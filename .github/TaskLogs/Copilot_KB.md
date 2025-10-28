@@ -4,31 +4,394 @@
 
 ## TOPIC
 
-About what happens during control focus switching, and how to switch using TAB and ALT
+GuiListControl has a complex design to enable customized item rendering, layouting and management. You need to research on these 3 topics.
+
+In GuiListControl.h's leading comment block there is explanatations about how each sub controls manage its own sub items. It would help you understanding the code structure better.
 
 ### Insight
 
-#### Focus Management Architecture
+#### Architecture Overview
 
-The focus management in GacUI is implemented across three main layers:
+`GuiListControl` implements a sophisticated three-layer architecture enabling customized item rendering, layouting, and management:
 
-**Layer 1: GuiGraphicsComposition Level**
-- `GuiGraphicsComposition` has an event receiver that fires `gotFocus` and `lostFocus` events
-- `GuiGraphicsHost` maintains the currently focused composition in `focusedComposition` member
-- `GuiGraphicsHost::SetFocusInternal` is the core method that switches focus between compositions
-  - Fires `lostFocus` event on the currently focused composition (if any)
-  - Updates `focusedComposition` to the new composition
-  - Resets caret point to (0,0)
-  - Fires `gotFocus` event on the newly focused composition
-- `GuiGraphicsHost::SetFocus` is the public API that validates the composition belongs to this host and calls `SetFocusInternal`
-- `GuiGraphicsHost::ClearFocus` removes focus from any composition
-- `GuiGraphicsHost::GetFocusedComposition` returns the currently focused composition
+**Layer 1: Data Layer (IItemProvider)**
+- Provides data to the list control
+- Located in `Source/Controls/ListControlPackage/DataSource_IItemProvider.h`
+- Core interface methods:
+  - `Count()`: Returns total number of items
+  - `GetTextValue(itemIndex)`: Returns text representation of an item
+  - `GetBindingValue(itemIndex)`: Returns boxed `description::Value` of an item
+  - `RequestView(identifier)`: Returns additional view interfaces for specialized data access
+  - `AttachCallback(IItemProviderCallback*)` and `DetachCallback(IItemProviderCallback*)`: Register/unregister for notifications
+- `IItemProviderCallback` receives notifications via `OnItemModified(start, count, newCount, itemReferenceUpdated)`
+- Base implementation `ItemProviderBase` manages callbacks and editing counter
 
-**Layer 2: GuiControl Level**
-- Each `GuiControl` has a `focusableComposition` property (can be null)
-- `GuiControl::SetFocusableComposition` attaches `gotFocus` and `lostFocus` event handlers to the composition
-- When composition gets focus: `GuiControl::OnGotFocus` is called, which sets `isFocused = true`, updates control template state, and fires `FocusedChanged` event
-- When composition loses focus: `GuiControl::OnLostFocus` is called, which sets `isFocused = false`, updates control template state, and fires `FocusedChanged` event
+**Layer 2: Layout Layer (IItemArranger)**
+- Decides how to arrange item controls spatially
+- Located in `Source/Controls/ListControlPackage/GuiListControls.h` as nested interface
+- Core interface methods:
+  - `AttachListControl(GuiListControl*)` and `DetachListControl()`: Lifecycle management
+  - `SetCallback(IItemArrangerCallback*)`: Receives callback for creating/destroying item controls
+  - `GetTotalSize()`: Returns total size of all items
+  - `GetVisibleStyle(itemIndex)`: Returns item template for visible items, null if not visible
+  - `GetVisibleIndex(ItemStyle*)`: Returns item index from template, -1 if not visible
+  - `ReloadVisibleStyles()`: Recreates all visible item controls
+  - `OnViewChanged(Rect bounds)`: Called when viewport changes
+  - `FindItemByVirtualKeyDirection(itemIndex, key)`: Navigation support
+  - `EnsureItemVisible(itemIndex)`: Scrolling support
+  - `GetAdoptedSize(expectedSize)`: Size calculation for fitting items
+- Implements `IItemProviderCallback` to respond to data changes
+- Base implementation `RangedItemArrangerBase` delegates to `GuiVirtualRepeatCompositionBase`
+
+**Layer 3: Rendering Layer (ItemStyle/ItemTemplate)**
+- Item templates define visual appearance of each item
+- Base template is `GuiListItemTemplate` in `Source/Controls/Templates/GuiControlTemplates.h`
+- Properties include `Selected`, `Index`, `AssociatedListControl`
+- Derived templates add specialized properties (e.g., `GuiTextListItemTemplate` adds `Checked`, `TextColor`)
+- Item template is created via `TemplateProperty<GuiListItemTemplate>` function pointer
+- Each item can be wrapped in background button if `displayItemBackground` is true
+
+#### Item Rendering Management
+
+**Item Creation and Lifecycle**
+
+`GuiListControl::ItemCallback` implements both `IItemProviderCallback` and `IItemArrangerCallback`:
+
+**Creation Flow (InstallStyle)**:
+1. Arranger calls `callback->CreateItem(itemIndex)`
+2. `ItemCallback::CreateItem` validates index and calls `itemStyleProperty` function to create template
+3. Template returned from the function becomes the `ItemStyle`
+4. If `displayItemBackground` is true:
+   - Creates `GuiSelectableButton` with `ThemeName::ListItemBackground`
+   - Wraps item template inside background button's container
+   - Synchronizes `Selected` state between template and button
+   - Returns wrapper as `ItemStyleBounds` instead of template itself
+5. Otherwise template itself is `ItemStyleBounds`
+6. Calls `OnStyleInstalled(itemIndex, style, false)` to initialize properties:
+   - `SetFont(GetDisplayFont())`
+   - `SetContext(GetContext())`
+   - `SetText(itemProvider->GetTextValue(itemIndex))`
+   - `SetVisuallyEnabled(GetVisuallyEnabled())`
+   - `SetSelected(false)`
+   - `SetIndex(itemIndex)`
+   - `SetAssociatedListControl(this)`
+7. Calls `AttachItemEvents(style)` to hook up mouse events
+8. Stores mapping from `ItemStyle*` to `ItemStyleBounds*` in `installedStyles` dictionary
+
+**Destruction Flow (UninstallStyle)**:
+1. Arranger calls `callback->ReleaseItem(style)`
+2. `ItemCallback::ReleaseItem` looks up style in `installedStyles`
+3. Calls `OnStyleUninstalled(style)` which calls `DetachItemEvents(style)`
+4. Removes from `installedStyles` dictionary
+5. Calls `SafeDeleteComposition(bounds)` to destroy compositions
+
+**Event Handling**:
+- Each visible style has attached mouse event handlers stored in `VisibleStyleHelper`
+- Events captured: left/middle/right button down/up/doubleclick, mouse move/enter/leave
+- Handler translates composition-level events to item-level events:
+  - Gets `itemIndex` from arranger via `GetVisibleIndex(style)`
+  - Creates `GuiItemMouseEventArgs` or `GuiItemEventArgs` with `itemIndex`
+  - Fires corresponding item event on `GuiListControl` (e.g., `ItemLeftButtonDown`)
+
+**Property Updates**:
+- When item provider notifies modification via `OnItemModified(start, count, newCount, itemReferenceUpdated)`
+- If `itemReferenceUpdated == false` and `count == newCount` (content update only):
+  - For each visible item in range, calls `OnStyleInstalled(itemIndex, style, true)` to refresh properties
+- Otherwise arranger handles recreation
+
+#### Item Layout Management
+
+**Virtual Repeat Composition System**
+
+All predefined arrangers use `RangedItemArrangerBase` which delegates to `GuiVirtualRepeatCompositionBase`:
+
+**Arranger Types** (in `Source/Controls/ListControlPackage/GuiListControlItemArrangers.h`):
+1. `FreeHeightItemArranger`: Uses `GuiRepeatFreeHeightItemComposition`
+   - Caches heights of all items individually
+   - Suitable for items with varying heights
+2. `FixedHeightItemArranger`: Uses `GuiRepeatFixedHeightItemComposition`
+   - All items have same height (maximum of minimum heights)
+   - Most efficient for uniform lists
+3. `FixedSizeMultiColumnItemArranger`: Uses `GuiRepeatFixedSizeMultiColumnItemComposition`
+   - Multiple columns with fixed item size (max width and height)
+   - Grid layout
+4. `FixedHeightMultiColumnItemArranger`: Uses `GuiRepeatFixedHeightMultiColumnItemComposition`
+   - Multiple columns with fixed height but variable width per item
+   - Suitable for tag clouds or varying-width items
+
+**Virtual Repeat Template Pattern**:
+
+`VirtualRepeatRangedItemArrangerBase<TVirtualRepeatComposition>` template creates `ArrangerRepeatComposition`:
+- Overrides `CreateStyleInternal(index)`:
+  - Calls `arranger->callback->CreateItem(index)` to get `ItemStyle`
+  - Calls `arranger->callback->GetItemBounds(itemStyle)` to get wrapping composition
+  - Returns bounds composition to repeat composition
+- Overrides `DeleteStyleInternal(style)`:
+  - Calls `arranger->callback->GetItem(style)` to unwrap to `ItemStyle`
+  - Calls `arranger->callback->ReleaseItem(itemStyle)` to destroy
+- Overrides `Layout_UpdateIndex(style, index)`:
+  - Updates `itemStyle->SetIndex(index)` when items scroll
+
+**Coordination with Repeat Composition**:
+
+`RangedItemArrangerBase` bridges list control and repeat composition:
+- `OnAttached(IItemProvider*)`: Creates `ArrangerItemSource` wrapper and calls `repeat->SetItemSource(itemSource)`
+- `OnItemModified(start, count, newCount, itemReferenceUpdated)`: If `itemReferenceUpdated` is true, calls `itemSource->ItemChanged(start, count, newCount)` to notify repeat composition
+- `AttachListControl(GuiListControl*)`: Calls `repeat->SetAxis(listControl->GetAxis())` to share coordinate transformer
+- `SetCallback(IItemArrangerCallback*)`: Adds repeat composition to container and sets dummy item template to enable virtual mode
+- `OnViewChanged(Rect bounds)`: Calls `repeat->SetViewLocation(bounds.LeftTop())` and `repeat->SetExpectedBounds(Rect({0,0}, bounds.GetSize()))`
+- Event forwarding: `ViewLocationChanged`, `TotalSizeChanged`, `AdoptedSizeInvalidated` from repeat to callback
+
+**IGuiAxis Integration**:
+- `IGuiAxis` transforms between real coordinates and virtual coordinates
+- Shared by list control and repeat composition via `repeat->SetAxis(listControl->GetAxis())`
+- Used for key navigation direction mapping
+- Default is `GuiDefaultAxis` (identity transformation)
+
+#### Item Data Management
+
+**IItemProvider View System**
+
+Providers expose multiple view interfaces via `RequestView(identifier)`:
+
+**Common Views**:
+
+1. **ITextItemView** (for `GuiVirtualTextList`):
+   - `GetChecked(itemIndex)` and `SetChecked(itemIndex, value)`: Checkbox state
+   - Used by `TextItemProvider` for `TextItem` data
+   
+2. **IListViewItemView** (for `GuiVirtualListView`):
+   - `GetSmallImage(itemIndex)`, `GetLargeImage(itemIndex)`: Icons
+   - `GetText(itemIndex)`: Main text
+   - `GetSubItem(itemIndex, subItemIndex)`: Sub-item text
+   - `GetDataColumnCount()`, `GetDataColumn(index)`: Data projection
+   - `GetColumnCount()`, `GetColumnText(index)`: Column headers
+   - Used by `ListViewItemProvider` for `ListViewItem` data
+
+3. **IColumnItemView** (for `GuiVirtualListView` columns):
+   - `GetColumnSize(index)`, `SetColumnSize(index, value)`: Column widths
+   - `GetDropdownPopup(index)`: Context menu for column
+   - `GetSortingState(index)`: Visual sort indicator
+   
+4. **INodeItemView** (for `GuiVirtualTreeListControl`):
+   - `RequestNode(index)`: Convert item index to `INodeProvider*`
+   - `CalculateNodeVisibilityIndex(node)`: Convert node to index (-1 if collapsed)
+   - Used by `NodeItemProvider` to flatten tree into list
+   
+5. **ITreeViewItemView** (for tree nodes):
+   - `GetNodeImage(node)`: Node icon
+   - Used by `TreeViewItemRootProvider` for `TreeViewItem` data
+
+6. **IDataGridView** (for `GuiVirtualDataGrid`):
+   - `GetBindingCellValue(row, column)`, `SetBindingCellValue(row, column, value)`: Cell data
+   - `GetCellSpan(row, column)`: Merging (not yet implemented)
+
+**Provider Hierarchy**:
+
+**Concrete Providers** (hold actual data):
+- `TextItemProvider`: List of `Ptr<TextItem>`
+- `ListViewItemProvider`: List of `Ptr<ListViewItem>` with columns
+- `TreeViewItemRootProvider`: Tree of `Ptr<MemoryNodeProvider>` with `TreeViewItem` data
+- `DataProvider` (for data grid): Holds filtered/sorted view
+
+**Bindable Providers** (wrap observable data sources):
+- `TextItemBindableProvider`: Wraps `IValueObservableList` as text items
+- `ListViewItemBindableProvider`: Wraps `IValueObservableList` as list view items
+- `TreeViewItemBindableRootProvider`: Wraps object graph as tree
+- Uses reflection (`description::Value`) to access properties
+
+**Converter Providers**:
+- `NodeItemProvider`: Converts `INodeRootProvider` (tree) to `IItemProvider` (flat list)
+- Implements `INodeItemView` for node access
+- Tracks expanded/collapsed state
+- Updates indices when tree structure changes
+
+**Base Class Hierarchy**:
+- `ItemProviderBase`: Manages callbacks and editing counter
+- `ListProvider<T>`: Extends `ItemProviderBase` and `ObservableListBase<T>` for observable list functionality
+- `NodeRootProviderBase`: Base for tree providers
+
+**Callback Flow**:
+
+When data changes:
+1. Provider calls `InvokeOnItemModified(start, count, newCount, itemReferenceUpdated)`
+2. `ItemProviderBase::InvokeOnItemModified` iterates through all `callbacks` (usually contains arranger and list control's `ItemCallback`)
+3. Each callback's `OnItemModified` is invoked
+4. Arranger's `OnItemModified`: Notifies repeat composition if `itemReferenceUpdated`
+5. List control's `ItemCallback::OnItemModified`: Forwards to `GuiListControl::OnItemModified`
+6. `GuiListControl::OnItemModified`: Refreshes visible item properties if content changed
+
+#### Selection Management
+
+**GuiSelectableListControl** extends `GuiListControl`:
+
+**Selection State**:
+- `selectedItems`: `SortedList<vint>` of selected indices
+- `multiSelect`: Boolean enabling multi-selection
+- `selectedItemIndexStart` and `selectedItemIndexEnd`: Range for shift-selection
+
+**Selection Methods**:
+- `SetSelected(itemIndex, value)`: Set single item selection
+  - Updates `selectedItems`
+  - Calls `OnItemSelectionChanged(itemIndex, value)` which updates visible style's `Selected` property
+  - Fires `SelectionChanged` event
+- `SelectItemsByClick(itemIndex, ctrl, shift, leftButton)`: Multi-selection logic
+  - Right-click without selection: skip (keep current selection)
+  - No modifiers: Clear all, select clicked item
+  - Ctrl: Toggle clicked item
+  - Shift: Select range from `selectedItemIndexStart` to clicked item
+  - Ctrl+Shift: Add range to selection
+- `SelectItemsByKey(code, ctrl, shift)`: Keyboard navigation
+  - Arrow keys: Navigate and select
+  - Home/End: First/last item
+  - PageUp/PageDown: Page navigation
+  - Uses `FindItemByVirtualKeyDirection` to find target item
+  - Applies same ctrl/shift logic as mouse
+  - Calls `EnsureItemVisible` after selection
+- `ClearSelection()`: Removes all selections, fires event
+
+**Synchronization with Item Styles**:
+- `OnStyleInstalled`: Sets `style->SetSelected(selectedItems.Contains(itemIndex))`
+- `OnItemModified`: Clears selection if item count changes or selected items modified
+
+**Special Behavior**:
+- Left-click always processes selection
+- Right-click on already-selected item keeps selection (for context menu)
+- Shift selection uses `SetMultipleItemsSelectedSilently` to batch update without firing multiple events
+
+#### Specialized List Controls
+
+**Control Hierarchy**:
+
+1. **GuiTextList**:
+   - Uses `TextItemProvider`
+   - Item template: `GuiTextListItemTemplate`
+   - Additional properties: `Checked`, `TextColor`
+   - `GetItems()`: Direct access to writable `Ptr<TextItem>` list
+
+2. **GuiListView**:
+   - Uses `ListViewItemProvider`
+   - Item template: Varies by view (List/SmallIcon/LargeIcon/Tile/Detail)
+   - Column management via `GetColumns()` and `GetDataColumns()`
+   - Column arranger: `ListViewColumnItemArranger` for detail view
+
+3. **GuiTreeView**:
+   - Uses `TreeViewItemRootProvider` + `NodeItemProvider`
+   - Item template: `GuiTreeItemTemplate`
+   - Properties: `Expanding`, `Expandable`, `Level`, `Image`
+   - Node manipulation via `Nodes()->GetRootNode()` and `MemoryNodeProvider::Children()`
+
+4. **GuiBindableTextList**:
+   - Uses `TextItemBindableProvider`
+   - Data source: `IValueObservableList` via `GetItemSource()`/`SetItemSource()`
+   - Automatically updates when observable list changes
+   - `NotifyItemDataModified(start, count)`: Manual refresh for property changes
+
+5. **GuiBindableListView**:
+   - Uses `ListViewItemBindableProvider`
+   - Similar to GuiBindableTextList but with columns
+
+6. **GuiBindableTreeView**:
+   - Uses `TreeViewItemBindableRootProvider`
+   - Constructor parameter `reverseMappingProperty`: Property name for accessing `INodeProvider*` from data
+   - `NotifyNodeDataModified(value)`: Refresh when node properties change
+
+7. **GuiVirtualDataGrid**:
+   - Uses `DataProvider` (filtered/sorted view)
+   - Cell editors: `SetCellValueSaved` when editor closes
+   - `SelectCell(value, openEditor)`: Navigate to cell and optionally edit
+
+**Common Pattern**:
+- Concrete controls (`GuiTextList`) manage their own data structures
+- Bindable controls (`GuiBindableTextList`) wrap user-provided data sources via reflection
+- All inherit from `GuiListControl` or `GuiSelectableListControl`
+- Data manipulation via provider's view interfaces
+- Visual customization via item templates
+
+#### Integration with GuiScrollView
+
+`GuiListControl` extends `GuiScrollView`:
+
+**Size Calculation**:
+- `QueryFullSize()`: Returns `itemArranger->GetTotalSize()` as `fullSize`
+- Called by scroll view to determine scroll range
+
+**View Updates**:
+- `UpdateView(Rect viewBounds)`: Called by scroll view when viewport changes
+- Forwards to `itemArranger->OnViewChanged(viewBounds)`
+- Arranger updates visible items based on new viewport
+
+**Adopted Size**:
+- `GetAdoptedSize(Size expectedSize)`: Calculate minimal size to fit items
+- Tracks scroll bar visibility in `adoptedSizeDiffWithScroll` and `adoptedSizeDiffWithoutScroll`
+- Delegates to `itemArranger->GetAdoptedSize(expectedViewSize)`
+- Used by responsive layouts to size list controls appropriately
+
+**Rendering Lifecycle**:
+- `OnRenderTargetChanged`: Recreates style and arranger (calls `SetStyleAndArranger`)
+- `OnBeforeReleaseGraphicsHost`: Clears style and arranger to release resources
+- `AfterControlTemplateInstalled_`: Reloads visible styles and recalculates view
+
+**Focus Handling**:
+- Constructor with `acceptFocus=true`: Attaches mouse down handlers to `boundsComposition`
+- Mouse down calls `SetFocused()` if visually enabled
+- Sets `focusableComposition` to `boundsComposition`
+
+#### Template and Arranger Coordination
+
+**SetStyleAndArranger Process**:
+
+Called when item template or arranger changes:
+
+1. **Detach Old Arranger**:
+   - `itemProvider->DetachCallback(itemArranger)` (stops data notifications)
+   - `itemArranger->DetachListControl()` (releases list control reference)
+   - `itemArranger->SetCallback(nullptr)` (removes item creation callback)
+
+2. **Clear Cached Items**:
+   - `callback->ClearCache()` iterates `installedStyles`
+   - Calls `UninstallStyle` for each, then `SafeDeleteComposition`
+
+3. **Update Properties**:
+   - `itemStyleProperty = styleProperty`
+   - `itemArranger = arranger`
+
+4. **Attach New Arranger**:
+   - `itemArranger->SetCallback(callback.Obj())` (arranger adds repeat composition to container)
+   - `itemArranger->AttachListControl(this)` (arranger gets axis from list control)
+   - `itemProvider->AttachCallback(itemArranger.Obj())` (arranger receives data notifications)
+
+5. **Reset Scrolls**:
+   - Set both horizontal and vertical scroll positions to 0
+
+6. **Recalculate View**:
+   - `CalculateView()` triggers size query and viewport update
+
+**PredefinedListItemTemplate Pattern**:
+
+Helper template for item templates in `Source/Controls/ListControlPackage/GuiListControls.h`:
+
+```cpp
+template<typename TBase>
+class PredefinedListItemTemplate : public TBase
+```
+
+- Hooks `AssociatedListControlChanged` event
+- When list control is set:
+  - Stores `listControl` pointer
+  - Calls `OnInitialize()` (derived class initialization)
+  - Calls `OnRefresh()` (derived class property update)
+- `RefreshItem()`: Public method to manually call `OnRefresh()`
+- Ensures template initializes only once even if event fires multiple times
+
+**Display Item Background**:
+
+`displayItemBackground` property controls wrapping:
+- `true` (default): Each item wrapped in `GuiSelectableButton` with `ThemeName::ListItemBackground`
+  - Background button handles selection visual state
+  - Template obtains background template from list control template via `GetBackgroundTemplate()`
+- `false`: Template used directly as bounds
+- Changing this property triggers `SetStyleAndArranger` to recreate all items
 - `GuiControl::GetFocused` checks if the control is currently focused
 - `GuiControl::SetFocused` is the public API to focus a control:
   - Returns early if no focusable composition
@@ -36,888 +399,3 @@ The focus management in GacUI is implemented across three main layers:
   - Returns early if focusable composition is not eventually visible
   - Gets the graphics host from the focusable composition
   - Calls `host->SetFocus(focusableComposition)`
-
-**Layer 3: Focus Loss on State Changes**
-- When a control is disabled: `GuiControl::SetEnabled(false)` calls `UpdateVisuallyEnabled`, which triggers `OnLostFocus` if the control was focused
-- When a control is hidden: `GuiControl::SetVisible(false)` does NOT automatically clear focus (based on test case comment)
-- When a control is deleted: `GuiGraphicsHost::DisconnectCompositionInternal` is called recursively, which clears `focusedComposition` if it matches the disconnected composition
-
-#### TAB Key Navigation
-
-**GuiTabActionManager Architecture**
-- Created and owned by `GuiGraphicsHost`
-- Manages TAB key navigation between focusable controls
-
-**IGuiTabAction Interface**
-- Controls implement `IGuiTabAction` service to participate in TAB navigation
-- Key methods:
-  - `GetAcceptTabInput()`: Returns whether control accepts TAB character (if true, TAB key is NOT used for navigation but passed to control)
-  - `GetTabPriority()`: Returns priority for TAB order (-1 means lowest priority, 0, 1, 2... are higher priorities)
-  - `IsTabEnabled()`: Returns whether control can be tabbed to (checks if control is visible and enabled)
-  - `IsTabAvailable()`: Returns whether control is available for TAB navigation (checks if focusable composition exists)
-
-**Control List Building (BuildControlList)**
-- Recursively collects all controls from the control host
-- Uses `tab_focus::CollectControls` to traverse control hierarchy
-- Groups controls by their `TabPriority` value
-- Inserts controls in priority order: 0, 1, 2, ..., then -1 (default/unprioritized)
-- For each control, recursively collects its children and inserts them after the parent
-- Result is a flattened list `controlsInOrder` sorted by TAB priority
-
-**Focus Navigation (GetNextFocusControl)**
-- Rebuilds control list if cache is invalidated (`available == false`)
-- Takes current focused control and offset (+1 for forward TAB, -1 for backward SHIFT+TAB)
-- Finds start index in the control list
-- Wraps around using modulo arithmetic: `(index + offset + count) % count`
-- Loops through controls until finding one that is both `IsTabAvailable()` and `IsTabEnabled()`
-- Returns the next focusable control or null if none found
-
-**Key Event Handling (GuiTabActionManager::KeyDown)**
-- Only processes TAB key when CTRL and ALT are NOT pressed
-- If focused composition's control has `GetAcceptTabInput() == true`, TAB is NOT intercepted (returns false)
-- Otherwise, calls `GetNextFocusControl` with offset based on SHIFT key state
-- If next control found: calls `next->SetFocused()`, sets `supressTabOnce = true` to prevent TAB character from being inserted
-- Returns true to indicate key was handled
-
-**Character Suppression (GuiTabActionManager::Char)**
-- Suppresses the TAB character (`\t`) if `supressTabOnce` is true
-- Resets `supressTabOnce` to false after checking
-
-**Cache Invalidation**
-- `GuiTabActionManager::InvalidateTabOrderCache()` sets `available = false` and clears `controlsInOrder`
-- Called when control's `TabPriority` changes via `GuiControl::SetTabPriority`
-- Next TAB key press triggers rebuild
-
-#### ALT Key Navigation
-
-**GuiAltActionManager Architecture**
-- Created and owned by `GuiGraphicsHost`
-- Manages ALT-combined shortcut keys for controls
-
-**IGuiAltAction Interface**
-- Controls implement `IGuiAltAction` service to have ALT shortcuts
-- Key methods:
-  - `GetAlt()`: Returns the ALT key string (e.g., "F" for ALT+F)
-  - `IsAltEnabled()`: Returns whether ALT action is enabled (checks visible and enabled state)
-  - `IsAltAvailable()`: Returns whether ALT action is available (checks if focusable composition and alt string exist)
-  - `GetAltComposition()`: Returns the composition to show the ALT key label on
-  - `GetActivatingAltHost()`: Returns the alt host to enter when this action is activated (null means just activate)
-  - `OnActiveAlt()`: Called when ALT key is activated (default implementation calls `SetFocused()`)
-- `IGuiAltAction::IsLegalAlt` validates that ALT string contains only uppercase letters (A-Z) and digits (0-9)
-
-**IGuiAltActionContainer Interface**
-- Controls can implement this to provide multiple ALT actions
-- `GetAltActionCount()` and `GetAltAction(index)` enumerate actions
-
-**IGuiAltActionHost Interface**
-- Hosts can be entered/exited, creating a hierarchy of ALT contexts
-- `GetAltComposition()`: Returns the composition for this host
-- `GetPreviousAltHost()`: Returns the parent host in the hierarchy
-- `OnActivatedAltHost(previousHost)` and `OnDeactivatedAltHost()`: Called when entering/leaving
-- `CollectAltActions(actions)`: Collects all ALT actions for this host
-- `IGuiAltActionHost::CollectAltActionsFromControl` recursively traverses control tree:
-  - If control has `IGuiAltActionContainer`: collects all actions from it
-  - Else if control has `IGuiAltAction` and `IsAltAvailable()` and `IsAltEnabled()`: adds single action
-  - Recursively processes all children
-
-**ALT Mode Activation**
-- Press ALT (KEY_MENU) without CTRL or SHIFT
-- `GuiAltActionManager::KeyDown` checks if control host implements `IGuiAltActionHost`
-- Calls `EnterAltHost` to enter ALT mode
-
-**EnterAltHost Process**
-- Calls `ClearAltHost` to clean up previous state
-- Calls `host->CollectAltActions(actions)` to get all available actions
-- If no actions available, calls `CloseAltHost` and exits
-- Calls `host->OnActivatedAltHost(currentAltHost)` with previous host
-- Updates `currentAltHost` to the new host
-- Calls `CreateAltTitles` to create visual labels
-
-**CreateAltTitles Process**
-- For each ALT action key (grouped by alt string):
-  - If single action and non-empty key: uses key as-is
-  - If multiple actions with same key: appends numeric suffix (0-999) with zero-padding
-  - Creates `currentActiveAltActions` dictionary mapping full key (e.g., "F", "F00", "F01") to action
-- For each action in `currentActiveAltActions`:
-  - Creates a `GuiLabel` with `ThemeName::ShortcutKey` theme
-  - Sets label text to the key string
-  - Adds label to the action's composition
-  - Stores label in `currentActiveAltTitles` dictionary
-- Calls `FilterTitles` to update visibility
-
-**Key Input Handling (EnterAltKey)**
-- Appends typed character to `currentAltPrefix`
-- Checks if `currentAltPrefix` matches any action key in `currentActiveAltActions`
-- If no match: calls `FilterTitles` and removes last character if no visible titles remain
-- If exact match found:
-  - If action has `GetActivatingAltHost()`: calls `EnterAltHost` to enter nested ALT host
-  - Otherwise: calls `CloseAltHost` to exit ALT mode
-  - Calls `action->OnActiveAlt()` to activate the action (usually focuses the control)
-  - Sets `supressAltKey` to prevent key from being processed further
-  - Returns true
-
-**FilterTitles Process**
-- Iterates through all labels in `currentActiveAltTitles`
-- If label's key starts with `currentAltPrefix`: shows label and formats text with brackets around next character (e.g., "F[0]0")
-- Otherwise: hides label
-- Returns count of visible labels
-
-**Exiting ALT Mode**
-- Press ESCAPE: calls `LeaveAltHost` to exit current host and restore previous
-- Press BACKSPACE: calls `LeaveAltKey` to remove last character from prefix
-- Clicking or any other key: depends on whether key matches an action
-- `CloseAltHost` clears all state, deletes all labels, and exits all hosts in the hierarchy
-
-**Character and Key Suppression**
-- `GuiAltActionManager::Char` returns true to suppress all character input while in ALT mode or if `supressAltKey` is set
-- `GuiAltActionManager::KeyUp` suppresses the key-up event for the key stored in `supressAltKey`
-
-#### Event Flow Integration
-
-**GuiGraphicsHost Key Event Processing**
-- `GuiGraphicsHost::KeyDown` processes native window key events
-- First tries `GuiAltActionManager::KeyDown`: if ALT manager is active or activates, returns true to consume event
-- Then tries `GuiTabActionManager::KeyDown`: if TAB key is handled, returns true to consume event
-- Then tries shortcut key manager (if exists)
-- Finally delivers to focused composition's event receiver if not consumed
-
-**GuiGraphicsHost Char Event Processing**
-- `GuiGraphicsHost::Char` processes character input
-- First tries `GuiTabActionManager::Char`: suppresses TAB character if just navigated
-- Then tries `GuiAltActionManager::Char`: suppresses all input while in ALT mode
-- Finally delivers to focused composition's event receiver if not suppressed
-
-**Control Visibility and Enable State**
-- `GuiControl::IsControlVisibleAndEnabled` traverses up parent chain checking both `GetVisible()` and `GetEnabled()`
-- Used by both `IsAltEnabled()` and `IsTabEnabled()` to determine if control can receive focus via ALT or TAB
-- This ensures that if a parent is disabled or invisible, all children are excluded from ALT/TAB navigation
-
-#### Test Coverage
-
-**TAB Navigation Tests**
-- `TestApplication_Tab.cpp` contains comprehensive tests:
-  - `TabNavigate`: Tests forward TAB through 3 buttons and backward SHIFT+TAB
-  - `TabNavigateWithContainer`: Tests TAB through 5 buttons including nested containers (GroupBox)
-  - `FocusedAndDisable`: Tests that disabling focused control clears focus
-  - `FocusedAndHide`: Tests hiding focused control (focus behavior noted as unclear in comment)
-  - `FocusedAndDelete`: Tests deleting focused control clears focus
-
-**ALT Focus Test**
-- `TestControls_CoreApplication_GuiControl.cpp` contains `AltFocus` test
-- Tests ALT key activation in nested control scenarios
-
-## ASK
-
-Usually nested tab hosts are created based on nested controls. But Tab and Menu controls has implemented their own nested tab hosts. Is there any other control doing the same thing? What do they actually do?
-
-### Insight
-
-#### Controls Implementing Nested ALT Hosts
-
-The following controls override `GetActivatingAltHost()` to provide nested ALT host functionality (not TAB host):
-
-**1. GuiMenuButton** (`Source/Controls/ToolstripPackage/GuiMenuControls.h/.cpp`)
-- Returns the submenu as a nested ALT host if it exists
-- Implementation in `GuiMenuButton::GetActivatingAltHost`:
-  - If `subMenu` exists: returns `subMenu->QueryTypedService<IGuiAltActionHost>()`
-  - Otherwise: returns `GuiSelectableButton::GetActivatingAltHost()`
-- When you press ALT key on a menu button with submenu, it enters the submenu's ALT context
-
-**2. GuiComboBoxBase** (`Source/Controls/ListControlPackage/GuiComboControls.h/.cpp`)
-- Does NOT provide nested ALT host even though it has dropdown
-- Implementation in `GuiComboBoxBase::GetActivatingAltHost`:
-  - Always returns `GuiSelectableButton::GetActivatingAltHost()`
-  - Comment says: "When the combo box is opened by an Alt action, it will not continue into the dropdown"
-- This prevents ALT navigation from entering the dropdown automatically
-
-**3. GuiVirtualDataGrid** (`Source/Controls/ListControlPackage/GuiDataGridControls.h/.cpp`)
-- Provides nested ALT host when cell editor is active
-- Implementation in `GuiVirtualDataGrid::GetActivatingAltHost`:
-  - If `currentEditor` exists and its focus control has `IGuiAltAction` service available and enabled:
-    - Calls `SetAltComposition(currentEditor->GetTemplate())`
-    - Calls `SetAltControl(focusControl, true)`
-    - Returns `this` (the data grid itself becomes the ALT host)
-  - Otherwise:
-    - Calls `SetAltComposition(nullptr)` and `SetAltControl(nullptr, false)`
-    - Returns `GuiVirtualListView::GetActivatingAltHost()`
-- This allows ALT navigation into the active cell editor
-
-**4. GuiRibbonGroup** (`Source/Controls/ToolstripPackage/GuiRibbonControls.h/.cpp`)
-- Implements `GuiAltActionHostBase` and can be a nested ALT host itself
-- Implementation in `GuiRibbonGroup::GetActivatingAltHost`:
-  - If `IsAltAvailable()` returns true (when `alt` string is not empty):
-    - Returns `this` (the ribbon group becomes the ALT host)
-  - Otherwise:
-    - Returns `GuiControl::GetActivatingAltHost()`
-- This allows the ribbon group to have its own ALT context for its contained buttons
-
-**5. GuiDatePicker** (`Source/Controls/GuiDateTimeControls.h/.cpp`)
-- Implements `GuiAltActionHostBase` and can be a nested ALT host
-- Implementation in `GuiDatePicker::GetActivatingAltHost`:
-  - If `nestedAlt` is true (passed in constructor):
-    - Returns `this` (the date picker becomes the ALT host)
-  - Otherwise:
-    - Returns `GuiControl::GetActivatingAltHost()`
-- When `nestedAlt` is true, ALT keys navigate within the date picker's calendar cells
-- Sets up ALT context with `SetAltComposition(boundsComposition)` and `SetAltControl(this, false)` in constructor
-
-**6. GuiWindow** (`Source/Application/Controls/GuiWindowControls.h`)
-- Implements `GuiAltActionHostBase` as the root ALT host
-- All windows serve as the top-level ALT host for their contained controls
-
-**Base Class: GuiControl** (`Source/Application/Controls/GuiBasicControls.h/.cpp`)
-- Default implementation in `GuiControl::GetActivatingAltHost`:
-  - Returns `activatingAltHost` member variable
-  - This can be set by derived classes
-- Most controls just inherit this default behavior
-
-#### What Nested ALT Hosts Actually Do
-
-When `GetActivatingAltHost()` returns a non-null `IGuiAltActionHost`:
-
-**During ALT Mode Activation:**
-- `GuiAltActionManager::EnterAltHost` is called with the returned host
-- The host's `CollectAltActions` is called to gather all ALT actions from its children
-- Visual ALT key labels are created for each action
-- The user can type ALT keys to navigate within this nested context
-
-**Key Differences from Normal ALT Navigation:**
-- **Nested Context**: Instead of collecting all ALT actions from the entire window, only actions within the nested host are collected
-- **Hierarchy**: You can press ESCAPE to exit the nested host and return to the parent ALT context
-- **Focused Scope**: This restricts ALT navigation to a specific part of the UI (e.g., inside a menu, inside a ribbon group, inside a date picker calendar)
-
-**Important Distinction:**
-- There is NO "nested TAB host" concept in the codebase
-- Only ALT navigation supports nesting through `IGuiAltActionHost`
-- TAB navigation is flat and managed by a single `GuiTabActionManager` per window
-- The question mentioned "nested tab hosts" but the implementation only supports nested ALT hosts
-
-## ASK
-
-Why the listed controls need to implement their own alt host? What is the reason behind it you believe that the default nested alt host handling can't achieve?
-
-### Insight
-
-#### Understanding Default ALT Host Behavior
-
-**Default Behavior in GuiControl**
-- `GuiControl::GetActivatingAltHost()` returns the `activatingAltHost` member variable (usually null)
-- When null, no nested ALT host is created; ALT actions are just collected from the control hierarchy
-
-**Default Collection Process (GuiAltActionHostBase::CollectAltActions)**
-- Calls `CollectAltActionsFromControl(control, includeControl, actions)`
-- This function recursively traverses ALL descendant controls in the control hierarchy
-- For each control, if it has `IGuiAltActionContainer` or `IGuiAltAction` service, adds its actions
-- This means by default, activating ALT on a control collects actions from all its permanent child controls
-
-#### Why Custom GetActivatingAltHost Implementations Are Needed
-
-**Problem 1: Non-Child Control Relationships (GuiMenuButton)**
-- A menu button's submenu is a separate `GuiMenu` popup window, NOT a child control
-- The submenu is in a different window hierarchy (it's a popup)
-- Default `CollectAltActionsFromControl` only traverses child controls, so it cannot reach the submenu's items
-- **Solution**: `GuiMenuButton::GetActivatingAltHost()` returns `subMenu->QueryTypedService<IGuiAltActionHost>()`
-- This explicitly tells the ALT system to switch context to the submenu window's ALT host
-- Result: When you press ALT+[key] on a menu button with submenu, you enter the submenu's ALT context and can navigate its items
-
-**Problem 2: Intentional Blocking of Nested Navigation (GuiComboBoxBase)**
-- A combo box also has a dropdown containing selectable items
-- Unlike menus, the UX design dictates that pressing ALT+[key] should just open the dropdown, NOT enter ALT navigation inside it
-- Default behavior would collect ALT actions from the dropdown's controls
-- **Solution**: `GuiComboBoxBase::GetActivatingAltHost()` explicitly returns `GuiSelectableButton::GetActivatingAltHost()` (which is usually null)
-- Comment in code: "When the combo box is opened by an Alt action, it will not continue into the dropdown"
-- Result: ALT key activation only opens the dropdown, without entering nested ALT mode for dropdown items
-
-**Problem 3: Dynamic/Temporary Content (GuiVirtualDataGrid)**
-- When editing a cell, an editor control is dynamically created and shown
-- The editor is NOT a permanent child of the grid; it's created on-demand and destroyed when editing ends
-- The editor might be a complex control (dropdown, date picker, text box) with its own ALT shortcuts
-- Default collection would only see permanent children, missing the temporary editor
-- **Solution**: `GuiVirtualDataGrid::GetActivatingAltHost()` checks if `currentEditor` exists
-  - If editor's focus control has available and enabled `IGuiAltAction`: calls `SetAltComposition(currentEditor->GetTemplate())` and `SetAltControl(focusControl, true)`, then returns `this`
-  - This makes the grid itself become a temporary ALT host specifically for the editor
-  - If no editor: returns `GuiVirtualListView::GetActivatingAltHost()` (default behavior)
-- Result: When editing a cell and pressing ALT, you can navigate within the editor control
-
-**Problem 4: Scoped Navigation for Dense Control Groups (GuiRibbonGroup)**
-- A ribbon group contains many buttons (potentially dozens)
-- If all buttons were at the same ALT level, there would be too many ALT key conflicts
-- Ribbon groups can collapse into a dropdown when space is limited
-- **Solution**: `GuiRibbonGroup::GetActivatingAltHost()` returns `this` when `IsAltAvailable()` is true (when alt string exists)
-- The ribbon group implements `GuiAltActionHostBase` and sets up its composition/control
-- Result: Two-level ALT navigation: first press ALT+[group-key] to enter the group, then press ALT+[button-key] to select a button
-- This reduces conflicts and creates logical grouping
-
-**Problem 5: Optional Scoped Navigation (GuiDatePicker)**
-- A date picker displays a calendar with many clickable date cells
-- Each date cell can have an ALT shortcut for keyboard navigation
-- This feature is optional (controlled by `nestedAlt` constructor parameter)
-- **Solution**: `GuiDatePicker::GetActivatingAltHost()` returns `this` when `nestedAlt` is true
-- The date picker implements `GuiAltActionHostBase` with `SetAltComposition(boundsComposition)` and `SetAltControl(this, false)` in constructor
-- Result: When `nestedAlt=true`, pressing ALT+[key] enters the calendar's ALT context for date selection
-
-#### Why Default Handling Is Insufficient
-
-**Limitation 1: Only Traverses Permanent Child Hierarchy**
-- `CollectAltActionsFromControl` uses `GetChild(i)` to traverse children
-- Cannot reach: separate popup windows (menus), dynamically created controls (grid editors), or non-child UI elements
-
-**Limitation 2: Cannot Create Scoped Contexts**
-- Default behavior collects ALL actions from ALL descendants into a flat list
-- Cannot create hierarchical navigation where you enter a group first, then select within it
-- Results in ALT key conflicts when too many controls exist
-
-**Limitation 3: Cannot Block Navigation**
-- Default behavior always collects from all available children
-- Cannot prevent entering a nested context when UX design requires just activation without nesting (like combo boxes)
-
-**Limitation 4: Cannot Handle Dynamic State**
-- Default collection is based on static control hierarchy
-- Cannot adapt to dynamic content (like temporary editors) that come and go
-
-#### Summary of Custom Implementations
-
-| Control | Purpose | What Default Can't Do |
-|---------|---------|----------------------|
-| `GuiMenuButton` | Enter submenu popup's ALT context | Submenu is a separate window, not a child |
-| `GuiComboBoxBase` | Prevent entering dropdown's ALT context | Need to explicitly block nested navigation |
-| `GuiVirtualDataGrid` | Enter temporary cell editor's ALT context | Editor is dynamic, not a permanent child |
-| `GuiRibbonGroup` | Create scoped navigation for button groups | Need hierarchical ALT levels to reduce conflicts |
-| `GuiDatePicker` | Optionally enter calendar's ALT context | Need configurable nested navigation |
-
-## ASK
-
-GuiRibbonGroup is also a container, so what is actually differences comparing to the default behavior in terms of alt handling?
-
-### Insight
-
-#### The Critical Difference: How CollectAltActionsFromControl Traverses Controls
-
-The key to understanding this is in `IGuiAltActionHost::CollectAltActionsFromControl` in `Source/Application/GraphicsHost/GuiGraphicsHost_Alt.cpp`:
-
-```cpp
-while (index < controls.Count())
-{
-    auto current = controls[index++];
-
-    if (current != control || includeThisControl)
-    {
-        if (auto container = current->QueryTypedService<IGuiAltActionContainer>())
-        {
-            // ... collect actions from container
-            continue;  // ← STOPS HERE, children NOT traversed
-        }
-        else if (auto action = current->QueryTypedService<IGuiAltAction>())
-        {
-            if (action->IsAltAvailable() && action->IsAltEnabled())
-            {
-                actions.Add(action->GetAlt(), action);
-                continue;  // ← STOPS HERE, children NOT traversed
-            }
-        }
-    }
-
-    // Only reached if control doesn't have IGuiAltAction or IGuiAltActionContainer
-    vint count = current->GetChildrenCount();
-    for (vint i = 0; i < count; i++)
-    {
-        controls.Add(current->GetChild(i));  // ← Children added only if no ALT action
-    }
-}
-```
-
-**The `continue` statement is critical**: When a control has `IGuiAltAction` (or `IGuiAltActionContainer`) service and it's available/enabled, the function adds the control's ALT action to the collection BUT SKIPS adding its children to the traversal queue. This means children's ALT actions are NOT collected.
-
-#### GuiRibbonGroup's Two Behaviors
-
-**Base Class Facts:**
-- `GuiControl` (base class of all controls) implements `IGuiAltAction` (`Source/Application/Controls/GuiBasicControls.h`, line 78)
-- `GuiRibbonGroup` inherits from both `GuiControl` and `GuiAltActionHostBase` (line 116 in `GuiRibbonControls.h`)
-- All controls have `GetAlt()`, `SetAlt()`, `IsAltAvailable()`, etc. from `GuiControl`
-
-**Behavior 1: When GuiRibbonGroup Has an ALT Key (alt string is NOT empty)**
-- `GuiRibbonGroup::IsAltAvailable()` returns true (`Source/Controls/ToolstripPackage/GuiRibbonControls.cpp`, line 289)
-- `GuiRibbonGroup::GetActivatingAltHost()` returns `this` (line 294-300)
-- When parent ALT host calls `CollectAltActionsFromControl`:
-  - Encounters `GuiRibbonGroup`, which has `IGuiAltAction` service
-  - Calls `IsAltAvailable()` → returns true
-  - Adds the group's own ALT action (e.g., "H" for Home group)
-  - Executes `continue` → **SKIPS** adding the group's button children to traversal
-  - Result: Only the group's ALT key is collected, NOT the buttons inside
-- When user presses ALT+[group-key]:
-  - `EnterAltKey` is called with the group's key
-  - Finds the action, calls `action->GetActivatingAltHost()` → returns the group itself
-  - Calls `EnterAltHost(group)` to enter nested context
-  - Calls `group->CollectAltActions(actions)` which calls `CollectAltActionsFromControl(this, false, actions)`
-  - Now traverses the group's children and collects button ALT actions
-  - Visual ALT labels are created for buttons
-
-**Behavior 2: When GuiRibbonGroup Has NO ALT Key (alt string is empty)**
-- `GuiRibbonGroup::IsAltAvailable()` returns false (line 289: `return alt != L""`)
-- `GuiRibbonGroup::GetActivatingAltHost()` returns `GuiControl::GetActivatingAltHost()` (usually null)
-- When parent ALT host calls `CollectAltActionsFromControl`:
-  - Encounters `GuiRibbonGroup`, which has `IGuiAltAction` service
-  - Calls `IsAltAvailable()` → returns false
-  - Does NOT add the group's action (no `continue` executed)
-  - Falls through to add children to traversal queue
-  - Result: The group's button children's ALT actions are collected at parent level
-
-#### Default Behavior Comparison
-
-**If GuiRibbonGroup Used Default Behavior (always returned null from GetActivatingAltHost):**
-- Assume the group has alt string "H" and contains 3 buttons with alt strings "B", "C", "D"
-- Parent calls `CollectAltActionsFromControl`:
-  - Encounters group → `IsAltAvailable()` returns true → adds "H" action → executes `continue`
-  - Children (buttons "B", "C", "D") are NOT traversed
-- When user presses ALT at window level: sees only "H" for the group
-- When user presses "H": calls `action->OnActiveAlt()` which calls `SetFocused()` on the group
-- **Problem**: User cannot navigate to buttons inside using ALT keys because:
-  - Buttons' ALT actions were never collected at parent level (blocked by `continue`)
-  - No nested ALT host is entered, so no new collection happens
-
-**With GuiRibbonGroup's Custom Implementation:**
-- Same setup: group has "H", buttons have "B", "C", "D"
-- Parent collection: sees only "H" (children blocked by `continue`)
-- When user presses "H": calls `GetActivatingAltHost()` → returns `this` → calls `EnterAltHost(group)`
-- `EnterAltHost` calls `group->CollectAltActions()` → collects "B", "C", "D" from buttons
-- User can now type "B", "C", or "D" to navigate to buttons
-
-#### Summary of Differences
-
-| Aspect | Default Behavior (if GetActivatingAltHost returned null) | GuiRibbonGroup's Custom Behavior |
-|--------|--------------------------------------------------------|----------------------------------|
-| **Parent-level collection** | Only group's "H" collected; buttons blocked by `continue` | Only group's "H" collected; buttons blocked by `continue` |
-| **After pressing ALT+H** | Just focuses the group, no further ALT navigation | Enters nested ALT context, collects button ALT actions |
-| **Button ALT keys visible** | Never (blocked at parent level, no nested collection) | Yes (collected when entering group's nested context) |
-| **Navigation levels** | Single-level (can only activate group) | Two-level (activate group → navigate within group) |
-| **Why custom needed** | Default can't provide nested navigation when control itself has an ALT action | Custom creates nested context to allow button navigation |
-
-#### The Core Insight
-
-The reason `GuiRibbonGroup` needs custom `GetActivatingAltHost` is NOT because it's a container (all containers have children). It's because:
-
-1. **The group itself implements `IGuiAltAction`** (inherited from `GuiControl`) and has its own ALT key
-2. **Having an ALT action blocks child traversal** due to the `continue` statement in `CollectAltActionsFromControl`
-3. **Default behavior would make buttons unreachable** via ALT navigation
-4. **Custom behavior creates a nested context** that re-collects children's actions when the group is activated
-
-This is fundamentally different from a plain container like `GuiGroupBox` or `GuiStackPanel` which don't have their own ALT actions, so their children are automatically collected at the parent level without needing nested contexts.
-
-## ASK
-
-Follow up the question in the last ASK, I think the default alt behavior collects every visible control, but ribbon group want to hide all children into its nested level, that is the reason, what do you think?
-
-### Insight
-
-#### Yes, Your Hypothesis Is Fundamentally Correct!
-
-**Summary of Your Insight:**
-You are **correct**. The default ALT behavior would collect every control from the control hierarchy at the top level. `GuiRibbonGroup` uses a nested ALT host to create a **two-level navigation structure** instead of exposing all button ALT keys at the parent level.
-
-#### The Core Mechanism: Why Nested ALT Host Is Needed
-
-**The Design Goal:**
-- Ribbon groups can contain many buttons (potentially dozens in a typical ribbon interface)
-- If all buttons' ALT keys were exposed at the window level, there would be too many ALT key conflicts
-- Solution: Create a hierarchical navigation - first activate the group, then navigate within the group
-
-**How It Works:**
-
-**Level 1: Window-Level ALT Collection (When Group Has ALT Key)**
-- `CollectAltActionsFromControl` encounters the ribbon group
-- Ribbon group has `IGuiAltAction` service with `IsAltAvailable()` returning true
-- Adds the ribbon group's own ALT action (e.g., "H" for Home group)
-- Executes `continue` which **blocks traversal of the group's children**
-- Result: Only the group's ALT key is visible at the window level, NOT the individual buttons
-
-**Level 2: Group-Level ALT Collection (After Entering Group's Nested Context)**
-- User presses ALT+H (the group's key)
-- `GetActivatingAltHost()` returns `this` (the ribbon group becomes a nested ALT host)
-- `EnterAltHost(group)` is called
-- `group->CollectAltActions(actions)` collects ALT actions from the group's children
-- Visual ALT labels are created for each button inside the group
-- User can now type button ALT keys to navigate within the group
-
-#### The Critical Role of the `continue` Statement
-
-In `CollectAltActionsFromControl`:
-```cpp
-else if (auto action = current->QueryTypedService<IGuiAltAction>())
-{
-    if (action->IsAltAvailable() && action->IsAltEnabled())
-    {
-        actions.Add(action->GetAlt(), action);
-        continue;  // ← Prevents children from being added to traversal queue
-    }
-}
-```
-
-**Why This Matters:**
-- **Without the `continue`**: All controls with ALT actions AND their children would be collected at the same level
-- **With the `continue`**: A control with an ALT action acts as a "barrier" - its children are not collected unless you enter its nested ALT context
-- **For GuiRibbonGroup**: This `continue` prevents buttons from being collected at the window level, even though they may be control children
-
-#### What Happens Without Custom GetActivatingAltHost
-
-**If GuiRibbonGroup Used Default Behavior (returned null from GetActivatingAltHost):**
-1. Window-level ALT collection sees only the ribbon group's "H" key (due to `continue`)
-2. User presses ALT+H
-3. `GetActivatingAltHost()` returns null (no nested context)
-4. `action->OnActiveAlt()` is called, which just focuses the ribbon group
-5. ALT mode exits because there's no nested host to enter
-6. **Problem**: User can never access the buttons inside using ALT keys
-
-**With GuiRibbonGroup's Custom Implementation:**
-1. Window-level collection sees only "H"
-2. User presses ALT+H
-3. `GetActivatingAltHost()` returns `this`
-4. `EnterAltHost(group)` creates a new ALT context
-5. Buttons' ALT keys are collected and displayed
-6. User can navigate to buttons
-
-#### Summary: Why Your Understanding Is Correct
-
-**Your Insight:** "The default alt behavior collects every visible control, but ribbon group wants to hide all children into its nested level"
-
-**Why It's Correct:**
-1. Default behavior WOULD collect all controls if there were no barriers
-2. The `continue` statement creates a barrier when a control has its own ALT action
-3. `GuiRibbonGroup` has its own ALT action, so the barrier is activated
-4. This "hides" children from parent-level collection
-5. Custom `GetActivatingAltHost` provides a way to "un-hide" them by entering a nested context
-6. Result: Two-level navigation instead of flat navigation
-
-**The Benefit:**
-- Reduces ALT key conflicts at the window level
-- Creates logical grouping (group → buttons within group)
-- Scales better for interfaces with many controls (like ribbon interfaces)
-
-## DRAFT
-
-Control Focus Switching and TAB/ALT Handling
-
-### Insight
-
-This is the topic I'm going to draft about, based on all findings in previous sections.
-
-# DRAFT-LOCATION
-
-This will be a new topic under the `Design Explanation` section of the `GacUI` project in `Index.md` of the knowledge base.
-
-The topic will be named: **Control Focus Switching and TAB/ALT Handling**
-
-It should be placed in the `GacUI` project section, under `### Design Explanation`.
-
-# DRAFT-TITLE
-
-Control Focus Switching and TAB/ALT Handling
-
-# DRAFT-CONTENT
-
-## Architecture Overview
-
-Control focus management in GacUI operates across three distinct architectural layers, each with specific responsibilities:
-
-### Layer 1: Composition-Level Focus (`GuiGraphicsComposition`)
-
-The lowest layer handles focus at the composition level through `GuiGraphicsHost`:
-
-- `GuiGraphicsHost` maintains the currently focused composition in the `focusedComposition` member variable
-- `GuiGraphicsHost::SetFocusInternal` is the core focus-switching method that:
-  - Fires `lostFocus` event on the currently focused composition (if any)
-  - Updates `focusedComposition` to the new composition
-  - Resets caret point to (0,0)
-  - Fires `gotFocus` event on the newly focused composition
-- `GuiGraphicsHost::SetFocus` validates that the composition belongs to this host before calling `SetFocusInternal`
-- `GuiGraphicsHost::ClearFocus` removes focus from any composition
-- `GuiGraphicsHost::GetFocusedComposition` returns the currently focused composition
-- Each composition has an event receiver that fires `gotFocus` and `lostFocus` events
-
-### Layer 2: Control-Level Focus (`GuiControl`)
-
-The middle layer connects controls to composition-level focus:
-
-- Each `GuiControl` has a `focusableComposition` property (can be null)
-- `GuiControl::SetFocusableComposition` attaches `gotFocus` and `lostFocus` event handlers to the composition
-- When composition gains focus: `GuiControl::OnGotFocus` is called, which:
-  - Sets `isFocused = true`
-  - Updates control template state
-  - Fires `FocusedChanged` event
-- When composition loses focus: `GuiControl::OnLostFocus` is called, which:
-  - Sets `isFocused = false`
-  - Updates control template state
-  - Fires `FocusedChanged` event
-- `GuiControl::GetFocused` checks if the control is currently focused
-- `GuiControl::SetFocused` is the public API to focus a control:
-  - Returns early if no focusable composition exists
-  - Returns early if control is not visually enabled
-  - Returns early if focusable composition is not eventually visible
-  - Gets the graphics host from the focusable composition
-  - Calls `host->SetFocus(focusableComposition)`
-
-### Layer 3: Focus Loss on State Changes
-
-Focus is automatically cleared when controls undergo certain state changes:
-
-- **When disabled**: `GuiControl::SetEnabled(false)` calls `UpdateVisuallyEnabled`, which triggers `OnLostFocus` if the control was focused
-- **When hidden**: `GuiControl::SetVisible(false)` does NOT automatically clear focus (based on test case comments indicating unclear behavior)
-- **When deleted**: `GuiGraphicsHost::DisconnectCompositionInternal` is called recursively, clearing `focusedComposition` if it matches the disconnected composition
-
-## TAB Key Navigation
-
-### Architecture Components
-
-TAB navigation is managed by `GuiTabActionManager`, which is created and owned by `GuiGraphicsHost`.
-
-#### IGuiTabAction Interface
-
-Controls implement `IGuiTabAction` service to participate in TAB navigation:
-
-- `GetAcceptTabInput()`: Returns whether control accepts TAB character as input (if true, TAB key is passed to control instead of used for navigation)
-- `GetTabPriority()`: Returns priority for TAB order (-1 = lowest priority, 0, 1, 2... = higher priorities)
-- `IsTabEnabled()`: Returns whether control can be tabbed to (checks if control is visible and enabled)
-- `IsTabAvailable()`: Returns whether control is available for TAB navigation (checks if focusable composition exists)
-
-#### Control List Building (`BuildControlList`)
-
-The TAB manager builds a prioritized list of focusable controls:
-
-- Uses `tab_focus::CollectControls` to recursively collect all controls from the control host
-- Groups controls by their `TabPriority` value
-- Inserts controls in priority order: 0, 1, 2, ..., then -1 (default/unprioritized)
-- For each control, recursively collects its children and inserts them after the parent
-- Result is a flattened list `controlsInOrder` sorted by TAB priority
-- Cache is invalidated when a control's `TabPriority` changes via `GuiControl::SetTabPriority`
-
-#### Focus Navigation (`GetNextFocusControl`)
-
-Finding the next focusable control:
-
-- Rebuilds control list if cache is invalidated (`available == false`)
-- Takes current focused control and offset (+1 for forward TAB, -1 for backward SHIFT+TAB)
-- Finds start index in the control list
-- Wraps around using modulo arithmetic: `(index + offset + count) % count`
-- Loops through controls until finding one that is both `IsTabAvailable()` and `IsTabEnabled()`
-- Returns the next focusable control or null if none found
-
-#### Key Event Handling
-
-TAB key processing in `GuiTabActionManager::KeyDown`:
-
-- Only processes TAB key when CTRL and ALT are NOT pressed
-- If focused composition's control has `GetAcceptTabInput() == true`, TAB is NOT intercepted (returns false to let control handle it)
-- Otherwise, calls `GetNextFocusControl` with offset based on SHIFT key state
-- If next control found: calls `next->SetFocused()` and sets `supressTabOnce = true` to prevent TAB character insertion
-- Returns true to indicate key was handled
-
-Character suppression in `GuiTabActionManager::Char`:
-
-- Suppresses the TAB character (`\t`) if `supressTabOnce` is true
-- Resets `supressTabOnce` to false after checking
-
-## ALT Key Navigation
-
-### Architecture Components
-
-ALT navigation is managed by `GuiAltActionManager`, which is created and owned by `GuiGraphicsHost`.
-
-#### IGuiAltAction Interface
-
-Controls implement `IGuiAltAction` service to have ALT shortcuts:
-
-- `GetAlt()`: Returns the ALT key string (e.g., "F" for ALT+F)
-- `IsAltEnabled()`: Returns whether ALT action is enabled (checks visible and enabled state)
-- `IsAltAvailable()`: Returns whether ALT action is available (checks if focusable composition and alt string exist)
-- `GetAltComposition()`: Returns the composition to show the ALT key label on
-- `GetActivatingAltHost()`: Returns the alt host to enter when this action is activated (null = just activate)
-- `OnActiveAlt()`: Called when ALT key is activated (default implementation calls `SetFocused()`)
-- `IGuiAltAction::IsLegalAlt`: Validates that ALT string contains only uppercase letters (A-Z) and digits (0-9)
-
-#### IGuiAltActionContainer Interface
-
-Controls can implement this to provide multiple ALT actions:
-
-- `GetAltActionCount()`: Returns the number of ALT actions
-- `GetAltAction(index)`: Returns the ALT action at the specified index
-
-#### IGuiAltActionHost Interface
-
-Hosts create a hierarchy of ALT contexts that can be entered/exited:
-
-- `GetAltComposition()`: Returns the composition for this host
-- `GetPreviousAltHost()`: Returns the parent host in the hierarchy
-- `OnActivatedAltHost(previousHost)` and `OnDeactivatedAltHost()`: Called when entering/leaving
-- `CollectAltActions(actions)`: Collects all ALT actions for this host
-
-ALT action collection from controls (`IGuiAltActionHost::CollectAltActionsFromControl`):
-
-- Recursively traverses control tree starting from the specified control
-- If control has `IGuiAltActionContainer`: collects all actions from it
-- Else if control has `IGuiAltAction` and `IsAltAvailable()` and `IsAltEnabled()`: adds single action
-- **Critical behavior**: When a control has an ALT action, executes `continue` which prevents its children from being added to the traversal queue
-- This creates a "barrier" effect where children are hidden unless you enter a nested ALT context
-- Recursively processes all children only if the control doesn't have its own ALT action
-
-### ALT Mode Lifecycle
-
-#### Activation
-
-Pressing ALT (KEY_MENU) without CTRL or SHIFT:
-
-- `GuiAltActionManager::KeyDown` checks if control host implements `IGuiAltActionHost`
-- Calls `EnterAltHost` to enter ALT mode
-
-`EnterAltHost` process:
-
-- Calls `ClearAltHost` to clean up previous state
-- Calls `host->CollectAltActions(actions)` to get all available actions
-- If no actions available: calls `CloseAltHost` and exits
-- Calls `host->OnActivatedAltHost(currentAltHost)` with previous host
-- Updates `currentAltHost` to the new host
-- Calls `CreateAltTitles` to create visual labels
-
-#### Visual Label Creation (`CreateAltTitles`)
-
-Creating ALT key labels:
-
-- For each ALT action key (grouped by alt string):
-  - If single action and non-empty key: uses key as-is
-  - If multiple actions with same key: appends numeric suffix (0-999) with zero-padding
-  - Creates `currentActiveAltActions` dictionary mapping full key (e.g., "F", "F00", "F01") to action
-- For each action in `currentActiveAltActions`:
-  - Creates a `GuiLabel` with `ThemeName::ShortcutKey` theme
-  - Sets label text to the key string
-  - Adds label to the action's composition
-  - Stores label in `currentActiveAltTitles` dictionary
-- Calls `FilterTitles` to update visibility
-
-#### Key Input Handling (`EnterAltKey`)
-
-Processing typed characters in ALT mode:
-
-- Appends typed character to `currentAltPrefix`
-- Checks if `currentAltPrefix` matches any action key in `currentActiveAltActions`
-- If no match: calls `FilterTitles` and removes last character if no visible titles remain
-- If exact match found:
-  - If action has `GetActivatingAltHost()`: calls `EnterAltHost` to enter nested ALT host
-  - Otherwise: calls `CloseAltHost` to exit ALT mode
-  - Calls `action->OnActiveAlt()` to activate the action (usually focuses the control)
-  - Sets `supressAltKey` to prevent key from being processed further
-  - Returns true
-
-#### Label Filtering (`FilterTitles`)
-
-Updating label visibility based on current prefix:
-
-- Iterates through all labels in `currentActiveAltTitles`
-- If label's key starts with `currentAltPrefix`: shows label and formats text with brackets around next character (e.g., "F[0]0")
-- Otherwise: hides label
-- Returns count of visible labels
-
-#### Exiting ALT Mode
-
-Ways to exit ALT mode:
-
-- Press ESCAPE: calls `LeaveAltHost` to exit current host and restore previous
-- Press BACKSPACE: calls `LeaveAltKey` to remove last character from prefix
-- Clicking or any other key: depends on whether key matches an action
-- `CloseAltHost`: clears all state, deletes all labels, and exits all hosts in the hierarchy
-
-#### Character and Key Suppression
-
-Input suppression while in ALT mode:
-
-- `GuiAltActionManager::Char` returns true to suppress all character input while in ALT mode or if `supressAltKey` is set
-- `GuiAltActionManager::KeyUp` suppresses the key-up event for the key stored in `supressAltKey`
-
-### Nested ALT Hosts
-
-#### Why Nested ALT Hosts Are Needed
-
-The `continue` statement in `CollectAltActionsFromControl` creates a "barrier" when a control has its own ALT action. This prevents the control's children from being collected at the parent level. Nested ALT hosts provide a mechanism to enter the control's context and collect children's ALT actions at a nested level.
-
-**Design Rationales for Custom `GetActivatingAltHost` Implementations:**
-
-1. **Non-Child Control Relationships** (`GuiMenuButton`):
-   - Problem: A menu button's submenu is a separate popup window, NOT a child control
-   - Default collection only traverses child controls, cannot reach submenu items
-   - Solution: Returns `subMenu->QueryTypedService<IGuiAltActionHost>()` to switch context to submenu window
-   - Result: Pressing ALT+[key] on menu button enters submenu's ALT context
-
-2. **Intentional Blocking** (`GuiComboBoxBase`):
-   - Problem: UX design requires ALT key to just open dropdown, NOT enter nested navigation
-   - Default would collect ALT actions from dropdown's controls
-   - Solution: Explicitly returns `GuiSelectableButton::GetActivatingAltHost()` (usually null)
-   - Result: ALT key only opens dropdown without entering nested mode
-
-3. **Dynamic/Temporary Content** (`GuiVirtualDataGrid`):
-   - Problem: Cell editor is created on-demand, not a permanent child
-   - Default collection only sees permanent children, misses temporary editor
-   - Solution: When `currentEditor` exists and has ALT action, calls `SetAltComposition(currentEditor->GetTemplate())` and `SetAltControl(focusControl, true)`, returns `this`
-   - Result: Can navigate within cell editor using ALT keys
-
-4. **Scoped Navigation for Dense Control Groups** (`GuiRibbonGroup`):
-   - Problem: Ribbon groups contain many buttons, exposing all at window level creates too many conflicts
-   - Default would collect all buttons at same level as the group (if group didn't have its own ALT action)
-   - But: `GuiRibbonGroup` has its own ALT action (from `GuiControl` base), which blocks children via `continue`
-   - Solution: Returns `this` when `IsAltAvailable()` is true, creating two-level navigation
-   - Result: First press ALT+[group-key] to enter group, then press ALT+[button-key] to select button
-   - Benefit: Reduces conflicts and creates logical grouping
-
-5. **Optional Scoped Navigation** (`GuiDatePicker`):
-   - Problem: Date picker displays calendar with many clickable date cells, needs optional nested navigation
-   - Solution: Returns `this` when `nestedAlt` constructor parameter is true
-   - Result: When enabled, pressing ALT+[key] enters calendar's ALT context for date selection
-
-#### The Critical Role of the `continue` Barrier
-
-The `continue` statement in `CollectAltActionsFromControl` serves as a crucial design element:
-
-- **Without nested hosts**: When a control has an ALT action, the `continue` prevents children from being collected, making them unreachable
-- **With nested hosts**: `GetActivatingAltHost` provides a way to "un-hide" children by entering a nested context that re-collects them
-- **For containers like `GuiRibbonGroup`**: This creates hierarchical navigation instead of flat navigation, reducing ALT key conflicts and improving scalability for interfaces with many controls
-
-## Event Flow Integration
-
-### Key Event Processing Chain
-
-`GuiGraphicsHost::KeyDown` processes native window key events in this order:
-
-1. First tries `GuiAltActionManager::KeyDown`: if ALT manager is active or activates, returns true to consume event
-2. Then tries `GuiTabActionManager::KeyDown`: if TAB key is handled, returns true to consume event
-3. Then tries shortcut key manager (if exists)
-4. Finally delivers to focused composition's event receiver if not consumed
-
-### Character Event Processing Chain
-
-`GuiGraphicsHost::Char` processes character input in this order:
-
-1. First tries `GuiTabActionManager::Char`: suppresses TAB character if just navigated
-2. Then tries `GuiAltActionManager::Char`: suppresses all input while in ALT mode
-3. Finally delivers to focused composition's event receiver if not suppressed
-
-### Control Visibility and Enable State
-
-`GuiControl::IsControlVisibleAndEnabled` determines if a control can receive focus:
-
-- Traverses up parent chain checking both `GetVisible()` and `GetEnabled()`
-- Used by both `IsAltEnabled()` and `IsTabEnabled()` to determine if control can receive focus via ALT or TAB
-- Ensures that if a parent is disabled or invisible, all children are excluded from ALT/TAB navigation
-
-## Test Coverage
-
-### TAB Navigation Tests
-
-`TestApplication_Tab.cpp` contains comprehensive TAB navigation tests:
-
-- `TabNavigate`: Tests forward TAB through 3 buttons and backward SHIFT+TAB
-- `TabNavigateWithContainer`: Tests TAB through 5 buttons including nested containers (GroupBox)
-- `FocusedAndDisable`: Tests that disabling focused control clears focus
-- `FocusedAndHide`: Tests hiding focused control (focus behavior noted as unclear in comment)
-- `FocusedAndDelete`: Tests deleting focused control clears focus
-
-### ALT Focus Test
-
-`TestControls_CoreApplication_GuiControl.cpp` contains `AltFocus` test:
-
-- Tests ALT key activation in nested control scenarios
