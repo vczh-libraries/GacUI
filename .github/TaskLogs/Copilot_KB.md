@@ -400,7 +400,7 @@ class PredefinedListItemTemplate : public TBase
   - Gets the graphics host from the focusable composition
   - Calls `host->SetFocus(focusableComposition)`
 
-## ASK
+## ASK #1
 
 List default item template implementation for each control if it has any
 
@@ -599,3 +599,473 @@ Each list control sets its default item template in its constructor or in a view
 | `GuiVirtualDataGrid` | `DefaultDataGridItemTemplate` | `SetViewToDefault()` | 1 |
 | `GuiComboBoxListControl` | None | User sets via `SetItemTemplate()` | 0 |
 | `GuiBindableRibbonGalleryList` | None | User sets via `SetItemTemplate()` | 0 |
+
+## ASK #2
+
+Explain data grid virualizer, editor, sorter and filter
+
+### Insight
+
+#### Data Visualizer System
+
+**Architecture Overview**:
+
+The data visualizer system allows customizing how each cell is displayed in `GuiVirtualDataGrid`:
+
+**Core Interfaces** (in `Source/Controls/ListControlPackage/GuiDataGridInterfaces.h`):
+
+1. **IDataVisualizerFactory**:
+   - `CreateVisualizer(dataGridContext)`: Creates visualizer instances
+   - Used to generate visualizers for each visible cell
+
+2. **IDataVisualizer**:
+   - `GetTemplate()`: Returns `GuiGridVisualizerTemplate*` for rendering
+   - `BeforeVisualizeCell(itemProvider, row, column)`: Updates visualizer before display
+   - `SetSelected(value)`: Highlights selected cell
+   - `NotifyDeletedTemplate()`: Cleanup when template is destroyed
+
+**Base Implementations** (in `Source/Controls/ListControlPackage/GuiDataGridExtensions.h`):
+
+1. **DataVisualizerBase**:
+   - Standard implementation of `IDataVisualizer`
+   - Stores `factory`, `dataGridContext`, `visualizerTemplate`
+   - `BeforeVisualizeCell`: Updates template properties from data
+     - Sets colors from control template: `PrimaryTextColor`, `SecondaryTextColor`, `ItemSeparatorColor`
+     - Sets images from `IListViewItemView`: `LargeImage`, `SmallImage`
+     - Sets text from column data: main text or sub-item text
+     - Sets binding values from `IDataGridView`: `RowValue`, `CellValue`
+
+2. **DataVisualizerFactory**:
+   - Stores `templateFactory` (function creating template) and optional `decoratedFactory`
+   - Decorator pattern: Creates template, then creates child template from decorated factory
+   - Forwards all property changes from parent to child template using macro-generated event handlers
+   - Enables composing visualizers (e.g., border + focus rectangle + content)
+
+**Predefined Visualizer Templates**:
+
+1. **MainColumnVisualizerTemplate**:
+   - First column with image and text
+   - Uses `GuiTableComposition` with 3 rows × 2 columns
+   - Image in cell (1,0), text in cell (0-2,1)
+   - Hooks: `TextChanged`, `FontChanged`, `PrimaryTextColorChanged`, `SmallImageChanged`
+
+2. **SubColumnVisualizerTemplate**:
+   - Other columns with text only
+   - Simple `GuiBoundsComposition` with `GuiSolidLabelElement`
+   - Uses `SecondaryTextColor` instead of primary
+
+3. **HyperlinkVisualizerTemplate** (extends `SubColumnVisualizerTemplate`):
+   - Blue text color (hardcoded)
+   - Underlines on mouse hover
+   - Hand cursor
+
+4. **FocusRectangleVisualizerTemplate**:
+   - Decorator adding focus rectangle around selected cell
+   - Creates `GuiFocusRectangleElement` with 1px margin
+   - Shows/hides based on `Selected` property
+   - Uses `ContainerComposition` pattern for decoration
+
+5. **CellBorderVisualizerTemplate**:
+   - Decorator adding cell borders
+   - Two `GuiSolidBorderElement` (left and top borders)
+   - Color from `ItemSeparatorColor` property
+   - Uses `ContainerComposition` pattern for decoration
+
+**Integration with DefaultDataGridItemTemplate**:
+
+In `Source/Controls/ListControlPackage/GuiDataGridControls.cpp`:
+
+- Each row template has `dataVisualizerFactories` array (one per column)
+- `GetDataVisualizerFactory(row, column)`:
+  - First tries custom factory from `IDataGridView::GetCellDataVisualizerFactory`
+  - Falls back to `defaultMainColumnVisualizerFactory` for column 0
+  - Falls back to `defaultSubColumnVisualizerFactory` for other columns
+- Default factories are composed via decorator pattern:
+  - `CellBorderVisualizerTemplate` wraps `FocusRectangleVisualizerTemplate` wraps `MainColumnVisualizerTemplate`
+  - `CellBorderVisualizerTemplate` wraps `FocusRectangleVisualizerTemplate` wraps `SubColumnVisualizerTemplate`
+- `OnRefresh()`: Creates visualizers if not exist, calls `BeforeVisualizeCell` to update data
+- `DeleteVisualizer(column)`: Calls `NotifyDeletedTemplate()`, removes from parent, destroys composition
+
+**Lifecycle**:
+
+1. Grid creates `DefaultDataGridItemTemplate` for each visible row
+2. Template calls `GetDataVisualizerFactory` for each column
+3. Factory creates visualizer via `CreateVisualizer(dataGridContext)`
+4. Visualizer creates template composition hierarchy
+5. Template calls `BeforeVisualizeCell` when data changes
+6. Visualizer updates template properties from data
+7. When cell scrolls out, visualizer is deleted via `DeleteVisualizer`
+
+#### Data Editor System
+
+**Architecture Overview**:
+
+The data editor system allows in-place editing of cells in `GuiVirtualDataGrid`:
+
+**Core Interfaces** (in `Source/Controls/ListControlPackage/GuiDataGridInterfaces.h`):
+
+1. **IDataEditorFactory**:
+   - `CreateEditor(dataGridContext)`: Creates editor instances
+   - Provided by column to enable editing
+
+2. **IDataEditor**:
+   - `GetTemplate()`: Returns `GuiGridEditorTemplate*` for editing UI
+   - `BeforeEditCell(itemProvider, row, column)`: Initializes editor before opening
+   - `GetCellValueSaved()`: Returns true if user confirmed edit
+   - `NotifyDeletedTemplate()`: Cleanup when template is destroyed
+
+**Base Implementation** (in `Source/Controls/ListControlPackage/GuiDataGridExtensions.cpp`):
+
+1. **DataEditorBase**:
+   - Standard implementation of `IDataEditor`
+   - Stores `factory`, `dataGridContext`, `editorTemplate`
+   - `BeforeEditCell`: Similar to visualizer, updates template properties and attaches `CellValueChanged` event
+   - `OnCellValueChanged`: Calls `dataGridContext->RequestSaveData()` when value changes
+   - `GetCellValueSaved`: Delegates to `editorTemplate->GetCellValueSaved()`
+
+2. **DataEditorFactory**:
+   - Stores `templateFactory` (function creating template)
+   - `CreateEditor`: Creates `DataEditorBase`, creates template from factory, assigns to editor
+
+**Integration with GuiVirtualDataGrid**:
+
+**Editor State** (in `Source/Controls/ListControlPackage/GuiDataGridControls.h`):
+- `currentEditor`: Currently opened editor (`Ptr<IDataEditor>`)
+- `currentEditorPos`: Position of edited cell (`GridPos`)
+- `currentEditorOpeningEditor`: Flag preventing recursive calls
+
+**Opening Editor** (`StartEdit`):
+1. Calls `StopEdit()` to close any existing editor
+2. Calls `NotifySelectCell(row, column)` to update selection
+3. Gets visible style for the row via arranger
+4. Calls `IDataGridView::GetCellDataEditorFactory(row, column)` to get factory
+5. Sets `currentEditorOpeningEditor = true` (prevents recursion)
+6. Creates editor via `factory->CreateEditor(this)`
+7. Sets editor's alt key to "E" for accessibility
+8. Calls `editor->BeforeEditCell(itemProvider, row, column)` to initialize
+9. Calls `itemStyle->NotifyOpenEditor(column, editor)` to show editor in cell
+10. Sets `currentEditorOpeningEditor = false`
+
+**Closing Editor** (`StopEdit`):
+1. If item provider is editing, calls `NotifyCloseEditor()` on template
+2. Otherwise directly closes editor
+3. Clears alt composition and control
+4. Resets `currentEditor` and `currentEditorPos`
+
+**Saving Data** (`RequestSaveData`):
+1. Called when user confirms edit (e.g., presses Enter)
+2. Calls `itemProvider->PushEditing()` to enter editing mode
+3. Gets value from `currentEditor->GetTemplate()->GetCellValue()`
+4. Calls `dataGridView->SetBindingCellValue(row, column, value)` to update data
+5. Calls `itemProvider->PopEditing()` to exit editing mode
+6. Calls `itemStyle->NotifyCellEdited()` to refresh visualizer
+
+**User Interactions**:
+
+**Mouse Events** (in `DefaultDataGridItemTemplate`):
+- `OnCellLeftButtonUp`: If not in editor, calls `SelectCell(pos, true)` to open editor
+- `OnCellRightButtonUp`: If not in editor, calls `SelectCell(pos, false)` to select without editing
+- `OnCellButtonDown`: Marks event as handled if click is inside editor (prevents closing)
+- `IsInEditor`: Checks if event source is within editor composition hierarchy
+
+**Keyboard Events** (in `GuiVirtualDataGrid::OnKeyDown`):
+- **Enter**: Saves data, toggles editor open/close, refocuses control if editor closed
+- **Escape**: If editor open, closes editor without saving, refocuses control
+- **Left/Right**: Navigates between cells, closes editor if open
+- **Other keys**: Handled by editor control itself
+
+**Editor Template Integration** (in `DefaultDataGridItemTemplate::NotifyOpenEditor`):
+1. Stores `currentEditor` pointer
+2. Gets cell composition for the column
+3. Gets editor bounds composition
+4. Sets font and context from row template
+5. Removes from old parent if needed
+6. Adds editor composition to cell with full alignment
+7. Focuses the editor's focus control
+8. Hides the visualizer for that column
+
+**Editor Template Removal** (in `DefaultDataGridItemTemplate::NotifyCloseEditor`):
+1. Shows all visualizers again
+2. Removes editor composition from parent
+3. Clears `currentEditor` pointer
+
+**Alt Action Integration**:
+- Editor can provide `IGuiAltAction` service for keyboard shortcuts
+- `GetActivatingAltHost` checks if editor has alt action support
+- If supported, sets editor as alt composition and control
+
+#### Data Sorter System
+
+**Architecture Overview**:
+
+The data sorter system enables sorting rows by column in `GuiBindableDataGrid`:
+
+**Core Interfaces** (in `Source/Controls/ListControlPackage/GuiBindableDataGrid.h`):
+
+1. **IDataProcessorCallback**:
+   - `GetItemProvider()`: Access to item provider
+   - `OnProcessorChanged()`: Called when sorter/filter structure changes
+
+2. **IDataSorter**:
+   - `SetCallback(callback)`: Receives notification callback
+   - `Compare(row1, row2)`: Returns <0, 0, >0 for ordering
+
+**Base Implementation** (in `Source/Controls/ListControlPackage/GuiBindableDataGrid.cpp`):
+
+1. **DataSorterBase**:
+   - Stores `callback` pointer
+   - `InvokeOnProcessorChanged()`: Notifies callback when sorter changes
+   - `SetCallback(value)`: Sets callback pointer
+
+**Predefined Sorter Implementations**:
+
+1. **DataMultipleSorter** (multi-level sorting):
+   - Stores `leftSorter` and `rightSorter`
+   - `Compare`: First tries `leftSorter`, if result is 0, tries `rightSorter`
+   - `SetLeftSorter`, `SetRightSorter`: Updates sub-sorters and their callbacks
+   - Enables sorting by primary column, then secondary column, etc.
+
+2. **DataReverseSorter** (reverse order):
+   - Stores single `sorter`
+   - `Compare`: Returns negated result from `sorter->Compare`
+   - Used for descending sort
+
+**Integration with DataColumn**:
+
+In `Source/Controls/ListControlPackage/GuiBindableDataGrid.h`:
+
+- Each `DataColumn` has `associatedSorter` property
+- `SetSorter(value)`:
+  - Detaches old sorter callback
+  - Attaches new sorter callback to `dataProvider`
+  - If this column is currently sorted, re-sorts using new sorter
+  - Otherwise just notifies change
+
+**Integration with DataProvider**:
+
+In `Source/Controls/ListControlPackage/GuiBindableDataGrid.cpp`:
+
+**State**:
+- `currentSorter`: Active sorter (`Ptr<IDataSorter>`)
+- `virtualRowToSourceRow`: Maps visible row index to source row index
+
+**Sorting Process** (`SortByColumn`):
+1. Gets sorter from column via `columns[column]->GetSorter()`
+2. If column is -1 or no sorter, clears `currentSorter`
+3. If ascending, uses column's sorter directly
+4. If descending, wraps in `DataReverseSorter`
+5. Updates all columns' `sortingState`:
+   - Sorted column: `Ascending` or `Descending`
+   - Other columns: `NotSorted`
+6. Calls `NotifyColumnChanged()` to update column headers
+7. Calls `ReorderRows(true)` to rebuild row order
+
+**Row Reordering** (`ReorderRows`):
+1. Gets old row count
+2. Clears `virtualRowToSourceRow`
+3. If filter exists, builds `virtualRowToSourceRow` with filtered indices
+4. If no filter but sorter exists, builds `virtualRowToSourceRow` with all indices
+5. If sorter exists and rows present:
+   - Calls `SortLambda` on `virtualRowToSourceRow` array
+   - Lambda compares using `sorter->Compare(itemSource->Get(a), itemSource->Get(b))`
+   - Uses spaceship operator (`<=>`) for stable sort (preserves original order for equal items)
+6. If `invokeCallback` is true, fires `OnItemModified` event with new row count
+
+**User Interaction** (`GuiVirtualDataGrid::OnColumnClicked`):
+1. Checks if column is sortable via `dataGridView->IsColumnSortable(column)`
+2. Gets current sorting state from `columnItemView->GetSortingState(column)`
+3. Cycles through states:
+   - `NotSorted` → `Ascending`: Calls `SortByColumn(column, true)`
+   - `Ascending` → `Descending`: Calls `SortByColumn(column, false)`
+   - `Descending` → `NotSorted`: Calls `SortByColumn(-1, false)` to unsort
+
+**Data Access** (`GetBindingValue`):
+- If `virtualRowToSourceRow` exists: `itemSource->Get(virtualRowToSourceRow->Get(itemIndex))`
+- Otherwise: `itemSource->Get(itemIndex)` (direct access)
+
+**Update Handling** (`OnItemSourceModified`):
+- If no sorter, no filter, and count unchanged: Direct notification
+- Otherwise: Calls `ReorderRows(true)` to rebuild sorted view
+
+#### Data Filter System
+
+**Architecture Overview**:
+
+The data filter system enables filtering rows based on criteria in `GuiBindableDataGrid`:
+
+**Core Interface** (in `Source/Controls/ListControlPackage/GuiBindableDataGrid.h`):
+
+1. **IDataFilter**:
+   - `SetCallback(callback)`: Receives notification callback
+   - `Filter(row)`: Returns true if row should be visible
+
+**Base Implementation**:
+
+1. **DataFilterBase**:
+   - Stores `callback` pointer
+   - `InvokeOnProcessorChanged()`: Notifies callback when filter changes
+   - `SetCallback(value)`: Sets callback pointer
+
+**Predefined Filter Implementations** (in `Source/Controls/ListControlPackage/GuiBindableDataGrid.cpp`):
+
+1. **DataMultipleFilter** (base for AND/OR):
+   - Stores `filters` list (`List<Ptr<IDataFilter>>`)
+   - `AddSubFilter(value)`: Adds filter, sets its callback, notifies change
+   - `RemoveSubFilter(value)`: Removes filter, clears its callback, notifies change
+   - `SetCallback(value)`: Sets callback on self and all sub-filters
+
+2. **DataAndFilter** (all must match):
+   - `Filter(row)`: Returns `true` if all sub-filters return `true`
+   - Uses `From(filters).All(lambda)` LINQ-style query
+
+3. **DataOrFilter** (any must match):
+   - `Filter(row)`: Returns `true` if any sub-filter returns `true`
+   - Uses `From(filters).Any(lambda)` LINQ-style query
+
+4. **DataNotFilter** (negation):
+   - Stores single `filter`
+   - `Filter(row)`: Returns `!filter->Filter(row)`
+   - `SetSubFilter(value)`: Updates filter and its callback
+
+**Integration with DataColumn**:
+
+- Each `DataColumn` has `associatedFilter` property
+- `SetFilter(value)`:
+  - Detaches old filter callback
+  - Attaches new filter callback to `dataProvider`
+  - Calls `dataProvider->OnProcessorChanged()` to rebuild filter
+
+**Integration with DataProvider**:
+
+**State**:
+- `additionalFilter`: User-provided filter (`Ptr<IDataFilter>`)
+- `currentFilter`: Combined filter from all columns + additional filter
+- `virtualRowToSourceRow`: Maps visible row index to source row index (created when filtering)
+
+**Filter Building** (`RebuildFilter`):
+1. Clears old `currentFilter` and its callback
+2. Collects all non-null filters from columns
+3. Adds `additionalFilter` if exists
+4. If any filters exist:
+   - Creates `DataAndFilter`
+   - Adds all collected filters as sub-filters
+   - Sets `currentFilter` to the AND filter
+5. Sets callback on `currentFilter`
+
+**Row Filtering** (`ReorderRows`):
+1. If `currentFilter` exists:
+   - Creates `virtualRowToSourceRow` list
+   - Iterates through all source rows
+   - For each row, calls `currentFilter->Filter(itemSource->Get(i))`
+   - Adds row index to `virtualRowToSourceRow` if filter returns `true`
+2. If no filter but sorter exists:
+   - Creates `virtualRowToSourceRow` with all indices (for sorting)
+3. If neither filter nor sorter:
+   - `virtualRowToSourceRow` is null (direct access to source)
+
+**Update Handling** (`OnProcessorChanged`):
+- Called when any filter or sorter changes structure
+- Calls `RebuildFilter()` to rebuild combined filter
+- Calls `ReorderRows(true)` to rebuild filtered/sorted view
+
+**Data Access** (`GetBindingValue`):
+- Uses same virtualization as sorter
+- If `virtualRowToSourceRow` exists: Maps virtual index to source index
+- Otherwise: Direct access to source
+
+**User Interaction**:
+- Filters are typically set programmatically via `DataColumn::SetFilter`
+- No built-in UI for filter configuration (user must provide custom UI)
+- `GuiBindableDataGrid::SetAdditionalFilter` allows programmatic filtering
+
+#### Integration Between Systems
+
+**DataProvider as Central Coordinator**:
+
+In `Source/Controls/ListControlPackage/GuiBindableDataGrid.cpp`:
+
+`DataProvider` implements multiple interfaces and coordinates all systems:
+
+1. **IDataProcessorCallback**:
+   - `OnProcessorChanged()`: Called when filter/sorter structure changes
+   - Rebuilds filter via `RebuildFilter()`
+   - Reorders rows via `ReorderRows(true)`
+
+2. **IDataGridView**:
+   - `GetCellDataVisualizerFactory(row, column)`: Returns column's visualizer factory
+   - `GetCellDataEditorFactory(row, column)`: Returns column's editor factory
+   - `IsColumnSortable(column)`: Checks if column has sorter
+   - `SortByColumn(column, ascending)`: Triggers sorting
+   - `GetBindingCellValue(row, column)`: Gets cell value via column's value property
+   - `SetBindingCellValue(row, column, value)`: Sets cell value via column's writable property
+
+3. **IListViewItemView**:
+   - Provides text and images for cells
+   - Uses column's text property to extract text from row data
+
+4. **IColumnItemView**:
+   - Provides column headers, sizes, popups, sorting states
+   - Manages column-level UI
+
+5. **IItemProvider**:
+   - Provides row count (after filtering)
+   - Provides row data (after sorting/filtering via `virtualRowToSourceRow`)
+
+**Callback Flow**:
+
+1. User modifies filter/sorter on column
+2. Column calls `dataProvider->OnProcessorChanged()`
+3. DataProvider rebuilds filter and reorders rows
+4. DataProvider fires `OnItemModified` event
+5. List control's arranger receives event
+6. Arranger recreates visible item templates
+7. Templates create visualizers for each cell
+8. Visualizers display filtered/sorted data
+
+**Data Flow**:
+
+```
+Source Data (IValueEnumerable)
+    ↓
+Filter (IDataFilter::Filter)
+    ↓
+Sort (IDataSorter::Compare)
+    ↓
+virtualRowToSourceRow mapping
+    ↓
+DataProvider::GetBindingValue (virtual → source)
+    ↓
+DataColumn::GetCellValue (property extraction)
+    ↓
+IDataVisualizer::BeforeVisualizeCell (display)
+```
+
+**Edit Flow**:
+
+```
+User clicks cell
+    ↓
+GuiVirtualDataGrid::SelectCell(pos, true)
+    ↓
+GuiVirtualDataGrid::StartEdit
+    ↓
+IDataEditorFactory::CreateEditor
+    ↓
+IDataEditor::BeforeEditCell (load current value)
+    ↓
+DefaultDataGridItemTemplate::NotifyOpenEditor (show editor)
+    ↓
+User edits value
+    ↓
+Editor fires CellValueChanged event
+    ↓
+GuiVirtualDataGrid::RequestSaveData
+    ↓
+DataProvider::SetBindingCellValue
+    ↓
+DataColumn::SetCellValue (property write)
+    ↓
+DataProvider::InvokeOnItemModified
+    ↓
+DefaultDataGridItemTemplate::NotifyCellEdited (refresh visualizer)
+```
