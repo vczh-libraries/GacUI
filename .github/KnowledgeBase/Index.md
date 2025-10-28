@@ -597,4 +597,15 @@ It provides a comprehensive testing framework, XML-to-C++ compilation, and integ
 
 [Design Explanation](./KB_GacUI_Design_LayoutAndGuiGraphicsComposition.md)
 
+#### Control Focus Switching and TAB/ALT Handling
+
+- Three-layered architecture from composition focus (`GuiGraphicsHost`) through control focus (`GuiControl`) to automatic clearing on state changes.
+- TAB navigation managed by `GuiTabActionManager` with `IGuiTabAction` service, prioritized control list building, wrapping navigation logic, and character suppression.
+- ALT navigation managed by `GuiAltActionManager` with `IGuiAltAction` service, nested ALT host hierarchy (`IGuiAltActionHost`), visual label creation, and prefix-based key filtering.
+- Critical `continue` barrier in `CollectAltActionsFromControl` blocks children from parent-level collection when control has ALT action, enabling nested context pattern.
+- Custom `GetActivatingAltHost` implementations handle non-child relationships (menu popups), intentional blocking (combo boxes), dynamic content (grid editors), and scoped navigation (ribbon groups, date pickers).
+- Event flow integration processes ALT before TAB in key event chain, with character suppression for both managers in character event chain.
+
+[Design Explanation](./KB_GacUI_Design_ControlFocusSwitchingAndTabAltHandling.md)
+
 ## Experiences and Learnings
