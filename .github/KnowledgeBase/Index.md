@@ -622,4 +622,19 @@ It provides a comprehensive testing framework, XML-to-C++ compilation, and integ
 
 [Design Explanation](./KB_GacUI_Design_ListControlArchitecture.md)
 
+#### Adding a New Control
+
+- Coordinated changes across control class definition, template system, theme management, reflection registration, and XML compiler integration.
+- Control class inherits from `GuiControl` and `Description<T>`, specifies template type via macro, overrides lifecycle methods, attaches event handlers to `boundsComposition`, and defines events/properties.
+- Template system with declaration in `GuiControlTemplates.h` using macro expansion, property definition macros, auto-generated implementations including getters/setters/change events.
+- Inheritance pattern for derived controls using parent template as base, selective lifecycle override, and attachment to parent events instead of re-implementing handlers.
+- Reflection registration in three steps: type list addition, control class registration with base/constructor/members, automatic template registration.
+- XML loader registration via `ADD_TEMPLATE_CONTROL` or `ADD_VIRTUAL_CONTROL` for themed variants.
+- Theme integration through `GUI_CONTROL_TEMPLATE_TYPES` macro generating `ThemeName` enum values.
+- Minimal working example demonstrates complete lifecycle from class definition through template, theme, reflection, to XML loader registration.
+- File modification checklist covers 10+ files across Controls, Templates, Application, Reflection, and Compiler directories.
+- Header organization requires updates to `IncludeForward.h` and `IncludeAll.h` for proper compilation order.
+
+[Design Explanation](./KB_GacUI_Design_AddingNewControl.md)
+
 ## Experiences and Learnings

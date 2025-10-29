@@ -15,6 +15,7 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Index.md" />
     <None Include="$(MSBuildThisFileDirectory)Learning.md" />
+    <None Include="$(MSBuildThisFileDirectory)KB_GacUI_Design_AddingNewControl.md" />
     <None Include="$(MSBuildThisFileDirectory)KB_GacUI_Design_ControlFocusSwitchingAndTabAltHandling.md" />
     <None Include="$(MSBuildThisFileDirectory)KB_GacUI_Design_ImplementingIGuiGraphicsElement.md" />
     <None Include="$(MSBuildThisFileDirectory)KB_GacUI_Design_LayoutAndGuiGraphicsComposition.md" />
