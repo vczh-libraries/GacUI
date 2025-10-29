@@ -18,6 +18,44 @@ Existing controls are developed following the same pattern, you should carefully
 
 Based on my analysis of `GuiButton` and `GuiSelectableButton`, here is the comprehensive process to add a new control to GacUI:
 
+## ASK
+
+I would like you to refine some mistakes in the `Insight` topic including:
+
+- `10. Additional Files to Update` is not necessary, please remove. By saying unnecessary I don't mean vcxproj files don't need to be touch, the real reason is there are multiple vcxproj and vcxitems files and user should make their choice and there is no standard answer. But if you find any general suggestion, you can replace the content with your new finding.
+- You have identified many important points about create a new control from stratch, but what about a new control inheriting from another?
+- Add a new sub section for a simple demo about how to define a control. I think existing sections are very useful, this item is for adding a new section, not for updating existing sections.
+
+### Insight
+
+**Refinement completed:**
+
+1. **Section 10 replaced** with comprehensive guidance on creating controls that inherit from other controls, covering:
+   - Class definition differences (inheriting from parent control instead of `GuiControl`)
+   - Constructor patterns (calling parent constructor)
+   - Template inheritance (parent template as base)
+   - Reflection registration (using `CLASS_MEMBER_BASE` with parent)
+   - Minimal changes approach (avoiding duplicate work)
+   - Real example from `GuiSelectableButton` inheriting from `GuiButton`
+
+2. **Section 13 added** with a complete minimal control demo showing:
+   - Header file structure with essential components
+   - Implementation file with lifecycle methods and event handling
+   - Template declaration with property macro
+   - Theme registration
+   - Reflection setup
+   - XML loader registration
+   - Explanation of the core pattern for all controls
+
+3. **Key insights for inherited controls:**
+   - Don't re-attach parent's event handlers
+   - Attach to parent's events to extend behavior
+   - Only override lifecycle methods if adding new behavior
+   - Template inherits from parent template
+   - Reflection uses `CLASS_MEMBER_BASE(ParentControl)` instead of `CLASS_MEMBER_BASE(GuiControl)`
+
+The original content remains intact with these additions providing deeper guidance for both inheritance scenarios and practical implementation examples.
+
 #### 1. Control Class Definition (in `Source/Controls/*.h`)
 
 The control class must:
@@ -153,11 +191,42 @@ Key patterns observed:
 - Focus integration: `SetFocusableComposition(boundsComposition)` and `autoFocus` property
 - Template communication: Call template setters like `SetState()`, `SetSelected()` in `AfterControlTemplateInstalled_`
 
-#### 10. Additional Files to Update
+#### 10. Creating a Control that Inherits from Another Control
 
-- Add control source files to the Visual Studio project (`.vcxproj` file in `Source/GacUICompiler`)
-- Add files to solution filters (`.vcxproj.filters` file)
-- Ensure the control appears in generated release files (automatic through build process)
+When creating a control that inherits from another control (e.g., `GuiSelectableButton` inherits from `GuiButton`):
+
+**Class Definition Differences:**
+- Inherit from the parent control instead of `GuiControl`: `class GuiDerivedControl : public GuiParentControl, public Description<GuiDerivedControl>`
+- Still use `GUI_SPECIFY_CONTROL_TEMPLATE_TYPE` but specify parent control as base: `GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DerivedTemplate, GuiParentControl)`
+- Do NOT re-attach event handlers that parent already handles (e.g., don't re-attach `leftButtonDown` if parent handles it)
+- Attach to parent's events instead if needed (e.g., `GuiSelectableButton` attaches to `GuiButton::AfterClicked`)
+
+**Constructor Pattern:**
+- Call parent constructor: `GuiDerivedControl(theme::ThemeName themeName) : GuiParentControl(themeName)`
+- Initialize additional events on `boundsComposition` (inherited from parent)
+- Attach handlers to parent's events if extending behavior
+
+**Template Inheritance:**
+- Template class should inherit from parent template: `DerivedTemplate` properties macro can be separate
+- In `GuiControlTemplates.h`, add `F(GuiDerivedTemplate, GuiParentTemplate)` to `GUI_CONTROL_TEMPLATE_DECL`
+- Define `GuiDerivedTemplate_PROPERTIES(F)` macro with additional properties
+
+**Reflection Registration:**
+- Use `CLASS_MEMBER_BASE(GuiParentControl)` instead of `CLASS_MEMBER_BASE(GuiControl)`
+- Still use `CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiDerivedControl)`
+- Only register new properties/events/methods introduced by derived class
+
+**Minimal Changes:**
+- Parent already handles basic lifecycle (`BeforeControlTemplateUninstalled_`, etc.) - override only if needed
+- Parent's event handlers are inherited - no need to re-implement
+- Focus on adding new functionality, not repeating parent's work
+
+**Example Pattern from `GuiSelectableButton`:**
+- Extends `GuiButton` with selection state
+- Attaches to parent's `AfterClicked` event to toggle selection
+- Adds new properties: `GroupController`, `AutoSelection`, `Selected`
+- Adds new template property: `Selected` in `SelectableButtonTemplate`
+- Template calls both parent methods and new methods: `SetState()` (from parent) and `SetSelected()` (new)
 
 #### 11. Template Property Access Pattern
 
@@ -174,6 +243,124 @@ The macro system provides:
 - `GUI_SPECIFY_CONTROL_TEMPLATE_TYPE`: Links control to its template type with automatic casting
 - Property macros: Generate private field, getter, setter, and change event
 
+#### 13. Simple Demo: Minimal Control Definition
+
+Here's a simplified example showing the minimal code structure for creating a custom control:
+
+**Step 1: Header File (`Source/Controls/GuiMyControls.h`)**
+```cpp
+class GuiMyControl : public GuiControl, public Description<GuiMyControl>
+{
+    GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MyControlTemplate, GuiControl)
+protected:
+    // State variables
+    bool myState = false;
+    
+    // Lifecycle overrides
+    void BeforeControlTemplateUninstalled_() override;
+    void AfterControlTemplateInstalled_(bool initialize) override;
+    
+    // Event handlers
+    void OnMouseClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
+    
+public:
+    GuiMyControl(theme::ThemeName themeName);
+    ~GuiMyControl();
+    
+    // Events
+    compositions::GuiNotifyEvent StateChanged;
+    
+    // Properties
+    bool GetMyState();
+    void SetMyState(bool value);
+};
+```
+
+**Step 2: Implementation File (`Source/Controls/GuiMyControls.cpp`)**
+```cpp
+void GuiMyControl::BeforeControlTemplateUninstalled_()
+{
+    // Cleanup before template removal
+}
+
+void GuiMyControl::AfterControlTemplateInstalled_(bool initialize)
+{
+    // Sync state to template
+    TypedControlTemplateObject(true)->SetMyState(myState);
+}
+
+void GuiMyControl::OnMouseClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+{
+    SetMyState(!myState);
+}
+
+GuiMyControl::GuiMyControl(theme::ThemeName themeName)
+    : GuiControl(themeName)
+{
+    StateChanged.SetAssociatedComposition(boundsComposition);
+    boundsComposition->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiMyControl::OnMouseClick);
+}
+
+GuiMyControl::~GuiMyControl()
+{
+}
+
+bool GuiMyControl::GetMyState()
+{
+    return myState;
+}
+
+void GuiMyControl::SetMyState(bool value)
+{
+    if (myState != value)
+    {
+        myState = value;
+        TypedControlTemplateObject(false)->SetMyState(myState);
+        StateChanged.Execute(compositions::GuiEventArgs(boundsComposition));
+    }
+}
+```
+
+**Step 3: Template Declaration (`Source/Controls/Templates/GuiControlTemplates.h`)**
+```cpp
+// Add to GUI_CONTROL_TEMPLATE_DECL macro:
+F(GuiMyControlTemplate, GuiControlTemplate)
+
+// Define template properties:
+#define GuiMyControlTemplate_PROPERTIES(F)\
+    F(GuiMyControlTemplate, bool, MyState, false)
+```
+
+**Step 4: Theme Registration (`Source/Application/Controls/GuiThemeManager.h`)**
+```cpp
+// Add to GUI_CONTROL_TEMPLATE_TYPES macro:
+F(MyControlTemplate, MyControl)
+```
+
+**Step 5: Reflection (`Source/Reflection/TypeDescriptors/GuiReflectionControls.cpp`)**
+```cpp
+BEGIN_CLASS_MEMBER(GuiMyControl)
+    CLASS_MEMBER_BASE(GuiControl)
+    CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiMyControl)
+    
+    CLASS_MEMBER_GUIEVENT(StateChanged)
+    CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(MyState)
+END_CLASS_MEMBER(GuiMyControl)
+```
+
+**Step 6: XML Loader (`Source/Compiler/InstanceLoaders/GuiInstanceLoader_Plugin.cpp`)**
+```cpp
+// Add in IGuiPlugin::Load():
+ADD_TEMPLATE_CONTROL(GuiMyControl, MyControl);
+```
+
+This demonstrates the core pattern - each control has:
+- A C++ class managing state and events
+- A template defining visual properties
+- Reflection for runtime access
+- XML loader for declarative usage
+- Theme integration for consistent styling
+
 #### Summary of Files to Modify
 
 1. `Source/Controls/Gui*Controls.h` - Control class declaration
@@ -186,4 +373,3 @@ The macro system provides:
 8. `Source/Reflection/TypeDescriptors/GuiReflectionTemplates.cpp` - Template reflection (automatic)
 9. `Source/Compiler/InstanceLoaders/GuiInstanceLoader_Plugin.cpp` - XML loader registration
 10. `Source/Controls/IncludeForward.h` and `IncludeAll.h` - Header organization
-11. Project files - Visual Studio project and filters
