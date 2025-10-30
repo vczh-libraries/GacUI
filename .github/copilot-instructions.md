@@ -43,7 +43,7 @@ This project is built on top of:
 # Leveraging the Knowledge Base
 
 When making design or coding decisions, you must leverage the knowledge base to make the best choice.
-The main entry is `Index.md`. Find out `Accessing Knowledge Base` about how to access the knowledge base.
+The main entry is `Index.md`. Find out `Accessing the Knowledge Base` about how to access the knowledge base.
 
 `Index.md` is organized in this way:
 
@@ -120,7 +120,7 @@ TEST_FILE
 }
 ```
 
-Please refer to the `Accessing Knowledge Base` section for more information about advanced features in unit test.
+Please refer to the `Accessing the Knowledge Base` section for more information about advanced features in unit test.
 IMPORTANT: Unlike `TEST_FILE` which ends with `}`, `TEST_CASE` and `TEST_CATEGORY` ends with `});`.
 # Writing GacUI Unit Test
 
