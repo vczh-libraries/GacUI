@@ -1,0 +1,22 @@
+# Application
+
+A GacUI application requires a user defined function **void GuiMain(void)**. In order to start a GacUI application, one of the following functions must be called in entry function. - For Windows, One of the following functions must be called in **WinMain** to start the application: - SetupWindowsDirect2DRenderer - SetupHostedWindowsDirect2DRenderer - SetupWindowsGDIRenderer - SetupHostedWindowsGDIRenderer They initialize necessary objects and call **GuiMain** with different rendering techniques. - For macOS, **SetupOSXCoreGraphicsRenderer** must be called in **main**. - For Linux, **SetupGGacRenderer** must be called in **main**.
+
+When **GuiMain** is called, the **GuiApplication** object is ready, which can be accessed by the **GetApplication** function. A typical **GuiMain** function looks like: ``` void GuiMain() { // 1. create a window, anything that inherits from GuiWindow works MyWindow myWindow; // 2. decide where to show the window, it could be any location in any monitor you like myWindow.MoveToScreenCenter() // 3. show the window as a main window of the application GetApplication()->Run(&myWindow); // 4. when the main window is closed, it gets here } ```
+
+**RegisterTheme** must be called before creating any UI object to [register a set of default control templates](../.././gacui/kb/dtemplates.md) for all controls. **RegisterTheme** and **UnregisterTheme** can be used to manage all registered themes. A single theme object is not required to provide control templates for all controls, but all registered themes must cover all controls. The latest registered theme has the top priority.
+
+When a theme is created using **GacUI XML Resource**, **RegisterTheme** for this theme is required to call after the associated resource file is loaded. It is difficult to know the exact timing, so GacUI provideds an efficient plugin system to solve this problem. You can create a plugin to register this theme and declare that this theme is depended on its resource like this: ``` class DefaultSkinPlugin : public Object, public IGuiPlugin { public: GUI_PLUGIN_NAME(Custom_DefaultSkinPlugin) { GUI_PLUGIN_DEPEND(GacGen_DarkSkinResourceLoader); } void Load(bool, bool)override { RegisterTheme(Ptr(new darkskin::Theme)); } void Unload(bool, bool)override { } }; GUI_REGISTER_PLUGIN(DefaultSkinPlugin) ```
+
+When the default control templates and **GuiMain** are ready, it is time to create a very simple **WinMain** to start the application: ``` int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int CmdShow) { return SetupWindowsDirect2DRenderer(); } ```
+
+All GacUI objects must only be used in the UI thread. In order to make communications between threads possible, **GuiApplication** provides all following functions to run tasks: - **IsInMainThread**: Check if the current thread is the UI thread or not. - **InvokeAsync**: Execute a task in a random background thread. - **InvokeInMainThread**: Execute a task in the UI thread. - **InvokeInMainThreadAndWait**: Execute a task in the UI thread and wait for its completion. - **DelayExecute**: Execute a task in a random background thread after a specified amount of time. - **DelayExecuteInMainThread**: Execute a task in the UI thread after a specified amount of time. - **RunGuiTask**: Execute a task in the UI thread and wait for its completion.
+
+**InvokeInMainThread** can be called in any thread. This function queues a task, which will be executed later. It is OK to call this function in the UI thread, which is a very common pattern to trigger something immediately but not exactly "now".
+
+For example, when you put a button in a tab header to remove the tab page, you cannot just remove and delete the tab page in the button's **Click** event, because there are still other events to trigger after this **Click** event, which requires the button and all ancestors to be alive. In this case, you can ask **InvokeInMainThread** to delete the tab header, it will happen after all required things is done for this particular click, and **SafeDeleteControl** will just work.
+
+**InvokeInMainThreadAndWait** cannot be called in the UI thread. If you do this, it will complain by throwing an exception. You can also ask this function to return if the task does not complete in the specified amount of time. In this case, the task will not be canceled.
+
+**RunGuiTask** works like **InvokeInMainThreadAndWait**, but it is OK to call in the UI thread. It will return only after the task is completed.
+

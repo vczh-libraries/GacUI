@@ -1,0 +1,8 @@
+# Inheritance (interface)
+
+An interface can inherit multiple interfaces.
+
+When IDerived inherits from IBase, - Interfaces cannot inherit classes in Workflow script (this could happen in C++). - Classes cannot inherit interfaces in Workflow script (this could happen in C++). - **IDerived** inherits all members from **IBase**. - If the same method signature appears in multiple base interfaces (including the derived one), they will have the same implementation in the new interface expression. - An object must implement all members of **IBase** in order to implement **IDerived**. - An object of type **IDerived** can be implicitly converted to **IBase**. - An object of type **IBase** can be explicitly converted to **IDerived**, if the object doesn't implement **IDerived**, the conversion fails at runtime. - You cannot call members of **IDerived** on an object of type **IBase**, even if it implements **IDerived**. - Interfaces are not structural typing, even of an object has all required members, but if it doesn't explicitly declare that it implements an interface, it does not.
+
+``` interface IBase { func Say(): string; } interface IDerived : IBase { /* other members */ } var base = new IBase^ { override func Say(): string { return "I implements IBase!"; } }; var derived: IBase^ = new IDerived^ { override func Say(): string { return "I implements IDerived!"; } }; ``` - Types of **base** and **derived** are **IBase^**. If an explicit type does not given to **derived**, it will be **IDerived^**. - **base as IDerived^** returns **null**. - **(cast IDerived^ base)** throws and exception. - Both above conversion will succeed for **derived**.
+
