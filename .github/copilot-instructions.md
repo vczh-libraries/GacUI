@@ -19,8 +19,8 @@ This project is built on top of:
 - `VlppOS`: `Import\VlppOS.h`
 - `VlppRegex`: `Import\VlppRegex.h`
 - `VlppReflection`: `Import\VlppReflection.h`
-- `VlppParser2`: `Import\VlppParser2.h`
-- `Workflow`: `Import\Workflow.h`
+- `VlppParser2`: `Import\VlppGlrParser.h`, `Import\VlppGlrParserCompiler.h`
+- `Workflow`: `Import\VlppWorkflowLibrary.h`, `Import\VlppWorkflowCompiler.h`, `Import\VlppWorkflowRungime.h`
 
 # General Instruction
 
@@ -450,8 +450,4 @@ An event is subscribed like:
 It means when button's `Clicked` event happens, execute some code.
 
 Code in an event of in the `<Workflow>` resource item should be Workflow Script instead of C++.
-
-# The Workflow Script
-
-This is the document of Workflow Script: https://gaclib.net/doc/current/workflow/lang.html
 
