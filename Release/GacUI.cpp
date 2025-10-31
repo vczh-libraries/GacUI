@@ -8429,6 +8429,14 @@ NodeItemProvider
 		{
 			return -2;
 		}
+		if (index == -1)
+		{
+			// Parent returned -1, which means parent has no parent (is a root node)
+			// Check if this parent is OUR root - if not, this is a foreign node
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::tree::NodeItemProvider::CalculateNodeVisibilityIndexInternal(INodeProvider*)#"
+			CHECK_ERROR(parent.Obj() == root->GetRootNode().Obj(), ERROR_MESSAGE_PREFIX L"The node does not belong to the tree associated with this NodeItemProvider.");
+#undef ERROR_MESSAGE_PREFIX
+		}
 
 		vint count = parent->GetChildCount();
 		for (vint i = 0; i < count; i++)
@@ -8451,24 +8459,6 @@ NodeItemProvider
 		return -1;
 	}
 
-	vint NodeItemProvider::CalculateNodeVisibilityIndex(INodeProvider* node)
-	{
-		vint result = CalculateNodeVisibilityIndexInternal(node);
-		return result < 0 ? -1 : result;
-	}
-
-	Ptr<INodeProvider> NodeItemProvider::RequestNode(vint index)
-	{
-		if(root->CanGetNodeByVisibleIndex())
-		{
-			return root->GetNodeByVisibleIndex(index+1);
-		}
-		else
-		{
-			return GetNodeByOffset(root->GetRootNode(), index+1);
-		}
-	}
-
 	NodeItemProvider::NodeItemProvider(Ptr<INodeRootProvider> _root)
 		:root(_root)
 	{
@@ -8485,6 +8475,28 @@ NodeItemProvider
 		return root;
 	}
 
+	Ptr<INodeProvider> NodeItemProvider::RequestNode(vint index)
+	{
+		if (index < 0 || index >= Count())
+		{
+			return nullptr;
+		}
+		else if (root->CanGetNodeByVisibleIndex())
+		{
+			return root->GetNodeByVisibleIndex(index + 1);
+		}
+		else
+		{
+			return GetNodeByOffset(root->GetRootNode(), index + 1);
+		}
+	}
+
+	vint NodeItemProvider::CalculateNodeVisibilityIndex(INodeProvider* node)
+	{
+		vint result = CalculateNodeVisibilityIndexInternal(node);
+		return result < 0 ? -1 : result;
+	}
+
 	vint NodeItemProvider::Count()
 	{
 		return root->GetRootNode()->CalculateTotalVisibleNodes()-1;
@@ -8492,20 +8504,20 @@ NodeItemProvider
 
 	WString NodeItemProvider::GetTextValue(vint itemIndex)
 	{
-		if (auto node = RequestNode(itemIndex))
-		{
-			return root->GetTextValue(node.Obj());
-		}
-		return L"";
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::tree::NodeItemProvider::GetTextValue(vint)#"
+		CHECK_ERROR(0 <= itemIndex && itemIndex < Count(), ERROR_MESSAGE_PREFIX L"Index out of range.");
+		auto node = RequestNode(itemIndex);
+		return root->GetTextValue(node.Obj());
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	description::Value NodeItemProvider::GetBindingValue(vint itemIndex)
 	{
-		if (auto node = RequestNode(itemIndex))
-		{
-			return root->GetBindingValue(node.Obj());
-		}
-		return Value();
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::tree::NodeItemProvider::GetBindingValue(vint)#"
+		CHECK_ERROR(0 <= itemIndex && itemIndex < Count(), ERROR_MESSAGE_PREFIX L"Index out of range.");
+		auto node = RequestNode(itemIndex);
+		return root->GetBindingValue(node.Obj());
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	IDescriptable* NodeItemProvider::RequestView(const WString& identifier)
@@ -8627,7 +8639,7 @@ MemoryNodeProvider
 	void MemoryNodeProvider::OnChildTotalVisibleNodesChanged(vint offset)
 	{
 		totalVisibleNodeCount+=offset;
-		if(parent)
+		if(parent && parent->GetExpanding())
 		{
 			parent->OnChildTotalVisibleNodesChanged(offset);
 		}
@@ -15547,57 +15559,12 @@ TreeViewItem
 TreeViewItemRootProvider
 ***********************************************************************/
 
-	Ptr<GuiImageData> TreeViewItemRootProvider::GetNodeImage(INodeProvider* node)
-	{
-		MemoryNodeProvider* memoryNode=dynamic_cast<MemoryNodeProvider*>(node);
-		if(memoryNode)
-		{
-			Ptr<TreeViewItem> data=memoryNode->GetData().Cast<TreeViewItem>();
-			if(data)
-			{
-				return data->image;
-			}
-		}
-		return 0;
-	}
-
-	WString TreeViewItemRootProvider::GetTextValue(INodeProvider* node)
-	{
-		MemoryNodeProvider* memoryNode = dynamic_cast<MemoryNodeProvider*>(node);
-		if (memoryNode)
-		{
-			Ptr<TreeViewItem> data = memoryNode->GetData().Cast<TreeViewItem>();
-			if (data)
-			{
-				return data->text;
-			}
-		}
-		return L"";
-	}
-
-	description::Value TreeViewItemRootProvider::GetBindingValue(INodeProvider* node)
-	{
-		return Value::From(GetTreeViewData(node));
-	}
-
 	TreeViewItemRootProvider::TreeViewItemRootProvider()
 	{
 	}
 
 	TreeViewItemRootProvider::~TreeViewItemRootProvider()
 	{
-	}
-
-	IDescriptable* TreeViewItemRootProvider::RequestView(const WString& identifier)
-	{
-		if(identifier==ITreeViewItemView::Identifier)
-		{
-			return (ITreeViewItemView*)this;
-		}
-		else
-		{
-			return MemoryNodeRootProvider::RequestView(identifier);
-		}
 	}
 
 	Ptr<TreeViewItem> TreeViewItemRootProvider::GetTreeViewData(INodeProvider* node)
@@ -15628,6 +15595,51 @@ TreeViewItemRootProvider
 		if(memoryNode)
 		{
 			memoryNode->NotifyDataModified();
+		}
+	}
+
+	Ptr<GuiImageData> TreeViewItemRootProvider::GetNodeImage(INodeProvider* node)
+	{
+		MemoryNodeProvider* memoryNode = dynamic_cast<MemoryNodeProvider*>(node);
+		if (memoryNode)
+		{
+			Ptr<TreeViewItem> data = memoryNode->GetData().Cast<TreeViewItem>();
+			if (data)
+			{
+				return data->image;
+			}
+		}
+		return 0;
+	}
+
+	WString TreeViewItemRootProvider::GetTextValue(INodeProvider* node)
+	{
+		MemoryNodeProvider* memoryNode = dynamic_cast<MemoryNodeProvider*>(node);
+		if (memoryNode)
+		{
+			Ptr<TreeViewItem> data = memoryNode->GetData().Cast<TreeViewItem>();
+			if (data)
+			{
+				return data->text;
+			}
+		}
+		return L"";
+	}
+
+	description::Value TreeViewItemRootProvider::GetBindingValue(INodeProvider* node)
+	{
+		return Value::From(GetTreeViewData(node));
+	}
+
+	IDescriptable* TreeViewItemRootProvider::RequestView(const WString& identifier)
+	{
+		if (identifier == ITreeViewItemView::Identifier)
+		{
+			return (ITreeViewItemView*)this;
+		}
+		else
+		{
+			return MemoryNodeRootProvider::RequestView(identifier);
 		}
 	}
 }

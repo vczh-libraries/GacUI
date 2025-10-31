@@ -1363,9 +1363,7 @@ NodeItemProvider
 		void							OnItemExpanded(INodeProvider* node)override;
 		void							OnItemCollapsed(INodeProvider* node)override;
 		vint							CalculateNodeVisibilityIndexInternal(INodeProvider* node);
-		vint							CalculateNodeVisibilityIndex(INodeProvider* node)override;
 		
-		Ptr<INodeProvider>				RequestNode(vint index)override;
 	public:
 		/// <summary>Create an item provider using a node root provider.</summary>
 		/// <param name="_root">The node root provider.</param>
@@ -1375,6 +1373,14 @@ NodeItemProvider
 		/// <summary>Get the owned node root provider.</summary>
 		/// <returns>The node root provider.</returns>
 		Ptr<INodeRootProvider>			GetRoot();
+
+		// ===================== list::INodeItemView =====================
+
+		Ptr<INodeProvider>				RequestNode(vint index)override;
+		vint							CalculateNodeVisibilityIndex(INodeProvider* node)override;
+
+		// ===================== list::IItemProvider =====================
+
 		vint							Count()override;
 		WString							GetTextValue(vint itemIndex)override;
 		description::Value				GetBindingValue(vint itemIndex)override;
@@ -11265,17 +11271,10 @@ TreeViewItemRootProvider
 		, public virtual ITreeViewItemView
 		, public Description<TreeViewItemRootProvider>
 	{
-	protected:
-
-		Ptr<GuiImageData>				GetNodeImage(INodeProvider* node)override;
-		WString							GetTextValue(INodeProvider* node)override;
-		description::Value				GetBindingValue(INodeProvider* node)override;
 	public:
 		/// <summary>Create a item root provider.</summary>
 		TreeViewItemRootProvider();
 		~TreeViewItemRootProvider();
-
-		IDescriptable*					RequestView(const WString& identifier)override;
 
 		/// <summary>Get the <see cref="TreeViewItem"/> object from a node.</summary>
 		/// <returns>The <see cref="TreeViewItem"/> object.</returns>
@@ -11288,6 +11287,16 @@ TreeViewItemRootProvider
 		/// <summary>Notify the tree view control that the node is changed. This is required when content in a <see cref="TreeViewItem"/> is modified, but both <see cref="SetTreeViewData"/> or [M:vl.presentation.controls.tree.MemoryNodeProvider.SetData] are not called.</summary>
 		/// <param name="node">The node.</param>
 		void							UpdateTreeViewData(INodeProvider* node);
+
+		// ===================== list::ITreeViewItemView =====================
+
+		Ptr<GuiImageData>				GetNodeImage(INodeProvider* node)override;
+		WString							GetTextValue(INodeProvider* node)override;
+		description::Value				GetBindingValue(INodeProvider* node)override;
+
+		// ===================== list::IItemProvider =====================
+
+		IDescriptable*					RequestView(const WString& identifier)override;
 	};
 }
 
