@@ -14,6 +14,8 @@ You are welcome to contribute to this repo by opening pull requests.
 
 ## Document
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/vczh-libraries/GacUI)
+
 For **Home Page**: click [here](http://vczh-libraries.github.io)
 
 For **Gaclib**: click [here](http://vczh-libraries.github.io/doc/current/home.html)
@@ -21,8 +23,6 @@ For **Gaclib**: click [here](http://vczh-libraries.github.io/doc/current/home.ht
 For **GacUI**: click [here](http://vczh-libraries.github.io/doc/current/gacui/home.html)
 
 [gaclib.net](http://gaclib.net/) is a mirror to github pages above.
-
-The deepwiki website [indexed GacUI](https://deepwiki.com/vczh-libraries/GacUI), it provides high level ideas with acceptable accuracy, but it is problematic in details.
 
 ## Content of This Project
 
