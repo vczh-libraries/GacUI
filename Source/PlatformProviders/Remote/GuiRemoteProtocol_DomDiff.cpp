@@ -15,10 +15,10 @@ GuiRemoteEventDomDiffConverter
 	{
 	}
 
-	void GuiRemoteEventDomDiffConverter::OnControllerConnect()
+	void GuiRemoteEventDomDiffConverter::OnControllerConnect(const remoteprotocol::ControllerGlobalConfig& arguments)
 	{
 		lastDom = {};
-		TBase::OnControllerConnect();
+		TBase::OnControllerConnect(arguments);
 	}
 
 /***********************************************************************

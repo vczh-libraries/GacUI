@@ -73,7 +73,7 @@ TEST_FILE
 		StartUpProtocol protocol;
 		SetGuiMainProxy([&]()
 		{
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 
 			auto rs = GetCurrentController()->ResourceService();
 			auto ss = GetCurrentController()->ScreenService();
@@ -137,7 +137,7 @@ TEST_FILE
 			// by not calling INativeWindowService::Run
 			// non of them will be connected to the native window
 			// so no interaction with the native window will happen
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 
 			TEST_CASE(L"Create and destroy a window")
 			{

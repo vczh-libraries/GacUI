@@ -68,7 +68,13 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::Opened()
 	{
-		events->OnControllerConnect();
+		vl::presentation::remoteprotocol::ControllerGlobalConfig globalConfig;
+#if defined VCZH_WCHAR_UTF16
+		globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF16;
+#elif defined VCZH_WCHAR_UTF32
+		globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF32;
+#endif
+		events->OnControllerConnect(globalConfig);
 	}
 
 	void GuiRemoteRendererSingle::BeforeClosing(bool& cancel)

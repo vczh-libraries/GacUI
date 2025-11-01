@@ -54,6 +54,7 @@ GuiRemoteController
 		bool											connectionForcedToStop = false;
 		bool											connectionStopped = false;
 
+		remoteprotocol::ControllerGlobalConfig			remoteGlobalConfig;
 		remoteprotocol::FontConfig						remoteFontConfig;
 		remoteprotocol::ScreenConfig					remoteScreenConfig;
 
@@ -132,7 +133,7 @@ GuiRemoteController
 		// Events
 		// =============================================================
 
-		void							OnControllerConnect();
+		void							OnControllerConnect(const remoteprotocol::ControllerGlobalConfig& _globalConfig);
 		void							OnControllerDisconnect();
 		void							OnControllerRequestExit();
 		void							OnControllerForceExit();
@@ -142,8 +143,9 @@ GuiRemoteController
 		GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol);
 		~GuiRemoteController();
 
-		void							Initialize();
-		void							Finalize();
+		void									Initialize();
+		void									Finalize();
+		remoteprotocol::ControllerGlobalConfig	GetGlobalConfig();
 
 		// =============================================================
 		// INativeController

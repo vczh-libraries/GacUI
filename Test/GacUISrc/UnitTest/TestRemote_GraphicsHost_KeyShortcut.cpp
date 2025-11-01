@@ -137,7 +137,7 @@ TEST_FILE
 
 			protocol.globalShortcutKeys.Clear();
 			protocol.GetEvents()->OnControllerDisconnect();
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 
 			TEST_ASSERT(protocol.globalShortcutKeys.Count() == 2);
 			TEST_ASSERT(protocol.globalShortcutKeys[0].id == 1);

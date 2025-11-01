@@ -16,7 +16,7 @@ TEST_FILE
 
 		SetGuiMainProxy([&]()
 		{
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 			auto theme = Ptr(new EmptyControlTheme);
 			theme::RegisterTheme(theme);
 
@@ -84,7 +84,7 @@ TEST_FILE
 
 		SetGuiMainProxy([&]()
 		{
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 			auto theme = Ptr(new EmptyControlTheme);
 			theme::RegisterTheme(theme);
 

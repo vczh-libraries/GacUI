@@ -1,4 +1,5 @@
 #include "../../../Source/UnitTestUtilities/GuiUnitTestUtilities.h"
+#include "TestRemote.h"
 #ifdef VCZH_64
 #include "../Generated_DarkSkin/Source_x64/DarkSkin.h"
 #else
@@ -47,7 +48,7 @@ TEST_FILE
 	{
 		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 		{
-			protocol->GetEvents()->OnControllerConnect();
+			protocol->GetEvents()->OnControllerConnect(MakeGlobalConfig());
 			auto darkskinTheme = Ptr(new darkskin::Theme);
 			theme::RegisterTheme(darkskinTheme);
 
@@ -74,7 +75,7 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				protocol->GetEvents()->OnControllerConnect();
+				protocol->GetEvents()->OnControllerConnect(MakeGlobalConfig());
 				auto emptyWindowTheme = Ptr(new EmptyWindowTheme);
 				theme::RegisterTheme(emptyWindowTheme);
 
@@ -98,7 +99,7 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				protocol->GetEvents()->OnControllerConnect();
+				protocol->GetEvents()->OnControllerConnect(MakeGlobalConfig());
 				auto emptyWindowTheme = Ptr(new EmptyWindowTheme);
 				theme::RegisterTheme(emptyWindowTheme);
 

@@ -148,6 +148,17 @@ using namespace vl::presentation;
 using namespace vl::presentation::controls;
 using namespace vl::reflection::description;
 
+remoteprotocol::ControllerGlobalConfig MakeGlobalConfig()
+{
+	vl::presentation::remoteprotocol::ControllerGlobalConfig globalConfig;
+#if defined VCZH_WCHAR_UTF16
+	globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF16;
+#elif defined VCZH_WCHAR_UTF32
+	globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF32;
+#endif
+	return globalConfig;
+}
+
 void SetGuiMainProxy(const Func<void()>& proxy)
 {
 	if (proxy)

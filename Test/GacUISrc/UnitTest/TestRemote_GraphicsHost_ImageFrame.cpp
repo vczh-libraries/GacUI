@@ -290,7 +290,7 @@ TEST_FILE
 			{
 				// Reconnect again
 				protocol.GetEvents()->OnControllerDisconnect();
-				protocol.GetEvents()->OnControllerConnect();
+				protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 			},
 			// Size of the composition becomes (30,40) and (50,60)
 			L"Render(1, {10,10:30,40}, {0,0:640,480})",

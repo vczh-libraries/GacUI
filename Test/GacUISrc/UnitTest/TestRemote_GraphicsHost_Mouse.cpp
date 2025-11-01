@@ -287,7 +287,7 @@ TEST_FILE
 				TEST_ASSERT(protocol.capturing == false);
 				protocol.GetEvents()->OnControllerDisconnect();
 				protocol.capturing = true;
-				protocol.GetEvents()->OnControllerConnect();
+				protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 				TEST_ASSERT(protocol.capturing == false);
 			}
 
@@ -317,7 +317,7 @@ TEST_FILE
 				TEST_ASSERT(protocol.capturing == true);
 				protocol.GetEvents()->OnControllerDisconnect();
 				protocol.capturing = false;
-				protocol.GetEvents()->OnControllerConnect();
+				protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 				TEST_ASSERT(protocol.capturing == true);
 			}
 

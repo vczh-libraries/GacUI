@@ -310,8 +310,9 @@ GuiRemoteController::INativeWindowService
 GuiRemoteController (events)
 ***********************************************************************/
 
-	void GuiRemoteController::OnControllerConnect()
+	void GuiRemoteController::OnControllerConnect(const remoteprotocol::ControllerGlobalConfig& _globalConfig)
 	{
+		remoteGlobalConfig = _globalConfig;
 		UpdateGlobalShortcutKey();
 		vint idGetFontConfig = remoteMessages.RequestControllerGetFontConfig();
 		vint idGetScreenConfig = remoteMessages.RequestControllerGetScreenConfig();
@@ -360,6 +361,11 @@ GuiRemoteController
 		, remoteWindow(this)
 		, imageService(this)
 	{
+#if defined VCZH_WCHAR_UTF16
+		remoteGlobalConfig.documentCaretFromEncoding = remoteprotocol::CharacterEncoding::UTF16;
+#elif defined VCZH_WCHAR_UTF32
+		remoteGlobalConfig.documentCaretFromEncoding = remoteprotocol::CharacterEncoding::UTF32;
+#endif
 	}
 
 	GuiRemoteController::~GuiRemoteController()
@@ -379,6 +385,11 @@ GuiRemoteController
 		bool disconnected = false;
 		remoteMessages.Submit(disconnected);
 		// there is no result from this request, assuming succeeded
+	}
+
+	remoteprotocol::ControllerGlobalConfig GuiRemoteController::GetGlobalConfig()
+	{
+		return remoteGlobalConfig;
 	}
 
 /***********************************************************************

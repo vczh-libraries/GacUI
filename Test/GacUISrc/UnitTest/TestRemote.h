@@ -5,7 +5,8 @@
 
 using namespace remote_protocol_tests;
 
-extern void SetGuiMainProxy(const Func<void()>& proxy);
+extern remoteprotocol::ControllerGlobalConfig	MakeGlobalConfig();
+extern void										SetGuiMainProxy(const Func<void()>& proxy);
 
 template<typename TProtocol>
 void StartRemoteControllerTest(TProtocol& protocol)

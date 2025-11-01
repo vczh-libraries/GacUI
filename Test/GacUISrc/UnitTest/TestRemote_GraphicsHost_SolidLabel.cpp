@@ -326,7 +326,7 @@ TEST_FILE
 			[&]()
 			{
 				protocol.GetEvents()->OnControllerDisconnect();
-				protocol.GetEvents()->OnControllerConnect();
+				protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 
 				protocol.measuringForNextRendering.minSizes = Ptr(new List<ElementMeasuring_ElementMinSize>);
 				protocol.measuringForNextRendering.minSizes->Add({ 1,{60,12} });
@@ -378,7 +378,7 @@ TEST_FILE
 
 			// Reconnect again but text heights will be doubled
 			protocol.GetEvents()->OnControllerDisconnect();
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 
 			protocol.measuringForNextRendering.minSizes = Ptr(new List<ElementMeasuring_ElementMinSize>);
 			protocol.measuringForNextRendering.minSizes->Add({ 1,{60,24} });

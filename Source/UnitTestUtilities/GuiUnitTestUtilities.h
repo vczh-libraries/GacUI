@@ -45,7 +45,15 @@ void GacUIUnitTest_StartFast_WithResourceAsText(
 		const vl::presentation::unittest::UnitTestMainFunc& previousMainProxy
 		)
 	{
-		protocol->GetEvents()->OnControllerConnect();
+		{
+			vl::presentation::remoteprotocol::ControllerGlobalConfig globalConfig;
+#if defined VCZH_WCHAR_UTF16
+			globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF16;
+#elif defined VCZH_WCHAR_UTF32
+			globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF32;
+#endif
+			protocol->GetEvents()->OnControllerConnect(globalConfig);
+		}
 		auto theme = vl::Ptr(new TTheme);
 		vl::presentation::theme::RegisterTheme(theme);
 		{

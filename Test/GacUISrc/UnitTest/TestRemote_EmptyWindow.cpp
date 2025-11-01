@@ -86,7 +86,7 @@ TEST_FILE
 			TEST_CASE(L"Establish connection")
 			{
 				TEST_ASSERT(!protocol.connectionEstablished);
-				protocol.GetEvents()->OnControllerConnect();
+				protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 				TEST_ASSERT(protocol.connectionEstablished);
 			});
 
@@ -124,7 +124,7 @@ TEST_FILE
 		});
 		SetGuiMainProxy([&]()
 		{
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
@@ -172,7 +172,7 @@ TEST_FILE
 		});
 		SetGuiMainProxy([&]()
 		{
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
@@ -262,7 +262,7 @@ TEST_FILE
 		});
 		SetGuiMainProxy([&]()
 		{
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
@@ -337,7 +337,7 @@ TEST_FILE
 		});
 		SetGuiMainProxy([&]()
 		{
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
@@ -409,7 +409,7 @@ TEST_FILE
 		});
 		SetGuiMainProxy([&]()
 		{
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
@@ -471,7 +471,7 @@ TEST_FILE
 		});
 		SetGuiMainProxy([&]()
 		{
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
@@ -530,14 +530,14 @@ TEST_FILE
 			protocol.styleConfig = {};
 			protocol.sizingConfig.bounds = { 270, 130, 370, 330 };
 			protocol.sizingConfig.clientBounds = { 270, 130, 370, 330 };
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 			assertConfigs({ 270, 120, 370, 320 });
 
 			window->Hide(true);
 		});
 		SetGuiMainProxy([&]()
 		{
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->SetTitle(L"EmptyWindow");
@@ -699,7 +699,7 @@ TEST_FILE
 
 		SetGuiMainProxy([&]()
 		{
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 			ws = GetCurrentController()->WindowService();
 			window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
@@ -781,7 +781,7 @@ TEST_FILE
 
 		SetGuiMainProxy([&]()
 		{
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 			auto ws = GetCurrentController()->WindowService();
 			window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
@@ -863,7 +863,7 @@ TEST_FILE
 
 		SetGuiMainProxy([&]()
 		{
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 			auto ws = GetCurrentController()->WindowService();
 			window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);

@@ -86,12 +86,22 @@ GuiRemoteGraphicsRenderTarget
 GuiRemoteGraphicsResourceManager
 ***********************************************************************/
 
-		class GuiRemoteGraphicsResourceManager : public GuiGraphicsResourceManager
+		class GuiRemoteGraphicsResourceManager
+			: public GuiGraphicsResourceManager
+			, protected IGuiGraphicsLayoutProvider
 		{
 		protected:
 			GuiRemoteController*				remote;
 			GuiRemoteGraphicsRenderTarget		renderTarget;
 			GuiHostedController*				hostedController;
+
+		protected:
+
+			// =============================================================
+			// IGuiGraphicsLayoutProvider
+			// =============================================================
+
+			Ptr<IGuiGraphicsParagraph>			CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* _renderTarget, IGuiGraphicsParagraphCallback* callback) override;
 
 		public:
 			GuiRemoteGraphicsResourceManager(GuiRemoteController* _remote, GuiHostedController* _hostedController);

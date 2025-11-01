@@ -35,7 +35,7 @@ GuiRemoteEventDomDiffConverter
 		GuiRemoteEventDomDiffConverter();
 		~GuiRemoteEventDomDiffConverter();
 
-		void							OnControllerConnect() override;
+		void							OnControllerConnect(const remoteprotocol::ControllerGlobalConfig& arguments) override;
 	};
 
 /***********************************************************************

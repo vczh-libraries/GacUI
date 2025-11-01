@@ -93,7 +93,7 @@ namespace remote_graphics_host_tests
 	{
 		return [&]()
 		{
-			protocol.GetEvents()->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
 			auto theme = Ptr(new EmptyControlTheme);
 			theme::RegisterTheme(theme);
 
@@ -113,11 +113,11 @@ namespace remote_graphics_host_tests
 		};
 	}
 
-	void									AttachAndLogEvents(GuiGraphicsComposition* sender, const wchar_t* name, List<WString>& eventLogs);
+	extern void										AttachAndLogEvents(GuiGraphicsComposition* sender, const wchar_t* name, List<WString>& eventLogs);
 
-	NativeWindowKeyInfo						MakeKeyInfo(bool ctrl, bool shift, bool alt, VKEY code);
-	NativeWindowCharInfo					MakeCharInfo(bool ctrl, bool shift, bool alt, wchar_t code);
-	NativeWindowMouseInfo					MakeMouseInfo(bool left, bool middle, bool right, vint x, vint y, vint wheel);
-	remoteprotocol::IOMouseInfoWithButton	MakeMouseInfoWithButton(remoteprotocol::IOMouseButton button, bool left, bool middle, bool right, vint x, vint y, vint wheel);
+	extern NativeWindowKeyInfo						MakeKeyInfo(bool ctrl, bool shift, bool alt, VKEY code);
+	extern NativeWindowCharInfo						MakeCharInfo(bool ctrl, bool shift, bool alt, wchar_t code);
+	extern NativeWindowMouseInfo					MakeMouseInfo(bool left, bool middle, bool right, vint x, vint y, vint wheel);
+	extern remoteprotocol::IOMouseInfoWithButton	MakeMouseInfoWithButton(remoteprotocol::IOMouseButton button, bool left, bool middle, bool right, vint x, vint y, vint wheel);
 }
 using namespace remote_graphics_host_tests;
