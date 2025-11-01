@@ -255,6 +255,6 @@ GuiRemoteEvents (events)
 
 	void GuiRemoteEvents::OnDocumentParagraph_RenderInlineObject(const remoteprotocol::RenderInlineObjectRequest& arguments)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		remote->resourceManager->OnDocumentParagraph_RenderInlineObject(arguments);
 	}
 }
