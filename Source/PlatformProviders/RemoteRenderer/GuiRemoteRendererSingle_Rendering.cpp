@@ -381,6 +381,50 @@ namespace vl::presentation::remote_renderer
 	}
 
 /***********************************************************************
+* Rendering (Elements -- Document)
+***********************************************************************/
+
+	void GuiRemoteRendererSingle::RequestRendererUpdateElement_DocumentParagraph(vint id, const remoteprotocol::ElementDesc_DocumentParagraph& arguments)
+	{
+		CHECK_FAIL(L"Not implemented.");
+	}
+
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetCaret(vint id, const remoteprotocol::GetCaretRequest& arguments)
+	{
+		CHECK_FAIL(L"Not implemented.");
+	}
+
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetCaretBounds(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments)
+	{
+		CHECK_FAIL(L"Not implemented.");
+	}
+
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetInlineObjectFromPoint(vint id, const Point& arguments)
+	{
+		CHECK_FAIL(L"Not implemented.");
+	}
+
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetNearestCaretFromTextPos(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments)
+	{
+		CHECK_FAIL(L"Not implemented.");
+	}
+
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_IsValidCaret(vint id, const vint& arguments)
+	{
+		CHECK_FAIL(L"Not implemented.");
+	}
+
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_OpenCaret(const remoteprotocol::OpenCaretRequest& arguments)
+	{
+		CHECK_FAIL(L"Not implemented.");
+	}
+
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_CloseCaret()
+	{
+		CHECK_FAIL(L"Not implemented.");
+	}
+
+/***********************************************************************
 * Rendering (Dom)
 ***********************************************************************/
 

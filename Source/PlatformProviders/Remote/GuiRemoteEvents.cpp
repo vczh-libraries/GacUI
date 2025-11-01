@@ -252,4 +252,9 @@ GuiRemoteEvents (events)
 	{
 		for (auto l : remote->remoteWindow.listeners) l->Char(arguments);
 	}
+
+	void GuiRemoteEvents::OnDocumentParagraph_RenderInlineObject(const remoteprotocol::RenderInlineObjectRequest& arguments)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
 }
