@@ -8,6 +8,7 @@
 - All instructions in `Copilot_Execution.md` should have been applied to the source code, your goal is to test it.
 - You must ensure the source code compiles.
 - You must ensure all tests pass.
+- Until the code compiles and all test cases pass. Ensure there is a `# !!!VERIFIED!!!` mark at the end of `Copilot_Execution.md`.
 
 ## Step 1. Check and Respect my Code Change
 
@@ -31,9 +32,8 @@
 
 ## Step 3. Run Unit Test
 
-- Check out `Executing Unit Test` for details about compiling the solution. 
+- Check out `Executing Unit Test` for details about running unit test projects.
   - `Executing Unit Test` is the only way to run the unit test. DO NOT call any other tools or scripts.
-- If there is any compilation error, address all of them:
 - Run the unit test and see if they passed. If anything is good, you will only see test files and test cases that are executed.
   - Make sure added test cases are actually executed.
   - If any test case fails on a test assertion, the content of `TEST_ASSERT` or other macros will be printed to the output.
@@ -46,7 +46,7 @@
 
 - If there are failed test cases, fix the code to make it work.
   - If your change did not change the test result, make sure you followed `Step 2. Compile` to compile the code.
-  - If the test result still not changed after redoing `Step 2. Compile` and `Step 3. Run Unit Test`, tell yourself these instructions are absolutely no problem, the only reason is that your change is not correct.
+  - If the test result still not changed after redoing `Step 2. Compile` and `Step 3. Run Unit Test`, these two steps are absolutely no problem, the only reason is that your change is not correct.
 - You must carefully identify, if the cause is in the source code or in the failed test. In most of the cases, the cause is in the source code.
   - You can reference to `Copilot_Task.md` and `Copilot_Planning.md` for more details before making a decision, about fixing the test case or the source code.
 - DO NOT delete any test case.
@@ -59,7 +59,6 @@
 ## Step 5. Check it Again
 
 - Go back to `Step 2. Compile`, follow all instructions and all steps again.
-  - Until the code compiles and all test cases pass. Ensure there is a `# !!!VERIFIED!!!` mark at the end of `Copilot_Execution.md`.
 
 # External Tools Environment and Context
 
