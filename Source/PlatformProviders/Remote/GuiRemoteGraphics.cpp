@@ -368,8 +368,8 @@ GuiRemoteGraphicsResourceManager
 	Ptr<IGuiGraphicsParagraph> GuiRemoteGraphicsResourceManager::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* _renderTarget, IGuiGraphicsParagraphCallback* callback)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GuiRemoteGraphicsResourceManager::CreateParagraph(const WString&, IGuiGraphicsRenderTarget*, IGuiGraphicsParagraphCallback*)#"
-		CHECK_ERROR(renderTarget == _renderTarget, ERROR_MESSAGE_PREFIX L"Unexpected render target object.");
-		return Ptr(new GuiRemoteGraphicsParagraph(text, remote, this, renderTarget, callback));
+		CHECK_ERROR(&renderTarget == _renderTarget, ERROR_MESSAGE_PREFIX L"Unexpected render target object.");
+		return Ptr(new GuiRemoteGraphicsParagraph(text, remote, this, &renderTarget, callback));
 #undef ERROR_MESSAGE_PREFIX
 	}
 
