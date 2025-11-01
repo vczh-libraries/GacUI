@@ -27,7 +27,7 @@ namespace vl::presentation::elements
 GuiRemoteGraphicsParagraph
 ***********************************************************************/
 
-	class GuiRemoteGraphicsParagraph : public IGuiGraphicsParagraph
+	class GuiRemoteGraphicsParagraph : public Object, public IGuiGraphicsParagraph
 	{
 	protected:
 		WString									text;

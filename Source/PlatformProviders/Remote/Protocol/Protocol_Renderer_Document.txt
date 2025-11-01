@@ -87,7 +87,7 @@ struct OpenCaretRequest
 }
 
 message DocumentParagraph_GetCaret                      { request: GetCaretRequest; response: GetCaretResponse; }
-message DocumentParagraph_GetCaretBound                 { request: GetCaretBoundsRequest; }
+message DocumentParagraph_GetCaretBounds                { request: GetCaretBoundsRequest; response: Rect; }
 message DocumentParagraph_GetInlineObjectFromPoint      { request: Point; response: DocumentRun?; }
 message DocumentParagraph_GetNearestCaretFromTextPos    { request: GetCaretBoundsRequest; response: int; }
 message DocumentParagraph_IsValidCaret                  { request: int; response: bool; }

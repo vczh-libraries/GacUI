@@ -2462,7 +2462,7 @@
     }, {
         "$ast": "MessageDecl",
         "attributes": [],
-        "name": "DocumentParagraph_GetCaretBound",
+        "name": "DocumentParagraph_GetCaretBounds",
         "request": {
             "$ast": "MessageRequest",
             "type": {
@@ -2470,7 +2470,13 @@
                 "name": "GetCaretBoundsRequest"
             }
         },
-        "response": null
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Rect"
+            }
+        }
     }, {
         "$ast": "MessageDecl",
         "attributes": [],

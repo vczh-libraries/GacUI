@@ -672,7 +672,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(RendererUpdateElement_ImageFrame, ::vl::presentation::remoteprotocol::ElementDesc_ImageFrame, void, REQ, NORES, NODROP)\
 	HANDLER(RendererUpdateElement_DocumentParagraph, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph, ::vl::presentation::Size, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_GetCaret, ::vl::presentation::remoteprotocol::GetCaretRequest, ::vl::presentation::remoteprotocol::GetCaretResponse, REQ, RES, NODROP)\
-	HANDLER(DocumentParagraph_GetCaretBound, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest, void, REQ, NORES, NODROP)\
+	HANDLER(DocumentParagraph_GetCaretBounds, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest, ::vl::presentation::Rect, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_GetInlineObjectFromPoint, ::vl::presentation::Point, ::vl::Nullable<::vl::presentation::remoteprotocol::DocumentRun>, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_GetNearestCaretFromTextPos, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest, ::vl::vint, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_IsValidCaret, ::vl::vint, bool, REQ, RES, NODROP)\
@@ -744,6 +744,7 @@ namespace vl::presentation::remoteprotocol
 
 #define GACUI_REMOTEPROTOCOL_MESSAGE_RESPONSE_TYPES(HANDLER)\
 	HANDLER(::vl::Nullable<::vl::presentation::remoteprotocol::DocumentRun>)\
+	HANDLER(::vl::presentation::Rect)\
 	HANDLER(::vl::presentation::Size)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementMeasurings)\
 	HANDLER(::vl::presentation::remoteprotocol::FontConfig)\

@@ -720,6 +720,50 @@ IGuiRemoteProtocolMessages (Elements - Image)
 #undef ERROR_MESSAGE_PREFIX
 		}
 
+/***********************************************************************
+IGuiRemoteProtocolMessages (Elements - Document)
+***********************************************************************/
+
+		void RequestRendererUpdateElement_DocumentParagraph(vint id, const remoteprotocol::ElementDesc_DocumentParagraph& arguments) override
+		{
+			CHECK_FAIL(L"Not implemented.");
+		}
+
+		void RequestDocumentParagraph_GetCaret(vint id, const remoteprotocol::GetCaretRequest& arguments) override
+		{
+			CHECK_FAIL(L"Not implemented.");
+		}
+
+		void RequestDocumentParagraph_GetCaretBounds(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments) override
+		{
+			CHECK_FAIL(L"Not implemented.");
+		}
+
+		void RequestDocumentParagraph_GetInlineObjectFromPoint(vint id, const Point& arguments) override
+		{
+			CHECK_FAIL(L"Not implemented.");
+		}
+
+		void RequestDocumentParagraph_GetNearestCaretFromTextPos(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments) override
+		{
+			CHECK_FAIL(L"Not implemented.");
+		}
+
+		void RequestDocumentParagraph_IsValidCaret(vint id, const vint& arguments) override
+		{
+			CHECK_FAIL(L"Not implemented.");
+		}
+
+		void RequestDocumentParagraph_OpenCaret(const remoteprotocol::OpenCaretRequest& arguments) override
+		{
+			CHECK_FAIL(L"Not implemented.");
+		}
+
+		void RequestDocumentParagraph_CloseCaret() override
+		{
+			CHECK_FAIL(L"Not implemented.");
+		}
+
 #undef REQUEST_RENDERER_UPDATE_ELEMENT
 #undef REQUEST_RENDERER_UPDATE_ELEMENT2
 	};
