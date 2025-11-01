@@ -11,8 +11,7 @@ enum RendererType
     SolidLabel,
     Polygon,
     ImageFrame,
-    UnsupportedColorizedText,
-    UnsupportedDocument,
+    DocumentParagraph,
 }
 
 struct RendererCreation

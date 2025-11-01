@@ -387,10 +387,43 @@
         "request": null,
         "response": null
     }, {
+        "$ast": "EnumDecl",
+        "attributes": [],
+        "name": "CharacterEncoding",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "UTF8"
+        }, {
+            "$ast": "EnumMember",
+            "name": "UTF16"
+        }, {
+            "$ast": "EnumMember",
+            "name": "UTF32"
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ControllerGlobalConfig",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "documentCaretFromEncoding",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "CharacterEncoding"
+            }
+        }],
+        "type": "Struct"
+    }, {
         "$ast": "EventDecl",
         "attributes": [],
         "name": "ControllerConnect",
-        "request": null
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ControllerGlobalConfig"
+            }
+        }
     }, {
         "$ast": "EventDecl",
         "attributes": [],
@@ -2093,6 +2126,459 @@
         "response": null
     }, {
         "$ast": "EnumDecl",
+        "attributes": [{
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition",
+            "name": "@Cpp"
+        }, {
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::elements::IGuiGraphicsParagraph",
+            "name": "@CppNamespace"
+        }],
+        "name": "BreakCondition",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "StickToPreviousRun"
+        }, {
+            "$ast": "EnumMember",
+            "name": "StickToNextRun"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Alone"
+        }]
+    }, {
+        "$ast": "EnumDecl",
+        "attributes": [{
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition",
+            "name": "@Cpp"
+        }, {
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::elements::IGuiGraphicsParagraph",
+            "name": "@CppNamespace"
+        }],
+        "name": "CaretRelativePosition",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "CaretFirst"
+        }, {
+            "$ast": "EnumMember",
+            "name": "CaretLast"
+        }, {
+            "$ast": "EnumMember",
+            "name": "CaretLineFirst"
+        }, {
+            "$ast": "EnumMember",
+            "name": "CaretLineLast"
+        }, {
+            "$ast": "EnumMember",
+            "name": "CaretMoveLeft"
+        }, {
+            "$ast": "EnumMember",
+            "name": "CaretMoveRight"
+        }, {
+            "$ast": "EnumMember",
+            "name": "CaretMoveUp"
+        }, {
+            "$ast": "EnumMember",
+            "name": "CaretMoveDown"
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "DocumentTextRunProperty",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "textColor",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Color"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "backgroundColor",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Color"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "fontProperties",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "FontProperties"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "DocumentInlineObjectRunProperty",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "size",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Size"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "baseline",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "breakCondition",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "BreakCondition"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "backgroundElementId",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "callbackId",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "UnionDecl",
+        "attributes": [],
+        "name": "DocumentRunProperty",
+        "members": [{
+            "$ast": "UnionMember",
+            "name": "DocumentTextRunProperty"
+        }, {
+            "$ast": "UnionMember",
+            "name": "DocumentInlineObjectRunProperty"
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "DocumentRun",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "caretBegin",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "caretEnd",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "props",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "DocumentRunProperty"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ElementDesc_DocumentParagraph",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "text",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "PrimitiveType",
+                    "type": "String"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "wrapLine",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "maxWidth",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "alignment",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementHorizontalAlignment"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "runsDiff",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "DocumentRun"
+                }
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererUpdateElement_DocumentParagraph",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementDesc_DocumentParagraph"
+            }
+        },
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Size"
+            }
+        }
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "GetCaretRequest",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "caret",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "relativePosition",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "CaretRelativePosition"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "GetCaretResponse",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "newCaret",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "preferFrontSide",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "GetCaretBoundsRequest",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "caret",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "frontSide",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "OpenCaretRequest",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "caret",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "caretColor",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Color"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "frontSide",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "DocumentParagraph_GetCaret",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "GetCaretRequest"
+            }
+        },
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "GetCaretResponse"
+            }
+        }
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "DocumentParagraph_GetCaretBound",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "GetCaretBoundsRequest"
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "DocumentParagraph_GetInlineObjectFromPoint",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Point"
+            }
+        },
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "DocumentRun"
+                }
+            }
+        }
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "DocumentParagraph_GetNearestCaretFromTextPos",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "GetCaretBoundsRequest"
+            }
+        },
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "DocumentParagraph_IsValidCaret",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        },
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "DocumentParagraph_OpenCaret",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "OpenCaretRequest"
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "DocumentParagraph_CloseCaret",
+        "request": null,
+        "response": null
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "RenderInlineObjectRequest",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "callbackId",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "location",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Rect"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "DocumentParagraph_RenderInlineObject",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "RenderInlineObjectRequest"
+            }
+        }
+    }, {
+        "$ast": "EnumDecl",
         "attributes": [],
         "name": "RendererType",
         "members": [{
@@ -2130,10 +2616,7 @@
             "name": "ImageFrame"
         }, {
             "$ast": "EnumMember",
-            "name": "UnsupportedColorizedText"
-        }, {
-            "$ast": "EnumMember",
-            "name": "UnsupportedDocument"
+            "name": "DocumentParagraph"
         }]
     }, {
         "$ast": "StructDecl",
@@ -2614,6 +3097,9 @@
         }, {
             "$ast": "UnionMember",
             "name": "ElementDesc_ImageFrame"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_DocumentParagraph"
         }]
     }, {
         "$ast": "StructDecl",

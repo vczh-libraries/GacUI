@@ -12,6 +12,7 @@ namespace vl::presentation::remoteprotocol
 {
 	struct FontConfig;
 	struct ScreenConfig;
+	struct ControllerGlobalConfig;
 	struct WindowSizingConfig;
 	struct WindowShowing;
 	struct IOMouseInfoWithButton;
@@ -28,6 +29,15 @@ namespace vl::presentation::remoteprotocol
 	struct ImageFrameMetadata;
 	struct ImageMetadata;
 	struct ElementDesc_ImageFrame;
+	struct DocumentTextRunProperty;
+	struct DocumentInlineObjectRunProperty;
+	struct DocumentRun;
+	struct ElementDesc_DocumentParagraph;
+	struct GetCaretRequest;
+	struct GetCaretResponse;
+	struct GetCaretBoundsRequest;
+	struct OpenCaretRequest;
+	struct RenderInlineObjectRequest;
 	struct RendererCreation;
 	struct ElementBeginRendering;
 	struct ElementRendering;
@@ -55,6 +65,7 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::FontProperties> { static constexpr const wchar_t* Name = L"FontProperties"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::FontConfig> { static constexpr const wchar_t* Name = L"FontConfig"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ScreenConfig> { static constexpr const wchar_t* Name = L"ScreenConfig"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ControllerGlobalConfig> { static constexpr const wchar_t* Name = L"ControllerGlobalConfig"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::WindowSizingConfig> { static constexpr const wchar_t* Name = L"WindowSizingConfig"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::WindowShowing> { static constexpr const wchar_t* Name = L"WindowShowing"; };
 	template<> struct JsonNameHelper<::vl::presentation::NativeWindowMouseInfo> { static constexpr const wchar_t* Name = L"IOMouseInfo"; };
@@ -75,6 +86,15 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ImageFrameMetadata> { static constexpr const wchar_t* Name = L"ImageFrameMetadata"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ImageMetadata> { static constexpr const wchar_t* Name = L"ImageMetadata"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_ImageFrame> { static constexpr const wchar_t* Name = L"ElementDesc_ImageFrame"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::DocumentTextRunProperty> { static constexpr const wchar_t* Name = L"DocumentTextRunProperty"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty> { static constexpr const wchar_t* Name = L"DocumentInlineObjectRunProperty"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::DocumentRun> { static constexpr const wchar_t* Name = L"DocumentRun"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph> { static constexpr const wchar_t* Name = L"ElementDesc_DocumentParagraph"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GetCaretRequest> { static constexpr const wchar_t* Name = L"GetCaretRequest"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GetCaretResponse> { static constexpr const wchar_t* Name = L"GetCaretResponse"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GetCaretBoundsRequest> { static constexpr const wchar_t* Name = L"GetCaretBoundsRequest"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::OpenCaretRequest> { static constexpr const wchar_t* Name = L"OpenCaretRequest"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderInlineObjectRequest> { static constexpr const wchar_t* Name = L"RenderInlineObjectRequest"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RendererCreation> { static constexpr const wchar_t* Name = L"RendererCreation"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementBeginRendering> { static constexpr const wchar_t* Name = L"ElementBeginRendering"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementRendering> { static constexpr const wchar_t* Name = L"ElementRendering"; };
@@ -91,6 +111,13 @@ namespace vl::presentation::remoteprotocol
 }
 namespace vl::presentation::remoteprotocol
 {
+	enum class CharacterEncoding
+	{
+		UTF8,
+		UTF16,
+		UTF32,
+	};
+
 	enum class IOMouseButton
 	{
 		Left,
@@ -131,8 +158,7 @@ namespace vl::presentation::remoteprotocol
 		SolidLabel,
 		Polygon,
 		ImageFrame,
-		UnsupportedColorizedText,
-		UnsupportedDocument,
+		DocumentParagraph,
 	};
 
 	enum class RenderingDom_DiffType
@@ -141,6 +167,11 @@ namespace vl::presentation::remoteprotocol
 		Created,
 		Modified,
 	};
+
+	using DocumentRunProperty = ::vl::Variant<
+		::vl::presentation::remoteprotocol::DocumentTextRunProperty,
+		::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty
+	>;
 
 	using UnitTest_ElementDescVariant = ::vl::Variant<
 		::vl::presentation::remoteprotocol::ElementDesc_SolidBorder,
@@ -151,7 +182,8 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::remoteprotocol::ElementDesc_InnerShadow,
 		::vl::presentation::remoteprotocol::ElementDesc_Polygon,
 		::vl::presentation::remoteprotocol::ElementDesc_SolidLabel,
-		::vl::presentation::remoteprotocol::ElementDesc_ImageFrame
+		::vl::presentation::remoteprotocol::ElementDesc_ImageFrame,
+		::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph
 	>;
 
 	struct FontConfig
@@ -166,6 +198,11 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::NativeRect clientBounds;
 		double scalingX;
 		double scalingY;
+	};
+
+	struct ControllerGlobalConfig
+	{
+		::vl::presentation::remoteprotocol::CharacterEncoding documentCaretFromEncoding;
 	};
 
 	struct WindowSizingConfig
@@ -297,6 +334,69 @@ namespace vl::presentation::remoteprotocol
 		::vl::Nullable<::vl::presentation::remoteprotocol::ImageCreation> imageCreation;
 	};
 
+	struct DocumentTextRunProperty
+	{
+		::vl::presentation::Color textColor;
+		::vl::presentation::Color backgroundColor;
+		::vl::presentation::FontProperties fontProperties;
+	};
+
+	struct DocumentInlineObjectRunProperty
+	{
+		::vl::presentation::Size size;
+		::vl::vint baseline;
+		::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition breakCondition;
+		::vl::vint backgroundElementId;
+		::vl::vint callbackId;
+	};
+
+	struct DocumentRun
+	{
+		::vl::vint caretBegin;
+		::vl::vint caretEnd;
+		::vl::presentation::remoteprotocol::DocumentRunProperty props;
+	};
+
+	struct ElementDesc_DocumentParagraph
+	{
+		::vl::Nullable<::vl::WString> text;
+		bool wrapLine;
+		::vl::vint maxWidth;
+		::vl::presentation::remoteprotocol::ElementHorizontalAlignment alignment;
+		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::DocumentRun>> runsDiff;
+	};
+
+	struct GetCaretRequest
+	{
+		::vl::vint caret;
+		::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition relativePosition;
+	};
+
+	struct GetCaretResponse
+	{
+		::vl::vint newCaret;
+		bool preferFrontSide;
+	};
+
+	struct GetCaretBoundsRequest
+	{
+		::vl::vint caret;
+		bool frontSide;
+	};
+
+	struct OpenCaretRequest
+	{
+		::vl::vint caret;
+		::vl::presentation::Color caretColor;
+		bool frontSide;
+	};
+
+	struct RenderInlineObjectRequest
+	{
+		::vl::vint callbackId;
+		::vl::presentation::Rect location;
+	};
+
 	struct RendererCreation
 	{
 		::vl::vint id;
@@ -390,6 +490,7 @@ namespace vl::presentation::remoteprotocol
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::UnitTest_RenderingFrame>> frames;
 	};
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::CharacterEncoding>(const ::vl::presentation::remoteprotocol::CharacterEncoding & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeCursor::SystemCursorType>(const ::vl::presentation::INativeCursor::SystemCursorType & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState & value);
@@ -401,6 +502,8 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementVerticalAlignment>(const ::vl::presentation::remoteprotocol::ElementVerticalAlignment & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest>(const ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeImage::FormatType>(const ::vl::presentation::INativeImage::FormatType & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition>(const ::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition>(const ::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RendererType>(const ::vl::presentation::remoteprotocol::RendererType & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDom_DiffType>(const ::vl::presentation::remoteprotocol::RenderingDom_DiffType & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeCoordinate>(const ::vl::presentation::NativeCoordinate & value);
@@ -414,6 +517,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::FontProperties>(const ::vl::presentation::FontProperties & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::FontConfig>(const ::vl::presentation::remoteprotocol::FontConfig & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ScreenConfig>(const ::vl::presentation::remoteprotocol::ScreenConfig & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ControllerGlobalConfig>(const ::vl::presentation::remoteprotocol::ControllerGlobalConfig & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::WindowSizingConfig>(const ::vl::presentation::remoteprotocol::WindowSizingConfig & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::WindowShowing>(const ::vl::presentation::remoteprotocol::WindowShowing & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeWindowMouseInfo>(const ::vl::presentation::NativeWindowMouseInfo & value);
@@ -434,6 +538,15 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ImageFrameMetadata>(const ::vl::presentation::remoteprotocol::ImageFrameMetadata & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ImageMetadata>(const ::vl::presentation::remoteprotocol::ImageMetadata & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_ImageFrame>(const ::vl::presentation::remoteprotocol::ElementDesc_ImageFrame & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::DocumentTextRunProperty>(const ::vl::presentation::remoteprotocol::DocumentTextRunProperty & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty>(const ::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::DocumentRun>(const ::vl::presentation::remoteprotocol::DocumentRun & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph>(const ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretRequest>(const ::vl::presentation::remoteprotocol::GetCaretRequest & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretResponse>(const ::vl::presentation::remoteprotocol::GetCaretResponse & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretBoundsRequest>(const ::vl::presentation::remoteprotocol::GetCaretBoundsRequest & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::OpenCaretRequest>(const ::vl::presentation::remoteprotocol::OpenCaretRequest & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderInlineObjectRequest>(const ::vl::presentation::remoteprotocol::RenderInlineObjectRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RendererCreation>(const ::vl::presentation::remoteprotocol::RendererCreation & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementBeginRendering>(const ::vl::presentation::remoteprotocol::ElementBeginRendering & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementRendering>(const ::vl::presentation::remoteprotocol::ElementRendering & value);
@@ -448,6 +561,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::UnitTest_RenderingFrame>(const ::vl::presentation::remoteprotocol::UnitTest_RenderingFrame & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::UnitTest_RenderingTrace>(const ::vl::presentation::remoteprotocol::UnitTest_RenderingTrace & value);
 
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::CharacterEncoding>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::CharacterEncoding& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindowListener::HitTestResult>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindowListener::HitTestResult& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeCursor::SystemCursorType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeCursor::SystemCursorType& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value);
@@ -459,6 +573,8 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementVerticalAlignment>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementVerticalAlignment& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeImage::FormatType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeImage::FormatType& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RendererType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RendererType& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDom_DiffType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingDom_DiffType& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeCoordinate>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeCoordinate& value);
@@ -472,6 +588,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::FontProperties>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::FontProperties& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::FontConfig>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::FontConfig& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ScreenConfig>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ScreenConfig& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ControllerGlobalConfig>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ControllerGlobalConfig& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::WindowSizingConfig>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::WindowSizingConfig& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::WindowShowing>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::WindowShowing& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeWindowMouseInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeWindowMouseInfo& value);
@@ -492,6 +609,15 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ImageFrameMetadata>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ImageFrameMetadata& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ImageMetadata>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ImageMetadata& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_ImageFrame>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_ImageFrame& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentTextRunProperty>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::DocumentTextRunProperty& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentRun>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::DocumentRun& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretRequest& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretResponse>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretResponse& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretBoundsRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::OpenCaretRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::OpenCaretRequest& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderInlineObjectRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderInlineObjectRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RendererCreation>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RendererCreation& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementBeginRendering>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementBeginRendering& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementRendering>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementRendering& value);
@@ -544,6 +670,14 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(ImageCreated, ::vl::presentation::remoteprotocol::ImageCreation, ::vl::presentation::remoteprotocol::ImageMetadata, REQ, RES, NODROP)\
 	HANDLER(ImageDestroyed, ::vl::vint, void, REQ, NORES, NODROP)\
 	HANDLER(RendererUpdateElement_ImageFrame, ::vl::presentation::remoteprotocol::ElementDesc_ImageFrame, void, REQ, NORES, NODROP)\
+	HANDLER(RendererUpdateElement_DocumentParagraph, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph, ::vl::presentation::Size, REQ, RES, NODROP)\
+	HANDLER(DocumentParagraph_GetCaret, ::vl::presentation::remoteprotocol::GetCaretRequest, ::vl::presentation::remoteprotocol::GetCaretResponse, REQ, RES, NODROP)\
+	HANDLER(DocumentParagraph_GetCaretBound, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest, void, REQ, NORES, NODROP)\
+	HANDLER(DocumentParagraph_GetInlineObjectFromPoint, ::vl::presentation::Point, ::vl::Nullable<::vl::presentation::remoteprotocol::DocumentRun>, REQ, RES, NODROP)\
+	HANDLER(DocumentParagraph_GetNearestCaretFromTextPos, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest, ::vl::vint, REQ, RES, NODROP)\
+	HANDLER(DocumentParagraph_IsValidCaret, ::vl::vint, bool, REQ, RES, NODROP)\
+	HANDLER(DocumentParagraph_OpenCaret, ::vl::presentation::remoteprotocol::OpenCaretRequest, void, REQ, NORES, NODROP)\
+	HANDLER(DocumentParagraph_CloseCaret, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(RendererCreated, ::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RendererCreation>>, void, REQ, NORES, NODROP)\
 	HANDLER(RendererDestroyed, ::vl::Ptr<::vl::collections::List<::vl::vint>>, void, REQ, NORES, NODROP)\
 	HANDLER(RendererBeginRendering, ::vl::presentation::remoteprotocol::ElementBeginRendering, void, REQ, NORES, NODROP)\
@@ -555,7 +689,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(RendererRenderDomDiff, ::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder, void, REQ, NORES, NODROP)\
 
 #define GACUI_REMOTEPROTOCOL_EVENTS(HANDLER)\
-	HANDLER(ControllerConnect, void, NOREQ, NODROP)\
+	HANDLER(ControllerConnect, ::vl::presentation::remoteprotocol::ControllerGlobalConfig, REQ, NODROP)\
 	HANDLER(ControllerDisconnect, void, NOREQ, NODROP)\
 	HANDLER(ControllerRequestExit, void, NOREQ, NODROP)\
 	HANDLER(ControllerForceExit, void, NOREQ, NODROP)\
@@ -574,6 +708,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(IOKeyDown, ::vl::presentation::NativeWindowKeyInfo, REQ, NODROP)\
 	HANDLER(IOKeyUp, ::vl::presentation::NativeWindowKeyInfo, REQ, NODROP)\
 	HANDLER(IOChar, ::vl::presentation::NativeWindowCharInfo, REQ, NODROP)\
+	HANDLER(DocumentParagraph_RenderInlineObject, ::vl::presentation::remoteprotocol::RenderInlineObjectRequest, REQ, NODROP)\
 
 #define GACUI_REMOTEPROTOCOL_MESSAGE_REQUEST_TYPES(HANDLER)\
 	HANDLER(::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::GlobalShortcutKey>>)\
@@ -583,9 +718,11 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::WString)\
 	HANDLER(::vl::presentation::NativeRect)\
 	HANDLER(::vl::presentation::NativeSize)\
+	HANDLER(::vl::presentation::Point)\
 	HANDLER(::vl::presentation::VKEY)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementBeginRendering)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementBoundary)\
+	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_GradientBackground)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_ImageFrame)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_InnerShadow)\
@@ -596,25 +733,34 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_SolidBorder)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_SolidLabel)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementRendering)\
+	HANDLER(::vl::presentation::remoteprotocol::GetCaretBoundsRequest)\
+	HANDLER(::vl::presentation::remoteprotocol::GetCaretRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::ImageCreation)\
+	HANDLER(::vl::presentation::remoteprotocol::OpenCaretRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder)\
 	HANDLER(::vl::presentation::remoteprotocol::WindowShowing)\
 	HANDLER(::vl::vint)\
 	HANDLER(bool)\
 
 #define GACUI_REMOTEPROTOCOL_MESSAGE_RESPONSE_TYPES(HANDLER)\
+	HANDLER(::vl::Nullable<::vl::presentation::remoteprotocol::DocumentRun>)\
+	HANDLER(::vl::presentation::Size)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementMeasurings)\
 	HANDLER(::vl::presentation::remoteprotocol::FontConfig)\
+	HANDLER(::vl::presentation::remoteprotocol::GetCaretResponse)\
 	HANDLER(::vl::presentation::remoteprotocol::ImageMetadata)\
 	HANDLER(::vl::presentation::remoteprotocol::ScreenConfig)\
 	HANDLER(::vl::presentation::remoteprotocol::WindowSizingConfig)\
+	HANDLER(::vl::vint)\
 	HANDLER(bool)\
 
 #define GACUI_REMOTEPROTOCOL_EVENT_REQUEST_TYPES(HANDLER)\
 	HANDLER(::vl::presentation::NativeWindowCharInfo)\
 	HANDLER(::vl::presentation::NativeWindowKeyInfo)\
 	HANDLER(::vl::presentation::NativeWindowMouseInfo)\
+	HANDLER(::vl::presentation::remoteprotocol::ControllerGlobalConfig)\
 	HANDLER(::vl::presentation::remoteprotocol::IOMouseInfoWithButton)\
+	HANDLER(::vl::presentation::remoteprotocol::RenderInlineObjectRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::ScreenConfig)\
 	HANDLER(::vl::presentation::remoteprotocol::WindowSizingConfig)\
 	HANDLER(::vl::vint)\

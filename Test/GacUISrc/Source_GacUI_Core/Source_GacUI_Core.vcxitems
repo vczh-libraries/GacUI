@@ -126,6 +126,7 @@
     <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_MainWindow.txt" />
     <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_Renderer.txt" />
     <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_Renderer_BasicElements.txt" />
+    <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_Renderer_Document.txt" />
     <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_Renderer_ImageFrame.txt" />
     <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_SyncDom.txt" />
   </ItemGroup>

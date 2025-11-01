@@ -99,7 +99,19 @@ message ControllerGetScreenConfig
 message ControllerConnectionEstablished {}
 message ControllerConnectionStopped     {}
 
-event ControllerConnect         {}
+enum CharacterEncoding
+{
+    UTF8,
+    UTF16,
+    UTF32,
+}
+
+struct ControllerGlobalConfig
+{
+    var documentCaretFromEncoding : CharacterEncoding;
+}
+
+event ControllerConnect         { request: ControllerGlobalConfig; }
 event ControllerDisconnect      {}
 event ControllerRequestExit     {}
 event ControllerForceExit       {}

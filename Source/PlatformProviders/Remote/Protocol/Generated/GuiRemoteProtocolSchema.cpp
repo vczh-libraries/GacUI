@@ -7,6 +7,21 @@ Licensed under https ://github.com/vczh-libraries/License
 
 namespace vl::presentation::remoteprotocol
 {
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::CharacterEncoding>(const ::vl::presentation::remoteprotocol::CharacterEncoding & value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::CharacterEncoding>(const ::vl::presentation::remoteprotocol::CharacterEncoding&)#"
+		auto node = Ptr(new glr::json::JsonString);
+		switch (value)
+		{
+		case ::vl::presentation::remoteprotocol::CharacterEncoding::UTF8: node->content.value = WString::Unmanaged(L"UTF8"); break;
+		case ::vl::presentation::remoteprotocol::CharacterEncoding::UTF16: node->content.value = WString::Unmanaged(L"UTF16"); break;
+		case ::vl::presentation::remoteprotocol::CharacterEncoding::UTF32: node->content.value = WString::Unmanaged(L"UTF32"); break;
+		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+		}
+		return node;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult & value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult&)#"
@@ -198,6 +213,41 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition>(const ::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition & value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition>(const ::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition&)#"
+		auto node = Ptr(new glr::json::JsonString);
+		switch (value)
+		{
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::StickToPreviousRun: node->content.value = WString::Unmanaged(L"StickToPreviousRun"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::StickToNextRun: node->content.value = WString::Unmanaged(L"StickToNextRun"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::Alone: node->content.value = WString::Unmanaged(L"Alone"); break;
+		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+		}
+		return node;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition>(const ::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition & value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition>(const ::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition&)#"
+		auto node = Ptr(new glr::json::JsonString);
+		switch (value)
+		{
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::CaretFirst: node->content.value = WString::Unmanaged(L"CaretFirst"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::CaretLast: node->content.value = WString::Unmanaged(L"CaretLast"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::CaretLineFirst: node->content.value = WString::Unmanaged(L"CaretLineFirst"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::CaretLineLast: node->content.value = WString::Unmanaged(L"CaretLineLast"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::CaretMoveLeft: node->content.value = WString::Unmanaged(L"CaretMoveLeft"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::CaretMoveRight: node->content.value = WString::Unmanaged(L"CaretMoveRight"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::CaretMoveUp: node->content.value = WString::Unmanaged(L"CaretMoveUp"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::CaretMoveDown: node->content.value = WString::Unmanaged(L"CaretMoveDown"); break;
+		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+		}
+		return node;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RendererType>(const ::vl::presentation::remoteprotocol::RendererType & value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RendererType>(const ::vl::presentation::remoteprotocol::RendererType&)#"
@@ -215,8 +265,7 @@ namespace vl::presentation::remoteprotocol
 		case ::vl::presentation::remoteprotocol::RendererType::SolidLabel: node->content.value = WString::Unmanaged(L"SolidLabel"); break;
 		case ::vl::presentation::remoteprotocol::RendererType::Polygon: node->content.value = WString::Unmanaged(L"Polygon"); break;
 		case ::vl::presentation::remoteprotocol::RendererType::ImageFrame: node->content.value = WString::Unmanaged(L"ImageFrame"); break;
-		case ::vl::presentation::remoteprotocol::RendererType::UnsupportedColorizedText: node->content.value = WString::Unmanaged(L"UnsupportedColorizedText"); break;
-		case ::vl::presentation::remoteprotocol::RendererType::UnsupportedDocument: node->content.value = WString::Unmanaged(L"UnsupportedDocument"); break;
+		case ::vl::presentation::remoteprotocol::RendererType::DocumentParagraph: node->content.value = WString::Unmanaged(L"DocumentParagraph"); break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;
@@ -336,6 +385,13 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"clientBounds", value.clientBounds);
 		ConvertCustomTypeToJsonField(node, L"scalingX", value.scalingX);
 		ConvertCustomTypeToJsonField(node, L"scalingY", value.scalingY);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ControllerGlobalConfig>(const ::vl::presentation::remoteprotocol::ControllerGlobalConfig & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"documentCaretFromEncoding", value.documentCaretFromEncoding);
 		return node;
 	}
 
@@ -547,6 +603,87 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::DocumentTextRunProperty>(const ::vl::presentation::remoteprotocol::DocumentTextRunProperty & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"textColor", value.textColor);
+		ConvertCustomTypeToJsonField(node, L"backgroundColor", value.backgroundColor);
+		ConvertCustomTypeToJsonField(node, L"fontProperties", value.fontProperties);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty>(const ::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"size", value.size);
+		ConvertCustomTypeToJsonField(node, L"baseline", value.baseline);
+		ConvertCustomTypeToJsonField(node, L"breakCondition", value.breakCondition);
+		ConvertCustomTypeToJsonField(node, L"backgroundElementId", value.backgroundElementId);
+		ConvertCustomTypeToJsonField(node, L"callbackId", value.callbackId);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::DocumentRun>(const ::vl::presentation::remoteprotocol::DocumentRun & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"caretBegin", value.caretBegin);
+		ConvertCustomTypeToJsonField(node, L"caretEnd", value.caretEnd);
+		ConvertCustomTypeToJsonField(node, L"props", value.props);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph>(const ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"text", value.text);
+		ConvertCustomTypeToJsonField(node, L"wrapLine", value.wrapLine);
+		ConvertCustomTypeToJsonField(node, L"maxWidth", value.maxWidth);
+		ConvertCustomTypeToJsonField(node, L"alignment", value.alignment);
+		ConvertCustomTypeToJsonField(node, L"runsDiff", value.runsDiff);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretRequest>(const ::vl::presentation::remoteprotocol::GetCaretRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"caret", value.caret);
+		ConvertCustomTypeToJsonField(node, L"relativePosition", value.relativePosition);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretResponse>(const ::vl::presentation::remoteprotocol::GetCaretResponse & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"newCaret", value.newCaret);
+		ConvertCustomTypeToJsonField(node, L"preferFrontSide", value.preferFrontSide);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretBoundsRequest>(const ::vl::presentation::remoteprotocol::GetCaretBoundsRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"caret", value.caret);
+		ConvertCustomTypeToJsonField(node, L"frontSide", value.frontSide);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::OpenCaretRequest>(const ::vl::presentation::remoteprotocol::OpenCaretRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"caret", value.caret);
+		ConvertCustomTypeToJsonField(node, L"caretColor", value.caretColor);
+		ConvertCustomTypeToJsonField(node, L"frontSide", value.frontSide);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderInlineObjectRequest>(const ::vl::presentation::remoteprotocol::RenderInlineObjectRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"callbackId", value.callbackId);
+		ConvertCustomTypeToJsonField(node, L"location", value.location);
+		return node;
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RendererCreation>(const ::vl::presentation::remoteprotocol::RendererCreation & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
@@ -664,6 +801,18 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"imageMetadatas", value.imageMetadatas);
 		ConvertCustomTypeToJsonField(node, L"frames", value.frames);
 		return node;
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::CharacterEncoding>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::CharacterEncoding& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::CharacterEncoding>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::CharacterEncoding&)#"
+		auto jsonNode = node.Cast<glr::json::JsonString>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		if (jsonNode->content.value == L"UTF8") value = ::vl::presentation::remoteprotocol::CharacterEncoding::UTF8; else
+		if (jsonNode->content.value == L"UTF16") value = ::vl::presentation::remoteprotocol::CharacterEncoding::UTF16; else
+		if (jsonNode->content.value == L"UTF32") value = ::vl::presentation::remoteprotocol::CharacterEncoding::UTF32; else
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindowListener::HitTestResult>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindowListener::HitTestResult& value)
@@ -824,6 +973,35 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> void ConvertJsonToCustomType<::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition>(Ptr<JsonNode>, ::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition&)#"
+		auto jsonNode = node.Cast<glr::json::JsonString>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		if (jsonNode->content.value == L"StickToPreviousRun") value = ::vl::presentation::elements::IGuiGraphicsParagraph::StickToPreviousRun; else
+		if (jsonNode->content.value == L"StickToNextRun") value = ::vl::presentation::elements::IGuiGraphicsParagraph::StickToNextRun; else
+		if (jsonNode->content.value == L"Alone") value = ::vl::presentation::elements::IGuiGraphicsParagraph::Alone; else
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition>(Ptr<JsonNode>, ::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition&)#"
+		auto jsonNode = node.Cast<glr::json::JsonString>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		if (jsonNode->content.value == L"CaretFirst") value = ::vl::presentation::elements::IGuiGraphicsParagraph::CaretFirst; else
+		if (jsonNode->content.value == L"CaretLast") value = ::vl::presentation::elements::IGuiGraphicsParagraph::CaretLast; else
+		if (jsonNode->content.value == L"CaretLineFirst") value = ::vl::presentation::elements::IGuiGraphicsParagraph::CaretLineFirst; else
+		if (jsonNode->content.value == L"CaretLineLast") value = ::vl::presentation::elements::IGuiGraphicsParagraph::CaretLineLast; else
+		if (jsonNode->content.value == L"CaretMoveLeft") value = ::vl::presentation::elements::IGuiGraphicsParagraph::CaretMoveLeft; else
+		if (jsonNode->content.value == L"CaretMoveRight") value = ::vl::presentation::elements::IGuiGraphicsParagraph::CaretMoveRight; else
+		if (jsonNode->content.value == L"CaretMoveUp") value = ::vl::presentation::elements::IGuiGraphicsParagraph::CaretMoveUp; else
+		if (jsonNode->content.value == L"CaretMoveDown") value = ::vl::presentation::elements::IGuiGraphicsParagraph::CaretMoveDown; else
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RendererType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RendererType& value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RendererType>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::RendererType&)#"
@@ -840,8 +1018,7 @@ namespace vl::presentation::remoteprotocol
 		if (jsonNode->content.value == L"SolidLabel") value = ::vl::presentation::remoteprotocol::RendererType::SolidLabel; else
 		if (jsonNode->content.value == L"Polygon") value = ::vl::presentation::remoteprotocol::RendererType::Polygon; else
 		if (jsonNode->content.value == L"ImageFrame") value = ::vl::presentation::remoteprotocol::RendererType::ImageFrame; else
-		if (jsonNode->content.value == L"UnsupportedColorizedText") value = ::vl::presentation::remoteprotocol::RendererType::UnsupportedColorizedText; else
-		if (jsonNode->content.value == L"UnsupportedDocument") value = ::vl::presentation::remoteprotocol::RendererType::UnsupportedDocument; else
+		if (jsonNode->content.value == L"DocumentParagraph") value = ::vl::presentation::remoteprotocol::RendererType::DocumentParagraph; else
 		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 #undef ERROR_MESSAGE_PREFIX
 	}
@@ -1020,6 +1197,19 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"clientBounds") ConvertJsonToCustomType(field->value, value.clientBounds); else
 			if (field->name.value == L"scalingX") ConvertJsonToCustomType(field->value, value.scalingX); else
 			if (field->name.value == L"scalingY") ConvertJsonToCustomType(field->value, value.scalingY); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ControllerGlobalConfig>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ControllerGlobalConfig& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ControllerGlobalConfig>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ControllerGlobalConfig&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"documentCaretFromEncoding") ConvertJsonToCustomType(field->value, value.documentCaretFromEncoding); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -1348,6 +1538,141 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"stretch") ConvertJsonToCustomType(field->value, value.stretch); else
 			if (field->name.value == L"enabled") ConvertJsonToCustomType(field->value, value.enabled); else
 			if (field->name.value == L"imageCreation") ConvertJsonToCustomType(field->value, value.imageCreation); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentTextRunProperty>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::DocumentTextRunProperty& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentTextRunProperty>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::DocumentTextRunProperty&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"textColor") ConvertJsonToCustomType(field->value, value.textColor); else
+			if (field->name.value == L"backgroundColor") ConvertJsonToCustomType(field->value, value.backgroundColor); else
+			if (field->name.value == L"fontProperties") ConvertJsonToCustomType(field->value, value.fontProperties); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"size") ConvertJsonToCustomType(field->value, value.size); else
+			if (field->name.value == L"baseline") ConvertJsonToCustomType(field->value, value.baseline); else
+			if (field->name.value == L"breakCondition") ConvertJsonToCustomType(field->value, value.breakCondition); else
+			if (field->name.value == L"backgroundElementId") ConvertJsonToCustomType(field->value, value.backgroundElementId); else
+			if (field->name.value == L"callbackId") ConvertJsonToCustomType(field->value, value.callbackId); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentRun>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::DocumentRun& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentRun>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::DocumentRun&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"caretBegin") ConvertJsonToCustomType(field->value, value.caretBegin); else
+			if (field->name.value == L"caretEnd") ConvertJsonToCustomType(field->value, value.caretEnd); else
+			if (field->name.value == L"props") ConvertJsonToCustomType(field->value, value.props); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"text") ConvertJsonToCustomType(field->value, value.text); else
+			if (field->name.value == L"wrapLine") ConvertJsonToCustomType(field->value, value.wrapLine); else
+			if (field->name.value == L"maxWidth") ConvertJsonToCustomType(field->value, value.maxWidth); else
+			if (field->name.value == L"alignment") ConvertJsonToCustomType(field->value, value.alignment); else
+			if (field->name.value == L"runsDiff") ConvertJsonToCustomType(field->value, value.runsDiff); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::GetCaretRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"caret") ConvertJsonToCustomType(field->value, value.caret); else
+			if (field->name.value == L"relativePosition") ConvertJsonToCustomType(field->value, value.relativePosition); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretResponse>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretResponse& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretResponse>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::GetCaretResponse&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"newCaret") ConvertJsonToCustomType(field->value, value.newCaret); else
+			if (field->name.value == L"preferFrontSide") ConvertJsonToCustomType(field->value, value.preferFrontSide); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretBoundsRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretBoundsRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"caret") ConvertJsonToCustomType(field->value, value.caret); else
+			if (field->name.value == L"frontSide") ConvertJsonToCustomType(field->value, value.frontSide); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::OpenCaretRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::OpenCaretRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::OpenCaretRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::OpenCaretRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"caret") ConvertJsonToCustomType(field->value, value.caret); else
+			if (field->name.value == L"caretColor") ConvertJsonToCustomType(field->value, value.caretColor); else
+			if (field->name.value == L"frontSide") ConvertJsonToCustomType(field->value, value.frontSide); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderInlineObjectRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderInlineObjectRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderInlineObjectRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::RenderInlineObjectRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"callbackId") ConvertJsonToCustomType(field->value, value.callbackId); else
+			if (field->name.value == L"location") ConvertJsonToCustomType(field->value, value.location); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX

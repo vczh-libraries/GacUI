@@ -3,6 +3,7 @@ Protocol_MainWindow
 Protocol_IO
 Protocol_Renderer_BasicElements
 Protocol_Renderer_ImageFrame
+Protocol_Renderer_Document
 Protocol_Renderer
 Protocol_SyncDom
 Protocol_UnitTest

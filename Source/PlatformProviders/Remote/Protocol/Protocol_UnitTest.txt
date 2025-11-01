@@ -9,6 +9,7 @@ union UnitTest_ElementDescVariant
     ElementDesc_Polygon,
     ElementDesc_SolidLabel,
     ElementDesc_ImageFrame,
+    ElementDesc_DocumentParagraph,
 }
 
 struct UnitTest_RenderingFrame

@@ -395,6 +395,9 @@
     <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_Renderer_ImageFrame.txt">
       <Filter>PlatformProviders\Remote\Protocol</Filter>
     </Text>
+    <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_Renderer_Document.txt">
+      <Filter>PlatformProviders\Remote\Protocol</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Metadata\Protocols.json">
