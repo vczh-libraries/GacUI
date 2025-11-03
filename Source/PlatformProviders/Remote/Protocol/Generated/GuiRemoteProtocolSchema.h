@@ -364,6 +364,8 @@ namespace vl::presentation::remoteprotocol
 		::vl::vint maxWidth;
 		::vl::presentation::remoteprotocol::ElementHorizontalAlignment alignment;
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::DocumentRun>> runsDiff;
+		::vl::Ptr<::vl::collections::List<::vl::vint>> createdInlineObjects;
+		::vl::Ptr<::vl::collections::List<::vl::vint>> removedInlineObjects;
 	};
 
 	struct GetCaretRequest

@@ -640,6 +640,8 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"maxWidth", value.maxWidth);
 		ConvertCustomTypeToJsonField(node, L"alignment", value.alignment);
 		ConvertCustomTypeToJsonField(node, L"runsDiff", value.runsDiff);
+		ConvertCustomTypeToJsonField(node, L"createdInlineObjects", value.createdInlineObjects);
+		ConvertCustomTypeToJsonField(node, L"removedInlineObjects", value.removedInlineObjects);
 		return node;
 	}
 
@@ -1602,6 +1604,8 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"maxWidth") ConvertJsonToCustomType(field->value, value.maxWidth); else
 			if (field->name.value == L"alignment") ConvertJsonToCustomType(field->value, value.alignment); else
 			if (field->name.value == L"runsDiff") ConvertJsonToCustomType(field->value, value.runsDiff); else
+			if (field->name.value == L"createdInlineObjects") ConvertJsonToCustomType(field->value, value.createdInlineObjects); else
+			if (field->name.value == L"removedInlineObjects") ConvertJsonToCustomType(field->value, value.removedInlineObjects); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX

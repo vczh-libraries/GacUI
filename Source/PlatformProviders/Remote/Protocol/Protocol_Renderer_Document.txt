@@ -57,6 +57,8 @@ struct ElementDesc_DocumentParagraph
     var maxWidth : int;
     var alignment : ElementHorizontalAlignment;
     var runsDiff : DocumentRun[];
+    var createdInlineObjects : int[];
+    var removedInlineObjects : int[];
 }
 
 message RendererUpdateElement_DocumentParagraph     { request: ElementDesc_DocumentParagraph; response: Size; }

@@ -2334,6 +2334,26 @@
                     "name": "DocumentRun"
                 }
             }
+        }, {
+            "$ast": "StructMember",
+            "name": "createdInlineObjects",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "PrimitiveType",
+                    "type": "Integer"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "removedInlineObjects",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "PrimitiveType",
+                    "type": "Integer"
+                }
+            }
         }],
         "type": "Struct"
     }, {
