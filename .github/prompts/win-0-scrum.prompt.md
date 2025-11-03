@@ -13,7 +13,7 @@
 
 - `# !!!SCRUM!!!`: This file always begin with this title.
 - `# DESIGN REQUEST`: An exact copy of the problem description I gave you.
-- `# UPDATES`:
+- `# UPDATES`: For multiple `## UPDATE` sections. It should always exist even there is no update.
   - `## UPDATE`: There could be multiple occurrences. Each one has an exact copy of the update description I gave you.
 - `# TASKS`:
   - A bullet list of all tasks, each task is in the format of `- [ ] TASK No.X: The Task Title`.
@@ -31,7 +31,9 @@
 - Find `# Problem` or `# Update` in the LATEST chat message. Ignore any `# Problem` or `# Update` in the chat history.
 - If there is a `# Problem` section: it means I am starting a fresh new request.
   - You should override `Copilot_Scrum.md` with only one title `# !!!SCRUM!!!`.
+    - At the moment, `Copilot_Scrum.md` may contain old tasks from previous requests, even it may look like the document is already finished for the current scrum, always clean it up.
   - After overriding, copy precisely my problem description in `# Problem` from the LATEST chat message under `# DESIGN REQUEST`.
+  - Add an empty `# UPDATES` section after `# DESIGN REQUEST`.
 - If there is an `# Update` section: it means I am going to propose some change to `Copilot_Scrum.md`.
   - Copy precisely my problem description in `# Update` from the LATEST chat message to the `# DESIGN REQUEST` section, with a new sub-section `## UPDATE`.
   - Follow my update to change the design document.

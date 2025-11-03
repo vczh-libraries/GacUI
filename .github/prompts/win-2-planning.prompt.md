@@ -14,7 +14,7 @@
 ## Copilot_Planning.md Structure
 
 - `# !!!PLANNING!!!`: This file always begin with this title.
-- `# UPDATES`:
+- `# UPDATES`: For multiple `## UPDATE` sections. It should always exist even there is no update.
   - `## UPDATE`: There could be multiple occurrences. Each one has an exact copy of the update description I gave you.
 - `# IMPROVEMENT PLAN`.
   - `## STEP X: The Step Title`: One step in the improvement plan.
@@ -31,6 +31,7 @@
   - Follow my update to change the planning document.
 - If there is nothing:
   - If `Copilot_Planning.md` only has a title, you are on a fresh start.
+    - Add an empty `# UPDATES` section after the title, if it does not already exist.
   - Otherwise, it means you are accidentally stopped. Please continue your work.
     - Read `Copilot_Planning.md` througly, it is highly possibly that you were working on the request described in the last section in `# UPDATES`.
 

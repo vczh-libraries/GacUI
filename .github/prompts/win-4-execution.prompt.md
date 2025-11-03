@@ -4,6 +4,15 @@
 
 - You are going to apply changes on the source code as well following `Copilot_Execution.md`.
 
+## Copilot_Execution.md Structure
+
+- `# !!!EXECUTION!!!`: This file always begin with this title.
+- `# UPDATES`:
+  - `## UPDATE`: There could be multiple occurrences. Each one has an exact copy of the update description I gave you.
+- `# IMPROVEMENT PLAN`.
+- `# TEST PLAN`.
+- `# FIXING ATTEMPTS`.
+
 ## Step 1. Identify the Problem
 
 - The execution document is in `Copilot_Execution.md`

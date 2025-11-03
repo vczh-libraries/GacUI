@@ -15,7 +15,7 @@
 
 - `# !!!TASK!!!`: This file always begin with this title.
 - `# PROBLEM DESCRIPTION`: An exact copy of the problem description I gave you.
-- `# UPDATES`:
+- `# UPDATES`: For multiple `## UPDATE` sections. It should always exist even there is no update.
   - `## UPDATE`: There could be multiple occurrences. Each one has an exact copy of the update description I gave you.
 - `# INSIGHTS AND REASONING`.
 
@@ -32,6 +32,7 @@
       - Locate the specific task in `Copilot_Scrum.md`.
       - There is a bullet list of all tasks at the beginning of `# TASKS`. Mark the specific task as being processed by changing `[ ]` to `[x]`.
       - Find the details of the specific task, copy everything in this task to `# PROBLEM DESCRIPTION`.
+  - Add an empty `# UPDATES` section after `# PROBLEM DESCRIPTION`.
 - If there is an `# Update` section: it means I am going to propose some change to `Copilot_Task.md`.
   - Copy precisely my problem description in `# Update` from the LATEST chat message to the `# PROBLEM DESCRIPTION` section, with a new sub-section `## UPDATE`.
   - Follow my update to change the design document.

@@ -7,10 +7,10 @@
 
 - Your goal is to finish an execution document in `Copilot_Execution.md` according to `Copilot_Task.md` and `Copilot_Planning.md`.
 
-## Copilot_Planning.md Structure
+## Copilot_Execution.md Structure
 
 - `# !!!EXECUTION!!!`: This file always begin with this title.
-- `# UPDATES`:
+- `# UPDATES`: For multiple `## UPDATE` sections. It should always exist even there is no update.
   - `## UPDATE`: There could be multiple occurrences. Each one has an exact copy of the update description I gave you.
 - `# IMPROVEMENT PLAN`.
 - `# TEST PLAN`.
@@ -25,6 +25,7 @@
   - Follow my update to change the execution document.
 - If there is nothing:
   - If `Copilot_Execution.md` only has a title, you are on a fresh start.
+    - Add an empty `# UPDATES` section after the title, if it does not already exist.
   - If there is a `# !!!FINISHED!!!` mark in `Copilot_Execution.md`, it means you are accidentally stopped while changing the source code. Please continue your work.
   - If there is no `# !!!FINISHED!!!` mark in `Copilot_Execution.md`, it means you are accidentally stopped while finishing the document. Please continue your work.
 
