@@ -12,10 +12,50 @@ Interfaces:
 #define VCZH_PRESENTATION_GUIREMOTEGRAPHICS_DOCUMENT
 
 #include "../../GraphicsElement/GuiGraphicsResourceManager.h"
+#include "Protocol/Generated/GuiRemoteProtocolSchema.h"
 
 namespace vl::presentation
 {
 	class GuiRemoteController;
+}
+
+namespace vl::presentation::remoteprotocol
+{
+	struct CaretRange
+	{
+		vint caretBegin = 0;
+		vint caretEnd = 0;
+
+		auto operator<=>(const CaretRange&) const = default;
+	};
+
+	using DocumentTextRunPropertyMap = collections::Dictionary<CaretRange, DocumentTextRunProperty>;
+	using DocumentInlineObjectRunPropertyMap = collections::Dictionary<CaretRange, DocumentInlineObjectRunProperty>;
+	using DocumentRunPropertyMap = collections::Dictionary<CaretRange, DocumentRunProperty>;
+
+	extern void AddTextRun(
+		DocumentTextRunPropertyMap& map,
+		CaretRange range,
+		const DocumentTextRunProperty& property);
+
+	extern bool AddInlineObjectRun(
+		DocumentInlineObjectRunPropertyMap& map,
+		CaretRange range,
+		const DocumentInlineObjectRunProperty& property);
+
+	extern bool ResetInlineObjectRun(
+		DocumentInlineObjectRunPropertyMap& map,
+		CaretRange range);
+
+	extern void MergeRuns(
+		const DocumentTextRunPropertyMap& textRuns,
+		const DocumentInlineObjectRunPropertyMap& inlineObjectRuns,
+		DocumentRunPropertyMap& result);
+
+	extern void DiffRuns(
+		const DocumentRunPropertyMap& oldRuns,
+		const DocumentRunPropertyMap& newRuns,
+		ElementDesc_DocumentParagraph& result);
 }
 
 namespace vl::presentation::elements

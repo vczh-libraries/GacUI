@@ -78,7 +78,7 @@ Some correction to Task 1, update Task 2 accordingly.
 
 # TASKS
 
-- [ ] TASK No.1: Define `CaretRange` struct and run management functions
+- [x] TASK No.1: Define `CaretRange` struct and run management functions
 - [ ] TASK No.2: Create unit test for run management (CaretRange and DocumentRunPropertyMap)
 - [ ] TASK No.3: Implement `GuiRemoteGraphicsParagraph` class
 - [ ] TASK No.4: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
