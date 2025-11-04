@@ -17,14 +17,7 @@
 			"label": "Build Unit Tests",
 			"type": "shell",
 			"windows": {
-				"problemMatcher": "$msCompile",
-				"command": "powershell.exe",
-				"args": [
-					"-ExecutionPolicy",
-					"Bypass",
-					"-File",
-					"${workspaceFolder}/.github/TaskLogs/copilotBuild.ps1"
-				]
+				"command": "${workspaceFolder}/.github/TaskLogs/copilotBuild.ps1"
 			},
 			"linux": {
 				"command": "false"
@@ -38,15 +31,7 @@
 			"label": "Run Unit Tests",
 			"type": "shell",
 			"windows": {
-				"command": "powershell.exe",
-				"args": [
-					"-ExecutionPolicy",
-					"Bypass",
-					"-File",
-					"${workspaceFolder}/.github/TaskLogs/copilotExecute.ps1",
-					"-Executable",
-					"UnitTest"
-				]
+				"command": "${workspaceFolder}/.github/TaskLogs/copilotExecute.ps1 -Executable UnitTest"
 			},
 			"linux": {
 				"command": "false"

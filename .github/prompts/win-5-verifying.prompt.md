@@ -134,15 +134,12 @@ You need to locate listed files in `TaskLogs.vcxitems`.
 - DO NOT use msbuild by yourself.
 - DO NOT modify `tasks.json`.
 
-### The Correct Way to Read Compiler Errors
+### The Correct Way to Read Compiler Result
 
-- DO NOT TRUST related tools Visual Studio Code offers you, like `get_errors` or return value from task system, etc.
-  - The reason is that, C++ extension is not installed so these tools are not working at all.
 - The only source of trust is the raw output of the compiler.
-  - The compiler does not create any log file, so DO NOT try to read any file for compile errors.
-  - The only way to read errors is reading the CLI panel for the specific task in Visual Studio Code.
-  - Check the output from the CLI panel for this task. At the very end there will be "X Warning(s) Y Errors(s)". If they are not 0, the CLI panel for this task should have more detailed information.
-  
+  - It is saved to `REPO-ROOT/.github/TaskLogs/Build.log`. `REPO-ROOT` is the root folder of the repo.
+- DO NOT TRUST related tools Visual Studio Code offers you, like `get_errors` or `get_task_output`, etc.
+
 ## Executing Unit Test
 
 - Just let Visual Studio Code to run the unit test, the `Run Unit Tests` should have been configured in `tasks.json`.
@@ -152,4 +149,10 @@ You need to locate listed files in `TaskLogs.vcxitems`.
 - If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
 - DO NOT call executables or scripts yourself.
 - DO NOT modify `tasks.json`.
+
+### The Correct Way to Read Test Result
+
+- The only source of trust is the raw output of the unit test process.
+  - It is saved to `REPO-ROOT/.github/TaskLogs/Execute.log`. `REPO-ROOT` is the root folder of the repo.
+- DO NOT TRUST related tools Visual Studio Code offers you, like `get_errors` or `get_task_output`, etc.
 

@@ -28,12 +28,8 @@ $Platform = "x64"
 $msbuild_arguments = "MSBUILD `"$solutionFile`" /m:8 $rebuildControl /p:Configuration=`"$Configuration`";Platform=`"$Platform`""
 $cmd_arguments = "`"`"$vsdevcmd`" & $msbuild_arguments"
 
-# Execute msbuild
+# Execute msbuild with output to both console and log file
+$logFile = "$PSScriptRoot\Build.log"
 $commandLine = "/c $cmd_arguments"
-$startInfo = New-Object System.Diagnostics.ProcessStartInfo
-$startInfo.FileName = $env:ComSpec
-$startInfo.Arguments = $commandLine
-$startInfo.UseShellExecute = $false
-$process = [System.Diagnostics.Process]::Start($startInfo)
-$process.WaitForExit()
-exit $process.ExitCode
+& $env:ComSpec $commandLine 2>&1 | Tee-Object -FilePath $logFile
+exit $LASTEXITCODE

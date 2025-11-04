@@ -83,15 +83,10 @@ if ($existingFiles.Count -gt 0) {
 		Write-Host "Failed to find $userProjectFile"
 	}
 
-    # Execute the selected executable with debug arguments using cmd to handle argument parsing
-    $commandLine = "/C $debugArgs"
-    $startInfo = New-Object System.Diagnostics.ProcessStartInfo
-    $startInfo.FileName = $latestFile.Path
-    $startInfo.Arguments = $commandLine
-    $startInfo.UseShellExecute = $false
-    $process = [System.Diagnostics.Process]::Start($startInfo)
-    $process.WaitForExit()
-    exit $process.ExitCode
+    # Execute the selected executable with debug arguments and save output to log file
+    $logFile = "$PSScriptRoot\Execute.log"
+    & $latestFile.Path $debugArgs 2>&1 | Tee-Object -FilePath $logFile
+    exit $LASTEXITCODE
 } else {
     throw "No $executableName files found in any of the expected locations."
 }
