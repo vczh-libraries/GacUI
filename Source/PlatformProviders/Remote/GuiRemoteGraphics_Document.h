@@ -33,19 +33,19 @@ DiffRuns
 		auto operator<=>(const CaretRange&) const = default;
 	};
 
-	using DocumentTextRunPropertyMap = collections::Dictionary<CaretRange, DocumentTextRunProperty>;
-	using DocumentInlineObjectRunPropertyMap = collections::Dictionary<CaretRange, DocumentInlineObjectRunProperty>;
-	using DocumentRunPropertyMap = collections::Dictionary<CaretRange, DocumentRunProperty>;
+	using DocumentTextRunPropertyMap = collections::Dictionary<CaretRange, remoteprotocol::DocumentTextRunProperty>;
+	using DocumentInlineObjectRunPropertyMap = collections::Dictionary<CaretRange, remoteprotocol::DocumentInlineObjectRunProperty>;
+	using DocumentRunPropertyMap = collections::Dictionary<CaretRange, remoteprotocol::DocumentRunProperty>;
 
 	extern void AddTextRun(
 		DocumentTextRunPropertyMap& map,
 		CaretRange range,
-		const DocumentTextRunProperty& property);
+		const remoteprotocol::DocumentTextRunProperty& property);
 
 	extern bool AddInlineObjectRun(
 		DocumentInlineObjectRunPropertyMap& map,
 		CaretRange range,
-		const DocumentInlineObjectRunProperty& property);
+		const remoteprotocol::DocumentInlineObjectRunProperty& property);
 
 	extern bool ResetInlineObjectRun(
 		DocumentInlineObjectRunPropertyMap& map,
@@ -59,7 +59,7 @@ DiffRuns
 	extern void DiffRuns(
 		const DocumentRunPropertyMap& oldRuns,
 		const DocumentRunPropertyMap& newRuns,
-		ElementDesc_DocumentParagraph& result);
+		remoteprotocol::ElementDesc_DocumentParagraph& result);
 
 	class GuiRemoteGraphicsResourceManager;
 	class GuiRemoteGraphicsRenderTarget;

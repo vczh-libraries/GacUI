@@ -9,7 +9,7 @@ namespace vl::presentation::elements
 DiffRuns
 ***********************************************************************/
 
-	bool operator==(const DocumentTextRunProperty& a, const DocumentTextRunProperty& b)
+	bool operator==(const remoteprotocol::DocumentTextRunProperty& a, const remoteprotocol::DocumentTextRunProperty& b)
 	{
 		return a.textColor == b.textColor &&
 			   a.backgroundColor == b.backgroundColor &&
@@ -19,7 +19,7 @@ DiffRuns
 	void AddTextRun(
 		DocumentTextRunPropertyMap& map,
 		CaretRange range,
-		const DocumentTextRunProperty& property)
+		const remoteprotocol::DocumentTextRunProperty& property)
 	{
 		vint firstOverlap = -1;
 		
@@ -39,7 +39,7 @@ DiffRuns
 			firstOverlap = BinarySearchLambda(&map.Keys()[0], map.Keys().Count(), range, index, comparer);
 		}
 
-		List<Pair<CaretRange, DocumentTextRunProperty>> fragmentsToReinsert;
+		List<Pair<CaretRange, remoteprotocol::DocumentTextRunProperty>> fragmentsToReinsert;
 		
 		if (firstOverlap != -1)
 		{
@@ -125,7 +125,7 @@ DiffRuns
 	bool AddInlineObjectRun(
 		DocumentInlineObjectRunPropertyMap& map,
 		CaretRange range,
-		const DocumentInlineObjectRunProperty& property)
+		const remoteprotocol::DocumentInlineObjectRunProperty& property)
 	{
 		if (map.Count() > 0)
 		{
@@ -171,7 +171,7 @@ DiffRuns
 		auto&& inlineKeys = inlineObjectRuns.Keys();
 
 		CaretRange currentTextRange;
-		DocumentTextRunProperty currentTextProperty;
+		remoteprotocol::DocumentTextRunProperty currentTextProperty;
 		bool hasCurrentText = false;
 
 		while (textIdx < textKeys.Count() || inlineIdx < inlineKeys.Count() || hasCurrentText)
@@ -184,10 +184,10 @@ DiffRuns
 				textIdx++;
 			}
 
-			if (!hasCurrentText && inlineIdx < inlineKeys.Count())
+			if (inlineIdx < inlineKeys.Count())
 			{
 				auto&& inlineKey = inlineKeys[inlineIdx];
-				DocumentRunProperty runProp = inlineObjectRuns[inlineKey];
+				remoteprotocol::DocumentRunProperty runProp = inlineObjectRuns[inlineKey];
 				result.Add(inlineKey, runProp);
 				inlineIdx++;
 				continue;
@@ -195,7 +195,7 @@ DiffRuns
 
 			if (hasCurrentText && inlineIdx >= inlineKeys.Count())
 			{
-				DocumentRunProperty runProp = currentTextProperty;
+				remoteprotocol::DocumentRunProperty runProp = currentTextProperty;
 				result.Add(currentTextRange, runProp);
 				hasCurrentText = false;
 				continue;
@@ -207,13 +207,13 @@ DiffRuns
 
 				if (currentTextRange.caretEnd <= inlineKey.caretBegin)
 				{
-					DocumentRunProperty runProp = currentTextProperty;
+					remoteprotocol::DocumentRunProperty runProp = currentTextProperty;
 					result.Add(currentTextRange, runProp);
 					hasCurrentText = false;
 				}
 				else if (inlineKey.caretEnd <= currentTextRange.caretBegin)
 				{
-					DocumentRunProperty runProp = inlineObjectRuns[inlineKey];
+					remoteprotocol::DocumentRunProperty runProp = inlineObjectRuns[inlineKey];
 					result.Add(inlineKey, runProp);
 					inlineIdx++;
 				}
@@ -222,11 +222,11 @@ DiffRuns
 					if (currentTextRange.caretBegin < inlineKey.caretBegin)
 					{
 						CaretRange beforeRange{ currentTextRange.caretBegin, inlineKey.caretBegin };
-						DocumentRunProperty runProp = currentTextProperty;
+						remoteprotocol::DocumentRunProperty runProp = currentTextProperty;
 						result.Add(beforeRange, runProp);
 					}
 
-					DocumentRunProperty runProp = inlineObjectRuns[inlineKey];
+					remoteprotocol::DocumentRunProperty runProp = inlineObjectRuns[inlineKey];
 					result.Add(inlineKey, runProp);
 					inlineIdx++;
 
@@ -243,20 +243,20 @@ DiffRuns
 		}
 	}
 
-	bool operator==(const DocumentRunProperty& a, const DocumentRunProperty& b)
+	bool operator==(const remoteprotocol::DocumentRunProperty& a, const remoteprotocol::DocumentRunProperty& b)
 	{
 		if (a.Index() != b.Index())
 			return false;
 
-		if (auto textA = a.TryGet<DocumentTextRunProperty>())
+		if (auto textA = a.TryGet<remoteprotocol::DocumentTextRunProperty>())
 		{
-			auto textB = b.Get<DocumentTextRunProperty>();
+			auto textB = b.Get<remoteprotocol::DocumentTextRunProperty>();
 			return *textA == textB;
 		}
 		else
 		{
-			auto inlineA = a.Get<DocumentInlineObjectRunProperty>();
-			auto inlineB = b.Get<DocumentInlineObjectRunProperty>();
+			auto inlineA = a.Get<remoteprotocol::DocumentInlineObjectRunProperty>();
+			auto inlineB = b.Get<remoteprotocol::DocumentInlineObjectRunProperty>();
 			return inlineA.size == inlineB.size &&
 				   inlineA.baseline == inlineB.baseline &&
 				   inlineA.breakCondition == inlineB.breakCondition &&
@@ -268,9 +268,9 @@ DiffRuns
 	void DiffRuns(
 		const DocumentRunPropertyMap& oldRuns,
 		const DocumentRunPropertyMap& newRuns,
-		ElementDesc_DocumentParagraph& result)
+		remoteprotocol::ElementDesc_DocumentParagraph& result)
 	{
-		result.runsDiff = Ptr(new List<DocumentRun>());
+		result.runsDiff = Ptr(new List<remoteprotocol::DocumentRun>());
 		result.createdInlineObjects = Ptr(new List<vint>());
 		result.removedInlineObjects = Ptr(new List<vint>());
 
@@ -290,13 +290,13 @@ DiffRuns
 				auto&& newKey = newKeys[newIdx];
 				auto&& newValue = newRuns[newKey];
 
-				DocumentRun run;
+				remoteprotocol::DocumentRun run;
 				run.caretBegin = newKey.caretBegin;
 				run.caretEnd = newKey.caretEnd;
 				run.props = newValue;
 				result.runsDiff->Add(run);
 
-				if (auto inlineObj = newValue.TryGet<DocumentInlineObjectRunProperty>())
+				if (auto inlineObj = newValue.TryGet<remoteprotocol::DocumentInlineObjectRunProperty>())
 				{
 					newInlineCallbackIds.Add(inlineObj->callbackId);
 				}
@@ -310,7 +310,7 @@ DiffRuns
 				auto&& oldKey = oldKeys[oldIdx];
 				auto&& oldValue = oldRuns[oldKey];
 
-				if (auto inlineObj = oldValue.TryGet<DocumentInlineObjectRunProperty>())
+				if (auto inlineObj = oldValue.TryGet<remoteprotocol::DocumentInlineObjectRunProperty>())
 				{
 					oldInlineCallbackIds.Add(inlineObj->callbackId);
 				}
@@ -327,18 +327,18 @@ DiffRuns
 				auto&& oldValue = oldRuns[oldKey];
 				auto&& newValue = newRuns[newKey];
 
-				if (auto inlineObj = oldValue.TryGet<DocumentInlineObjectRunProperty>())
+				if (auto inlineObj = oldValue.TryGet<remoteprotocol::DocumentInlineObjectRunProperty>())
 				{
 					oldInlineCallbackIds.Add(inlineObj->callbackId);
 				}
-				if (auto inlineObj = newValue.TryGet<DocumentInlineObjectRunProperty>())
+				if (auto inlineObj = newValue.TryGet<remoteprotocol::DocumentInlineObjectRunProperty>())
 				{
 					newInlineCallbackIds.Add(inlineObj->callbackId);
 				}
 
 				if (!(oldValue == newValue))
 				{
-					DocumentRun run;
+					remoteprotocol::DocumentRun run;
 					run.caretBegin = newKey.caretBegin;
 					run.caretEnd = newKey.caretEnd;
 					run.props = newValue;
@@ -352,13 +352,13 @@ DiffRuns
 			{
 				auto&& newValue = newRuns[newKey];
 
-				DocumentRun run;
+				remoteprotocol::DocumentRun run;
 				run.caretBegin = newKey.caretBegin;
 				run.caretEnd = newKey.caretEnd;
 				run.props = newValue;
 				result.runsDiff->Add(run);
 
-				if (auto inlineObj = newValue.TryGet<DocumentInlineObjectRunProperty>())
+				if (auto inlineObj = newValue.TryGet<remoteprotocol::DocumentInlineObjectRunProperty>())
 				{
 					newInlineCallbackIds.Add(inlineObj->callbackId);
 				}
@@ -369,7 +369,7 @@ DiffRuns
 			{
 				auto&& oldValue = oldRuns[oldKey];
 
-				if (auto inlineObj = oldValue.TryGet<DocumentInlineObjectRunProperty>())
+				if (auto inlineObj = oldValue.TryGet<remoteprotocol::DocumentInlineObjectRunProperty>())
 				{
 					oldInlineCallbackIds.Add(inlineObj->callbackId);
 				}
