@@ -6,15 +6,41 @@ namespace vl::presentation::elements
 	using namespace collections;
 
 /***********************************************************************
-DiffRuns
+Comparison
 ***********************************************************************/
 
-	bool operator==(const remoteprotocol::DocumentTextRunProperty& a, const remoteprotocol::DocumentTextRunProperty& b)
+	bool AreEqual(const remoteprotocol::DocumentTextRunProperty& a, const remoteprotocol::DocumentTextRunProperty& b)
 	{
 		return a.textColor == b.textColor &&
 			   a.backgroundColor == b.backgroundColor &&
 			   a.fontProperties == b.fontProperties;
 	}
+
+	bool AreEqual(const remoteprotocol::DocumentRunProperty& a, const remoteprotocol::DocumentRunProperty& b)
+	{
+		if (a.Index() != b.Index())
+			return false;
+
+		if (auto textA = a.TryGet<remoteprotocol::DocumentTextRunProperty>())
+		{
+			auto textB = b.Get<remoteprotocol::DocumentTextRunProperty>();
+			return AreEqual(*textA, textB);
+		}
+		else
+		{
+			auto inlineA = a.Get<remoteprotocol::DocumentInlineObjectRunProperty>();
+			auto inlineB = b.Get<remoteprotocol::DocumentInlineObjectRunProperty>();
+			return inlineA.size == inlineB.size &&
+				inlineA.baseline == inlineB.baseline &&
+				inlineA.breakCondition == inlineB.breakCondition &&
+				inlineA.backgroundElementId == inlineB.backgroundElementId &&
+				inlineA.callbackId == inlineB.callbackId;
+		}
+	}
+
+/***********************************************************************
+DiffRuns
+***********************************************************************/
 
 	void AddTextRun(
 		DocumentTextRunPropertyMap& map,
@@ -83,7 +109,7 @@ DiffRuns
 			auto&& currentKey = map.Keys()[newIndex];
 			
 			if (leftKey.caretEnd == currentKey.caretBegin &&
-				map[leftKey] == map[currentKey])
+				AreEqual(map[leftKey], map[currentKey]))
 			{
 				CaretRange mergedRange{ leftKey.caretBegin, currentKey.caretEnd };
 				auto mergedProperty = map[leftKey];
@@ -106,7 +132,7 @@ DiffRuns
 			auto&& rightKey = map.Keys()[newIndex + 1];
 			
 			if (currentKey.caretEnd == rightKey.caretBegin &&
-				map[currentKey] == map[rightKey])
+				AreEqual(map[currentKey], map[rightKey]))
 			{
 				CaretRange mergedRange{ currentKey.caretBegin, rightKey.caretEnd };
 				auto mergedProperty = map[currentKey];
@@ -243,28 +269,6 @@ DiffRuns
 		}
 	}
 
-	bool operator==(const remoteprotocol::DocumentRunProperty& a, const remoteprotocol::DocumentRunProperty& b)
-	{
-		if (a.Index() != b.Index())
-			return false;
-
-		if (auto textA = a.TryGet<remoteprotocol::DocumentTextRunProperty>())
-		{
-			auto textB = b.Get<remoteprotocol::DocumentTextRunProperty>();
-			return *textA == textB;
-		}
-		else
-		{
-			auto inlineA = a.Get<remoteprotocol::DocumentInlineObjectRunProperty>();
-			auto inlineB = b.Get<remoteprotocol::DocumentInlineObjectRunProperty>();
-			return inlineA.size == inlineB.size &&
-				   inlineA.baseline == inlineB.baseline &&
-				   inlineA.breakCondition == inlineB.breakCondition &&
-				   inlineA.backgroundElementId == inlineB.backgroundElementId &&
-				   inlineA.callbackId == inlineB.callbackId;
-		}
-	}
-
 	void DiffRuns(
 		const DocumentRunPropertyMap& oldRuns,
 		const DocumentRunPropertyMap& newRuns,
@@ -336,7 +340,7 @@ DiffRuns
 					newInlineCallbackIds.Add(inlineObj->callbackId);
 				}
 
-				if (!(oldValue == newValue))
+				if (!AreEqual(oldValue, newValue))
 				{
 					remoteprotocol::DocumentRun run;
 					run.caretBegin = newKey.caretBegin;
