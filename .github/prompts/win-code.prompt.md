@@ -88,6 +88,7 @@
 - If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
 - DO NOT use msbuild by yourself.
 - DO NOT modify `tasks.json`.
+- DO NOT run `Build and Run Unit Tests`.
 
 ### The Correct Way to Read Compiler Result
 
@@ -104,6 +105,7 @@
 - If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
 - DO NOT call executables or scripts yourself.
 - DO NOT modify `tasks.json`.
+- DO NOT run `Build and Run Unit Tests`.
 
 ### The Correct Way to Read Test Result
 

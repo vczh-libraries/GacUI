@@ -85,7 +85,7 @@ if ($existingFiles.Count -gt 0) {
 
     # Execute the selected executable with debug arguments and save output to log file
     $logFile = "$PSScriptRoot\Execute.log"
-    & $latestFile.Path $debugArgs 2>&1 | Tee-Object -FilePath $logFile
+    & $latestFile.Path /C $debugArgs 2>&1 | Tee-Object -FilePath $logFile
     exit $LASTEXITCODE
 } else {
     throw "No $executableName files found in any of the expected locations."

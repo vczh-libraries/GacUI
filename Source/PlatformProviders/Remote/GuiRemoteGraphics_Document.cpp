@@ -61,52 +61,70 @@ DiffRuns
 					return std::strong_ordering::equal;
 			};
 
-			vint index = -1;
-			firstOverlap = BinarySearchLambda(&map.Keys()[0], map.Keys().Count(), range, index, comparer);
-		}
-
-		List<Pair<CaretRange, remoteprotocol::DocumentTextRunProperty>> fragmentsToReinsert;
+		vint index = -1;
+		firstOverlap = BinarySearchLambda(&map.Keys()[0], map.Keys().Count(), range, index, comparer);
 		
+		// Binary search may return any overlapping entry, scan backwards to find the first one
 		if (firstOverlap != -1)
 		{
-			auto&& keys = map.Keys();
-			for (vint i = firstOverlap; i < keys.Count(); i++)
+			while (firstOverlap > 0)
 			{
-				auto&& key = keys[i];
-				if (key.caretBegin >= range.caretEnd)
+				auto&& prevKey = map.Keys()[firstOverlap - 1];
+				if (prevKey.caretEnd <= range.caretBegin || prevKey.caretBegin >= range.caretEnd)
 					break;
-
-				auto&& oldProperty = map[key];
-
-				if (key.caretBegin < range.caretBegin)
-				{
-					CaretRange beforeRange{ key.caretBegin, range.caretBegin };
-					fragmentsToReinsert.Add({ beforeRange, oldProperty });
-				}
-
-				if (key.caretEnd > range.caretEnd)
-				{
-					CaretRange afterRange{ range.caretEnd, key.caretEnd };
-					fragmentsToReinsert.Add({ afterRange, oldProperty });
-				}
-
-				map.Remove(key);
+				firstOverlap--;
 			}
 		}
+	}
 
-		for (auto&& fragment : fragmentsToReinsert)
+	List<Pair<CaretRange, remoteprotocol::DocumentTextRunProperty>> fragmentsToReinsert;
+	List<CaretRange> keysToRemove;
+	
+	if (firstOverlap != -1)
+	{
+		auto&& keys = map.Keys();
+		for (vint i = firstOverlap; i < keys.Count(); i++)
 		{
-			map.Add(fragment.key, fragment.value);
-		}
+			auto&& key = keys[i];
+			if (key.caretBegin >= range.caretEnd)
+				break;
 
-		map.Add(range, property);
+			auto&& oldProperty = map[key];
+
+			if (key.caretBegin < range.caretBegin)
+			{
+				CaretRange beforeRange{ key.caretBegin, range.caretBegin };
+				fragmentsToReinsert.Add({ beforeRange, oldProperty });
+			}
+
+			if (key.caretEnd > range.caretEnd)
+			{
+				CaretRange afterRange{ range.caretEnd, key.caretEnd };
+				fragmentsToReinsert.Add({ afterRange, oldProperty });
+			}
+
+			keysToRemove.Add(key);
+		}
+		
+		for (auto&& key : keysToRemove)
+		{
+			map.Remove(key);
+		}
+	}
+
+	for (auto&& fragment : fragmentsToReinsert)
+	{
+		map.Add(fragment.key, fragment.value);
+	}
+
+	map.Add(range, property);
 
 		vint newIndex = map.Keys().IndexOf(range);
 		
 		while (newIndex > 0)
 		{
-			auto&& leftKey = map.Keys()[newIndex - 1];
-			auto&& currentKey = map.Keys()[newIndex];
+			CaretRange leftKey = map.Keys()[newIndex - 1];
+			CaretRange currentKey = map.Keys()[newIndex];
 			
 			if (leftKey.caretEnd == currentKey.caretBegin &&
 				AreEqual(map[leftKey], map[currentKey]))
@@ -118,7 +136,7 @@ DiffRuns
 				map.Remove(currentKey);
 				map.Add(mergedRange, mergedProperty);
 				
-				newIndex--;
+				newIndex = map.Keys().IndexOf(mergedRange);
 			}
 			else
 			{
@@ -128,8 +146,8 @@ DiffRuns
 
 		while (newIndex < map.Keys().Count() - 1)
 		{
-			auto&& currentKey = map.Keys()[newIndex];
-			auto&& rightKey = map.Keys()[newIndex + 1];
+			CaretRange currentKey = map.Keys()[newIndex];
+			CaretRange rightKey = map.Keys()[newIndex + 1];
 			
 			if (currentKey.caretEnd == rightKey.caretBegin &&
 				AreEqual(map[currentKey], map[rightKey]))
@@ -140,6 +158,8 @@ DiffRuns
 				map.Remove(currentKey);
 				map.Remove(rightKey);
 				map.Add(mergedRange, mergedProperty);
+				
+				newIndex = map.Keys().IndexOf(mergedRange);
 			}
 			else
 			{
