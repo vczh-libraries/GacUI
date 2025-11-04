@@ -89,6 +89,7 @@
 - DO NOT use msbuild by yourself.
 - DO NOT modify `tasks.json`.
 - DO NOT rely on Visual Studio Code tool to read errors. You must check the task panel which containing the raw compiler output.
+  - Especially DO NOT use `get_errors` as it gives you intellisense generated errors, but intellisense doesn't work in this project.
   - When running MSBUILD, at the very end there will be "X Warning(s) Y Errors(s)". If they are not 0, the task panel should have more detailed information.
 
 ## Executing Unit Test
