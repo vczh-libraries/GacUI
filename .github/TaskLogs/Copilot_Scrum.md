@@ -86,7 +86,7 @@ Break Task 2 into 5 separate tasks:
 
 - [x] TASK No.1: Define `CaretRange` struct and run management functions
 - [x] TASK No.2: Unit test for CaretRange comparison and AddTextRun
-- [ ] TASK No.3: Unit test for AddInlineObjectRun
+- [x] TASK No.3: Unit test for AddInlineObjectRun
 - [ ] TASK No.4: Unit test for ResetInlineObjectRun
 - [ ] TASK No.5: Unit test for MergeRuns
 - [ ] TASK No.6: Unit test for DiffRuns

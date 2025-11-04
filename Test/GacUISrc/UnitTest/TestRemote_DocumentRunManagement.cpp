@@ -10,7 +10,7 @@ using namespace vl::presentation::remoteprotocol;
 
 namespace remote_document_paragrpah_tests
 {
-	DocumentTextRunProperty CreateTextProp(vint colorValue)
+	DocumentTextRunProperty CreateTextProp(unsigned char colorValue)
 	{
 		DocumentTextRunProperty prop;
 		prop.textColor = Color(colorValue, colorValue, colorValue);
@@ -445,6 +445,216 @@ TEST_FILE
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 50}, prop1);  // All merged back
 			
 			AssertMap(textMap, expectedMap);
+		});
+	});
+
+	TEST_CATEGORY(L"AddInlineObjectRun")
+	{
+		// Success cases
+		TEST_CASE(L"Add to empty map")
+		{
+			DocumentInlineObjectRunPropertyMap inlineMap;
+			auto prop1 = CreateInlineProp(100);
+			
+			bool result = AddInlineObjectRun(inlineMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+			
+			TEST_ASSERT(result == true);
+			
+			DocumentInlineObjectRunPropertyMap expectedMap;
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
+			
+			AssertMap(inlineMap, expectedMap);
+		});
+
+		TEST_CASE(L"Add non-overlapping objects with gap")
+		{
+			DocumentInlineObjectRunPropertyMap inlineMap;
+			auto prop1 = CreateInlineProp(100);
+			auto prop2 = CreateInlineProp(200);
+			
+			AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+			bool result = AddInlineObjectRun(inlineMap, {.caretBegin = 30, .caretEnd = 40}, prop2);
+			
+			TEST_ASSERT(result == true);
+			
+			DocumentInlineObjectRunPropertyMap expectedMap;
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
+			expectedMap.Add({.caretBegin = 30, .caretEnd = 40}, prop2);
+			
+			AssertMap(inlineMap, expectedMap);
+		});
+
+		TEST_CASE(L"Adjacent objects - boundary test")
+		{
+			DocumentInlineObjectRunPropertyMap inlineMap;
+			auto prop1 = CreateInlineProp(100);
+			auto prop2 = CreateInlineProp(200);
+			
+			AddInlineObjectRun(inlineMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+			bool result = AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
+			
+			TEST_ASSERT(result == true);
+			
+			DocumentInlineObjectRunPropertyMap expectedMap;
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop2);
+			
+			AssertMap(inlineMap, expectedMap);
+		});
+
+		TEST_CASE(L"Multiple non-overlapping objects")
+		{
+			DocumentInlineObjectRunPropertyMap inlineMap;
+			auto prop1 = CreateInlineProp(100);
+			auto prop2 = CreateInlineProp(200);
+			auto prop3 = CreateInlineProp(300);
+			
+			AddInlineObjectRun(inlineMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+			AddInlineObjectRun(inlineMap, {.caretBegin = 30, .caretEnd = 40}, prop2);
+			bool result = AddInlineObjectRun(inlineMap, {.caretBegin = 50, .caretEnd = 60}, prop3);
+			
+			TEST_ASSERT(result == true);
+			
+			DocumentInlineObjectRunPropertyMap expectedMap;
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
+			expectedMap.Add({.caretBegin = 30, .caretEnd = 40}, prop2);
+			expectedMap.Add({.caretBegin = 50, .caretEnd = 60}, prop3);
+			
+			AssertMap(inlineMap, expectedMap);
+		});
+
+		// Failure cases
+		TEST_CASE(L"Complete overlap - exact match")
+		{
+			DocumentInlineObjectRunPropertyMap inlineMap;
+			auto prop1 = CreateInlineProp(100);
+			auto prop2 = CreateInlineProp(200);
+			
+			AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+			bool result = AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
+			
+			TEST_ASSERT(result == false);
+			
+			DocumentInlineObjectRunPropertyMap expectedMap;
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
+			
+			AssertMap(inlineMap, expectedMap);
+		});
+
+		TEST_CASE(L"Partial overlap from left")
+		{
+			DocumentInlineObjectRunPropertyMap inlineMap;
+			auto prop1 = CreateInlineProp(100);
+			auto prop2 = CreateInlineProp(200);
+			
+			AddInlineObjectRun(inlineMap, {.caretBegin = 20, .caretEnd = 30}, prop1);
+			bool result = AddInlineObjectRun(inlineMap, {.caretBegin = 15, .caretEnd = 25}, prop2);
+			
+			TEST_ASSERT(result == false);
+			
+			DocumentInlineObjectRunPropertyMap expectedMap;
+			expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, prop1);
+			
+			AssertMap(inlineMap, expectedMap);
+		});
+
+		TEST_CASE(L"Partial overlap from right")
+		{
+			DocumentInlineObjectRunPropertyMap inlineMap;
+			auto prop1 = CreateInlineProp(100);
+			auto prop2 = CreateInlineProp(200);
+			
+			AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+			bool result = AddInlineObjectRun(inlineMap, {.caretBegin = 15, .caretEnd = 25}, prop2);
+			
+			TEST_ASSERT(result == false);
+			
+			DocumentInlineObjectRunPropertyMap expectedMap;
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
+			
+			AssertMap(inlineMap, expectedMap);
+		});
+
+		TEST_CASE(L"New contains existing")
+		{
+			DocumentInlineObjectRunPropertyMap inlineMap;
+			auto prop1 = CreateInlineProp(100);
+			auto prop2 = CreateInlineProp(200);
+			
+			AddInlineObjectRun(inlineMap, {.caretBegin = 15, .caretEnd = 25}, prop1);
+			bool result = AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 30}, prop2);
+			
+			TEST_ASSERT(result == false);
+			
+			DocumentInlineObjectRunPropertyMap expectedMap;
+			expectedMap.Add({.caretBegin = 15, .caretEnd = 25}, prop1);
+			
+			AssertMap(inlineMap, expectedMap);
+		});
+
+		TEST_CASE(L"New contained within existing")
+		{
+			DocumentInlineObjectRunPropertyMap inlineMap;
+			auto prop1 = CreateInlineProp(100);
+			auto prop2 = CreateInlineProp(200);
+			
+			AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 30}, prop1);
+			bool result = AddInlineObjectRun(inlineMap, {.caretBegin = 15, .caretEnd = 25}, prop2);
+			
+			TEST_ASSERT(result == false);
+			
+			DocumentInlineObjectRunPropertyMap expectedMap;
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 30}, prop1);
+			
+			AssertMap(inlineMap, expectedMap);
+		});
+
+		// Edge cases
+		TEST_CASE(L"Gap fitting with multiple objects")
+		{
+			DocumentInlineObjectRunPropertyMap inlineMap;
+			auto prop1 = CreateInlineProp(100);
+			auto prop2 = CreateInlineProp(200);
+			auto prop3 = CreateInlineProp(300);
+			auto prop4 = CreateInlineProp(400);
+			
+			AddInlineObjectRun(inlineMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+			AddInlineObjectRun(inlineMap, {.caretBegin = 20, .caretEnd = 30}, prop2);
+			AddInlineObjectRun(inlineMap, {.caretBegin = 40, .caretEnd = 50}, prop3);
+			bool result = AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop4);
+			
+			TEST_ASSERT(result == true);
+			
+			DocumentInlineObjectRunPropertyMap expectedMap;
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop4);
+			expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, prop2);
+			expectedMap.Add({.caretBegin = 40, .caretEnd = 50}, prop3);
+			
+			AssertMap(inlineMap, expectedMap);
+		});
+
+		TEST_CASE(L"Adjacent chain")
+		{
+			DocumentInlineObjectRunPropertyMap inlineMap;
+			auto prop1 = CreateInlineProp(100);
+			auto prop2 = CreateInlineProp(200);
+			auto prop3 = CreateInlineProp(300);
+			
+			bool result1 = AddInlineObjectRun(inlineMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+			bool result2 = AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
+			bool result3 = AddInlineObjectRun(inlineMap, {.caretBegin = 20, .caretEnd = 30}, prop3);
+			
+			TEST_ASSERT(result1 == true);
+			TEST_ASSERT(result2 == true);
+			TEST_ASSERT(result3 == true);
+			
+			DocumentInlineObjectRunPropertyMap expectedMap;
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop2);
+			expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, prop3);
+			
+			AssertMap(inlineMap, expectedMap);
 		});
 	});
 }
