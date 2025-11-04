@@ -19,8 +19,12 @@ namespace vl::presentation
 	class GuiRemoteController;
 }
 
-namespace vl::presentation::remoteprotocol
+namespace vl::presentation::elements
 {
+/***********************************************************************
+DiffRuns
+***********************************************************************/
+
 	struct CaretRange
 	{
 		vint caretBegin = 0;
@@ -56,10 +60,7 @@ namespace vl::presentation::remoteprotocol
 		const DocumentRunPropertyMap& oldRuns,
 		const DocumentRunPropertyMap& newRuns,
 		ElementDesc_DocumentParagraph& result);
-}
 
-namespace vl::presentation::elements
-{
 	class GuiRemoteGraphicsResourceManager;
 	class GuiRemoteGraphicsRenderTarget;
 

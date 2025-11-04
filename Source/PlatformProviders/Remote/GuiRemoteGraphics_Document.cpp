@@ -1,9 +1,13 @@
 #include "GuiRemoteGraphics_Document.h"
 #include "GuiRemoteGraphics.h"
 
-namespace vl::presentation::remoteprotocol
+namespace vl::presentation::elements
 {
 	using namespace collections;
+
+/***********************************************************************
+DiffRuns
+***********************************************************************/
 
 	bool operator==(const DocumentTextRunProperty& a, const DocumentTextRunProperty& b)
 	{
@@ -392,14 +396,12 @@ namespace vl::presentation::remoteprotocol
 			}
 		}
 	}
-}
-
-namespace vl::presentation::elements
-{
 
 /***********************************************************************
 GuiRemoteGraphicsParagraph
-***********************************************************************/ 	GuiRemoteGraphicsParagraph::GuiRemoteGraphicsParagraph(const WString& _text, GuiRemoteController* _remote, GuiRemoteGraphicsResourceManager* _resourceManager, GuiRemoteGraphicsRenderTarget* _renderTarget, IGuiGraphicsParagraphCallback* _callback)
+***********************************************************************/
+
+	GuiRemoteGraphicsParagraph::GuiRemoteGraphicsParagraph(const WString& _text, GuiRemoteController* _remote, GuiRemoteGraphicsResourceManager* _resourceManager, GuiRemoteGraphicsRenderTarget* _renderTarget, IGuiGraphicsParagraphCallback* _callback)
 		: text(_text)
 		, remote(_remote)
 		, resourceManager(_resourceManager)
