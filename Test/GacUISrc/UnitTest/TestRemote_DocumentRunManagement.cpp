@@ -1,4 +1,5 @@
 #include "../../../Source/UnitTestUtilities/GuiUnitTestProtocol.h"
+#include "../../../Source/PlatformProviders/Remote/GuiRemoteGraphics_Document.h"
 
 using namespace vl;
 using namespace vl::unittest;
@@ -30,7 +31,7 @@ namespace remote_document_paragrpah_tests
 		DocumentInlineObjectRunProperty prop;
 		prop.size = Size(width, 10);
 		prop.baseline = 8;
-		prop.breakCondition = IGuiGraphicsParagraph::BreakCondition::Follow;
+		prop.breakCondition = IGuiGraphicsParagraph::BreakCondition::Alone;
 		prop.backgroundElementId = -1;
 		prop.callbackId = callbackId;
 		return prop;
@@ -151,8 +152,8 @@ TEST_FILE
 	{
 		TEST_CASE(L"Equal ranges")
 		{
-			CaretRange r1{10, 20};
-			CaretRange r2{10, 20};
+			CaretRange r1{.caretBegin = 10, .caretEnd = 20};
+			CaretRange r2{.caretBegin = 10, .caretEnd = 20};
 			TEST_ASSERT(r1 == r2);
 			TEST_ASSERT(!(r1 < r2));
 			TEST_ASSERT(!(r2 < r1));
@@ -160,8 +161,8 @@ TEST_FILE
 
 		TEST_CASE(L"Different caretBegin")
 		{
-			CaretRange r1{10, 20};
-			CaretRange r2{15, 20};
+			CaretRange r1{.caretBegin = 10, .caretEnd = 20};
+			CaretRange r2{.caretBegin = 15, .caretEnd = 20};
 			TEST_ASSERT(r1 != r2);
 			TEST_ASSERT(r1 < r2);
 			TEST_ASSERT(!(r2 < r1));
@@ -169,8 +170,8 @@ TEST_FILE
 
 		TEST_CASE(L"Same caretBegin, different caretEnd")
 		{
-			CaretRange r1{10, 20};
-			CaretRange r2{10, 25};
+			CaretRange r1{.caretBegin = 10, .caretEnd = 20};
+			CaretRange r2{.caretBegin = 10, .caretEnd = 25};
 			TEST_ASSERT(r1 != r2);
 			TEST_ASSERT(r1 < r2);
 			TEST_ASSERT(!(r2 < r1));
@@ -178,24 +179,24 @@ TEST_FILE
 
 		TEST_CASE(L"Adjacent ranges - non-overlapping")
 		{
-			CaretRange r1{10, 20};
-			CaretRange r2{20, 30};
+			CaretRange r1{.caretBegin = 10, .caretEnd = 20};
+			CaretRange r2{.caretBegin = 20, .caretEnd = 30};
 			TEST_ASSERT(r1 != r2);
 			TEST_ASSERT(r1 < r2);
 		});
 
 		TEST_CASE(L"Overlapping ranges")
 		{
-			CaretRange r1{10, 25};
-			CaretRange r2{20, 30};
+			CaretRange r1{.caretBegin = 10, .caretEnd = 25};
+			CaretRange r2{.caretBegin = 20, .caretEnd = 30};
 			TEST_ASSERT(r1 != r2);
 			TEST_ASSERT(r1 < r2);
 		});
 
 		TEST_CASE(L"Contained range")
 		{
-			CaretRange r1{10, 30};
-			CaretRange r2{15, 25};
+			CaretRange r1{.caretBegin = 10, .caretEnd = 30};
+			CaretRange r2{.caretBegin = 15, .caretEnd = 25};
 			TEST_ASSERT(r1 != r2);
 			TEST_ASSERT(r1 < r2);  // r1.caretBegin < r2.caretBegin
 		});
@@ -208,10 +209,10 @@ TEST_FILE
 			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
 			auto prop1 = CreateTextProp(100);
 			
-			AddTextRun(textMap, {0, 10}, prop1);
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
 			
 			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
-			expectedMap.Add({0, 10}, prop1);
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
 			
 			AssertMap(textMap, expectedMap);
 		});
@@ -222,12 +223,12 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {0, 10}, prop1);
-			AddTextRun(textMap, {20, 30}, prop2);
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2);
 			
 			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
-			expectedMap.Add({0, 10}, prop1);
-			expectedMap.Add({20, 30}, prop2);
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
+			expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, prop2);
 			
 			AssertMap(textMap, expectedMap);
 		});
@@ -238,12 +239,12 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {0, 10}, prop1);
-			AddTextRun(textMap, {10, 20}, prop2);
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
 			
 			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
-			expectedMap.Add({0, 10}, prop1);
-			expectedMap.Add({10, 20}, prop2);
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop2);
 			
 			AssertMap(textMap, expectedMap);
 		});
@@ -253,11 +254,11 @@ TEST_FILE
 			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
 			auto prop1 = CreateTextProp(100);
 			
-			AddTextRun(textMap, {0, 10}, prop1);
-			AddTextRun(textMap, {10, 20}, prop1);
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
 			
 			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
-			expectedMap.Add({0, 20}, prop1);
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 20}, prop1);
 			
 			AssertMap(textMap, expectedMap);
 		});
@@ -268,11 +269,11 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {10, 20}, prop1);
-			AddTextRun(textMap, {10, 20}, prop2);
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
 			
 			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
-			expectedMap.Add({10, 20}, prop2);
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop2);
 			
 			AssertMap(textMap, expectedMap);
 		});
@@ -283,12 +284,12 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {10, 30}, prop1);
-			AddTextRun(textMap, {5, 20}, prop2);
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 30}, prop1);
+			AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 20}, prop2);
 			
 			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
-			expectedMap.Add({5, 20}, prop2);
-			expectedMap.Add({20, 30}, prop1);
+			expectedMap.Add({.caretBegin = 5, .caretEnd = 20}, prop2);
+			expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, prop1);
 			
 			AssertMap(textMap, expectedMap);
 		});
@@ -299,12 +300,12 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {10, 30}, prop1);
-			AddTextRun(textMap, {20, 35}, prop2);
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 30}, prop1);
+			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 35}, prop2);
 			
 			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
-			expectedMap.Add({10, 20}, prop1);
-			expectedMap.Add({20, 35}, prop2);
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
+			expectedMap.Add({.caretBegin = 20, .caretEnd = 35}, prop2);
 			
 			AssertMap(textMap, expectedMap);
 		});
@@ -315,11 +316,11 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {15, 25}, prop1);
-			AddTextRun(textMap, {10, 30}, prop2);
+			AddTextRun(textMap, {.caretBegin = 15, .caretEnd = 25}, prop1);
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 30}, prop2);
 			
 			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
-			expectedMap.Add({10, 30}, prop2);
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 30}, prop2);
 			
 			AssertMap(textMap, expectedMap);
 		});
@@ -330,13 +331,13 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {10, 40}, prop1);
-			AddTextRun(textMap, {20, 30}, prop2);
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 40}, prop1);
+			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2);
 			
 			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
-			expectedMap.Add({10, 20}, prop1);
-			expectedMap.Add({20, 30}, prop2);
-			expectedMap.Add({30, 40}, prop1);
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
+			expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, prop2);
+			expectedMap.Add({.caretBegin = 30, .caretEnd = 40}, prop1);
 			
 			AssertMap(textMap, expectedMap);
 		});
@@ -349,15 +350,15 @@ TEST_FILE
 			auto prop3 = CreateTextProp(140);
 			auto propNew = CreateTextProp(200);
 			
-			AddTextRun(textMap, {10, 20}, prop1);
-			AddTextRun(textMap, {20, 30}, prop2);
-			AddTextRun(textMap, {30, 40}, prop3);
-			AddTextRun(textMap, {15, 35}, propNew);
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2);
+			AddTextRun(textMap, {.caretBegin = 30, .caretEnd = 40}, prop3);
+			AddTextRun(textMap, {.caretBegin = 15, .caretEnd = 35}, propNew);
 			
 			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
-			expectedMap.Add({10, 15}, prop1);
-			expectedMap.Add({15, 35}, propNew);
-			expectedMap.Add({35, 40}, prop3);
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 15}, prop1);
+			expectedMap.Add({.caretBegin = 15, .caretEnd = 35}, propNew);
+			expectedMap.Add({.caretBegin = 35, .caretEnd = 40}, prop3);
 			
 			AssertMap(textMap, expectedMap);
 		});
@@ -367,12 +368,12 @@ TEST_FILE
 			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
 			auto prop1 = CreateTextProp(100);
 			
-			AddTextRun(textMap, {0, 10}, prop1);
-			AddTextRun(textMap, {20, 30}, prop1);
-			AddTextRun(textMap, {10, 20}, prop1);
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop1);
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
 			
 			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
-			expectedMap.Add({0, 30}, prop1);
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 30}, prop1);
 			
 			AssertMap(textMap, expectedMap);
 		});
@@ -383,13 +384,13 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {0, 10}, prop1);
-			AddTextRun(textMap, {20, 30}, prop2);
-			AddTextRun(textMap, {10, 20}, prop1);
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2);
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
 			
 			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
-			expectedMap.Add({0, 20}, prop1);
-			expectedMap.Add({20, 30}, prop2);
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 20}, prop1);
+			expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, prop2);
 			
 			AssertMap(textMap, expectedMap);
 		});
@@ -400,13 +401,13 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {0, 10}, prop2);
-			AddTextRun(textMap, {20, 30}, prop1);
-			AddTextRun(textMap, {10, 20}, prop1);
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop2);
+			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop1);
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
 			
 			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
-			expectedMap.Add({0, 10}, prop2);
-			expectedMap.Add({10, 30}, prop1);
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop2);
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 30}, prop1);
 			
 			AssertMap(textMap, expectedMap);
 		});
@@ -418,14 +419,14 @@ TEST_FILE
 			auto prop2 = CreateTextProp(150);
 			auto prop3 = CreateTextProp(200);
 			
-			AddTextRun(textMap, {0, 10}, prop1);
-			AddTextRun(textMap, {20, 30}, prop3);
-			AddTextRun(textMap, {10, 20}, prop2);
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop3);
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
 			
 			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
-			expectedMap.Add({0, 10}, prop1);
-			expectedMap.Add({10, 20}, prop2);
-			expectedMap.Add({20, 30}, prop3);
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop2);
+			expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, prop3);
 			
 			AssertMap(textMap, expectedMap);
 		});
@@ -436,12 +437,12 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {0, 50}, prop1);
-			AddTextRun(textMap, {20, 30}, prop2);
-			AddTextRun(textMap, {20, 30}, prop1);  // Replace prop2 with prop1
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 50}, prop1);
+			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2);
+			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop1);  // Replace prop2 with prop1
 			
 			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
-			expectedMap.Add({0, 50}, prop1);  // All merged back
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 50}, prop1);  // All merged back
 			
 			AssertMap(textMap, expectedMap);
 		});

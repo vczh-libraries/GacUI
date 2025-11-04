@@ -97,6 +97,7 @@
   - The compiler does not create any log file, so DO NOT try to read any file for compile errors.
   - The only way to read errors is reading the CLI panel for the specific task in Visual Studio Code.
   - Check the output from the CLI panel for this task. At the very end there will be "X Warning(s) Y Errors(s)". If they are not 0, the CLI panel for this task should have more detailed information.
+  
 ## Executing Unit Test
 
 - Just let Visual Studio Code to run the unit test, the `Run Unit Tests` should have been configured in `tasks.json`.
