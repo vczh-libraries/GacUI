@@ -13,6 +13,8 @@
 
 - Check out `Compile the Solution` for details about compiling the solution but DO NOT run unit test yet.
   - `Compile the Solution` is the only way to build the project. DO NOT call any other tools or scripts.
+- Find out if there is any warning or error.
+  - `Compile the Solution` has the instruction about how to check compile result.
 - If there is any compilation error, address all of them:
   - If there is any compile warning, only fix warnings that caused by your code change. Do no fix any other warnings.
   - If there is any compile error, you need to carefully identify, is the issue in the callee side or the caller side. Check out similar code before making a decision.
@@ -86,6 +88,8 @@
 - If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
 - DO NOT use msbuild by yourself.
 - DO NOT modify `tasks.json`.
+- DO NOT rely on Visual Studio Code tool to read errors. You must check the task panel which containing the raw compiler output.
+  - When running MSBUILD, at the very end there will be "X Warning(s) Y Errors(s)". If they are not 0, the task panel should have more detailed information.
 
 ## Executing Unit Test
 
