@@ -17,17 +17,23 @@ namespace vl::presentation::remoteprotocol
 		CaretRange range,
 		const DocumentTextRunProperty& property)
 	{
-		auto comparer = [&](const Pair<CaretRange, DocumentTextRunProperty>& item) -> vint
+		vint firstOverlap = -1;
+		
+		if (map.Count() > 0)
 		{
-			if (item.key.caretEnd <= range.caretBegin)
-				return -1;
-			else if (item.key.caretBegin >= range.caretEnd)
-				return 1;
-			else
-				return 0;
-		};
+			auto comparer = [&](const CaretRange& key, const CaretRange& searchRange) -> std::strong_ordering
+			{
+				if (key.caretEnd <= searchRange.caretBegin)
+					return std::strong_ordering::less;
+				else if (key.caretBegin >= searchRange.caretEnd)
+					return std::strong_ordering::greater;
+				else
+					return std::strong_ordering::equal;
+			};
 
-		vint firstOverlap = BinarySearchLambda(map.Keys(), comparer);
+			vint index = -1;
+			firstOverlap = BinarySearchLambda(&map.Keys()[0], map.Keys().Count(), range, index, comparer);
+		}
 
 		List<Pair<CaretRange, DocumentTextRunProperty>> fragmentsToReinsert;
 		
@@ -117,20 +123,24 @@ namespace vl::presentation::remoteprotocol
 		CaretRange range,
 		const DocumentInlineObjectRunProperty& property)
 	{
-		auto comparer = [&](const Pair<CaretRange, DocumentInlineObjectRunProperty>& item) -> vint
+		if (map.Count() > 0)
 		{
-			if (item.key.caretEnd <= range.caretBegin)
-				return -1;
-			else if (item.key.caretBegin >= range.caretEnd)
-				return 1;
-			else
-				return 0;
-		};
+			auto comparer = [&](const CaretRange& key, const CaretRange& searchRange) -> std::strong_ordering
+			{
+				if (key.caretEnd <= searchRange.caretBegin)
+					return std::strong_ordering::less;
+				else if (key.caretBegin >= searchRange.caretEnd)
+					return std::strong_ordering::greater;
+				else
+					return std::strong_ordering::equal;
+			};
 
-		vint firstOverlap = BinarySearchLambda(map.Keys(), comparer);
-		
-		if (firstOverlap != -1)
-			return false;
+			vint index = -1;
+			vint firstOverlap = BinarySearchLambda(&map.Keys()[0], map.Keys().Count(), range, index, comparer);
+			
+			if (firstOverlap != -1)
+				return false;
+		}
 
 		map.Add(range, property);
 		return true;
@@ -231,7 +241,7 @@ namespace vl::presentation::remoteprotocol
 
 	bool operator==(const DocumentRunProperty& a, const DocumentRunProperty& b)
 	{
-		if (a.GetType() != b.GetType())
+		if (a.Index() != b.Index())
 			return false;
 
 		if (auto textA = a.TryGet<DocumentTextRunProperty>())
