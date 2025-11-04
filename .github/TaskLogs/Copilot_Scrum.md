@@ -76,14 +76,24 @@ Some correction to Task 1, update Task 2 accordingly.
 - `ResetInlineObjectRun` does not allow overlapping, it removes the value binding to the exact key. Returns `false` if the key cannot be found.
 - `DiffRuns` pay attention to that, keys between `oldRuns` and `newRuns` could be different, e.g.  splitted or merged. When a part of an old run is updated, the function should always keep complete keys of `newRuns` in the result.
 
+## UPDATE
+
+Break Task 2 into 5 separate tasks:
+1. First task for CaretRange and AddTextRun testing
+2. One task each for AddInlineObjectRun, ResetInlineObjectRun, MergeRuns, and DiffRuns testing
+
 # TASKS
 
 - [x] TASK No.1: Define `CaretRange` struct and run management functions
-- [ ] TASK No.2: Create unit test for run management (CaretRange and DocumentRunPropertyMap)
-- [ ] TASK No.3: Implement `GuiRemoteGraphicsParagraph` class
-- [ ] TASK No.4: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
-- [ ] TASK No.5: Create basic `GuiSinglelineTextBox` test case
-- [ ] TASK No.6: Create typing simulation test case and complete typing helper functions
+- [ ] TASK No.2: Unit test for CaretRange comparison and AddTextRun
+- [ ] TASK No.3: Unit test for AddInlineObjectRun
+- [ ] TASK No.4: Unit test for ResetInlineObjectRun
+- [ ] TASK No.5: Unit test for MergeRuns
+- [ ] TASK No.6: Unit test for DiffRuns
+- [ ] TASK No.7: Implement `GuiRemoteGraphicsParagraph` class
+- [ ] TASK No.8: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
+- [ ] TASK No.9: Create basic `GuiSinglelineTextBox` test case
+- [ ] TASK No.10: Create typing simulation test case and complete typing helper functions
 
 ## TASK No.1: Define `CaretRange` struct and run management functions
 
@@ -162,13 +172,13 @@ This redesign separates text runs from inline object runs at the storage level, 
 
 This separation makes the implementation cleaner and more maintainable. The `MergeRuns` function brings them together only when needed, enforcing the priority rule (inline objects > text runs). The `DiffRuns` function is crucial for the protocol - it enables sending only changes between updates, minimizing network traffic. By leveraging Dictionary's ordered keys, all operations can be implemented efficiently with linear complexity.
 
-## TASK No.2: Create unit test for run management (CaretRange and DocumentRunPropertyMap)
+## TASK No.2: Unit test for CaretRange comparison and AddTextRun
 
 ### description
 
 Create a dedicated test file `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp` using the standard GacUI test framework.
 
-Use `TEST_FILE`, `TEST_CATEGORY`, and `TEST_CASE` macros. Use `TEST_ASSERT` for verification. Each test should verify the map state after operations using `map.Count()` and checking specific entries with map iteration or direct key lookup.
+This task covers the first two test categories: **CaretRange** and **AddTextRun**.
 
 **Test Category 1: CaretRange**
 - Test comparison operators (`<`, `==`, `!=`)
@@ -194,39 +204,158 @@ Use `TEST_FILE`, `TEST_CATEGORY`, and `TEST_CASE` macros. Use `TEST_ASSERT` for 
    - Multiple consecutive identical runs merge into one
    - Different properties prevent merging even if adjacent
 
+**Helper Functions** (to be created for use across all test tasks):
+- `CreateTextProp(vint colorValue)`: Creates a `DocumentTextRunProperty` with distinguishable colors
+- `CreateInlineProp(vint callbackId, vint width)`: Creates a `DocumentInlineObjectRunProperty`
+- `FormatRunProperty`: Overloaded functions to convert properties to readable strings
+- `CompareRunProperty`: Overloaded functions to compare property equality
+- `PrintMap`: Template function to print actual and expected maps
+- `AssertMap`: Template function to compare maps and fail with detailed output if mismatched
+
+These helper functions follow the pattern from `TestItemProviders.h` (`PrintCallbacks` and `AssertCallbacks`).
+
+### what to be done
+
+1. Create the test file with proper includes (`TestRemote.h`)
+2. Implement all helper functions at the top of the file
+3. Create `TEST_FILE` block with two `TEST_CATEGORY` blocks
+4. For CaretRange: Create test cases for all comparison operators and ordering rules
+5. For AddTextRun: Create test cases for basic operations, splitting scenarios, and merging scenarios
+6. Each test case should:
+   - Set up initial state (create maps, add runs)
+   - Perform the operation being tested
+   - Use `AssertMap` to verify the result
+
+### how to test it
+
+Run the compiled unit test executable. The test cases validate:
+1. CaretRange can be used as Dictionary key with correct ordering
+2. AddTextRun correctly handles splitting when runs overlap
+3. AddTextRun correctly merges consecutive runs with identical properties
+4. Map state is always consistent after operations
+
+### file locations
+
+New file: `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
+
+### rationale
+
+CaretRange and AddTextRun are foundational - all other functions depend on them. CaretRange must work correctly for Dictionary operations. AddTextRun is the most complex function with splitting and merging logic that needs thorough validation. Testing these first ensures a solid foundation. The helper functions created here will be reused by all subsequent test tasks, establishing a consistent testing pattern.
+
+## TASK No.3: Unit test for AddInlineObjectRun
+
+### description
+
+Add test category for `AddInlineObjectRun` to `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`.
+
 **Test Category 3: AddInlineObjectRun**
 
-1. **Success cases**:
+1. **Success cases** (return true):
    - Adding to empty map
-   - Adding non-overlapping inline objects
+   - Adding non-overlapping inline objects (multiple objects with gaps)
+   - Adjacent inline objects (touching at boundaries but not overlapping)
 
-2. **Failure cases** (should return false or throw):
-   - Adding inline object that overlaps existing inline object (complete overlap)
-   - Adding inline object that partially overlaps existing inline object
+2. **Failure cases** (return false):
+   - Adding inline object that completely overlaps existing inline object
+   - Adding inline object that partially overlaps existing inline object from left
+   - Adding inline object that partially overlaps existing inline object from right
    - Adding inline object that contains existing inline object
-   - Adding inline object that is contained by existing inline object
+   - Adding inline object that is contained within existing inline object
 
 3. **Edge cases**:
-   - Adjacent inline objects (should succeed - no overlap)
    - Multiple inline objects in map, new one fits in gap (should succeed)
+   - Attempting to add inline object in a position that would touch but not overlap (should succeed)
+
+### what to be done
+
+1. Add a new `TEST_CATEGORY(L"AddInlineObjectRun")` block to the existing test file
+2. Create test cases for all success scenarios, verifying:
+   - Return value is `true`
+   - Map count increases correctly
+   - Map contains the expected entries (use `AssertMap`)
+3. Create test cases for all failure scenarios, verifying:
+   - Return value is `false`
+   - Map state is unchanged (objects that failed to add are not in map)
+4. Use existing helper functions (`CreateInlineProp`, `AssertMap`)
+
+### how to test it
+
+Run the compiled unit test executable. The test cases validate:
+1. AddInlineObjectRun succeeds when there's no overlap
+2. AddInlineObjectRun fails and returns false for any overlapping scenario
+3. Map state remains consistent - no partial updates on failure
+4. Adjacent inline objects (non-overlapping) are correctly handled
+
+### file locations
+
+Modified file: `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
+
+### rationale
+
+AddInlineObjectRun has critical no-overlap validation logic. Inline objects represent atomic UI elements (like images or controls) that cannot be split. The overlap detection must be bulletproof - any bug here could cause protocol corruption or crashes. Testing in isolation ensures the binary search-based overlap detection works correctly for all edge cases. This function's boolean return value (instead of throwing) requires careful verification of both return value and map state.
+
+## TASK No.4: Unit test for ResetInlineObjectRun
+
+### description
+
+Add test category for `ResetInlineObjectRun` to `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`.
 
 **Test Category 4: ResetInlineObjectRun**
 
 1. **Success cases** (returns true):
-   - Remove inline object with exact range match (key found)
-   - Verify the specific inline object is removed from map
+   - Remove inline object with exact range match from map with single object
+   - Remove inline object with exact range match from map with multiple objects
+   - Verify the specific inline object is removed and others remain
 
 2. **Failure cases** (returns false):
    - Remove from empty map (key not found)
-   - Remove non-existent range (key not found)
+   - Remove with non-existent range (key not found)
    - Remove with partially overlapping range (key doesn't match exactly)
    - Remove with range that contains an inline object but doesn't match exactly
-   - Remove with range that is contained by an inline object but doesn't match exactly
+   - Remove with range that is contained within an inline object but doesn't match exactly
+   - Remove with adjacent range (should fail - no exact match)
 
 3. **Edge cases**:
-   - Remove with adjacent range (should fail - no exact match)
-   - Multiple inline objects in map, remove one exact match (only that one removed)
-   - After successful removal, verify map state is correct
+   - After successful removal, verify map count decreased by exactly 1
+   - After failed removal, verify map state is completely unchanged
+
+### what to be done
+
+1. Add a new `TEST_CATEGORY(L"ResetInlineObjectRun")` block to the existing test file
+2. Create test cases for success scenarios:
+   - Set up initial map with inline objects
+   - Call `ResetInlineObjectRun` with exact matching key
+   - Verify return value is `true`
+   - Verify map count decreased
+   - Verify specific object removed (use `AssertMap` with expected state)
+3. Create test cases for failure scenarios:
+   - Set up initial map state
+   - Call `ResetInlineObjectRun` with various non-matching keys
+   - Verify return value is `false`
+   - Verify map state unchanged (use `AssertMap` comparing before and after)
+4. Use existing helper functions
+
+### how to test it
+
+Run the compiled unit test executable. The test cases validate:
+1. ResetInlineObjectRun requires exact key match (no partial matching)
+2. Function returns true only when key is found and removed
+3. Function returns false when key doesn't exist or doesn't match exactly
+4. Map state is correctly updated on success, unchanged on failure
+
+### file locations
+
+Modified file: `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
+
+### rationale
+
+ResetInlineObjectRun has strict exact-match semantics that differ from typical removal operations. The function only removes if the key matches exactly - this prevents accidental removal of inline objects when text formatting changes nearby. The boolean return value lets callers detect whether removal succeeded, enabling proper error handling in the protocol layer. Testing all failure cases ensures the exact-match requirement is properly enforced.
+
+## TASK No.5: Unit test for MergeRuns
+
+### description
+
+Add test category for `MergeRuns` to `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`.
 
 **Test Category 5: MergeRuns**
 
@@ -236,89 +365,126 @@ Use `TEST_FILE`, `TEST_CATEGORY`, and `TEST_CASE` macros. Use `TEST_ASSERT` for 
    - Merge with only inline objects (result contains all inline objects)
    - Merge with both types, no overlap (result contains all runs)
 
-2. **Inline object priority**:
-   - Text run completely overlaps inline object (text run cut out)
-   - Text run partially overlaps inline object (text run split, non-overlapping part kept)
-   - Multiple text runs overlap one inline object (all cut appropriately)
-   - One text run overlaps multiple inline objects (text run fragmented)
+2. **Inline object priority** (inline objects always win):
+   - Text run completely overlaps inline object → inline object kept, text run removed
+   - Text run partially overlaps inline object from left → text run split, non-overlapping part kept, overlapping part removed
+   - Text run partially overlaps inline object from right → text run split, non-overlapping part kept, overlapping part removed
+   - One text run overlaps multiple inline objects → text run fragmented into gaps between inline objects
+   - Multiple text runs overlap one inline object → all text runs cut, inline object kept
 
 3. **Complex scenarios**:
-   - Text runs with gaps, inline objects fill gaps (interleaved result)
-   - Consecutive text runs merged, then cut by inline object
+   - Text runs with gaps, inline objects fill some gaps → interleaved result
+   - Text runs that would merge (identical properties) but are separated by inline object → remain separate
+   - Multiple overlaps in single merge operation
+
+### what to be done
+
+1. Add a new `TEST_CATEGORY(L"MergeRuns")` block to the existing test file
+2. Create test cases for basic merging:
+   - Create separate `DocumentTextRunPropertyMap` and `DocumentInlineObjectRunPropertyMap`
+   - Call `MergeRuns` to produce `DocumentRunPropertyMap` result
+   - Use `AssertMap` to verify result contains expected keys and values
+3. Create test cases for inline object priority:
+   - Set up text and inline maps with various overlapping scenarios
+   - Verify inline objects appear complete in result
+   - Verify text runs are properly split/removed where they overlap inline objects
+4. Create test cases for complex scenarios
+5. Need to extend helper functions:
+   - Create `AssertMap` overload for `DocumentRunPropertyMap` (which can contain either text or inline objects)
+   - Create `FormatRunProperty` overload for `DocumentRunProperty`
+   - Create `CompareRunProperty` overload for `DocumentRunProperty`
+
+### how to test it
+
+Run the compiled unit test executable. The test cases validate:
+1. MergeRuns correctly combines two separate maps
+2. Inline object priority is always enforced (they cannot be split or removed)
+3. Text runs are correctly split when overlapping inline objects
+4. The result map is correctly typed as `DocumentRunPropertyMap`
+5. Complex multi-overlap scenarios are handled correctly
+
+### file locations
+
+Modified file: `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
+
+### rationale
+
+MergeRuns implements the critical priority system where inline objects (atomic UI elements) take precedence over text formatting. This function is used when building the final paragraph state from separate text and inline object tracking. The splitting logic must be precise - any error could result in text runs overlapping inline objects in the protocol, causing rendering corruption. Testing ensures the state machine correctly handles gaps, overlaps, and boundary conditions.
+
+## TASK No.6: Unit test for DiffRuns
+
+### description
+
+Add test category for `DiffRuns` to `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`.
 
 **Test Category 6: DiffRuns**
 
 1. **Empty and simple diffs**:
    - Both maps empty (no diff)
-   - Old map empty, new map has runs (all runs in `runsDiff`, inline objects in `createdInlineObjects`)
-   - New map empty, old map has runs (all runs in `runsDiff` with remove indication, inline objects in `removedInlineObjects`)
+   - Old map empty, new map has runs (all in `runsDiff`, inline objects in `createdInlineObjects`)
+   - New map empty, old map has runs (all in `runsDiff` as removals, inline objects in `removedInlineObjects`)
 
 2. **Changes detection**:
-   - Same text run in both maps with same key (no diff)
-   - Text run property changed (appears in `runsDiff`)
-   - Text run range changed (old removed, new added in `runsDiff`)
-   - Text run added (appears in `runsDiff`)
-   - Text run removed (appears in `runsDiff`)
+   - Same key, same value → no entry in diff
+   - Same key, different value → entry in `runsDiff`
+   - Key only in new map → entry in `runsDiff` (addition)
+   - Key only in old map → entry in `runsDiff` (removal)
 
 3. **Inline object tracking**:
-   - Inline object added (in both `runsDiff` and `createdInlineObjects`)
-   - Inline object removed (in both `runsDiff` and `removedInlineObjects`)
-   - Inline object unchanged (not in any diff list)
-   - Inline object moved (old removed, new created)
+   - Inline object added → in both `runsDiff` and `createdInlineObjects`
+   - Inline object removed → in both `runsDiff` and `removedInlineObjects`
+   - Inline object unchanged (same key, same callbackId) → not in any diff list
+   - Inline object moved (different key, same or different callbackId) → old in `removedInlineObjects`, new in `createdInlineObjects`
 
-4. **Key difference handling** (CRITICAL):
-   - Old run split into multiple new runs (verify result uses new run keys completely)
-   - Multiple old runs merged into one new run (verify result uses new run key)
-   - One old run partially updated: part becomes new run with different key (verify result contains complete new run key, not partial)
-   - Example: old run [0,10], new runs [0,5] and [5,10] with different properties → result should have [0,5] and [5,10] as complete entries
-   - Example: old runs [0,5] and [5,10], new run [0,10] → result should have [0,10] as complete entry if property changed
-   - Verify that `runsDiff` always contains complete keys from `newRuns`, never partial keys or mixed old/new keys
+4. **Key difference handling** (CRITICAL - most important test scenarios):
+   - Old run [0,10] → New runs [0,5] and [5,10] with different properties
+     - Result should have [0,5] and [5,10] as complete entries in `runsDiff`
+   - Old runs [0,5] and [5,10] → New run [0,10] with changed property
+     - Result should have [0,10] as complete entry in `runsDiff`
+   - Old run [0,15] → New runs [0,5], [5,10], [10,15] where only middle changed
+     - Result should have all three new ranges in `runsDiff` if properties differ
+   - Mixed: some keys unchanged, some split, some merged in same diff
+     - Verify result uses only new keys for changed ranges
 
 5. **Complex scenarios**:
-   - Multiple changes in one diff operation with key splitting/merging
-   - Mixed text runs and inline objects changing with different keys
-   - Verify efficient single-pass algorithm by checking performance on large maps
+   - Multiple simultaneous changes with key transformations
+   - Mix of text runs and inline objects changing
+   - Inline objects added/removed while text runs split/merge
 
 ### what to be done
 
-Create the test file with comprehensive test cases organized into six test categories. Each test case should:
-- Set up initial state (create maps, add runs)
-- Perform the operation being tested
-- Verify the result state (check map contents, counts, specific entries)
-- Test both success and failure paths where applicable
-
-For `AddInlineObjectRun` and `ResetInlineObjectRun`, verify return values (`true` for success, `false` for failure).
-
-For diff testing, create helper functions to verify the contents of `runsDiff`, `createdInlineObjects`, and `removedInlineObjects` arrays. Pay special attention to verifying that keys in the diff result come from `newRuns`, not a mixture of old and new keys.
+1. Add a new `TEST_CATEGORY(L"DiffRuns")` block to the existing test file
+2. Create additional helper functions for diff verification:
+   - `FormatDocumentRun`: Convert `DocumentRun` to readable string
+   - `PrintDiffArray`: Print array of `Pair<CaretRange, DocumentRun>`
+   - `AssertDiffArray`: Compare actual and expected diff arrays
+   - `PrintCallbackIdArray`: Print arrays of callback IDs
+   - `AssertCallbackIdArray`: Compare callback ID arrays
+3. Create test cases for all scenarios:
+   - Set up old and new `DocumentRunPropertyMap`
+   - Create `ElementDesc_DocumentParagraph` with empty arrays
+   - Call `DiffRuns` to populate the descriptor
+   - Verify `runsDiff`, `createdInlineObjects`, and `removedInlineObjects` using assertion helpers
+4. Focus heavily on key difference scenarios - this is critical for protocol correctness
 
 ### how to test it
 
-This task IS the testing task. Verification is done by running the compiled unit test executable. The test cases themselves serve as the specification and validation of the run management functions.
+Run the compiled unit test executable. The test cases validate:
+1. DiffRuns correctly identifies added, removed, and changed runs
+2. Inline object callback IDs are correctly tracked in separate arrays
+3. **CRITICAL**: Result always uses complete keys from `newRuns`, never partial or mixed keys
+4. The two-pointer algorithm efficiently handles all key transformation scenarios
+5. Unchanged runs (same key, same value) are correctly omitted from diff
 
 ### file locations
 
-New file: `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
+Modified file: `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
 
 ### rationale
 
-The redesigned run management functions have more complex behavior than the original design:
-- Text runs support splitting and merging
-- Inline objects have strict no-overlap rules and exact-match removal semantics
-- `AddInlineObjectRun` returns `false` on overlap failure
-- `ResetInlineObjectRun` requires exact key match and returns `false` if not found
-- MergeRuns implements priority-based combining
-- DiffRuns requires efficient two-map comparison and must preserve `newRuns` keys completely
+DiffRuns is the most critical function for protocol correctness. It computes the difference between two paragraph states for sending incremental updates over the network. The key-handling requirement is crucial: when old runs are split or merged in new state, the diff must represent the NEW state with NEW keys. Any bug here causes synchronization failures between client and server, corrupting the remote paragraph state. The separate inline object tracking enables proper lifecycle management (creation/destruction callbacks). This function must be tested exhaustively with focus on key transformation scenarios.
 
-Each function has numerous edge cases that must be tested thoroughly. Comprehensive unit tests ensure:
-1. Correctness of complex splitting/merging logic
-2. Proper handling of inline object priority and failure cases
-3. Correct difference detection for protocol updates with proper key handling
-4. Prevention of invalid states (overlapping inline objects)
-5. Verification that `DiffRuns` always uses complete keys from `newRuns` in the result
-
-Testing in isolation catches bugs early and provides confidence before integrating with `GuiRemoteGraphicsParagraph`. The test cases also serve as executable documentation of the expected behavior, especially for the critical key-handling requirements in `DiffRuns`.
-
-## TASK No.3: Implement `GuiRemoteGraphicsParagraph` class
+## TASK No.7: Implement `GuiRemoteGraphicsParagraph` class
 
 ### description
 
@@ -388,7 +554,7 @@ Header updates (if needed): `Source\PlatformProviders\Remote\GuiRemoteGraphics_D
 
 This is the core implementation that bridges `IGuiGraphicsParagraph` interface with the remote protocol. The three-category approach cleanly separates concerns: properties configure the paragraph, run methods modify formatting, query methods interact with the remote side. The lazy update strategy (only send when needed) optimizes protocol traffic. Text position conversion functions, though currently identity functions, provide future extensibility for surrogate pair handling or other text encoding complexities.
 
-## TASK No.4: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
+## TASK No.8: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
 
 ### description
 
@@ -452,7 +618,7 @@ Modified file: `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.h`
 
 These handlers are the server-side implementation of the paragraph protocol for the unit test environment. Without these implementations, any test using document controls will fail. The implementations can be simplified compared to production renderers (e.g., Windows/Linux) since they only need to support testing scenarios. However, they must be consistent and functional enough to validate the paragraph protocol and allow document control tests to pass.
 
-## TASK No.5: Create basic `GuiSinglelineTextBox` test case
+## TASK No.9: Create basic `GuiSinglelineTextBox` test case
 
 ### description
 
@@ -508,7 +674,7 @@ New file: `Test\GacUISrc\UnitTest\TestControls_Editor_GuiSinglelineTextBox.cpp`
 
 This test validates that the basic paragraph protocol implementation works correctly with a real GacUI control. `GuiSinglelineTextBox` uses `GuiDocumentLabel` which uses `IGuiGraphicsParagraph`, so this test exercises the complete stack. By testing programmatic text manipulation first (before user input simulation), we verify the foundational functionality before adding complexity. This test will catch integration issues between the paragraph implementation and the document control system.
 
-## TASK No.6: Create typing simulation test case and complete typing helper functions
+## TASK No.10: Create typing simulation test case and complete typing helper functions
 
 ### description
 
