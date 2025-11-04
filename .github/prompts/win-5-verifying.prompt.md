@@ -133,10 +133,15 @@ You need to locate listed files in `TaskLogs.vcxitems`.
 - If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
 - DO NOT use msbuild by yourself.
 - DO NOT modify `tasks.json`.
-- DO NOT rely on Visual Studio Code tool to read errors. You must check the task panel which containing the raw compiler output.
-  - Especially DO NOT use `get_errors` as it gives you intellisense generated errors, but intellisense doesn't work in this project.
-  - When running MSBUILD, at the very end there will be "X Warning(s) Y Errors(s)". If they are not 0, the task panel should have more detailed information.
 
+### The Correct Way to Read Compiler Errors
+
+- DO NOT TRUST related tools Visual Studio Code offers you, like `get_errors` or return value from task system, etc.
+  - The reason is that, C++ extension is not installed so these tools are not working at all.
+- The only source of trust is the raw output of the compiler.
+  - The compiler does not create any log file, so DO NOT try to read any file for compile errors.
+  - The only way to read errors is reading the CLI panel for the specific task in Visual Studio Code.
+  - Check the output from the CLI panel for this task. At the very end there will be "X Warning(s) Y Errors(s)". If they are not 0, the CLI panel for this task should have more detailed information.
 ## Executing Unit Test
 
 - Just let Visual Studio Code to run the unit test, the `Run Unit Tests` should have been configured in `tasks.json`.
