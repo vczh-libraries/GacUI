@@ -277,6 +277,7 @@ Add test category for `AddInlineObjectRun` to `Test\GacUISrc\UnitTest\TestRemote
    - Return value is `false`
    - Map state is unchanged (objects that failed to add are not in map)
 4. Use existing helper functions (`CreateInlineProp`, `AssertMap`)
+5. **IMPORTANT**: Use designated initializers for CaretRange: `{.caretBegin = x, .caretEnd = y}`
 
 ### how to test it
 
@@ -293,6 +294,8 @@ Modified file: `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
 ### rationale
 
 AddInlineObjectRun has critical no-overlap validation logic. Inline objects represent atomic UI elements (like images or controls) that cannot be split. The overlap detection must be bulletproof - any bug here could cause protocol corruption or crashes. Testing in isolation ensures the binary search-based overlap detection works correctly for all edge cases. This function's boolean return value (instead of throwing) requires careful verification of both return value and map state.
+
+**Note from Task 2 learning**: The implementation uses the same binary search pattern as AddTextRun. However, unlike AddTextRun which must handle the "any match" behavior of binary search, AddInlineObjectRun only needs to detect *any* overlap (returns -1 for no overlap, non-negative for found overlap). So it doesn't need the backward scan that AddTextRun required.
 
 ## TASK No.4: Unit test for ResetInlineObjectRun
 
@@ -334,6 +337,7 @@ Add test category for `ResetInlineObjectRun` to `Test\GacUISrc\UnitTest\TestRemo
    - Verify return value is `false`
    - Verify map state unchanged (use `AssertMap` comparing before and after)
 4. Use existing helper functions
+5. **IMPORTANT**: Use designated initializers for CaretRange: `{.caretBegin = x, .caretEnd = y}`
 
 ### how to test it
 
@@ -393,6 +397,7 @@ Add test category for `MergeRuns` to `Test\GacUISrc\UnitTest\TestRemote_Document
    - Create `AssertMap` overload for `DocumentRunPropertyMap` (which can contain either text or inline objects)
    - Create `FormatRunProperty` overload for `DocumentRunProperty`
    - Create `CompareRunProperty` overload for `DocumentRunProperty`
+6. **IMPORTANT**: Use designated initializers for CaretRange: `{.caretBegin = x, .caretEnd = y}`
 
 ### how to test it
 
@@ -410,6 +415,8 @@ Modified file: `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
 ### rationale
 
 MergeRuns implements the critical priority system where inline objects (atomic UI elements) take precedence over text formatting. This function is used when building the final paragraph state from separate text and inline object tracking. The splitting logic must be precise - any error could result in text runs overlapping inline objects in the protocol, causing rendering corruption. Testing ensures the state machine correctly handles gaps, overlaps, and boundary conditions.
+
+**Note from Task 2 learning**: The MergeRuns implementation uses a state machine with `hasCurrentText` flag to track partial text runs being built. Be careful not to hold references (`auto&&`) to keys when iterating and potentially modifying collections - always use value copies to avoid reference invalidation issues similar to those found in AddTextRun.
 
 ## TASK No.6: Unit test for DiffRuns
 
@@ -466,6 +473,7 @@ Add test category for `DiffRuns` to `Test\GacUISrc\UnitTest\TestRemote_DocumentR
    - Call `DiffRuns` to populate the descriptor
    - Verify `runsDiff`, `createdInlineObjects`, and `removedInlineObjects` using assertion helpers
 4. Focus heavily on key difference scenarios - this is critical for protocol correctness
+5. **IMPORTANT**: Use designated initializers for CaretRange: `{.caretBegin = x, .caretEnd = y}`
 
 ### how to test it
 
@@ -483,6 +491,8 @@ Modified file: `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
 ### rationale
 
 DiffRuns is the most critical function for protocol correctness. It computes the difference between two paragraph states for sending incremental updates over the network. The key-handling requirement is crucial: when old runs are split or merged in new state, the diff must represent the NEW state with NEW keys. Any bug here causes synchronization failures between client and server, corrupting the remote paragraph state. The separate inline object tracking enables proper lifecycle management (creation/destruction callbacks). This function must be tested exhaustively with focus on key transformation scenarios.
+
+**Note from Task 2 learning**: Be careful when iterating through both old and new maps simultaneously in the two-pointer algorithm. Avoid holding references to container keys/values when they might be accessed after potential container modifications. The DiffRuns implementation already uses value copies correctly, which is good practice.
 
 ## TASK No.7: Implement `GuiRemoteGraphicsParagraph` class
 
