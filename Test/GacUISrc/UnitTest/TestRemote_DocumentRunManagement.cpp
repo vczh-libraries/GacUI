@@ -1542,6 +1542,7 @@ TEST_FILE
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
 			DiffRuns(oldRuns, newRuns, desc);
 			
+			TEST_ASSERT(!desc.runsDiff || desc.runsDiff->Count() == 0);
 			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline objects created");
 			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({5, 7}), L"Inline objects removed");
 		});
