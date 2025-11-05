@@ -24,7 +24,7 @@ This project is built on top of:
 
 # General Instruction
 
-- This project uses C++ 20, you don't need to worry about compatibility with prior version of C++.
+- This project uses C++ 20, you are recommended to use new C++ 20 feature aggresively.
 - All code should be crossed-platform. In case when OS feature is needed, a Windows version and a Linux version should be prepared in different files, following the `*.Windows.cpp` and `*.Linux.cpp` naming convention, and keep them as small as possible.
 - DO NOT MODIFY any source code in the `Import` folder, they are dependencies.
 - DO NOT MODIFY any source code in the `Release` folder, they are generated release files.
