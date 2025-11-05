@@ -1,13 +1,20 @@
-# Task
+# Verifying
+
+- Checkout `Accessing Log Files and PowerShell Scripts` for context about mentioned `*.md` and `*.ps1` files.
+  - All `*.md` and `*.ps1` files should already be existing, you should not create any new files.
 
 ## Goal and Constraints
 
+- All instructions in `Copilot_Execution.md` should have been applied to the source code, your goal is to test it.
 - You must ensure the source code compiles.
 - You must ensure all tests pass.
+- Until the code compiles and all test cases pass. Ensure there is a `# !!!VERIFIED!!!` mark at the end of `Copilot_Execution.md`.
 
-## Step 1. Implement Request
+## Step 1. Check and Respect my Code Change
 
-- Follow the chat message to implement the task.
+- If you spot any difference between `Copilot_Execution.md` and the source code:
+  - It means I edited them. I have my reason. DO NOT change the code to match `Copilot_Execution.md`.
+  - Write down every differences you spotted, make a `## User Update Spotted` section in the `# UPDATES` section in `Copilot_Execution.md`.
 
 ## Step 2. Compile
 
@@ -18,6 +25,11 @@
 - If there is any compilation error, address all of them:
   - If there is any compile warning, only fix warnings that caused by your code change. Do no fix any other warnings.
   - If there is any compile error, you need to carefully identify, is the issue in the callee side or the caller side. Check out similar code before making a decision.
+  - For every attempt of fixing the source code:
+    - Explain why the original change did not work.
+    - Explain what you need to do.
+    - Explain why you think it would solve the build break or test break.
+    - Log these in `Copilot_Execution.md`, with section `## Fixing attempt No.<attempt_number>` in `# FIXING ATTEMPTS`.
   - Go back to `Step 2. Compile`
 
 ## Step 3. Run Unit Test
@@ -38,7 +50,13 @@
   - If your change did not change the test result, make sure you followed `Step 2. Compile` to compile the code.
   - If the test result still not changed after redoing `Step 2. Compile` and `Step 3. Run Unit Test`, these two steps are absolutely no problem, the only reason is that your change is not correct.
 - You must carefully identify, if the cause is in the source code or in the failed test. In most of the cases, the cause is in the source code.
+  - You can reference to `Copilot_Task.md` and `Copilot_Planning.md` for more details before making a decision, about fixing the test case or the source code.
 - DO NOT delete any test case.
+- For every attempt of fixing the source code:
+  - Explain why the original change did not work.
+  - Explain what you need to do.
+  - Explain why you think it would solve the build break or test break.
+  - Log these in `Copilot_Execution.md`, with section `## Fixing attempt No.<attempt_number>` in `# FIXING ATTEMPTS`.
 
 ## Step 5. Check it Again
 
@@ -46,15 +64,14 @@
 
 # External Tools Environment and Context
 
-- You are on Windows running in Visual Studio Code.
+- You are on Windows running in Cursor.
 - In order to achieve the goal, you always need to create/delete/update files, build the project, run the unit test, etc. This is what you MUST DO to ensure a successful result:
-  - You are always recommended to ask Visual Studio Code for any task, but when there is no choice but to use a Powershell Terminal:
+  - You are always recommended to ask Cursor for any task, but when there is no choice but to use a Powershell Terminal:
     - DO NOT run multiple commands at the same time, except they are connected with pipe (`|`).
     - DO NOT call `msbuild` or other executable files by yourself.
     - DO NOT create any new file unless explicitly directed.
     - MUST run any powershell script in this format: `& absolute-path.ps1 parameters...`.
-    - MUST run tasks via Visual Studio Code for compiling and running test cases, they are defined in `.vscode/tasks.json`, DO NOT    change this file.
-    - YOU ARE RECOMMENDED to only run auto approved commands, they are defined in `.vscode/settings.json`, DO NOT change this file.
+    - MUST run tasks via Cursor for compiling and running test cases, they are defined in `.vscode/tasks.json`, DO NOT    change this file.
 
 # General Instructions
 
@@ -74,37 +91,46 @@
   - In side the `Filter` tag there is the solution explorer folder.
   - Edit that `*.filters` file to include the source file.
 
+# Accessing Log Files and PowerShell Scripts
+
+This guidance is for accessing following files mentioned in this instruction:
+- `Copilot_Scrum.md`
+- `Copilot_Task.md`
+- `Copilot_Planning.md`
+- `Copilot_Execution.md`
+- `Copilot_KB.md`
+- `copilotPrepare.ps1`
+- `copilotBuild.ps1`
+- `copilotExecute.ps1`
+
+If you are running in Visual Studio, you will find the `TaskLogs` project in the current solution.
+Otherwise, locate the `TaskLogs` project in `REPO-ROOT/.github/TaskLogs/TaskLogs.vcxitems`.
+`REPO-ROOT` is the root folder of the repo.
+
+`TaskLogs.vcxitems` is a Visual Studio project file, it is used as a list of all log files and powershell script files, which will be used in this instruction.
+You need to locate listed files in `TaskLogs.vcxitems`.
+
+## Important Rules for Markdown Document or Log
+
+- Do not print "````````" or "````````markdown" in markdown file.
+- It is totally fine to have multiple top level `# Topic`.
+- When mentioning a C++ name in markdown file:
+  - If it is defined in the standard C++ library or third-party library, use the full name.
+  - If it is defined in the source code, use the full name if there is ambiguity, and then mention the file containing its definition.
+
 # Unit Test Projects to Work with
 
 ## Compile the Solution
 
-- Just let Visual Studio Code to compile the solution, the `Build Unit Tests` should have been configured in `tasks.json`.
+- Just let Cursor to compile the solution, the `Build Unit Tests` should have been configured in `tasks.json`.
   - This task only copmile without running.
-- If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
-- DO NOT use msbuild by yourself.
-- DO NOT modify `tasks.json`.
 - DO NOT run `Build and Run Unit Tests`.
-
-### The Correct Way to Read Compiler Result
-
-- The only source of trust is the raw output of the compiler.
-  - It is saved to `REPO-ROOT/.github/TaskLogs/Build.log`. `REPO-ROOT` is the root folder of the repo.
-- DO NOT TRUST related tools Visual Studio Code offers you, like `get_errors` or `get_task_output`, etc.
 
 ## Executing Unit Test
 
-- Just let Visual Studio Code to run the unit test, the `Run Unit Tests` should have been configured in `tasks.json`.
+- Just let Cursor to run the unit test, the `Run Unit Tests` should have been configured in `tasks.json`.
   - If you updated any source files, you should build the unit test before running it, check out `Compile the Solution` for details.
   - Run the `Run Unit Tests` task.
   - When all test cases pass, there will be a summarizing about how many test cases are executed. Otherwise it crashed at the last showing test case.
-- If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
-- DO NOT call executables or scripts yourself.
-- DO NOT modify `tasks.json`.
 - DO NOT run `Build and Run Unit Tests`.
-
-### The Correct Way to Read Test Result
-
-- The only source of trust is the raw output of the unit test process.
-  - It is saved to `REPO-ROOT/.github/TaskLogs/Execute.log`. `REPO-ROOT` is the root folder of the repo.
-- DO NOT TRUST related tools Visual Studio Code offers you, like `get_errors` or `get_task_output`, etc.
 

@@ -1,16 +1,13 @@
-# Summarizing
-
-- Checkout `Accessing Log Files and PowerShell Scripts` for context about mentioned `*.md` and `*.ps1` files.
-  - All `*.md` and `*.ps1` files should already be existing, you should not create any new files.
+# Execution
 
 ## Goal and Constraints
 
-- Your goal is to finish an execution document in `Copilot_Execution.md` according to `Copilot_Task.md` and `Copilot_Planning.md`.
+- You are going to apply changes on the source code as well following `Copilot_Execution.md`.
 
 ## Copilot_Execution.md Structure
 
 - `# !!!EXECUTION!!!`: This file always begin with this title.
-- `# UPDATES`: For multiple `## UPDATE` sections. It should always exist even there is no update.
+- `# UPDATES`:
   - `## UPDATE`: There could be multiple occurrences. Each one has an exact copy of the update description I gave you.
 - `# IMPROVEMENT PLAN`.
 - `# TEST PLAN`.
@@ -18,55 +15,43 @@
 
 ## Step 1. Identify the Problem
 
-- The design document is in `Copilot_Task.md`, the planning document is in `Copilot_Planning.md`.
+- The execution document is in `Copilot_Execution.md`
 - Find `# Update` in the LATEST chat message. Ignore any `# Update` in the chat history.
 - If there is an `# Update` section: it means I am going to propose some change to `Copilot_Execution.md` and the source code together.
   - Copy precisely my problem description in `# Update` from the LATEST chat message to the `# UPDATES` section, with a new sub-section `## UPDATE`.
-  - Follow my update to change the execution document.
+  - Follow my update to change the execution document and the source code.
 - If there is nothing:
-  - If `Copilot_Execution.md` only has a title, you are on a fresh start.
-    - Add an empty `# UPDATES` section after the title, if it does not already exist.
-  - If there is a `# !!!FINISHED!!!` mark in `Copilot_Execution.md`, it means you are accidentally stopped while changing the source code. Please continue your work.
-  - If there is no `# !!!FINISHED!!!` mark in `Copilot_Execution.md`, it means you are accidentally stopped while finishing the document. Please continue your work.
+  - Apply all code changes in `Copilot_Execution.md` to the source code.
+  - After applying each step in `Copilot_Execution.md`, mark the step as completed by appending `[DONE]` after the step title. This allow you to find where you are if you are interrupted.
 
-## Step 2. Finish the Document
+## Step 2. Make Sure the Code Compiles but DO NOT Run Unit Test
 
-- Your need to summary code change in `Copilot_Execution.md`.
-- All changes you need to made is already in `Copilot_Planning.md`, but it contains many explanations.
-- Read `Copilot_Planning.md`, copy the following parts to `Copilot_Execution.md`:
-  - `# IMPROVEMENT PLAN`
-    - Copy EVERY code block exactly as written
-    - If Planning has 1000 lines of test code, Execution must have those same 1000 lines
-    - Remove only the explanatory text between code blocks
-    - Keep ALL actual code
-  - `# TEST PLAN`
-    - Copy EVERY code block exactly as written
-    - If Planning has 1000 lines of test code, Execution must have those same 1000 lines
-    - Remove only the explanatory text between code blocks
-    - Keep ALL actual code
-  - DO NOT copy `# UPDATES` from `Copilot_Planning.md` to `Copilot_Execution.md`. The `# UPDATES` in `Copilot_Execution.md` is for update requests for `Copilot_Execution.md` and the actual source code.
-
-## Step 3. Document Quality Check List
-
-- [ ] Can someone copy-paste ONLY from Execution.md and apply all changes? (No need to refer to Planning.md)
-- [ ] Does every STEP show the complete code to write, not just describe it?
-- [ ] Is there any phrase like "including:", "such as:", "etc.", "refer to"? (If yes, you did it wrong!)
-- [ ] Count lines of code in Planning.md STEP X vs Execution.md STEP X - are they similar?
-
-## Step 4. Completion
-- Ensure there is a `# !!!FINISHED!!!` mark at the end of `Copilot_Execution.md` to indicate the document reaches the end.
+- Check out `Compile the Solution` for details about compiling the solution but DO NOT run unit test.
+  - `Compile the Solution` is the only way to build the project. DO NOT call any other tools or scripts.
+- Find out if there is any warning or error.
+  - `Compile the Solution` has the instruction about how to check compile result.
+- If there is any compilation error, address all of them:
+  - If there is any compile warning, only fix warnings that caused by your code change. Do no fix any other warnings.
+  - If there is any compile error, you need to carefully identify, is the issue in the callee side or the caller side. Check out similar code before making a decision.
+  - For every attempt of fixing the source code:
+    - Explain why the original change did not work.
+    - Explain what you need to do.
+    - Explain why you think it would solve the build break.
+    - Log these in `Copilot_Execution.md`, with section `## Fixing attempt No.<attempt_number>` in `# FIXING ATTEMPTS`.
+  - Go back to `Step 2. Make Sure the Code Compiles but DO NOT Run Unit Test`.
+- When the code compiles:
+  - DO NOT run any tests, the code will be verified in future tasks.
 
 # External Tools Environment and Context
 
-- You are on Windows running in Visual Studio Code.
+- You are on Windows running in Cursor.
 - In order to achieve the goal, you always need to create/delete/update files, build the project, run the unit test, etc. This is what you MUST DO to ensure a successful result:
-  - You are always recommended to ask Visual Studio Code for any task, but when there is no choice but to use a Powershell Terminal:
+  - You are always recommended to ask Cursor for any task, but when there is no choice but to use a Powershell Terminal:
     - DO NOT run multiple commands at the same time, except they are connected with pipe (`|`).
     - DO NOT call `msbuild` or other executable files by yourself.
     - DO NOT create any new file unless explicitly directed.
     - MUST run any powershell script in this format: `& absolute-path.ps1 parameters...`.
-    - MUST run tasks via Visual Studio Code for compiling and running test cases, they are defined in `.vscode/tasks.json`, DO NOT    change this file.
-    - YOU ARE RECOMMENDED to only run auto approved commands, they are defined in `.vscode/settings.json`, DO NOT change this file.
+    - MUST run tasks via Cursor for compiling and running test cases, they are defined in `.vscode/tasks.json`, DO NOT    change this file.
 
 # General Instructions
 
@@ -112,4 +97,20 @@ You need to locate listed files in `TaskLogs.vcxitems`.
 - When mentioning a C++ name in markdown file:
   - If it is defined in the standard C++ library or third-party library, use the full name.
   - If it is defined in the source code, use the full name if there is ambiguity, and then mention the file containing its definition.
+
+# Unit Test Projects to Work with
+
+## Compile the Solution
+
+- Just let Cursor to compile the solution, the `Build Unit Tests` should have been configured in `tasks.json`.
+  - This task only copmile without running.
+- DO NOT run `Build and Run Unit Tests`.
+
+## Executing Unit Test
+
+- Just let Cursor to run the unit test, the `Run Unit Tests` should have been configured in `tasks.json`.
+  - If you updated any source files, you should build the unit test before running it, check out `Compile the Solution` for details.
+  - Run the `Run Unit Tests` task.
+  - When all test cases pass, there will be a summarizing about how many test cases are executed. Otherwise it crashed at the last showing test case.
+- DO NOT run `Build and Run Unit Tests`.
 
