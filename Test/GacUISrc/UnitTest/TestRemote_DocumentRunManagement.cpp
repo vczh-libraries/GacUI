@@ -176,6 +176,124 @@ namespace remote_document_paragrpah_tests
 		}
 		TEST_ASSERT(matches);
 	}
+	// Format a remoteprotocol::DocumentRun for debugging
+	WString FormatDocumentRun(const remoteprotocol::DocumentRun& run)
+	{
+		return L"[" + itow(run.caretBegin) + L"," + itow(run.caretEnd) + L") -> " + FormatRunProperty(run.props);
+	}
+
+	// Print List of DocumentRun for debugging
+	WString PrintDiffList(const Ptr<List<remoteprotocol::DocumentRun>>& diff)
+	{
+		if (!diff || diff->Count() == 0)
+		{
+			return L"(empty)";
+		}
+		
+		WString result;
+		for (vint i = 0; i < diff->Count(); i++)
+		{
+			result += L"  " + FormatDocumentRun(diff->Get(i)) + L"\r\n";
+		}
+		return result;
+	}
+
+	// Compare two remoteprotocol::DocumentRun for equality
+	bool CompareDocumentRun(const remoteprotocol::DocumentRun& a, const remoteprotocol::DocumentRun& b)
+	{
+		return a.caretBegin == b.caretBegin &&
+		       a.caretEnd == b.caretEnd &&
+		       CompareRunProperty(a.props, b.props);
+	}
+
+	// Assert that two diff lists are equal
+	void AssertDiffList(
+		const Ptr<List<remoteprotocol::DocumentRun>>& actual,
+		const Ptr<List<remoteprotocol::DocumentRun>>& expected,
+		const wchar_t* message
+	)
+	{
+		vint actualCount = actual ? actual->Count() : 0;
+		vint expectedCount = expected ? expected->Count() : 0;
+		
+		if (actualCount != expectedCount)
+		{
+			auto msg = WString::Unmanaged(message) + L"\r\nExpected count: " + itow(expectedCount)
+			         + L", Actual count: " + itow(actualCount)
+			         + L"\r\nExpected:\r\n" + PrintDiffList(expected)
+			         + L"Actual:\r\n" + PrintDiffList(actual);
+			UnitTest::PrintMessage(msg, UnitTest::MessageKind::Error);
+			TEST_ASSERT(false);
+		}
+		
+		for (vint i = 0; i < expectedCount; i++)
+		{
+			auto&& e = expected->Get(i);
+			auto&& a = actual->Get(i);
+			
+			if (!CompareDocumentRun(a, e))
+			{
+				auto msg = WString::Unmanaged(message) + L"\r\nDiff at index " + itow(i)
+				         + L"\r\nExpected: " + FormatDocumentRun(e)
+				         + L"\r\nActual: " + FormatDocumentRun(a)
+				         + L"\r\nFull Expected:\r\n" + PrintDiffList(expected)
+				         + L"Full Actual:\r\n" + PrintDiffList(actual);
+				UnitTest::PrintMessage(msg, UnitTest::MessageKind::Error);
+				TEST_ASSERT(false);
+			}
+		}
+	}
+
+	// Print List of callback IDs for debugging
+	WString PrintCallbackIdList(const Ptr<List<vint>>& ids)
+	{
+		if (!ids || ids->Count() == 0)
+		{
+			return L"(empty)";
+		}
+		
+		WString result = L"  ";
+		for (vint i = 0; i < ids->Count(); i++)
+		{
+			if (i > 0) result += L", ";
+			result += itow(ids->Get(i));
+		}
+		return result + L"\r\n";
+	}
+
+	// Assert that two callback ID lists are equal
+	void AssertCallbackIdList(
+		const Ptr<List<vint>>& actual,
+		const Ptr<List<vint>>& expected,
+		const wchar_t* message
+	)
+	{
+		vint actualCount = actual ? actual->Count() : 0;
+		vint expectedCount = expected ? expected->Count() : 0;
+		
+		if (actualCount != expectedCount)
+		{
+			auto msg = WString::Unmanaged(message) + L"\r\nExpected count: " + itow(expectedCount)
+			         + L", Actual count: " + itow(actualCount)
+			         + L"\r\nExpected: " + PrintCallbackIdList(expected)
+			         + L"Actual: " + PrintCallbackIdList(actual);
+			UnitTest::PrintMessage(msg, UnitTest::MessageKind::Error);
+			TEST_ASSERT(false);
+		}
+		
+		for (vint i = 0; i < expectedCount; i++)
+		{
+			if (expected->Get(i) != actual->Get(i))
+			{
+				auto msg = WString::Unmanaged(message) + L"\r\nDiff at index " + itow(i)
+				         + L": Expected " + itow(expected->Get(i)) + L", Actual " + itow(actual->Get(i))
+				         + L"\r\nExpected: " + PrintCallbackIdList(expected)
+				         + L"Actual: " + PrintCallbackIdList(actual);
+				UnitTest::PrintMessage(msg, UnitTest::MessageKind::Error);
+				TEST_ASSERT(false);
+			}
+		}
+	}
 }
 using namespace remote_document_paragrpah_tests;
 
@@ -1338,6 +1456,126 @@ TEST_FILE
 			expectedResult.Add({.caretBegin = 85, .caretEnd = 100}, DocumentRunProperty(textProp3));
 			
 			AssertMap(result, expectedResult);
+		});
+	});
+	
+	TEST_CATEGORY(L"DiffRuns")
+	{
+		// Helper to create expected DocumentRun list
+		auto MakeExpectedList = []() {
+			return Ptr(new List<remoteprotocol::DocumentRun>());
+		};
+		
+		// Helper to add expected DocumentRun
+		auto AddExpectedRun = [](Ptr<List<remoteprotocol::DocumentRun>> list, vint begin, vint end, const DocumentRunProperty& prop) {
+			remoteprotocol::DocumentRun run;
+			run.caretBegin = begin;
+			run.caretEnd = end;
+			run.props = prop;
+			list->Add(run);
+		};
+		
+		// Helper to create expected callback ID list
+		auto MakeExpectedIds = [](std::initializer_list<vint> ids) {
+			auto list = Ptr(new List<vint>());
+			for (auto id : ids)
+			{
+				list->Add(id);
+			}
+			return list;
+		};
+		
+		TEST_CASE(L"Empty maps produce empty diff")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			TEST_ASSERT(!desc.runsDiff || desc.runsDiff->Count() == 0);
+			TEST_ASSERT(!desc.createdInlineObjects || desc.createdInlineObjects->Count() == 0);
+			TEST_ASSERT(!desc.removedInlineObjects || desc.removedInlineObjects->Count() == 0);
+		});
+		
+		TEST_CASE(L"Old map empty, new map has text runs")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			newRuns.Add({.caretBegin = 0, .caretEnd = 5}, DocumentRunProperty(CreateTextProp(0xFF)));
+			newRuns.Add({.caretBegin = 5, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x00)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 0, 5, DocumentRunProperty(CreateTextProp(0xFF)));
+			AddExpectedRun(expected, 5, 10, DocumentRunProperty(CreateTextProp(0x00)));
+			
+			AssertDiffList(desc.runsDiff, expected, L"All new runs should be in diff");
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline objects created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline objects removed");
+		});
+		
+		TEST_CASE(L"Old map empty, new map has inline objects")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			newRuns.Add({.caretBegin = 0, .caretEnd = 1}, DocumentRunProperty(CreateInlineProp(5, 100)));
+			newRuns.Add({.caretBegin = 5, .caretEnd = 6}, DocumentRunProperty(CreateInlineProp(7, 50)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 0, 1, DocumentRunProperty(CreateInlineProp(5, 100)));
+			AddExpectedRun(expected, 5, 6, DocumentRunProperty(CreateInlineProp(7, 50)));
+			
+			AssertDiffList(desc.runsDiff, expected, L"All new inline objects in diff");
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({5, 7}), L"Inline objects created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline objects removed");
+		});
+		
+		TEST_CASE(L"New map empty, old map has inline objects")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 1}, DocumentRunProperty(CreateInlineProp(5, 100)));
+			oldRuns.Add({.caretBegin = 5, .caretEnd = 6}, DocumentRunProperty(CreateInlineProp(7, 50)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline objects created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({5, 7}), L"Inline objects removed");
+		});
+
+		TEST_CASE(L"Same key, same value - no diff entry")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			auto prop = DocumentRunProperty(CreateTextProp(0xFF));
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, prop);
+			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, prop);
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			TEST_ASSERT(!desc.runsDiff || desc.runsDiff->Count() == 0);
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline objects created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline objects removed");
+		});
+
+		TEST_CASE(L"Same key, different value - entry in diff")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0xFF)));
+			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x00)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateTextProp(0x00)));
+			
+			AssertDiffList(desc.runsDiff, expected, L"Changed run should be in diff");
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline objects created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline objects removed");
 		});
 	});
 }
