@@ -219,6 +219,7 @@ DiffRuns
 		CaretRange currentTextRange;
 		remoteprotocol::DocumentTextRunProperty currentTextProperty;
 		bool hasCurrentText = false;
+		vint lastInlineEnd = -1;
 
 		while (textIdx < textKeys.Count() || inlineIdx < inlineKeys.Count() || hasCurrentText)
 		{
@@ -228,15 +229,22 @@ DiffRuns
 				currentTextProperty = textRuns[currentTextRange];
 				hasCurrentText = true;
 				textIdx++;
-			}
-
-			if (inlineIdx < inlineKeys.Count())
-			{
-				auto&& inlineKey = inlineKeys[inlineIdx];
-				remoteprotocol::DocumentRunProperty runProp = inlineObjectRuns[inlineKey];
-				result.Add(inlineKey, runProp);
-				inlineIdx++;
-				continue;
+				
+				// Trim text run if it overlaps with the last processed inline object
+				if (lastInlineEnd > currentTextRange.caretBegin)
+				{
+					if (lastInlineEnd >= currentTextRange.caretEnd)
+					{
+						// Text run is completely within the last inline object
+						hasCurrentText = false;
+						continue;
+					}
+					else
+					{
+						// Text run partially overlaps, trim the beginning
+						currentTextRange.caretBegin = lastInlineEnd;
+					}
+				}
 			}
 
 			if (hasCurrentText && inlineIdx >= inlineKeys.Count())
@@ -244,6 +252,16 @@ DiffRuns
 				remoteprotocol::DocumentRunProperty runProp = currentTextProperty;
 				result.Add(currentTextRange, runProp);
 				hasCurrentText = false;
+				continue;
+			}
+
+			if (!hasCurrentText && inlineIdx < inlineKeys.Count())
+			{
+				auto&& inlineKey = inlineKeys[inlineIdx];
+				remoteprotocol::DocumentRunProperty runProp = inlineObjectRuns[inlineKey];
+				result.Add(inlineKey, runProp);
+				lastInlineEnd = inlineKey.caretEnd;
+				inlineIdx++;
 				continue;
 			}
 
@@ -261,6 +279,7 @@ DiffRuns
 				{
 					remoteprotocol::DocumentRunProperty runProp = inlineObjectRuns[inlineKey];
 					result.Add(inlineKey, runProp);
+					lastInlineEnd = inlineKey.caretEnd;
 					inlineIdx++;
 				}
 				else
@@ -274,6 +293,7 @@ DiffRuns
 
 					remoteprotocol::DocumentRunProperty runProp = inlineObjectRuns[inlineKey];
 					result.Add(inlineKey, runProp);
+					lastInlineEnd = inlineKey.caretEnd;
 					inlineIdx++;
 
 					if (currentTextRange.caretEnd > inlineKey.caretEnd)
