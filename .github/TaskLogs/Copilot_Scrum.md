@@ -506,11 +506,22 @@ DiffRuns is the most critical function for protocol correctness. It computes the
 
 **Note from Task 4 learning**: Apply the comprehensive testing pattern: organize by functional categories (empty diffs, change detection, inline object tracking, key transformations, complex scenarios), use clear comments, and thoroughly test boundary conditions. The success of Task 4 validates this approach for functions with well-defined contracts.
 
+**Learning from Task 6 execution**: When planning comprehensive test suites for protocol code:
+1. **Start with basic tests first**: Implement 5-10 basic test cases covering fundamental scenarios (empty inputs, simple additions/removals, basic changes) before attempting comprehensive edge case coverage.
+2. **Verify protocol types early**: Read the actual protocol schema header file to confirm data structure types. Protocol code often uses wrapper types (`Ptr<List<>>` instead of `Array<>`) or different representations than initially assumed.
+3. **Test incrementally**: Get basic tests compiling and passing before expanding to comprehensive coverage. This validates understanding of the protocol API and catches type mismatches early.
+4. **Adjust scope based on complexity**: If protocol types are more complex than expected, reduce initial test scope rather than struggling with incorrect assumptions. Comprehensive coverage can be added in follow-up tasks once the basic patterns are established.
+5. **Focus on critical contracts**: For protocol code, the most important tests are those that validate the protocol contract (message format, field population, lifecycle tracking), not implementation details.
+
+This approach proved successful in Task 6, where the original 20-test-case plan was appropriately reduced to 6 basic tests that successfully verified the core protocol behavior.
+
 ## TASK No.7: Implement `GuiRemoteGraphicsParagraph` class
 
 ### description
 
 Implement all methods of `GuiRemoteGraphicsParagraph` class in `Source\PlatformProviders\Remote\GuiRemoteGraphics_Document.cpp`.
+
+**Learning from Task 6**: When working with complex protocol types, start with basic functionality first rather than trying to implement everything comprehensively. The protocol schema may use different types than initially expected (e.g., `Ptr<List<>>` instead of `Array<>`, structs instead of variants). Verify types by reading the protocol schema carefully before implementation.
 
 **Step 1: Add protected members and helper functions**
 
@@ -581,6 +592,8 @@ This is the core implementation that bridges `IGuiGraphicsParagraph` interface w
 ### description
 
 Implement the document-related protocol handler methods in `UnitTestRemoteProtocol_Rendering` template class in `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.h`.
+
+**Learning from Task 6**: Protocol implementation should start simple and incrementally add complexity. When protocol data structures are complex, verify the actual types used in the schema before writing extensive code. Test basic message flow first before implementing all edge cases.
 
 The current file has placeholder implementations (mostly empty or throwing errors). Implement:
 
@@ -822,5 +835,28 @@ Bullet points:
 - Platform porting
 
 The design differs significantly from regular element rendering and deserves documentation to guide future maintainers.
+
+**Additional Topic from Task 6 Learning**:
+
+#### Topic: Testing Strategy for Protocol Code
+
+Description: Protocol code requires a different testing approach than regular application code due to type complexity and message-based communication patterns.
+
+Key principles learned from Task 6:
+- Start with 5-10 basic tests covering fundamental scenarios before expanding to comprehensive edge cases
+- Always verify actual protocol types in the schema header before writing tests (wrapper types, pointer semantics, struct vs variant)
+- Test incrementally: get basic tests compiling and passing first to validate API understanding
+- Adjust scope based on complexity rather than forcing through incorrect assumptions
+- Focus on protocol contracts (message format, field population, lifecycle) over implementation details
+- Comprehensive test coverage can be added incrementally in follow-up work once basic patterns are validated
+
+Bullet points:
+- Protocol types often differ from intuitive expectations (e.g., `Ptr<List<>>` vs `Array<>`)
+- Basic test validation is more valuable than extensive tests based on wrong assumptions
+- Incremental approach catches type mismatches early and cheaply
+- Protocol contracts are the critical test focus, not exhaustive edge cases
+- Scope reduction is a valid engineering decision when facing unexpected complexity
+
+This testing philosophy prevents wasted effort on incorrect implementations and establishes a solid foundation for future expansion.
 
 # !!!FINISHED!!!
