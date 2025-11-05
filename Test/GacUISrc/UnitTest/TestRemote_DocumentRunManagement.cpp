@@ -654,7 +654,354 @@ TEST_FILE
 			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop2);
 			expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, prop3);
 			
-			AssertMap(inlineMap, expectedMap);
-		});
+		AssertMap(inlineMap, expectedMap);
 	});
+});
+
+TEST_CATEGORY(L"ResetInlineObjectRun")
+{
+	// Success cases - exact match removal
+	TEST_CASE(L"Remove from single object map")
+	{
+		DocumentInlineObjectRunPropertyMap inlineMap;
+		auto prop1 = CreateInlineProp(100);
+		
+		AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+		bool result = ResetInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20});
+		
+		TEST_ASSERT(result == true);
+		TEST_ASSERT(inlineMap.Count() == 0);
+		
+		DocumentInlineObjectRunPropertyMap expectedMap;
+		AssertMap(inlineMap, expectedMap);
+	});
+
+	TEST_CASE(L"Remove from map with multiple objects - remove middle")
+	{
+		DocumentInlineObjectRunPropertyMap inlineMap;
+		auto prop1 = CreateInlineProp(100);
+		auto prop2 = CreateInlineProp(200);
+		auto prop3 = CreateInlineProp(300);
+		
+		AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+		AddInlineObjectRun(inlineMap, {.caretBegin = 30, .caretEnd = 40}, prop2);
+		AddInlineObjectRun(inlineMap, {.caretBegin = 50, .caretEnd = 60}, prop3);
+		
+		bool result = ResetInlineObjectRun(inlineMap, {.caretBegin = 30, .caretEnd = 40});
+		
+		TEST_ASSERT(result == true);
+		TEST_ASSERT(inlineMap.Count() == 2);
+		
+		DocumentInlineObjectRunPropertyMap expectedMap;
+		expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
+		expectedMap.Add({.caretBegin = 50, .caretEnd = 60}, prop3);
+		
+		AssertMap(inlineMap, expectedMap);
+	});
+
+	TEST_CASE(L"Remove from map with multiple objects - remove first")
+	{
+		DocumentInlineObjectRunPropertyMap inlineMap;
+		auto prop1 = CreateInlineProp(100);
+		auto prop2 = CreateInlineProp(200);
+		auto prop3 = CreateInlineProp(300);
+		
+		AddInlineObjectRun(inlineMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+		AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
+		AddInlineObjectRun(inlineMap, {.caretBegin = 20, .caretEnd = 30}, prop3);
+		
+		bool result = ResetInlineObjectRun(inlineMap, {.caretBegin = 0, .caretEnd = 10});
+		
+		TEST_ASSERT(result == true);
+		TEST_ASSERT(inlineMap.Count() == 2);
+		
+		DocumentInlineObjectRunPropertyMap expectedMap;
+		expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop2);
+		expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, prop3);
+		
+		AssertMap(inlineMap, expectedMap);
+	});
+
+	TEST_CASE(L"Remove from map with multiple objects - remove last")
+	{
+		DocumentInlineObjectRunPropertyMap inlineMap;
+		auto prop1 = CreateInlineProp(100);
+		auto prop2 = CreateInlineProp(200);
+		auto prop3 = CreateInlineProp(300);
+		
+		AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+		AddInlineObjectRun(inlineMap, {.caretBegin = 30, .caretEnd = 40}, prop2);
+		AddInlineObjectRun(inlineMap, {.caretBegin = 50, .caretEnd = 60}, prop3);
+		
+		bool result = ResetInlineObjectRun(inlineMap, {.caretBegin = 50, .caretEnd = 60});
+		
+		TEST_ASSERT(result == true);
+		TEST_ASSERT(inlineMap.Count() == 2);
+		
+		DocumentInlineObjectRunPropertyMap expectedMap;
+		expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
+		expectedMap.Add({.caretBegin = 30, .caretEnd = 40}, prop2);
+		
+		AssertMap(inlineMap, expectedMap);
+	});
+
+	// Failure cases - no exact match
+	TEST_CASE(L"Remove from empty map")
+	{
+		DocumentInlineObjectRunPropertyMap inlineMap;
+		
+		bool result = ResetInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20});
+		
+		TEST_ASSERT(result == false);
+		TEST_ASSERT(inlineMap.Count() == 0);
+		
+		DocumentInlineObjectRunPropertyMap expectedMap;
+		AssertMap(inlineMap, expectedMap);
+	});
+
+	TEST_CASE(L"Remove with non-existent range")
+	{
+		DocumentInlineObjectRunPropertyMap inlineMap;
+		auto prop1 = CreateInlineProp(100);
+		
+		AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+		
+		bool result = ResetInlineObjectRun(inlineMap, {.caretBegin = 30, .caretEnd = 40});
+		
+		TEST_ASSERT(result == false);
+		TEST_ASSERT(inlineMap.Count() == 1);
+		
+		DocumentInlineObjectRunPropertyMap expectedMap;
+		expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
+		
+		AssertMap(inlineMap, expectedMap);
+	});
+
+	TEST_CASE(L"Remove with partial overlap from left")
+	{
+		DocumentInlineObjectRunPropertyMap inlineMap;
+		auto prop1 = CreateInlineProp(100);
+		
+		AddInlineObjectRun(inlineMap, {.caretBegin = 20, .caretEnd = 30}, prop1);
+		
+		bool result = ResetInlineObjectRun(inlineMap, {.caretBegin = 15, .caretEnd = 25});
+		
+		TEST_ASSERT(result == false);
+		TEST_ASSERT(inlineMap.Count() == 1);
+		
+		DocumentInlineObjectRunPropertyMap expectedMap;
+		expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, prop1);
+		
+		AssertMap(inlineMap, expectedMap);
+	});
+
+	TEST_CASE(L"Remove with partial overlap from right")
+	{
+		DocumentInlineObjectRunPropertyMap inlineMap;
+		auto prop1 = CreateInlineProp(100);
+		
+		AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+		
+		bool result = ResetInlineObjectRun(inlineMap, {.caretBegin = 15, .caretEnd = 25});
+		
+		TEST_ASSERT(result == false);
+		TEST_ASSERT(inlineMap.Count() == 1);
+		
+		DocumentInlineObjectRunPropertyMap expectedMap;
+		expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
+		
+		AssertMap(inlineMap, expectedMap);
+	});
+
+	TEST_CASE(L"Remove with range that contains existing object")
+	{
+		DocumentInlineObjectRunPropertyMap inlineMap;
+		auto prop1 = CreateInlineProp(100);
+		
+		AddInlineObjectRun(inlineMap, {.caretBegin = 15, .caretEnd = 25}, prop1);
+		
+		bool result = ResetInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 30});
+		
+		TEST_ASSERT(result == false);
+		TEST_ASSERT(inlineMap.Count() == 1);
+		
+		DocumentInlineObjectRunPropertyMap expectedMap;
+		expectedMap.Add({.caretBegin = 15, .caretEnd = 25}, prop1);
+		
+		AssertMap(inlineMap, expectedMap);
+	});
+
+	TEST_CASE(L"Remove with range contained within existing object")
+	{
+		DocumentInlineObjectRunPropertyMap inlineMap;
+		auto prop1 = CreateInlineProp(100);
+		
+		AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 30}, prop1);
+		
+		bool result = ResetInlineObjectRun(inlineMap, {.caretBegin = 15, .caretEnd = 25});
+		
+		TEST_ASSERT(result == false);
+		TEST_ASSERT(inlineMap.Count() == 1);
+		
+		DocumentInlineObjectRunPropertyMap expectedMap;
+		expectedMap.Add({.caretBegin = 10, .caretEnd = 30}, prop1);
+		
+		AssertMap(inlineMap, expectedMap);
+	});
+
+	TEST_CASE(L"Remove with adjacent range on left side")
+	{
+		DocumentInlineObjectRunPropertyMap inlineMap;
+		auto prop1 = CreateInlineProp(100);
+		
+		AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+		
+		bool result = ResetInlineObjectRun(inlineMap, {.caretBegin = 0, .caretEnd = 10});
+		
+		TEST_ASSERT(result == false);
+		TEST_ASSERT(inlineMap.Count() == 1);
+		
+		DocumentInlineObjectRunPropertyMap expectedMap;
+		expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
+		
+		AssertMap(inlineMap, expectedMap);
+	});
+
+	TEST_CASE(L"Remove with adjacent range on right side")
+	{
+		DocumentInlineObjectRunPropertyMap inlineMap;
+		auto prop1 = CreateInlineProp(100);
+		
+		AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+		
+		bool result = ResetInlineObjectRun(inlineMap, {.caretBegin = 20, .caretEnd = 30});
+		
+		TEST_ASSERT(result == false);
+		TEST_ASSERT(inlineMap.Count() == 1);
+		
+		DocumentInlineObjectRunPropertyMap expectedMap;
+		expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
+		
+		AssertMap(inlineMap, expectedMap);
+	});
+
+	TEST_CASE(L"Remove with same begin, different end")
+	{
+		DocumentInlineObjectRunPropertyMap inlineMap;
+		auto prop1 = CreateInlineProp(100);
+		
+		AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+		
+		bool result = ResetInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 25});
+		
+		TEST_ASSERT(result == false);
+		TEST_ASSERT(inlineMap.Count() == 1);
+		
+		DocumentInlineObjectRunPropertyMap expectedMap;
+		expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
+		
+		AssertMap(inlineMap, expectedMap);
+	});
+
+	TEST_CASE(L"Remove with different begin, same end")
+	{
+		DocumentInlineObjectRunPropertyMap inlineMap;
+		auto prop1 = CreateInlineProp(100);
+		
+		AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+		
+		bool result = ResetInlineObjectRun(inlineMap, {.caretBegin = 5, .caretEnd = 20});
+		
+		TEST_ASSERT(result == false);
+		TEST_ASSERT(inlineMap.Count() == 1);
+		
+		DocumentInlineObjectRunPropertyMap expectedMap;
+		expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
+		
+		AssertMap(inlineMap, expectedMap);
+	});
+
+	// Edge cases
+	TEST_CASE(L"Multiple removals in sequence")
+	{
+		DocumentInlineObjectRunPropertyMap inlineMap;
+		auto prop1 = CreateInlineProp(100);
+		auto prop2 = CreateInlineProp(200);
+		auto prop3 = CreateInlineProp(300);
+		auto prop4 = CreateInlineProp(400);
+		auto prop5 = CreateInlineProp(500);
+		
+		AddInlineObjectRun(inlineMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+		AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
+		AddInlineObjectRun(inlineMap, {.caretBegin = 20, .caretEnd = 30}, prop3);
+		AddInlineObjectRun(inlineMap, {.caretBegin = 30, .caretEnd = 40}, prop4);
+		AddInlineObjectRun(inlineMap, {.caretBegin = 40, .caretEnd = 50}, prop5);
+		
+		TEST_ASSERT(inlineMap.Count() == 5);
+		
+		// Remove second object
+		bool result1 = ResetInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20});
+		TEST_ASSERT(result1 == true);
+		TEST_ASSERT(inlineMap.Count() == 4);
+		
+		// Remove fourth object (was originally at position 3, now at position 2)
+		bool result2 = ResetInlineObjectRun(inlineMap, {.caretBegin = 30, .caretEnd = 40});
+		TEST_ASSERT(result2 == true);
+		TEST_ASSERT(inlineMap.Count() == 3);
+		
+		// Verify remaining objects are correct
+		DocumentInlineObjectRunPropertyMap expectedMap;
+		expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
+		expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, prop3);
+		expectedMap.Add({.caretBegin = 40, .caretEnd = 50}, prop5);
+		
+		AssertMap(inlineMap, expectedMap);
+	});
+
+	TEST_CASE(L"Attempt to remove already-removed object")
+	{
+		DocumentInlineObjectRunPropertyMap inlineMap;
+		auto prop1 = CreateInlineProp(100);
+		auto prop2 = CreateInlineProp(200);
+		
+		AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+		AddInlineObjectRun(inlineMap, {.caretBegin = 30, .caretEnd = 40}, prop2);
+		
+		// First removal succeeds
+		bool result1 = ResetInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20});
+		TEST_ASSERT(result1 == true);
+		TEST_ASSERT(inlineMap.Count() == 1);
+		
+		// Second removal of same object fails
+		bool result2 = ResetInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20});
+		TEST_ASSERT(result2 == false);
+		TEST_ASSERT(inlineMap.Count() == 1);
+		
+		// Map contains only the second object
+		DocumentInlineObjectRunPropertyMap expectedMap;
+		expectedMap.Add({.caretBegin = 30, .caretEnd = 40}, prop2);
+		
+		AssertMap(inlineMap, expectedMap);
+	});
+
+	TEST_CASE(L"Zero-length range removal")
+	{
+		DocumentInlineObjectRunPropertyMap inlineMap;
+		auto prop1 = CreateInlineProp(100);
+		
+		// Add normal object
+		AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+		
+		// Try to remove with zero-length range (should fail - no exact match)
+		bool result = ResetInlineObjectRun(inlineMap, {.caretBegin = 15, .caretEnd = 15});
+		
+		TEST_ASSERT(result == false);
+		TEST_ASSERT(inlineMap.Count() == 1);
+		
+		DocumentInlineObjectRunPropertyMap expectedMap;
+		expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
+		
+		AssertMap(inlineMap, expectedMap);
+	});
+});
 }

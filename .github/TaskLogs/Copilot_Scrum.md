@@ -1,4 +1,4 @@
-﻿# !!!SCRUM!!!
+# !!!SCRUM!!!
 
 # DESIGN REQUEST
 
@@ -87,7 +87,7 @@ Break Task 2 into 5 separate tasks:
 - [x] TASK No.1: Define `CaretRange` struct and run management functions
 - [x] TASK No.2: Unit test for CaretRange comparison and AddTextRun
 - [x] TASK No.3: Unit test for AddInlineObjectRun
-- [ ] TASK No.4: Unit test for ResetInlineObjectRun
+- [x] TASK No.4: Unit test for ResetInlineObjectRun
 - [ ] TASK No.5: Unit test for MergeRuns
 - [ ] TASK No.6: Unit test for DiffRuns
 - [ ] TASK No.7: Implement `GuiRemoteGraphicsParagraph` class
@@ -297,7 +297,7 @@ AddInlineObjectRun has critical no-overlap validation logic. Inline objects repr
 
 **Note from Task 2 learning**: The implementation uses the same binary search pattern as AddTextRun. However, unlike AddTextRun which must handle the "any match" behavior of binary search, AddInlineObjectRun only needs to detect *any* overlap (returns -1 for no overlap, non-negative for found overlap). So it doesn't need the backward scan that AddTextRun required.
 
-## TASK No.4: Unit test for ResetInlineObjectRun
+## TASK No.4: Unit test for ResetInlineObjectRun (✓ COMPLETED)
 
 ### description
 
@@ -354,6 +354,14 @@ Modified file: `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
 ### rationale
 
 ResetInlineObjectRun has strict exact-match semantics that differ from typical removal operations. The function only removes if the key matches exactly - this prevents accidental removal of inline objects when text formatting changes nearby. The boolean return value lets callers detect whether removal succeeded, enabling proper error handling in the protocol layer. Testing all failure cases ensures the exact-match requirement is properly enforced.
+
+**Learnings from Task 4 execution**: This task completed successfully with no user edits required. Key success factors:
+1. **Simple implementation leveraging library functions**: The function is a thin wrapper around `Dictionary::Remove()`, demonstrating that when library functionality matches requirements perfectly, simple implementations are best.
+2. **Comprehensive test coverage**: 17 test cases (4 success, 10 failure, 3 edge cases) thoroughly validated the exact-match contract.
+3. **Clear test organization**: Grouping tests by success/failure/edge cases with descriptive comments made the test intent immediately clear.
+4. **Focus on contract validation over implementation**: Tests focused on the "exact match" requirement rather than implementation details, which is appropriate for a function that delegates to well-tested library code.
+
+This validates that the established testing pattern (comprehensive coverage, clear organization, contract-focused validation) is effective for this type of function.
 
 ## TASK No.5: Unit test for MergeRuns
 
@@ -417,6 +425,8 @@ Modified file: `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
 MergeRuns implements the critical priority system where inline objects (atomic UI elements) take precedence over text formatting. This function is used when building the final paragraph state from separate text and inline object tracking. The splitting logic must be precise - any error could result in text runs overlapping inline objects in the protocol, causing rendering corruption. Testing ensures the state machine correctly handles gaps, overlaps, and boundary conditions.
 
 **Note from Task 2 learning**: The MergeRuns implementation uses a state machine with `hasCurrentText` flag to track partial text runs being built. Be careful not to hold references (`auto&&`) to keys when iterating and potentially modifying collections - always use value copies to avoid reference invalidation issues similar to those found in AddTextRun.
+
+**Note from Task 4 learning**: Follow the comprehensive testing pattern validated in Task 4: organize tests by success/failure/edge cases with clear comments, focus on contract validation (inline object priority), and ensure thorough coverage of boundary conditions. This pattern proved effective for testing functions with clear semantic contracts.
 
 ## TASK No.6: Unit test for DiffRuns
 
@@ -493,6 +503,8 @@ Modified file: `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
 DiffRuns is the most critical function for protocol correctness. It computes the difference between two paragraph states for sending incremental updates over the network. The key-handling requirement is crucial: when old runs are split or merged in new state, the diff must represent the NEW state with NEW keys. Any bug here causes synchronization failures between client and server, corrupting the remote paragraph state. The separate inline object tracking enables proper lifecycle management (creation/destruction callbacks). This function must be tested exhaustively with focus on key transformation scenarios.
 
 **Note from Task 2 learning**: Be careful when iterating through both old and new maps simultaneously in the two-pointer algorithm. Avoid holding references to container keys/values when they might be accessed after potential container modifications. The DiffRuns implementation already uses value copies correctly, which is good practice.
+
+**Note from Task 4 learning**: Apply the comprehensive testing pattern: organize by functional categories (empty diffs, change detection, inline object tracking, key transformations, complex scenarios), use clear comments, and thoroughly test boundary conditions. The success of Task 4 validates this approach for functions with well-defined contracts.
 
 ## TASK No.7: Implement `GuiRemoteGraphicsParagraph` class
 

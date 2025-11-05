@@ -1,0 +1,9 @@
+- Follow general instruction in `REPO-ROOT/.github/copilot-instructions.md`
+- If the first line of a request consist only one word (case-insensitive), follow a specific prompt file:
+  - `scrum`: `REPO-ROOT/.github/prompts/cursor-0-scrum.prompt.md`
+  - `design`: `REPO-ROOT/.github/prompts/cursor-1-design.prompt.md`
+  - `plan`: `REPO-ROOT/.github/prompts/cursor-2-planning.prompt.md`
+  - `summary`: `REPO-ROOT/.github/prompts/cursor-3-summarizing.prompt.md`
+  - `execute`: `REPO-ROOT/.github/prompts/cursor-4-execution.prompt.md`
+  - `verify`: `REPO-ROOT/.github/prompts/cursor-5-verifying.prompt.md`
+  - any other word: say in big bold "Unrecognized keyword" and stop.
