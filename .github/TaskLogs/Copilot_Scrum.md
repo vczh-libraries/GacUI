@@ -88,7 +88,7 @@ Break Task 2 into 5 separate tasks:
 - [x] TASK No.2: Unit test for CaretRange comparison and AddTextRun
 - [x] TASK No.3: Unit test for AddInlineObjectRun
 - [x] TASK No.4: Unit test for ResetInlineObjectRun
-- [ ] TASK No.5: Unit test for MergeRuns
+- [x] TASK No.5: Unit test for MergeRuns
 - [ ] TASK No.6: Unit test for DiffRuns
 - [ ] TASK No.7: Implement `GuiRemoteGraphicsParagraph` class
 - [ ] TASK No.8: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
