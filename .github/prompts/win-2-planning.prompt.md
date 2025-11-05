@@ -104,13 +104,16 @@ This guidance is for accessing following files mentioned in this instruction:
 - `copilotPrepare.ps1`
 - `copilotBuild.ps1`
 - `copilotExecute.ps1`
+- `Build.log`
+- `Execute.log`
 
-If you are running in Visual Studio, you will find the `TaskLogs` project in the current solution.
-Otherwise, locate the `TaskLogs` project in `REPO-ROOT/.github/TaskLogs/TaskLogs.vcxitems`.
+They are in the `REPO-ROOT/.github/TaskLogs` folder.
+
 `REPO-ROOT` is the root folder of the repo.
 
-`TaskLogs.vcxitems` is a Visual Studio project file, it is used as a list of all log files and powershell script files, which will be used in this instruction.
-You need to locate listed files in `TaskLogs.vcxitems`.
+## If you are running in Visual Studio
+
+You will find the `TaskLogs` project in the current solution, which should contain these files.
 
 ## Important Rules for Markdown Document or Log
 

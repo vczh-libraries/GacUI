@@ -62,7 +62,6 @@
 - You are on Windows running in Cursor.
 - Submitting CLI commands is not recommended unless you have no choice.
 - There is some rules to follow to submit correct powershell commands:
-  - DO NOT run multiple commands at the same time, except they are connected with pipe (`|`).
   - DO NOT call `msbuild` or other executable files by yourself.
   - DO NOT create any new file unless explicitly directed.
   - MUST run any powershell script in this format: `& absolute-path.ps1 parameters...`.
@@ -97,13 +96,16 @@ This guidance is for accessing following files mentioned in this instruction:
 - `copilotPrepare.ps1`
 - `copilotBuild.ps1`
 - `copilotExecute.ps1`
+- `Build.log`
+- `Execute.log`
 
-If you are running in Visual Studio, you will find the `TaskLogs` project in the current solution.
-Otherwise, locate the `TaskLogs` project in `REPO-ROOT/.github/TaskLogs/TaskLogs.vcxitems`.
+They are in the `REPO-ROOT/.github/TaskLogs` folder.
+
 `REPO-ROOT` is the root folder of the repo.
 
-`TaskLogs.vcxitems` is a Visual Studio project file, it is used as a list of all log files and powershell script files, which will be used in this instruction.
-You need to locate listed files in `TaskLogs.vcxitems`.
+## If you are running in Visual Studio
+
+You will find the `TaskLogs` project in the current solution, which should contain these files.
 
 ## Important Rules for Markdown Document or Log
 

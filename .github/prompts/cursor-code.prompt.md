@@ -49,7 +49,6 @@
 - You are on Windows running in Cursor.
 - Submitting CLI commands is not recommended unless you have no choice.
 - There is some rules to follow to submit correct powershell commands:
-  - DO NOT run multiple commands at the same time, except they are connected with pipe (`|`).
   - DO NOT call `msbuild` or other executable files by yourself.
   - DO NOT create any new file unless explicitly directed.
   - MUST run any powershell script in this format: `& absolute-path.ps1 parameters...`.
@@ -75,11 +74,27 @@
 
 # Unit Test Projects to Work with
 
+REPO-ROOT is the absolute path of the current repo.
+
+## Calling copilotBuild.ps1
+
+```
+cd REPO-ROOT\Test\GacUISrc
+& ..\..\.github\TaskLogs\copilotBuild.ps1
+```
+
+## Calling copilotExecute.ps1
+
+```
+cd REPO-ROOT\Test\GacUISrc
+& ..\..\.github\TaskLogs\copilotExecute.ps1 -Executable UnitTest
+```
+
 ## Compile the Solution
 
-- Run the `Build Unit Tests` task.
+- Run the `copilotBuild.ps1` script. Check out `Unit Test Projects to Work with` for details.
 
 ## Executing Unit Test
 
-- Run the `Run Unit Tests` task.
+- Run the `copilotExecute.ps1` script. Check out `Unit Test Projects to Work with` for details.
 
