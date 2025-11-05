@@ -45,14 +45,12 @@
 # External Tools Environment and Context
 
 - You are on Windows running in Visual Studio Code.
-- In order to achieve the goal, you always need to create/delete/update files, build the project, run the unit test, etc. This is what you MUST DO to ensure a successful result:
-  - You are always recommended to ask Visual Studio Code for any task, but when there is no choice but to use a Powershell Terminal:
-    - DO NOT run multiple commands at the same time, except they are connected with pipe (`|`).
-    - DO NOT call `msbuild` or other executable files by yourself.
-    - DO NOT create any new file unless explicitly directed.
-    - MUST run any powershell script in this format: `& absolute-path.ps1 parameters...`.
-    - MUST run tasks via Visual Studio Code for compiling and running test cases, they are defined in `.vscode/tasks.json`, DO NOT    change this file.
-    - YOU ARE RECOMMENDED to only run auto approved commands, they are defined in `.vscode/settings.json`, DO NOT change this file.
+- Submitting CLI commands is not recommended unless you have no choice.
+- There is some rules to follow to submit correct powershell commands:
+  - DO NOT call `msbuild` or other executable files by yourself.
+  - DO NOT create or delete any file unless explicitly directed.
+  - MUST run any powershell script in this format: `& absolute-path.ps1 parameters...`.
+  - MUST run tasks via Cursor for compiling and running test cases.
 
 # General Instructions
 
@@ -106,12 +104,8 @@ You will find the `TaskLogs` project in the current solution, which should conta
 
 ## Compile the Solution
 
-- Just let Visual Studio Code to compile the solution, the `Build Unit Tests` should have been configured in `tasks.json`.
-  - This task only copmile without running.
-- If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
+- Run the `Build Unit Tests` task.
 - DO NOT use msbuild by yourself.
-- DO NOT modify `tasks.json`.
-- DO NOT run `Build and Run Unit Tests`.
 
 ### The Correct Way to Read Compiler Result
 
@@ -121,18 +115,13 @@ You will find the `TaskLogs` project in the current solution, which should conta
 
 ## Executing Unit Test
 
-- Just let Visual Studio Code to run the unit test, the `Run Unit Tests` should have been configured in `tasks.json`.
-  - If you updated any source files, you should build the unit test before running it, check out `Compile the Solution` for details.
-  - Run the `Run Unit Tests` task.
-  - When all test cases pass, there will be a summarizing about how many test cases are executed. Otherwise it crashed at the last showing test case.
-- If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
+- Run the `Run Unit Tests` task.
 - DO NOT call executables or scripts yourself.
-- DO NOT modify `tasks.json`.
-- DO NOT run `Build and Run Unit Tests`.
 
 ### The Correct Way to Read Test Result
 
 - The only source of trust is the raw output of the unit test process.
   - It is saved to `REPO-ROOT/.github/TaskLogs/Execute.log`. `REPO-ROOT` is the root folder of the repo.
+  - When all test cases pass, there will be a summarizing about how many test cases are executed. Otherwise it crashed at the last showing test case.
 - DO NOT TRUST related tools Visual Studio Code offers you, like `get_errors` or `get_task_output`, etc.
 
