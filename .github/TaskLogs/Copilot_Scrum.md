@@ -82,6 +82,42 @@ Break Task 2 into 5 separate tasks:
 1. First task for CaretRange and AddTextRun testing
 2. One task each for AddInlineObjectRun, ResetInlineObjectRun, MergeRuns, and DiffRuns testing
 
+## UPDATE
+
+I would like you to add a new task right after Task 6, as the previous implemented RunDiff test coverage is insufficient.
+
+You can make a new TEST_CATEGORY("DiffRuns (Complex)").
+
+It is very common that existing runs are modified. So please prepare test cases to cover like:
+
+text run -> object run
+
+object run -> text run
+
+text run -> text run
+
+object run -> object run
+
+and must include situation that:
+
+caret range changed
+
+prop changed
+
+multiple runs are updated to multiple runs with caret ranges also changed
+
+and whatever you think need to be covered.
+
+## UPDATE
+
+Just to mention that, the result of DiffRuns should contain complete caret range from the "new runs".
+
+For example, we have 3 consecutive text runs: (1-2)prop1 (2-5)prop2 (5-10)prop1
+
+and they are updated to (1-10)prop1
+
+DiffRuns should report (1-10)prop1 instead of (2-5)prop1
+
 # TASKS
 
 - [x] TASK No.1: Define `CaretRange` struct and run management functions
@@ -90,10 +126,11 @@ Break Task 2 into 5 separate tasks:
 - [x] TASK No.4: Unit test for ResetInlineObjectRun
 - [x] TASK No.5: Unit test for MergeRuns
 - [x] TASK No.6: Unit test for DiffRuns
-- [ ] TASK No.7: Implement `GuiRemoteGraphicsParagraph` class
-- [ ] TASK No.8: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
-- [ ] TASK No.9: Create basic `GuiSinglelineTextBox` test case
-- [ ] TASK No.10: Create typing simulation test case and complete typing helper functions
+- [ ] TASK No.7: Unit test for DiffRuns (Complex run modification scenarios)
+- [ ] TASK No.8: Implement `GuiRemoteGraphicsParagraph` class
+- [ ] TASK No.9: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
+- [ ] TASK No.10: Create basic `GuiSinglelineTextBox` test case
+- [ ] TASK No.11: Create typing simulation test case and complete typing helper functions
 
 ## TASK No.1: Define `CaretRange` struct and run management functions
 
@@ -515,13 +552,133 @@ DiffRuns is the most critical function for protocol correctness. It computes the
 
 This approach proved successful in Task 6, where the original 20-test-case plan was appropriately reduced to 6 basic tests that successfully verified the core protocol behavior.
 
-## TASK No.7: Implement `GuiRemoteGraphicsParagraph` class
+## TASK No.7: Unit test for DiffRuns (Complex run modification scenarios)
+
+### description
+
+Add a new test category `TEST_CATEGORY(L"DiffRuns (Complex)")` to `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp` to thoroughly test complex run modification scenarios that occur commonly in real-world document editing.
+
+Task 6 established basic DiffRuns testing with simple addition, removal, and change detection. This task focuses on the more complex scenarios where existing runs are modified in place, which is critical for realistic document editing workflows.
+
+**Test Category 7: DiffRuns (Complex)**
+
+The test scenarios should cover four primary transformation types:
+
+**1. Text run → Inline object run**:
+   - Same caret range, text property replaced with inline object
+   - Verify `runsDiff` contains the new inline object
+   - Verify `createdInlineObjects` contains the new callback ID
+   - Different caret range (shifted/resized), text replaced with inline object
+   - Multiple text runs replaced by one inline object
+   - One text run replaced by multiple inline objects
+
+**2. Inline object run → Text run**:
+   - Same caret range, inline object replaced with text property
+   - Verify `runsDiff` contains the new text run
+   - Verify `removedInlineObjects` contains the old callback ID
+   - Different caret range (shifted/resized), inline object replaced with text
+   - Multiple inline objects replaced by one text run
+   - One inline object replaced by multiple text runs
+
+**3. Text run → Text run (property changes)**:
+   - Same caret range, property changed (color, font, size, style)
+   - Verify `runsDiff` contains the run with new property
+   - Caret range changed, property unchanged (range splitting or merging)
+   - Both caret range and property changed simultaneously
+   - Multiple consecutive runs with different properties → single merged run with uniform property
+   - Single run → multiple runs with different properties (range splitting with property changes)
+   - **CRITICAL TEST**: Old runs (1-2)prop1, (2-5)prop2, (5-10)prop1 → New run (1-10)prop1
+     - Must report complete new range (1-10) in `runsDiff`, NOT partial range like (2-5)
+
+**4. Inline object run → Inline object run (property or position changes)**:
+   - Same caret range, callback ID changed (replacing one inline object with another)
+   - Verify old callback ID in `removedInlineObjects`
+   - Verify new callback ID in `createdInlineObjects`
+   - Same callback ID, caret range changed (inline object moved/resized)
+   - Multiple inline objects repositioned (ranges changed but callback IDs same)
+   - Inline object replaced at different position
+
+**5. Complex multi-run modification scenarios**:
+   - Mixed transformations in single diff (some text→object, some object→text, some text→text)
+   - Range merging + property changes (e.g., [0,5] and [5,10] → [0,10] with new property)
+   - Range splitting + type changes (e.g., [0,10] text → [0,3] object + [3,7] text + [7,10] object)
+   - Overlapping modifications affecting adjacent runs
+   - Multiple runs updated with cascading caret range adjustments
+
+**6. Edge cases for run modifications**:
+   - Modifying first run in paragraph
+   - Modifying last run in paragraph
+   - Modifying middle run surrounded by unchanged runs
+   - All runs modified simultaneously
+   - Partial paragraph updates (some runs unchanged, some modified)
+
+### what to be done
+
+1. Add a new `TEST_CATEGORY(L"DiffRuns (Complex)")` block in `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
+2. Implement test cases for all four primary transformation types (text→object, object→text, text→text, object→object)
+3. For each transformation type, test:
+   - Same caret range with property/type change
+   - Different caret range with property/type change
+   - Multiple runs involved in the transformation
+4. Implement test cases for complex multi-run modification scenarios
+5. Implement test cases for edge cases
+6. Each test case should:
+   - Set up initial `oldRuns` map with a realistic run configuration
+   - Set up modified `newRuns` map representing the transformation
+   - Call `DiffRuns` to compute the difference
+   - Use `AssertDiffArray` to verify `runsDiff` contains expected entries with correct keys from `newRuns`
+   - Use `AssertCallbackIdArray` to verify `createdInlineObjects` and `removedInlineObjects`
+7. Use existing helper functions from Task 6
+8. **CRITICAL**: Verify that result keys always come from `newRuns`, never from `oldRuns`
+   - Specifically test: When oldRuns [(1-2)prop1, (2-5)prop2, (5-10)prop1] → newRuns [(1-10)prop1]
+   - The `runsDiff` must contain (1-10), NOT (2-5) or any partial range from oldRuns
+9. **IMPORTANT**: Use designated initializers for CaretRange: `{.caretBegin = x, .caretEnd = y}`
+
+### how to test it
+
+Run the compiled unit test executable. The test cases validate:
+1. DiffRuns correctly handles in-place run modifications (common in document editing)
+2. Type transformations (text↔object) are correctly tracked in all output arrays
+3. Property changes on text runs are correctly detected
+4. Inline object replacement and repositioning scenarios work correctly
+5. Complex multi-run transformations preserve protocol correctness
+6. **CRITICAL**: The result always uses complete caret ranges from `newRuns`, never partial or mixed ranges from `oldRuns`
+   - Example: oldRuns [(1-2), (2-5), (5-10)] merging to newRuns [(1-10)] must report (1-10) in diff
+7. All combinations of range changes + property changes are handled correctly
+
+This comprehensive test coverage ensures DiffRuns works correctly for realistic document editing scenarios, not just basic additions and removals.
+
+### file locations
+
+Modified file: `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
+
+### rationale
+
+Task 6 established basic DiffRuns functionality with simple scenarios, but real-world document editing primarily involves modifying existing runs rather than adding/removing them. Users change text formatting (bold, color, size), replace text with inline objects (inserting images), and move inline objects around. These modification scenarios have subtle corner cases:
+
+- When a text run becomes an inline object at the same position, both `runsDiff` and `createdInlineObjects` must be updated
+- When caret ranges change during type transformation, the protocol must use the NEW ranges consistently
+- **CRITICAL**: When multiple runs merge or split with simultaneous property changes, the diff must represent the complete final state using NEW caret ranges
+  - Example: When 3 old runs (1-2)prop1, (2-5)prop2, (5-10)prop1 merge into new run (1-10)prop1, the diff must report (1-10), not (2-5) or any partial range from the old state
+  - This ensures the remote side receives complete, consistent range information matching the current state
+
+Without comprehensive testing of these scenarios, bugs could cause:
+- Inline object lifecycle mismatches (creation callbacks not sent, destruction callbacks double-sent)
+- Incorrect text formatting in the remote renderer
+- **Protocol synchronization failures** when the remote side receives partial or mixed range information from old and new states
+- Rendering corruption due to incomplete caret range updates
+
+This task ensures the DiffRuns implementation handles the full complexity of document editing, not just the simplified scenarios tested in Task 6. The separation into a dedicated task (rather than expanding Task 6) follows the successful pattern established by the Task 2→Task 3-6 split: start with basic functionality, then comprehensively test the complex scenarios once the foundation is validated.
+
+**Learning from Task 6**: Start with 10-15 focused test cases covering the most critical transformation types before attempting exhaustive coverage. Prioritize the most common editing operations (text property changes, text↔object transformations) over rare edge cases. The goal is thorough coverage of realistic scenarios, not theoretical completeness.
+
+## TASK No.8: Implement `GuiRemoteGraphicsParagraph` class
 
 ### description
 
 Implement all methods of `GuiRemoteGraphicsParagraph` class in `Source\PlatformProviders\Remote\GuiRemoteGraphics_Document.cpp`.
 
-**Learning from Task 6**: When working with complex protocol types, start with basic functionality first rather than trying to implement everything comprehensively. The protocol schema may use different types than initially expected (e.g., `Ptr<List<>>` instead of `Array<>`, structs instead of variants). Verify types by reading the protocol schema carefully before implementation.
+**Learning from Task 6 and Task 7**: When working with complex protocol types, start with basic functionality first rather than trying to implement everything comprehensively. The protocol schema may use different types than initially expected (e.g., `Ptr<List<>>` instead of `Array<>`, structs instead of variants). Verify types by reading the protocol schema carefully before implementation.
 
 **Step 1: Add protected members and helper functions**
 
@@ -587,7 +744,7 @@ Header updates (if needed): `Source\PlatformProviders\Remote\GuiRemoteGraphics_D
 
 This is the core implementation that bridges `IGuiGraphicsParagraph` interface with the remote protocol. The three-category approach cleanly separates concerns: properties configure the paragraph, run methods modify formatting, query methods interact with the remote side. The lazy update strategy (only send when needed) optimizes protocol traffic. Text position conversion functions, though currently identity functions, provide future extensibility for surrogate pair handling or other text encoding complexities.
 
-## TASK No.8: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
+## TASK No.9: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
 
 ### description
 
@@ -653,7 +810,7 @@ Modified file: `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.h`
 
 These handlers are the server-side implementation of the paragraph protocol for the unit test environment. Without these implementations, any test using document controls will fail. The implementations can be simplified compared to production renderers (e.g., Windows/Linux) since they only need to support testing scenarios. However, they must be consistent and functional enough to validate the paragraph protocol and allow document control tests to pass.
 
-## TASK No.9: Create basic `GuiSinglelineTextBox` test case
+## TASK No.10: Create basic `GuiSinglelineTextBox` test case
 
 ### description
 
@@ -709,7 +866,7 @@ New file: `Test\GacUISrc\UnitTest\TestControls_Editor_GuiSinglelineTextBox.cpp`
 
 This test validates that the basic paragraph protocol implementation works correctly with a real GacUI control. `GuiSinglelineTextBox` uses `GuiDocumentLabel` which uses `IGuiGraphicsParagraph`, so this test exercises the complete stack. By testing programmatic text manipulation first (before user input simulation), we verify the foundational functionality before adding complexity. This test will catch integration issues between the paragraph implementation and the document control system.
 
-## TASK No.10: Create typing simulation test case and complete typing helper functions
+## TASK No.11: Create typing simulation test case and complete typing helper functions
 
 ### description
 
