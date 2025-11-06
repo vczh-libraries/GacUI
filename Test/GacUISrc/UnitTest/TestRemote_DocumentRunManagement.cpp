@@ -1532,17 +1532,19 @@ TEST_FILE
 			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({5, 7}), L"Inline objects created");
 			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline objects removed");
 		});
-		
-	TEST_CASE(L"New map empty, old map has inline objects - ERROR")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		oldRuns.Add({.caretBegin = 0, .caretEnd = 1}, DocumentRunProperty(CreateInlineProp(5, 100)));
-		oldRuns.Add({.caretBegin = 5, .caretEnd = 6}, DocumentRunProperty(CreateInlineProp(7, 50)));
-		
-		// This should trigger CHECK_ERROR because old runs are not covered by new runs
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		TEST_ERROR(DiffRuns(oldRuns, newRuns, desc));
-	});		TEST_CASE(L"Same key, same value - no diff entry")
+	
+		TEST_CASE(L"New map empty, old map has inline objects - ERROR")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 1}, DocumentRunProperty(CreateInlineProp(5, 100)));
+			oldRuns.Add({.caretBegin = 5, .caretEnd = 6}, DocumentRunProperty(CreateInlineProp(7, 50)));
+			
+			// This should trigger CHECK_ERROR because old runs are not covered by new runs
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			TEST_ERROR(DiffRuns(oldRuns, newRuns, desc));
+		});
+	
+		TEST_CASE(L"Same key, same value - no diff entry")
 		{
 			DocumentRunPropertyMap oldRuns, newRuns;
 			auto prop = DocumentRunProperty(CreateTextProp(0xFF));
@@ -1555,582 +1557,580 @@ TEST_FILE
 			TEST_ASSERT(!desc.runsDiff || desc.runsDiff->Count() == 0);
 			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline objects created");
 			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline objects removed");
-		});
-
-		TEST_CASE(L"Same key, different value - entry in diff")
-		{
-			DocumentRunPropertyMap oldRuns, newRuns;
-			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0xFF)));
-			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x00)));
-			
-			remoteprotocol::ElementDesc_DocumentParagraph desc;
-			DiffRuns(oldRuns, newRuns, desc);
-			
+		});		TEST_CASE(L"Same key, different value - entry in diff")
+			{
+				DocumentRunPropertyMap oldRuns, newRuns;
+				oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0xFF)));
+				newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x00)));
+				
+				remoteprotocol::ElementDesc_DocumentParagraph desc;
+				DiffRuns(oldRuns, newRuns, desc);
+				
 			auto expected = MakeExpectedList();
 			AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateTextProp(0x00)));
 			
 			AssertDiffList(desc.runsDiff, expected, L"Changed run should be in diff");
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline objects created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline objects removed");
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline objects created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline objects removed");
+		});
 	});
-});
-
-TEST_CATEGORY(L"DiffRuns (Complex)")
-{
-	// Helper functions reused from DiffRuns category
-	auto MakeExpectedList = []() {
-		return Ptr(new List<remoteprotocol::DocumentRun>());
-	};
 	
-	auto AddExpectedRun = [](Ptr<List<remoteprotocol::DocumentRun>> list, vint begin, vint end, const DocumentRunProperty& prop) {
-		remoteprotocol::DocumentRun run;
-		run.caretBegin = begin;
-		run.caretEnd = end;
-		run.props = prop;
-		list->Add(run);
-	};
+	TEST_CATEGORY(L"DiffRuns (Complex)")
+	{
+		// Helper functions reused from DiffRuns category
+		auto MakeExpectedList = []() {
+			return Ptr(new List<remoteprotocol::DocumentRun>());
+		};
+		
+		auto AddExpectedRun = [](Ptr<List<remoteprotocol::DocumentRun>> list, vint begin, vint end, const DocumentRunProperty& prop) {
+			remoteprotocol::DocumentRun run;
+			run.caretBegin = begin;
+			run.caretEnd = end;
+			run.props = prop;
+			list->Add(run);
+		};
+		
+		auto MakeExpectedIds = [](std::initializer_list<vint> ids) {
+			auto list = Ptr(new List<vint>());
+			for (auto id : ids)
+			{
+				list->Add(id);
+			}
+			return list;
+		};
 	
-	auto MakeExpectedIds = [](std::initializer_list<vint> ids) {
-		auto list = Ptr(new List<vint>());
-		for (auto id : ids)
+		// Category 1: Valid Text → Inline Object Transformations
+		
+		TEST_CASE(L"Text→Inline: Same range, type changed")
 		{
-			list->Add(id);
-		}
-		return list;
-	};
-
-	// Category 1: Valid Text → Inline Object Transformations
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: text run at [10, 20]
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));
+			
+			// New: inline object at same range (fully covers old - VALID)
+			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateInlineProp(1, 100)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			// Verify diff contains the new inline object
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateInlineProp(1, 100)));
+			AssertDiffList(desc.runsDiff, expected, L"Text→Inline at same range");
+			
+			// Verify callback tracking
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({1}), L"Inline object created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
+		});
+		
+		TEST_CASE(L"Text→Inline: Different cuts - 3 old runs → 2 new inlines (decreased count)")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: three text runs at [0, 10], [10, 20], [20, 30] (cut at 10, 20)
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x60)));
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0xA0)));
+			
+			// New: two inline objects at [0, 15], [15, 30] (cut at 15) - different cuts, fewer runs
+			newRuns.Add({.caretBegin = 0, .caretEnd = 15}, DocumentRunProperty(CreateInlineProp(3, 150)));
+			newRuns.Add({.caretBegin = 15, .caretEnd = 30}, DocumentRunProperty(CreateInlineProp(4, 150)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			// Both new inline objects in diff
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 0, 15, DocumentRunProperty(CreateInlineProp(3, 150)));
+			AddExpectedRun(expected, 15, 30, DocumentRunProperty(CreateInlineProp(4, 150)));
+			AssertDiffList(desc.runsDiff, expected, L"3 text runs → 2 inlines with different cuts");
+			
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({3, 4}), L"Two inlines created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
+		});
+		
+		TEST_CASE(L"Text→Inline: Different cuts - 2 old runs → 3 new inlines (increased count)")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: two text runs at [0, 15], [15, 30] (cut at 15)
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 15}, DocumentRunProperty(CreateTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 15, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0xA0)));
+			
+			// New: three inline objects at [0, 10], [10, 20], [20, 30] (cut at 10, 20) - different cuts, more runs
+			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateInlineProp(5, 50)));
+			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateInlineProp(6, 60)));
+			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateInlineProp(7, 70)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			// All three inline objects in diff
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateInlineProp(5, 50)));
+			AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateInlineProp(6, 60)));
+			AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateInlineProp(7, 70)));
+			AssertDiffList(desc.runsDiff, expected, L"2 text runs → 3 inlines with different cuts");
+			
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({5, 6, 7}), L"Three inlines created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
+		});
 	
-	TEST_CASE(L"Text→Inline: Same range, type changed")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
+		// Category 2: Valid Inline Object → Text Transformations
 		
-		// Old: text run at [10, 20]
-		oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));
+		TEST_CASE(L"Inline→Text: Same range, type changed")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: inline object at [10, 20]
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateInlineProp(10, 100)));
+			
+			// New: text run at same range (fully covers old - VALID)
+			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0xA0)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			// Verify diff contains the new text run
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateTextProp(0xA0)));
+			AssertDiffList(desc.runsDiff, expected, L"Inline→Text at same range");
+			
+			// Verify callback tracking: old inline removed
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({10}), L"Inline object removed");
+		});
 		
-		// New: inline object at same range (fully covers old - VALID)
-		newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateInlineProp(1, 100)));
+		TEST_CASE(L"Inline→Text: Different cuts - 3 old inlines → 2 new text runs (decreased count)")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: three inline objects at [0, 8], [8, 16], [16, 24] (cut at 8, 16)
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 8}, DocumentRunProperty(CreateInlineProp(12, 20)));
+			oldRuns.Add({.caretBegin = 8, .caretEnd = 16}, DocumentRunProperty(CreateInlineProp(13, 30)));
+			oldRuns.Add({.caretBegin = 16, .caretEnd = 24}, DocumentRunProperty(CreateInlineProp(14, 40)));
+			
+			// New: two text runs at [0, 12], [12, 24] (cut at 12) - different cuts, fewer runs
+			newRuns.Add({.caretBegin = 0, .caretEnd = 12}, DocumentRunProperty(CreateTextProp(0xFF)));
+			newRuns.Add({.caretBegin = 12, .caretEnd = 24}, DocumentRunProperty(CreateTextProp(0xCC)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			// Both new text runs in diff
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 0, 12, DocumentRunProperty(CreateTextProp(0xFF)));
+			AddExpectedRun(expected, 12, 24, DocumentRunProperty(CreateTextProp(0xCC)));
+			AssertDiffList(desc.runsDiff, expected, L"3 inlines → 2 text runs with different cuts");
+			
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({12, 13, 14}), L"Three inlines removed");
+		});
 		
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		DiffRuns(oldRuns, newRuns, desc);
+		TEST_CASE(L"Inline→Text: Different cuts - 2 old inlines → 3 new text runs (increased count)")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: two inline objects at [10, 25], [25, 40] (cut at 25)
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 25}, DocumentRunProperty(CreateInlineProp(15, 150)));
+			oldRuns.Add({.caretBegin = 25, .caretEnd = 40}, DocumentRunProperty(CreateInlineProp(16, 150)));
+			
+			// New: three text runs at [10, 20], [20, 30], [30, 40] (cut at 20, 30) - different cuts, more runs
+			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x40)));
+			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x80)));
+			newRuns.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(CreateTextProp(0xC0)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			// All three text runs in diff
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateTextProp(0x40)));
+			AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateTextProp(0x80)));
+			AddExpectedRun(expected, 30, 40, DocumentRunProperty(CreateTextProp(0xC0)));
+			AssertDiffList(desc.runsDiff, expected, L"2 inlines → 3 text runs with different cuts");
+			
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({15, 16}), L"Two inlines removed");
+		});
+	
+		// Category 3: Text → Text Property Changes
 		
-		// Verify diff contains the new inline object
-		auto expected = MakeExpectedList();
-		AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateInlineProp(1, 100)));
-		AssertDiffList(desc.runsDiff, expected, L"Text→Inline at same range");
+		TEST_CASE(L"Text→Text: Same range, property changed")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: text with color 0x80
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x80)));
+			
+			// New: same range but different color
+			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0xFF)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			// Changed property should appear in diff
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateTextProp(0xFF)));
+			AssertDiffList(desc.runsDiff, expected, L"Text property changed");
+			
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
+		});
 		
-		// Verify callback tracking
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({1}), L"Inline object created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
+		TEST_CASE(L"Text→Text: CRITICAL - Multiple old runs merge to single new run")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			auto prop1 = CreateTextProp(0x40);
+			auto prop2 = CreateTextProp(0x80);
+			
+			// Old: three runs with alternating properties
+			oldRuns.Add({.caretBegin = 1, .caretEnd = 2}, DocumentRunProperty(prop1));
+			oldRuns.Add({.caretBegin = 2, .caretEnd = 5}, DocumentRunProperty(prop2));
+			oldRuns.Add({.caretBegin = 5, .caretEnd = 10}, DocumentRunProperty(prop1));
+			
+			// New: single merged run covering entire range (fully covers old - VALID)
+			newRuns.Add({.caretBegin = 1, .caretEnd = 10}, DocumentRunProperty(prop1));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			// CRITICAL: Must report complete new range (1,10), NOT partial like (2,5)
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 1, 10, DocumentRunProperty(prop1));
+			AssertDiffList(desc.runsDiff, expected, L"CRITICAL: Merged range uses new key (1,10)");
+			
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
+		});
+		
+		TEST_CASE(L"Text→Text: Different cuts - 2 old runs → 3 new runs (increased, properties changed)")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: two runs at [0, 15], [15, 30] (cut at 15)
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 15}, DocumentRunProperty(CreateTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 15, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x80)));
+			
+			// New: three runs at [0, 10], [10, 20], [20, 30] (cut at 10, 20) with different properties
+			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x20)));
+			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
+			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0xA0)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			// All three new runs appear in diff (different cuts + properties changed)
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateTextProp(0x20)));
+			AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateTextProp(0x60)));
+			AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateTextProp(0xA0)));
+			AssertDiffList(desc.runsDiff, expected, L"2→3 runs, different cuts + property changes");
+			
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
+		});
+		
+		TEST_CASE(L"Text→Text: Different cuts - 4 old runs → 2 new runs (decreased, merged with new property)")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			auto propFinal = CreateTextProp(0xFF);
+			
+			// Old: four runs at [0, 5], [5, 10], [10, 18], [18, 24] (cut at 5, 10, 18)
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 5}, DocumentRunProperty(CreateTextProp(0x20)));
+			oldRuns.Add({.caretBegin = 5, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 18}, DocumentRunProperty(CreateTextProp(0x60)));
+			oldRuns.Add({.caretBegin = 18, .caretEnd = 24}, DocumentRunProperty(CreateTextProp(0x80)));
+			
+			// New: two runs at [0, 12], [12, 24] (cut at 12) with uniform property
+			newRuns.Add({.caretBegin = 0, .caretEnd = 12}, DocumentRunProperty(propFinal));
+			newRuns.Add({.caretBegin = 12, .caretEnd = 24}, DocumentRunProperty(propFinal));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			// Both new runs in diff (different cuts + property changed)
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 0, 12, DocumentRunProperty(propFinal));
+			AddExpectedRun(expected, 12, 24, DocumentRunProperty(propFinal));
+			AssertDiffList(desc.runsDiff, expected, L"4→2 runs, different cuts + property changes");
+			
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
+		});
+	
+		// Category 4: Inline Object → Inline Object Changes
+		
+		TEST_CASE(L"Inline→Inline: Same range, callback ID changed")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: inline with callback ID 20
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateInlineProp(20, 100)));
+			
+			// New: different inline at same range (fully covers old - VALID)
+			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateInlineProp(21, 100)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			// New inline appears in diff (property changed)
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateInlineProp(21, 100)));
+			AssertDiffList(desc.runsDiff, expected, L"Inline replaced at same range");
+			
+			// Old inline removed, new inline created
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({21}), L"New inline created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({20}), L"Old inline removed");
+		});
+		
+		TEST_CASE(L"Inline→Inline: Different cuts - 3 old inlines → 2 new inlines (decreased count)")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: three inline objects at [0, 6], [6, 12], [12, 18] (cut at 6, 12)
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 6}, DocumentRunProperty(CreateInlineProp(23, 30)));
+			oldRuns.Add({.caretBegin = 6, .caretEnd = 12}, DocumentRunProperty(CreateInlineProp(24, 40)));
+			oldRuns.Add({.caretBegin = 12, .caretEnd = 18}, DocumentRunProperty(CreateInlineProp(25, 50)));
+			
+			// New: two inlines at [0, 9], [9, 18] (cut at 9) - different cuts, fewer runs
+			newRuns.Add({.caretBegin = 0, .caretEnd = 9}, DocumentRunProperty(CreateInlineProp(26, 90)));
+			newRuns.Add({.caretBegin = 9, .caretEnd = 18}, DocumentRunProperty(CreateInlineProp(27, 90)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			// New inlines in diff
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 0, 9, DocumentRunProperty(CreateInlineProp(26, 90)));
+			AddExpectedRun(expected, 9, 18, DocumentRunProperty(CreateInlineProp(27, 90)));
+			AssertDiffList(desc.runsDiff, expected, L"3→2 inlines with different cuts");
+			
+			// Old inlines removed, new inlines created
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({26, 27}), L"Two new inlines created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({23, 24, 25}), L"Three old inlines removed");
+		});
+	
+		// Category 5: Error Detection - Invalid Range Coverage
+		
+		TEST_CASE(L"ERROR: Text→Inline with partial coverage (shifted right)")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: text at [10, 20]
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));
+			
+			// New: inline at [15, 25] - only covers [15, 20], leaving [10, 15] uncovered - INVALID
+			newRuns.Add({.caretBegin = 15, .caretEnd = 25}, DocumentRunProperty(CreateInlineProp(100, 50)));
+			
+			// This should trigger CHECK_ERROR and result in TEST_ERROR
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			TEST_ERROR(DiffRuns(oldRuns, newRuns, desc));
+		});
+		
+		TEST_CASE(L"ERROR: Text→Text with partial coverage (shifted left)")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: text at [10, 20]
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));
+			
+			// New: text at [5, 15] - only covers [10, 15], leaving [15, 20] uncovered - INVALID
+			newRuns.Add({.caretBegin = 5, .caretEnd = 15}, DocumentRunProperty(CreateTextProp(0xA0)));
+			
+			// This should trigger CHECK_ERROR and result in TEST_ERROR
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			TEST_ERROR(DiffRuns(oldRuns, newRuns, desc));
+		});
+		
+		TEST_CASE(L"ERROR: Text→Text with truncated coverage")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: text at [10, 20]
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));
+			
+			// New: text at [10, 15] - only covers [10, 15], leaving [15, 20] uncovered - INVALID
+			newRuns.Add({.caretBegin = 10, .caretEnd = 15}, DocumentRunProperty(CreateTextProp(0xA0)));
+			
+			// This should trigger CHECK_ERROR and result in TEST_ERROR
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			TEST_ERROR(DiffRuns(oldRuns, newRuns, desc));
+		});
+		
+		TEST_CASE(L"ERROR: Multiple old runs with gap in new coverage")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: two consecutive text runs
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
+			
+			// New: two runs with a gap [5, 7] uncovered - INVALID
+			newRuns.Add({.caretBegin = 0, .caretEnd = 5}, DocumentRunProperty(CreateTextProp(0x80)));
+			newRuns.Add({.caretBegin = 7, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0xA0)));
+			
+			// This should trigger CHECK_ERROR for first old run [0, 10]
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			TEST_ERROR(DiffRuns(oldRuns, newRuns, desc));
+		});
+		
+		TEST_CASE(L"ERROR: Inline→Text with partial coverage")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: inline at [20, 30]
+			oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateInlineProp(50, 80)));
+			
+			// New: text at [22, 35] - only covers [22, 30], leaving [20, 22] uncovered - INVALID
+			newRuns.Add({.caretBegin = 22, .caretEnd = 35}, DocumentRunProperty(CreateTextProp(0x60)));
+			
+			// This should trigger CHECK_ERROR and result in TEST_ERROR
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			TEST_ERROR(DiffRuns(oldRuns, newRuns, desc));
+		});
+	
+		// Category 6: Complex Mixed Scenarios
+		
+		TEST_CASE(L"Mixed transformations: text→inline, inline→text, text→text in one diff")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: mixed runs
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));  // will become inline
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateInlineProp(30, 50)));  // will become text
+			oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x60)));  // property change
+			
+			// New: transformed runs (all fully cover old - VALID)
+			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateInlineProp(31, 100)));  // text→inline
+			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));  // inline→text
+			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0xA0)));  // text→text
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			// All three transformations in diff
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateInlineProp(31, 100)));
+			AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateTextProp(0x80)));
+			AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateTextProp(0xA0)));
+			AssertDiffList(desc.runsDiff, expected, L"Mixed transformations");
+			
+			// Callback tracking: one created, one removed
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({31}), L"Inline 31 created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({30}), L"Inline 30 removed");
+		});
+		
+		TEST_CASE(L"Range splitting + type changes")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: single text run [0, 9]
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 9}, DocumentRunProperty(CreateTextProp(0x80)));
+			
+			// New: split into inline + text + inline (fully covers old - VALID)
+			newRuns.Add({.caretBegin = 0, .caretEnd = 3}, DocumentRunProperty(CreateInlineProp(40, 30)));
+			newRuns.Add({.caretBegin = 3, .caretEnd = 6}, DocumentRunProperty(CreateTextProp(0xA0)));
+			newRuns.Add({.caretBegin = 6, .caretEnd = 9}, DocumentRunProperty(CreateInlineProp(41, 40)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			// All three new runs in diff
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 0, 3, DocumentRunProperty(CreateInlineProp(40, 30)));
+			AddExpectedRun(expected, 3, 6, DocumentRunProperty(CreateTextProp(0xA0)));
+			AddExpectedRun(expected, 6, 9, DocumentRunProperty(CreateInlineProp(41, 40)));
+			AssertDiffList(desc.runsDiff, expected, L"Split with type changes");
+			
+			// Two inline objects created
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({40, 41}), L"Two inlines created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
+		});
+		
+		// Category 7: Edge Cases
+		
+		TEST_CASE(L"Modify first run in paragraph")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: three runs, first will change
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
+			oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x80)));
+			
+			// New: first run property changed, others unchanged (all fully covered - VALID)
+			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0xFF)));
+			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
+			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x80)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			// Only first run in diff
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateTextProp(0xFF)));
+			AssertDiffList(desc.runsDiff, expected, L"Only first run modified");
+			
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
+		});
+		
+		TEST_CASE(L"Modify last run in paragraph")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: three runs, last will change
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
+			oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x80)));
+			
+			// New: last run becomes inline, others unchanged (all fully covered - VALID)
+			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));
+			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
+			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateInlineProp(50, 100)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			// Only last run in diff
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateInlineProp(50, 100)));
+			AssertDiffList(desc.runsDiff, expected, L"Only last run modified");
+			
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({50}), L"Inline created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
+		});
+		
+		TEST_CASE(L"Modify middle run surrounded by unchanged runs")
+		{
+			DocumentRunPropertyMap oldRuns, newRuns;
+			
+			// Old: five runs, middle one will change
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x20)));
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x40)));
+			oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x60)));
+			oldRuns.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(CreateTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 40, .caretEnd = 50}, DocumentRunProperty(CreateTextProp(0xA0)));
+			
+			// New: middle run property changed (all fully covered - VALID)
+			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x20)));
+			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x40)));
+			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0xFF)));
+			newRuns.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(CreateTextProp(0x80)));
+			newRuns.Add({.caretBegin = 40, .caretEnd = 50}, DocumentRunProperty(CreateTextProp(0xA0)));
+			
+			remoteprotocol::ElementDesc_DocumentParagraph desc;
+			DiffRuns(oldRuns, newRuns, desc);
+			
+			// Only middle run in diff
+			auto expected = MakeExpectedList();
+			AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateTextProp(0xFF)));
+			AssertDiffList(desc.runsDiff, expected, L"Only middle run modified");
+			
+			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
+			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
+		});
 	});
-	
-	TEST_CASE(L"Text→Inline: Different cuts - 3 old runs → 2 new inlines (decreased count)")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: three text runs at [0, 10], [10, 20], [20, 30] (cut at 10, 20)
-		oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x60)));
-		oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));
-		oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0xA0)));
-		
-		// New: two inline objects at [0, 15], [15, 30] (cut at 15) - different cuts, fewer runs
-		newRuns.Add({.caretBegin = 0, .caretEnd = 15}, DocumentRunProperty(CreateInlineProp(3, 150)));
-		newRuns.Add({.caretBegin = 15, .caretEnd = 30}, DocumentRunProperty(CreateInlineProp(4, 150)));
-		
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		DiffRuns(oldRuns, newRuns, desc);
-		
-		// Both new inline objects in diff
-		auto expected = MakeExpectedList();
-		AddExpectedRun(expected, 0, 15, DocumentRunProperty(CreateInlineProp(3, 150)));
-		AddExpectedRun(expected, 15, 30, DocumentRunProperty(CreateInlineProp(4, 150)));
-		AssertDiffList(desc.runsDiff, expected, L"3 text runs → 2 inlines with different cuts");
-		
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({3, 4}), L"Two inlines created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
-	});
-	
-	TEST_CASE(L"Text→Inline: Different cuts - 2 old runs → 3 new inlines (increased count)")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: two text runs at [0, 15], [15, 30] (cut at 15)
-		oldRuns.Add({.caretBegin = 0, .caretEnd = 15}, DocumentRunProperty(CreateTextProp(0x80)));
-		oldRuns.Add({.caretBegin = 15, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0xA0)));
-		
-		// New: three inline objects at [0, 10], [10, 20], [20, 30] (cut at 10, 20) - different cuts, more runs
-		newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateInlineProp(5, 50)));
-		newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateInlineProp(6, 60)));
-		newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateInlineProp(7, 70)));
-		
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		DiffRuns(oldRuns, newRuns, desc);
-		
-		// All three inline objects in diff
-		auto expected = MakeExpectedList();
-		AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateInlineProp(5, 50)));
-		AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateInlineProp(6, 60)));
-		AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateInlineProp(7, 70)));
-		AssertDiffList(desc.runsDiff, expected, L"2 text runs → 3 inlines with different cuts");
-		
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({5, 6, 7}), L"Three inlines created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
-	});
-
-	// Category 2: Valid Inline Object → Text Transformations
-	
-	TEST_CASE(L"Inline→Text: Same range, type changed")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: inline object at [10, 20]
-		oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateInlineProp(10, 100)));
-		
-		// New: text run at same range (fully covers old - VALID)
-		newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0xA0)));
-		
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		DiffRuns(oldRuns, newRuns, desc);
-		
-		// Verify diff contains the new text run
-		auto expected = MakeExpectedList();
-		AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateTextProp(0xA0)));
-		AssertDiffList(desc.runsDiff, expected, L"Inline→Text at same range");
-		
-		// Verify callback tracking: old inline removed
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({10}), L"Inline object removed");
-	});
-	
-	TEST_CASE(L"Inline→Text: Different cuts - 3 old inlines → 2 new text runs (decreased count)")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: three inline objects at [0, 8], [8, 16], [16, 24] (cut at 8, 16)
-		oldRuns.Add({.caretBegin = 0, .caretEnd = 8}, DocumentRunProperty(CreateInlineProp(12, 20)));
-		oldRuns.Add({.caretBegin = 8, .caretEnd = 16}, DocumentRunProperty(CreateInlineProp(13, 30)));
-		oldRuns.Add({.caretBegin = 16, .caretEnd = 24}, DocumentRunProperty(CreateInlineProp(14, 40)));
-		
-		// New: two text runs at [0, 12], [12, 24] (cut at 12) - different cuts, fewer runs
-		newRuns.Add({.caretBegin = 0, .caretEnd = 12}, DocumentRunProperty(CreateTextProp(0xFF)));
-		newRuns.Add({.caretBegin = 12, .caretEnd = 24}, DocumentRunProperty(CreateTextProp(0xCC)));
-		
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		DiffRuns(oldRuns, newRuns, desc);
-		
-		// Both new text runs in diff
-		auto expected = MakeExpectedList();
-		AddExpectedRun(expected, 0, 12, DocumentRunProperty(CreateTextProp(0xFF)));
-		AddExpectedRun(expected, 12, 24, DocumentRunProperty(CreateTextProp(0xCC)));
-		AssertDiffList(desc.runsDiff, expected, L"3 inlines → 2 text runs with different cuts");
-		
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({12, 13, 14}), L"Three inlines removed");
-	});
-	
-	TEST_CASE(L"Inline→Text: Different cuts - 2 old inlines → 3 new text runs (increased count)")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: two inline objects at [10, 25], [25, 40] (cut at 25)
-		oldRuns.Add({.caretBegin = 10, .caretEnd = 25}, DocumentRunProperty(CreateInlineProp(15, 150)));
-		oldRuns.Add({.caretBegin = 25, .caretEnd = 40}, DocumentRunProperty(CreateInlineProp(16, 150)));
-		
-		// New: three text runs at [10, 20], [20, 30], [30, 40] (cut at 20, 30) - different cuts, more runs
-		newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x40)));
-		newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x80)));
-		newRuns.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(CreateTextProp(0xC0)));
-		
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		DiffRuns(oldRuns, newRuns, desc);
-		
-		// All three text runs in diff
-		auto expected = MakeExpectedList();
-		AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateTextProp(0x40)));
-		AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateTextProp(0x80)));
-		AddExpectedRun(expected, 30, 40, DocumentRunProperty(CreateTextProp(0xC0)));
-		AssertDiffList(desc.runsDiff, expected, L"2 inlines → 3 text runs with different cuts");
-		
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({15, 16}), L"Two inlines removed");
-	});
-
-	// Category 3: Text → Text Property Changes
-	
-	TEST_CASE(L"Text→Text: Same range, property changed")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: text with color 0x80
-		oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x80)));
-		
-		// New: same range but different color
-		newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0xFF)));
-		
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		DiffRuns(oldRuns, newRuns, desc);
-		
-		// Changed property should appear in diff
-		auto expected = MakeExpectedList();
-		AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateTextProp(0xFF)));
-		AssertDiffList(desc.runsDiff, expected, L"Text property changed");
-		
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
-	});
-	
-	TEST_CASE(L"Text→Text: CRITICAL - Multiple old runs merge to single new run")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		auto prop1 = CreateTextProp(0x40);
-		auto prop2 = CreateTextProp(0x80);
-		
-		// Old: three runs with alternating properties
-		oldRuns.Add({.caretBegin = 1, .caretEnd = 2}, DocumentRunProperty(prop1));
-		oldRuns.Add({.caretBegin = 2, .caretEnd = 5}, DocumentRunProperty(prop2));
-		oldRuns.Add({.caretBegin = 5, .caretEnd = 10}, DocumentRunProperty(prop1));
-		
-		// New: single merged run covering entire range (fully covers old - VALID)
-		newRuns.Add({.caretBegin = 1, .caretEnd = 10}, DocumentRunProperty(prop1));
-		
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		DiffRuns(oldRuns, newRuns, desc);
-		
-		// CRITICAL: Must report complete new range (1,10), NOT partial like (2,5)
-		auto expected = MakeExpectedList();
-		AddExpectedRun(expected, 1, 10, DocumentRunProperty(prop1));
-		AssertDiffList(desc.runsDiff, expected, L"CRITICAL: Merged range uses new key (1,10)");
-		
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
-	});
-	
-	TEST_CASE(L"Text→Text: Different cuts - 2 old runs → 3 new runs (increased, properties changed)")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: two runs at [0, 15], [15, 30] (cut at 15)
-		oldRuns.Add({.caretBegin = 0, .caretEnd = 15}, DocumentRunProperty(CreateTextProp(0x80)));
-		oldRuns.Add({.caretBegin = 15, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x80)));
-		
-		// New: three runs at [0, 10], [10, 20], [20, 30] (cut at 10, 20) with different properties
-		newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x20)));
-		newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
-		newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0xA0)));
-		
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		DiffRuns(oldRuns, newRuns, desc);
-		
-		// All three new runs appear in diff (different cuts + properties changed)
-		auto expected = MakeExpectedList();
-		AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateTextProp(0x20)));
-		AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateTextProp(0x60)));
-		AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateTextProp(0xA0)));
-		AssertDiffList(desc.runsDiff, expected, L"2→3 runs, different cuts + property changes");
-		
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
-	});
-	
-	TEST_CASE(L"Text→Text: Different cuts - 4 old runs → 2 new runs (decreased, merged with new property)")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		auto propFinal = CreateTextProp(0xFF);
-		
-		// Old: four runs at [0, 5], [5, 10], [10, 18], [18, 24] (cut at 5, 10, 18)
-		oldRuns.Add({.caretBegin = 0, .caretEnd = 5}, DocumentRunProperty(CreateTextProp(0x20)));
-		oldRuns.Add({.caretBegin = 5, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));
-		oldRuns.Add({.caretBegin = 10, .caretEnd = 18}, DocumentRunProperty(CreateTextProp(0x60)));
-		oldRuns.Add({.caretBegin = 18, .caretEnd = 24}, DocumentRunProperty(CreateTextProp(0x80)));
-		
-		// New: two runs at [0, 12], [12, 24] (cut at 12) with uniform property
-		newRuns.Add({.caretBegin = 0, .caretEnd = 12}, DocumentRunProperty(propFinal));
-		newRuns.Add({.caretBegin = 12, .caretEnd = 24}, DocumentRunProperty(propFinal));
-		
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		DiffRuns(oldRuns, newRuns, desc);
-		
-		// Both new runs in diff (different cuts + property changed)
-		auto expected = MakeExpectedList();
-		AddExpectedRun(expected, 0, 12, DocumentRunProperty(propFinal));
-		AddExpectedRun(expected, 12, 24, DocumentRunProperty(propFinal));
-		AssertDiffList(desc.runsDiff, expected, L"4→2 runs, different cuts + property changes");
-		
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
-	});
-
-	// Category 4: Inline Object → Inline Object Changes
-	
-	TEST_CASE(L"Inline→Inline: Same range, callback ID changed")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: inline with callback ID 20
-		oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateInlineProp(20, 100)));
-		
-		// New: different inline at same range (fully covers old - VALID)
-		newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateInlineProp(21, 100)));
-		
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		DiffRuns(oldRuns, newRuns, desc);
-		
-		// New inline appears in diff (property changed)
-		auto expected = MakeExpectedList();
-		AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateInlineProp(21, 100)));
-		AssertDiffList(desc.runsDiff, expected, L"Inline replaced at same range");
-		
-		// Old inline removed, new inline created
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({21}), L"New inline created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({20}), L"Old inline removed");
-	});
-	
-	TEST_CASE(L"Inline→Inline: Different cuts - 3 old inlines → 2 new inlines (decreased count)")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: three inline objects at [0, 6], [6, 12], [12, 18] (cut at 6, 12)
-		oldRuns.Add({.caretBegin = 0, .caretEnd = 6}, DocumentRunProperty(CreateInlineProp(23, 30)));
-		oldRuns.Add({.caretBegin = 6, .caretEnd = 12}, DocumentRunProperty(CreateInlineProp(24, 40)));
-		oldRuns.Add({.caretBegin = 12, .caretEnd = 18}, DocumentRunProperty(CreateInlineProp(25, 50)));
-		
-		// New: two inlines at [0, 9], [9, 18] (cut at 9) - different cuts, fewer runs
-		newRuns.Add({.caretBegin = 0, .caretEnd = 9}, DocumentRunProperty(CreateInlineProp(26, 90)));
-		newRuns.Add({.caretBegin = 9, .caretEnd = 18}, DocumentRunProperty(CreateInlineProp(27, 90)));
-		
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		DiffRuns(oldRuns, newRuns, desc);
-		
-		// New inlines in diff
-		auto expected = MakeExpectedList();
-		AddExpectedRun(expected, 0, 9, DocumentRunProperty(CreateInlineProp(26, 90)));
-		AddExpectedRun(expected, 9, 18, DocumentRunProperty(CreateInlineProp(27, 90)));
-		AssertDiffList(desc.runsDiff, expected, L"3→2 inlines with different cuts");
-		
-		// Old inlines removed, new inlines created
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({26, 27}), L"Two new inlines created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({23, 24, 25}), L"Three old inlines removed");
-	});
-
-	// Category 5: Error Detection - Invalid Range Coverage
-	
-	TEST_CASE(L"ERROR: Text→Inline with partial coverage (shifted right)")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: text at [10, 20]
-		oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));
-		
-		// New: inline at [15, 25] - only covers [15, 20], leaving [10, 15] uncovered - INVALID
-		newRuns.Add({.caretBegin = 15, .caretEnd = 25}, DocumentRunProperty(CreateInlineProp(100, 50)));
-		
-		// This should trigger CHECK_ERROR and result in TEST_ERROR
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		TEST_ERROR(DiffRuns(oldRuns, newRuns, desc));
-	});
-	
-	TEST_CASE(L"ERROR: Text→Text with partial coverage (shifted left)")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: text at [10, 20]
-		oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));
-		
-		// New: text at [5, 15] - only covers [10, 15], leaving [15, 20] uncovered - INVALID
-		newRuns.Add({.caretBegin = 5, .caretEnd = 15}, DocumentRunProperty(CreateTextProp(0xA0)));
-		
-		// This should trigger CHECK_ERROR and result in TEST_ERROR
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		TEST_ERROR(DiffRuns(oldRuns, newRuns, desc));
-	});
-	
-	TEST_CASE(L"ERROR: Text→Text with truncated coverage")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: text at [10, 20]
-		oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));
-		
-		// New: text at [10, 15] - only covers [10, 15], leaving [15, 20] uncovered - INVALID
-		newRuns.Add({.caretBegin = 10, .caretEnd = 15}, DocumentRunProperty(CreateTextProp(0xA0)));
-		
-		// This should trigger CHECK_ERROR and result in TEST_ERROR
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		TEST_ERROR(DiffRuns(oldRuns, newRuns, desc));
-	});
-	
-	TEST_CASE(L"ERROR: Multiple old runs with gap in new coverage")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: two consecutive text runs
-		oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));
-		oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
-		
-		// New: two runs with a gap [5, 7] uncovered - INVALID
-		newRuns.Add({.caretBegin = 0, .caretEnd = 5}, DocumentRunProperty(CreateTextProp(0x80)));
-		newRuns.Add({.caretBegin = 7, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0xA0)));
-		
-		// This should trigger CHECK_ERROR for first old run [0, 10]
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		TEST_ERROR(DiffRuns(oldRuns, newRuns, desc));
-	});
-	
-	TEST_CASE(L"ERROR: Inline→Text with partial coverage")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: inline at [20, 30]
-		oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateInlineProp(50, 80)));
-		
-		// New: text at [22, 35] - only covers [22, 30], leaving [20, 22] uncovered - INVALID
-		newRuns.Add({.caretBegin = 22, .caretEnd = 35}, DocumentRunProperty(CreateTextProp(0x60)));
-		
-		// This should trigger CHECK_ERROR and result in TEST_ERROR
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		TEST_ERROR(DiffRuns(oldRuns, newRuns, desc));
-	});
-
-	// Category 6: Complex Mixed Scenarios
-	
-	TEST_CASE(L"Mixed transformations: text→inline, inline→text, text→text in one diff")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: mixed runs
-		oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));  // will become inline
-		oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateInlineProp(30, 50)));  // will become text
-		oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x60)));  // property change
-		
-		// New: transformed runs (all fully cover old - VALID)
-		newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateInlineProp(31, 100)));  // text→inline
-		newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));  // inline→text
-		newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0xA0)));  // text→text
-		
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		DiffRuns(oldRuns, newRuns, desc);
-		
-		// All three transformations in diff
-		auto expected = MakeExpectedList();
-		AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateInlineProp(31, 100)));
-		AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateTextProp(0x80)));
-		AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateTextProp(0xA0)));
-		AssertDiffList(desc.runsDiff, expected, L"Mixed transformations");
-		
-		// Callback tracking: one created, one removed
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({31}), L"Inline 31 created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({30}), L"Inline 30 removed");
-	});
-	
-	TEST_CASE(L"Range splitting + type changes")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: single text run [0, 9]
-		oldRuns.Add({.caretBegin = 0, .caretEnd = 9}, DocumentRunProperty(CreateTextProp(0x80)));
-		
-		// New: split into inline + text + inline (fully covers old - VALID)
-		newRuns.Add({.caretBegin = 0, .caretEnd = 3}, DocumentRunProperty(CreateInlineProp(40, 30)));
-		newRuns.Add({.caretBegin = 3, .caretEnd = 6}, DocumentRunProperty(CreateTextProp(0xA0)));
-		newRuns.Add({.caretBegin = 6, .caretEnd = 9}, DocumentRunProperty(CreateInlineProp(41, 40)));
-		
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		DiffRuns(oldRuns, newRuns, desc);
-		
-		// All three new runs in diff
-		auto expected = MakeExpectedList();
-		AddExpectedRun(expected, 0, 3, DocumentRunProperty(CreateInlineProp(40, 30)));
-		AddExpectedRun(expected, 3, 6, DocumentRunProperty(CreateTextProp(0xA0)));
-		AddExpectedRun(expected, 6, 9, DocumentRunProperty(CreateInlineProp(41, 40)));
-		AssertDiffList(desc.runsDiff, expected, L"Split with type changes");
-		
-		// Two inline objects created
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({40, 41}), L"Two inlines created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
-	});
-	
-	// Category 7: Edge Cases
-	
-	TEST_CASE(L"Modify first run in paragraph")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: three runs, first will change
-		oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));
-		oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
-		oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x80)));
-		
-		// New: first run property changed, others unchanged (all fully covered - VALID)
-		newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0xFF)));
-		newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
-		newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x80)));
-		
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		DiffRuns(oldRuns, newRuns, desc);
-		
-		// Only first run in diff
-		auto expected = MakeExpectedList();
-		AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateTextProp(0xFF)));
-		AssertDiffList(desc.runsDiff, expected, L"Only first run modified");
-		
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
-	});
-	
-	TEST_CASE(L"Modify last run in paragraph")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: three runs, last will change
-		oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));
-		oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
-		oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x80)));
-		
-		// New: last run becomes inline, others unchanged (all fully covered - VALID)
-		newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));
-		newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
-		newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateInlineProp(50, 100)));
-		
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		DiffRuns(oldRuns, newRuns, desc);
-		
-		// Only last run in diff
-		auto expected = MakeExpectedList();
-		AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateInlineProp(50, 100)));
-		AssertDiffList(desc.runsDiff, expected, L"Only last run modified");
-		
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({50}), L"Inline created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
-	});
-	
-	TEST_CASE(L"Modify middle run surrounded by unchanged runs")
-	{
-		DocumentRunPropertyMap oldRuns, newRuns;
-		
-		// Old: five runs, middle one will change
-		oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x20)));
-		oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x40)));
-		oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x60)));
-		oldRuns.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(CreateTextProp(0x80)));
-		oldRuns.Add({.caretBegin = 40, .caretEnd = 50}, DocumentRunProperty(CreateTextProp(0xA0)));
-		
-		// New: middle run property changed (all fully covered - VALID)
-		newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x20)));
-		newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x40)));
-		newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0xFF)));
-		newRuns.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(CreateTextProp(0x80)));
-		newRuns.Add({.caretBegin = 40, .caretEnd = 50}, DocumentRunProperty(CreateTextProp(0xA0)));
-		
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		DiffRuns(oldRuns, newRuns, desc);
-		
-		// Only middle run in diff
-		auto expected = MakeExpectedList();
-		AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateTextProp(0xFF)));
-		AssertDiffList(desc.runsDiff, expected, L"Only middle run modified");
-		
-		AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
-		AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline removed");
-	});
-});
 }
