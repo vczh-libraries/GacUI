@@ -61,12 +61,12 @@ DiffRuns
 		const DocumentRunPropertyMap& newRuns,
 		remoteprotocol::ElementDesc_DocumentParagraph& result);
 
-	class GuiRemoteGraphicsResourceManager;
-	class GuiRemoteGraphicsRenderTarget;
-
 /***********************************************************************
 GuiRemoteGraphicsParagraph
 ***********************************************************************/
+
+	class GuiRemoteGraphicsResourceManager;
+	class GuiRemoteGraphicsRenderTarget;
 
 	class GuiRemoteGraphicsParagraph : public Object, public IGuiGraphicsParagraph
 	{
