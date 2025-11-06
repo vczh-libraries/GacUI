@@ -172,14 +172,6 @@ function Display-State {
     Write-Host $state.Prompt
     Write-Host ""
     
-    # Display general instructions unless in Finished state
-    if ($StateName -ne "Finished") {
-        Write-Host "# General Instructions"
-        Write-Host ""
-        Write-Host $Workflow.GeneralInstructions
-        Write-Host ""
-    }
-    
     # Display keywords if any
     if ($state.Keywords.Count -gt 0) {
         $scriptPath = $PSCommandPath
@@ -188,11 +180,21 @@ function Display-State {
         $allKeywords = $state.Keywords | ForEach-Object { $_.Keyword }
         $keywordString = $allKeywords -join '|'
         
+        Write-Host "# Continuation"
+        Write-Host ""
         Write-Host "Run this command after finishing the instruction:"
         Write-Host "& $scriptPath -Keyword $keywordString"
         foreach ($kw in $state.Keywords) {
             Write-Host "  - Use keyword `"$($kw.Keyword)`" if $($kw.Condition)"
         }
+        Write-Host ""
+    }
+    
+    # Display general instructions unless in Finished state
+    if ($StateName -ne "Finished") {
+        Write-Host "# General Instructions"
+        Write-Host ""
+        Write-Host $Workflow.GeneralInstructions
         Write-Host ""
     }
 }
