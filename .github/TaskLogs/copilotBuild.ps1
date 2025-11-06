@@ -38,5 +38,7 @@ $cmd_arguments = "`"`"$vsdevcmd`" & $msbuild_arguments"
 # Execute msbuild with output to both console and log file
 $logFile = "$PSScriptRoot\Build.log"
 $commandLine = "/c $cmd_arguments"
-& $env:ComSpec $commandLine 2>&1 | Tee-Object -FilePath $logFile
+$logFileUnfinished = "$logFile.unfinished"
+& $env:ComSpec $commandLine 2>&1 | Tee-Object -FilePath $logFileUnfinished
+Rename-Item -Path $logFileUnfinished -NewName $logFile -Force
 exit $LASTEXITCODE
