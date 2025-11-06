@@ -28,6 +28,8 @@
     "chat.agent.maxRequests": 9999,
     "task.allowAutomaticTasks": "on",
     "chat.tools.terminal.autoApprove": {
+        "/\\bcopilot(Prepare|Build|Execute)\\.ps1\\b/i": true,
+        "/\\bWorkflowDriver.ps1\\b/i": true,
         "yarn": true,
         "npm": true,
         "npx vitest run": true,
@@ -47,7 +49,6 @@
         "Select-Object": true,
         "ForEach-Object": true,
         "Measure-Object": true,
-        "/\\bcopilot(Prepare|Build|Execute)\\.ps1\\b/i": true,
         "kill": false,
         "curl": false,
         "wget": false,

@@ -62,8 +62,9 @@ Follow the format to display the current state:
 ```
 Prompt of the state
 
-Call <absolute-path-to-WorkflowDriver.ps1> -Keyword KEYWORD
-Use keyword "KEYWORD" if <condition-of-the-keyword>
+Run this command after finishing the instruction:
+& <absolute-path-to-WorkflowDriver.ps1> -Keyword KEYWORDS
+  - Use keyword "KEYWORD" if <condition-of-the-keyword>
 ...
 ```
 
@@ -170,11 +171,17 @@ function Display-State {
     # Display keywords if any
     if ($state.Keywords.Count -gt 0) {
         $scriptPath = $PSCommandPath
+        
+        # Collect all keywords
+        $allKeywords = $state.Keywords | ForEach-Object { $_.Keyword }
+        $keywordString = $allKeywords -join '|'
+        
+        Write-Host "Run this command after finishing the instruction:"
+        Write-Host "& $scriptPath -Keyword $keywordString"
         foreach ($kw in $state.Keywords) {
-            Write-Host "Call $scriptPath -Keyword $($kw.Keyword)"
-            Write-Host "Use keyword `"$($kw.Keyword)`" if $($kw.Condition)"
-            Write-Host ""
+            Write-Host "  - Use keyword `"$($kw.Keyword)`" if $($kw.Condition)"
         }
+        Write-Host ""
     }
 }
 
