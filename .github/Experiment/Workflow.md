@@ -7,7 +7,7 @@
 [PASSED][Test]there is not compile error
 [FAILED][Fix Compile Error]there is any compiler error
 
-- Run the `Run Unit Tests` task.
+- Run the `Build Unit Tests` task.
 - The only source of trust is the raw output of the compiler.
   - It is saved to `REPO-ROOT/.github/TaskLogs/Build.log`. `REPO-ROOT` is the root folder of the repo.
   - If you cannot find the file, it means the compiling has not finished yet.
