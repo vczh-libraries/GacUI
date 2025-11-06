@@ -1533,21 +1533,16 @@ TEST_FILE
 			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({}), L"No inline objects removed");
 		});
 		
-		TEST_CASE(L"New map empty, old map has inline objects")
-		{
-			DocumentRunPropertyMap oldRuns, newRuns;
-			oldRuns.Add({.caretBegin = 0, .caretEnd = 1}, DocumentRunProperty(CreateInlineProp(5, 100)));
-			oldRuns.Add({.caretBegin = 5, .caretEnd = 6}, DocumentRunProperty(CreateInlineProp(7, 50)));
-			
-			remoteprotocol::ElementDesc_DocumentParagraph desc;
-			DiffRuns(oldRuns, newRuns, desc);
-			
-			TEST_ASSERT(!desc.runsDiff || desc.runsDiff->Count() == 0);
-			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline objects created");
-			AssertCallbackIdList(desc.removedInlineObjects, MakeExpectedIds({5, 7}), L"Inline objects removed");
-		});
-
-		TEST_CASE(L"Same key, same value - no diff entry")
+	TEST_CASE(L"New map empty, old map has inline objects - ERROR")
+	{
+		DocumentRunPropertyMap oldRuns, newRuns;
+		oldRuns.Add({.caretBegin = 0, .caretEnd = 1}, DocumentRunProperty(CreateInlineProp(5, 100)));
+		oldRuns.Add({.caretBegin = 5, .caretEnd = 6}, DocumentRunProperty(CreateInlineProp(7, 50)));
+		
+		// This should trigger CHECK_ERROR because old runs are not covered by new runs
+		remoteprotocol::ElementDesc_DocumentParagraph desc;
+		TEST_ERROR(DiffRuns(oldRuns, newRuns, desc));
+	});		TEST_CASE(L"Same key, same value - no diff entry")
 		{
 			DocumentRunPropertyMap oldRuns, newRuns;
 			auto prop = DocumentRunProperty(CreateTextProp(0xFF));
