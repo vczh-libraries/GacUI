@@ -116,6 +116,10 @@
 - Find out what you can learn from the updates, about my philosophy and preferences.
 - Check all future tasks, apply what you have learned, and adjust your approach accordingly.
 
+### Step 6.4
+
+- Find and execute `copilotPrepare.ps1 -Backup`. You MUST use the `-Backup` parameter.
+
 # External Tools Environment and Context
 
 - You are on Windows running in Cursor.

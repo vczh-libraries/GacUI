@@ -1,4 +1,4 @@
-# !!!SCRUM!!!
+﻿# !!!SCRUM!!!
 
 # DESIGN REQUEST
 
@@ -126,7 +126,7 @@ DiffRuns should report (1-10)prop1 instead of (2-5)prop1
 - [x] TASK No.4: Unit test for ResetInlineObjectRun
 - [x] TASK No.5: Unit test for MergeRuns
 - [x] TASK No.6: Unit test for DiffRuns
-- [ ] TASK No.7: Unit test for DiffRuns (Complex run modification scenarios)
+- [x] TASK No.7: Unit test for DiffRuns (Complex run modification scenarios)
 - [ ] TASK No.8: Implement `GuiRemoteGraphicsParagraph` class
 - [ ] TASK No.9: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
 - [ ] TASK No.10: Create basic `GuiSinglelineTextBox` test case
