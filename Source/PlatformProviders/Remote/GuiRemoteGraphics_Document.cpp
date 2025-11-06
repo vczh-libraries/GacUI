@@ -418,42 +418,44 @@ DiffRuns
 					oldInlineCallbackIds.Add(inlineObj->callbackId);
 				}
 
-			oldIdx++;
+				oldIdx++;
+			}
 		}
-	}
 
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::DiffRuns(const DocumentRunPropertyMap&, const DocumentRunPropertyMap&, remoteprotocol::ElementDesc_DocumentParagraph&)#"
-	// Validate that all old run ranges are fully covered by new run ranges
-	for (vint oldI = 0; oldI < oldKeys.Count(); oldI++)
-	{
-		auto&& oldKey = oldKeys[oldI];
-		vint coveredEnd = oldKey.caretBegin;
-		
-		// Find all new ranges that cover this old range
-		for (vint newI = 0; newI < newKeys.Count(); newI++)
+		// Validate that all old run ranges are fully covered by new run ranges
+		for (vint oldI = 0; oldI < oldKeys.Count(); oldI++)
 		{
-			auto&& newKey = newKeys[newI];
-			
-			// Check if this new range overlaps with uncovered part of old range
-			if (newKey.caretBegin <= coveredEnd && newKey.caretEnd > coveredEnd)
+			auto&& oldKey = oldKeys[oldI];
+			vint coveredEnd = oldKey.caretBegin;
+
+			// Find all new ranges that cover this old range
+			for (vint newI = 0; newI < newKeys.Count(); newI++)
 			{
-				coveredEnd = newKey.caretEnd > oldKey.caretEnd ? oldKey.caretEnd : newKey.caretEnd;
+				auto&& newKey = newKeys[newI];
+
+				// Check if this new range overlaps with uncovered part of old range
+				if (newKey.caretBegin <= coveredEnd && newKey.caretEnd > coveredEnd)
+				{
+					coveredEnd = newKey.caretEnd > oldKey.caretEnd ? oldKey.caretEnd : newKey.caretEnd;
+				}
+			}
+
+			CHECK_ERROR(coveredEnd >= oldKey.caretEnd,
+				ERROR_MESSAGE_PREFIX L"Old run range not fully covered by new runs");
+		}
+#undef ERROR_MESSAGE_PREFIX
+
+		for (vint i = 0; i < newInlineCallbackIds.Count(); i++)
+		{
+			auto id = newInlineCallbackIds[i];
+			if (!oldInlineCallbackIds.Contains(id))
+			{
+				result.createdInlineObjects->Add(id);
 			}
 		}
 		
-		CHECK_ERROR(coveredEnd >= oldKey.caretEnd,
-			ERROR_MESSAGE_PREFIX L"Old run range not fully covered by new runs");
-	}
-#undef ERROR_MESSAGE_PREFIX
-
-	for (vint i = 0; i < newInlineCallbackIds.Count(); i++)
-	{
-		auto id = newInlineCallbackIds[i];
-		if (!oldInlineCallbackIds.Contains(id))
-		{
-			result.createdInlineObjects->Add(id);
-		}
-	}		for (vint i = 0; i < oldInlineCallbackIds.Count(); i++)
+		for (vint i = 0; i < oldInlineCallbackIds.Count(); i++)
 		{
 			auto id = oldInlineCallbackIds[i];
 			if (!newInlineCallbackIds.Contains(id))
