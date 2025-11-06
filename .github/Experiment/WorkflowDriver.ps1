@@ -164,9 +164,21 @@ function Display-State {
         return
     }
     
+    # Always print "# Instructions" first
+    Write-Host "# Instructions"
+    Write-Host ""
+    
     # Display the prompt
     Write-Host $state.Prompt
     Write-Host ""
+    
+    # Display general instructions unless in Finished state
+    if ($StateName -ne "Finished") {
+        Write-Host "# General Instructions"
+        Write-Host ""
+        Write-Host $Workflow.GeneralInstructions
+        Write-Host ""
+    }
     
     # Display keywords if any
     if ($state.Keywords.Count -gt 0) {
