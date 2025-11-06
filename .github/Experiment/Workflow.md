@@ -10,7 +10,7 @@
 - Run the `Build Unit Tests` task.
 - The only source of trust is the raw output of the compiler.
   - It is saved to `REPO-ROOT/.github/TaskLogs/Build.log`. `REPO-ROOT` is the root folder of the repo.
-  - If you cannot find the file, it means the compiling has not finished yet.
+  - Wait for the task to finish before reading the log file. DO NOT HURRY.
 - DO NOT TRUST related tools Visual Studio Code offers you, like `get_errors` or `get_task_output`, etc.
 
 # [State] Fix Compile Error
@@ -26,7 +26,7 @@
 - Run the `Run Unit Tests` task.
 - The only source of trust is the raw output of the unit test process.
   - It is saved to `REPO-ROOT/.github/TaskLogs/Execute.log`. `REPO-ROOT` is the root folder of the repo.
-  - If you cannot find the file, it means the testing has not finished yet.
+  - Wait for the task to finish before reading the log file. DO NOT HURRY.
   - When all test cases pass, there will be a summarizing about how many test cases are executed. Otherwise it crashed at the last showing test case.
 - DO NOT TRUST related tools Visual Studio Code offers you, like `get_errors` or `get_task_output`, etc.
 - Run the unit test and see if they passed. If anything is good, you will only see test files and test cases that are executed.
