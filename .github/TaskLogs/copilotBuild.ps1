@@ -1,3 +1,10 @@
+# Remove log file if it exists
+$logFile = "$PSScriptRoot\Build.log"
+if (Test-Path $logFile) {
+    Remove-Item $logFile -Force
+    Write-Host "Removed existing log file: $logFile"
+}
+
 # Find the solution folder by looking for *.sln files
 $currentDir = Get-Location
 $solutionFile = $null

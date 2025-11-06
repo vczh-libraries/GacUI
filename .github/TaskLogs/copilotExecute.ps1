@@ -3,6 +3,13 @@ param(
     [string]$Executable
 )
 
+# Remove log file if it exists
+$logFile = "$PSScriptRoot\Execute.log"
+if (Test-Path $logFile) {
+    Remove-Item $logFile -Force
+    Write-Host "Removed existing log file: $logFile"
+}
+
 # Ensure the executable name has .exe extension
 if (-not $Executable.EndsWith(".exe")) {
     $executableName = $Executable + ".exe"
