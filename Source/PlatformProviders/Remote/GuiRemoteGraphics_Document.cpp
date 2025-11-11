@@ -51,6 +51,19 @@ Comparison
 DiffRuns
 ***********************************************************************/
 
+	DocumentTextRunPropertyOverrides ApplyOverrides(
+		const DocumentTextRunPropertyOverrides& base,
+		const DocumentTextRunPropertyOverrides& overrides)
+	{
+		DocumentTextRunPropertyOverrides result;
+		result.textColor = overrides.textColor ? overrides.textColor : base.textColor;
+		result.backgroundColor = overrides.backgroundColor ? overrides.backgroundColor : base.backgroundColor;
+		result.fontFamily = overrides.fontFamily ? overrides.fontFamily : base.fontFamily;
+		result.size = overrides.size ? overrides.size : base.size;
+		result.textStyle = overrides.textStyle ? overrides.textStyle : base.textStyle;
+		return result;
+	}
+
 	void AddTextRun(
 		DocumentTextRunPropertyMap& map,
 		CaretRange range,
@@ -88,6 +101,7 @@ DiffRuns
 	
 		List<Pair<CaretRange, DocumentTextRunPropertyOverrides>> fragmentsToReinsert;
 		List<CaretRange> keysToRemove;
+		List<Tuple<CaretRange, DocumentTextRunPropertyOverrides>> overlappingOldRuns;
 		
 		if (firstOverlap != -1)
 		{
@@ -99,6 +113,11 @@ DiffRuns
 					break;
 			
 				auto&& oldProperty = map[key];
+			
+				// Record the overlapping portion
+				vint overlapBegin = key.caretBegin < range.caretBegin ? range.caretBegin : key.caretBegin;
+				vint overlapEnd = key.caretEnd > range.caretEnd ? range.caretEnd : key.caretEnd;
+				overlappingOldRuns.Add({CaretRange{overlapBegin, overlapEnd}, oldProperty});
 			
 				if (key.caretBegin < range.caretBegin)
 				{
@@ -126,9 +145,54 @@ DiffRuns
 			map.Add(fragment.key, fragment.value);
 		}
 	
-		map.Add(range, propertyOverrides);
+		if (overlappingOldRuns.Count() > 0)
+		{
+			// The new range has overlaps with old runs - apply override semantics
+			vint currentPos = range.caretBegin;
+			
+			for (vint i = 0; i < overlappingOldRuns.Count(); i++)
+			{
+				auto&& [oldRange, oldProp] = overlappingOldRuns[i];
+				
+				// Add any gap before this overlap with new properties as-is
+				if (currentPos < oldRange.caretBegin)
+				{
+					map.Add(CaretRange{currentPos, oldRange.caretBegin}, propertyOverrides);
+				}
+				
+				// Add the overlapping portion with merged properties
+				auto mergedProp = ApplyOverrides(oldProp, propertyOverrides);
+				map.Add(oldRange, mergedProp);
+				
+				currentPos = oldRange.caretEnd;
+			}
+			
+			// Add any remaining part after all overlaps with new properties as-is
+			if (currentPos < range.caretEnd)
+			{
+				map.Add(CaretRange{currentPos, range.caretEnd}, propertyOverrides);
+			}
+		}
+		else
+		{
+			// No overlaps - add the entire range with new properties
+			map.Add(range, propertyOverrides);
+		}
 
-		vint newIndex = map.Keys().IndexOf(range);
+		// Find the first key within the original range for merging
+		vint newIndex = -1;
+		auto&& keys = map.Keys();
+		for (vint i = 0; i < keys.Count(); i++)
+		{
+			if (keys[i].caretBegin >= range.caretBegin)
+			{
+				newIndex = i;
+				break;
+			}
+		}
+		
+		if (newIndex == -1)
+			return;
 		
 		while (newIndex > 0)
 		{
