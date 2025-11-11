@@ -22,6 +22,57 @@ namespace remote_document_paragrpah_tests
 		return prop;
 	}
 
+	DocumentTextRunPropertyOverrides CreateTextPropPartial(
+		Nullable<WString> fontFamily,
+		Nullable<vint> size,
+		Nullable<Color> textColor,
+		Nullable<Color> backgroundColor,
+		Nullable<IGuiGraphicsParagraph::TextStyle> textStyle)
+	{
+		DocumentTextRunPropertyOverrides prop;
+		prop.fontFamily = fontFamily;
+		prop.size = size;
+		prop.textColor = textColor;
+		prop.backgroundColor = backgroundColor;
+		prop.textStyle = textStyle;
+		return prop;
+	}
+
+	DocumentTextRunPropertyOverrides CreateTextPropWithFont(const WString& fontFamily)
+	{
+		DocumentTextRunPropertyOverrides prop;
+		prop.fontFamily = fontFamily;
+		return prop;
+	}
+
+	DocumentTextRunPropertyOverrides CreateTextPropWithSize(vint size)
+	{
+		DocumentTextRunPropertyOverrides prop;
+		prop.size = size;
+		return prop;
+	}
+
+	DocumentTextRunPropertyOverrides CreateTextPropWithColor(Color textColor)
+	{
+		DocumentTextRunPropertyOverrides prop;
+		prop.textColor = textColor;
+		return prop;
+	}
+
+	DocumentTextRunPropertyOverrides CreateTextPropWithBgColor(Color backgroundColor)
+	{
+		DocumentTextRunPropertyOverrides prop;
+		prop.backgroundColor = backgroundColor;
+		return prop;
+	}
+
+	DocumentTextRunPropertyOverrides CreateTextPropWithStyle(IGuiGraphicsParagraph::TextStyle textStyle)
+	{
+		DocumentTextRunPropertyOverrides prop;
+		prop.textStyle = textStyle;
+		return prop;
+	}
+
 	DocumentTextRunProperty CreateFullTextProp(unsigned char colorValue)
 	{
 		DocumentTextRunProperty prop;
@@ -677,6 +728,354 @@ TEST_FILE
 			
 			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 50}, prop1);  // All merged back
+			
+			AssertMap(textMap, expectedMap);
+		});
+	});
+
+	TEST_CATEGORY(L"AddTextRun (partial application)")
+	{
+		TEST_CASE(L"Partial update - font only preserves other properties")
+		{
+			DocumentTextRunPropertyMap textMap;
+			auto initial = CreateTextProp(100);  // All properties defined
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial);
+			
+			// Update only font, leaving others null
+			auto fontUpdate = CreateTextPropWithFont(L"NewFont");
+			AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, fontUpdate);
+			
+			// Expected: three fragments
+			// [0,5]: original properties
+			// [5,15]: font changed to "NewFont", other properties preserved from original
+			// [15,20]: original properties
+			DocumentTextRunPropertyMap expectedMap;
+			
+			auto fragment1 = initial;  // [0,5] unchanged
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 5}, fragment1);
+			
+			auto fragment2 = initial;  // [5,15] font updated, others preserved
+			fragment2.fontFamily = L"NewFont";
+			expectedMap.Add({.caretBegin = 5, .caretEnd = 15}, fragment2);
+			
+			auto fragment3 = initial;  // [15,20] unchanged
+			expectedMap.Add({.caretBegin = 15, .caretEnd = 20}, fragment3);
+			
+			AssertMap(textMap, expectedMap);
+		});
+
+		TEST_CASE(L"Partial update - color only preserves other properties")
+		{
+			DocumentTextRunPropertyMap textMap;
+			auto initial = CreateTextProp(100);
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial);
+			
+			auto colorUpdate = CreateTextPropWithColor(Color(255, 0, 0));  // Red
+			AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, colorUpdate);
+			
+			DocumentTextRunPropertyMap expectedMap;
+			
+			auto fragment1 = initial;
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 5}, fragment1);
+			
+			auto fragment2 = initial;
+			fragment2.textColor = Color(255, 0, 0);
+			expectedMap.Add({.caretBegin = 5, .caretEnd = 15}, fragment2);
+			
+			auto fragment3 = initial;
+			expectedMap.Add({.caretBegin = 15, .caretEnd = 20}, fragment3);
+			
+			AssertMap(textMap, expectedMap);
+		});
+
+		TEST_CASE(L"Partial update - size only preserves other properties")
+		{
+			DocumentTextRunPropertyMap textMap;
+			auto initial = CreateTextProp(100);
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial);
+			
+			auto sizeUpdate = CreateTextPropWithSize(16);
+			AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, sizeUpdate);
+			
+			DocumentTextRunPropertyMap expectedMap;
+			
+			auto fragment1 = initial;
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 5}, fragment1);
+			
+			auto fragment2 = initial;
+			fragment2.size = 16;
+			expectedMap.Add({.caretBegin = 5, .caretEnd = 15}, fragment2);
+			
+			auto fragment3 = initial;
+			expectedMap.Add({.caretBegin = 15, .caretEnd = 20}, fragment3);
+			
+			AssertMap(textMap, expectedMap);
+		});
+
+		TEST_CASE(L"Partial update - multiple properties, some null")
+		{
+			DocumentTextRunPropertyMap textMap;
+			auto initial = CreateTextProp(100);
+		AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial);
+		
+		// Update font and color, leave others null
+		auto update = CreateTextPropPartial(
+			WString(L"PartialFont"), 
+			Nullable<vint>(),  // size null
+			Color(0, 255, 0),   // green
+			Nullable<Color>(),  // backgroundColor null
+			Nullable<IGuiGraphicsParagraph::TextStyle>());  // style null
+		AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, update);			DocumentTextRunPropertyMap expectedMap;
+			
+			auto fragment1 = initial;
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 5}, fragment1);
+			
+			auto fragment2 = initial;
+			fragment2.fontFamily = L"PartialFont";
+			fragment2.textColor = Color(0, 255, 0);
+			expectedMap.Add({.caretBegin = 5, .caretEnd = 15}, fragment2);
+			
+			auto fragment3 = initial;
+			expectedMap.Add({.caretBegin = 15, .caretEnd = 20}, fragment3);
+			
+			AssertMap(textMap, expectedMap);
+		});
+
+		TEST_CASE(L"Merge - identical nullability patterns merge")
+		{
+			DocumentTextRunPropertyMap textMap;
+			
+			// Both runs have font defined, color null
+			auto prop1 = CreateTextPropWithFont(L"Arial");
+			auto prop2 = CreateTextPropWithFont(L"Arial");
+			
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
+			
+			// Should merge because all properties (including nullability) match
+			DocumentTextRunPropertyMap expectedMap;
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 20}, prop1);
+			
+			AssertMap(textMap, expectedMap);
+		});
+
+		TEST_CASE(L"Merge - null vs defined prevents merge")
+		{
+			DocumentTextRunPropertyMap textMap;
+			
+			// First run: font defined, color null
+			auto prop1 = CreateTextPropWithFont(L"Arial");
+			
+		// Second run: font defined, color defined
+		auto prop2 = CreateTextPropPartial(
+			WString(L"Arial"),
+			Nullable<vint>(),
+			Color(255, 0, 0),  // Red - defined
+			Nullable<Color>(),
+			Nullable<IGuiGraphicsParagraph::TextStyle>());			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
+			
+			// Should NOT merge (color differs: null vs Red)
+			DocumentTextRunPropertyMap expectedMap;
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop2);
+			
+			AssertMap(textMap, expectedMap);
+		});
+
+		TEST_CASE(L"Merge - defined vs null prevents merge")
+		{
+			DocumentTextRunPropertyMap textMap;
+			
+		// First run: font and color defined
+		auto prop1 = CreateTextPropPartial(
+			WString(L"Arial"),
+			Nullable<vint>(),
+			Color(255, 0, 0),
+			Nullable<Color>(),
+			Nullable<IGuiGraphicsParagraph::TextStyle>());			// Second run: font defined, color null
+			auto prop2 = CreateTextPropWithFont(L"Arial");
+			
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
+			
+			// Should NOT merge (color differs: Red vs null)
+			DocumentTextRunPropertyMap expectedMap;
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop2);
+			
+			AssertMap(textMap, expectedMap);
+		});
+
+		TEST_CASE(L"Merge - multiple null properties can merge")
+		{
+			DocumentTextRunPropertyMap textMap;
+			
+			// Both runs have only font defined, all others null
+			auto prop1 = CreateTextPropWithFont(L"Courier");
+			auto prop2 = CreateTextPropWithFont(L"Courier");
+			
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
+			
+			// All properties match (including multiple nulls), should merge
+			DocumentTextRunPropertyMap expectedMap;
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 20}, prop1);
+			
+			AssertMap(textMap, expectedMap);
+		});
+
+		TEST_CASE(L"Layered - sequential partial updates accumulate properties")
+		{
+			DocumentTextRunPropertyMap textMap;
+			
+			// Step 1: Add font only
+			auto fontOnly = CreateTextPropWithFont(L"Arial");
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, fontOnly);
+			
+			// Step 2: Add size only (same range)
+			auto sizeOnly = CreateTextPropWithSize(14);
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, sizeOnly);
+			
+		// Should merge into single run with both properties
+		DocumentTextRunPropertyMap expectedMap;
+		auto combined = CreateTextPropPartial(
+			WString(L"Arial"),
+			14,
+			Nullable<Color>(),
+			Nullable<Color>(),
+			Nullable<IGuiGraphicsParagraph::TextStyle>());
+		expectedMap.Add({.caretBegin = 0, .caretEnd = 20}, combined);			AssertMap(textMap, expectedMap);
+		});
+
+		TEST_CASE(L"Layered - partial overlap creates split with accumulated properties")
+		{
+			DocumentTextRunPropertyMap textMap;
+			
+			// Step 1: Add font for full range
+			auto fontOnly = CreateTextPropWithFont(L"Arial");
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, fontOnly);
+			
+			// Step 2: Add size for half range
+			auto sizeOnly = CreateTextPropWithSize(14);
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, sizeOnly);
+			
+			// Step 3: Add color for different half range
+			auto colorOnly = CreateTextPropWithColor(Color(0, 0, 255));
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, colorOnly);
+			
+			// Should result in two runs with different property combinations
+			DocumentTextRunPropertyMap expectedMap;
+			
+		auto left = CreateTextPropPartial(
+			WString(L"Arial"),
+			14,
+			Nullable<Color>(),
+			Nullable<Color>(),
+			Nullable<IGuiGraphicsParagraph::TextStyle>());
+		expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, left);
+		
+		auto right = CreateTextPropPartial(
+			WString(L"Arial"),
+			Nullable<vint>(),
+			Color(0, 0, 255),
+			Nullable<Color>(),
+			Nullable<IGuiGraphicsParagraph::TextStyle>());
+		expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, right);			AssertMap(textMap, expectedMap);
+		});
+
+		TEST_CASE(L"Layered - three-step application with overlapping ranges")
+		{
+			DocumentTextRunPropertyMap textMap;
+			
+			// Step 1: Font for [0, 30]
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 30}, CreateTextPropWithFont(L"Arial"));
+			
+			// Step 2: Size for [0, 20]
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, CreateTextPropWithSize(12));
+			
+			// Step 3: Color for [10, 30]
+			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 30}, CreateTextPropWithColor(Color(255, 0, 0)));
+			
+			// Expected three regions with different property combinations:
+		// [0,10]: font+size
+		// [10,20]: font+size+color
+		// [20,30]: font+color
+		DocumentTextRunPropertyMap expectedMap;
+		
+		auto region1 = CreateTextPropPartial(WString(L"Arial"), 12, Nullable<Color>(), Nullable<Color>(), Nullable<IGuiGraphicsParagraph::TextStyle>());
+		expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, region1);
+		
+		auto region2 = CreateTextPropPartial(WString(L"Arial"), 12, Color(255, 0, 0), Nullable<Color>(), Nullable<IGuiGraphicsParagraph::TextStyle>());
+		expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, region2);
+		
+		auto region3 = CreateTextPropPartial(WString(L"Arial"), Nullable<vint>(), Color(255, 0, 0), Nullable<Color>(), Nullable<IGuiGraphicsParagraph::TextStyle>());
+		expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, region3);			AssertMap(textMap, expectedMap);
+		});
+
+		TEST_CASE(L"Edge case - all null properties")
+		{
+			DocumentTextRunPropertyMap textMap;
+			
+			// Start with fully defined properties
+			auto initial = CreateTextProp(100);
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial);
+			
+			// Add run with all properties null
+			auto allNull = CreateTextPropPartial(
+				Nullable<WString>(),
+				Nullable<vint>(),
+				Nullable<Color>(),
+				Nullable<Color>(),
+				Nullable<IGuiGraphicsParagraph::TextStyle>());
+			AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, allNull);
+			
+			// All-null update preserves all existing properties
+			// Should result in three fragments, middle has all properties from original
+			// After split and merge, all three should merge back
+			DocumentTextRunPropertyMap expectedMapMerged;
+			expectedMapMerged.Add({.caretBegin = 0, .caretEnd = 20}, initial);
+			
+			AssertMap(textMap, expectedMapMerged);
+		});
+
+		TEST_CASE(L"Edge case - overwrite with same partial properties")
+		{
+			DocumentTextRunPropertyMap textMap;
+			
+			// Initial: only font defined
+			auto initial = CreateTextPropWithFont(L"Arial");
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial);
+			
+			// Update with same font
+			auto update = CreateTextPropWithFont(L"Arial");
+			AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, update);
+			
+			// Properties are identical (font="Arial", all others null)
+			// After split and merge, should merge back to single run
+			DocumentTextRunPropertyMap expectedMap;
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 20}, initial);
+			
+			AssertMap(textMap, expectedMap);
+		});
+
+		TEST_CASE(L"Edge case - overwrite with different partial properties")
+		{
+			DocumentTextRunPropertyMap textMap;
+			
+			// Initial: only font defined as Arial
+			auto initial = CreateTextPropWithFont(L"Arial");
+			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial);
+			
+			// Update with different font (Courier)
+			auto update = CreateTextPropWithFont(L"Courier");
+			AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, update);
+			
+			// Should create three fragments with different fonts
+			DocumentTextRunPropertyMap expectedMap;
+			expectedMap.Add({.caretBegin = 0, .caretEnd = 5}, initial);  // Arial
+			expectedMap.Add({.caretBegin = 5, .caretEnd = 15}, update);   // Courier
+			expectedMap.Add({.caretBegin = 15, .caretEnd = 20}, initial); // Arial
 			
 			AssertMap(textMap, expectedMap);
 		});

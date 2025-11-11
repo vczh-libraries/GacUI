@@ -181,7 +181,7 @@ When you split task 8, you should do this in order:
 - [x] TASK No.8: Define DocumentTextRunPropertyOverrides type and update signatures without nullable semantics
 - [x] TASK No.9: Implement nullable property storage and comparison (no overriding logic)
 - [x] TASK No.10: Implement nullable property overriding logic in AddTextRun and default application in MergeRuns
-- [ ] TASK No.11: Add comprehensive test cases for nullable property scenarios in AddTextRun
+- [x] TASK No.11: Add comprehensive test cases for nullable property scenarios in AddTextRun
 - [ ] TASK No.12: Add comprehensive test cases for nullable property scenarios in MergeRuns
 - [ ] TASK No.13: Implement `GuiRemoteGraphicsParagraph` class
 - [ ] TASK No.14: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
