@@ -152,6 +152,23 @@ Null remains "not changing" when applying text run changes or in MergeRuns.
 
 Split task 9 to two as they test two functions
 
+## UPDATE
+
+The last execution of Task 8 was a disaster. So I would like you to split Task 8 into 3 tasks:
+
+First task:
+Make the new override type, but do not apply nullable types yet. So that we can fix and make sure the current test cases work with the new signature
+
+Second task:
+We now use nullable properties, treat null like a normal value first, do not implement any overriding features. So that we can fix and make sure the current test cases work with the new signature
+
+Third task:
+Implement the overriding feature, but do not touch the test cases, make sure there is no regresssion. In Task 9 and 10 there will be new test cases that cover the new logic.
+
+When you split task 8, you should do this in order:
+- Adjust existing task numbers through the document first
+- Rewrite task 8 into 3 tasks
+
 # TASKS
 
 - [x] TASK No.1: Define `CaretRange` struct and run management functions
@@ -161,13 +178,15 @@ Split task 9 to two as they test two functions
 - [x] TASK No.5: Unit test for MergeRuns
 - [x] TASK No.6: Unit test for DiffRuns
 - [x] TASK No.7: Unit test for DiffRuns (Complex run modification scenarios)
-- [ ] TASK No.8: Add DocumentTextRunPropertyOverrides and update AddTextRun/MergeRuns to support nullable properties
-- [ ] TASK No.9: Add comprehensive test cases for nullable property scenarios in AddTextRun
-- [ ] TASK No.10: Add comprehensive test cases for nullable property scenarios in MergeRuns
-- [ ] TASK No.11: Implement `GuiRemoteGraphicsParagraph` class
-- [ ] TASK No.12: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
-- [ ] TASK No.13: Create basic `GuiSinglelineTextBox` test case
-- [ ] TASK No.14: Create typing simulation test case and complete typing helper functions
+- [ ] TASK No.8: Define DocumentTextRunPropertyOverrides type and update signatures without nullable semantics
+- [ ] TASK No.9: Implement nullable property storage and comparison (no overriding logic)
+- [ ] TASK No.10: Implement nullable property overriding logic in AddTextRun and default application in MergeRuns
+- [ ] TASK No.11: Add comprehensive test cases for nullable property scenarios in AddTextRun
+- [ ] TASK No.12: Add comprehensive test cases for nullable property scenarios in MergeRuns
+- [ ] TASK No.13: Implement `GuiRemoteGraphicsParagraph` class
+- [ ] TASK No.14: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
+- [ ] TASK No.15: Create basic `GuiSinglelineTextBox` test case
+- [ ] TASK No.16: Create typing simulation test case and complete typing helper functions
 
 ## TASK No.1: Define `CaretRange` struct and run management functions
 
@@ -709,15 +728,114 @@ This task ensures the DiffRuns implementation handles the full complexity of doc
 
 **Learning from Task 6**: Start with 10-15 focused test cases covering the most critical transformation types before attempting exhaustive coverage. Prioritize the most common editing operations (text property changes, text↔object transformations) over rare edge cases. The goal is thorough coverage of realistic scenarios, not theoretical completeness.
 
-## TASK No.8: Add DocumentTextRunPropertyOverrides and update AddTextRun/MergeRuns to support nullable properties
+## TASK No.8: Define DocumentTextRunPropertyOverrides type and update signatures without nullable semantics
 
 ### description
 
-Introduce a new `DocumentTextRunPropertyOverrides` struct that mirrors `DocumentTextRunProperty` but with all fields as `Nullable<T>`, enabling partial property updates. This allows text formatting operations to specify only the properties they want to change, leaving others unchanged.
+Create the infrastructure for nullable property support by defining the `DocumentTextRunPropertyOverrides` type and updating function signatures, but WITHOUT implementing nullable property semantics yet. This task focuses on making the type system changes while keeping all behavior identical to the current implementation.
 
 **Step 1: Define DocumentTextRunPropertyOverrides**
 
 Create the struct in `GuiRemoteGraphics_Document.h` right after `CaretRange`:
+
+```cpp
+struct DocumentTextRunPropertyOverrides
+{
+	Nullable<Color> textColor;
+	Nullable<Color> backgroundColor;
+	Nullable<WString> fontFamily;
+	Nullable<vint> size;
+	Nullable<IGuiGraphicsParagraph::TextStyle> textStyle;
+};
+```
+
+Note: Unlike `DocumentTextRunProperty` which has a `fontProperties` field of type `FontProperties`, the overrides struct expands font properties into individual nullable fields:
+- `fontFamily` (from `FontProperties::fontFamily`)
+- `size` (from `FontProperties::size`)
+- `textStyle` (combines `bold`, `italic`, `underline`, `strikeline` as a single enum flag set)
+
+**Step 2: Update DocumentTextRunPropertyMap type**
+
+Change the map type alias to use overrides:
+```cpp
+using DocumentTextRunPropertyMap = collections::Dictionary<CaretRange, DocumentTextRunPropertyOverrides>;
+```
+
+**Step 3: Update AddTextRun signature**
+
+Change signature:
+```cpp
+extern void AddTextRun(
+	DocumentTextRunPropertyMap& map,
+	CaretRange range,
+	const DocumentTextRunPropertyOverrides& propertyOverrides);
+```
+
+**Step 4: Update MergeRuns signature**
+
+No signature change needed (it already takes `const DocumentTextRunPropertyMap&`).
+
+**Step 5: Implementation approach for this task**
+
+**CRITICAL**: Do NOT implement nullable semantics yet. Instead:
+
+1. **In AddTextRun**: 
+   - Keep the exact same splitting and merging logic as before
+   - When comparing properties for merging, compare all fields including nullability exactly
+   - When applying properties during splits, just copy the property values as-is (null or not)
+   - The behavior should be identical to before, just with a different type
+
+2. **In MergeRuns**:
+   - Keep the exact same merge logic as before
+   - Just treat overrides as a struct with nullable fields
+   - Convert to DocumentRunProperty by extracting values from Nullable<> wrappers
+   - No special handling for null values yet (that comes in Task No.10)
+
+**Step 6: Update test helper functions**
+
+In `TestRemote_DocumentRunManagement.cpp`:
+- Update `CreateTextProp()` to return `DocumentTextRunPropertyOverrides` with all fields defined (non-null)
+- Update `CompareRunProperty()` to handle the overrides type
+- Update `FormatRunProperty()` to display overrides type
+- No changes needed to test logic - all existing tests should pass unchanged
+
+### what to be done
+
+1. Define `DocumentTextRunPropertyOverrides` struct in `GuiRemoteGraphics_Document.h`
+2. Update `DocumentTextRunPropertyMap` type alias
+3. Update `AddTextRun()` signature to use overrides
+4. Update AddTextRun implementation to work with the new type (but no nullable semantics yet)
+5. Update MergeRuns implementation to work with the new type (but no nullable semantics yet)
+6. Update test helper functions to use the new type
+7. Ensure all existing test cases pass without modification
+
+### how to test it
+
+Run the compiled unit test executable. All existing test cases should pass:
+- Existing AddTextRun tests verify splitting and merging still work correctly
+- Existing MergeRuns tests verify inline object priority still works
+- Build succeeds (signature changes compile correctly)
+- All test categories pass: CaretRange, AddTextRun, AddInlineObjectRun, ResetInlineObjectRun, MergeRuns, DiffRuns
+
+### file locations
+
+Modified files:
+- `Source\PlatformProviders\Remote\GuiRemoteGraphics_Document.h`
+- `Source\PlatformProviders\Remote\GuiRemoteGraphics_Document.cpp`
+- `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
+
+### rationale
+
+The previous attempt at Task 8 tried to do too much at once: change types, implement nullable storage, implement nullable semantics, and update tests. This led to confusion and failures.
+
+By splitting into 3 incremental tasks:
+1. **Task 8** (this task): Change the types and signatures, but keep behavior identical. This validates that the type system changes compile and don't break existing tests.
+2. **Task 9**: Add nullable storage and comparison, treating null as a normal value. This validates the storage mechanism without complex overriding logic.
+3. **Task 10**: Implement the actual overriding semantics (null = "keep existing" in AddTextRun, null = "use default" in MergeRuns).
+
+This approach follows the principle of making one type of change at a time, making each step easier to debug and verify.
+
+## TASK No.9: Implement nullable property storage and comparison (no overriding logic)
 
 ```cpp
 struct DocumentTextRunPropertyOverrides
@@ -856,11 +974,158 @@ The design choices:
 
 This task focuses on implementation without breaking existing tests. Task No.9 will add comprehensive tests for nullable property scenarios.
 
-## TASK No.9: Add comprehensive test cases for nullable property scenarios in AddTextRun
+## TASK No.9: Implement nullable property storage and comparison (no overriding logic)
 
 ### description
 
-Add new test cases to `TestRemote_DocumentRunManagement.cpp` within the existing `TEST_CATEGORY("AddTextRun")` to thoroughly test the nullable property functionality added in Task No.8.
+Now that the type system supports nullable properties (Task No.8), implement nullable property storage and comparison. Treat null as a valid value that can be stored and compared, but do NOT implement any special "overriding" semantics yet.
+
+**Key principle**: In this task, null is just another value. Two runs with `color=null` are considered to have the same color. A run with `color=null` is different from a run with `color=Red`.
+
+**Step 1: Update AddTextRun implementation**
+
+1. **Property comparison for merging**: When determining if two consecutive runs can merge, compare all properties including null values as regular values:
+   - `color=null` equals `color=null` ✓
+   - `color=Red` equals `color=Red` ✓
+   - `color=null` does NOT equal `color=Red` ✗
+   - `color=Red` does NOT equal `color=null` ✗
+
+2. **Property storage during splits**: When splitting runs, just copy property values directly (null or not). No special "apply overrides" logic yet.
+
+**Step 2: Update MergeRuns implementation**
+
+1. For text runs with null properties, provide default values:
+   - `textColor`: if null, use Black `Color(0, 0, 0)`
+   - `backgroundColor`: if null, use Black `Color(0, 0, 0)`
+   - `textStyle`: if null, use `(TextStyle)0` (no styles)
+   - `fontFamily` and `size`: if null, this is an error (these are required)
+
+2. Add validation: `fontFamily` and `size` must be non-null in all text runs. If null is encountered, this is a programming error (assert/verify).
+
+**Step 3: Update test helpers**
+
+Update `CompareRunProperty()` to properly compare nullable values:
+- If both are null: equal
+- If one is null and one is defined: not equal
+- If both are defined: compare the values
+
+Update `FormatRunProperty()` to display null values as `<null>`.
+
+**Step 4: Update existing tests**
+
+All existing tests create runs with all properties defined (non-null), so they should continue to pass without modification. The new comparison logic should handle non-null values identically to before.
+
+### what to be done
+
+1. Update AddTextRun to compare properties including nullability correctly
+2. Update MergeRuns to fill defaults for null optional properties
+3. Add validation in MergeRuns that fontFamily and size are non-null
+4. Update test helper functions for nullable comparison and formatting
+5. Verify all existing test cases pass
+
+### how to test it
+
+Run the compiled unit test executable. All existing test cases should pass:
+- AddTextRun tests verify merging considers null as a distinct value
+- MergeRuns tests verify default value application
+- No new tests needed in this task (covered in Task No.11 and No.12)
+
+### file locations
+
+Modified files:
+- `Source\PlatformProviders\Remote\GuiRemoteGraphics_Document.cpp`
+- `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp` (helper functions only)
+
+### rationale
+
+This task establishes the nullable value system without the complexity of overriding semantics. By treating null as "just another value", we can verify:
+1. The comparison logic works correctly
+2. The default value application in MergeRuns works
+3. The validation of required properties works
+
+This creates a stable foundation before adding the more complex overriding logic in Task No.10. If existing tests fail at this stage, it's easier to debug because we haven't added the overriding behavior yet.
+
+## TASK No.10: Implement nullable property overriding logic in AddTextRun and default application in MergeRuns
+
+### description
+
+Now that nullable properties can be stored and compared (Task No.9), implement the actual overriding semantics: in AddTextRun, null means "keep existing value", and in MergeRuns, defaults are already applied.
+
+**Critical note**: MergeRuns already applies defaults in Task No.9, so no changes needed there. This task only changes AddTextRun.
+
+**Step 1: Update AddTextRun overriding logic**
+
+When adding a new run that overlaps existing runs, the new run's properties should override:
+- If a property in the new run is **defined** (non-null): Replace the existing run's property value
+- If a property in the new run is **null**: Keep the existing run's property value (don't change it)
+
+**Example scenario**:
+- Existing map: `[(0,10) fontFamily="Arial", size=12, color=Black, bgColor=White]`
+- Add run: `[(5,15) fontFamily="Times", color=null, bgColor=null, size=null]`
+- Result:
+  - `[(0,5) fontFamily="Arial", size=12, color=Black, bgColor=White]` - unchanged part
+  - `[(5,10) fontFamily="Times", size=12, color=Black, bgColor=White]` - fontFamily updated, others kept
+  - `[(10,15) fontFamily="Times", size=<null>, color=<null>, bgColor=<null>]` - new range beyond original
+
+Note: The overriding only applies to existing ranges. For new ranges (like 10-15 above), just use the new run's properties as-is.
+
+**Step 2: Keep merging logic unchanged**
+
+The merging logic from Task No.9 remains:
+- Two runs merge if all properties match exactly (including nullability)
+- `color=null` can merge with `color=null`
+- `color=null` cannot merge with `color=Red`
+
+**Step 3: Implementation approach**
+
+When splitting an existing run because of overlap with a new run:
+1. Identify the overlapping fragment
+2. For each property in the fragment:
+   - If the new run's property is defined: Use the new value
+   - If the new run's property is null: Use the existing fragment's value
+3. Continue with merging logic as before
+
+### what to be done
+
+1. Update AddTextRun implementation to apply overriding semantics
+2. When a new run overlaps existing runs, apply the "null = keep existing" rule
+3. Keep merging logic unchanged (from Task No.9)
+4. Do NOT modify test cases - they should continue to pass
+5. Verify no regression in existing behavior
+
+### how to test it
+
+Run the compiled unit test executable. All existing test cases should pass:
+- Tests with all properties defined (non-null) should behave identically to Task No.9
+- The overriding logic only affects cases where properties are null, which existing tests don't use
+- No new tests needed in this task (covered in Task No.11)
+
+Success criteria:
+- All existing test categories pass
+- Build succeeds
+- No regressions in observable behavior for non-null property cases
+
+### file locations
+
+Modified files:
+- `Source\PlatformProviders\Remote\GuiRemoteGraphics_Document.cpp`
+
+### rationale
+
+This task completes the nullable property implementation by adding the overriding semantics. By deferring this to the third task in the sequence, we ensure:
+1. The type system changes are validated (Task No.8)
+2. The nullable storage and comparison is validated (Task No.9)
+3. Only then do we add the complex overriding logic (this task)
+
+Since existing tests use all-defined properties, the overriding logic won't affect them - they'll continue to pass. The new behavior will be thoroughly tested in Task No.11 and No.12, which add test cases specifically for nullable property scenarios.
+
+This incremental approach makes each step small and verifiable, avoiding the "disaster" of trying to do everything at once.
+
+## TASK No.11: Add comprehensive test cases for nullable property scenarios in AddTextRun
+
+### description
+
+Add new test cases to `TestRemote_DocumentRunManagement.cpp` within the existing `TEST_CATEGORY("AddTextRun")` to thoroughly test the nullable property functionality added in Task No.8, No.9, and No.10.
 
 **Test approach**:
 - Add new TEST_CASE blocks within existing TEST_CATEGORY("AddTextRun")
@@ -955,7 +1220,7 @@ Modified file: `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
 
 ### rationale
 
-Task No.8 implements the nullable property mechanism for AddTextRun but maintains backward compatibility by only testing with fully-defined properties. This task validates that the nullable property system actually works as intended for AddTextRun's primary use cases:
+Task No.8, No.9, and No.10 implement the nullable property mechanism for AddTextRun but maintain backward compatibility by only testing with fully-defined properties. This task validates that the nullable property system actually works as intended for AddTextRun's primary use cases:
 
 1. **Partial formatting operations**: Real text editors need to change one property at a time (make bold, change color, etc.) without knowing or specifying all other properties. The nullable system enables this.
 
@@ -970,11 +1235,11 @@ Without comprehensive testing of nullable scenarios for AddTextRun, we risk:
 
 This task focuses specifically on AddTextRun behavior, allowing for thorough testing of this critical function's nullable property handling.
 
-## TASK No.10: Add comprehensive test cases for nullable property scenarios in MergeRuns
+## TASK No.12: Add comprehensive test cases for nullable property scenarios in MergeRuns
 
 ### description
 
-Add new test cases to `TestRemote_DocumentRunManagement.cpp` within the existing `TEST_CATEGORY("MergeRuns")` to thoroughly test the nullable property functionality added in Task No.8.
+Add new test cases to `TestRemote_DocumentRunManagement.cpp` within the existing `TEST_CATEGORY("MergeRuns")` to thoroughly test the nullable property functionality added in Task No.8, No.9, and No.10.
 
 **Test approach**:
 - Add new TEST_CASE blocks within existing TEST_CATEGORY("MergeRuns")
@@ -1037,7 +1302,7 @@ Modified file: `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
 
 ### rationale
 
-Task No.8 implements the nullable property mechanism for MergeRuns but maintains backward compatibility by only testing with fully-defined properties. This task validates that MergeRuns correctly handles nullable properties according to its specific requirements:
+Task No.8, No.9, and No.10 implement the nullable property mechanism for MergeRuns but maintain backward compatibility by only testing with fully-defined properties. This task validates that MergeRuns correctly handles nullable properties according to its specific requirements:
 
 1. **Protocol requirements**: MergeRuns must ensure fontFamily and size are always defined because the protocol layer needs complete FontProperties. This validation must be tested.
 
@@ -1050,9 +1315,9 @@ Without comprehensive testing of nullable scenarios for MergeRuns, we risk:
 - Incorrect default values being applied
 - Breaking inline object priority when text runs have nulls
 
-This task focuses specifically on MergeRuns behavior, complementing Task No.9's focus on AddTextRun. Splitting these into two tasks allows for thorough, focused testing of each function's unique nullable property semantics.
+This task focuses specifically on MergeRuns behavior, complementing Task No.11's focus on AddTextRun. Splitting these into two tasks allows for thorough, focused testing of each function's unique nullable property semantics.
 
-## TASK No.11: Implement `GuiRemoteGraphicsParagraph` class
+## TASK No.13: Implement `GuiRemoteGraphicsParagraph` class
 
 ### description
 
@@ -1138,7 +1403,7 @@ Header updates (if needed): `Source\PlatformProviders\Remote\GuiRemoteGraphics_D
 
 This is the core implementation that bridges `IGuiGraphicsParagraph` interface with the remote protocol. The three-category approach cleanly separates concerns: properties configure the paragraph, run methods modify formatting, query methods interact with the remote side. The lazy update strategy (only send when needed) optimizes protocol traffic. Text position conversion functions, though currently identity functions, provide future extensibility for surrogate pair handling or other text encoding complexities.
 
-## TASK No.12: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
+## TASK No.14: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
 
 ### description
 
@@ -1217,7 +1482,7 @@ Modified file: `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.h`
 
 These handlers are the server-side implementation of the paragraph protocol for the unit test environment. Without these implementations, any test using document controls will fail. The implementations can be simplified compared to production renderers (e.g., Windows/Linux) since they only need to support testing scenarios. However, they must be consistent and functional enough to validate the paragraph protocol and allow document control tests to pass.
 
-## TASK No.13: Create basic `GuiSinglelineTextBox` test case
+## TASK No.15: Create basic `GuiSinglelineTextBox` test case
 
 ### description
 
@@ -1292,7 +1557,7 @@ New file: `Test\GacUISrc\UnitTest\TestControls_Editor_GuiSinglelineTextBox.cpp`
 
 This test validates that the basic paragraph protocol implementation works correctly with a real GacUI control. `GuiSinglelineTextBox` uses `GuiDocumentLabel` which uses `IGuiGraphicsParagraph`, so this test exercises the complete stack. By testing programmatic text manipulation first (before user input simulation), we verify the foundational functionality before adding complexity. This test will catch integration issues between the paragraph implementation and the document control system.
 
-## TASK No.14: Create typing simulation test case and complete typing helper functions
+## TASK No.16: Create typing simulation test case and complete typing helper functions
 
 ### description
 
