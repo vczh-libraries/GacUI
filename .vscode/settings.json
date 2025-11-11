@@ -51,6 +51,7 @@
         "ForEach-Object": true,
         "Measure-Object": true,
         */
+        "/^\\$\\w+\\s*=/": true,
         "/.*/": true,
         "git": false,
         "kill": false,

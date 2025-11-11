@@ -212,6 +212,28 @@ DiffRuns
 		return map.Remove(range);
 	}
 
+	remoteprotocol::DocumentTextRunProperty ConvertToFullProperty(const DocumentTextRunPropertyOverrides& propertyOverrides)
+	{
+		remoteprotocol::DocumentTextRunProperty fullProp;
+		fullProp.textColor = propertyOverrides.textColor.Value();
+		fullProp.backgroundColor = propertyOverrides.backgroundColor.Value();
+		fullProp.fontProperties.fontFamily = propertyOverrides.fontFamily.Value();
+		fullProp.fontProperties.size = propertyOverrides.size.Value();
+		
+		// Convert TextStyle enum flags to individual bool fields
+		auto style = propertyOverrides.textStyle.Value();
+		fullProp.fontProperties.bold = (style & IGuiGraphicsParagraph::TextStyle::Bold) != (IGuiGraphicsParagraph::TextStyle)0;
+		fullProp.fontProperties.italic = (style & IGuiGraphicsParagraph::TextStyle::Italic) != (IGuiGraphicsParagraph::TextStyle)0;
+		fullProp.fontProperties.underline = (style & IGuiGraphicsParagraph::TextStyle::Underline) != (IGuiGraphicsParagraph::TextStyle)0;
+		fullProp.fontProperties.strikeline = (style & IGuiGraphicsParagraph::TextStyle::Strikeline) != (IGuiGraphicsParagraph::TextStyle)0;
+		
+		// Set default values for antialias properties
+		fullProp.fontProperties.antialias = true;
+		fullProp.fontProperties.verticalAntialias = true;
+		
+		return fullProp;
+	}
+
 	void MergeRuns(
 		const DocumentTextRunPropertyMap& textRuns,
 		const DocumentInlineObjectRunPropertyMap& inlineObjectRuns,
@@ -258,25 +280,7 @@ DiffRuns
 
 			if (hasCurrentText && inlineIdx >= inlineKeys.Count())
 			{
-				// Convert DocumentTextRunPropertyOverrides to DocumentTextRunProperty
-				remoteprotocol::DocumentTextRunProperty fullProp;
-				fullProp.textColor = currentTextProperty.textColor.Value();
-				fullProp.backgroundColor = currentTextProperty.backgroundColor.Value();
-				fullProp.fontProperties.fontFamily = currentTextProperty.fontFamily.Value();
-				fullProp.fontProperties.size = currentTextProperty.size.Value();
-				
-				// Convert TextStyle enum flags to individual bool fields
-				auto style = currentTextProperty.textStyle.Value();
-				fullProp.fontProperties.bold = (style & IGuiGraphicsParagraph::TextStyle::Bold) != (IGuiGraphicsParagraph::TextStyle)0;
-				fullProp.fontProperties.italic = (style & IGuiGraphicsParagraph::TextStyle::Italic) != (IGuiGraphicsParagraph::TextStyle)0;
-				fullProp.fontProperties.underline = (style & IGuiGraphicsParagraph::TextStyle::Underline) != (IGuiGraphicsParagraph::TextStyle)0;
-				fullProp.fontProperties.strikeline = (style & IGuiGraphicsParagraph::TextStyle::Strikeline) != (IGuiGraphicsParagraph::TextStyle)0;
-				
-				// Set default values for antialias properties
-				fullProp.fontProperties.antialias = true;
-				fullProp.fontProperties.verticalAntialias = true;
-				
-				remoteprotocol::DocumentRunProperty runProp = fullProp;
+				remoteprotocol::DocumentRunProperty runProp = ConvertToFullProperty(currentTextProperty);
 				result.Add(currentTextRange, runProp);
 				hasCurrentText = false;
 				continue;
@@ -298,25 +302,7 @@ DiffRuns
 
 				if (currentTextRange.caretEnd <= inlineKey.caretBegin)
 				{
-					// Convert DocumentTextRunPropertyOverrides to DocumentTextRunProperty
-					remoteprotocol::DocumentTextRunProperty fullProp;
-					fullProp.textColor = currentTextProperty.textColor.Value();
-					fullProp.backgroundColor = currentTextProperty.backgroundColor.Value();
-					fullProp.fontProperties.fontFamily = currentTextProperty.fontFamily.Value();
-					fullProp.fontProperties.size = currentTextProperty.size.Value();
-					
-					// Convert TextStyle enum flags to individual bool fields
-					auto style = currentTextProperty.textStyle.Value();
-					fullProp.fontProperties.bold = (style & IGuiGraphicsParagraph::TextStyle::Bold) != (IGuiGraphicsParagraph::TextStyle)0;
-					fullProp.fontProperties.italic = (style & IGuiGraphicsParagraph::TextStyle::Italic) != (IGuiGraphicsParagraph::TextStyle)0;
-					fullProp.fontProperties.underline = (style & IGuiGraphicsParagraph::TextStyle::Underline) != (IGuiGraphicsParagraph::TextStyle)0;
-					fullProp.fontProperties.strikeline = (style & IGuiGraphicsParagraph::TextStyle::Strikeline) != (IGuiGraphicsParagraph::TextStyle)0;
-					
-					// Set default values for antialias properties
-					fullProp.fontProperties.antialias = true;
-					fullProp.fontProperties.verticalAntialias = true;
-					
-					remoteprotocol::DocumentRunProperty runProp = fullProp;
+					remoteprotocol::DocumentRunProperty runProp = ConvertToFullProperty(currentTextProperty);
 					result.Add(currentTextRange, runProp);
 					hasCurrentText = false;
 				}
@@ -333,25 +319,7 @@ DiffRuns
 					{
 						CaretRange beforeRange{ currentTextRange.caretBegin, inlineKey.caretBegin };
 						
-						// Convert DocumentTextRunPropertyOverrides to DocumentTextRunProperty
-						remoteprotocol::DocumentTextRunProperty fullProp;
-						fullProp.textColor = currentTextProperty.textColor.Value();
-						fullProp.backgroundColor = currentTextProperty.backgroundColor.Value();
-						fullProp.fontProperties.fontFamily = currentTextProperty.fontFamily.Value();
-						fullProp.fontProperties.size = currentTextProperty.size.Value();
-						
-						// Convert TextStyle enum flags to individual bool fields
-						auto style = currentTextProperty.textStyle.Value();
-						fullProp.fontProperties.bold = (style & IGuiGraphicsParagraph::TextStyle::Bold) != (IGuiGraphicsParagraph::TextStyle)0;
-						fullProp.fontProperties.italic = (style & IGuiGraphicsParagraph::TextStyle::Italic) != (IGuiGraphicsParagraph::TextStyle)0;
-						fullProp.fontProperties.underline = (style & IGuiGraphicsParagraph::TextStyle::Underline) != (IGuiGraphicsParagraph::TextStyle)0;
-						fullProp.fontProperties.strikeline = (style & IGuiGraphicsParagraph::TextStyle::Strikeline) != (IGuiGraphicsParagraph::TextStyle)0;
-						
-						// Set default values for antialias properties
-						fullProp.fontProperties.antialias = true;
-						fullProp.fontProperties.verticalAntialias = true;
-						
-						remoteprotocol::DocumentRunProperty runProp = fullProp;
+						remoteprotocol::DocumentRunProperty runProp = ConvertToFullProperty(currentTextProperty);
 						result.Add(beforeRange, runProp);
 					}
 
