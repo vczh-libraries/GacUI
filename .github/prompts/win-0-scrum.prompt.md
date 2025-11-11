@@ -38,7 +38,8 @@
   - Copy precisely my problem description in `# Update` from the LATEST chat message to the `# DESIGN REQUEST` section, with a new sub-section `## UPDATE`.
   - The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# TASKS`).
   - Follow my update to change the design document.
-- If there is a `# Learn` section: it means I made important updates during the execution of the last task, you should apply them smart enough to future tasks. Find the `Optional Step for Learning` section for more instruction.
+  - Find the `(Optional) Step 5. Verify the Document` section to verify the whole document after applying the update.
+- If there is a `# Learn` section: it means I made important updates during the execution of the last task, you should apply them smart enough to future tasks. Find the `(Optional) Step 7. Learning` section for more instruction.
 - If there is nothing: it means you are accidentally stopped. Please continue your work.
 
 ## Step 2. Understand the Goal and Quality Requirement
@@ -81,20 +82,22 @@
   - Keep the knowledge base to only guidelines and design insights will have you find correct piece of code to read.
 - It is fine that you find nothing to change or add to the knowledge base.
 
-## Step 5. Mark the Completion
+## (Optional) Step 5. Verify the Document (only when # Update appears in the LATEST chat message)
+
+- Verify the content of the whole document again. Make sure when you changing, adding, removing, splitting tasks content being replaced are removed properly.
+
+## Step 6. Mark the Completion
 
 - Ensure there is a `# !!!FINISHED!!!` mark at the end of `Copilot_Scrum.md` to indicate the document reaches the end.
 
-## (Optional) Step 6. Learning (only when # Learn appears in the LATEST chat message)
-
+## (Optional) Step 7. Learning (only when # Learn appears in the LATEST chat message)
 - Ignore this section if there is no `# Learn` in the LATEST chat message
 
-### Step 6.1
+### Step 7.1
 
 - Identify the last completed task.
 
-### Step 6.2
-
+### Step 7.2
 - Read through `Copilot_Execution.md`. There may be some fixing attempts, that were done by you.
 - Compare existing source code with `Copilot_Execution.md`, finding what is changed.
   - During comparing, you need to take into consideration of the fixing attempts, as sometimes you didn't update the main content of the document.
@@ -110,14 +113,14 @@
 - Add your finding to `Copilot_Execution.md` at the very end with the topic `# Comparing to User Edit`.
   - If every changes are ignored by the rule above, or if you can't find any user edit, just write `No user edit found`.
 
-### Step 6.3
+### Step 7.3
 
 - There will be multiple `# UPDATES` or `# FIXING ATTEMPTS` or `# Comparing to User Edit` sections in `Copilot_Task.md`, `Copilot_Planning.md` and `Copilot_Execution.md`.
 - These 3 files recorded how you interpreted the last completed task, and how I wanted you to adjust  your understanding.
 - Find out what you can learn from the updates, about my philosophy and preferences.
 - Check all future tasks, apply what you have learned, and adjust your approach accordingly.
 
-### Step 6.4
+### Step 7.4
 
 - Find and execute `copilotPrepare.ps1 -Backup`. You MUST use the `-Backup` parameter.
 
