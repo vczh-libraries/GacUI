@@ -215,13 +215,24 @@ DiffRuns
 	remoteprotocol::DocumentTextRunProperty ConvertToFullProperty(const DocumentTextRunPropertyOverrides& propertyOverrides)
 	{
 		remoteprotocol::DocumentTextRunProperty fullProp;
-		fullProp.textColor = propertyOverrides.textColor.Value();
-		fullProp.backgroundColor = propertyOverrides.backgroundColor.Value();
+		
+		// Required properties - validate non-null
+		CHECK_ERROR(propertyOverrides.fontFamily, L"fontFamily must be defined");
+		CHECK_ERROR(propertyOverrides.size, L"size must be defined");
+		
 		fullProp.fontProperties.fontFamily = propertyOverrides.fontFamily.Value();
 		fullProp.fontProperties.size = propertyOverrides.size.Value();
 		
+		// Optional properties - use defaults if null
+		fullProp.textColor = propertyOverrides.textColor ? 
+			propertyOverrides.textColor.Value() : Color(0, 0, 0);
+		fullProp.backgroundColor = propertyOverrides.backgroundColor ? 
+			propertyOverrides.backgroundColor.Value() : Color(0, 0, 0);
+		
+		auto style = propertyOverrides.textStyle ? 
+			propertyOverrides.textStyle.Value() : (IGuiGraphicsParagraph::TextStyle)0;
+		
 		// Convert TextStyle enum flags to individual bool fields
-		auto style = propertyOverrides.textStyle.Value();
 		fullProp.fontProperties.bold = (style & IGuiGraphicsParagraph::TextStyle::Bold) != (IGuiGraphicsParagraph::TextStyle)0;
 		fullProp.fontProperties.italic = (style & IGuiGraphicsParagraph::TextStyle::Italic) != (IGuiGraphicsParagraph::TextStyle)0;
 		fullProp.fontProperties.underline = (style & IGuiGraphicsParagraph::TextStyle::Underline) != (IGuiGraphicsParagraph::TextStyle)0;

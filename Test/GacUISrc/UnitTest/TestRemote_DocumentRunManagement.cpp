@@ -51,14 +51,35 @@ namespace remote_document_paragrpah_tests
 
 	WString FormatRunProperty(const DocumentTextRunPropertyOverrides& prop)
 	{
-		return L"Text(color:" + 
-			   itow(prop.textColor.Value().r) + L"," + 
-			   itow(prop.textColor.Value().g) + L"," + 
-			   itow(prop.textColor.Value().b) + 
-			   L", bg:" + 
-			   itow(prop.backgroundColor.Value().r) + L"," + 
-			   itow(prop.backgroundColor.Value().g) + L"," + 
-			   itow(prop.backgroundColor.Value().b) + L")";
+		WString colorStr = prop.textColor ? 
+			(itow(prop.textColor.Value().r) + L"," + 
+			 itow(prop.textColor.Value().g) + L"," + 
+			 itow(prop.textColor.Value().b)) :
+			L"<null>";
+		
+		WString bgColorStr = prop.backgroundColor ? 
+			(itow(prop.backgroundColor.Value().r) + L"," + 
+			 itow(prop.backgroundColor.Value().g) + L"," + 
+			 itow(prop.backgroundColor.Value().b)) :
+			L"<null>";
+		
+		WString fontStr = prop.fontFamily ? 
+			prop.fontFamily.Value() : 
+			L"<null>";
+		
+		WString sizeStr = prop.size ? 
+			itow(prop.size.Value()) : 
+			L"<null>";
+		
+		WString styleStr = prop.textStyle ? 
+			itow((vint)prop.textStyle.Value()) : 
+			L"<null>";
+		
+		return L"Text(color:" + colorStr + 
+			   L", bg:" + bgColorStr + 
+			   L", font:" + fontStr + 
+			   L", size:" + sizeStr + 
+			   L", style:" + styleStr + L")";
 	}
 
 	WString FormatRunProperty(const DocumentTextRunProperty& prop)
