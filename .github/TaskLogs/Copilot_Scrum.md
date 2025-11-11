@@ -1286,10 +1286,10 @@ This task focuses specifically on AddTextRun behavior, allowing for thorough tes
 
 ### description
 
-Add new test cases to `TestRemote_DocumentRunManagement.cpp` within the existing `TEST_CATEGORY("MergeRuns")` to thoroughly test the nullable property functionality added in Task No.8, No.9, and No.10.
+Add new test cases to `TestRemote_DocumentRunManagement.cpp` in a new `TEST_CATEGORY("MergeRuns (partial application)")` to thoroughly test the nullable property functionality added in Task No.8, No.9, and No.10.
 
 **Test approach**:
-- Add new TEST_CASE blocks within existing TEST_CATEGORY("MergeRuns")
+- Add new TEST_CASE blocks in a new TEST_CATEGORY("MergeRuns (partial application)") after the existing TEST_CATEGORY("MergeRuns")
 - Use helper functions that create text run maps with nullable properties
 - Verify nullable property semantics: null = use default in MergeRuns
 
@@ -1317,17 +1317,18 @@ Add new test cases to `TestRemote_DocumentRunManagement.cpp` within the existing
 
 ### what to be done
 
-1. Add new test cases to TEST_CATEGORY("MergeRuns"):
+1. Add a new TEST_CATEGORY("MergeRuns (partial application)") after the existing TEST_CATEGORY("MergeRuns")
+2. Add new test cases to the new category:
    - Test mandatory property validation (2-3 test cases)
    - Test default value application (3-4 test cases)
    - Test mixing defined and null properties (3-5 test cases)
    - Test complex nullable scenarios (2-3 test cases)
-2. Each test case should:
+3. Each test case should:
    - Create DocumentTextRunPropertyMap with nullable properties
    - Call MergeRuns to produce DocumentRunPropertyMap result
    - Use AssertMap to verify result has correct default values for null properties
    - Verify mandatory properties (fontFamily, size) are validated
-3. Test cases should verify that inline object priority and text run splitting work correctly even with nullable properties
+4. Test cases should verify that inline object priority and text run splitting work correctly even with nullable properties
 
 ### how to test it
 
@@ -1362,7 +1363,7 @@ Without comprehensive testing of nullable scenarios for MergeRuns, we risk:
 - Incorrect default values being applied
 - Breaking inline object priority when text runs have nulls
 
-This task focuses specifically on MergeRuns behavior, complementing Task No.11's focus on AddTextRun. Splitting these into two tasks allows for thorough, focused testing of each function's unique nullable property semantics.
+This task focuses specifically on MergeRuns behavior, complementing Task No.11's focus on AddTextRun. Splitting these into two tasks allows for thorough, focused testing of each function's unique nullable property semantics. The separate test category "MergeRuns (partial application)" matches the organizational pattern established in Task No.11, making it clear that these tests validate nullable property behavior specifically.
 
 ## TASK No.13: Implement `GuiRemoteGraphicsParagraph` class
 
