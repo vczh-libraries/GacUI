@@ -1255,22 +1255,22 @@ TEST_FILE
 		TEST_CASE(L"Only inline objects")
 		{
 			DocumentTextRunPropertyMap textMap;
-			
+
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			auto prop1 = CreateInlineProp(100);
 			auto prop2 = CreateInlineProp(200);
-			
+
 			AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
 			AddInlineObjectRun(inlineMap, {.caretBegin = 30, .caretEnd = 40}, prop2);
-			
+
 			DocumentRunPropertyMap result;
-			
+
 			MergeRuns(textMap, inlineMap, result);
-			
+
 			DocumentRunPropertyMap expectedResult;
-			expectedResult.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(100)));
-			expectedResult.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(CreateFullTextProp(150)));
-			
+			expectedResult.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(prop1));
+			expectedResult.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(prop2));
+
 			AssertMap(result, expectedResult);
 		});
 	
@@ -1508,15 +1508,14 @@ TEST_FILE
 			DocumentRunPropertyMap expectedResult;
 			expectedResult.Add({.caretBegin = 0, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(100)));
 			expectedResult.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(inlineProp1));
-			expectedResult.Add({.caretBegin = 35, .caretEnd = 40}, DocumentRunProperty(CreateFullTextProp(150)));
+			expectedResult.Add({.caretBegin = 35, .caretEnd = 40}, DocumentRunProperty(CreateFullTextProp(120)));
 			expectedResult.Add({.caretBegin = 40, .caretEnd = 50}, DocumentRunProperty(inlineProp2));
-			expectedResult.Add({.caretBegin = 50, .caretEnd = 55}, DocumentRunProperty(CreateFullTextProp(150)));
-			expectedResult.Add({.caretBegin = 65, .caretEnd = 70}, DocumentRunProperty(CreateFullTextProp(200)));
+			expectedResult.Add({.caretBegin = 50, .caretEnd = 55}, DocumentRunProperty(CreateFullTextProp(120)));
+			expectedResult.Add({.caretBegin = 65, .caretEnd = 70}, DocumentRunProperty(CreateFullTextProp(140)));
 			expectedResult.Add({.caretBegin = 70, .caretEnd = 75}, DocumentRunProperty(inlineProp3));
-			expectedResult.Add({.caretBegin = 75, .caretEnd = 80}, DocumentRunProperty(CreateFullTextProp(200)));
+			expectedResult.Add({.caretBegin = 75, .caretEnd = 80}, DocumentRunProperty(CreateFullTextProp(140)));
 			expectedResult.Add({.caretBegin = 80, .caretEnd = 85}, DocumentRunProperty(inlineProp4));
-			expectedResult.Add({.caretBegin = 85, .caretEnd = 100}, DocumentRunProperty(CreateFullTextProp(200)));
-			
+			expectedResult.Add({.caretBegin = 85, .caretEnd = 100}, DocumentRunProperty(CreateFullTextProp(140)));
 			AssertMap(result, expectedResult);
 		});
 	});
