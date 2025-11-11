@@ -33,14 +33,23 @@ DiffRuns
 		auto operator<=>(const CaretRange&) const = default;
 	};
 
-	using DocumentTextRunPropertyMap = collections::Dictionary<CaretRange, remoteprotocol::DocumentTextRunProperty>;
+	struct DocumentTextRunPropertyOverrides
+	{
+		Nullable<Color> textColor;
+		Nullable<Color> backgroundColor;
+		Nullable<WString> fontFamily;
+		Nullable<vint> size;
+		Nullable<IGuiGraphicsParagraph::TextStyle> textStyle;
+	};
+
+	using DocumentTextRunPropertyMap = collections::Dictionary<CaretRange, DocumentTextRunPropertyOverrides>;
 	using DocumentInlineObjectRunPropertyMap = collections::Dictionary<CaretRange, remoteprotocol::DocumentInlineObjectRunProperty>;
 	using DocumentRunPropertyMap = collections::Dictionary<CaretRange, remoteprotocol::DocumentRunProperty>;
 
 	extern void AddTextRun(
 		DocumentTextRunPropertyMap& map,
 		CaretRange range,
-		const remoteprotocol::DocumentTextRunProperty& property);
+		const DocumentTextRunPropertyOverrides& propertyOverrides);
 
 	extern bool AddInlineObjectRun(
 		DocumentInlineObjectRunPropertyMap& map,

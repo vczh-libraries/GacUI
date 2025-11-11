@@ -28,6 +28,7 @@
     "chat.agent.maxRequests": 9999,
     "task.allowAutomaticTasks": "on",
     "chat.tools.terminal.autoApprove": {
+        /*
         "/\\bcopilot(Prepare|Build|Execute)\\.ps1\\b/i": true,
         "/\\bWorkflowDriver.ps1\\b/i": true,
         "yarn": true,
@@ -49,6 +50,9 @@
         "Select-Object": true,
         "ForEach-Object": true,
         "Measure-Object": true,
+        */
+        "/.*/": true,
+        "git": false,
         "kill": false,
         "curl": false,
         "wget": false,

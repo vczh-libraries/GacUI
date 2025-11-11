@@ -10,7 +10,19 @@ using namespace vl::presentation::remoteprotocol;
 
 namespace remote_document_paragrpah_tests
 {
-	DocumentTextRunProperty CreateTextProp(unsigned char colorValue)
+	DocumentTextRunPropertyOverrides CreateTextProp(unsigned char colorValue)
+	{
+		DocumentTextRunPropertyOverrides prop;
+		prop.textColor = Color(colorValue, colorValue, colorValue);
+		prop.backgroundColor = Color(255 - colorValue, 255 - colorValue, 255 - colorValue);
+		prop.fontFamily = L"TestFont";
+		prop.size = 12;
+		// Create TextStyle with no flags set (value 0)
+		prop.textStyle = (IGuiGraphicsParagraph::TextStyle)0;
+		return prop;
+	}
+
+	DocumentTextRunProperty CreateFullTextProp(unsigned char colorValue)
 	{
 		DocumentTextRunProperty prop;
 		prop.textColor = Color(colorValue, colorValue, colorValue);
@@ -37,6 +49,18 @@ namespace remote_document_paragrpah_tests
 		return prop;
 	}
 
+	WString FormatRunProperty(const DocumentTextRunPropertyOverrides& prop)
+	{
+		return L"Text(color:" + 
+			   itow(prop.textColor.Value().r) + L"," + 
+			   itow(prop.textColor.Value().g) + L"," + 
+			   itow(prop.textColor.Value().b) + 
+			   L", bg:" + 
+			   itow(prop.backgroundColor.Value().r) + L"," + 
+			   itow(prop.backgroundColor.Value().g) + L"," + 
+			   itow(prop.backgroundColor.Value().b) + L")";
+	}
+
 	WString FormatRunProperty(const DocumentTextRunProperty& prop)
 	{
 		return L"Text(color:" + 
@@ -54,6 +78,17 @@ namespace remote_document_paragrpah_tests
 		return L"Inline(callback:" + 
 			   itow(prop.callbackId) + 
 			   L", size:" + itow(prop.size.x) + L"x" + itow(prop.size.y) + L")";
+	}
+
+	bool CompareRunProperty(
+		const DocumentTextRunPropertyOverrides& a,
+		const DocumentTextRunPropertyOverrides& b)
+	{
+		return a.textColor == b.textColor &&
+			   a.backgroundColor == b.backgroundColor &&
+			   a.fontFamily == b.fontFamily &&
+			   a.size == b.size &&
+			   a.textStyle == b.textStyle;
 	}
 
 	bool CompareRunProperty(
@@ -384,12 +419,12 @@ TEST_FILE
 	{
 		TEST_CASE(L"Add to empty map")
 		{
-			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
+			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			
 			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
 			
-			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
+			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
 			
 			AssertMap(textMap, expectedMap);
@@ -397,14 +432,14 @@ TEST_FILE
 
 		TEST_CASE(L"Add non-overlapping runs")
 		{
-			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
+			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
 			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
 			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2);
 			
-			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
+			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
 			expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, prop2);
 			
@@ -413,14 +448,14 @@ TEST_FILE
 
 		TEST_CASE(L"Adjacent runs with different properties - no merge")
 		{
-			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
+			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
 			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
 			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
 			
-			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
+			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
 			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop2);
 			
@@ -429,13 +464,13 @@ TEST_FILE
 
 		TEST_CASE(L"Adjacent runs with identical properties - merge")
 		{
-			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
+			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			
 			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
 			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
 			
-			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
+			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 20}, prop1);
 			
 			AssertMap(textMap, expectedMap);
@@ -443,14 +478,14 @@ TEST_FILE
 
 		TEST_CASE(L"Complete overlap - replacement")
 		{
-			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
+			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
 			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
 			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
 			
-			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
+			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop2);
 			
 			AssertMap(textMap, expectedMap);
@@ -458,14 +493,14 @@ TEST_FILE
 
 		TEST_CASE(L"Partial overlap from left")
 		{
-			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
+			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
 			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 30}, prop1);
 			AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 20}, prop2);
 			
-			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
+			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 5, .caretEnd = 20}, prop2);
 			expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, prop1);
 			
@@ -474,14 +509,14 @@ TEST_FILE
 
 		TEST_CASE(L"Partial overlap from right")
 		{
-			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
+			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
 			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 30}, prop1);
 			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 35}, prop2);
 			
-			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
+			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
 			expectedMap.Add({.caretBegin = 20, .caretEnd = 35}, prop2);
 			
@@ -490,14 +525,14 @@ TEST_FILE
 
 		TEST_CASE(L"New run completely contains old run")
 		{
-			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
+			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
 			AddTextRun(textMap, {.caretBegin = 15, .caretEnd = 25}, prop1);
 			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 30}, prop2);
 			
-			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
+			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 10, .caretEnd = 30}, prop2);
 			
 			AssertMap(textMap, expectedMap);
@@ -505,14 +540,14 @@ TEST_FILE
 
 		TEST_CASE(L"New run contained within old run - split into 3")
 		{
-			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
+			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
 			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 40}, prop1);
 			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2);
 			
-			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
+			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
 			expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, prop2);
 			expectedMap.Add({.caretBegin = 30, .caretEnd = 40}, prop1);
@@ -522,7 +557,7 @@ TEST_FILE
 
 		TEST_CASE(L"Overlap multiple consecutive runs")
 		{
-			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
+			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(120);
 			auto prop3 = CreateTextProp(140);
@@ -533,7 +568,7 @@ TEST_FILE
 			AddTextRun(textMap, {.caretBegin = 30, .caretEnd = 40}, prop3);
 			AddTextRun(textMap, {.caretBegin = 15, .caretEnd = 35}, propNew);
 			
-			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
+			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 10, .caretEnd = 15}, prop1);
 			expectedMap.Add({.caretBegin = 15, .caretEnd = 35}, propNew);
 			expectedMap.Add({.caretBegin = 35, .caretEnd = 40}, prop3);
@@ -543,14 +578,14 @@ TEST_FILE
 
 		TEST_CASE(L"Insert between two identical runs - all three merge")
 		{
-			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
+			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			
 			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
 			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop1);
 			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
 			
-			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
+			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 30}, prop1);
 			
 			AssertMap(textMap, expectedMap);
@@ -558,7 +593,7 @@ TEST_FILE
 
 		TEST_CASE(L"Merge left neighbor only")
 		{
-			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
+			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
@@ -566,7 +601,7 @@ TEST_FILE
 			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2);
 			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
 			
-			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
+			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 20}, prop1);
 			expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, prop2);
 			
@@ -575,7 +610,7 @@ TEST_FILE
 
 		TEST_CASE(L"Merge right neighbor only")
 		{
-			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
+			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
@@ -583,7 +618,7 @@ TEST_FILE
 			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop1);
 			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
 			
-			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
+			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop2);
 			expectedMap.Add({.caretBegin = 10, .caretEnd = 30}, prop1);
 			
@@ -592,7 +627,7 @@ TEST_FILE
 
 		TEST_CASE(L"No merge when neighbors differ")
 		{
-			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
+			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			auto prop3 = CreateTextProp(200);
@@ -601,7 +636,7 @@ TEST_FILE
 			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop3);
 			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
 			
-			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
+			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
 			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop2);
 			expectedMap.Add({.caretBegin = 20, .caretEnd = 30}, prop3);
@@ -611,7 +646,7 @@ TEST_FILE
 
 		TEST_CASE(L"Merge after splitting creates merged regions")
 		{
-			Dictionary<CaretRange, DocumentTextRunProperty> textMap;
+			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
@@ -619,7 +654,7 @@ TEST_FILE
 			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2);
 			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop1);  // Replace prop2 with prop1
 			
-			Dictionary<CaretRange, DocumentTextRunProperty> expectedMap;
+			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 50}, prop1);  // All merged back
 			
 			AssertMap(textMap, expectedMap);
@@ -1211,8 +1246,8 @@ TEST_FILE
 			MergeRuns(textMap, inlineMap, result);
 			
 			DocumentRunPropertyMap expectedResult;
-			expectedResult.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(prop1));
-			expectedResult.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(prop2));
+			expectedResult.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(100)));
+			expectedResult.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateFullTextProp(150)));
 			
 			AssertMap(result, expectedResult);
 		});
@@ -1233,8 +1268,8 @@ TEST_FILE
 			MergeRuns(textMap, inlineMap, result);
 			
 			DocumentRunPropertyMap expectedResult;
-			expectedResult.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(prop1));
-			expectedResult.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(prop2));
+			expectedResult.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(100)));
+			expectedResult.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(CreateFullTextProp(150)));
 			
 			AssertMap(result, expectedResult);
 		});
@@ -1258,9 +1293,9 @@ TEST_FILE
 			MergeRuns(textMap, inlineMap, result);
 			
 			DocumentRunPropertyMap expectedResult;
-			expectedResult.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(textProp1));
+			expectedResult.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(100)));
 			expectedResult.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(inlineProp));
-			expectedResult.Add({.caretBegin = 40, .caretEnd = 50}, DocumentRunProperty(textProp2));
+			expectedResult.Add({.caretBegin = 40, .caretEnd = 50}, DocumentRunProperty(CreateFullTextProp(150)));
 			
 			AssertMap(result, expectedResult);
 		});
@@ -1281,9 +1316,9 @@ TEST_FILE
 			// Text [0,30] containing Inline [10,20] should result in:
 			// Text [0,10], Inline [10,20], Text [20,30]
 			DocumentRunPropertyMap expectedResult;
-			expectedResult.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(textProp));
+			expectedResult.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(100)));
 			expectedResult.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(inlineProp));
-			expectedResult.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(textProp));
+			expectedResult.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateFullTextProp(100)));
 			
 			AssertMap(result, expectedResult);
 		});
@@ -1304,7 +1339,7 @@ TEST_FILE
 			// Text [0,25] overlapping Inline [20,30] from left should result in:
 			// Text [0,20], Inline [20,30]
 			DocumentRunPropertyMap expectedResult;
-			expectedResult.Add({.caretBegin = 0, .caretEnd = 20}, DocumentRunProperty(textProp));
+			expectedResult.Add({.caretBegin = 0, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(100)));
 			expectedResult.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(inlineProp));
 			
 			AssertMap(result, expectedResult);
@@ -1327,7 +1362,7 @@ TEST_FILE
 			// Inline [10,25], Text [25,40]
 			DocumentRunPropertyMap expectedResult;
 			expectedResult.Add({.caretBegin = 10, .caretEnd = 25}, DocumentRunProperty(inlineProp));
-			expectedResult.Add({.caretBegin = 25, .caretEnd = 40}, DocumentRunProperty(textProp));
+			expectedResult.Add({.caretBegin = 25, .caretEnd = 40}, DocumentRunProperty(CreateFullTextProp(100)));
 			
 			AssertMap(result, expectedResult);
 		});
@@ -1354,13 +1389,13 @@ TEST_FILE
 			// Text [0,10], Inline [10,15], Text [15,20], Inline [20,25], 
 			// Text [25,40], Inline [40,45], Text [45,50]
 			DocumentRunPropertyMap expectedResult;
-			expectedResult.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(textProp));
+			expectedResult.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(100)));
 			expectedResult.Add({.caretBegin = 10, .caretEnd = 15}, DocumentRunProperty(inlineProp1));
-			expectedResult.Add({.caretBegin = 15, .caretEnd = 20}, DocumentRunProperty(textProp));
+			expectedResult.Add({.caretBegin = 15, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(100)));
 			expectedResult.Add({.caretBegin = 20, .caretEnd = 25}, DocumentRunProperty(inlineProp2));
-			expectedResult.Add({.caretBegin = 25, .caretEnd = 40}, DocumentRunProperty(textProp));
+			expectedResult.Add({.caretBegin = 25, .caretEnd = 40}, DocumentRunProperty(CreateFullTextProp(100)));
 			expectedResult.Add({.caretBegin = 40, .caretEnd = 45}, DocumentRunProperty(inlineProp3));
-			expectedResult.Add({.caretBegin = 45, .caretEnd = 50}, DocumentRunProperty(textProp));
+			expectedResult.Add({.caretBegin = 45, .caretEnd = 50}, DocumentRunProperty(CreateFullTextProp(100)));
 			
 			AssertMap(result, expectedResult);
 		});
@@ -1384,9 +1419,9 @@ TEST_FILE
 			// Text [0,15] and Text [25,40] with Inline [10,30] should result in:
 			// Text [0,10], Inline [10,30], Text [30,40]
 			DocumentRunPropertyMap expectedResult;
-			expectedResult.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(textProp1));
+			expectedResult.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(100)));
 			expectedResult.Add({.caretBegin = 10, .caretEnd = 30}, DocumentRunProperty(inlineProp));
-			expectedResult.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(textProp2));
+			expectedResult.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(CreateFullTextProp(150)));
 			
 			AssertMap(result, expectedResult);
 		});
@@ -1412,9 +1447,9 @@ TEST_FILE
 			
 			// All four runs should be preserved with gaps
 			DocumentRunPropertyMap expectedResult;
-			expectedResult.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(textProp1));
+			expectedResult.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(100)));
 			expectedResult.Add({.caretBegin = 15, .caretEnd = 20}, DocumentRunProperty(inlineProp1));
-			expectedResult.Add({.caretBegin = 25, .caretEnd = 35}, DocumentRunProperty(textProp2));
+			expectedResult.Add({.caretBegin = 25, .caretEnd = 35}, DocumentRunProperty(CreateFullTextProp(150)));
 			expectedResult.Add({.caretBegin = 40, .caretEnd = 45}, DocumentRunProperty(inlineProp2));
 			
 			AssertMap(result, expectedResult);
@@ -1438,9 +1473,9 @@ TEST_FILE
 			// Despite identical properties, text runs should remain separate
 			// because MergeRuns doesn't perform merging
 			DocumentRunPropertyMap expectedResult;
-			expectedResult.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(textProp));
+			expectedResult.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(100)));
 			expectedResult.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(inlineProp));
-			expectedResult.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(textProp));
+			expectedResult.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateFullTextProp(100)));
 			
 			AssertMap(result, expectedResult);
 		});
@@ -1471,16 +1506,16 @@ TEST_FILE
 			MergeRuns(textMap, inlineMap, result);
 			
 			DocumentRunPropertyMap expectedResult;
-			expectedResult.Add({.caretBegin = 0, .caretEnd = 20}, DocumentRunProperty(textProp1));
+			expectedResult.Add({.caretBegin = 0, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(100)));
 			expectedResult.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(inlineProp1));
-			expectedResult.Add({.caretBegin = 35, .caretEnd = 40}, DocumentRunProperty(textProp2));
+			expectedResult.Add({.caretBegin = 35, .caretEnd = 40}, DocumentRunProperty(CreateFullTextProp(150)));
 			expectedResult.Add({.caretBegin = 40, .caretEnd = 50}, DocumentRunProperty(inlineProp2));
-			expectedResult.Add({.caretBegin = 50, .caretEnd = 55}, DocumentRunProperty(textProp2));
-			expectedResult.Add({.caretBegin = 65, .caretEnd = 70}, DocumentRunProperty(textProp3));
+			expectedResult.Add({.caretBegin = 50, .caretEnd = 55}, DocumentRunProperty(CreateFullTextProp(150)));
+			expectedResult.Add({.caretBegin = 65, .caretEnd = 70}, DocumentRunProperty(CreateFullTextProp(200)));
 			expectedResult.Add({.caretBegin = 70, .caretEnd = 75}, DocumentRunProperty(inlineProp3));
-			expectedResult.Add({.caretBegin = 75, .caretEnd = 80}, DocumentRunProperty(textProp3));
+			expectedResult.Add({.caretBegin = 75, .caretEnd = 80}, DocumentRunProperty(CreateFullTextProp(200)));
 			expectedResult.Add({.caretBegin = 80, .caretEnd = 85}, DocumentRunProperty(inlineProp4));
-			expectedResult.Add({.caretBegin = 85, .caretEnd = 100}, DocumentRunProperty(textProp3));
+			expectedResult.Add({.caretBegin = 85, .caretEnd = 100}, DocumentRunProperty(CreateFullTextProp(200)));
 			
 			AssertMap(result, expectedResult);
 		});
@@ -1503,15 +1538,15 @@ TEST_FILE
 		TEST_CASE(L"Old map empty, new map has text runs")
 		{
 			DocumentRunPropertyMap oldRuns, newRuns;
-			newRuns.Add({.caretBegin = 0, .caretEnd = 5}, DocumentRunProperty(CreateTextProp(0xFF)));
-			newRuns.Add({.caretBegin = 5, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x00)));
+			newRuns.Add({.caretBegin = 0, .caretEnd = 5}, DocumentRunProperty(CreateFullTextProp(0xFF)));
+			newRuns.Add({.caretBegin = 5, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(0x00)));
 			
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
 			DiffRuns(oldRuns, newRuns, desc);
 			
 			auto expected = MakeExpectedList();
-			AddExpectedRun(expected, 0, 5, DocumentRunProperty(CreateTextProp(0xFF)));
-			AddExpectedRun(expected, 5, 10, DocumentRunProperty(CreateTextProp(0x00)));
+			AddExpectedRun(expected, 0, 5, DocumentRunProperty(CreateFullTextProp(0xFF)));
+			AddExpectedRun(expected, 5, 10, DocumentRunProperty(CreateFullTextProp(0x00)));
 			
 			AssertDiffList(desc.runsDiff, expected, L"All new runs should be in diff");
 			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline objects created");
@@ -1550,7 +1585,7 @@ TEST_FILE
 		TEST_CASE(L"Same key, same value - no diff entry")
 		{
 			DocumentRunPropertyMap oldRuns, newRuns;
-			auto prop = DocumentRunProperty(CreateTextProp(0xFF));
+			auto prop = DocumentRunProperty(CreateFullTextProp(0xFF));
 			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, prop);
 			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, prop);
 
@@ -1563,14 +1598,14 @@ TEST_FILE
 		});		TEST_CASE(L"Same key, different value - entry in diff")
 			{
 				DocumentRunPropertyMap oldRuns, newRuns;
-				oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0xFF)));
-				newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x00)));
+				oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(0xFF)));
+				newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(0x00)));
 
 				remoteprotocol::ElementDesc_DocumentParagraph desc;
 				DiffRuns(oldRuns, newRuns, desc);
 
 			auto expected = MakeExpectedList();
-			AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateTextProp(0x00)));
+			AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateFullTextProp(0x00)));
 			
 			AssertDiffList(desc.runsDiff, expected, L"Changed run should be in diff");
 			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline objects created");
@@ -1587,7 +1622,7 @@ TEST_FILE
 			DocumentRunPropertyMap oldRuns, newRuns;
 
 			// Old: text run at [10, 20]
-			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(0x80)));
 
 			// New: inline object at same range (fully covers old - VALID)
 			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateInlineProp(1, 100)));
@@ -1610,9 +1645,9 @@ TEST_FILE
 			DocumentRunPropertyMap oldRuns, newRuns;
 
 			// Old: three text runs at [0, 10], [10, 20], [20, 30] (cut at 10, 20)
-			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x60)));
-			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));
-			oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0xA0)));
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(0x60)));
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateFullTextProp(0xA0)));
 
 			// New: two inline objects at [0, 15], [15, 30] (cut at 15) - different cuts, fewer runs
 			newRuns.Add({.caretBegin = 0, .caretEnd = 15}, DocumentRunProperty(CreateInlineProp(3, 150)));
@@ -1636,8 +1671,8 @@ TEST_FILE
 			DocumentRunPropertyMap oldRuns, newRuns;
 
 			// Old: two text runs at [0, 15], [15, 30] (cut at 15)
-			oldRuns.Add({.caretBegin = 0, .caretEnd = 15}, DocumentRunProperty(CreateTextProp(0x80)));
-			oldRuns.Add({.caretBegin = 15, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0xA0)));
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 15}, DocumentRunProperty(CreateFullTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 15, .caretEnd = 30}, DocumentRunProperty(CreateFullTextProp(0xA0)));
 
 			// New: three inline objects at [0, 10], [10, 20], [20, 30] (cut at 10, 20) - different cuts, more runs
 			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateInlineProp(5, 50)));
@@ -1668,14 +1703,14 @@ TEST_FILE
 			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateInlineProp(10, 100)));
 
 			// New: text run at same range (fully covers old - VALID)
-			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0xA0)));
+			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(0xA0)));
 
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
 			DiffRuns(oldRuns, newRuns, desc);
 
 			// Verify diff contains the new text run
 			auto expected = MakeExpectedList();
-			AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateTextProp(0xA0)));
+			AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateFullTextProp(0xA0)));
 			AssertDiffList(desc.runsDiff, expected, L"Inline→Text at same range");
 
 			// Verify callback tracking: old inline removed
@@ -1693,16 +1728,16 @@ TEST_FILE
 			oldRuns.Add({.caretBegin = 16, .caretEnd = 24}, DocumentRunProperty(CreateInlineProp(14, 40)));
 
 			// New: two text runs at [0, 12], [12, 24] (cut at 12) - different cuts, fewer runs
-			newRuns.Add({.caretBegin = 0, .caretEnd = 12}, DocumentRunProperty(CreateTextProp(0xFF)));
-			newRuns.Add({.caretBegin = 12, .caretEnd = 24}, DocumentRunProperty(CreateTextProp(0xCC)));
+			newRuns.Add({.caretBegin = 0, .caretEnd = 12}, DocumentRunProperty(CreateFullTextProp(0xFF)));
+			newRuns.Add({.caretBegin = 12, .caretEnd = 24}, DocumentRunProperty(CreateFullTextProp(0xCC)));
 
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
 			DiffRuns(oldRuns, newRuns, desc);
 
 			// Both new text runs in diff
 			auto expected = MakeExpectedList();
-			AddExpectedRun(expected, 0, 12, DocumentRunProperty(CreateTextProp(0xFF)));
-			AddExpectedRun(expected, 12, 24, DocumentRunProperty(CreateTextProp(0xCC)));
+			AddExpectedRun(expected, 0, 12, DocumentRunProperty(CreateFullTextProp(0xFF)));
+			AddExpectedRun(expected, 12, 24, DocumentRunProperty(CreateFullTextProp(0xCC)));
 			AssertDiffList(desc.runsDiff, expected, L"3 inlines → 2 text runs with different cuts");
 
 			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
@@ -1718,18 +1753,18 @@ TEST_FILE
 			oldRuns.Add({.caretBegin = 25, .caretEnd = 40}, DocumentRunProperty(CreateInlineProp(16, 150)));
 
 			// New: three text runs at [10, 20], [20, 30], [30, 40] (cut at 20, 30) - different cuts, more runs
-			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x40)));
-			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x80)));
-			newRuns.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(CreateTextProp(0xC0)));
+			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(0x40)));
+			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateFullTextProp(0x80)));
+			newRuns.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(CreateFullTextProp(0xC0)));
 
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
 			DiffRuns(oldRuns, newRuns, desc);
 
 			// All three text runs in diff
 			auto expected = MakeExpectedList();
-			AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateTextProp(0x40)));
-			AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateTextProp(0x80)));
-			AddExpectedRun(expected, 30, 40, DocumentRunProperty(CreateTextProp(0xC0)));
+			AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateFullTextProp(0x40)));
+			AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateFullTextProp(0x80)));
+			AddExpectedRun(expected, 30, 40, DocumentRunProperty(CreateFullTextProp(0xC0)));
 			AssertDiffList(desc.runsDiff, expected, L"2 inlines → 3 text runs with different cuts");
 
 			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
@@ -1743,17 +1778,17 @@ TEST_FILE
 			DocumentRunPropertyMap oldRuns, newRuns;
 
 			// Old: text with color 0x80
-			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(0x80)));
 
 			// New: same range but different color
-			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0xFF)));
+			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(0xFF)));
 
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
 			DiffRuns(oldRuns, newRuns, desc);
 
 			// Changed property should appear in diff
 			auto expected = MakeExpectedList();
-			AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateTextProp(0xFF)));
+			AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateFullTextProp(0xFF)));
 			AssertDiffList(desc.runsDiff, expected, L"Text property changed");
 
 			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
@@ -1767,19 +1802,19 @@ TEST_FILE
 			auto prop2 = CreateTextProp(0x80);
 
 			// Old: three runs with alternating properties
-			oldRuns.Add({.caretBegin = 1, .caretEnd = 2}, DocumentRunProperty(prop1));
-			oldRuns.Add({.caretBegin = 2, .caretEnd = 5}, DocumentRunProperty(prop2));
-			oldRuns.Add({.caretBegin = 5, .caretEnd = 10}, DocumentRunProperty(prop1));
+			oldRuns.Add({.caretBegin = 1, .caretEnd = 2}, DocumentRunProperty(CreateFullTextProp(100)));
+			oldRuns.Add({.caretBegin = 2, .caretEnd = 5}, DocumentRunProperty(CreateFullTextProp(150)));
+			oldRuns.Add({.caretBegin = 5, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(100)));
 
 			// New: single merged run covering entire range (fully covers old - VALID)
-			newRuns.Add({.caretBegin = 1, .caretEnd = 10}, DocumentRunProperty(prop1));
+			newRuns.Add({.caretBegin = 1, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(100)));
 
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
 			DiffRuns(oldRuns, newRuns, desc);
 
 			// CRITICAL: Must report complete new range (1,10), NOT partial like (2,5)
 			auto expected = MakeExpectedList();
-			AddExpectedRun(expected, 1, 10, DocumentRunProperty(prop1));
+			AddExpectedRun(expected, 1, 10, DocumentRunProperty(CreateFullTextProp(100)));
 			AssertDiffList(desc.runsDiff, expected, L"CRITICAL: Merged range uses new key (1,10)");
 
 			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
@@ -1791,22 +1826,22 @@ TEST_FILE
 			DocumentRunPropertyMap oldRuns, newRuns;
 
 			// Old: two runs at [0, 15], [15, 30] (cut at 15)
-			oldRuns.Add({.caretBegin = 0, .caretEnd = 15}, DocumentRunProperty(CreateTextProp(0x80)));
-			oldRuns.Add({.caretBegin = 15, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 15}, DocumentRunProperty(CreateFullTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 15, .caretEnd = 30}, DocumentRunProperty(CreateFullTextProp(0x80)));
 
 			// New: three runs at [0, 10], [10, 20], [20, 30] (cut at 10, 20) with different properties
-			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x20)));
-			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
-			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0xA0)));
+			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(0x20)));
+			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(0x60)));
+			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateFullTextProp(0xA0)));
 
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
 			DiffRuns(oldRuns, newRuns, desc);
 
 			// All three new runs appear in diff (different cuts + properties changed)
 			auto expected = MakeExpectedList();
-			AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateTextProp(0x20)));
-			AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateTextProp(0x60)));
-			AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateTextProp(0xA0)));
+			AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateFullTextProp(0x20)));
+			AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateFullTextProp(0x60)));
+			AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateFullTextProp(0xA0)));
 			AssertDiffList(desc.runsDiff, expected, L"2→3 runs, different cuts + property changes");
 
 			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
@@ -1819,22 +1854,22 @@ TEST_FILE
 			auto propFinal = CreateTextProp(0xFF);
 
 			// Old: four runs at [0, 5], [5, 10], [10, 18], [18, 24] (cut at 5, 10, 18)
-			oldRuns.Add({.caretBegin = 0, .caretEnd = 5}, DocumentRunProperty(CreateTextProp(0x20)));
-			oldRuns.Add({.caretBegin = 5, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));
-			oldRuns.Add({.caretBegin = 10, .caretEnd = 18}, DocumentRunProperty(CreateTextProp(0x60)));
-			oldRuns.Add({.caretBegin = 18, .caretEnd = 24}, DocumentRunProperty(CreateTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 5}, DocumentRunProperty(CreateFullTextProp(0x20)));
+			oldRuns.Add({.caretBegin = 5, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(0x40)));
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 18}, DocumentRunProperty(CreateFullTextProp(0x60)));
+			oldRuns.Add({.caretBegin = 18, .caretEnd = 24}, DocumentRunProperty(CreateFullTextProp(0x80)));
 
 			// New: two runs at [0, 12], [12, 24] (cut at 12) with uniform property
-			newRuns.Add({.caretBegin = 0, .caretEnd = 12}, DocumentRunProperty(propFinal));
-			newRuns.Add({.caretBegin = 12, .caretEnd = 24}, DocumentRunProperty(propFinal));
+			newRuns.Add({.caretBegin = 0, .caretEnd = 12}, DocumentRunProperty(CreateFullTextProp(0xFF)));
+			newRuns.Add({.caretBegin = 12, .caretEnd = 24}, DocumentRunProperty(CreateFullTextProp(0xFF)));
 
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
 			DiffRuns(oldRuns, newRuns, desc);
 
 			// Both new runs in diff (different cuts + property changed)
 			auto expected = MakeExpectedList();
-			AddExpectedRun(expected, 0, 12, DocumentRunProperty(propFinal));
-			AddExpectedRun(expected, 12, 24, DocumentRunProperty(propFinal));
+			AddExpectedRun(expected, 0, 12, DocumentRunProperty(CreateFullTextProp(0xFF)));
+			AddExpectedRun(expected, 12, 24, DocumentRunProperty(CreateFullTextProp(0xFF)));
 			AssertDiffList(desc.runsDiff, expected, L"4→2 runs, different cuts + property changes");
 
 			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
@@ -1900,7 +1935,7 @@ TEST_FILE
 			DocumentRunPropertyMap oldRuns, newRuns;
 
 			// Old: text at [10, 20]
-			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(0x80)));
 
 			// New: inline at [15, 25] - only covers [15, 20], leaving [10, 15] uncovered - INVALID
 			newRuns.Add({.caretBegin = 15, .caretEnd = 25}, DocumentRunProperty(CreateInlineProp(100, 50)));
@@ -1915,10 +1950,10 @@ TEST_FILE
 			DocumentRunPropertyMap oldRuns, newRuns;
 
 			// Old: text at [10, 20]
-			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(0x80)));
 
 			// New: text at [5, 15] - only covers [10, 15], leaving [15, 20] uncovered - INVALID
-			newRuns.Add({.caretBegin = 5, .caretEnd = 15}, DocumentRunProperty(CreateTextProp(0xA0)));
+			newRuns.Add({.caretBegin = 5, .caretEnd = 15}, DocumentRunProperty(CreateFullTextProp(0xA0)));
 
 			// This should trigger CHECK_ERROR and result in TEST_ERROR
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
@@ -1930,10 +1965,10 @@ TEST_FILE
 			DocumentRunPropertyMap oldRuns, newRuns;
 
 			// Old: text at [10, 20]
-			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(0x80)));
 
 			// New: text at [10, 15] - only covers [10, 15], leaving [15, 20] uncovered - INVALID
-			newRuns.Add({.caretBegin = 10, .caretEnd = 15}, DocumentRunProperty(CreateTextProp(0xA0)));
+			newRuns.Add({.caretBegin = 10, .caretEnd = 15}, DocumentRunProperty(CreateFullTextProp(0xA0)));
 
 			// This should trigger CHECK_ERROR and result in TEST_ERROR
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
@@ -1945,12 +1980,12 @@ TEST_FILE
 			DocumentRunPropertyMap oldRuns, newRuns;
 
 			// Old: two consecutive text runs
-			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));
-			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(0x40)));
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(0x60)));
 
 			// New: two runs with a gap [5, 7] uncovered - INVALID
-			newRuns.Add({.caretBegin = 0, .caretEnd = 5}, DocumentRunProperty(CreateTextProp(0x80)));
-			newRuns.Add({.caretBegin = 7, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0xA0)));
+			newRuns.Add({.caretBegin = 0, .caretEnd = 5}, DocumentRunProperty(CreateFullTextProp(0x80)));
+			newRuns.Add({.caretBegin = 7, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(0xA0)));
 
 			// This should trigger CHECK_ERROR for first old run [0, 10]
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
@@ -1965,7 +2000,7 @@ TEST_FILE
 			oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateInlineProp(50, 80)));
 
 			// New: text at [22, 35] - only covers [22, 30], leaving [20, 22] uncovered - INVALID
-			newRuns.Add({.caretBegin = 22, .caretEnd = 35}, DocumentRunProperty(CreateTextProp(0x60)));
+			newRuns.Add({.caretBegin = 22, .caretEnd = 35}, DocumentRunProperty(CreateFullTextProp(0x60)));
 
 			// This should trigger CHECK_ERROR and result in TEST_ERROR
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
@@ -1979,14 +2014,14 @@ TEST_FILE
 			DocumentRunPropertyMap oldRuns, newRuns;
 
 			// Old: mixed runs
-			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));  // will become inline
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(0x40)));  // will become inline
 			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateInlineProp(30, 50)));  // will become text
-			oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x60)));  // property change
+			oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateFullTextProp(0x60)));  // property change
 
 			// New: transformed runs (all fully cover old - VALID)
 			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateInlineProp(31, 100)));  // text→inline
-			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x80)));  // inline→text
-			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0xA0)));  // text→text
+			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(0x80)));  // inline→text
+			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateFullTextProp(0xA0)));  // text→text
 
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
 			DiffRuns(oldRuns, newRuns, desc);
@@ -1994,8 +2029,8 @@ TEST_FILE
 			// All three transformations in diff
 			auto expected = MakeExpectedList();
 			AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateInlineProp(31, 100)));
-			AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateTextProp(0x80)));
-			AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateTextProp(0xA0)));
+			AddExpectedRun(expected, 10, 20, DocumentRunProperty(CreateFullTextProp(0x80)));
+			AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateFullTextProp(0xA0)));
 			AssertDiffList(desc.runsDiff, expected, L"Mixed transformations");
 
 			// Callback tracking: one created, one removed
@@ -2008,11 +2043,11 @@ TEST_FILE
 			DocumentRunPropertyMap oldRuns, newRuns;
 
 			// Old: single text run [0, 9]
-			oldRuns.Add({.caretBegin = 0, .caretEnd = 9}, DocumentRunProperty(CreateTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 9}, DocumentRunProperty(CreateFullTextProp(0x80)));
 
 			// New: split into inline + text + inline (fully covers old - VALID)
 			newRuns.Add({.caretBegin = 0, .caretEnd = 3}, DocumentRunProperty(CreateInlineProp(40, 30)));
-			newRuns.Add({.caretBegin = 3, .caretEnd = 6}, DocumentRunProperty(CreateTextProp(0xA0)));
+			newRuns.Add({.caretBegin = 3, .caretEnd = 6}, DocumentRunProperty(CreateFullTextProp(0xA0)));
 			newRuns.Add({.caretBegin = 6, .caretEnd = 9}, DocumentRunProperty(CreateInlineProp(41, 40)));
 
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
@@ -2021,7 +2056,7 @@ TEST_FILE
 			// All three new runs in diff
 			auto expected = MakeExpectedList();
 			AddExpectedRun(expected, 0, 3, DocumentRunProperty(CreateInlineProp(40, 30)));
-			AddExpectedRun(expected, 3, 6, DocumentRunProperty(CreateTextProp(0xA0)));
+			AddExpectedRun(expected, 3, 6, DocumentRunProperty(CreateFullTextProp(0xA0)));
 			AddExpectedRun(expected, 6, 9, DocumentRunProperty(CreateInlineProp(41, 40)));
 			AssertDiffList(desc.runsDiff, expected, L"Split with type changes");
 
@@ -2037,21 +2072,21 @@ TEST_FILE
 			DocumentRunPropertyMap oldRuns, newRuns;
 
 			// Old: three runs, first will change
-			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));
-			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
-			oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(0x40)));
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(0x60)));
+			oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateFullTextProp(0x80)));
 
 			// New: first run property changed, others unchanged (all fully covered - VALID)
-			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0xFF)));
-			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
-			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x80)));
+			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(0xFF)));
+			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(0x60)));
+			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateFullTextProp(0x80)));
 
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
 			DiffRuns(oldRuns, newRuns, desc);
 
 			// Only first run in diff
 			auto expected = MakeExpectedList();
-			AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateTextProp(0xFF)));
+			AddExpectedRun(expected, 0, 10, DocumentRunProperty(CreateFullTextProp(0xFF)));
 			AssertDiffList(desc.runsDiff, expected, L"Only first run modified");
 
 			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
@@ -2063,13 +2098,13 @@ TEST_FILE
 			DocumentRunPropertyMap oldRuns, newRuns;
 
 			// Old: three runs, last will change
-			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));
-			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
-			oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(0x40)));
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(0x60)));
+			oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateFullTextProp(0x80)));
 
 			// New: last run becomes inline, others unchanged (all fully covered - VALID)
-			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x40)));
-			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x60)));
+			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(0x40)));
+			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(0x60)));
 			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateInlineProp(50, 100)));
 
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
@@ -2089,25 +2124,25 @@ TEST_FILE
 			DocumentRunPropertyMap oldRuns, newRuns;
 
 			// Old: five runs, middle one will change
-			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x20)));
-			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x40)));
-			oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0x60)));
-			oldRuns.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(CreateTextProp(0x80)));
-			oldRuns.Add({.caretBegin = 40, .caretEnd = 50}, DocumentRunProperty(CreateTextProp(0xA0)));
+			oldRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(0x20)));
+			oldRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(0x40)));
+			oldRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateFullTextProp(0x60)));
+			oldRuns.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(CreateFullTextProp(0x80)));
+			oldRuns.Add({.caretBegin = 40, .caretEnd = 50}, DocumentRunProperty(CreateFullTextProp(0xA0)));
 
 			// New: middle run property changed (all fully covered - VALID)
-			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateTextProp(0x20)));
-			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateTextProp(0x40)));
-			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateTextProp(0xFF)));
-			newRuns.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(CreateTextProp(0x80)));
-			newRuns.Add({.caretBegin = 40, .caretEnd = 50}, DocumentRunProperty(CreateTextProp(0xA0)));
+			newRuns.Add({.caretBegin = 0, .caretEnd = 10}, DocumentRunProperty(CreateFullTextProp(0x20)));
+			newRuns.Add({.caretBegin = 10, .caretEnd = 20}, DocumentRunProperty(CreateFullTextProp(0x40)));
+			newRuns.Add({.caretBegin = 20, .caretEnd = 30}, DocumentRunProperty(CreateFullTextProp(0xFF)));
+			newRuns.Add({.caretBegin = 30, .caretEnd = 40}, DocumentRunProperty(CreateFullTextProp(0x80)));
+			newRuns.Add({.caretBegin = 40, .caretEnd = 50}, DocumentRunProperty(CreateFullTextProp(0xA0)));
 
 			remoteprotocol::ElementDesc_DocumentParagraph desc;
 			DiffRuns(oldRuns, newRuns, desc);
 
 			// Only middle run in diff
 			auto expected = MakeExpectedList();
-			AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateTextProp(0xFF)));
+			AddExpectedRun(expected, 20, 30, DocumentRunProperty(CreateFullTextProp(0xFF)));
 			AssertDiffList(desc.runsDiff, expected, L"Only middle run modified");
 
 			AssertCallbackIdList(desc.createdInlineObjects, MakeExpectedIds({}), L"No inline created");
