@@ -36,6 +36,7 @@
   - Add an empty `# UPDATES` section after `# DESIGN REQUEST`.
 - If there is an `# Update` section: it means I am going to propose some change to `Copilot_Scrum.md`.
   - Copy precisely my problem description in `# Update` from the LATEST chat message to the `# DESIGN REQUEST` section, with a new sub-section `## UPDATE`.
+  - The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# TASKS`).
   - Follow my update to change the design document.
 - If there is a `# Learn` section: it means I made important updates during the execution of the last task, you should apply them smart enough to future tasks. Find the `Optional Step for Learning` section for more instruction.
 - If there is nothing: it means you are accidentally stopped. Please continue your work.

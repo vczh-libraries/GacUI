@@ -35,6 +35,7 @@
   - Add an empty `# UPDATES` section after `# PROBLEM DESCRIPTION`.
 - If there is an `# Update` section: it means I am going to propose some change to `Copilot_Task.md`.
   - Copy precisely my problem description in `# Update` from the LATEST chat message to the `# PROBLEM DESCRIPTION` section, with a new sub-section `## UPDATE`.
+  - The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# INSIGHTS AND REASONING`).
   - Follow my update to change the design document.
 - If there is nothing: it means you are accidentally stopped. Please continue your work.
   - Read `Copilot_Task.md` througly, it is highly possibly that you were working on the request described in the last section in `# PROBLEM DESCRIPTION`.

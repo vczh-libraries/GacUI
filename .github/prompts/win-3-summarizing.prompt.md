@@ -22,6 +22,7 @@
 - Find `# Update` in the LATEST chat message. Ignore any `# Update` in the chat history.
 - If there is an `# Update` section: it means I am going to propose some change to `Copilot_Execution.md` and the source code together.
   - Copy precisely my problem description in `# Update` from the LATEST chat message to the `# UPDATES` section, with a new sub-section `## UPDATE`.
+  - The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# IMPROVEMENT PLAN`).
   - Follow my update to change the execution document.
 - If there is nothing:
   - If `Copilot_Execution.md` only has a title, you are on a fresh start.

@@ -118,6 +118,30 @@ and they are updated to (1-10)prop1
 
 DiffRuns should report (1-10)prop1 instead of (2-5)prop1
 
+## UPDATE
+
+I need to add 2 more tasks before unfinished ones:
+
+Make a copy of DocumentTextRunProperty to DocumentTextRunPropertyOverrides in GuiRemoteGraphics_Document.h, right after `CaretRange`, but change every fields to Nullable<T>. There is a fontProperties field in DocumentTextRunProperty, expand it to fontFamily, size, TextStyle in overrides, turning each font properties to nullable.
+
+TextStyle is used as a set of style switches, not just each member individually.
+
+DocumentTextRunPropertyMap should use overrides too. So MergeRuns are affected. Details below.
+
+Null means keep the original value. AddTextRun will use it as the 3rd parameter but keep the map type unchanged. New rules applies:
+- When a property is not defined for a range, a default value applied.
+- When AddTextRun, because now null members means "not changing", it is possible that the same fontFamily applies to two text runs with different values. Resulting in still two different values but they are updated to use the new fontFamily. More complicated cases happen. And eventually you still have to merge consecutive identical text runs into a single one just like what has been implemented today.
+- When MergeRuns, we requires fontFamily and size must be defined in every fragment of text run properties, others use black or false.
+
+First task:
+- Fix AddTextRun
+- Fix MergeRuns
+- Fix TestRemote_DocumentRunManagement.cpp to fix build breaks and ensure existing test cases work, you don't need to add new tests
+- Since current AddTextRun and MergeRuns do not support nullable members, so all test cases define what should happen when there is no unspecified text run properties. Supporting nullable members should not break them.
+
+Second task:
+Add new test cases for AddTextRun and MergeRuns to cover new scenario.
+
 # TASKS
 
 - [x] TASK No.1: Define `CaretRange` struct and run management functions
@@ -127,10 +151,12 @@ DiffRuns should report (1-10)prop1 instead of (2-5)prop1
 - [x] TASK No.5: Unit test for MergeRuns
 - [x] TASK No.6: Unit test for DiffRuns
 - [x] TASK No.7: Unit test for DiffRuns (Complex run modification scenarios)
-- [ ] TASK No.8: Implement `GuiRemoteGraphicsParagraph` class
-- [ ] TASK No.9: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
-- [ ] TASK No.10: Create basic `GuiSinglelineTextBox` test case
-- [ ] TASK No.11: Create typing simulation test case and complete typing helper functions
+- [ ] TASK No.8: Add DocumentTextRunPropertyOverrides and update AddTextRun/MergeRuns to support nullable properties
+- [ ] TASK No.9: Add comprehensive test cases for nullable property scenarios in AddTextRun and MergeRuns
+- [ ] TASK No.10: Implement `GuiRemoteGraphicsParagraph` class
+- [ ] TASK No.11: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
+- [ ] TASK No.12: Create basic `GuiSinglelineTextBox` test case
+- [ ] TASK No.13: Create typing simulation test case and complete typing helper functions
 
 ## TASK No.1: Define `CaretRange` struct and run management functions
 
@@ -672,7 +698,606 @@ This task ensures the DiffRuns implementation handles the full complexity of doc
 
 **Learning from Task 6**: Start with 10-15 focused test cases covering the most critical transformation types before attempting exhaustive coverage. Prioritize the most common editing operations (text property changes, text↔object transformations) over rare edge cases. The goal is thorough coverage of realistic scenarios, not theoretical completeness.
 
-## TASK No.8: Implement `GuiRemoteGraphicsParagraph` class
+## TASK No.8: Add DocumentTextRunPropertyOverrides and update AddTextRun/MergeRuns to support nullable properties
+
+### description
+
+Introduce a new `DocumentTextRunPropertyOverrides` struct that mirrors `DocumentTextRunProperty` but with all fields as `Nullable<T>`, enabling partial property updates. This allows text formatting operations to specify only the properties they want to change, leaving others unchanged.
+
+**Step 1: Define DocumentTextRunPropertyOverrides**
+
+Create the struct in `GuiRemoteGraphics_Document.h` right after `CaretRange`:
+
+```cpp
+struct DocumentTextRunPropertyOverrides
+{
+	Nullable<Color> textColor;
+	Nullable<Color> backgroundColor;
+	Nullable<WString> fontFamily;
+	Nullable<vint> size;
+	Nullable<IGuiGraphicsParagraph::TextStyle> textStyle;
+};
+```
+
+Note: Unlike `DocumentTextRunProperty` which has a `fontProperties` field of type `FontProperties` (containing `fontFamily`, `size`, `bold`, `italic`, `underline`, `strikeline`, `antialias`, `verticalAntialias`), the overrides struct expands font properties into individual nullable fields:
+- `fontFamily` (from `FontProperties::fontFamily`)
+- `size` (from `FontProperties::size`)
+- `textStyle` (combines `bold`, `italic`, `underline`, `strikeline` as a single enum flag set)
+
+The `textStyle` field uses `IGuiGraphicsParagraph::TextStyle` which is a flags enum combining Bold, Italic, Underline, Strikeline. This treats style as a unified set of switches, not individual nullable booleans.
+
+**Step 2: Update DocumentTextRunPropertyMap type**
+
+Change the map type alias to use overrides:
+```cpp
+using DocumentTextRunPropertyMap = collections::Dictionary<CaretRange, DocumentTextRunPropertyOverrides>;
+```
+
+**Step 3: Update AddTextRun signature and implementation**
+
+Change signature:
+```cpp
+extern void AddTextRun(
+	DocumentTextRunPropertyMap& map,
+	CaretRange range,
+	const DocumentTextRunPropertyOverrides& propertyOverrides);
+```
+
+Update implementation logic:
+1. When adding a new run with overrides, split/merge logic remains the same
+2. **Nullable property merging**: When determining if two consecutive runs can merge, only compare properties that are **defined** (non-null) in **both** runs. If a property is null in either run, it doesn't affect mergeability for that property.
+3. **Property application during splits**: When an existing run needs to be split:
+   - For fragments that will be overwritten by the new run: The new overrides are applied, null values mean "keep the existing value"
+   - For fragments that remain unchanged: Keep their existing property values
+4. **Example scenario**:
+   - Existing map: `[(0,10) with fontFamily="Arial", size=12, color=Black]`
+   - Add run: `[(5,15) with fontFamily="Times", color=null]`
+   - Result:
+     - `[(0,5) fontFamily="Arial", size=12, color=Black]` - unchanged part
+     - `[(5,10) fontFamily="Times", size=12, color=Black]` - fontFamily updated, others kept from original
+     - `[(10,15) fontFamily="Times", size=<null>, color=<null>]` - new range with only fontFamily defined
+5. **Consecutive run merging**: After insertion, merge consecutive runs that have **identical defined properties**. Two runs can merge if:
+   - All properties that are defined (non-null) in **both** runs have the same value
+   - Null properties in either run don't prevent merging (they mean "don't care" for that property)
+
+**Step 4: Update MergeRuns requirements**
+
+MergeRuns expects all text runs to have certain properties fully defined (non-null):
+- `fontFamily` must be defined in all text runs
+- `size` must be defined in all text runs
+- Other properties (textColor, backgroundColor, textStyle) use default values if null:
+  - `textColor`: Black `Color(0, 0, 0)`
+  - `backgroundColor`: Black `Color(0, 0, 0)`
+  - `textStyle`: `(TextStyle)0` (no styles)
+
+Update MergeRuns implementation:
+1. When processing text runs, verify `fontFamily` and `size` are non-null
+2. Convert `DocumentTextRunPropertyOverrides` to full `DocumentTextRunProperty` by filling defaults for null properties
+3. Rest of the merge logic remains unchanged (inline object priority, splitting, etc.)
+
+**Step 5: Update test cases**
+
+Update existing test cases in `TestRemote_DocumentRunManagement.cpp`:
+- Since current test cases don't use nullable properties, they define all properties explicitly
+- Supporting nullable members should not break them
+- Update helper functions:
+  - `CreateTextProp()` should create overrides with all properties defined (non-null)
+  - `CompareRunProperty()` should handle nullable comparisons correctly
+  - `FormatRunProperty()` should display null properties as `<null>`
+- All existing TEST_CASE blocks in AddTextRun and MergeRuns categories should continue to pass without modification to their test logic
+
+### what to be done
+
+1. Define `DocumentTextRunPropertyOverrides` struct in `GuiRemoteGraphics_Document.h`
+2. Update `DocumentTextRunPropertyMap` type alias to use overrides
+3. Modify `AddTextRun()` signature and implementation:
+   - Change parameter type to `DocumentTextRunPropertyOverrides`
+   - Implement nullable property application during splits (null = keep existing value)
+   - Update consecutive run merging to only compare defined (non-null) properties
+4. Modify `MergeRuns()` implementation:
+   - Add validation that `fontFamily` and `size` are defined in all text runs
+   - Convert overrides to full properties by filling defaults for null values
+   - Keep rest of merge logic unchanged
+5. Update helper functions in test file:
+   - `CreateTextProp()` returns overrides with all fields defined
+   - `CompareRunProperty()` handles nullable comparisons
+   - `FormatRunProperty()` displays null values
+6. Verify all existing test cases still pass without modification
+
+### how to test it
+
+Run the compiled unit test executable. All existing test cases should pass:
+- Existing AddTextRun tests verify splitting and merging still work correctly
+- Existing MergeRuns tests verify inline object priority still works
+- No new test cases needed in this task (covered in Task No.9)
+
+The key validation points:
+1. Non-nullable test cases (all properties defined) behave identically to before
+2. Build succeeds (signature changes compile correctly)
+3. All test categories pass: CaretRange, AddTextRun, AddInlineObjectRun, ResetInlineObjectRun, MergeRuns, DiffRuns
+
+### file locations
+
+Modified files:
+- `Source\PlatformProviders\Remote\GuiRemoteGraphics_Document.h`
+- `Source\PlatformProviders\Remote\GuiRemoteGraphics_Document.cpp`
+- `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
+
+### rationale
+
+Current implementation requires specifying all text properties even when only changing one (e.g., changing font family requires re-specifying color, size, style). This creates unnecessary coupling between property changes and forces redundant data specification.
+
+The nullable property design enables:
+1. **Partial updates**: Change only the properties you care about (e.g., "make this bold" without knowing/caring about current color)
+2. **Composition of formatting**: Multiple operations can layer formatting changes (first set font, then set color, then set bold) without each operation needing complete property context
+3. **Realistic API**: Matches how text editors work - format commands typically affect one property dimension at a time
+
+The design choices:
+- **TextStyle as unified flag set**: Bold/italic/underline/strikeline are conceptually a single "style" dimension, treated atomically (you set the entire style mask, not individual flags). This matches the `SetStyle()` method in `IGuiGraphicsParagraph`.
+- **Mandatory font family and size in MergeRuns**: These are fundamental text properties required for layout calculation. The protocol layer (`ElementDesc_DocumentParagraph`) needs complete `FontProperties`, so MergeRuns enforces these are always defined before protocol conversion.
+- **Null means "keep existing"**: During AddTextRun, null values preserve whatever the text already had. This is the most useful semantic for formatting operations.
+- **Merging only considers defined properties**: Two runs merge if their defined properties match. This prevents excessive fragmentation from null properties.
+
+This task focuses on implementation without breaking existing tests. Task No.9 will add comprehensive tests for nullable property scenarios.
+
+## TASK No.9: Add comprehensive test cases for nullable property scenarios in AddTextRun and MergeRuns
+
+### description
+
+Add new test cases to `TestRemote_DocumentRunManagement.cpp` to thoroughly test the nullable property functionality added in Task No.8.
+
+**Test approach**:
+- Add new TEST_CASE blocks within existing TEST_CATEGORY("AddTextRun") and TEST_CATEGORY("MergeRuns")
+- Use helper function variants that create overrides with some properties null
+- Verify nullable property semantics: null = keep existing value in AddTextRun, null = use default in MergeRuns
+
+**New test cases for AddTextRun**:
+
+1. **Partial property updates**:
+   - Existing run with all properties defined, add overlapping run with only fontFamily defined → verify only fontFamily changes
+   - Existing run, add run with only textColor defined → verify only color changes
+   - Existing run, add run with only textStyle defined → verify only style changes
+   - Test all property combinations (fontFamily, size, textColor, backgroundColor, textStyle)
+
+2. **Null property merging**:
+   - Adjacent runs with same defined properties but different null properties → should merge
+   - Example: Run1 [(0,5) fontFamily="Arial", color=null] + Run2 [(5,10) fontFamily="Arial", size=null] → should merge to [(0,10) fontFamily="Arial", color=null, size=null]
+   - Adjacent runs with different defined properties → should NOT merge
+   - Example: Run1 [(0,5) fontFamily="Arial"] + Run2 [(5,10) fontFamily="Times"] → remain separate
+
+3. **Layered property application**:
+   - Start with empty map
+   - Add run [(0,10) fontFamily="Arial"]
+   - Add run [(0,10) size=12]  → should merge to single run with both properties
+   - Add run [(5,10) textColor=Red] → should split: [(0,5) Arial+12], [(5,10) Arial+12+Red]
+   - Verify final state has correct property combinations
+
+4. **Split with partial updates**:
+   - Existing run [(0,20) with all properties defined]
+   - Add run [(5,15) with only fontFamily defined]
+   - Verify three fragments: [(0,5) original], [(5,15) updated fontFamily only], [(15,20) original]
+
+5. **Edge cases**:
+   - Add run with all properties null → effectively a no-op or only affects range structure
+   - Consecutive additions with different nullable combinations
+   - Null properties in complex merge scenarios (3+ consecutive runs merging)
+
+**New test cases for MergeRuns**:
+
+1. **Mandatory property validation**:
+   - Text run with null fontFamily → should fail assertion or produce error
+   - Text run with null size → should fail assertion or produce error
+   - Text run with both fontFamily and size defined → should succeed
+
+2. **Default value application**:
+   - Text run with null textColor → verify result uses Black (0,0,0)
+   - Text run with null backgroundColor → verify result uses Black (0,0,0)
+   - Text run with null textStyle → verify result uses (TextStyle)0
+   - Text run with all optional properties null → verify result has defaults
+
+3. **Mixing defined and null properties**:
+   - Text run [(0,10) fontFamily="Arial", size=12, color=null] → verify result has Black color
+   - Inline object run + text run with nulls → verify defaults applied, inline object priority preserved
+
+4. **Complex nullable scenarios**:
+   - Multiple text runs with different null patterns merging with inline objects
+   - Ensure gap filling and splitting still work correctly with nullable properties
+
+**Helper function additions**:
+
+Create new helper functions:
+```cpp
+// Create overrides with only specified properties defined
+DocumentTextRunPropertyOverrides CreateTextPropPartial(
+	Nullable<WString> fontFamily,
+	Nullable<vint> size,
+	Nullable<Color> textColor,
+	Nullable<Color> backgroundColor,
+	Nullable<IGuiGraphicsParagraph::TextStyle> textStyle);
+
+// Create overrides with single property defined
+DocumentTextRunPropertyOverrides CreateTextPropWithFont(const WString& fontFamily);
+DocumentTextRunPropertyOverrides CreateTextPropWithSize(vint size);
+DocumentTextRunPropertyOverrides CreateTextPropWithColor(Color textColor);
+DocumentTextRunPropertyOverrides CreateTextPropWithStyle(IGuiGraphicsParagraph::TextStyle style);
+```
+
+### what to be done
+
+1. Create helper functions for partial property override creation
+2. Add new test cases to TEST_CATEGORY("AddTextRun"):
+   - Test partial property updates (5-10 test cases covering different property combinations)
+   - Test null property merging rules (3-5 test cases)
+   - Test layered property application (2-3 test cases building up complex states)
+   - Test split with partial updates (2-3 test cases)
+   - Test edge cases (2-3 test cases)
+3. Add new test cases to TEST_CATEGORY("MergeRuns"):
+   - Test mandatory property validation (2-3 test cases)
+   - Test default value application (3-4 test cases)
+   - Test mixing defined and null properties (3-5 test cases)
+   - Test complex nullable scenarios (2-3 test cases)
+4. Each test case should:
+   - Use the new partial helper functions
+   - Set up initial state with specific null patterns
+   - Perform AddTextRun or MergeRuns operation
+   - Use AssertMap to verify result matches expected state including nullability
+5. Ensure test output clearly shows which properties are null vs defined
+
+### how to test it
+
+Run the compiled unit test executable. The new test cases validate:
+1. AddTextRun correctly applies only non-null properties, preserving existing values for null properties
+2. AddTextRun merging rules work correctly with nullable properties (merge when defined properties match)
+3. MergeRuns correctly enforces mandatory properties (fontFamily, size)
+4. MergeRuns correctly applies default values for optional null properties
+5. Complex combinations of nullable properties work correctly in realistic scenarios
+6. The nullable property system enables the intended use case: partial/layered formatting operations
+
+Success criteria:
+- All new test cases pass
+- Test coverage includes all property combinations
+- Edge cases with multiple null properties are handled correctly
+- Error conditions (mandatory properties null) are properly detected
+
+### file locations
+
+Modified file: `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
+
+### rationale
+
+Task No.8 implements the nullable property mechanism but maintains backward compatibility by only testing with fully-defined properties. This task validates that the nullable property system actually works as intended for its primary use cases:
+
+1. **Partial formatting operations**: Real text editors need to change one property at a time (make bold, change color, etc.) without knowing or specifying all other properties. The nullable system enables this.
+
+2. **Layered formatting**: Multiple formatting operations can compose naturally. First set font, then set color, then set bold - each operation only touches its property dimension.
+
+3. **Merge semantics**: The merging rules need to work correctly with nullable properties. Two runs should merge if their *defined* properties match, regardless of nullability differences.
+
+4. **Protocol requirements**: MergeRuns enforces that certain properties must be defined before protocol conversion. This prevents incomplete property sets from reaching the remote renderer.
+
+Without comprehensive testing of nullable scenarios, we risk:
+- Subtle bugs in property application (null treated as value instead of "no change")
+- Incorrect merging (runs that should merge staying separate, or vice versa)
+- Missing validation (null mandatory properties slipping through)
+- Protocol corruption (incomplete properties sent to remote side)
+
+This task completes the nullable property feature by ensuring it works correctly for all intended use cases. The separation from Task No.8 follows the established pattern: implement with backward compatibility first, then comprehensively test the new functionality.
+
+## TASK No.10: Implement `GuiRemoteGraphicsParagraph` class
+
+### description
+
+Add a new test category `TEST_CATEGORY(L"DiffRuns (Complex)")` to `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp` to thoroughly test complex run modification scenarios that occur commonly in real-world document editing.
+
+Task 6 established basic DiffRuns testing with simple addition, removal, and change detection. This task focuses on the more complex scenarios where existing runs are modified in place, which is critical for realistic document editing workflows.
+
+**Test Category 7: DiffRuns (Complex)**
+
+The test scenarios should cover four primary transformation types:
+
+**1. Text run → Inline object run**:
+   - Same caret range, text property replaced with inline object
+   - Verify `runsDiff` contains the new inline object
+   - Verify `createdInlineObjects` contains the new callback ID
+   - Different caret range (shifted/resized), text replaced with inline object
+   - Multiple text runs replaced by one inline object
+   - One text run replaced by multiple inline objects
+
+**2. Inline object run → Text run**:
+   - Same caret range, inline object replaced with text property
+   - Verify `runsDiff` contains the new text run
+   - Verify `removedInlineObjects` contains the old callback ID
+   - Different caret range (shifted/resized), inline object replaced with text
+   - Multiple inline objects replaced by one text run
+   - One inline object replaced by multiple text runs
+
+**3. Text run → Text run (property changes)**:
+   - Same caret range, property changed (color, font, size, style)
+   - Verify `runsDiff` contains the run with new property
+   - Caret range changed, property unchanged (range splitting or merging)
+   - Both caret range and property changed simultaneously
+   - Multiple consecutive runs with different properties → single merged run with uniform property
+   - Single run → multiple runs with different properties (range splitting with property changes)
+   - **CRITICAL TEST**: Old runs (1-2)prop1, (2-5)prop2, (5-10)prop1 → New run (1-10)prop1
+     - Must report complete new range (1-10) in `runsDiff`, NOT partial range like (2-5)
+
+**4. Inline object run → Inline object run (property or position changes)**:
+   - Same caret range, callback ID changed (replacing one inline object with another)
+   - Verify old callback ID in `removedInlineObjects`
+   - Verify new callback ID in `createdInlineObjects`
+   - Same callback ID, caret range changed (inline object moved/resized)
+   - Multiple inline objects repositioned (ranges changed but callback IDs same)
+   - Inline object replaced at different position
+
+**5. Complex multi-run modification scenarios**:
+   - Mixed transformations in single diff (some text→object, some object→text, some text→text)
+   - Range merging + property changes (e.g., [0,5] and [5,10] → [0,10] with new property)
+   - Range splitting + type changes (e.g., [0,10] text → [0,3] object + [3,7] text + [7,10] object)
+   - Overlapping modifications affecting adjacent runs
+   - Multiple runs updated with cascading caret range adjustments
+
+**6. Edge cases for run modifications**:
+   - Modifying first run in paragraph
+   - Modifying last run in paragraph
+   - Modifying middle run surrounded by unchanged runs
+   - All runs modified simultaneously
+   - Partial paragraph updates (some runs unchanged, some modified)
+
+### what to be done
+
+1. Add a new `TEST_CATEGORY(L"DiffRuns (Complex)")` block in `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
+2. Implement test cases for all four primary transformation types (text→object, object→text, text→text, object→object)
+3. For each transformation type, test:
+   - Same caret range with property/type change
+   - Different caret range with property/type change
+   - Multiple runs involved in the transformation
+4. Implement test cases for complex multi-run modification scenarios
+5. Implement test cases for edge cases
+6. Each test case should:
+   - Set up initial `oldRuns` map with a realistic run configuration
+   - Set up modified `newRuns` map representing the transformation
+   - Call `DiffRuns` to compute the difference
+   - Use `AssertDiffArray` to verify `runsDiff` contains expected entries with correct keys from `newRuns`
+   - Use `AssertCallbackIdArray` to verify `createdInlineObjects` and `removedInlineObjects`
+7. Use existing helper functions from Task 6
+8. **CRITICAL**: Verify that result keys always come from `newRuns`, never from `oldRuns`
+   - Specifically test: When oldRuns [(1-2)prop1, (2-5)prop2, (5-10)prop1] → newRuns [(1-10)prop1]
+   - The `runsDiff` must contain (1-10), NOT (2-5) or any partial range from oldRuns
+9. **IMPORTANT**: Use designated initializers for CaretRange: `{.caretBegin = x, .caretEnd = y}`
+
+### how to test it
+
+Run the compiled unit test executable. The test cases validate:
+1. DiffRuns correctly handles in-place run modifications (common in document editing)
+2. Type transformations (text↔object) are correctly tracked in all output arrays
+3. Property changes on text runs are correctly detected
+4. Inline object replacement and repositioning scenarios work correctly
+5. Complex multi-run transformations preserve protocol correctness
+6. **CRITICAL**: The result always uses complete caret ranges from `newRuns`, never partial or mixed ranges from `oldRuns`
+   - Example: oldRuns [(1-2), (2-5), (5-10)] merging to newRuns [(1-10)] must report (1-10) in diff
+7. All combinations of range changes + property changes are handled correctly
+
+This comprehensive test coverage ensures DiffRuns works correctly for realistic document editing scenarios, not just basic additions and removals.
+
+### file locations
+
+Modified file: `Test\GacUISrc\UnitTest\TestRemote_DocumentRunManagement.cpp`
+
+### rationale
+
+Task 6 established basic DiffRuns functionality with simple scenarios, but real-world document editing primarily involves modifying existing runs rather than adding/removing them. Users change text formatting (bold, color, size), replace text with inline objects (inserting images), and move inline objects around. These modification scenarios have subtle corner cases:
+
+- When a text run becomes an inline object at the same position, both `runsDiff` and `createdInlineObjects` must be updated
+- When caret ranges change during type transformation, the protocol must use the NEW ranges consistently
+- **CRITICAL**: When multiple runs merge or split with simultaneous property changes, the diff must represent the complete final state using NEW caret ranges
+  - Example: When 3 old runs (1-2)prop1, (2-5)prop2, (5-10)prop1 merge into new run (1-10)prop1, the diff must report (1-10), not (2-5) or any partial range from the old state
+  - This ensures the remote side receives complete, consistent range information matching the current state
+
+Without comprehensive testing of these scenarios, bugs could cause:
+- Inline object lifecycle mismatches (creation callbacks not sent, destruction callbacks double-sent)
+- Incorrect text formatting in the remote renderer
+- **Protocol synchronization failures** when the remote side receives partial or mixed range information from old and new states
+- Rendering corruption due to incomplete caret range updates
+
+This task ensures the DiffRuns implementation handles the full complexity of document editing, not just the simplified scenarios tested in Task 6. The separation into a dedicated task (rather than expanding Task 6) follows the successful pattern established by the Task 2→Task 3-6 split: start with basic functionality, then comprehensively test the complex scenarios once the foundation is validated.
+
+**Learning from Task 6**: Start with 10-15 focused test cases covering the most critical transformation types before attempting exhaustive coverage. Prioritize the most common editing operations (text property changes, text↔object transformations) over rare edge cases. The goal is thorough coverage of realistic scenarios, not theoretical completeness.
+
+## TASK No.10: Implement `GuiRemoteGraphicsParagraph` class
+
+### description
+
+Implement all methods of `GuiRemoteGraphicsParagraph` class in `Source\PlatformProviders\Remote\GuiRemoteGraphics_Document.cpp`.
+
+**Learning from Task 6 and Task 7**: When working with complex protocol types, start with basic functionality first rather than trying to implement everything comprehensively. The protocol schema may use different types than initially expected (e.g., `Ptr<List<>>` instead of `Array<>`, structs instead of variants). Verify types by reading the protocol schema carefully before implementation.
+
+**Step 1: Add protected members and helper functions**
+
+Add protected members:
+- `DocumentRunPropertyMap runs` - stores text formatting and inline objects
+- `bool wrapLine = false`
+- `vint maxWidth = -1`
+- `Alignment paragraphAlignment = Alignment::Left`
+- `Size cachedSize = Size(0, 0)`
+- `bool needUpdate = true` - tracks if paragraph needs resending to remote
+- `vint id = -1` - paragraph ID for protocol communication
+
+Add protected conversion functions:
+- `vint NativeTextPosToRemoteTextPos(vint textPos)` - currently returns `textPos` directly
+- `vint RemoteTextPosToNativeTextPos(vint textPos)` - currently returns `textPos` directly
+
+**Step 2: Categorize IGuiGraphicsParagraph methods**
+
+Group methods into three categories:
+
+*Category A: Property getters/setters (affect ElementDesc_DocumentParagraph)*:
+- `GetWrapLine`, `SetWrapLine`
+- `GetMaxWidth`, `SetMaxWidth`
+- `GetParagraphAlignment`, `SetParagraphAlignment`
+
+*Category B: Run manipulation (modify runs map)*:
+- `SetFont`, `SetSize`, `SetStyle`, `SetColor`, `SetBackgroundColor`
+- `SetInlineObject`, `ResetInlineObject`
+
+*Category C: Query operations (send messages)*:
+- `GetSize` - sends `RendererUpdateElement_DocumentParagraph`, caches result
+- `GetCaret` - sends `DocumentParagraph_GetCaret`
+- `GetCaretBounds` - sends `DocumentParagraph_GetCaretBounds`
+- `GetCaretFromPoint` - sends `DocumentParagraph_GetCaretBounds` with point
+- `GetInlineObjectFromPoint` - sends `DocumentParagraph_GetInlineObjectFromPoint`
+- `GetNearestCaretFromTextPos` - sends `DocumentParagraph_GetNearestCaretFromTextPos`
+- `IsValidCaret` - sends `DocumentParagraph_IsValidCaret`
+- `OpenCaret` - sends `DocumentParagraph_OpenCaret`
+- `CloseCaret` - sends `DocumentParagraph_CloseCaret`
+
+**Step 3: Implement update strategy**
+
+- Category A and B methods set `needUpdate = true`
+- Before any Category C message, if `needUpdate == true`, send `RendererUpdateElement_DocumentParagraph` first with runs converted to `runsDiff` array, then set `needUpdate = false`
+- `GetSize()` caches the size returned from `RendererUpdateElement_DocumentParagraph`
+- Constructor allocates paragraph ID via `remote->AllocateParagraphId()`
+- Destructor sends paragraph destruction message
+
+**Step 4: Implement each method**
+
+- `GetProvider`, `GetRenderTarget`, `IsValidTextPos` - simple implementations
+- Property methods - update members and set `needUpdate = true`
+- Run manipulation methods - use `AddRun`, `ResetInlineObjectRun` with text position conversion
+- Query methods - ensure update is sent, then send corresponding protocol message with proper text position conversion
+- `Render` - triggers rendering via render target
+
+### file locations
+
+Implementation: `Source\PlatformProviders\Remote\GuiRemoteGraphics_Document.cpp`
+Header updates (if needed): `Source\PlatformProviders\Remote\GuiRemoteGraphics_Document.h`
+
+### rationale
+
+This is the core implementation that bridges `IGuiGraphicsParagraph` interface with the remote protocol. The three-category approach cleanly separates concerns: properties configure the paragraph, run methods modify formatting, query methods interact with the remote side. The lazy update strategy (only send when needed) optimizes protocol traffic. Text position conversion functions, though currently identity functions, provide future extensibility for surrogate pair handling or other text encoding complexities.
+
+## TASK No.11: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
+
+### description
+
+Implement the document-related protocol handler methods in `UnitTestRemoteProtocol_Rendering` template class in `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.h`.
+
+**Learning from Task 6**: Protocol implementation should start simple and incrementally add complexity. When protocol data structures are complex, verify the actual types used in the schema before writing extensive code. Test basic message flow first before implementing all edge cases.
+
+The current file has placeholder implementations (mostly empty or throwing errors). Implement:
+
+**Main rendering handler**:
+- `RequestRendererUpdateElement_DocumentParagraph(const ElementDesc_DocumentParagraph& arguments)`: 
+  - Store paragraph text, wrapLine, maxWidth, alignment
+  - Process `runsDiff` array to build internal run representation
+  - Calculate paragraph size based on font metrics (similar to `CalculateSolidLabelSizeIfNecessary`)
+  - Return calculated size
+
+**Caret navigation handlers**:
+- `RequestDocumentParagraph_GetCaret(vint id, const GetCaretRequest& arguments)`:
+  - Implement basic caret movement logic for CaretFirst, CaretLast, CaretLineFirst, CaretLineLast
+  - For CaretMoveLeft/Right/Up/Down, calculate new position based on text layout
+  - Return `GetCaretResponse` with new caret and preferFrontSide
+
+- `RequestDocumentParagraph_GetCaretBounds(vint id, const GetCaretBoundsRequest& arguments)`:
+  - Calculate bounds rectangle for caret at given position
+  - Consider frontSide flag for RTL/complex scripts
+  - Return Rect with width=0, positioned at caret
+
+- `RequestDocumentParagraph_GetCaretFromPoint(vint id, const Point& arguments)`:
+  - Perform hit testing to find nearest caret to given point
+  - Consider line layout and character positions
+
+**Other query handlers**:
+- `RequestDocumentParagraph_GetInlineObjectFromPoint(vint id, const Point& arguments)`:
+  - Check if point intersects any inline object
+  - Return DocumentRun with inline object info, or null
+
+- `RequestDocumentParagraph_GetNearestCaretFromTextPos(vint id, const GetCaretBoundsRequest& arguments)`:
+  - Convert text position to nearest valid caret position
+  - Consider frontSide preference
+
+- `RequestDocumentParagraph_IsValidCaret(vint id, const int& arguments)`:
+  - Validate if caret position is within valid range (0 to text.Length())
+
+**Caret display handlers**:
+- `RequestDocumentParagraph_OpenCaret(vint id, const OpenCaretRequest& arguments)`:
+  - Store caret state for rendering (position, color, frontSide)
+
+- `RequestDocumentParagraph_CloseCaret(vint id)`:
+  - Clear stored caret state
+
+**Implementation approach**:
+
+Follow the pattern from `CalculateSolidLabelSizeIfNecessary`:
+- Use cached font measurements
+- Store paragraph state in `lastElementDescs` or similar structure keyed by `id`
+- For complex layout calculations, implement simplified version suitable for testing (exact pixel-perfect layout not required, but consistent behavior is)
+
+### file locations
+
+Modified file: `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.h`
+
+### rationale
+
+These handlers are the server-side implementation of the paragraph protocol for the unit test environment. Without these implementations, any test using document controls will fail. The implementations can be simplified compared to production renderers (e.g., Windows/Linux) since they only need to support testing scenarios. However, they must be consistent and functional enough to validate the paragraph protocol and allow document control tests to pass.
+
+## TASK No.12: Create basic `GuiSinglelineTextBox` test case
+
+### description
+
+Create a new test file `Test\GacUISrc\UnitTest\TestControls_Editor_GuiSinglelineTextBox.cpp` following the established GacUI test pattern.
+
+Define a test resource with:
+```xml
+<Window Text="GuiSinglelineTextBox Test" ClientSize="x:480 y:320">
+  <Table ...>
+    <SinglelineTextBox ref.Name="textBox" Text="Initial text"/>
+  </Table>
+</Window>
+```
+
+Implement a test case that:
+1. Starts the application with the resource
+2. In first idle frame:
+   - Find the textBox control
+   - Verify initial text is "Initial text"
+   - Verify the textBox is enabled
+   - Test basic properties (font, size, etc.)
+   - Programmatically change text via `SetText`
+3. In second idle frame:
+   - Verify text was changed
+   - Test getting selection
+   - Test setting selection programmatically
+4. In final frame:
+   - Close window
+
+Use the standard pattern:
+```cpp
+GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+{
+    protocol->OnNextIdleFrame(L"Ready", [=]() { ... });
+    protocol->OnNextIdleFrame(L"After text change", [=]() { ... });
+    protocol->OnNextIdleFrame(L"Final", [=]() {
+        auto window = GetApplication()->GetMainWindow();
+        window->Hide();
+    });
+});
+GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+    WString::Unmanaged(L"Controls/Editor/GuiSinglelineTextBox/Basic"),
+    WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+    resource
+);
+```
+
+### file locations
+
+New file: `Test\GacUISrc\UnitTest\TestControls_Editor_GuiSinglelineTextBox.cpp`
+
+### rationale
+
+This test validates that the basic paragraph protocol implementation works correctly with a real GacUI control. `GuiSinglelineTextBox` uses `GuiDocumentLabel` which uses `IGuiGraphicsParagraph`, so this test exercises the complete stack. By testing programmatic text manipulation first (before user input simulation), we verify the foundational functionality before adding complexity. This test will catch integration issues between the paragraph implementation and the document control system.
+
+## TASK No.13: Create typing simulation test case and complete typing helper functions
 
 ### description
 
@@ -866,7 +1491,7 @@ New file: `Test\GacUISrc\UnitTest\TestControls_Editor_GuiSinglelineTextBox.cpp`
 
 This test validates that the basic paragraph protocol implementation works correctly with a real GacUI control. `GuiSinglelineTextBox` uses `GuiDocumentLabel` which uses `IGuiGraphicsParagraph`, so this test exercises the complete stack. By testing programmatic text manipulation first (before user input simulation), we verify the foundational functionality before adding complexity. This test will catch integration issues between the paragraph implementation and the document control system.
 
-## TASK No.11: Create typing simulation test case and complete typing helper functions
+## TASK No.13: Create typing simulation test case and complete typing helper functions
 
 ### description
 
