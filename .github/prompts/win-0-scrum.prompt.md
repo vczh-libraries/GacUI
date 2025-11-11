@@ -28,7 +28,7 @@
 ## Step 1. Identify the Problem
 
 - The problem I would like to solve is in the chat messages sending with this request.
-- Find `# Problem` or `# Update` or `# Split` or `# Learn` in the LATEST chat message. Ignore any `# Problem` or `# Update` in the chat history.
+- Find `# Problem` or `# Update` or `# Learn` in the LATEST chat message. Ignore any `# Problem` or `# Update` in the chat history.
 - If there is a `# Problem` section: it means I am starting a fresh new request.
   - You should override `Copilot_Scrum.md` with only one title `# !!!SCRUM!!!`.
     - At the moment, `Copilot_Scrum.md` may contain old tasks from previous requests, even it may look like the document is already finished for the current scrum, always clean it up.
@@ -37,12 +37,10 @@
 - If there is an `# Update` section: it means I am going to propose some change to `Copilot_Scrum.md`.
   - Copy precisely my problem description in `# Update` from the LATEST chat message to the `# DESIGN REQUEST` section, with a new sub-section `## UPDATE`.
   - The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# TASKS`).
+  - When the number of tasks needs to be changed, due to inserting/removing/splitting/merging tasks:
+    - Adjust task number of unaffected tasks accordingly, throughout the document.
+    - Replace the affected tasks with new content, DO NOT TOUCH unaffected tasks.
   - Follow my update to change the design document.
-- If there is an `# Split` section: it means I am going to break down an existing task into smaller tasks.section, with a new sub-section `## UPDATE`.
-  - The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# TASKS`).
-  - Follow my update to change the design document.
-  - Adjust task number of existing tasks accordingly, throughout the document.
-  - Replace the original task with the new smaller tasks, DO NOT TOUCH other tasks.
 - If there is a `# Learn` section: it means I made important updates during the execution of the last task, you should apply them smart enough to future tasks. Find the `Optional Step for Learning` section for more instruction.
 - If there is nothing: it means you are accidentally stopped. Please continue your work.
 
