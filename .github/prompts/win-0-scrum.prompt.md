@@ -124,8 +124,10 @@
 
 ### Step 6.4 Backup
 
-- You must only run this step after finishing all above steps. As previous steps may change files to backup.
+- You must only run this step after finishing all above steps.
+  - In the above steps, necessary change will be updated to `Copilot_Execution.md` and `Copilot_Scrum.md`.
 - Find and execute `copilotPrepare.ps1 -Backup`. You MUST use the `-Backup` parameter.
+  - By running the backup script, `Copilot_Task.md`, `Copilot_Planning.md` and `Copilot_Execution.md` will be backed up and deleted.
 
 # External Tools Environment and Context
 
