@@ -1,5 +1,6 @@
 #include "GuiRemoteGraphics_Document.h"
 #include "GuiRemoteGraphics.h"
+#include "GuiRemoteGraphics_BasicElements.h"
 
 namespace vl::presentation::elements
 {
@@ -583,139 +584,529 @@ GuiRemoteGraphicsParagraph
 		, renderTarget(_renderTarget)
 		, callback(_callback)
 	{
+		if (renderTarget)
+		{
+			id = renderTarget->AllocateNewElementId();
+			renderTarget->RegisterParagraph(this);
+		}
 	}
 
 	GuiRemoteGraphicsParagraph::~GuiRemoteGraphicsParagraph()
 	{
+		if (renderTarget && id != -1)
+		{
+			renderTarget->UnregisterParagraph(id);
+			id = -1;
+		}
+	}
+
+	vint GuiRemoteGraphicsParagraph::GetParagraphId() const
+	{
+		return id;
+	}
+
+	bool GuiRemoteGraphicsParagraph::EnsureRemoteParagraphSynced()
+	{
+		if (!needUpdate)
+		{
+			return id != -1;
+		}
+
+		if (id == -1 || !renderTarget)
+		{
+			return false;
+		}
+
+		stagedRuns.Clear();
+		MergeRuns(textRuns, inlineObjectRuns, stagedRuns);
+
+		remoteprotocol::ElementDesc_DocumentParagraph desc;
+		if (committedRuns.Count() == 0)
+		{
+			desc.text = text;
+		}
+
+		switch (paragraphAlignment)
+		{
+		case Alignment::Right:
+			desc.alignment = remoteprotocol::ElementHorizontalAlignment::Right;
+			break;
+		case Alignment::Center:
+			desc.alignment = remoteprotocol::ElementHorizontalAlignment::Center;
+			break;
+		default:
+			desc.alignment = remoteprotocol::ElementHorizontalAlignment::Left;
+			break;
+		}
+
+		desc.wrapLine = wrapLine;
+		desc.maxWidth = maxWidth;
+		DiffRuns(committedRuns, stagedRuns, desc);
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		vint requestId = messages.RequestRendererUpdateElement_DocumentParagraph(id, desc);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		if (disconnected)
+		{
+			return false;
+		}
+
+		cachedSize = messages.RetrieveRendererUpdateElement_DocumentParagraph(requestId);
+		committedRuns = stagedRuns;
+		needUpdate = false;
+		return true;
+	}
+
+	bool GuiRemoteGraphicsParagraph::TryBuildCaretRange(vint start, vint length, CaretRange& range)
+	{
+		if (length <= 0 || start < 0 || start + length > text.Length())
+		{
+			return false;
+		}
+		range.caretBegin = NativeTextPosToRemoteTextPos(start);
+		range.caretEnd = NativeTextPosToRemoteTextPos(start + length);
+		return true;
+	}
+
+	void GuiRemoteGraphicsParagraph::MarkParagraphDirty(bool invalidateSize)
+	{
+		needUpdate = true;
+		if (invalidateSize)
+		{
+			cachedSize = Size(0, 0);
+		}
+	}
+
+	vint GuiRemoteGraphicsParagraph::NativeTextPosToRemoteTextPos(vint textPos)
+	{
+		return textPos;
+	}
+
+	vint GuiRemoteGraphicsParagraph::RemoteTextPosToNativeTextPos(vint textPos)
+	{
+		return textPos;
 	}
 
 	IGuiGraphicsLayoutProvider* GuiRemoteGraphicsParagraph::GetProvider()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return resourceManager;
 	}
 
 	IGuiGraphicsRenderTarget* GuiRemoteGraphicsParagraph::GetRenderTarget()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return renderTarget;
 	}
 
 	bool GuiRemoteGraphicsParagraph::GetWrapLine()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return wrapLine;
 	}
 
 	void GuiRemoteGraphicsParagraph::SetWrapLine(bool value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (wrapLine != value)
+		{
+			wrapLine = value;
+			MarkParagraphDirty(true);
+		}
 	}
 
 	vint GuiRemoteGraphicsParagraph::GetMaxWidth()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return maxWidth;
 	}
 
 	void GuiRemoteGraphicsParagraph::SetMaxWidth(vint value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (maxWidth != value)
+		{
+			maxWidth = value;
+			MarkParagraphDirty(true);
+		}
 	}
 
 	Alignment GuiRemoteGraphicsParagraph::GetParagraphAlignment()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return paragraphAlignment;
 	}
 
 	void GuiRemoteGraphicsParagraph::SetParagraphAlignment(Alignment value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (paragraphAlignment != value)
+		{
+			paragraphAlignment = value;
+			MarkParagraphDirty(true);
+		}
 	}
 
 	bool GuiRemoteGraphicsParagraph::SetFont(vint start, vint length, const WString& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		DocumentTextRunPropertyOverrides overrides;
+		overrides.fontFamily = value;
+		AddTextRun(textRuns, range, overrides);
+		MarkParagraphDirty(true);
+		return true;
 	}
 
 	bool GuiRemoteGraphicsParagraph::SetSize(vint start, vint length, vint value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		DocumentTextRunPropertyOverrides overrides;
+		overrides.size = value;
+		AddTextRun(textRuns, range, overrides);
+		MarkParagraphDirty(true);
+		return true;
 	}
 
 	bool GuiRemoteGraphicsParagraph::SetStyle(vint start, vint length, TextStyle value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		DocumentTextRunPropertyOverrides overrides;
+		overrides.textStyle = value;
+		AddTextRun(textRuns, range, overrides);
+		MarkParagraphDirty(true);
+		return true;
 	}
 
 	bool GuiRemoteGraphicsParagraph::SetColor(vint start, vint length, Color value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		DocumentTextRunPropertyOverrides overrides;
+		overrides.textColor = value;
+		AddTextRun(textRuns, range, overrides);
+		MarkParagraphDirty(true);
+		return true;
 	}
 
 	bool GuiRemoteGraphicsParagraph::SetBackgroundColor(vint start, vint length, Color value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		DocumentTextRunPropertyOverrides overrides;
+		overrides.backgroundColor = value;
+		AddTextRun(textRuns, range, overrides);
+		MarkParagraphDirty(true);
+		return true;
 	}
 
 	bool GuiRemoteGraphicsParagraph::SetInlineObject(vint start, vint length, const InlineObjectProperties& properties)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		vint backgroundElementId = -1;
+		IGuiGraphicsRenderer* renderer = properties.backgroundImage ? properties.backgroundImage->GetRenderer() : nullptr;
+		if (renderer)
+		{
+			renderer->SetRenderTarget(renderTarget);
+			if (auto remoteRenderer = dynamic_cast<elements_remoteprotocol::IGuiRemoteProtocolElementRender*>(renderer))
+			{
+				backgroundElementId = remoteRenderer->GetID();
+			}
+		}
+
+		remoteprotocol::DocumentInlineObjectRunProperty remoteProp;
+		remoteProp.size = properties.size;
+		remoteProp.baseline = properties.baseline;
+		remoteProp.breakCondition = properties.breakCondition;
+		remoteProp.backgroundElementId = backgroundElementId;
+		remoteProp.callbackId = properties.callbackId;
+
+		if (!AddInlineObjectRun(inlineObjectRuns, range, remoteProp))
+		{
+			return false;
+		}
+
+		inlineObjectProperties.Remove(range);
+		inlineObjectProperties.Add(range, properties);
+		MarkParagraphDirty(true);
+		return true;
 	}
 
 	bool GuiRemoteGraphicsParagraph::ResetInlineObject(vint start, vint length)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+		if (!ResetInlineObjectRun(inlineObjectRuns, range)) return false;
+
+		vint index = inlineObjectProperties.Keys().IndexOf(range);
+		if (index != -1)
+		{
+			auto stored = inlineObjectProperties.Values()[index];
+			if (stored.backgroundImage)
+			{
+				if (auto renderer = stored.backgroundImage->GetRenderer())
+				{
+					renderer->SetRenderTarget(nullptr);
+				}
+			}
+			inlineObjectProperties.Remove(range);
+		}
+
+		MarkParagraphDirty(true);
+		return true;
 	}
 
 	Size GuiRemoteGraphicsParagraph::GetSize()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return cachedSize;
+		}
+		return cachedSize;
 	}
 
 	bool GuiRemoteGraphicsParagraph::OpenCaret(vint caret, Color color, bool frontSide)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return false;
+		}
+
+		remoteprotocol::OpenCaretRequest request;
+		request.caret = NativeTextPosToRemoteTextPos(caret);
+		request.caretColor = color;
+		request.frontSide = frontSide;
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		messages.RequestDocumentParagraph_OpenCaret(request);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		return !disconnected;
 	}
 
 	bool GuiRemoteGraphicsParagraph::CloseCaret()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (id == -1 || !renderTarget)
+		{
+			return false;
+		}
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		messages.RequestDocumentParagraph_CloseCaret();
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		return !disconnected;
 	}
 
 	void GuiRemoteGraphicsParagraph::Render(Rect bounds)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (!renderTarget)
+		{
+			return;
+		}
+
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return;
+		}
+
+		remoteprotocol::ElementRendering rendering;
+		rendering.id = id;
+		rendering.bounds = bounds;
+		rendering.areaClippedByParent = renderTarget->GetClipperValidArea();
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		messages.RequestRendererRenderElement(rendering);
+		lastRenderedBatchId = renderTarget->renderingBatchId;
 	}
 
 	vint GuiRemoteGraphicsParagraph::GetCaret(vint comparingCaret, CaretRelativePosition position, bool& preferFrontSide)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (!EnsureRemoteParagraphSynced())
+		{
+			preferFrontSide = false;
+			return comparingCaret;
+		}
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		remoteprotocol::GetCaretRequest request;
+		request.caret = NativeTextPosToRemoteTextPos(comparingCaret);
+		request.relativePosition = position;
+
+		vint requestId = messages.RequestDocumentParagraph_GetCaret(id, request);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		if (disconnected)
+		{
+			preferFrontSide = false;
+			return comparingCaret;
+		}
+
+		auto response = messages.RetrieveDocumentParagraph_GetCaret(requestId);
+		preferFrontSide = response.preferFrontSide;
+		return RemoteTextPosToNativeTextPos(response.newCaret);
 	}
 
 	Rect GuiRemoteGraphicsParagraph::GetCaretBounds(vint caret, bool frontSide)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return {};
+		}
+
+		remoteprotocol::GetCaretBoundsRequest request;
+		request.caret = NativeTextPosToRemoteTextPos(caret);
+		request.frontSide = frontSide;
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		vint requestId = messages.RequestDocumentParagraph_GetCaretBounds(id, request);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		if (disconnected)
+		{
+			return {};
+		}
+
+		return messages.RetrieveDocumentParagraph_GetCaretBounds(requestId);
 	}
 
 	vint GuiRemoteGraphicsParagraph::GetCaretFromPoint(Point point)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return 0;
+		}
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		vint bestCaret = 0;
+		vint bestDistance = -1;
+
+		for (vint caret = 0; caret <= text.Length(); caret++)
+		{
+			remoteprotocol::GetCaretBoundsRequest request;
+			request.caret = NativeTextPosToRemoteTextPos(caret);
+			request.frontSide = true;
+
+			bool disconnected = false;
+			vint requestId = messages.RequestDocumentParagraph_GetCaretBounds(id, request);
+			messages.Submit(disconnected);
+			if (disconnected)
+			{
+				return bestCaret;
+			}
+
+			Rect bounds = messages.RetrieveDocumentParagraph_GetCaretBounds(requestId);
+			if (bounds.x1 <= point.x && point.x < bounds.x2 && bounds.y1 <= point.y && point.y < bounds.y2)
+			{
+				return caret;
+			}
+
+			vint horizontalDistance = 0;
+			if (point.x < bounds.x1) horizontalDistance = bounds.x1 - point.x;
+			else if (point.x > bounds.x2) horizontalDistance = point.x - bounds.x2;
+
+			vint verticalDistance = 0;
+			if (point.y < bounds.y1) verticalDistance = bounds.y1 - point.y;
+			else if (point.y > bounds.y2) verticalDistance = point.y - bounds.y2;
+
+			vint distance = horizontalDistance + verticalDistance;
+			if (bestDistance == -1 || distance < bestDistance)
+			{
+				bestDistance = distance;
+				bestCaret = caret;
+			}
+		}
+
+		return bestCaret;
 	}
 
 	Nullable<IGuiGraphicsParagraph::InlineObjectProperties> GuiRemoteGraphicsParagraph::GetInlineObjectFromPoint(Point point, vint& start, vint& length)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		start = 0;
+		length = 0;
+
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return {};
+		}
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		vint requestId = messages.RequestDocumentParagraph_GetInlineObjectFromPoint(id, point);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		if (disconnected)
+		{
+			return {};
+		}
+
+		auto response = messages.RetrieveDocumentParagraph_GetInlineObjectFromPoint(requestId);
+		if (!response)
+		{
+			return {};
+		}
+
+		CaretRange range;
+		range.caretBegin = response.Value().caretBegin;
+		range.caretEnd = response.Value().caretEnd;
+
+		vint index = inlineObjectProperties.Keys().IndexOf(range);
+		if (index == -1)
+		{
+			return {};
+		}
+
+		start = RemoteTextPosToNativeTextPos(range.caretBegin);
+		length = RemoteTextPosToNativeTextPos(range.caretEnd) - start;
+		return inlineObjectProperties.Values()[index];
 	}
 
 	vint GuiRemoteGraphicsParagraph::GetNearestCaretFromTextPos(vint textPos, bool frontSide)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return textPos;
+		}
+
+		remoteprotocol::GetCaretBoundsRequest request;
+		request.caret = NativeTextPosToRemoteTextPos(textPos);
+		request.frontSide = frontSide;
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		vint requestId = messages.RequestDocumentParagraph_GetNearestCaretFromTextPos(id, request);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		if (disconnected)
+		{
+			return textPos;
+		}
+
+		auto response = messages.RetrieveDocumentParagraph_GetNearestCaretFromTextPos(requestId);
+		return RemoteTextPosToNativeTextPos(response);
 	}
 
 	bool GuiRemoteGraphicsParagraph::IsValidCaret(vint caret)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return false;
+		}
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		vint requestId = messages.RequestDocumentParagraph_IsValidCaret(id, NativeTextPosToRemoteTextPos(caret));
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		if (disconnected)
+		{
+			return false;
+		}
+
+		return messages.RetrieveDocumentParagraph_IsValidCaret(requestId);
 	}
 
 	bool GuiRemoteGraphicsParagraph::IsValidTextPos(vint textPos)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return 0 <= textPos && textPos <= text.Length();
 	}
 }

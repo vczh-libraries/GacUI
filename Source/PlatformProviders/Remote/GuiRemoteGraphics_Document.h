@@ -86,10 +86,33 @@ GuiRemoteGraphicsParagraph
 		GuiRemoteGraphicsRenderTarget*			renderTarget = nullptr;
 		IGuiGraphicsParagraphCallback*			callback = nullptr;
 
+		DocumentTextRunPropertyMap					textRuns;
+		DocumentInlineObjectRunPropertyMap			inlineObjectRuns;
+		DocumentRunPropertyMap						stagedRuns;
+		DocumentRunPropertyMap						committedRuns;
+		collections::Dictionary<CaretRange, InlineObjectProperties>	inlineObjectProperties;
+		bool										wrapLine = false;
+		vint										maxWidth = -1;
+		Alignment									paragraphAlignment = Alignment::Left;
+		Size										cachedSize = Size(0, 0);
+		bool										needUpdate = true;
+		vint										id = -1;
+		vuint64_t									lastRenderedBatchId = 0;
+
 	public:
 		GuiRemoteGraphicsParagraph(const WString& _text, GuiRemoteController* _remote, GuiRemoteGraphicsResourceManager* _resourceManager, GuiRemoteGraphicsRenderTarget* _renderTarget, IGuiGraphicsParagraphCallback* _callback);
 		~GuiRemoteGraphicsParagraph();
 
+		vint											GetParagraphId() const;
+
+	protected:
+		vint											NativeTextPosToRemoteTextPos(vint textPos);
+		vint											RemoteTextPosToNativeTextPos(vint textPos);
+		bool											TryBuildCaretRange(vint start, vint length, CaretRange& range);
+		bool											EnsureRemoteParagraphSynced();
+		void											MarkParagraphDirty(bool invalidateSize);
+
+	public:
 		// =============================================================
 		// IGuiGraphicsParagraph
 		// =============================================================

@@ -183,7 +183,7 @@ When you split task 8, you should do this in order:
 - [x] TASK No.10: Implement nullable property overriding logic in AddTextRun and default application in MergeRuns
 - [x] TASK No.11: Add comprehensive test cases for nullable property scenarios in AddTextRun
 - [x] TASK No.12: Add comprehensive test cases for nullable property scenarios in MergeRuns
-- [ ] TASK No.13: Implement `GuiRemoteGraphicsParagraph` class
+- [x] TASK No.13: Implement `GuiRemoteGraphicsParagraph` class
 - [ ] TASK No.14: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
 - [ ] TASK No.15: Create basic `GuiSinglelineTextBox` test case
 - [ ] TASK No.16: Create typing simulation test case and complete typing helper functions

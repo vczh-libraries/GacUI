@@ -69,21 +69,24 @@ GuiRemoteGraphicsRenderTarget
 			auto ids = Ptr(new List<vint>);
 			CopyFrom(*ids.Obj(), destroyedRenderers);
 			destroyedRenderers.Clear();
-			remote->remoteMessages.RequestRendererDestroyed(ids);
-		}
+		remote->remoteMessages.RequestRendererDestroyed(ids);
+	}
 
-		if (createdRenderers.Count() > 0)
+	if (createdRenderers.Count() > 0 || pendingParagraphCreations.Count() > 0)
+	{
+		auto ids = Ptr(new List<remoteprotocol::RendererCreation>);
+		for (auto id : createdRenderers)
 		{
-			auto ids = Ptr(new List<remoteprotocol::RendererCreation>);
-			for (auto id : createdRenderers)
-			{
-				ids->Add({ id,renderers[id]->GetRendererType() });
-			}
-			createdRenderers.Clear();
-			remote->remoteMessages.RequestRendererCreated(ids);
+			ids->Add({ id,renderers[id]->GetRendererType() });
 		}
-
-		for (auto [id, renderer] : renderers)
+		for (auto&& creation : pendingParagraphCreations)
+		{
+			ids->Add(creation);
+		}
+		createdRenderers.Clear();
+		pendingParagraphCreations.Clear();
+		remote->remoteMessages.RequestRendererCreated(ids);
+	}		for (auto [id, renderer] : renderers)
 		{
 			if (renderer->IsUpdated())
 			{
@@ -359,6 +362,45 @@ GuiRemoteGraphicsRenderTarget
 	Rect GuiRemoteGraphicsRenderTarget::GetClipperValidArea()
 	{
 		return clipperValidArea.Value();
+	}
+
+	GuiRemoteGraphicsParagraph* GuiRemoteGraphicsRenderTarget::GetParagraph(vint id)
+	{
+		vint index = paragraphs.Keys().IndexOf(id);
+		return index == -1 ? nullptr : paragraphs.Values()[index];
+	}
+
+	void GuiRemoteGraphicsRenderTarget::RegisterParagraph(GuiRemoteGraphicsParagraph* paragraph)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GuiRemoteGraphicsRenderTarget::RegisterParagraph(GuiRemoteGraphicsParagraph*)#"
+		auto paragraphId = paragraph->GetParagraphId();
+		CHECK_ERROR(!paragraphs.Keys().Contains(paragraphId), ERROR_MESSAGE_PREFIX L"Duplicated paragraph id.");
+		paragraphs.Add(paragraphId, paragraph);
+		pendingParagraphCreations.Add({ paragraphId,remoteprotocol::RendererType::DocumentParagraph });
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void GuiRemoteGraphicsRenderTarget::UnregisterParagraph(vint id)
+	{
+		vint index = paragraphs.Keys().IndexOf(id);
+		if (index == -1)
+		{
+			return;
+		}
+
+		paragraphs.Remove(id);
+		for (vint i = pendingParagraphCreations.Count() - 1; i >= 0; i--)
+		{
+			if (pendingParagraphCreations[i].id == id)
+			{
+				pendingParagraphCreations.RemoveAt(i);
+				return;
+			}
+		}
+		if (!destroyedRenderers.Contains(id))
+		{
+			destroyedRenderers.Add(id);
+		}
 	}
 
 /***********************************************************************
