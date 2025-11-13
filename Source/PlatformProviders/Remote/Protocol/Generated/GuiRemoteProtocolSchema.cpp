@@ -635,6 +635,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph>(const ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"id", value.id);
 		ConvertCustomTypeToJsonField(node, L"text", value.text);
 		ConvertCustomTypeToJsonField(node, L"wrapLine", value.wrapLine);
 		ConvertCustomTypeToJsonField(node, L"maxWidth", value.maxWidth);
@@ -1599,6 +1600,7 @@ namespace vl::presentation::remoteprotocol
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
 		{
+			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
 			if (field->name.value == L"text") ConvertJsonToCustomType(field->value, value.text); else
 			if (field->name.value == L"wrapLine") ConvertJsonToCustomType(field->value, value.wrapLine); else
 			if (field->name.value == L"maxWidth") ConvertJsonToCustomType(field->value, value.maxWidth); else

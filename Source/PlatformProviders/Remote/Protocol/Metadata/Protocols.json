@@ -2295,6 +2295,13 @@
         "name": "ElementDesc_DocumentParagraph",
         "members": [{
             "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
             "name": "text",
             "type": {
                 "$ast": "OptionalType",

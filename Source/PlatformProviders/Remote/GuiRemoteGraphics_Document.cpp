@@ -1,6 +1,7 @@
 #include "GuiRemoteGraphics_Document.h"
 #include "GuiRemoteGraphics.h"
 #include "GuiRemoteGraphics_BasicElements.h"
+#include "GuiRemoteEvents.h"
 
 namespace vl::presentation::elements
 {
@@ -641,10 +642,11 @@ GuiRemoteGraphicsParagraph
 
 		desc.wrapLine = wrapLine;
 		desc.maxWidth = maxWidth;
+		desc.id = id;
 		DiffRuns(committedRuns, stagedRuns, desc);
 
 		auto& messages = renderTarget->GetRemoteMessages();
-		vint requestId = messages.RequestRendererUpdateElement_DocumentParagraph(id, desc);
+		vint requestId = messages.RequestRendererUpdateElement_DocumentParagraph(desc);
 		bool disconnected = false;
 		messages.Submit(disconnected);
 		if (disconnected)
@@ -653,7 +655,7 @@ GuiRemoteGraphicsParagraph
 		}
 
 		cachedSize = messages.RetrieveRendererUpdateElement_DocumentParagraph(requestId);
-		committedRuns = stagedRuns;
+		committedRuns = std::move(stagedRuns);
 		needUpdate = false;
 		return true;
 	}
@@ -935,7 +937,7 @@ GuiRemoteGraphicsParagraph
 		request.caret = NativeTextPosToRemoteTextPos(comparingCaret);
 		request.relativePosition = position;
 
-		vint requestId = messages.RequestDocumentParagraph_GetCaret(id, request);
+		vint requestId = messages.RequestDocumentParagraph_GetCaret(request);
 		bool disconnected = false;
 		messages.Submit(disconnected);
 		if (disconnected)
@@ -961,7 +963,7 @@ GuiRemoteGraphicsParagraph
 		request.frontSide = frontSide;
 
 		auto& messages = renderTarget->GetRemoteMessages();
-		vint requestId = messages.RequestDocumentParagraph_GetCaretBounds(id, request);
+		vint requestId = messages.RequestDocumentParagraph_GetCaretBounds(request);
 		bool disconnected = false;
 		messages.Submit(disconnected);
 		if (disconnected)
@@ -990,7 +992,7 @@ GuiRemoteGraphicsParagraph
 			request.frontSide = true;
 
 			bool disconnected = false;
-			vint requestId = messages.RequestDocumentParagraph_GetCaretBounds(id, request);
+			vint requestId = messages.RequestDocumentParagraph_GetCaretBounds(request);
 			messages.Submit(disconnected);
 			if (disconnected)
 			{
@@ -1033,7 +1035,7 @@ GuiRemoteGraphicsParagraph
 		}
 
 		auto& messages = renderTarget->GetRemoteMessages();
-		vint requestId = messages.RequestDocumentParagraph_GetInlineObjectFromPoint(id, point);
+		vint requestId = messages.RequestDocumentParagraph_GetInlineObjectFromPoint(point);
 		bool disconnected = false;
 		messages.Submit(disconnected);
 		if (disconnected)
@@ -1074,7 +1076,7 @@ GuiRemoteGraphicsParagraph
 		request.frontSide = frontSide;
 
 		auto& messages = renderTarget->GetRemoteMessages();
-		vint requestId = messages.RequestDocumentParagraph_GetNearestCaretFromTextPos(id, request);
+		vint requestId = messages.RequestDocumentParagraph_GetNearestCaretFromTextPos(request);
 		bool disconnected = false;
 		messages.Submit(disconnected);
 		if (disconnected)
@@ -1094,7 +1096,7 @@ GuiRemoteGraphicsParagraph
 		}
 
 		auto& messages = renderTarget->GetRemoteMessages();
-		vint requestId = messages.RequestDocumentParagraph_IsValidCaret(id, NativeTextPosToRemoteTextPos(caret));
+		vint requestId = messages.RequestDocumentParagraph_IsValidCaret(NativeTextPosToRemoteTextPos(caret));
 		bool disconnected = false;
 		messages.Submit(disconnected);
 		if (disconnected)

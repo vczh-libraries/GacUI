@@ -92,7 +92,7 @@ GuiRemoteGraphicsResourceManager
 
 		class GuiRemoteGraphicsResourceManager
 			: public GuiGraphicsResourceManager
-			, protected IGuiGraphicsLayoutProvider
+			, public IGuiGraphicsLayoutProvider
 		{
 		protected:
 			GuiRemoteController*				remote;

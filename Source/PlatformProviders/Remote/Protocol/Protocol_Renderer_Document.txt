@@ -52,6 +52,7 @@ struct DocumentRun
 
 struct ElementDesc_DocumentParagraph
 {
+    var id : int;
     var text : string?;
     var wrapLine : bool;
     var maxWidth : int;

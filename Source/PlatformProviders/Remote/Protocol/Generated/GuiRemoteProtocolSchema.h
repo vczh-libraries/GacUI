@@ -359,6 +359,7 @@ namespace vl::presentation::remoteprotocol
 
 	struct ElementDesc_DocumentParagraph
 	{
+		::vl::vint id;
 		::vl::Nullable<::vl::WString> text;
 		bool wrapLine;
 		::vl::vint maxWidth;
