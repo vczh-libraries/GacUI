@@ -30,7 +30,7 @@
 - If there is any compilation error, address all of them:
   - If there is any compile warning, only fix warnings that caused by your code change. Do no fix any other warnings.
   - If there is any compile error, you need to carefully identify, is the issue in the callee side or the caller side. Check out similar code before making a decision.
-- After finishing fixing, exit and tell the main agent to go back to `Step 2. Compile`
+- After finishing fixing, exit the current sub agent and tell the main agent to go back to `Step 2. Compile`
 
 ## Step 3. Run Unit Test
 
@@ -60,7 +60,7 @@
   - If the test result still not changed after redoing `Step 2. Compile` and `Step 3. Run Unit Test`, these two steps are absolutely no problem, the only reason is that your change is not correct.
 - You must carefully identify, if the cause is in the source code or in the failed test. In most of the cases, the cause is in the source code.
 - DO NOT delete any test case.
-- After finishing fixing, exit and tell the main agent to go back to `Step 2. Compile`
+- After finishing fixing, exit the current sub agent and tell the main agent to go back to `Step 2. Compile`
 
 ## Step 4. Check it Again
 

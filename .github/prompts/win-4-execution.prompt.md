@@ -51,7 +51,7 @@
     - Explain what you need to do.
     - Explain why you think it would solve the build break.
     - Log these in `Copilot_Execution.md`, with section `## Fixing attempt No.<attempt_number>` in `# FIXING ATTEMPTS`.
-- After finishing fixing, exit and tell the main agent to go back to `Step 2. Make Sure the Code Compiles but DO NOT Run Unit Test`.
+- After finishing fixing, exit the current sub agent and tell the main agent to go back to `Step 2. Make Sure the Code Compiles but DO NOT Run Unit Test`.
 - When the code compiles:
   - DO NOT run any tests, the code will be verified in future tasks.
 

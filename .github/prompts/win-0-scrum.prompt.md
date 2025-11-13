@@ -92,11 +92,12 @@
 
 - Ignore this section if there is no `# Learn` in the LATEST chat message
 
-### Step 6.1
+### Step 6.1. Identify the Last Complteted Task
 
 - Identify the last completed task.
+- The current `Copilot_Task.md`, `Copilot_Planning.md` and `Copilot_Execution.md` are associated to that task.
 
-### Step 6.2
+### Step 6.2. Identify My Inputs
 
 - Read through `Copilot_Execution.md`. There may be some fixing attempts, that were done by you.
 - Compare existing source code with `Copilot_Execution.md`, finding what is changed.
@@ -113,14 +114,15 @@
 - Add your finding to `Copilot_Execution.md` at the very end with the topic `# Comparing to User Edit`.
   - If every changes are ignored by the rule above, or if you can't find any user edit, just write `No user edit found`.
 
-### Step 6.3
+### Step 6.3 Learn
 
 - There will be multiple `# UPDATES` or `# FIXING ATTEMPTS` or `# Comparing to User Edit` sections in `Copilot_Task.md`, `Copilot_Planning.md` and `Copilot_Execution.md`.
 - These 3 files recorded how you interpreted the last completed task, and how I wanted you to adjust  your understanding.
 - Find out what you can learn from the updates, about my philosophy and preferences.
 - Check all future tasks, apply what you have learned, and adjust your approach accordingly.
+  - For each unfinished tasks that can be improved, update releated learnings in `Copilot_Scrum.md`.
 
-### Step 6.4
+### Step 6.4 Backup
 
 - Find and execute `copilotPrepare.ps1 -Backup`. You MUST use the `-Backup` parameter.
 

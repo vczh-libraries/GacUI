@@ -42,7 +42,7 @@
     - Explain what you need to do.
     - Explain why you think it would solve the build break or test break.
     - Log these in `Copilot_Execution.md`, with section `## Fixing attempt No.<attempt_number>` in `# FIXING ATTEMPTS`.
-- After finishing fixing, exit and tell the main agent to go back to `Step 2. Compile`
+- After finishing fixing, exit the current sub agent and tell the main agent to go back to `Step 2. Compile`
 
 ## Step 3. Run Unit Test
 
@@ -78,7 +78,7 @@
   - Explain what you need to do.
   - Explain why you think it would solve the build break or test break.
   - Log these in `Copilot_Execution.md`, with section `## Fixing attempt No.<attempt_number>` in `# FIXING ATTEMPTS`.
-- After finishing fixing, exit and tell the main agent to go back to `Step 2. Compile`
+- After finishing fixing, exit the current sub agent and tell the main agent to go back to `Step 2. Compile`
 
 ## Step 4. Check it Again
 
