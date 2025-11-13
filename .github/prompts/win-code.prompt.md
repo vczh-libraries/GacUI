@@ -14,7 +14,8 @@
 - Check out `Compile the Solution` for details about compiling the solution but DO NOT run unit test yet.
   - `Compile the Solution` is the only way to build the project. DO NOT call any other tools or scripts.
   - Each attempt of build-fix process should be executed in a sub agent.
-    - Tell the sub agent actual instructions about how to compile.
+    - One build-fix process includes one attempt following `Build Unit Test` and `Fix Compile Errors`.
+    - The main agent should call different sub agent for each build-fix process.
     - Do not build and retrieve build results in the main agent.
 
 ### Use a sub agent to run the following instructions (`Build Unit Test` and `Fix Compile Errors`)
@@ -36,7 +37,8 @@
 - Check out `Executing Unit Test` for details about running unit test projects.
   - `Executing Unit Test` is the only way to run the unit test. DO NOT call any other tools or scripts.
   - Each attempt of test-fix process should be executed in a sub agent.
-    - Tell the sub agent actual instructions about how to test.
+    - One test-fix process includes one attempt following `Execute Unit Test` and `Fix Failed Test Cases`.
+    - The main agent should call different sub agent for each test-fix process.
     - Do not test and retrieve test results in the main agent.
 
 ### Use a sub agent to run the following instructions (`Execute Unit Test` and `Fix Failed Test Cases`)
