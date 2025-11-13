@@ -32,7 +32,7 @@
     - Tell the sub agent actual instructions about how to compile.
     - Do not build and retrieve build results in the main agent.
 
-### Use a sub agent to run the following instructions
+### Use a sub agent to run the following instructions (`Build Unit Test` and `Fix Compile Errors`)
 
 #### Build Unit Test
 
@@ -49,7 +49,7 @@
     - Explain what you need to do.
     - Explain why you think it would solve the build break.
     - Log these in `Copilot_Execution.md`, with section `## Fixing attempt No.<attempt_number>` in `# FIXING ATTEMPTS`.
-  - Go back to `Step 2. Make Sure the Code Compiles but DO NOT Run Unit Test`.
+- After finishing fixing, exit and tell the main agent to go back to `Step 2. Make Sure the Code Compiles but DO NOT Run Unit Test`.
 - When the code compiles:
   - DO NOT run any tests, the code will be verified in future tasks.
 

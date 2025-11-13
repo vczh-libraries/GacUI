@@ -22,7 +22,7 @@
   - `Compile the Solution` is the only way to build the project. DO NOT call any other tools or scripts.
   - Each attempt of build-fix process should be executed in a sub agent.
 
-### Use a sub agent to run the following instructions
+### Use a sub agent to run the following instructions (`Build Unit Test` and `Fix Compile Errors`)
 
 #### Build Unit Test
 
@@ -39,7 +39,7 @@
     - Explain what you need to do.
     - Explain why you think it would solve the build break or test break.
     - Log these in `Copilot_Execution.md`, with section `## Fixing attempt No.<attempt_number>` in `# FIXING ATTEMPTS`.
-  - Go back to `Step 2. Compile`
+- After finishing fixing, exit and tell the main agent to go back to `Step 2. Compile`
 
 ## Step 3. Run Unit Test
 
@@ -49,7 +49,7 @@
     - Tell the sub agent actual instructions about how to test.
     - Do not test and retrieve test results in the main agent.
 
-### Use a sub agent to run the following instructions
+### Use a sub agent to run the following instructions (`Execute Unit Test` and `Fix Failed Test Cases`)
 
 #### Execute Unit Test
 
@@ -74,6 +74,7 @@
   - Explain what you need to do.
   - Explain why you think it would solve the build break or test break.
   - Log these in `Copilot_Execution.md`, with section `## Fixing attempt No.<attempt_number>` in `# FIXING ATTEMPTS`.
+- After finishing fixing, exit and tell the main agent to go back to `Step 2. Compile`
 
 ## Step 4. Check it Again
 
