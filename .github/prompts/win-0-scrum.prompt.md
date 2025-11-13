@@ -124,6 +124,7 @@
 
 ### Step 6.4 Backup
 
+- You must only run this step after finishing all above steps. As previous steps may change files to backup.
 - Find and execute `copilotPrepare.ps1 -Backup`. You MUST use the `-Backup` parameter.
 
 # External Tools Environment and Context
