@@ -28,8 +28,19 @@
 
 - Check out `Compile the Solution` for details about compiling the solution but DO NOT run unit test.
   - `Compile the Solution` is the only way to build the project. DO NOT call any other tools or scripts.
+  - Each attempt of build-fix process should be executed in a sub agent.
+    - Tell the sub agent actual instructions about how to compile.
+    - Do not build and retrieve build results in the main agent.
+
+### Use a sub agent to run the following instructions
+
+#### Build Unit Test
+
 - Find out if there is any warning or error.
   - `Compile the Solution` has the instruction about how to check compile result.
+
+#### Fix Compile Errors
+
 - If there is any compilation error, address all of them:
   - If there is any compile warning, only fix warnings that caused by your code change. Do no fix any other warnings.
   - If there is any compile error, you need to carefully identify, is the issue in the callee side or the caller side. Check out similar code before making a decision.
