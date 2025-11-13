@@ -40,23 +40,23 @@ GuiRemoteGraphicsRenderTarget
 			using HitTestResult = INativeWindowListener::HitTestResult;
 			using SystemCursorType = INativeCursor::SystemCursorType;
 		protected:
-			GuiRemoteController*				remote;
-			GuiHostedController*				hostedController;
-			NativeSize							canvasSize;
-			vint								usedFrameIds = 0;
-			vint								usedElementIds = 0;
-			vint								usedCompositionIds = 0;
-			RendererMap							renderers;
-			collections::SortedList<vint>		createdRenderers;
-			collections::SortedList<vint>		destroyedRenderers;
-			RendererSet							renderersAskingForCache;
-		Nullable<Rect>						clipperValidArea;
-		collections::List<HitTestResult>	hitTestResults;
-		collections::List<SystemCursorType>	cursors;
-		collections::Dictionary<vint, GuiRemoteGraphicsParagraph*>	paragraphs;
-		collections::List<remoteprotocol::RendererCreation>			pendingParagraphCreations;
+			GuiRemoteController*										remote;
+			GuiHostedController*										hostedController;
+			NativeSize													canvasSize;
+			vint														usedFrameIds = 0;
+			vint														usedElementIds = 0;
+			vint														usedCompositionIds = 0;
+			RendererMap													renderers;
+			collections::SortedList<vint>								createdRenderers;
+			collections::SortedList<vint>								destroyedRenderers;
+			RendererSet													renderersAskingForCache;
+			Nullable<Rect>												clipperValidArea;
+			collections::List<HitTestResult>							hitTestResults;
+			collections::List<SystemCursorType>							cursors;
+			collections::Dictionary<vint, GuiRemoteGraphicsParagraph*>	paragraphs;
+			collections::List<remoteprotocol::RendererCreation>			pendingParagraphCreations;
 
-		HitTestResult						GetHitTestResultFromGenerator(reflection::DescriptableObject* generator);
+			HitTestResult						GetHitTestResultFromGenerator(reflection::DescriptableObject* generator);
 			Nullable<SystemCursorType>			GetCursorFromGenerator(reflection::DescriptableObject* generator);
 
 			void								StartRenderingOnNativeWindow() override;
@@ -78,15 +78,17 @@ GuiRemoteGraphicsRenderTarget
 			void								OnControllerConnect();
 			void								OnControllerDisconnect();
 
-		GuiRemoteMessages&					GetRemoteMessages();
-		vint								AllocateNewElementId();
-		void								RegisterRenderer(elements_remoteprotocol::IGuiRemoteProtocolElementRender* renderer);
-		void								UnregisterRenderer(elements_remoteprotocol::IGuiRemoteProtocolElementRender* renderer);
-		Rect								GetClipperValidArea();
-		GuiRemoteGraphicsParagraph*			GetParagraph(vint id);
-		void								RegisterParagraph(GuiRemoteGraphicsParagraph* paragraph);
-		void								UnregisterParagraph(vint id);
-	};/***********************************************************************
+			GuiRemoteMessages&					GetRemoteMessages();
+			vint								AllocateNewElementId();
+			void								RegisterRenderer(elements_remoteprotocol::IGuiRemoteProtocolElementRender* renderer);
+			void								UnregisterRenderer(elements_remoteprotocol::IGuiRemoteProtocolElementRender* renderer);
+			Rect								GetClipperValidArea();
+			GuiRemoteGraphicsParagraph*			GetParagraph(vint id);
+			void								RegisterParagraph(GuiRemoteGraphicsParagraph* paragraph);
+			void								UnregisterParagraph(vint id);
+		};
+
+/***********************************************************************
 GuiRemoteGraphicsResourceManager
 ***********************************************************************/
 

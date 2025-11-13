@@ -69,24 +69,26 @@ GuiRemoteGraphicsRenderTarget
 			auto ids = Ptr(new List<vint>);
 			CopyFrom(*ids.Obj(), destroyedRenderers);
 			destroyedRenderers.Clear();
-		remote->remoteMessages.RequestRendererDestroyed(ids);
-	}
+			remote->remoteMessages.RequestRendererDestroyed(ids);
+		}
 
-	if (createdRenderers.Count() > 0 || pendingParagraphCreations.Count() > 0)
-	{
-		auto ids = Ptr(new List<remoteprotocol::RendererCreation>);
-		for (auto id : createdRenderers)
+		if (createdRenderers.Count() > 0 || pendingParagraphCreations.Count() > 0)
 		{
-			ids->Add({ id,renderers[id]->GetRendererType() });
+			auto ids = Ptr(new List<remoteprotocol::RendererCreation>);
+			for (auto id : createdRenderers)
+			{
+				ids->Add({ id,renderers[id]->GetRendererType() });
+			}
+			for (auto&& creation : pendingParagraphCreations)
+			{
+				ids->Add(creation);
+			}
+			createdRenderers.Clear();
+			pendingParagraphCreations.Clear();
+			remote->remoteMessages.RequestRendererCreated(ids);
 		}
-		for (auto&& creation : pendingParagraphCreations)
-		{
-			ids->Add(creation);
-		}
-		createdRenderers.Clear();
-		pendingParagraphCreations.Clear();
-		remote->remoteMessages.RequestRendererCreated(ids);
-	}		for (auto [id, renderer] : renderers)
+
+		for (auto [id, renderer] : renderers)
 		{
 			if (renderer->IsUpdated())
 			{
