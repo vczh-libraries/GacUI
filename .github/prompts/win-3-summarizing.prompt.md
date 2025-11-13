@@ -46,13 +46,19 @@
     - Remove only the explanatory text between code blocks
     - Keep ALL actual code
   - DO NOT copy `# UPDATES` from `Copilot_Planning.md` to `Copilot_Execution.md`. The `# UPDATES` in `Copilot_Execution.md` is for update requests for `Copilot_Execution.md` and the actual source code.
+  - In each code change, ensure the context information is complete:
+    - Which file to edit?
+    - Insert/Delete/Update which part of the file? Is it better to define "which part" by line number or surrounding code?
+    - The code block to be written to the file.
+    - In `Copilot_Planning.md`, the code block might be incomplete or containing above metadata, do not update `Copilot_Planning.md` but instead fix them in `Copilot_Execution.md` following the rule:
+      - Each code block only contain consecutive code to be written to the file.
+      - If the original code block contains metadata, do not include it.
+      - If the original code block contains code change in multiple places or even multiple files, split it.
 
 ## Step 3. Document Quality Check List
 
-- [ ] Can someone copy-paste ONLY from Execution.md and apply all changes? (No need to refer to Planning.md)
-- [ ] Does every STEP show the complete code to write, not just describe it?
-- [ ] Is there any phrase like "including:", "such as:", "etc.", "refer to"? (If yes, you did it wrong!)
-- [ ] Count lines of code in Planning.md STEP X vs Execution.md STEP X - are they similar?
+- Is `Copilot_Execution.md` contains enough information so that one can follow the document to make actual code change, without having to refer to `Copilot_Planning.md`?
+- Is `Copilot_Execution.md` include all code changes mentioned in `Copilot_Planning.md`?
 
 ## Step 4. Completion
 - Ensure there is a `# !!!FINISHED!!!` mark at the end of `Copilot_Execution.md` to indicate the document reaches the end.

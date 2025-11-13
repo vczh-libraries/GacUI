@@ -3,6 +3,7 @@
 ## Goal and Constraints
 
 - You are going to apply changes on the source code as well following `Copilot_Execution.md`.
+- Make sure indentation and line breaks are applied correctly, following the same style in the target file.
 
 ## Copilot_Execution.md Structure
 
