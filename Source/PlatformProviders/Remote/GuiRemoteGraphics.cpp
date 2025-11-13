@@ -416,7 +416,7 @@ GuiRemoteGraphicsResourceManager
 		renderTarget.OnControllerDisconnect();
 	}
 
-	void GuiRemoteGraphicsResourceManager::OnDocumentParagraph_RenderInlineObject(const remoteprotocol::RenderInlineObjectRequest& arguments)
+	void GuiRemoteGraphicsResourceManager::OnDocumentParagraph_RenderInlineObjects(collections::List<remoteprotocol::RenderInlineObjectRequest>& arguments)
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}

@@ -112,7 +112,7 @@ GuiRemoteGraphicsResourceManager
 
 			void								OnControllerConnect();
 			void								OnControllerDisconnect();
-			void								OnDocumentParagraph_RenderInlineObject(const remoteprotocol::RenderInlineObjectRequest& arguments);
+			void								OnDocumentParagraph_RenderInlineObjects(collections::List<remoteprotocol::RenderInlineObjectRequest>& arguments);
 
 			// =============================================================
 			// IGuiGraphicsResourceManager

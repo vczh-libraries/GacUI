@@ -2595,12 +2595,15 @@
     }, {
         "$ast": "EventDecl",
         "attributes": [],
-        "name": "DocumentParagraph_RenderInlineObject",
+        "name": "DocumentParagraph_RenderInlineObjects",
         "request": {
             "$ast": "EventRequest",
             "type": {
-                "$ast": "ReferenceType",
-                "name": "RenderInlineObjectRequest"
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "RenderInlineObjectRequest"
+                }
             }
         }
     }, {

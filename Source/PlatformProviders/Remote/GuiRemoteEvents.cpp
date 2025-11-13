@@ -253,8 +253,11 @@ GuiRemoteEvents (events)
 		for (auto l : remote->remoteWindow.listeners) l->Char(arguments);
 	}
 
-	void GuiRemoteEvents::OnDocumentParagraph_RenderInlineObject(const remoteprotocol::RenderInlineObjectRequest& arguments)
+	void GuiRemoteEvents::OnDocumentParagraph_RenderInlineObjects(const Ptr<collections::List<remoteprotocol::RenderInlineObjectRequest>>& arguments)
 	{
-		remote->resourceManager->OnDocumentParagraph_RenderInlineObject(arguments);
+		if (arguments)
+		{
+			remote->resourceManager->OnDocumentParagraph_RenderInlineObjects(*arguments.Obj());
+		}
 	}
 }

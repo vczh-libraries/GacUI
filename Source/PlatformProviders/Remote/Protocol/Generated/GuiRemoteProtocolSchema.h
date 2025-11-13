@@ -710,7 +710,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(IOKeyDown, ::vl::presentation::NativeWindowKeyInfo, REQ, NODROP)\
 	HANDLER(IOKeyUp, ::vl::presentation::NativeWindowKeyInfo, REQ, NODROP)\
 	HANDLER(IOChar, ::vl::presentation::NativeWindowCharInfo, REQ, NODROP)\
-	HANDLER(DocumentParagraph_RenderInlineObject, ::vl::presentation::remoteprotocol::RenderInlineObjectRequest, REQ, NODROP)\
+	HANDLER(DocumentParagraph_RenderInlineObjects, ::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RenderInlineObjectRequest>>, REQ, NODROP)\
 
 #define GACUI_REMOTEPROTOCOL_MESSAGE_REQUEST_TYPES(HANDLER)\
 	HANDLER(::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::GlobalShortcutKey>>)\
@@ -758,12 +758,12 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(bool)\
 
 #define GACUI_REMOTEPROTOCOL_EVENT_REQUEST_TYPES(HANDLER)\
+	HANDLER(::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RenderInlineObjectRequest>>)\
 	HANDLER(::vl::presentation::NativeWindowCharInfo)\
 	HANDLER(::vl::presentation::NativeWindowKeyInfo)\
 	HANDLER(::vl::presentation::NativeWindowMouseInfo)\
 	HANDLER(::vl::presentation::remoteprotocol::ControllerGlobalConfig)\
 	HANDLER(::vl::presentation::remoteprotocol::IOMouseInfoWithButton)\
-	HANDLER(::vl::presentation::remoteprotocol::RenderInlineObjectRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::ScreenConfig)\
 	HANDLER(::vl::presentation::remoteprotocol::WindowSizingConfig)\
 	HANDLER(::vl::vint)\
