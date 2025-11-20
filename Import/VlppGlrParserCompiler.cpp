@@ -95,7 +95,7 @@ WriteAstHeaderFile
 					writer.WriteLine(L"#pragma once");
 				}
 				writer.WriteLine(L"");
-				for (auto include : group->Owner()->Global().includes)
+				for (auto include : group->Owner()->Global().astIncludes)
 				{
 					if (include.Length() > 0 && include[0] == L'<')
 					{
@@ -3283,7 +3283,7 @@ WriteLexerHeaderFile
 					writer.WriteLine(L"#pragma once");
 				}
 				writer.WriteLine(L"");
-				for (auto include : manager.Global().includes)
+				for (auto include : manager.Global().astIncludes)
 				{
 					if (include.Length() > 0 && include[0] == L'<')
 					{
@@ -10378,7 +10378,8 @@ Utility
 			void InitializeParserSymbolManager(ParserSymbolManager& manager)
 			{
 				manager.name = L"ParserGen";
-				Fill(manager.includes, L"../AstBase.h", L"../SyntaxBase.h");
+				Fill(manager.astIncludes, L"../AstBase.h");
+				Fill(manager.syntaxIncludes, L"../SyntaxBase.h");
 				Fill(manager.cppNss, L"vl", L"glr", L"parsergen");
 				manager.headerGuard = L"VCZH_PARSER2_PARSERGEN";
 			}
@@ -15784,8 +15785,19 @@ WriteSyntaxHeaderFile
 					writer.WriteLine(L"#pragma once");
 				}
 				writer.WriteLine(L"");
+				for (auto include : manager.Global().syntaxIncludes)
+				{
+					if (include.Length() > 0 && include[0] == L'<')
+					{
+						writer.WriteLine(L"#include " + include);
+					}
+					else
+					{
+						writer.WriteLine(L"#include \"" + include + L"\"");
+					}
+				}
 				writer.WriteLine(L"#include \"" + output->assemblyH + L"\"");
-				writer.WriteLine(L"#include \"" + output->lexerH +L"\"");
+				writer.WriteLine(L"#include \"" + output->lexerH + L"\"");
 				writer.WriteLine(L"");
 
 				WString prefix = WriteNssBegin(manager.Global().cppNss, writer);

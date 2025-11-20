@@ -34968,8 +34968,9 @@ GuiRemoteController::INativeWindowService
 GuiRemoteController (events)
 ***********************************************************************/
 
-	void GuiRemoteController::OnControllerConnect()
+	void GuiRemoteController::OnControllerConnect(const remoteprotocol::ControllerGlobalConfig& _globalConfig)
 	{
+		remoteGlobalConfig = _globalConfig;
 		UpdateGlobalShortcutKey();
 		vint idGetFontConfig = remoteMessages.RequestControllerGetFontConfig();
 		vint idGetScreenConfig = remoteMessages.RequestControllerGetScreenConfig();
@@ -35018,6 +35019,11 @@ GuiRemoteController
 		, remoteWindow(this)
 		, imageService(this)
 	{
+#if defined VCZH_WCHAR_UTF16
+		remoteGlobalConfig.documentCaretFromEncoding = remoteprotocol::CharacterEncoding::UTF16;
+#elif defined VCZH_WCHAR_UTF32
+		remoteGlobalConfig.documentCaretFromEncoding = remoteprotocol::CharacterEncoding::UTF32;
+#endif
 	}
 
 	GuiRemoteController::~GuiRemoteController()
@@ -35037,6 +35043,11 @@ GuiRemoteController
 		bool disconnected = false;
 		remoteMessages.Submit(disconnected);
 		// there is no result from this request, assuming succeeded
+	}
+
+	remoteprotocol::ControllerGlobalConfig GuiRemoteController::GetGlobalConfig()
+	{
+		return remoteGlobalConfig;
 	}
 
 /***********************************************************************
@@ -35253,10 +35264,10 @@ GuiRemoteEvents (messages)
 GuiRemoteEvents (events)
 ***********************************************************************/
 
-	void GuiRemoteEvents::OnControllerConnect()
+	void GuiRemoteEvents::OnControllerConnect(const remoteprotocol::ControllerGlobalConfig& arguments)
 	{
 		remote->remoteMessages.RequestControllerConnectionEstablished();
-		remote->OnControllerConnect();
+		remote->OnControllerConnect(arguments);
 		bool disconnected = false;
 		remote->remoteMessages.Submit(disconnected);
 		// there is no result from this request, assuming succeeded
@@ -35391,6 +35402,14 @@ GuiRemoteEvents (events)
 	{
 		for (auto l : remote->remoteWindow.listeners) l->Char(arguments);
 	}
+
+	void GuiRemoteEvents::OnDocumentParagraph_RenderInlineObjects(const Ptr<collections::List<remoteprotocol::RenderInlineObjectRequest>>& arguments)
+	{
+		if (arguments)
+		{
+			remote->resourceManager->OnDocumentParagraph_RenderInlineObjects(*arguments.Obj());
+		}
+	}
 }
 
 /***********************************************************************
@@ -35464,14 +35483,19 @@ GuiRemoteGraphicsRenderTarget
 			remote->remoteMessages.RequestRendererDestroyed(ids);
 		}
 
-		if (createdRenderers.Count() > 0)
+		if (createdRenderers.Count() > 0 || pendingParagraphCreations.Count() > 0)
 		{
 			auto ids = Ptr(new List<remoteprotocol::RendererCreation>);
 			for (auto id : createdRenderers)
 			{
 				ids->Add({ id,renderers[id]->GetRendererType() });
 			}
+			for (auto&& creation : pendingParagraphCreations)
+			{
+				ids->Add(creation);
+			}
 			createdRenderers.Clear();
+			pendingParagraphCreations.Clear();
 			remote->remoteMessages.RequestRendererCreated(ids);
 		}
 
@@ -35753,9 +35777,56 @@ GuiRemoteGraphicsRenderTarget
 		return clipperValidArea.Value();
 	}
 
+	GuiRemoteGraphicsParagraph* GuiRemoteGraphicsRenderTarget::GetParagraph(vint id)
+	{
+		vint index = paragraphs.Keys().IndexOf(id);
+		return index == -1 ? nullptr : paragraphs.Values()[index];
+	}
+
+	void GuiRemoteGraphicsRenderTarget::RegisterParagraph(GuiRemoteGraphicsParagraph* paragraph)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GuiRemoteGraphicsRenderTarget::RegisterParagraph(GuiRemoteGraphicsParagraph*)#"
+		auto paragraphId = paragraph->GetParagraphId();
+		CHECK_ERROR(!paragraphs.Keys().Contains(paragraphId), ERROR_MESSAGE_PREFIX L"Duplicated paragraph id.");
+		paragraphs.Add(paragraphId, paragraph);
+		pendingParagraphCreations.Add({ paragraphId,remoteprotocol::RendererType::DocumentParagraph });
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void GuiRemoteGraphicsRenderTarget::UnregisterParagraph(vint id)
+	{
+		vint index = paragraphs.Keys().IndexOf(id);
+		if (index == -1)
+		{
+			return;
+		}
+
+		paragraphs.Remove(id);
+		for (vint i = pendingParagraphCreations.Count() - 1; i >= 0; i--)
+		{
+			if (pendingParagraphCreations[i].id == id)
+			{
+				pendingParagraphCreations.RemoveAt(i);
+				return;
+			}
+		}
+		if (!destroyedRenderers.Contains(id))
+		{
+			destroyedRenderers.Add(id);
+		}
+	}
+
 /***********************************************************************
 GuiRemoteGraphicsResourceManager
 ***********************************************************************/
+
+	Ptr<IGuiGraphicsParagraph> GuiRemoteGraphicsResourceManager::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* _renderTarget, IGuiGraphicsParagraphCallback* callback)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GuiRemoteGraphicsResourceManager::CreateParagraph(const WString&, IGuiGraphicsRenderTarget*, IGuiGraphicsParagraphCallback*)#"
+		CHECK_ERROR(&renderTarget == _renderTarget, ERROR_MESSAGE_PREFIX L"Unexpected render target object.");
+		return Ptr(new GuiRemoteGraphicsParagraph(text, remote, this, &renderTarget, callback));
+#undef ERROR_MESSAGE_PREFIX
+	}
 
 	GuiRemoteGraphicsResourceManager::GuiRemoteGraphicsResourceManager(GuiRemoteController* _remote, GuiHostedController* _hostedController)
 		: remote(_remote)
@@ -35800,6 +35871,11 @@ GuiRemoteGraphicsResourceManager
 		renderTarget.OnControllerDisconnect();
 	}
 
+	void GuiRemoteGraphicsResourceManager::OnDocumentParagraph_RenderInlineObjects(collections::List<remoteprotocol::RenderInlineObjectRequest>& arguments)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+
 	IGuiGraphicsRenderTarget* GuiRemoteGraphicsResourceManager::GetRenderTarget(INativeWindow* window)
 	{
 		CHECK_ERROR(window == &remote->remoteWindow, L"vl::presentation::elements::GuiRemoteGraphicsResourceManager::GetRenderTarget(INativeWindow*)#GuiHostedController should call this function with the native window.");
@@ -35816,7 +35892,7 @@ GuiRemoteGraphicsResourceManager
 
 	IGuiGraphicsLayoutProvider* GuiRemoteGraphicsResourceManager::GetLayoutProvider()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return this;
 	}
 
 	Ptr<IGuiGraphicsElement> GuiRemoteGraphicsResourceManager::CreateRawElement()
@@ -36402,6 +36478,1120 @@ GuiPolygonElementRenderer
 		arguments.points = Ptr(new List<Point>);
 		CopyFrom(*arguments.points.Obj(), element->GetPointsArray());
 		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_Polygon(arguments);
+	}
+}
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEGRAPHICS_DOCUMENT.CPP
+***********************************************************************/
+
+namespace vl::presentation::elements
+{
+	using namespace collections;
+
+/***********************************************************************
+Comparison
+***********************************************************************/
+
+	bool AreEqual(const DocumentTextRunPropertyOverrides& a, const DocumentTextRunPropertyOverrides& b)
+	{
+		return a.textColor == b.textColor &&
+			   a.backgroundColor == b.backgroundColor &&
+			   a.fontFamily == b.fontFamily &&
+			   a.size == b.size &&
+			   a.textStyle == b.textStyle;
+	}
+
+	bool AreEqual(const remoteprotocol::DocumentTextRunProperty& a, const remoteprotocol::DocumentTextRunProperty& b)
+	{
+		return a.textColor == b.textColor &&
+			   a.backgroundColor == b.backgroundColor &&
+			   a.fontProperties == b.fontProperties;
+	}
+
+	bool AreEqual(const remoteprotocol::DocumentRunProperty& a, const remoteprotocol::DocumentRunProperty& b)
+	{
+		if (a.Index() != b.Index())
+			return false;
+
+		if (auto textA = a.TryGet<remoteprotocol::DocumentTextRunProperty>())
+		{
+			auto textB = b.Get<remoteprotocol::DocumentTextRunProperty>();
+			return AreEqual(*textA, textB);
+		}
+		else
+		{
+			auto inlineA = a.Get<remoteprotocol::DocumentInlineObjectRunProperty>();
+			auto inlineB = b.Get<remoteprotocol::DocumentInlineObjectRunProperty>();
+			return inlineA.size == inlineB.size &&
+				inlineA.baseline == inlineB.baseline &&
+				inlineA.breakCondition == inlineB.breakCondition &&
+				inlineA.backgroundElementId == inlineB.backgroundElementId &&
+				inlineA.callbackId == inlineB.callbackId;
+		}
+	}
+
+/***********************************************************************
+DiffRuns
+***********************************************************************/
+
+	DocumentTextRunPropertyOverrides ApplyOverrides(
+		const DocumentTextRunPropertyOverrides& base,
+		const DocumentTextRunPropertyOverrides& overrides)
+	{
+		DocumentTextRunPropertyOverrides result;
+		result.textColor = overrides.textColor ? overrides.textColor : base.textColor;
+		result.backgroundColor = overrides.backgroundColor ? overrides.backgroundColor : base.backgroundColor;
+		result.fontFamily = overrides.fontFamily ? overrides.fontFamily : base.fontFamily;
+		result.size = overrides.size ? overrides.size : base.size;
+		result.textStyle = overrides.textStyle ? overrides.textStyle : base.textStyle;
+		return result;
+	}
+
+	void AddTextRun(
+		DocumentTextRunPropertyMap& map,
+		CaretRange range,
+		const DocumentTextRunPropertyOverrides& propertyOverrides)
+	{
+		vint firstOverlap = -1;
+		
+		if (map.Count() > 0)
+		{
+			auto comparer = [&](const CaretRange& key, const CaretRange& searchRange) -> std::strong_ordering
+			{
+				if (key.caretEnd <= searchRange.caretBegin)
+					return std::strong_ordering::less;
+				else if (key.caretBegin >= searchRange.caretEnd)
+					return std::strong_ordering::greater;
+				else
+					return std::strong_ordering::equal;
+			};
+
+			vint index = -1;
+			firstOverlap = BinarySearchLambda(&map.Keys()[0], map.Keys().Count(), range, index, comparer);
+			
+			// Binary search may return any overlapping entry, scan backwards to find the first one
+			if (firstOverlap != -1)
+			{
+				while (firstOverlap > 0)
+				{
+					auto&& prevKey = map.Keys()[firstOverlap - 1];
+					if (prevKey.caretEnd <= range.caretBegin || prevKey.caretBegin >= range.caretEnd)
+						break;
+					firstOverlap--;
+				}
+			}
+		}
+	
+		List<Pair<CaretRange, DocumentTextRunPropertyOverrides>> fragmentsToReinsert;
+		List<CaretRange> keysToRemove;
+		List<Tuple<CaretRange, DocumentTextRunPropertyOverrides>> overlappingOldRuns;
+		
+		if (firstOverlap != -1)
+		{
+			auto&& keys = map.Keys();
+			for (vint i = firstOverlap; i < keys.Count(); i++)
+			{
+				auto&& key = keys[i];
+				if (key.caretBegin >= range.caretEnd)
+					break;
+			
+				auto&& oldProperty = map[key];
+			
+				// Record the overlapping portion
+				vint overlapBegin = key.caretBegin < range.caretBegin ? range.caretBegin : key.caretBegin;
+				vint overlapEnd = key.caretEnd > range.caretEnd ? range.caretEnd : key.caretEnd;
+				overlappingOldRuns.Add({CaretRange{overlapBegin, overlapEnd}, oldProperty});
+			
+				if (key.caretBegin < range.caretBegin)
+				{
+					CaretRange beforeRange{ key.caretBegin, range.caretBegin };
+					fragmentsToReinsert.Add({ beforeRange, oldProperty });
+				}
+			
+				if (key.caretEnd > range.caretEnd)
+				{
+					CaretRange afterRange{ range.caretEnd, key.caretEnd };
+					fragmentsToReinsert.Add({ afterRange, oldProperty });
+				}
+			
+				keysToRemove.Add(key);
+			}
+			
+			for (auto&& key : keysToRemove)
+			{
+				map.Remove(key);
+			}
+		}
+	
+		for (auto&& fragment : fragmentsToReinsert)
+		{
+			map.Add(fragment.key, fragment.value);
+		}
+	
+		if (overlappingOldRuns.Count() > 0)
+		{
+			// The new range has overlaps with old runs - apply override semantics
+			vint currentPos = range.caretBegin;
+			
+			for (vint i = 0; i < overlappingOldRuns.Count(); i++)
+			{
+				auto&& [oldRange, oldProp] = overlappingOldRuns[i];
+				
+				// Add any gap before this overlap with new properties as-is
+				if (currentPos < oldRange.caretBegin)
+				{
+					map.Add(CaretRange{currentPos, oldRange.caretBegin}, propertyOverrides);
+				}
+				
+				// Add the overlapping portion with merged properties
+				auto mergedProp = ApplyOverrides(oldProp, propertyOverrides);
+				map.Add(oldRange, mergedProp);
+				
+				currentPos = oldRange.caretEnd;
+			}
+			
+			// Add any remaining part after all overlaps with new properties as-is
+			if (currentPos < range.caretEnd)
+			{
+				map.Add(CaretRange{currentPos, range.caretEnd}, propertyOverrides);
+			}
+		}
+		else
+		{
+			// No overlaps - add the entire range with new properties
+			map.Add(range, propertyOverrides);
+		}
+
+		// Find the first key within the original range for merging
+		vint newIndex = -1;
+		auto&& keys = map.Keys();
+		for (vint i = 0; i < keys.Count(); i++)
+		{
+			if (keys[i].caretBegin >= range.caretBegin)
+			{
+				newIndex = i;
+				break;
+			}
+		}
+		
+		if (newIndex == -1)
+			return;
+		
+		while (newIndex > 0)
+		{
+			CaretRange leftKey = map.Keys()[newIndex - 1];
+			CaretRange currentKey = map.Keys()[newIndex];
+			
+			if (leftKey.caretEnd == currentKey.caretBegin &&
+				AreEqual(map[leftKey], map[currentKey]))
+			{
+				CaretRange mergedRange{ leftKey.caretBegin, currentKey.caretEnd };
+				auto mergedProperty = map[leftKey];
+				
+				map.Remove(leftKey);
+				map.Remove(currentKey);
+				map.Add(mergedRange, mergedProperty);
+				
+				newIndex = map.Keys().IndexOf(mergedRange);
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		while (newIndex < map.Keys().Count() - 1)
+		{
+			CaretRange currentKey = map.Keys()[newIndex];
+			CaretRange rightKey = map.Keys()[newIndex + 1];
+			
+			if (currentKey.caretEnd == rightKey.caretBegin &&
+				AreEqual(map[currentKey], map[rightKey]))
+			{
+				CaretRange mergedRange{ currentKey.caretBegin, rightKey.caretEnd };
+				auto mergedProperty = map[currentKey];
+				
+				map.Remove(currentKey);
+				map.Remove(rightKey);
+				map.Add(mergedRange, mergedProperty);
+				
+				newIndex = map.Keys().IndexOf(mergedRange);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	bool AddInlineObjectRun(
+		DocumentInlineObjectRunPropertyMap& map,
+		CaretRange range,
+		const remoteprotocol::DocumentInlineObjectRunProperty& property)
+	{
+		if (map.Count() > 0)
+		{
+			auto comparer = [&](const CaretRange& key, const CaretRange& searchRange) -> std::strong_ordering
+			{
+				if (key.caretEnd <= searchRange.caretBegin)
+					return std::strong_ordering::less;
+				else if (key.caretBegin >= searchRange.caretEnd)
+					return std::strong_ordering::greater;
+				else
+					return std::strong_ordering::equal;
+			};
+
+			vint index = -1;
+			vint firstOverlap = BinarySearchLambda(&map.Keys()[0], map.Keys().Count(), range, index, comparer);
+			
+			if (firstOverlap != -1)
+				return false;
+		}
+
+		map.Add(range, property);
+		return true;
+	}
+
+	bool ResetInlineObjectRun(
+		DocumentInlineObjectRunPropertyMap& map,
+		CaretRange range)
+	{
+		return map.Remove(range);
+	}
+
+	remoteprotocol::DocumentTextRunProperty ConvertToFullProperty(const DocumentTextRunPropertyOverrides& propertyOverrides)
+	{
+		remoteprotocol::DocumentTextRunProperty fullProp;
+		
+		// Required properties - validate non-null
+		CHECK_ERROR(propertyOverrides.fontFamily, L"fontFamily must be defined");
+		CHECK_ERROR(propertyOverrides.size, L"size must be defined");
+		
+		fullProp.fontProperties.fontFamily = propertyOverrides.fontFamily.Value();
+		fullProp.fontProperties.size = propertyOverrides.size.Value();
+		
+		// Optional properties - use defaults if null
+		fullProp.textColor = propertyOverrides.textColor ? 
+			propertyOverrides.textColor.Value() : Color(0, 0, 0);
+		fullProp.backgroundColor = propertyOverrides.backgroundColor ? 
+			propertyOverrides.backgroundColor.Value() : Color(0, 0, 0);
+		
+		auto style = propertyOverrides.textStyle ? 
+			propertyOverrides.textStyle.Value() : (IGuiGraphicsParagraph::TextStyle)0;
+		
+		// Convert TextStyle enum flags to individual bool fields
+		fullProp.fontProperties.bold = (style & IGuiGraphicsParagraph::TextStyle::Bold) != (IGuiGraphicsParagraph::TextStyle)0;
+		fullProp.fontProperties.italic = (style & IGuiGraphicsParagraph::TextStyle::Italic) != (IGuiGraphicsParagraph::TextStyle)0;
+		fullProp.fontProperties.underline = (style & IGuiGraphicsParagraph::TextStyle::Underline) != (IGuiGraphicsParagraph::TextStyle)0;
+		fullProp.fontProperties.strikeline = (style & IGuiGraphicsParagraph::TextStyle::Strikeline) != (IGuiGraphicsParagraph::TextStyle)0;
+		
+		// Set default values for antialias properties
+		fullProp.fontProperties.antialias = true;
+		fullProp.fontProperties.verticalAntialias = true;
+		
+		return fullProp;
+	}
+
+	void MergeRuns(
+		const DocumentTextRunPropertyMap& textRuns,
+		const DocumentInlineObjectRunPropertyMap& inlineObjectRuns,
+		DocumentRunPropertyMap& result)
+	{
+		result.Clear();
+
+		vint textIdx = 0;
+		vint inlineIdx = 0;
+
+		auto&& textKeys = textRuns.Keys();
+		auto&& inlineKeys = inlineObjectRuns.Keys();
+
+		CaretRange currentTextRange;
+		DocumentTextRunPropertyOverrides currentTextProperty;
+		bool hasCurrentText = false;
+		vint lastInlineEnd = -1;
+
+		while (textIdx < textKeys.Count() || inlineIdx < inlineKeys.Count() || hasCurrentText)
+		{
+			if (!hasCurrentText && textIdx < textKeys.Count())
+			{
+				currentTextRange = textKeys[textIdx];
+				currentTextProperty = textRuns[currentTextRange];
+				hasCurrentText = true;
+				textIdx++;
+				
+				// Trim text run if it overlaps with the last processed inline object
+				if (lastInlineEnd > currentTextRange.caretBegin)
+				{
+					if (lastInlineEnd >= currentTextRange.caretEnd)
+					{
+						// Text run is completely within the last inline object
+						hasCurrentText = false;
+						continue;
+					}
+					else
+					{
+						// Text run partially overlaps, trim the beginning
+						currentTextRange.caretBegin = lastInlineEnd;
+					}
+				}
+			}
+
+			if (hasCurrentText && inlineIdx >= inlineKeys.Count())
+			{
+				remoteprotocol::DocumentRunProperty runProp = ConvertToFullProperty(currentTextProperty);
+				result.Add(currentTextRange, runProp);
+				hasCurrentText = false;
+				continue;
+			}
+
+			if (!hasCurrentText && inlineIdx < inlineKeys.Count())
+			{
+				auto&& inlineKey = inlineKeys[inlineIdx];
+				remoteprotocol::DocumentRunProperty runProp = inlineObjectRuns[inlineKey];
+				result.Add(inlineKey, runProp);
+				lastInlineEnd = inlineKey.caretEnd;
+				inlineIdx++;
+				continue;
+			}
+
+			if (hasCurrentText && inlineIdx < inlineKeys.Count())
+			{
+				auto&& inlineKey = inlineKeys[inlineIdx];
+
+				if (currentTextRange.caretEnd <= inlineKey.caretBegin)
+				{
+					remoteprotocol::DocumentRunProperty runProp = ConvertToFullProperty(currentTextProperty);
+					result.Add(currentTextRange, runProp);
+					hasCurrentText = false;
+				}
+				else if (inlineKey.caretEnd <= currentTextRange.caretBegin)
+				{
+					remoteprotocol::DocumentRunProperty runProp = inlineObjectRuns[inlineKey];
+					result.Add(inlineKey, runProp);
+					lastInlineEnd = inlineKey.caretEnd;
+					inlineIdx++;
+				}
+				else
+				{
+					if (currentTextRange.caretBegin < inlineKey.caretBegin)
+					{
+						CaretRange beforeRange{ currentTextRange.caretBegin, inlineKey.caretBegin };
+						
+						remoteprotocol::DocumentRunProperty runProp = ConvertToFullProperty(currentTextProperty);
+						result.Add(beforeRange, runProp);
+					}
+
+					remoteprotocol::DocumentRunProperty runProp = inlineObjectRuns[inlineKey];
+					result.Add(inlineKey, runProp);
+					lastInlineEnd = inlineKey.caretEnd;
+					inlineIdx++;
+
+					if (currentTextRange.caretEnd > inlineKey.caretEnd)
+					{
+						currentTextRange.caretBegin = inlineKey.caretEnd;
+					}
+					else
+					{
+						hasCurrentText = false;
+					}
+				}
+			}
+		}
+	}
+
+	void DiffRuns(
+		const DocumentRunPropertyMap& oldRuns,
+		const DocumentRunPropertyMap& newRuns,
+		remoteprotocol::ElementDesc_DocumentParagraph& result)
+	{
+		result.runsDiff = Ptr(new List<remoteprotocol::DocumentRun>());
+		result.createdInlineObjects = Ptr(new List<vint>());
+		result.removedInlineObjects = Ptr(new List<vint>());
+
+		SortedList<vint> oldInlineCallbackIds;
+		SortedList<vint> newInlineCallbackIds;
+
+		vint oldIdx = 0;
+		vint newIdx = 0;
+
+		auto&& oldKeys = oldRuns.Keys();
+		auto&& newKeys = newRuns.Keys();
+
+		while (oldIdx < oldKeys.Count() || newIdx < newKeys.Count())
+		{
+			if (oldIdx >= oldKeys.Count())
+			{
+				auto&& newKey = newKeys[newIdx];
+				auto&& newValue = newRuns[newKey];
+
+				remoteprotocol::DocumentRun run;
+				run.caretBegin = newKey.caretBegin;
+				run.caretEnd = newKey.caretEnd;
+				run.props = newValue;
+				result.runsDiff->Add(run);
+
+				if (auto inlineObj = newValue.TryGet<remoteprotocol::DocumentInlineObjectRunProperty>())
+				{
+					newInlineCallbackIds.Add(inlineObj->callbackId);
+				}
+
+				newIdx++;
+				continue;
+			}
+
+			if (newIdx >= newKeys.Count())
+			{
+				auto&& oldKey = oldKeys[oldIdx];
+				auto&& oldValue = oldRuns[oldKey];
+
+				if (auto inlineObj = oldValue.TryGet<remoteprotocol::DocumentInlineObjectRunProperty>())
+				{
+					oldInlineCallbackIds.Add(inlineObj->callbackId);
+				}
+
+				oldIdx++;
+				continue;
+			}
+
+			auto&& oldKey = oldKeys[oldIdx];
+			auto&& newKey = newKeys[newIdx];
+
+			if (oldKey == newKey)
+			{
+				auto&& oldValue = oldRuns[oldKey];
+				auto&& newValue = newRuns[newKey];
+
+				if (auto inlineObj = oldValue.TryGet<remoteprotocol::DocumentInlineObjectRunProperty>())
+				{
+					oldInlineCallbackIds.Add(inlineObj->callbackId);
+				}
+				if (auto inlineObj = newValue.TryGet<remoteprotocol::DocumentInlineObjectRunProperty>())
+				{
+					newInlineCallbackIds.Add(inlineObj->callbackId);
+				}
+
+				if (!AreEqual(oldValue, newValue))
+				{
+					remoteprotocol::DocumentRun run;
+					run.caretBegin = newKey.caretBegin;
+					run.caretEnd = newKey.caretEnd;
+					run.props = newValue;
+					result.runsDiff->Add(run);
+				}
+
+				oldIdx++;
+				newIdx++;
+			}
+			else if (newKey < oldKey)
+			{
+				auto&& newValue = newRuns[newKey];
+
+				remoteprotocol::DocumentRun run;
+				run.caretBegin = newKey.caretBegin;
+				run.caretEnd = newKey.caretEnd;
+				run.props = newValue;
+				result.runsDiff->Add(run);
+
+				if (auto inlineObj = newValue.TryGet<remoteprotocol::DocumentInlineObjectRunProperty>())
+				{
+					newInlineCallbackIds.Add(inlineObj->callbackId);
+				}
+
+				newIdx++;
+			}
+			else
+			{
+				auto&& oldValue = oldRuns[oldKey];
+
+				if (auto inlineObj = oldValue.TryGet<remoteprotocol::DocumentInlineObjectRunProperty>())
+				{
+					oldInlineCallbackIds.Add(inlineObj->callbackId);
+				}
+
+				oldIdx++;
+			}
+		}
+
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::DiffRuns(const DocumentRunPropertyMap&, const DocumentRunPropertyMap&, remoteprotocol::ElementDesc_DocumentParagraph&)#"
+		// Validate that all old run ranges are fully covered by new run ranges
+		for (vint oldI = 0; oldI < oldKeys.Count(); oldI++)
+		{
+			auto&& oldKey = oldKeys[oldI];
+			vint coveredEnd = oldKey.caretBegin;
+
+			// Find all new ranges that cover this old range
+			for (vint newI = 0; newI < newKeys.Count(); newI++)
+			{
+				auto&& newKey = newKeys[newI];
+
+				// Check if this new range overlaps with uncovered part of old range
+				if (newKey.caretBegin <= coveredEnd && newKey.caretEnd > coveredEnd)
+				{
+					coveredEnd = newKey.caretEnd > oldKey.caretEnd ? oldKey.caretEnd : newKey.caretEnd;
+				}
+			}
+
+			CHECK_ERROR(coveredEnd >= oldKey.caretEnd,
+				ERROR_MESSAGE_PREFIX L"Old run range not fully covered by new runs");
+		}
+#undef ERROR_MESSAGE_PREFIX
+
+		for (vint i = 0; i < newInlineCallbackIds.Count(); i++)
+		{
+			auto id = newInlineCallbackIds[i];
+			if (!oldInlineCallbackIds.Contains(id))
+			{
+				result.createdInlineObjects->Add(id);
+			}
+		}
+		
+		for (vint i = 0; i < oldInlineCallbackIds.Count(); i++)
+		{
+			auto id = oldInlineCallbackIds[i];
+			if (!newInlineCallbackIds.Contains(id))
+			{
+				result.removedInlineObjects->Add(id);
+			}
+		}
+	}
+
+/***********************************************************************
+GuiRemoteGraphicsParagraph
+***********************************************************************/
+
+	GuiRemoteGraphicsParagraph::GuiRemoteGraphicsParagraph(const WString& _text, GuiRemoteController* _remote, GuiRemoteGraphicsResourceManager* _resourceManager, GuiRemoteGraphicsRenderTarget* _renderTarget, IGuiGraphicsParagraphCallback* _callback)
+		: text(_text)
+		, remote(_remote)
+		, resourceManager(_resourceManager)
+		, renderTarget(_renderTarget)
+		, callback(_callback)
+	{
+		if (renderTarget)
+		{
+			id = renderTarget->AllocateNewElementId();
+			renderTarget->RegisterParagraph(this);
+		}
+	}
+
+	GuiRemoteGraphicsParagraph::~GuiRemoteGraphicsParagraph()
+	{
+		if (renderTarget && id != -1)
+		{
+			renderTarget->UnregisterParagraph(id);
+			id = -1;
+		}
+	}
+
+	vint GuiRemoteGraphicsParagraph::GetParagraphId() const
+	{
+		return id;
+	}
+
+	bool GuiRemoteGraphicsParagraph::EnsureRemoteParagraphSynced()
+	{
+		if (!needUpdate)
+		{
+			return id != -1;
+		}
+
+		if (id == -1 || !renderTarget)
+		{
+			return false;
+		}
+
+		stagedRuns.Clear();
+		MergeRuns(textRuns, inlineObjectRuns, stagedRuns);
+
+		remoteprotocol::ElementDesc_DocumentParagraph desc;
+		if (committedRuns.Count() == 0)
+		{
+			desc.text = text;
+		}
+
+		switch (paragraphAlignment)
+		{
+		case Alignment::Right:
+			desc.alignment = remoteprotocol::ElementHorizontalAlignment::Right;
+			break;
+		case Alignment::Center:
+			desc.alignment = remoteprotocol::ElementHorizontalAlignment::Center;
+			break;
+		default:
+			desc.alignment = remoteprotocol::ElementHorizontalAlignment::Left;
+			break;
+		}
+
+		desc.wrapLine = wrapLine;
+		desc.maxWidth = maxWidth;
+		desc.id = id;
+		DiffRuns(committedRuns, stagedRuns, desc);
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		vint requestId = messages.RequestRendererUpdateElement_DocumentParagraph(desc);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		if (disconnected)
+		{
+			return false;
+		}
+
+		cachedSize = messages.RetrieveRendererUpdateElement_DocumentParagraph(requestId);
+		committedRuns = std::move(stagedRuns);
+		needUpdate = false;
+		return true;
+	}
+
+	bool GuiRemoteGraphicsParagraph::TryBuildCaretRange(vint start, vint length, CaretRange& range)
+	{
+		if (length <= 0 || start < 0 || start + length > text.Length())
+		{
+			return false;
+		}
+		range.caretBegin = NativeTextPosToRemoteTextPos(start);
+		range.caretEnd = NativeTextPosToRemoteTextPos(start + length);
+		return true;
+	}
+
+	void GuiRemoteGraphicsParagraph::MarkParagraphDirty(bool invalidateSize)
+	{
+		needUpdate = true;
+		if (invalidateSize)
+		{
+			cachedSize = Size(0, 0);
+		}
+	}
+
+	vint GuiRemoteGraphicsParagraph::NativeTextPosToRemoteTextPos(vint textPos)
+	{
+		return textPos;
+	}
+
+	vint GuiRemoteGraphicsParagraph::RemoteTextPosToNativeTextPos(vint textPos)
+	{
+		return textPos;
+	}
+
+	IGuiGraphicsLayoutProvider* GuiRemoteGraphicsParagraph::GetProvider()
+	{
+		return resourceManager;
+	}
+
+	IGuiGraphicsRenderTarget* GuiRemoteGraphicsParagraph::GetRenderTarget()
+	{
+		return renderTarget;
+	}
+
+	bool GuiRemoteGraphicsParagraph::GetWrapLine()
+	{
+		return wrapLine;
+	}
+
+	void GuiRemoteGraphicsParagraph::SetWrapLine(bool value)
+	{
+		if (wrapLine != value)
+		{
+			wrapLine = value;
+			MarkParagraphDirty(true);
+		}
+	}
+
+	vint GuiRemoteGraphicsParagraph::GetMaxWidth()
+	{
+		return maxWidth;
+	}
+
+	void GuiRemoteGraphicsParagraph::SetMaxWidth(vint value)
+	{
+		if (maxWidth != value)
+		{
+			maxWidth = value;
+			MarkParagraphDirty(true);
+		}
+	}
+
+	Alignment GuiRemoteGraphicsParagraph::GetParagraphAlignment()
+	{
+		return paragraphAlignment;
+	}
+
+	void GuiRemoteGraphicsParagraph::SetParagraphAlignment(Alignment value)
+	{
+		if (paragraphAlignment != value)
+		{
+			paragraphAlignment = value;
+			MarkParagraphDirty(true);
+		}
+	}
+
+	bool GuiRemoteGraphicsParagraph::SetFont(vint start, vint length, const WString& value)
+	{
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		DocumentTextRunPropertyOverrides overrides;
+		overrides.fontFamily = value;
+		AddTextRun(textRuns, range, overrides);
+		MarkParagraphDirty(true);
+		return true;
+	}
+
+	bool GuiRemoteGraphicsParagraph::SetSize(vint start, vint length, vint value)
+	{
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		DocumentTextRunPropertyOverrides overrides;
+		overrides.size = value;
+		AddTextRun(textRuns, range, overrides);
+		MarkParagraphDirty(true);
+		return true;
+	}
+
+	bool GuiRemoteGraphicsParagraph::SetStyle(vint start, vint length, TextStyle value)
+	{
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		DocumentTextRunPropertyOverrides overrides;
+		overrides.textStyle = value;
+		AddTextRun(textRuns, range, overrides);
+		MarkParagraphDirty(true);
+		return true;
+	}
+
+	bool GuiRemoteGraphicsParagraph::SetColor(vint start, vint length, Color value)
+	{
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		DocumentTextRunPropertyOverrides overrides;
+		overrides.textColor = value;
+		AddTextRun(textRuns, range, overrides);
+		MarkParagraphDirty(true);
+		return true;
+	}
+
+	bool GuiRemoteGraphicsParagraph::SetBackgroundColor(vint start, vint length, Color value)
+	{
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		DocumentTextRunPropertyOverrides overrides;
+		overrides.backgroundColor = value;
+		AddTextRun(textRuns, range, overrides);
+		MarkParagraphDirty(true);
+		return true;
+	}
+
+	bool GuiRemoteGraphicsParagraph::SetInlineObject(vint start, vint length, const InlineObjectProperties& properties)
+	{
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		vint backgroundElementId = -1;
+		IGuiGraphicsRenderer* renderer = properties.backgroundImage ? properties.backgroundImage->GetRenderer() : nullptr;
+		if (renderer)
+		{
+			renderer->SetRenderTarget(renderTarget);
+			if (auto remoteRenderer = dynamic_cast<elements_remoteprotocol::IGuiRemoteProtocolElementRender*>(renderer))
+			{
+				backgroundElementId = remoteRenderer->GetID();
+			}
+		}
+
+		remoteprotocol::DocumentInlineObjectRunProperty remoteProp;
+		remoteProp.size = properties.size;
+		remoteProp.baseline = properties.baseline;
+		remoteProp.breakCondition = properties.breakCondition;
+		remoteProp.backgroundElementId = backgroundElementId;
+		remoteProp.callbackId = properties.callbackId;
+
+		if (!AddInlineObjectRun(inlineObjectRuns, range, remoteProp))
+		{
+			return false;
+		}
+
+		inlineObjectProperties.Remove(range);
+		inlineObjectProperties.Add(range, properties);
+		MarkParagraphDirty(true);
+		return true;
+	}
+
+	bool GuiRemoteGraphicsParagraph::ResetInlineObject(vint start, vint length)
+	{
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+		if (!ResetInlineObjectRun(inlineObjectRuns, range)) return false;
+
+		vint index = inlineObjectProperties.Keys().IndexOf(range);
+		if (index != -1)
+		{
+			auto stored = inlineObjectProperties.Values()[index];
+			if (stored.backgroundImage)
+			{
+				if (auto renderer = stored.backgroundImage->GetRenderer())
+				{
+					renderer->SetRenderTarget(nullptr);
+				}
+			}
+			inlineObjectProperties.Remove(range);
+		}
+
+		MarkParagraphDirty(true);
+		return true;
+	}
+
+	Size GuiRemoteGraphicsParagraph::GetSize()
+	{
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return cachedSize;
+		}
+		return cachedSize;
+	}
+
+	bool GuiRemoteGraphicsParagraph::OpenCaret(vint caret, Color color, bool frontSide)
+	{
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return false;
+		}
+
+		remoteprotocol::OpenCaretRequest request;
+		request.caret = NativeTextPosToRemoteTextPos(caret);
+		request.caretColor = color;
+		request.frontSide = frontSide;
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		messages.RequestDocumentParagraph_OpenCaret(request);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		return !disconnected;
+	}
+
+	bool GuiRemoteGraphicsParagraph::CloseCaret()
+	{
+		if (id == -1 || !renderTarget)
+		{
+			return false;
+		}
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		messages.RequestDocumentParagraph_CloseCaret();
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		return !disconnected;
+	}
+
+	void GuiRemoteGraphicsParagraph::Render(Rect bounds)
+	{
+		if (!renderTarget)
+		{
+			return;
+		}
+
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return;
+		}
+
+		remoteprotocol::ElementRendering rendering;
+		rendering.id = id;
+		rendering.bounds = bounds;
+		rendering.areaClippedByParent = renderTarget->GetClipperValidArea();
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		messages.RequestRendererRenderElement(rendering);
+		lastRenderedBatchId = renderTarget->renderingBatchId;
+	}
+
+	vint GuiRemoteGraphicsParagraph::GetCaret(vint comparingCaret, CaretRelativePosition position, bool& preferFrontSide)
+	{
+		if (!EnsureRemoteParagraphSynced())
+		{
+			preferFrontSide = false;
+			return comparingCaret;
+		}
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		remoteprotocol::GetCaretRequest request;
+		request.caret = NativeTextPosToRemoteTextPos(comparingCaret);
+		request.relativePosition = position;
+
+		vint requestId = messages.RequestDocumentParagraph_GetCaret(request);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		if (disconnected)
+		{
+			preferFrontSide = false;
+			return comparingCaret;
+		}
+
+		auto response = messages.RetrieveDocumentParagraph_GetCaret(requestId);
+		preferFrontSide = response.preferFrontSide;
+		return RemoteTextPosToNativeTextPos(response.newCaret);
+	}
+
+	Rect GuiRemoteGraphicsParagraph::GetCaretBounds(vint caret, bool frontSide)
+	{
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return {};
+		}
+
+		remoteprotocol::GetCaretBoundsRequest request;
+		request.caret = NativeTextPosToRemoteTextPos(caret);
+		request.frontSide = frontSide;
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		vint requestId = messages.RequestDocumentParagraph_GetCaretBounds(request);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		if (disconnected)
+		{
+			return {};
+		}
+
+		return messages.RetrieveDocumentParagraph_GetCaretBounds(requestId);
+	}
+
+	vint GuiRemoteGraphicsParagraph::GetCaretFromPoint(Point point)
+	{
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return 0;
+		}
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		vint bestCaret = 0;
+		vint bestDistance = -1;
+
+		for (vint caret = 0; caret <= text.Length(); caret++)
+		{
+			remoteprotocol::GetCaretBoundsRequest request;
+			request.caret = NativeTextPosToRemoteTextPos(caret);
+			request.frontSide = true;
+
+			bool disconnected = false;
+			vint requestId = messages.RequestDocumentParagraph_GetCaretBounds(request);
+			messages.Submit(disconnected);
+			if (disconnected)
+			{
+				return bestCaret;
+			}
+
+			Rect bounds = messages.RetrieveDocumentParagraph_GetCaretBounds(requestId);
+			if (bounds.x1 <= point.x && point.x < bounds.x2 && bounds.y1 <= point.y && point.y < bounds.y2)
+			{
+				return caret;
+			}
+
+			vint horizontalDistance = 0;
+			if (point.x < bounds.x1) horizontalDistance = bounds.x1 - point.x;
+			else if (point.x > bounds.x2) horizontalDistance = point.x - bounds.x2;
+
+			vint verticalDistance = 0;
+			if (point.y < bounds.y1) verticalDistance = bounds.y1 - point.y;
+			else if (point.y > bounds.y2) verticalDistance = point.y - bounds.y2;
+
+			vint distance = horizontalDistance + verticalDistance;
+			if (bestDistance == -1 || distance < bestDistance)
+			{
+				bestDistance = distance;
+				bestCaret = caret;
+			}
+		}
+
+		return bestCaret;
+	}
+
+	Nullable<IGuiGraphicsParagraph::InlineObjectProperties> GuiRemoteGraphicsParagraph::GetInlineObjectFromPoint(Point point, vint& start, vint& length)
+	{
+		start = 0;
+		length = 0;
+
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return {};
+		}
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		vint requestId = messages.RequestDocumentParagraph_GetInlineObjectFromPoint(point);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		if (disconnected)
+		{
+			return {};
+		}
+
+		auto response = messages.RetrieveDocumentParagraph_GetInlineObjectFromPoint(requestId);
+		if (!response)
+		{
+			return {};
+		}
+
+		CaretRange range;
+		range.caretBegin = response.Value().caretBegin;
+		range.caretEnd = response.Value().caretEnd;
+
+		vint index = inlineObjectProperties.Keys().IndexOf(range);
+		if (index == -1)
+		{
+			return {};
+		}
+
+		start = RemoteTextPosToNativeTextPos(range.caretBegin);
+		length = RemoteTextPosToNativeTextPos(range.caretEnd) - start;
+		return inlineObjectProperties.Values()[index];
+	}
+
+	vint GuiRemoteGraphicsParagraph::GetNearestCaretFromTextPos(vint textPos, bool frontSide)
+	{
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return textPos;
+		}
+
+		remoteprotocol::GetCaretBoundsRequest request;
+		request.caret = NativeTextPosToRemoteTextPos(textPos);
+		request.frontSide = frontSide;
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		vint requestId = messages.RequestDocumentParagraph_GetNearestCaretFromTextPos(request);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		if (disconnected)
+		{
+			return textPos;
+		}
+
+		auto response = messages.RetrieveDocumentParagraph_GetNearestCaretFromTextPos(requestId);
+		return RemoteTextPosToNativeTextPos(response);
+	}
+
+	bool GuiRemoteGraphicsParagraph::IsValidCaret(vint caret)
+	{
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return false;
+		}
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		vint requestId = messages.RequestDocumentParagraph_IsValidCaret(NativeTextPosToRemoteTextPos(caret));
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		if (disconnected)
+		{
+			return false;
+		}
+
+		return messages.RetrieveDocumentParagraph_IsValidCaret(requestId);
+	}
+
+	bool GuiRemoteGraphicsParagraph::IsValidTextPos(vint textPos)
+	{
+		return 0 <= textPos && textPos <= text.Length();
 	}
 }
 
@@ -37427,10 +38617,10 @@ GuiRemoteEventDomDiffConverter
 	{
 	}
 
-	void GuiRemoteEventDomDiffConverter::OnControllerConnect()
+	void GuiRemoteEventDomDiffConverter::OnControllerConnect(const remoteprotocol::ControllerGlobalConfig& arguments)
 	{
 		lastDom = {};
-		TBase::OnControllerConnect();
+		TBase::OnControllerConnect(arguments);
 	}
 
 /***********************************************************************
@@ -39300,6 +40490,21 @@ Licensed under https ://github.com/vczh-libraries/License
 
 namespace vl::presentation::remoteprotocol
 {
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::CharacterEncoding>(const ::vl::presentation::remoteprotocol::CharacterEncoding & value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::CharacterEncoding>(const ::vl::presentation::remoteprotocol::CharacterEncoding&)#"
+		auto node = Ptr(new glr::json::JsonString);
+		switch (value)
+		{
+		case ::vl::presentation::remoteprotocol::CharacterEncoding::UTF8: node->content.value = WString::Unmanaged(L"UTF8"); break;
+		case ::vl::presentation::remoteprotocol::CharacterEncoding::UTF16: node->content.value = WString::Unmanaged(L"UTF16"); break;
+		case ::vl::presentation::remoteprotocol::CharacterEncoding::UTF32: node->content.value = WString::Unmanaged(L"UTF32"); break;
+		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+		}
+		return node;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult & value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult&)#"
@@ -39491,6 +40696,41 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition>(const ::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition & value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition>(const ::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition&)#"
+		auto node = Ptr(new glr::json::JsonString);
+		switch (value)
+		{
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::StickToPreviousRun: node->content.value = WString::Unmanaged(L"StickToPreviousRun"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::StickToNextRun: node->content.value = WString::Unmanaged(L"StickToNextRun"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::Alone: node->content.value = WString::Unmanaged(L"Alone"); break;
+		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+		}
+		return node;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition>(const ::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition & value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition>(const ::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition&)#"
+		auto node = Ptr(new glr::json::JsonString);
+		switch (value)
+		{
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::CaretFirst: node->content.value = WString::Unmanaged(L"CaretFirst"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::CaretLast: node->content.value = WString::Unmanaged(L"CaretLast"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::CaretLineFirst: node->content.value = WString::Unmanaged(L"CaretLineFirst"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::CaretLineLast: node->content.value = WString::Unmanaged(L"CaretLineLast"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::CaretMoveLeft: node->content.value = WString::Unmanaged(L"CaretMoveLeft"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::CaretMoveRight: node->content.value = WString::Unmanaged(L"CaretMoveRight"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::CaretMoveUp: node->content.value = WString::Unmanaged(L"CaretMoveUp"); break;
+		case ::vl::presentation::elements::IGuiGraphicsParagraph::CaretMoveDown: node->content.value = WString::Unmanaged(L"CaretMoveDown"); break;
+		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+		}
+		return node;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RendererType>(const ::vl::presentation::remoteprotocol::RendererType & value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RendererType>(const ::vl::presentation::remoteprotocol::RendererType&)#"
@@ -39508,8 +40748,7 @@ namespace vl::presentation::remoteprotocol
 		case ::vl::presentation::remoteprotocol::RendererType::SolidLabel: node->content.value = WString::Unmanaged(L"SolidLabel"); break;
 		case ::vl::presentation::remoteprotocol::RendererType::Polygon: node->content.value = WString::Unmanaged(L"Polygon"); break;
 		case ::vl::presentation::remoteprotocol::RendererType::ImageFrame: node->content.value = WString::Unmanaged(L"ImageFrame"); break;
-		case ::vl::presentation::remoteprotocol::RendererType::UnsupportedColorizedText: node->content.value = WString::Unmanaged(L"UnsupportedColorizedText"); break;
-		case ::vl::presentation::remoteprotocol::RendererType::UnsupportedDocument: node->content.value = WString::Unmanaged(L"UnsupportedDocument"); break;
+		case ::vl::presentation::remoteprotocol::RendererType::DocumentParagraph: node->content.value = WString::Unmanaged(L"DocumentParagraph"); break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;
@@ -39629,6 +40868,13 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"clientBounds", value.clientBounds);
 		ConvertCustomTypeToJsonField(node, L"scalingX", value.scalingX);
 		ConvertCustomTypeToJsonField(node, L"scalingY", value.scalingY);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ControllerGlobalConfig>(const ::vl::presentation::remoteprotocol::ControllerGlobalConfig & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"documentCaretFromEncoding", value.documentCaretFromEncoding);
 		return node;
 	}
 
@@ -39840,6 +41086,90 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::DocumentTextRunProperty>(const ::vl::presentation::remoteprotocol::DocumentTextRunProperty & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"textColor", value.textColor);
+		ConvertCustomTypeToJsonField(node, L"backgroundColor", value.backgroundColor);
+		ConvertCustomTypeToJsonField(node, L"fontProperties", value.fontProperties);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty>(const ::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"size", value.size);
+		ConvertCustomTypeToJsonField(node, L"baseline", value.baseline);
+		ConvertCustomTypeToJsonField(node, L"breakCondition", value.breakCondition);
+		ConvertCustomTypeToJsonField(node, L"backgroundElementId", value.backgroundElementId);
+		ConvertCustomTypeToJsonField(node, L"callbackId", value.callbackId);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::DocumentRun>(const ::vl::presentation::remoteprotocol::DocumentRun & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"caretBegin", value.caretBegin);
+		ConvertCustomTypeToJsonField(node, L"caretEnd", value.caretEnd);
+		ConvertCustomTypeToJsonField(node, L"props", value.props);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph>(const ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"id", value.id);
+		ConvertCustomTypeToJsonField(node, L"text", value.text);
+		ConvertCustomTypeToJsonField(node, L"wrapLine", value.wrapLine);
+		ConvertCustomTypeToJsonField(node, L"maxWidth", value.maxWidth);
+		ConvertCustomTypeToJsonField(node, L"alignment", value.alignment);
+		ConvertCustomTypeToJsonField(node, L"runsDiff", value.runsDiff);
+		ConvertCustomTypeToJsonField(node, L"createdInlineObjects", value.createdInlineObjects);
+		ConvertCustomTypeToJsonField(node, L"removedInlineObjects", value.removedInlineObjects);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretRequest>(const ::vl::presentation::remoteprotocol::GetCaretRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"caret", value.caret);
+		ConvertCustomTypeToJsonField(node, L"relativePosition", value.relativePosition);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretResponse>(const ::vl::presentation::remoteprotocol::GetCaretResponse & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"newCaret", value.newCaret);
+		ConvertCustomTypeToJsonField(node, L"preferFrontSide", value.preferFrontSide);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretBoundsRequest>(const ::vl::presentation::remoteprotocol::GetCaretBoundsRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"caret", value.caret);
+		ConvertCustomTypeToJsonField(node, L"frontSide", value.frontSide);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::OpenCaretRequest>(const ::vl::presentation::remoteprotocol::OpenCaretRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"caret", value.caret);
+		ConvertCustomTypeToJsonField(node, L"caretColor", value.caretColor);
+		ConvertCustomTypeToJsonField(node, L"frontSide", value.frontSide);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderInlineObjectRequest>(const ::vl::presentation::remoteprotocol::RenderInlineObjectRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"callbackId", value.callbackId);
+		ConvertCustomTypeToJsonField(node, L"location", value.location);
+		return node;
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RendererCreation>(const ::vl::presentation::remoteprotocol::RendererCreation & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
@@ -39957,6 +41287,18 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"imageMetadatas", value.imageMetadatas);
 		ConvertCustomTypeToJsonField(node, L"frames", value.frames);
 		return node;
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::CharacterEncoding>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::CharacterEncoding& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::CharacterEncoding>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::CharacterEncoding&)#"
+		auto jsonNode = node.Cast<glr::json::JsonString>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		if (jsonNode->content.value == L"UTF8") value = ::vl::presentation::remoteprotocol::CharacterEncoding::UTF8; else
+		if (jsonNode->content.value == L"UTF16") value = ::vl::presentation::remoteprotocol::CharacterEncoding::UTF16; else
+		if (jsonNode->content.value == L"UTF32") value = ::vl::presentation::remoteprotocol::CharacterEncoding::UTF32; else
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindowListener::HitTestResult>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindowListener::HitTestResult& value)
@@ -40117,6 +41459,35 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> void ConvertJsonToCustomType<::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition>(Ptr<JsonNode>, ::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition&)#"
+		auto jsonNode = node.Cast<glr::json::JsonString>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		if (jsonNode->content.value == L"StickToPreviousRun") value = ::vl::presentation::elements::IGuiGraphicsParagraph::StickToPreviousRun; else
+		if (jsonNode->content.value == L"StickToNextRun") value = ::vl::presentation::elements::IGuiGraphicsParagraph::StickToNextRun; else
+		if (jsonNode->content.value == L"Alone") value = ::vl::presentation::elements::IGuiGraphicsParagraph::Alone; else
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition>(Ptr<JsonNode>, ::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition&)#"
+		auto jsonNode = node.Cast<glr::json::JsonString>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		if (jsonNode->content.value == L"CaretFirst") value = ::vl::presentation::elements::IGuiGraphicsParagraph::CaretFirst; else
+		if (jsonNode->content.value == L"CaretLast") value = ::vl::presentation::elements::IGuiGraphicsParagraph::CaretLast; else
+		if (jsonNode->content.value == L"CaretLineFirst") value = ::vl::presentation::elements::IGuiGraphicsParagraph::CaretLineFirst; else
+		if (jsonNode->content.value == L"CaretLineLast") value = ::vl::presentation::elements::IGuiGraphicsParagraph::CaretLineLast; else
+		if (jsonNode->content.value == L"CaretMoveLeft") value = ::vl::presentation::elements::IGuiGraphicsParagraph::CaretMoveLeft; else
+		if (jsonNode->content.value == L"CaretMoveRight") value = ::vl::presentation::elements::IGuiGraphicsParagraph::CaretMoveRight; else
+		if (jsonNode->content.value == L"CaretMoveUp") value = ::vl::presentation::elements::IGuiGraphicsParagraph::CaretMoveUp; else
+		if (jsonNode->content.value == L"CaretMoveDown") value = ::vl::presentation::elements::IGuiGraphicsParagraph::CaretMoveDown; else
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RendererType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RendererType& value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RendererType>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::RendererType&)#"
@@ -40133,8 +41504,7 @@ namespace vl::presentation::remoteprotocol
 		if (jsonNode->content.value == L"SolidLabel") value = ::vl::presentation::remoteprotocol::RendererType::SolidLabel; else
 		if (jsonNode->content.value == L"Polygon") value = ::vl::presentation::remoteprotocol::RendererType::Polygon; else
 		if (jsonNode->content.value == L"ImageFrame") value = ::vl::presentation::remoteprotocol::RendererType::ImageFrame; else
-		if (jsonNode->content.value == L"UnsupportedColorizedText") value = ::vl::presentation::remoteprotocol::RendererType::UnsupportedColorizedText; else
-		if (jsonNode->content.value == L"UnsupportedDocument") value = ::vl::presentation::remoteprotocol::RendererType::UnsupportedDocument; else
+		if (jsonNode->content.value == L"DocumentParagraph") value = ::vl::presentation::remoteprotocol::RendererType::DocumentParagraph; else
 		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 #undef ERROR_MESSAGE_PREFIX
 	}
@@ -40313,6 +41683,19 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"clientBounds") ConvertJsonToCustomType(field->value, value.clientBounds); else
 			if (field->name.value == L"scalingX") ConvertJsonToCustomType(field->value, value.scalingX); else
 			if (field->name.value == L"scalingY") ConvertJsonToCustomType(field->value, value.scalingY); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ControllerGlobalConfig>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ControllerGlobalConfig& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ControllerGlobalConfig>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ControllerGlobalConfig&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"documentCaretFromEncoding") ConvertJsonToCustomType(field->value, value.documentCaretFromEncoding); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -40646,6 +42029,144 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentTextRunProperty>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::DocumentTextRunProperty& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentTextRunProperty>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::DocumentTextRunProperty&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"textColor") ConvertJsonToCustomType(field->value, value.textColor); else
+			if (field->name.value == L"backgroundColor") ConvertJsonToCustomType(field->value, value.backgroundColor); else
+			if (field->name.value == L"fontProperties") ConvertJsonToCustomType(field->value, value.fontProperties); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"size") ConvertJsonToCustomType(field->value, value.size); else
+			if (field->name.value == L"baseline") ConvertJsonToCustomType(field->value, value.baseline); else
+			if (field->name.value == L"breakCondition") ConvertJsonToCustomType(field->value, value.breakCondition); else
+			if (field->name.value == L"backgroundElementId") ConvertJsonToCustomType(field->value, value.backgroundElementId); else
+			if (field->name.value == L"callbackId") ConvertJsonToCustomType(field->value, value.callbackId); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentRun>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::DocumentRun& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentRun>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::DocumentRun&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"caretBegin") ConvertJsonToCustomType(field->value, value.caretBegin); else
+			if (field->name.value == L"caretEnd") ConvertJsonToCustomType(field->value, value.caretEnd); else
+			if (field->name.value == L"props") ConvertJsonToCustomType(field->value, value.props); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
+			if (field->name.value == L"text") ConvertJsonToCustomType(field->value, value.text); else
+			if (field->name.value == L"wrapLine") ConvertJsonToCustomType(field->value, value.wrapLine); else
+			if (field->name.value == L"maxWidth") ConvertJsonToCustomType(field->value, value.maxWidth); else
+			if (field->name.value == L"alignment") ConvertJsonToCustomType(field->value, value.alignment); else
+			if (field->name.value == L"runsDiff") ConvertJsonToCustomType(field->value, value.runsDiff); else
+			if (field->name.value == L"createdInlineObjects") ConvertJsonToCustomType(field->value, value.createdInlineObjects); else
+			if (field->name.value == L"removedInlineObjects") ConvertJsonToCustomType(field->value, value.removedInlineObjects); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::GetCaretRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"caret") ConvertJsonToCustomType(field->value, value.caret); else
+			if (field->name.value == L"relativePosition") ConvertJsonToCustomType(field->value, value.relativePosition); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretResponse>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretResponse& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretResponse>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::GetCaretResponse&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"newCaret") ConvertJsonToCustomType(field->value, value.newCaret); else
+			if (field->name.value == L"preferFrontSide") ConvertJsonToCustomType(field->value, value.preferFrontSide); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretBoundsRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretBoundsRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"caret") ConvertJsonToCustomType(field->value, value.caret); else
+			if (field->name.value == L"frontSide") ConvertJsonToCustomType(field->value, value.frontSide); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::OpenCaretRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::OpenCaretRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::OpenCaretRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::OpenCaretRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"caret") ConvertJsonToCustomType(field->value, value.caret); else
+			if (field->name.value == L"caretColor") ConvertJsonToCustomType(field->value, value.caretColor); else
+			if (field->name.value == L"frontSide") ConvertJsonToCustomType(field->value, value.frontSide); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderInlineObjectRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderInlineObjectRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderInlineObjectRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::RenderInlineObjectRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"callbackId") ConvertJsonToCustomType(field->value, value.callbackId); else
+			if (field->name.value == L"location") ConvertJsonToCustomType(field->value, value.location); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RendererCreation>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RendererCreation& value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RendererCreation>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::RendererCreation&)#"
@@ -40918,7 +42439,13 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::Opened()
 	{
-		events->OnControllerConnect();
+		vl::presentation::remoteprotocol::ControllerGlobalConfig globalConfig;
+#if defined VCZH_WCHAR_UTF16
+		globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF16;
+#elif defined VCZH_WCHAR_UTF32
+		globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF32;
+#endif
+		events->OnControllerConnect(globalConfig);
 	}
 
 	void GuiRemoteRendererSingle::BeforeClosing(bool& cancel)
@@ -41834,6 +43361,50 @@ namespace vl::presentation::remote_renderer
 			}
 		}
 #undef ERROR_MESSAGE_PREFIX
+	}
+
+/***********************************************************************
+* Rendering (Elements -- Document)
+***********************************************************************/
+
+	void GuiRemoteRendererSingle::RequestRendererUpdateElement_DocumentParagraph(vint id, const remoteprotocol::ElementDesc_DocumentParagraph& arguments)
+	{
+		CHECK_FAIL(L"Not implemented.");
+	}
+
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetCaret(vint id, const remoteprotocol::GetCaretRequest& arguments)
+	{
+		CHECK_FAIL(L"Not implemented.");
+	}
+
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetCaretBounds(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments)
+	{
+		CHECK_FAIL(L"Not implemented.");
+	}
+
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetInlineObjectFromPoint(vint id, const Point& arguments)
+	{
+		CHECK_FAIL(L"Not implemented.");
+	}
+
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetNearestCaretFromTextPos(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments)
+	{
+		CHECK_FAIL(L"Not implemented.");
+	}
+
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_IsValidCaret(vint id, const vint& arguments)
+	{
+		CHECK_FAIL(L"Not implemented.");
+	}
+
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_OpenCaret(const remoteprotocol::OpenCaretRequest& arguments)
+	{
+		CHECK_FAIL(L"Not implemented.");
+	}
+
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_CloseCaret()
+	{
+		CHECK_FAIL(L"Not implemented.");
 	}
 
 /***********************************************************************

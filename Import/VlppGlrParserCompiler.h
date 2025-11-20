@@ -219,7 +219,8 @@ ParserSymbolManager
 				ErrorList					errors;
 			public:
 				WString						name;
-				StringItems					includes;
+				StringItems					astIncludes;
+				StringItems					syntaxIncludes;
 				StringItems					cppNss;
 				WString						headerGuard;
 

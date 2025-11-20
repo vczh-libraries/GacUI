@@ -1393,6 +1393,50 @@ IGuiRemoteProtocolMessages (Elements - Image)
 #undef ERROR_MESSAGE_PREFIX
 		}
 
+/***********************************************************************
+IGuiRemoteProtocolMessages (Elements - Document)
+***********************************************************************/
+
+		void RequestRendererUpdateElement_DocumentParagraph(vint id, const remoteprotocol::ElementDesc_DocumentParagraph& arguments) override
+		{
+			CHECK_FAIL(L"Not implemented.");
+		}
+
+		void RequestDocumentParagraph_GetCaret(vint id, const remoteprotocol::GetCaretRequest& arguments) override
+		{
+			CHECK_FAIL(L"Not implemented.");
+		}
+
+		void RequestDocumentParagraph_GetCaretBounds(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments) override
+		{
+			CHECK_FAIL(L"Not implemented.");
+		}
+
+		void RequestDocumentParagraph_GetInlineObjectFromPoint(vint id, const Point& arguments) override
+		{
+			CHECK_FAIL(L"Not implemented.");
+		}
+
+		void RequestDocumentParagraph_GetNearestCaretFromTextPos(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments) override
+		{
+			CHECK_FAIL(L"Not implemented.");
+		}
+
+		void RequestDocumentParagraph_IsValidCaret(vint id, const vint& arguments) override
+		{
+			CHECK_FAIL(L"Not implemented.");
+		}
+
+		void RequestDocumentParagraph_OpenCaret(const remoteprotocol::OpenCaretRequest& arguments) override
+		{
+			CHECK_FAIL(L"Not implemented.");
+		}
+
+		void RequestDocumentParagraph_CloseCaret() override
+		{
+			CHECK_FAIL(L"Not implemented.");
+		}
+
 #undef REQUEST_RENDERER_UPDATE_ELEMENT
 #undef REQUEST_RENDERER_UPDATE_ELEMENT2
 	};
@@ -1697,7 +1741,15 @@ void GacUIUnitTest_StartFast_WithResourceAsText(
 		const vl::presentation::unittest::UnitTestMainFunc& previousMainProxy
 		)
 	{
-		protocol->GetEvents()->OnControllerConnect();
+		{
+			vl::presentation::remoteprotocol::ControllerGlobalConfig globalConfig;
+#if defined VCZH_WCHAR_UTF16
+			globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF16;
+#elif defined VCZH_WCHAR_UTF32
+			globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF32;
+#endif
+			protocol->GetEvents()->OnControllerConnect(globalConfig);
+		}
 		auto theme = vl::Ptr(new TTheme);
 		vl::presentation::theme::RegisterTheme(theme);
 		{
