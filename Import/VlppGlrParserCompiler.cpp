@@ -3131,41 +3131,6 @@ CreateParserGenRuleAst
 				_ReuseClause->CreateProp(L"assignments")->SetPropType(AstPropType::Array, L"Assignment");
 
 				///////////////////////////////////////////////////////////////////////////////////
-				// Left Recursion Clauses
-				///////////////////////////////////////////////////////////////////////////////////
-
-				auto _Lrp = _ast->CreateClass(L"LeftRecursionPlaceholder");
-				_Lrp->CreateProp(L"flag")->SetPropType(AstPropType::Token);
-
-				auto _LrpClause = _ast->CreateClass(L"LeftRecursionPlaceholderClause");
-				_LrpClause->SetBaseClass(L"Clause");
-				_LrpClause->CreateProp(L"flags")->SetPropType(AstPropType::Array, L"LeftRecursionPlaceholder");
-
-				auto LriConfig = _ast->CreateEnum(L"LeftRecursionConfiguration");
-				LriConfig->CreateItem(L"Single");
-				LriConfig->CreateItem(L"Multiple");
-
-				auto LriContinuationType = _ast->CreateEnum(L"LeftRecursionInjectContinuationType");
-				LriContinuationType->CreateItem(L"Optional");
-				LriContinuationType->CreateItem(L"Required");
-
-				auto _LriContinuation = _ast->CreateClass(L"LeftRecursionInjectContinuation");
-				auto _LriClause = _ast->CreateClass(L"LeftRecursionInjectClause");
-
-				_LriContinuation->CreateProp(L"flags")->SetPropType(AstPropType::Array, L"LeftRecursionPlaceholder");
-				_LriContinuation->CreateProp(L"configuration")->SetPropType(AstPropType::Type, L"LeftRecursionConfiguration");
-				_LriContinuation->CreateProp(L"type")->SetPropType(AstPropType::Type, L"LeftRecursionInjectContinuationType");
-				_LriContinuation->CreateProp(L"injectionTargets")->SetPropType(AstPropType::Array, L"LeftRecursionInjectClause");
-
-				_LriClause->SetBaseClass(L"Clause");
-				_LriClause->CreateProp(L"rule")->SetPropType(AstPropType::Type, L"RefSyntax");
-				_LriClause->CreateProp(L"continuation")->SetPropType(AstPropType::Type, L"LeftRecursionInjectContinuation");
-
-				auto _PmClause = _ast->CreateClass(L"PrefixMergeClause");
-				_PmClause->SetBaseClass(L"Clause");
-				_PmClause->CreateProp(L"rule")->SetPropType(AstPropType::Type, L"RefSyntax");
-
-				///////////////////////////////////////////////////////////////////////////////////
 				// Rule
 				///////////////////////////////////////////////////////////////////////////////////
 
@@ -3644,10 +3609,6 @@ CreateParserGenAst
 				manager.CreateToken(L"POSITIVE", L"/+");
 				manager.CreateToken(L"NEGATIVE", L"-");
 
-				manager.CreateToken(L"LS_PH", L"left_recursion_placeholder");
-				manager.CreateToken(L"LS_I", L"left_recursion_inject");
-				manager.CreateToken(L"LS_IM", L"left_recursion_inject_multiple");
-				manager.CreateToken(L"LS_PM", L"prefix_merge");
 				manager.CreateToken(L"ID", L"[a-zA-Z_][a-zA-Z0-9_]*");
 				manager.CreateToken(L"STRING", L"(\"[^\"]*\")+");
 				manager.CreateToken(L"CONDITIONAL_LITERAL", L"(\'[^\']*\')+");
@@ -3967,10 +3928,8 @@ namespace vl
 			extern void					CalculateFirstSet(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile);
 			extern void					ValidateTypes(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile);
 			extern void					ValidateStructure(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile);
-			extern void					ValidatePrefixMerge(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile);
 
 			extern Ptr<GlrSyntaxFile>	RewriteSyntax_Switch(VisitorContext& context, VisitorSwitchContext& sContext, SyntaxSymbolManager& syntaxManager, Ptr<GlrSyntaxFile> syntaxFile);
-			extern Ptr<GlrSyntaxFile>	RewriteSyntax_PrefixMerge(VisitorContext& context, SyntaxSymbolManager& syntaxManager, Ptr<GlrSyntaxFile> syntaxFile);
 			extern void					CompileSyntax(VisitorContext& context, Ptr<CppParserGenOutput> output, Ptr<GlrSyntaxFile> syntaxFile);
 
 /***********************************************************************
@@ -3980,14 +3939,6 @@ CompileSyntax
 			bool NeedRewritten_Switch(Ptr<GlrSyntaxFile> syntaxFile)
 			{
 				return syntaxFile->switches.Count() > 0;
-			}
-
-			bool NeedRewritten_PrefixMerge(Ptr<GlrSyntaxFile> syntaxFile)
-			{
-				return !From(syntaxFile->rules)
-					.SelectMany([](auto rule) { return From(rule->clauses); })
-					.FindType<GlrPrefixMergeClause>()
-					.IsEmpty();
 			}
 
 			void CreateSyntaxSymbols(LexerSymbolManager& lexerManager, SyntaxSymbolManager& syntaxManager, vint fileIndex, Ptr<GlrSyntaxFile> syntaxFile)
@@ -4012,20 +3963,6 @@ CompileSyntax
 							rule->codeRange
 							);
 					}
-
-					for (auto clause : rule->clauses)
-					{
-						if (auto lrpClause = clause.Cast<GlrLeftRecursionPlaceholderClause>())
-						{
-							for (auto flag : lrpClause->flags)
-							{
-								if (!syntaxManager.lrpFlags.Contains(flag->flag.value))
-								{
-									syntaxManager.lrpFlags.Add(flag->flag.value);
-								}
-							}
-						}
-					}
 				}
 			}
 
@@ -4046,7 +3983,7 @@ CompileSyntax
 				return true;
 			}
 
-			bool VerifySyntax_UntilPrefixMerge(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile)
+			bool VerifySyntax_UntilCompile(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile)
 			{
 				CalculateFirstSet(context, syntaxFile);
 				if (context.syntaxManager.Global().Errors().Count() > 0) return false;
@@ -4055,9 +3992,6 @@ CompileSyntax
 				if (context.syntaxManager.Global().Errors().Count() > 0) return false;
 
 				ValidateStructure(context, syntaxFile);
-				if (context.syntaxManager.Global().Errors().Count() > 0) return false;
-
-				ValidatePrefixMerge(context, syntaxFile);
 				if (context.syntaxManager.Global().Errors().Count() > 0) return false;
 
 				return true;
@@ -4087,22 +4021,11 @@ CompileSyntax
 					if (context.syntaxManager.Global().Errors().Count() > 0) goto FINISHED_COMPILING;
 				}
 
-				if (NeedRewritten_PrefixMerge(syntaxFile))
 				{
 					VisitorContext context(astManager, lexerManager, syntaxManager);
 					VisitorSwitchContext sContext;
 					if (!VerifySyntax_UntilSwitch(context, sContext, syntaxFile)) goto FINISHED_COMPILING;
-					if (!VerifySyntax_UntilPrefixMerge(context, syntaxFile)) goto FINISHED_COMPILING;
-
-					syntaxFile = RewriteSyntax_PrefixMerge(context, syntaxManager, syntaxFile);
-					if (context.syntaxManager.Global().Errors().Count() > 0) goto FINISHED_COMPILING;
-				}
-
-				{
-					VisitorContext context(astManager, lexerManager, syntaxManager);
-					VisitorSwitchContext sContext;
-					if (!VerifySyntax_UntilSwitch(context, sContext, syntaxFile)) goto FINISHED_COMPILING;
-					if (!VerifySyntax_UntilPrefixMerge(context, syntaxFile)) goto FINISHED_COMPILING;
+					if (!VerifySyntax_UntilCompile(context, syntaxFile)) goto FINISHED_COMPILING;
 					CompileSyntax(context, output, syntaxFile);
 				}
 			FINISHED_COMPILING:
@@ -4156,29 +4079,6 @@ DirectFirstSetVisitor
 					return context.syntaxManager.Rules().Values()[index];
 				}
 
-				void AddStartLiteral(const ParsingToken& literal)
-				{
-					context.ruleBeginsWithLiteral.Add(ruleSymbol, literal);
-					context.clauseBeginsWithLiteral.Add(currentClause, literal);
-				}
-
-				void AddStartTokenOrRule(const ParsingToken& literal)
-				{
-					if (auto startRule = TryGetRuleSymbol(literal.value))
-					{
-						context.directStartRules.Add(ruleSymbol, { startRule,currentClause });
-						context.clauseToStartRules.Add(currentClause, startRule);
-						if (ruleSymbol == startRule && !context.leftRecursiveClauses.Contains(ruleSymbol, currentClause))
-						{
-							context.leftRecursiveClauses.Add(ruleSymbol, currentClause);
-						}
-					}
-					else
-					{
-						AddStartLiteral(literal);
-					}
-				}
-
 			public:
 				DirectFirstSetVisitor(
 					VisitorContext& _context,
@@ -4202,20 +4102,11 @@ DirectFirstSetVisitor
 
 				void Visit(GlrRefSyntax* node) override
 				{
-					if (node->refType == GlrRefType::Id)
-					{
-						AddStartTokenOrRule(node->literal);
-					}
-					else
-					{
-						AddStartLiteral(node->literal);
-					}
 					couldBeEmpty = false;
 				}
 
 				void Visit(GlrUseSyntax* node) override
 				{
-					AddStartTokenOrRule(node->name);
 					couldBeEmpty = false;
 				}
 
@@ -4278,30 +4169,7 @@ DirectFirstSetVisitor
 						auto nodeSyntax = node->syntax.Obj();
 						auto pushSyntax = dynamic_cast<GlrPushConditionSyntax*>(nodeSyntax);
 						if (pushSyntax) nodeSyntax = pushSyntax->syntax.Obj();
-
-						if (auto useSyntax = dynamic_cast<GlrUseSyntax*>(nodeSyntax))
-						{
-							if (auto startRule = TryGetRuleSymbol(useSyntax->name.value))
-							{
-								context.directSimpleUseRules.Add(ruleSymbol, { startRule,currentClause });
-								context.simpleUseClauseToReferencedRules.Add(currentClause, startRule);
-							}
-						}
 					}
-				}
-
-				void Visit(GlrLeftRecursionPlaceholderClause* node) override
-				{
-				}
-
-				void Visit(GlrLeftRecursionInjectClause* node) override
-				{
-					node->rule->Accept(this);
-				}
-
-				void Visit(GlrPrefixMergeClause* node) override
-				{
-					node->rule->Accept(this);
 				}
 			};
 
@@ -4320,74 +4188,6 @@ CalculateFirstSet
 						visitor.VisitClause(clause);
 					}
 				}
-			}
-
-			void CalculateFirstSet_RuleClosure(const RulePathDependencies& direct, RulePathDependencies& indirect, PathToLastRuleMap& pathToLastRules)
-			{
-				for (auto [rule, index] : indexed(direct.Keys()))
-				{
-					auto&& startRules = direct.GetByIndex(index);
-					for (auto [startRule, clause] : startRules)
-					{
-						indirect.Add(rule, { startRule,clause });
-						pathToLastRules.Add({ rule,startRule }, { rule,clause });
-					}
-				}
-
-				while (true)
-				{
-					vint offset = 0;
-					// TODO: (enumerable) foreach:alterable
-					for (auto [rule, index] : indexed(indirect.Keys()))
-					{
-						auto&& startRules1 = indirect.GetByIndex(index);
-						for (auto [startRule1, clause1] : startRules1)
-						{
-							if (rule == startRule1) continue;
-							vint index2 = direct.Keys().IndexOf(startRule1);
-							if (index2 != -1)
-							{
-								auto&& startRules2 = direct.GetByIndex(index2);
-								for (auto [startRule2, clause2] : startRules2)
-								{
-									if (rule == startRule2 || startRule1 == startRule2) continue;
-									if (!pathToLastRules.Contains({ rule,startRule2 }, { startRule1,clause2 }))
-									{
-										offset++;
-										if (!indirect.Contains(rule, { startRule2,clause2 }))
-										{
-											indirect.Add(rule, { startRule2,clause2 });
-										}
-										pathToLastRules.Add({ rule,startRule2 }, { startRule1,clause2 });
-									}
-								}
-							}
-						}
-					}
-
-					if (offset == 0)
-					{
-						break;
-					}
-				}
-			}
-
-			void CalculateFirstSet_IndirectStartRules(VisitorContext& context)
-			{
-				CalculateFirstSet_RuleClosure(
-					context.directStartRules,
-					context.indirectStartRules,
-					context.indirectStartPathToLastRules
-					);
-			}
-
-			void CalculateFirstSet_IndirectSimpleUseRules(VisitorContext& context)
-			{
-				CalculateFirstSet_RuleClosure(
-					context.directSimpleUseRules,
-					context.indirectSimpleUseRules,
-					context.indirectSimpleUsePathToLastRules
-					);
 			}
 
 			template<typename TClause>
@@ -4413,35 +4213,9 @@ CalculateFirstSet
 				}
 			}
 
-			void CalculateFirstSet_IndirectLrpPmClauses(VisitorContext& context)
-			{
-				for (auto [rule, index] : indexed(context.indirectStartRules.Keys()))
-				{
-					SortedList<GlrLeftRecursionInjectClause*> lriClauses;
-					SortedList<GlrLeftRecursionPlaceholderClause*> lrpClauses;
-					SortedList<GlrPrefixMergeClause*> pmClauses;
-
-					CalculateFirstSet_MoveFromDirectClauses(lriClauses, context.indirectLriClauses, context.directLriClauses, rule, rule);
-					CalculateFirstSet_MoveFromDirectClauses(lrpClauses, context.indirectLrpClauses, context.directLrpClauses, rule, rule);
-					CalculateFirstSet_MoveFromDirectClauses(pmClauses, context.indirectPmClauses, context.directPmClauses, rule, rule);
-
-					auto&& startRules = context.indirectStartRules.GetByIndex(index);
-
-					for (auto startRule : startRules)
-					{
-						CalculateFirstSet_MoveFromDirectClauses(lriClauses, context.indirectLriClauses, context.directLriClauses, rule, startRule.ruleSymbol);
-						CalculateFirstSet_MoveFromDirectClauses(lrpClauses, context.indirectLrpClauses, context.directLrpClauses, rule, startRule.ruleSymbol);
-						CalculateFirstSet_MoveFromDirectClauses(pmClauses, context.indirectPmClauses, context.directPmClauses, rule, startRule.ruleSymbol);
-					}
-				}
-			}
-
 			void CalculateFirstSet(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile)
 			{
 				CalculateFirstSet_DirectStartRules(context, syntaxFile);
-				CalculateFirstSet_IndirectStartRules(context);
-				CalculateFirstSet_IndirectSimpleUseRules(context);
-				CalculateFirstSet_IndirectLrpPmClauses(context);
 			}
 		}
 	}
@@ -4792,6 +4566,19 @@ CompileSyntaxVisitor
 					node->Accept(this);
 					return result;
 				}
+
+				StatePair BuildAssignments(StatePair pair, List<Ptr<GlrAssignment>>& assignments)
+				{
+					for (auto node : assignments)
+					{
+						auto propSymbol = FindPropSymbol(clauseType, node->field.value);
+						auto enumSymbol = dynamic_cast<AstEnumSymbol*>(propSymbol->propSymbol);
+						auto enumItem = (vint32_t)enumSymbol->ItemOrder().IndexOf(node->value.value);
+						auto field = output->fieldIds[propSymbol];
+						pair = automatonBuilder.BuildAssignment(pair, enumItem, field, (node->type == GlrAssignmentType::Weak));
+					}
+					return pair;
+				}
 			public:
 				CompileSyntaxVisitor(
 					VisitorContext& _context,
@@ -4844,7 +4631,17 @@ CompileSyntaxVisitor
 								auto rule = context.syntaxManager.Rules().Values()[index];
 								if (rule->isPartial)
 								{
-									result = automatonBuilder.BuildPartialRuleSyntax(rule);
+									auto astRule = context.astRules[rule];
+									List<Func<StatePair()>> elements;
+									for (auto clause : astRule->clauses)
+									{
+										auto partialClause = clause.Cast<GlrPartialClause>();
+										elements.Add([this, partialClause]()
+										{
+											return BuildAssignments(Build(partialClause->syntax), partialClause->assignments);
+										});
+									}
+									result = automatonBuilder.BuildAlternativeSyntax(elements);
 								}
 								else if (field == -1)
 								{
@@ -4946,19 +4743,6 @@ CompileSyntaxVisitor
 				// GlrClause::IVisitor
 				////////////////////////////////////////////////////////////////////////
 
-				StatePair BuildAssignments(StatePair pair, List<Ptr<GlrAssignment>>& assignments)
-				{
-					for (auto node : assignments)
-					{
-						auto propSymbol = FindPropSymbol(clauseType, node->field.value);
-						auto enumSymbol = dynamic_cast<AstEnumSymbol*>(propSymbol->propSymbol);
-						auto enumItem = (vint32_t)enumSymbol->ItemOrder().IndexOf(node->value.value);
-						auto field = output->fieldIds[propSymbol];
-						pair = automatonBuilder.BuildAssignment(pair, enumItem, field, (node->type == GlrAssignmentType::Weak));
-					}
-					return pair;
-				}
-
 				void Visit(GlrCreateClause* node) override
 				{
 					clauseType = context.clauseTypes[node];
@@ -4973,13 +4757,7 @@ CompileSyntaxVisitor
 
 				void Visit(GlrPartialClause* node) override
 				{
-					clauseType = context.clauseTypes[node];
-					result = automatonBuilder.BuildClause([this, node]()
-					{
-						return automatonBuilder.BuildPartialClause(
-							[this, node]() { return BuildAssignments(Build(node->syntax), node->assignments); }
-							);
-					});
+					// Content of partial clauses are embedded in the caller side
 				}
 
 				void Visit(GlrReuseClause* node) override
@@ -4991,101 +4769,6 @@ CompileSyntaxVisitor
 							[this, node]() { return BuildAssignments(Build(node->syntax), node->assignments); }
 							);
 					});
-				}
-
-				WString FlagIndexToName(vint32_t flag)
-				{
-					return context.syntaxManager.lrpFlags[flag];
-				}
-
-				void CollectFlagsInOrder(SortedList<vint32_t>& flags, List<Ptr<GlrLeftRecursionPlaceholder>>& placeholders)
-				{
-					CopyFrom(
-						flags,
-						From(placeholders)
-							.Select([this](Ptr<GlrLeftRecursionPlaceholder> flag)
-							{
-								return (vint32_t)context.syntaxManager.lrpFlags.IndexOf(flag->flag.value);
-							})
-							.Distinct()
-						);
-				}
-
-				void Visit(GlrLeftRecursionPlaceholderClause* node) override
-				{
-					SortedList<vint32_t> flags;
-					CollectFlagsInOrder(flags, node->flags);
-
-					result = automatonBuilder.BuildClause([this, &flags]()
-					{
-						return automatonBuilder.BuildLrpClause(
-							flags,
-							{ this,&CompileSyntaxVisitor::FlagIndexToName }
-							);
-					});
-				}
-
-				using StateBuilder = Func<AutomatonBuilder::StatePair()>;
-
-				StateBuilder CompileLriTarget(SortedList<vint32_t>& flags, GlrLeftRecursionInjectClause* lriTarget)
-				{
-					StateBuilder useOrLriSyntax;
-					auto rule = context.syntaxManager.Rules()[lriTarget->rule->literal.value];
-					if (flags.Count() == 0)
-					{
-						useOrLriSyntax = [this, rule]() { return automatonBuilder.BuildUseSyntax(rule); };
-					}
-					else
-					{
-						useOrLriSyntax = [this, rule, &flags]() {
-							return automatonBuilder.BuildLriSyntax(
-								flags,
-								rule,
-								{ this,&CompileSyntaxVisitor::FlagIndexToName }
-								);
-							};
-					}
-
-					if (!lriTarget->continuation)
-					{
-						return useOrLriSyntax;
-					}
-					else
-					{
-						auto cont = lriTarget->continuation;
-						return [this, useOrLriSyntax, cont]()
-						{
-							bool optional = cont->type == GlrLeftRecursionInjectContinuationType::Optional;
-
-							SortedList<vint32_t> flags;
-							CollectFlagsInOrder(flags, cont->flags);
-
-							List<StateBuilder> targetRules;
-							for (auto lriTarget : cont->injectionTargets)
-							{
-								targetRules.Add(CompileLriTarget(flags, lriTarget.Obj()));
-							}
-
-							return automatonBuilder.BuildLriClauseSyntax(
-								useOrLriSyntax,
-								optional,
-								std::move(targetRules));
-						};
-					}
-				}
-
-				void Visit(GlrLeftRecursionInjectClause* node) override
-				{
-					result = automatonBuilder.BuildClause([this, node]()
-					{
-						SortedList<vint32_t> flags;
-						return automatonBuilder.BuildReuseClause(CompileLriTarget(flags, node));
-					});
-				}
-
-				void Visit(GlrPrefixMergeClause* node) override
-				{
-					CHECK_FAIL(L"GlrPrefixMergeClause should have been removed after RewriteSyntax_PrefixMerge()!");
 				}
 			};
 
@@ -5200,7 +4883,6 @@ ResolveNameVisitor
 
 				void ResolveClause(Ptr<GlrClause> clause)
 				{
-					context.clauseToRules.Add(clause.Obj(), ruleSymbol);
 					clause->Accept(this);
 				}
 
@@ -5479,7 +5161,6 @@ ResolveNameVisitor
 				{
 					if (auto classSymbol = GetRuleClass(node->type))
 					{
-						context.ruleKnownTypes.Add(ruleSymbol, classSymbol);
 						context.clauseTypes.Add(node, classSymbol);
 					}
 					node->syntax->Accept(this);
@@ -5489,7 +5170,6 @@ ResolveNameVisitor
 				{
 					if (auto classSymbol = GetRuleClass(node->type))
 					{
-						context.ruleKnownTypes.Add(ruleSymbol, classSymbol);
 						context.clauseTypes.Add(node, classSymbol);
 					}
 					node->syntax->Accept(this);
@@ -5499,46 +5179,6 @@ ResolveNameVisitor
 				{
 					reuseClause = node;
 					node->syntax->Accept(this);
-				}
-
-				void Visit(GlrLeftRecursionPlaceholderClause* node) override
-				{
-					for (auto flag : node->flags)
-					{
-						auto name = flag->flag.value;
-						if (!ruleSymbol->lrFlags.Contains(name))
-						{
-							ruleSymbol->lrFlags.Add(name);
-						}
-					}
-					context.directLrpClauses.Add(ruleSymbol, node);
-				}
-
-				void VisitLriClause(GlrLeftRecursionInjectClause* node)
-				{
-					VisitReuseSyntax(
-						node->rule->literal,
-						(!node->continuation || node->continuation->type == GlrLeftRecursionInjectContinuationType::Optional)
-						);
-					if (node->continuation)
-					{
-						for (auto lriTarget : node->continuation->injectionTargets)
-						{
-							VisitLriClause(lriTarget.Obj());
-						}
-					}
-				}
-
-				void Visit(GlrLeftRecursionInjectClause* node) override
-				{
-					VisitLriClause(node);
-					context.directLriClauses.Add(ruleSymbol, node);
-				}
-
-				void Visit(GlrPrefixMergeClause* node) override
-				{
-					VisitReuseSyntax(node->rule->literal, true);
-					context.directPmClauses.Add(ruleSymbol, node);
 				}
 			};
 
@@ -5637,1467 +5277,6 @@ ResolveName
 						}
 					}
 				}
-
-				if (context.directPmClauses.Count() > 0)
-				{
-					for (auto rule : syntaxFile->rules)
-					{
-						if (!IsLegalNameBeforeWithPrefixMerge(rule->name.value))
-						{
-							context.syntaxManager.AddError(
-								ParserErrorType::SyntaxInvolvesPrefixMergeWithIllegalRuleName,
-								rule->name.codeRange,
-								rule->name.value
-								);
-						}
-
-						for (auto lrp : From(rule->clauses).FindType<GlrLeftRecursionPlaceholderClause>())
-						{
-							for (auto p : lrp->flags)
-							{
-								if (!IsLegalNameBeforeWithPrefixMerge(p->flag.value))
-								{
-									context.syntaxManager.AddError(
-										ParserErrorType::SyntaxInvolvesPrefixMergeWithIllegalPlaceholderName,
-										p->flag.codeRange,
-										rule->name.value,
-										p->flag.value
-										);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-/***********************************************************************
-.\PARSERGEN\COMPILESYNTAX_REWRITESYNTAX_PREFIXMERGE.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace glr
-	{
-		namespace parsergen
-		{
-			using namespace collections;
-			using namespace compile_syntax;
-
-			extern void CalculateFirstSet_IndirectStartRules(VisitorContext& context);
-			extern void CalculateFirstSet_IndirectSimpleUseRules(VisitorContext& context);
-
-			namespace rewritesyntax_prefixmerge
-			{
-				struct RewritingPrefixConflict
-				{
-					// all clauses are simple use clauses, RuleSymbol* in values are the rule referenced by keys
-					SortedList<GlrClause*>									unaffectedClauses;		// clauses that are not affected by prefix extraction
-					SortedList<GlrClause*>									prefixClauses;			// simple use clauses that are prefix themselves
-					Group<GlrClause*, GlrClause*>							conflictedClauses;		// c1 -> c2 if c1's prefix is prefix clause c2
-				};
-
-				struct PrefixRuleWithClause
-				{
-					RuleSymbol*												ruleSymbol = nullptr;
-					GlrClause*												clause = nullptr;
-
-					bool operator==(PrefixRuleWithClause& p) const
-					{
-						return ruleSymbol == p.ruleSymbol && clause == p.clause;
-					}
-				};
-
-				struct RewritingContext
-				{
-					List<RuleSymbol*>										pmRules;				// all rules that need to be rewritten
-					Dictionary<RuleSymbol*, GlrRule*>						skippedRules;			// skipped RuleSymbol -> GlrRule
-					SortedList<GlrClause*>									protectedSkippedClause;	// a simple use clause that belongs to one of the skipped rules
-					Dictionary<RuleSymbol*, GlrRule*>						originRules;			// rewritten RuleSymbol -> GlrRule ends with _LRI_Original, which is the same GlrRule object before rewritten
-					Dictionary<RuleSymbol*, GlrRule*>						lriRules;				// rewritten RuleSymbol -> GlrRule containing left_recursion_inject clauses
-					Dictionary<RuleSymbol*, GlrRule*>						fixedAstRules;			// RuleSymbol -> GlrRule relationship after rewritten
-
-					Group<RuleSymbol*, PrefixRuleWithClause>				extractPrefixClauses;	// RuleSymbol -> {rule to be extracted, clause begins with rule}
-					Dictionary<Pair<RuleSymbol*, RuleSymbol*>, GlrRule*>	extractedPrefixRules;	// {rewritten RuleSymbol, prefix RuleSymbol} -> GlrRule ends with _LRI_Prefix
-					Dictionary<RuleSymbol*, Ptr<RewritingPrefixConflict>>	extractedConflicts;		// rewritten RuleSymbol -> all needed information if prefix extraction affects how it generates left_recursion_inject clauses
-				};
-
-				Ptr<RewritingPrefixConflict> GetConflict(const RewritingContext& rContext, RuleSymbol* ruleSymbol)
-				{
-					vint indexConflict = rContext.extractedConflicts.Keys().IndexOf(ruleSymbol);
-					if (indexConflict == -1)
-					{
-						return nullptr;
-					}
-					else
-					{
-						return rContext.extractedConflicts.Values()[indexConflict];
-					}
-				}
-
-				Ptr<RewritingPrefixConflict> EnsureGetConflict(RewritingContext& rContext, RuleSymbol* ruleSymbol)
-				{
-					auto conflict = GetConflict(rContext, ruleSymbol);
-					if (!conflict)
-					{
-						conflict = Ptr(new RewritingPrefixConflict);
-						rContext.extractedConflicts.Add(ruleSymbol, conflict);
-					}
-					return conflict;
-				}
-
-/***********************************************************************
-FillMissingPrefixMergeClauses
-***********************************************************************/
-
-				void RemoveDirectReferences(RulePathDependencies& references, RuleSymbol* ruleSymbol, GlrClause* clause)
-				{
-					vint index = references.Keys().IndexOf(ruleSymbol);
-					if (index != -1)
-					{
-						auto&& values = const_cast<List<RuleClausePath>&>(references.GetByIndex(index));
-						// TODO: (enumerable) foreach:indexed(alterable(reversed))
-						for (vint i = values.Count() - 1; i >= 0; i--)
-						{
-							if (values[i].clause == clause)
-							{
-								values.RemoveAt(i);
-							}
-						}
-
-						if (values.Count() == 0)
-						{
-							references.Remove(ruleSymbol);
-						}
-					}
-				}
-
-				void FillMissingPrefixMergeClauses(VisitorContext& vContext, SyntaxSymbolManager& syntaxManager, Ptr<GlrSyntaxFile> rewritten)
-				{
-					// find position of thses clauses in rules
-					for (auto clauseRaw : vContext.clauseToConvertedToPrefixMerge)
-					{
-						auto ruleSymbol = vContext.clauseToRules[clauseRaw];
-						auto ruleRaw = vContext.astRules[ruleSymbol];
-						vint ruleIndex = rewritten->rules.IndexOf(ruleRaw);
-						vint clauseIndex = ruleRaw->clauses.IndexOf(clauseRaw);
-						auto clause = ruleRaw->clauses[clauseIndex];
-
-						// create new rule and replace the clause with prefix_merge
-						auto newRule = Ptr(new GlrRule);
-						rewritten->rules.Insert(ruleIndex, newRule);
-						newRule->codeRange = clauseRaw->codeRange;
-						newRule->name = ruleRaw->name;
-						newRule->name.value += L"_LRI_Isolated_" + itow(clauseIndex);
-						newRule->clauses.Add(clause);
-
-						auto newPM = Ptr(new GlrPrefixMergeClause);
-						newPM->codeRange = clauseRaw->codeRange;
-						ruleRaw->clauses[clauseIndex] = newPM;
-						{
-							auto startRule = Ptr(new GlrRefSyntax);
-							newPM->rule = startRule;
-
-							startRule->refType = GlrRefType::Id;
-							startRule->literal.value = newRule->name.value;
-						}
-
-						// remove direct references
-						RemoveDirectReferences(vContext.directStartRules, ruleSymbol, clause.Obj());
-						RemoveDirectReferences(vContext.directSimpleUseRules, ruleSymbol, clause.Obj());
-
-						// fix rule and clause symbols
-						auto newRuleSymbol = syntaxManager.CreateRule(
-							newRule->name.value,
-							ruleSymbol->fileIndex,
-							true,
-							ruleSymbol->isParser,
-							ruleRaw->name.codeRange
-						);
-						newRuleSymbol->isPartial = ruleSymbol->isPartial;
-						newRuleSymbol->ruleType = vContext.clauseTypes[clause.Obj()];
-						vContext.astRules.Add(newRuleSymbol, newRule.Obj());
-						vContext.clauseTypes.Add(newPM.Obj(), newRuleSymbol->ruleType);
-						vContext.clauseToRules.Set(clause.Obj(), newRuleSymbol);
-						vContext.clauseToRules.Add(newPM.Obj(), ruleSymbol);
-						vContext.clauseToStartRules.Add(newPM.Obj(), newRuleSymbol);
-
-						// fix	directPmClauses
-						//		indirectPmClauses
-						//		directStartRules
-						vContext.directPmClauses.Add(ruleSymbol, newPM.Obj());
-						vContext.indirectPmClauses.Add(ruleSymbol, newPM.Obj());
-						vContext.directStartRules.Add(ruleSymbol, { newRuleSymbol,newPM.Obj() });
-						for (auto key : syntaxManager.Rules().Values())
-						{
-							if (vContext.indirectStartPathToLastRules.Contains({ key,ruleSymbol }))
-							{
-								vContext.indirectPmClauses.Add(key, newPM.Obj());
-							}
-						}
-					}
-
-					// fix	indirectStartRules
-					//		indirectSimpleUseRules
-					//		indirectStartPathToLastRules
-					//		indirectSimpleUsePathToLastRules
-					vContext.indirectStartRules.Clear();
-					vContext.indirectSimpleUseRules.Clear();
-					vContext.indirectStartPathToLastRules.Clear();
-					vContext.indirectSimpleUsePathToLastRules.Clear();
-					CalculateFirstSet_IndirectStartRules(vContext);
-					CalculateFirstSet_IndirectSimpleUseRules(vContext);
-				}
-
-/***********************************************************************
-CollectSkippedTargets
-***********************************************************************/
-
-				void CollectSkippedTargets(const VisitorContext& vContext, RewritingContext& rContext, Ptr<GlrSyntaxFile> rewritten)
-				{
-					// when a rule
-					//   is not a prefix of a rewritten rule
-					//   has no direct prefix_merge clause
-					//   has only one clause which starts with prefix_merge clause
-					// skip rewriting it
-					// if the only clause of a skipped rule is a simple use clause referencing a rule to be rewritten
-					// the name it referenced should not be changed in RenamePrefix
-
-					List<RuleSymbol*> lastRemovedCandidates;
-					Dictionary<RuleSymbol*, GlrClause*> candidateProtectedClauses;
-
-					for (auto rule : rewritten->rules)
-					{
-						auto ruleSymbol = vContext.syntaxManager.Rules()[rule->name.value];
-						if (vContext.indirectPmClauses.Keys().Contains(ruleSymbol))
-						{
-							if (!vContext.directPmClauses.Keys().Contains(ruleSymbol))
-							{
-								GlrClause* uniqueQualifiedClause = nullptr;
-								for (auto clause : rule->clauses)
-								{
-									vint index = vContext.clauseToStartRules.Keys().IndexOf(clause.Obj());
-									if (index == -1) continue;
-							
-									auto&& startRules = vContext.clauseToStartRules.GetByIndex(index);
-									for (auto startRule : startRules)
-									{
-										if (vContext.indirectPmClauses.Keys().Contains(startRule))
-										{
-											if (!uniqueQualifiedClause)
-											{
-												uniqueQualifiedClause = clause.Obj();
-												break;
-											}
-											else
-											{
-												goto DO_NOT_SKIP;
-											}
-											break;
-										}
-									}
-								}
-
-								if (uniqueQualifiedClause)
-								{
-									rContext.skippedRules.Add(ruleSymbol, rule.Obj());
-									if (vContext.simpleUseClauseToReferencedRules.Keys().Contains(uniqueQualifiedClause))
-									{
-										candidateProtectedClauses.Add(ruleSymbol, uniqueQualifiedClause);
-									}
-								}
-								continue;
-							DO_NOT_SKIP:
-								lastRemovedCandidates.Add(ruleSymbol);
-							}
-						}
-					}
-
-					while (lastRemovedCandidates.Count() > 0)
-					{
-						List<RuleSymbol*> newRemovedCandidates;
-						for (auto ruleSymbol : lastRemovedCandidates)
-						{
-							vint indexStart = vContext.directStartRules.Keys().IndexOf(ruleSymbol);
-							if (indexStart != -1)
-							{
-								for (auto startRuleSymbol : vContext.directStartRules.GetByIndex(indexStart))
-								{
-									if (rContext.skippedRules.Keys().Contains(startRuleSymbol.ruleSymbol))
-									{
-										rContext.skippedRules.Remove(startRuleSymbol.ruleSymbol);
-										newRemovedCandidates.Add(startRuleSymbol.ruleSymbol);
-									}
-								}
-							}
-						}
-						CopyFrom(lastRemovedCandidates, newRemovedCandidates);
-					}
-
-					for (auto [ruleSymbol, rule] : rContext.skippedRules)
-					{
-						vint index = candidateProtectedClauses.Keys().IndexOf(ruleSymbol);
-						if (index != -1)
-						{
-							rContext.protectedSkippedClause.Add(candidateProtectedClauses.Values()[index]);
-						}
-					}
-				}
-
-/***********************************************************************
-CollectRewritingTargets
-***********************************************************************/
-
-				void CollectRewritingTargets(const VisitorContext& vContext, RewritingContext& rContext, Ptr<GlrSyntaxFile> rewritten)
-				{
-					for (auto rule : rewritten->rules)
-					{
-						auto ruleSymbol = vContext.syntaxManager.Rules()[rule->name.value];
-						if (vContext.indirectPmClauses.Keys().Contains(ruleSymbol))
-						{
-							if (rContext.skippedRules.Keys().Contains(ruleSymbol))
-							{
-								continue;
-							}
-							rContext.pmRules.Add(ruleSymbol);
-
-							vint indexStart = vContext.directStartRules.Keys().IndexOf(ruleSymbol);
-							vint indexSimpleUse = vContext.directSimpleUseRules.Keys().IndexOf(ruleSymbol);
-
-							if (indexStart != -1 && indexSimpleUse != -1)
-							{
-								// all clauses should be simple use to enable prefix detection
-								if (vContext.directSimpleUseRules.GetByIndex(indexSimpleUse).Count() != rule->clauses.Count()) continue;
-								Ptr<RewritingPrefixConflict> conflict;
-
-								for (auto [startRule, startClause] : vContext.directStartRules.GetByIndex(indexStart))
-								{
-									// prefix_merge clauses and left recursive clauses are not involved in prefix detection/extraction
-									if (dynamic_cast<GlrPrefixMergeClause*>(startClause)) continue;
-									if (vContext.leftRecursiveClauses.Contains(ruleSymbol, startClause)) continue;
-
-									// find all clause pair "!X" and "Y ...", see if X is a prefix of Y
-									for (auto [simpleUseRule, simpleUseClause] : vContext.directSimpleUseRules.GetByIndex(indexSimpleUse))
-									{
-										// ignore if X is Y
-										if (startRule == simpleUseRule) continue;
-
-										// ignore if X is not a prefix of Y
-										vint indexExtract = vContext.indirectStartPathToLastRules.Keys().IndexOf({ startRule,simpleUseRule });
-										if (indexExtract == -1) continue;
-
-										// ignore if Y ::= X directly or indirectly
-										for (auto [extractRule, extractClause] : vContext.indirectStartPathToLastRules.GetByIndex(indexExtract))
-										{
-											// ignore if Y ::= X directly or indirectly
-											if (vContext.directSimpleUseRules.Contains(extractRule, { simpleUseRule,extractClause })) continue;
-
-											// prefix extraction needed
-											if (!rContext.extractPrefixClauses.Contains(extractRule, { simpleUseRule,extractClause }))
-											{
-												rContext.extractPrefixClauses.Add(extractRule, { simpleUseRule,extractClause });
-											}
-
-											// fill conflict information for ruleSymbol
-											if (!conflict)
-											{
-												conflict = EnsureGetConflict(rContext, ruleSymbol);
-											}
-
-											if (!conflict->prefixClauses.Contains(simpleUseClause))
-											{
-												conflict->prefixClauses.Add(simpleUseClause);
-											}
-											if (!conflict->conflictedClauses.Contains(startClause, simpleUseClause))
-											{
-												conflict->conflictedClauses.Add(startClause, simpleUseClause);
-											}
-										}
-									}
-								}
-
-								if (conflict)
-								{
-									for (auto clause : rule->clauses)
-									{
-										if (!conflict->prefixClauses.Contains(clause.Obj()) && !conflict->conflictedClauses.Contains(clause.Obj()))
-										{
-											conflict->unaffectedClauses.Add(clause.Obj());
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-
-/***********************************************************************
-CreateRewrittenRules
-***********************************************************************/
-
-				void CreateRewrittenRules(const VisitorContext& vContext, RewritingContext& rContext, Ptr<GlrSyntaxFile> rewritten)
-				{
-					for (auto ruleSymbol : rContext.pmRules)
-					{
-						auto originRule = vContext.astRules[ruleSymbol];
-						rContext.originRules.Add(ruleSymbol, originRule);
-
-						auto lri = Ptr(new GlrRule);
-						rewritten->rules.Add(lri);
-						rContext.lriRules.Add(ruleSymbol, lri.Obj());
-
-						lri->codeRange = originRule->codeRange;
-						lri->attPublic = originRule->attPublic;
-						lri->attParser = originRule->attParser;
-						lri->codeRange = originRule->name.codeRange;
-						lri->name = originRule->name;
-
-						originRule->attPublic = {};
-						originRule->attParser = {};
-						originRule->name.value += L"_LRI_Original";
-					}
-
-					// TODO: (enumerable) foreach
-					for (auto [ruleSymbol, index] : indexed(rContext.extractPrefixClauses.Keys()))
-					{
-						auto originRule = vContext.astRules[ruleSymbol];
-						auto&& prefixClauses = rContext.extractPrefixClauses.GetByIndex(index);
-						for (auto [prefixRuleSymbol, prefixClause] : From(prefixClauses)
-							.OrderByKey([](auto&& p) {return p.ruleSymbol->Name(); }))
-						{
-							if (!rContext.extractedPrefixRules.Keys().Contains({ ruleSymbol,prefixRuleSymbol }))
-							{
-								auto ep = Ptr(new GlrRule);
-								rewritten->rules.Insert(rewritten->rules.IndexOf(originRule), ep);
-								rContext.extractedPrefixRules.Add({ ruleSymbol,prefixRuleSymbol }, ep.Obj());
-
-								ep->codeRange = originRule->codeRange;
-								ep->name.codeRange = originRule->name.codeRange;
-								ep->name.value = ruleSymbol->Name() + L"_" + prefixRuleSymbol->Name() + L"_LRI_Prefix";
-							}
-						}
-					}
-				}
-
-/***********************************************************************
-FixRuleTypes
-***********************************************************************/
-
-				void FixRuleTypes(const VisitorContext& vContext, RewritingContext& rContext, SyntaxSymbolManager& syntaxManager)
-				{
-					CopyFrom(rContext.fixedAstRules, vContext.astRules);
-					for (auto ruleSymbol : rContext.pmRules)
-					{
-						auto originRule = rContext.originRules[ruleSymbol];
-						auto lriRule = rContext.lriRules[ruleSymbol];
-						auto originSymbol = syntaxManager.CreateRule(
-							originRule->name.value,
-							ruleSymbol->fileIndex,
-							ruleSymbol->isPublic,
-							ruleSymbol->isParser,
-							originRule->codeRange
-							);
-
-						originSymbol->isPartial = ruleSymbol->isPartial;
-						originSymbol->ruleType = ruleSymbol->ruleType;
-						rContext.fixedAstRules.Set(originSymbol, originRule);
-						rContext.fixedAstRules.Set(ruleSymbol, lriRule);
-					}
-
-					for (auto [pair, epRule] : rContext.extractedPrefixRules)
-					{
-						auto originRule = rContext.originRules[pair.key];
-						auto epRuleSymbol = syntaxManager.CreateRule(
-							epRule->name.value,
-							pair.key->fileIndex,
-							false,
-							false,
-							originRule->codeRange
-							);
-						epRuleSymbol->ruleType = pair.value->ruleType;
-						rContext.fixedAstRules.Add(epRuleSymbol, epRule);
-					}
-
-					for (auto [ruleSymbol, rule] : rContext.fixedAstRules)
-					{
-						if (!rule->type)
-						{
-							rule->type.value = ruleSymbol->ruleType->Name();
-						}
-					}
-
-					for (auto ruleSymbol : syntaxManager.Rules().Values())
-					{
-						ruleSymbol->assignedNonArrayField = false;
-						ruleSymbol->lrFlags.Clear();
-					}
-				}
-
-/***********************************************************************
-RewriteExtractedPrefixRules
-***********************************************************************/
-
-				void RewriteExtractedPrefixRules(const VisitorContext& vContext, RewritingContext& rContext, SyntaxSymbolManager& syntaxManager)
-				{
-					for (auto [pair, epRule] : rContext.extractedPrefixRules)
-					{
-						{
-							auto lrpClause = Ptr(new GlrLeftRecursionPlaceholderClause);
-							lrpClause->codeRange = epRule->codeRange;
-							epRule->clauses.Add(lrpClause);
-
-							auto lrp = Ptr(new GlrLeftRecursionPlaceholder);
-							lrpClause->flags.Add(lrp);
-							lrp->flag.value = L"LRIP_" + pair.key->Name() + L"_" + pair.value->Name();
-							syntaxManager.lrpFlags.Add(lrp->flag.value);
-						}
-						{
-							auto reuseClause = Ptr(new GlrReuseClause);
-							reuseClause->codeRange = epRule->codeRange;
-							epRule->clauses.Add(reuseClause);
-
-							auto useSyntax = Ptr(new GlrUseSyntax);
-							reuseClause->syntax = useSyntax;
-							useSyntax->name.value = rContext.originRules[pair.value]->name.value;
-						}
-					}
-				}
-
-/***********************************************************************
-RewriteRules (Common)
-***********************************************************************/
-
-				using PMClauseRecord = GenericRuleClausePath<GlrPrefixMergeClause>;
-
-				struct PMInjectRecord
-				{
-					RuleSymbol*					pmRule = nullptr;
-					RuleSymbol*					injectIntoRule = nullptr;
-				};
-
-				void RewriteRules_AddPmClause(
-					const VisitorContext& vContext,
-					RuleSymbol* ruleSymbol,
-					GlrPrefixMergeClause* pmClause,
-					Group<WString, PMClauseRecord>& pmClauses
-				)
-				{
-					auto pmRule = vContext.clauseToRules[pmClause];
-					if (ruleSymbol == pmRule)
-					{
-						if (!pmClauses.Contains(pmClause->rule->literal.value, { ruleSymbol,pmClause }))
-						{
-							pmClauses.Add(pmClause->rule->literal.value, { ruleSymbol,pmClause });
-						}
-					}
-					else
-					{
-						for (auto [indirectStartRule, indirectClause] : vContext.indirectStartPathToLastRules[{ ruleSymbol, pmRule }])
-						{
-							if (!pmClauses.Contains(pmClause->rule->literal.value, { ruleSymbol,pmClause }))
-							{
-								pmClauses.Add(pmClause->rule->literal.value, { ruleSymbol,pmClause });
-							}
-						}
-					}
-				}
-
-				Ptr<RewritingPrefixConflict> RewriteRules_CollectUnaffectedIndirectPmClauses(
-					const VisitorContext& vContext,
-					const RewritingContext& rContext,
-					RuleSymbol* initiatedRuleSymbol,
-					RuleSymbol* ruleSymbol,
-					SortedList<RuleSymbol*>& visited,
-					Group<WString, PMClauseRecord>& pmClauses
-				)
-				{
-					auto conflict = initiatedRuleSymbol == ruleSymbol ? GetConflict(rContext, ruleSymbol) : nullptr;
-					if (!visited.Contains(ruleSymbol))
-					{
-						visited.Add(ruleSymbol);
-
-						if (conflict)
-						{
-							for (auto [simpleUseRule, simpleUseClause] : vContext.directSimpleUseRules[ruleSymbol])
-							{
-								if (conflict->unaffectedClauses.Contains(simpleUseClause))
-								{
-									RewriteRules_CollectUnaffectedIndirectPmClauses(vContext, rContext, initiatedRuleSymbol, simpleUseRule, visited, pmClauses);
-								}
-								else
-								{
-									vint indexConflicted = conflict->conflictedClauses.Keys().IndexOf(simpleUseClause);
-									if (indexConflicted == -1) continue;
-
-									auto&& prefixClauses = conflict->conflictedClauses.GetByIndex(indexConflicted);
-									for (auto pmClause :
-										From(vContext.indirectPmClauses[ruleSymbol]).Except(
-											From(prefixClauses)
-											.SelectMany([&](GlrClause* prefixClause)
-											{
-												return From(vContext.indirectPmClauses[vContext.simpleUseClauseToReferencedRules[prefixClause]]);
-											})
-										))
-									{
-										RewriteRules_AddPmClause(vContext, simpleUseRule, pmClause, pmClauses);
-									}
-								}
-							}
-						}
-						else
-						{
-							for (auto pmClause : vContext.indirectPmClauses[ruleSymbol])
-							{
-								RewriteRules_AddPmClause(vContext, ruleSymbol, pmClause, pmClauses);
-							}
-						}
-					}
-					return conflict;
-				}
-
-				void RewriteRules_CheckPath(
-					const VisitorContext& vContext,
-					RuleSymbol* startSymbol,
-					RuleSymbol* endSymbol,
-					bool& hasSimpleUseTransition,
-					bool& hasNonSimpleUseTransition
-				)
-				{
-					// check the path from startSymbol to endSymbol
-					// hasSimpleUseTransition and hasNonSimpleUseTransition must be false before non-recursive calling from outside
-					// if a transition is found
-					// either of one will be set to true
-					// meaning such transition is counted
-
-					bool isEndSymbolLeftRecursive = vContext.leftRecursiveClauses.Keys().Contains(endSymbol);
-					if (isEndSymbolLeftRecursive)
-					{
-						// if endSymbol is left recursive
-						// then we find a non-simple-use transition from startSymbol to endSymbol
-						hasNonSimpleUseTransition = true;
-					}
-
-					if (startSymbol == endSymbol)
-					{
-						// if startSymbol is endSymbol
-						// then we find a simple-use transition
-						// which does not actually transit
-						hasSimpleUseTransition = true;
-					}
-					else
-					{
-						// otherwise we look through all possible path from startSymbol to endSymbol
-						vint index = vContext.indirectStartPathToLastRules.Keys().IndexOf({ startSymbol,endSymbol });
-						if (index != -1)
-						{
-							for (auto [lastRuleSymbol, clause] : vContext.indirectStartPathToLastRules.GetByIndex(index))
-							{
-								if (vContext.simpleUseClauseToReferencedRules.Keys().Contains(clause))
-								{
-									// if we find a simple-use clause
-									// we check how all transitions look like from startSymbol to lastRuleSymbol
-									RewriteRules_CheckPath(vContext, startSymbol, lastRuleSymbol, hasSimpleUseTransition, hasNonSimpleUseTransition);
-								}
-								else
-								{
-									// if we find a non-simple-use clause
-									// then we find a non-simple-use transition from startSymbol to endSymbol
-									hasNonSimpleUseTransition = true;
-								}
-							}
-						}
-					}
-				}
-
-				void RewriteRules_CollectFlags(
-					const VisitorContext& vContext,
-					RuleSymbol* ruleSymbol,
-					const List<PMClauseRecord>& pmClauses,
-					Dictionary<WString, PMInjectRecord>& flags,
-					bool& generateOptionalLri
-				)
-				{
-					for (auto [injectIntoRule, pmClause] : pmClauses)
-					{
-						auto pmRule = vContext.clauseToRules[pmClause];
-						bool hasSimpleUseTransition = false;
-						bool hasNonSimpleUseTransition = false;
-						RewriteRules_CheckPath(vContext, ruleSymbol, pmRule, hasSimpleUseTransition, hasNonSimpleUseTransition);
-
-						if (hasSimpleUseTransition)
-						{
-							generateOptionalLri = true;
-						}
-
-						if (hasNonSimpleUseTransition)
-						{
-							flags.Add(L"LRI_" + pmRule->Name(), { pmRule,injectIntoRule });
-						}
-					}
-				}
-
-				bool RewriteRules_HasMultiplePaths(
-					const VisitorContext& vContext,
-					RuleSymbol* fromRule,
-					RuleSymbol* toRule,
-					Dictionary<Pair<RuleSymbol*, RuleSymbol*>, vint>& pathCounter
-				)
-				{
-					Pair<RuleSymbol*, RuleSymbol*> key = { fromRule, toRule };
-					vint index = pathCounter.Keys().IndexOf(key);
-					if (index != -1) return pathCounter.Values()[index];
-
-					RuleSymbol* currentRule = toRule;
-					bool hasMultiplePaths = false;
-
-					while (currentRule != fromRule)
-					{
-						index = vContext.indirectStartPathToLastRules.Keys().IndexOf({ fromRule,currentRule });
-						if (index == -1) goto FINISHED;
-
-						auto&& lastRules = vContext.indirectStartPathToLastRules.GetByIndex(index);
-						if (lastRules.Count() > 1) {
-							hasMultiplePaths = true;
-							goto FINISHED;
-						}
-						currentRule = lastRules[0].ruleSymbol;
-					}
-
-				FINISHED:
-					pathCounter.Add(key, hasMultiplePaths);
-					return hasMultiplePaths;
-				}
-
-/***********************************************************************
-RewriteRules (AST Creation)
-***********************************************************************/
-
-				Ptr<GlrLeftRecursionInjectClause> CreateLriClause(
-					const WString& ruleName
-				)
-				{
-					auto lriClause = Ptr(new GlrLeftRecursionInjectClause);
-
-					auto lriStartRule = Ptr(new GlrRefSyntax);
-					lriClause->rule = lriStartRule;
-					lriStartRule->refType = GlrRefType::Id;
-					lriStartRule->literal.value = ruleName;
-
-					return lriClause;
-				}
-
-				Ptr<GlrLeftRecursionInjectContinuation> CreateLriContinuation(
-					const VisitorContext& vContext,
-					const RewritingContext& rContext,
-					RuleSymbol* ruleSymbol,
-					const PMInjectRecord& pmInjectRecord,
-					const WString& flag,
-					Dictionary<Pair<RuleSymbol*, RuleSymbol*>, vint>& pathCounter,
-					bool generateOptionalLri
-				)
-				{
-					auto lriCont = Ptr(new GlrLeftRecursionInjectContinuation);
-
-					if (RewriteRules_HasMultiplePaths(vContext, ruleSymbol, pmInjectRecord.pmRule, pathCounter))
-					{
-						lriCont->configuration = GlrLeftRecursionConfiguration::Multiple;
-					}
-					else
-					{
-						lriCont->configuration = GlrLeftRecursionConfiguration::Single;
-					}
-
-					if (generateOptionalLri)
-					{
-						lriCont->type = GlrLeftRecursionInjectContinuationType::Optional;
-					}
-					else
-					{
-						lriCont->type = GlrLeftRecursionInjectContinuationType::Required;
-					}
-
-					auto lriContFlag = Ptr(new GlrLeftRecursionPlaceholder);
-					lriCont->flags.Add(lriContFlag);
-					lriContFlag->flag.value = flag;
-
-					vint injectIntoOriginIndex = rContext.originRules.Keys().IndexOf(pmInjectRecord.injectIntoRule);
-					auto lriContTargetName = injectIntoOriginIndex == -1
-						? pmInjectRecord.injectIntoRule->Name()
-						: rContext.originRules.Values()[injectIntoOriginIndex]->name.value
-						;
-					auto lriContTarget = CreateLriClause(lriContTargetName);
-					lriCont->injectionTargets.Add(lriContTarget);
-
-					return lriCont;
-				}
-
-/***********************************************************************
-RewriteRules (Unaffected)
-***********************************************************************/
-
-				void RewriteRules_GenerateUnaffectedLRIClauses(
-					const VisitorContext& vContext,
-					const RewritingContext& rContext,
-					RuleSymbol* ruleSymbol,
-					GlrRule* lriRule,
-					Dictionary<Pair<RuleSymbol*, RuleSymbol*>, vint>& pathCounter,
-					Group<WString, PMClauseRecord>& pmClauses,
-					SortedList<WString>& knownOptionalStartRules
-				)
-				{
-					// TODO: (enumerable) foreach on group
-					for (auto [pmName, pmIndex] : indexed(pmClauses.Keys()))
-					{
-						//   if originRule is not left recursive
-						//     do not generate lriClause for the flag created for originRule, because there is no continuation
-						//     if a pmName does generate some lriClause
-						//       it becomes GLRICT::Optional
-						//     otherwise
-						//       it becomse GLRICT::Required
-						//       generate useSyntax instead of lriClause
-
-						Dictionary<WString, PMInjectRecord> flags;
-						bool generateOptionalLri = false;
-						RewriteRules_CollectFlags(
-							vContext,
-							ruleSymbol,
-							pmClauses.GetByIndex(pmIndex),
-							flags,
-							generateOptionalLri
-							);
-
-						if (generateOptionalLri && flags.Count() == 0)
-						{
-							auto reuseClause = Ptr(new GlrReuseClause);
-							reuseClause->codeRange = lriRule->codeRange;
-							lriRule->clauses.Add(reuseClause);
-
-							auto useSyntax = Ptr(new GlrUseSyntax);
-							reuseClause->syntax = useSyntax;
-							useSyntax->name.value = pmName;
-						}
-
-						for (auto [flag, pmInjectRecord] : flags)
-						{
-							auto lriClause = CreateLriClause(pmName);
-							lriRule->clauses.Add(lriClause);
-
-							auto lriCont = CreateLriContinuation(
-								vContext,
-								rContext,
-								ruleSymbol,
-								pmInjectRecord,
-								flag,
-								pathCounter,
-								generateOptionalLri
-								);
-							lriClause->continuation = lriCont;
-
-							if (generateOptionalLri)
-							{
-								generateOptionalLri = false;
-								knownOptionalStartRules.Add(pmName);
-							}
-						}
-					}
-				}
-
-/***********************************************************************
-RewriteRules (Affected)
-***********************************************************************/
-
-				void RewriteRules_GenerateAffectedLRIClausesSubgroup(
-					const VisitorContext& vContext,
-					const RewritingContext& rContext,
-					RuleSymbol* conflictedRuleSymbol,
-					RuleSymbol* prefixRuleSymbol,
-					SortedList<WString>& lripFlags,
-					GlrRule* lriRule,
-					Dictionary<Pair<RuleSymbol*, RuleSymbol*>, vint>& pathCounter,
-					SortedList<WString>& knownOptionalStartRules
-				)
-				{
-					Group<WString, PMClauseRecord> pmClauses;
-					{
-						SortedList<RuleSymbol*> visited;
-						auto conflict = RewriteRules_CollectUnaffectedIndirectPmClauses(
-							vContext,
-							rContext,
-							prefixRuleSymbol,
-							prefixRuleSymbol,
-							visited,
-							pmClauses
-							);
-
-						if (conflict)
-						{
-							vContext.syntaxManager.AddError(
-								ParserErrorType::PrefixExtractionAffectedRuleReferencedAnother,
-								rContext.originRules[vContext.syntaxManager.Rules()[lriRule->name.value]]->codeRange,
-								lriRule->name.value,
-								conflictedRuleSymbol->Name(),
-								prefixRuleSymbol->Name()
-								);
-							return;
-						}
-					}
-
-					// TODO: (enumerable) foreach on group
-					for (auto [pmName, pmIndex] : indexed(pmClauses.Keys()))
-					{
-						//   if originRule is not left recursive
-						//     left_recursion_inject directly into conflictedRuleSymbol
-						//     if a pmName does generate some lriClause
-						//       it becomes GLRICT::Optional
-						//     otherwise
-						//       it becomse GLRICT::Required
-						//       generate useSyntax instead of lriClause
-
-						auto&& pmClauseRecords = pmClauses.GetByIndex(pmIndex);
-				
-						Dictionary<WString, PMInjectRecord> flags;
-						bool omittedSelf = false;
-						bool generateOptionalLri = false;
-						RewriteRules_CollectFlags(
-							vContext,
-							prefixRuleSymbol,
-							pmClauseRecords,
-							flags,
-							generateOptionalLri
-							);
-
-						if (generateOptionalLri)
-						{
-							// TODO: add test case for omittedSelf == true
-							for (auto lripFlag : lripFlags)
-							{
-								auto lriClause = CreateLriClause(pmName);
-								lriRule->clauses.Add(lriClause);
-
-								auto lriCont = CreateLriContinuation(
-									vContext,
-									rContext,
-									conflictedRuleSymbol,
-									{ prefixRuleSymbol,conflictedRuleSymbol },
-									lripFlag,
-									pathCounter,
-									false
-									);
-								lriClause->continuation = lriCont;
-							}
-						}
-
-						if (knownOptionalStartRules.Contains(pmName))
-						{
-							generateOptionalLri = false;
-						}
-
-						for (auto [flag, pmInjectRecord] : flags)
-						{
-							{
-								// Since there is no switches in pmClauses
-								// So there is no switches in pmInjectRecord as well
-								// because flags comes from pmClauses, collected by RewriteRules_CollectFlags above
-								auto lriClause = CreateLriClause(pmName);
-								lriRule->clauses.Add(lriClause);
-					
-								auto lriCont = CreateLriContinuation(
-									vContext,
-									rContext,
-									prefixRuleSymbol,
-									{ pmInjectRecord.pmRule,prefixRuleSymbol },
-									flag,
-									pathCounter,
-									generateOptionalLri
-									);
-								lriClause->continuation = lriCont;
-
-								for (auto lripFlag : lripFlags)
-								{
-									auto lriCont2 = CreateLriContinuation(
-										vContext,
-										rContext,
-										conflictedRuleSymbol,
-										{ prefixRuleSymbol,conflictedRuleSymbol },
-										lripFlag,
-										pathCounter,
-										true
-										);
-
-									auto branchStart = lriCont->injectionTargets[0];
-									if (branchStart->continuation)
-									{
-										// TODO: add test case
-										auto newBranchStart = CreateLriClause(branchStart->rule->literal.value);
-										newBranchStart->continuation = lriCont2;
-										lriCont->injectionTargets.Add(newBranchStart);
-									}
-									else
-									{
-										branchStart->continuation = lriCont2;
-									}
-								}
-
-								if (generateOptionalLri)
-								{
-									generateOptionalLri = false;
-								}
-							}
-						}
-					}
-				}
-
-				void RewriteRules_GenerateAffectedLRIClauses(
-					const VisitorContext& vContext,
-					const RewritingContext& rContext,
-					RuleSymbol* ruleSymbol,
-					GlrRule* lriRule,
-					Ptr<RewritingPrefixConflict> conflict,
-					Dictionary<Pair<RuleSymbol*, RuleSymbol*>, vint>& pathCounter,
-					SortedList<WString>& knownOptionalStartRules
-				)
-				{
-					// TODO: (enumerable) foreach on group
-					for (auto [conflictedClause, conflictedIndex] : indexed(conflict->conflictedClauses.Keys()))
-					{
-						auto conflictedRuleSymbol = vContext.simpleUseClauseToReferencedRules[conflictedClause];
-						auto&& prefixClauses = conflict->conflictedClauses.GetByIndex(conflictedIndex);
-						for (auto prefixClause : prefixClauses)
-						{
-							auto prefixRuleSymbol = vContext.simpleUseClauseToReferencedRules[prefixClause];
-							SortedList<WString> lripFlags;
-							for (auto extracted : vContext.indirectStartPathToLastRules[{conflictedRuleSymbol, prefixRuleSymbol}])
-							{
-								lripFlags.Add(L"LRIP_" + extracted.ruleSymbol->Name() + L"_" + prefixRuleSymbol->Name());
-							}
-							RewriteRules_GenerateAffectedLRIClausesSubgroup(
-								vContext,
-								rContext,
-								conflictedRuleSymbol,
-								prefixRuleSymbol,
-								lripFlags,
-								lriRule,
-								pathCounter,
-								knownOptionalStartRules
-								);
-						}
-					}
-				}
-
-/***********************************************************************
-RewriteRules
-***********************************************************************/
-
-				bool CompareLri(Ptr<GlrLeftRecursionInjectClause> c1, Ptr<GlrLeftRecursionInjectClause> c2);
-
-				bool CompareLriTargest(List<Ptr<GlrLeftRecursionInjectClause>>& targets1, List<Ptr<GlrLeftRecursionInjectClause>>& targets2)
-				{
-					if (targets1.Count() != targets2.Count()) return false;
-					for (auto [target, i] : indexed(targets1))
-					{
-						if (!CompareLri(targets1[i], targets2[i])) return false;
-					}
-					return true;
-				}
-
-				bool CompareLri(Ptr<GlrLeftRecursionInjectClause> c1, Ptr<GlrLeftRecursionInjectClause> c2)
-				{
-					if (c1->rule->literal.value != c2->rule->literal.value) return false;
-					if ((c1->continuation == nullptr) != (c2->continuation == nullptr)) return false;
-					if (!c1->continuation) return true;
-
-					auto cont1 = c1->continuation;
-					auto cont2 = c2->continuation;
-					if (cont1->flags.Count() != cont2->flags.Count()) return false;
-					// TODO: (enumerable) foreach:indexed, flag not used, considering Linq:Zip, Any
-					for (auto [flag, i] : indexed(cont1->flags))
-					{
-						if (cont1->flags[i]->flag.value != cont2->flags[i]->flag.value) return false;
-					}
-
-					return CompareLriTargest(cont1->injectionTargets, cont2->injectionTargets);
-				}
-
-				void OptimizeLri(List<Ptr<GlrLeftRecursionInjectClause>>& lriClauses)
-				{
-					for (auto lriClause : lriClauses)
-					{
-						if (lriClause->continuation)
-						{
-							OptimizeLri(lriClause->continuation->injectionTargets);
-						}
-					}
-
-					List<Ptr<GlrLeftRecursionInjectClause>> results, candidates;
-					for (auto [prefixRuleName, subLriClauses] : From(lriClauses)
-						.GroupBy([](auto lriClause) {return lriClause->rule->literal.value; })
-						)
-					{
-						CopyFrom(candidates, From(subLriClauses).Reverse());
-						while (candidates.Count() > 0)
-						{
-							auto candidate = candidates[candidates.Count() - 1];
-							candidates.RemoveAt(candidates.Count() - 1);
-							// TODO: (enumerable) foreach:indexed(alterable(reversed))
-							for (vint i = candidates.Count() - 1; i >= 0; i--)
-							{
-								auto compare = candidates[i];
-								if (CompareLriTargest(candidate->continuation->injectionTargets, compare->continuation->injectionTargets))
-								{
-									List<Ptr<GlrLeftRecursionPlaceholder>> flags;
-									CopyFrom(
-										flags,
-										From(candidate->continuation->flags)
-											.Concat(compare->continuation->flags)
-									);
-									CopyFrom(
-										candidate->continuation->flags,
-										From(flags)
-											.GroupBy([](auto flag) { return flag->flag.value; })
-											.Select([](auto pair) { return pair.value.First(); })
-									);
-
-									if (compare->continuation->configuration == GlrLeftRecursionConfiguration::Multiple)
-									{
-										candidate->continuation->configuration = GlrLeftRecursionConfiguration::Multiple;
-									}
-
-									if(compare->continuation->type==GlrLeftRecursionInjectContinuationType::Optional)
-									{
-										candidate->continuation->type = GlrLeftRecursionInjectContinuationType::Optional;
-									}
-
-									candidates.RemoveAt(i);
-								}
-							}
-							results.Add(candidate);
-						}
-					}
-
-					CopyFrom(lriClauses, results);
-				}
-
-				void RewriteRules(const VisitorContext& vContext, const RewritingContext& rContext, SyntaxSymbolManager& syntaxManager)
-				{
-					Dictionary<Pair<RuleSymbol*, RuleSymbol*>, vint> pathCounter;
-					for (auto [ruleSymbol, originRule] : rContext.originRules)
-					{
-						auto lriRule = rContext.lriRules[ruleSymbol];
-						Ptr<RewritingPrefixConflict> conflict;
-						Group<WString, PMClauseRecord> pmClauses;
-						{
-							SortedList<RuleSymbol*> visited;
-							conflict = RewriteRules_CollectUnaffectedIndirectPmClauses(
-								vContext,
-								rContext,
-								ruleSymbol,
-								ruleSymbol,
-								visited,
-								pmClauses
-								);
-						}
-
-						SortedList<WString> knownOptionalStartRules;
-						RewriteRules_GenerateUnaffectedLRIClauses(
-							vContext,
-							rContext,
-							ruleSymbol,
-							lriRule,
-							pathCounter,
-							pmClauses,
-							knownOptionalStartRules
-							);
-
-						if (conflict)
-						{
-							RewriteRules_GenerateAffectedLRIClauses(
-								vContext,
-								rContext,
-								ruleSymbol,
-								lriRule,
-								conflict,
-								pathCounter,
-								knownOptionalStartRules
-								);
-						}
-
-						List<Ptr<GlrClause>> otherClauses;
-						List<Ptr<GlrLeftRecursionInjectClause>> lriClauses;
-						for (auto clause : lriRule->clauses)
-						{
-							if (auto lriClause = clause.Cast<GlrLeftRecursionInjectClause>())
-							{
-								lriClauses.Add(lriClause);
-							}
-							else
-							{
-								otherClauses.Add(clause);
-							}
-						}
-
-						if (lriClauses.Count() > 0)
-						{
-							OptimizeLri(lriClauses);
-							CopyFrom(
-								lriRule->clauses,
-								From(otherClauses)
-									.Concat(
-										From(lriClauses).Select([](auto clause)->Ptr<GlrClause> {return clause; })
-									)
-								);
-						}
-					}
-				}
-
-/***********************************************************************
-FixPrefixMergeClauses
-***********************************************************************/
-
-				void FixPrefixMergeClauses(const VisitorContext& vContext, const RewritingContext& rContext, SyntaxSymbolManager& syntaxManager)
-				{
-					for (auto ruleSymbol : vContext.directPmClauses.Keys())
-					{
-						auto originRule = rContext.originRules[ruleSymbol];
-
-						auto lrpClause = Ptr(new GlrLeftRecursionPlaceholderClause);
-						lrpClause->codeRange = originRule->codeRange;
-						originRule->clauses.Insert(0, lrpClause);
-
-						auto lrp = Ptr(new GlrLeftRecursionPlaceholder);
-						lrp->flag.value = L"LRI_" + ruleSymbol->Name();
-						lrpClause->flags.Add(lrp);
-						syntaxManager.lrpFlags.Add(lrp->flag.value);
-
-						for (vint i = 0; i < originRule->clauses.Count(); i++)
-						{
-							if (auto pmClause = originRule->clauses[i].Cast<GlrPrefixMergeClause>())
-							{
-								if (ruleSymbol->isPartial)
-								{
-									auto partialClause = Ptr(new GlrPartialClause);
-									originRule->codeRange = originRule->codeRange;
-									originRule->clauses[i] = partialClause;
-
-									partialClause->type.value = ruleSymbol->ruleType->Name();
-
-									auto refSyntax = Ptr(new GlrRefSyntax);
-									refSyntax->refType = GlrRefType::Id;
-									refSyntax->literal.value = pmClause->rule->literal.value;
-									partialClause->syntax = refSyntax;
-								}
-								else
-								{
-									auto reuseClause = Ptr(new GlrReuseClause);
-									originRule->codeRange = originRule->codeRange;
-									originRule->clauses[i] = reuseClause;
-
-									auto useSyntax = Ptr(new GlrUseSyntax);
-									useSyntax->name.value = pmClause->rule->literal.value;
-									reuseClause->syntax = useSyntax;
-								}
-							}
-						}
-					}
-				}
-
-/***********************************************************************
-RenamePrefix
-***********************************************************************/
-
-				class RenamePrefixVisitor
-					: public Object
-					, protected virtual GlrSyntax::IVisitor
-					, protected virtual GlrClause::IVisitor
-				{
-				protected:
-					const RewritingContext&			rContext;
-					RuleSymbol*						ruleSymbol;
-					const SyntaxSymbolManager&		syntaxManager;
-
-				public:
-					RenamePrefixVisitor(
-						const RewritingContext& _rContext,
-						RuleSymbol* _ruleSymbol,
-						const SyntaxSymbolManager& _syntaxManager
-					)
-						: rContext(_rContext)
-						, ruleSymbol(_ruleSymbol)
-						, syntaxManager(_syntaxManager)
-					{
-					}
-
-					void FixClause(Ptr<GlrClause> clause)
-					{
-						clause->Accept(this);
-					}
-
-				protected:
-
-					void FixStartRule(ParsingToken& ruleName)
-					{
-						auto startRuleSymbol = syntaxManager.Rules()[ruleName.value];
-						vint index = rContext.extractedPrefixRules.Keys().IndexOf({ ruleSymbol,startRuleSymbol });
-						if (index != -1)
-						{
-							auto epRule = rContext.extractedPrefixRules.Values()[index];
-							ruleName.value = epRule->name.value;
-							return;
-						}
-
-						index = rContext.originRules.Keys().IndexOf(startRuleSymbol);
-						if (index != -1)
-						{
-							auto originRule = rContext.originRules.Values()[index];
-							ruleName.value = originRule->name.value;
-						}
-					}
-
-					////////////////////////////////////////////////////////////////////////
-					// GlrSyntax::IVisitor
-					////////////////////////////////////////////////////////////////////////
-
-					void Visit(GlrRefSyntax* node) override
-					{
-						if (node->refType == GlrRefType::Id)
-						{
-							vint index = syntaxManager.Rules().Keys().IndexOf(node->literal.value);
-							if (index != -1)
-							{
-								FixStartRule(node->literal);
-							}
-						}
-					}
-
-					void Visit(GlrUseSyntax* node) override
-					{
-						FixStartRule(node->name);
-					}
-
-					void Visit(GlrLoopSyntax* node) override
-					{
-					}
-
-					void Visit(GlrOptionalSyntax* node) override
-					{
-					}
-
-					void Visit(GlrSequenceSyntax* node) override
-					{
-						node->first->Accept(this);
-					}
-
-					void Visit(GlrAlternativeSyntax* node) override
-					{
-					}
-
-					void Visit(GlrPushConditionSyntax* node) override
-					{
-						node->syntax->Accept(this);
-					}
-
-					void Visit(GlrTestConditionSyntax* node) override
-					{
-					}
-
-					////////////////////////////////////////////////////////////////////////
-					// GlrClause::IVisitor
-					////////////////////////////////////////////////////////////////////////
-
-					void Visit(GlrCreateClause* node) override
-					{
-						node->syntax->Accept(this);
-					}
-
-					void Visit(GlrPartialClause* node) override
-					{
-						node->syntax->Accept(this);
-					}
-
-					void Visit(GlrReuseClause* node) override
-					{
-						node->syntax->Accept(this);
-					}
-
-					void Visit(GlrLeftRecursionPlaceholderClause* node) override
-					{
-					}
-
-					void Visit(GlrLeftRecursionInjectClause* node) override
-					{
-					}
-
-					void Visit(GlrPrefixMergeClause* node) override
-					{
-					}
-				};
-
-				void RenamePrefix(RewritingContext& rContext, const SyntaxSymbolManager& syntaxManager)
-				{
-					for (auto [ruleSymbol, originRule] : From(rContext.originRules).Concat(rContext.skippedRules))
-					{
-						RenamePrefixVisitor visitor(rContext, ruleSymbol, syntaxManager);
-						for (auto clause : originRule->clauses)
-						{
-							if (rContext.protectedSkippedClause.Contains(clause.Obj()))
-							{
-								continue;
-							}
-
-							// !(a; b) should be moved from rule X_LRI_Original to left_recursion_inject clauses in rule X
-							if (auto reuseClause = clause.Cast<GlrReuseClause>())
-							{
-								if (auto pushSyntax = reuseClause->syntax.Cast<GlrPushConditionSyntax>())
-								{
-									reuseClause->syntax = pushSyntax->syntax;
-								}
-							}
-							visitor.FixClause(clause);
-						}
-					}
-				}
-			}
-
-/***********************************************************************
-RewriteSyntax
-***********************************************************************/
-
-			Ptr<GlrSyntaxFile> RewriteSyntax_PrefixMerge(VisitorContext& context, SyntaxSymbolManager& syntaxManager, Ptr<GlrSyntaxFile> syntaxFile)
-			{
-				using namespace rewritesyntax_prefixmerge;
-
-				// merge files to single syntax file
-				auto rewritten = Ptr(new GlrSyntaxFile);
-				CopyFrom(rewritten->rules, syntaxFile->rules);
-
-				// find clauses that need to be converted to prefix_merge and fix VisitorContext
-				FillMissingPrefixMergeClauses(context, syntaxManager, rewritten);
-
-				// find rules that need to be rewritten using left_recursion_inject
-				RewritingContext rewritingContext;
-				CollectSkippedTargets(context, rewritingContext, rewritten);
-				CollectRewritingTargets(context, rewritingContext, rewritten);
-
-				// create rewritten rules, rename origin rules
-				CreateRewrittenRules(context, rewritingContext, rewritten);
-
-				// fix rule types (fix syntaxManager.rules, clear RuleSymbol fields)
-				FixRuleTypes(context, rewritingContext, syntaxManager);
-
-				// create clauses in rewritten X_Y_LRI_Prefix rules
-				RewriteExtractedPrefixRules(context, rewritingContext, syntaxManager);
-
-				// create left_recursion_inject clauses in rewritten rules
-				RewriteRules(context, rewritingContext, syntaxManager);
-
-				// convert prefix_merge to left_recursion_placeholder and reuse clauses (fix syntaxManager.lrpFlags)
-				FixPrefixMergeClauses(context, rewritingContext, syntaxManager);
-
-				// rename rule references in origin rules
-				RenamePrefix(rewritingContext, syntaxManager);
-
-				return rewritten;
 			}
 		}
 	}
@@ -7843,21 +6022,6 @@ DeductAndVerifyClauseVisitor
 						Verify(node->syntax);
 					}
 
-					void Visit(GlrLeftRecursionPlaceholderClause* node) override
-					{
-						result = true;
-					}
-
-					void Visit(GlrLeftRecursionInjectClause* node) override
-					{
-						result = true;
-					}
-
-					void Visit(GlrPrefixMergeClause* node) override
-					{
-						result = true;
-					}
-
 				public:
 					bool								result = false;
 
@@ -8181,550 +6345,6 @@ RewriteSyntax
 }
 
 /***********************************************************************
-.\PARSERGEN\COMPILESYNTAX_VALIDATEPREFIXMERGE.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace glr
-	{
-		namespace parsergen
-		{
-			using namespace collections;
-			using namespace compile_syntax;
-
-/***********************************************************************
-ValidateDirectPrefixMergeRuleVisitor
-***********************************************************************/
-
-			class ValidateDirectPrefixMergeRuleVisitor
-				: public Object
-				, protected virtual GlrSyntax::IVisitor
-				, protected virtual GlrClause::IVisitor
-			{
-			protected:
-				VisitorContext&				context;
-				RuleSymbol*					ruleSymbol;
-
-			public:
-				ValidateDirectPrefixMergeRuleVisitor(
-					VisitorContext& _context,
-					RuleSymbol* _ruleSymbol
-				)
-					: context(_context)
-					, ruleSymbol(_ruleSymbol)
-				{
-				}
-
-				void ValidateClause(Ptr<GlrClause> clause)
-				{
-					clause->Accept(this);
-				}
-
-			protected:
-
-				void NotBeginWithARule(ParsingAstBase* node)
-				{
-					// TODO: Should accept and generate !prefix_merge equivalent effect for this clause automatically
-					context.syntaxManager.AddError(
-						ParserErrorType::RuleMixedPrefixMergeWithClauseNotSyntacticallyBeginWithARule,
-						node->codeRange,
-						ruleSymbol->Name()
-						);
-				}
-
-				void VerifyStartRule(ParsingAstBase* node, RuleSymbol* startRule)
-				{
-					if (ruleSymbol != startRule && !context.indirectPmClauses.Keys().Contains(startRule))
-					{
-						// TODO: Should accept and generate !prefix_merge equivalent effect for this clause automatically
-						//       When this is not a left-recursive clause
-						context.syntaxManager.AddError(
-							ParserErrorType::RuleMixedPrefixMergeWithClauseNotBeginWithIndirectPrefixMerge,
-							node->codeRange,
-							ruleSymbol->Name(),
-							startRule->Name()
-							);
-					}
-				}
-
-				////////////////////////////////////////////////////////////////////////
-				// GlrSyntax::IVisitor
-				////////////////////////////////////////////////////////////////////////
-
-				void Visit(GlrRefSyntax* node) override
-				{
-					if (node->refType != GlrRefType::Id)
-					{
-						NotBeginWithARule(node);
-					}
-					else
-					{
-						vint index = context.syntaxManager.Rules().Keys().IndexOf(node->literal.value);
-						if (index == -1)
-						{
-							NotBeginWithARule(node);
-						}
-						else
-						{
-							VerifyStartRule(node, context.syntaxManager.Rules().Values()[index]);
-						}
-					}
-				}
-
-				void Visit(GlrUseSyntax* node) override
-				{
-					VerifyStartRule(node, context.syntaxManager.Rules()[node->name.value]);
-				}
-
-				void Visit(GlrLoopSyntax* node) override
-				{
-					NotBeginWithARule(node);
-				}
-
-				void Visit(GlrOptionalSyntax* node) override
-				{
-					NotBeginWithARule(node);
-				}
-
-				void Visit(GlrSequenceSyntax* node) override
-				{
-					node->first->Accept(this);
-				}
-
-				void Visit(GlrAlternativeSyntax* node) override
-				{
-					NotBeginWithARule(node);
-				}
-
-				void Visit(GlrPushConditionSyntax* node) override
-				{
-					CHECK_FAIL(L"GlrPushConditionSyntax should have been removed after RewriteSyntax_Switch()!");
-				}
-
-				void Visit(GlrTestConditionSyntax* node) override
-				{
-					CHECK_FAIL(L"GlrTestConditionSyntax should have been removed after RewriteSyntax_Switch()!");
-				}
-
-				////////////////////////////////////////////////////////////////////////
-				// GlrClause::IVisitor
-				////////////////////////////////////////////////////////////////////////
-
-				void Visit(GlrCreateClause* node) override
-				{
-					node->syntax->Accept(this);
-				}
-
-				void Visit(GlrPartialClause* node) override
-				{
-					node->syntax->Accept(this);
-				}
-
-				void Visit(GlrReuseClause* node) override
-				{
-					node->syntax->Accept(this);
-				}
-
-				void Visit(GlrLeftRecursionPlaceholderClause* node) override
-				{
-					NotBeginWithARule(node);
-				}
-
-				void Visit(GlrLeftRecursionInjectClause* node) override
-				{
-					NotBeginWithARule(node);
-				}
-
-				void Visit(GlrPrefixMergeClause* node) override
-				{
-				}
-			};
-
-/***********************************************************************
-ValidateDeducingPrefixMergeRuleVisitor
-***********************************************************************/
-
-			class ValidateDeducingPrefixMergeRuleVisitor
-				: public Object
-				, protected virtual GlrSyntax::IVisitor
-				, protected virtual GlrClause::IVisitor
-			{
-			protected:
-				using NonSimpleUseDeduction = Pair<const ParsingToken*, RuleSymbol*>;
-
-				VisitorContext&						context;
-				RuleSymbol*							ruleSymbol;
-
-				Ptr<List<NonSimpleUseDeduction>>	result;
-				bool								couldBeEmpty = false;
-
-			public:
-				ValidateDeducingPrefixMergeRuleVisitor(
-					VisitorContext& _context,
-					RuleSymbol* _ruleSymbol
-				)
-					: context(_context)
-					, ruleSymbol(_ruleSymbol)
-				{
-				}
-
-				void ValidateClause(Ptr<GlrClause> clause)
-				{
-					clause->Accept(this);
-				}
-
-			protected:
-
-				void TryAppendResult(const ParsingToken& name, RuleSymbol* refRuleSymbol)
-				{
-					if (context.directPmClauses.Keys().Contains(refRuleSymbol))
-					{
-						if (!result) result = Ptr(new List<NonSimpleUseDeduction>);
-						result->Add({ &name,refRuleSymbol });
-					}
-				}
-
-				void VisitRuleRef(const ParsingToken& name)
-				{
-					vint index = context.syntaxManager.Rules().Keys().IndexOf(name.value);
-					if (index == -1) return;
-
-					auto refRuleSymbol = context.syntaxManager.Rules().Values()[index];
-					TryAppendResult(name, refRuleSymbol);
-
-					index = context.indirectSimpleUseRules.Keys().IndexOf(refRuleSymbol);
-					if (index == -1) return;
-
-					for (auto [simpleUseSymbol, _] : context.indirectSimpleUseRules.GetByIndex(index))
-					{
-						TryAppendResult(name, simpleUseSymbol);
-					}
-				}
-
-				void VisitPotentialEmptySyntax()
-				{
-					// a clause is not allowed to produce an empty sequence
-					// since this syntax could produce an empty sequence
-					// therefore there should be other non-parallel part of syntax in this clause that produces a non-empty sequence
-					// it doesn't need to check the error here
-					result = nullptr;
-					couldBeEmpty = true;
-				}
-
-				////////////////////////////////////////////////////////////////////////
-				// GlrSyntax::IVisitor
-				////////////////////////////////////////////////////////////////////////
-
-				void Visit(GlrRefSyntax* node) override
-				{
-					result = nullptr;
-					couldBeEmpty = false;
-
-					if (node->refType != GlrRefType::Id) return;
-					VisitRuleRef(node->literal);
-				}
-
-				void Visit(GlrUseSyntax* node) override
-				{
-					result = nullptr;
-					couldBeEmpty = false;
-
-					VisitRuleRef(node->name);
-				}
-
-				void Visit(GlrLoopSyntax* node) override
-				{
-					VisitPotentialEmptySyntax();
-				}
-
-				void Visit(GlrOptionalSyntax* node) override
-				{
-					VisitPotentialEmptySyntax();
-				}
-
-				void Visit(GlrSequenceSyntax* node) override
-				{
-					node->first->Accept(this);
-					auto firstResult = result;
-					bool firstEmpty = couldBeEmpty;
-
-					node->second->Accept(this);
-					auto secondResult = result;
-					auto secondEmpty = couldBeEmpty;
-
-					couldBeEmpty = firstEmpty && secondEmpty;
-
-					if (!firstEmpty && !secondEmpty)
-					{
-						result = nullptr;
-					}
-					else if (!firstEmpty)
-					{
-						result = firstResult;
-					}
-					else if (!secondEmpty)
-					{
-						result = secondResult;
-					}
-					else
-					{
-						result = nullptr;
-					}
-				}
-
-				void Visit(GlrAlternativeSyntax* node) override
-				{
-					node->first->Accept(this);
-					auto firstResult = result;
-					bool firstEmpty = couldBeEmpty;
-
-					node->second->Accept(this);
-					auto secondResult = result;
-					auto secondEmpty = couldBeEmpty;
-
-					couldBeEmpty = firstEmpty || secondEmpty;
-					if (couldBeEmpty)
-					{
-						VisitPotentialEmptySyntax();
-					}
-					else
-					{
-						if (firstResult && secondResult)
-						{
-							CopyFrom(*firstResult.Obj(), *secondResult.Obj(), true);
-							result = firstResult;
-						}
-						else if (firstResult)
-						{
-							result = firstResult;
-						}
-						else if (secondResult)
-						{
-							result = secondResult;
-						}
-						else
-						{
-							result = nullptr;
-						}
-					}
-				}
-
-				void Visit(GlrPushConditionSyntax* node) override
-				{
-					CHECK_FAIL(L"GlrPushConditionSyntax should have been removed after RewriteSyntax_Switch()!");
-				}
-
-				void Visit(GlrTestConditionSyntax* node) override
-				{
-					CHECK_FAIL(L"GlrTestConditionSyntax should have been removed after RewriteSyntax_Switch()!");
-				}
-
-				////////////////////////////////////////////////////////////////////////
-				// GlrClause::IVisitor
-				////////////////////////////////////////////////////////////////////////
-
-				void Visit(GlrCreateClause* node) override
-				{
-					node->syntax->Accept(this);
-				}
-
-				void Visit(GlrPartialClause* node) override
-				{
-					node->syntax->Accept(this);
-				}
-
-				void Visit(GlrReuseClause* node) override
-				{
-					if (!dynamic_cast<GlrUseSyntax*>(node->syntax.Obj()))
-					{
-						node->syntax->Accept(this);
-					}
-				}
-
-				void Visit(GlrLeftRecursionPlaceholderClause* node) override
-				{
-				}
-
-				void Visit(GlrLeftRecursionInjectClause* node) override
-				{
-					if (!node->continuation || node->continuation->type == GlrLeftRecursionInjectContinuationType::Optional)
-					{
-						VisitRuleRef(node->rule->literal);
-					}
-				}
-
-				void Visit(GlrPrefixMergeClause* node) override
-				{
-				}
-			};
-
-/***********************************************************************
-ValidatePrefixMerge
-***********************************************************************/
-
-			void ValidatePrefixMerge(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile)
-			{
-				for (auto rule : syntaxFile->rules)
-				{
-					auto ruleSymbol = context.syntaxManager.Rules()[rule->name.value];
-
-					if (context.directPmClauses.Keys().Contains(ruleSymbol))
-					{
-						ValidateDirectPrefixMergeRuleVisitor visitor(context, ruleSymbol);
-						for (auto clause : rule->clauses)
-						{
-							visitor.ValidateClause(clause);
-						}
-					}
-
-					{
-						ValidateDeducingPrefixMergeRuleVisitor visitor(context, ruleSymbol);
-						for (auto clause : rule->clauses)
-						{
-							visitor.ValidateClause(clause);
-						}
-					}
-
-					vint indexPm = context.indirectPmClauses.Keys().IndexOf(ruleSymbol);
-					vint indexLrp = context.indirectLrpClauses.Keys().IndexOf(ruleSymbol);
-					vint indexLri = context.indirectLriClauses.Keys().IndexOf(ruleSymbol);
-
-					if (indexPm != -1)
-					{
-						auto rulePm = context.clauseToRules[context.indirectPmClauses.GetByIndex(indexPm)[0]];
-						if (indexLrp != -1)
-						{
-							auto ruleLrp = context.clauseToRules[context.indirectLrpClauses.GetByIndex(indexLrp)[0]];
-							context.syntaxManager.AddError(
-								ParserErrorType::RuleIndirectlyBeginsWithPrefixMergeMixedLeftRecursionMarkers,
-								rule->name.codeRange,
-								ruleSymbol->Name(),
-								rulePm->Name(),
-								ruleLrp->Name()
-								);
-						}
-						if (indexLri != -1)
-						{
-							auto ruleLri = context.clauseToRules[context.indirectLriClauses.GetByIndex(indexLri)[0]];
-							context.syntaxManager.AddError(
-								ParserErrorType::RuleIndirectlyBeginsWithPrefixMergeMixedLeftRecursionMarkers,
-								rule->name.codeRange,
-								ruleSymbol->Name(),
-								rulePm->Name(),
-								ruleLri->Name()
-								);
-						}
-						if (ruleSymbol->isPartial)
-						{
-							context.syntaxManager.AddError(
-								ParserErrorType::PartialRuleIndirectlyBeginsWithPrefixMerge,
-								rule->name.codeRange,
-								ruleSymbol->Name(),
-								rulePm->Name()
-								);
-						}
-
-						if (!context.directPmClauses.Keys().Contains(ruleSymbol))
-						{
-							for (auto clause : rule->clauses)
-							{
-								ParsingToken firstDirectLiteral;
-								RuleSymbol* firstIndirectNonPmRule = nullptr;
-								GlrPrefixMergeClause* firstIndirectlyPmClause = nullptr;
-
-								// test if this clause directly begins with and literal
-								vint index = context.clauseBeginsWithLiteral.Keys().IndexOf(clause.Obj());
-								if (index != -1)
-								{
-									firstDirectLiteral = context.clauseBeginsWithLiteral.GetByIndex(index)[0];
-								}
-
-								// find all direct start rules from this clause
-								index = context.clauseToStartRules.Keys().IndexOf(clause.Obj());
-								if (index != -1)
-								{
-									List<RuleSymbol*> visiting;
-									SortedList<RuleSymbol*> visited;
-									CopyFrom(visiting, context.clauseToStartRules.GetByIndex(index));
-
-									// TODO: (enumerable) visiting/visited
-									for (vint i = 0; i < visiting.Count(); i++)
-									{
-										auto visitingRule = visiting[i];
-										if (visited.Contains(visitingRule)) continue;
-										visited.Add(visitingRule);
-
-										// test if the visiting rule begins with prefix_merge
-										index = context.indirectPmClauses.Keys().IndexOf(visitingRule);
-										if (index != -1)
-										{
-											if (!firstIndirectlyPmClause)
-											{
-												firstIndirectlyPmClause = context.indirectPmClauses.GetByIndex(index)[0];
-											}
-										}
-										else
-										{
-											// if the visiting rule itself partial begins with prefix_merge
-											// then an errors should be generated for this rule
-											// here we assume it never happens in order to reduce the number of errors
-											if (!firstIndirectNonPmRule)
-											{
-												firstIndirectNonPmRule = visitingRule;
-											}
-										}
-										if ((firstDirectLiteral || firstIndirectNonPmRule) && firstIndirectlyPmClause) break;
-									}
-								}
-
-								if (firstDirectLiteral && firstIndirectlyPmClause)
-								{
-									context.syntaxManager.AddError(
-										ParserErrorType::ClausePartiallyIndirectlyBeginsWithPrefixMergeAndLiteral,
-										clause->codeRange,
-										ruleSymbol->Name(),
-										context.clauseToRules[firstIndirectlyPmClause]->Name(),
-										firstDirectLiteral.value
-										);
-								}
-								else if (firstIndirectNonPmRule && firstIndirectlyPmClause)
-								{
-									context.syntaxManager.AddError(
-										ParserErrorType::ClausePartiallyIndirectlyBeginsWithPrefixMergeAndRule,
-										clause->codeRange,
-										ruleSymbol->Name(),
-										context.clauseToRules[firstIndirectlyPmClause]->Name(),
-										firstIndirectNonPmRule->Name()
-										);
-								}
-								else if (!context.leftRecursiveClauses.Contains(ruleSymbol, clause.Obj()))
-								{
-									// safe to add the clause since errors have been detected in ClausePartiallyIndirectlyBeginsWithPrefixMerge
-									vint index = context.clauseToStartRules.Keys().IndexOf(clause.Obj());
-									if (index != -1)
-									{
-										for (auto ruleSymbol : context.clauseToStartRules.GetByIndex(index))
-										{
-											if (context.indirectPmClauses.Keys().IndexOf(ruleSymbol) != -1)
-											{
-												goto SKIP_ADDING;
-											}
-										}
-									}
-									context.clauseToConvertedToPrefixMerge.Add(clause.Obj());
-								SKIP_ADDING:;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-/***********************************************************************
 .\PARSERGEN\COMPILESYNTAX_VALIDATESTRUCTURE.CPP
 ***********************************************************************/
 
@@ -8750,7 +6370,6 @@ ValidateStructureCountingVisitor
 				VisitorContext&							context;
 				RuleSymbol*								ruleSymbol;
 				GlrClause*								clause = nullptr;
-				GlrLeftRecursionPlaceholderClause*		lrpClause = nullptr;
 
 				vint									optionalCounter = 0;
 				vint									loopCounter = 0;
@@ -9037,30 +6656,6 @@ ValidateStructureCountingVisitor
 					node->syntax->Accept(this);
 					CheckAfterClause(node, true);
 				}
-
-				void Visit(GlrLeftRecursionPlaceholderClause* node) override
-				{
-					if (!lrpClause)
-					{
-						lrpClause = node;
-					}
-					else
-					{
-						context.syntaxManager.AddError(
-							ParserErrorType::TooManyLeftRecursionPlaceholderClauses,
-							node->codeRange,
-							ruleSymbol->Name()
-							);
-					}
-				}
-
-				void Visit(GlrLeftRecursionInjectClause* node) override
-				{
-				}
-
-				void Visit(GlrPrefixMergeClause* node) override
-				{
-				}
 			};
 
 /***********************************************************************
@@ -9117,6 +6712,19 @@ ValidateStructureRelationshipVisitor
 					if (node->field)
 					{
 						AddFieldCounter(node->field.value, 1);
+					}
+
+					if (ruleSymbol->isPartial && node->refType == GlrRefType::Id)
+					{
+						vint ruleIndex = context.syntaxManager.Rules().Keys().IndexOf(node->literal.value);
+						if (ruleIndex != -1)
+						{
+							auto refRuleSymbol = context.syntaxManager.Rules().Values()[ruleIndex];
+							if (refRuleSymbol->isPartial && !context.partialRuleDependencies.Contains(ruleSymbol, refRuleSymbol))
+							{
+								context.partialRuleDependencies.Add(ruleSymbol, refRuleSymbol);
+							}
+						}
 					}
 				}
 
@@ -9256,18 +6864,6 @@ ValidateStructureRelationshipVisitor
 					node->syntax->Accept(this);
 					CheckAfterClause(node);
 				}
-
-				void Visit(GlrLeftRecursionPlaceholderClause* node) override
-				{
-				}
-
-				void Visit(GlrLeftRecursionInjectClause* node) override
-				{
-				}
-
-				void Visit(GlrPrefixMergeClause* node) override
-				{
-				}
 			};
 
 /***********************************************************************
@@ -9285,6 +6881,45 @@ ValidateStructure
 						ValidateStructureRelationshipVisitor visitor2(context, ruleSymbol);
 						visitor1.ValidateClause(clause);
 						visitor2.ValidateClause(clause);
+					}
+				}
+
+				PartialOrderingProcessor pop;
+				List<RuleSymbol*> partialRules;
+				CopyFrom(partialRules,
+					From(context.syntaxManager.Rules().Values())
+						.Where([&](RuleSymbol* rule) { return rule->isPartial; })
+					);
+				pop.InitWithGroup(partialRules, context.partialRuleDependencies);
+				pop.Sort();
+
+				for (vint i = 0; i < context.partialRuleDependencies.Count(); i++)
+				{
+					auto partialRule = context.partialRuleDependencies.Keys()[i];
+					if (context.partialRuleDependencies.GetByIndex(i).Contains(partialRule))
+					{
+						context.syntaxManager.AddError(
+							ParserErrorType::PartialRuleIsRecursive,
+							context.astRules[partialRule]->codeRange,
+							partialRule->Name()
+							);
+					}
+				}
+
+				for (auto&& component : pop.components)
+				{
+					if (component.nodeCount > 1)
+					{
+						for (auto partialRule : From(FromPointer(component.firstNode, component.firstNode + component.nodeCount))
+							.Select([&](vint index) { return partialRules[index]; })
+							.OrderByKey([](auto partialRule) { return partialRule->Name(); }))
+						{
+							context.syntaxManager.AddError(
+								ParserErrorType::PartialRuleIsRecursive,
+								context.astRules[partialRule]->codeRange,
+								partialRule->Name()
+								);
+						}
 					}
 				}
 			}
@@ -9582,26 +7217,6 @@ VerifySwitchesAndConditionsVisitor
 								switchItem->name.value
 								);
 						}
-					}
-				}
-
-				////////////////////////////////////////////////////////////////////////
-				// GlrClause::IVisitor
-				////////////////////////////////////////////////////////////////////////
-
-				void Traverse(GlrPrefixMergeClause* node) override
-				{
-					auto pmRuleSymbol = context.syntaxManager.Rules()[node->rule->literal.value];
-					vint index = sContext.ruleAffectedSwitches.Keys().IndexOf(pmRuleSymbol);
-					if(index != -1)
-					{
-						context.syntaxManager.AddError(
-							ParserErrorType::PrefixMergeAffectedBySwitches,
-							node->codeRange,
-							ruleSymbol->Name(),
-							pmRuleSymbol->Name(),
-							sContext.ruleAffectedSwitches.GetByIndex(index)[0]
-							);
 					}
 				}
 			};
@@ -9928,240 +7543,6 @@ ValidateTypesVisitor
 						Visit(assignment.Obj());
 					}
 				}
-
-				void Visit(GlrLeftRecursionPlaceholderClause* node) override
-				{
-				}
-
-				void Visit(GlrLeftRecursionInjectClause* node) override
-				{
-				}
-
-				void Visit(GlrPrefixMergeClause* node) override
-				{
-					auto prefixRule = context.syntaxManager.Rules()[node->rule->literal.value];
-					if (prefixRule->isPartial)
-					{
-						context.syntaxManager.AddError(
-							ParserErrorType::PartialRuleInPrefixMerge,
-							node->rule->codeRange,
-							ruleSymbol->Name(),
-							node->rule->literal.value
-							);
-					}
-				}
-			};
-
-/***********************************************************************
-LriVerifyTypesVisitor
-***********************************************************************/
-
-			class LriVerifyTypesVisitor
-				: public empty_visitor::ClauseVisitor
-			{
-			protected:
-				VisitorContext&									context;
-				RuleSymbol*										ruleSymbol;
-
-			public:
-				LriVerifyTypesVisitor(
-					VisitorContext& _context,
-					RuleSymbol* _ruleSymbol
-				)
-					: context(_context)
-					, ruleSymbol(_ruleSymbol)
-				{
-				}
-
-				void ValidateClause(Ptr<GlrClause> clause)
-				{
-					clause->Accept(this);
-				}
-
-				////////////////////////////////////////////////////////////////////////
-				// GlrClause::IVisitor
-				////////////////////////////////////////////////////////////////////////
-
-				void Visit(GlrLeftRecursionInjectClause* node) override
-				{
-					auto prefixRule = context.syntaxManager.Rules()[node->rule->literal.value];
-					if (prefixRule->isPartial)
-					{
-						context.syntaxManager.AddError(
-							ParserErrorType::PartialRuleInLeftRecursionInject,
-							node->rule->codeRange,
-							ruleSymbol->Name(),
-							node->rule->literal.value
-							);
-					}
-
-					for (auto lriTarget : node->continuation->injectionTargets)
-					{
-						auto target = lriTarget->rule;
-						for (auto lriFlag : node->continuation->flags)
-						{
-							List<GlrLeftRecursionPlaceholderClause*> lrpClauses;
-							{
-								vint index = context.indirectLrpClauses.Keys().IndexOf(context.syntaxManager.Rules()[target->literal.value]);
-								if (index != -1)
-								{
-									CopyFrom(
-										lrpClauses,
-										From(context.indirectLrpClauses.GetByIndex(index))
-											.Where([lriFlag](auto&& lrp)
-											{
-												return !From(lrp->flags)
-													.Where([lriFlag](auto&& flag) { return flag->flag.value == lriFlag->flag.value; })
-													.IsEmpty();
-											}));
-								}
-							}
-
-							if (lrpClauses.Count() == 0)
-							{
-								context.syntaxManager.AddError(
-									ParserErrorType::LeftRecursionPlaceholderNotFoundInRule,
-									target->codeRange,
-									ruleSymbol->Name(),
-									lriFlag->flag.value,
-									target->literal.value
-									);
-							}
-							else if (lrpClauses.Count() > 1 && node->continuation->configuration == GlrLeftRecursionConfiguration::Single)
-							{
-								context.syntaxManager.AddError(
-									ParserErrorType::LeftRecursionPlaceholderNotUnique,
-									target->codeRange,
-									ruleSymbol->Name(),
-									lriFlag->flag.value,
-									target->literal.value
-									);
-							}
-
-							for (auto lrpClause : lrpClauses)
-							{
-								auto lrpClauseRule = context.clauseToRules[lrpClause];
-								if (!ConvertibleTo(prefixRule->ruleType, lrpClauseRule->ruleType))
-								{
-									context.syntaxManager.AddError(
-										ParserErrorType::LeftRecursionPlaceholderTypeMismatched,
-										target->codeRange,
-										ruleSymbol->Name(),
-										lriFlag->flag.value,
-										target->literal.value,
-										lrpClauseRule->Name()
-										);
-								}
-							}
-						}
-
-						if (lriTarget->continuation)
-						{
-							Visit(lriTarget.Obj());
-						}
-					}
-				}
-			};
-
-/***********************************************************************
-LriPrefixTestingVisitor
-***********************************************************************/
-
-			class LriPrefixTestingVisitor
-				: public empty_visitor::ClauseVisitor
-			{
-			protected:
-				VisitorContext&									context;
-				RuleSymbol*										ruleSymbol;
-				Group<GlrLeftRecursionInjectClause*, WString>	lriEndings;
-
-			public:
-				LriPrefixTestingVisitor(
-					VisitorContext& _context,
-					RuleSymbol* _ruleSymbol
-				)
-					: context(_context)
-					, ruleSymbol(_ruleSymbol)
-				{
-				}
-
-				void ValidateClause(Ptr<GlrClause> clause)
-				{
-					clause->Accept(this);
-				}
-
-				////////////////////////////////////////////////////////////////////////
-				// GlrClause::IVisitor
-				////////////////////////////////////////////////////////////////////////
-
-				void SearchLriEndings(List<GlrLeftRecursionInjectClause*>& visiting, GlrLeftRecursionInjectClause* node)
-				{
-					visiting.Add(node);
-					if (!node->continuation || node->continuation->type == GlrLeftRecursionInjectContinuationType::Optional)
-					{
-						for (auto lri : visiting)
-						{
-							if (!lriEndings.Contains(lri, node->rule->literal.value))
-							{
-								lriEndings.Add(lri, node->rule->literal.value);
-							}
-						}
-					}
-
-					if (node->continuation)
-					{
-						for (auto target : node->continuation->injectionTargets)
-						{
-							SearchLriEndings(visiting, target.Obj());
-						}
-					}
-					visiting.RemoveAt(visiting.Count() - 1);
-				}
-
-				void VerifyPrefix(GlrLeftRecursionInjectClause* node)
-				{
-					if (node->continuation)
-					{
-						for (auto t1 : node->continuation->injectionTargets)
-						{
-							auto k1 = context.syntaxManager.Rules()[t1->rule->literal.value];
-							vint i1 = lriEndings.Keys().IndexOf(t1.Obj());
-							if (i1 == -1) continue;
-							for (auto t2 : node->continuation->injectionTargets)
-							{
-								auto k2 = context.syntaxManager.Rules()[t2->rule->literal.value];
-								vint i2 = lriEndings.Keys().IndexOf(t2.Obj());
-								if (i2 == -1) continue;
-
-								if (t1 != t2 && context.indirectStartPathToLastRules.Keys().Contains({ k2, k1 }))
-								{
-									auto&& e1 = lriEndings.GetByIndex(i1);
-									auto&& e2 = lriEndings.GetByIndex(i2);
-									if (!From(e1).Intersect(e2).IsEmpty())
-									{
-										context.syntaxManager.AddError(
-											ParserErrorType::LeftRecursionInjectTargetIsPrefixOfAnotherSameEnding,
-											node->codeRange,
-											ruleSymbol->Name(),
-											node->continuation->flags[0]->flag.value,
-											k1->Name(),
-											k2->Name()
-											);
-									}
-								}
-							}
-						}
-					}
-				}
-
-				void Visit(GlrLeftRecursionInjectClause* node) override
-				{
-					{
-						List<GlrLeftRecursionInjectClause*> visiting;
-						SearchLriEndings(visiting, node);
-					}
-					VerifyPrefix(node);
-				}
 			};
 
 /***********************************************************************
@@ -10177,14 +7558,6 @@ ValidateTypes
 					for (auto clause : rule->clauses)
 					{
 						vtVisitor.ValidateClause(clause);
-						{
-							LriVerifyTypesVisitor lvtVisitor(context, ruleSymbol);
-							lvtVisitor.ValidateClause(clause);
-						}
-						{
-							LriPrefixTestingVisitor lptVisitor(context, ruleSymbol);
-							lptVisitor.ValidateClause(clause);
-						}
 					}
 				}
 			}
@@ -10477,21 +7850,6 @@ Visitor Pattern Implementation
 	{
 		visitor->Visit(this);
 	}
-
-	void GlrLeftRecursionPlaceholderClause::Accept(GlrClause::IVisitor* visitor)
-	{
-		visitor->Visit(this);
-	}
-
-	void GlrLeftRecursionInjectClause::Accept(GlrClause::IVisitor* visitor)
-	{
-		visitor->Visit(this);
-	}
-
-	void GlrPrefixMergeClause::Accept(GlrClause::IVisitor* visitor)
-	{
-		visitor->Visit(this);
-	}
 }
 namespace vl::reflection::description
 {
@@ -10525,13 +7883,6 @@ namespace vl::reflection::description
 	IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrCreateClause, glr::parsergen::GlrCreateClause)
 	IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrPartialClause, glr::parsergen::GlrPartialClause)
 	IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrReuseClause, glr::parsergen::GlrReuseClause)
-	IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrLeftRecursionPlaceholder, glr::parsergen::GlrLeftRecursionPlaceholder)
-	IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrLeftRecursionPlaceholderClause, glr::parsergen::GlrLeftRecursionPlaceholderClause)
-	IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrLeftRecursionConfiguration, glr::parsergen::GlrLeftRecursionConfiguration)
-	IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrLeftRecursionInjectContinuationType, glr::parsergen::GlrLeftRecursionInjectContinuationType)
-	IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrLeftRecursionInjectContinuation, glr::parsergen::GlrLeftRecursionInjectContinuation)
-	IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrLeftRecursionInjectClause, glr::parsergen::GlrLeftRecursionInjectClause)
-	IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrPrefixMergeClause, glr::parsergen::GlrPrefixMergeClause)
 	IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrRule, glr::parsergen::GlrRule)
 	IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrSyntaxFile, glr::parsergen::GlrSyntaxFile)
 
@@ -10740,62 +8091,6 @@ namespace vl::reflection::description
 		CLASS_MEMBER_FIELD(assignments)
 	END_CLASS_MEMBER(vl::glr::parsergen::GlrReuseClause)
 
-	BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrLeftRecursionPlaceholder)
-		CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
-
-		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrLeftRecursionPlaceholder>(), NO_PARAMETER)
-
-		CLASS_MEMBER_FIELD(flag)
-	END_CLASS_MEMBER(vl::glr::parsergen::GlrLeftRecursionPlaceholder)
-
-	BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrLeftRecursionPlaceholderClause)
-		CLASS_MEMBER_BASE(vl::glr::parsergen::GlrClause)
-
-		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrLeftRecursionPlaceholderClause>(), NO_PARAMETER)
-
-		CLASS_MEMBER_FIELD(flags)
-	END_CLASS_MEMBER(vl::glr::parsergen::GlrLeftRecursionPlaceholderClause)
-
-	BEGIN_ENUM_ITEM(vl::glr::parsergen::GlrLeftRecursionConfiguration)
-		ENUM_ITEM_NAMESPACE(vl::glr::parsergen::GlrLeftRecursionConfiguration)
-		ENUM_NAMESPACE_ITEM(Single)
-		ENUM_NAMESPACE_ITEM(Multiple)
-	END_ENUM_ITEM(vl::glr::parsergen::GlrLeftRecursionConfiguration)
-
-	BEGIN_ENUM_ITEM(vl::glr::parsergen::GlrLeftRecursionInjectContinuationType)
-		ENUM_ITEM_NAMESPACE(vl::glr::parsergen::GlrLeftRecursionInjectContinuationType)
-		ENUM_NAMESPACE_ITEM(Optional)
-		ENUM_NAMESPACE_ITEM(Required)
-	END_ENUM_ITEM(vl::glr::parsergen::GlrLeftRecursionInjectContinuationType)
-
-	BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrLeftRecursionInjectContinuation)
-		CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
-
-		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrLeftRecursionInjectContinuation>(), NO_PARAMETER)
-
-		CLASS_MEMBER_FIELD(flags)
-		CLASS_MEMBER_FIELD(configuration)
-		CLASS_MEMBER_FIELD(type)
-		CLASS_MEMBER_FIELD(injectionTargets)
-	END_CLASS_MEMBER(vl::glr::parsergen::GlrLeftRecursionInjectContinuation)
-
-	BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrLeftRecursionInjectClause)
-		CLASS_MEMBER_BASE(vl::glr::parsergen::GlrClause)
-
-		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrLeftRecursionInjectClause>(), NO_PARAMETER)
-
-		CLASS_MEMBER_FIELD(rule)
-		CLASS_MEMBER_FIELD(continuation)
-	END_CLASS_MEMBER(vl::glr::parsergen::GlrLeftRecursionInjectClause)
-
-	BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrPrefixMergeClause)
-		CLASS_MEMBER_BASE(vl::glr::parsergen::GlrClause)
-
-		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrPrefixMergeClause>(), NO_PARAMETER)
-
-		CLASS_MEMBER_FIELD(rule)
-	END_CLASS_MEMBER(vl::glr::parsergen::GlrPrefixMergeClause)
-
 	BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrRule)
 		CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
 
@@ -10839,9 +8134,6 @@ namespace vl::reflection::description
 		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrClause::IVisitor::*)(vl::glr::parsergen::GlrCreateClause* node))
 		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrClause::IVisitor::*)(vl::glr::parsergen::GlrPartialClause* node))
 		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrClause::IVisitor::*)(vl::glr::parsergen::GlrReuseClause* node))
-		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrClause::IVisitor::*)(vl::glr::parsergen::GlrLeftRecursionPlaceholderClause* node))
-		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrClause::IVisitor::*)(vl::glr::parsergen::GlrLeftRecursionInjectClause* node))
-		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrClause::IVisitor::*)(vl::glr::parsergen::GlrPrefixMergeClause* node))
 	END_INTERFACE_MEMBER(vl::glr::parsergen::GlrClause)
 
 #endif
@@ -10880,13 +8172,6 @@ namespace vl::reflection::description
 			ADD_TYPE_INFO(vl::glr::parsergen::GlrCreateClause)
 			ADD_TYPE_INFO(vl::glr::parsergen::GlrPartialClause)
 			ADD_TYPE_INFO(vl::glr::parsergen::GlrReuseClause)
-			ADD_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionPlaceholder)
-			ADD_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionPlaceholderClause)
-			ADD_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionConfiguration)
-			ADD_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionInjectContinuationType)
-			ADD_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionInjectContinuation)
-			ADD_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionInjectClause)
-			ADD_TYPE_INFO(vl::glr::parsergen::GlrPrefixMergeClause)
 			ADD_TYPE_INFO(vl::glr::parsergen::GlrRule)
 			ADD_TYPE_INFO(vl::glr::parsergen::GlrSyntaxFile)
 		}
@@ -11002,70 +8287,6 @@ MakeCreateClause
 	}
 
 /***********************************************************************
-MakeLeftRecursionInjectClause
-***********************************************************************/
-
-	MakeLeftRecursionInjectClause& MakeLeftRecursionInjectClause::continuation(const vl::Ptr<GlrLeftRecursionInjectContinuation>& value)
-	{
-		node->continuation = value;
-		return *this;
-	}
-
-	MakeLeftRecursionInjectClause& MakeLeftRecursionInjectClause::rule(const vl::Ptr<GlrRefSyntax>& value)
-	{
-		node->rule = value;
-		return *this;
-	}
-
-/***********************************************************************
-MakeLeftRecursionInjectContinuation
-***********************************************************************/
-
-	MakeLeftRecursionInjectContinuation& MakeLeftRecursionInjectContinuation::configuration(GlrLeftRecursionConfiguration value)
-	{
-		node->configuration = value;
-		return *this;
-	}
-
-	MakeLeftRecursionInjectContinuation& MakeLeftRecursionInjectContinuation::flags(const vl::Ptr<GlrLeftRecursionPlaceholder>& value)
-	{
-		node->flags.Add(value);
-		return *this;
-	}
-
-	MakeLeftRecursionInjectContinuation& MakeLeftRecursionInjectContinuation::injectionTargets(const vl::Ptr<GlrLeftRecursionInjectClause>& value)
-	{
-		node->injectionTargets.Add(value);
-		return *this;
-	}
-
-	MakeLeftRecursionInjectContinuation& MakeLeftRecursionInjectContinuation::type(GlrLeftRecursionInjectContinuationType value)
-	{
-		node->type = value;
-		return *this;
-	}
-
-/***********************************************************************
-MakeLeftRecursionPlaceholder
-***********************************************************************/
-
-	MakeLeftRecursionPlaceholder& MakeLeftRecursionPlaceholder::flag(const vl::WString& value)
-	{
-		node->flag.value = value;
-		return *this;
-	}
-
-/***********************************************************************
-MakeLeftRecursionPlaceholderClause
-***********************************************************************/
-
-	MakeLeftRecursionPlaceholderClause& MakeLeftRecursionPlaceholderClause::flags(const vl::Ptr<GlrLeftRecursionPlaceholder>& value)
-	{
-		node->flags.Add(value);
-		return *this;
-	}
-
-/***********************************************************************
 MakeLoopSyntax
 ***********************************************************************/
 
@@ -11142,16 +8363,6 @@ MakePartialClause
 	MakePartialClause& MakePartialClause::type(const vl::WString& value)
 	{
 		node->type.value = value;
-		return *this;
-	}
-
-/***********************************************************************
-MakePrefixMergeClause
-***********************************************************************/
-
-	MakePrefixMergeClause& MakePrefixMergeClause::rule(const vl::Ptr<GlrRefSyntax>& value)
-	{
-		node->rule = value;
 		return *this;
 	}
 
@@ -11391,41 +8602,6 @@ namespace vl::glr::parsergen::copy_visitor
 		to->type = from->type;
 	}
 
-	void RuleAstVisitor::CopyFields(GlrLeftRecursionInjectClause* from, GlrLeftRecursionInjectClause* to)
-	{
-		CopyFields(static_cast<GlrClause*>(from), static_cast<GlrClause*>(to));
-		to->continuation = CopyNode(from->continuation.Obj());
-		to->rule = CopyNode(from->rule.Obj());
-	}
-
-	void RuleAstVisitor::CopyFields(GlrLeftRecursionInjectContinuation* from, GlrLeftRecursionInjectContinuation* to)
-	{
-		to->configuration = from->configuration;
-		for (auto&& listItem : from->flags)
-		{
-			to->flags.Add(CopyNode(listItem.Obj()));
-		}
-		for (auto&& listItem : from->injectionTargets)
-		{
-			to->injectionTargets.Add(CopyNode(listItem.Obj()));
-		}
-		to->type = from->type;
-	}
-
-	void RuleAstVisitor::CopyFields(GlrLeftRecursionPlaceholder* from, GlrLeftRecursionPlaceholder* to)
-	{
-		to->flag = from->flag;
-	}
-
-	void RuleAstVisitor::CopyFields(GlrLeftRecursionPlaceholderClause* from, GlrLeftRecursionPlaceholderClause* to)
-	{
-		CopyFields(static_cast<GlrClause*>(from), static_cast<GlrClause*>(to));
-		for (auto&& listItem : from->flags)
-		{
-			to->flags.Add(CopyNode(listItem.Obj()));
-		}
-	}
-
 	void RuleAstVisitor::CopyFields(GlrLoopSyntax* from, GlrLoopSyntax* to)
 	{
 		CopyFields(static_cast<GlrSyntax*>(from), static_cast<GlrSyntax*>(to));
@@ -11462,12 +8638,6 @@ namespace vl::glr::parsergen::copy_visitor
 		}
 		to->syntax = CopyNode(from->syntax.Obj());
 		to->type = from->type;
-	}
-
-	void RuleAstVisitor::CopyFields(GlrPrefixMergeClause* from, GlrPrefixMergeClause* to)
-	{
-		CopyFields(static_cast<GlrClause*>(from), static_cast<GlrClause*>(to));
-		to->rule = CopyNode(from->rule.Obj());
 	}
 
 	void RuleAstVisitor::CopyFields(GlrPushConditionSyntax* from, GlrPushConditionSyntax* to)
@@ -11583,20 +8753,6 @@ namespace vl::glr::parsergen::copy_visitor
 	void RuleAstVisitor::Visit(GlrAssignment* node)
 	{
 		auto newNode = vl::Ptr(new GlrAssignment);
-		CopyFields(node, newNode.Obj());
-		this->result = newNode;
-	}
-
-	void RuleAstVisitor::Visit(GlrLeftRecursionPlaceholder* node)
-	{
-		auto newNode = vl::Ptr(new GlrLeftRecursionPlaceholder);
-		CopyFields(node, newNode.Obj());
-		this->result = newNode;
-	}
-
-	void RuleAstVisitor::Visit(GlrLeftRecursionInjectContinuation* node)
-	{
-		auto newNode = vl::Ptr(new GlrLeftRecursionInjectContinuation);
 		CopyFields(node, newNode.Obj());
 		this->result = newNode;
 	}
@@ -11720,27 +8876,6 @@ namespace vl::glr::parsergen::copy_visitor
 		this->result = newNode;
 	}
 
-	void RuleAstVisitor::Visit(GlrLeftRecursionPlaceholderClause* node)
-	{
-		auto newNode = vl::Ptr(new GlrLeftRecursionPlaceholderClause);
-		CopyFields(node, newNode.Obj());
-		this->result = newNode;
-	}
-
-	void RuleAstVisitor::Visit(GlrLeftRecursionInjectClause* node)
-	{
-		auto newNode = vl::Ptr(new GlrLeftRecursionInjectClause);
-		CopyFields(node, newNode.Obj());
-		this->result = newNode;
-	}
-
-	void RuleAstVisitor::Visit(GlrPrefixMergeClause* node)
-	{
-		auto newNode = vl::Ptr(new GlrPrefixMergeClause);
-		CopyFields(node, newNode.Obj());
-		this->result = newNode;
-	}
-
 	vl::Ptr<GlrCondition> RuleAstVisitor::CopyNode(GlrCondition* node)
 	{
 		if (!node) return nullptr;
@@ -11789,22 +8924,6 @@ namespace vl::glr::parsergen::copy_visitor
 		return this->result.Cast<GlrAssignment>();
 	}
 
-	vl::Ptr<GlrLeftRecursionPlaceholder> RuleAstVisitor::CopyNode(GlrLeftRecursionPlaceholder* node)
-	{
-		if (!node) return nullptr;
-		Visit(node);
-		this->result->codeRange = node->codeRange;
-		return this->result.Cast<GlrLeftRecursionPlaceholder>();
-	}
-
-	vl::Ptr<GlrLeftRecursionInjectContinuation> RuleAstVisitor::CopyNode(GlrLeftRecursionInjectContinuation* node)
-	{
-		if (!node) return nullptr;
-		Visit(node);
-		this->result->codeRange = node->codeRange;
-		return this->result.Cast<GlrLeftRecursionInjectContinuation>();
-	}
-
 	vl::Ptr<GlrRule> RuleAstVisitor::CopyNode(GlrRule* node)
 	{
 		if (!node) return nullptr;
@@ -11839,18 +8958,6 @@ namespace vl::glr::parsergen::copy_visitor
 		return CopyNode(static_cast<GlrClause*>(node)).Cast<GlrCreateClause>();
 	}
 
-	vl::Ptr<GlrLeftRecursionInjectClause> RuleAstVisitor::CopyNode(GlrLeftRecursionInjectClause* node)
-	{
-		if (!node) return nullptr;
-		return CopyNode(static_cast<GlrClause*>(node)).Cast<GlrLeftRecursionInjectClause>();
-	}
-
-	vl::Ptr<GlrLeftRecursionPlaceholderClause> RuleAstVisitor::CopyNode(GlrLeftRecursionPlaceholderClause* node)
-	{
-		if (!node) return nullptr;
-		return CopyNode(static_cast<GlrClause*>(node)).Cast<GlrLeftRecursionPlaceholderClause>();
-	}
-
 	vl::Ptr<GlrLoopSyntax> RuleAstVisitor::CopyNode(GlrLoopSyntax* node)
 	{
 		if (!node) return nullptr;
@@ -11879,12 +8986,6 @@ namespace vl::glr::parsergen::copy_visitor
 	{
 		if (!node) return nullptr;
 		return CopyNode(static_cast<GlrClause*>(node)).Cast<GlrPartialClause>();
-	}
-
-	vl::Ptr<GlrPrefixMergeClause> RuleAstVisitor::CopyNode(GlrPrefixMergeClause* node)
-	{
-		if (!node) return nullptr;
-		return CopyNode(static_cast<GlrClause*>(node)).Cast<GlrPrefixMergeClause>();
 	}
 
 	vl::Ptr<GlrPushConditionSyntax> RuleAstVisitor::CopyNode(GlrPushConditionSyntax* node)
@@ -12022,18 +9123,6 @@ ClauseVisitor
 	void ClauseVisitor::Visit(GlrReuseClause* node)
 	{
 	}
-
-	void ClauseVisitor::Visit(GlrLeftRecursionPlaceholderClause* node)
-	{
-	}
-
-	void ClauseVisitor::Visit(GlrLeftRecursionInjectClause* node)
-	{
-	}
-
-	void ClauseVisitor::Visit(GlrPrefixMergeClause* node)
-	{
-	}
 }
 
 
@@ -12114,83 +9203,6 @@ namespace vl::glr::parsergen::json_visitor
 		WriteToken(node->type);
 		EndField();
 	}
-	void RuleAstVisitor::PrintFields(GlrLeftRecursionInjectClause* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"continuation"));
-		Print(node->continuation.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"rule"));
-		Print(node->rule.Obj());
-		EndField();
-	}
-	void RuleAstVisitor::PrintFields(GlrLeftRecursionInjectContinuation* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"configuration"));
-		switch (node->configuration)
-		{
-		case vl::glr::parsergen::GlrLeftRecursionConfiguration::Multiple:
-			WriteString(vl::WString::Unmanaged(L"Multiple"));
-			break;
-		case vl::glr::parsergen::GlrLeftRecursionConfiguration::Single:
-			WriteString(vl::WString::Unmanaged(L"Single"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"flags"));
-		BeginArray();
-		for (auto&& listItem : node->flags)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"injectionTargets"));
-		BeginArray();
-		for (auto&& listItem : node->injectionTargets)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		switch (node->type)
-		{
-		case vl::glr::parsergen::GlrLeftRecursionInjectContinuationType::Optional:
-			WriteString(vl::WString::Unmanaged(L"Optional"));
-			break;
-		case vl::glr::parsergen::GlrLeftRecursionInjectContinuationType::Required:
-			WriteString(vl::WString::Unmanaged(L"Required"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-	}
-	void RuleAstVisitor::PrintFields(GlrLeftRecursionPlaceholder* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"flag"));
-		WriteToken(node->flag);
-		EndField();
-	}
-	void RuleAstVisitor::PrintFields(GlrLeftRecursionPlaceholderClause* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"flags"));
-		BeginArray();
-		for (auto&& listItem : node->flags)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-	}
 	void RuleAstVisitor::PrintFields(GlrLoopSyntax* node)
 	{
 		BeginField(vl::WString::Unmanaged(L"delimiter"));
@@ -12254,12 +9266,6 @@ namespace vl::glr::parsergen::json_visitor
 		EndField();
 		BeginField(vl::WString::Unmanaged(L"type"));
 		WriteToken(node->type);
-		EndField();
-	}
-	void RuleAstVisitor::PrintFields(GlrPrefixMergeClause* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"rule"));
-		Print(node->rule.Obj());
 		EndField();
 	}
 	void RuleAstVisitor::PrintFields(GlrPushConditionSyntax* node)
@@ -12643,48 +9649,6 @@ namespace vl::glr::parsergen::json_visitor
 		EndObject();
 	}
 
-	void RuleAstVisitor::Visit(GlrLeftRecursionPlaceholderClause* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"LeftRecursionPlaceholderClause"), node);
-		PrintFields(static_cast<GlrClause*>(node));
-		PrintFields(static_cast<GlrLeftRecursionPlaceholderClause*>(node));
-		EndObject();
-	}
-
-	void RuleAstVisitor::Visit(GlrLeftRecursionInjectClause* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"LeftRecursionInjectClause"), node);
-		PrintFields(static_cast<GlrClause*>(node));
-		PrintFields(static_cast<GlrLeftRecursionInjectClause*>(node));
-		EndObject();
-	}
-
-	void RuleAstVisitor::Visit(GlrPrefixMergeClause* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"PrefixMergeClause"), node);
-		PrintFields(static_cast<GlrClause*>(node));
-		PrintFields(static_cast<GlrPrefixMergeClause*>(node));
-		EndObject();
-	}
-
 	RuleAstVisitor::RuleAstVisitor(vl::stream::StreamWriter& _writer)
 		: vl::glr::JsonVisitorBase(_writer)
 	{
@@ -12759,32 +9723,6 @@ namespace vl::glr::parsergen::json_visitor
 		EndObject();
 	}
 
-	void RuleAstVisitor::Print(GlrLeftRecursionPlaceholder* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"LeftRecursionPlaceholder"), node);
-		PrintFields(static_cast<GlrLeftRecursionPlaceholder*>(node));
-		EndObject();
-	}
-
-	void RuleAstVisitor::Print(GlrLeftRecursionInjectContinuation* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"LeftRecursionInjectContinuation"), node);
-		PrintFields(static_cast<GlrLeftRecursionInjectContinuation*>(node));
-		EndObject();
-	}
-
 	void RuleAstVisitor::Print(GlrRule* node)
 	{
 		if (!node)
@@ -12834,16 +9772,11 @@ namespace vl::glr::parsergen::traverse_visitor
 	void RuleAstVisitor::Traverse(GlrClause* node) {}
 	void RuleAstVisitor::Traverse(GlrCondition* node) {}
 	void RuleAstVisitor::Traverse(GlrCreateClause* node) {}
-	void RuleAstVisitor::Traverse(GlrLeftRecursionInjectClause* node) {}
-	void RuleAstVisitor::Traverse(GlrLeftRecursionInjectContinuation* node) {}
-	void RuleAstVisitor::Traverse(GlrLeftRecursionPlaceholder* node) {}
-	void RuleAstVisitor::Traverse(GlrLeftRecursionPlaceholderClause* node) {}
 	void RuleAstVisitor::Traverse(GlrLoopSyntax* node) {}
 	void RuleAstVisitor::Traverse(GlrNotCondition* node) {}
 	void RuleAstVisitor::Traverse(GlrOptionalSyntax* node) {}
 	void RuleAstVisitor::Traverse(GlrOrCondition* node) {}
 	void RuleAstVisitor::Traverse(GlrPartialClause* node) {}
-	void RuleAstVisitor::Traverse(GlrPrefixMergeClause* node) {}
 	void RuleAstVisitor::Traverse(GlrPushConditionSyntax* node) {}
 	void RuleAstVisitor::Traverse(GlrRefCondition* node) {}
 	void RuleAstVisitor::Traverse(GlrRefSyntax* node) {}
@@ -12864,16 +9797,11 @@ namespace vl::glr::parsergen::traverse_visitor
 	void RuleAstVisitor::Finishing(GlrClause* node) {}
 	void RuleAstVisitor::Finishing(GlrCondition* node) {}
 	void RuleAstVisitor::Finishing(GlrCreateClause* node) {}
-	void RuleAstVisitor::Finishing(GlrLeftRecursionInjectClause* node) {}
-	void RuleAstVisitor::Finishing(GlrLeftRecursionInjectContinuation* node) {}
-	void RuleAstVisitor::Finishing(GlrLeftRecursionPlaceholder* node) {}
-	void RuleAstVisitor::Finishing(GlrLeftRecursionPlaceholderClause* node) {}
 	void RuleAstVisitor::Finishing(GlrLoopSyntax* node) {}
 	void RuleAstVisitor::Finishing(GlrNotCondition* node) {}
 	void RuleAstVisitor::Finishing(GlrOptionalSyntax* node) {}
 	void RuleAstVisitor::Finishing(GlrOrCondition* node) {}
 	void RuleAstVisitor::Finishing(GlrPartialClause* node) {}
-	void RuleAstVisitor::Finishing(GlrPrefixMergeClause* node) {}
 	void RuleAstVisitor::Finishing(GlrPushConditionSyntax* node) {}
 	void RuleAstVisitor::Finishing(GlrRefCondition* node) {}
 	void RuleAstVisitor::Finishing(GlrRefSyntax* node) {}
@@ -13094,46 +10022,6 @@ namespace vl::glr::parsergen::traverse_visitor
 		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
 	}
 
-	void RuleAstVisitor::Visit(GlrLeftRecursionPlaceholderClause* node)
-	{
-		if (!node) return;
-		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-		Traverse(static_cast<GlrClause*>(node));
-		Traverse(static_cast<GlrLeftRecursionPlaceholderClause*>(node));
-		for (auto&& listItem : node->flags)
-		{
-			InspectInto(listItem.Obj());
-		}
-		Finishing(static_cast<GlrLeftRecursionPlaceholderClause*>(node));
-		Finishing(static_cast<GlrClause*>(node));
-		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-	}
-
-	void RuleAstVisitor::Visit(GlrLeftRecursionInjectClause* node)
-	{
-		if (!node) return;
-		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-		Traverse(static_cast<GlrClause*>(node));
-		Traverse(static_cast<GlrLeftRecursionInjectClause*>(node));
-		InspectInto(node->continuation.Obj());
-		InspectInto(node->rule.Obj());
-		Finishing(static_cast<GlrLeftRecursionInjectClause*>(node));
-		Finishing(static_cast<GlrClause*>(node));
-		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-	}
-
-	void RuleAstVisitor::Visit(GlrPrefixMergeClause* node)
-	{
-		if (!node) return;
-		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-		Traverse(static_cast<GlrClause*>(node));
-		Traverse(static_cast<GlrPrefixMergeClause*>(node));
-		InspectInto(node->rule.Obj());
-		Finishing(static_cast<GlrPrefixMergeClause*>(node));
-		Finishing(static_cast<GlrClause*>(node));
-		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-	}
-
 	void RuleAstVisitor::InspectInto(GlrCondition* node)
 	{
 		if (!node) return;
@@ -13181,33 +10069,6 @@ namespace vl::glr::parsergen::traverse_visitor
 		Traverse(node->field);
 		Traverse(node->value);
 		Finishing(static_cast<GlrAssignment*>(node));
-		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-	}
-
-	void RuleAstVisitor::InspectInto(GlrLeftRecursionPlaceholder* node)
-	{
-		if (!node) return;
-		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-		Traverse(static_cast<GlrLeftRecursionPlaceholder*>(node));
-		Traverse(node->flag);
-		Finishing(static_cast<GlrLeftRecursionPlaceholder*>(node));
-		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-	}
-
-	void RuleAstVisitor::InspectInto(GlrLeftRecursionInjectContinuation* node)
-	{
-		if (!node) return;
-		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-		Traverse(static_cast<GlrLeftRecursionInjectContinuation*>(node));
-		for (auto&& listItem : node->flags)
-		{
-			InspectInto(listItem.Obj());
-		}
-		for (auto&& listItem : node->injectionTargets)
-		{
-			InspectInto(listItem.Obj());
-		}
-		Finishing(static_cast<GlrLeftRecursionInjectContinuation*>(node));
 		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
 	}
 
@@ -13262,71 +10123,52 @@ namespace vl::glr::parsergen
 {
 	void ParserGenRuleParserData(vl::stream::IStream& outputStream)
 	{
-		static const vl::vint dataLength = 14903; // 207517 bytes before compressing
+		static const vl::vint dataLength = 10130; // 132882 bytes before compressing
 		static const vl::vint dataBlock = 256;
-		static const vl::vint dataRemain = 55;
-		static const vl::vint dataSolidRows = 58;
-		static const vl::vint dataRows = 59;
+		static const vl::vint dataRemain = 146;
+		static const vl::vint dataSolidRows = 39;
+		static const vl::vint dataRows = 40;
 		static const char* compressed[] = {
-			"\x9D\x2A\x03\x00\x2F\x3A\x00\x00\x27\x00\x01\x82\x80\x08\x0B\x82\x81\x82\x06\x89\x82\x88\x0A\x86\x06\x84\x0A\x0A\x97\x0A\x9C\x0A\x82\x12\x84\x80\x09\xAD\x0A\x92\x1A\x81\x2A\x84\x2B\x0A\xDC\x0A\x9F\x2A\x83\x32\x84\x34\x0A\x8C\x4A\x8F\x4A\x82\x4A\x84\x4B\x0A\xA1\x4A\x87\x5A\x86\x56\x84\x5C\x0A\xC5\x1E\x09\x8F\x7D\x9E\x9F\x9E\x0A\x80\x3F\x9F\x91\xA3\xA2\x9F\xA2\x46\xFF\x48\xA6\xAB\xA3\xA1\xA6\xA2\x0A\xC9\x8A\xB1\xA9\xA7\xA7\xA2\xAA\x4C\xD8\x8E\xA1\xAA\x81\x02\xAC\xA8\x3C\xD5\x9F\xB7\xA1\xB1\xAD\xB3\xAD\x67\xE0\x86\x92\xA6\xA8\xA3\xB0\xB7\x69\xE4\xAB\xA2\xB1\xB8\xBB\xB8\xB3\x77\xE8\x86\x9E\xA9\x84\xBD\xBC\xB5\x03\xEC\xAF\xB3\xA5\xBC\xC3\xBE\xB9\x81\xF4\x87\xD6\xB9\xC0\xBF\x80\x01\x5D\x83\xED\xA6\xCD\xC2\xBD\xCA\xC0\x02\x82\xC5\xD3\xCC\xCA\xCA\xCF\xCD\x9F\x8B\xD4\xD9\xCA\xC7\xC8\xC4\xD2\x8E\xA8\xD6\xCA\xD8\xC9\x82\xCC\xD1\x9D\xA0\xF2\xD0\xD1\xD6\xD0\xC6\xD6\xA7\xAE\xE5\xD8\xD7\xDA\xDD\xD4\xDF\xAB\xC0\xED\xC2\xAB\xDA\xE1\xDC\xE2\xBF\xC8\xC1\xEA\xE3\xE7\xD6\xDB\xD1\xC6\xBD\xCC\xE7\xEE\xE4\xDC\xE9\xE9\xD2\xD5\xD1\xF7",
-			"\xEA\xE8\xEC\xEF\xE2\xDE\xB1\xF4\xD3\xDF\xE2\xF1\xF3\xDA\x02\x83\x11\xC4\xF6\xEE\xF1\xF6\xF4\xDB\xEE\xF1\xF0\xF1\xF4\xF9\xEF\xFB\xE0\x84\x2B\xE3\xFC\xFF\xF0\xF7\xF9\xFF\x75\x71\x81\x01\xFB\x7E\x7D\x7F\x7B\x01\x86\x05\x80\x82\x07\x80\x8D\x82\x80\x0F\xB8\x79\x72\x84\xCB\x54\x8D\x70\x78\x16\x94\x78\x87\x86\x13\x9C\x85\x86\x87\x17\x9D\x82\x8B\x87\x23\xA1\x84\x8B\x89\x26\xA9\x8A\x85\x89\x2B\xA8\x8D\x8A\x8A\xD9\x60\x87\x73\x01\x0B\x8E\x86\x83\x8D\x0C\xB8\x86\x8D\x8E\x3C\xBB\x8E\x8C\x84\x3A\x80\x9D\x8E\x90\x3F\x99\x81\x8C\x8B\x47\xAE\x89\x90\x8C\xDF\x48\x9D\x92\x92\x4F\x8C\x92\x7C\x91\x54\x86\x91\x97\x8B\x58\x8B\x99\x97\x75\x0C\x7D\x56\x7E\x8C\x5A\xA1\x97\x96\x98\x53\x96\x95\x98\x98\x63\xA9\x97\x9A\x93\x6B\x90\x9D\x9A\x94\x5F\xAC\x91\x9E\x9B\x73\xB0\x91\x82\x99\x75\x9B\x9F\x9A\x9E\x79\xA4\x9D\x9E\x9A\x7F\xBB\x9E\x9D\x42\x09\x35\x85\x94\x9A\x82\x80\xA7\x9C\xA2\x81\x8D\xAB\xA2\x9C\x8F\xB4\x91\xA6\x9D\x11\x8C\xA3\xA4\x9F\x97\x83\xA5\xA4\xA4\x9B\x92\xAD\xA7\x70\x0A\x06\xA8\x9D\xA6\x8A\x9F\xA8\xA6\xA9\x9A\x81\x93\xAA\x41",
-			"\x0B\x22\xA6\xA4\xAA\xA5\xAA\xAF\xAB\x40\x0C\x2E\xAC\xA6\xAC\xB7\x83\x9B\xA8\xAE\x9E\xBC\xA4\xA6\xAF\xC7\x4D\x06\xAD\xAF\xBA\xB3\xA5\xB1\xAE\x45\x86\xB9\xB0\xB2\x00\x0E\x4E\x94\xA9\x89\x91\xBE\xA2\x41\x0F\x03\xBF\xAF\xB1\xC4\x8B\xB9\xB7\xA1\xCC\xBB\xA8\xB7\xB5\xDA\xA0\xBC\xB7\xB6\xDE\xA1\xB7\xA8\xB0\xA9\x9F\xB7\xBA\xBA\xE9\xA6\xBD\xBB\xB8\xE2\xA5\xB0\xBF\xBA\xEE\xB1\xAC\xBA\xBD\xF5\x92\xB9\x40\x04\xD6\xB4\xB3\xBF\xBB\xF2\x81\xCA\xB3\xBF\xF8\x80\x01\x05\xBF\x00\xC3\xC2\xC0\xB3\x12\x08\xC5\xC2\xBC\x13\x06\xA0\x47\xB3\xB0\xBA\xB5\xC7\xB4\xE8\x8F\xCA\xC3\xC6\xDD\x9C\xC4\xBA\xC7\xF1\xA0\xCE\xBF\xC2\x1F\xDD\xC6\xC9\xC9\x28\xE1\xC7\xCA\xCA\x29\xE3\xC2\xC9\xC2\x2B\xFE\xB5\x06\xC3\x16\xD9\xC5\xCF\xBD\x37\xF9\xB8\xC4\xCE\x3B\xFF\x86\x06\xA1\x12\x54\xC6\xCD\xCF\x04\xF9\xC5\xD0\xD1\x24\xEC\xCA\xD2\xCB\x31\xF0\xCD\xCA\xD3\x4B\xD0\xDC\xD3\xD3\x1A\xCD\xD5\xD4\xD5\x46\xC9\xDE\xBC\x42\x7B\x48\xDF\xCB\xD5\x51\xE0\xD3\xD6\xB8\x19\x34\xCE\xD6\xD5\x46\xDA\x06\xD8\xB4\x67\xD8\xDD\xD9\xD8\x59\xDF\xD1\xDC\xDA\x6F\xE3\xD6\xDE\xD4\x78",
-			"\xE2\xD9\xDF\xDC\x6E\xEC\xDE\xDF\xC5\x7F\xC3\xD1\xE0\xCF\x09\x5B\x0B\xD8\xE0\x88\xC2\xE9\xE0\xE1\x8B\xFF\x84\x46\xD0\x8C\xCA\xE2\xE5\xE4\x02\x5D\x07\xE3\xE4\x3F\xBB\x40\xE5\x40\x1F\x17\xE4\xE6\xCE\x83\xE0\xED\xE3\xD1\xA1\xE4\xE3\xEA\xD6\x7B\xF5\xD9\xE9\xE9\xA8\xFA\xDE\xE8\xDF\x70\xEA\xEF\xEA\xEC\xB0\xF7\xD3\xED\xE9\x20\x1E\xE2\xE8\xE6\xA6\xFC\xED\xE9\xED\xAB\xE3\xE1\x0A\xA1\x16\x5B\xED\xEF\xE7\xC7\xFB\xE8\xF3\xEF\xB4\xCD\xFC\xEA\xDC\xCE\xE7\xE0\xF7\xF3\x74\xD4\xFD\xDE\xF4\xD5\xD8\xFB\xB7\x08\xBA\xC9\xFE\xF4\xF3\xD6\xF1\xE1\x80\x09\xDD\xE0\xFA\xF6\xB8\x25\x25\xF3\xF7\xF9\xB6\xC0\xF7\xEC\xFB\xC1\xFE\xEB\xFA\xFC\xD9\xF4\xF7\xF6\xFD\xE2\xF0\xFF\xF9\x90\x26\x2A\xF5\xFF\xF2\xF3\x60\x83\xFF\x4A\x74\x81\xEF\x41\x85\x80\xE6\x78\x7D\xFB\x51\x7A\x81\xF8\x42\x87\x7E\x0F\x99\x7D\x03\xFB\x71\x83\x05\xA1\x7E\x82\x0F\x58\x21\xD7\x17\x8E\x80\x04\xA0\x38\x05\xFE\x70\x82\x07\x83\x86\x80\x12\x89\x85\x82\x1D\x85\x86\x08\xAA\x82\x82\x14\x94\x83\x84\x2B\x87\x84\x0C\xAD\x83\x86\x0C\x93\x86\x7D\x38\x8C\x82\x0B\xB9\x8C\x83\x17\xAC\x87",
-			"\x38\x29\x01\x84\x0D\x80\x0A\x04\x21\xB6\x83\x87\x3A\x95\x85\x0A\xB2\x8F\x87\x25\x87\x85\x89\x3E\x8C\x8A\x14\xCF\x8B\x04\x23\x8E\x8E\x84\x4F\x93\x88\x16\xDB\x81\x87\x2C\x9E\x8C\x8B\x43\x9A\x89\x17\xE0\x87\x89\x02\xAC\x06\x8A\x51\x9F\x8B\x18\xEB\x81\x8C\x35\xAD\x8C\x8C\x57\x8C\x8D\x19\xD0\x8C\x86\xFD\x75\x8F\x86\x49\x94\x8D\x1E\xE2\x8F\x8C\x39\xB1\x8D\x8F\x80\x93\x8C\x1F\x82\x9E\x8C\x42\xB0\x8E\x87\x1A\x26\x7A\xBC\x2E\x08\x8D\x3B\x88\x89\x21\x2F\x0D\x93\x1E\x85\x9F\x8E\x43\xBE\x89\x8D\x87\x8E\x92\x12\x85\x60\x06\x49\xBD\x82\x93\x00\x11\x06\x27\xA3\x7C\x22\x45\x94\x90\x93\x97\x80\x97\x20\x95\x9C\x94\x54\x81\x95\x95\xAA\x87\x95\x2C\x99\x93\x92\x5A\x9F\x95\x96\x2B\x93\x05\xF7\x34\x03\x94\x3C\xB7\x97\x97\x76\x98\x97\x2B\xAE\x96\x93\x61\x81\x2D\x06\xBD\x8F\x91\x30\xC0\x9E\x97\x65\x8E\x9D\x99\xD0\x8A\x99\x34\x9B\x93\x97\x54\x82\x9D\x98\xD8\x90\x97\x35\xDA\x9C\x98\x69\x9E\x9C\x9A\xDB\x85\x62\x0D\x5D\x77\x07\xEE\x78\x05\x7B\x39\x06\x52\x0E\x49\x90\x9D\xD2\x7B\x04\x9D\x00\x1C\x06\xA1\x3D\x00\x9E\x79\x7E\x06\x50\x3F\x06",
-			"\x50\x10\x70\x91\x09\x7A\xB2\x91\x9C\xD5\x86\x98\x40\x83\xAD\x9B\x76\x8F\x9F\x9B\x7A\x85\xA1\x42\x87\xA6\xA1\x69\x80\x02\x08\xFE\x96\x94\x43\x8B\xAE\xA1\x55\x84\x9C\x9B\x13\xB6\xA1\x40\xFE\x53\x09\x88\x96\x9A\xA1\x1A\xB4\x3C\x11\x1E\xA2\xA1\xD2\x45\x0C\xA4\xD9\x97\xA2\x4A\x9B\xA8\xA3\x8A\xBF\x98\xA4\x2F\xB9\xA1\x4C\xAE\xAC\x58\x23\x28\xA5\xA5\x08\xA1\xA4\x4C\x92\xA4\xA7\x8F\xB2\xA4\xA7\x39\xAF\x8B\x11\x37\xAB\xA4\x82\xBF\xA6\xA7\x3D\xA5\xA7\x51\xCA\xA9\xA9\x94\xAC\xA5\xA8\x3B\xA8\xAA\x40\x48\x0D\x7B\x24\x1D\x7A\x09\xDD\x6B\x0A\xA1\x4C\x04\xA9\x29\x4D\x08\x9E\x4E\x10\x9F\x13\x06\x50\x0B\xAE\xB4\x3E\x23\xC6\x72\x0A\xA1\x53\x06\xAD\xA8\x8C\xA9\xA8\x40\xAD\xA0\x5C\xDB\x54\x0B\xB6\x8B\xAE\xA9\x46\xAD\xA8\x4E\xF2\xAC\xAE\x8A\xB3\xAF\xAD\x7D\xBA\xA7\x5D\xFB\xAE\x7B\x2A\x06\x50\x24\xC6\x77\x0A\x5D\xFA\xA0\xAB\xC1\x8D\xB4\xB1\x4F\xB1\xB1\x5E\xFF\xA8\xAE\x85\x98\x0B\xB1\x94\xA4\xB2\x60\x90\xB3\xB3\xC0\xB3\xA1\xB3\x8F\xA0\xB5\x50\x59\x08\xB2\xCF\xB1\xAE\xAF\xA6\xB2\xA9\x6A\x80\xB8\xB5\xD6\x9B\xB0\xA1\x5A\x05\xB6\x6B\x9F",
-			"\xBB\xB5\xCA\x8E\xB2\xB2\x6E\xB6\xB4\x67\xB9\xBA\xB2\xDA\xB3\xB4\x59\x5B\x1D\x7A\x48\x26\x99\x39\x2E\x1D\x7E\x0B\x86\x44\x24\x71\xAA\xBD\xB4\x30\x30\x99\x0C\x86\x42\x0E\x6C\xDD\x36\x24\xE3\x64\x0E\x50\x65\x13\xBA\x6F\xAF\xB5\xB7\xDE\xA7\xB4\xBB\xBF\xAC\xB8\x78\xE3\xBB\xBB\xF2\x9F\xBE\xBC\xE2\xA8\xBC\x6B\xE4\xB7\xBC\x66\x66\x0A\xBB\xC9\x27\x0C\x7C\xE9\xBD\xBC\xFA\xB6\xBB\xBD\xEA\xBA\xB6\x68\x9D\xB1\xBC\xFC\xB5\xBE\xBF\xF7\xBA\xBD\x01\xA8\x2B\xB8\x71\x69\x0B\xBE\x00\xC3\x3A\x1A\x08\xC2\xC1\xFE\x8D\xC4\xBD\x01\xDE\xB9\x84\xD7\x3B\x0C\x06\xD2\xC3\x38\x6C\x16\xC1\x68\xDD\xBB\xC2\xEF\x6D\x0D\x7B\x6E\x1D\x7B\x1B\x5D\x70\x0E\x43\x71\x0A\xC3\xA0\x92\x0C\x3C\xF3\x06\x50\x3A\x28\xC2\x21\x75\x06\x52\x1D\x06\x57\x0E\x78\xB8\x0F\xC5\xBC\xBD\xC0\x84\x89\xCF\xC1\xFC\x97\xC5\xC7\xFF\xA0\xCB\x84\xB8\xBF\x41\x3C\x38\xC7\xB6\xFC\xBB\xC6\x90\xBC\xCF\xC7\x26\xFA\xC6\xC7\x4F\xC1\xCA\x74\x7A\x0D\x7B\x3D\x07\xCB\xB7\x48\xD9\xC4\x91\xD8\xCC\xCA\xE4\x7C\x0F\xCA\xFB\xBA\xC9\x92\xD0\xCB\xCB\x21\x7D\x08\xCC\x1C\xC5\xCD\x9A\xE3\xC2\xCB\x28",
-			"\xC3\xCC\xCD\x6F\xC2\xCE\x9C\xD9\xC6\x20\x3F\x28\xCE\xC1\x4E\xCA\xCC\x9E\xEE\xC3\x89\x3F\x37\xCA\xC9\x79\xD0\xCC\x93\xFC\xCB\xC9\x42\xC1\xD3\xCE\x5D\xCB\xCD\xE9\x00\x1F\xCE\x32\xC2\xD7\x38\x81\x0D\xD3\x69\x82\x12\xD3\x38\xF4\xC9\xD1\x00\x03\x11\xA5\x83\xD0\x94\x42\x1B\xD6\xD0\x84\xC7\xD3\xA5\xE1\xCF\x41\x42\x1F\xD2\xD4\x98\xDD\x3A\x21\x27\xDD\xC3\x43\x2C\xD2\xCF\x80\xDD\xC0\x22\x2F\xDF\xD1\x14\x89\x14\xD6\x88\xC4\xD5\x90\x0A\x18\xD7\x51\xCA\xD6\xD7\x7B\xD0\xD6\xA3\xB9\xDF\xD7\x54\xC3\xD8\xD8\xDD\x2B\x11\xF7\x2A\x25\xC1\xE3\x0D\x15\x7B\x8E\x06\x50\x4B\x4D\xD8\xD4\xE4\x50\x10\x9E\x91\x06\x52\x4B\x54\xDD\xC3\x49\x06\x54\x12\x86\x55\x11\xAF\xC6\xDD\xCC\x61\xC9\x38\x26\xDC\xC6\xDF\x72\x17\x13\xDC\x5D\xEE\xDD\xD8\xEF\xC1\xD9\x1E\x98\x1D\x7B\x4C\x1D\x7A\x13\xDD\x7B\x12\xA1\x1C\x1D\xDD\x02\x9D\x10\x9E\x9E\x06\x53\x27\x77\xC0\x14\x43\x72\x26\x78\xA2\x1D\xDE\xBC\xC4\xDB\xE1\xD1\x63\x12\xE1\xB1\xCA\xDC\xA7\xFC\xB4\x14\x88\xC7\xDC\xDC\x96\xD8\xE3\xC4\x8C\xE1\xE3\x3C\xA5\x16\xE2\xE5\xD5\xD5\xA8\xA3\xE2\xE2\x50\xE5\xE4\xB0",
-			"\xA6\x00\xE5\xC6\xF1\xDD\xE2\x85\xB4\x21\xDD\x22\xE7\xE4\xC9\xB1\xE4\xE6\x8E\xD7\xE4\xE5\x37\xF0\xDE\xCE\xDE\x78\x15\x3B\xE9\x12\xE5\x1B\xE8\xD9\xCE\x8D\xEA\xE2\x93\xF5\xE3\xA2\xAA\x00\xEA\xD1\xB6\xE1\xE4\xA6\xEB\xE3\xE7\x2D\xE2\xE9\xD3\xD2\xEB\x85\x55\x0A\xED\xDA\x50\xE3\xE9\xD4\xC5\xE8\xEA\xA2\xC8\x7C\x15\xDD\x6D\x15\xF7\x36\x20\xE7\x84\x2F\x16\x50\xB0\x17\xE9\xC1\x31\x10\x9E\x59\x06\x53\x16\x77\xD4\x16\xA1\x35\x16\x50\x5B\x2A\xEA\xE6\xA0\x97\x15\xF7\x38\x25\xEC\x83\x39\x15\x7B\xBA\x06\x53\x2E\x77\xE4\x3E\x5E\x30\x9D\x17\x86\x5E\x17\x9D\xBF\x16\x50\x60\x06\x51\x18\x84\xEE\xE9\xD0\xDC\xE3\xE6\xC9\xCB\xEC\xEA\x93\xF8\xE7\xD4\x98\xD2\x19\xEE\x43\x1D\x7B\xC4\x1D\x79\x31\x06\x56\x19\xC8\xCF\x47\x18\xF0\x88\x1A\xA1\x49\x17\xCE\x65\x06\x53\x19\x86\x4C\x18\x3C\xCD\x16\x50\x67\x26\xF4\xF2\x78\xE7\xE8\xEE\xBA\xFA\xF2\xE6\x8F\x1E\x50\xD0\x17\xF5\xEF\x99\xF9\xEB\xCD\xC3\xFF\xF2\xBB\xF6\xF1\xD7\xE0\xB1\x1B\xEE\x52\x1D\x7B\xD3\x1D\x78\x35\x06\x55\x1A\xE1\xFF\x46\x1A\xF0\x97\x1A\xA1\x58\x17\xCF\x6C\x06\x52\x1B\x86\x5B\x1A",
-			"\xF5\xDE\xE5\xF9\xA7\xE4\xFF\xFC\x5B\xE7\xFB\xF2\xDA\xEC\xFD\xD3\x9C\x1D\x7B\xDD\x1D\x7A\x37\x5D\x7F\x1A\x43\x60\x1B\xFC\xDD\x21\x1C\x3C\xE2\x16\x51\x71\x37\xCC\x1C\x86\x25\x0E\x86\x26\x0E\xF0\x47\x0E\x86\x28\x0E\xF8\x7D\x7E\xE6\x79\x7E\xE5\x74\x7C\xE8\x7A\x80\x0E\x8C\x80\x0F\x86\x7C\x0D\x83\x47\xE9\x09\x80\x14\x8D\x5A\xEA\x06\x28\xEB\x08\x81\x0B\x80\x81\xC8\x7A\x7E\x95\x78\x79\x21\x85\x81\xEB\x74\x42\xEC\x0D\x3D\xED\x0D\x3D\xEE\x0D\x3D\xEF\x06\x28\xF0\x0E\x81\xC3\x11\x0F\xF0\x42\x0F\x86\x23\x0F\x77\x64\x0F\x86\x25\x0F\x86\x26\x0F\x32\x85\x82\x13\x8F\x81\x19\x82\x81\x44\x80\x82\x29\x47\x0F\x3F\x87\x82\x42\x8B\x84\x11\x86\x84\x23\x89\x7C\x24\x8A\x84\x4D\x83\x84\x4E\x86\x34\xF8\x06\x28\xF9\x09\x84\x4F\x82\x82\xB9\x7A\x7C\x5B\x86\x82\x5F\x81\x84\x53\x8C\x5C\xFA\x0A\x85\x5D\x81\x85\x61\x85\x84\x54\x8B\x86\xCC\x5B\x0F\x66\x8C\x7B\x60\x87\x86\x50\x83\x87\x5C\x80\x87\x62\x80\x84\x6A\x8C\x84\x78\x85\x85\xFC\x5C\x0F\x6F\x8E\x85\x72\x85\x87\x80\x86\x87\x79\x83\x86\x86\x8B\x87\x6C\x87\x88\x52\x88\x88\xCB\x1D\x0F\x86\x2E",
-			"\x0F\x7F\x88\x86\x81\x81\x87\x84\x8C\x87\x83\x87\x89\xC8\x67\x67\x00\x0E\x17\x02\x1C\x89\x82\x82\x89\x95\x89\x88\x8C\x8A\x88\x69\x86\x89\xA0\x88\x89\x41\x21\x00\x9E\x80\x00\xEA\x11\x20\x04\x0B\x8A\xAD\x8F\x20\x07\x00\x8B\xF4\x1A\x00\xB4\x89\x10\x0D\x07\x8B\xA7\x83\x3A\x10\x0B\x8A\x04\x25\x3A\x15\x0A\x8B\x03\x18\x01\xC2\x82\x10\x1B\x0B\x8A\xAB\x8D\x5A\x1C\x05\x8C\x9C\x3C\x8C\x00\x02\x02\xCE\x85\x88\xA3\x83\x8D\x8B\x85\x8D\xA5\x82\x8A\xD6\x83\x89\x77\x89\x8D\xA1\x8A\x87\xDC\x88\x8A\xC8\x35\x02\xC8\x8C\x5F\x26\x03\x8E\xE0\x84\x89\xE7\x8B\x8D\xD7\x8E\x8D\xEB\x84\x8A\xDA\x82\x8D\x29\x47\x02\xE6\x8B\x8B\x74\x88\x8E\xF4\x8F\x89\xF5\x8A\x8E\x7A\x68\x02\xF3\x89\x8F\xF0\x8D\x8E\xD4\x80\x90\xDF\x87\x8F\xF6\x8E\x8F\xA6\x86\x90\xD8\x87\x1D\x29\x0D\x8F\xF8\x8D\x90\x05\x9E\x90\xFA\x8D\x8D\xEE\x86\x87\x2A\x0C\x90\x0F\x97\x91\x11\x9A\x50\x2B\x06\x91\x19\x94\x90\x1D\x9E\x50\x2C\x0C\x91\x2D\x0C\x91\xFF\x81\x14\x2E\x04\x92\x07\x90\x91\x25\x92\x91\x01\x9F\x8E\x29\x98\x91\x2B\x99\x8E\x31\x9E\x91\x33\x98\x69\x2F\x08\x92\x09\x9E\x92",
-			"\x39\x9A\x10\x30\x08\x93\xEC\x86\x34\x31\x0E\x93\x13\x92\x93\x2F\x9F\x91\x2A\x95\x94\x35\x97\x94\x3B\x9C\x70\x32\x02\x94\x2D\x9C\x92\x03\x93\x10\x33\x0E\x94\x51\x98\x3C\x34\x04\x95\x02\x99\x95\x3A\x9B\x2D\x35\x08\x95\x5B\x93\x94\x34\x98\x94\x62\x9B\x94\x61\x94\x96\x08\x9B\x1C\x36\x0E\x95\x50\x9A\x95\x6B\x9F\x95\x4F\x94\x94\x66\x9A\x94\x3F\x9D\x96\x74\x91\x20\x37\x0A\x96\x0A\x58\x03\x78\x95\x96\x73\x9A\x50\x39\x0B\x97\x67\x90\x96\x81\x9F\x96\x7C\x92\x98\x72\x92\x2E\x3A\x00\x98\x87\x94\x98\x83\x92\x1D\x3B\x0A\x98\x30\x93\x96\x7D\x95\x98\x8C\x9B\x98\x55\x91\x10\x3C\x00\x99\xAD\x5D\x03\x9A\x99\x94\x91\x91\x97\x9F\x93\x99\x8D\x9C\x96\x70\x92\x9A\x96\x97\x1D\x3E\x0D\x99\x4F\x4F\x03\xAA\x90\x9A\x46\x91\x9A\x86\x90\x9B\xC7\x10\x04\xAD\x96\x9A\xB2\x97\x99\xAF\x99\x9B\x9E\x9A\x9B\x92\x91\x9B\xBC\x9E\x9A\x4C\x41\x04\xB5\x93\x44\x42\x03\x9C\x95\x97\x9B\x3E\x43\x04\xC6\x98\x9B\xBB\x9D\x9C\xBD\x97\x9C\xBF\x96\x7E\x44\x0B\x9C\xA4\x94\x99\xB8\x95\x04\xD4\x9E\x96\xCC\x9F\x9C\xDB\x90\x9C\xDC\x9E\x43\x46\x09\x9D\x44\x37\x04\xE2",
-			"\x95\x9A\xBE\x9E\x9C\xDE\x99\x9E\xB6\x91\x9D\xE7\x9F\x9D\x46\x38\x04\xE5\x93\x3A\x49\x01\x9F\xA3\x9A\x9D\xD5\x95\x9F\x79\x4A\x04\xF4\x97\x9A\xF6\x9D\x9F\x75\x96\x9D\xF7\x98\x50\x4B\x0B\x9F\xC8\x9E\x9F\xE6\x90\x9D\x12\x8C\x04\x04\xAC\x9E\x08\xA3\x30\x4D\x0B\xA0\xE8\x9B\x9E\x11\xAD\x9E\xEA\x94\xA1\x2B\x4E\x04\x10\xAE\x9E\xFF\x9E\x50\x4F\x09\xA1\x15\xAD\xA0\x1F\xAD\x9D\x12\xAA\xA1\x01\x20\x05\x1E\xAB\x2D\x51\x07\xA2\x16\xAB\xA2\x20\xA3\xA2\x21\xA1\xA0\x05\xAB\xA1\xFC\x94\x1F\x52\x0A\xA2\xFE\x23\x05\x36\xA2\xA2\x2C\xAA\xA3\x2D\xAB\xA3\x30\xAC\xA0\x3C\xAD\x75\x54\x09\xA3\x3F\xA3\xA1\x3D\xA7\xA4\x41\xA5\xA4\x24\xA6\x10\x55\x04\xA4\x06\xA0\xA0\x4F\xA8\x9F\x07\xA9\xA4\x51\xA3\xA3\x53\xAA\xA4\x2F\xA5\xA5\x3F\x26\x05\x4E\xA2\xA3\x31\xA7\xA5\x5A\xA0\xA4\x58\xAE\xA2\xCB\x17\x05\x5D\xA0\xA6\x5E\xA2\xA6\x61\xA6\xA4\x54\xA9\xA6\x6C\xA3\xA6\x3E\xAB\xA6\x03\x38\x05\x1C\x99\x05\x67\xA0\xA5\x6E\xAB\xA4\x52\xA8\xA7\x68\xAD\xA7\x0F\x2A\x05\x77\xAB\xA7\x82\xA6\xA5\x7C\xA5\xA8\x83\xAF\x23\x5B\x01\xA8\x84\xA7\xA8\x6A\xA9\xA7\x59\xAE",
-			"\xA8\x64\xA1\xA7\x90\xA2\xA9\x7E\xA1\x24\x5C\x0C\x91\x5D\x0A\xA8\x5F\xA6\xA8\x8B\xAD\xA9\x9B\xAC\xA8\x6F\xA2\xA7\x8F\xA5\xA9\x9E\xAD\xA8\xA4\xA1\x10\x5E\x0A\xA9\xA6\xAC\xA9\x05\x4F\x05\xAA\xA2\x81\x60\x0F\xAA\x7A\xA5\xAA\xA1\xA3\xA9\x48\xA0\xA7\xB7\xA1\xA6\x61\x02\xAB\xA3\xAC\xAA\x54\x22\x06\xBC\xA6\x7E\x63\x01\xAC\x94\xAE\xAB\xB5\xA7\xAA\x54\x24\x06\xC4\xA9\xAB\xB6\xAD\xA6\x09\x15\x06\xCB\xA2\x1D\x66\x01\xAD\xB8\xAE\xAC\xC6\xAF\x44\x67\x04\xAD\xA2\xA1\xA9\xCC\xAA\x50\x68\x0A\xAD\xCD\xA5\xAD\xE2\xA1\x14\x69\x00\xAE\x09\x1A\x06\xE6\xA7\xAD\xBD\xA0\xAA\x03\x3B\x06\xE9\xAC\xAE\xEB\xA4\xAB\x4F\x4C\x06\xEF\xA2\xAF\xF1\xAF\xA9\xF6\xAC\xAD\xD6\xA3\x10\x6D\x05\xAF\xF8\xAF\xAF\xDE\x3E\x06\x1C\x9F\x06\xFE\xAB\xAA\xF0\xAA\xAF\xE3\xA1\xAE\xDB\xA5\xAC\x07\xBC\xB0\xF9\xAE\xB0\x18\x90\x07\x1C\x91\x07\x05\xB2\x2F\x72\x05\xB1\xB3\xA0\xB0\xC7\xAA\xAE\x08\xBB\xB0\xDD\xAE\x91\x73\x08\xB1\xF7\xA6\xB0\x0F\xBE\x2F\x74\x02\xB2\x1D\xBA\xB0\x2A\xB8\xAC\x1B\xBD\xB0\x1F\xB1\x24\x75\x08\xB2\x10\xB4\xB2\x00\xB6\x07\x32\xBF\xB2\x25\xBB\xAF",
-			"\x39\xB9\xB0\x2C\xB9\xB1\x34\xBF\xB3\x2D\xBB\xB3\xDA\x87\x07\x37\xBA\xB3\x1A\xB0\x1E\x78\x05\xB4\x3C\xBC\xB1\xC3\x19\x07\x1C\x9A\x07\x4A\xB3\x25\x7B\x01\xB5\x2B\xBC\xB4\x38\xB7\xB4\x23\xB1\xB4\x58\xBB\x2D\x7C\x04\xB5\x3D\xB9\xB5\x3E\xB2\x2F\x7D\x0E\xB5\x56\xB6\xB4\x40\xB1\xB6\x68\xB9\x81\x7E\x0C\x91\x7F\x04\xB6\x2E\xB6\xB6\x5A\xBF\xB3\x80\x0E\xB6\x42\xB5\xB5\x6F\xBB\xB4\x77\xBE\xB1\x84\x51\x08\x74\xBB\xB5\x33\xB1\xB7\xBB\x92\x08\x7D\xB7\xB6\x60\xB5\xB8\x29\xBF\xB5\xDB\x23\x08\x83\xB0\xB8\x69\xB7\xB8\x0F\x24\x08\x1C\x95\x08\x1C\x96\x08\x8B\xBD\xB8\x7F\xB6\xB9\x57\xB4\xB8\x8E\xB9\x8F\x87\x05\xB9\x86\xB7\xB9\x9F\xBE\x2F\x88\x0C\x91\x89\x0E\xB9\x9B\xB5\xB7\x88\xB2\x2E\x8A\x01\x8D\xE0\x1D\x08\xAC\xB9\x1C\x90\x0F\xBA\xCB\x13\x09\xCE\x86\x09\xB2\xB3\xB3\x99\x0E\x8B\x44\x3E\x09\xCE\x81\x0A\xCE\x84\x0A\xAA\xA5\x0A\xCE\x88\x0A\xCE\x8B\x0A\xB7\xB9\xB9\x8C\xB1\xBA\x5D\x7E\x0A\x1C\x9F\x0A\xA6\xB0\xBA\x2B\x40\x0B\xCF\xB8\xBC\x98\xB0\xB7\xD5\xB8\xB7\x08\x51\x0B\x1C\x92\x0B\xAA\xA3\x0B\xD3\xB6\xBD\xCA\xB8\xBD\x3F\x24\x0B\xDF",
-			"\xB2\xBE\x9A\xB0\xBD\xE8\xB4\xBD\xE1\xB3\x25\xB5\x0C\x91\xB6\x05\xBE\x7A\xB6\xBE\xC9\xB6\x7E\xB7\x05\xB0\xB8\x0B\xA0\xB9\x0C\x91\xBA\x00\xBF\x76\xB8\xBA\x65\xB1\x86\xBB\x05\xB0\xBC\x0B\xA0\xBD\x0C\x91\xBE\x0C\xBF\xA9\xBA\xBE\xA7\xB8\x91\xBF\x05\xB0\x04\x0F\x8B\x03\x11\x8B\xCF\x12\x15\x90\x1B\x2F\x83\x15\xC1\x06\x1F\x33\xA4\x22\x15\x85\x29\x10\x20\x45\x18\x12\xC6\x1D\x14\xCA\x10\xFC\x25\x18\x18\xC3\x10\x1A\xC0\x2B\x1C\xCA\x10\x1F\xC2\x1A\x10\xC3\xC1\x49\x1F\xC2\x22\xC1\xC3\x83\x12\x15\x21\xCB\x1D\x36\xC5\xC3\x49\x17\xC3\xDE\x19\xC3\x85\x1E\xC3\xA2\x10\xC4\x30\xC6\x14\x3C\xC2\x15\x23\xC6\xC1\x20\xCA\xC3\x44\xCA\xC4\x43\x15\xC4\x46\xC6\x14\x27\xC2\x10\x29\xC9\x31\x2B\xCE\xC1\x83\x1E\xC4\x4F\xCF\x13\x58\xC9\xC5\x3D\x1B\xC5\x5C\xC1\xC5\x01\x15\xC2\xA2\x1E\xC5\x59\xC0\xC6\x00\x03\xC5\xF7\x25\xC5\x06\x1D\xC2\xCF\x14\xC6\x4F\xC6\xC6\x62\xCF\x1C\x66\xC8\xC6\xF5\x2A\xC6\x03\x1C\xC6\xD6\x12\xC3\x38\xC4\xC3\x3F\xC9\x14\x34\x2D\xC7\x50\xCE\x30\x5D\x21\xC4\x49\x1D\xC1\x06\x16\xC6\x52\x1A\xC7\x3D\xCC\xC7\x84\xC6\x14\x7F\xCD",
-			"\xC8\x43\x16\xC6\xC9\x82\x15\x83\xC3\xC4\x43\x16\xC8\x8F\x17\xC5\x4C\xCA\xC5\x9B\xCE\x13\x6E\xC6\xC4\x9F\xC2\xC4\x33\xC1\xC8\x48\xC3\xC6\x9D\xCD\xC5\xA7\xCF\x0F\x73\xCF\x27\x76\xC2\x10\x78\xCB\x1D\xA1\xCB\xC3\xA9\xC1\xCB\xA4\xC6\x10\x71\xC6\x1D\xB4\xC1\xC9\x0A\x14\xC7\x04\x3D\xCA\x01\x1F\xCA\xDE\x1A\xC8\x5C\xCF\x13\xC2\xC3\xCC\x3D\x1F\xC8\x96\xCF\x13\x66\xCD\x30\x85\x15\xC9\xA3\xC7\xC9\x0A\x19\x3B\x85\x15\xCC\xC6\xC4\xCD\xC3\xC8\xCC\xCF\xCA\xCC\x0A\x1C\xCC\xA2\x1E\xCC\x7B\xC6\x14\x98\xC2\x10\xD2\xC6\xCA\x80\xCD\xC4\xB3\xC7\xCE\xE5\xCC\xC9\xE9\xCE\xC9\xE8\xC0\xC9\xDA\xC5\xCA\x6D\xCD\xCE\xC9\xCC\xCE\xEB\xCD\x13\xAB\xCB\xC1\x85\xCC\xC2\x83\x1A\x1F\xF5\xCF\x0F\xD6\xCF\xC5\x0A\x16\x38\x26\xC1\xD0\xAC\xC9\xCF\x09\x18\x4C\xF8\xC0\xCE\x0A\x18\xD0\xA2\x19\x8C\x93\x11\xCE\x01\x13\x4E\xD3\xC9\xCA\xC9\x83\xC9\x06\xD6\x10\x12\xDE\xC2\xA9\xC6\xC6\x02\xD2\x1A\x1C\xD5\xD0\x0A\xD7\xD0\x17\xC4\xD0\x03\xD5\x38\x20\xD0\xCD\x22\xD9\xC4\xFD\xC9\xCB\xEA\xCE\xCE\xF4\xCE\xD2\xA8\xCB\xD2\xF2\xC9\xCD\x3E\x16\xC6\x07\x3A\xD2\x30\xDF\x0F",
-			"\x2C\xDF\xD2\xF3\xC6\xCF\x0A\x15\x2D\x38\xDD\xD3\x3A\xD3\xD3\xDF\xCA\xCB\x09\x13\x33\x41\xD4\xD3\x31\xD9\xD3\x3B\xDE\xD3\x09\x1D\x39\x49\xD5\xD4\x2D\xD2\xD4\x4D\xDA\xCA\x0A\x13\x3C\x51\xDB\xC8\x4B\xC2\xD3\xFD\xC6\xD3\x9A\xCC\xD5\x4C\xDB\xD1\x0A\x17\xD3\xE4\xC1\xD6\x60\xD2\xD4\x66\xC1\x34\x2A\xC7\xD1\x03\x15\x44\x59\xD6\xCC\x4B\xD4\xD5\x62\xD9\x10\x6A\xD4\xC5\x6C\xD2\x10\x6E\xD5\xD6\x72\xD7\xD6\x4A\xD6\xD5\x74\xD7\xD2\x3F\x10\xD1\x44\x43\xD2\x09\x1A\x39\x7A\xDD\xD7\x55\xD9\xD8\x73\xD6\x10\x86\xD1\xCF\x7C\xD2\xD5\x3C\xDD\xD7\x70\xC4\xD8\x8C\xDF\xD5\x66\xD7\xD9\x68\xDB\xCB\x80\xDE\x13\x82\xD0\xCC\x89\xC9\xCA\xFF\xC9\xC5\x8A\xDF\xD8\x5A\xD6\xD4\x06\x14\xD6\x8E\xD9\xD3\x66\xC0\xD4\x87\xD0\xD9\x4E\xD6\x10\x48\xDD\xDA\xA5\xDF\xCE\x06\x10\xD5\xB2\xD0\xD7\x7E\xD6\x10\x58\xD7\xDB\x70\xDE\xD5\x6F\xDD\xDB\x63\xD6\xD9\x99\xDF\xD7\x09\xD8\xD2\x06\x19\xD7\xA9\xD3\xDC\x06\x15\xD7\x69\xC7\xD7\x01\x18\xDC\xB8\xCB\xD8\x03\x1C\xDC\x75\xCE\xDC\x83\xD5\xDC\x81\xDA\x10\xD0\xD5\xDD\x21\xD7\xDC\x9B\xDD\x13\x82\xDB\xDD\xDE\x19\x8C\x88",
-			"\xC6\xDD\x55\x45\x18\x0E\xD3\x18\x82\xD7\xDE\x0D\xDE\x30\xEB\xD2\xDC\x92\xD1\xDC\x25\xD4\x2D\x94\xD3\x10\xB1\xD2\xC7\x0A\x16\xDB\xF8\xD9\x10\xBB\xDB\xDF\xA7\xD5\xDF\x02\x18\xDA\xD6\x19\xD6\xDF\xDF\x0F\xE1\xD0\xE0\x01\x14\xDD\xBD\xC6\xDD\xE2\xD7\xC4\xCB\xD5\xE0\x07\xE8\xDD\x9C\xDA\x10\xF7\x43\xD1\x5D\xD4\xD2\x1E\xD8\xE1\x76\xDD\xDD\x03\x1C\xD0\xFE\xD3\x10\x1D\xDF\xE1\xC6\x80\xE1\x0B\xD0\xDF\xAE\xD3\xD4\xA4\xD8\xDB\xA3\xD8\xD9\x88\xD2\xDD\x01\xE6\xE2\xB3\xD1\xD9\x27\xE5\xD5\xAB\xD0\xE3\x2A\xE4\xD4\x31\xEF\xDA\xF6\xD6\xE3\x70\xDB\xE2\xCA\xD3\x10\xFA\xD1\xDD\x29\xED\xE3\x2E\xE1\x10\xFD\xD2\xE4\x2C\xE3\xE3\x45\xE6\x30\x3C\xE6\xCC\x3E\xE1\xDF\x09\x12\xE0\xB0\xC8\xE3\x37\xE7\xE1\xC4\xDB\xD6\x1C\xE8\xD7\x4D\xE3\xCC\x4F\xE7\xE2\x04\xE2\xE1\xE0\xDA\xDD\x5B\xEC\xC5\x5D\xE9\xE3\xB9\xD3\xDD\x24\xE9\x10\x0D\xEC\xC8\x42\xD5\xD1\xEA\xDA\x10\x8D\xD9\xC7\x14\xDA\x10\xE5\xD9\xE5\x01\x11\xE7\xDB\x11\xDA\x6F\xC0\xE7\x63\xE2\xDA\x54\xE4\xE4\x56\xE5\xD9\xBF\xDE\xE4\x7F\xE6\xCC\x93\xD3\xDF\x03\x18\xE7\xDE\x15\xE6\x55\xEA\xDA\x9A\xD0",
-			"\xE6\x06\xEA\xCF\x88\xE2\x10\x8A\xE2\xCA\x4A\xE3\xE4\x84\xE1\xE8\x89\xED\xE7\x4F\xCC\xE8\xC0\xD0\xCF\x03\xEC\xE7\x83\xEC\xE5\x85\xE3\xCC\xF7\xC8\xE5\xC6\xD7\xC7\x83\x1A\xE7\xA0\xC5\xEA\x64\xEE\xEA\x7E\xE8\xE9\xA4\xEA\xE9\x2F\xE3\xEA\xAF\xE2\xEB\x00\xD9\x10\xAC\xD9\xDC\x2D\xE8\xEB\x65\xCA\x10\xF7\xD8\xE4\x7B\xD9\xE4\x66\xE6\xC6\x41\xE3\xE5\xBE\xED\xE9\x4B\xE7\xE4\xC8\xE4\xEC\x8D\xEF\xE3\xB5\xEC\xDB\x99\xEE\xEC\x9F\xEF\xDF\xB6\xE1\xEB\xD4\xE6\xE8\x11\x19\xE6\xDE\xD7\xED\xCA\xE9\xEC\x46\xCF\xE5\xA8\xE9\xDD\x6A\xEC\xE9\xAD\xE0\xEE\x0E\xE8\xE6\x90\xE1\xE1\xD2\xE3\xEB\xD9\xEE\xEE\xC3\xE1\xEF\xBD\xEE\xE8\x51\xE6\xEE\x96\xE6\xE6\x34\xEF\xD3\xF6\xE2\xCB\xE8\xE9\x14\x66\xC1\xEC\xCD\xE2\xEF\x97\xE4\xEF\xB5\xDB\xEF\x5B\xDF\xEE\xB9\xEA\xDB\x06\xF6\xCE\xFD\xE5\xCB\x03\x12\xE5\x8B\xE0\xEB\xDF\xE4\xF0\x0F\xFB\xF0\x53\xD3\xEF\xD0\xE9\xE0\xDC\xED\xD6\x16\xF2\xE3\xF8\xEB\xE4\x0A\xE6\x25\xBE\xC7\xDD\xED\xE7\xEB\x08\xFF\xEB\x57\xEB\xE1\xA9\xEA\xE5\x16\xE9\xD3\xE9\xD5\x18\x82\xD5\xE9\x6C\xED\xD7\xAC\xE2\xF2\xD6\xD1\x44\x2D\xF2\xD4",
-			"\x35\xFC\xEF\x27\xF3\xF1\x02\xFF\xF1\x0D\xFC\xF0\x14\xF1\xED\xBC\xE3\xF0\x3F\xF8\xDB\x35\xEE\xED\xE7\xED\xF3\xE1\xE0\xEC\x1D\xF1\xD7\x18\xF0\xE5\x05\xFA\xF4\xF7\xEF\xEC\x52\xF3\x10\xCC\xE1\xF1\x41\xF7\xF1\x5E\xE2\xDF\x25\xF8\xED\x47\xF5\xED\x15\xF4\xF5\x3C\xF1\xF6\xDA\xE9\xF2\xCD\xD6\xE7\x24\xF5\xF4\x40\xFC\xF4\xE9\xE2\x10\x21\xF8\x26\x23\xFB\xE6\x07\xF6\xF6\xF0\xE7\xF5\x70\xFB\xF1\x2C\xFF\xF5\x3E\xF1\xF5\x5D\xF5\xEF\x64\xFE\xF0\x02\x1B\xEB\xC2\xE8\xF7\x01\x10\xF0\x5A\xF3\xF4\x9C\x3F\xF4\x67\xE2\x10\x59\xF5\xF5\x62\xF4\xF4\x85\xFF\xF7\xD6\xEC\xF7\x4D\xF8\xF6\xDC\xDB\xF2\xCF\xDC\xF8\xE2\xEA\xF2\xE4\xED\xED\x96\xFF\xF6\x1A\xFB\xEE\x62\xE1\xF8\xA6\xD3\xF6\x19\xEA\xEB\x08\xE0\x00\x88\xF2\xFA\x00\x07\xEC\xDE\x16\xC6\x8F\xFE\xEF\x5E\xF2\xE2\x01\x10\xF1\xAE\xF1\xF7\x4E\x23\xF7\xAB\xFA\xFB\x50\x2C\xFB\x93\xE3\xFA\xE3\xE3\xE1\xE5\xE9\xF3\x34\xF9\xCA\xD8\xC4\xF9\x03\x1A\x36\xCD\xC9\xCA\x82\xDA\x4B\xC6\xF7\xE2\x3B\xFE\xC8\x4B\xEC\xFC\xDD\xCE\xFC\x0A\x10\xFD\xA1\xF5\xF6\x7E\xFD\xF6\x76\xF9\xF0\xA8\xFC\xF6\x56\xFA\xFC\x83",
-			"\xFC\xF8\xF9\xE7\xD4\xE6\xFB\xE4\xB0\xF0\xF9\xD3\xE9\xF1\x00\x03\xFB\x75\xFD\xFD\x48\xF5\xFB\x93\xFE\xFD\x86\xFC\xE4\xA6\xFC\xF5\xC5\xEB\xED\xA4\xF5\xFC\xDB\xF1\xFF\xE4\x7A\xF8\x5E\x7C\xE2\x70\xFA\x62\x7C\xA0\x6A\x7C\x00\x06\xF7\x4C\x12\xE0\x7F\xFF\x42\x7B\xF7\x68\x79\x95\x7E\x00\xA7\x7A\xFA\x69\xFF\x35\x6A\xD3\x75\x80\x3A\x72\x20\x2B\x7E\xEE\x71\x00\xEF\x7C\xE7\x74\x7F\x01\x7F\xFE\x78\x7C\x0E\x8B\xFF\x18\x7F\x82\x6A\x7B\x74\x7E\x01\xB7\x7E\x05\x8B\x25\x0C\x82\x04\x86\x75\xFC\x7B\xF8\x61\x72\xFF\x7F\x1C\x53\x7F\x50\x16\x81\x3F\x09\xF9\x65\x80\xAE\x0F\x1C\x5E\x66\x99\x62\x6C\x93\x08\x07\xBE\x08\x21\x87\xCC\x4B\x73\x64\x1E\x81\xB8\x68\x08\xA9\x7F\xAD\x7E\xF1\x63\x7E\xFD\x66\x7A\x22\x83\x09\xAE\x7A\xDA\x7A\xFA\x18\x80\x8A\x73\x82\x82\x7F\xF0\x52\x83\x07\x8B\xE7\x4F\x6B\x16\x92\x7F\x91\x7E\xC8\x5F\x82\x28\x8D\x01\xA3\x80\x00\x8F\x82\x68\x83\xFE\x40\x7D\x06\x8A\xFF\x4E\x82\x1A\x8F\x70\xFD\x7D\x00\xB5\x7E\x37\x87\x00\xEE\x7C\x0B\x82\x13\x2E\x83\x0E\xB5\x82\x30\x83\x01\xEA\x76\x0C\x91\x74\x34\x86\x3A\x3C\x67\x9C\x64",
-			"\x04\xFF\x07\xCB\x62\x0D\x82\x6C\xD5\x6E\x72\x98\x7A\x10\x2C\x76\x19\x75\x73\xBF\x7E\xBA\x43\x85\x01\x83\x03\x86\x0A\x82\x11\x7E\x3B\x83\x20\x11\x18\x2B\x8E\xE9\x6D\x7F\xFD\x68\x82\x24\x84\x0E\x9E\x84\x32\x89\x09\x87\x0B\x18\x89\x83\x7B\x85\x03\x9B\x84\x36\x8D\x04\xA9\x85\x29\x97\x7D\xAB\x78\x14\xA7\x82\x51\x87\xF7\x65\x83\xEA\x7C\x1A\x2F\x86\xE4\x5C\x83\xCB\x71\x01\xA1\x75\x42\x0B\x85\xB9\x80\xEC\x7C\x82\x18\x85\x05\xA9\x7E\x41\x12\x85\x2A\x84\x14\xB4\x84\xF0\x75\xFE\x41\x7C\x41\x07\x85\xCB\x80\x02\x83\x08\xC2\x7B\x1D\x66\x60\x30\x9A\x83\xA3\x80\x15\xBD\x82\x81\x0D\xFA\x54\x83\x31\x90\x86\xAE\x87\x0D\xBB\x70\x67\x88\x0B\xD8\x85\x2D\x9A\x86\xC4\x80\xB6\x6B\x7D\x6B\x81\x02\xCA\x85\x38\x81\x83\xAF\x79\x16\xA0\x87\x6C\x82\x0E\x9A\x83\x2D\x93\x87\xE7\x85\x1E\x8B\x7C\x72\x88\x0F\xBA\x87\xFD\x70\x7F\xA7\x7A\x20\x2C\x87\xC4\x7B\x0B\xEC\x7D\x3A\x98\x7A\xF2\x84\x13\x92\x78\x5E\x88\x10\xCE\x87\xC4\x06\x86\x03\x0D\x55\x0E\x87\x81\x86\x10\xFE\x86\x3B\x9B\x86\xB0\x86\x19\x88\x87\x36\x8F\x0E\xF4\x84\x3C\x86\x83\x01\x89\x20",
-			"\x25\x87\x76\x88\x0E\x96\x8B\x2B\x98\x7F\x10\x8A\x20\xBD\x86\x61\x86\x0B\x9A\x8B\x4A\x9D\x7B\x2D\x89\x25\xA2\x89\x97\x8B\xF4\x6E\x7C\x48\x94\x6D\x03\x0E\x59\x32\x88\x00\x04\x11\xA1\x85\x47\x99\x87\xF0\x87\x0E\xA9\x13\x3C\x85\x0D\x8A\x0B\x46\x8D\x85\x1E\x89\x29\x87\x89\xBC\x71\x07\x9C\x78\x3F\x8A\x88\x4C\x81\x03\x82\x81\xB4\x7A\xF9\x6B\x7A\x2F\x86\x08\x3D\x8B\x16\xBF\x88\x93\x8A\x0F\x89\x82\xDE\x7B\x7C\x2E\x88\x2A\x98\x83\x90\x8E\x15\xCD\x8B\xDE\x76\x7D\xCF\x82\x2C\x85\x88\x6F\x8E\x07\x94\x84\x20\x92\x83\x45\x8F\x17\xB4\x89\x8A\x82\x0D\xCC\x8B\x1F\x8C\x77\x68\x8F\x28\x90\x7B\x8B\x80\x14\x98\x89\x59\x97\x8B\xA5\x7B\x27\xA3\x88\x82\x83\x0C\xDC\x89\x50\x9F\x8A\x56\x89\x2E\xB0\x82\xC0\x81\x08\xF9\x70\xC8\x68\x8C\x29\x80\x27\x82\x09\x5A\x1E\x0C\x94\x8F\x4E\x96\x8C\x35\x83\xC9\x42\x16\xB3\x81\x10\x65\x1A\x33\x9B\x8C\x8C\x8E\x20\x1E\x8C\x8D\x6D\xCF\x13\x0F\xC8\x64\x1F\x98\x85\x2B\x90\x85\x05\x82\x09\xAB\x7F\x6A\x8D\x81\xAD\x89\x35\xB0\x6A\xD3\x86\xDD\x37\x66\x63\x94\x75\x01\x0F\x35\xB8\x83\xD8\x8B\x13\xBA\x8F\x50\x9C",
-			"\x8D\x99\x8D\x9F\x45\x85\x47\x88\x18\x93\x87\x55\x99\x64\x9C\x88\x00\x06\x8F\xDB\x88\x00\xA0\x8E\x5B\x82\x6C\xA3\x89\x38\x88\x80\xA1\x84\x1B\xA8\x83\x60\x07\x84\xCF\x0F\xBD\x72\x8C\x63\x68\x1D\xD6\x0E\x60\x7D\x86\x46\x0B\x11\x88\x85\x0B\x8B\x13\xCE\x8C\x55\x9F\x7C\x03\x09\x3A\x87\x8E\x81\x06\x1E\x99\x7C\x7A\x82\x08\xEA\x8A\x31\x91\x89\xD5\x72\x11\xBB\x88\x75\x98\x7E\x8D\x89\xF6\x4A\x09\xFA\x88\x16\xFC\x8F\x7A\x93\x8A\xEE\x8C\x00\x8E\x8B\xCB\x8B\xFA\x18\x8F\x7F\x80\x00\x06\x93\x3B\x1D\x8F\xED\x02\xD8\x03\x8F\x67\x7D\x67\xE2\x89\x3B\x8A\x08\x07\x93\xF3\x1D\x82\x7F\x92\x8F\x02\x0F\x42\xBA\x8E\x13\x86\xF3\x56\x8E\x33\x97\x8F\xFD\x60\x2F\x87\x91\x04\x9B\x21\x86\x08\x89\x8E\x7D\x27\x95\x42\xBF\x81\x87\x0B\xEA\x4B\x71\x7C\x87\x81\x55\x89\x92\x0E\x87\x17\x9D\x21\xD5\x88\x23\x33\x91\x88\x8A\x94\x09\x8F\x1B\x91\x1A\x83\x0A\x8E\x9D\x91\x02\x0F\x47\x8F\x8F\x8D\x0B\x0E\xF3\x8A\x4F\x8A\x8A\xCC\x81\x20\x3A\x8B\x2B\x8B\x16\xDA\x88\x92\x95\x8B\x33\x8A\x2D\x85\x8C\x96\x87\x12\xD9\x89\x32\x85\x89\x54\x95\x2B\xB7\x88\x0B\x89\x10",
-			"\x4B\x91\x27\x9D\x8B\x4B\x89\x23\x82\x8C\x23\x9E\x24\xE1\x90\x4A\x88\x8B\x56\x94\x23\x8F\x92\x98\x87\x12\xD4\x85\x89\x83\x08\x5E\x93\x21\xB4\x8B\x2E\x84\x01\xE3\x92\x94\x9C\x8B\x49\x90\x00\x2E\x92\xD7\x79\x26\xC8\x88\x98\x86\x8C\x7E\x88\x3C\xA4\x8B\x38\x91\x15\xCC\x93\xFD\x62\x94\x92\x89\x4A\xAC\x85\xBD\x88\x25\xF4\x93\x38\x9B\x89\x7D\x94\x51\x91\x86\x36\x9D\x15\x9B\x81\x16\x80\x00\x84\x93\x2C\xAA\x92\x33\x96\x29\xE4\x88\x85\x85\x93\x80\x97\x4F\x90\x93\x78\x8F\x14\x8B\x96\xA1\x98\x93\xA3\x90\x20\x89\x94\x4C\x94\x26\xD7\x91\x57\x8A\x95\x5C\x90\x2B\xAD\x95\x4D\x99\x27\xB0\x96\x54\x80\x00\x0F\x8D\x3F\x85\x93\x3B\x9D\x28\x8C\x8A\xE4\x78\x90\x4A\x93\x56\xBE\x93\x3C\x9B\x25\xB7\x97\xA7\x8E\x95\x5B\x89\x4B\x9F\x89\x5D\x96\x2A\xDF\x90\xB1\x89\x88\xCD\x92\x4E\xAC\x8B\x5F\x9F\x26\xA6\x84\xAF\x93\x94\xBE\x92\x4C\xA8\x8A\x9D\x88\x26\xC2\x96\xA4\x87\x8C\xC9\x89\x32\xB1\x94\x38\x9E\x2D\xA7\x97\x49\x80\x91\x39\x6A\x44\x80\x97\xB4\x81\x2D\x85\x95\xE7\x67\x8F\x02\x97\x2C\x87\x91\x48\x96\x2E\xD8\x97\x9C\x99\x96\x7F\x8B\x48\xB9",
-			"\x8E\xD7\x79\x29\xCD\x90\xB2\x9E\x8B\xE8\x92\xA8\x6A\x97\x6A\x9A\x28\xC1\x84\xA5\x89\x96\x8E\x96\x2E\xBA\x96\xB8\x84\x30\xBC\x89\xB9\x87\x7F\x8B\x8B\x61\x83\x91\xBC\x8F\x30\x8F\x8D\xB8\x97\x87\xD7\x90\x61\xB8\x97\x80\x9D\xD7\x03\x9B\x83\x88\x80\x96\x18\x47\x89\x8E\x19\x9B\x13\xA1\x9B\x4E\x94\x91\x72\x7E\xBA\x7C\x90\xB4\x86\x32\xAC\x9B\xEA\x68\x99\xBB\x7E\xBA\x42\x93\x03\x90\x33\x91\x86\xDA\x64\x99\x68\x8D\x66\xAC\x8C\xB5\x7B\x32\xB4\x99\x8E\x8D\x91\xB8\x88\x00\x3A\x98\xD8\x87\x33\xAF\x98\x62\x9D\x99\xEB\x93\x68\xBB\x8C\xB5\x73\x33\xCC\x8E\xFB\x6A\x9A\xBF\x8D\x68\xA2\x98\x20\x91\x10\x48\x99\xC3\x90\x9A\xD5\x8D\x2A\x8D\x9A\xEF\x02\xD8\x2D\x9A\x20\x89\x65\xCB\x8E\xCC\x61\x9B\x24\x8A\x10\x1F\x66\x60\x76\x95\x6F\x8B\x20\x27\x26\x46\x89\x10\x6B\x9B\x78\x9E\x82\x85\x0B\x6C\xB0\x6A\xB9\x96\xCC\x02\x6D\x3A\x2C\x9B\x06\x0B\x9D\x38\x9B\x81\x0D\x3F\x7B\x9A\x40\x1D\x9B\x6F\x9E\x20\x1A\x20\x09\x99\x10\x6F\x26\xDF\x81\x08\x86\x99\x70\x83\x09\xC7\x1A\x38\xA3\x71\xDC\x98\x8F\x06\x0C\x97\x07\x9D\x4D\x4F\xE6\x09\x08\xF7\x13\x9C",
-			"\x7B\x96\xBA\x49\x25\xC6\x91\x10\x69\x1F\xE4\x99\x95\xDE\x8A\x21\x34\x96\xC1\x66\xFD\x04\x9E\x41\x05\x9D\xA1\x99\x21\x05\x1E\xCE\x9F\x8C\x15\x9E\x41\x1C\x96\xA9\x9F\x75\xAE\x9D\x81\x07\x46\x13\x9D\xED\x8C\x9D\xBC\x63\xE4\x79\x9C\xEB\x62\x14\x82\x6D\xEF\x8C\x91\x93\x9B\x74\xBC\x49\xD9\x92\x10\x65\x27\xE4\x86\x9E\xAC\x98\x79\xA6\x9D\x81\x0A\x3C\xD6\x0E\x18\x1C\x61\x3C\x81\x7A\x81\x08\xF2\x65\x36\x8A\x09\xD8\x94\x9E\x09\x0C\x87\x57\x9E\x3A\x75\x3D\x89\x09\xD8\x9F\x9E\xD6\x9D\x11\xA2\x9F\x84\x0A\xC8\x5A\x9D\xF7\x86\x08\x61\x9E\x7C\x89\x09\x4B\x88\x3E\x8A\x08\xFB\x83\x08\x61\x9F\x7D\x82\x09\xB0\x96\xC6\x6A\x9F\x21\x67\x9F\xF0\x9C\x7B\x99\x9F\xF0\x99\x10\x3A\x82\x0E\x9E\x81\x3E\x82\xB0\x61\x15\x84\x0A\x21\xA4\x92\x00\xBB\x8F\x0A\x0C\x44\xAD\x8E\x00\x07\x40\x84\xA1\x02\xAA\x08\x0D\xA4\x55\x0F\xA0\x42\x1A\x10\x03\xA2\x04\xA9\x08\x06\xA5\x82\x88\xA0\x0C\xA0\x41\x9A\xA2\x03\xBC\xA0\x14\xA1\x21\x16\xA1\xF9\x80\x42\x86\x09\x04\xA4\xA1\x26\x95\x21\x1D\xA0\x11\xAB\x41\xA9\xA1\x42\x10\x9D\x01\x0F\x84\x99\x91\x09\xA2\x3B\xC5",
-			"\x84\x72\x86\x08\xF6\x9B\x1A\xBA\x9E\x1C\xAC\x3F\xF5\x93\x0D\xB1\x60\x3D\xA3\x20\x36\x8C\x04\x94\xC2\x34\xA3\x40\x0B\xA0\x43\xA4\x44\x89\xA3\x22\xA5\x42\xC2\xA2\x11\xA2\x08\x4B\xA0\xD4\x41\x08\x25\xAF\x44\x81\x08\x0C\xA0\x00\x51\xA5\x86\xB6\x65\x2A\xAD\x2C\x0A\x0B\x02\xB7\xA2\x60\xA0\x04\xA7\x92\x81\x0C\xCD\x03\x09\x19\xAA\x89\x2C\xA7\x83\xAE\xA0\x59\x99\x46\x97\xA3\x1A\xA7\xA2\xA2\x9E\x83\xAE\xA2\x5A\x11\x47\xED\xA0\x0A\xB4\xA3\x72\x8E\x8E\xB3\xA1\x26\xA8\x46\x86\x0B\x08\xBB\xA3\x6F\xA5\x8F\x83\x09\x3F\xA1\x10\x05\xA1\x1D\xBE\xA3\x2D\xA0\x8F\xAC\xA2\x44\xAA\x46\x8A\xA5\x4E\x87\xA4\x83\xA1\x91\x93\x8C\x15\xA9\x47\x8C\xA7\x1C\xB3\xA4\x2F\xA0\x78\xAA\x87\x84\x0C\xCB\x6E\x91\xFD\x81\xA2\x52\x62\xDF\x49\x09\x4F\xAE\x3D\x8F\x76\x0F\xA2\x08\xA4\xA5\x7D\xA6\x80\x4F\xA8\x3F\xF3\x9D\x0C\x9A\xA1\xA3\xA5\x95\x81\x09\xB0\x9A\xE0\x2C\xA7\xFE\x85\xA5\x09\x0B\x30\x84\xA4\x00\x06\x48\xB9\xA6\x1C\xB7\xA3\x98\xA6\x20\x0B\xA0\x5D\xA2\x49\xD3\xA3\x84\x9F\xA5\x80\xA6\x91\x96\x96\x4B\xA0\x4C\xC6\xA6\x2F\xBA\xA3\x85\xA4\x8B\x84\xA7",
-			"\x46\xA1\x4C\xC3\x44\x32\xB1\xA6\x7C\xA5\x60\x82\x09\x5D\xAD\x4B\xDA\xA2\x35\xB0\xA6\xBC\xA4\x8B\x97\xA3\x69\xA7\x49\xCE\xA6\x37\xB0\x8F\xD7\xA1\x9C\x99\xA6\xA1\x99\x4E\xDD\xA4\x1C\xA9\x08\x2F\x94\x9B\x9C\xA3\x78\xA5\x4C\xC4\xA0\x3C\xAD\xA7\xF3\xA0\x9F\xAB\xA6\x7A\xA4\x4D\xE6\xA5\x7A\x9A\xA7\x81\xA5\x33\x80\xA8\x65\xA6\x45\x8A\x08\x3F\xA5\xA7\xF6\xA7\x9C\x82\xA8\x70\xAE\x4E\x82\x0B\x15\xA8\x9D\x01\x0A\x9E\xAB\xA6\x88\xA0\x00\x12\xA9\x40\xA0\x00\x0B\xA4\xA2\x96\xA8\x82\xA0\x00\x1A\xA9\x3D\xA4\x91\x1E\xAD\x9F\x89\xA9\xE5\x73\x50\xD5\xA6\x40\x01\xA9\x08\xA8\xA4\xA5\xA8\x7F\xA7\x52\xAB\xAB\x48\xAE\xA8\x0A\x08\xA5\x8D\xA7\x97\xA5\x50\x89\x0A\x4C\xA9\xA6\x26\xAD\xA6\x97\xA8\x05\xAC\x45\xA4\x92\x4F\xBD\xA9\xE2\xA1\xA8\xAB\xA7\x2B\xA1\xE2\x0E\x9E\x30\xBA\x70\x46\xA8\xC4\x48\xAB\x80\x05\x54\xCC\xAB\x52\xBD\xA2\x26\x69\x93\x91\xAA\x85\xAA\x4E\x97\xA9\x43\xA1\x08\x0B\xA7\xAA\x95\xAA\x8E\xAA\x55\xDD\xA8\x17\xBE\xAA\x43\xAF\xA3\x94\xA5\x94\xA3\x56\x8B\x9C\x17\xAC\x9C\x1C\xAB\x81\xA8\xAB\x9C\xA0\x00\x6B\xA8\x4B\xA1\x08\x6E",
-			"\xAC\xA6\xAD\xAB\xB3\xA4\x57\xEB\xA5\x5C\xA4\x91\x57\xA7\xAE\xA5\xAA\x81\x0A\x57\xD2\xA8\x33\xB8\xA9\x6F\xAD\xA2\xA2\xAA\x5C\x4E\x52\xA4\x93\x46\xAC\xAB\x87\xA9\xB0\x89\xAC\xB9\xAB\x58\x86\xAF\x60\xBF\xAB\xD8\xA7\xA2\x97\xA3\xC6\xAB\x57\x91\xAB\x63\xAF\xA4\x09\x0E\x6B\x81\x08\xCD\xA0\x00\x0A\x74\x65\xB0\x9B\x90\xAB\xAB\xAC\xAB\x71\x61\x49\xA2\xA8\x89\x9E\xAC\x97\xAC\x3D\xB9\x6F\xC2\xAE\x45\xD1\x64\x6B\xA4\xAC\x85\x6F\xB5\x93\x7B\xD0\xAA\x55\xA4\xAF\x36\xA9\xAD\x77\x72\xB6\x80\x72\xDD\xA2\xCE\x3C\xAD\x6E\xAC\xA8\x5C\xA0\xF6\x5F\xAC\x83\x06\x5B\x96\xAE\x69\xAE\xAD\xC0\xAB\x9D\xA8\xAD\xE3\xA0\x5A\xA5\xAC\x59\xB1\xAD\xC9\xAF\xA2\x82\xAE\xDC\xA0\x00\x45\xAE\x60\xAC\xAE\x82\x74\xB6\x81\xAE\xDF\xA5\x5D\xDC\xAF\x72\xAF\xAE\x54\xAB\xBA\x98\xAE\xCC\xA4\x5C\xDC\xAF\x15\xBF\xAE\x33\xA8\xAF\xAB\xAD\xE8\xAC\x51\xD7\xA2\x75\xA3\xAE\xE4\xAB\xD3\x6C\xAE\xB6\xA7\x45\xE2\xAC\x78\xB1\xAF\xBD\xAB\xBE\x81\xAD\x2B\xA9\xF5\x2B\x9F\x40\x17\x9C\x06\x08\xC0\x83\x08\xD4\x86\x10\x1E\x9D\x80\xAA\x08\x04\xB3\x20\x06\xB0\xBE\x97\x11\x12\x76",
-			"\x41\x18\x79\x0C\x9C\xBD\x74\x9C\x85\x0B\x39\x8A\xB2\x42\x0B\xB0\x02\x0E\x6A\xB8\x98\x81\x0D\x49\x09\x09\x87\xA6\x08\x5B\x9D\x94\x06\x08\x11\xBE\x23\x88\xB3\x85\xA6\xB1\x09\x08\xC3\x81\x08\xED\x76\x61\x89\x08\x8B\xA2\x08\x2A\xB1\x94\x0A\x08\xC9\x96\x10\x1E\x72\x40\x16\xB1\x01\x09\xC1\xB0\xB1\x12\x79\x10\x3A\xB1\xE7\x8A\x08\x19\x6A\xBE\x9A\xAF\x75\xA1\x64\xF6\x86\x7E\xB2\xAB\x45\xB1\x20\x2F\xAE\xEA\xA9\x64\x9D\xAC\x77\xAB\xA0\x4D\xB6\xBE\xA9\xAF\xD6\xA9\x10\x4D\xB3\x92\xA3\xAF\xAA\xAD\xCA\xA2\x75\x21\xB7\x51\xD1\xB0\x77\xB6\xB2\x5F\xB3\xCB\x8E\xAF\x29\xBA\x65\xCD\xAF\x6D\xB8\xB2\x11\x68\xB9\x9C\xB2\x8E\xAD\x64\xE8\xAC\x60\xA8\xB2\xEB\xAB\xCD\xAC\xAA\x30\xB7\x64\xA4\x90\x9D\xB2\xB3\x81\xAE\xCB\xB5\xB2\x20\xB2\x66\xE7\xB3\x7D\xA2\x08\x4D\xB1\xD0\xBD\xB2\xE3\xAF\x67\xE9\xB2\x99\xA4\xB4\x64\xB0\xA3\x6A\xB3\x31\xBF\x66\xF6\xB3\xA0\xB7\xAE\x85\xB0\x00\x3A\xB2\x3C\xB0\x67\x89\x0B\x95\xB1\xB4\x82\xB0\xBA\x94\xB4\xF5\xA5\x66\xB3\xAC\xA3\xB1\xAC\xED\xAC\xCF\x96\xB4\xF3\xA2\x6A\xD9\xAF\xA7\xA2\xAD\xFB\xAD\xD4\xBB\xAD\x3D",
-			"\xBE\x57\x83\x0B\x9D\xA7\xB5\x5A\xAF\x8A\xAD\xB2\x52\xBD\x69\xAB\xB7\xA6\xB5\xAC\x92\xB3\xD1\xBE\xB3\x44\xB8\x5F\x81\x09\xF3\x9E\xB5\x0A\x0E\x6D\x8C\x9E\x85\x07\x37\x86\x09\xB1\xA3\x08\xC7\xB2\x20\x3A\x9B\xBC\x9A\x10\x4B\xB7\x40\x09\x9C\xCF\xB2\x21\x10\xB6\x81\x02\x4F\x52\x9D\x40\x10\x9E\xD6\xB1\x20\x14\x07\xE5\x89\x8C\x3C\x62\xFC\x9C\x81\x3C\x65\x1A\x1C\xB7\x1D\xA8\xC2\x59\xB4\x2B\x54\x0F\xC9\x43\x20\x81\x0A\x1E\x66\x0D\x63\xB5\xB6\xAB\xA0\xEB\xB2\x21\x17\x06\x77\xB6\x6D\x9A\x92\xB9\xA0\x00\xD8\x04\xDE\x83\x09\x64\x40\xF1\x77\xB5\x36\x1A\xB7\xAE\xA4\xBF\x77\xB6\x85\x0A\x0D\x00\xBB\x2C\xB7\x6A\x03\xB9\x21\x1B\x06\x83\xB2\x57\x80\x9D\xC2\xA1\x08\xDC\x04\xE1\x9A\x90\xE4\x29\x6D\x9F\x65\x50\x1B\xA5\xC1\x2D\xE2\x8A\x09\x6E\x0C\x70\x82\x6E\x61\x3A\xB8\x09\x0E\x1B\x0C\xB9\x6F\xB0\x00\x58\x29\xB6\xB6\x68\xC9\x0E\x07\x9A\x2B\x93\xB4\x1F\x3C\x63\xED\x8F\xB8\x00\x07\x1B\x0C\xB9\x5D\xA0\x61\xB0\xB8\x38\x0C\xB8\x61\x9B\xDA\x89\xB9\x70\x08\x73\xD2\xB4\xCC\xA2\x08\xE2\x04\xE1\xA4\x90\x67\xBF\x70\xE3\x07\xC8\xAA\x08\xF4\x24",
-			"\xE5\x89\x10\x85\x09\x4F\x4A\xBA\x2C\x4A\x08\xFD\x27\xE7\x80\x00\x72\x0C\x70\xBA\x81\x47\x32\xBA\xE5\x02\xE8\x8A\x08\x9B\x22\x75\xE6\x06\xD6\xA9\x08\x54\x2A\xEA\xA7\x07\xAF\xB6\x10\x63\x28\xC8\xA6\x08\xE8\x05\xE3\x8A\x09\xBA\x22\x75\xE9\x07\xCC\xAA\x08\xA4\x2A\xEA\xAA\x06\x86\xBB\x40\xEF\x2E\xD3\xA1\x12\x24\x96\xD4\x12\xBB\x75\x04\x76\x83\x0B\xAA\x32\xBA\xEC\x05\xEF\x82\x08\x57\x32\x75\xED\x04\xC3\xB0\x78\x19\x32\xEA\xAE\x07\xC3\xBA\x10\x25\x32\xD4\xAF\x07\x0C\xB8\x74\x81\x09\x13\x32\x75\xF0\x04\xC3\xA3\x88\x29\x3F\xEE\x83\x13\x33\xA1\x10\x05\x3A\xE6\xBF\x11\x43\xA4\xC5\x12\xBB\x78\x0C\x70\xC3\xA1\x8C\x32\xBA\xF2\x04\xE1\x97\xA3\x33\x32\x75\xF3\x06\xEA\xAA\x08\xAC\xBF\xE7\xB4\x07\xD7\xB9\x10\x1E\x36\xD4\xB5\x07\xB4\xBE\x20\x36\xBD\x9F\xB6\x0F\x39\xBF\x40\x0A\x36\x52\xBF\x1E\x3E\xBC\x81\x00\x7C\xBF\xB8\x3E\x05\xBD\x0A\x0E\xDE\x12\xBB\x7C\x08\x7C\x89\x0A\xBE\x32\xBA\xFA\x04\xE1\x88\x7D\x7F\x32\x75\xFB\x04\xE3\xA9\x08\x62\x3A\xEA\x9D\x0E\xC4\x73\x70\x52\xB8\x3F\x17\xBC\x0A\x0F\xE3\x1F\xBC\x2A\x10\xF1\x49\x3A\xD4",
-			"\xBD\x07\x91\xBA\x21\x20\x3A\xA9\xBE\x0F\x0C\xBA\x9B\x96\x3B\xDA\xBC\xE1\xBC\x65\xC1\x32\x75\x80\x02\x1E\x69\x46\x8A\x61\xF0\x23\xBF\xEE\x03\x7F\xF5\xBD\x00\x17\xBF\xA6\xA3\x20\x06\x3C\xA9\xB2\x00\x00\xC0\x27\xAA\x08\x03\xC7\xE7\x83\x00\x03\xC6\x10\x40\x07\x82\x9A\x81\xDD\x0F\xDE\xA8\xB9\x6D\x11\x14\x3E\x8E\x04\xD0\x27\x41\x0C\x6E\x8B\x0F\x0A\xC6\x28\x3C\x62\x05\xC4\xB7\x02\x08\x02\xE0\x0F\xA0\x0A\xC8\x13\xC3\x70\x01\x0A\xD8\x9F\x7E\x81\x11\xA0\x04\x72\xA6\xC3\x71\x11\x90\xA8\xA0\x94\xBF\x11\xA0\x0A\x03\xC9\x46\x0F\x84\x8E\xC6\x1C\x87\x6E\xC0\xE9\x07\x71\xF0\x27\xF6\x8B\xC1\xF5\xA3\x07\xC5\x19\x12\xC4\x1F\x41\x08\x89\x82\xC2\x53\x14\xE4\xAC\x75\x7B\xBC\x44\x7E\x9D\x11\xD4\xB2\xAA\xA7\x41\x39\xA1\x10\xC0\x82\xB3\xC2\x18\xBA\xC0\xC3\x0A\x07\xA1\x9A\x2D\xCF\x84\xE8\x7C\x2E\xA2\x8D\x55\xC0\xD5\x8A\x8E\xA3\x8A\x10\x22\xC1\x72\x01\x0A\x4D\xA8\x00\x1F\xC0\x1B\xAD\x89\x64\xC1\x2C\xA0\xC2\x99\xA9\x0C\xDD\x0F\x21\xA6\x83\xB2\xC0\x95\x01\x0A\xB0\x7A\xF6\x61\xC2\x88\x79\x8C\x3B\xA6\x19\xDB\xC0\x0A\x0A\xC0\xAD\xC3\x00\x1C",
-			"\x79\x94\x9C\x38\xAB\xC3\xD6\xB6\xC7\x86\xC5\x07\x13\x10\xFD\xC2\x1D\xD1\xC0\x27\xB6\x78\x0E\xB9\x18\xC9\x10\x12\xBF\x22\xD3\xA9\x82\x68\x12\xD6\x63\xBE\x31\x24\x5A\xAA\x26\xCF\xB0\x76\xC5\xC2\x83\xC5\x07\x1E\x58\xF0\xC3\x44\x2B\xA0\x99\xC3\x04\xCA\x08\xAB\x98\x84\xF4\x0F\x02\xA9\x91\x67\xC2\x21\x1B\xB1\x83\xBE\x62\xDD\x1F\x15\xBF\xC3\x27\xC3\xC6\xB2\xA4\x2A\x18\xF8\x66\x63\x15\xA8\xC4\xD2\x9F\xD7\xA7\xB7\x00\x1A\xE0\x3E\xC7\x23\xCA\xC5\x09\x0C\xE8\x97\xB6\xA4\xB1\x86\xAF\x93\xA1\x66\x08\xB8\xC7\x38\x01\x0B\xA6\xBA\x82\x8F\x11\x1A\xCF\xC6\x3F\xA3\x48\x01\x0B\xA8\xB5\x8D\xC1\x10\x67\xB8\xC6\x01\xBF\x41\x01\x0B\xAB\xBD\x8D\x82\x0B\x49\x2F\xC3\x9E\xB4\x12\xFD\x85\x80\x09\x39\xB1\xC5\x42\x03\x2A\x9C\xC3\x48\x10\x79\x42\xCF\x89\x83\x09\xD8\xB1\xC2\x03\x0C\xAB\x31\xC7\x80\x05\x88\xC3\xA1\x3D\xC8\x28\x03\x8D\x1D\xC0\xC5\x84\x0F\x55\x7B\xC4\x95\x03\x88\xF4\xC0\x19\xC6\x09\xB0\x2F\x85\x83\x0A\x5A\x26\xC8\x96\xC1\x1A\xFC\xC0\x85\x0C\x56\x0D\xCB\x90\x19\x7A\x3C\x66\x12\xC0\xC7\xE8\x9A\x58\x16\xCB\x8F\x0A\xC4\x19\xCF\x18",
-			"\xEE\xC6\x83\x09\x71\xF8\xC6\x40\x0A\x2E\xE5\xC1\x20\x03\x9D\xF4\x01\x80\xDC\x85\x17\xC6\x08\xD0\x28\x1D\xFC\x1C\x05\x78\x35\xE6\xB5\x75\x3B\x20\xA3\x1A\xC1\x69\xC3\x7F\xC1\x10\x57\x2E\xF1\x19\x2E\x32\xCB\x48\x2F\x90\x8A\xAC\x93\xD4\x12\x7C\x21\xCA\x3F\x14\xA2\x87\x97\x5C\xC9\x10\x07\x33\x2D\xA3\x1D\x69\xC3\x29\xD2\xC6\x85\x09\x78\xBC\xA1\xE9\x11\xAB\x32\x7B\x24\xCE\x28\x45\x76\x5D\xC5\xC8\x13\x2A\x74\x35\xC9\xDB\xA3\x30\x83\xC2\xDE\x49\x46\xA2\x7B\xC9\x0A\xCB\x20\x0E\xBC\x9C\xC3\x10\x14\xBD\x4A\xC0\x00\x12\xB3\x14\xF6\xB5\x7F\xA6\x8A\x83\x0A\xE8\xAC\xCB\x43\x17\xE5\xB2\xCA\x23\xB6\x10\x68\xCA\x56\xC2\x08\x2E\x36\x78\x27\xBD\xB7\xC2\x8A\xD3\x9E\xAE\xBB\xAC\x2F\xCE\xA1\x19\x7B\x4E\x9C\x94\x93\x29\xD6\x7D\xCA\x69\xC8\xA1\x3E\xAE\x81\x0A\x88\xDE\xCB\x13\x2A\xC4\x65\x2D\x2E\xC2\x09\x1A\x3E\x91\xD4\x12\xD5\x81\x9B\x8A\xC5\x32\xD1\xCD\x80\x06\x65\x1D\xCD\x77\x04\xB1\x02\x0A\x91\x4A\xC5\x73\xC2\x8E\x8A\x0A\x9F\x26\xCD\xE0\x0A\x18\xE0\xCC\x55\xBA\x8D\x8A\x0A\xA6\x30\xCD\xC9\x0A\xE7\xA3\xC3\x1E\xBA\x10\x7B\x26\x66\xC1",
-			"\x08\x84\xBE\x24\xFF\x10\x6A\xC9\x3F\xBC\xCD\x42\x14\xB1\x41\x11\x28\x05\xBF\xE2\xCF\x20\x64\xC4\x73\xC3\xB0\x0A\x0D\xDA\xAD\xCD\x84\x03\x6D\x42\xCC\x95\x10\xC7\xD6\xCA\x11\xD5\x71\xE9\xC6\x10\x5E\x34\x6E\xCB\x0E\x2B\xB9\x3B\xC3\x9F\xDF\xC0\x00\x6C\x35\x67\xCF\xBE\x6F\xCE\xEC\x86\x08\xD5\xCA\x10\x5B\x99\x51\xD4\xBE\xD6\xCF\xE0\x2F\xCA\xB6\xBB\x9E\xA8\xB2\x41\x13\xC5\x77\xC2\x21\x0F\x39\xCE\xCF\x72\x6F\xC9\xDC\xB5\xCF\x29\xB1\x10\xC9\xCC\x84\x23\x89\xBF\xB0\x79\xCC\x22\x2B\xC9\x20\x12\xC9\xEB\x01\x14\x3F\x38\xF9\x94\x0F\x14\xBE\x3A\xC9\xD0\x35\xC3\xA0\x81\x08\xD9\x20\xD0\x0F\x12\xBA\x1D\xCD\x09\xD8\x85\xD3\xC9\x42\x10\x3B\x0F\xD1\x21\x3C\x3B\xB7\xC6\x77\xD6\xCD\xCD\xAE\x65\x15\xD0\x00\x3A\xBE\xBC\xC5\x40\x62\x6E\x67\x63\xCD\x00\x04\xFE\xAC\xD0\xEF\x11\x97\x81\x09\x66\xDC\xCE\x02\xC2\x0E\xE0\x0F\x05\x38\x94\xF0\xCA\x7D\xC9\xCE\x0A\x0A\xF1\x3D\xD1\xEE\x05\x95\xC0\xA1\x42\x15\xD1\x00\x04\x35\xC0\xD3\x84\x0E\x78\x43\xD0\x78\x03\xCB\x6F\xC8\x49\xCD\xB3\xA2\xCD\x79\x4E\xD1\x72\x0E\xCB\xD9\xC1\x20\x08\xD2\xDF\xC8\xA3",
-			"\x82\x09\xE8\x36\xD2\xCB\x0F\x2E\xD9\xD2\x1F\xDB\x2F\xB0\xD0\x13\x28\xD2\xC8\xCD\x36\xC9\x09\xD2\x30\xA6\xC3\x0F\x60\xC3\xD3\x48\xD2\x3A\xCB\xD2\x83\x0A\x7A\x6D\xD3\x71\x1C\xCC\x51\xD4\xC2\x69\xD0\xD7\x36\xA7\xD2\x0E\x91\x3D\xD1\x48\xD7\xC3\xB3\xD3\x81\x02\x7B\x3D\xD2\xED\x3D\xD1\xA5\xCE\x2A\xC6\x08\x24\xDE\x9E\xB0\xD1\xF0\x3D\xD1\xCF\x3D\x47\xF6\x33\xA7\xC3\x10\x48\xD0\x7E\xC5\xCA\xD3\x3D\x47\xD8\x3F\x1E\xD1\x69\x14\xD6\x40\x1A\xCB\x5A\xD1\x45\xCC\x23\xC2\xC0\x00\x02\xD6\x9A\xCF\x10\xDC\x3D\x4F\xD7\x0E\x52\xDD\xA8\xFF\xCB\x8F\x00\x3F\xAA\xD1\x28\x24\xD5\x4B\xD6\xA6\xE0\x0F\xFB\x31\xD5\xB2\xC3\x15\xE9\xD1\xF9\x38\xAB\x81\x12\xA9\xD5\x9A\x29\xD7\xFE\x3D\xD5\x07\x1B\x35\xD6\x99\x51\xDC\x3F\xC3\xD1\x48\x28\xCC\x1B\xD9\xA2\x80\x42\x41\xC7\xCD\x3F\xD7\x54\xC3\x08\x01\x46\x90\xBB\xBF\xBE\xA4\x92\x09\x0A\x49\xD2\xD6\x81\x04\x80\x4F\xD4\x78\x0B\xD6\xB9\xB4\x3C\xC6\x40\x6F\xD9\x1C\x60\xD4\x97\xC3\xD4\x02\x08\x01\x64\xD7\xE5\x00\xAE\xE9\xD2\x15\xC9\x08\x17\x43\x5D\xC3\x0E\x70\xD2\xA7\xDB\xD5\x40\x1B\x40\xF2\xD7\x38\x20",
-			"\xD7\xED\xC8\xAE\x81\x09\x07\x59\xD7\xD2\x08\x5C\xFF\xD5\xFC\xC9\x10\x29\x42\xF1\x0B\x41\x3D\xD2\xEF\xB3\xD0\x70\xDD\xAA\x83\xCA\x41\x0F\x41\xC6\x19\x06\x7D\xD1\xBF\xBB\xB0\xB9\xD4\x79\xD6\x41\xC6\x18\x07\x7D\xD1\xE0\xC7\xAD\xC7\xCC\x8F\xBD\xD2\x3F\x14\x07\x49\xD7\x1B\xB9\xFD\x29\xD0\x12\x40\xD8\xD7\x0D\xC9\x82\xB6\x7B\xDD\x5A\x4D\xB1\x58\xD6\xB6\x57\x46\x20\xF3\x34\xE3\x1D\x64\xFE\xCA\xC3\xC3\x08\x59\x46\x78\x25\x43\x1E\xD7\x6B\x46\x1E\x30\xCF\xD9\xD2\x9E\x0F\x46\xC8\x5E\x3E\xB3\xCF\xA9\x51\xCE\x44\xC6\x18\x12\x7D\xD1\xE5\xCB\x97\x81\x0B\xCA\xCC\xD6\xE4\xCF\x12\xF4\xC5\x07\x1C\x6C\x56\xCF\xD3\xC0\x00\xA2\xCE\x55\xCA\x8F\x55\x4D\xA1\xD2\x0F\xB5\x21\xD1\x06\x0F\x6A\xDA\xD7\x77\xD7\x0C\xDC\xD8\x7D\x02\x37\x9D\xCF\x6A\xD3\xD2\x18\xDC\x00\x66\xD9\x80\x0A\xBE\x56\xDD\x37\xE9\xD1\x5E\x4F\x9D\xC3\x0C\x7C\xCF\xCE\x02\x0F\x6A\xEE\xD6\x82\xD6\x10\x14\x02\xDB\xCF\x10\xF2\xC8\x6F\xCE\xDB\xE8\xC9\xA2\xC4\x45\xDD\xC7\x0E\xE2\xB9\x6E\xC9\x08\x7E\xDC\xB2\xCB\x47\xE1\xD2\x0E\x0E\xD2\x71\xC6\x09\x81\xD5\x94\xA0\x03\xDF\xC3\xB0",
-			"\xAB\x46\x8C\x59\xBE\x0C\xDA\x36\xED\xCD\x8A\xC5\x47\x9D\xCD\x22\x7D\xD0\xB7\x30\xB6\x9D\xDC\x24\x29\xD1\x21\x4D\x33\xFD\x49\x1E\xDA\x77\x25\xDE\x40\x09\xB6\x2B\xB1\x45\xCD\x4A\x94\xD1\x14\x4A\xC4\x00\x10\xDD\x7C\xDE\xA1\x3A\xCC\x61\xC6\x99\xA4\x22\x6E\xD7\xDA\xBD\xDB\x85\x35\xD7\x1C\xB2\xAA\x83\x19\x02\xDD\xD8\x06\x09\xE9\x86\x09\x17\xB4\xB6\xD2\x4B\xF1\x4F\x17\x8C\xDC\x78\xC7\xD1\x81\x18\x78\x46\x1C\x71\xC2\x08\xCC\xD9\x77\xC0\xB5\xE7\xD5\x30\x67\xD4\x15\xC4\xCF\x7F\x4E\x75\xFF\x10\x21\xDC\xB9\x82\x0A\xF7\xD9\x8D\x29\xD1\x35\x62\xDE\x2A\x1F\x79\x6B\xDF\xF9\xDB\xCD\x20\xD8\x00\x0A\x4F\xF5\xD0\x9F\x3D\xD1\x9D\xC5\xDF\x01\x0C\x1B\xC3\x09\x91\x23\xBD\xA4\x22\xFE\xC2\x08\x10\x2D\x7F\xEB\x21\x00\xE0\x8D\xA9\xD2\x7E\x4B\xDF\xDD\x0C\xF6\x2B\xDE\x02\xE3\xA6\xC5\xC9\x87\x48\xE0\xE0\x09\x52\xF8\xDF\x87\x22\x92\xB7\xDA\x40\x03\x52\xEB\xDE\x4E\x7D\xD0\xED\x3B\xBE\xCE\xCE\x40\x1C\xDF\xF1\xDC\x89\x1E\xE1\x80\x0C\xC0\xAC\xD8\x13\x20\xE1\x52\x49\x45\xC9\x54\xDA\xD9\x13\x0A\x0B\x8D\xDD\xD7\x00\x07\x52\x4F\xDD\xEB\x07\xAB\xD6",
-			"\xCF\xD8\xD8\xDA\x29\xD1\x56\x73\xE1\xA0\x02\xAC\x93\xE3\x0D\xF7\xE1\x45\xCA\x59\x7B\xE0\x85\x04\xAD\xB6\xE0\x6D\xCD\xDE\x02\x0F\x5B\x43\xE2\x78\xD6\x87\xB7\xE3\xFB\xC5\xCA\xF4\x53\x89\xC6\x08\x84\xD6\xC4\x9E\xD8\x79\xD2\x58\x52\xE3\x20\x34\x41\xCE\xC7\xC3\xC3\xDE\xF6\xC1\x08\x27\x59\x8B\xC2\x08\x91\xD5\xC5\x86\x09\xF4\xDF\xE2\x00\x01\x69\x62\xE3\x80\x09\xB3\xE5\xE3\x40\x14\xDC\x30\xD5\x6B\x5D\xCD\xB9\x5D\xA3\xC8\xDA\x0F\xFE\xDC\xE4\xCA\x70\x5D\xCC\xCA\x5D\xA3\x82\x02\xEE\x59\xD6\x16\xD9\x7E\xE3\x5D\xCE\xCC\x08\x19\xDD\x19\xDF\xE3\x06\x0C\xEB\x86\x08\xAB\x22\xC0\xC3\x22\x22\xE3\x08\xD8\xC8\x86\xCC\x23\x48\xE2\x10\x2F\xE0\xCB\xCE\x04\x97\xDB\x48\x2D\xDB\xCE\xC4\xC9\xD2\xDD\xFC\xD2\x04\x99\xE0\xF4\x88\xE4\x48\xED\xC2\xE4\xCE\xED\x4B\xE3\xAC\x79\x94\xC0\x01\x4E\xE1\xAE\xF1\xDE\x26\x0A\xE5\xDD\x09\x03\x2A\xE4\x56\xEF\xC4\xB0\xD0\xEF\x48\xE5\x1D\x03\x96\xFA\xC4\xF2\xC2\x0A\x30\xE4\x78\x01\x01\xBA\xE1\x21\x1E\xE3\xA2\xC6\x0A\x3E\xE5\x72\x02\x47\x9C\xE2\x4F\xE4\xCE\x55\x06\xCC\xCB\x0F\x42\x49\xE6\x1E\xB1\x45\xCC\x5F",
-			"\xCE\xCC\xBD\x3D\xD3\x48\x4B\xDF\xAC\xE5\x61\xCD\xCD\x81\x04\xBE\x1D\xCF\xFD\x5D\xD1\xB3\xDB\x82\xEC\xE4\x5A\xDA\xB5\xFB\x5D\x67\xC7\x60\x3D\xD7\x2E\x74\xDE\x85\x0C\xC8\xA1\xE3\x13\x2D\xE7\x29\xE4\x3C\xCE\xC0\x16\xE9\x10\x26\xBB\xF2\xC9\xD1\xC1\x04\x7B\xD3\x13\xF0\xC1\xCF\xF1\xDC\x31\x0B\x50\xFC\xE2\x20\x3A\xC6\x77\xE4\x42\x03\xEB\x40\x05\xC8\x04\xEB\x39\x05\x06\x43\xE1\x20\x08\xE9\x3F\xF0\xE1\xC7\x03\x41\x4C\xC9\x7B\xE4\x9E\xC8\x07\x82\x4A\xCF\x03\x0B\xA2\xD2\xE5\x27\x26\xC9\xD0\xD9\xFC\xC9\x06\xCD\xE3\x38\x19\x4D\xCE\xCD\xD1\xB8\xE0\x79\xCD\x06\x21\xEB\x36\x63\xE5\x4A\xE5\xCA\xF1\xDD\x34\x09\xE9\xD2\x08\x3B\x64\xE9\x23\xE8\xC6\xD5\x04\x4C\xF7\x0E\xF3\x4B\xA6\xC9\x09\x5A\xEA\xB5\xD9\x07\x4D\xE1\x0A\x0F\x52\xA7\xD1\x9D\x14\xDD\x0D\x3F\xE9\x47\x0A\xE5\x25\xEB\x98\xF0\xD1\x70\x06\xD4\x89\x09\x93\x42\xEA\x03\x0F\x8C\xC5\xCB\x72\x0D\xD4\x86\x0A\x06\xF6\xCE\x25\xE8\x8E\xDA\xDB\x74\x0A\xCA\xED\x04\x43\xE6\x08\x99\x53\x7D\xE5\xE8\x6D\xEE\xA1\x8F\xDA\x2A\xF3\x07\x5F\xEB\x20\x00\x56\xB1\xE1\xC8\xB0\xE1\x3D\x0A\xE5\xF9",
-			"\x01\xAD\xC2\x09\x6C\x5B\xBE\xE8\x2A\x41\x05\xE9\x45\xCB\x1F\x32\xEB\x1F\x11\xC5\xB3\xD2\x5D\xF0\xCE\xE4\xCD\x1F\x3B\xEA\x2A\x1D\xAF\x3D\xD3\x5F\xE6\xC7\xA2\xD3\xB0\xDD\x0E\x82\x56\x3C\x07\xEE\xA1\xB1\xDF\x01\x00\x8C\x5B\xC9\x80\x08\xC5\xFE\xEA\xDC\xC4\xCF\x03\x02\xB2\xF4\x0E\x8A\x5D\xD8\xBB\xE5\xFC\xC5\x00\x9A\xE9\x40\x17\x59\xCE\xE2\xCC\xA9\xD3\x01\x01\xED\x0F\x11\x64\x64\xEC\x33\xE9\xA2\x89\x00\x6A\xE1\x12\x61\xE6\xB2\xD1\xE6\xF2\xCB\x00\x2F\xEC\x7B\x96\xED\x01\x09\x66\x46\xEC\x3C\xE1\xBF\x8F\x00\x6E\xE6\x18\xBF\xEC\x68\x7B\xED\xD3\xD4\x9E\x93\x03\x6F\xF5\x00\xBF\xEE\x69\x7D\xD1\x8A\xC7\xD7\xA9\xD3\x05\x00\x63\xAD\xC1\x21\x13\x5A\xE3\x1C\xDC\x80\xED\xFC\xD8\x00\xD0\xEC\x3E\x32\xE3\xB7\xC5\xDD\x88\xEC\x79\xD9\x00\xD9\xE9\x40\x2B\x5A\xEA\xE4\xD3\xC5\xCA\x06\x01\xEF\x0F\x15\x6D\x64\xEF\x9D\xE9\xA2\x9B\x00\x7A\xE1\x12\x74\xE3\x46\xDD\xEF\x80\x0B\xB7\xC5\xC8\x07\x0F\xEF\x43\x14\x6F\x6B\xEE\x83\x0A\xD4\xDA\xD9\x07\x18\xEF\x3F\x12\x8F\xF2\xEE\x65\xE1\xBF\x9E\x00\x80\xF4\x12\x8A\x5B\xBF\xEF\xE3\x14\xDF\x01\x07\xF0",
-			"\x08\x1F\xED\x90\x5B\xB9\xFC\xEC\x18\xE2\x02\x07\xF3\x08\x1F\xED\x7C\xE4\xBB\xED\xEA\x96\xD5\x02\x07\xF2\x09\x1F\xED\x83\xE3\x3E\xCA\x09\x87\xC1\xBF\xA8\x03\x81\xF2\x17\xF4\xCB\x20\x33\xEE\x34\xE9\x02\x60\x61\xD8\x8D\x01\x27\xF0\x3C\x1F\xB8\x83\x04\xE2\xB0\xE2\x0B\x11\xF1\xCC\x13\xC6\xEA\xF1\x14\xDF\x02\x2E\xF1\xF6\x78\xF1\xCB\x08\xB1\x0D\xEE\xF2\xC4\x03\x60\x62\xC5\xAA\x08\xAB\x5D\x47\xC2\xF2\xEB\xE0\xC3\xB7\x02\x91\xF4\x0F\x85\xE6\x53\xC1\x09\x25\xFE\xDD\xF1\xDE\x0E\x0F\xF2\x01\x17\x11\x03\xEC\x2A\xFF\xD8\xB0\xE1\x0F\x18\xF2\x0F\x11\x12\x1B\xF3\xCB\xE1\xBF\xC0\x00\x98\xE1\x12\xB4\x5A\xC9\xDE\xEC\x18\xE3\x04\x67\xF3\x90\x15\x04\x63\xF5\xB4\xE4\xCE\x23\x0E\xE6\xBF\x13\x25\x11\xF3\xAC\xEC\x3C\xC9\x03\x3A\xF4\x25\x39\x5E\x9A\xF3\xED\xF1\xDC\x09\x3C\xF3\x27\x0F\xDB\x9B\x06\x33\x5C\xF2\x32\xB4\x3C\xD1\x02\x3E\xF4\x05\x3F\xEF\x2D\xEA\xD4\x03\x08\xD1\xE4\xE6\x0B\xE3\xE5\xFC\xF1\x16\x1F\xED\xBE\x5A\xCA\xC0\x01\xCB\x29\x10\x78\xE8\x8C\xDB\x02\xBF\xED\x3B\x00\x5F\x1E\xDC\xE9\x86\x09\xD6\xD4\xF4\x00\x05\x0B\x21\xF4\xF0",
-			"\x05\xCC\x9A\xF5\xA9\xE3\x08\x40\xE0\x46\xDF\x03\x55\xF9\x1C\x29\x07\x60\xEF\xF5\x80\xB1\x45\xE1\x02\x5A\xFB\x1C\x46\x5C\xA9\xE4\xF3\x30\xE3\x0C\x3C\xF5\xE1\x0D\x0A\x37\xF7\x9A\xEC\xD9\x65\x03\xD8\xC7\x0E\xE7\x5F\xEB\xF2\xF1\xFC\xC7\x03\xCA\xF2\x3A\x1A\x5F\x66\xF9\xE7\xF1\xDD\x1A\x11\xF6\xD7\x0E\x7B\x54\xF7\x05\xF4\x9E\xEB\x03\x6F\xED\x03\xBF\xED\x7D\x6E\xF5\x09\xFC\xB2\xEF\x03\x6F\xF1\x03\xBF\xEF\x9B\xD0\xF4\x81\x08\xEB\x81\x0B\xA4\xFB\xE6\x02\x0B\x0E\x3F\xED\x3A\x0F\xDB\x81\x62\xA6\xFF\xCF\x03\x0D\x23\xF1\xDF\x3B\x00\xE4\xE2\x14\xBE\xE2\x08\xB1\x2C\x3C\xF8\x02\x1F\xF9\x10\x7C\x01\xBF\xE7\x0E\x01\xFE\x20\x2D\xF6\x34\xEC\x44\x25\xC9\xBE\xE9\xD1\x7D\x07\xE0\xEF\x16\x87\xF0\xF0\xA9\xD2\x1F\x04\xF8\x06\x0A\x10\x12\xF9\xEB\x03\x5C\x43\xF1\xFC\xC3\x04\x18\xF9\x48\x28\xE7\x75\xF1\x10\x1D\xF8\x93\xEC\xD9\x87\x01\xE4\xC3\x13\x7C\xED\x99\xA6\xF9\x95\xF0\xE1\x8B\x02\xE5\xFF\x11\x85\xEA\xE9\xAE\xF9\x97\xEC\xD9\x8F\x02\xE6\xD4\x12\x8B\xE5\xF3\xC0\xF4\xCB\xD3\x04\x3A\xFD\x3B\x0B\x06\x67\x46\xF3\x80\x01\x7D\xF0\xD1\x97\x01",
-			"\xE8\xE0\x0E\x67\x04\xF4\x84\xDC\x79\xDB\x04\x4A\xF9\x39\x2F\xE9\x9E\xFB\xB8\xA9\xD3\x27\x11\xFA\xCB\x0C\x1A\x0D\xFA\x40\xF0\xC3\xA3\x06\xCE\xE7\x05\xBF\xEF\x1A\x2A\xE5\xA2\xF4\xD6\x93\xC9\x42\x09\x05\x3A\xFD\x15\x3F\xED\x6D\x03\xF6\x9B\xF0\x12\xE1\x08\xAF\x02\xE7\xF3\x05\xDF\xEF\x0D\x2A\xE5\x84\xC3\x08\xC6\x2C\x3C\xF5\x04\x6C\xF3\x25\x28\xCB\x40\x11\xC9\x09\xEB\x88\x3E\xFA\x81\x0A\xA1\x81\xFF\x1C\x20\xFC\x03\x0E\xB9\x24\xCF\x5B\x0C\xF7\xF4\x0D\xE1\xE9\xFC\x29\xD1\x17\x0D\xFD\x00\x17\x93\x83\x08\x50\xD1\xDF\xBB\x07\xC0\xFC\x05\xC9\xF6\x10\x17\xFF\xDF\xE5\xDE\xCC\x13\x1C\x1C\x48\xCF\xF4\xF8\xA0\xFF\xB6\x04\x07\x1C\x4D\x44\xC3\x09\xA3\xC6\xF8\xD2\x0E\x2F\x1C\xFC\xAB\xFA\x21\x3E\xC9\xF8\xD0\x0C\x1B\xFB\x94\x04\x30\x1E\xF8\x86\xC1\x06\x30\x6B\x84\xC4\xE2\x2A\xF8\xFD\x03\x0E\xD3\xDA\xDA\x63\x0C\xFB\xF4\x0C\x57\xFD\xCC\xC0\xFC\xA5\xE4\xCF\x65\x05\xFC\x81\x12\x57\xE8\xFE\xD1\xD7\xED\xC0\x00\x68\x0D\xFC\x8F\x11\x3C\x0B\xE9\x01\x09\xF9\xDE\xE4\x18\xE5\x0D\x55\xFD\x90\x16\x07\xD8\xF8\x00\x1A\xFE\x93\xE1\xBF\xDA\x06\xF7",
-			"\xE3\x12\x7A\xEB\x7D\xE3\xFF\x58\xFA\xB5\xDF\x07\xF9\xF3\xC1\x3A\xFB\xFD\xCD\xD7\xF7\xF4\x25\x04\x01\xFC\xED\xE9\x30\xE1\x1D\x34\xFF\xEE\x08\x00\x77\xFD\xAD\xAC\xD9\xEE\x03\xFE\x70\x1E\x0C\x00\xFE\x7E\xA2\x54\x9E\x73\x03\x02\x81\x72\x00\x01\x05\x80\xAE\x59\x8A\x68\x0F\x09\x80\xCB\x04\x05\x0C\x00\xA6\x6F\x29\x69\x3F\x00\x01\x83\x07\xD8\x74\xF4\x7C\xDE\x64\x67\x02\x03\x0D\x3D\xFB\x49\x04\xF7\x76\x06\x86\x10\x3C\x74\xA8\x7B\x01\x0E\x01\xB4\x07\x0F\x7A\x08\x83\x10\x07\x7D\x5A\x6C\x03\x07\x02\xA3\x0F\x13\x80\x7D\x79\xA2\x51\x00\x2F\x83\x83\x06\xE2\x6A\x80\x02\x04\x0B\x88\xEA\x56\x00\x35\x81\x90\x0C\x02\x31\x80\x00\x01\x88\x14\x9E\x5B\x00\x37\x31\x74\x7F\x20\x23\x7F\x50\x68\x0C\x7C\x01\x05\x81\x44\x0F\xF8\x7D\xDF\x68\x7A\x1D\x01\x0F\x83\x24\x30\x00\x40\x83\x13\x80\xEF\x41\x04\x22\x02\x14\x8F\x23\x05\x79\x38\x80\x66\x29\xA2\x67\x00\x5A\x80\x95\x08\x03\x00\x81\x52\x74\x8C\x6C\x02\x21\x81\xDD\x04\x0F\x04\x06\xA9\x68\x31\x00\x1A\x80\x1E\x26\x79\x5D\x80\x00\x05\x06\x9A\x6D\x36\x02\x1B\x89\x1C\x04\x01\x40\x80\x9E\x60\xC3",
-			"\x7B\x00\x4C\x81\xE9\x03\xFE\x5A\x75\xA8\x78\x0F\x01\x06\x81\x01\x37\x32\x19\x38\x04\x34\x7F\x7F\x81\x8A\x63\x04\x21\x81\x48\x01\x21\x8A\x10\x0D\x01\x88\x83\x78\x61\xBF\x4A\x01\x61\x83\x13\x0E\x08\x89\x04\x52\x01\x24\x89\x10\x25\x7D\x0C\x69\x47\x01\x06\x96\x01\x97\x82\x41\x07\x05\x1A\x82\x20\x59\x8A\x68\x05\x21\x81\x5D\x01\x28\x83\x10\x1C\x01\xA4\x81\x89\x54\x9E\x5F\x01\x61\x80\x19\x0A\x0A\x82\x04\xBB\x7A\xFA\x7E\xF6\x68\x71\x66\x01\x18\x8B\x06\x33\x82\x01\x06\x19\x0D\x0A\x82\x04\xEF\x79\x59\x7C\xAF\x21\x81\x72\x00\x2F\x80\x00\x1E\x7B\xB6\x80\x71\x71\xBF\x74\x01\x61\x81\x1E\x06\x0C\xB0\x01\xF4\x7C\x8F\x66\x10\x19\x1B\xE4\x67\x1E\x0D\x07\x86\x04\x7C\x02\x31\x84\xEF\x46\x0F\x15\x19\x53\x66\xF1\x57\x83\xBC\x0D\x91\x62\x10\x1D\x83\xAD\x7E\x0F\x1F\x61\x27\x2B\xA6\x7F\x10\x12\x04\x86\x04\xE7\x81\x39\x86\x34\x09\x81\x02\x04\x35\x81\xBF\x7F\x01\xE0\x82\x40\x00\x08\x06\x83\x76\x03\x81\x7B\x96\x43\x04\xFB\x65\xFC\x62\x08\x35\x83\x3F\x08\xBF\x76\x3C\x3B\x83\x02\x04\xB8\x14\x9E\x43\x02\x00\x84\x95\x03\xF0\x5A\x7A\x04\x85",
-			"\x40\x08\xB6\x71\x6F\x84\x01\x42\x8D\x1D\x3B\x01\x7C\x78\x96\x62\x10\x0E\x65\xF1\x6D\x21\x02\x11\x83\x0C\x2A\x19\x42\x01\x6D\x24\x67\x86\x01\x42\x87\x08\x06\x83\x17\x7E\xF1\x02\xA6\x42\x04\x33\x19\x23\x73\x47\x27\x84\x60\x71\x3A\x83\x47\x01\x66\x06\x07\x47\x81\xBF\x49\x02\x09\x86\x22\x06\x0C\xBF\x01\x07\x7B\x9B\x68\x12\xAE\x84\x29\x12\x4E\x8D\x12\xAA\x84\x29\x11\x4A\x86\x10\x18\x84\x30\x70\x23\x0B\x11\x8C\x0B\x7A\x82\x40\x0D\x11\xAE\x83\x44\x0F\x8D\x19\x10\x3F\x69\x4C\x85\x42\x0D\x08\x06\x83\xDD\x04\x54\x83\x10\x04\x85\x38\x7F\x51\x8B\x2D\x16\x85\x02\x04\x95\x10\x14\xBE\x10\x5E\x84\x36\x8C\x13\xA0\x85\x0A\x04\xE9\x72\xFD\x50\x02\x09\x85\x24\x06\x0C\x80\x02\x07\x79\xA2\x66\xF9\x69\x68\x93\x01\x42\x84\x09\x06\x83\x81\x03\x81\x7F\x65\x1E\x83\xA6\x72\x56\x82\x2E\x31\x5E\x03\x07\x5D\x81\x15\xA3\x0E\x7C\x86\x40\x0E\x16\xA6\x70\x4F\x13\xA4\x66\x10\x0E\x85\x7F\x84\xEF\x0F\x9A\x46\x04\x8C\x1B\x57\x81\x14\x17\x02\x54\x84\x78\x0D\x18\x83\x85\x29\x69\x26\x0A\x17\xBE\x0B\x93\x87\x40\x0D\xA9\x49\x86\xC8\x0F\x66\x83\x10\x37",
-			"\x66\x9C\x85\x01\x1E\x19\x82\x04\x66\x84\x1A\x7A\x09\x09\x84\x9B\x02\x31\x8A\xF1\x46\x0F\x94\x1B\xB3\x29\xA2\x5D\x02\x09\x86\x27\x06\x0C\xA0\x7C\xC6\x0C\x68\x87\x15\xA9\x68\xA0\x03\x65\x8F\x2E\x16\x6B\x02\x06\x6D\x84\x18\xA4\x10\xBC\x85\x40\x0D\x1A\xA1\x86\xDE\x0E\xC2\x63\x10\x06\x86\x1B\x74\x09\x14\xB1\x43\x04\x8B\x85\x72\x8B\x42\x1C\x6C\x17\x85\x8A\x61\x0A\x3A\x86\x05\x0C\x74\x81\x10\x33\x6C\xC4\x86\xBC\x08\x1D\x83\x04\x44\x6D\x76\x83\x30\x1B\x87\xA4\x85\x8A\x62\x0A\x09\x84\xA3\x02\x31\x84\x08\x07\x78\x3D\x6D\xE7\x79\xA2\x65\x02\x09\x86\x29\x06\x0C\x85\x02\x07\x79\x77\x87\x1B\xA4\x67\xA8\x00\x75\x83\x25\x0C\x6D\x01\x06\x7C\x8F\x1B\xAB\x10\xF8\x84\x00\x09\x1E\x8E\x87\x43\x11\xD5\x63\x10\x32\x84\x30\x71\x2A\x09\x10\xAA\x02\x91\x85\x72\x04\x20\x82\x04\xCF\x18\x79\x6C\x0A\x36\x87\xF4\x05\x75\x63\x10\x32\x83\x30\x71\x2B\x09\x10\xAE\x02\x09\x8B\x72\x04\x21\x82\x04\x5F\x6D\xFC\x60\x0B\x37\x30\x47\x79\x80\x0B\x6D\x06\x04\x06\x86\x77\x8C\x2C\x23\x88\x03\x07\x43\x80\x20\xB3\x11\x25\x8B\x40\x0E\x9D\x71\x6F\xB3\x01\x86",
-			"\x82\x2E\x2A\x88\x02\x07\x8B\x80\xC3\x75\x02\x32\x8A\xBF\x08\x6E\x24\x88\x63\x87\x94\x06\x08\x07\x78\x3B\x89\x8A\x8D\x23\xB4\x07\x29\x7E\xF1\x04\x6F\x1E\x84\x29\x6B\x2D\x09\x10\xB8\x02\xC6\x80\x22\x07\xE0\x70\x6D\x03\x04\xBF\x1E\x18\x84\x0D\x50\x8A\x40\x08\x6F\x13\x89\xA5\x0F\x95\x81\x13\xA9\x68\xBA\x01\x42\x8B\x0B\x06\x83\x89\x03\x81\x78\x9E\x51\x89\x43\x89\xE9\x03\x26\x96\x89\x65\x8B\xE8\x02\x25\x86\x04\x91\x6C\x0C\x7D\x0B\x10\x88\x09\x06\x22\x07\xE0\x6B\x89\x13\x89\x8A\x6E\x0B\x06\x83\xC0\x02\x31\x81\xF3\x7D\x68\x77\x6E\x40\x06\x9E\x66\x88\xDB\x09\x9F\x81\x10\x01\x1C\x58\x8B\xE8\x04\x28\xAC\x89\x29\x6A\x30\x00\x27\x86\x04\x8D\x03\x81\x77\x28\xB5\x89\xE4\x67\x30\x06\x0C\x85\x03\xC6\x82\x23\x0F\xDB\x5D\x5F\x06\x07\x9F\x8B\x22\xA9\x10\x98\x8B\x40\x0F\x28\xBB\x87\x43\x12\xE7\x56\x10\x07\x89\x80\x8A\xB8\x01\xB8\x42\x04\xFD\x80\x44\x7B\x28\x81\x09\xA7\x89\x40\x0D\x22\xAC\x6C\xC8\x03\xAA\x8C\x21\x98\x7A\x0A\x04\x8D\x82\xFD\x49\x03\xB2\x89\x40\x02\x09\x3F\x76\xA9\x89\x41\x89\x26\x81\x09\x94\x00\xAF\x85\x2B\xBF\x8A",
-			"\x43\x0A\x25\x0F\xDB\x55\x1C\x09\x05\xC2\x14\x9E\x4A\x03\x20\x88\xD1\x09\xB8\x43\x04\xC8\x89\xA9\x8E\x2F\x19\x5E\x06\x06\xB2\x81\xBF\x4D\x03\xCD\x89\xE9\x0D\x9F\x43\x04\x6D\x88\xCB\x60\x0D\x39\x8A\x54\x0B\xB6\x81\x0F\xA9\x68\xD1\x02\x31\x83\x0D\x06\x83\x98\x03\x81\x7D\x2D\x81\x04\x1B\x8A\xF4\x75\x0D\x09\x84\xD6\x02\x31\x89\x09\x07\x78\xE6\x5E\x41\x0D\x2B\x92\x7F\xD8\x00\xB8\x8A\x09\x34\x8B\x0A\x07\xAB\x82\xFD\x59\x03\xE0\x88\xD4\x7A\xE9\x75\x8B\x42\x88\x79\x6A\x0D\x20\x8B\x9E\x00\x9F\x76\x75\x09\x04\x3D\x1C\x79\x6B\x0D\x20\x8B\xDD\x07\xFA\x56\x10\x0B\x8C\xD2\x8B\xBB\x0B\xB9\x43\x04\x0D\x8D\xFC\x6C\x0D\x39\x88\xEF\x0B\x85\x63\x10\x29\x1D\xE4\x66\x37\x09\x10\x9F\x03\x1C\x8F\x75\x0E\x31\x82\x04\x6C\x1C\x79\x61\x0E\x09\x84\xE2\x01\xC9\x81\x14\x27\x8C\x01\x04\xE9\x61\xBF\x64\x03\x09\x85\x39\x0E\x32\x8A\x04\x20\x8E\x41\x09\x32\x84\x87\xE7\x03\xCD\x89\x10\x39\x8C\x03\x06\xCC\x8B\x29\x97\x07\xE9\x02\xCF\x8A\x33\x8A\x04\x42\x8C\xA8\x87\x1C\x2B\x03\x46\x8D\xD0\x8A\x10\x20\x68\x15\x8D\xC1\x09\x34\x81\x04\xAD\x6D\xD4\x83",
-			"\x25\x13\x8D\x00\x00\xDD\x15\x28\xBC\x0E\x50\x8C\x37\x74\x2C\x81\x04\xED\x01\xD3\x82\x10\x32\x1D\x09\x05\xD5\x83\x34\x86\x0D\x64\x8E\x41\x0A\x35\x96\x8D\xF4\x07\xDA\x81\xFC\x69\x68\xEF\x02\x1D\x8B\x1C\x21\x02\xF4\x7E\xDB\x8A\xFC\x71\x6F\xF4\x02\xDC\x83\x1C\x26\x02\x75\x8E\x0B\x79\xA2\x79\x03\x7A\x8F\x71\x0B\x0A\x3D\x8D\xC6\x65\xFC\x6E\x0F\x01\x8E\xD2\x04\x2C\x00\xC6\x24\x5C\x76\x8F\xF6\x7C\xB2\x43\x00\xCB\x47\x07\x86\x10\x36\x02\x8B\x8E\x42\x0D\x38\xA4\x7F\x30\x70\x02\x01\x39\x85\x1E\x95\x8D\x42\x07\x39\xAC\x7F\xA8\x79\x03\x0B\x39\x81\x08\xC2\x00\xE1\x86\x10\x20\x8E\x57\x80\x00\x02\x01\x23\x8E\xA7\x1E\xE9\x80\xEB\x4E\x77\xAC\x8D\x90\x0C\x0C\x2E\x8E\xB9\x78\x79\x6C\x01\x31\x8E\x43\x09\x34\x04\x3B\xB7\x7C\xD2\x7D\x08\x08\x3B\x97\x1F\xBB\x8D\x2B\x70\xC3\x66\x00\xBF\x8C\x95\x0B\x0D\x01\x8F\x24\x81\xEA\x8B\x02\x05\x8F\xDD\x04\x38\x08\x3C\xA9\x68\x30\x00\xF3\x80\x1E\x25\x03\xCF\x8C\x79\x65\x03\x12\x8F\xC9\x06\x3A\x01\x3C\xBA\x80\xA9\x8E\x0E\x08\x3D\x8B\x07\xEF\x03\xF6\x89\xA2\x7F\x00\xDF\x8F\x70\x04\x0F\x22\x8F\xE4",
-			"\x64\x11\x05\x3E\x87\x07\xF9\x01\xF0\x8B\x0E\xB0\x70\x49\x00\xC3\x5D\x1D\x3E\x03\x07\x7B\xE5\x80\x0F\x92\x7F\x4A\x02\xFC\x88\x21\x35\x8F\x4E\x7D\xFC\x6B\x04\x2B\x8F\x3C\x61\x18\x87\x39\x96\x81\xC2\x81\x25\x70\x40\x97\x07\x05\x02\x00\x9D\x3F\xB0\x70\x55\x03\x01\x97\x71\x4A\x90\x55\x7C\x79\x6A\x05\x0E\x90\x3F\x34\x04\x95\xED\x70\x70\x5F\x00\x05\x95\x89\x56\x90\x51\x75\x8A\x64\x06\x1A\x90\xA2\x44\x07\x9B\x99\x69\x68\x69\x02\xFE\x89\x1C\x1E\x00\x09\x87\xE5\x80\x08\xA9\x8E\x6A\x01\xF1\x8F\x06\x0B\x47\xC6\x3B\x0D\x3C\x38\x92\x82\x30\x71\x1C\x05\x3C\xB6\x01\x30\x93\x85\x52\x43\x96\x8E\x34\x90\xCB\x68\x07\x05\x8F\x7D\x01\x0E\x97\xA4\x7B\x90\x9E\x8C\xB9\x72\xFD\x7F\x01\xC5\x8C\x21\x02\x44\xA0\x58\x44\x92\xDA\x86\x44\xA8\x71\x86\x01\xF1\x8B\x08\x0B\x91\xCC\x4D\x13\x93\x10\x17\x8E\x9C\x83\xBD\x5D\x08\x05\x8F\x92\x00\x15\x92\x10\x3D\x00\x56\x92\x40\x07\x39\x81\x83\x66\x7C\x89\x85\x3C\x99\x02\x5E\x91\x40\x0B\x08\xAB\x4F\x3C\x92\x32\x80\xC3\x5B\x02\xC5\x8C\x28\x09\x46\x80\x00\x49\x01\x18\x91\x10\x23\x91\xE2\x85\xF1\x87\x0A",
-			"\x33\x91\x96\x80\x1B\x99\x10\x30\x5F\x06\x06\xD9\x8A\x34\xA9\x10\x80\x93\x15\x9F\x35\x9E\x0F\x82\x90\xDC\x79\xA2\x69\x02\x26\x93\xB6\x03\xA2\x5F\x8C\x29\x6A\x2A\x03\x47\xAC\x02\x73\x91\x15\x0B\x24\x8A\x04\x3B\x8C\x0C\x7E\x0A\x33\x91\xB0\x03\x1C\x90\x0A\x86\x0F\x8F\x90\xA5\x39\xA2\x72\x02\x8D\x93\x70\x07\x05\x17\x92\x09\x04\xD6\x85\x94\x73\x02\x73\x91\x2D\x03\x47\xA7\x82\xC6\x0F\x8A\x60\x49\x8B\x7E\x0C\x5C\x2E\x03\x47\x99\x01\x09\x86\x2C\x98\x32\x9C\x89\x0C\x5F\x2E\x03\x47\x9A\x01\xB9\x90\xD2\x89\xA2\x7D\x02\x0C\x5E\x2F\x03\x47\x9B\x01\x5E\x8A\x42\x0F\x77\x32\x73\xA5\x92\xBF\x02\xA3\x73\x92\xF1\x6D\x30\x0C\x70\x42\x03\x73\x90\x17\x09\x4C\x89\x04\x99\x90\xCB\x64\x0C\x0C\x5C\xC5\x03\x1C\x99\x0A\x86\x0F\xCF\x92\x40\x0A\x4A\xB0\x68\xC7\x00\xC3\x58\x0C\x33\x91\x5E\x01\x42\x87\xBC\x42\x04\xCB\x91\xFC\x6A\x0C\x0D\x93\xEF\x0B\x3A\x91\x10\x00\x8D\x2C\x6F\x32\x0C\x70\x4C\x03\x73\x90\x2C\x86\x3C\x32\x93\x00\x01\x36\x92\xFD\x4E\x03\x0C\x5F\x33\x03\x47\xA0\x01\xEA\x92\x30\x94\x9E\x51\x03\x0C\x5E\x34\x03\x47\xA1\x01\x09\x85",
-			"\xF5\x66\x6D\x51\x60\x46\x30\x07\x66\x6E\x66\x31\xF5\x5D\xD3\x6C\x03\x4B\x48\x86\x64\xCD\x02\x84\x46\x42\x86\x0A\xD4\x69\x51\x86\x0F\x0E\x34\x46\x94\xA1\x5B\x06\xBE\x45\xE3\x3F\x51\xAF\x65\x0E\x36\x24\x32\x51\xA7\x5D\xE5\x05\x28\x38\x6D\x55\x70\x44\x05\xD7\x6D\x13\x3F\x60\x9D\x66\x43\x31\x36\x5C\x05\x4B\x61\xCD\x3A\xC8\x38\x94\xF7\x5B\x4E\x94\x82\x77\x5B\x24\x5C\x5B\x01\x54\x92\x05\x24\x5C\x57\x05\x54\xAC\x60\xF7\x5B\x82\x60\x00\x0B\x68\xFF\x02\x0E\x4C\x15\x0E\x95\x34\x61\x52\x97\x6F\x4B\x49\xAC\x4B\x0F\x37\x83\x41\x05\x3E\x40\x57\x0E\x03\x4E\x34\xA9\x60\x53\x0D\x55\xAA\x3D\x5C\x95\x47\x92\xD8\x05\x95\x63\x95\x50\x05\x56\xAB\x50\x96\x42\x59\x9E\x3E\x6A\x95\x7E\x91\x08\x54\xF2\x71\x50\xBB\x60\x03\x56\x87\x72\x95\x9D\x64\x5D\x95\xC0\x68\x95\x03\x06\x53\x92\xD8\x3A\x95\x65\x60\x5B\x97\x57\xAE\x95\x63\x6A\x5D\x91\x58\x82\x36\x14\x94\x61\x9E\x57\x83\x96\xE3\x4C\x60\x92\x3D\x4A\x41\x78\x97\x62\x9E\x86\x4A\x96\xC1\x49\x63\x91\x59\xA0\x53\x6C\x07\x2E\x56\xC4\x3B\x52\x0E\x34\x66\x9D\x83\x66\x5B\x1A\x48\x5B\x0D\x59\x92",
-			"\x05\x1A\x4A\x43\x31\x5A\x81\x05\xA3\x95\x3D\x5C\x15\x30\x62\x4E\x04\x6A\x93\x14\x24\x48\x5C\x07\x02\x5C\x16\x2E\x96\x52\x04\xBC\x51\x14\x0B\x50\x0E\x37\x15\x5C\x16\x36\x96\x52\x07\x15\x5C\x15\x3A\x96\x41\x04\x6F\x92\x4A\x70\x06\x02\x67\x50\x0E\x26\x7B\x94\xC3\x95\x50\x05\x5C\xBF\x96\x03\x04\x71\x99\x58\xA7\x52\x53\x6C\x73\x90\xBF\x4E\x97\x37\x96\x9B\x40\x3D\x52\x97\xC6\x95\x5C\x94\x5D\x88\x97\x2C\x64\x76\x9B\x8C\x5A\x97\x1E\x94\x3B\x6D\x51\xAE\x49\x0E\x34\x78\x95\x5D\x86\x0F\x7A\x4B\x77\x96\x5E\xA6\x5B\x6E\x48\x57\x09\x5E\xA3\x97\xD9\x5B\x7A\x9C\x5D\xAA\x97\xE7\x95\x7B\x91\x86\x65\x97\x3D\x68\x7D\x9F\x96\x76\x97\x81\x96\x2D\x52\x45\x61\x07\xFE\x62\x54\x03\x44\x5C\x05\xC5\x4A\x52\x01\x60\xBF\x03\xFD\x59\x50\x09\x90\x4C\x05\x07\x9A\x51\x05\x88\x5C\x05\x85\x62\x43\x34\x2F\x4E\x4C\x3F\x32\xBA\x51\x14\x12\x98\x90\x52\xF4\x44\x61\x95\x52\xD6\x5B\x85\x9B\x48\x59\x98\xF7\x5A\x86\x93\x10\x16\x62\x6C\x04\x88\x92\x15\x16\x62\x0E\x34\x89\x91\x14\x26\x98\x9A\x52\xB5\x58\x28\x47\x05\x2B\x9A\x4F\x08\xF8\x0E\x34\x2F\x99\x50",
-			"\x01\x63\xA4\x47\xC8\x6F\x26\x59\x6D\x7B\x4E\x4C\x04\x8E\x96\x14\x3C\x32\x5C\x04\x8F\x91\x14\x3E\x98\x2D\x65\xF4\x40\x64\x87\x60\xE6\x5B\x90\x99\xC1\x37\x5B\xD4\x46\x50\x4F\x0F\x0A\x38\x5C\x04\x93\x91\x14\x0E\x99\xE6\x58",
+			"\x12\x07\x02\x00\x8A\x27\x00\x00\x23\x00\x01\x82\x80\x0E\x03\x82\x81\x82\x06\x89\x82\x88\x0A\x80\x86\x82\x0A\x0A\x97\x0A\x9C\x0A\x82\x12\x85\x24\x0A\xCE\x0A\x94\x2A\x87\x2A\x85\x2E\x0A\xF0\x0A\x9A\x3A\x82\x66\x09\x84\xFF\x29\xAA\x89\x9A\x80\x03\x95\x95\x2D\xAF\xAA\x91\x92\x9F\x7C\x9A\x99\x37\xAF\xB9\x90\x9A\x85\x9A\x9B\x9E\x35\xBB\xB3\x80\xA8\x9C\xA2\x9D\x96\x0A\x81\x06\xBC\x98\x91\xA3\xA5\xA1\x4D\xC5\x91\xA7\xA3\xAC\xA6\x82\x9F\x42\xAC\x8F\xBA\xA5\xA8\xAB\xAA\xA7\x5D\xDC\x9F\xB2\xA3\xB4\xAA\x82\xA5\x09\xE8\xA5\xB6\xA3\x80\xAF\xAD\x9F\x61\xF0\x86\x82\x09\xA7\xB5\xAC\xB9\x6D\xE0\xAB\xBE\xA9\xBC\xB1\xBE\xB3\x7F\xEC\x82\x8E\xB1\xBF\xBA\xC2\xBB\x88\x85\xC9\xDB\xB2\xB1\xC0\xBF\xC1\x7A\x8E\xCD\xD0\xCE\xBC\xC8\xC0\xCB\x82\x81\x84\xCC\xC8\xB8\xCF\xC6\xCD\x91\x9E\xD3\xC0\xD5\xCC\xD3\xCA\xD3\x99\xAE\xA1\xC8\xDF\xCA\xD5\xD2\xD7\xA7\xB0\xE9\xDB\xC2\xCD\xCC\xD7\xD1\xB2\xAD\xF4\xC2\xD6\xD9\xDC\xDD\xDD\xB7\xBD\xC0\xFE\xD2\xE3\xD4\xE3\xC3\x8A\xC9\xDC\xC8\xE6\x83\x01\xBA\xE5\xB5\xCC\xD1\xEB\xC3\xE8\xE8\xDE\xE9\xD7\xD4\xD9\xF6",
+			"\xE1\xE5\x94\x03\xE7\xCB\xDA\xDD\xE2\xF0\x05\x00\xF1\xEA\xE1\xDC\xC7\xEA\x86\x07\xF3\xED\xF4\xF0\xE8\xF2\xEF\xF3\xFB\xF2\xF5\xE1\xF8\xC6\xF9\xEF\xDB\xF9\xD9\xFF\xD9\xFA\x41\x8C\x7E\x80\xFE\x44\x80\x83\x80\x08\x85\x89\x83\x81\x0A\x8D\x8C\x83\x83\xBA\x46\x77\x02\x7B\xF6\x71\x74\x7F\x85\x15\xB5\x7B\x7B\x7D\x06\x91\x8B\x82\x87\x0E\xA0\x80\x87\x6F\x1D\xA4\x8F\x86\x89\x21\xA8\x83\x89\x71\x27\xAC\x89\x8A\x8B\x2B\x98\x79\x84\x86\x1B\x96\x83\x8D\x40\x0C\x69\x54\x7B\x7F\x22\xBD\x8A\x8A\x8F\x30\x80\x92\x8D\x8D\x1A\xBC\x8F\x8F\x91\x41\x88\x93\x92\x91\x49\x8D\x9B\x91\x89\x4E\xBB\x80\x97\x93\x2D\x94\x9F\x8A\x95\x31\x92\x95\x96\x96\x57\x9C\x99\x96\x7A\x09\x14\x84\x90\x8D\x4C\x98\x92\x92\x97\x67\x9C\x8B\x96\x9A\x5D\xAC\x9F\x96\x8D\x63\xB7\x81\x9F\x9C\x65\xA8\x9A\x92\x9D\x51\xAE\x99\x9A\x41\x0A\x22\x95\x9E\x9E\x77\x80\xA9\x9C\x9C\x7F\x84\xA3\x96\x42\x0B\x3E\x97\xA2\xA0\x2D\x4C\x0A\xA3\x9A\x86\x90\xA5\x93\xA2\x91\xAD\x95\xA7\x9B\x93\xAF\x6D\x03\xA3\x96\x99\xAD\xA4\x99\x94\x9E\xA8\xA4\xA8\x92\x87\x4C\xA7\xA8\x72\x83\x7F\x03\xA9",
+			"\x7B\xA2\xAD\xA8\xA9\x9F\xA9\xA1\xA8\xAC\xA8\xB4\x93\xAE\xAC\xA5\xB8\xA1\xAE\xAD\xB9\xBC\xAB\xAD\xA1\xAE\x81\xA7\xA7\xAB\xBA\xB5\xA0\xB0\xAD\xC4\xBE\xA6\xB3\xAD\xCA\x89\xB0\x04\xAB\xC2\x81\xB3\xA2\xB4\x66\x91\xB8\xB2\xB5\x72\x91\x00\xB7\xB4\xD7\xBD\x67\x4A\x8E\x8C\xB8\x9D\x4B\x04\x62\x90\x40\xBB\xB0\xD8\x8D\xB9\xBB\xB1\xC5\x89\xBC\xBA\xBA\xDC\xAD\xBB\xB8\xB3\xEF\xB5\xB4\xBF\xBD\xBD\xB6\xB9\xBC\xBE\xBF\xBC\xBB\xB3\xBE\x00\xFD\xB1\xC3\xBF\xBB\x95\x0B\xB5\xB5\xF1\xB0\xB8\xC3\xC2\xE2\x8D\xC1\xB9\x42\x16\x22\x92\x47\xB9\xD4\x8E\xC8\xB9\xC2\xFA\x82\xCA\xC4\xC1\x1C\xEE\xBE\xBE\xC7\x03\xE0\xCB\xC6\xC8\x1D\xF3\xB1\xCA\xC9\x23\xE8\xC5\xC9\xC2\x18\x07\xC6\xC5\xC5\x0F\xD7\xCC\xC1\xCC\x1A\x99\x0E\xC8\xCD\x34\x9A\x07\xCE\xCC\x2F\xDD\xB3\xCC\xCF\x38\xF2\xB8\xC7\xC7\x2A\xE4\xC6\xD1\xD1\x48\xC3\xD7\xCA\xD2\x29\xCC\xDB\xCB\xCF\x30\xC0\xD2\xD5\xD4\x54\xC2\x4B\x07\xCE\x55\xC2\xD0\xD6\xCF\x3D\xDA\xD4\x78\x45\x14\xDC\xD1\xD0\x00\x1D\x18\xD2\xD8\x9C\x1E\x22\x9F\x06\xD9\x5E\xE3\xD9\xC7\xD3\x5D\xCA\xC1\xDF\xDB\x47\xCE\xD5\xDF\xD6\x6D",
+			"\xD3\xD7\xD9\xD6\x72\xEE\xD4\xD2\xDD\x49\xF8\xDD\xDE\xDE\x79\xFC\xD0\x08\xDB\x83\xFC\xD4\xDD\xE0\x73\xFF\xDD\x49\x08\x62\x96\x41\xD9\xE1\x7B\xD5\xE4\xE7\xE5\x89\xD6\xE9\xE4\xE6\x8B\xC0\xEE\xE6\xE0\x9D\xE0\xEE\xE1\xE3\x4B\xE2\xE5\xE9\xDC\x00\x53\xEB\xE7\xEA\xA1\xE4\xED\xD2\xE0\x24\x08\xED\xE9\x42\x25\x32\xE3\xEA\xDF\xA7\xF8\xEF\xEA\xEB\x70\xFA\xED\xEC\xE1\xAC\xF7\xE0\xF3\xEC\xC3\xC2\xF3\x42\x09\xB6\xF9\xE5\xF2\xF2\x8A\xC6\xFA\xE4\xF1\xCD\xCC\xFF\xF2\xF3\x9C\xD4\xF1\xF2\xF4\xD5\xD8\xF7\xF7\xEE\xBE\xF7\xDC\xEE\xF7\xDD\xE9\xB7\x09\xF2\xDC\xC6\x48\x08\xF9\xBF\xD1\xF5\xFA\xFA\xE9\xD3\xFA\xF4\xF4\xEE\xEB\xF1\xFD\xFB\xD9\xF2\xF5\xFC\xFD\xDB\xF8\xF0\xFF\xFD\xE0\xCB\xF6\xFD\xFE\xFD\x6C\x7D\x00\xF3\x7D\x35\x14\x28\x7B\x80\x01\x2A\x07\x01\x8C\x71\x7D\xCF\x5F\x7C\x81\xFE\x7A\x7E\xF5\x7B\x70\x80\x08\x82\x86\x82\x34\x4B\x07\x02\x8E\x8D\x80\xD3\x7F\x7C\x82\x20\x93\x82\x08\xEF\x73\x85\x0F\xA5\x82\x82\x24\x89\x87\xFF\x2C\x0B\x82\x0F\xA8\x86\x84\x2A\x89\x35\x0B\x2D\x81\x6E\x17\x34\x85\x83\x0F\x9C\x81\x04\x88\x85\x82\x1D\x97\x86",
+			"\x87\x04\x98\x80\xFF\x42\x8D\x86\x17\xAD\x37\x05\x37\x9B\x84\x11\xA1\x81\x86\x1E\x8C\x88\x86\x50\x8F\x86\x14\xCE\x8C\x58\x18\x09\x8F\x87\x46\x8B\x8B\x09\xD4\x8D\x88\x2D\x9D\x88\x88\x43\x80\x8D\x11\xB9\x89\x8A\x31\x8F\x89\x35\x31\x08\x72\x0C\x08\x73\x06\xC4\x74\x02\x4C\x35\x17\x8A\xE6\x36\x02\x8F\x80\x37\x05\x8E\x00\x18\x06\x98\x39\x02\x4C\x1D\x22\x4B\x07\x62\x5C\x04\x1E\xE7\x8C\x8B\x28\x85\x93\x8A\x5E\x86\x91\xBA\x3D\x03\x91\x2D\x89\x90\x91\x66\x8E\x91\x24\xDF\x83\x48\x1F\x08\x77\x07\x88\x60\x08\xE2\x41\x02\x4C\x21\x0D\x94\x92\xE4\x23\x08\x1E\xC4\x02\x4D\x22\x22\x4E\x08\x62\x47\x0A\x98\x48\x0F\x92\x45\x93\x96\x95\x65\x91\x94\x19\xB3\x98\x87\x5A\x8A\x8F\x95\x90\x92\x96\x2D\xD8\x84\x97\x5B\xBA\x96\x97\xBD\x9C\x97\x2E\x9A\x78\x22\xD5\x44\x90\x37\x4A\x0D\x95\x2E\xC1\x91\x88\x5C\x87\x97\x99\x8F\x90\x9A\x33\xD1\x94\x9B\x69\x96\x9F\x97\xC2\x80\x9B\x30\xE1\x88\x9A\x81\x0B\x08\x8F\x4C\x0A\x99\xB2\x4D\x02\x9D\x6A\x9D\x9C\x9B\xCC\x88\x9F\x36\xE3\x8B\x9D\x63\xBD\x32\x23\xC6\x92\x91\x4B\x4F\x05\x9D\x6B\xA9\x9C\x9D\xDA\x90",
+			"\x4C\x14\x08\x71\x0A\xC4\x52\x08\x71\x53\x02\x4C\x47\x71\x90\x95\x75\x95\x08\x8F\x56\x02\x4E\x47\x2A\x78\x0A\x31\x59\x0A\x4C\x5A\x18\x8F\x16\x75\x97\x9C\x7C\x99\x9F\xA2\xCD\x95\xA2\x3B\x9A\xA2\x9F\x7B\x9B\xA6\xA3\x1D\xAB\x9C\x17\x14\xA0\xA5\x82\xB9\x98\xA3\xEA\x87\xA5\x46\xA5\xA0\x96\x96\x8B\x9D\x9D\xD6\x60\x24\x41\xB1\x3E\x0A\x92\xB0\xA6\xA4\x28\xB6\xA3\x4A\xB7\xAB\x57\x2F\x08\x70\x0C\x88\x61\x0C\xE2\x62\x02\x4D\x31\x36\xA2\xA5\x72\x44\x0C\x1E\xE5\x02\x4C\x33\x22\x4F\x0C\x62\x48\x0E\x98\x69\x08\x8E\x35\x07\xA9\xA7\x1F\xBC\xA7\x4B\xC8\xAA\xA7\x94\x98\xA9\xA4\x5C\xB9\xA9\x58\xE0\xAF\xAB\xD7\x2B\x0F\xAA\x3B\xA3\xAC\x4E\xE9\xA5\xAD\x96\x9A\xAA\x9A\x1C\xBD\x54\x1B\x68\xAE\xAA\xB6\xB6\xAD\xAE\x78\xBD\xAA\x5E\xE2\xAD\xAC\xFC\x6D\x08\x71\x6E\x08\x73\x1B\x08\x72\x24\xD5\x71\x0C\xAE\x7B\xA6\x3A\x1C\x78\x83\x0E\x31\x74\x0A\x4C\x75\x02\x4E\x1D\x62\x47\x0E\x3C\xB8\x08\xB1\x7C\xB7\xAD\x62\xEB\xA9\xAF\xCC\x9D\xB4\xAC\x9A\xBE\xB3\x66\xEE\xAA\xAD\xFF\x79\x08\xB3\xA0\xBF\xB0\x67\xA3\xBB\xAB\xBE\xB0\xAE\xA5\xAF\xA9\x20\x49\x33",
+			"\xAD\xB5\xD0\xA9\xB4\xB5\xB1\xA5\xB5\x6D\xAA\xB4\xB4\xBE\x7B\x08\xB5\xAB\xA2\xB4\x05\xFC\x00\xB9\xD8\x3D\x0D\xB8\xBB\xB8\xB6\x39\xF7\x9E\x0E\xE4\xB9\xB6\xB5\xE9\x5F\x0E\x73\xCB\xBF\xAC\xEA\xBA\xB7\xB9\x34\x40\x13\x74\xF6\x95\xBA\xEE\x86\x21\x10\xDB\xAD\x26\x20\x61\xB0\xB6\xEB\x90\xBA\x8C\x83\x04\xBD\x77\xF1\xA1\x36\x42\x2A\xBF\xBA\x44\x85\x13\x7B\xE7\xBC\xBD\xE4\x82\xBF\xB6\xF7\xA1\xB8\x7E\xFB\xBA\xBF\xFE\xB1\x36\x10\x88\x67\x10\xE2\x08\x18\x71\x44\x22\x4A\x11\xF3\xBA\xB3\x22\x78\x8C\x10\x31\x4D\x12\x4C\x8E\x02\x4F\x23\x62\x40\x12\x3C\x91\x11\xC1\xBC\xB6\xBC\x7F\xBD\xB6\xB6\xFF\x9A\xC6\xC3\xD8\xB9\xC1\x88\xCA\xB2\x8C\x49\x18\xC4\xC4\xF5\xA3\xC5\x7E\x9C\xC2\xC4\xF3\x9A\xB3\x12\x88\x74\x10\xE2\x15\x18\x70\x4B\x22\x4F\x12\x27\xD4\x80\x26\x78\x89\x12\x31\x5A\x12\x4C\x9B\x02\x4C\x27\x62\x4D\x13\x1C\xDB\xC7\xC3\x2C\xDA\xAE\x27\x46\xCD\x57\x4F\x0C\xC9\xC9\x2B\xC8\xCA\x94\xA3\xC0\x14\xC4\x61\x10\x71\xA2\x08\x73\x28\x62\x44\x15\x27\xF8\x7D\x14\x78\x86\x16\x98\x27\x12\x4C\x54\x22\x49\x15\x62\x4A\x16\x97\xAA\xC7\xC8\x36",
+			"\xDA\x7B\x15\x6B\xCE\xC5\x8B\xDE\xB4\xBE\x85\x2C\x11\xCE\x74\xDD\xC0\x94\xED\xC2\xCE\x14\xE5\xB9\xCF\x98\x6D\x14\x9E\xA9\xCD\xCF\x28\xEE\xCB\x57\xAE\x03\xD3\x9F\x84\xDD\x37\x57\x0A\xD3\xBD\x8B\xD1\xD0\xA4\xEA\x30\x17\x47\xF0\xB8\xD0\x7E\xD3\xD3\xA5\x8C\xDC\xD2\x49\xDB\xD6\xD3\x1A\x51\x17\x89\xB2\x16\xD3\x3A\xDA\xD6\xD4\x9F\xC7\xD6\x9E\xD3\xCD\xCF\x59\x25\xD3\xD5\x87\xCC\xD4\xA6\xEF\x54\x17\x57\xF3\xCD\xD3\x09\x35\x16\xAD\x99\xD9\xD5\x5E\xE8\xD7\xD7\xB0\xC5\xD0\x9F\xB3\xD3\xD8\x5C\xC6\x26\x16\xBB\xC6\xD2\xB0\xA0\xCB\xD9\x3D\xCC\xDC\xD8\xBD\x57\x14\xE2\x38\x18\x71\x5C\x08\x72\x17\x62\x5B\x15\xB2\xCC\x5C\x16\x3C\xBD\x12\x4C\xBE\x02\x4F\x2F\x62\x40\x18\x31\x41\x1B\xDB\xCF\xC6\xDB\x40\x42\x18\x71\x61\x08\x74\x18\x88\x65\x1A\x98\x46\x18\xDD\x5D\x47\x18\x8F\xC8\x02\x4D\x32\x62\x4A\x18\x31\x4B\x1A\x4C\xCC\x15\xDE\xAC\xEA\xD1\xD8\x68\xCE\xDF\xE0\x03\xE0\xD5\xC1\x84\xE7\xD6\xF2\x0D\x18\x71\xCE\x08\x73\x33\x08\x70\x1A\x31\x51\x1A\xE0\xC9\x52\x18\x1E\xD3\x12\x4C\x6A\x22\x4D\x1A\x62\x56\x1A\x98\x57\x18\x8E\x6C\x22\x49\x1B",
+			"\x18\xED\xD9\xC2\xAA\xDD\xE0\x96\xFC\xD0\xD8\x72\x5A\x1A\x98\x5B\x19\xE4\x83\xEB\xE6\xD7\x0B\xEA\xE1\xCB\xB8\xEB\xE6\x98\xEF\xE4\x46\xDC\x08\x71\x37\x08\x7E\x1A\xC4\x5F\x1A\x4C\xE0\x15\xE7\x90\x61\x18\x8E\x71\x22\x4B\x1C\x62\x44\x1E\x98\x65\x12\x4C\x73\x0A\xEA\xE7\x3F\xFD\xE5\xCE\xAE\xEA\xD8\x9B\xF1\xD7\xEB\x2A\xE0\xED\x6F\x67\x18\x70\x74\x08\x71\x1D\x88\x6A\x1E\x98\x6B\x17\xEA\xF5\x2C\x18\x8F\xED\x02\x4E\x3B\x62\x4F\x1C\x31\x70\x1A\x4C\xF1\x18\x8E\x3C\x62\x43\x1F\xB6\xFC\xE1\xEB\x80\xFD\xE8\xC3\x81\xF5\xD8\xAC\xC2\xF6\xF0\x85\xFC\xEA\xF5\x74\x1E\xEE\x9F\xF5\x1A\x4C\xF6\x0D\xF3\xD6\xFF\xE7\xF0\xC5\xE9\xD8\xF1\x97\xF6\xF0\xC2\xC9\x57\x1E\xC4\x78\x18\x71\xF9\x08\x72\x3E\x62\x4B\x1E\xC9\xF2\x4C\x1F\x78\x9D\x1E\x98\x7E\x1E\x4E\x31\x40\x02\x2D\x02\x30\xF5\xEC\xB2\xFF\xF4\xCC\xDB\xF1\xEC\xB8\xFE\xE9\xEE\x83\xF5\xF2\xCA\xC6\x3A\x00\xB4\xF4\xF4\xE1\x99\xFE\xF6\xE2\xFE\xE5\xF7\xC7\xE9\xF1\xF1\xB7\xFA\xF7\xE6\xFC\xF2\xF9\xC9\xFD\x57\x00\x41\xF6\xF7\x9B\xD1\xFC\xF9\xCF\xE6\xFB\xE4\xD7\xF6\xFB\xED\xDE\xFA\xEB\xE0\xE3\xF8",
+			"\xF6\xD5\xF3\xC4\x02\x14\xFE\xE5\x05\x07\xFF\xF2\xDD\xF1\xFC\xE4\xDF\xFA\xFC\xEC\xF0\xFE\xD8\xD9\xF3\xFC\xCD\xF1\xFE\xFD\xED\xE6\x3A\x01\x6A\xFC\xFB\xF9\xE4\xFB\xF7\xFF\x7E\x7C\x01\x8D\x12\x07\x0C\x7F\x0B\x16\x80\xF9\x7A\x7D\x09\x85\x7F\x70\x29\x00\x08\x83\x27\x0A\x0F\x80\xC3\x1B\x00\x12\x86\x1C\x0C\x0F\x80\x0D\x05\x81\x0A\x8B\x3A\x0E\x0A\x81\xBB\x2F\x00\x0F\x80\x01\x0F\x81\x01\x0F\x82\x01\x0F\x83\x01\x1E\x87\x7F\xD0\x7F\x7E\xF8\x72\x7F\x00\x86\x7F\xFE\x70\x83\x2F\x8B\x7E\x31\x84\x83\x33\x8D\x7F\x44\x44\x01\x29\x83\x62\x15\x0B\x83\x37\x8C\x82\x2B\x82\x27\x16\x0E\x83\x02\x82\x83\x45\x86\x83\x47\x88\x83\x49\x80\x84\xAF\x17\x01\x44\x84\x7F\x2A\x8B\x5A\x18\x0F\x84\x03\x85\x85\x46\x80\x85\x35\x8A\x84\x58\x89\x2E\x19\x04\x85\xEB\x4A\x01\x5E\x88\x84\x5B\x8B\x84\x0B\x81\x85\x0C\x8A\x85\x56\x82\x86\x69\x8E\x73\x1B\x01\x86\x39\x5C\x01\x6E\x8C\x84\x67\x8F\x7E\x1D\x01\x87\x65\x89\x85\x72\x89\x1A\x1E\x06\x87\x2E\x84\x86\x7D\x83\x86\x80\x8B\x86\x79\x8C\x43\x1F\x0C\x87\x2D\x87\x88\xD6\x30\x02\x86\x81\x84\x7F\x82\x88\x77\x8F",
+			"\x83\x8F\x8E\x87\xEF\x21\x02\x8B\x8A\x3D\x22\x05\x89\x73\x81\x89\x81\x87\x85\x8E\x8D\x88\x9C\x8F\x89\x6A\x80\x8A\x7C\x33\x02\x98\x88\x3F\x24\x05\x8A\x78\x8A\x89\x9D\x88\x88\x1B\x8D\x82\x25\x08\x8A\x90\x8E\x89\x5C\x56\x02\xB0\x82\x89\x8C\x8C\x8A\x99\x82\x8B\x68\x82\x8A\x02\x17\x02\xB5\x82\x38\x28\x0F\x8B\xAB\x87\x8B\xC4\x8D\x8A\xC5\x89\x8B\xB8\x86\x86\xCA\x89\x8A\x73\x29\x02\xC2\x83\x36\x2A\x0F\x8C\xA1\x83\x8D\xBB\x84\x8D\x9A\x5B\x02\xD2\x85\x8D\xDA\x83\x88\x7D\x6C\x02\xD9\x8A\x39\x2D\x0F\x8D\xAA\x83\x36\x2E\x02\x8E\x7A\x5F\x02\xE6\x89\x8C\xCC\x8A\x8E\xB1\x83\x1C\x30\x0F\x80\x31\x09\x8E\xC7\x8B\x8C\xED\x83\x8F\xCC\x82\x03\xF2\x86\x8C\xFA\x88\x8C\xF6\x85\x8F\xFB\x84\x8F\xB6\x8A\x3D\x33\x09\x8F\xFC\x8F\x8F\xEB\x8D\x8F\x7E\x84\x03\x04\x90\x90\x9B\x86\x8D\xE3\x8E\x90\xBA\x8A\x59\x35\x0B\x90\x07\x96\x90\xFE\x85\x90\xB9\x86\x03\x0F\x87\x03\x0F\x88\x03\x14\x97\x91\x0C\x93\x8C\x16\x91\x90\x18\x91\x92\x2E\x79\x03\x1F\x94\x92\x26\x90\x91\xEC\x8E\x87\x3A\x0F\x80\x3B\x09\x92\x0D\x9B\x8D\x0F\x94\x93\x00\x0C\x03\x7C\x8D\x03",
+			"\x7C\x8E\x03\x7C\x8F\x03\x0F\x80\x04\x32\x98\x75\x41\x06\x8E\x42\x0F\x80\x43\x0F\x80\x44\x0F\x80\x45\x0F\x80\x46\x01\x94\xBC\x85\x93\xDC\x8A\x92\x23\x67\x04\x0F\x88\x04\x4E\x9C\x92\xD6\x39\x04\x57\x96\x93\x2D\x93\x93\x51\x9E\x95\x50\x91\x96\x00\x0A\x04\x0F\x8B\x04\x5B\x92\x10\x4C\x07\x96\x62\x9D\x95\x22\x99\x64\x4D\x0A\x96\x11\x9B\x96\x08\x90\x96\x71\x95\x97\x6C\x9F\x94\x76\x93\x97\x6D\x99\x5C\x4E\x06\x8E\x4F\x00\x97\xC3\x10\x05\x80\x9A\x97\x78\x97\x97\x58\x93\x92\x2D\x11\x05\x83\x9F\x1A\x52\x0B\x98\x49\x63\x05\x0F\x84\x05\x8E\x9B\x92\x5C\x94\x98\x87\x9B\x2B\x55\x03\x99\xAD\x16\x05\xE6\x87\x05\x0F\x88\x05\x9A\x90\x92\x15\x95\x92\xA3\x99\x5C\x59\x01\x9A\xBD\x1A\x05\xE6\x8B\x05\x0F\x8C\x05\xA8\x94\x97\x86\x95\x99\x88\x94\x1E\x5D\x0F\x9A\x7B\x95\x9A\xB8\x92\x9A\xE9\x2E\x05\x7C\x8F\x05\xB6\x95\x98\xD6\x3C\x01\xCE\x13\x17\x6F\x1F\x2E\x74\x11\x17\xC6\x95\x9C\xCC\x27\x9C\x9C\x19\x9C\xC8\x9B\x9C\xCA\x9D\x2B\xDF\x19\x10\x8E\x21\x17\xE6\x19\x10\x06\x3A\x3A\x13\x2F\x9C\x32\x13\x9D\x06\x1A\x2D\xD6\x9A\x10\x6B\x38\x14\x06",
+			"\x1B\x9D\xCD\x95\x13\xE6\x95\x1B\x4C\x2C\x9C\x03\x1C\x9E\xBC\x1E\x9C\xE7\x9D\x2B\xEE\x91\x1C\xF0\x9A\x9E\xD0\x9C\x9D\xBB\x23\x9F\xC4\x15\x9F\xEF\x97\x9F\xF1\x99\x9F\xD1\x9B\x2B\xDE\x93\x10\xC2\x7E\x13\xD7\x94\x9C\xE4\x93\x10\x07\xA3\x10\xC3\x98\xA0\xE5\x91\xA0\x2B\x13\xA0\xB1\x7F\x16\x0B\xA2\x10\xFA\x9D\x12\x15\xA1\x10\x0D\xAD\x9E\x0A\x19\x9E\xFD\x92\x13\xFA\x9E\x13\x3E\x1B\xA1\x34\x27\x17\xC2\x7E\xA1\xF4\x98\x9E\x10\xAA\x12\x21\xA2\xA2\x32\x14\xA2\x72\x2D\xA2\x2E\xA5\x2B\x32\xA3\xA3\xE9\x25\xA3\x36\xA3\x24\x38\xA3\xA3\x3A\xAB\xA2\x37\xAE\xA3\x09\x32\xA1\x01\x1E\x10\xB5\x19\xA1\x00\x0D\x32\x09\xA2\x10\x46\xA6\x33\x09\x1A\x9F\x28\xAB\x9F\x35\x12\xA4\x04\x14\xA1\x0A\x18\xA4\x49\xA5\x1E\x0A\x1C\xA4\x0E\xA3\x10\x4F\xA6\xA3\x2B\x1B\xA3\x2E\xA0\xA3\x73\x26\xA2\x1D\xA0\xA4\x5D\xAE\xA5\x29\x10\xA6\x22\xA2\xA6\xC3\x1A\xA6\xFC\x99\xA2\xF2\x90\xA4\x43\x27\xA6\x68\xAE\xA6\xFE\x96\x9F\xBD\x24\xA6\xAA\x3D\x12\xFA\x92\xA5\x11\x31\x9E\x09\x1C\x42\xAA\x36\xA4\x33\x4D\xA4\x65\xA8\x9F\x2B\x12\x7C\x8A\xAA\x10\x7E\xA4\xA5\x81\xA7",
+			"\xA5\x01\x14\xA8\x62\x24\xA7\x5E\xA6\xA7\x71\xA8\xA8\xC9\x26\xA9\x02\xA9\xA5\x8E\xA6\x10\x56\x40\xA9\x46\xA9\x46\x86\xA9\x10\x94\xA6\xA3\x52\xAA\xA5\x45\xAA\x10\x9F\xA7\xA5\xA1\xAA\x10\x4E\xA0\xA4\x9A\xA4\xA3\x72\xA4\x1E\xB1\xA9\xA9\xB3\xAA\x1E\xB5\xA9\x2E\x77\x12\xA6\xB9\xA9\x30\xBD\xAD\xA3\x98\xAF\xA3\xC1\xAE\xAB\xB7\xAC\x19\xFA\x9F\xAB\x6F\x12\xA5\x7A\xAB\xA5\x1F\xA0\xA0\xC3\xA0\xAC\xFF\x92\xAB\xCF\xA4\xAB\xC5\xAA\x21\xC8\xA8\xAB\xD5\xA4\x23\xD7\xA0\x27\xDB\xA6\xAD\xD9\xA1\x1C\xC7\xAF\xAD\xC4\x1A\xAC\x6F\x12\x7C\x52\xA0\x36\x9C\x16\xA4\x71\x4A\x9D\xE2\xA3\xA2\xAE\xAD\xAE\xBF\x70\xAF\xAF\x1D\xAD\xDA\xA2\xAF\xB1\x14\xAF\x31\xA6\xAF\xA9\x18\xAF\x73\x2C\xAF\x6D\xAA\xAF\xAD\x1E\xAF\xF1\xA3\xAD\xD8\xA4\xB0\xDC\xA0\xB0\xB8\x12\xB0\x20\xAF\xAE\x06\xB5\x1B\x52\xA2\xA5\xCF\x20\xA8\x06\x15\x36\x83\xAA\x10\x69\x39\x10\x52\xA5\xAA\x3C\xAD\xA9\x49\xAE\x13\x17\xAF\x16\xBC\xA8\xB0\xBD\x1A\xB0\xF7\xA2\xB2\x7C\xA6\xB2\x0C\xB1\xAD\xB6\xAD\xB0\xF5\xAC\xB2\xF9\xAE\xB2\xFD\xA8\xB2\xA3\xAA\xB2\x48\x21\xAE\x30\xBE\x13\x52\xAB\xA8",
+			"\x18\xBC\xA8\x0A\x1B\x29\x12\xB3\x10\x13\x3C\xAC\x91\xAA\x10\x7F\xA6\x10\x19\xB2\xB2\x62\xAB\xAC\x1C\xA7\xB3\x03\xB4\xB3\xC4\xAC\xB4\xF3\xA2\xB3\x42\xB0\xA5\x97\xAE\xB4\xD0\xA8\xA7\xCE\xA6\xB5\xD4\xA0\xB5\x25\xBC\xB5\x5F\xA9\xB2\x58\xBB\x22\x39\xB0\xB6\x02\x1F\xB0\x3D\xBC\xB1\x02\x11\xB4\x4B\xB6\x10\x46\xA5\xB4\x03\x17\xB4\x5E\xBA\x12\x49\xB5\xAE\x64\xB0\xA7\x59\xB1\xB6\x2B\xBA\xB5\xEA\x17\x17\xE4\xA1\x17\x36\xBA\xB7\x07\xB1\xB7\x09\xB2\xB5\x1D\xB1\xA5\x90\xA4\x1C\x7D\xAA\x10\x3A\x3F\xB3\x02\x1B\x46\x15\xB9\x10\x8E\xBD\x1C\x87\xAE\xB4\x24\xBB\xAF\x84\xB6\xA1\x97\xB1\x10\x95\xB1\xB0\x99\xB0\x00\x9B\xB3\xB8\x82\xB3\xB2\x9D\xBF\xB9\xA2\xB1\xBA\x7F\xB8\xB7\x48\x23\xB6\x90\xA2\xA6\x52\xAE\xB3\xE9\xA1\x11\x62\x2D\xB6\x0A\x12\xA6\x1A\xBE\xA2\x77\x17\xBA\xCD\xA2\xAD\x80\xBE\xAD\xA1\xB7\xB2\xBD\xB5\xB7\x54\xB7\xB7\xB9\xB9\xB7\xA8\xBF\xB4\xBB\xBD\xB2\xC7\xBF\xB2\xC9\xB8\xB8\xC0\xB8\xA6\xA9\xB7\xB8\x38\xB0\xBD\x35\x18\xBB\x76\xBA\xBB\xC5\xB7\xB5\xC3\xB2\xAC\xCB\xBF\xAF\xBF\xB3\xB3\xD7\xBB\xB5\xDB\xBD\xB4\xDF\xB5\xB0\xE1",
+			"\xB1\xB5\xA6\xBD\xBC\xCE\xBC\xB7\xD2\xBD\x9D\x3C\xB9\x10\x89\x2C\xB8\x01\x16\x2E\x67\x1A\x10\x46\xA4\x2E\x09\x14\xBB\x40\xA2\x7C\x2D\x16\xAE\x0A\x1F\x2D\xAF\xB9\x10\x90\x30\xAA\x15\x11\xBB\x0A\x11\xC0\x53\xB6\xA4\x92\x32\xB9\x09\x16\xA4\x06\xCF\xB6\xF4\xB3\xC0\x0B\xCF\xC0\x09\x17\x38\xA4\xA3\xB9\xC5\xBA\xBF\xAE\x7F\x16\xED\x1A\x3A\xC2\x7C\xBA\xFD\xB8\xB6\x01\x1D\xC0\x09\xA8\xC0\x04\xC0\xC0\xC0\xB4\xC2\xF7\xB2\xC1\x06\x12\xC2\x01\x12\xA5\x28\xCC\xB6\x2A\xC3\x10\x14\xCF\xA0\x15\xC3\xAC\x3A\xBA\xC0\x57\xAE\x13\x1B\xC9\xC3\x2A\xAB\xB3\x09\x1E\xBF\xA9\xA6\xC2\x02\xC9\x10\x09\xC4\xA0\x31\xC2\x10\x2C\xCE\xB9\x47\xC1\x10\x45\xC2\x10\x62\xAC\xC0\xED\xB0\xC3\x44\xCB\xC4\x58\xA3\xC1\x16\xC2\x10\xB5\xB2\xA2\xC2\x7A\x9F\x46\xA2\xA5\x40\xCC\x1B\x50\xC3\xC4\x06\x1D\xC4\x01\x12\x7C\x61\xC7\xC0\x10\xC8\xC3\x0A\xA5\xC0\x51\xCB\xC6\x53\xC1\xC1\x70\xC6\x10\x33\xCC\xA5\x57\xC5\xBD\x2A\x1B\xC5\x54\xC7\x17\x3B\xC4\xC7\xE7\xBE\xBD\xD9\xB6\xBC\xE3\xB1\xB8\xE5\xBD\xB5\x83\xC6\xB9\xDD\xB3\xB5\xCE\xB0\xC8\x7F\xC8\xBD\x76\xCA\xBD\x81\xCC",
+			"\xBB\x85\xCC\xA2\xE8\xB8\xA6\xEA\xBE\xC7\x8D\xCA\xC8\x97\xCC\xC8\xC1\xB6\xBD\x8B\xC0\xBE\x8F\xC8\xBC\x9F\xCA\xBC\xA1\xC1\xB3\x87\xCB\xB6\xA3\xCC\xBD\x91\xC9\xA6\x93\xCE\xA5\x95\xC8\xC8\xE9\xBE\xC9\x9D\xC4\xBE\xA7\xC2\xBE\xB1\xC2\xC8\xB3\xC6\xBE\xA9\xC5\xBA\xB9\xCE\xBB\xBB\xCB\xCA\x39\xA0\xCB\x99\xCF\x16\xD4\xBB\xC9\x40\x26\xB6\xD8\x90\xC2\x00\x0A\x40\x62\xC3\x10\x1A\x4C\xAE\xC3\xA2\xA5\xD9\x9F\xBF\x06\x1A\xCC\xAC\xAA\x10\xCD\xC3\xBF\x35\xC4\xB9\x40\xAC\xA6\x12\x26\xA6\xB0\xAB\xCD\xC0\xC4\xCC\x8E\xC5\xCB\x90\xC7\xCB\x84\xC6\xCE\x86\xCD\xCB\x96\xC2\xCE\x98\xCC\xCE\x9A\xC9\xC8\xEF\xCF\xCA\xB2\xC4\xCE\xBC\x13\xCC\xF0\xC9\xAC\xBE\xCB\xB1\xF3\xC1\xCC\xFB\xCE\xCE\xE1\xC7\xCF\xFD\xC0\xD0\xB6\xC4\xCF\xA2\xC4\xD0\xA4\xCA\xCE\xAE\xC4\xC9\xFF\xC2\xCF\xC6\xA9\xCF\xB6\xB8\xCF\x3E\xCC\xC3\x32\x16\xA4\x87\xB5\xC5\xD8\xC3\xB5\x59\xC1\xBD\x90\xA6\xA0\x15\xD4\xC5\x78\xC9\xCD\xC5\xBD\xAB\xDC\xCF\x1A\x4A\xB8\xC5\xDE\xC3\xAC\x22\xDB\xD0\x0A\xD1\xD0\x0C\xD5\xCE\x06\xD8\xCA\xE8\xCC\xB9\xA5\xC8\xB9\x33\xDA\xB9\xA3\xB7\xD3\x35\xDA\xC4",
+			"\x7D\xC9\xD0\xAC\xC0\xD1\x34\xCA\xCD\x39\xD8\xC1\xEB\xC7\x17\x5D\xCE\xD0\xFF\x05\xD4\xCB\xCA\xA4\x27\xC4\xC5\x2E\xCC\x1E\x54\xC9\xD1\x35\x17\xC3\x0E\xCB\xD1\x35\x14\xD1\x74\xB4\xD5\x2F\xA6\xD4\x6F\xAE\xCF\x2C\xDB\xD2\x03\xDC\xCF\x5F\xDC\xD5\x61\xD2\xD0\x2E\xD0\xD6\x65\xD2\xD6\x67\xD4\xD6\xA0\xCF\xD2\xD3\xBA\xD5\x50\x2D\xB7\x9C\x1E\xC1\x09\x1B\x2A\xF0\xB0\x00\x57\x39\xD4\x01\x18\xAE\x0C\xA4\xC5\x8B\xB2\xC5\x3F\xD1\xD3\x29\x10\xD7\xB5\x1F\xA4\xA4\xBC\xCB\x80\xDD\x1B\x52\xA4\xD7\xD2\xC3\x10\x77\xD5\xCD\x09\x1A\xD7\x4E\xCC\xD7\x4F\xD2\xB2\x4F\xAA\xC7\x6D\xCB\x10\xC8\xCA\xD8\x49\xA6\xA4\x11\xB8\xC6\x09\x14\xA4\x65\xB5\xC7\x68\xDC\x1B\x73\xB1\x17\x7B\xC4\xD3\x08\xD6\xCA\x6C\xDF\x1A\x52\xA9\x23\x8B\xD2\x10\x9A\xD3\xC2\x0A\x1D\xD9\xAA\xD3\xB4\x9F\xD7\xD9\x01\x10\xD5\x2D\x27\xDA\xE4\x9C\xD1\x58\xDF\x12\x52\xA5\xD8\x6E\xD2\x9D\x0A\x16\xBF\xAF\xD1\x10\xB1\x38\xD7\x00\x09\x3A\x18\xD2\xB2\x82\xD4\xDA\xEB\xBF\x12\x1F\xBE\xB7\xB8\xD0\x00\xC6\xD1\xC4\x06\x19\xDC\x8E\xD6\x10\xCC\xD5\xDB\x00\x0A\xDB\x2F\x22\xD4\x9C\x1F\xD1\xA9",
+			"\xD8\xDA\x87\xD4\xDE\x87\xD3\xDD\xE3\xD1\xDD\x5F\xBF\xDB\xED\xD2\xD1\x2F\x15\xDA\x9C\x15\xD9\xC8\xCD\xCA\x85\xB2\x13\xF4\xD5\xD7\xC2\xDB\xCE\x6A\xD5\xD0\x66\xDB\xD6\xFF\xDE\xDF\xA3\xD2\xE0\xFD\xD7\xD0\x87\xD6\xD8\xAB\xD7\xCE\x09\xE9\xCE\xE9\xD3\xDC\x2F\x2F\xDC\xC1\x19\xDF\xC7\xD0\x00\x52\xA2\xBF\xD8\xD7\x3C\x87\xB6\xA4\xB5\x3F\xB8\xE6\x3B\xD4\x09\x16\x40\x11\xDE\xC6\x06\x13\x3E\x09\x1C\xDB\xDF\xDF\xCD\x39\xD4\xBA\xE8\xDB\xE0\x32\xD9\xCB\xEA\xD5\x1B\x21\xB9\xE2\x38\xD5\xDE\x36\xD2\xE3\x36\xE9\xCB\x2B\xE1\xE0\xCC\xB1\xE2\x02\x16\xA5\x17\xE2\x10\x48\x4C\xE1\x03\x16\x43\x3C\xE6\xDB\x06\x14\xE4\x7E\xDC\xC7\x40\xD4\xE3\x3A\xD8\xE3\x0E\xEB\x22\x89\xB9\x10\x3E\xE0\xC6\x0A\x11\xE4\x17\xD2\xE2\x43\xE5\xDD\x46\xA8\xE4\x58\xE6\xD2\x28\xD3\xE3\xE7\xDF\xE4\x40\x2F\xE2\xF5\xCC\xDE\x72\xB3\xBB\x57\xDC\xD3\x36\xAD\xAB\x29\xD4\xDD\x29\xCE\xE6\x6A\xE3\xA3\x23\xD1\x1B\x73\xEF\xDE\xDE\xD9\xC8\x75\xE7\xC7\x68\xE1\x17\x1D\xCE\xD3\x77\xEE\xBC\x6D\xED\xD0\x6F\xE2\xE8\x6A\xCC\x1B\x7D\xE1\x17\x62\xA9\xE7\x29\x17\xE8\xEB\xD3\xE8\x30\xEB",
+			"\xE7\x8D\xE5\xE8\xE0\xA2\xE6\x29\x1A\xE8\xBD\x16\xE9\x46\xA8\xE9\x90\xEE\xB0\x9B\xEC\x1B\x52\xA6\xE9\xFA\x90\xEA\x9D\xE1\x1C\x26\xE1\xE8\x9C\xEE\xE8\x86\xE3\xEA\xC4\x1C\xE8\xA7\xE2\xE9\xC4\x19\xE9\xC8\xCE\x07\x64\xED\xD1\x39\xE0\x00\x72\xD7\xE5\xE6\xD1\xD9\x45\xE5\x7B\xEB\xC7\xEB\x53\xD6\xB4\x5A\xE4\xC5\xB0\xEB\xEB\xBE\xEA\xEB\xC0\xE5\xE2\xD5\xD6\xE2\x52\xAA\xEC\xC0\xB5\xEC\x35\xEE\xEA\xC1\xDA\xEA\x70\xB3\xB5\xCE\xE7\xE2\xBD\xE5\xDD\x84\xD2\xED\x0A\x1E\xDA\x03\x11\x26\x09\x1C\xED\x02\x1E\xED\x06\x10\xEE\x01\x12\xEE\x03\x14\xEE\x00\x06\xEE\x98\xD9\x10\xEA\xE8\x23\x0A\x1D\xEE\x00\x08\xEE\xF0\xE2\xEF\xDB\xEF\xEE\xF5\xEC\xEE\xF7\xE6\x10\xF0\xED\x27\x09\x1C\xEF\x06\x1F\xBE\xFF\xEA\x10\xD5\x96\x10\xAE\xB3\x10\xA0\xD5\xEE\x02\xF7\xB6\xB7\xD8\xEF\xD4\x9A\xF0\x06\x17\xF0\xE9\xE9\xF0\x09\x15\xF0\xA6\x2C\xF0\x06\x13\xF0\x03\x14\xF1\x43\xA6\xEF\x0D\xF3\xF1\x0D\x1C\xF1\x17\xFE\xF0\x06\xF0\xF2\x03\x18\xF1\x02\x1A\xF1\x53\xA6\xF1\x25\xF2\xF2\x15\xFA\xEF\x12\xF4\xF0\x1F\xFA\xF2\x02\x16\xF2\x01\x18\xF2\x10\xF0\xEF\xB1\xD5\xF3",
+			"\x31\xFE\xF2\x73\xDC\xF2\x1B\xF2\xF3\x01\x19\xF3\x00\x06\xF3\x24\xF0\xDB\x3E\xF9\xF2\x3C\xF6\x10\x42\xF4\xF4\x40\xF0\x00\x4B\xFB\xF3\xDD\xEA\x10\x4F\xFB\xF0\x49\xF3\x10\x53\xFF\xF0\x45\xF1\xF4\x47\xF7\xF3\x52\xFB\xF5\x59\xFE\xF4\x5E\xFD\xF4\xB4\xD7\xF2\x50\xF1\xEE\xB3\xD1\xF6\x55\xF2\x10\x63\xFA\xF3\x54\xF1\xF5\x09\x1B\xF6\x43\xF5\xF6\x08\xFF\xF6\x68\xFE\xF6\x06\x10\xF7\x4C\xF9\xF6\x01\x18\xF7\x72\xF1\xF1\x74\xFE\xF1\x6D\xF6\xF6\x7F\xF0\xF3\x81\xF3\xF7\x77\xF5\xF7\x82\xF7\xF8\x80\xF8\xF5\x4D\xF0\x9E\x7F\xD9\xEB\x1A\xA5\xDD\x8E\xFA\xE4\xDE\xD5\xED\x93\xFE\xE5\xD4\xE5\xDD\x5F\xC9\xDB\xCD\xEA\xF9\xA2\xD1\xEA\x9E\xF0\xD2\x90\xF6\xEB\xD5\xD7\xDD\x64\xF5\xF8\x7E\xF6\x10\xA6\xFC\xF6\x8C\xFA\xF7\xD6\xD8\xF8\x86\xF3\x10\xAB\xF1\xF7\xA8\xF0\xEF\xB3\xF9\xF7\x76\xF2\xFB\xB0\xF9\xFA\xBA\xFB\xF8\x23\xFD\xF4\xB7\xFD\xF7\xB6\xFB\xFB\xC3\xFE\xFB\x2D\xF9\xFB\x02\x11\xFC\xB5\xFA\x10\x16\xE7\xFA\xAD\xF8\xFC\xF1\xB4\xFC\xCC\xF2\xFD\x09\x1D\xFC\xAC\xFF\xFB\xAE\xF6\xFD\xB4\xFF\xFC\x89\xF3\x10\xDA\xF8\xFB\xDD\xF2\x10\xDF\xF2\xFC\xD3",
+			"\xF6\xFC\x3F\xF9\xFD\xD4\xFF\x10\xE9\xFE\xFD\xEB\xF2\x10\xD1\xC9\xF1\xE4\xF7\xCC\xE6\xF8\xF4\xD0\xF0\x00\xEF\xFE\xFC\xD8\xF5\xFF\xF7\xF7\xFD\xC7\xF1\xFE\x01\x1B\xFF\xDB\x79\xFF\x7E\x7E\xFB\x7D\xFE\x7F\x7D\x01\x84\x80\xF3\x7C\xEB\x72\x7E\xC2\x7C\xFD\x31\x7E\xFB\x67\x80\x00\x80\xFC\x4E\x81\x80\x0E\xB6\x78\x7D\xFF\x73\x80\x00\x05\x02\xBC\x7F\xF3\x75\xFF\x1A\x81\x00\x97\x80\xBC\x7A\x20\x1E\x80\x09\x81\x02\x94\x83\x01\x83\x81\xF1\x7E\x20\x28\x81\xE5\x70\x31\x27\x82\x0B\x89\x80\x5F\x7B\x05\x8D\x81\x12\x84\x03\xF0\x76\x0D\x9F\x7A\x37\x85\xE9\x79\x80\xD7\x7A\xB6\x69\x58\xEC\x49\x08\x3D\x81\x20\x01\x82\x00\x03\x04\xC5\x83\x0F\x86\x08\x46\x84\x05\xB3\x80\x78\x7A\x00\xCB\x81\x0A\x82\x80\x18\x85\x09\x90\x82\x1A\x82\x05\xA0\x80\x13\x9F\x7A\x53\x70\x03\x99\x82\x1A\x8B\x05\xF0\x75\x17\x95\x52\x58\x81\x0C\x8D\x7B\x2F\x82\xE5\x62\x82\xEB\x64\x83\x0C\x83\x0A\xB0\x76\x12\x8B\x06\xCF\x82\x05\x9C\x80\x03\x84\x0D\x87\x80\x39\x80\x03\xCD\x78\x1D\x89\x83\x56\x87\x00\xA8\x55\x37\x84\xFF\x03\x83\x1E\x9B\x80\x7D\x80\x03\xBF\x83\x0F\x80",
+			"\x07\x82\x86\x1E\x87\x84\x75\x86\xF5\x43\x85\x3B\x83\x10\x0B\x86\x1B\x81\x08\x8E\x82\x09\x8D\x84\x44\x88\x07\x85\x84\x0D\x9D\x6B\x8C\x6B\x22\x0A\x08\x8A\x56\x10\x17\x5A\x41\x03\x4F\x72\x64\x53\x49\x85\xFA\x73\xC7\x02\x09\x24\x8E\x82\x56\x61\x21\x27\x84\x35\x8A\x10\x25\x84\x24\x87\x80\xAE\x80\x00\x2B\x85\x3C\x89\x0A\x86\x0B\x2C\x96\x84\xF0\x71\x16\xB7\x85\x40\x84\x03\xBA\x84\x2C\x82\x85\x95\x84\x17\xB9\x84\x60\x80\xFF\x12\x86\x40\x1E\x85\xA3\x83\x00\x89\x63\x65\x89\xC6\x03\x08\x19\x6B\x6E\x0A\x0D\xBB\x42\x08\xED\x63\x10\x54\x87\x34\x8A\x08\x1B\x76\x20\x19\x87\x81\x0B\x0D\x82\x08\xF2\x09\x08\xDF\x86\x20\x21\x87\x24\x54\xE2\x57\x52\xA5\x75\x68\xF4\x03\x3E\x6C\x74\x81\x06\xE2\x43\x0F\x39\x80\x5E\x1E\x86\x1D\x8A\x09\x7A\x0A\x0E\xE2\x13\xEC\x72\x87\x09\x0E\x1E\x35\x86\x48\x58\xF2\x78\x86\x41\x17\x07\xFB\x87\x4A\x40\x78\x0D\x1D\x12\x78\x05\x40\x86\x62\x09\x0F\xF2\x72\x13\x96\x09\x0F\x07\x8A\xB1\x63\x08\x49\x63\x38\x2D\x08\x7D\x03\x9F\x2F\x55\x42\x1E\x84\x04\x8A\x21\x3C\x06\x87\x81\x10\x26\x70\x39\x2A\x0F\x62\x55\x1F",
+			"\x1C\x88\x0A\x76\xCD\x64\x0D\x4B\x1E\x07\x23\x8A\x4A\x57\x67\x8C\x88\x12\x23\x88\xBC\x74\x66\x2C\x88\xD5\x7C\x75\x71\x7A\x10\x09\x28\x48\x89\x0A\x30\x57\x44\x4A\x09\x80\x27\x13\xCD\x51\x4E\x9F\x7A\x5C\x75\x44\x73\x5D\x9F\x8D\xF4\x11\x5D\x4C\x8F\x5B\x44\x89\xC9\x42\x09\x75\x50\x27\x18\x51\x52\x9D\x72\x76\x26\x24\xAC\x0F\xA7\x83\x00\x80\x27\xDE\x5D\x50\x54\x88\x03\x8C\x25\xAB\x8F\xED\x59\x88\x0D\x98\x24\x5C\x8A\xDF\x5E\x8A\x78\x7A\x4A\x3D\x88\x9C\x06\x71\xE1\x21\x2C\x83\x08\x05\x0E\x15\xCF\x51\x3F\x2A\x8B\x02\x0B\x01\x23\x8A\x85\x03\x58\x70\x89\x40\x0C\x00\x30\x52\x3F\x7E\x77\x81\x0A\x54\x76\x88\x41\x1E\x8A\x7B\x8A\x20\x3D\x8B\xA6\x82\xF5\x00\x8E\x42\x14\x2A\x7E\x88\x02\x06\x8D\x84\x08\x18\x84\x8D\x42\x8B\x8C\x06\x0F\xAF\x3E\x8A\x09\x00\x19\x83\x0A\x64\x8E\x8C\xAA\x7E\x2B\x83\x88\x81\x07\x59\x7E\x88\x05\x1E\x8A\x34\x78\x00\x12\x2E\xBF\x85\x01\x79\x89\x75\x60\x2F\x7E\x8F\x02\x1E\x8A\x29\x58\x1A\x98\x8F\x40\x18\x00\xA0\x8A\x21\x23\x8C\xD7\x86\x0A\xB1\x8D\x42\x1A\x2E\x7E\x8A\x03\x36\x8C\x83\x08\x1B\xB4\x8D\x40\x1B",
+			"\x00\x5E\x88\x0C\x22\x6E\xCC\x7C\x37\x08\x73\x42\x86\x6A\x9A\x62\x4D\x55\x68\x29\x5F\x2E\x51\x75\x3F\x79\x62\x43\x15\xD4\x47\x5D\x5A\x7A\x1C\xE4\x0C\xBA\x7A\x4F\x52\x6B\xF4\x4C\x8E\x66\x11\x18\xCF\x76\x77\x6B\x87\x65\x61\x6E\x21\x8D\x77\x8B\xEB\x05\x50\xB3\x02\x7A\xE4\x8A\x29\xA1\x8F\xB1\x1B\xF9\x33\x8A\x86\x06\x71\x46\x57\x5D\x33\x7C\xF3\x8F\x1A\x4F\x50\x74\x84\x0F\xDA\x78\xF4\x7B\x75\x6C\x73\x36\x1E\x82\x45\x87\x76\x8F\x7D\x85\x71\x1B\x2D\x8A\x9F\x1B\x8E\x80\x9F\x76\xA2\x6F\x5D\x18\x85\xD1\x72\xF4\x42\x3F\x75\x91\x1B\x90\x6E\x3B\xAA\x7A\x31\x18\xEE\x5B\x8D\xAF\x18\x88\xA3\x7A\x21\xAE\x8E\x81\x0D\x1D\xD6\x74\xF0\x11\x85\xFA\x4D\x3D\x82\x3F\x0E\x95\x1D\xEA\x0F\x33\x9A\x4F\xF3\x8A\x21\x1D\x90\x0B\x9B\x2B\x56\x86\x84\x91\x7E\xAA\x1E\x40\xB4\x81\x77\x13\x0E\xA1\x6E\x7A\x12\x91\xA1\x8F\x5D\x30\x88\x76\x84\x1E\x21\x8D\x87\x8F\x17\xAB\x50\x21\xB0\x12\x94\x70\xEF\x6F\x16\xA8\x58\x75\x72\x10\xE5\x79\x90\x66\x16\x14\x8F\x88\x8D\x10\x78\xF7\x8A\x3D\x0C\x8A\xEF\x60\x00\xFA\x4C\xC4\x65\x91\x70\x17\x8E\x2B\x67\x21\x86\x25",
+			"\xD5\x6F\xBB\x1C\x23\xEB\x63\x10\xBA\x4E\xB8\x71\x25\xF0\x12\x55\x93\x5A\x8D\x6E\xBB\x70\x7A\x2C\x9A\x21\x5B\x8B\xD4\x5C\x84\x6A\x96\x4B\x8C\x16\xB0\x83\xB5\x20\x86\x77\x7A\x90\x42\x7F\x5D\x1C\x25\x5D\x73\x1C\x1A\x91\x7B\x8F\x17\xA6\x20\xD9\x6A\x0F\xF6\x80\xF7\x6F\x17\x37\x34\x2D\xAD\x0B\xF6\x79\x92\x66\x19\x16\xC8\x93\x9C\x13\x7D\x7F\x94\x59\x1F\x88\x57\x73\x1C\x5A\x7D\x99\x9A\x10\xFB\x23\x9D\x49\x62\x31\x59\x1F\xF1\x1B\x3F\x2B\x67\x2E\x94\xF4\x55\x7E\x39\x9D\x2B\x03\x2B\xD4\x45\x87\x7B\x6D\x05\x8B\x80\xBE\x16\x13\x8E\x97\x70\x03\x82\x83\x87\x5D\x0B\x29\x38\x78\x1B\x43\x81\x9A\x9A\x1C\x0F\x2C\xBF\x46\x0F\x41\x8B\x20\x98\x1F\x44\x28\x94\xB8\x0D\x57\x87\x53\xB8\x13\x52\x71\x62\x86\x17\x95\x01\x0B\x0B\xAF\x16\xA1\x26\x2C\xB4\x11\x84\x9E\x90\x7C\x1E\xA9\x2B\x67\x1D\x97\x20\x86\x0B\xB3\x8C\x93\x34\x12\xAA\x2B\x67\xA0\x85\x2D\x83\x0B\xB3\x8C\x91\xB5\x16\xAA\x2B\x67\x26\x9D\x2D\x82\x08\x86\x81\x08\x70\x92\x73\x33\x2A\x3E\x96\x1C\x76\x92\x40\x09\x97\x98\x1D\xB0\x00\x90\x0D\x11\x0B\xAC\x27\xD8\x0F\x2C\xEB\x64\x8E\x2B",
+			"\x67\x58\x80\x26\xC0\x1F\x64\x2B\x67\x7A\x23\x5F\x8A\x08\x41\x23\x36\x1D\x8F\xD4\x5E\x23\x02\x98\x1C\xB1\x1B\xD9\x23\xB5\x04\x9B\xD4\x51\x85\x6F\x23\x6C\x04\x2F\x75\x66\x49\x09\x9B\x27\x91\x1B\xCD\x28\x58\xBD\x0D\x58\x81\x2A\xEF\x17\x6C\x9E\x6E\x9A\x26\x62\x83\x08\x2B\x7C\x37\x2D\x8E\x77\x7E\x24\x22\x9A\x20\x2D\x23\xB1\x19\x5E\x6B\x64\x29\x29\x99\x01\x0B\x4F\x80\x1E\xF9\x2B\xCE\x28\x24\xCC\x80\x00\x28\x98\x78\x02\x31\x75\x66\x2F\x8F\x9A\x42\x01\x94\xC0\x1E\xC0\x2B\x67\x64\x2A\x29\xAD\x85\xDC\x0B\x30\x1A\x9D\x25\x0F\x87\x9E\x9C\x37\x0D\x32\xAE\x8F\x0D\xCF\x85\x5F\xBC\x1B\x08\x3F\x34\xB1\x0F\x33\x8E\x98\x7C\x1D\xC2\x15\x9B\xD4\x0F\x0C\xB5\x90\xE6\x06\x31\x5B\x9D\x35\x0F\x87\x88\x90\x3C\x32\x31\xD8\x98\x0D\xCF\x85\x63\x8C\x16\x1B\x37\x36\xBD\x0F\x33\x84\x99\x9A\x1B\xC7\x2D\x9A\xA5\x9A\x10\x2B\x98\xF0\x1F\x31\x73\x9D\x19\x82\x08\x99\x9C\x37\x43\x31\xDE\x8F\x63\x06\x09\x67\xBC\x1B\x25\x3F\x37\xE3\x63\xCF\x91\x1B\x55\x35\x70\x95\x86\x6C\x81\x37\x59\x31\xD2\x8C\x9C\x09\x0A\x1A\x98\x1D\x2D\x32\x13\xF3\x12\xD7\x80\x00",
+			"\xE7\x1B\x6C\x22\x33\xC7\x9A\x30\xAA\x85\xDC\x04\x33\xEB\x65\x51\x82\x92\x0C\x79\x10\x48\x97\xEA\x08\x33\xEB\x63\x52\xA3\x9D\x5E\x44\x0C\x9A\x1C\x9C\x2B\x67\xF0\x26\x51\xA8\x94\xAB\x11\x37\x02\x37\x3A\x74\x27\xAA\x19\x73\x86\x08\xA6\x9A\x39\x0E\x37\x3A\x79\x94\xF3\x92\x20\x3A\x9D\x81\x02\x35\x9A\x1E\xA8\x2B\x67\xA6\x97\xD7\x43\x09\xE1\x92\x10\x58\x9A\xE6\x0E\x35\xEB\x65\xA1\x3B\x74\xE6\x91\x10\x17\x9F\xBB\x1A\x35\xEB\x65\x58\x81\x9F\x80\x04\x3D\x80\x00\xD9\x9C\x1B\xD2\x33\x9D\x40\x2B\xE9\x9A\x10\x6A\x99\xAF\x16\x36\xEB\x63\x30\x8A\x9E\xE1\x95\xE5\x71\x1A\xB6\x2B\x67\xDA\x93\x7B\x98\x9D\xBA\x91\x37\x5F\x37\x3A\x6B\x97\xF2\x9D\x7B\xBC\x9A\xCD\x13\x6E\x6B\x66\xBC\x8B\x9F\xDC\x9A\x21\x02\x9C\xCD\x17\x6E\x6B\x64\xBE\x99\x9F\x87\x9B\x6C\x2E\x37\x75\x66\x30\x80\xA0\x00\x00\x71\xDC\x69\x6E\x32\x36\x76\x9F\x1A\x54\x97\x03\xB1\x1B\xFB\x34\x73\x86\x09\x95\x8C\x3A\xE3\x19\xBF\x3A\xA0\xCC\x62\x21\x1D\x9F\x77\x1F\x6F\x20\xA2\x40\x02\x54\xBB\x99\x6E\x01\x39\x75\x63\x31\xF2\x9C\x0A\xA4\x9E\x71\x19\xE2\x2B\x67\xDE\x8E\x40\xAF",
+			"\xA1\xF3\x91\x1B\x15\x3B\x9D\x6E\x2F\x5D\x76\x43\xD5\x9D\xDC\x1A\x38\xEB\x64\xC0\x3C\xA0\x85\x0F\x3D\x9A\x1E\xC7\x2B\x67\x4E\x9E\x85\xA5\x9F\xB8\x12\x72\x6B\x66\xD6\x8A\xA2\x09\x08\x6E\x98\x1C\x93\x3B\xCE\x66\x98\x14\xA6\x08\x76\x9C\x6F\x32\x39\x75\x62\x37\xD7\xA3\x40\x1B\x9F\x98\x19\xE8\x2B\x66\xBF\x9E\x45\x82\x0B\x00\xB8\x1C\x45\x3B\x9D\x49\x9D\x32\xA1\x10\x40\x98\xDF\x09\x3A\xEB\x65\xCB\x3B\x75\x42\x51\x41\xE3\x1A\xD3\x2D\x96\x72\x14\x5B\x80\x00\x3A\xAC\x37\x64\x3A\x09\xA1\x08\x52\xA0\x00\x3D\xA1\xD5\x16\x76\x7F\xA0\x00\x01\x92\x02\x0C\x77\x98\x1C\xB4\x3B\xCE\x66\x33\xAE\x68\xA4\x01\x0D\x78\x98\x1C\xB6\x3B\xCE\x77\x33\x23\xA3\x98\x71\x19\xEE\x2B\x67\x4A\x37\x49\x9D\x9C\xF0\x15\x3B\xEB\x65\xD6\x1D\xA4\x83\x05\x44\x98\x1D\xDE\x2B\x67\xD4\x33\x94\x8B\x9D\xB1\x1D\x77\x6B\x65\xB7\x2A\xA5\x40\x71\x6E\x0F\x3D\x75\x65\x6E\x30\xA5\x40\x19\xA2\x9A\x1D\xF3\x2B\x66\x78\x36\x4B\x80\x00\x18\xAB\x1D\xA1\x3B\x9D\x79\x37\x5E\xA7\x46\xAB\x1D\xE9\x2B\x67\x2B\xA2\x7E\x90\xA4\x00\x0E\x46\x9A\x1E\xEA\x2B\x67\x39\xA2\x7E\x87\x93",
+			"\x81\x02\x39\xAC\x1C\x15\x63\x0E\xE4\x90\x00\x13\xA6\xCD\x16\x7E\x06\xA4\x2E\xA1\x08\xCB\xA7\x5D\x29\x3E\x43\xA5\x4A\xD0\x96\xE6\x1B\x3F\xEB\x67\x88\xAA\x8E\xEF\x98\x1C\xD6\x8C\xED\x3A\x4F\x28\x38\x8F\xAC\xA6\x0A\xAB\x2B\x11\x43\x3A\x69\xA3\xEB\xA3\x4A\x82\x09\x80\x90\x3C\x17\x42\x21\xBA\xA7\x01\x0A\x5F\x80\x1F\x0C\x46\x48\x82\xA8\xE5\x7A\x1C\x1D\x43\x9D\x50\x3A\x79\xA6\x50\xA3\x7F\xBB\x02\x41\xEB\x65\x90\xAB\xA7\x86\xA5\x2E\x98\x1E\x09\x4B\x67\x9A\xA3\x9D\x9A\x92\x83\x0C\x4F\xFC\x1A\x0E\x46\xA4\x1B\xAB\x20\x14\xA9\xD5\x1D\x83\x06\xA5\x47\xA2\x08\xD5\xA7\x5D\x03\x42\x7A\xA9\x1A\x12\xA4\x00\x0A\xA4\xAB\x18\x0C\x6B\x67\xBD\x3B\xEB\x2E\xAA\x4B\xAF\x17\x70\x43\x9D\x51\x3D\x9A\xA8\x49\xE3\x1B\x1E\x4B\x67\xA3\x3C\xA7\x9E\xA4\xC3\x1F\x4E\x8A\x08\xEB\x22\xAA\xA4\xA1\x6E\x17\x45\x75\x60\x7C\x48\xAB\x2A\xA0\x1E\xA7\x43\x9D\x68\xA6\xF9\x9E\x52\x81\xA4\x8D\x85\xAA\xFD\x74\xF6\x12\x52\x97\xAF\x4D\xAB\x1D\x30\x4B\x67\x09\xAC\xAA\x8A\x09\x5F\xAA\x23\xD8\xAA\x41\x17\xA8\x62\xA9\x21\x05\xA7\x77\x1E\x8D\x6B\x67\x4A\xA9\xAB\x06",
+			"\x0D\x99\x98\x1D\x72\x4B\xCE\x32\xAA\xFC\x88\x98\x75\xA0\x78\x2F\x46\x79\xA3\x1C\x67\x93\x40\x18\xAB\x7C\x1B\x22\x46\xA4\xE7\x91\x10\x30\xAB\xBB\x1A\x48\xEB\x67\xA7\xB2\x9E\xC2\xA0\x00\x37\xA8\xB3\x1E\x48\xEB\x63\xA9\x8B\xAD\x9E\xA0\x3C\x2F\x4B\x3A\x74\x45\xBB\x74\xB1\x96\x9E\x66\x18\x93\x53\x96\x56\xB4\xAC\x03\x0D\x9C\xAF\x16\x9E\x4B\x2D\x9F\xAD\x42\x0C\xAC\xE6\x9B\x57\x00\x4B\x71\x96\x5A\x86\x08\x63\xB6\xAA\xCC\x15\x28\x79\x97\xD6\xA3\x10\x0C\xAD\x57\xAF\x17\x49\x4B\x9D\x56\xAD\xC9\xA9\x10\x64\xA8\xB3\x0D\x4A\x14\x9C\xB6\xB7\xA0\xB5\xA1\x37\x56\x4B\x3A\x72\xAD\xBC\xA9\xAE\xB1\x1A\xB2\x45\x33\xC2\xAD\x40\x0E\x93\x03\x09\x64\x80\x1F\xB4\x46\x48\xD0\xAE\x40\x15\x98\xC0\x1F\x2D\x46\xA4\xEC\xA3\x10\x06\xAC\xB3\x1D\x4B\x43\x9E\xB9\x80\x00\xEE\xA2\x10\x0E\xAD\xAF\x02\x4C\xB0\x9A\xBC\xA4\xAF\x80\x0C\x58\xEF\x15\x63\x4B\x67\xEF\xAA\x7E\xAB\xAE\x00\x0B\x59\xA5\x96\x59\xA3\x08\x9C\x4B\xD7\x73\xAE\xD1\xAC\x2C\x79\xAF\xD4\x4A\x4D\xFA\xAB\x89\xA3\x1A\xD0\x4B\xCE\x3C\x4D\x80\xB1\xA2\x71\x18\xC0\x93\x5A\x31\x0A\x5E\xF4\x9F",
+			"\xD8\x0E\x4D\xEB\x66\x0C\x0D\xB1\xDE\xA1\x37\x06\xB3\xD4\x4A\x03\x13\xB1\x70\xB1\x1A\xE1\x8B\xCE\x6E\x01\x86\xA3\x08\x72\xAB\x75\x0C\xB1\x75\x62\x07\x62\xAC\x9D\x91\xAE\x71\x1C\x0C\x3C\x42\xE9\xA4\x4D\xF1\x19\x19\x02\xAF\xC3\x0F\x97\xA9\xA8\x66\x19\x06\x34\x3F\x8F\x86\x0E\xBF\xA2\x94\x23\x1B\x39\x07\x5F\xB4\x11\x31\xB3\xB1\xBD\x15\x0E\x36\xB0\xF2\x05\x4C\xBA\xB0\xF0\x1F\x03\x3D\xB2\x4E\x06\xB3\x81\x0F\x32\xC0\x1D\x20\x1C\x43\x4D\xB5\xC5\xA3\x1A\x41\x04\x7B\x45\x92\x71\x01\xB1\x40\xB3\x57\x0B\x05\x21\xBA\x1E\x21\xB3\x92\xBA\x1C\x95\x01\xC9\xB3\x12\x9B\x99\x57\xFC\x1B\x25\x1C\x43\x65\x8E\x20\x24\xB2\xBE\x18\x09\x7C\x40\x4C\xBE\xAE\xBD\x11\x13\x22\xB2\x3B\x02\x5E\xB0\xAA\x79\xBB\x15\x9B\x02\xCC\xBA\x03\x3A\xB0\x5A\x9A\x1D\x27\x02\xB3\x7E\x04\xCF\x83\xAA\xCD\x1F\x09\x62\xB0\x95\xBB\x75\x30\xAC\xBF\xBD\x15\x50\x02\x66\x86\x06\xA0\xB9\x6E\x71\x1B\x14\x22\xB2\x45\x0F\x68\xA3\x99\xDC\x05\x05\x62\xB6\x11\x15\xB4\x95\x9F\x39\xE2\xB2\x24\x1B\xB4\x31\x99\x6E\x29\x04\x31\xB6\x09\x20\xB4\xCE\x91\x1B\xAB\x02\xCC\x9A\x04\x53",
+			"\xB1\x62\xEF\x15\x2B\x02\xB3\x9E\x02\xBC\x85\x27\x14\xA3\x36\x2F\x06\x98\xA2\x05\x0F\x43\xD6\xB0\xA1\xB1\x11\x0B\x62\xB2\xA4\xAA\x1D\xBA\xB3\xB8\x80\x1F\x59\x02\x66\xA4\x05\xAE\xAA\x08\xF5\xAB\x57\x35\x04\x31\xB8\x69\xC0\xB4\x11\xB1\x1B\xB7\x02\xCC\xA6\x05\x63\xB9\x10\x29\xAD\xAD\x19\x05\x62\xB7\x14\x14\xB6\x83\x00\x5B\xBD\x17\x2E\x02\xB3\xA8\x03\xDB\x83\x09\xDB\xAC\x2C\x3D\x06\x98\xA3\xB5\xCE\xB4\xC2\xA3\x1B\x5F\x02\x66\xAA\x06\xB8\xA6\xA3\x71\x19\x18\x22\xB3\x54\xB9\x6E\xCA\xAE\x02\xA2\xB3\xAC\x05\x2C\x4A\x08\x38\xBB\x2B\x45\x06\x98\xAF\xB5\xAA\x1F\x50\x86\x09\x3B\xB5\x2B\x47\x06\x98\xAE\x05\xFA\xB7\xB4\x98\xA0\x31\xB6\x6B\x81\xB8\xB2\xB1\x1B\xCB\x02\xCC\xB0\x05\x84\xB9\x54\xE3\x19\x33\x02\xB3\xBD\xB6\xE1\x95\xB7\xB8\x1F\x0C\x62\xB2\x2C\x14\xB8\x96\xB3\x6C\x11\x06\x31\xB4\x6C\x9A\xB8\x16\xB1\x1B\xD3\x02\xCC\xB4\x04\x90\xBB\x37\xF1\x19\x35\x02\xB3\xCB\xB6\xE4\x83\x09\xB5\xAC\x2C\x57\x06\x98\xB6\x05\x2C\xBD\x8D\xB1\x1B\x6C\x02\x66\xD1\xB6\xEA\x02\x9D\x02\x0C\x68\x80\x1F\x6D\x00\x63\xC6\x0C\xD0\xA1\x08\x02\xBC",
+			"\x6F\x1F\x06\xDA\x3D\x0E\xC6\x0E\xEA\x81\xBA\x71\x1D\x1C\x3C\x43\xA7\xB8\x74\xF1\x1A\x39\x14\x3D\xE9\x8B\x20\x31\x9D\xEE\xA1\x37\x69\x06\x98\xB8\x05\x62\xB3\xEB\xA5\xAF\xB8\x1B\x0E\x62\xB2\x2E\x01\xBB\x7D\xB0\x73\x2D\x06\x31\xBC\x0B\x68\xBB\xA0\xB8\x1C\xEF\x02\xCC\xBE\x04\xB7\xB5\x71\xC0\x1D\x3C\x02\xB3\xC0\x04\xEE\x8F\xAA\xBE\x13\x0F\x62\xB2\x30\x1A\xBB\xB1\xA3\x6C\x35\x06\x31\xB4\x0C\x00\xBF\x2D\xB1\x1B\xF7\x02\xCC\x86\x06\xC3\xBE\x4B\xF1\x19\x3E\x02\xB3\xC8\x04\xF1\xB4\xB9\x5E\x1B\x0F\x62\xB2\x32\x0C\xBC\xAD\xB4\x59\x3D\x06\x31\xBC\x0C\x62\xB0\xF0\x9C\xBA\x6E\x1A\xCC\x8E\x06\xCF\xBA\x10\x04\xB9\xB2\x01\x00\x15\x8A\x21\x10\x06\xD2\xBA\x70\xE3\x1B\x00\x09\xBD\x09\x0A\x1A\x2C\xBC\x71\x81\x37\x05\x00\xEC\xA6\x08\xD4\x03\xF6\xA1\xAD\xB8\x17\x00\x37\xBF\x40\x16\x06\xBA\xBF\x1A\xA3\x1B\x04\x0E\x7B\x82\x08\x36\x01\xBE\x80\xA1\x6E\x0B\x01\xE2\xB1\x10\x5A\x04\xF2\xA0\x00\xE4\xB5\x57\x0D\x00\xE6\xB0\x00\x5C\x07\xF3\xBE\xAD\xBD\x17\x01\x14\xBE\x6F\x0F\x7C\x93\xBF\xAE\x11\x00\xD4\xB8\x1C\x0F\xBF\xCC\xBD\x2B\x13\x00\xF5",
+			"\xA2\x07\x62\xB7\x2D\x86\x08\xDC\x90\x3C\x15\x03\x7C\x40\x97\xAD\x0A\xFD\x83\x09\x4F\x90\x3C\x19\x03\x7C\x4D\xBA\x8C\x4A\x21\x1F\xBC\xCD\x1F\x01\x23\x8B\x70\x1C\x89\xEB\xB9\x6E\x20\x00\xFF\xB6\x1C\x00\xC3\xFC\xB1\x1B\x21\x03\x3E\x59\xBA\x81\x09\x3C\x89\xA5\xDC\x04\x01\xD4\xBC\x1C\x18\xBB\x8D\x05\x7A\xF1\x1A\x09\x14\xBE\xE7\x03\x02\xC9\x09\x06\xCC\x5E\xF1\x18\x0A\x14\xBE\xEA\x02\x03\xC6\x08\x0E\xC4\x5F\xF1\x1A\x0A\x14\xBE\x6B\xBD\x72\xA4\xC0\x45\xBB\x2B\x2C\x00\xF5\xB0\x07\x22\xC3\x20\x24\xC0\x6B\xB9\x2C\x2E\x00\xF5\xBD\xBB\x2A\xC5\x7D\xA3\x1A\x18\x04\x7D\xF6\x05\x0C\xCC\xC0\x0E\xB0\x78\x32\x00\xEA\xBF\x78\xB9\xC2\xBA\xA0\x1E\x34\x04\xFA\xBC\x07\x1F\xC1\x10\x24\xC2\xF7\xB5\x15\x36\x04\xFA\xBF\x06\x26\xC0\x00\x24\xC0\xF9\xBB\x15\x38\x04\xFA\x82\x00\x05\xC5\x13\x8A\x0B\x41\x23\x1B\x3A\x04\x00\xEF\x0D\x59\x93\x10\x5A\x9C\xDF\x1B\x01\x52\xC6\x38\x39\x94\x83\x01\x51\x63\x19\x0F\x09\xC3\xAF\x0D\x0D\xC6\x08\xE9\x90\x3C\x3F\x03\xFD\xA4\x0F\xBF\x94\x0D\xF1\x1B\x22\x00\x87\xB1\x0E\x19\xC2\x08\x6B\xC4\x6F\x07\x02\x31\xCE",
+			"\x87\x8A\x09\x1E\xDC\x1B\x48\x04\x10\xE9\x0C\x99\x24\x6B\xC0\x1D\x12\x14\xBE\xB6\xBB\xD7\x4C\xC5\x5D\xB0\x3C\x4B\x00\xF5\xA4\xBE\x92\xC1\xED\xAB\x1D\x26\x04\x7D\xD3\xBD\x26\xCF\xBB\xAB\x1F\x09\x14\xBE\xF0\xBF\x89\xF5\xB8\xDF\x11\x02\xD4\xBE\xFD\xA5\xC5\xBD\xBA\x39\x53\x00\xF5\xB6\xBF\xAB\xC1\xF0\x80\x1F\x2A\x04\x7D\x9D\x03\xFB\xBF\x08\x41\xC4\x6F\x17\x02\xEA\xB9\x80\xB1\xC5\xA8\xA3\x1B\x59\x04\xFA\xA5\x01\x5B\xC9\x10\x13\xC4\xBC\xA3\x1B\x5B\x04\xFA\xA9\x00\x62\xC6\x10\x46\xC6\xCE\xA3\x1B\x5D\x04\xFA\xAD\x00\x66\xC3\x10\x3E\x29\x42\x03\x9F\xC0\x1F\x0B\x0A\xC5\xD6\x08\x8D\x83\x09\x4D\x23\x1B\x60\x03\x3E\x71\x8E\xE3\x0D\x8D\x82\x08\xB3\x80\x1E\x65\x03\x1B\xF8\x0D\x73\xC3\x10\x46\x2B\xD8\x06\x03\xEA\xC5\x37\x2C\xC6\x81\x0F\x87\x98\x1F\x19\x14\xBE\x31\x03\x24\x84\x2B\x84\x05\x8F\xAB\x1D\x1A\x14\xBE\x43\xC2\x75\x2E\xC6\x83\x0F\x8D\xC0\x1F\x1A\x02\xC7\xE4\x0A\x7D\x82\x09\x81\xCC\x37\x70\x01\x3C\xCD\x09\x0A\xC9\x20\x3B\xC6\xE0\x11\x07\x0F\xCA\x42\x0C\x2A\x09\x0D\x20\xFC\x1A\x39\x08\x90\xEA\x0C\x46\xC6\x08\xD2\x90\x78",
+			"\x37\x02\x8B\xC9\x10\x21\xCB\x40\x11\x9F\x7C\x18\x0F\x24\xC8\x90\xCA\x10\x7D\xC7\xBB\x19\x03\xD4\xBB\x06\x23\x88\xA8\x2C\x8F\xF1\x1B\x1E\x14\xBE\x49\xC2\x75\x28\xC8\x81\x0A\x91\x9A\x1D\x1F\x1D\xC8\x70\x15\x31\xA7\xC9\xB8\x12\x08\x2B\xCB\x40\x02\xCA\x02\x0C\x26\xC0\x1F\x41\x06\x94\x82\x0A\xB8\x86\x08\xF8\x9C\x6F\x04\x05\xA6\xC1\x10\x4F\xC9\x19\xD1\x1B\x85\x04\xFA\xB5\x01\x91\x87\x56\x35\xCB\xD8\x07\x04\xD4\xB9\x0A\xEA\x1D\xA8\xCC\x93\xF1\x19\x22\x14\xC6\x34\x17\x32\x83\x08\xB2\xC8\x39\x0D\x04\x55\xC0\x00\x6A\xCA\x20\x1D\xCA\xE0\x1E\x08\x6F\xC9\x60\x29\x08\xD6\xC0\x78\x0F\x04\xBB\xC7\x91\xF1\x18\x24\x0F\xCB\x75\x8C\x20\xF1\x1B\x48\x08\x96\xF2\x11\x60\xC3\x08\x77\xC8\x78\x15\x04\xC0\xCA\x10\x56\xCA\xE6\x16\x04\x6F\xCF\x7F\x82\x09\xC5\x23\x36\x17\x05\x1F\xC9\x0D\x92\xC9\x20\x0D\x2D\xB1\x19\x09\x17\xCD\x6B\x19\xCC\x00\x07\x80\xBC\x1B\x4D\x0E\x99\xB8\x0C\x65\xC6\x08\x9B\xC8\x78\x1D\x05\xB7\xC7\x9A\x83\x0A\x68\xDA\x1C\x9E\x07\x2D\xE9\xCC\xD7\xC1\x37\x1F\x07\x5B\xCF\xCD\x01\x09\xB2\x23\x1A\x50\x07\x9B\x8A\x0B\x69\x23",
+			"\x1B\xA1\x05\x37\xC9\x09\xCA\x23\x36\x22\x07\x5B\xDA\xCD\x06\x0F\x5F\x80\x1F\x51\x0F\x96\xCA\xCF\x40\x1F\xCD\xC0\x1C\x14\x0D\xCE\x85\x04\x9C\xC0\x1D\x29\x0F\xCB\xD5\xC8\xF4\x80\x1E\x53\x04\x7D\xB7\x00\x50\xC3\x08\xD9\xCB\xEC\xA3\x1A\x54\x04\x7D\xBC\x03\x77\xC2\x08\xE1\xCD\x03\xE3\x1A\x55\x04\x7D\xC1\x03\x79\xC1\x08\xE9\xCD\x04\xE3\x1A\x56\x04\x7D\xC6\x03\x7B\xC0\x00\xF1\xCC\x05\xF5\x14\x57\x04\x7D\x96\xC6\x3C\xB1\xCF\x34\xC1\x5D\x30\x04\xEA\xB0\x05\x77\xCD\x7C\xDD\xB6\xBB\x12\x16\x14\xBE\x5A\xCF\x9F\xB9\xC6\xE6\x14\x05\xD4\xBA\x0B\x06\xD1\xB1\xA1\x37\x36\x04\xF5\xBA\xC6\x0D\xD4\xB8\xA3\x1A\x5C\x04\x7D\xE4\x03\x84\xC9\x08\x57\xC5\x56\x3A\x04\xEA\xBF\x8F\xF2\xA5\x03\xA2\x08\xD0\xCC\x6F\x3C\x05\xB7\xC7\xA2\xF0\xCD\xFD\x8F\xCB\x29\xD2\x20\x07\x2D\xB1\x1E\x0B\x73\x4F\xA5\x82\x08\x0C\x9B\x20\x2D\xCC\xCD\x15\x0C\x54\xBE\x1B\x03\x89\x39\xD2\x20\x33\xCC\xCD\x17\x0C\x54\xBF\x1B\x00\xD2\x0A\x0D\x85\xBC\x1B\x64\x05\x9A\xBD\x0D\x90\xC1\x08\xB8\xCB\x75\x0B\x06\xEA\xBE\x90\xAA\x1E\x92\xC2\x08\x19\x98\x78\x0D\x07\xB7\xC7\xA5",
+			"\xAF\x87\xD8\x0E\x06\xD4\xBD\x22\xD6\xD2\x85\x06\x3A\xEF\x14\x34\x14\xBE\x1C\xCA\x75\x07\x2E\xCF\x93\x36\x52\x04\xF5\xB3\x03\x23\x8B\x4D\xC6\x09\x32\xDC\x2C\x54\x04\xF5\xB4\x03\x23\x89\x4B\xFA\xD0\x26\xA4\x7D\xF5\x01\x9E\xCA\x08\x43\xD3\x8A\x94\xBE\x3B\x0F\xA7\x89\x09\x94\xCF\x17\xDA\x04\xFA\xA3\xC8\xD5\x1F\x31\x82\x0B\x6F\x23\x1B\xDC\x07\x3E\xC3\x0F\x46\xD1\x10\x3B\xD0\xE6\x01\x07\xD4\xBA\x25\xCC\xD4\x40\xD1\x37\x63\x04\xF5\xB0\xC9\x9B\xD6\x50\xD1\xBA\xEA\xBA\x07\x23\x88\x0D\xAE\xD4\x71\x1F\x1C\x12\xD4\xE3\x07\xAA\x95\xD5\xDC\x0C\x07\xD4\xBF\x26\xEA\x1D\x56\xD0\x00\x01\xD7\xEA\x0E\x07\xD4\xBC\x0F\x26\xD4\x85\x07\xA8\xCC\x14\x3C\x14\xBE\x3F\xCA\x75\x26\x98\x81\x02\xA7\xFC\x1A\x3C\x0F\xCB\xC3\xD1\x20\x3A\xD2\xCD\x13\x0F\x6F\xCB\x78\x3D\x68\x28\x08\x5A\xD2\xD6\x5A\x7B\xBF\x3D\x0A\xFE\x57\xD6\xD5\xD0\x78\x4D\x73\xB6\x07\xA1\x5D\xD6\x71\x91\x7C\xAA\x77\x1F\x09\x5A\x65\x5C\x1C\xE4\xD6\x77\x18\x50\xE8\xD0\x25\x14\x69\x75\xD9\xAE\x82\x96\xBB\xCD\x0B\x26\x70\x00\x31\xD7\x79\xDD\x12\x74\xD6\x53\x77\xD7\xEF\xD3\x20\x36",
+			"\xD7\x7C\xDC\x23\xF8\xD6\x41\x1B\xD7\xFF\xD5\x5E\xC2\xD8\x7F\xDA\xAF\x83\xD8\xBF\xDD\x88\x06\xD9\x60\xC4\xD9\x7E\xD7\xB0\xF2\xD5\xC2\xC5\xD8\x0B\xD8\x61\xD1\xD8\x87\xD3\xB1\x95\x6D\x97\x56\xD8\x04\x45\x25\x28\x77\x78\x7D\x13\x1B\xDA\xC7\xDA\xD8\x2D\x08\xDE\x73\x90\x91\xDD\x21\x80\x03\x8F\x85\xD9\x28\xDD\x25\x25\xD8\x19\x90\x00\x32\x93\x3F\x0C\xD9\x30\xDD\x25\x31\xD8\x44\x12\xB3\xB5\xD8\xCD\xD7\xD9\xEE\x5E\x66\xF9\xD8\x9C\xD1\xF0\x3C\xDB\x40\x0C\xD9\xA1\x88\x00\x39\x91\xA0\xD4\xB4\x8D\x16\xD1\xCF\x79\x21\x78\x69\xC5\x87\xF9\x7F\x0F\x28\x78\x21\x80\x84\x4F\xD9\x6A\xCE\xDB\x96\x00",
 		};
 		vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
 	}
@@ -13339,23 +10181,13 @@ namespace vl::glr::parsergen
 			L"Cond2",
 			L"Cond",
 			L"SwitchItem",
-			L"Switches",
-			L"OptionalBody",
 			L"TestBranch",
-			L"Token",
 			L"Syntax0",
 			L"Syntax1",
 			L"Syntax2",
 			L"Syntax",
-			L"AssignmentOp",
 			L"Assignment",
 			L"Clause",
-			L"Placeholder",
-			L"RuleName",
-			L"LriConfig",
-			L"LriContinuationBody",
-			L"LriContinuation",
-			L"LriTarget",
 			L"Rule",
 			L"File",
 		};
@@ -13370,190 +10202,131 @@ namespace vl::glr::parsergen
 			L"[2][Cond0]< \"!\" @ Cond0 >",
 			L"[3][Cond0]< \"!\" Cond0 @ >",
 			L"[4][Cond0]< ID @ >",
-			L"[5][Cond0]<< \"(\" !Cond \")\" @ >>",
-			L"[6][Cond0]<< \"(\" !Cond @ \")\" >>",
-			L"[7][Cond0]<< \"(\" @ !Cond \")\" >>",
+			L"[5][Cond0]<! \"(\" !Cond \")\" @ !>",
+			L"[6][Cond0]<! \"(\" !Cond @ \")\" !>",
+			L"[7][Cond0]<! \"(\" @ !Cond \")\" !>",
 			L"[8][Cond1] BEGIN ",
 			L"[9][Cond1] END [ENDING]",
 			L"[10][Cond1]< Cond1 \"&&\" @ Cond0 >",
 			L"[11][Cond1]< Cond1 \"&&\" Cond0 @ >",
 			L"[12][Cond1]< Cond1 @ \"&&\" Cond0 >",
-			L"[13][Cond1]<< !Cond0 @ >>",
+			L"[13][Cond1]<! !Cond0 @ !>",
 			L"[14][Cond2] BEGIN ",
 			L"[15][Cond2] END [ENDING]",
 			L"[16][Cond2]< Cond2 \"||\" @ Cond1 >",
 			L"[17][Cond2]< Cond2 \"||\" Cond1 @ >",
 			L"[18][Cond2]< Cond2 @ \"||\" Cond1 >",
-			L"[19][Cond2]<< !Cond1 @ >>",
+			L"[19][Cond2]<! !Cond1 @ !>",
 			L"[20][Cond] BEGIN ",
 			L"[21][Cond] END [ENDING]",
-			L"[22][Cond]<< !Cond2 @ >>",
+			L"[22][Cond]<! !Cond2 @ !>",
 			L"[23][SwitchItem] BEGIN ",
 			L"[24][SwitchItem] END [ENDING]",
 			L"[25][SwitchItem]< \"!\" @ ID >",
 			L"[26][SwitchItem]< \"!\" ID @ >",
 			L"[27][SwitchItem]< ID @ >",
-			L"[28][Switches] BEGIN ",
-			L"[29][Switches] END [ENDING]",
-			L"[30][Switches]\"switch\" @ { SwitchItem ; \",\" } \";\"",
-			L"[31][Switches]\"switch\" { SwitchItem ; \",\" @ } \";\"",
-			L"[32][Switches]\"switch\" { SwitchItem ; \",\" } \";\" @",
-			L"[33][Switches]\"switch\" { SwitchItem @ ; \",\" } \";\"",
-			L"[34][OptionalBody] BEGIN ",
-			L"[35][OptionalBody] END [ENDING]",
-			L"[36][OptionalBody]\"[\" @ Syntax \"]\"",
-			L"[37][OptionalBody]\"[\" Syntax \"]\" @",
-			L"[38][OptionalBody]\"[\" Syntax @ \"]\"",
-			L"[39][TestBranch] BEGIN ",
-			L"[40][TestBranch] END [ENDING]",
-			L"[41][TestBranch]< Cond \":\" ( Syntax1 @ | \";\" ) >",
-			L"[42][TestBranch]< Cond \":\" ( Syntax1 | \";\" @ ) >",
-			L"[43][TestBranch]< Cond \":\" @ ( Syntax1 | \";\" ) >",
-			L"[44][TestBranch]< Cond @ \":\" ( Syntax1 | \";\" ) >",
-			L"[45][Token] BEGIN ",
-			L"[46][Token] END [ENDING]",
-			L"[47][Token]CONDITIONAL_LITERAL @",
-			L"[48][Token]ID @",
-			L"[49][Token]STRING @",
-			L"[50][Syntax0] BEGIN ",
-			L"[51][Syntax0] END [ENDING]",
-			L"[52][Syntax0]< \"!\" @ ID >",
-			L"[53][Syntax0]< \"!\" ID @ >",
-			L"[54][Syntax0]< \"!(\" @ { SwitchItem ; \",\" } \";\" Syntax \")\" >",
-			L"[55][Syntax0]< \"!(\" { SwitchItem ; \",\" @ } \";\" Syntax \")\" >",
-			L"[56][Syntax0]< \"!(\" { SwitchItem ; \",\" } \";\" @ Syntax \")\" >",
-			L"[57][Syntax0]< \"!(\" { SwitchItem ; \",\" } \";\" Syntax \")\" @ >",
-			L"[58][Syntax0]< \"!(\" { SwitchItem ; \",\" } \";\" Syntax @ \")\" >",
-			L"[59][Syntax0]< \"!(\" { SwitchItem @ ; \",\" } \";\" Syntax \")\" >",
-			L"[60][Syntax0]< \"+\" @ OptionalBody >",
-			L"[61][Syntax0]< \"+\" OptionalBody @ >",
-			L"[62][Syntax0]< \"-\" @ OptionalBody >",
-			L"[63][Syntax0]< \"-\" OptionalBody @ >",
-			L"[64][Syntax0]< \"?(\" @ TestBranch { \"|\" TestBranch } \")\" >",
-			L"[65][Syntax0]< \"?(\" TestBranch @ { \"|\" TestBranch } \")\" >",
-			L"[66][Syntax0]< \"?(\" TestBranch { \"|\" @ TestBranch } \")\" >",
-			L"[67][Syntax0]< \"?(\" TestBranch { \"|\" TestBranch @ } \")\" >",
-			L"[68][Syntax0]< \"?(\" TestBranch { \"|\" TestBranch } \")\" @ >",
-			L"[69][Syntax0]< \"{\" @ Syntax [ \";\" Syntax ] \"}\" >",
-			L"[70][Syntax0]< \"{\" Syntax @ [ \";\" Syntax ] \"}\" >",
-			L"[71][Syntax0]< \"{\" Syntax [ \";\" @ Syntax ] \"}\" >",
-			L"[72][Syntax0]< \"{\" Syntax [ \";\" Syntax @ ] \"}\" >",
-			L"[73][Syntax0]< \"{\" Syntax [ \";\" Syntax ] \"}\" @ >",
-			L"[74][Syntax0]< OptionalBody @ >",
-			L"[75][Syntax0]< Token @ [ \":\" ID ] >",
-			L"[76][Syntax0]< Token [ \":\" @ ID ] >",
-			L"[77][Syntax0]< Token [ \":\" ID @ ] >",
-			L"[78][Syntax0]<< \"(\" !Syntax \")\" @ >>",
-			L"[79][Syntax0]<< \"(\" !Syntax @ \")\" >>",
-			L"[80][Syntax0]<< \"(\" @ !Syntax \")\" >>",
-			L"[81][Syntax1] BEGIN ",
-			L"[82][Syntax1] END [ENDING]",
-			L"[83][Syntax1]< Syntax1 @ Syntax0 >",
-			L"[84][Syntax1]< Syntax1 Syntax0 @ >",
-			L"[85][Syntax1]<< !Syntax0 @ >>",
-			L"[86][Syntax2] BEGIN ",
-			L"[87][Syntax2] END [ENDING]",
-			L"[88][Syntax2]< Syntax2 \"|\" @ Syntax1 >",
-			L"[89][Syntax2]< Syntax2 \"|\" Syntax1 @ >",
-			L"[90][Syntax2]< Syntax2 @ \"|\" Syntax1 >",
-			L"[91][Syntax2]<< !Syntax1 @ >>",
-			L"[92][Syntax] BEGIN ",
-			L"[93][Syntax] END [ENDING]",
-			L"[94][Syntax]<< !Syntax2 @ >>",
-			L"[95][AssignmentOp] BEGIN ",
-			L"[96][AssignmentOp] END [ENDING]",
-			L"[97][AssignmentOp]\"=\" @",
-			L"[98][AssignmentOp]\"?=\" @",
-			L"[99][Assignment] BEGIN ",
-			L"[100][Assignment] END [ENDING]",
-			L"[101][Assignment]< ID @ AssignmentOp ID >",
-			L"[102][Assignment]< ID AssignmentOp @ ID >",
-			L"[103][Assignment]< ID AssignmentOp ID @ >",
-			L"[104][Clause] BEGIN ",
-			L"[105][Clause] END [ENDING]",
-			L"[106][Clause]< \"!\" \"prefix_merge\" \"(\" @ RuleName \")\" >",
-			L"[107][Clause]< \"!\" \"prefix_merge\" \"(\" RuleName \")\" @ >",
-			L"[108][Clause]< \"!\" \"prefix_merge\" \"(\" RuleName @ \")\" >",
-			L"[109][Clause]< \"!\" \"prefix_merge\" @ \"(\" RuleName \")\" >",
-			L"[110][Clause]< \"!\" @ \"prefix_merge\" \"(\" RuleName \")\" >",
-			L"[111][Clause]< \"!\" @ RuleName LriContinuation >",
-			L"[112][Clause]< \"!\" RuleName @ LriContinuation >",
-			L"[113][Clause]< \"!\" RuleName LriContinuation @ >",
-			L"[114][Clause]< \"left_recursion_placeholder\" \"(\" @ Placeholder { \",\" Placeholder } \")\" >",
-			L"[115][Clause]< \"left_recursion_placeholder\" \"(\" Placeholder @ { \",\" Placeholder } \")\" >",
-			L"[116][Clause]< \"left_recursion_placeholder\" \"(\" Placeholder { \",\" @ Placeholder } \")\" >",
-			L"[117][Clause]< \"left_recursion_placeholder\" \"(\" Placeholder { \",\" Placeholder @ } \")\" >",
-			L"[118][Clause]< \"left_recursion_placeholder\" \"(\" Placeholder { \",\" Placeholder } \")\" @ >",
-			L"[119][Clause]< \"left_recursion_placeholder\" @ \"(\" Placeholder { \",\" Placeholder } \")\" >",
-			L"[120][Clause]< Syntax \"as\" \"partial\" @ ID [ \"{\" { Assignment ; \",\" } \"}\" ] >",
-			L"[121][Clause]< Syntax \"as\" \"partial\" ID @ [ \"{\" { Assignment ; \",\" } \"}\" ] >",
-			L"[122][Clause]< Syntax \"as\" \"partial\" ID [ \"{\" @ { Assignment ; \",\" } \"}\" ] >",
-			L"[123][Clause]< Syntax \"as\" \"partial\" ID [ \"{\" { Assignment ; \",\" @ } \"}\" ] >",
-			L"[124][Clause]< Syntax \"as\" \"partial\" ID [ \"{\" { Assignment ; \",\" } \"}\" @ ] >",
-			L"[125][Clause]< Syntax \"as\" \"partial\" ID [ \"{\" { Assignment @ ; \",\" } \"}\" ] >",
-			L"[126][Clause]< Syntax \"as\" @ \"partial\" ID [ \"{\" { Assignment ; \",\" } \"}\" ] >",
-			L"[127][Clause]< Syntax \"as\" @ ID [ \"{\" { Assignment ; \",\" } \"}\" ] >",
-			L"[128][Clause]< Syntax \"as\" ID @ [ \"{\" { Assignment ; \",\" } \"}\" ] >",
-			L"[129][Clause]< Syntax \"as\" ID [ \"{\" @ { Assignment ; \",\" } \"}\" ] >",
-			L"[130][Clause]< Syntax \"as\" ID [ \"{\" { Assignment ; \",\" @ } \"}\" ] >",
-			L"[131][Clause]< Syntax \"as\" ID [ \"{\" { Assignment ; \",\" } \"}\" @ ] >",
-			L"[132][Clause]< Syntax \"as\" ID [ \"{\" { Assignment @ ; \",\" } \"}\" ] >",
-			L"[133][Clause]< Syntax @ \"as\" \"partial\" ID [ \"{\" { Assignment ; \",\" } \"}\" ] >",
-			L"[134][Clause]< Syntax @ \"as\" ID [ \"{\" { Assignment ; \",\" } \"}\" ] >",
-			L"[135][Clause]< Syntax @ [ \"{\" { Assignment ; \",\" } \"}\" ] >",
-			L"[136][Clause]< Syntax [ \"{\" @ { Assignment ; \",\" } \"}\" ] >",
-			L"[137][Clause]< Syntax [ \"{\" { Assignment ; \",\" @ } \"}\" ] >",
-			L"[138][Clause]< Syntax [ \"{\" { Assignment ; \",\" } \"}\" @ ] >",
-			L"[139][Clause]< Syntax [ \"{\" { Assignment @ ; \",\" } \"}\" ] >",
-			L"[140][Placeholder] BEGIN ",
-			L"[141][Placeholder] END [ENDING]",
-			L"[142][Placeholder]< ID @ >",
-			L"[143][RuleName] BEGIN ",
-			L"[144][RuleName] END [ENDING]",
-			L"[145][RuleName]< ID @ >",
-			L"[146][LriConfig] BEGIN ",
-			L"[147][LriConfig] END [ENDING]",
-			L"[148][LriConfig]\"left_recursion_inject\" @",
-			L"[149][LriConfig]\"left_recursion_inject_multiple\" @",
-			L"[150][LriContinuationBody] BEGIN ",
-			L"[151][LriContinuationBody] END [ENDING]",
-			L"[152][LriContinuationBody]LriConfig \"(\" @ Placeholder { \",\" Placeholder } \")\" LriTarget { \"|\" LriTarget }",
-			L"[153][LriContinuationBody]LriConfig \"(\" Placeholder @ { \",\" Placeholder } \")\" LriTarget { \"|\" LriTarget }",
-			L"[154][LriContinuationBody]LriConfig \"(\" Placeholder { \",\" @ Placeholder } \")\" LriTarget { \"|\" LriTarget }",
-			L"[155][LriContinuationBody]LriConfig \"(\" Placeholder { \",\" Placeholder @ } \")\" LriTarget { \"|\" LriTarget }",
-			L"[156][LriContinuationBody]LriConfig \"(\" Placeholder { \",\" Placeholder } \")\" @ LriTarget { \"|\" LriTarget }",
-			L"[157][LriContinuationBody]LriConfig \"(\" Placeholder { \",\" Placeholder } \")\" LriTarget @ { \"|\" LriTarget }",
-			L"[158][LriContinuationBody]LriConfig \"(\" Placeholder { \",\" Placeholder } \")\" LriTarget { \"|\" @ LriTarget }",
-			L"[159][LriContinuationBody]LriConfig \"(\" Placeholder { \",\" Placeholder } \")\" LriTarget { \"|\" LriTarget @ }",
-			L"[160][LriContinuationBody]LriConfig @ \"(\" Placeholder { \",\" Placeholder } \")\" LriTarget { \"|\" LriTarget }",
-			L"[161][LriContinuation] BEGIN ",
-			L"[162][LriContinuation] END [ENDING]",
-			L"[163][LriContinuation]< \"[\" @ LriContinuationBody \"]\" >",
-			L"[164][LriContinuation]< \"[\" LriContinuationBody \"]\" @ >",
-			L"[165][LriContinuation]< \"[\" LriContinuationBody @ \"]\" >",
-			L"[166][LriContinuation]< LriContinuationBody @ >",
-			L"[167][LriTarget] BEGIN ",
-			L"[168][LriTarget] END [ENDING]",
-			L"[169][LriTarget]< \"(\" @ RuleName LriContinuation \")\" >",
-			L"[170][LriTarget]< \"(\" RuleName @ LriContinuation \")\" >",
-			L"[171][LriTarget]< \"(\" RuleName LriContinuation \")\" @ >",
-			L"[172][LriTarget]< \"(\" RuleName LriContinuation @ \")\" >",
-			L"[173][LriTarget]< RuleName @ >",
-			L"[174][Rule] BEGIN ",
-			L"[175][Rule] END [ENDING]",
-			L"[176][Rule]< [ \"@public\" @ ] [ \"@parser\" ] ID [ \":\" ID ] { \"::=\" Clause } \";\" >",
-			L"[177][Rule]< [ \"@public\" ] [ \"@parser\" @ ] ID [ \":\" ID ] { \"::=\" Clause } \";\" >",
-			L"[178][Rule]< [ \"@public\" ] [ \"@parser\" ] ID @ [ \":\" ID ] { \"::=\" Clause } \";\" >",
-			L"[179][Rule]< [ \"@public\" ] [ \"@parser\" ] ID [ \":\" @ ID ] { \"::=\" Clause } \";\" >",
-			L"[180][Rule]< [ \"@public\" ] [ \"@parser\" ] ID [ \":\" ID @ ] { \"::=\" Clause } \";\" >",
-			L"[181][Rule]< [ \"@public\" ] [ \"@parser\" ] ID [ \":\" ID ] { \"::=\" @ Clause } \";\" >",
-			L"[182][Rule]< [ \"@public\" ] [ \"@parser\" ] ID [ \":\" ID ] { \"::=\" Clause @ } \";\" >",
-			L"[183][Rule]< [ \"@public\" ] [ \"@parser\" ] ID [ \":\" ID ] { \"::=\" Clause } \";\" @ >",
-			L"[184][File] BEGIN ",
-			L"[185][File] END [ENDING]",
-			L"[186][File]< [ Switches @ ] Rule { Rule } >",
-			L"[187][File]< [ Switches ] Rule @ { Rule } >",
-			L"[188][File]< [ Switches ] Rule { Rule @ } >",
+			L"[28][TestBranch] BEGIN ",
+			L"[29][TestBranch] END [ENDING]",
+			L"[30][TestBranch]< Cond \":\" ( Syntax1 @ | \";\" ) >",
+			L"[31][TestBranch]< Cond \":\" ( Syntax1 | \";\" @ ) >",
+			L"[32][TestBranch]< Cond \":\" @ ( Syntax1 | \";\" ) >",
+			L"[33][TestBranch]< Cond @ \":\" ( Syntax1 | \";\" ) >",
+			L"[34][Syntax0] BEGIN ",
+			L"[35][Syntax0] END [ENDING]",
+			L"[36][Syntax0]< \"!\" @ ID >",
+			L"[37][Syntax0]< \"!\" ID @ >",
+			L"[38][Syntax0]< \"!(\" @ { SwitchItem ; \",\" } \";\" Syntax \")\" >",
+			L"[39][Syntax0]< \"!(\" { SwitchItem ; \",\" @ } \";\" Syntax \")\" >",
+			L"[40][Syntax0]< \"!(\" { SwitchItem ; \",\" } \";\" @ Syntax \")\" >",
+			L"[41][Syntax0]< \"!(\" { SwitchItem ; \",\" } \";\" Syntax \")\" @ >",
+			L"[42][Syntax0]< \"!(\" { SwitchItem ; \",\" } \";\" Syntax @ \")\" >",
+			L"[43][Syntax0]< \"!(\" { SwitchItem @ ; \",\" } \";\" Syntax \")\" >",
+			L"[44][Syntax0]< \"+\" \"[\" @ Syntax \"]\" >",
+			L"[45][Syntax0]< \"+\" \"[\" Syntax \"]\" @ >",
+			L"[46][Syntax0]< \"+\" \"[\" Syntax @ \"]\" >",
+			L"[47][Syntax0]< \"+\" @ \"[\" Syntax \"]\" >",
+			L"[48][Syntax0]< \"-\" \"[\" @ Syntax \"]\" >",
+			L"[49][Syntax0]< \"-\" \"[\" Syntax \"]\" @ >",
+			L"[50][Syntax0]< \"-\" \"[\" Syntax @ \"]\" >",
+			L"[51][Syntax0]< \"-\" @ \"[\" Syntax \"]\" >",
+			L"[52][Syntax0]< \"?(\" @ TestBranch { \"|\" TestBranch } \")\" >",
+			L"[53][Syntax0]< \"?(\" TestBranch @ { \"|\" TestBranch } \")\" >",
+			L"[54][Syntax0]< \"?(\" TestBranch { \"|\" @ TestBranch } \")\" >",
+			L"[55][Syntax0]< \"?(\" TestBranch { \"|\" TestBranch @ } \")\" >",
+			L"[56][Syntax0]< \"?(\" TestBranch { \"|\" TestBranch } \")\" @ >",
+			L"[57][Syntax0]< \"[\" @ Syntax \"]\" >",
+			L"[58][Syntax0]< \"[\" Syntax \"]\" @ >",
+			L"[59][Syntax0]< \"[\" Syntax @ \"]\" >",
+			L"[60][Syntax0]< \"{\" @ Syntax [ \";\" Syntax ] \"}\" >",
+			L"[61][Syntax0]< \"{\" Syntax @ [ \";\" Syntax ] \"}\" >",
+			L"[62][Syntax0]< \"{\" Syntax [ \";\" @ Syntax ] \"}\" >",
+			L"[63][Syntax0]< \"{\" Syntax [ \";\" Syntax @ ] \"}\" >",
+			L"[64][Syntax0]< \"{\" Syntax [ \";\" Syntax ] \"}\" @ >",
+			L"[65][Syntax0]< ( ID @ | STRING | CONDITIONAL_LITERAL ) [ \":\" ID ] >",
+			L"[66][Syntax0]< ( ID | STRING @ | CONDITIONAL_LITERAL ) [ \":\" ID ] >",
+			L"[67][Syntax0]< ( ID | STRING | CONDITIONAL_LITERAL ) [ \":\" @ ID ] >",
+			L"[68][Syntax0]< ( ID | STRING | CONDITIONAL_LITERAL ) [ \":\" ID @ ] >",
+			L"[69][Syntax0]< ( ID | STRING | CONDITIONAL_LITERAL @ ) [ \":\" ID ] >",
+			L"[70][Syntax0]<! \"(\" !Syntax \")\" @ !>",
+			L"[71][Syntax0]<! \"(\" !Syntax @ \")\" !>",
+			L"[72][Syntax0]<! \"(\" @ !Syntax \")\" !>",
+			L"[73][Syntax1] BEGIN ",
+			L"[74][Syntax1] END [ENDING]",
+			L"[75][Syntax1]< Syntax1 @ Syntax0 >",
+			L"[76][Syntax1]< Syntax1 Syntax0 @ >",
+			L"[77][Syntax1]<! !Syntax0 @ !>",
+			L"[78][Syntax2] BEGIN ",
+			L"[79][Syntax2] END [ENDING]",
+			L"[80][Syntax2]< Syntax2 \"|\" @ Syntax1 >",
+			L"[81][Syntax2]< Syntax2 \"|\" Syntax1 @ >",
+			L"[82][Syntax2]< Syntax2 @ \"|\" Syntax1 >",
+			L"[83][Syntax2]<! !Syntax1 @ !>",
+			L"[84][Syntax] BEGIN ",
+			L"[85][Syntax] END [ENDING]",
+			L"[86][Syntax]<! !Syntax2 @ !>",
+			L"[87][Assignment] BEGIN ",
+			L"[88][Assignment] END [ENDING]",
+			L"[89][Assignment]< ID ( \"=\" @ | \"?=\" ) ID >",
+			L"[90][Assignment]< ID ( \"=\" | \"?=\" ) ID @ >",
+			L"[91][Assignment]< ID ( \"=\" | \"?=\" @ ) ID >",
+			L"[92][Assignment]< ID @ ( \"=\" | \"?=\" ) ID >",
+			L"[93][Clause] BEGIN ",
+			L"[94][Clause] END [ENDING]",
+			L"[95][Clause]< Syntax \"as\" \"partial\" @ ID [ \"{\" { Assignment ; \",\" } \"}\" ] >",
+			L"[96][Clause]< Syntax \"as\" \"partial\" ID @ [ \"{\" { Assignment ; \",\" } \"}\" ] >",
+			L"[97][Clause]< Syntax \"as\" \"partial\" ID [ \"{\" @ { Assignment ; \",\" } \"}\" ] >",
+			L"[98][Clause]< Syntax \"as\" \"partial\" ID [ \"{\" { Assignment ; \",\" @ } \"}\" ] >",
+			L"[99][Clause]< Syntax \"as\" \"partial\" ID [ \"{\" { Assignment ; \",\" } \"}\" @ ] >",
+			L"[100][Clause]< Syntax \"as\" \"partial\" ID [ \"{\" { Assignment @ ; \",\" } \"}\" ] >",
+			L"[101][Clause]< Syntax \"as\" ID @ [ \"{\" { Assignment ; \",\" } \"}\" ] >",
+			L"[102][Clause]< Syntax \"as\" ID [ \"{\" @ { Assignment ; \",\" } \"}\" ] >",
+			L"[103][Clause]< Syntax \"as\" ID [ \"{\" { Assignment ; \",\" @ } \"}\" ] >",
+			L"[104][Clause]< Syntax \"as\" ID [ \"{\" { Assignment ; \",\" } \"}\" @ ] >",
+			L"[105][Clause]< Syntax \"as\" ID [ \"{\" { Assignment @ ; \",\" } \"}\" ] >",
+			L"[106][Clause]< Syntax [ \"{\" @ { Assignment ; \",\" } \"}\" ] >",
+			L"[107][Clause]< Syntax [ \"{\" { Assignment ; \",\" @ } \"}\" ] >",
+			L"[108][Clause]< Syntax [ \"{\" { Assignment ; \",\" } \"}\" @ ] >",
+			L"[109][Clause]< Syntax [ \"{\" { Assignment @ ; \",\" } \"}\" ] >",
+			L"[110][Clause]{{< Syntax \"as\" @ \"partial\" ID [ \"{\" { Assignment ; \",\" } \"}\" ] > ; < Syntax \"as\" @ ID [ \"{\" { Assignment ; \",\" } \"}\" ] >}}",
+			L"[111][Clause]{{< Syntax @ \"as\" \"partial\" ID [ \"{\" { Assignment ; \",\" } \"}\" ] > ; < Syntax @ \"as\" ID [ \"{\" { Assignment ; \",\" } \"}\" ] > ; < Syntax @ [ \"{\" { Assignment ; \",\" } \"}\" ] >}}",
+			L"[112][Rule] BEGIN ",
+			L"[113][Rule] END [ENDING]",
+			L"[114][Rule]< [ \"@public\" @ ] [ \"@parser\" ] ID [ \":\" ID ] { \"::=\" Clause } \";\" >",
+			L"[115][Rule]< [ \"@public\" ] [ \"@parser\" @ ] ID [ \":\" ID ] { \"::=\" Clause } \";\" >",
+			L"[116][Rule]< [ \"@public\" ] [ \"@parser\" ] ID @ [ \":\" ID ] { \"::=\" Clause } \";\" >",
+			L"[117][Rule]< [ \"@public\" ] [ \"@parser\" ] ID [ \":\" @ ID ] { \"::=\" Clause } \";\" >",
+			L"[118][Rule]< [ \"@public\" ] [ \"@parser\" ] ID [ \":\" ID @ ] { \"::=\" Clause } \";\" >",
+			L"[119][Rule]< [ \"@public\" ] [ \"@parser\" ] ID [ \":\" ID ] { \"::=\" @ Clause } \";\" >",
+			L"[120][Rule]< [ \"@public\" ] [ \"@parser\" ] ID [ \":\" ID ] { \"::=\" Clause @ } \";\" >",
+			L"[121][Rule]< [ \"@public\" ] [ \"@parser\" ] ID [ \":\" ID ] { \"::=\" Clause } \";\" @ >",
+			L"[122][File] BEGIN ",
+			L"[123][File] END [ENDING]",
+			L"[124][File]< [ \"switch\" @ { SwitchItem ; \",\" } \";\" ] Rule { Rule } >",
+			L"[125][File]< [ \"switch\" { SwitchItem ; \",\" @ } \";\" ] Rule { Rule } >",
+			L"[126][File]< [ \"switch\" { SwitchItem ; \",\" } \";\" @ ] Rule { Rule } >",
+			L"[127][File]< [ \"switch\" { SwitchItem ; \",\" } \";\" ] Rule @ { Rule } >",
+			L"[128][File]< [ \"switch\" { SwitchItem ; \",\" } \";\" ] Rule { Rule @ } >",
+			L"[129][File]< [ \"switch\" { SwitchItem @ ; \",\" } \";\" ] Rule { Rule } >",
 		};
 		return results[index];
 	}
@@ -14331,24 +11104,22 @@ namespace vl::glr::parsergen
 {
 	void ParserGenTypeParserData(vl::stream::IStream& outputStream)
 	{
-		static const vl::vint dataLength = 2930; // 42808 bytes before compressing
+		static const vl::vint dataLength = 2480; // 34610 bytes before compressing
 		static const vl::vint dataBlock = 256;
-		static const vl::vint dataRemain = 114;
-		static const vl::vint dataSolidRows = 11;
-		static const vl::vint dataRows = 12;
+		static const vl::vint dataRemain = 176;
+		static const vl::vint dataSolidRows = 9;
+		static const vl::vint dataRows = 10;
 		static const char* compressed[] = {
-			"\x38\xA7\x00\x00\x6A\x0B\x00\x00\x27\x00\x01\x82\x80\x08\x03\x82\x81\x82\x06\x89\x82\x84\x0A\x84\x06\x85\x09\x0A\x9A\x0A\x82\x1A\x80\x16\x84\x16\x0A\xB0\x47\x09\x8F\x7D\x8E\x8F\x8E\x0A\x80\x1F\x9F\x81\x93\x92\x8F\x92\x26\xFF\x68\x86\x9B\x93\x91\x96\x92\x0A\xA9\xAA\x91\x99\x97\x97\x92\x9A\x2C\xB8\xAE\x9A\x90\x9C\x8D\x9A\x9E\x37\xBE\xB9\x82\xAB\x9C\xA1\x9E\x83\x32\xB6\xA0\x80\xAB\xA6\xA1\xA0\xA4\x3F\xCE\x8D\xB0\xA3\xA4\xA9\xA2\xAB\x47\x83\x89\xAC\xA3\x9A\xA9\xAE\xAC\x4F\xDA\x91\xA0\xB3\xAA\xB1\xAA\xB3\x57\xE8\x99\xA1\x92\x81\x00\xAE\xA5\x5F\xEA\xA1\xA2\x8B\xAE\xAC\xB9\xBB\x6F\xF9\xB6\xBA\xB4\xB1\xB8\xBB\xB1\x72\xE5\xBF\xA7\xB3\xC1\xB5\xC3\xB5\x01\xF5\xBD\xB8\xBB\xBD\xC7\xC4\xBE\x81\xFE\x89\xC0\xC7\xC3\xBB\xC8\xC2\x97\x86\xD9\xC8\xC2\x94\xCB\xCC\xCB\x9D\x98\xE1\xDA\xC3\xD4\xCE\xC5\xC8\x8C\x8F\xCE\xC8\xD0\xCD\xCA\xC1\xCF\xAF\xA5\xE0\xCE\xB9\x84\xDA\xD5\xDB\xAC\xAB\xEE\xD2\xC2\xD9\xDB\xD3\xDD\xA9\xB9\xF8\xC0\xED\xD0\xD8\xDF\xDF\xC6\xC1\xC4\xFA\xD9\xE5\xE1\xDF\xE3\x9E\xCF\xCA\xED\xEC\xE2\xEA\xE6\xE4\xD6\xD5\xD8\xFB",
-			"\xE1\xEC\xEE\xD0\xEF\xA4\xE0\xE6\xDD\xE4\xF7\xED\xF3\xF0\xE7\xE3\xE6\xEB\xF8\xF4\xF6\xF5\xF6\xF0\xEF\xF2\xE0\xD2\xF4\xF9\xF4\xD0\x02\x0A\xB6\xC2\xEC\xFB\xE7\xE0\xEA\xFF\x59\x71\x81\x7D\xBE\x77\x75\x82\x7B\xF6\x48\x87\x81\x7C\x09\x8C\x8B\x80\x67\x03\x3A\x77\x75\x74\x0C\x75\x63\x86\x82\xD0\x58\x83\x76\x80\xFD\x40\x8D\x84\x87\xFE\x5F\x84\x81\x86\x0E\xA4\x83\x7F\x83\x0D\xA7\x86\x89\x8A\x2C\xA8\x8E\x8B\x8A\x2F\x9B\x83\x8A\x8C\x06\xB0\x86\x8C\x8D\x1A\x97\x85\x88\x8E\x3B\xBA\x8A\x88\x8F\x3F\xBE\x8D\x8B\x8D\x42\xB1\x85\x90\x91\xDA\x75\x80\x93\x90\x4B\x86\x99\x91\x8E\x4F\xBD\x81\x95\x90\xD5\x45\x02\x87\x94\x4C\x87\x9D\x90\x92\x03\x8A\x9A\x97\x97\x58\x8E\x9D\x94\x94\x63\x92\x95\x98\x95\x67\x99\x91\x98\x97\x22\x9E\x9B\x9B\x96\x70\xA0\x99\x9A\x98\x6D\xA4\x95\x9E\x99\x77\xA8\x99\x9E\x9A\x73\xAC\x91\x8B\x9F\x1E\x80\xA0\x89\xA0\x84\x83\xA0\x02\x01\x57\xBD\x91\x9F\x9B\x72\xBB\x94\x9E\xA0\x33\x8D\xA0\xA6\x9B\x8A\x8A\x4B\x46\x85\x8C\x99\xA5\xA6\xA6\x8E\xBE\x95\xA1\xA4\x9C\x93\xA2\x68\x42\x06\x7B\x72\xA8\x9E\xA7\xBA\x99\xA8\x9F",
-			"\x9D\x8B\xAB\xA7\xAB\xAD\x92\xA1\x41\x02\x89\xB1\xA1\xAB\xA7\x94\xB6\xA0\xAF\xAA\x8F\xB8\xA6\x9E\xA0\x0A\x35\xAC\xAE\xA7\x86\x8B\x02\xB2\xAF\xA8\x88\xBA\xAA\xB2\xAC\x83\xBE\xAA\xAE\xD0\x8E\xB2\xAE\xA1\xA0\xBB\xAC\xB1\xAF\xD4\xB9\xA2\xB7\xAD\xD9\xBF\xA7\xB4\xB1\xD5\x91\xBF\xB7\xB3\xDB\x96\xBD\xB4\x69\x0E\x58\xA6\xB9\xB8\xE5\xA2\xB7\xBB\xB2\xEF\x8D\xB3\xBB\xB4\xEC\xB3\xBC\xB5\xBD\xF1\x98\xB8\xBC\xBE\x0D\x07\xB9\xBC\xB8\xDA\xB6\xBB\xB9\xC0\xFF\xA4\xB2\xC2\xBB\xFB\x84\xC9\xC2\x68\x0E\x0A\x49\x7F\xBD\x0A\xD1\xCE\xB5\xC1\xF4\x92\xC9\xB0\xC5\x10\xD3\xCB\xC3\xC5\x1B\xF0\xBD\xC6\xBC\x18\xC3\xCA\xC6\xC5\x1E\xD1\x70\x06\xBF\x1F\xFA\xB4\xC8\xC8\x29\xC0\xC3\xCB\xCB\x1C\xEB\xCA\xC8\xCC\x25\xF4\xCC\xCA\xCC\x2E\xF1\xC6\xCC\xB6\x11\x28\xC8\xCE\xC1\x21\xC8\xCF\xCD\xC5\x3B\xF9\xC5\xCE\xCE\x48\xC7\xDA\xD3\xCD\x45\xC0\xDD\xCA\xD3\x43\xD9\xC9\xD0\xD3\x53\xF3\xC7\xC6\x04\x3E\xCD\xD4\xD1\xD5\x46\xD4\xDB\xD2\xD5\x5F\xDD\xD0\xDA\xD7\x20\xD0\x4A\xBA\xD0\x5A\xD2\xD1\xD8\xD4\x69\xE2\xCC\xD4\xDB\x6F\xDB\xDB\xDA\xDC\x64\xE3\xD6\xDE\xD8\x78",
-			"\xF0\xD3\xDE\xDA\x75\xC4\xB4\x05\xD6\x71\xFC\xD7\xDE\xDE\x7D\xC4\xE3\xE0\xDD\x87\xC2\xE9\xDC\xE2\x8B\xC9\x45\x04\xE0\x7B\xEE\xD1\xE4\xDA\x81\xD2\xE5\xE0\xE3\x86\xCD\xE6\xE5\xE2\x9B\xDA\xE4\xE7\xE4\xED\xA1\xE7\xC2\xE8\x41\xE4\xEF\xD0\xE6\xA8\xCA\xE9\xE7\xEA\xA9\xDD\xEC\xEA\xEA\xAD\xDF\xE7\xE4\xEC\xB4\xEE\xE1\xEE\xE9\x51\xE6\xB6\x04\xE4\xB3\xF6\xE5\xEE\xEC\xD8\x97\x0C\xEC\xE7\xC0\xDE\xE8\xED\xDB\xC5\xEF\xEE\xEF\xF2\x1F\x98\x0E\xC3\xED\x85\x92\x47\xDB\xF1\x95\xC9\xF0\xF5\xE9\xA3\xD9\xF8\xF7\xF6\xA7\xFF\xE4\xF4\xE8\xDA\xDD\xFC\xF3\xF7\xBD\xD6\xFE\xF5\xF8\xB9\xE6\xF3\xFA\xF6\x1B\x03\xF6\xF0\xFA\xC8\xE4\xF4\xF2\xFC\xEF\xDC\xF9\xF8\xFD\xCA\xEA\xFA\xFC\xFE\xCE\x5C\x0E\xF9\xFE\xFC\x67\x7E\xFD\x71\x70\x7F\xEA\x41\x83\x7D\x03\x86\x81\x01\xE0\x79\x80\x06\xA2\x7B\x7F\x0B\x85\x7E\xA0\x1D\x0F\x7F\xEB\x4F\x87\x80\x10\x8D\x82\x04\x91\x83\x7E\x0E\xB5\x7F\x82\x1E\x80\x81\x08\x96\x87\x7F\x11\x82\x80\x84\x1A\x9D\x82\xA1\x1E\x05\x83\x13\x84\x67\x03\x2D\x88\x80\x0A\xB3\x85\x85\x14\x9F\x85\x86\x34\x84\x82\x0D\xA2\x8B\x86\x12\xBA\x81",
-			"\x87\x0A\x9D\x84\xB7\x20\x01\x87\x0C\x80\x8E\x81\x38\x89\x8B\x0F\xD1\x31\x05\x22\x98\x87\x89\x26\x92\x86\x12\xC1\x87\x89\x0D\x82\x88\x81\x14\x33\x79\x14\xC6\x85\x87\x11\x0E\x8B\x8B\x50\x97\x88\x17\xCB\x84\x8C\x2A\x93\x88\x89\x13\x64\x07\x17\xE2\x81\x8C\x7C\x65\x03\x8D\x55\x8A\x85\x1C\xB7\x85\x8C\x34\xA6\x8A\x34\x26\x10\x8F\x19\xD6\x83\x8E\x1E\xBD\x8E\x87\x77\x81\x92\x1D\x83\x9C\x8F\x3D\xAA\x80\x20\x5A\x80\x02\x45\x09\x98\x3B\x14\x3A\x8D\x8E\x85\x90\x92\x1C\x86\x94\x8E\x41\x91\x96\x92\x93\x92\x91\x25\x84\x99\x92\x4C\x9B\x97\x92\x9C\x9F\x91\x27\xA1\x9E\x8E\x4A\xA5\x92\x87\x2A\x0F\x90\x69\x2B\x0A\x94\x52\x80\x96\x95\x2E\x9A\x93\x29\x9E\x93\x96\x58\x92\x8A\x96\x17\x2D\x94\x28\xBB\x93\x94\x5E\xA2\x97\x97\xB5\x9E\x95\x30\xBD\x94\x98\x60\xAF\x92\x98\xC7\x85\x9B\x30\xC6\x91\x96\x5A\x97\x7D\x05\xBA\x8A\x86\x0B\x51\x9C\x99\x5B\x8E\x9D\x99\xB6\x83\x8F\x35\xD6\x99\x9B\x36\xA6\x93\x5A\x2F\x1E\x5C\x0C\x4F\x75\x3A\x19\x3E\x5B\x06\xD4\x8B\x9A\x3A\xC9\x95\x9A\x6D\x9D\x98\x8C\xF0\x8C\x8D\x3C\xFF\x88\x9A\x64\xB5\x9A\x99\xEC\x8B",
-			"\x9F\x3D\xED\x9E\x9A\x1D\xB4\x01\x9D\xF9\x81\xA3\x3E\xFA\x9C\x9A\x7B\x85\xA0\x9F\x03\xA2\xA2\x41\x35\x00\xA1\x84\x8E\xA7\xA0\xFC\x93\x9F\x37\x8F\xAE\x9C\x83\x95\xA0\xA1\x06\x36\x06\xBF\x37\x04\x9D\x00\x79\x06\x5F\x3A\x0D\xA0\x44\x84\xA7\xA3\x88\xB2\x9F\xA4\xF4\x83\xA6\x42\xA5\xA4\xA5\x7E\x9B\x9C\xA5\x2B\xAE\xA7\x3B\xA8\xA3\xA2\x04\xBB\x03\x8D\x3C\x1E\x5D\x0F\x1D\xAF\x43\x1F\x3E\x58\x08\x22\xB0\xA4\x45\xB2\xA6\xA2\xA2\x98\xA2\xA8\x2A\xBC\x59\x10\x6B\x82\x08\x7F\x43\x0C\xA7\x82\x45\x0A\xBF\x46\x01\xA8\xA3\xA6\xA1\xA5\x48\xB9\xAA\x55\xAD\xA2\xA3\x89\x47\x10\xAA\x01\x21\x5B\x9A\x32\x24\x57\x84\x18\x6E\x2B\x56\x5E\x2A\x4C\x0F\x66\x21\xB2\xBD\x4C\xAC\x0A\x39\xA6\x57\x6C\xA3\x20\xB7\x9D\x50\xAE\x09\x3B\xA7\x5C\x8A\x22\xAD\xB7\xA9\x26\xAE\x02\x27\xAD\x5F\x74\xA2\x21\xBE\xB7\xAF\xAF\x0A\x22\xB1\x64\x69\xAD\x2F\x11\x78\xAE\x20\xFD\x43\xAC\x62\x89\x21\xB3\xBE\x26\x54\x2D\xCF\x20\xB1\x40\x69\x56\xB2\xB0\x99\xB5\x21\x5C\x37\xB0\x00\x22\xBF\xB1\x81\x1C\xB1\x32\x84\xA1\x20\x63\x87\xB6\x24\xCD\x80\x06\x58\x92\xAD\xB6\x42\x15",
-			"\xBC\xB5\x91\x2E\xB4\xB6\xBB\x2B\xB7\x6E\x0E\xB3\xB2\x83\x3A\xAE\xAF\xB2\xA9\x22\x6B\xEB\xAA\x20\xDD\x86\x39\xB5\x00\x06\xBB\x73\x48\xB5\x42\xE0\xB6\xB2\x21\xA4\x48\xB6\x42\x4D\xB5\xB7\x8F\x2E\xB2\xAE\x83\xB3\xBB\x91\x25\xB7\x21\xED\xBD\xB3\x20\xBF\xAB\xB0\x57\x32\x21\x42\xB5\xA9\x24\xB9\xDE\xA1\xBA\x41\x51\xBB\x37\xF2\x8D\xB7\xBC\x0A\x23\xB9\x8D\x5C\xB1\x20\xEC\x91\x36\xBD\x91\x24\xB9\x42\x54\xB3\x58\xFA\x80\x06\xBE\xED\xA3\xBC\x7C\xFB\xBC\x2A\xFC\xBB\xB3\xC0\x6D\xBC\x28\x7F\xC6\x32\x26\xE5\xB2\x22\x26\x0B\xCF\x39\x83\x82\xC6\x24\xE4\x86\xC6\x38\x17\xD2\xC0\x82\x83\x21\xC2\xDE\xAA\xBB\x20\xEC\xA7\xBA\x42\x19\xC4\xBC\x0A\xE3\x20\xB9\xF2\xB8\x42\x7F\x80\xC2\xC5\x84\x24\xC1\x25\x2F\xCF\xC3\x89\xDA\xB1\xB7\xE7\x89\x24\xC5\xCB\xA3\xC5\x81\xA6\xCF\x22\xF4\xBB\xAE\xC5\x3B\xC6\xBD\x85\xF1\xBC\x2A\x07\xF2\xC3\x24\x31\xC7\xC9\x47\x3E\xCE\xB8\xEB\x90\xB9\xC8\xEF\xA3\xCA\x70\xE9\xB6\xC6\x83\x38\xC5\xC4\x42\xD3\xC4\x81\xB5\xCE\xC9\x1B\xD0\xC9\xBF\x1B\xCB\x23\x97\x87\xC2\xCB\x04\xE8\xAC\xC7\x1E\x29\xCA\x92\xCC\xC5\xBA\x8F",
-			"\x2E\xB1\xC4\xCF\x2A\xCF\x91\xA8\xC4\xCB\x2E\xD6\xCB\xCC\x0C\xC1\xCD\x40\x1D\xC3\xBF\xEF\x82\x27\xCA\x30\xC8\xCF\x92\xB4\xCD\x2E\x39\xF2\xC4\xCE\x5E\x2E\xB5\xCF\x09\xDA\x21\x45\xFD\x2E\xB5\x86\xBB\x34\xA4\xDC\x2E\xB5\x4B\x4F\xD6\x52\x94\xD8\xD2\x57\x2C\x98\xB3\x81\x22\xB0\xB9\xA0\xDA\xC7\x96\x86\x2A\xB8\x44\x49\x26\xD2\x03\x26\xD6\x41\x2A\xD3\x20\x54\xDD\xB9\x21\xAC\xCF\xD6\x41\x2E\xD1\x20\x38\xF1\xD5\xD6\x0A\x37\xD4\x41\x1A\xD6\xCD\x55\xC4\xCF\xD4\xBF\xDE\xD7\x94\xB0\xD1\xD9\x56\xFC\xA9\xD7\xC7\xC0\xD9\x42\x11\xD1\x20\x5D\xCC\xDF\x50\xC9\xD3\xD6\x42\x30\xBD\xD3\x59\x55\xDD\xD3\x80\x1E\x5D\x48\x2E\xB7\xDA\x81\x01\x16\x5F\xC8\xAE\x79\xB7\xA4\xB1\x3B\x0C\xC4\x8D\xDB\x21\x22\x12\xBF\x66\xD8\xDD\x90\x03\x16\x5F\x11\xC8\x93\xB5\xE4\xD2\x34\xE5\x9C\xD7\xDA\x86\xDC\x36\x68\xA9\x9D\xDB\x7C\xE1\x22\xD7\xD3\x8D\xDD\x42\x04\x1E\x5E\x5D\xE1\x9A\xE0\x06\x25\x11\xC1\x8A\x27\xE0\x84\xC2\x26\x10\xFE\x47\x08\xBA\xFE\xDE\xE0\x4F\xE0\xDE\x39\xC8\xB4\xDC\x69\x21\x29\xC2\x8D\xF0\x59\xC3\xC8\xB8\x38\x0F\x91\xCA\xD6\x91\xC4\xD6\xE2",
-			"\x09\x2A\xB9\xC8\x94\x4C\xD7\x0F\x61\x24\xD6\xA3\xB3\x5A\xAE\xB0\xE6\xE4\x01\xB0\xE4\xDA\x2E\xEE\x38\x9C\xAB\xE3\x55\x68\xF9\xE2\x80\x70\xD4\xE1\xB7\xCF\xD2\xB4\x9C\xC2\x20\xB9\x21\x22\xB7\xA4\xD5\x3C\x86\xD7\x82\xEF\xDA\xB8\xA1\x22\x68\x8D\x69\x21\x8C\xFE\x5F\xD9\x46\xC2\x35\x48\x27\x6C\x90\x82\x46\xE8\xD7\x4C\xF7\x7B\x69\x82\x24\xEB\x00\x7C\x83\xEC\x01\x2E\xD3\xCF\x81\x4A\xED\xA3\xCE\x38\xED\x00\x0A\xB2\xA0\x1B\x46\x6C\x83\x3C\xE4\x34\x65\xE3\x21\xD4\x86\x51\x25\xC7\x55\xEB\x5A\x0F\x13\xB6\x73\x21\x22\x79\xBF\xDC\x5C\xEB\x06\x21\xF1\xD8\x82\x8D\xED\x80\x3B\xED\xE6\x06\x39\x02\x67\xF8\x52\xEF\x80\x08\xF3\xED\x19\x95\xEF\x40\x7E\xE6\xEC\x85\x2D\x7D\xEB\x13\x7C\xF3\x40\x12\xFB\xF1\x00\x7E\x7E\xF0\x01\x5B\x75\x42\x79\xE3\xEF\x69\x56\xE9\x21\xAA\xE6\x21\xE3\xFC\xEE\x38\x16\xA8\xF3\x20\x1D\xEA\x21\xEC\x83\x25\xF2\xDA\xD5\x3F\xDC\x76\xE7\xE5\x5B\x0A\x25\xF0\x83\x3F\x6D\xF4\x03\x39\x89\xA9\x53\x52\xDC\x83\x05\xF8\xF3\x61\x84\xF6\x41\x3B\xFD\xF4\x01\x92\x7E\x20\xA7\xFD\xF1\x75\x5E\x87\xF6\x41\x59\xFB\x20\x30\x88\xF9",
-			"\x18\xDF\xF2\x20\x0A\xA2\xF9\x9E\xE6\xE6\x22\xED\xDA\xF1\x41\x37\x9D\xFD\x50\xEB\xE0\xFF\xE0\xD7\x71\xFC\x83\x22\xF5\xFA\x06\x32\xDC\xCA\x81\x4A\xB8\xD1\xB5\xFB\x20\x4D\x47\x7E\x27\x50\x7C\x9B\x73\x7F\x09\x1B\x48\xCB\x75\x1D\xBA\x62\x5A\x04\x82\x10\x01\x8C\x7E\x19\x4F\x80\x03\x1F\x79\x10\x81\x46\xCA\x73\x10\xEE\x75\x81\x01\x1E\x48\x89\x4C\x6F\xC1\x75\x1D\x17\x82\x10\x6A\x42\x80\x18\x19\x48\xD0\x4F\x7E\x86\x21\x82\x01\x19\x47\x02\x8D\x70\xFB\x7E\x2E\x23\x86\x10\x19\x80\x7D\x85\x23\x4E\x28\x88\x1D\x31\x83\x10\x2C\x8A\x81\x27\x53\x83\x02\x1B\x83\x34\x87\x52\x40\x82\x10\xE4\x75\x28\x1B\x26\x4E\x28\x80\x73\xA2\x5A\x7F\x02\x1C\x7D\x3C\x8F\x4F\xA0\x77\x31\x08\x88\x81\x06\x8B\x50\x9E\x5C\x51\x28\x80\x67\xA2\x53\x85\x02\x15\x72\xD1\x11\x12\x1F\x58\x82\x37\x58\x82\xAE\x5B\x85\x0A\x19\x83\xF8\x70\x5E\x9E\x5E\x53\x28\x84\x74\x15\x1A\x10\x43\x86\x84\x0A\x1B\x54\x37\x81\x1D\x5F\x71\x73\x07\x8D\x72\x69\x82\x10\x4F\x55\x87\xA2\x10\x77\xFB\x6A\x10\x1C\x8C\x83\x52\x5E\x87\x17\x37\x6F\x03\x13\x88\x41\x82\x71\x86\x80\x2F\x25\x82",
-			"\x83\x55\x83\x10\x49\x02\x6A\x06\x1C\x04\x9E\x5B\x77\xC8\x5F\x88\xA9\x61\x89\x02\x1E\x04\x94\x83\x10\x51\x0E\x59\x8A\x7F\x81\x06\x1A\x89\x22\x8C\x89\x01\x13\x05\x9F\x82\x10\x56\x0E\x59\xB3\x79\x89\x70\x88\x8A\x00\x08\x05\xAB\x85\x28\x9A\x7E\x76\x09\x16\x8A\x01\x14\x73\x5F\x8A\x10\x5B\x05\x8B\x86\x27\x7F\x01\x18\x5C\x01\x76\x10\x27\x8C\x83\x5E\x05\x55\x01\x15\x8C\x54\x82\x80\x5F\x0E\x59\x61\x0E\x59\xCF\x78\x8B\x06\x1C\x8C\x5D\x82\x8B\x63\x0E\x59\x65\x0E\x59\xD2\x73\x10\xC4\x87\x86\xB2\x87\x06\x9E\x59\x06\x9E\x54\x81\xDE\x8A\x10\xD6\x8B\x82\xB2\x8B\x06\x93\x71\x1D\xE9\x77\x8E\x09\x19\x8E\x00\x0C\x8B\x5A\x7A\x10\x6D\x0D\x8E\xA2\x1F\x7F\xD4\x83\x10\x2E\x82\x10\xC7\x81\x84\x6F\x0A\x8C\x00\x0D\x8F\x01\x1E\x83\x72\x89\x10\x70\x0E\x59\x72\x0E\x59\x12\x8B\x8F\x02\x14\x90\xD0\x62\x80\x74\x0E\x59\x76\x0E\x59\x4E\x80\x8F\x06\x10\x91\x68\x87\x90\x06\x18\x07\x9E\x5A\x07\x9E\x56\x90\x00\x08\x5C\x10\x91\x87\xBE\x76\x10\x7C\x08\x8F\xA4\x1C\x84\xC3\x8C\x70\x7A\x8C\x91\x03\x1E\x07\x2A\x9C\x19\x8A\x8E\x90\x01\x16\x83\xD7\x62\x72",
-			"\x0F\x65\x71\xE3\x6F\x16\x1E\x7F\x11\xA2\x5C\x16\x41\x99\x74\xED\x63\x94\xDA\x64\x94\xE8\x67\x77\x24\x1A\x94\x3D\x6D\x6E\xA1\x6E\x59\x48\x7F\x7A\x28\x88\x74\xFE\x69\x6F\xFF\x09\x61\x6C\x18\x95\x1C\x7D\x6E\x5A\x90\x8C\x6C\x1C\x67\x2C\x10\x96\x26\x11\x61\x5F\x9D\x6E\x64\x91\x12\x67\x92\x7C\x9D\x69\x96\x29\x7F\x16\x59\x76\x12\xCA\x5C\x16\x71\x91\x12\x73\x95\x5C\xED\x6E\x85\x2C\x18\x97\x26\x1A\x6B\x6C\x1C\x97\x2F\x7F\x16\xF4\x86\x12\x30\x7C\x16\x83\x9D\x6E",
+			"\x32\x87\x00\x00\xA8\x09\x00\x00\x23\x00\x01\x82\x80\x06\x03\x82\x81\x82\x06\x89\x82\x84\x0A\x84\x06\x85\x0B\x0A\xA2\x0A\x86\x1A\x82\x08\x85\x81\xFF\x19\x9A\x99\x8A\x80\x03\x8D\x8D\x1D\x9F\x9A\x81\x92\x97\x7C\x92\x91\x27\x9F\xA9\x80\x9A\x85\x92\x93\x96\x25\xAB\xA3\x90\x98\x94\x9A\x94\x9B\x2C\x89\xAE\x92\x9C\x88\x9F\x98\x9D\x31\xBE\xBD\x80\xA5\x9C\xA3\x9A\xA3\x39\x86\xBB\x82\xAF\x90\xA7\x9E\xA5\x41\xCE\x83\xB0\xA5\xA4\xAB\xA2\xAB\x49\x98\x91\xB8\xAF\xA2\xAD\xAB\x8E\x03\x81\x0C\xBC\x9D\xA4\xAF\xA8\xAF\x57\xE8\x99\xA2\x8B\xA2\xA9\xB2\xB5\x5D\xEC\x9B\xB0\xB7\xB2\xBB\xAE\xBB\x69\xF8\xAB\xA1\x8D\xB6\xB3\xB6\xBD\x71\xFC\xB3\xA0\xC5\xBA\xC3\xBA\xC3\x79\x88\xFB\xBE\x83\xC2\xC5\xC0\xC6\x87\x90\xC9\xD2\xCB\xC5\xBC\xBB\xBF\x8E\x85\xD4\xCF\xC6\xCC\xC0\xCD\xCD\x9A\x9D\xD9\xDF\xC2\xD0\xD0\xD3\xC6\xA6\xE4\xAA\xCA\x82\xB1\x85\xD6\xBF\xAB\xEE\xB1\xD0\xD3\xB5\xDA\xD8\xDB\xB4\xB7\xFA\xD9\xDC\xDF\xCB\xD8\xDF\xB8\xC0\xFB\xC2\xED\xDE\xCF\xDE\xE3\xC1\xC8\xC3\xEA\xE5\xE3\xD3\xE2\xE7\xC9\xD0\xCB\xF2\xED\xE1\xD5\xE8\xEB\xD3\xD8\xD5\xE5",
+			"\xDC\xE8\xD5\xEF\xC8\xDF\x93\xE1\xF5\xCE\xED\xF0\xF0\xF3\x93\x82\x2C\xD7\xE3\xF4\xCC\xF4\xF2\xE7\xF1\xE2\xEF\xFE\xF2\xF8\xF9\xF9\xF6\xF5\xF8\xF3\xC3\x03\xF5\xED\xD2\x0C\x6E\x6C\x78\x7D\xA1\x44\x87\x69\x7E\x05\x88\x87\x83\x7E\xF7\x4D\x8A\x7E\x83\x09\x8C\x8F\x83\x84\x11\x90\x8B\x82\x85\xCF\x5A\x74\x73\x86\xCC\x5C\x84\x76\x87\x1A\x9D\x82\x8B\x87\x23\xA1\x84\x8B\x89\x26\xA9\x8D\x79\x85\x14\x97\x8D\x89\x86\x2B\xAE\x8C\x8B\x8C\x32\xB5\x80\x8E\x81\x37\x8A\x89\x8E\x84\x34\xBB\x88\x87\x80\x3A\x80\x93\x65\x01\xFE\x5B\x78\x8E\x90\x3F\xBF\x77\x92\x92\x41\x8C\x9C\x8E\x8D\x48\xAF\x81\x95\x8F\x53\x90\x9E\x91\x92\x46\x8D\x99\x97\x93\x3E\x92\x97\x96\x97\x5B\x98\x90\x89\x8C\x5D\x94\x9F\x96\x99\x61\xA0\x93\x9B\x92\x69\xA8\x90\x8B\x45\x61\x55\x95\x9A\x95\x6D\xB4\x9B\x9A\x96\x77\x9C\x92\x9F\x9E\x67\xB6\x92\x43\x01\x45\xB9\x92\x99\x89\x64\xBC\x95\x9F\x9C\x88\x8A\x48\x01\xA0\x84\xAC\x92\xA2\x9A\x8D\xB8\x91\xA6\x9E\x7D\x89\xA5\xA6\xA1\x20\x89\x0C\xA0\x8A\x85\x97\xAE\xA7\xA1\x98\x93\xA3\xA1\x40\x0A\x1B\xAA\x8A\xA3\x25\x8B\x06\xA9\xA7",
+			"\xA0\x9F\xAF\xA2\x9B\xA2\x90\xAC\xA4\xAA\xB3\x92\xA5\xAC\xA5\xAD\xB9\xAF\xAA\x9F\xB7\xA3\xA7\xAA\xAD\xBF\xB8\xAB\xAE\xA5\xBA\xB1\xA0\xAD\xAF\xB2\x81\xBE\xAE\x43\x02\xAE\xA6\xB0\xAF\xCA\x89\xBC\xAB\xB0\xA1\x88\xB7\xB1\xB4\xD7\x93\xBF\xB0\xB1\x20\x8D\x0B\xA8\xAD\xD8\x90\xBA\xB6\xB5\xE2\xA0\xB3\xB9\xB8\xDC\x9B\xB5\xB4\xBA\xEB\xA7\xBE\xBA\xB9\xF0\x80\xBF\xBA\xBC\xF1\x82\xBA\xBA\xB3\xE4\xA9\xB9\xBD\xBB\xF5\xBE\xA3\xBE\xBD\xFB\xB8\xBC\xBA\xC0\xFF\xBE\xBD\xBE\xB4\x07\xD9\xB9\xC1\xB9\xF4\x8D\xC0\xC3\xC0\xC5\x81\x4E\x03\xB7\x0E\xC6\xC5\xC4\xC2\x17\xCA\xC9\xC4\xC3\x0F\xC5\xC8\xC5\xC7\x0B\xD9\x8F\x00\xC5\x20\xDB\xCA\xBC\xC4\xD4\x84\xC1\xC8\xBF\x26\xEC\xC5\xCB\xCB\x16\xF0\xCF\xC5\xCC\x8B\x50\x04\xC8\xCD\x33\xF9\xCA\xC6\xCC\xD7\x91\x07\xCE\xCE\x1C\xF8\xCB\xCE\xD0\x41\xC0\xD7\xCA\xC7\x43\xC6\xDE\xC8\xD1\x47\xEB\xCA\xC9\xCB\x4F\xFC\xC5\xD1\xD2\x54\xD3\xD6\xD5\xD3\x50\xD5\x72\x07\xCF\x55\xD8\xD2\xD6\xD7\x4C\xCB\xDA\xD1\xD4\x61\xE4\xD9\xB3\x04\x5C\xD7\xD2\xD9\xD7\x6B\xEA\xD6\xD8\xDB\x6F\xEE\xD1\xC4\xCA\xF7\xB3\xD8\xD0\xB4\x14",
+			"\x29\xD0\xDB\xD8\x76\xCE\xDD\xDD\xD6\x29\xFF\xDF\xD5\xDB\x7B\xF0\xD6\x41\x05\x7A\xC4\xEA\xE1\xDC\x85\xF2\xD1\xE3\xE3\x75\xE0\x86\x06\x42\xEA\x4C\xEB\xE2\xE0\x65\xD8\xEC\xDC\xE4\x01\xDA\xE6\xE0\xE7\x00\x18\x09\xE2\xE5\xA4\xDE\xEE\xE1\xE4\x25\x99\x06\xAA\x06\xA3\xC6\x4B\x05\xEB\xA0\xF7\xDD\xE3\xEC\x97\xF1\xEE\xDE\xED\x80\xE8\xED\xE4\xEE\x83\xE5\xEC\xED\xE6\xBF\xDB\xEA\xEC\xDD\xBB\xC3\xF2\xED\xED\xC6\xF7\xE9\xF0\xB0\x1C\x30\xE5\x89\x07\xCE\xC5\xF2\xF4\xF1\xD4\xC7\xFE\xEF\xF2\xBD\xE6\xE4\xEF\xF5\xD3\xD6\xF3\xDE\x07\xD1\xD5\xFA\xF1\xF7\xE3\xE2\xF9\xEC\xF9\xE7\xE6\xF9\xF5\xF0\x9F\xD8\xF0\xF2\xFB\xC2\xE8\xFB\xF8\xFC\xED\xF2\xFF\xFA\xFD\xF1\xD4\xFF\x05\xF8\xDE\xEC\xF7\xE8\xFE\xF5\x6A\x7F\xFD\x29\x40\x04\xFE\x65\x7F\x5C\x21\x06\x81\xFA\x7D\x74\x7F\xFF\x42\x81\x7F\x0C\x80\x82\x03\x91\x8F\x81\x00\x94\x87\x82\x07\x85\x7E\x44\x4D\x5A\x7A\xE4\x52\x83\x7B\x1D\x9C\x78\xF5\x00\x2C\x82\xFF\x60\x86\x84\x1E\x95\x83\x04\x99\x8B\x80\x16\x93\x34\x04\x0A\x93\x7F\x07\xEB\x55\x05\x18\x83\x80\x83\x2D\x99\x86\x0C\xAA\x87\x85\x06\x99\x44",
+			"\x22\x25\x9E\x85\x0A\x94\x87\x04\x1B\x90\x86\x85\x37\x88\x8B\x11\xE9\x78\x04\x23\x96\x82\x89\x4F\x9A\x85\x12\xD2\x8B\x89\x1D\xB8\x86\x8A\x50\x8B\x85\x64\x29\x06\x54\x15\x14\x77\x3A\x2C\x06\x55\x0B\x4E\x8A\x8A\x2C\x94\x89\x8A\x66\x89\x8F\x14\xEA\x85\x8B\x35\xAE\x8D\x8D\x70\x88\x8F\x1B\xF2\x81\x8F\x32\xB3\x8E\x8E\x75\x87\x66\x0B\x64\x8D\x87\x19\xA2\x87\x8A\x77\x9D\x8C\x0F\xC3\x89\x8A\x41\xA7\x5F\x05\x7C\x84\x93\x19\xF8\x84\x8F\x46\x8C\x97\x91\x86\x85\x92\x22\xEC\x8A\x32\x18\x26\x51\x06\x5F\x99\x3B\x0C\x26\x54\x07\x44\xBF\x8A\x92\x9F\x8B\x91\x24\xA2\x93\x93\x40\xA5\x91\x8F\xA7\x8E\x93\x28\x94\x90\x93\x54\xAD\x91\x94\x3B\x95\x05\xF8\x36\x06\x55\x1B\x19\x95\x3A\x39\x06\x56\x0E\x1E\x91\x85\x5E\xA8\x80\x96\xA6\x80\x98\x2A\xC2\x97\x5B\x1D\x21\x7C\x07\xA6\x5D\x07\x2D\xA0\x4F\x06\x53\x40\x0C\x97\xBF\x9E\x96\x10\xC4\x9F\x94\x69\xBE\x8E\x9A\x83\x89\x22\x21\x4B\x9E\x33\x73\x41\x46\x20\xA5\x4E\x2C\x91\x09\x2B\x6A\xB0\x06\x20\x50\x6E\x31\x47\x6B\x03\x25\x72\xBF\x27\x5D\x9D\x97\x2A\x9E\x39\xFE\x2B\x9D\x79\xAE\x20\x9E\xF6\x85",
+			"\x27\x38\x86\x28\x9F\xD1\x27\x5C\x2C\xFB\x8C\x9C\x53\x5E\x9A\x20\x4D\x62\x9A\x21\x9B\x93\x9E\x40\x01\xA2\x21\x4E\x89\x25\x9F\x00\x0C\xA1\x40\x3E\x69\x21\x6F\x83\x20\x9D\xEE\x86\x41\x7F\x0F\xA3\xA0\x70\x64\x2D\x9E\x01\x20\xA4\x58\x16\xA9\x9E\x91\x2A\x51\x88\x21\xAA\x20\x9C\x25\xAF\x23\x93\x86\x24\xA4\x01\x32\xA2\x69\x32\xAE\xA5\x38\x49\x22\xA6\xCC\x4F\xA6\x42\x32\xAE\x5B\x9B\xBB\xA5\x21\x2A\xBF\xA5\x42\x3D\xA7\x9C\xA1\x86\x21\xA7\x03\x21\x9D\x51\xE9\x95\x24\x91\x90\xA2\xA9\x0A\xAE\x25\x4D\xAC\xAB\x22\x83\x8A\xA6\x34\x8B\x57\xAA\x69\x1B\xA7\xAA\x97\x32\xA4\x2C\x18\xB1\xA9\x49\x10\xA0\xA2\x97\x32\x9C\xA3\x4C\xA0\x59\x59\xE6\xAA\x40\x88\x9F\xA2\xAB\xA6\x2E\xAC\x53\x72\xAE\x2C\xAE\xA2\xAA\x24\x2B\xA6\x9E\x4B\x30\xA0\x2C\xAF\xB0\xAE\x25\x79\xA0\x03\x5A\xEC\xAE\x56\xB2\x19\xAC\x9F\x1D\xA0\x5A\x61\x8A\x2C\xAE\xBE\xBE\xA9\x21\x09\xB7\xAA\x4C\x87\xB6\xA6\x83\x32\xA6\xA1\x06\x36\xAF\x42\x85\xA6\xA9\x81\x32\xA0\xAA\x7F\x4A\x21\x58\xDD\x93\xAD\xC4\x8F\x4E\xA9\xA6\xBE\x57\x60\x84\xB7\x5B\xD5\xAC\xB4\x2C\x64\xA9\xB5\x8B\x22",
+			"\xA3\xB4\x7F\xA5\x25\xB6\xA6\x37\x9E\x6C\xB4\x48\xB5\xB4\x8F\x66\xB5\x84\xB9\x40\x70\xEC\xA0\xB6\x6E\xB6\xB2\x41\x22\xBC\xAE\x66\xA3\x32\xA6\xDC\x9D\x25\xB9\xA6\x58\xB4\x6B\x9B\x23\xB8\xB3\xAF\xA8\xAD\x19\xAA\xAF\x6E\xD0\x55\xBB\x18\x71\xB6\xB7\x16\x49\xBA\x42\x4B\xB3\xA6\xD1\xB0\xA8\xBA\x28\xA0\x02\x74\xD3\xB9\x23\xEE\x86\x45\xB7\xD9\xBF\xB7\x76\xC2\xB3\xBF\xB9\x86\xB9\xB7\xEF\xA3\xBC\x53\x4A\xBB\xBE\xFD\xAE\x28\xB7\xE4\xAE\x24\x6E\xEE\xB2\x24\x02\xDF\x26\xC0\x1B\x21\xC0\x6A\x0A\xC2\x24\x91\x8C\xC7\x23\x22\xA5\x8A\x56\xF0\xB3\x20\xF2\xBC\xAA\xA6\x8D\xBD\xB3\x41\x0C\xB1\xA8\x9F\x89\x21\xB0\x7C\xA0\xC5\x87\x96\xB6\xBD\x8A\xA5\xC4\xC4\x09\x38\xB4\x5F\xAA\xC7\xC4\xCF\x8A\x54\xC3\x09\x34\xB3\x66\xB1\xC0\xC6\x83\x32\xC1\x20\x7C\xB7\xC5\x44\xF0\xA6\xAA\x85\xBD\xC5\x44\x1D\x3C\x0E\xA9\x1D\x2F\xC6\x14\x5D\x25\x0F\xA6\x50\xA1\x01\xD9\x3D\x22\x3F\x09\xCA\x21\x4B\xD5\x39\x47\x7F\x06\x54\xF2\xB5\x81\x3B\xE4\xA0\x12\xA9\x22\xA0\x86\x2C\xCA\x21\x10\xA6\x5C\xAD\x13\xCC\xCA\x20\x41\x37\xBC\xAF\x5C\x84\xCD\x42\x04\x11\xCC\x85",
+			"\x29\xCA\xCA\x0A\x25\x12\xA9\x41\x00\xAF\x07\xC5\xB7\xBE\xA5\x30\xA2\x48\xEF\x9E\xBF\xEA\x24\xBD\xBA\x19\x52\xA7\x9E\xA8\x31\xC5\x75\x41\xB0\xD0\x35\xD7\xA3\xBA\x3A\xC8\xD1\x0F\xED\xC3\x78\xA0\xA9\xA5\x76\x38\xB3\xAB\xE9\x55\xD0\x00\x83\xD1\x32\x8E\x91\xD4\x7A\xA4\x82\x21\xD3\x93\x3A\xC6\x9D\xC9\x54\xA8\x81\x93\xC4\xB3\x09\x3C\xD3\xB9\x23\x69\xBD\xD2\x05\xC8\x00\xA3\xD7\x5A\xCD\x58\xB5\xB3\x5A\xC2\x24\xD3\x32\xA7\x5D\x39\xA8\xC5\x3B\x4B\xFA\xC7\x5C\x10\x2D\xD4\x6A\x1E\xD2\x63\x75\x62\x74\xD6\x25\x53\x61\x42\x13\x72\x60\xD6\x42\xD9\x32\xAC\xC6\x20\x45\xF3\x6F\x74\x64\xE8\x43\xD6\xD2\xCB\x5C\xF4\x56\xD9\x45\x69\xC3\x25\xD4\xC3\x7B\x7C\x8D\xD9\x3B\xD7\x81\x1E\xDB\x78\x12\xC8\xB1\x76\x68\x64\x9D\x75\x6F\xCE\xD6\x28\x59\x6D\x42\x6C\xD3\x6E\x2F\x8F\xDB\x32\x88\x69\x21\xB4\xA0\x7B\x05\xF0\x79\xDE\x20\xD8\xC0\x75\x18\xF7\xDB\x31\x7F\xC3\x22\xDE\x73\x63\x8C\xC1\x8F\x3C\xD9\xC3\x6B\x5B\x8F\x0B\xFA\x31\xB0\x86\x2E\xD9\xB9\x48\x94\xDB\xA5\x33\xE3\x40\x2A\x72\x60\x4C\x98\xE0\x35\x1A\xE2\x21\xB5\xF3\x61\xB2\x53\xD5\x3C\xE3",
+			"\x14\xEB\x5E\x2C\x91\xEF\x32\x94\xC3\x23\xE4\xA0\x74\x94\xCB\x9D\x25\xE3\x97\xEB\x5E\x96\x33\xEA\x20\xCC\x82\x2D\x78\x81\x78\x01\x7C\x3D\xE6\x22\xB8\xF3\x69\x97\x9C\xC9\x21\xE8\x03\x3B\xDB\xDC\x3B\x96\xE8\x83\x0A\xEB\x20\xE0\x62\x62\x31\xCD\xE0\xEA\x85\x03\xE8\x74\xC8\x94\xEA\x40\x57\xE2\x20\x65\xF3\x6A\x99\xDC\xDA\xCE\xD5\x8A\x29\x80\x81\x4D\x9A\xEB\x01\x31\xCB\x40\x5E\xE0\x75\x67\x9C\xDC\xBC\x22\xAA\xEE\x40\x65\xE3\x6E\x21\x21\x7C\xEE\x03\x27\xDB\xDC\x43\x0F\xD0\x14\x5B\x81\xE5\x02\x6A\x0B\x99\xA6\x5F\xEF\x81\x01\xB7\x5C\x4C\x17\xBE\xA0\x91\x2A\x20\x97\xC3\x7E\x09\xF7\xA1\xB2\x48\x85\xF2\xE5\x75\x50\x0F\xBE\xB8\xB3\xF1\xDF\xD4\x72\x0B\xFB\xBA\xC4\xCB\x0A\x24\x87\xDC\x54\x01\x7D\x2B\xC6\x22\xF4\xA0\x75\x09\xF8\x40\x80\xF1\xB9\x56\x0F\xBE\xAF\xD0\xA0\xEB\x86\xFB\x5C\x2C\x37\xBF\xD2\xB2\xED\xF3\xBA\x5A\x07\xBE\x70\xC1\x21\xF7\x09\x3B\xE7\xF4\x5C\x07\xBF\x7D\xC2\x20\xF8\x4B\xB3\x6E\x17\x77\xB7\xDD\xDF\xCA\x23\xCC\x06\x29\xDC\xE8\x60\x09\xD1\x12\x50\xFB\x20\x35\xE3\x78\x19\x77\xB4\xDE\x93\xC3\x27\xFA\x1B\xC2\x62",
+			"\x19\x77\xB6\xE1\xE3\xCF\xFA\xF7\x02\x68\x0F\x7D\xA1\xEE\xF9\x84\x20\xF9\x20\xC2\xF4\x7A\x1A\x77\xBE\xF1\xF6\xC6\x27\xFD\xEA\xAB\x5C\x1B\x77\xB1\xFE\x88\xAF\xDA\x20\xD2\x73\x3C\x6E\x05\x7D\x28\x2F\x7F\x01\x19\x7D\xD3\x32\x07\xF7\x5F\x74\xE6\x79\x10\x06\x84\x10\xEB\x24\x07\xF7\x5C\x75\xF6\x73\x10\x0F\x85\x7F\xD4\x36\x07\xF7\x58\x77\x0D\x86\x10\x0F\x81\x7F\xE7\x28\x07\xF7\x58\x7A\x1D\x86\x81\x9B\x77\x2E\x7A\x07\x5F\xA6\x7E\x7D\x02\x16\x6F\x70\x5D\x12\x2F\x82\x69\xAD\x62\x52\x98\x6D\x11\x34\x87\x83\x36\x8D\x11\x6E\x55\x56\x3B\x8A\x83\x3E\x87\x5F\x82\x5F\x83\xDC\x61\x84\x7D\x69\x59\x2D\x14\x5E\xB0\x6D\x11\x48\x8B\x84\x4A\x8D\x84\x45\x85\x61\x1D\x1C\x57\x00\x0E\x58\x52\x82\x85\x5F\x59\x6B\x57\x8F\x82",
 		};
 		vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
 	}
@@ -14358,9 +11129,7 @@ namespace vl::glr::parsergen
 		static const wchar_t* results[] = {
 			L"EnumItem",
 			L"Enum",
-			L"ClassPropType",
 			L"classProp",
-			L"ClassBody",
 			L"Class",
 			L"Type",
 			L"File",
@@ -14383,42 +11152,36 @@ namespace vl::glr::parsergen
 			L"[9][Enum]< [ \"@public\" ] \"enum\" ID \"{\" { EnumItem @ } \"}\" >",
 			L"[10][Enum]< [ \"@public\" ] \"enum\" ID \"{\" { EnumItem } \"}\" @ >",
 			L"[11][Enum]< [ \"@public\" ] \"enum\" ID @ \"{\" { EnumItem } \"}\" >",
-			L"[12][ClassPropType] BEGIN ",
-			L"[13][ClassPropType] END [ENDING]",
-			L"[14][ClassPropType]\"token\" @",
-			L"[15][ClassPropType]ID \"[\" \"]\" @",
-			L"[16][ClassPropType]ID \"[\" @ \"]\"",
-			L"[17][ClassPropType]ID @",
-			L"[18][ClassPropType]ID @ \"[\" \"]\"",
-			L"[19][classProp] BEGIN ",
-			L"[20][classProp] END [ENDING]",
-			L"[21][classProp]< \"var\" @ ID \":\" ClassPropType \";\" >",
-			L"[22][classProp]< \"var\" ID \":\" @ ClassPropType \";\" >",
-			L"[23][classProp]< \"var\" ID \":\" ClassPropType \";\" @ >",
-			L"[24][classProp]< \"var\" ID \":\" ClassPropType @ \";\" >",
-			L"[25][classProp]< \"var\" ID @ \":\" ClassPropType \";\" >",
-			L"[26][ClassBody] BEGIN ",
-			L"[27][ClassBody] END [ENDING]",
-			L"[28][ClassBody]ID @ [ \":\" ID ] \"{\" { classProp } \"}\"",
-			L"[29][ClassBody]ID [ \":\" @ ID ] \"{\" { classProp } \"}\"",
-			L"[30][ClassBody]ID [ \":\" ID @ ] \"{\" { classProp } \"}\"",
-			L"[31][ClassBody]ID [ \":\" ID ] \"{\" @ { classProp } \"}\"",
-			L"[32][ClassBody]ID [ \":\" ID ] \"{\" { classProp @ } \"}\"",
-			L"[33][ClassBody]ID [ \":\" ID ] \"{\" { classProp } \"}\" @",
-			L"[34][Class] BEGIN ",
-			L"[35][Class] END [ENDING]",
-			L"[36][Class]< [ \"@public\" @ ] [ \"@ambiguous\" ] \"class\" ClassBody >",
-			L"[37][Class]< [ \"@public\" ] [ \"@ambiguous\" @ ] \"class\" ClassBody >",
-			L"[38][Class]< [ \"@public\" ] [ \"@ambiguous\" ] \"class\" @ ClassBody >",
-			L"[39][Class]< [ \"@public\" ] [ \"@ambiguous\" ] \"class\" ClassBody @ >",
-			L"[40][Type] BEGIN ",
-			L"[41][Type] END [ENDING]",
-			L"[42][Type]<< ( !Enum @ | !Class ) >>",
-			L"[43][Type]<< ( !Enum | !Class @ ) >>",
-			L"[44][File] BEGIN ",
-			L"[45][File] END [ENDING]",
-			L"[46][File]< Type @ { Type } >",
-			L"[47][File]< Type { Type @ } >",
+			L"[12][classProp] BEGIN ",
+			L"[13][classProp] END [ENDING]",
+			L"[14][classProp]< \"var\" @ ID \":\" ( \"token\" | ID | ID \"[\" \"]\" ) \";\" >",
+			L"[15][classProp]< \"var\" ID \":\" ( \"token\" @ | ID | ID \"[\" \"]\" ) \";\" >",
+			L"[16][classProp]< \"var\" ID \":\" ( \"token\" | ID @ | ID \"[\" \"]\" ) \";\" >",
+			L"[17][classProp]< \"var\" ID \":\" ( \"token\" | ID | ID \"[\" \"]\" ) \";\" @ >",
+			L"[18][classProp]< \"var\" ID \":\" ( \"token\" | ID | ID \"[\" \"]\" @ ) \";\" >",
+			L"[19][classProp]< \"var\" ID \":\" ( \"token\" | ID | ID \"[\" @ \"]\" ) \";\" >",
+			L"[20][classProp]< \"var\" ID \":\" ( \"token\" | ID | ID @ \"[\" \"]\" ) \";\" >",
+			L"[21][classProp]< \"var\" ID \":\" @ ( \"token\" | ID | ID \"[\" \"]\" ) \";\" >",
+			L"[22][classProp]< \"var\" ID @ \":\" ( \"token\" | ID | ID \"[\" \"]\" ) \";\" >",
+			L"[23][Class] BEGIN ",
+			L"[24][Class] END [ENDING]",
+			L"[25][Class]< [ \"@public\" @ ] [ \"@ambiguous\" ] \"class\" ID [ \":\" ID ] \"{\" { classProp } \"}\" >",
+			L"[26][Class]< [ \"@public\" ] [ \"@ambiguous\" @ ] \"class\" ID [ \":\" ID ] \"{\" { classProp } \"}\" >",
+			L"[27][Class]< [ \"@public\" ] [ \"@ambiguous\" ] \"class\" @ ID [ \":\" ID ] \"{\" { classProp } \"}\" >",
+			L"[28][Class]< [ \"@public\" ] [ \"@ambiguous\" ] \"class\" ID @ [ \":\" ID ] \"{\" { classProp } \"}\" >",
+			L"[29][Class]< [ \"@public\" ] [ \"@ambiguous\" ] \"class\" ID [ \":\" @ ID ] \"{\" { classProp } \"}\" >",
+			L"[30][Class]< [ \"@public\" ] [ \"@ambiguous\" ] \"class\" ID [ \":\" ID @ ] \"{\" { classProp } \"}\" >",
+			L"[31][Class]< [ \"@public\" ] [ \"@ambiguous\" ] \"class\" ID [ \":\" ID ] \"{\" @ { classProp } \"}\" >",
+			L"[32][Class]< [ \"@public\" ] [ \"@ambiguous\" ] \"class\" ID [ \":\" ID ] \"{\" { classProp @ } \"}\" >",
+			L"[33][Class]< [ \"@public\" ] [ \"@ambiguous\" ] \"class\" ID [ \":\" ID ] \"{\" { classProp } \"}\" @ >",
+			L"[34][Type] BEGIN ",
+			L"[35][Type] END [ENDING]",
+			L"[36][Type]<! ( !Enum @ | !Class ) !>",
+			L"[37][Type]<! ( !Enum | !Class @ ) !>",
+			L"[38][File] BEGIN ",
+			L"[39][File] END [ENDING]",
+			L"[40][File]< Type @ { Type } >",
+			L"[41][File]< Type { Type @ } >",
 		};
 		return results[index];
 	}
@@ -14490,14 +11253,6 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 			return vl::Ptr(new vl::glr::parsergen::GlrEnum);
 		case ParserGenClasses::EnumItem:
 			return vl::Ptr(new vl::glr::parsergen::GlrEnumItem);
-		case ParserGenClasses::LeftRecursionInjectClause:
-			return vl::Ptr(new vl::glr::parsergen::GlrLeftRecursionInjectClause);
-		case ParserGenClasses::LeftRecursionInjectContinuation:
-			return vl::Ptr(new vl::glr::parsergen::GlrLeftRecursionInjectContinuation);
-		case ParserGenClasses::LeftRecursionPlaceholder:
-			return vl::Ptr(new vl::glr::parsergen::GlrLeftRecursionPlaceholder);
-		case ParserGenClasses::LeftRecursionPlaceholderClause:
-			return vl::Ptr(new vl::glr::parsergen::GlrLeftRecursionPlaceholderClause);
 		case ParserGenClasses::LoopSyntax:
 			return vl::Ptr(new vl::glr::parsergen::GlrLoopSyntax);
 		case ParserGenClasses::NotCondition:
@@ -14508,8 +11263,6 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 			return vl::Ptr(new vl::glr::parsergen::GlrOrCondition);
 		case ParserGenClasses::PartialClause:
 			return vl::Ptr(new vl::glr::parsergen::GlrPartialClause);
-		case ParserGenClasses::PrefixMergeClause:
-			return vl::Ptr(new vl::glr::parsergen::GlrPrefixMergeClause);
 		case ParserGenClasses::PushConditionSyntax:
 			return vl::Ptr(new vl::glr::parsergen::GlrPushConditionSyntax);
 		case ParserGenClasses::RefCondition:
@@ -14560,16 +11313,6 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 			return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrCreateClause::syntax, object, field, value, cppFieldName);
 		case ParserGenFields::Enum_items:
 			return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrEnum::items, object, field, value, cppFieldName);
-		case ParserGenFields::LeftRecursionInjectClause_continuation:
-			return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrLeftRecursionInjectClause::continuation, object, field, value, cppFieldName);
-		case ParserGenFields::LeftRecursionInjectClause_rule:
-			return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrLeftRecursionInjectClause::rule, object, field, value, cppFieldName);
-		case ParserGenFields::LeftRecursionInjectContinuation_flags:
-			return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrLeftRecursionInjectContinuation::flags, object, field, value, cppFieldName);
-		case ParserGenFields::LeftRecursionInjectContinuation_injectionTargets:
-			return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrLeftRecursionInjectContinuation::injectionTargets, object, field, value, cppFieldName);
-		case ParserGenFields::LeftRecursionPlaceholderClause_flags:
-			return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrLeftRecursionPlaceholderClause::flags, object, field, value, cppFieldName);
 		case ParserGenFields::LoopSyntax_delimiter:
 			return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrLoopSyntax::delimiter, object, field, value, cppFieldName);
 		case ParserGenFields::LoopSyntax_syntax:
@@ -14586,8 +11329,6 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 			return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrPartialClause::assignments, object, field, value, cppFieldName);
 		case ParserGenFields::PartialClause_syntax:
 			return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrPartialClause::syntax, object, field, value, cppFieldName);
-		case ParserGenFields::PrefixMergeClause_rule:
-			return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrPrefixMergeClause::rule, object, field, value, cppFieldName);
 		case ParserGenFields::PushConditionSyntax_switches:
 			return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrPushConditionSyntax::switches, object, field, value, cppFieldName);
 		case ParserGenFields::PushConditionSyntax_syntax:
@@ -14638,8 +11379,6 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 			return vl::glr::AssemblerSetTokenField(&vl::glr::parsergen::GlrCreateClause::type, object, field, token, tokenIndex, cppFieldName);
 		case ParserGenFields::EnumItem_name:
 			return vl::glr::AssemblerSetTokenField(&vl::glr::parsergen::GlrEnumItem::name, object, field, token, tokenIndex, cppFieldName);
-		case ParserGenFields::LeftRecursionPlaceholder_flag:
-			return vl::glr::AssemblerSetTokenField(&vl::glr::parsergen::GlrLeftRecursionPlaceholder::flag, object, field, token, tokenIndex, cppFieldName);
 		case ParserGenFields::PartialClause_type:
 			return vl::glr::AssemblerSetTokenField(&vl::glr::parsergen::GlrPartialClause::type, object, field, token, tokenIndex, cppFieldName);
 		case ParserGenFields::RefCondition_name:
@@ -14678,10 +11417,6 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 			return vl::glr::AssemblerSetEnumField(&vl::glr::parsergen::GlrAssignment::type, object, field, enumItem, weakAssignment, cppFieldName);
 		case ParserGenFields::ClassProp_propType:
 			return vl::glr::AssemblerSetEnumField(&vl::glr::parsergen::GlrClassProp::propType, object, field, enumItem, weakAssignment, cppFieldName);
-		case ParserGenFields::LeftRecursionInjectContinuation_configuration:
-			return vl::glr::AssemblerSetEnumField(&vl::glr::parsergen::GlrLeftRecursionInjectContinuation::configuration, object, field, enumItem, weakAssignment, cppFieldName);
-		case ParserGenFields::LeftRecursionInjectContinuation_type:
-			return vl::glr::AssemblerSetEnumField(&vl::glr::parsergen::GlrLeftRecursionInjectContinuation::type, object, field, enumItem, weakAssignment, cppFieldName);
 		case ParserGenFields::OptionalSyntax_priority:
 			return vl::glr::AssemblerSetEnumField(&vl::glr::parsergen::GlrOptionalSyntax::priority, object, field, enumItem, weakAssignment, cppFieldName);
 		case ParserGenFields::RefSyntax_refType:
@@ -14707,16 +11442,11 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"CreateClause",
 			L"Enum",
 			L"EnumItem",
-			L"LeftRecursionInjectClause",
-			L"LeftRecursionInjectContinuation",
-			L"LeftRecursionPlaceholder",
-			L"LeftRecursionPlaceholderClause",
 			L"LoopSyntax",
 			L"NotCondition",
 			L"OptionalSyntax",
 			L"OrCondition",
 			L"PartialClause",
-			L"PrefixMergeClause",
 			L"PushConditionSyntax",
 			L"RefCondition",
 			L"RefSyntax",
@@ -14732,7 +11462,7 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"UseSyntax",
 		};
 		vl::vint index = (vl::vint)type;
-		return 0 <= index && index < 34 ? results[index] : nullptr;
+		return 0 <= index && index < 29 ? results[index] : nullptr;
 	}
 
 	const wchar_t* ParserGenCppTypeName(ParserGenClasses type)
@@ -14749,16 +11479,11 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::glr::parsergen::GlrCreateClause",
 			L"vl::glr::parsergen::GlrEnum",
 			L"vl::glr::parsergen::GlrEnumItem",
-			L"vl::glr::parsergen::GlrLeftRecursionInjectClause",
-			L"vl::glr::parsergen::GlrLeftRecursionInjectContinuation",
-			L"vl::glr::parsergen::GlrLeftRecursionPlaceholder",
-			L"vl::glr::parsergen::GlrLeftRecursionPlaceholderClause",
 			L"vl::glr::parsergen::GlrLoopSyntax",
 			L"vl::glr::parsergen::GlrNotCondition",
 			L"vl::glr::parsergen::GlrOptionalSyntax",
 			L"vl::glr::parsergen::GlrOrCondition",
 			L"vl::glr::parsergen::GlrPartialClause",
-			L"vl::glr::parsergen::GlrPrefixMergeClause",
 			L"vl::glr::parsergen::GlrPushConditionSyntax",
 			L"vl::glr::parsergen::GlrRefCondition",
 			L"vl::glr::parsergen::GlrRefSyntax",
@@ -14774,7 +11499,7 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::glr::parsergen::GlrUseSyntax",
 		};
 		vl::vint index = (vl::vint)type;
-		return 0 <= index && index < 34 ? results[index] : nullptr;
+		return 0 <= index && index < 29 ? results[index] : nullptr;
 	}
 
 	const wchar_t* ParserGenFieldName(ParserGenFields field)
@@ -14799,14 +11524,6 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"CreateClause::type",
 			L"Enum::items",
 			L"EnumItem::name",
-			L"LeftRecursionInjectClause::continuation",
-			L"LeftRecursionInjectClause::rule",
-			L"LeftRecursionInjectContinuation::configuration",
-			L"LeftRecursionInjectContinuation::flags",
-			L"LeftRecursionInjectContinuation::injectionTargets",
-			L"LeftRecursionInjectContinuation::type",
-			L"LeftRecursionPlaceholder::flag",
-			L"LeftRecursionPlaceholderClause::flags",
 			L"LoopSyntax::delimiter",
 			L"LoopSyntax::syntax",
 			L"NotCondition::condition",
@@ -14817,7 +11534,6 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"PartialClause::assignments",
 			L"PartialClause::syntax",
 			L"PartialClause::type",
-			L"PrefixMergeClause::rule",
 			L"PushConditionSyntax::switches",
 			L"PushConditionSyntax::syntax",
 			L"RefCondition::name",
@@ -14845,7 +11561,7 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"UseSyntax::name",
 		};
 		vl::vint index = (vl::vint)field;
-		return 0 <= index && index < 63 ? results[index] : nullptr;
+		return 0 <= index && index < 54 ? results[index] : nullptr;
 	}
 
 	const wchar_t* ParserGenCppFieldName(ParserGenFields field)
@@ -14870,14 +11586,6 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::glr::parsergen::GlrCreateClause::type",
 			L"vl::glr::parsergen::GlrEnum::items",
 			L"vl::glr::parsergen::GlrEnumItem::name",
-			L"vl::glr::parsergen::GlrLeftRecursionInjectClause::continuation",
-			L"vl::glr::parsergen::GlrLeftRecursionInjectClause::rule",
-			L"vl::glr::parsergen::GlrLeftRecursionInjectContinuation::configuration",
-			L"vl::glr::parsergen::GlrLeftRecursionInjectContinuation::flags",
-			L"vl::glr::parsergen::GlrLeftRecursionInjectContinuation::injectionTargets",
-			L"vl::glr::parsergen::GlrLeftRecursionInjectContinuation::type",
-			L"vl::glr::parsergen::GlrLeftRecursionPlaceholder::flag",
-			L"vl::glr::parsergen::GlrLeftRecursionPlaceholderClause::flags",
 			L"vl::glr::parsergen::GlrLoopSyntax::delimiter",
 			L"vl::glr::parsergen::GlrLoopSyntax::syntax",
 			L"vl::glr::parsergen::GlrNotCondition::condition",
@@ -14888,7 +11596,6 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::glr::parsergen::GlrPartialClause::assignments",
 			L"vl::glr::parsergen::GlrPartialClause::syntax",
 			L"vl::glr::parsergen::GlrPartialClause::type",
-			L"vl::glr::parsergen::GlrPrefixMergeClause::rule",
 			L"vl::glr::parsergen::GlrPushConditionSyntax::switches",
 			L"vl::glr::parsergen::GlrPushConditionSyntax::syntax",
 			L"vl::glr::parsergen::GlrRefCondition::name",
@@ -14916,7 +11623,7 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::glr::parsergen::GlrUseSyntax::name",
 		};
 		vl::vint index = (vl::vint)field;
-		return 0 <= index && index < 63 ? results[index] : nullptr;
+		return 0 <= index && index < 54 ? results[index] : nullptr;
 	}
 
 	vl::Ptr<vl::glr::ParsingAstBase> ParserGenAstInsReceiver::ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates)
@@ -14984,10 +11691,6 @@ namespace vl::glr::parsergen
 			L"WEAK_ASSIGN",
 			L"POSITIVE",
 			L"NEGATIVE",
-			L"LS_PH",
-			L"LS_I",
-			L"LS_IM",
-			L"LS_PM",
 			L"ID",
 			L"STRING",
 			L"CONDITIONAL_LITERAL",
@@ -15031,10 +11734,6 @@ namespace vl::glr::parsergen
 			L"?=",
 			L"+",
 			L"-",
-			L"left_recursion_placeholder",
-			L"left_recursion_inject",
-			L"left_recursion_inject_multiple",
-			L"prefix_merge",
 			nullptr,
 			nullptr,
 			nullptr,
@@ -15078,10 +11777,6 @@ namespace vl::glr::parsergen
 			L"/?=",
 			L"/+",
 			L"-",
-			L"left_recursion_placeholder",
-			L"left_recursion_inject",
-			L"left_recursion_inject_multiple",
-			L"prefix_merge",
 			L"[a-zA-Z_][a-zA-Z0-9_]*",
 			L"(\"[^\"]*\")+",
 			L"(\'[^\']*\')+",
@@ -15094,22 +11789,20 @@ namespace vl::glr::parsergen
 
 	void ParserGenLexerData(vl::stream::IStream& outputStream)
 	{
-		static const vl::vint dataLength = 2348; // 39623 bytes before compressing
+		static const vl::vint dataLength = 1801; // 25496 bytes before compressing
 		static const vl::vint dataBlock = 256;
-		static const vl::vint dataRemain = 44;
-		static const vl::vint dataSolidRows = 9;
-		static const vl::vint dataRows = 10;
+		static const vl::vint dataRemain = 9;
+		static const vl::vint dataSolidRows = 7;
+		static const vl::vint dataRows = 8;
 		static const char* compressed[] = {
-			"\xC7\x9A\x00\x00\x24\x09\x00\x00\x94\x00\x01\x81\x21\x84\x81\x80\x20\x82\x01\x04\x88\x04\x89\x04\x84\x82\x05\x0F\x84\x8B\x04\x8C\x04\x81\x06\x8B\x04\x8E\x04\x9F\x04\x80\x11\x8E\x82\x21\x20\x84\x82\x13\x94\x83\x10\x82\x25\x04\xA6\x0A\x94\x87\x11\x96\x82\x28\x30\x84\x89\x13\x9C\x82\x14\x9B\x04\xAB\x39\x84\x8C\x14\x9C\x83\x16\x3F\x84\xAE\x02\xA4\x87\x15\xA2\x82\x30\x04\xB9\x04\x8A\x1C\xA4\x83\x1D\x4F\x84\xBC\x12\xA4\x85\x1D\xAA\x82\x3E\x58\x84\x9F\x1B\xAC\x83\x82\x83\x04\x83\x81\x9A\x24\x83\x2D\xB2\x82\x5C\x68\x84\x9D\x2B\xB4\x82\x2E\xB7\x04\xDF\x31\xA4\x80\x34\xB8\x83\x30\x77\x84\xA2\x3A\xB4\x83\x31\xBE\x82\x64\x00\xC4\x85\x33\xC4\x82\x32\xC3\x04\xE7\x09\xC4\x88\x34\xC4\x83\x34\x8F\x84\xAA\x32\xC4\x83\x35\xCA\x82\x6C\x18\xC4\x8D\x3B\xCC\x82\x36\xCF\x04\xEF\x21\xC4\x80\x3C\xD0\x83\x38\xA7\x84\xB2\x2A\xD4\x83\x39\xD6\x82\x74\x30\xC4\x95\x33\xDC\x82\x3A\xDB\x04\xF7\x39\xC4\x88\x3C\xDC\x83\x3C\x04\xFA\x04\x9B\x33\xE4\x80\x3E\xE3\x04\xFD\x09\xE4\x8E\x3C\x83\x7F\x7F\x10\x00\x0F\xEF\xED\x0C\x81\xEB\x80\xD3\xFF\x57\xF2",
-			"\xE3\xEB\xEF\x06\x82\x1B\x4E\xD3\xF1\x04\x84\x0E\x87\x80\x10\xD8\xD3\xF7\x04\x83\x08\x82\x0C\xE2\xCF\xDE\x11\xFF\x7C\x08\x83\x0A\xF4\x96\x34\xF1\xE1\x81\x85\x80\x0D\x12\x74\x75\x46\x7A\xCF\x40\x84\x83\x3F\x07\x04\x46\x80\x00\x02\x0A\x84\x43\x00\x0E\xBF\x71\x84\x00\x0B\x95\x84\x41\x06\x13\x96\x81\x43\x42\x12\x9D\x80\x01\x01\x04\x46\x03\x84\x01\x19\x93\x87\x45\x40\x12\x19\x44\x7D\x76\x2C\xAD\x8E\x8B\x8B\x30\xB1\x82\x8F\x8C\x34\xB5\x86\x8F\x8D\x35\x9C\x47\x80\x8E\x3C\xB8\x8E\x47\x8E\x3D\x81\x92\x93\x90\x44\x85\x9F\x70\x49\x40\x83\x98\x90\x77\x35\x8B\x99\x77\x92\x50\xA5\x41\x41\x94\x53\x92\x90\x00\x95\x57\xA2\x45\x97\x96\x59\x9C\x98\x97\x97\x56\xA0\x99\x92\x91\x64\xA5\x96\x8E\x93\x65\xA8\x9D\x90\x7D\x62\x9D\x9E\x99\x9B\x70\x96\x97\x4A\x97\x61\xB5\x94\x9F\x9D\x6E\xA6\x9A\x9F\x9E\x34\xAA\x96\x92\x9F\x33\xBE\x94\x0A\x9D\x6F\x84\xA1\x9C\x9E\x87\x85\xA8\xA2\xA1\x2B\xBC\x9E\xA2\xA3\x80\x84\x91\xA5\x8C\x7E\x89\xA6\xA4\xA3\x8B\x99\xAA\xA3\xA6\x29\x78\x9F\xA3\xA7\x8F\x93\xA2\x92\xA8\x2F\x95\xA8\xA7\xA6\x97\x9A\xAB\x4A\xA6",
-			"\xA9\x9B\xA0\xAB\xAB\x7A\xA4\xAD\x8E\xAC\x2D\xA6\xAC\xAB\xA9\xAD\xAD\xAE\x4B\xAD\x9E\xB0\xAE\xAD\x91\xB4\xB8\x81\xB3\x93\xF4\x71\x4C\xAC\xAA\xB8\x89\xBC\x94\x4D\xC7\xAD\x9F\xAF\xB3\xD0\x91\xB2\xB7\xB4\xD4\x95\xB6\xB7\xB5\xD8\x99\xBA\xB7\xB6\xDC\x9D\xBE\xB7\xB7\xE0\xA1\xB2\xBB\xB8\xE4\xA5\xB6\xBB\xB9\xE8\xA9\xBA\xBB\xBA\x44\xB7\x43\x98\xBB\xF0\xB1\xBE\xAE\x4E\xEF\xA0\xAD\x4D\xBD\xF2\xB9\xB4\xB4\x50\xF8\xBA\xBE\xBF\xBF\x00\xC1\xCC\xBB\x50\xFD\x82\xC6\xC3\xC1\x08\xC3\x96\x51\xC1\x09\xCD\xCE\xC3\xC3\x10\xD1\xC2\xC7\xC4\x14\xD5\xC6\xC7\xC5\x18\xD9\xC4\x9B\xB0\x67\x8D\xA4\xA4\x9B\xA7\x89\x5D\xB2\xB2\xC8\xA3\xCA\xA6\xC6\xD3\x5C\xCB\x98\xC3\x47\xA0\xC6\xC9\xC9\x30\xF9\xA4\xCA\xB3\x3D\xB1\x04\x42\xCD\x01\x78\xC0\x02\xCE\x3C\xF7\xCE\xCD\x40\x32\x3F\xCB\xCE\xD0\x3D\xF9\xC4\xD3\xD1\x46\xC9\xD3\xD2\xD2\x45\xCB\xDE\xD1\xD3\x50\xC8\xDF\xD2\xD4\x51\xCC\xD4\xD7\xD5\x56\xD9\xD3\xD6\xD6\x55\xDB\xDE\xD5\x76\x33\x04\x41\xD9\x40\x63\xC0\x05\xDB\xD9\x62\xE9\xD4\xDA\xDA\x66\xC4\x44\x0C\xDB\x68\xEB\xD2\xDD\xDB\x73\xF1\xD4\xDF\xDD\x76",
-			"\xF9\xD0\xDF\xDE\x75\xFC\xD8\xDE\xDF\x7A\xFD\xD2\xE3\xDF\x83\xC1\xE4\xE3\xE1\x86\xC6\xEF\x89\x0D\x04\x4C\xE7\x82\xE3\x4C\xBF\x30\xE4\xCA\x94\xD5\xE2\x8E\x0D\x1E\xD6\xEA\xE7\xE6\xDE\xB7\x09\xE4\xE7\x19\xCB\x5C\xC8\xB9\x38\x1F\xE0\xE9\xCB\xA3\xC1\xA6\xE9\xAD\xF4\x4D\x5F\xCA\xCC\xAF\xF3\xC4\xA1\xE5\x2A\xFD\x9B\xE8\x8B\xB6\xB1\xC2\xED\xEC\xBC\xF0\xC4\xEF\xED\x37\xB5\xE9\xEC\xEC\xBA\xFD\xED\x98\x54\xC7\xBF\xE9\xEA\x8C\xC2\xEE\xC5\xF3\xF3\xC4\xD8\x93\x56\xF1\xC0\xD0\xC5\xEE\xEA\xA3\xC3\xFB\xEE\x9B\x56\x54\xFE\xF6\xAB\x94\xD7\xFC\xF1\xF5\xA8\xD1\xE1\xF7\xA9\x59\x5F\xF7\xFB\xF2\x08\xE2\xFF\xC5\xF6\xCE\xEB\xF0\xF7\xF6\xF2\xCA\xF1\xE4\xB0\xE4\xFF\x3A\xF6\xFA\xF4\xD6\x9C\x57\xF7\xF6\x66\x4D\xF3\x07\x49\x51\xAF\x33\x7C\x7F\x00\x87\x76\x02\x8B\x8C\x81\x06\x8E\x87\x81\x10\x91\x82\x04\x93\x84\x82\x80\x62\x2F\x7E\x15\x94\x82\xFB\x30\x43\x80\xF3\x64\x62\x08\xFD\x68\x83\x01\x98\x85\x47\xAE\x66\x82\x68\x41\x7C\x68\xD6\x5E\x67\x84\x15\xAE\x84\x85\x2B\x8D\x84\x0C\xAF\x82\x87\x1A\xB1\x87\x86\x34\x99\x7D\x90\x43\x0A\x87\x0C\x91\x61",
-			"\x71\x80\x61\x8B\xDC\x6F\x65\x70\x21\x88\x76\x88\x40\x85\x8A\x12\xC7\x8B\x89\x24\x8C\x8F\x89\x4E\x91\x88\x12\xEC\x67\x5A\x22\x3D\x86\x87\x01\x70\x73\xE4\x53\x3B\x8B\xE7\x1D\x88\x8B\x0B\x85\x08\x41\x62\x87\x40\x32\x91\x76\x8C\x68\x83\x8E\x1A\x81\x29\x8C\x36\xAB\x88\x00\x6D\x90\x8F\x1B\xF1\x84\x8F\x39\xB6\x8E\x8D\x78\x92\x8D\x1E\xF5\x8B\x8F\x3B\xBA\x8F\x8F\x7C\x80\x92\x1F\x81\x94\x91\x41\x86\x95\x8F\x88\x84\x84\x18\xBD\x46\x09\x2B\x8B\x91\x82\x47\x0E\x93\x23\x93\x9A\x5A\x24\x12\x92\x81\x1B\x85\x55\xFE\x7B\x73\x84\xF9\x49\x51\x09\x21\x8A\x91\xC5\x19\x9E\x45\x0E\x84\x5A\x84\x6D\x4A\x09\x28\xC4\x71\x81\x34\x5B\x91\x7E\xAB\x91\x94\x2A\x97\x91\x60\x52\xAC\x70\x7E\x04\x92\x95\x27\xDB\x7B\x09\xED\x6D\x93\x63\xAF\x99\x96\xA6\x4C\x0A\x96\x4F\xBE\x91\x7C\xB4\x98\x75\x30\x9E\x83\x97\x66\x80\x05\x09\xC7\x88\x66\x2D\xCA\x98\x96\x66\x8F\x7E\x09\xC5\x99\x9B\xC9\x14\x9C\x9B\xD3\x53\x9F\x94\xA2\x85\x94\x2C\xCE\x96\x99\x80\x0F\x09\x9A\x38\x50\x08\x41\x6A\x91\x20\x76\x80\x06\x9D\xF0\x8B\x9E\x3C\x81\x21\x0B\x79\xAF\x9E\x9E\xF1\x8D",
-			"\x9C\x3E\xFB\x9A\x9F\x7E\xB7\x9E\x9F\xF9\x9F\x9E\x40\x81\xA4\xA0\x7E\x83\xA6\xA0\x05\xA0\xA0\x42\x8B\xAA\xA1\x86\x87\xA6\xA1\x09\xAF\xA2\x44\xD9\x32\x0A\x82\x15\xA1\x20\x17\xA0\x01\x46\x9B\xA6\xA3\x8E\x98\xA6\xA3\x1A\xA4\x23\x14\x20\xAC\xA3\x8F\xA6\xA1\xA4\x27\xA5\xA4\x4A\xAB\xAA\xA5\x96\xA4\xA7\xA5\x29\xB0\xA4\x4B\xB2\xAE\xA5\x98\xB6\xA3\xA6\x37\xB5\xA4\x4E\xBB\xAA\xA6\x9D\x99\x39\x8E\x3F\xB4\x3D\x21\x89\x93\xA8\x41\x84\xAF\x90\x46\xA9\xA9\x51\xCB\xA8\xA8\xA6\x87\xAF\xA9\x4A\xAD\xAA\x54\xD0\xAD\x9B\x6B\x54\x09\x99\x55\xB2\x81\x15\x58\xA9\xAB\xAA\x96\x0C\xAB\xD2\x80\xAE\xFE\x4B\x90\x9D\x72\xBB\x92\x53\x57\x01\x97\x2F\xFF\x44\xAD\x94\x5A\x9F\xAC\x70\xA9\x53\x5A\xF8\x75\x9B\xB2\x84\x20\x0B\x6F\xA6\xAC\x2B\xC8\x9C\x7C\x0E\xAD\xAD\x7C\x7A\xA7\x55\x16\x79\xA3\x76\xBE\xA1\x9C\x47\xA6\x8E\xAF\xF7\x64\x24\x9C\xB5\x86\xB2\x80\x7F\xA3\xAF\xF7\x66\x2D\xB1\xDE\x73\xAA\x52\xF9\x69\x2E\x30\xF1\xA4\xB0\x11\x81\x49\xA2\xA0\xB6\x9D\x3D\x90\xAC\xA0\x89\xA1\xB4\xB4\xA8\xA6\xB5\x69\xA7\xBA\xB5\xD4\xAC\xB7\xB5\xAB\xB1\xB6\x6B\xE2",
-			"\xAF\x44\x1E\xBD\xAD\xAB\xF9\x5D\xA4\x4D\xBB\xB7\xA5\x91\xB9\xA4\xB7\x3C\xA0\xBA\x6E\xBF\xB4\xB9\xE0\x85\xBB\xB8\xC6\xA9\xB8\x72\xCB\xB2\xB8\x90\x95\x8C\xB6\xB8\xB1\xB8\xC2\x6C\x27\xB6\xE9\x8C\x87\x2D\xD5\xB6\xB9\xC2\x72\x29\xBA\xED\xA3\x52\xAC\x89\xA0\xB1\x67\x9C\xB9\x81\xB0\x9D\xB8\x9C\xC1\x63\x9F\x08\xF5\x25\xB2\xF2\x87\xB2\x62\xDF\x8A\xB3\x7B\xE8\xB2\xBF\xC0\xAD\xBD\x55\x97\xAA\x49\x64\xF8\x27\xBF\xF1\xB2\xAF\xB1\xAE\x95\xAD\x7D\xFE\xB4\xC0\x2E\x7B\x2C\x4B\xF9\xBF\xBA\x80\xE2\xBD\xBF\x63\x7E\x2D\xBC\xDE\xB5\x71\x60\x67\xB1\xC2\x21\x44\x34\xC2\x15\xD9\xC2\x8C\x07\x38\xC2\xCB\x71\xBD\x7C\xE9\xBB\xB2\x7D\xEE\xB6\xAD\x04\xC1\x49\xBC\x92\xA4\xC4\xA1\x0A\x3D\xC0\xF0\x66\xBB\xBE\x1D\x63\x75\x63\x22\xC5\xC0\x15\xEF\x66\xC4\xB3\x51\xB1\xA2\x10\x3D\xC5\x11\xDA\xC6\x5F\x93\x3D\xC3\x8F\xC3\xC4\xC9\x22\xE1\x5F\xC3\x29\xC1\xC6\x35\xA3\xCC\xC8\x74\x99\x60\xC9\x28\xCD\xC8\x9E\x16\x3D\xC6\xE8\xB0\x58\xCA\x3A\xD6\x49\x66\x55\xCD\xBC\x23\xD7\x64\x33\x42\xD6\x78\x78\xD9\xCA\x53\xCF\x1C\xCE\xC6\x30\xCF\x60\x96\x8B\xC9\xC4\x29",
-			"\xE8\xCB\x49\xA2\x29\x7A\x97\x8D\x65\x35\x30\xD7\x63\xCD\x69\xC9\xCB\x80\xE7\xCD\x4C\xD4\x10\xC7\xC9\x63\xCC\xCE\x9B\xF2\x7B\x35\x3F\xF3\xCF\xD0\x47\xC1\xD1\x9E\x9C\x99\x50\xD7\x3C\xCE\xC9\x18\x78\xCE\x92\xF6\xAF\xD0\x4D\x71\x36\xB2\x00\xC0\x9A\xA0\xA7\x54\x37\x4A\xEE\xB8\xC7\x88\xA4\xCE\x7B\xB7\x3E\xD2\x9A\x6F\xC0\xB2\x9B\xC5\xD5\x8D\xA0\xD2\x58\x51\xC3\xD4\x50\xBA\x3D\xC9\xA6\xEC\xA9\xD5\x37\xE7\x55\x37\x2D\xCC\xD7\xA4\xB6\x40\x38\x1A\xEA\xD6\x99\xBA\xD1\xC7\xA2\xEA\xB4\x78\xE2\x3D\x72\x38\xC0\xD3\xD4\x5D\xC3\xDE\xD6\x5B\xC1\x27\x38\x9E\xC1\xDB\xCA\x4C\xDB\xC9\x1A\xCB\x4A\x39\xB9\xCA\xD8\x66\xEC\xCD\x39\x5F\xCE\xD9\x4F\xDA\xDA\xBD\xAD\xE6\xAF\x0E\x6B\xE4\x62\xDA\xB6\x63\xDC\x41\x00\x16\xDD\x6C\xE7\xD1\xC0\xD4\xD4\xD3\xA6\x01\x1D\xDD\x6F\xE8\xD8\x7B\xF1\xDB\xCF\xA6\x02\x15\xDE\x1F\xE1\xDA\xC1\xF9\xCC\xC0\x00\x03\x1D\xDF\x55\xFF\xDF\xC4\xAE\xDB\x78\x21\x05\xE7\xC7\x83\xF9\xC2\xDD\xDE\xCD\x4D\x21\x10\xD7\xCE\x45\xFB\xD2\xE0\xAF\xDC\x4A\x21\x06\xEF\xDC\x4D\xF9\xCF\x10\xC4\xCC\xE3\xB7\xC8\xC2\x5E\x49\xC2\xDA\xDE",
-			"\x23\xC8\x12\xC8\xA4\xE1\x5E\x93\xD3\xD8\xE5\xE3\xA9\x12\xC8\xF7\xD3\x7C\x88\xEE\x4A\x11\x2B\xEF\xAC\xCD\xEF\x71\xE1\x36\xF9\xE7\x65\x8B\x07\xDE\xC3\xA1\xD6\xE6\x2C\x4C\x17\xE7\x9F\xC3\xE9\xAB\xC5\xEF\xAD\x46\x08\xEB\xE7\x7E\xAC\xEA\xB7\x8E\x1A\x96\xA8\xDA\x92\xEA\x23\xE1\x97\x23\x14\xE6\x62\x97\xE9\xDD\xDA\x11\xFA\xE6\xD2\x97\xEF\xEA\x98\xEF\x60\x12\x48\xE6\xD6\xC6\x5E\xE8\xDE\xB3\xD9\xE8\x4F\x91\x03\xBE\xD5\xE2\x98\xEA\xB3\x92\x17\xE9\x63\xE7\xE6\xDE\x98\xE6\x4B\x49\x29\xEE\xB1\x1D\xF4\xD5\xCF\x99\xEF\xED\xE7\x41\x4C\x1F\xFF\x1C\x1F\x09\x7E\x1F\x0F\x3A\x0A\xF6\x1F\x8A\x1F\x03\x3B\x5B\x19\x3B\x07\x00\x25\x20\x01\x3B\x56\x7B\xE9\x30\x01\x89\x01\x23\x40\x00\x07\x44\x00\x1A\x21\x21\xEF\x01\x20\x43\x99\xEF\x25\x40\x70\x31\x20\xFB\x01\x20\x3F\x01\x3A\x3E\x87\x66\x31\x21\xED\x18\x4A\xF3\x9A\xFD\x50\x00\x38\xFA\xF4\xB8\x9C\x43\x53\xFC\x20\x00\x79\x01\x21\x3C\x14\x6D\x3D\xF7\x4B\x5A\xF3\x9C\x3B\xF4\x21\x41\x41\x22\xF7\xAB\x4C\xF9\xEA\xD3\xFB\x52\x10\x47\x5C\x3D\x5C\x5C\xF5\x40\x51\xFA\xFA\xE9\xEE\x4C\x44\x2F\x6A\xF9",
-			"\xEF\xCE\xFE\xFB\xEE\xD0\x44\x4B\x09\x5A\x51\xF7\x9A\xF2\x44\xF5\xC8\x24\x20\x0D\x41\x21\x43\x78\x4A\xF3\xDB\xC4\x55\x20\x89\x41\x25\xD8\x81\x2A\x46\x34\xF3\x3F\x58\x3F\x20\x00",
+			"\x98\x63\x00\x00\x01\x07\x00\x00\x60\x00\x01\x80\x21\x84\x81\x83\x1E\x82\x01\x04\x88\x04\x89\x04\x84\x82\x05\x0F\x84\x8B\x04\x8C\x04\x81\x06\x8B\x04\x8E\x04\x9F\x04\x80\x11\x8E\x82\x21\x20\x84\x82\x13\x94\x83\x10\x82\x25\x04\xA6\x0A\x94\x87\x11\x96\x82\x28\x30\x84\x89\x13\x9C\x82\x14\x9B\x04\xAB\x39\x84\x8C\x14\x9C\x83\x16\x3F\x84\xAE\x02\xA4\x87\x15\xA2\x82\x30\x04\xB9\x04\x8A\x1C\xA4\x83\x1D\x4F\x84\xBC\x12\xA4\x85\x1D\xAA\x82\x3E\x58\x84\x87\x86\x84\x83\x80\x81\x04\xC1\x04\x9A\x24\x83\x2D\xB2\x82\x5C\x68\x84\x9D\x2B\xB4\x82\x2E\xB7\x04\xDF\x31\xA4\x80\x81\x81\xBA\x00\x61\x04\xB9\xA1\x82\x34\x81\xBF\x80\x63\x04\x81\xC1\x84\x34\x81\xC3\x80\x65\x04\x89\xC1\x86\x34\x81\xC7\x80\x67\x04\x91\xC1\x88\x34\x81\xCB\x80\x69\x04\x99\xC1\x8A\x34\x81\xCF\x80\x6B\x04\xA1\xC1\x8C\x34\x81\xD3\x80\x6D\x04\xA9\xC1\x8E\x34\x81\xD7\x80\x6F\x04\xB1\xC1\x80\x3C\x81\xDB\x80\x71\x04\xB9\xC1\x82\x3C\x81\xDF\x80\x73\x04\x81\xE1\x84\x3C\x81\xE3\x80\x75\x04\x89\xE1\x86\x3C\x81\xE7\x80\x77\x04\x91\xE1\x88\x3C\x82\x3C\x82\x7B\x58\xC4\x9C",
+			"\x3B\xEC\x81\x3E\xEF\x04\xFE\x04\x9F\x7F\x78\x08\x00\xF2\xE4\x9C\x04\x8A\xF1\x80\xF7\x7E\xF6\xE7\xE8\xF0\xEF\x04\x82\x0F\xF0\xF4\x11\x04\x9B\x0E\x81\x80\x89\xF6\xF4\x17\x04\x43\x04\x41\x18\x37\x74\x79\x07\x06\xBF\x34\x04\x41\x15\x09\x86\x05\x82\xE6\x41\x49\x41\x40\x19\x12\x49\x81\x45\xFF\x64\x75\x85\x86\xFF\x07\x04\x43\x86\x00\x02\x0F\x84\x41\x03\x23\x84\x86\x89\x00\x20\x8A\x88\x8A\x2B\xA7\x81\x43\x42\x2E\xA9\x84\x41\x01\x04\x46\x08\x88\x01\x2C\x98\x41\x42\x04\x19\x49\x8E\x7B\x8F\x40\x81\x92\x93\x90\x44\x85\x96\x93\x91\x48\x89\x9A\x90\x92\x1E\x3E\x8B\x93\x93\x4A\x9C\x4C\x84\x94\x54\x95\x96\x97\x95\x57\xA1\x43\x95\x96\x4E\x84\x9A\x95\x7C\xE4\x5F\x92\x9A\x48\x01\x63\x95\x98\x99\x00\x26\x99\x9B\x47\x67\xAD\x9B\x9A\x9B\x6A\xB1\x98\x9A\x9A\x58\xB5\x96\x9D\x9D\x5F\xB7\x9F\x3D\x9E\x49\xBC\x91\x9B\x9C\x80\xB0\x91\xA3\x9B\x84\xAA\x94\x4A\xA0\x88\x85\xA3\xA0\x9D\x7A\x8D\xAE\xA2\x91\x7E\xB8\x9D\x97\x90\x91\xA7\x49\xA2\x9C\x97\x8B\xAA\xA5\xA6\x9C\x8A\xAE\x9B\xA3\xA0\xA1\xAE\x79\xA4\x58\xA4\xA5\x91\xA4\x98\x9E\xAA\xA9\xAA",
+			"\xAC\x9B\xAB\xAB\xA0\x24\x28\x92\xAB\xAC\x8F\xA6\xA6\x96\xAD\x94\x89\x8D\xA9\xA7\xBB\xAF\xA1\x41\x4A\xBC\xAE\xAC\xA0\xAD\xC4\x92\xAB\x97\xAD\x93\x82\x98\xAA\xB0\xCC\x81\xBE\xB0\xA1\x2B\x4F\xB8\xAD\xB1\xD4\xBD\x99\xB0\x94\xD3\x81\x91\xA6\x4B\xD2\x8D\xBE\xAF\xB7\xBD\xBD\xA5\xB7\xB8\xE4\xA5\xB6\xBB\xB9\xE8\xA9\xBA\xBB\xBA\xEC\xAD\xBE\xBB\xBB\xF0\xB1\xB2\xBF\xBC\xF4\xB5\xB6\xBF\xBD\xF8\xB9\xBA\xBF\xBE\xFC\xBD\xBE\xBD\xB1\x31\x47\xBF\xBF\xC0\x04\xF3\xA4\x4E\xC0\xB4\xB7\x48\xC1\xC1\x0C\xE4\xBA\x4F\xC2\x0D\xD1\xC2\xC7\xC4\x14\xF8\xBD\x4C\xC4\x15\xD9\xCA\xC7\xC6\x50\x80\x58\xC4\xC7\x20\xE1\xC2\xCB\xC8\x24\xE5\xC6\xCB\xC9\x28\xE9\xCA\xCB\xCA\x2C\xDA\xB7\xB7\x93\xD9\x80\x9B\xB1\xB7\x34\xE0\xBE\xB5\xB8\x2F\xC3\x93\x51\x40\x3B\xC0\x0D\xCF\xCF\x44\x7C\xC1\xD0\x00\x46\x42\xD6\xD2\xCF\x43\xC0\xD7\xD2\xD2\x48\xCB\xD9\xD3\xD3\x4E\xD1\xDD\xD3\xD4\x4C\xD5\xD0\xD4\xD5\x57\xD6\xD2\xD6\xD6\x58\xDB\xD9\xD7\xD7\x52\xEE\x79\x51\x40\x63\xC0\x05\xDB\xD9\x48\x69\xD4\xDA\xDA\x66\xEC\xD1\x0C\xDB\x68\xEB\xD2\xDD\xDB\x73\xF1\xD4\xDF\xDD\x76",
+			"\xF9\xD0\xDF\xDE\x75\xFC\xD8\xDE\xDF\x7A\xFD\xD2\xE3\xDF\x83\xC1\xE4\xE3\xE1\x86\xF6\xD2\x92\x0C\x04\x4C\xEC\x86\xE3\x60\xBF\x30\xE5\xCB\x94\xD5\xE4\x93\x0C\x39\xD6\xEA\xE7\xE6\xEB\xB4\x09\xE4\xE7\x24\xF6\x0F\xE4\xBE\x35\x23\xED\xC9\xCC\x4B\xA8\xE3\xA9\x82\x37\x37\xCE\xE9\xCD\x38\xDD\xA6\xE6\xEA\xD6\x9F\xC8\x7B\xCC\x36\xF0\xEF\xE9\xEE\xBC\xF3\xE6\xE8\xA4\xA6\xF8\xE1\xEC\xEF\xC3\xC3\xF8\x0E\xAB\xBE\xF6\xE8\x90\xED\x7F\x9C\x85\xF3\xEE\xCF\xC1\x4B\x52\xEE\xCA\xE1\xCC\xF3\x91\xD7\xC2\xF0\xF6\x53\xD4\xC4\xFE\xB5\xF2\x91\xE5\xA1\xF2\xAE\xDB\xDD\xA0\x55\xF7\xD1\xC4\xA0\xFA\x9E\xD9\xE4\xF8\xF9\xF9\xDE\xF5\xCB\xFB\x9D\xED\xCE\xF0\xFD\xFA\xBD\x93\x5D\xF4\xE8\xFC\xFD\xFE\xFF\xFF\x00\x81\x82\x00\x83\x84\x81\x02\x86\x83\x63\x56\x35\x7B\x01\xD8\x4C\x6B\x06\x83\x6D\x68\x5D\x71\x82\x03\xDE\x64\x82\x09\xA0\x6E\x82\x15\x93\x80\x06\x9B\x8A\x83\x0E\x97\x86\x83\x47\x74\x55\x56\x0A\x8B\x80\x91\x49\x70\x70\x28\x93\x6F\xDB\x05\x79\x84\xC4\x6D\x87\x84\x2C\x91\x86\x0B\xB2\x80\x87\x19\xB6\x85\x86\x38\x8F\x87\xEF\x0F\x5C\x2B\xF0\x65\x85",
+			"\x64\x90\x73\x70\x7A\x42\x84\x3C\x22\xBF\x85\x7F\x5F\x20\x01\x12\xEE\x3B\x88\xF4\x09\x8F\x89\x5E\x31\x88\x58\x53\x8A\x88\x29\x95\x8C\x8A\x50\x98\x8A\x15\xD9\x87\x8B\x2E\x9C\x8F\x8B\x5B\x81\x8E\x16\xE3\x8E\x8A\x31\xA5\x8C\x8C\x60\x88\x8E\x19\xE9\x87\x8D\x36\x9C\x8F\x88\x7A\x42\x2C\x09\xF0\x84\x80\x21\x3B\x84\x8E\x78\x8F\x5F\x10\x77\x8C\x7F\xEB\x40\x7D\x7A\xDA\x6F\x7E\x20\xAA\x54\x09\xDD\x73\x7E\x4E\xF5\x71\x70\xFE\x3B\x75\x09\xFB\x5F\x7D\x72\x7E\x87\x57\xF8\x76\x73\x91\x45\x95\x92\x56\x90\x9C\x8E\xB2\x13\x9A\x90\x47\x97\x95\x53\x46\x0F\x90\xE5\x11\x9E\x4A\x4E\xAB\x75\x53\x47\x1E\x91\xFC\x2B\x93\x59\xD3\x5A\x96\x65\x80\x8E\x7C\x2B\xAA\x93\x78\x24\x22\x91\x8F\xB8\x98\x49\x12\x04\x2B\x97\x80\x3D\x90\x00\xBF\x81\x98\x2F\xC3\x91\x20\x25\x04\x98\x98\xC7\x82\x9A\x2F\xC9\x9C\x99\x65\x8E\x98\x99\xCF\x8A\x98\x34\xD3\x92\x9B\x6A\x8D\x9C\x9A\xD7\x96\x99\x34\xD9\x9C\x9B\x6D\x9E\x98\x9B\xDF\x9A\x98\x38\xD3\x9E\x3D\x25\x04\x26\x9C\x01\x28\x9C\x00\x6A\x9C\x9D\x73\xAE\x99\x9D\xEF\x8B\x9C\x41\x4C\x01\x9F\x76\xB0\x9F\x9E\xF2\x98",
+			"\x9E\x3D\xF9\x9C\x9F\x7D\xBE\x9D\x9E\x00\xBA\x9D\x40\xFD\x93\xA1\x7F\x82\xA7\xA0\x04\xA8\xA2\x41\x89\xAC\xA1\x85\xBB\x9C\x89\x56\x90\xA0\x87\x6C\x84\xA3\x35\x96\xA2\x8D\x18\xAE\x8F\x45\x9A\xA9\xA3\x8A\x9D\xA3\xA3\x1E\xBC\xA2\x48\xA1\xAF\x8D\x5C\xAB\x5D\x09\xAF\x86\xA6\x01\xCE\x09\xA4\x95\xAE\xA7\x09\x2D\xAC\x64\x29\xB9\x51\x96\x4A\xB3\x97\x93\xDF\x50\x0A\x21\x99\x93\x8E\x9A\xBE\x85\x94\x36\xB6\x93\x4D\xC3\xA2\x5C\x9E\xBF\xA5\x4A\x89\x87\x94\xA1\x51\x04\x97\xA6\xB2\x7E\xA8\xEC\x66\x97\xED\x4E\xAC\x76\x29\x14\xAD\x95\x32\xB1\xA7\x54\xB5\xAD\x93\x41\x93\x0F\xAA\xF0\x74\x4A\x38\xE3\xA7\x98\x63\xA1\x9D\x9B\xE3\x84\xAF\x59\xEB\xA9\xAC\xB4\xAA\xAD\xAD\x6C\xAF\xAE\x5C\xEE\xA4\xAE\xB6\xA2\x82\xAB\x2E\xBB\x5E\x43\x85\xAC\xAE\x7C\xB4\x9A\xA1\x7D\xAD\xA1\x60\xFB\xA0\xB1\xC2\x82\xB6\xB0\x84\xA7\xB2\x62\x89\xBC\xB1\xC1\xB8\xAD\x4A\x3D\x99\xAE\x64\x82\x84\x0B\xC7\x93\xB6\x72\x55\x16\xB3\x65\x8D\x66\x0A\xCD\x9B\xB7\x8F\x47\xB4\x49\x52\xDB\xA4\xA8\xB0\x83\x97\x90\xC6\x41\xB4\x2C\xDD\xA3\xA9\x2B\x26\xB5\xB4\x3D\xB9\x63\x4C\x9B",
+			"\x9C\xAA\xA5\x82\xAF\xB6\x54\xA8\xB6\xF8\x35\xB8\x3C\x2C\x2F\xB0\xB7\xFB\x7F\xB0\xE8\x59\x0E\xB2\xE1\x87\x4C\x2C\xB1\xA6\xBA\x72\xCA\x46\x2D\xE4\x9B\x73\xB6\xAB\xAA\x49\x20\xB0\xB4\xBA\xE0\xAA\xB6\x64\xD0\xB2\x66\x54\xCD\x75\xBB\x41\x69\x28\xA7\x45\xAB\xB9\xC4\x6C\x2E\xB8\xF1\xA6\xBF\xBC\xE8\xB5\x5D\x76\xBF\x43\xB4\xEE\x96\xBF\xBD\x61\xA9\xBF\xCA\x6F\x25\xBC\xF9\x91\x62\x2E\xF5\xB6\xBC\x2E\xFC\x1F\x1E\x7E\x13\x07\x1F\x9F\x0E\x13\x0F\x71\x15\x03\x47\x1D\x17\x2E\x05\x36\x50\x00\x4D\x41\x20\x06\xCB\xC4\x20\x0E\xD1\xC0\x84\x91\x21\x21\x89\x01\x20\x43\x00\x17\x21\x40\x1A\x21\x20\xFA\x31\x42\xC1\x0A\xC5\x41\x40\x0B\x41\x21\x06\x41\x27\x41\x01\x36\x3D\x40\x70\x38\x41\x06\xE6\x27\xC5\x6E\x40\xC4\x8C\x8F\xCE\xC5\x1A\xF4\xC7\xC6\x0E\xD0\x47\x8D\x91\x40\x01\xFC\x01\x23\x3F\x3B\x42\x43\x8C\x8A\xC2\x4A\x00\x0A\xC6\x23\x6E\x47\x52\x91\xC3\xC3\xC2\x1B\xF4\x46\xC6\x12\xC1\x21\x80\x01\x22\xC7\x80\x0A\xCD\xCA\x4B\xD6\xC4\x8E\x50\xCD\xC9\x2C\xC0\x05\xC8\x47\xCC\xC8\x95\xA4\x4D\xCA\x0F\x76\xC0\xCB\x0A\xD6\x47\x99\x88\x24\x20\x11",
+			"\x41\x25\x21\x63\xD1\xCD\x41\x00\x00",
 		};
 		vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
 	}
@@ -15377,81 +12070,6 @@ namespace vl::glr::parsergen
 			{
 				VisitSyntax(node->syntax.Obj());
 				Visit(node->assignments);
-			}
-		
-			void Visit(GlrLeftRecursionPlaceholderClause* node) override
-			{
-				writer.WriteString(L"left_recursion_placeholder(");
-				for (auto [flag, index] : indexed(node->flags))
-				{
-					if (index != 0) writer.WriteString(L", ");
-					writer.WriteString(flag->flag.value);
-				}
-				writer.WriteChar(L')');
-			}
-		
-			void VisitLriCont(GlrLeftRecursionInjectContinuation* node)
-			{
-				if (node->type == GlrLeftRecursionInjectContinuationType::Optional)
-				{
-					writer.WriteChar(L'[');
-				}
-		
-				writer.WriteString(L"left_recursion_inject");
-				if (node->configuration == GlrLeftRecursionConfiguration::Multiple)
-				{
-					writer.WriteString(L"_multiple");
-				}
-		
-				writer.WriteChar(L'(');
-				for (auto [lriFlag, index] : indexed(node->flags))
-				{
-					if (index != 0) writer.WriteString(L", ");
-					writer.WriteString(lriFlag->flag.value);
-				}
-				writer.WriteString(L") ");
-		
-				for (auto [target, index] : indexed(node->injectionTargets))
-				{
-					if (index != 0) writer.WriteString(L" | ");
-					VisitLriTarget(target.Obj());
-				}
-		
-				if (node->type == GlrLeftRecursionInjectContinuationType::Optional)
-				{
-					writer.WriteChar(L']');
-				}
-			}
-		
-			void VisitLriTarget(GlrLeftRecursionInjectClause* node)
-			{
-				if (node->continuation)
-				{
-					writer.WriteChar(L'(');
-					writer.WriteString(node->rule->literal.value);
-					writer.WriteChar(L' ');
-					VisitLriCont(node->continuation.Obj());
-					writer.WriteChar(L')');
-				}
-				else
-				{
-					writer.WriteString(node->rule->literal.value);
-				}
-			}
-		
-			void Visit(GlrLeftRecursionInjectClause* node) override
-			{
-				writer.WriteChar(L'!');
-				writer.WriteString(node->rule->literal.value);
-				writer.WriteChar(L' ');
-				VisitLriCont(node->continuation.Obj());
-			}
-		
-			void Visit(GlrPrefixMergeClause* node) override
-			{
-				writer.WriteString(L"!prefix_merge(");
-				writer.WriteString(node->rule->literal.value);
-				writer.WriteString(L")");
 			}
 		};
 	}
@@ -16023,10 +12641,9 @@ namespace vl
 StateSymbol
 ***********************************************************************/
 
-			StateSymbol::StateSymbol(RuleSymbol* _rule, vint32_t _clauseId)
+			StateSymbol::StateSymbol(RuleSymbol* _rule)
 				: ownerManager(_rule->Owner())
 				, rule(_rule)
-				, clauseId(_clauseId)
 			{
 			}
 
@@ -16044,18 +12661,7 @@ StateSymbol
 								result = e1->input.token <=> e2->input.token;
 								if (result == 0)
 								{
-									if (e1->input.condition && e2->input.condition)
-									{
-										result = e1->input.condition.Value() <=> e2->input.condition.Value();
-									}
-									else if (e1->input.condition)
-									{
-										result = std::strong_ordering::greater;
-									}
-									else if (e2->input.condition)
-									{
-										result = std::strong_ordering::less;
-									}
+									result = e1->input.condition <=> e2->input.condition;
 								}
 								break;
 							case EdgeInputType::Rule:
@@ -16064,9 +12670,30 @@ StateSymbol
 							default:;
 							}
 						}
-
-						if (result != 0) return result;
-						return orderedStates.IndexOf(e1->To()) <=> orderedStates.IndexOf(e2->To());
+						if (result == 0)
+						{
+							result = orderedStates.IndexOf(e1->To()) <=> orderedStates.IndexOf(e2->To());
+						}
+						if (result == 0)
+						{
+							result = CompareEnumerable(e1->competitions, e2->competitions);
+						}
+						if (result == 0)
+						{
+							result = CompareEnumerable(e1->insAfterInput, e2->insAfterInput);
+						}
+						if (result == 0)
+						{
+							result = e1->returnEdges.Count() <=> e2->returnEdges.Count();
+						}
+						if (result == 0)
+						{
+							result = CompareEnumerable(
+								From(e1->returnEdges).Select([&](EdgeSymbol* e) { return orderedStates.IndexOf(e->To()); }),
+								From(e2->returnEdges).Select([&](EdgeSymbol* e) { return orderedStates.IndexOf(e->To()); })
+								);
+						}
+						return result;
 					}));
 			}
 
@@ -16125,10 +12752,10 @@ SyntaxSymbolManager
 				rules.Remove(name);
 			}
 
-			StateSymbol* SyntaxSymbolManager::CreateState(RuleSymbol* rule, vint32_t clauseId)
+			StateSymbol* SyntaxSymbolManager::CreateState(RuleSymbol* rule)
 			{
 				CHECK_ERROR(phase == SyntaxPhase::EpsilonNFA, L"vl::gre::parsergen::SyntaxSymbolManager::CreateState(RuleSymbol*)#Cannot change the automaton after calling BuildCompactSyntax().");
-				auto symbol = Ptr(new StateSymbol(rule, clauseId));
+				auto symbol = Ptr(new StateSymbol(rule));
 				states.Add(symbol);
 				return symbol.Obj();
 			}
@@ -16193,6 +12820,7 @@ SyntaxSymbolManager
 					for (auto ruleName : rules.order)
 					{
 						auto ruleSymbol = rules.map[ruleName];
+						if (ruleSymbol->isPartial) continue;
 						auto orderedStates = From(groupedStates[ruleSymbol])
 							.OrderByKey([](StateSymbol* s)
 							{
@@ -16251,10 +12879,12 @@ AutomatonBuilder (Syntax)
 					edge->input.type = EdgeInputType::Token;
 					edge->input.token = tokenId;
 					edge->input.condition = condition;
+
+					vint count = usedFieldIds++;
+					edge->insAfterInput.Add({ AstInsType::Token,-1,count });
 					if (field != -1)
 					{
-						edge->insAfterInput.Add({ AstInsType::Token });
-						edge->insAfterInput.Add({ AstInsType::Field,field });
+						fieldIns.Add({ AstInsType::Field,field,count });
 					}
 				}
 
@@ -16277,22 +12907,23 @@ AutomatonBuilder (Syntax)
 					edge->input.rule = rule;
 					edge->input.ruleType = ruleType;
 
+					vint count = usedFieldIds++;
 					switch (ruleType)
 					{
 					case automaton::ReturnRuleType::Field:
 						CHECK_ERROR(field != -1, ERROR_MESSAGE_PREFIX L"Field must set for ReturnRuleType::Field.");
-						edge->insAfterInput.Add({ AstInsType::Field,field });
+						edge->insAfterInput.Add({ AstInsType::StackSlot,-1,count });
+						fieldIns.Add({ AstInsType::Field,field,count });
 						break;
 					case automaton::ReturnRuleType::Partial:
 						CHECK_ERROR(field == -1, ERROR_MESSAGE_PREFIX L"Field must not set for ReturnRuleType::Partial.");
 						break;
 					case automaton::ReturnRuleType::Discard:
 						CHECK_ERROR(field == -1, ERROR_MESSAGE_PREFIX L"Field must not set for ReturnRuleType::Discard.");
-						edge->insAfterInput.Add({ AstInsType::DiscardValue });
+						edge->insAfterInput.Add({ AstInsType::StackSlot,-1,count });
 						break;
 					case automaton::ReturnRuleType::Reuse:
 						CHECK_ERROR(field == -1, ERROR_MESSAGE_PREFIX L"Field must not set for ReturnRuleType::Reuse.");
-						edge->insAfterInput.Add({ AstInsType::ReopenObject });
 						break;
 					}
 				}
@@ -16314,11 +12945,6 @@ AutomatonBuilder (Syntax)
 			AutomatonBuilder::StatePair AutomatonBuilder::BuildFieldRuleSyntax(RuleSymbol* rule, vint32_t field)
 			{
 				return BuildRuleSyntaxInternal(rule, field, automaton::ReturnRuleType::Field);
-			}
-
-			AutomatonBuilder::StatePair AutomatonBuilder::BuildPartialRuleSyntax(RuleSymbol* rule)
-			{
-				return BuildRuleSyntaxInternal(rule, -1, automaton::ReturnRuleType::Partial);
 			}
 
 			AutomatonBuilder::StatePair AutomatonBuilder::BuildDiscardRuleSyntax(RuleSymbol* rule)
@@ -16412,13 +13038,11 @@ AutomatonBuilder (Syntax)
 				CreateEdge(bodyPair.end, pair.end);
 				auto skipEdge = CreateEdge(pair.begin, pair.end);
 
-				if (preferTake)
+				if (preferTake || preferSkip)
 				{
-					takeEdge->important = true;
-				}
-				if (preferSkip)
-				{
-					skipEdge->important = true;
+					vint32_t id = ++ruleSymbol->Owner()->usedCompetitionIds;
+					takeEdge->competitions.Add({ id,preferTake });
+					skipEdge->competitions.Add({ id,preferSkip });
 				}
 
 				endPoses.Add(pair.end, clauseDisplayText.Length());
@@ -16478,7 +13102,8 @@ AutomatonBuilder (Clause)
 
 			AutomatonBuilder::StatePair AutomatonBuilder::BuildClause(const StateBuilder& compileSyntax)
 			{
-				ruleSymbol->NewClause();
+				usedFieldIds = 0;
+				fieldIns.Clear();
 				clauseDisplayText = L"";
 				startPoses.Clear();
 				endPoses.Clear();
@@ -16505,8 +13130,9 @@ AutomatonBuilder (Clause)
 			{
 				auto withState = CreateState();
 				auto edge = CreateEdge(pair.end, withState);
-				edge->insBeforeInput.Add({ AstInsType::EnumItem,enumItem });
-				edge->insBeforeInput.Add({ (weakAssignment ? AstInsType::FieldIfUnassigned : AstInsType::Field),field});
+				vint count = usedFieldIds++;
+				edge->insAfterInput.Add({ AstInsType::EnumItem,enumItem,count });
+				fieldIns.Add({ (weakAssignment ? AstInsType::FieldIfUnassigned : AstInsType::Field),field,count});
 				endPoses.Add(withState, clauseDisplayText.Length());
 				return { pair.begin,withState };
 			}
@@ -16523,19 +13149,16 @@ AutomatonBuilder (Clause)
 				clauseDisplayText += L" >";
 				{
 					auto edge = CreateEdge(pair.begin, bodyPair.begin);
-					edge->insBeforeInput.Add({ AstInsType::BeginObject,classId });
+					edge->insAfterInput.Add({ AstInsType::StackBegin });
 				}
 				{
 					auto edge = CreateEdge(bodyPair.end, pair.end);
-					edge->insBeforeInput.Add({ AstInsType::EndObject });
+					edge->insAfterInput.Add({ AstInsType::CreateObject,classId });
+					CopyFrom(edge->insAfterInput, fieldIns, true);
+					edge->insAfterInput.Add({ AstInsType::StackEnd });
 				}
 				endPoses.Add(pair.end, clauseDisplayText.Length());
 				return pair;
-			}
-
-			AutomatonBuilder::StatePair AutomatonBuilder::BuildPartialClause(const StateBuilder& compileSyntax)
-			{
-				return compileSyntax();
 			}
 
 			AutomatonBuilder::StatePair AutomatonBuilder::BuildReuseClause(const StateBuilder& compileSyntax)
@@ -16545,118 +13168,20 @@ AutomatonBuilder (Clause)
 				pair.end = CreateState();
 				startPoses.Add(pair.begin, clauseDisplayText.Length());
 
-				clauseDisplayText += L"<< ";
+				clauseDisplayText += L"<! ";
 				auto bodyPair = compileSyntax();
-				clauseDisplayText += L" >>";
+				clauseDisplayText += L" !>";
 				{
 					auto edge = CreateEdge(pair.begin, bodyPair.begin);
-					edge->insBeforeInput.Add({ AstInsType::DelayFieldAssignment });
+					edge->insAfterInput.Add({ AstInsType::StackBegin });
 				}
 				{
 					auto edge = CreateEdge(bodyPair.end, pair.end);
-					edge->insBeforeInput.Add({ AstInsType::EndObject });
+					CopyFrom(edge->insAfterInput, fieldIns, true);
+					edge->insAfterInput.Add({ AstInsType::StackEnd });
 				}
 				endPoses.Add(pair.end, clauseDisplayText.Length());
 				return pair;
-			}
-
-			AutomatonBuilder::StatePair AutomatonBuilder::BuildLrpClause(collections::SortedList<vint32_t>& flags, const Func<WString(vint32_t)>& flagName)
-			{
-				/*
-				* S --+--(lrp:(a,b))--+--> E
-				*/
-
-				StatePair pair;
-				pair.begin = CreateState();
-				pair.end = CreateState();
-				startPoses.Add(pair.begin, clauseDisplayText.Length());
-
-				{
-					auto edge = CreateEdge(pair.begin, pair.end);
-					edge->input.type = EdgeInputType::LrPlaceholder;
-					CopyFrom(edge->input.flags, flags);
-				}
-
-				clauseDisplayText += L"lrp:(";
-				// TODO: (enumerable) Linq:Aggregate
-				for (vint i = 0; i < flags.Count(); i++)
-				{
-					if (i > 0) clauseDisplayText += L",";
-					clauseDisplayText += flagName(flags[i]);
-				}
-				clauseDisplayText += L")";
-				endPoses.Add(pair.end, clauseDisplayText.Length());
-				return pair;
-			}
-
-			AutomatonBuilder::StatePair AutomatonBuilder::BuildLriSyntax(collections::SortedList<vint32_t>& flags, RuleSymbol* rule, const Func<WString(vint32_t)>& flagName)
-			{
-				StatePair pair;
-				pair.begin = CreateState();
-				pair.end = CreateState();
-				startPoses.Add(pair.begin, clauseDisplayText.Length());
-
-				{
-					auto edge = CreateEdge(pair.begin, pair.end);
-					edge->input.type = EdgeInputType::LrInject;
-					CopyFrom(edge->input.flags, flags);
-					edge->input.rule = rule;
-					edge->input.ruleType = automaton::ReturnRuleType::Reuse;
-					edge->insAfterInput.Add({ AstInsType::ReopenObject });
-				}
-
-				clauseDisplayText += L"lri:(";
-				// TODO: (enumerable) Linq:Aggregate
-				for (vint i = 0; i < flags.Count(); i++)
-				{
-					if (i > 0) clauseDisplayText += L",";
-					clauseDisplayText += flagName(flags[i]);
-				}
-				clauseDisplayText += L")->" + rule->Name();
-				endPoses.Add(pair.end, clauseDisplayText.Length());
-				return pair;
-			}
-
-			AutomatonBuilder::StatePair AutomatonBuilder::BuildLriSkip()
-			{
-				StatePair pair;
-				pair.begin = CreateState();
-				pair.end = CreateState();
-				startPoses.Add(pair.begin, clauseDisplayText.Length());
-
-				{
-					auto edge = CreateEdge(pair.begin, pair.end);
-					edge->input.type = EdgeInputType::Epsilon;
-				}
-
-				clauseDisplayText += L"lri:<skip>";
-				endPoses.Add(pair.end, clauseDisplayText.Length());
-				return pair;
-			}
-
-			AutomatonBuilder::StatePair AutomatonBuilder::BuildLriClauseSyntax(StateBuilder useOrLriSyntax, bool optional, collections::List<StateBuilder>&& continuations)
-			{
-				/*
-				*                                                   +--(lri:c:ReopenObject)--+
-				*                                                   |                        |
-				*                          +--(lri:a:ReopenObject)--+--(lri:d:ReopenObject)--+--+
-				*                          |                        |                        |  |
-				*                          |                        +------------------------+  | {<-- if optional}
-				*                          |                                                    V
-				* S --(rule:ReopenObject)--+--(lri:b:ReopenObject)------------------------------+--> E
-				*                          |                                                    ^
-				*                          +----------------------------------------------------+  {<-- if optional}
-				*/
-
-				if (optional)
-				{
-					continuations.Add([this]() { return BuildLriSkip(); });
-				}
-
-				List<StateBuilder> seqs;
-				seqs.Add(useOrLriSyntax);
-				seqs.Add([this, &continuations]() { return BuildAlternativeSyntax(continuations); });
-				return BuildSequenceSyntax(seqs);
 			}
 		}
 	}
@@ -16718,12 +13243,12 @@ SyntaxSymbolManager::BuildAutomaton
 				{
 					auto&& stateDesc = executable.states[index];
 					stateDesc.rule = (vint32_t)rulesInOrder.IndexOf(state->Rule());
-					stateDesc.clause = state->ClauseId();
 					stateDesc.endingState = state->endingState;
 				}
 
 				List<EdgeSymbol*> edgesInOrder;
 				List<EdgeSymbol*> returnEdgesInOrder;
+				List<automaton::CompetitionDesc> competitionsInOrder;
 				List<vint32_t> returnIndicesInOrder;
 				List<AstIns> astInsInOrder;
 
@@ -16799,25 +13324,20 @@ SyntaxSymbolManager::BuildAutomaton
 						stringLiteralIndex += length;
 					}
 
-					switch (edge->importancy)
+					// edgeDesc.competitions
+					edgeDesc.competitions.start = (vint32_t)competitionsInOrder.Count();
+					for (auto competition : edge->competitions)
 					{
-					case EdgeImportancy::HighPriority:
-						edgeDesc.priority = automaton::EdgePriority::HighPriority;
-						break;
-					case EdgeImportancy::LowPriority:
-						edgeDesc.priority = automaton::EdgePriority::LowPriority;
-						break;
-					default:;
+						competitionsInOrder.Add({ competition.competitionId, competition.highPriority });
 					}
+					edgeDesc.competitions.count = (vint32_t)competitionsInOrder.Count() - edgeDesc.competitions.start;
 
-					edgeDesc.insBeforeInput.start = (vint32_t)astInsInOrder.Count();
-					CopyFrom(astInsInOrder, edge->insBeforeInput, true);
-					edgeDesc.insBeforeInput.count = (vint32_t)astInsInOrder.Count() - edgeDesc.insBeforeInput.start;
-
+					// edgeDesc.insAfterInput
 					edgeDesc.insAfterInput.start = (vint32_t)astInsInOrder.Count();
 					CopyFrom(astInsInOrder, edge->insAfterInput, true);
 					edgeDesc.insAfterInput.count = (vint32_t)astInsInOrder.Count() - edgeDesc.insAfterInput.start;
 
+					// edgeDesc.returnIndices
 					edgeDesc.returnIndices.start = (vint32_t)returnIndicesInOrder.Count();
 					for (auto returnEdge : edge->returnEdges)
 					{
@@ -16830,7 +13350,7 @@ SyntaxSymbolManager::BuildAutomaton
 					}
 					edgeDesc.returnIndices.count = (vint32_t)returnIndicesInOrder.Count() - edgeDesc.returnIndices.start;
 
-					if (edgeDesc.insBeforeInput.count == 0) edgeDesc.insBeforeInput.start = -1;
+					if (edgeDesc.competitions.count == 0) edgeDesc.competitions.start = -1;
 					if (edgeDesc.insAfterInput.count == 0) edgeDesc.insAfterInput.start = -1;
 					if (edgeDesc.returnIndices.count == 0) edgeDesc.returnIndices.start = -1;
 				}
@@ -16842,23 +13362,27 @@ SyntaxSymbolManager::BuildAutomaton
 					auto&& returnDesc = executable.returns[edgeIndex];
 					returnDesc.consumedRule = (vint32_t)rulesInOrder.IndexOf(edge->input.rule);
 					returnDesc.returnState = (vint32_t)statesInOrder.IndexOf(edge->To());
-					switch (edge->importancy)
-					{
-					case EdgeImportancy::HighPriority:
-						returnDesc.priority = automaton::EdgePriority::HighPriority;
-						break;
-					case EdgeImportancy::LowPriority:
-						returnDesc.priority = automaton::EdgePriority::LowPriority;
-						break;
-					default:;
-					}
-
 					returnDesc.ruleType = edge->input.ruleType;
+
+					// returnDesc.competitions
+					returnDesc.competitions.start = (vint32_t)competitionsInOrder.Count();
+					for (auto competition : edge->competitions)
+					{
+						competitionsInOrder.Add({ competition.competitionId, competition.highPriority });
+					}
+					returnDesc.competitions.count = (vint32_t)competitionsInOrder.Count() - returnDesc.competitions.start;
+
+					// returnDesc.insAfterInput
 					returnDesc.insAfterInput.start = (vint32_t)astInsInOrder.Count();
 					CopyFrom(astInsInOrder, edge->insAfterInput, true);
 					returnDesc.insAfterInput.count = (vint32_t)astInsInOrder.Count() - returnDesc.insAfterInput.start;
+
+					if (returnDesc.competitions.count == 0) returnDesc.competitions.start = -1;
 					if (returnDesc.insAfterInput.count == 0) returnDesc.insAfterInput.start = -1;
 				}
+
+				// executable.competitions
+				CopyFrom(executable.competitions, competitionsInOrder);
 
 				// executable.returnIndices
 				CopyFrom(executable.returnIndices, returnIndicesInOrder);
@@ -16904,32 +13428,15 @@ CreateParserGenRuleSyntax
 				auto _cond2 = createRule(L"Cond2");
 				auto _cond = createRule(L"Cond");
 				auto _switchItem = createRule(L"SwitchItem");
-				auto _switches = createRule(L"Switches");
-				auto _optionalBody = createRule(L"OptionalBody");
 				auto _testBranch = createRule(L"TestBranch");
-				auto _token = createRule(L"Token");
 				auto _syntax0 = createRule(L"Syntax0");
 				auto _syntax1 = createRule(L"Syntax1");
 				auto _syntax2 = createRule(L"Syntax2");
 				auto _syntax = createRule(L"Syntax");
-				auto _assignmentOp = createRule(L"AssignmentOp");
 				auto _assignment = createRule(L"Assignment");
 				auto _clause = createRule(L"Clause");
-				auto _placeholder = createRule(L"Placeholder");
-				auto _ruleName = createRule(L"RuleName");
-				auto _lriConfig = createRule(L"LriConfig");
-				auto _lriContinuationBody = createRule(L"LriContinuationBody");
-				auto _lriContinuation = createRule(L"LriContinuation");
-				auto _lriTarget = createRule(L"LriTarget");
 				auto _rule = createRule(L"Rule");
 				auto _file = createRule(L"File");
-
-				_switches->isPartial = true;
-				_optionalBody->isPartial = true;
-				_token->isPartial = true;
-				_assignmentOp->isPartial = true;
-				_lriConfig->isPartial = true;
-				_lriContinuationBody->isPartial = true;
 
 				_file->isParser = true;
 				_file->ruleType = dynamic_cast<AstClassSymbol*>(ast.Symbols()[L"SyntaxFile"][0]);
@@ -16977,26 +13484,25 @@ CreateParserGenRuleSyntax
 				Clause{ _switchItem } = create(tok(T::USE) + tok(T::ID, F::SwitchItem_name), C::SwitchItem).with(F::SwitchItem_value, GlrSwitchValue::False);
 
 				// "switch" {SwitchItem:switches ; ","} ";" as partial File
-				Clause{ _switches } = partial(tok(T::SWITCH) + loop(rule(_switchItem, F::SyntaxFile_switches), tok(T::COMMA)) + tok(T::SEMICOLON));
+				auto _switches = tok(T::SWITCH) + loop(rule(_switchItem, F::SyntaxFile_switches), tok(T::COMMA)) + tok(T::SEMICOLON);
 
 				///////////////////////////////////////////////////////////////////////////////////
 				// Syntax (primitive)
 				///////////////////////////////////////////////////////////////////////////////////
 
 				// "[" Syntax:syntax "]" as partial OptionalSyntax
-				Clause{ _optionalBody } = partial(tok(T::OPEN_SQUARE) + rule(_syntax, F::OptionalSyntax_syntax) + tok(T::CLOSE_SQUARE));
+				auto _optionalBody = tok(T::OPEN_SQUARE) + rule(_syntax, F::OptionalSyntax_syntax) + tok(T::CLOSE_SQUARE);
 
 				// ID:literal as partial RefSyntax {refType = Id}
-				Clause{ _token } = partial(tok(T::ID, F::RefSyntax_literal)).with(F::RefSyntax_refType, GlrRefType::Id);
-
 				// STRING:literal as partial RefSyntax {refType = Literal}
-				Clause{ _token } = partial(tok(T::STRING, F::RefSyntax_literal)).with(F::RefSyntax_refType, GlrRefType::Literal);
-
 				// CONDITIONAL_LITERAL:literal as partial RefSyntax {refType = ConditionalLiteral}
-				Clause{ _token } = partial(tok(T::CONDITIONAL_LITERAL, F::RefSyntax_literal)).with(F::RefSyntax_refType, GlrRefType::ConditionalLiteral);
+				auto _token_Id = tok(T::ID, F::RefSyntax_literal) && with(F::RefSyntax_refType, GlrRefType::Id);
+				auto _token_Literal = tok(T::STRING, F::RefSyntax_literal) && with(F::RefSyntax_refType, GlrRefType::Literal);
+				auto _token_ConditionalLiteral = tok(T::CONDITIONAL_LITERAL, F::RefSyntax_literal) && with(F::RefSyntax_refType, GlrRefType::ConditionalLiteral);
+				auto _token = _token_Id | _token_Literal | _token_ConditionalLiteral;
 
 				// Token [":" ID:field] as RefSyntax
-				Clause{ _syntax0 } = create(prule(_token) + opt(tok(T::COLON) + tok(T::ID, F::RefSyntax_field)), C::RefSyntax);
+				Clause{ _syntax0 } = create(_token + opt(tok(T::COLON) + tok(T::ID, F::RefSyntax_field)), C::RefSyntax);
 
 				// "!" ID:name as UseSyntax
 				Clause{ _syntax0 } = create(tok(T::USE) + tok(T::ID, F::UseSyntax_name), C::UseSyntax);
@@ -17005,13 +13511,13 @@ CreateParserGenRuleSyntax
 				Clause{ _syntax0 } = create(tok(T::OPEN_CURLY) + rule(_syntax, F::LoopSyntax_syntax) + opt(tok(T::SEMICOLON) + rule(_syntax, F::LoopSyntax_delimiter)) + tok(T::CLOSE_CURLY), C::LoopSyntax);
 
 				// "+" OptionalBody as OptionalSyntax {priority = PreferTake}
-				Clause{ _syntax0 } = create(tok(T::POSITIVE) + prule(_optionalBody), C::OptionalSyntax).with(F::OptionalSyntax_priority, GlrOptionalPriority::PreferTake);
+				Clause{ _syntax0 } = create(tok(T::POSITIVE) + _optionalBody, C::OptionalSyntax).with(F::OptionalSyntax_priority, GlrOptionalPriority::PreferTake);
 
 				// "-" OptionalBody as OptionalSyntax {priority = PreferSkip}
-				Clause{ _syntax0 } = create(tok(T::NEGATIVE) + prule(_optionalBody), C::OptionalSyntax).with(F::OptionalSyntax_priority, GlrOptionalPriority::PreferSkip);
+				Clause{ _syntax0 } = create(tok(T::NEGATIVE) + _optionalBody, C::OptionalSyntax).with(F::OptionalSyntax_priority, GlrOptionalPriority::PreferSkip);
 
 				// OptionalBody as OptionalSyntax {priority = Equal}
-				Clause{ _syntax0 } = create(prule(_optionalBody), C::OptionalSyntax).with(F::OptionalSyntax_priority, GlrOptionalPriority::Equal);
+				Clause{ _syntax0 } = create(_optionalBody, C::OptionalSyntax).with(F::OptionalSyntax_priority, GlrOptionalPriority::Equal);
 
 				///////////////////////////////////////////////////////////////////////////////////
 				// Syntax (conditional)
@@ -17053,13 +13559,13 @@ CreateParserGenRuleSyntax
 				///////////////////////////////////////////////////////////////////////////////////
 
 				// "=" as partial Assignment {type = Strong}
-				Clause{ _assignmentOp } = partial(tok(T::ASSIGN)).with(F::Assignment_type, GlrAssignmentType::Strong);
-
 				// "?=" as partial Assignment {type = Weak}
-				Clause{ _assignmentOp } = partial(tok(T::WEAK_ASSIGN)).with(F::Assignment_type, GlrAssignmentType::Weak);
+				auto _assignmentOp_Strong = tok(T::ASSIGN) && with(F::Assignment_type, GlrAssignmentType::Strong);
+				auto _assignmentOp_Weak = tok(T::WEAK_ASSIGN) && with(F::Assignment_type, GlrAssignmentType::Weak);
+				auto _assignmentOp = _assignmentOp_Strong | _assignmentOp_Weak;
 
 				// ID:field AssignmentOp STRING:value as Assignment
-				Clause{ _assignment } = create(tok(T::ID, F::Assignment_field) + prule(_assignmentOp) + tok(T::ID, F::Assignment_value), C::Assignment);
+				Clause{ _assignment } = create(tok(T::ID, F::Assignment_field) + _assignmentOp + tok(T::ID, F::Assignment_value), C::Assignment);
 
 				// Syntax:syntax "as" ID:type ["{" {Assignment:assignments ; ","} "}"] as CreateClause
 				Clause{ _clause } = create(rule(_syntax, F::CreateClause_syntax) + tok(T::AS) + tok(T::ID, F::CreateClause_type) + opt(tok(T::OPEN_CURLY) + loop(rule(_assignment, F::CreateClause_assignments), tok(T::COMMA)) + tok(T::CLOSE_CURLY)), C::CreateClause);
@@ -17071,58 +13577,6 @@ CreateParserGenRuleSyntax
 				Clause{ _clause } = create(rule(_syntax, F::ReuseClause_syntax) + opt(tok(T::OPEN_CURLY) + loop(rule(_assignment, F::ReuseClause_assignments), tok(T::COMMA)) + tok(T::CLOSE_CURLY)), C::ReuseClause);
 
 				///////////////////////////////////////////////////////////////////////////////////
-				// Clause (left recursive)
-				///////////////////////////////////////////////////////////////////////////////////
-
-				// ID:flag as LeftRecursionPlaceholder
-				Clause{ _placeholder } = create(tok(T::ID, F::LeftRecursionPlaceholder_flag), C::LeftRecursionPlaceholder);
-
-				// ID:literal as RefSyntax {refType = ID}
-				Clause{ _ruleName } = create(tok(T::ID, F::RefSyntax_literal), C::RefSyntax).with(F::RefSyntax_refType, GlrRefType::Id);
-
-				// "left_recursion_placeholder" "(" RuleName:flags {"," ruleName:flags} ")" as LeftRecursionPlaceholderClause
-				Clause{ _clause } = create(
-						tok(T::LS_PH) + tok(T::OPEN_ROUND)
-						+ rule(_placeholder, F::LeftRecursionPlaceholderClause_flags)
-						+ loop(tok(T::COMMA) + rule(_placeholder, F::LeftRecursionPlaceholderClause_flags))
-						+ tok(T::CLOSE_ROUND),
-					C::LeftRecursionPlaceholderClause);
-
-				// "left_recursion_inject" as partial LeftRecursionInjectContinuation {configuration = Single}
-				Clause{ _lriConfig } = partial(tok(T::LS_I)).with(F::LeftRecursionInjectContinuation_configuration, GlrLeftRecursionConfiguration::Single);
-
-				// "left_recursion_inject_multiple" as partial LeftRecursionInjectContinuation {configuration = Multiple}
-				Clause{ _lriConfig } = partial(tok(T::LS_IM)).with(F::LeftRecursionInjectContinuation_configuration, GlrLeftRecursionConfiguration::Multiple);
-
-				// LriConfig "(" Placeholder:flag {"," Placeholder:flag} ")" LriTarget:injectionTargets {"|" LriTarget:injectionTargets} as partial LeftRecursionInjectContinuation
-				Clause{ _lriContinuationBody } = partial(
-					prule(_lriConfig) + tok(T::OPEN_ROUND)
-					+ rule(_placeholder, F::LeftRecursionInjectContinuation_flags)
-					+ loop(tok(T::COMMA) + rule(_placeholder, F::LeftRecursionInjectContinuation_flags))
-					+ tok(T::CLOSE_ROUND)
-					+ rule(_lriTarget, F::LeftRecursionInjectContinuation_injectionTargets)
-					+ loop(tok(T::ALTERNATIVE) + rule(_lriTarget, F::LeftRecursionInjectContinuation_injectionTargets))
-					);
-
-				// LriContinuationBody as LeftRecursionInjectionContinuation {type = Required}
-				Clause{ _lriContinuation } = create(prule(_lriContinuationBody), C::LeftRecursionInjectContinuation).with(F::LeftRecursionInjectContinuation_type, GlrLeftRecursionInjectContinuationType::Required);
-
-				// "[" LriContinuationBody as LeftRecursionInjectionContinuation "]" {type = Optional}
-				Clause{ _lriContinuation } = create(tok(T::OPEN_SQUARE) + prule(_lriContinuationBody) + tok(T::CLOSE_SQUARE), C::LeftRecursionInjectContinuation).with(F::LeftRecursionInjectContinuation_type, GlrLeftRecursionInjectContinuationType::Optional);
-
-				// RuleName:rule as LeftRecursionInjectClause
-				Clause{ _lriTarget } = create(rule(_ruleName, F::LeftRecursionInjectClause_rule), C::LeftRecursionInjectClause);
-
-				// "(" RuleName:rule LriContinuation:continuation ")" as LeftRecursionInjectClause
-				Clause{ _lriTarget } = create(tok(T::OPEN_ROUND) + rule(_ruleName, F::LeftRecursionInjectClause_rule) + rule(_lriContinuation, F::LeftRecursionInjectClause_continuation) + tok(T::CLOSE_ROUND), C::LeftRecursionInjectClause);
-
-				// "!" RuleName:rule LriContinuation:continuation as LeftRecursionInjectClause
-				Clause{ _clause } = create(tok(T::USE) + rule(_ruleName, F::LeftRecursionInjectClause_rule) + rule(_lriContinuation, F::LeftRecursionInjectClause_continuation), C::LeftRecursionInjectClause);
-
-				// "!" "prefix_merge" "(" RuleName:rule ")" as PrefixMergeClause
-				Clause{ _clause } = create(tok(T::USE) + tok(T::LS_PM) + tok(T::OPEN_ROUND) + rule(_ruleName, F::PrefixMergeClause_rule) + tok(T::CLOSE_ROUND), C::PrefixMergeClause);
-
-				///////////////////////////////////////////////////////////////////////////////////
 				// File
 				///////////////////////////////////////////////////////////////////////////////////
 
@@ -17130,7 +13584,7 @@ CreateParserGenRuleSyntax
 				Clause{ _rule } = create(opt(tok(T::ATT_PUBLIC, F::Rule_attPublic)) + opt(tok(T::ATT_PARSER, F::Rule_attParser)) + tok(T::ID, F::Rule_name) + opt(tok(T::COLON) + tok(T::ID, F::Rule_type)) + loop(tok(T::INFER) + rule(_clause, F::Rule_clauses)) + tok(T::SEMICOLON), C::Rule);
 
 				// [Switches] Rule:rules {Rule:rules} as SyntaxFile
-				Clause{ _file } = create(opt(prule(_switches)) + rule(_rule, F::SyntaxFile_rules) + loop(rule(_rule, F::SyntaxFile_rules)), C::SyntaxFile);
+				Clause{ _file } = create(opt(_switches) + rule(_rule, F::SyntaxFile_rules) + loop(rule(_rule, F::SyntaxFile_rules)), C::SyntaxFile);
 			}
 		}
 	}
@@ -17167,15 +13621,10 @@ CreateParserGenTypeSyntax
 
 				auto _enumItem = createRule(L"EnumItem");
 				auto _enum = createRule(L"Enum");
-				auto _classPropType = createRule(L"ClassPropType");
 				auto _classProp = createRule(L"classProp");
-				auto _classBody = createRule(L"ClassBody");
 				auto _class = createRule(L"Class");
 				auto _type = createRule(L"Type");
 				auto _file = createRule(L"File");
-
-				_classPropType->isPartial = true;
-				_classBody->isPartial = true;
 
 				_file->isParser = true;
 				_file->ruleType = dynamic_cast<AstClassSymbol*>(ast.Symbols()[L"AstFile"][0]);
@@ -17191,22 +13640,21 @@ CreateParserGenTypeSyntax
 				Clause{ _enum } = create(opt(tok(T::ATT_PUBLIC, F::Type_attPublic)) + tok(T::ENUM) + tok(T::ID, F::Type_name) + tok(T::OPEN_CURLY) + loop(rule(_enumItem, F::Enum_items)) + tok(T::CLOSE_CURLY), C::Enum);
 
 				// "token" as partial ClassProp {propType = "Token"}
-				Clause{ _classPropType } = partial(tok(T::TOKEN)).with(F::ClassProp_propType, GlrPropType::Token);
-
 				// ID:propTypeName as partial ClassProp {propType = "Type"}
-				Clause{ _classPropType } = partial(tok(T::ID, F::ClassProp_propTypeName)).with(F::ClassProp_propType, GlrPropType::Type);
-
 				// ID:propTypeName "[" "]" as partial ClassProp {propType = "Array"}
-				Clause{ _classPropType } = partial(tok(T::ID, F::ClassProp_propTypeName) + tok(T::OPEN_SQUARE) + tok(T::CLOSE_SQUARE)).with(F::ClassProp_propType, GlrPropType::Array);
+				auto _classPropType_Token = tok(T::TOKEN) && with(F::ClassProp_propType, GlrPropType::Token);
+				auto _classPropType_Type = (tok(T::ID, F::ClassProp_propTypeName)) && with(F::ClassProp_propType, GlrPropType::Type);
+				auto _classPropType_Array = (tok(T::ID, F::ClassProp_propTypeName) + tok(T::OPEN_SQUARE) + tok(T::CLOSE_SQUARE)) && with(F::ClassProp_propType, GlrPropType::Array);
+				auto _classPropType = _classPropType_Token | _classPropType_Type | _classPropType_Array;
 
 				// "var" ID:name ":" ClassPropType ";" as ClassProp
-				Clause{ _classProp } = create(tok(T::VAR) + tok(T::ID, F::ClassProp_name) + tok(T::COLON) + prule(_classPropType) + tok(T::SEMICOLON), C::ClassProp);
+				Clause{ _classProp } = create(tok(T::VAR) + tok(T::ID, F::ClassProp_name) + tok(T::COLON) + _classPropType + tok(T::SEMICOLON), C::ClassProp);
 
 				// ID:name [":" ID:baseClass] "{" {ClassProp} "}" as partial Class
-				Clause{ _classBody } = partial(tok(T::ID, F::Type_name) + opt(tok(T::COLON) + tok(T::ID, F::Class_baseClass)) + tok(T::OPEN_CURLY) + loop(rule(_classProp, F::Class_props)) + tok(T::CLOSE_CURLY));
+				auto _classBody = (tok(T::ID, F::Type_name) + opt(tok(T::COLON) + tok(T::ID, F::Class_baseClass)) + tok(T::OPEN_CURLY) + loop(rule(_classProp, F::Class_props)) + tok(T::CLOSE_CURLY));
 
 				// ["@public"] ["@ambiguous"] "class" ClassBody {ambiguity = Yes}
-				Clause{ _class } = create(opt(tok(T::ATT_PUBLIC, F::Type_attPublic)) + opt(tok(T::ATT_AMBIGUOUS, F::Class_attAmbiguous)) + tok(T::CLASS) + prule(_classBody), C::Class);
+				Clause{ _class } = create(opt(tok(T::ATT_PUBLIC, F::Type_attPublic)) + opt(tok(T::ATT_AMBIGUOUS, F::Class_attAmbiguous)) + tok(T::CLASS) + _classBody, C::Class);
 
 				// !Class | !Enum
 				Clause{ _type } = use(_enum) | use(_class);
@@ -17265,73 +13713,145 @@ namespace vl
 			using namespace collections;
 
 /***********************************************************************
-StateSymbolSet
+SyntaxSymbolManager::MergeEdgesWithSameInput
 ***********************************************************************/
 
-			struct StateSymbolSet
+			void SyntaxSymbolManager::ApplyIncrementalChange(const IncrementalChange& ic, StateList& newStates, EdgeList& newEdges)
 			{
-			private:
-				static const SortedList<StateSymbol*> EmptyStates;
-
-				Ptr<SortedList<StateSymbol*>> states;
-
-			public:
-				StateSymbolSet() = default;
-				StateSymbolSet(const StateSymbolSet&) = delete;
-				StateSymbolSet& operator=(const StateSymbolSet&) = delete;
-
-				StateSymbolSet(StateSymbolSet&& set)
+				if (ic.createdStates.Count() + ic.createdEdges.Count() > 0)
 				{
-					states = set.states;
-					set.states = nullptr;
-				}
-
-				StateSymbolSet& operator=(StateSymbolSet&& set)
-				{
-					states = set.states;
-					set.states = nullptr;
-					return *this;
-				}
-
-				StateSymbolSet Copy() const
-				{
-					StateSymbolSet set;
-					set.states = states;
-					return set;
-				}
-
-				bool Add(StateSymbol* state)
-				{
-					if (states)
+					for (vint i = newEdges.Count() - 1; i >= 0; i--)
 					{
-						if (states->Contains(state)) return false;
-						states->Add(state);
-						return true;
+						auto edge = newEdges[i];
+						if (ic.reuseOps == !ic.opEdges.Contains(edge.Obj()))
+						{
+							if (edge->fromState) edge->fromState->outEdges.Remove(edge.Obj());
+							if (edge->toState) edge->toState->inEdges.Remove(edge.Obj());
+							newEdges.RemoveAt(i);
+						}
 					}
-					else
+
+					for (vint i = newStates.Count() - 1; i >= 0; i--)
 					{
-						states = Ptr(new SortedList<StateSymbol*>);
-						states->Add(state);
-						return true;
+						auto state = newStates[i];
+						if (ic.reuseOps == !ic.opStates.Contains(state.Obj()))
+						{
+							newStates.RemoveAt(i);
+						}
+					}
+
+					CopyFrom(newStates, ic.createdStates, true);
+					CopyFrom(newEdges, ic.createdEdges, true);
+				}
+			}
+
+/***********************************************************************
+SyntaxSymbolManager::BuildCompactNFAInternal
+***********************************************************************/
+
+			void SyntaxSymbolManager::BuildCompactNFAInternal()
+			{
+				Array<Pair<Ptr<StateList>, Ptr<EdgeList>>> newStatesAndEdges(rules.map.Count());
+				for (vint i = 0; i < newStatesAndEdges.Count(); i++)
+				{
+					newStatesAndEdges[i] = { Ptr(new StateList),Ptr(new EdgeList) };
+				}
+
+				for (auto [ruleSymbol, i] : indexed(rules.map.Values()))
+				{
+					auto&& newStates = *newStatesAndEdges[i].key.Obj();
+					auto&& newEdges = *newStatesAndEdges[i].value.Obj();
+					// remove all epsilon edges, potentially duplicating input edges
+					auto [startState, endState] = EliminateEpsilonEdges(ruleSymbol, newStates, newEdges);
+					ruleSymbol->startStates.Clear();
+					ruleSymbol->startStates.Add(startState);
+
+					// there will be only one start state per rule after EliminateEpsilonEdges
+					// detect and resolve direct left recursion
+					EliminateLeftRecursion(ruleSymbol, startState, endState, newStates, newEdges);
+
+					// merge as many input edges as possible to reduce wasted traces during parsing
+					// they consume same token or rule from the same state
+					// performance will be bad if duplicated parsing actually happen
+					// could save 20x wasted traces for Workflow parser
+					MergeEdgesWithSameInput(ruleSymbol, startState, newStates, newEdges);
+					MergeEdgesWithSameRuleUsingLeftrec(ruleSymbol, ruleSymbol->startStates[0], newStates, newEdges);
+				}
+
+				// further merging but introduces minimum cross-reference rule input to states in other rule
+				// this should only be done after performing local merging inside each rule
+				// detect and ban indirect left recursion
+				auto pmCache = CreatePrefixMergeCache();
+				if (!pmCache) return;
+				PrefixMergeCrossReference_Solve(pmCache.Obj(), prefixMergeSolutions);
+
+				// apply each solution
+				// unnecessary edges will be removed later as they could be still needed
+				// prefix-merge created Rule becomes PrefixMergeRule and later changed back to Rule
+				Array<IncrementalChange> ics(prefixMergeSolutions.Count());
+				for (auto [key, index] : indexed(prefixMergeSolutions.Keys()))
+				{
+					auto [ruleSymbol, currentState] = key;
+					auto solution = prefixMergeSolutions[key];
+					auto&& ic = ics[index];
+					ic.reuseOps = false;
+					PrefixMergeCrossReference_Apply(pmCache.Obj(), ruleSymbol, currentState, solution, ic);
+				}
+
+				// recycle unused states and edges
+				for (auto [key, index] : indexed(prefixMergeSolutions.Keys()))
+				{
+					auto [ruleSymbol, currentState] = key;
+					vint i = rules.map.Keys().IndexOf(ruleSymbol->Name());
+					auto&& newStates = *newStatesAndEdges[i].key.Obj();
+					auto&& newEdges = *newStatesAndEdges[i].value.Obj();
+					auto&& ic = ics[index];
+					ApplyIncrementalChange(ic, newStates, newEdges);
+
+					auto solution = prefixMergeSolutions[key];
+					for (auto application : solution->applications)
+					{
+						for (auto edge : application->edgesToMerge)
+						{
+							edge->input.type = EdgeInputType::PrefixMergeDiscardedRule;
+						}
+					}
+
+					for (auto edge : currentState->OutEdges())
+					{
+						if (edge->input.type == EdgeInputType::PrefixMergeRule)
+						{
+							edge->input.type = EdgeInputType::Rule;
+						}
 					}
 				}
 
-				const SortedList<StateSymbol*>& States() const
+				// secure life cycle of states and edges
+				states.Clear();
+				edges.Clear();
+				for (vint i = 0; i < newStatesAndEdges.Count(); i++)
 				{
-					return states ? *states.Obj() : EmptyStates;
+					auto&& newStates = *newStatesAndEdges[i].key.Obj();
+					auto&& newEdges = *newStatesAndEdges[i].value.Obj();
+					CopyFrom(states, newStates, true);
+					CopyFrom(edges, newEdges, true);
 				}
+			}
+		}
+	}
+}
 
-				std::strong_ordering operator<=>(const StateSymbolSet& set) const
-				{
-					if (!states && !set.states) return std::strong_ordering::equal;
-					if (!states) return std::strong_ordering::less;
-					if (!set.states) return std::strong_ordering::greater;
-					return CompareEnumerable(*states.Obj(), *set.states.Obj());
-				}
+/***********************************************************************
+.\SYNTAX\SYNTAXSYMBOL_NFACOMPACT_ELIMINATEEPSILONEDGES.CPP
+***********************************************************************/
 
-				bool operator==(const StateSymbolSet& set) const { return (*this <=> set) == 0; }
-			};
-			const SortedList<StateSymbol*> StateSymbolSet::EmptyStates;
+namespace vl
+{
+	namespace glr
+	{
+		namespace parsergen
+		{
+			using namespace collections;
 
 /***********************************************************************
 CompactSyntaxBuilder
@@ -17373,8 +13893,6 @@ CompactSyntaxBuilder
 						{
 						case EdgeInputType::Token:
 						case EdgeInputType::Rule:
-						case EdgeInputType::LrPlaceholder:
-						case EdgeInputType::LrInject:
 							{
 								// a new edge is created, accumulating multiple epsilon edges, ending with such edge
 								auto targetNewState = CreateCompactState(edge->To());
@@ -17385,12 +13903,10 @@ CompactSyntaxBuilder
 								auto newEdge = Ptr(new EdgeSymbol(newState, targetNewState));
 								newEdges.Add(newEdge);
 								newEdge->input = edge->input;
-								newEdge->important |= edge->important;
 								for (auto accumulatedEdge : accumulatedEdges)
 								{
-									CopyFrom(newEdge->insBeforeInput, accumulatedEdge->insBeforeInput, true);
 									CopyFrom(newEdge->insAfterInput, accumulatedEdge->insAfterInput, true);
-									newEdge->important |= accumulatedEdge->important;
+									CopyFrom(newEdge->competitions, accumulatedEdge->competitions, true);
 								}
 							}
 							break;
@@ -17398,7 +13914,12 @@ CompactSyntaxBuilder
 							BuildEpsilonEliminatedEdgesInternal(edge->To(), newState, endState, visited, accumulatedEdges);
 							break;
 						case EdgeInputType::Ending:
-							// Ending is ignored because it doesn't exist in epsilon-NFA
+							// These edges are not involved
+						case EdgeInputType::LeftRec:
+						case EdgeInputType::PrefixMergeDiscardedRule:
+						case EdgeInputType::PrefixMergeRule:
+						case EdgeInputType::CrossReferencedToken:
+							// These edges do not exist in epsilon-NFA
 							break;
 						default:
 							CHECK_FAIL(L"<BuildCompactNFAInternal>Unhandled!");
@@ -17417,20 +13938,16 @@ CompactSyntaxBuilder
 						newEdge->input.type = EdgeInputType::Ending;
 						for (auto accumulatedEdge : accumulatedEdges)
 						{
-							CopyFrom(newEdge->insBeforeInput, accumulatedEdge->insBeforeInput, true);
 							CopyFrom(newEdge->insAfterInput, accumulatedEdge->insAfterInput, true);
-							newEdge->important |= accumulatedEdge->important;
+							CopyFrom(newEdge->competitions, accumulatedEdge->competitions, true);
 						}
 
 						for (auto endingEdge : newState->OutEdges())
 						{
 							if (endingEdge != newEdge && endingEdge->input.type == EdgeInputType::Ending)
 							{
-								if (
-									CompareEnumerable(endingEdge->insBeforeInput, newEdge->insBeforeInput) == 0 &&
-									CompareEnumerable(endingEdge->insAfterInput, newEdge->insAfterInput) == 0)
+								if (CompareEnumerable(endingEdge->insAfterInput, newEdge->insAfterInput) == 0)
 								{
-									CHECK_ERROR(newEdge->important == endingEdge->important, L"It is not possible to have two equal ending edges with different priority.");
 									newState->outEdges.Remove(newEdge.Obj());
 									endState->inEdges.Remove(newEdge.Obj());
 									goto DISCARD_ENDING_EDGE;
@@ -17459,7 +13976,7 @@ CompactSyntaxBuilder
 					}
 					else
 					{
-						auto newState = Ptr(new StateSymbol(rule, state->ClauseId()));
+						auto newState = Ptr(new StateSymbol(rule));
 						newState->label = state->label;
 						newStates.Add(newState);
 						oldToNew.Add(state, newState.Obj());
@@ -17479,38 +13996,92 @@ CompactSyntaxBuilder
 			};
 
 /***********************************************************************
+SyntaxSymbolManager::EliminateEpsilonEdges
+***********************************************************************/
+
+			SyntaxSymbolManager::StartEndStatePair SyntaxSymbolManager::EliminateEpsilonEdges(RuleSymbol* rule, StateList& newStates, EdgeList& newEdges)
+			{
+				/*
+				* For any transition that goes through some epsilon edge and ends with a non-epsilon edge
+				* we copy all instructions from epsilon edges and the non-epsilon edge in order
+				* and create a new edge directly pointing to the toState of the non-epsilon edge
+				* 
+				* [BEFORE]
+				*         +-(x)-> B
+				*         |
+				* A -(e1)-+-(e2)-> C -+-(y)-> E
+				*         |           |
+				*         +-(e3)-> D -+
+				* 
+				* [AFTER]
+				*    +-(e1,x)-> B
+				*    |
+				* A -+-(e1,e2,y)-> E
+				*    |             ^
+				*    +-(e1,e3,y)---+
+				*/
+
+				// epsilon-NFAs are per clause
+				// now we need to create a start state and an ending state
+				// to connect all epsilon-NFAs of its clauses together
+				auto psuedoState = Ptr(new StateSymbol(rule));
+				newStates.Add(psuedoState);
+				for (auto startState : rule->startStates)
+				{
+					newEdges.Add(Ptr(new EdgeSymbol(psuedoState.Obj(), startState)));
+				}
+
+				CompactSyntaxBuilder builder(rule, newStates, newEdges);
+				auto compactStartState = builder.CreateCompactState(psuedoState.Obj());
+				compactStartState->label = L" BEGIN ";
+
+				auto compactEndState = Ptr(new StateSymbol(rule));
+				compactEndState->label = L" END ";
+				compactEndState->endingState = true;
+				newStates.Add(compactEndState);
+
+				List<StateSymbol*> visited;
+				visited.Add(compactStartState);
+
+				// all epsilon-NFAs of its clauses become one connected epsilon-NFA of this rule
+				// we can build the compact-NFA out of this epsilon-NFA starting from the start state
+				// TODO: (enumerable) foreach:alterable
+				for (vint i = 0; i < visited.Count(); i++)
+				{
+					auto current = visited[i];
+					builder.BuildEpsilonEliminatedEdges(current, compactEndState.Obj(), visited);
+				}
+
+				return { compactStartState,compactEndState.Obj()};
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\SYNTAX\SYNTAXSYMBOL_NFACOMPACT_ELIMINATELEFTRECURSION.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace parsergen
+		{
+			using namespace collections;
+
+/***********************************************************************
 SyntaxSymbolManager::BuildLeftRecEdge
 ***********************************************************************/
 
 			void SyntaxSymbolManager::BuildLeftRecEdge(EdgeSymbol* newEdge, EdgeSymbol* endingEdge, EdgeSymbol* lrecPrefixEdge)
 			{
-				newEdge->important |= endingEdge->important;
-				newEdge->important |= lrecPrefixEdge->important;
+				CopyFrom(newEdge->competitions, endingEdge->competitions, true);
+				CopyFrom(newEdge->competitions, lrecPrefixEdge->competitions, true);
 
 				newEdge->input.type = EdgeInputType::LeftRec;
-				CopyFrom(newEdge->insBeforeInput, endingEdge->insBeforeInput, true);
 				CopyFrom(newEdge->insAfterInput, endingEdge->insAfterInput, true);
-				CopyFrom(newEdge->insBeforeInput, lrecPrefixEdge->insBeforeInput, true);
 				CopyFrom(newEdge->insAfterInput, lrecPrefixEdge->insAfterInput, true);
-
-				// TODO: (enumerable) foreach:indexed(alterable(reversed))
-				for (vint i = newEdge->insBeforeInput.Count() - 1; i >= 0; i--)
-				{
-					if (newEdge->insBeforeInput[i].type == AstInsType::BeginObject)
-					{
-						newEdge->insBeforeInput.Insert(i, { AstInsType::LriStore });
-						newEdge->insBeforeInput.Insert(i + 2, { AstInsType::LriFetch });
-					}
-				}
-				// TODO: (enumerable) foreach:indexed(alterable(reversed))
-				for (vint i = newEdge->insAfterInput.Count() - 1; i >= 0; i--)
-				{
-					if (newEdge->insAfterInput[i].type == AstInsType::BeginObject)
-					{
-						newEdge->insBeforeInput.Insert(i, { AstInsType::LriStore });
-						newEdge->insBeforeInput.Insert(i + 2, { AstInsType::LriFetch });
-					}
-				}
 			}
 
 /***********************************************************************
@@ -17568,289 +14139,1677 @@ SyntaxSymbolManager::EliminateLeftRecursion
 					newEdges.Remove(lrecEdge);
 				}
 			}
+		}
+	}
+}
 
 /***********************************************************************
-SyntaxSymbolManager::EliminateSingleRulePrefix
+.\SYNTAX\SYNTAXSYMBOL_NFACOMPACT_MERGEEDGESWITHSAMEINPUT.CPP
 ***********************************************************************/
 
-			void SyntaxSymbolManager::EliminateSingleRulePrefix(RuleSymbol* rule, StateSymbol* startState, StateSymbol* endState, StateList& newStates, EdgeList& newEdges)
+namespace vl
+{
+	namespace glr
+	{
+		namespace parsergen
+		{
+			using namespace collections;
+
+/***********************************************************************
+SymbolSet
+***********************************************************************/
+
+			template<typename TSymbol, bool Ordered>
+			struct SymbolSetListType;
+
+			template<typename TSymbol>
+			struct SymbolSetListType<TSymbol, false>
+			{
+				using Type = List<TSymbol>;
+			};
+
+			template<typename TSymbol>
+			struct SymbolSetListType<TSymbol, true>
+			{
+				using Type = SortedList<TSymbol>;
+			};
+
+			template<typename TSymbol, bool Ordered>
+			using SymbolSetListType_t = typename SymbolSetListType<TSymbol, Ordered>::Type;;
+
+			template<typename TSymbol, bool Ordered>
+			struct SymbolSet
+			{
+			public:
+				using ListType = SymbolSetListType_t<TSymbol, Ordered>;
+				using ListPtr = Ptr<ListType>;
+
+			private:
+				static const ListType				EmptySymbols;
+				ListPtr								symbols;
+
+			public:
+				SymbolSet() = default;
+				SymbolSet(const SymbolSet&) = delete;
+				SymbolSet<TSymbol, Ordered>& operator=(const SymbolSet<TSymbol, Ordered>&) = delete;
+
+				SymbolSet<TSymbol, Ordered>(SymbolSet<TSymbol, Ordered>&& set)
+				{
+					symbols = set.symbols;
+					set.symbols = nullptr;
+				}
+
+				SymbolSet<TSymbol, Ordered>& operator=(SymbolSet<TSymbol, Ordered>&& set)
+				{
+					symbols = set.symbols;
+					set.symbols = nullptr;
+					return *this;
+				}
+
+				SymbolSet(TSymbol _symbol)
+				{
+					Add(_symbol);
+				}
+
+				SymbolSet(const IEnumerable<TSymbol>& _symbols)
+				{
+					symbols = Ptr(new ListType);
+					CopyFrom(*symbols.Obj(), _symbols);
+				}
+
+				bool Add(TSymbol _symbol)
+				{
+					if (!symbols)
+					{
+						symbols = Ptr(new ListType);
+					}
+					if (symbols->Contains(_symbol)) return false;
+					symbols->Add(_symbol);
+					return true;
+				}
+
+				const ListType& Symbols() const
+				{
+					return symbols ? *symbols.Obj() : EmptySymbols;
+				}
+
+				ListPtr SymbolsPtr() const
+				{
+					return symbols;
+				}
+
+				std::strong_ordering operator<=>(const SymbolSet<TSymbol, Ordered>& set) const
+				{
+					if (!symbols && !set.symbols) return std::strong_ordering::equal;
+					if (!symbols) return std::strong_ordering::less;
+					if (!set.symbols) return std::strong_ordering::greater;
+					return CompareEnumerable(*symbols.Obj(), *set.symbols.Obj());
+				}
+
+				bool operator==(const SymbolSet<TSymbol, Ordered>& set) const
+				{
+					return (*this <=> set) == 0;
+				}
+			};
+
+			template<typename TSymbol, bool Ordered>
+			const SymbolSetListType_t<TSymbol, Ordered> SymbolSet<TSymbol, Ordered>::EmptySymbols;
+
+			struct LabeledState
+			{
+				WString				label;
+				vint				index;
+				StateSymbol*		state = nullptr;
+
+				auto operator<=>(const LabeledState& ls) const = default;
+				bool operator==(const LabeledState&) const = default;
+			};
+
+			using StateSymbolSet = SymbolSet<LabeledState, true>;
+			using InsSymbolSet = SymbolSet<AstIns, false>;
+			using CompetitionSymbolSet = SymbolSet<EdgeCompetition, true>;
+
+/***********************************************************************
+SyntaxSymbolManager::MergeEdgesWithSameInput
+***********************************************************************/
+
+			void SyntaxSymbolManager::MergeEdgesWithSameInput(RuleSymbol* rule, StateSymbol* startState, StateList& newStates, EdgeList& newEdges)
 			{
 				/*
-				* Move the single rule prefix from the rule begin state
-				* if there is any single rule clause consist of the same rule
-				*
+				* Two edges can be merged if:
+				*   They are both Token or Rule
+				*   They have the same input, insAfterInput and competitions
+				*   returnEdges of an edge is empty at this moment so it is ignored
+				* 
+				* If a state has multiple outgoing edges that can be merged
+				*   the target states will be merged into one
+				*   all outgoing edges from target states will be recreated from the merged state
+				*   mergable edges will be replaced by a new edge
+				* 
 				* [BEFORE]
-				*    +-(x)-> A --------(ending)-+
-				*    |                          |
-				* S -+-(x)-> ... -> B -(ending)-+-> E
-				*    |                          |
-				*    +-(x)-> ... -> C -(ending)-+
-				*
+				*    +-(r)-> U -(b)-> X
+				*    |
+				* A -+-(r)-> V -(b)-> Y
+				*    |
+				*    +-(r)-> W -(c)-> Z
+				* 
 				* [AFTER]
-				*            +-(leftrec)-> ... -> B -(ending)---+
-				*            |                                  v
-				* S-(x)-> A -+-----------------------(ending)-> E
-				*            |                                  ^
-				*            +-(leftrec)-> ... -> C -(ending)---+
+				* 
+				*                 +-(b)-> XY
+				*                 |
+				* A -+-(r)-> UVW -+-(c)-> Z
 				*/
 
-				Group<RuleSymbol*, EdgeSymbol*> prefixEdges;
-				List<EdgeSymbol*> continuationEdges, eliminatedEdges;
+				Dictionary<StateSymbolSet, Ptr<StateSymbol>> statesToMerged;
+				Dictionary<StateSymbol*, StateSymbolSet::ListPtr> mergedToStates;
 
-				// identify prefix edge and continuation edge
-				// prefix edges are clauses (x)
-				// continuation edges are all qualified clauses with prefix (x) except prefix edges
-				for (auto edge : startState->OutEdges())
+				List<StateSymbol*> workingStates;
+				IncrementalChange ic;
+
+				// Start from the start state
 				{
-					if (edge->input.type != EdgeInputType::Rule) continue;
-					if (edge->input.rule == rule) continue;
-					auto state = edge->To();
-					if (state->InEdges().Count() > 1) continue;
+					ic.opStates.Add(startState);
+					workingStates.Add(startState);
+				}
 
-					if (state->OutEdges().Count() == 1 && state->OutEdges()[0]->input.type == EdgeInputType::Ending)
+				auto ReuseState = [&](StateSymbol* state)
+				{
+					if (!ic.opStates.Contains(state))
 					{
-						prefixEdges.Add(edge->input.rule, edge);
+						ic.opStates.Add(state);
+						workingStates.Add(state);
+					}
+				};
+
+				auto ReuseEdge = [&](EdgeSymbol* edge)
+				{
+					ReuseState(edge->To());
+					if (!ic.opEdges.Contains(edge))
+					{
+						ic.opEdges.Add(edge);
+					}
+				};
+
+				auto ApplyEdgeToMergedState = [&](EdgeSymbol* edge, StateSymbol* mergedState)
+				{
+					ReuseState(edge->To());
+					auto newEdge = Ptr(new EdgeSymbol(mergedState, edge->To()));
+					ic.createdEdges.Add(newEdge);
+					newEdge->input = edge->input;
+					CopyFrom(newEdge->competitions, edge->competitions);
+					CopyFrom(newEdge->insAfterInput, edge->insAfterInput);
+				};
+
+				for (vint i = 0; i < workingStates.Count(); i++)
+				{
+					auto currentState = workingStates[i];
+					vint currentMergedToStateIndex = mergedToStates.Keys().IndexOf(currentState);
+
+					Group<Tuple<EdgeInput, InsSymbolSet, CompetitionSymbolSet>, EdgeSymbol*> groupedEdges;
+					if (currentMergedToStateIndex == -1)
+					{
+						// if the current state is an original state
+						for (auto edge : currentState->OutEdges())
+						{
+							if (edge->input.type == EdgeInputType::Token || edge->input.type == EdgeInputType::Rule)
+							{
+								// only group Token or Rule edges
+								groupedEdges.Add(
+									{
+										edge->input,
+										InsSymbolSet{edge->insAfterInput},
+										CompetitionSymbolSet(edge->competitions)
+									}, edge);
+							}
+							else
+							{
+								// reuse others
+								ReuseEdge(edge);
+							}
+						}
 					}
 					else
 					{
-						continuationEdges.Add(edge);
-					}
-				}
-
-				// TODO: (enumerable) foreach on group
-				for (auto [ruleSymbol, prefixIndex] : indexed(prefixEdges.Keys()))
-				{
-					auto&& prefixEdgesOfRule = prefixEdges.GetByIndex(prefixIndex);
-					CHECK_ERROR(prefixEdgesOfRule.Count() == 1, L"<EliminateSingleRulePrefix>Multiple prefix edges under the same rule is not supported yet.");
-
-					// TODO:
-					// prefixEdge means the clause could consume only one rule
-					// multiple prefixEdge could be
-					//   the rule has multiple such clauses
-					//   there is one clause but it looks like "([a] | [b]) c"
-					//     where both [a] and [b] create an epsilon edge to c
-					//     and after removing epsilon edges they become both edge consuming c
-					// in this case we need to create a prefix edges to replace all others
-					// it also means unresolvable ambiguity
-					// maybe a better solution is to define it as a kind of invalid syntax
-				}
-
-				// for all prefixEdge and continuationEdge under the same rule
-				// if their insBeforeInput are different
-				// move prefixEdge's insBeforeInput to insAfterInput with help from LriStore and LriFetch
-				SortedList<RuleSymbol*> compatibleInsBeforeInputPrefixRules;
-				// TODO: (enumerable) foreach on group
-				for (auto [ruleSymbol, prefixIndex] : indexed(prefixEdges.Keys()))
-				{
-					// see if all prefixEdges are compatible
-					auto&& prefixEdgesOfRule = prefixEdges.GetByIndex(prefixIndex);
-					auto prefixEdge = prefixEdgesOfRule[0];
-					for (auto otherPrefixEdge : From(prefixEdgesOfRule).Skip(1))
-					{
-						if (CompareEnumerable(prefixEdge->insBeforeInput, otherPrefixEdge->insBeforeInput) != 0)
+						// if the current state is a merged state, search all of its original states
+						for (auto targetState : *mergedToStates.Values()[currentMergedToStateIndex].Obj())
 						{
-							goto INCOMPATIBLE;
-						}
-					}
-
-					// see if all continuationEdges are compatible
-					for (auto continuationEdge : continuationEdges)
-					{
-						if (continuationEdge->input.rule == prefixEdge->input.rule)
-						{
-							if (CompareEnumerable(prefixEdge->insBeforeInput, continuationEdge->insBeforeInput) != 0)
+							for (auto edge : targetState.state->OutEdges())
 							{
-								goto INCOMPATIBLE;
+								if (edge->input.type == EdgeInputType::Token || edge->input.type == EdgeInputType::Rule)
+								{
+									// only group Token or Rule edges
+									groupedEdges.Add(
+										{
+											edge->input,
+											InsSymbolSet{edge->insAfterInput},
+											CompetitionSymbolSet(edge->competitions)
+										}, edge);
+								}
+								else
+								{
+									// duplicate others to start from the merged state
+									ApplyEdgeToMergedState(edge, currentState);
+								}
 							}
 						}
 					}
 
-					compatibleInsBeforeInputPrefixRules.Add(ruleSymbol);
-				INCOMPATIBLE:;
-				}
-
-				// for all prefixEdge that fails the above test
-				// combine insBeforeInput with insAfterInput with the help from LriStore and LriFetch
-				// properly move instructions from prefixEdge to endingEdge
-				// TODO: (enumerable) foreach on group
-				for (auto [ruleSymbol, prefixIndex] : indexed(prefixEdges.Keys()))
-				{
-					bool compatible = compatibleInsBeforeInputPrefixRules.Contains(ruleSymbol);
-					for (auto prefixEdge : prefixEdges.GetByIndex(prefixIndex))
+					// see if multiple edges could be grouped together
+					for (vint groupedIndex = 0; groupedIndex < groupedEdges.Count(); groupedIndex++)
 					{
-						List<AstIns> ins;
-						if (!compatible && prefixEdge->insBeforeInput.Count() > 0)
-						{
-							ins.Add({ AstInsType::LriStore });
-							CopyFrom(ins, prefixEdge->insBeforeInput, true);
-							ins.Add({ AstInsType::LriFetch });
-							prefixEdge->insBeforeInput.Clear();
-						}
-						CopyFrom(ins, prefixEdge->insAfterInput, true);
-						prefixEdge->insAfterInput.Clear();
+						auto&& groupedKey = groupedEdges.Keys()[groupedIndex];
+						auto&& groupedValues = groupedEdges.GetByIndex(groupedIndex);
 
-						auto endingEdge = prefixEdge->To()->OutEdges()[0];
-						CopyFrom(ins, endingEdge->insBeforeInput, true);
-						CopyFrom(endingEdge->insBeforeInput, ins);
+						if (groupedValues.Count() == 1)
+						{
+							// if a group only has one edge, reuse the target state
+							if (currentMergedToStateIndex == -1)
+							{
+								ReuseEdge(groupedValues[0]);
+							}
+							else
+							{
+								ApplyEdgeToMergedState(groupedValues[0], currentState);
+							}
+						}
+						else
+						{
+							// if a group has multiple edges, merge all target states into one
+							Ptr<StateSymbol> mergedState;
+							{
+								StateSymbolSet targetSet;
+								for (auto edge : groupedValues)
+								{
+									targetSet.Add({ edge->To()->label,newStates.IndexOf(edge->To()),edge->To() });
+								}
+
+								vint index = statesToMerged.Keys().IndexOf(targetSet);
+								if (index != -1)
+								{
+									// if the merged state already exists, reuse it
+									mergedState = statesToMerged.Values()[index];
+								}
+								else
+								{
+									// otherwise, create a new merged state
+									// its label is the combination of all originals
+									mergedState = Ptr(new StateSymbol(startState->Rule()));
+									ic.createdStates.Add(mergedState);
+									workingStates.Add(mergedState.Obj());
+
+									mergedState->label = stream::GenerateToStream([&](stream::TextWriter& writer)
+									{
+										writer.WriteString(L"{{");
+										for (auto [state, index] : indexed(targetSet.Symbols()))
+										{
+											if (index > 0) writer.WriteString(L" ; ");
+											writer.WriteString(state.label);
+										}
+										writer.WriteString(L"}}");
+									});
+
+									mergedToStates.Add(mergedState.Obj(), targetSet.SymbolsPtr());
+									statesToMerged.Add(std::move(targetSet), mergedState);
+								}
+							}
+
+							auto newEdge = Ptr(new EdgeSymbol(currentState, mergedState.Obj()));
+							ic.createdEdges.Add(newEdge);
+
+							newEdge->input = groupedKey.get<0>();
+							CopyFrom(newEdge->insAfterInput, groupedKey.get<1>().Symbols());
+							CopyFrom(newEdge->competitions, groupedKey.get<2>().Symbols());
+						}
 					}
 				}
 
-				// for all qualified continuationEdge
-				// create a new edge to run continuationEdge's instruction properly after prefixEdge
-				// remove continuationEdge
-				for (auto continuationEdge : continuationEdges)
-				{
-					vint prefixIndex = prefixEdges.Keys().IndexOf(continuationEdge->input.rule);
-					if (prefixIndex == -1) continue;
-
-					bool compatible = compatibleInsBeforeInputPrefixRules.Contains(continuationEdge->input.rule);
-					bool eliminated = false;
-					for (auto prefixEdge : prefixEdges.GetByIndex(prefixIndex))
-					{
-						// important and insSwitch happen before shifting into the rule
-						if (continuationEdge->important != prefixEdge->important) continue;
-
-						eliminated = true;
-						auto state = prefixEdge->To();
-						auto newEdge = Ptr(new EdgeSymbol(state, continuationEdge->To()));
-						newEdges.Add(newEdge);
-
-						newEdge->input.type = EdgeInputType::LeftRec;
-						newEdge->important = continuationEdge->important;
-						if (compatible)
-						{
-							CopyFrom(newEdge->insAfterInput, continuationEdge->insAfterInput);
-						}
-						else if (continuationEdge->insBeforeInput.Count() > 0)
-						{
-							// for incompatible continuationEdge
-							// combine insBeforeInput with insAfterInput with the help from LriStore and LriFetch
-							newEdge->insAfterInput.Add({ AstInsType::LriStore });
-							CopyFrom(newEdge->insAfterInput, continuationEdge->insBeforeInput, true);
-							newEdge->insAfterInput.Add({ AstInsType::LriFetch });
-							CopyFrom(newEdge->insAfterInput, continuationEdge->insAfterInput, true);
-						}
-					}
-
-					if (eliminated)
-					{
-						eliminatedEdges.Add(continuationEdge);
-					}
-				}
-
-				for (auto eliminatedEdge : eliminatedEdges)
-				{
-					vint prefixIndex = prefixEdges.Keys().IndexOf(eliminatedEdge->input.rule);
-					if (prefixIndex == -1) continue;
-					eliminatedEdge->From()->outEdges.Remove(eliminatedEdge);
-					eliminatedEdge->To()->inEdges.Remove(eliminatedEdge);
-					newEdges.Remove(eliminatedEdge);
-				}
+				ApplyIncrementalChange(ic, newStates, newEdges);
 			}
+		}
+	}
+}
 
 /***********************************************************************
-SyntaxSymbolManager::EliminateEpsilonEdges
+.\SYNTAX\SYNTAXSYMBOL_NFACOMPACT_MERGEEDGESWITHSAMERULEUSINGLEFTREC.CPP
 ***********************************************************************/
 
-			StateSymbol* SyntaxSymbolManager::EliminateEpsilonEdges(RuleSymbol* rule, StateList& newStates, EdgeList& newEdges)
+namespace vl
+{
+	namespace glr
+	{
+		namespace parsergen
+		{
+			using namespace collections;
+
+/***********************************************************************
+SyntaxSymbolManager::MergeEdgesWithSameRuleUsingLeftrec
+***********************************************************************/
+
+			void SyntaxSymbolManager::MergeEdgesWithSameRuleUsingLeftrec(RuleSymbol* rule, StateSymbol* startState, StateList& newStates, EdgeList& newEdges)
 			{
 				/*
-				* For any transition that goes through some epsilon edge and ends with a non-epsilon edge
-				* we copy all instructions from epsilon edges and the non-epsilon edge in order
-				* and create a new edge directly pointing to the toState of the non-epsilon edge
-				* 
+				* Two edges can be merged if:
+				*   They consume the same Rule, but they have different insAfterInput and competitions
+				*   We only check rules because MergeEdgesWithSameInput already take care of those
+				*
+				* If a state has multiple outgoing edges that can be merged
+				*   An edge with no insAfterInput and competitions will be inserted before these edges
+				*   These edges will be converted to LeftRec
+				*
 				* [BEFORE]
-				*         +-(x)-> B
-				*         |
-				* A -(e1)-+-(e2)-> C -+-(y)-> E
-				*         |           |
-				*         +-(e3)-> D -+
-				* 
-				* [AFTER]
-				*    +-(e1,x)-> B
+				*    +-(r)-> U -(ending)-> X
 				*    |
-				* A -+-(e1,e2,y)-> E
-				*    |             ^
-				*    +-(e1,e3,y)---+
+				* A -+-(r)-> V -(b)-> Y
+				*    |
+				*    +-(r)-> W -+-(c)-> Z1
+				*               |
+				*               +-(ending)-> Z2
+				*
+				* [AFTER]
+				*
+				*             +-(ending)-> X
+				*             |
+				* A -(r)-> B -+-(leftrec)-> V -(b)-> Y
+				*             |
+				*             +-(leftrec)-> W -(c)-> Z1
+				*             |
+				*             +-(ending)-> Z2
 				*/
 
-				// epsilon-NFAs are per clause
-				// now we need to create a start state and an ending state
-				// to connect all epsilon-NFAs of its clauses together
-				auto psuedoState = CreateState(rule, -1);
-				for (auto startState : rule->startStates)
+				IncrementalChange ic;
+				CopyFrom(ic.opStates, From(newStates).Select([](auto p) {return p.Obj(); }));
+				CopyFrom(ic.opEdges, From(newEdges).Select([](auto p) {return p.Obj(); }));
+
+				SortedList<StateSymbol*> visitedStates;
+				List<StateSymbol*> workingStates;
+				workingStates.Add(startState);
+
+				// travel through all states
+				for (vint i = 0; i < workingStates.Count(); i++)
 				{
-					CreateEdge(psuedoState, startState);
+					// group outgoing Rule edges by rules, ignore others
+					auto currentState = workingStates[i];
+					Group<RuleSymbol*, EdgeSymbol*> groupedEdges;
+					for (auto edge : currentState->OutEdges())
+					{
+						if (edge->input.type != EdgeInputType::Rule) continue;
+						groupedEdges.Add(edge->input.rule, edge);
+					}
+
+					for (vint j = 0; j < groupedEdges.Count(); j++)
+					{
+						// only process cases when multiple edges consume the same rule
+						// their insAfterInput or competitions are different
+						// otherwise they should have been merged in MergeEdgesWithSameInput
+						auto&& edges = groupedEdges.GetByIndex(j);
+						if (edges.Count() > 1)
+						{
+							// newState labeling [pm-lr] is made
+							auto newState = Ptr(new StateSymbol(rule));
+							ic.createdStates.Add(newState);
+							newState->label = currentState->label + L"[pm-lr]";
+
+							// currentState goes to newState by an Rule edge with empty insAfterInput and competitions
+							auto newEdge = Ptr(new EdgeSymbol(currentState, newState.Obj()));
+							ic.createdEdges.Add(newEdge);
+							newEdge->input = edges[0]->input;
+
+							// edit all original Rule edges
+							for (auto originalRuleEdge : edges)
+							{
+								// disconnect originalRuleEdge from currentState
+								originalRuleEdge->fromState->outEdges.Remove(originalRuleEdge);
+								originalRuleEdge->fromState = nullptr;
+
+								vint epsilonCount = 0;
+								vint inputCount = 0;
+
+								auto targetState = originalRuleEdge->toState;
+								for (auto targetEdge : targetState->outEdges)
+								{
+									if (targetEdge->input.type == EdgeInputType::Ending || targetEdge->input.type == EdgeInputType::LeftRec)
+									{
+										epsilonCount++;
+									}
+									else
+									{
+										inputCount++;
+									}
+								}
+
+								if (epsilonCount == 0)
+								{
+									// if all edges following originalRuleEdge are input edges
+									// reconnect it from newState and turn it into LeftRec
+									originalRuleEdge->fromState = newState.Obj();
+									originalRuleEdge->fromState->outEdges.Add(originalRuleEdge);
+									originalRuleEdge->input = { EdgeInputType::LeftRec };
+								}
+								else
+								{
+									// otherwise complex editing involves
+									Ptr<StateSymbol> newTargetState;
+									for (auto targetEdge : targetState->OutEdges())
+									{
+										if (targetEdge->input.type == EdgeInputType::Ending || targetEdge->input.type == EdgeInputType::LeftRec)
+										{
+											// for any epsilon edge following originalRuleEdge
+											// we don't want two epsilon edge as it would make the NFA non-compact
+											// a new edge will be made to merge originalRuleEdge and this following epsilon edge
+											auto newTargetEdge = Ptr(new EdgeSymbol(newState.Obj(), targetEdge->toState));
+											ic.createdEdges.Add(newTargetEdge);
+
+											newTargetEdge->input = targetEdge->input;
+											CopyFrom(newTargetEdge->competitions, originalRuleEdge->competitions, true);
+											CopyFrom(newTargetEdge->competitions, targetEdge->competitions, true);
+											CopyFrom(newTargetEdge->insAfterInput, originalRuleEdge->insAfterInput, true);
+											CopyFrom(newTargetEdge->insAfterInput, targetEdge->insAfterInput, true);
+										}
+										else
+										{
+											// for any input edge following originalRuleEdge
+											// as we can't change targetState which originalRuleEdge points to
+											// because there might be other edges connecting to targetState
+											// we will duplicate targetState to a [pm-dup]
+											// and make originalRuleEdge connect to it from newState as a LeftRec
+											if (!newTargetState)
+											{
+												newTargetState = Ptr(new StateSymbol(rule));
+												ic.createdStates.Add(newTargetState);
+												newTargetState->label = targetState->label + L"[pm-dup]";
+
+												originalRuleEdge->fromState = newState.Obj();
+												originalRuleEdge->fromState->outEdges.Add(originalRuleEdge);
+												originalRuleEdge->toState->inEdges.Remove(originalRuleEdge);
+												originalRuleEdge->toState = newTargetState.Obj();
+												originalRuleEdge->toState->inEdges.Add(originalRuleEdge);
+												originalRuleEdge->input = { EdgeInputType::LeftRec };
+											}
+
+											// and copy the input rule
+											auto newTargetEdge = Ptr(new EdgeSymbol(newTargetState.Obj(), targetEdge->toState));
+											ic.createdEdges.Add(newTargetEdge);
+
+											newTargetEdge->input = targetEdge->input;
+											CopyFrom(newTargetEdge->competitions, targetEdge->competitions, true);
+											CopyFrom(newTargetEdge->insAfterInput, targetEdge->insAfterInput, true);
+										}
+									}
+								}
+
+								if (originalRuleEdge->fromState == nullptr)
+								{
+									// if originalRuleEdge is not reused, remove it
+									originalRuleEdge->toState->inEdges.Remove(originalRuleEdge);
+									ic.opEdges.Remove(originalRuleEdge);
+								}
+
+								if (targetState->inEdges.Count() == 0)
+								{
+									// after removing originalRuleEdge
+									// if no other state points to targetState
+									// remove it
+									// if a [pm-dup] is made, we won't reusing and just let that happen
+									ic.opStates.Remove(targetState);
+									for (auto targetEdge : targetState->OutEdges())
+									{
+										targetEdge->toState->inEdges.Remove(targetEdge);
+										ic.opEdges.Remove(targetEdge);
+									}
+								}
+							}
+						}
+					}
+
+					for (auto edge : currentState->OutEdges())
+					{
+						if (!visitedStates.Contains(edge->To()))
+						{
+							visitedStates.Add(edge->To());
+							workingStates.Add(edge->To());
+						}
+					}
 				}
 
-				CompactSyntaxBuilder builder(rule, newStates, newEdges);
-				auto compactStartState = builder.CreateCompactState(psuedoState);
-				compactStartState->label = L" BEGIN ";
-
-				auto compactEndState = Ptr(new StateSymbol(rule, -1));
-				compactEndState->label = L" END ";
-				compactEndState->endingState = true;
-				newStates.Add(compactEndState);
-
-				List<StateSymbol*> visited;
-				visited.Add(compactStartState);
-
-				// all epsilon-NFAs of its clauses become one connected epsilon-NFA of this rule
-				// we can build the compact-NFA out of this epsilon-NFA starting from the start state
-				// TODO: (enumerable) foreach:alterable
-				for (vint i = 0; i < visited.Count(); i++)
-				{
-					auto current = visited[i];
-					builder.BuildEpsilonEliminatedEdges(current, compactEndState.Obj(), visited);
-				}
-
-				// optimize
-				EliminateLeftRecursion(rule, compactStartState, compactEndState.Obj(), newStates, newEdges);
-				EliminateSingleRulePrefix(rule, compactStartState, compactEndState.Obj(), newStates, newEdges);
-
-				return compactStartState;
+				ApplyIncrementalChange(ic, newStates, newEdges);
 			}
+		}
+	}
+}
 
 /***********************************************************************
-SyntaxSymbolManager::BuildCompactNFAInternal
+.\SYNTAX\SYNTAXSYMBOL_NFACOMPACT_PREFIXMERGECROSSREFERENCE.CPP
 ***********************************************************************/
 
-			void SyntaxSymbolManager::BuildCompactNFAInternal()
-			{
-				StateList newStates;
-				EdgeList newEdges;
-				for (auto ruleSymbol : rules.map.Values())
-				{
-					auto startState = EliminateEpsilonEdges(ruleSymbol, newStates, newEdges);
-					ruleSymbol->startStates.Clear();
-					ruleSymbol->startStates.Add(startState);
-				}
-				CopyFrom(states, newStates);
-				CopyFrom(edges, newEdges);
+namespace vl
+{
+	namespace glr
+	{
+		namespace parsergen
+		{
+			using namespace collections;
 
-				// only when a state has any important out edge
-				// its out edges are marked accordingly
-				for (auto state : states)
+/***********************************************************************
+BitSet
+***********************************************************************/
+
+			struct BitSet
+			{
+			public:
+				static const BitSet		Zero;
+
+			private:
+				vint					wordCount = 0;
+				vuint64_t*				words = nullptr;
+
+				static bool AllZero(vuint64_t* words, vint wordCount)
 				{
-					bool competition = false;
-					for (auto edge : state->OutEdges())
+					for (vint i = 0; i < wordCount; i++)
 					{
-						if (edge->important)
+						if (words[i] != 0) return false;
+					}
+					return true;
+				}
+			public:
+				BitSet& operator=(const BitSet& bs) noexcept
+				{
+					if (this != &bs)
+					{
+						wordCount = bs.wordCount;
+						if (words)
 						{
-							competition = true;
+							delete[] words;
+							words = nullptr;
+						}
+						if (bs.words)
+						{
+							words = new vuint64_t[wordCount];
+							memcpy(words, bs.words, sizeof(vuint64_t) * wordCount);
+						}
+					}
+					return *this;
+				}
+
+				BitSet& operator=(BitSet&& bs) noexcept
+				{
+					if (this != &bs)
+					{
+						wordCount = bs.wordCount;
+						if (words)
+						{
+							delete[] words;
+						}
+						words = bs.words;
+						bs.wordCount = 0;
+						bs.words = nullptr;
+					}
+					return *this;
+				}
+
+				BitSet() = default;
+				BitSet(const BitSet& bs) noexcept { *this = bs; }
+				BitSet(BitSet&& bs) noexcept { *this = std::move(bs); }
+				~BitSet() { if (words) delete[] words; }
+
+				auto operator<=>(const BitSet& bs) const
+				{
+					if (this == &bs) return std::strong_ordering::equal;
+					vint minWordCount = wordCount < bs.wordCount ? wordCount : bs.wordCount;
+					if (minWordCount > 0)
+					{
+						auto result = memcmp(words, bs.words, sizeof(vuint64_t) * minWordCount) <=> 0;
+						if (result != 0) return result;
+					}
+
+					auto result = wordCount <=> bs.wordCount;
+					if (result < 0)
+					{
+						return AllZero(bs.words + minWordCount, bs.wordCount - minWordCount) ? std::strong_ordering::equal : std::strong_ordering::less;
+					}
+					else if (result > 0)
+					{
+						return AllZero(words + minWordCount, wordCount - minWordCount) ? std::strong_ordering::equal : std::strong_ordering::greater;
+					}
+					else
+					{
+						return result;
+					}
+				}
+				bool operator==(const BitSet& bs) const
+				{
+					return (*this <=> bs) == 0;
+				}
+
+				bool operator[](vint index) const
+				{
+					vint wordIndex = index / 64;
+					vint bitIndex = index % 64;
+					if (wordIndex >= wordCount)
+					{
+						return false;
+					}
+					return (words[wordIndex] & (vuint64_t(1) << bitIndex)) != 0;
+				}
+
+				void Set(vint index)
+				{
+					vint wordIndex = index / 64;
+					vint bitIndex = index % 64;
+					if (wordIndex >= wordCount)
+					{
+						vint oldWordCount = wordCount;
+						wordCount = wordIndex + 1;
+						vuint64_t* newWords = new vuint64_t[wordCount];
+						memset(newWords, 0, sizeof(vuint64_t) * wordCount);
+						if (words)
+						{
+							memcpy(newWords, words, sizeof(vuint64_t) * oldWordCount);
+							delete[] words;
+						}
+						words = newWords;
+					}
+					words[wordIndex] |= (vuint64_t(1) << bitIndex);
+				}
+
+				operator bool() const
+				{
+					return !AllZero(words, wordCount);
+				}
+
+				BitSet operator|(const BitSet& bs) const
+				{
+					if (this == &bs) return *this;
+					BitSet result;
+					vint maxWordCount = wordCount > bs.wordCount ? wordCount : bs.wordCount;
+					if (maxWordCount > 0)
+					{
+						result.wordCount = maxWordCount;
+						result.words = new vuint64_t[maxWordCount];
+						for (vint i = 0; i < maxWordCount; i++)
+						{
+							vuint64_t w1 = i < wordCount ? words[i] : 0;
+							vuint64_t w2 = i < bs.wordCount ? bs.words[i] : 0;
+							result.words[i] = w1 | w2;
+						}
+					}
+					return result;
+				}
+
+				BitSet& operator|=(const BitSet& bs)
+				{
+					if (this == &bs) return *this;
+					*this = *this | bs;
+					return *this;
+				}
+
+				BitSet operator&(const BitSet& bs) const
+				{
+					if (this == &bs) return *this;
+					BitSet result;
+					vint minWordCount = wordCount < bs.wordCount ? wordCount : bs.wordCount;
+					if (minWordCount > 0)
+					{
+						result.wordCount = minWordCount;
+						result.words = new vuint64_t[minWordCount];
+						for (vint i = 0; i < minWordCount; i++)
+						{
+							result.words[i] = words[i] & bs.words[i];
+						}
+					}
+					return result;
+				}
+
+				BitSet& operator&=(const BitSet& bs)
+				{
+					if (this == &bs) return *this;
+					*this = *this & bs;
+					return *this;
+				}
+
+				BitSet& operator-=(const BitSet& bs)
+				{
+					if (this == &bs) 
+					{
+						*this = Zero;
+					}
+					else
+					{
+						vint minWordCount = wordCount < bs.wordCount ? wordCount : bs.wordCount;
+						for (vint i = 0; i < minWordCount; i++)
+						{
+							words[i] &= ~bs.words[i];
+						}
+					}
+					return *this;
+				}
+			};
+
+			const BitSet BitSet::Zero;
+
+/***********************************************************************
+SyntaxSymbolManager::CreatePrefixMerge
+***********************************************************************/
+
+			struct PrefixMergeCache
+			{
+				// prepared by CreatePrefixMergeCache
+				Array<RuleSymbol*>		rules;
+				Array<RuleSymbol*>		rulesByDeps; // if a begins with b, a is before b
+				Array<BitSet>			directStartSetTokens, startSetTokens;
+				Array<BitSet>			directStartSetRules, startSetRules, reverseStartSetRules;
+			};
+
+			Ptr<PrefixMergeCache> SyntaxSymbolManager::CreatePrefixMergeCache()
+			{
+				auto cache = Ptr(new PrefixMergeCache);
+				CopyFrom(cache->rules, rules.map.Values());
+				const vint ruleCount = cache->rules.Count();
+
+				cache->rulesByDeps.Resize(ruleCount);
+				cache->directStartSetTokens.Resize(ruleCount);
+				cache->startSetTokens.Resize(ruleCount);
+				cache->directStartSetRules.Resize(ruleCount);
+				cache->startSetRules.Resize(ruleCount);
+				cache->reverseStartSetRules.Resize(ruleCount);
+				for (auto [ruleSymbol, index] : indexed(cache->rules))
+				{
+					ruleSymbol->pmRuleIndex = index;
+				}
+
+				PartialOrderingProcessor pop;
+				{
+					Group<RuleSymbol*, RuleSymbol*> deps;
+					for (auto ruleSymbol : cache->rules)
+					{
+						auto startState = ruleSymbol->startStates[0];
+						BitSet directTokens, directRules;
+						for (auto edge : startState->OutEdges())
+						{
+							switch (edge->input.type)
+							{
+							case EdgeInputType::Token:
+								directTokens.Set(edge->input.token);
+								break;
+							case EdgeInputType::Rule:
+								directRules.Set(edge->input.rule->pmRuleIndex);
+								deps.Add(ruleSymbol, edge->input.rule);
+								break;
+							default:;
+							}
+						}
+						cache->directStartSetTokens[ruleSymbol->pmRuleIndex] = directTokens;
+						cache->directStartSetRules[ruleSymbol->pmRuleIndex] = directRules;
+					}
+					pop.InitWithGroup(cache->rules, deps);
+					pop.Sort();
+				}
+
+				for (auto component : pop.components)
+				{
+					if (component.nodeCount > 1)
+					{
+						AddError(
+							ParserErrorType::RuleIsIndirectlyLeftRecursive,
+							{},
+							From(Range<vint>(0, component.nodeCount))
+							.Select([&](vint index) { return cache->rules[component.firstNode[index]]->Name(); })
+							.OrderBySelf()
+							.Aggregate([](auto&& a, auto&& b) { return a + L", " + b; })
+						);
+					}
+				}
+				if (global.Errors().Count() > 0) return nullptr;
+
+				for (auto [component, index] : indexed(pop.components))
+				{
+					auto ruleSymbol = cache->rules[*component.firstNode];
+					auto startSetTokens = cache->directStartSetTokens[ruleSymbol->pmRuleIndex];
+					auto startSetRules = cache->directStartSetRules[ruleSymbol->pmRuleIndex];
+					cache->rulesByDeps[ruleCount - 1 - index] = ruleSymbol;
+
+					auto startState = ruleSymbol->startStates[0];
+					for (auto edge : startState->OutEdges())
+					{
+						if (edge->input.type != EdgeInputType::Rule) continue;
+						startSetTokens |= cache->startSetTokens[edge->input.rule->pmRuleIndex];
+						startSetRules |= cache->startSetRules[edge->input.rule->pmRuleIndex];
+					}
+					cache->startSetTokens[ruleSymbol->pmRuleIndex] = startSetTokens;
+					cache->startSetRules[ruleSymbol->pmRuleIndex] = startSetRules;
+				}
+
+				for (vint i = 0; i < ruleCount; i++)
+				{
+					for (vint j = 0; j < ruleCount; j++)
+					{
+						if (cache->startSetRules[i][j])
+						{
+							cache->reverseStartSetRules[j].Set(i);
+						}
+					}
+				}
+
+				return cache;
+			}
+
+//#if defined VCZH_MSVC && defined _DEBUG
+//#define LOG_DECISION_MAKING
+//#define LOG console::Console::Write
+//#define LOGL console::Console::WriteLine
+//#endif
+
+/***********************************************************************
+SyntaxSymbolManager::PrefixMergeCrossReference_SolveInState
+***********************************************************************/
+
+			void SyntaxSymbolManager::PrefixMergeCrossReference_SolveInState(
+				PrefixMergeCache * cache,
+				RuleSymbol * rule,
+				StateSymbol * currentState,
+				Ptr<PrefixMergeSolutionApplication> application)
+			{
+				/*
+				* To find out the minimum start set of rules to inject
+				* 
+				* Stores startSetRules[edge->input.rule] to startSetEdges
+				* Try each rule in cache->rulesByDeps
+				* If startSetRules[rule] satisfies both conditions on each edge to merge
+				*   startSetEdges[edge] & startSetRules[rule] == startSetRules[rule]
+				*   startSetEdges[edge] & startSetRules[rule] == BitSet::Zero
+				* Then this rule is one in the minimum start set, update startSetEdges by:
+				*   extract startSetRules[rule]
+				*   extract any parent rule where startSetRules[parent rule] has rule
+				* Repeat until the test results in all BitSet::Zero (or when all startSetEdges are BitSet::Zero)
+				* 
+				* We can see indirectStartSetRules as the relationship in a partial ordered graph starting from a rule
+				* When a rule is picked up as a prefix rule
+				*   it removes the rule and all its descendants from the graph
+				*   and we will have to break all node that depends on this prefix rule into multiple prefix rules
+				*   so those parents will never be prefix rules
+				*   after parent nodes are removed, the graph breaks into multiple sub graphs, maybe disconnected
+				* The goal is to pick up all smaller graphs that:
+				*   they are big enough
+				*   their leaf nodes do no intersect with each other
+				*   leaf nodes of the current graph is covered by them
+				*/
+
+#define ERROR_MESSAGE_PREFIX L"vl::glr::parsergen::SyntaxSymbolManager::PrefixMergeCrossReference_SolveInState(PrefixMergeCache*, RuleSymbol*, StateSymbol*, Array<EdgeSymbol*>&, List<RuleSymbol*>&, PrefixMergeSolutionMap&)#"
+
+#ifdef LOG_DECISION_MAKING
+				LOG(L"  [GROUPED] :");
+				for (auto [edge, index] : indexed(application->edgesToMerge))
+				{
+					LOG(L" " + edge->input.rule->Name());
+				}
+				LOGL(L"");
+#endif
+				// prepare startSetEdges to be startSetRules of each edge's input rule
+				Array<BitSet> startSetEdges(application->edgesToMerge.Count());
+				for (auto [edge, index] : indexed(application->edgesToMerge))
+				{
+					startSetEdges[index] = cache->startSetRules[edge->input.rule->pmRuleIndex];
+					startSetEdges[index].Set(edge->input.rule->pmRuleIndex);
+				}
+
+				// at this moment, application->prefixRules are part of the solution that has already been picked u
+				if (application->prefixRules.Count() > 0)
+				{
+					for (auto prefixRule : application->prefixRules)
+					{
+						// take away all rules that depends or reversed depends on the prefix rule
+						auto startSetRule = cache->startSetRules[prefixRule->pmRuleIndex];
+						startSetRule.Set(prefixRule->pmRuleIndex);
+						auto reverseStartSetRule = cache->reverseStartSetRules[prefixRule->pmRuleIndex];
+						auto startSetToExtract = startSetRule | reverseStartSetRule;
+
+						for (vint edgeIndex = 0; edgeIndex < application->edgesToMerge.Count(); edgeIndex++)
+						{
+							startSetEdges[edgeIndex] -= startSetToExtract;
+						}
+					}
+#ifdef LOG_DECISION_MAKING
+					LOGL(L"    [APPLIED REUSED]");
+					for (auto [edge, index] : indexed(application->edgesToMerge))
+					{
+						LOG(L"      " + edge->input.rule->Name() + L" :");
+						auto&& startSetEdge = startSetEdges[index];
+						for (auto rule : cache->rulesByDeps)
+						{
+							if (startSetEdge[rule->pmRuleIndex]) LOG(L" " + rule->Name());
+						}
+						LOGL(L"");
+					}
+#endif
+					// if startSetEdges become all empty, no more prefix rule will be found
+					bool allZero = true;
+					for (vint edgeIndex = 0; edgeIndex < application->edgesToMerge.Count(); edgeIndex++)
+					{
+						if (startSetEdges[edgeIndex] != BitSet::Zero)
+						{
+							allZero = false;
 							break;
 						}
 					}
+					if (allZero) return;
+				}
 
-					if (competition)
+				{
+				FOUND_ONE_SOLUTION:
+#ifdef LOG_DECISION_MAKING
+					LOGL(L"    [ITERATION]");
+					for (auto [edge, index] : indexed(application->edgesToMerge))
 					{
-						for (auto edge : state->OutEdges())
+						LOG(L"      " + edge->input.rule->Name() + L" :");
+						auto&& startSetEdge = startSetEdges[index];
+						for (auto rule : cache->rulesByDeps)
 						{
-							edge->importancy = edge->important ? EdgeImportancy::HighPriority : EdgeImportancy::LowPriority;
+							if (startSetEdge[rule->pmRuleIndex]) LOG(L" " + rule->Name());
+						}
+						LOGL(L"");
+					}
+#endif
+
+					bool matchedOthers = false;
+
+					// try each rule in dependency order
+					for (auto prefixRule : cache->rulesByDeps)
+					{
+						vint containedCount = 0;
+						vint exclusiveCount = 0;
+						vint otherCount = 0;
+						auto startSetRule = cache->startSetRules[prefixRule->pmRuleIndex];
+						startSetRule.Set(prefixRule->pmRuleIndex);
+
+						// compare the start set of this rule to remaining start set subset of each edge
+						// count each situation
+						for (vint edgeIndex = 0; edgeIndex < application->edgesToMerge.Count(); edgeIndex++)
+						{
+							auto& startSetEdge = startSetEdges[edgeIndex];
+							auto matchResult = startSetEdge & startSetRule;
+							if (matchResult == startSetRule)
+							{
+								// startSetEdge contains startSetRule
+								containedCount++;
+							}
+							else if (matchResult == BitSet::Zero)
+							{
+								// startSetEdge does no intercept with startSetRule
+								exclusiveCount++;
+							}
+							else
+							{
+								// others
+								otherCount++;
+								break;
+							}
+						}
+						if (otherCount > 0) matchedOthers = true;
+
+						// if some startSetEdge contains start set of the candidate rule
+						// and others are empty intersection
+						// we found a prefix rule
+						if (containedCount > 0 && otherCount == 0)
+						{
+							// take away all rules that depends or reversed depends on the prefix rule
+							auto reverseStartSetRule = cache->reverseStartSetRules[prefixRule->pmRuleIndex];
+							auto startSetToExtract = startSetRule | reverseStartSetRule;
+
+							for (vint edgeIndex = 0; edgeIndex < application->edgesToMerge.Count(); edgeIndex++)
+							{
+								startSetEdges[edgeIndex] -= startSetToExtract;
+							}
+
+							application->prefixRules.Add(prefixRule);
+#ifdef LOG_DECISION_MAKING
+							LOG(L"    [FOUND " + prefixRule->Name() + L"] :");
+							for (auto rule : cache->rulesByDeps)
+							{
+								if (startSetRule[rule->pmRuleIndex]) LOG(L" " + rule->Name());
+							}
+							LOGL(L"");
+#endif
+							goto FOUND_ONE_SOLUTION;
+						}
+					}
+
+					CHECK_ERROR(!matchedOthers, ERROR_MESSAGE_PREFIX L"Internal error: Unable to find a proper prefix merge solution.");
+				}
+
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+/***********************************************************************
+SyntaxSymbolManager::PrefixMergeCrossReference_Solve
+***********************************************************************/
+
+			void SyntaxSymbolManager::PrefixMergeCrossReference_Solve(
+				PrefixMergeCache* cache,
+				bool forStartState,
+				RuleSymbol* rule,
+				StateSymbol* startState,
+				PrefixMergeSolutionMap& prefixMergeSolutions)
+			{
+				auto logCache = [&]()
+				{
+#ifdef LOG_DECISION_MAKING
+					if (prefixMergeSolutions.Count() == 0)
+					{
+						LOGL(L"[CACHE]");
+						LOGL(L"  [RULES]");
+						for (auto rule : cache->rulesByDeps)
+						{
+							LOG(L"    " + rule->Name() + L" :");
+							auto&& startSetRule = cache->directStartSetRules[rule->pmRuleIndex];
+							for (auto rule : cache->rulesByDeps)
+							{
+								if (startSetRule[rule->pmRuleIndex]) LOG(L" " + rule->Name());
+							}
+							LOGL(L"");
+						}
+						LOGL(L"  [START SET]");
+						for (auto rule : cache->rulesByDeps)
+						{
+							LOG(L"    " + rule->Name() + L" :");
+							auto&& startSetRule = cache->startSetRules[rule->pmRuleIndex];
+							for (auto rule : cache->rulesByDeps)
+							{
+								if (startSetRule[rule->pmRuleIndex]) LOG(L" " + rule->Name());
+							}
+							LOGL(L"");
+						}
+						LOGL(L"  [REVERSED]");
+						for (auto rule : cache->rulesByDeps)
+						{
+							LOG(L"    " + rule->Name() + L" :");
+							auto&& startSetRule = cache->reverseStartSetRules[rule->pmRuleIndex];
+							for (auto rule : cache->rulesByDeps)
+							{
+								if (startSetRule[rule->pmRuleIndex]) LOG(L" " + rule->Name());
+							}
+							LOGL(L"");
+						}
+						LOGL(L"");
+					}
+#endif
+				};
+
+				/*
+				* If forStartState is true, only process the start state, otherwise process all reachable states except the start state
+				* forStartState == true will be applied all rules in start set dependency order first
+				* therefore whenever we see a rule input edge, its (rule, startState) should already have a solution
+				* 
+				* When making a solution, if any Rule input edge already have a solution, reuse it
+				* Find edges whose start set have intersection, process each group
+				* Merge all solutions into one
+				* 
+				* There are multiple applications in a solution
+				* Each application records what prefix rules will be injected into what edges
+				* For group that has only one edge, there will be no application
+				* 
+				* For any start state, a solution will be created when there are groups with multiple edges, or any edge whose input rule has a solution on its start state
+				* For any other state, a solution will be created only when there are groups with multiple edges
+				*/
+
+#define ERROR_MESSAGE_PREFIX L"vl::glr::parsergen::SyntaxSymbolManager::PrefixMergeCrossReference_Solve(PrefixMergeCache*, RuleSymbol*, StateSymbol*, PrefixMergeSolutionMap&)#"
+				SortedList<StateSymbol*> visitedStates;
+				List<StateSymbol*> workingStates;
+				workingStates.Add(startState);
+
+				// Traverse all states
+				for (vint i = 0; i < workingStates.Count(); i++)
+				{
+					auto currentState = workingStates[i];
+
+					if (forStartState == (currentState == startState))
+					{
+						Group<EdgeSymbol*, EdgeSymbol*> biDeps;
+
+						// Group all edges that have intersection in start set
+						for (vint j = 0; j < currentState->OutEdges().Count() - 1; j++)
+						{
+							auto edge1 = currentState->OutEdges()[j];
+							if (edge1->input.type != EdgeInputType::Rule) continue;
+							auto tokens1 = cache->startSetTokens[edge1->input.rule->pmRuleIndex];
+							auto rules1 = cache->startSetRules[edge1->input.rule->pmRuleIndex];
+							rules1.Set(edge1->input.rule->pmRuleIndex);
+
+							for (vint k = j + 1; k < currentState->OutEdges().Count(); k++)
+							{
+								auto edge2 = currentState->OutEdges()[k];
+								if (edge2->input.type != EdgeInputType::Rule) continue;
+								auto tokens2 = cache->startSetTokens[edge2->input.rule->pmRuleIndex];
+								auto rules2 = cache->startSetRules[edge2->input.rule->pmRuleIndex];
+								rules2.Set(edge2->input.rule->pmRuleIndex);
+
+								CHECK_ERROR(edge1->input.rule != edge2->input.rule, ERROR_MESSAGE_PREFIX L"Internal error: Two edges from the same state should not consume the same rule, this should have been eliminated by MergeEdgesWithSameRuleUsingLeftrec.");
+								if (!(tokens1 & tokens2)) continue;
+								if (!(rules1 & rules2)) continue;
+
+								biDeps.Add(edge1, edge2);
+								biDeps.Add(edge2, edge1);
+							}
+						}
+
+						PartialOrderingProcessor pop;
+						pop.InitWithGroup(currentState->OutEdges(), biDeps);
+						pop.Sort();
+
+						// Find if a solution needs to be created for the current state
+						bool hasSolution = false;
+						for (auto component : pop.components)
+						{
+							if (component.nodeCount > 1)
+							{
+								// if there is a group with multiple edges, yes
+								hasSolution = true;
+								break;
+							}
+							else if (currentState == startState)
+							{
+								// if the input rule has a solution on its start state, and the current state is the start state, yes
+								auto edge = currentState->OutEdges()[*component.firstNode];
+								if (edge->input.type == EdgeInputType::Rule)
+								{
+									auto prefixRule = edge->input.rule;
+									if (prefixMergeSolutions.Keys().Contains({ prefixRule, prefixRule->startStates[0] }))
+									{
+										hasSolution = true;
+										break;
+									}
+								}
+							}
+						}
+
+						// skip the current state if no solution is needed
+						// edges are grouped by start set intersections
+						// so whenever a rule input has a solution on its start state or not
+						// the rule or its solution will never conflict with other groups
+						// since the solution will be a subset of union of all start sets for the group
+						if (hasSolution)
+						{
+							logCache();
+#ifdef LOG_DECISION_MAKING
+							LOGL(L"[PMCR] " + rule->Name() + L" @ " + currentState->label);
+#endif
+							// Check all groups with single edge
+							auto solution = Ptr(new PrefixMergeSolutionValue);
+							for (auto component : pop.components)
+							{
+								if (component.nodeCount == 1)
+								{
+									auto edge = currentState->OutEdges()[*component.firstNode];
+									if (edge->input.type == EdgeInputType::Rule)
+									{
+										auto prefixRule = edge->input.rule;
+										vint solutionIndex = prefixMergeSolutions.Keys().IndexOf({ prefixRule, prefixRule->startStates[0] });
+										if (solutionIndex == -1)
+										{
+#ifdef LOG_DECISION_MAKING
+											LOGL(L"  [SINGLE] " + prefixRule->Name());
+#endif
+											// if the input rule has no solution on its start state
+											// but the current state needs a solution
+											// then the input rule is a prefix
+											solution->prefixRules.Add(prefixRule);
+										}
+										else
+										{
+#ifdef LOG_DECISION_MAKING
+											LOGL(L"  [SINGLE USED] " + prefixRule->Name());
+#endif
+											// otherwise, copy all prefix rules
+											CopyFrom(solution->prefixRules, prefixMergeSolutions.Values()[solutionIndex]->prefixRules, true);
+										}
+									}
+								}
+							}
+
+							// Check all groups with multiple edges, applications will be created on these groups
+							for (auto component : pop.components)
+							{
+								if (component.nodeCount > 1)
+								{
+									// collect all existing solutions for each edge
+									auto application = Ptr(new PrefixMergeSolutionApplication);
+									application->edgesToMerge.Resize(component.nodeCount);
+									for (vint j = 0; j < component.nodeCount; j++)
+									{
+										application->edgesToMerge[j] = currentState->OutEdges()[component.firstNode[j]];
+									}
+									for (auto edge : application->edgesToMerge)
+									{
+										auto prefixRule = edge->input.rule;
+										vint solutionIndex = prefixMergeSolutions.Keys().IndexOf({ prefixRule, prefixRule->startStates[0] });
+										if (solutionIndex != -1)
+										{
+#ifdef LOG_DECISION_MAKING
+											LOGL(L"  [SINGLE USED] " + prefixRule->Name());
+#endif
+											// copy all prefix rules, ensure no duplication
+											for (auto prefixRule : prefixMergeSolutions.Values()[solutionIndex]->prefixRules)
+											{
+												if (!application->prefixRules.Contains(prefixRule))
+												{
+													application->prefixRules.Add(prefixRule);
+												}
+											}
+										}
+									}
+
+									// solve for the current group
+									PrefixMergeCrossReference_SolveInState(cache, rule, currentState, application);
+
+									// copy all prefix rules, ensure no duplication
+									solution->applications.Add(application);
+									for (auto prefixRule : application->prefixRules)
+									{
+										if (!solution->prefixRules.Contains(prefixRule))
+										{
+											solution->prefixRules.Add(prefixRule);
+										}
+									}
+								}
+							}
+							prefixMergeSolutions.Add({ rule, currentState }, solution);
+
+#ifdef LOG_DECISION_MAKING
+							LOG(L"  [MATCHED] :");
+							for (auto rule : solution->prefixRules)
+							{
+								LOG(L" " + rule->Name());
+							}
+							LOGL(L"");
+							LOGL(L"");
+#endif
+						}
+					}
+
+					// continue if required
+					if (!forStartState)
+					{
+						for (auto edge : currentState->OutEdges())
+						{
+							if (!visitedStates.Contains(edge->To()))
+							{
+								visitedStates.Add(edge->To());
+								workingStates.Add(edge->To());
+							}
 						}
 					}
 				}
+#undef ERROR_MESSAGE_PREFIX
 			}
+
+			void SyntaxSymbolManager::PrefixMergeCrossReference_Solve(PrefixMergeCache* cache, PrefixMergeSolutionMap& prefixMergeSolutions)
+			{
+				for (auto rule : From(cache->rulesByDeps).Reverse())
+				{
+					PrefixMergeCrossReference_Solve(cache, true, rule, rule->startStates[0], prefixMergeSolutions);
+				}
+				for (auto rule : From(cache->rulesByDeps).Reverse())
+				{
+					PrefixMergeCrossReference_Solve(cache, false, rule, rule->startStates[0], prefixMergeSolutions);
+				}
+			}
+
+/***********************************************************************
+SyntaxSymbolManager::PrefixMergeCrossReference_AccumulatedEdges
+***********************************************************************/
+
+			struct PrefixMergeApplicationItems
+			{
+				using EdgeList = List<EdgeSymbol*>;
+				using EdgeListPtr = Ptr<EdgeList>;
+				using RuleToEdgesMap = Group<RuleSymbol*, EdgeListPtr>;
+				using TokenToEdgesMap = Group<Pair<vint32_t, Nullable<WString>>, EdgeListPtr>;
+
+				BitSet				coveredRules;
+				RuleToEdgesMap		ruleToEdges;
+				TokenToEdgesMap		tokenToEdges;
+			};
+
+			EdgeSymbol* SyntaxSymbolManager::PrefixMergeCrossReference_AccumulatedEdges(StateSymbol* fromState, const WString& pmLabel, const collections::List<PrefixMergeApplicationItems::EdgeListPtr>& accumulatedEdgesList, IncrementalChange& ic)
+			{
+				auto IsSingleReuseEdge = [](EdgeSymbol* edge)
+				{
+					if (edge->input.type != EdgeInputType::Rule) return false;
+					if (edge->input.ruleType != automaton::ReturnRuleType::Reuse) return false;
+					if (edge->competitions.Count() != 0) return false;
+
+					vint edgeIns = edge->insAfterInput.Count();
+					if (edgeIns >= 2) return false;
+					if (edgeIns == 1 && edge->insAfterInput[0].type != AstInsType::StackBegin) return false;
+
+					auto targetState = edge->To();
+					List<EdgeSymbol*> endingEdges;
+					CopyFrom(endingEdges, From(targetState->OutEdges()).Where([](EdgeSymbol* e)
+					{
+						return e->input.type == EdgeInputType::Ending;
+					}));
+					if (endingEdges.Count() != 1) return false;
+
+					auto endingEdge = endingEdges[0];
+					if (endingEdge->input.type != EdgeInputType::Ending) return false;
+
+					if (edgeIns == 0)
+					{
+						if (endingEdge->insAfterInput.Count() != 2) return false;
+						if (endingEdge->insAfterInput[0].type != AstInsType::StackBegin) return false;
+						if (endingEdge->insAfterInput[1].type != AstInsType::StackEnd) return false;
+					}
+					else
+					{
+						if (endingEdge->insAfterInput.Count() != 1) return false;
+						if (endingEdge->insAfterInput[0].type != AstInsType::StackEnd) return false;
+					}
+					return true;
+				};
+
+				Array<vint> accumulatedSizes(accumulatedEdgesList.Count());
+				for (auto [edges, index] : indexed(accumulatedEdgesList))
+				{
+					auto&& edgeList = *edges.Obj();
+					accumulatedSizes[index] = 0;
+					for (vint i = edgeList.Count(); i > 0; i--)
+					{
+						auto edge = edgeList[i - 1];
+						if (!IsSingleReuseEdge(edge))
+						{
+							accumulatedSizes[index] = i;
+							break;
+						}
+					}
+				}
+
+				// newState labeling [pm-cr] is made if there are multiple choices
+				auto newState = Ptr(new StateSymbol(fromState->Rule()));
+				ic.createdStates.Add(newState);
+				newState->label = fromState->label + pmLabel;
+
+				// newEdge to connect fromState to newState
+				auto newEdge = Ptr(new EdgeSymbol(fromState, newState.Obj()));
+				ic.createdEdges.Add(newEdge);
+
+				SortedList<WString> contStateLabels;
+				Group<Pair<StateSymbol*, StateSymbol*>, EdgeSymbol*> createdContEdges;
+				for (auto [edges, index] : indexed(accumulatedEdgesList))
+				{
+#ifdef LOG_DECISION_MAKING
+					LOG(L"    ");
+					for (auto [edge, edgeIndex] : indexed(*edges.Obj()))
+					{
+						if (edgeIndex > 0) LOG(L" -> ");
+						if (edgeIndex == accumulatedSizes[index])
+						{
+							LOG(L"| ");
+						}
+						if (edge->input.type == EdgeInputType::Rule)
+						{
+							LOG(edge->input.rule->Name());
+						}
+						else
+						{
+							LOG(L"[TOKEN] " + (edge->input.condition ? edge->input.condition.Value() : itow(edge->input.token)));
+						}
+					}
+					LOGL(L"");
+#endif
+					auto&& edgeList = *edges.Obj();
+					vint accSize = accumulatedSizes[index];
+					for (vint i = edgeList.Count(); i >= accSize && i > 0; i--)
+					{
+						auto lastEdge = edgeList[i - 1];
+
+						Ptr<StateSymbol> contState;
+						auto lastState = lastEdge->To();
+						for (auto contEdge : lastState->OutEdges())
+						{
+							if (contEdge->input.type == EdgeInputType::PrefixMergeDiscardedRule)
+							{
+								continue;
+							}
+
+							if (contEdge->input.type == EdgeInputType::LeftRec)
+							{
+								if (contEdge->returnEdges.Count() == 0);
+								else continue;
+							}
+
+							if (contEdge->input.type == EdgeInputType::Ending)
+							{
+								if (accSize == 0 && i == 1);
+								else if (i == accSize);
+								else continue;
+							}
+
+							auto AddNewContEdge = [&](StateSymbol* contFromState, bool useLastEdgeContent, bool useReturnEdges)
+							{
+								auto newContEdge = Ptr(new EdgeSymbol(contFromState, contEdge->To()));
+
+								newContEdge->input = contEdge->input;
+								if (useLastEdgeContent)
+								{
+									CopyFrom(newContEdge->competitions, lastEdge->competitions, true);
+									CopyFrom(newContEdge->insAfterInput, lastEdge->insAfterInput, true);
+								}
+								CopyFrom(newContEdge->competitions, contEdge->competitions, true);
+								CopyFrom(newContEdge->insAfterInput, contEdge->insAfterInput, true);
+
+								if (useReturnEdges)
+								{
+									for (vint j = 0; j < i - 1; j++)
+									{
+										newContEdge->returnEdges.Add(edgeList[j]);
+									}
+								}
+
+								auto key = Pair(newContEdge->From(), newContEdge->To());
+								vint index = createdContEdges.Keys().IndexOf(key);
+								if (index != -1)
+								{
+									for (auto created : createdContEdges.GetByIndex(index))
+									{
+										if (created->input != newContEdge->input) continue;
+										if (CompareEnumerable(created->competitions, newContEdge->competitions) != 0) continue;
+										if (CompareEnumerable(created->insAfterInput, newContEdge->insAfterInput) != 0) continue;
+										if (CompareEnumerable(created->returnEdges, newContEdge->returnEdges) != 0) continue;
+
+										newContEdge->From()->outEdges.Remove(newContEdge.Obj());
+										newContEdge->To()->inEdges.Remove(newContEdge.Obj());
+										return;
+									}
+								}
+
+								createdContEdges.Add(key, newContEdge.Obj());
+								ic.createdEdges.Add(newContEdge);
+							};
+
+							if (i == 1 && contEdge->input.type != EdgeInputType::Rule)
+							{
+								AddNewContEdge(newState.Obj(), true, false);
+								continue;
+							}
+
+							if (contEdge->input.type == EdgeInputType::LeftRec)
+							{
+								AddNewContEdge(newState.Obj(), true, true);
+								continue;
+							}
+
+							if (!contState)
+							{
+								auto label = fromState->label + pmLabel;
+								for (vint j = 0; j < i; j++)
+								{
+									auto&& input = edgeList[j]->input;
+									if (input.type == EdgeInputType::Rule)
+									{
+										label += L" " + input.rule->Name();
+									}
+									else
+									{
+										label += L" [TOKEN] " + (input.condition ? input.condition.Value() : itow(input.token));
+									}
+								}
+								if (contStateLabels.Contains(label)) continue;
+								contStateLabels.Add(label);
+
+								contState = Ptr(new StateSymbol(fromState->Rule()));
+								ic.createdStates.Add(contState);
+								contState->label = label;
+
+								auto lrEdge = Ptr(new EdgeSymbol(newState.Obj(), contState.Obj()));
+								ic.createdEdges.Add(lrEdge);
+
+								lrEdge->input.type = EdgeInputType::LeftRec;
+								CopyFrom(lrEdge->competitions, lastEdge->competitions, true);
+								for (vint j = 0; j < i - 1; j++)
+								{
+									lrEdge->returnEdges.Add(edgeList[j]);
+								}
+								CopyFrom(lrEdge->insAfterInput, lastEdge->insAfterInput, true);
+							}
+
+							{
+								AddNewContEdge(contState.Obj(), false, false);
+							}
+						}
+					}
+				}
+
+				return newEdge.Obj();
+			}
+
+/***********************************************************************
+SyntaxSymbolManager::PrefixMergeCrossReference_Apply
+***********************************************************************/
+
+			void SyntaxSymbolManager::PrefixMergeCrossReference_Apply(PrefixMergeCache* cache, collections::List<EdgeSymbol*>& accumulatedEdges, PrefixMergeApplicationItems& pmai)
+			{
+				auto lastEdge = accumulatedEdges[accumulatedEdges.Count() - 1];
+				auto lastRule = lastEdge->input.rule;
+
+				if (pmai.coveredRules[lastRule->pmRuleIndex])
+				{
+					auto edges = Ptr(new List<EdgeSymbol*>);
+					CopyFrom(*edges.Obj(), accumulatedEdges);
+					pmai.ruleToEdges.Add(lastRule, edges);
+				}
+				else
+				{
+					for (auto edge : lastRule->startStates[0]->OutEdges())
+					{
+						switch (edge->input.type)
+						{
+						case EdgeInputType::Rule:
+							// RuleIsIndirectlyLeftRecursive has been checked so there will be no deadloop 
+							accumulatedEdges.Add(edge);
+							PrefixMergeCrossReference_Apply(cache, accumulatedEdges, pmai);
+							accumulatedEdges.RemoveAt(accumulatedEdges.Count() - 1);
+							break;
+						case EdgeInputType::Token:
+							{
+								auto edges = Ptr(new List<EdgeSymbol*>);
+								CopyFrom(*edges.Obj(), accumulatedEdges);
+								edges->Add(edge);
+								pmai.tokenToEdges.Add({ edge->input.token, edge->input.condition }, edges);
+							}
+							break;
+						default:;
+						}
+					}
+				}
+
+			}
+
+			void SyntaxSymbolManager::PrefixMergeCrossReference_Apply(PrefixMergeCache* cache, RuleSymbol* rule, StateSymbol* currentState, Ptr<PrefixMergeSolutionValue> solution, IncrementalChange& ic)
+			{
+				/*
+				* For any state A whose prefix calls look like:
+				*   A -> r1 -> ... rn -> (u1, v1, ...)
+				*   A -> s1 -> ... sn -> (u1, v1, ...)
+				* The same (u1, v1, ...) will be merged.
+				* Especially when A indirectly reuses (u1, v1, ...), this approach removes duplicated ambiguous results.
+				*   by not doing this, it produces two duplicated A -> (different paths) -> (u1, v1, ...)
+				*   and parsing efforts are wasted if (u1, v1, ...) costs a large number of transitions
+				* 
+				* Because a prefix will be produced and then passed into its parent rule like this:
+				*   {CreateObject(u1)} ... {StackSlot(0), CreateObject(r1)} {StackSlot(0), CreateObject(A)}
+				*   we can parse (u1, v1, ...) first, and then patch multiple EndingInput transitions directly into (rn, sn)
+				*   such EndingInput transition will have non-empty returnEdges
+				* 
+				* (u1, v1, ...) are not required to be reuse clauses which only contain one rule
+				*   as even if they are, they may be followed by LeftRec transitions, it doesn't make the work simpler, but even more checking
+				*   recursive cross-reference merges will not be implemented at the moment
+				*   treat it as a special case which only merge prefixes in the size of one rule
+				* 
+				* PrefixMergeCrossReference_Solve worked out how many transitions need to be reworked
+				*   e.g. (a start set graph, assuming left nodes are selected prefix rules)
+				*              +-> r2 ..
+				*              |       +-> r4 ..
+				*     A -> r1 -+-> r3 -+-> r5 ..
+				*              |
+				*              +-> r6..
+				*   when r4 merges, (r2, r5, r6) will need similar edges to start from A:
+				*     A -+- r4 (injects into r3)
+				*        +- r5 (injects into r3)
+				*        +- r2 (injects into r1)
+				*        +- r6 (injects into r1)
+				*/
+
+				for (auto application : solution->applications)
+				{
+					PrefixMergeApplicationItems pmai;
+					for (auto prefixRule : application->prefixRules)
+					{
+						pmai.coveredRules.Set(prefixRule->pmRuleIndex);
+					}
+
+					List<EdgeSymbol*> accumulatedEdges;
+					for (auto edge : application->edgesToMerge)
+					{
+						accumulatedEdges.Add(edge);
+						PrefixMergeCrossReference_Apply(cache, accumulatedEdges, pmai);
+						accumulatedEdges.RemoveAt(accumulatedEdges.Count() - 1);
+					}
+
+#ifdef LOG_DECISION_MAKING
+					LOGL(L"[PMAI] " + rule->Name() + L" @ " + currentState->label);
+#endif
+					for (vint i = 0; i < pmai.ruleToEdges.Count(); i++)
+					{
+						auto pmRule = pmai.ruleToEdges.Keys()[i];
+#ifdef LOG_DECISION_MAKING
+						LOGL(L"  [RULE] " + pmRule->Name() + L" :");
+#endif
+						auto&& accumulatedEdgesList = pmai.ruleToEdges.GetByIndex(i);
+						auto newEdge = PrefixMergeCrossReference_AccumulatedEdges(currentState, (L"[pm-cr-rule: " + pmRule->Name() + L"]"), accumulatedEdgesList, ic);
+						newEdge->input.type = EdgeInputType::PrefixMergeRule;
+						newEdge->input.rule = pmRule;
+					}
+					for (vint i = 0; i < pmai.tokenToEdges.Count(); i++)
+					{
+						auto [pmToken, condition] = pmai.tokenToEdges.Keys()[i];
+#ifdef LOG_DECISION_MAKING
+						LOGL(L"  [TOKEN] " + (condition ? condition.Value() : itow(pmToken)));
+#endif
+						auto&& accumulatedEdgesList = pmai.tokenToEdges.GetByIndex(i);
+						auto newEdge = PrefixMergeCrossReference_AccumulatedEdges(currentState, (L"[pm-cr-token: " + (condition ? condition.Value() : itow(pmToken)) + L"]"), accumulatedEdgesList, ic);
+						newEdge->input.type = EdgeInputType::Token;
+						newEdge->input.token = pmToken;
+						newEdge->input.condition = condition;
+					}
+#ifdef LOG_DECISION_MAKING
+					LOGL(L"");
+#endif
+				}
+			}
+
+#ifdef LOG_DECISION_MAKING
+#undef LOG_DECISION_MAKING
+#undef LOG
+#undef LOGL
+#endif
 		}
 	}
 }
@@ -17884,447 +15843,45 @@ SyntaxSymbolManager::FixCrossReferencedRuleEdge
 					switch (edge->input.type)
 					{
 					case EdgeInputType::Token:
-					case EdgeInputType::LrPlaceholder:
-						// multiple Rule edges followed by one Token or LrPlaceholder edge create a cross-referenced edge
-						if (edge->returnEdges.Count() == 0)
 						{
+							// Cannot call CreateEdge here because it is checked as a public API
+							// But during NFA building we should still change the automaton
 							auto newEdge = Ptr(new EdgeSymbol(startState, edge->To()));
 							edges.Add(newEdge);
 
+							// Either prefix-merged or cross-referenced Token transition may have non-empty returnEdges
+							// There is no way to tell if a token is cross-referenced, which should be ignored during accumulation
+							// So we use CrossReferencedToken here and later renamed everything back to Token
 							newEdge->input = edge->input;
-							newEdge->importancy = edge->importancy;
+							newEdge->input.type = EdgeInputType::CrossReferencedToken;
+							CopyFrom(newEdge->competitions, edge->competitions, true);
 							for (auto acc : accumulatedEdges)
 							{
-								CopyFrom(newEdge->insBeforeInput, acc->insBeforeInput, true);
+								CopyFrom(newEdge->returnEdges, acc->returnEdges, true);
 								newEdge->returnEdges.Add(acc);
 							}
-							CopyFrom(newEdge->insBeforeInput, edge->insBeforeInput, true);
 							CopyFrom(newEdge->insAfterInput, edge->insAfterInput, true);
 						}
 						break;
 					case EdgeInputType::Rule:
-						if (accumulatedEdges.Contains(edge))
-						{
-							AddError(
-								ParserErrorType::RuleIsIndirectlyLeftRecursive,
-								{},
-								edge->input.rule->Name()
-								);
-						}
-						else
-						{
-							accumulatedEdges.Add(edge);
-							FixCrossReferencedRuleEdge(startState, orderedEdges, accumulatedEdges);
-							accumulatedEdges.RemoveAt(accumulatedEdges.Count() - 1);
-						}
+						// RuleIsIndirectlyLeftRecursive has been checked so there will be no deadloop 
+						accumulatedEdges.Add(edge);
+						FixCrossReferencedRuleEdge(startState, orderedEdges, accumulatedEdges);
+						accumulatedEdges.RemoveAt(accumulatedEdges.Count() - 1);
 						break;
 					case EdgeInputType::Epsilon:
-					case EdgeInputType::Ending:
 					case EdgeInputType::LeftRec:
-						// Epsilon edges do not exist in compact-NFA
-						// Ending and LeftRec edges are not involved
-						break;
-					case EdgeInputType::LrInject:
-						CHECK_FAIL(L"<BuildCrossReferencedNFAInternal>LrInject is impossible from a start state");
+					case EdgeInputType::PrefixMergeDiscardedRule:
+						// These edges are not involved
+					case EdgeInputType::Ending:
+					case EdgeInputType::PrefixMergeRule:
+					case EdgeInputType::CrossReferencedToken:
+						// These edges do not exist in compact-NFA
 						break;
 					default:
 						CHECK_FAIL(L"<BuildCrossReferencedNFAInternal>Unhandled!");
 					}
 				}
-			}
-
-/***********************************************************************
-SyntaxSymbolManager::FixLeftRecursionInjectEdge
-***********************************************************************/
-
-			void SyntaxSymbolManager::FixLeftRecursionInjectEdge(StateSymbol* startState, EdgeSymbol* injectEdge)
-			{
-#define ERROR_MESSAGE_PREFIX L"vl::glr::parsergen::SyntaxSymbolManager::FixLeftRecursionInjectEdge(StateSymbol*, EdgeSymbol*)#"
-				// search for all qualified placeholder edge starts from inject targets
-				List<EdgeSymbol*> placeholderEdges;
-				for (auto outEdge : startState->OutEdges())
-				{
-					if (outEdge->input.type == EdgeInputType::LrPlaceholder)
-					{
-						if (!From(outEdge->input.flags).Intersect(injectEdge->input.flags).IsEmpty())
-						{
-							placeholderEdges.Add(outEdge);
-						}
-					}
-				}
-
-				// calculate all return edges and ending states for each placeholder edge
-				// return edges:
-				//   injectEdge
-				//   return edge begins from inject target
-				//   ...
-				//   return edge begins from most inner rule that contains placeholder
-				// ending states:
-				//   to state of return edge begins from inject target
-				//   ...
-				//   to state of return edge begins from most inner rule that contains placeholder
-				//   to state from placeholder edge
-				Array<List<StateSymbol*>> endingStatesArray(placeholderEdges.Count());
-				Array<List<EdgeSymbol*>> returnEdgesArray(placeholderEdges.Count());
-				for(auto [placeholderEdge, index] : indexed(placeholderEdges))
-				{
-					auto& endingStates = endingStatesArray[index];
-					auto& returnEdges = returnEdgesArray[index];
-
-					// check if placeholderEdge does nothing more than using rules
-					if (placeholderEdge->insAfterInput.Count() > 0)
-					{
-						// EdgeInputType::LrPlaceholder is created from a left_recursion_placeholder clause
-						// This is ensured by the semantic
-						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Internal error: EdgeInputType::LrPlaceholder edge should have empty insAfterInput.");
-					}
-
-					for (vint i = 0; i <= placeholderEdge->returnEdges.Count(); i++)
-					{
-						auto returnEdge =
-							i == 0
-							? injectEdge
-							: placeholderEdge->returnEdges[i - 1]
-							;
-						auto endingState =
-							i == placeholderEdge->returnEdges.Count()
-							? placeholderEdge->To()
-							: placeholderEdge->returnEdges[i]->To()
-							;
-
-						for (auto outEdge : endingState->OutEdges())
-						{
-							if (outEdge->input.type == EdgeInputType::Ending && outEdge->insAfterInput.Count() > 0)
-							{
-								// EdgeInputType::Ending is created from accumulating multiple EdgeInputType::Epsilon edges leading to an ending state
-								// EdgeInputType::Epsilon always have empty insAfterInput
-								CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Internal error: EdgeInputType::Ending edge should have empty insAfterInput.");
-							}
-						}
-
-						returnEdges.Add(returnEdge);
-						endingStates.Add(endingState);
-					}
-				}
-
-				// calculate all acceptable Token input from inject edge
-				// key:
-				//   token
-				//   the number of return edges carried into this edge, at least 1
-				// value:
-				//   index of placeholder edge
-				//   the LeftRec edge before the Token edge (optional)
-				//   the Token edge that consume this input
-				using InputKey = Pair<vint32_t, vint>;
-				using InputValue = Tuple<vint, EdgeSymbol*, EdgeSymbol*>;
-				Group<InputKey, InputValue> acceptableInputs;
-
-				// calculate all acceptable Ending input from inject edge
-				// value:
-				//   index of placeholder edge
-				//   the additional Ending edge
-				using EndingInputValue = Pair<vint, EdgeSymbol*>;
-				List<EndingInputValue> acceptableEndingInputs;
-
-				for(auto [placeholderEdge, index] : indexed(placeholderEdges))
-				{
-					auto& endingStates = endingStatesArray[index];
-					auto& returnEdges = returnEdgesArray[index];
-
-					// TODO: (enumerable) foreach:indexed(reversed)
-					for (vint i = returnEdges.Count() - 1; i >= 0; i--)
-					{
-						auto endingState = endingStates[i];
-						auto returnEdge = returnEdges[i];
-						EdgeSymbol* endingEdge = nullptr;
-
-						for (auto outEdge : endingState->OutEdges())
-						{
-							switch (outEdge->input.type)
-							{
-							case EdgeInputType::Ending:
-								endingEdge = outEdge;
-								if (returnEdge == injectEdge)
-								{
-									// all possible Ending input are comsumed
-									// an ending edge should be created if
-									//   the injection edge cannot be skipped
-									//   the injection edge to state has Ending input
-									// an optional injection can be skipped
-									// a non-optional injection can be skipped by surrounding syntax
-
-									auto endingEdgeAfterInject = From(injectEdge->To()->OutEdges())
-										.Where([](auto edge) { return edge->input.type == EdgeInputType::Ending; })
-										.First(nullptr);
-									if (endingEdgeAfterInject)
-									{
-										// find if there is a state in the same rule that looks like:
-										//      +-------------------(ending)---------------------+
-										//      |                                                |
-										//   S -+                                                +->E
-										//      |                                                |
-										//      +-{-(leftrec)-> X} -(lri:ThisEdge)-> T -(ending)-+
-										// or
-										//      +-(same rule)-> Y -----------------(ending)------------------+
-										//      |                                                            |
-										//   S -+                                                            +->E
-										//      |                                                            |
-										//      +-(same rule)-{-(leftrec)-> X} -(lri:ThisEdge)-> T -(ending)-+
-
-										List<StateSymbol*> visiting;
-										SortedList<StateSymbol*> visited;
-										visiting.Add(injectEdge->From());
-
-										// TODO: (enumerable) visiting/visited
-										for (vint i = 0; i < visiting.Count(); i++)
-										{
-											auto visitingState = visiting[i];
-											if (visited.Contains(visitingState)) continue;
-											visited.Add(visitingState);
-
-											for (auto siblingEdge : visitingState->OutEdges())
-											{
-												if (siblingEdge->input.type == EdgeInputType::Ending)
-												{
-													goto SKIP_SEARCHING;
-												}
-											}
-
-											for (auto commingEdge : visitingState->InEdges())
-											{
-												if (commingEdge->From()->Rule() != injectEdge->From()->Rule()) continue;
-
-												switch (commingEdge->input.type)
-												{
-												case EdgeInputType::LeftRec:
-													visiting.Add(commingEdge->From());
-													break;
-												case EdgeInputType::Rule:
-													{
-														auto expectedReturnRule = commingEdge->input.rule;
-														for (auto siblingCommingEdge : commingEdge->From()->OutEdges())
-														{
-															if (siblingCommingEdge == commingEdge) continue;
-															if (siblingCommingEdge->input.type != EdgeInputType::Rule) continue;
-															if (siblingCommingEdge->input.rule != expectedReturnRule) continue;
-
-															if (!From(siblingCommingEdge->To()->OutEdges())
-																.Where([](auto edge) { return edge->input.type == EdgeInputType::Ending; })
-																.IsEmpty())
-															{
-																goto SKIP_SEARCHING;
-															}
-														}
-													}
-													break;
-												default:;
-												}
-											}
-										}
-
-										{
-											// if there is no such state
-											// an Ending edge is needed
-											acceptableEndingInputs.Add({ index,endingEdgeAfterInject });
-										}
-									SKIP_SEARCHING:;
-									}
-								}
-								break;
-							// find if there is any LeftRec from this state
-							case EdgeInputType::LeftRec:
-								{
-									// compact everything on top of this LeftRec and create an Input
-									for (auto tokenEdge : outEdge->To()->OutEdges())
-									{
-										if (tokenEdge->input.type == EdgeInputType::Token)
-										{
-											acceptableInputs.Add({ tokenEdge->input.token,i + 1 }, { index,outEdge,tokenEdge });
-										}
-									}
-								}
-								break;
-							// find if there is any Token from this state
-							case EdgeInputType::Token:
-								acceptableInputs.Add({ outEdge->input.token,i + 1 }, { index,nullptr,outEdge });
-								break;
-							default:;
-							}
-						}
-
-						if (!endingEdge)
-						{
-							// stop searching if there is no Ending input
-							// since there will be no more {Ending} Token edge to compact
-							break;
-						}
-					}
-				}
-
-				auto prepareLriEdgeInstructions = [&](vint placeholderIndex, vint returnEdgeCount, List<AstIns>& instructionPrefix)
-				{
-					auto placeholderEdge = placeholderEdges[placeholderIndex];
-					auto& endingStates = endingStatesArray[placeholderIndex];
-					auto& returnEdges = returnEdgesArray[placeholderIndex];
-
-					// search for all possible "LrPlaceholder {Ending} LeftRec Token" transitions
-					// for each transition, compact edges and put injectEdge properly in returnEdges
-					// here insBeforeInput has been ensured to be:
-					//   EndObject
-					//   LriStore
-					//   DelayFieldAssignment
-					//   placeholderEdge->insBeforeInput
-					//   LriFetch
-					//   loop {endingEdge->insBeforeInput returnEdge->insAfterInput}
-					//   --LeftRec--> ...
-
-					// EndObject is for the ReopenObject in the use rule transition before
-					// DelayFieldAssignment is for the ReopenObject in injectEdge->insAfterInput
-					// injectEdge is the last returnEdge
-
-					// there is no instruction in injectEdge->insBeforeInput
-					instructionPrefix.Add({ AstInsType::EndObject });
-					instructionPrefix.Add({ AstInsType::LriStore });
-					instructionPrefix.Add({ AstInsType::DelayFieldAssignment });
-					CopyFrom(instructionPrefix, placeholderEdge->insBeforeInput, true);
-					instructionPrefix.Add({ AstInsType::LriFetch });
-
-					// TODO: (enumerable) foreach:reversed
-					for (vint i = returnEdges.Count() - 1; i >= returnEdgeCount; i--)
-					{
-						auto endingState = endingStates[i];
-						auto returnEdge = returnEdges[i];
-						auto endingEdge = From(endingState->OutEdges())
-							.Where([](auto edge) { return edge->input.type == EdgeInputType::Ending; })
-							.First();
-
-						CopyFrom(instructionPrefix, endingEdge->insBeforeInput, true);
-						CopyFrom(instructionPrefix, returnEdge->insAfterInput, true);
-					}
-				};
-
-				for (auto [placeholderIndex, endingEdgeAfterInject] : acceptableEndingInputs)
-				{
-					auto newEdge = Ptr(new EdgeSymbol(injectEdge->From(), endingEdgeAfterInject->To()));
-					edges.Add(newEdge);
-					newEdge->input = endingEdgeAfterInject->input;
-					newEdge->importancy = endingEdgeAfterInject->importancy;
-
-					prepareLriEdgeInstructions(placeholderIndex, 0, newEdge->insBeforeInput);
-					CopyFrom(newEdge->insBeforeInput, endingEdgeAfterInject->insBeforeInput, true);
-					CopyFrom(newEdge->insBeforeInput, endingEdgeAfterInject->insAfterInput, true);
-				}
-
-				// TODO: (enumerable) foreach on group
-				for (auto [input, inputIndex] : indexed(acceptableInputs.Keys()))
-				{
-					auto [inputToken, returnEdgeCount] = input;
-					auto&& placeholderRecords = acceptableInputs.GetByIndex(inputIndex);
-
-					// group inputs by lrEdge, tokenEdge, carried return edges
-					// if there are multiple inputs from the same key
-					// it means such input creates an ambiguity
-					// 
-					// it usually happens in clauses like Prefix lri(flags) Target
-					// where multiple valid flags found in Target at the same time
-					//
-					// if we could indentify some inputs here where excluded return edges are all reuse edges
-					// then we can only create edges for one of them
-
-					struct Entry
-					{
-						EdgeSymbol*				lrEdge;
-						EdgeSymbol*				tokenEdge;
-						List<EdgeSymbol*>*		returnEdges;
-						vint					returnEdgeCount;
-
-						std::strong_ordering operator<=>(const Entry& entry)const
-						{
-							std::strong_ordering
-							result = lrEdge <=> entry.lrEdge; if (result != 0) return result;
-							result = tokenEdge <=> entry.tokenEdge; if (result != 0) return result;
-							return CompareEnumerable(
-								From(*returnEdges).Take(returnEdgeCount),
-								From(*entry.returnEdges).Take(returnEdgeCount)
-								);
-						}
-
-						bool operator==(const Entry& entry) const { return (*this <=> entry) == 0; }
-					};
-					Group<Entry, vint> simpleUseRecords;
-
-					// search for placeholder edges where their excluded return edges are all reuse edges
-					// TODO: (enumerable) foreach on group
-					for (vint recordIndex = 0; recordIndex < placeholderRecords.Count(); recordIndex++)
-					{
-						auto [placeholderIndex, lrEdge, tokenEdge] = placeholderRecords[recordIndex];
-						Entry entry{ lrEdge,tokenEdge,&returnEdgesArray[placeholderIndex],returnEdgeCount };
-						if(From(*entry.returnEdges)
-							.Skip(returnEdgeCount)
-							.All([](EdgeSymbol* edge) {return edge->input.ruleType == automaton::ReturnRuleType::Reuse; })
-							)
-						{
-							simpleUseRecords.Add(entry, recordIndex);
-						}
-					}
-
-					// for each group, if there are more than one placeholder edges
-					// mark them as deleted except the first one
-					SortedList<vint> recordsToRemove;
-					// TODO: (enumerable) foreach on group
-					for (vint recordGroup = 0; recordGroup < simpleUseRecords.Count(); recordGroup++)
-					{
-						auto&& records = simpleUseRecords.GetByIndex(recordGroup);
-						if (records.Count() > 1)
-						{
-							CopyFrom(recordsToRemove, From(records).Skip(1));
-						}
-					}
-
-					// delete them in Group
-					// this way is not recommended but the group is going to be discarded very soon
-					// TODO: (enumerable) foreach:reversed
-					for (vint i = recordsToRemove.Count() - 1; i >= 0; i--)
-					{
-						const_cast<List<InputValue>&>(placeholderRecords).RemoveAt(recordsToRemove[i]);
-					}
-
-					// convert reminaings
-					for (auto [placeholderIndex, lrEdge, tokenEdge] : placeholderRecords)
-					{
-						auto newEdge = Ptr(new EdgeSymbol(injectEdge->From(), tokenEdge->To()));
-						edges.Add(newEdge);
-						newEdge->input = tokenEdge->input;
-						newEdge->importancy = tokenEdge->importancy;
-
-						CopyFrom(newEdge->returnEdges, From(returnEdgesArray[placeholderIndex]).Take(returnEdgeCount), true);
-						CopyFrom(newEdge->returnEdges, tokenEdge->returnEdges, true);
-						prepareLriEdgeInstructions(placeholderIndex, returnEdgeCount, newEdge->insBeforeInput);
-						if (lrEdge)
-						{
-							// newEdge consumes a token
-							// lrEdge->insAfterInput happens before consuming this token
-							// so it should be copied to newEdge->insBeforeInput
-							CopyFrom(newEdge->insBeforeInput, lrEdge->insBeforeInput, true);
-							CopyFrom(newEdge->insBeforeInput, lrEdge->insAfterInput, true);
-						}
-						CopyFrom(newEdge->insBeforeInput, tokenEdge->insBeforeInput, true);
-						CopyFrom(newEdge->insAfterInput, tokenEdge->insAfterInput, true);
-					}
-				}
-
-				// report an error if nothing is created
-				if (acceptableInputs.Count() == 0 && acceptableEndingInputs.Count() == 0)
-				{
-					AddError(
-						ParserErrorType::LeftRecursionInjectHasNoContinuation,
-						{},
-						injectEdge->fromState->Rule()->Name(),
-						lrpFlags[injectEdge->input.flags[0]],
-						startState->Rule()->Name()
-						);
-				}
-#undef ERROR_MESSAGE_PREFIX
 			}
 
 /***********************************************************************
@@ -18368,19 +15925,13 @@ SyntaxSymbolManager::BuildCrossReferencedNFAInternal
 					}
 				}
 
-				// convert LrInject to Token
 				for (auto state : states)
 				{
-					vint index = orderedEdges.Keys().IndexOf(state);
-					if (index != -1)
+					for (auto edge : state->OutEdges())
 					{
-						for (auto edge : orderedEdges.GetByIndex(index))
+						if (edge->input.type == EdgeInputType::CrossReferencedToken)
 						{
-							if (edge->input.type == EdgeInputType::LrInject)
-							{
-								auto startState = edge->input.rule->startStates[0];
-								FixLeftRecursionInjectEdge(startState, edge);
-							}
+							edge->input.type = EdgeInputType::Token;
 						}
 					}
 				}

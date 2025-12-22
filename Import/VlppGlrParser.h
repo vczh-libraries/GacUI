@@ -279,23 +279,19 @@ AST (Visitor)
 Instructions
 ***********************************************************************/
 
+		constexpr vint32_t ResolveAmbiguitySlotIndex = -2;
+
 		enum class AstInsType
 		{
-			Token,										// Token()							: Push the current token as a value.
-			EnumItem,									// EnumItem(Value)					: Push an enum item.
-			BeginObject,								// BeginObject(Type)				: Begin creating an AST node.
-			DelayFieldAssignment,						// DelayFieldAssignment()			: An object will be created later by ReopenObject, delay future field assignments to this object before ReopenObject.
-			ReopenObject,								// ReopenObject()					: Move the last pushed object back to creating status.
-			EndObject,									// EndObject()						: Finish creating an AST node, all objects pushed after BeginObject are supposed to be its fields.
-			DiscardValue,								// DiscardValue()					: Remove a pushed value.
-			LriStore,									// LriStore()						: Take the top object away and store to a register temporarily.
-			LriFetch,									// LriFetch()						: Clear the register and put it back as a top object.
-			Field,										// Field(Field)						: Associate a field name with the top object.
-			FieldIfUnassigned,							// FieldIfUnassigned(Field)			: Like Field(Field) but only take effect if such field has never been assigned.
-			ResolveAmbiguity,							// ResolveAmbiguity(Type, Count)	: Combine several top objects to one using an ambiguity node. Type is the type of each top object.
-
-			AccumulatedDfa,								// AccumulatedDfa(Count)			: Multiple DelayFieldAssignment
-			AccumulatedEoRo,							// AccumulatedEoRo(Count)			: Multiple EndObject + ReopenObject
+			Token,										// Token(Count)						: Put the current token in the Count-th slot.
+			EnumItem,									// EnumItem(Value, Count)			: Put an enum item in the Count-th slot.
+			StackBegin,									// StackBegin()						: Begin a new stack frame.
+			StackSlot,									// StackSlot(Count)					: Assign the just created object to the Count-th slot. Reset the creating object.
+			CreateObject,								// CreateObject(Type)				: Create an AST node, it becomes the creating object. Error if the previous creating object has not been reset.
+			Field,										// Field(Field, Count)				: Associate a field name of the creating object with the value in the Count-th slot. Ignored if the Count-th slot is empty.
+			FieldIfUnassigned,							// FieldIfUnassigned(Field, Count)	: Like Field(Field) but only take effect if such field has never been assigned.
+			StackEnd,									// StackEnd()						: End the current stack frame. Leave the creating object as is.
+			ResolveAmbiguity,							// ResolveAmbiguity(Type)			: Combine several values in the specified slot to one using an ambiguity node. Type is the type of each value.
 		};
 
 		struct AstIns
@@ -324,28 +320,22 @@ Instructions
 			UnknownType,								// UnknownType(Type)					: The type id does not exist.
 			UnknownField,								// UnknownField(Field)					: The field id does not exist.
 			UnsupportedAbstractType,					// UnsupportedAbstractType(Type)		: Unable to create abstract class.
-			UnsupportedAmbiguityType,					// UnsupportedAmbiguityType(Type)		: The type is not configured to allow ambiguity.
-			UnexpectedAmbiguousCandidate,				// UnexpectedAmbiguousCandidate(Type)	: The type of the ambiguous candidate is not compatible to the required type.
 			FieldNotExistsInType,						// FieldNotExistsInType(Field)			: The type doesn't have such field.
 			FieldReassigned,							// FieldReassigned(Field)				: An object is assigned to a field but this field has already been assigned.
 			FieldWeakAssignmentOnNonEnum,				// FieldWeakAssignmentOnNonEnum(Field)	: Weak assignment only available for field of enum type.
 			ObjectTypeMismatchedToField,				// ObjectTypeMismatchedToField(Field)	: Unable to assign an object to a field because the type does not match.
 
-			NoRootObject,								// NoRootObject()						: There is no created objects.
-			NoRootObjectAfterDfa,						// NoRootObjectAfterDfa()				: There is no created objects after DelayFieldAssignment.
-			TooManyUnassignedValues,					// LeavingUnassignedValues()			: The value to reopen is not the only unassigned value.
-			MissingDfaBeforeReopen,						// MissingDfaBeforeReopen()				: DelayFieldAssignment is not submitted before ReopenObject.
-			MissingValueToReopen,						// MissingValueToReopen()				: There is no pushed value to reopen.
-			ReopenedValueIsNotObject,					// ReopenedValueIsNotObject()			: The pushed value to reopen is not an object.
-			MissingValueToDiscard,						// MissingValueToDiscard()				: There is no pushed value to discard.
-			MissingValueToLriStore,						// MissingValueToLriStore()				: There is no pushed value to run LriStore.
-			LriStoredValueIsNotObject,					// LriStoredValueIsNotObject()			: The value to run LriStore is not an object.
-			LriStoredValueNotCleared,					// LriStoredValueNotCleared()			: LriFetch is not executed before the next LriStore.
-			LriStoredValueNotExists,					// LriStoredValueNotExists()			: LriStore is not executed before the next LriFetch.
-			LeavingUnassignedValues,					// LeavingUnassignedValues()			: There are still values to assign to fields before finishing an object.
-			MissingFieldValue,							// MissingFieldValue()					: There is no pushed value to be assigned to a field.
-			MissingAmbiguityCandidate,					// MissingAmbiguityCandidate()			: There are not enough candidates to create an ambiguity node.
+			UnsupportedAmbiguityType,					// UnsupportedAmbiguityType(Type)		: The type is not configured to allow ambiguity.
+			UnexpectedAmbiguousCandidate,				// UnexpectedAmbiguousCandidate(Type)	: The type of the ambiguous candidate is not compatible to the required type.
+			MissingAmbiguityCandidate,					// MissingAmbiguityCandidate()			: There are less than two candidates to create an ambiguity node.
 			AmbiguityCandidateIsNotObject,				// AmbiguityCandidateIsNotObject()		: Tokens or enum items cannot be ambiguity candidates.
+
+			NoStackFrame,								// NoStackFrame()						: Stack operations are executed while no stack frame exists.
+			NoStackFrameForStackEnd,					// NoStackFrameForStackEnd()			: StackEnd when no stack frame exists.
+			NoCreatingObjectForField,					// NoCreatingObjectForField()			: Field when no creating object.
+			NoCreatingObjectForStackSlot,				// NoCreatingObjectForStackSlot()		: StackSlot when no creating object.
+			NoCreatingObjectForStackEnd,				// NoCreatingObjectForStackEnd()		: StackEnd when no creating object.
+			
 			InstructionNotComplete,						// InstructionNotComplete()				: No more instruction but the root object has not been completed yet.
 			Corrupted,									// Corrupted()							: An exception has been thrown therefore this receiver cannot be used anymore.
 			Finished,									// Finished()							: The finished instruction has been executed therefore this receiver cannot be used anymore.
@@ -379,61 +369,54 @@ IAstInsReceiver
 		class AstInsReceiverBase : public Object, public virtual IAstInsReceiver
 		{
 		private:
-			struct ObjectOrToken
+			struct TokenSlot
+			{
+				regex::RegexToken						token;
+				vint32_t								index = -1;
+
+				auto operator<=>(const TokenSlot&) const = default;
+			};
+
+			struct EnumItemSlot
+			{
+				vint32_t								value = -1;
+
+				auto operator<=>(const EnumItemSlot&) const = default;
+			};
+
+			using SlotValue = Variant<TokenSlot, EnumItemSlot, Ptr<ParsingAstBase>>;
+
+			struct SlotStorage
+			{
+				SlotValue								value;
+				Ptr<collections::List<SlotValue>>		additionalValues;
+
+				auto operator<=>(const SlotStorage&) const = default;
+			};
+			using SlotMap = collections::Dictionary<vint, SlotStorage>;
+
+			struct StackFrame
+			{
+				SlotMap									slots;
+				ParsingTextPos							codeRangeStart;
+			};
+			using StackFrameList = collections::List<StackFrame>;
+
+			struct CreatingObject
 			{
 				Ptr<ParsingAstBase>						object;
-				vint32_t								enumItem = -1;
-				regex::RegexToken						token = {};
-				vint32_t								tokenIndex = -1;
-
-				explicit ObjectOrToken(Ptr<ParsingAstBase> _object) : object(_object) {}
-				explicit ObjectOrToken(vint32_t _enumItem) : enumItem(_enumItem) {}
-				explicit ObjectOrToken(const regex::RegexToken& _token, vint32_t _tokenIndex) : token(_token), tokenIndex(_tokenIndex) {}
+				vint32_t								type = -1;
 			};
+			using CreatingObjectList = collections::List<CreatingObject>;
 
-			struct FieldAssignment
-			{
-				ObjectOrToken							value;
-				vint32_t								field = -1;
-				bool									weakAssignment = false;
-			};
-
-			struct CreatedObject
-			{
-				Ptr<ParsingAstBase>						object;
-				vint									pushedCount;
-
-				regex::RegexToken						delayedToken;
-				collections::List<FieldAssignment>		delayedFieldAssignments;
-				vint									extraEmptyDfaBelow = 0;
-
-				CreatedObject(Ptr<ParsingAstBase> _object, vint _pushedCount)
-					: object(_object)
-					, pushedCount(_pushedCount)
-				{
-				}
-
-				CreatedObject(Ptr<ParsingAstBase> _object, vint _pushedCount, const regex::RegexToken& _delayedToken)
-					: object(_object)
-					, pushedCount(_pushedCount)
-					, delayedToken(_delayedToken)
-				{
-				}
-			};
-
-			collections::List<CreatedObject>			created;
-			collections::List<ObjectOrToken>			pushed;
-			Ptr<ParsingAstBase>							lriStoredObject;
+			CreatingObjectList							creatingObjects;
+			StackFrameList								stackFrames;
 			bool										finished = false;
 			bool										corrupted = false;
 
 			void										EnsureContinuable();
-			void										SetField(ParsingAstBase* object, vint32_t field, const ObjectOrToken& value, bool weakAssignment);
+			void										SetField(ParsingAstBase* object, vint32_t field, const SlotValue& value, bool weakAssignment);
 
-			CreatedObject&								PushCreated(CreatedObject&& createdObject);
-			const CreatedObject&						TopCreated();
-			void										PopCreated();
-			void										DelayAssign(FieldAssignment&& fa);
 		protected:
 			virtual Ptr<ParsingAstBase>					CreateAstNode(vint32_t type) = 0;
 			virtual void								SetField(ParsingAstBase* object, vint32_t field, Ptr<ParsingAstBase> value) = 0;
@@ -639,6 +622,7 @@ Reflection
 
 #endif
 
+
 /***********************************************************************
 .\ASTPRINT.H
 ***********************************************************************/
@@ -788,6 +772,12 @@ Executable
 				vint32_t							count = 0;
 			};
 
+			struct CompetitionArray
+			{
+				vint32_t							start = -1;
+				vint32_t							count = 0;
+			};
+
 			struct ReturnIndexArray
 			{
 				vint32_t							start = -1;
@@ -800,11 +790,10 @@ Executable
 				vint32_t							count = 0;
 			};
 
-			enum class EdgePriority
+			struct CompetitionDesc
 			{
-				NoCompetition,
-				HighPriority,
-				LowPriority,
+				vint32_t							competitionId = -1;
+				bool								highPriority = false;
 			};
 
 			enum class ReturnRuleType
@@ -819,7 +808,7 @@ Executable
 			{
 				vint32_t							consumedRule = -1;
 				vint32_t							returnState = -1;
-				EdgePriority						priority = EdgePriority::NoCompetition;
+				CompetitionArray					competitions;
 				ReturnRuleType						ruleType = ReturnRuleType::Field;
 				InstructionArray					insAfterInput;
 			};
@@ -829,8 +818,7 @@ Executable
 				vint32_t							fromState = -1;
 				vint32_t							toState = -1;
 				StringLiteral						condition;
-				EdgePriority						priority = EdgePriority::NoCompetition;
-				InstructionArray					insBeforeInput;
+				CompetitionArray					competitions;
 				InstructionArray					insAfterInput;
 				ReturnIndexArray					returnIndices;
 			};
@@ -838,7 +826,6 @@ Executable
 			struct StateDesc
 			{
 				vint32_t							rule = -1;
-				vint32_t							clause = -1;
 				bool								endingState = false;
 			};
 
@@ -855,6 +842,7 @@ Executable
 				collections::Array<EdgeArray>		transitions;			// transitions[state * (TokenBegin + tokenCount) + input] = edges from state with specified input.
 				collections::Array<AstIns>			astInstructions;		// referenced by EdgeDesc::insBeforeInput and EdgeDesc::insAfterInput
 				collections::Array<vint32_t>		returnIndices;			// referenced by ReturnIndexArray
+				collections::Array<CompetitionDesc>	competitions;			// referenced by EdgeArray
 				collections::Array<ReturnDesc>		returns;				// referenced by Executable::returnIndices
 				collections::Array<EdgeDesc>		edges;					// referenced by EdgeArray
 				collections::Array<StateDesc>		states;					// referenced by returnState/fromState/toState
@@ -1802,9 +1790,8 @@ AllocateOnly<T>
 				explicit Ref(vint32_t _handle) :handle(_handle) {}
 
 				__forceinline bool operator==(NullRef) const { return handle == -1; }
-
-				__forceinline std::strong_ordering operator<=>(const Ref<T>& ref) const { return handle <=> ref.handle; }
 				__forceinline bool operator==(const Ref<T>& ref) const { return handle == ref.handle; }
+				__forceinline std::strong_ordering operator<=>(const Ref<T>& ref) const = default;
 
 				__forceinline Ref& operator=(const Ref<T>& ref) { handle = ref.handle; return *this; }
 				__forceinline Ref& operator=(T* obj) { handle = obj == nullptr ? -1 : obj->allocatedIndex; return *this; }
@@ -1876,7 +1863,6 @@ AllocateOnly<T>
 			struct ReturnStack;
 			struct Trace;
 			struct TraceExec;
-			struct InsExec_Object;
 
 /***********************************************************************
 TraceManager (Data Structures)
@@ -1927,7 +1913,7 @@ TraceManager (Data Structures)
 
 				vint32_t				currentTokenIndex = -1;					// currentTokenIndex from the trace that creates this competition
 				vint32_t				ruleId = -1;							// the rule id of state, when an edge starts this competition
-				vint32_t				clauseId = -1;							// the clause id of the state, when an edge starts this competition
+				vint32_t				competitionId = -1;						// the unique competition id in a rule, when an edge starts this competition
 																				// an state must be picked up and ensure that, the syntax creating the priority and the state belong to the same clause
 
 				vint32_t				highCounter = 0;						// temporary counter for all existing high bets
@@ -1953,6 +1939,21 @@ TraceManager (Data Structures)
 
 /***********************************************************************
 TraceManager (Data Structures -- Input/EndOfInput)
+
+For a trace like:
+  A
+ / \
+B   C
+ \ /
+  D
+
+A.successors.(first .. last) = {B,C}
+B.successors.siblingNext = C
+C.successors.siblingPrev = B
+(B, C).successors.(first .. last) = {D}
+
+predecessors are for reverse relationships.
+Such data structure makes many-to-many relationships impossible to represent.
 ***********************************************************************/
 
 			struct TraceCollection
@@ -1970,7 +1971,7 @@ TraceManager (Data Structures -- Input/EndOfInput)
 				Ref<AttendingCompetitions>	attendingCompetitions;		// a linked list containing all AttendingCompetitions that this trace is attending
 																		// predecessors could share and modify the same linked list
 																		// if a competition is over, node could be removed from the linked list
-																		// one competition only creates two AttendingCompetitions, traces with the same bet share the object
+																		// one competition only creates two AttendingCompetitions, traces with the same bet sharing the object
 
 				Ref<AttendingCompetitions>	carriedCompetitions;		// all attended competitions regardless of the status of the competition
 			};
@@ -2002,13 +2003,17 @@ TraceManager (Data Structures -- Input/EndOfInput)
 			};
 
 /***********************************************************************
-TraceManager (Data Structures -- PrepareTraceRoute/ResolveAmbiguity)
+TraceManager (Data Structures -- PrepareTraceRoute)
 ***********************************************************************/
+
+			struct InsExec_Stack;
 
 			struct InsRef
 			{
 				Ref<Trace>							trace;
 				vint32_t							ins = -1;
+
+				__forceinline std::strong_ordering operator<=>(const InsRef& ref) const = default;
 			};
 
 			struct InsExec_InsRefLink : Allocatable<InsExec_InsRefLink>
@@ -2017,116 +2022,142 @@ TraceManager (Data Structures -- PrepareTraceRoute/ResolveAmbiguity)
 				InsRef								insRef;
 			};
 
-			struct InsExec_ObjRefLink : Allocatable<InsExec_ObjRefLink>
+			struct InsExec_StackRefLink : Allocatable<InsExec_StackRefLink>
 			{
-				Ref<InsExec_ObjRefLink>				previous;
-				Ref<InsExec_Object>					id;
+				Ref<InsExec_StackRefLink>			previous;
+				Ref<InsExec_Stack>					id;
 			};
 
-			struct InsExec_Object : Allocatable<InsExec_Object>, WithMagicCounter
+			struct InsExec_StackArrayRefLink : Allocatable<InsExec_StackArrayRefLink>, WithMagicCounter
 			{
-				static const vint32_t				TokenOrEnumItemObjectId = -2;
+				Ref<InsExec_StackArrayRefLink>		previous;
+				Ref<InsExec_StackRefLink>			ids;
 
-				// previous allocated object
-				Ref<InsExec_Object>					previous;
+				// The current depth of the link. The first one is 0.
+				vint								currentDepth = -1;
 
-				// fieldObjectIds are object fields of this object
-				Ref<InsExec_ObjRefLink>				fieldObjectIds;
+				// Available when the link is in InsExec_Context::createStack
+				// It records the InsExec_Context::objectStack depth when the link is created.
+				vint								objectStackDepthForCreateStack = -1;
+			};
 
-				// assignedToObjectIds are objects who has at least one field that is this object
-				Ref<InsExec_ObjRefLink>				assignedToObjectIds;
+			struct InsExec_StackSummarizing
+			{
+				// The earliest StackBegin instructions including in useFromStacks
+				InsRef								earliestLocalInsRef;
 
-				// instruction that creates this object
-				InsRef								createInsRef;
+				// The earliest StackBegin instructions including in useFromStacks and fieldStacks
+				InsRef								earliestStackInsRef;
 
-				// DelayFieldAssignment instructions that associates to the current object
-				Ref<InsExec_InsRefLink>				dfaInsRefs;
+				// earliestStackInsRef but propogated back into useFromStacks
+				InsRef								earliestInsRef;
 
-				// first instruction that creates this object
-				InsRef								topLocalInsRef;
-
-				// first instruction that creates this object or its fields
-				InsRef								topInsRef;
-
-				// last instructions that closes this object
+				// StackEnd instructions mapping earliestInsRef.
+				// Such StackBegin and StackEnd may not belong to the same stack.
+				// But belong to the out-most stack.
 				Ref<InsExec_InsRefLink>				bottomInsRefs;
+
+				// All CreateObject instructions including in useFromStacks
+				Ref<InsExec_InsRefLink>				indirectCreateObjectInsRefs;
 			};
 
-			struct InsExec_ObjectStack : Allocatable<InsExec_ObjectStack>, WithMagicCounter
+			struct InsExec_Stack : Allocatable<InsExec_Stack>, WithMagicCounter
 			{
-				Ref<InsExec_ObjectStack>			previous;
-				Ref<InsExec_ObjRefLink>				objectIds;
-				vint32_t							pushedCount = -1;		// number for InsExec_CreateStack::stackBase
-			};
+				// previous allocated object
+				Ref<InsExec_Stack>					previous;
 
-			struct InsExec_CreateStack : Allocatable<InsExec_CreateStack>, WithMagicCounter
-			{
-				Ref<InsExec_CreateStack>			previous;
-				vint32_t							stackBase = -1;			// the number of objects in the object stack that is frozen
+				// owner-field relationships
+				Ref<InsExec_StackRefLink>			fieldStacks;
 
-				// All InsExec_InsRefLink that create the current InsExec_CreateStack
-				Ref<InsExec_InsRefLink>				createInsRefs;
+				// useFrom-useBy relationships
+				Ref<InsExec_StackRefLink>			useFromStacks;
 
-				// InsExec_ObjRefLink assigned by BO/BOLA/RO
-				Ref<InsExec_ObjRefLink>				objectIds;
+				// fieldStacks and useFromStacks
+				Ref<InsExec_StackRefLink>			allDependentStacks;
 
-				// objectIds will be added to reverseAssignedToObjectIds::assignedToObjectIds when ReopenObject happens
-				// it happens when a field is assigned to a DFA created object, the objectIds are unknown yet
-				Ref<InsExec_ObjRefLink>				reverseAssignedToObjectIds;
+				// Key instructions in this stack
+				InsRef								beginInsRef;
+				Ref<InsExec_InsRefLink>				createObjectInsRefs;
+				Ref<InsExec_InsRefLink>				endWithCreateInsRefs;
+				Ref<InsExec_InsRefLink>				endWithReuseInsRefs;
+
+				InsExec_StackSummarizing			summarizing;
 			};
 
 			struct InsExec_Context
 			{
-				Ref<InsExec_ObjectStack>			objectStack;			// InsExec_ObjectStack after executing instructions
-				Ref<InsExec_CreateStack>			createStack;			// InsExec_CreateStack after executing instructions
-				Ref<InsExec_ObjRefLink>				lriStoredObjects;		// LriStore stored InsExec_ObjRefLink after executing instructions
+				Ref<InsExec_StackArrayRefLink>		objectStack;			// Stack of created objects
+				Ref<InsExec_StackArrayRefLink>		createStack;			// Stack of opening objects
 			};
 
 			struct InsExec : WithMagicCounter
 			{
-				// BO:
-				//   the created object
-				Ref<InsExec_Object>					createdObjectId;
+				// Stack operated by StackBegin/StackEnd/CreateObject
+				Ref<InsExec_StackRefLink>			operatingStacks;
 
-				// DFA:
-				//   all associated objects
-				// EO:
-				//   all ended objects
-				Ref<InsExec_ObjRefLink>				objRefs;
-
-				// InsExec_InsRefLink
-				// BO/DFA:
-				//   EndingObject instructions that close objects or create stack created by the current instruction
-				Ref<InsExec_InsRefLink>				eoInsRefs;
-
-				// context before executing the current instruction
+				// Context before executing this instruction
 				InsExec_Context						contextBeforeExecution;
 			};
 
+/***********************************************************************
+TraceManager (Data Structures -- ResolveAmbiguity)
+
+A branch begins from:
+  The initial trace
+  Successors of a branch trace (a trace with multiple successors)
+  A merge trace (a trace with multiple predecessors)
+branchData.forwardTrace points to the nearest beginning of a trace.
+
+Here a demos of which traces are beginnings:
+  A*
+  |
+  B
+ / \
+C*  D*
+|   |
+E   F
+ \ /
+  G*(cfb->B)
+  |
+  H
+
+For any merge trace, its branchData.commonForwardBranch points to the latest forwardTrace that all comming branches share.
+It does not necessary equal to branchData.forwardTrace of all predecessors as their values might be different.
+
+All branch traces can be found beginning from TraceManager::firstBranchTrace following nextBranchTrace.
+All merge traces can be found beginning from TraceManager::firstMergeTrace following nextMergeTrace.
+Traversing through branchData.forwardTrace and branchData.commonForwardBranch will skip all branches going forward.
+***********************************************************************/
+
+			// TraceAmbiguity describes where an ambiguity resolving begins and ends
 			struct TraceAmbiguity : Allocatable<TraceAmbiguity>
 			{
-				// all objects to merge
-				Ref<InsExec_ObjRefLink>				bottomObjectIds;
+				// all objects to merge, they all have valid createObjectInsRef 
+				Ref<InsExec_StackRefLink>			bottomCreateObjectStacks;
 
 				// if multiple TraceAmbiguity are assigned to the same place
 				// it records the one it overrides
 				Ref<TraceAmbiguity>					overridedAmbiguity;
 
 				// the trace where ambiguity resolution begins
-				// prefix is the number of instructions before BO/DFA
+				// prefix is the number of instructions before SB
 				// if prefix + 1 is larger than instructions in firstTrace
-				// then BO/DFA is in all successors
+				// then StackBegin is in all successors
 				// these instructions create topObjectIds
 				Ref<Trace>							firstTrace;
 				vint32_t							prefix = -1;
 
 				// the trace when ambiguity resolution ends
-				// postfix is the number of instructions after EO
+				// postfix is the number of instructions after SE
 				// if lastTrace is a merge trace
-				// then EO is in all predecessors
+				// then StackEnd is in all predecessors
 				// these instructions end bottomObjectIds
 				Ref<Trace>							lastTrace;
 				vint32_t							postfix = -1;
+
+				// The merge trace that creates this TraceAmbiguity, and its associated branch trace
+				Ref<Trace>							branchTrace;
+				Ref<Trace>							mergeTrace;
 			};
 
 			struct TraceAmbiguityLink : Allocatable<TraceAmbiguityLink>
@@ -2137,12 +2168,10 @@ TraceManager (Data Structures -- PrepareTraceRoute/ResolveAmbiguity)
 
 			struct TraceInsLists
 			{
-				InstructionArray					edgeInsBeforeInput;
 				InstructionArray					edgeInsAfterInput;
 				InstructionArray					returnInsAfterInput;
-				vint32_t							c1;
-				vint32_t							c2;
-				vint32_t							c3;
+				vint32_t							countAfterInput;
+				vint32_t							countAll;
 			};
 
 			struct TraceBranchData : WithMagicCounter
@@ -2158,24 +2187,25 @@ TraceManager (Data Structures -- PrepareTraceRoute/ResolveAmbiguity)
 				Ref<Trace>							commonForwardBranch;
 			};
 
+			// TraceExec stores all ambiguity awared data for a trace
 			struct TraceExec : Allocatable<TraceExec>
 			{
 				Ref<Trace>							traceId;
 				TraceInsLists						insLists;				// instruction list of this trace
 				InstructionArray					insExecRefs;			// allocated InsExec for instructions
 
-				InsExec_Context						context;
-				TraceBranchData						branchData;
+				InsExec_Context						context;				// context after executing all instructions
+				TraceBranchData						branchData;				// branch shapes
 
-				// linked list of branch traces
+				// linked list of branch traces, in a global depth-first order, from TraceManager::firstBranchTrace
 				Ref<Trace>							nextBranchTrace;
 
-				// linked list of merge traces
+				// linked list of merge traces, in a global depth-first order, from TraceManager::firstMergeTrace
 				Ref<Trace>							nextMergeTrace;
 
-				// linked list of ambiguity critical trace (order by trace id ascending)
-				// the linked list begins from a trace whose forwardTrace is itself
-				// record all traces that is
+				// linked list of ambiguity critical trace
+				// it is stored in a trace whose forwardTrace is itself
+				// record all traces with the same forwardTrace value, order by trace id ascending
 				//   a branch trace
 				//   a predecessor of a merge trace
 				//   a trace pointed by TraceAmbiguity::firstTrace
@@ -2183,32 +2213,32 @@ TraceManager (Data Structures -- PrepareTraceRoute/ResolveAmbiguity)
 
 				// TraceAmbiguity associated to the trace
 				// it could be associated to
-				//   firstTrace (order by prefix ascending)
-				//   lastTrace  (order by postfix ascending)
+				//   TraceAmbiguity::firstTrace (order by prefix ascending)
+				//   TraceAmbiguity::lastTrace  (order by postfix ascending)
 				//   the merge trace that create this TraceAmbiguity
 				// ambiguityBegins will contain multiple TraceAmbiguity when
 				//   multiple ambiguity begins in different group of successors
 				//   there is also a possibility when all ambiguities don't cover all successors
-				Ref<TraceAmbiguity>					ambiguityDetected;
-				Ref<TraceAmbiguityLink>				ambiguityBegins;
 
-				// when this trace is a successor of a branch trace
-				// and such branch trace has non-empty ambiguityBegins
-				// ambiguityCoveredInForward points to the ambiguity which begins in the current trace
-				Ref<TraceAmbiguity>					ambiguityCoveredInForward;
+				Ref<TraceAmbiguity>					ambiguityDetected;		// The TraceAmbiguity whose lastTrace is this trace
+																			// Referring to the last StackEnd of all predecessors
+																			// Or the opening object at the end of the trace
+
+				Ref<TraceAmbiguityLink>				ambiguityBegins;		// All TraceAmbiguity whose firstTrace is this trace
+																			// All TraceAmbiguity in this list are grouped by lastTrace (using TraceAmbiguity::overridedAmbiguity)
+																			// To traverse all of them, begins from each TraceAmbiguity in this list, and go through TraceAmbiguity::overridedAmbiguity
 			};
 
 /***********************************************************************
 TraceManager (Data Structures -- BuildExecutionOrder)
 ***********************************************************************/
 
-			struct ExecutionStep;
-
 			enum class ExecutionType
 			{
-				Empty,
 				Instruction,
-				ResolveAmbiguity,
+				RA_Begin,
+				RA_Branch,
+				RA_End,
 			};
 
 			struct ExecutionStep : Allocatable<ExecutionStep>
@@ -2223,31 +2253,35 @@ TraceManager (Data Structures -- BuildExecutionOrder)
 
 				struct ETRA
 				{
-					vint32_t						count;
 					vint32_t						type;
 					vint32_t						trace;
 				};
 
 				ExecutionType						type = ExecutionType::Instruction;
 
-				// for steps that ready to execute
-				// "next" means the next step to execute
-				// for steps that returns from BuildStepTree
-				// "next" in a leaf step points to the next leaf step
-				Ref<ExecutionStep>					next;
-
-				// for steps that returns from BuildStepTree
-				// "next" is the parent step in the tree
-				Ref<ExecutionStep>					parent;
-
-				vint32_t							copyCount = 0;
-				vint32_t							visitCount = 0;
-
 				union
 				{
 					ETI								et_i;
 					ETRA							et_ra;
 				};
+
+				// list (parent, next)
+				// tree (parent, leafPrev, leafNext)
+				Ref<ExecutionStep>					next, parent, leafNext;
+				vint32_t							visitCount = 0;
+				vint32_t							copyCount = 0;
+			};
+
+			struct ExecutionStepLinkedList
+			{
+				ExecutionStep*						first = nullptr;
+				ExecutionStep*						last = nullptr;
+			};
+
+			struct ExecutionStepTree
+			{
+				ExecutionStep*						firstLeaf = nullptr;
+				ExecutionStep*						lastLeaf = nullptr;
 			};
 
 /***********************************************************************
@@ -2273,8 +2307,6 @@ TraceManager
 					return currentTrace && stateTrace;
 				}
 			};
-
-			struct TraceManagerSubmitter;
 
 			class TraceManager : public Object, public virtual IExecutor
 			{
@@ -2310,7 +2342,7 @@ TraceManager
 				void										TryMergeSurvivingTraces();
 
 				// Competition
-				void										AttendCompetition(Trace* trace, Ref<AttendingCompetitions>& newAttendingCompetitions, Ref<AttendingCompetitions>& newCarriedCompetitions, Ref<ReturnStack> returnStack, vint32_t ruleId, vint32_t clauseId, bool forHighPriority);
+				void										AttendCompetition(Trace* trace, Ref<AttendingCompetitions>& newAttendingCompetitions, Ref<AttendingCompetitions>& newCarriedCompetitions, Ref<ReturnStack> returnStack, vint32_t ruleId, CompetitionDesc comp);
 				void										AttendCompetitionIfNecessary(Trace* trace, vint32_t currentTokenIndex, EdgeDesc& edgeDesc, Ref<AttendingCompetitions>& newAttendingCompetitions, Ref<AttendingCompetitions>& newCarriedCompetitions, Ref<ReturnStack>& newReturnStack);
 				void										CheckAttendingCompetitionsOnEndingEdge(Trace* trace, EdgeDesc& edgeDesc, Ref<AttendingCompetitions> acId, Ref<ReturnStack> returnStack);
 				bool										CheckBackupTracesBeforeSwapping(vint32_t currentTokenIndex);
@@ -2322,6 +2354,7 @@ TraceManager
 				// Walk
 				bool										IsQualifiedTokenForCondition(regex::RegexToken* token, StringLiteral condition);
 				bool										IsQualifiedTokenForEdgeArray(regex::RegexToken* token, EdgeArray& edgeArray);
+				void										TestLeftrecEdgeQualification(EdgeDesc& edgeDesc, regex::RegexToken* lookAhead, bool& acceptLookAhead, bool& acceptEndingInput);
 				WalkingTrace								WalkAlongSingleEdge(vint32_t currentTokenIndex, vint32_t input, WalkingTrace trace, vint32_t byEdge, EdgeDesc& edgeDesc);
 				void										WalkAlongLeftrecEdges(vint32_t currentTokenIndex, regex::RegexToken* lookAhead, WalkingTrace trace, EdgeArray& edgeArray);
 				void										WalkAlongEpsilonEdges(vint32_t currentTokenIndex, regex::RegexToken* lookAhead, WalkingTrace trace);
@@ -2336,6 +2369,8 @@ TraceManager
 
 				template<typename TCallback>
 				void										IterateSurvivedTraces(TCallback&& callback);
+
+			public:
 				void										ReadInstructionList(Trace* trace, TraceInsLists& insLists);
 				AstIns&										ReadInstruction(vint32_t instruction, TraceInsLists& insLists);
 
@@ -2343,66 +2378,54 @@ TraceManager
 				// PrepareTraceRoute
 				AllocateOnly<TraceExec>						traceExecs;
 				collections::Array<InsExec>					insExecs;
-				AllocateOnly<InsExec_Object>				insExec_Objects;
+				AllocateOnly<InsExec_Stack>					insExec_Stacks;
 				AllocateOnly<InsExec_InsRefLink>			insExec_InsRefLinks;
-				AllocateOnly<InsExec_ObjRefLink>			insExec_ObjRefLinks;
-				AllocateOnly<InsExec_ObjectStack>			insExec_ObjectStacks;
-				AllocateOnly<InsExec_CreateStack>			insExec_CreateStacks;
+				AllocateOnly<InsExec_StackRefLink>			insExec_StackRefLinks;
+				AllocateOnly<InsExec_StackArrayRefLink>		insExec_StackArrayRefLinks;
 
 				// phase: AllocateExecutionData
 				void										AllocateExecutionData();
 
+				// phase: BuildAmbiguityStructures
+				Trace* StepForward(Trace* trace);
+				void										BuildAmbiguityStructures();
+
 				// phase: PartialExecuteTraces - PartialExecuteOrdinaryTrace
-				InsExec_Object*								NewObject();
-				vint32_t									GetStackBase(InsExec_Context& context);
-				vint32_t									GetStackTop(InsExec_Context& context);
+				InsExec_Stack*								NewStack();
 				void										PushInsRefLink(Ref<InsExec_InsRefLink>& link, InsRef insRef);
-				void										PushObjRefLink(Ref<InsExec_ObjRefLink>& link, Ref<InsExec_Object> id);
+				void										PushStackRefLink(Ref<InsExec_StackRefLink>& link, Ref<InsExec_Stack> id);
+				void										PushStackArrayRefLink(Ref<InsExec_StackArrayRefLink>& arrayLink, Ref<InsExec_Stack> id);
+				void										PushStackArrayRefLink(Ref<InsExec_StackArrayRefLink>& arrayLink, Ref<InsExec_StackRefLink> link);
 				Ref<InsExec_InsRefLink>						JoinInsRefLink(Ref<InsExec_InsRefLink> first, Ref<InsExec_InsRefLink> second);
-				Ref<InsExec_ObjRefLink>						JoinObjRefLink(Ref<InsExec_ObjRefLink> first, Ref<InsExec_ObjRefLink> second);
-				void										PushAssignedToObjectIdsSingleWithMagic(Ref<InsExec_ObjRefLink> fieldObjectIds, Ref<InsExec_Object> assignedToTarget);
-				void										PushAssignedToObjectIdsMultipleWithMagic(Ref<InsExec_ObjRefLink> fieldObjectIds, Ref<InsExec_ObjRefLink> assignedToTargets);
-				InsExec_ObjectStack*						PushObjectStackSingle(InsExec_Context& context, Ref<InsExec_Object> objectId);
-				InsExec_ObjectStack*						PushObjectStackMultiple(InsExec_Context& context, Ref<InsExec_ObjRefLink> linkId);
-				InsExec_CreateStack*						PushCreateStack(InsExec_Context& context);
+				Ref<InsExec_StackRefLink>					JoinStackRefLink(Ref<InsExec_StackRefLink> first, Ref<InsExec_StackRefLink> second);
 				void										PartialExecuteOrdinaryTrace(Trace* trace);
 
 				// phase: PartialExecuteTraces - EnsureInsExecContextCompatible
 				void										EnsureInsExecContextCompatible(Trace* baselineTrace, Trace* commingTrace);
 
 				// phase: PartialExecuteTraces - MergeInsExecContext
-				void										PushInsRefLinkWithCounter(Ref<InsExec_InsRefLink>& link, Ref<InsExec_InsRefLink> comming);
-				void										PushObjRefLinkWithCounter(Ref<InsExec_ObjRefLink>& link, Ref<InsExec_ObjRefLink> comming);
-				template<typename T, T* (TraceManager::*get)(Ref<T>), Ref<T> (InsExec_Context::*stack), typename TMerge>
-				Ref<T>										MergeStack(Trace* mergeTrace, AllocateOnly<T>& allocator, TMerge&& merge);
+				template<Ref<InsExec_StackArrayRefLink> (InsExec_Context::*stack), typename TMerge>
+				Ref<InsExec_StackArrayRefLink>				MergeStack(Trace* mergeTrace, TMerge&& merge);
 				void										MergeInsExecContext(Trace* mergeTrace);
-
-				// phase: PartialExecuteTraces - CalculateObjectFirstInstruction
-				bool										UpdateTopTrace(InsRef& topInsRef, InsRef newInsRef);
-				void										InjectFirstInstruction(InsRef insRef, Ref<InsExec_ObjRefLink> injectTargets, vuint64_t magicInjection);
-				void										CalculateObjectFirstInstruction();
-
-				// phase: PartialExecuteTraces - CalculateObjectLastInstruction
-				bool										IsInTheSameBranch(Trace* forward, Trace* targetForwardAtFront);
-				void										CalculateObjectLastInstruction();
 
 				// phase: PartialExecuteTraces
 				void										PartialExecuteTraces();
 
-				// phase: BuildAmbiguityStructures
-				Trace*										StepForward(Trace* trace);
-				void										BuildAmbiguityStructures();
-
-#if defined VCZH_MSVC && defined _DEBUG
-				// phase: DebugCheckTraceExecData
-				void										DebugCheckTraceExecData();
-#endif
+				// phase: SummarizeInstructionRange
+				template<typename TCallback>
+				void										IterateStackWithDependency(Ref<InsExec_StackRefLink>(InsExec_Stack::* dependencies), TCallback&& callback);
+				bool										UpdateTopTrace(InsRef& topInsRef, InsRef newInsRef);
+				void										CollectInsRefs(collections::SortedList<InsRef>& insRefs, Ref<InsExec_InsRefLink> link);
+				void										SummarizeEarilestLocalInsRefs();
+				void										SummarizeEarilestStackInsRefs();
+				void										SummarizeEarilestInsRefs();
+				void										SummarizeInstructionRange();
 
 			protected:
 				// ResolveAmbiguity
 				Ref<Trace>									firstBranchTrace;
 				Ref<Trace>									firstMergeTrace;
-				Ref<InsExec_Object>							firstObject;
+				Ref<InsExec_Stack>							firstStack;
 				Ref<ExecutionStep>							firstStep;
 				AllocateOnly<TraceAmbiguity>				traceAmbiguities;
 				AllocateOnly<TraceAmbiguityLink>			traceAmbiguityLinks;
@@ -2410,41 +2433,90 @@ TraceManager
 
 				// phase: CheckMergeTraces
 				template<typename TCallback>
-				bool										EnumerateObjects(Ref<InsExec_ObjRefLink> objRefLinkStartSet, bool withCounter, TCallback&& callback);
+				bool										EnumerateObjects(Ref<InsExec_StackRefLink> stackRefLinkStartSet, bool withCounter, TCallback&& callback);
 				template<typename TCallback>
-				bool										EnumerateBottomInstructions(InsExec_Object* ieObject, TCallback&& callback);
+				bool										EnumerateBottomInstructions(InsExec_Stack* ieObject, TCallback&& callback);
 				bool										ComparePrefix(TraceExec* baselineTraceExec, TraceExec* commingTraceExec, vint32_t prefix);
 				bool										ComparePostfix(TraceExec* baselineTraceExec, TraceExec* commingTraceExec, vint32_t postfix);
 				template<typename TCallback>
-				bool										CheckAmbiguityResolution(TraceAmbiguity* ta, collections::List<Ref<InsExec_ObjRefLink>>& visitingIds, TCallback&& callback);
-				bool										CheckMergeTrace(TraceAmbiguity* ta, Trace* trace, TraceExec* traceExec, collections::List<Ref<InsExec_ObjRefLink>>& visitingIds);
+				bool										CheckAmbiguityResolution(TraceAmbiguity* ta, collections::List<Ref<InsExec_StackRefLink>>& visitingIds, collections::List<WString>* failureReasons, TCallback&& callback);
+				bool										CheckSingleMergeTrace(TraceAmbiguity* ta, Trace* trace, TraceExec* traceExec, collections::List<Ref<InsExec_StackRefLink>>& visitingIds, collections::List<WString>* failureReasons);
 				void										LinkAmbiguityCriticalTrace(Ref<Trace> traceId);
 				void										CheckTraceAmbiguity(TraceAmbiguity* ta);
-#if defined VCZH_MSVC && defined _DEBUG
-				void										DebugCheckTraceAmbiguitiesInSameTrace(Trace* trace, TraceExec* traceExec);
-#endif
 				void										MarkAmbiguityCoveredForward(Trace* currentTrace, TraceAmbiguity* ta, Trace* firstTrace, TraceExec* firstTraceExec);
 				void										CategorizeTraceAmbiguities(Trace* trace, TraceExec* traceExec);
 				void										CheckMergeTraces();
 
 				// phase: BuildExecutionOrder
-#define DEFINE_EXECUTION_STEP_CONTEXT						ExecutionStep*& root, ExecutionStep*& firstLeaf, ExecutionStep*& currentStep, ExecutionStep*& currentLeaf
-				void										MarkNewLeafStep(ExecutionStep* step, ExecutionStep*& firstLeaf, ExecutionStep*& currentLeaf);
-				void										AppendStepLink(ExecutionStep* first, ExecutionStep* last, bool leapNode, DEFINE_EXECUTION_STEP_CONTEXT);
-				void										AppendStepsBeforeAmbiguity(Trace* startTrace, vint32_t startIns, TraceAmbiguity* ta, DEFINE_EXECUTION_STEP_CONTEXT);
-				void										AppendStepsAfterAmbiguity(Trace*& startTrace, vint32_t& startIns, TraceAmbiguity* ta, DEFINE_EXECUTION_STEP_CONTEXT);
-				void										AppendStepsForAmbiguity(TraceAmbiguity* ta, bool checkCoveredMark, DEFINE_EXECUTION_STEP_CONTEXT);
-				void										AppendStepsBeforeBranch(Trace* startTrace, vint32_t startIns, Trace* branchTrace, TraceExec* branchTraceExec, DEFINE_EXECUTION_STEP_CONTEXT);
-				void										BuildStepTree(Trace* startTrace, vint32_t startIns, Trace* endTrace, vint32_t endIns, ExecutionStep*& root, ExecutionStep*& firstLeaf, ExecutionStep* currentStep, ExecutionStep*& currentLeaf);
-				void										ConvertStepTreeToLink(ExecutionStep* root, ExecutionStep* firstLeaf, ExecutionStep*& first, ExecutionStep*& last);
-				void										BuildAmbiguousStepLink(TraceAmbiguity* ta, bool checkCoveredMark, ExecutionStep*& first, ExecutionStep*& last);
+
+
+				struct NestedAmbiguityInfo
+				{
+					collections::List<TraceAmbiguity*>					nestedAmbiguities;	// all nested ambiguities in order from outer to inner
+					collections::Dictionary<Trace*, TraceAmbiguity*>	branchTraces;		// branchTrace to TraceAmbiguities
+					collections::Group<TraceAmbiguity*, Trace*>			branchSelections;	// critial successors of each TraceAmbiguities' branchTrace from inner to outer
+				};
+
+				struct BSL_Guidance
+				{
+					const collections::List<Trace*>*					branchSelections = nullptr;
+					const collections::List<TraceAmbiguity*>*			ambiguitiesToSkip = nullptr;
+
+				};
+
+				struct BSLA_Guidance
+				{
+					Ptr<NestedAmbiguityInfo>							nestedTas;
+					vint												nextAmbiguityIndex = 0;
+				};
+
+				void										AppendStepsAfterList(ExecutionStepLinkedList steps, ExecutionStepLinkedList& current);
+				void										AppendLeafToTree(ExecutionStep* leaf, ExecutionStepTree& tree);
+				ExecutionStepLinkedList						ConvertStepTreeToList(ExecutionStepTree tree);
+
+				ExecutionStep*								CreateResolveAmbiguityStep(TraceAmbiguity* ta);
+				Ptr<NestedAmbiguityInfo>					CollectNestedAmbiguities(TraceAmbiguity* ta);
+				
+				void										BuildStepLeafsForAmbiguityBranch(
+																TraceAmbiguity* ta,
+																ExecutionStep* lastSharedStep,
+																Trace* ambiguityBranchStartTrace,
+																vint32_t* ambiguityBranchStartIns,
+																ExecutionStepTree& ambiguityStepTree);
+				void										BuildStepLeafsForNestedAmbiguityBranch(
+																TraceAmbiguity* ta,
+																ExecutionStep* lastSharedStep,
+																BSLA_Guidance* guidance,
+																ExecutionStepTree& ambiguityStepTree);
+				ExecutionStepLinkedList						BuildStepListForAmbiguity(
+																TraceAmbiguity* ta,
+																BSLA_Guidance* guidance);
+				ExecutionStepLinkedList						BuildStepListThroughAmbiguity(
+																Trace*& currentTrace,
+																vint32_t& currentIns,
+																TraceAmbiguity* ta,
+																BSLA_Guidance* guidance
+																);
+				ExecutionStepLinkedList						BuildStepListUntilFirstRawBranchTrace(
+																Trace* startTrace,
+																vint32_t startIns,
+																Trace* endTrace,
+																vint32_t endIns,
+																BSL_Guidance* guidance,
+																Trace** rawBranchTrace);
+				ExecutionStepLinkedList						BuildStepList(
+																Trace* startTrace,
+																vint32_t startIns,
+																Trace* endTrace,
+																vint32_t endIns,
+																BSL_Guidance* guidance);
 				void										BuildExecutionOrder();
-#undef DEFINE_EXECUTION_STEP_CONTEXT
 
 			public:
 				TraceManager(Executable& _executable, const ITypeCallback* _typeCallback, vint blockSize);
 
 				vint32_t						concurrentCount = 0;
+				Nullable<vint32_t>				concurrentCountBeforeError;
 				collections::List<Trace*>*		concurrentTraces = nullptr;
 				collections::List<Trace*>*		backupTraces = nullptr;
 
@@ -2458,11 +2530,10 @@ TraceManager
 				AttendingCompetitions*			AllocateAttendingCompetitions();
 
 				InsExec*						GetInsExec(vint32_t index);
-				InsExec_Object*					GetInsExec_Object(Ref<InsExec_Object> index);
+				InsExec_Stack*					GetInsExec_Stack(Ref<InsExec_Stack> index);
 				InsExec_InsRefLink*				GetInsExec_InsRefLink(Ref<InsExec_InsRefLink> index);
-				InsExec_ObjRefLink*				GetInsExec_ObjRefLink(Ref<InsExec_ObjRefLink> index);
-				InsExec_ObjectStack*			GetInsExec_ObjectStack(Ref<InsExec_ObjectStack> index);
-				InsExec_CreateStack*			GetInsExec_CreateStack(Ref<InsExec_CreateStack> index);
+				InsExec_StackRefLink*			GetInsExec_StackRefLink(Ref<InsExec_StackRefLink> index);
+				InsExec_StackArrayRefLink*		GetInsExec_StackArrayRefLink(Ref<InsExec_StackArrayRefLink> index);
 				TraceExec*						GetTraceExec(Ref<TraceExec> index);
 				TraceAmbiguity*					GetTraceAmbiguity(Ref<TraceAmbiguity> index);
 				TraceAmbiguityLink*				GetTraceAmbiguityLink(Ref<TraceAmbiguityLink> index);
@@ -2479,10 +2550,84 @@ TraceManager
 				void							ResolveAmbiguity() override;
 
 			protected:
-				void							ExecuteSingleTrace(TraceManagerSubmitter& submitter, Trace* trace, vint32_t firstIns, vint32_t lastIns, TraceInsLists& insLists, collections::List<regex::RegexToken>& tokens);
-				void							ExecuteSingleStep(TraceManagerSubmitter& submitter, ExecutionStep* step, collections::List<regex::RegexToken>& tokens);
+				void							ExecuteSingleTrace(IAstInsReceiver& receiver, Trace* trace, vint32_t firstIns, vint32_t lastIns, TraceInsLists& insLists, collections::List<regex::RegexToken>& tokens);
+				void							ExecuteSingleStep(IAstInsReceiver& receiver, ExecutionStep* step, collections::List<regex::RegexToken>& tokens);
 			public:
 				Ptr<ParsingAstBase>				ExecuteTrace(IAstInsReceiver& receiver, collections::List<regex::RegexToken>& tokens) override;
+			};
+
+			class TraceException : public Exception
+			{
+			public:
+				TraceException(TraceManager& tm, InsRef insRef, const wchar_t* phrase, const wchar_t* message)
+					: Exception(
+						WString::Unmanaged(L"[") + 
+						WString::Unmanaged(phrase) +
+						WString::Unmanaged(L"] at ") +
+						itow(insRef.trace.handle) + WString::Unmanaged(L"@") + itow(insRef.ins) +
+						WString::Unmanaged(L" : ") +
+						WString::Unmanaged(message)
+					)
+				{
+				}
+
+				TraceException(TraceManager& tm, Trace* trace1, Trace* trace2, const wchar_t* phrase, const WString& message)
+					: Exception(
+						WString::Unmanaged(L"[") +
+						WString::Unmanaged(phrase) +
+						WString::Unmanaged(L"] at trace ") +
+						itow(trace1->allocatedIndex) +
+						(trace2 == nullptr ? WString::Empty : WString::Unmanaged(L" and ") + itow(trace2->allocatedIndex)) +
+						WString::Unmanaged(L" : ") +
+						message
+					)
+				{
+				}
+
+				TraceException(TraceManager& tm, Trace* trace1, Trace* trace2, const wchar_t* phrase, const wchar_t* message)
+					: TraceException(tm, trace1, trace2, phrase, WString::Unmanaged(message))
+				{
+				}
+
+				TraceException(TraceManager& tm, TraceAmbiguity* ta1, TraceAmbiguity* ta2, const wchar_t* phrase, const wchar_t* message)
+					: Exception(
+						WString::Unmanaged(L"[") +
+						WString::Unmanaged(phrase) +
+						WString::Unmanaged(L"] at trace ambiguity ") +
+						itow(ta1->firstTrace.handle) + WString::Unmanaged(L"@") + itow(ta1->prefix) + WString::Unmanaged(L"..") +
+						itow(ta1->lastTrace.handle) + WString::Unmanaged(L"@-") + itow(ta1->postfix) +
+						(ta2 == nullptr ? WString::Empty :
+							WString::Unmanaged(L" and ") +
+							itow(ta2->firstTrace.handle) + WString::Unmanaged(L"@") + itow(ta2->prefix) + WString::Unmanaged(L"..") +
+							itow(ta2->lastTrace.handle) + WString::Unmanaged(L"@-") + itow(ta2->postfix)
+							) +
+						WString::Unmanaged(L" : ") +
+						WString::Unmanaged(message)
+					)
+				{
+				}
+
+				TraceException(TraceManager& tm, InsExec_Stack* stack, const wchar_t* phrase, const wchar_t* message)
+					: Exception(
+						WString::Unmanaged(L"[") +
+						WString::Unmanaged(phrase) +
+						WString::Unmanaged(L"] at trace ") +
+						itow(stack->allocatedIndex) +
+						WString::Unmanaged(L" : ") +
+						WString::Unmanaged(message)
+					)
+				{
+				}
+
+				TraceException(TraceManager& tm, const wchar_t* phrase, const wchar_t* message)
+					: Exception(
+						WString::Unmanaged(L"[") +
+						WString::Unmanaged(phrase) +
+						WString::Unmanaged(L"] : ") +
+						WString::Unmanaged(message)
+					)
+				{
+				}
 			};
 		}
 	}
