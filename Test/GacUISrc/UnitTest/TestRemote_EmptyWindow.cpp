@@ -25,8 +25,9 @@ namespace remote_empty_window_tests
 			return config;
 		}
 
-		EmptyWindowProtocol()
-			: SingleScreenProtocol(MakeUnitTestScreenConfig())
+		EmptyWindowProtocol(const UnitTestScreenConfig& _globalConfig = MakeUnitTestScreenConfig())
+			: UnitTestRemoteProtocolBase(_globalConfig)
+			, SingleScreenProtocol(_globalConfig)
 		{
 		}
 

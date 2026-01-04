@@ -12,41 +12,35 @@ namespace remote_protocol_tests
 {
 	using namespace vl::presentation::unittest;
 
-	class NotImplementedProtocolBase : public UnitTestRemoteProtocolBase
+	class SingleScreenProtocolFeatures :
+		public UnitTestRemoteProtocol_MainWindow,
+		public UnitTestRemoteProtocol_IO
 	{
 	public:
-#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					void Request ## NAME()									override { CHECK_FAIL(L"Not Implemented in NotImplementedProtocolBase!"); }
-#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)						void Request ## NAME(vint id)							override { CHECK_FAIL(L"Not Implemented in NotImplementedProtocolBase!"); }
-#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)						void Request ## NAME(const REQUEST& arguments)			override { CHECK_FAIL(L"Not Implemented in NotImplementedProtocolBase!"); }
-#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)						void Request ## NAME(vint id, const REQUEST& arguments)	override { CHECK_FAIL(L"Not Implemented in NotImplementedProtocolBase!"); }
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
-		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-#undef MESSAGE_HANDLER
-#undef MESSAGE_REQ_RES
-#undef MESSAGE_REQ_NORES
-#undef MESSAGE_NOREQ_RES
-#undef MESSAGE_NOREQ_NORES
-	
-		NotImplementedProtocolBase(UnitTestScreenConfig _globalConfig)
-			: UnitTestRemoteProtocolBase(_globalConfig)
+		SingleScreenProtocolFeatures(const UnitTestScreenConfig& _globalConfig)
+			: UnitTestRemoteProtocol_MainWindow(_globalConfig)
+			, UnitTestRemoteProtocol_IO(_globalConfig)
 		{
 		}
-		
-		void Submit(bool& disconnected) override
+
+		void Impl_ControllerConnectionEstablished()
 		{
 		}
-		
-		IGuiRemoteEventProcessor* GetRemoteEventProcessor() override
+
+		void Impl_ControllerConnectionStopped()
 		{
-			return nullptr;
+		}
+
+		void Impl_RendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments)
+		{
+		}
+
+		void Impl_RendererEndRendering(vint id)
+		{
+			ElementMeasurings arguments;
+			GetEvents()->RespondRendererEndRendering(id, arguments);
 		}
 	};
-
-	using SingleScreenProtocolFeatures = Mixin<
-		NotImplementedProtocolBase,
-		UnitTestRemoteProtocol_MainWindow,
-		UnitTestRemoteProtocol_IO
-	>::Type;
 	
 	class SingleScreenProtocol 
 		: public SingleScreenProtocolFeatures
@@ -57,8 +51,9 @@ namespace remote_protocol_tests
 		List<Func<void()>>			processRemoteEvents;
 		vint						nextEventIndex = 0;
 
-		SingleScreenProtocol(UnitTestScreenConfig _globalConfig)
-			: SingleScreenProtocolFeatures(_globalConfig)
+		SingleScreenProtocol(const UnitTestScreenConfig& _globalConfig)
+			: UnitTestRemoteProtocolBase(_globalConfig)
+			, SingleScreenProtocolFeatures(_globalConfig)
 		{
 		}
 	
@@ -68,7 +63,25 @@ namespace remote_protocol_tests
 			processRemoteEvents.Add(std::move(callback));
 		}
 
-	protected:
+/***********************************************************************
+IGuiRemoteProtocolMessages
+***********************************************************************/
+
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					void Request ## NAME() override { SingleScreenProtocolFeatures::Impl_ ## NAME(); }
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)						void Request ## NAME(vint id) override { SingleScreenProtocolFeatures::Impl_ ## NAME(id); }
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)						void Request ## NAME(const REQUEST& arguments) override { SingleScreenProtocolFeatures::Impl_ ## NAME(arguments); }
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)						void Request ## NAME(vint id, const REQUEST& arguments) override { SingleScreenProtocolFeatures::Impl_ ## NAME(id, arguments); }
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_REQ_NORES
+#undef MESSAGE_NOREQ_RES
+#undef MESSAGE_NOREQ_NORES
+
+		void Submit(bool& disconnected) override
+		{
+		}
 
 		void ProcessRemoteEvents() override
 		{
@@ -78,30 +91,10 @@ namespace remote_protocol_tests
 			});
 			nextEventIndex++;
 		}
-
-	public:
 		
 		IGuiRemoteEventProcessor* GetRemoteEventProcessor() override
 		{
 			return this;
-		}
-
-		void RequestControllerConnectionEstablished() override
-		{
-		}
-	
-		void RequestControllerConnectionStopped() override
-		{
-		}
-
-		void RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments) override
-		{
-		}
-
-		void RequestRendererEndRendering(vint id) override
-		{
-			ElementMeasurings arguments;
-			GetEvents()->RespondRendererEndRendering(id, arguments);
 		}
 	};
 }

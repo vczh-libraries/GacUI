@@ -11,8 +11,7 @@ Unit Test Snapsnot and other Utilities
 
 namespace vl::presentation::unittest
 {
-	template<typename TProtocol>
-	class UnitTestRemoteProtocol_MainWindow : public TProtocol
+	class UnitTestRemoteProtocol_MainWindow : public virtual UnitTestRemoteProtocolBase
 	{
 		using WindowSizingConfig = remoteprotocol::WindowSizingConfig;
 		using WindowShowing = remoteprotocol::WindowShowing;
@@ -21,9 +20,8 @@ namespace vl::presentation::unittest
 		WindowStyleConfig			styleConfig;
 		NativeRect					lastRestoredSize;
 	
-		template<typename ...TArgs>
-		UnitTestRemoteProtocol_MainWindow(TArgs&& ...args)
-			: TProtocol(std::forward<TArgs&&>(args)...)
+		UnitTestRemoteProtocol_MainWindow(const UnitTestScreenConfig& _globalConfig)
+			: UnitTestRemoteProtocolBase(_globalConfig)
 		{
 			sizingConfig.bounds = { 0,0,0,0 };
 			sizingConfig.clientBounds = { 0,0,0,0 };
@@ -37,12 +35,12 @@ namespace vl::presentation::unittest
 IGuiRemoteProtocolMessages (Controller)
 ***********************************************************************/
 	
-		void RequestControllerGetFontConfig(vint id) override
+		void Impl_ControllerGetFontConfig(vint id)
 		{
 			this->GetEvents()->RespondControllerGetFontConfig(id, this->GetGlobalConfig().fontConfig);
 		}
 	
-		void RequestControllerGetScreenConfig(vint id) override
+		void Impl_ControllerGetScreenConfig(vint id)
 		{
 			this->GetEvents()->RespondControllerGetScreenConfig(id, this->GetGlobalConfig().screenConfig);
 		}
@@ -51,27 +49,27 @@ IGuiRemoteProtocolMessages (Controller)
 IGuiRemoteProtocolMessages (Window)
 ***********************************************************************/
 	
-		void RequestWindowGetBounds(vint id) override
+		void Impl_WindowGetBounds(vint id)
 		{
 			this->GetEvents()->RespondWindowGetBounds(id, sizingConfig);
 		}
 	
-		void RequestWindowNotifySetTitle(const ::vl::WString& arguments) override
+		void Impl_WindowNotifySetTitle(const ::vl::WString& arguments)
 		{
 			styleConfig.title = arguments;
 		}
 	
-		void RequestWindowNotifySetEnabled(const bool& arguments) override
+		void Impl_WindowNotifySetEnabled(const bool& arguments)
 		{
 			styleConfig.enabled = arguments;
 		}
 	
-		void RequestWindowNotifySetTopMost(const bool& arguments) override
+		void Impl_WindowNotifySetTopMost(const bool& arguments)
 		{
 			styleConfig.topMost = arguments;
 		}
 	
-		void RequestWindowNotifySetShowInTaskBar(const bool& arguments) override
+		void Impl_WindowNotifySetShowInTaskBar(const bool& arguments)
 		{
 			styleConfig.showInTaskBar = arguments;
 		}
@@ -86,29 +84,29 @@ IGuiRemoteProtocolMessages (Window)
 			this->GetEvents()->OnWindowBoundsUpdated(sizingConfig);
 		}
 	
-		void RequestWindowNotifySetBounds(const NativeRect& arguments) override
+		void Impl_WindowNotifySetBounds(const NativeRect& arguments)
 		{
 			sizingConfig.bounds = arguments;
 			OnBoundsUpdated();
 		}
 	
-		void RequestWindowNotifySetClientSize(const NativeSize& arguments) override
+		void Impl_WindowNotifySetClientSize(const NativeSize& arguments)
 		{
 			sizingConfig.bounds = { sizingConfig.bounds.LeftTop(), arguments };
 			OnBoundsUpdated();
 		}
 	
-		void RequestWindowNotifySetCustomFrameMode(const bool& arguments) override	{ styleConfig.customFrameMode = arguments;	this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
-		void RequestWindowNotifySetMaximizedBox(const bool& arguments) override		{ styleConfig.maximizedBox = arguments;		this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
-		void RequestWindowNotifySetMinimizedBox(const bool& arguments) override		{ styleConfig.minimizedBox = arguments;		this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
-		void RequestWindowNotifySetBorder(const bool& arguments) override			{ styleConfig.border = arguments;			this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
-		void RequestWindowNotifySetSizeBox(const bool& arguments) override			{ styleConfig.sizeBox = arguments;			this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
-		void RequestWindowNotifySetIconVisible(const bool& arguments) override		{ styleConfig.iconVisible = arguments;		this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
-		void RequestWindowNotifySetTitleBar(const bool& arguments) override			{ styleConfig.titleBar = arguments;			this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
-		void RequestWindowNotifyActivate() override									{ styleConfig.activated = true; }
-		void RequestWindowNotifyMinSize(const NativeSize& arguments) override		{}
+		void Impl_WindowNotifySetCustomFrameMode(const bool& arguments)	{ styleConfig.customFrameMode = arguments;	this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
+		void Impl_WindowNotifySetMaximizedBox(const bool& arguments)	{ styleConfig.maximizedBox = arguments;		this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
+		void Impl_WindowNotifySetMinimizedBox(const bool& arguments)	{ styleConfig.minimizedBox = arguments;		this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
+		void Impl_WindowNotifySetBorder(const bool& arguments)			{ styleConfig.border = arguments;			this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
+		void Impl_WindowNotifySetSizeBox(const bool& arguments)			{ styleConfig.sizeBox = arguments;			this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
+		void Impl_WindowNotifySetIconVisible(const bool& arguments)		{ styleConfig.iconVisible = arguments;		this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
+		void Impl_WindowNotifySetTitleBar(const bool& arguments)		{ styleConfig.titleBar = arguments;			this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
+		void Impl_WindowNotifyActivate()								{ styleConfig.activated = true; }
+		void Impl_WindowNotifyMinSize(const NativeSize& arguments)		{}
 	
-		void RequestWindowNotifyShow(const WindowShowing& arguments) override
+		void Impl_WindowNotifyShow(const WindowShowing& arguments)
 		{
 			styleConfig.activated = arguments.activate;
 			if (sizingConfig.sizeState != arguments.sizeState)

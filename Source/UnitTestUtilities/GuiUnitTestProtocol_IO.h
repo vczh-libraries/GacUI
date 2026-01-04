@@ -11,8 +11,7 @@ Unit Test Snapsnot and other Utilities
 
 namespace vl::presentation::unittest
 {
-	template<typename TProtocol>
-	class UnitTestRemoteProtocol_IO : public TProtocol
+	class UnitTestRemoteProtocol_IO : public virtual UnitTestRemoteProtocolBase
 	{
 		using GlobalShortcutKey = remoteprotocol::GlobalShortcutKey;
 		using GlobalShortcutKeyList = collections::List<GlobalShortcutKey>;
@@ -20,9 +19,8 @@ namespace vl::presentation::unittest
 		bool						capturing = false;
 		GlobalShortcutKeyList		globalShortcutKeys;
 
-		template<typename ...TArgs>
-		UnitTestRemoteProtocol_IO(TArgs&& ...args)
-			: TProtocol(std::forward<TArgs&&>(args)...)
+		UnitTestRemoteProtocol_IO(const UnitTestScreenConfig& _globalConfig)
+			: UnitTestRemoteProtocolBase(_globalConfig)
 		{
 		}
 
@@ -32,7 +30,7 @@ namespace vl::presentation::unittest
 IGuiRemoteProtocolMessages (IO)
 ***********************************************************************/
 
-		void RequestIOUpdateGlobalShortcutKey(const Ptr<GlobalShortcutKeyList>& arguments) override
+		void Impl_IOUpdateGlobalShortcutKey(const Ptr<GlobalShortcutKeyList>& arguments)
 		{
 			if (arguments)
 			{
@@ -44,22 +42,22 @@ IGuiRemoteProtocolMessages (IO)
 			}
 		}
 
-		void RequestIORequireCapture() override
+		void Impl_IORequireCapture()
 		{
 			capturing = true;
 		}
 
-		void RequestIOReleaseCapture() override
+		void Impl_IOReleaseCapture()
 		{
 			capturing = false;
 		}
 
-		void RequestIOIsKeyPressing(vint id, const VKEY& arguments) override
+		void Impl_IOIsKeyPressing(vint id, const VKEY& arguments)
 		{
 			CHECK_FAIL(L"Not Implemented!");
 		}
 
-		void RequestIOIsKeyToggled(vint id, const VKEY& arguments) override
+		void Impl_IOIsKeyToggled(vint id, const VKEY& arguments)
 		{
 			CHECK_FAIL(L"Not Implemented!");
 		}

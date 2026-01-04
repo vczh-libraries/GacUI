@@ -18,8 +18,9 @@ namespace remote_protocol_tests
 		Regex								regexImage{ L"(<width>/d+)x(<height>/d+)" };
 		ImageMetadataMap					imageMetadatas;
 
-		SingleScreenRenderingProtocol(UnitTestScreenConfig _globalConfig, collections::List<WString>& _eventLogs)
-			: SingleScreenProtocol(_globalConfig)
+		SingleScreenRenderingProtocol(const UnitTestScreenConfig& _globalConfig, collections::List<WString>& _eventLogs)
+			: UnitTestRemoteProtocolBase(_globalConfig)
+			, SingleScreenProtocol(_globalConfig)
 			, eventLogs(_eventLogs)
 		{
 		}

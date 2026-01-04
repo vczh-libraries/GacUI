@@ -60,7 +60,7 @@ namespace vl::presentation::unittest
 		UnitTestScreenConfig		globalConfig;
 
 	public:
-		UnitTestRemoteProtocolBase(UnitTestScreenConfig _globalConfig)
+		UnitTestRemoteProtocolBase(const UnitTestScreenConfig& _globalConfig)
 			: globalConfig(_globalConfig)
 		{
 		}
@@ -81,6 +81,18 @@ namespace vl::presentation::unittest
 		}
 
 	protected:
+
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					void Impl_ ## NAME()									{ CHECK_FAIL(L"Not Implemented!"); }
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)						void Impl_ ## NAME(vint id)								{ CHECK_FAIL(L"Not Implemented!"); }
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)						void Impl_ ## NAME(const REQUEST& arguments)			{ CHECK_FAIL(L"Not Implemented!"); }
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)						void Impl_ ## NAME(vint id, const REQUEST& arguments)	{ CHECK_FAIL(L"Not Implemented!"); }
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_REQ_NORES
+#undef MESSAGE_NOREQ_RES
+#undef MESSAGE_NOREQ_NORES
 
 /***********************************************************************
 IGuiRemoteProtocol

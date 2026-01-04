@@ -6,8 +6,7 @@ using namespace vl::presentation::controls;
 
 namespace remote_graphics_host_tests
 {
-	template<typename TProtocol>
-	class GraphicsHostProtocolBase : public TProtocol
+	class GraphicsHostProtocolBase 
 	{
 	public:
 		static UnitTestScreenConfig MakeUnitTestScreenConfig()
@@ -21,23 +20,24 @@ namespace remote_graphics_host_tests
 
 			return config;
 		}
+	};
 
-		template<typename ...TArgs>
-		GraphicsHostProtocolBase(TArgs&& ...args)
-			: TProtocol(MakeUnitTestScreenConfig(), std::forward<TArgs&&>(args)...)
+	class GraphicsHostProtocol : public GraphicsHostProtocolBase, public SingleScreenProtocol
+	{
+	public:
+		GraphicsHostProtocol(const UnitTestScreenConfig& _globalConfig = MakeUnitTestScreenConfig())
+			: UnitTestRemoteProtocolBase(_globalConfig)
+			, SingleScreenProtocol(_globalConfig)
 		{
 		}
 	};
 
-	class GraphicsHostProtocol : public GraphicsHostProtocolBase<SingleScreenProtocol>
-	{
-	};
-
-	class GraphicsHostRenderingProtocol : public GraphicsHostProtocolBase<SingleScreenRenderingProtocol>
+	class GraphicsHostRenderingProtocol : public GraphicsHostProtocolBase, public SingleScreenRenderingProtocol
 	{
 	public:
-		GraphicsHostRenderingProtocol(List<WString>& _eventLogs)
-			:GraphicsHostProtocolBase<SingleScreenRenderingProtocol>(_eventLogs)
+		GraphicsHostRenderingProtocol(List<WString>& _eventLogs, const UnitTestScreenConfig& _globalConfig = MakeUnitTestScreenConfig())
+			: UnitTestRemoteProtocolBase(_globalConfig)
+			, SingleScreenRenderingProtocol(_globalConfig, _eventLogs)
 		{
 		}
 	};

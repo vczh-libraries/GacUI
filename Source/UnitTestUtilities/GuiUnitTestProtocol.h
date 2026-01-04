@@ -31,50 +31,21 @@ UnitTestFrameworkConfig
 UnitTestRemoteProtocol
 ***********************************************************************/
 
-	template<typename TBase, template<typename> class ...TMixins>
-	struct Mixin;
-
-	template<typename TBase>
-	struct Mixin<TBase>
+	class UnitTestRemoteProtocolFeatures :
+		public UnitTestRemoteProtocol_MainWindow,
+		public UnitTestRemoteProtocol_IO,
+		public UnitTestRemoteProtocol_Rendering,
+		public UnitTestRemoteProtocol_IOCommands
 	{
-		using Type = TBase;
-	};
-
-	template<typename TBase, template<typename> class TMixin, template<typename> class ...TOtherMixins>
-	struct Mixin<TBase, TMixin, TOtherMixins...>
-	{
-		using Type = typename Mixin<TMixin<TBase>, TOtherMixins...>::Type;
-	};
-
-	using UnitTestRemoteProtocolFeatures = Mixin<
-		UnitTestRemoteProtocolBase,
-		UnitTestRemoteProtocol_MainWindow,
-		UnitTestRemoteProtocol_IO,
-		UnitTestRemoteProtocol_Rendering,
-		UnitTestRemoteProtocol_IOCommands
-	>::Type;
-
-	class UnitTestRemoteProtocol 
-		: public UnitTestRemoteProtocolFeatures
-		, protected virtual IGuiRemoteEventProcessor
-	{
-		using EventPair = collections::Pair<Nullable<WString>, Func<void()>>;
 	protected:
-		const UnitTestFrameworkConfig&		frameworkConfig;
-		WString								appName;
-		collections::List<EventPair>		processRemoteEvents;
-		vint								lastFrameIndex = -1;
-		vint								nextEventIndex = 0;
 		bool								stopped = false;
-		
-	protected:
 		bool								everRendered = false;
 		Ptr<UnitTestLoggedFrame>			candidateFrame;
 		vint								idlingCounter = 0;
 
 		bool LogRenderingResult()
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol::LogRenderingResult()#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocolFeatures::LogRenderingResult()#"
 			if (auto lastFrame = this->TryGetLastRenderingFrameAndReset())
 			{
 				candidateFrame = lastFrame;
@@ -114,9 +85,59 @@ UnitTestRemoteProtocol
 		}
 
 	public:
+		UnitTestRemoteProtocolFeatures(const UnitTestScreenConfig& _globalConfig)
+			: UnitTestRemoteProtocol_MainWindow(_globalConfig)
+			, UnitTestRemoteProtocol_IO(_globalConfig)
+			, UnitTestRemoteProtocol_Rendering(_globalConfig)
+			, UnitTestRemoteProtocol_IOCommands(_globalConfig)
+		{
+		}
+
+		const auto& GetLoggedTrace()
+		{
+			return this->loggedTrace;
+		}
+
+		const auto& GetLoggedFrames()
+		{
+			return this->loggedFrames;
+		}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Initialization)
+***********************************************************************/
+
+	protected:
+
+		void Impl_ControllerConnectionEstablished()
+		{
+			ResetCreatedObjects();
+		}
+
+		void Impl_ControllerConnectionStopped()
+		{
+			stopped = true;
+		}
+	};
+
+	class UnitTestRemoteProtocol 
+		: public UnitTestRemoteProtocolFeatures
+		, protected virtual IGuiRemoteEventProcessor
+	{
+		using EventPair = collections::Pair<Nullable<WString>, Func<void()>>;
+	protected:
+		const UnitTestFrameworkConfig&		frameworkConfig;
+		WString								appName;
+		collections::List<EventPair>		processRemoteEvents;
+		vint								lastFrameIndex = -1;
+		vint								nextEventIndex = 0;
+		bool								frameExecuting = false;
+
+	public:
 
 		UnitTestRemoteProtocol(const WString& _appName, UnitTestScreenConfig _globalConfig)
-			: UnitTestRemoteProtocolFeatures(_globalConfig)
+			: UnitTestRemoteProtocolBase(_globalConfig)
+			, UnitTestRemoteProtocolFeatures(_globalConfig)
 			, frameworkConfig(GetUnitTestFrameworkConfig())
 			, appName(_appName)
 		{
@@ -134,21 +155,21 @@ UnitTestRemoteProtocol
 			processRemoteEvents.Add({ name,std::forward<TCallback&&>(callback) });
 		}
 
-	protected:
-
 /***********************************************************************
-IGuiRemoteProtocolMessages (Initialization)
+IGuiRemoteProtocolMessages
 ***********************************************************************/
 
-		void RequestControllerConnectionEstablished() override
-		{
-			ResetCreatedObjects();
-		}
-
-		void RequestControllerConnectionStopped() override
-		{
-			stopped = true;
-		}
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					void Request ## NAME() override { UnitTestRemoteProtocolFeatures::Impl_ ## NAME(); }
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)						void Request ## NAME(vint id) override { UnitTestRemoteProtocolFeatures::Impl_ ## NAME(id); }
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)						void Request ## NAME(const REQUEST& arguments) override { UnitTestRemoteProtocolFeatures::Impl_ ## NAME(arguments); }
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)						void Request ## NAME(vint id, const REQUEST& arguments) override { UnitTestRemoteProtocolFeatures::Impl_ ## NAME(id, arguments); }
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_REQ_NORES
+#undef MESSAGE_NOREQ_RES
+#undef MESSAGE_NOREQ_NORES
 
 /***********************************************************************
 IGuiRemoteProtocol
@@ -158,10 +179,6 @@ IGuiRemoteProtocol
 		{
 			// TODO: Failure injection to disconnected
 		}
-
-	protected:
-
-		bool								frameExecuting = false;
 
 		void ProcessRemoteEvents() override
 		{
@@ -189,8 +206,6 @@ IGuiRemoteProtocol
 			}
 #undef ERROR_MESSAGE_PREFIX
 		}
-
-	public:
 
 		IGuiRemoteEventProcessor* GetRemoteEventProcessor() override
 		{

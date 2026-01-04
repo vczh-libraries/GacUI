@@ -30,8 +30,7 @@ UnitTestRemoteProtocol
 
 	using UnitTestLoggedFrameList = collections::List<Ptr<UnitTestLoggedFrame>>;
 	
-	template<typename TProtocol>
-	class UnitTestRemoteProtocol_Rendering : public TProtocol
+	class UnitTestRemoteProtocol_Rendering : public virtual UnitTestRemoteProtocolBase
 	{
 		using IdSet = collections::SortedList<vint>;
 		using Base64ToImageMetadataMap = collections::Dictionary<WString, remoteprotocol::ImageMetadata>;
@@ -66,22 +65,11 @@ UnitTestRemoteProtocol
 		}
 	public:
 
-		template<typename ...TArgs>
-		UnitTestRemoteProtocol_Rendering(TArgs&& ...args)
-			: TProtocol(std::forward<TArgs&&>(args)...)
+		UnitTestRemoteProtocol_Rendering(const UnitTestScreenConfig& _globalConfig)
+			: UnitTestRemoteProtocolBase(_globalConfig)
 		{
 			ResetCreatedObjects();
 			loggedTrace.frames = Ptr(new collections::List<remoteprotocol::UnitTest_RenderingFrame>);
-		}
-
-		const auto& GetLoggedTrace()
-		{
-			return this->loggedTrace;
-		}
-
-		const auto& GetLoggedFrames()
-		{
-			return this->loggedFrames;
 		}
 
 	protected:
@@ -106,7 +94,7 @@ IGuiRemoteProtocolMessages (Rendering)
 			return loggedFrames[loggedFrames.Count() - 1];
 		}
 
-		void RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments) override
+		void Impl_RendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments)
 		{
 			receivedDomDiffMessage = false;
 			receivedElementMessage = false;
@@ -116,7 +104,7 @@ IGuiRemoteProtocolMessages (Rendering)
 			loggedFrames.Add(frame);
 		}
 
-		void RequestRendererEndRendering(vint id) override
+		void Impl_RendererEndRendering(vint id)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererEndRendering(vint)#"
 			CHECK_ERROR(receivedElementMessage || receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"Either dom-diff or element message should be sent before this message.");
@@ -141,7 +129,7 @@ IGuiRemoteProtocolMessages (Rendering)
 IGuiRemoteProtocolMessages (Rendering - Element)
 ***********************************************************************/
 
-		void RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments) override
+		void Impl_RendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererBeginBoundary(const ElementBoundary&)#"
 			CHECK_ERROR(!receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with dom-diff messages in the same rendering cycle.");
@@ -167,7 +155,7 @@ IGuiRemoteProtocolMessages (Rendering - Element)
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RequestRendererEndBoundary() override
+		void Impl_RendererEndBoundary()
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererEndBoundary()#"
 			CHECK_ERROR(!receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with dom-diff messages in the same rendering cycle.");
@@ -213,7 +201,7 @@ IGuiRemoteProtocolMessages (Rendering - Element)
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override
+		void Impl_RendererRenderElement(const remoteprotocol::ElementRendering& arguments)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const ElementRendering&)#"
 			CHECK_ERROR(!receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with dom-diff messages in the same rendering cycle.");
@@ -261,7 +249,7 @@ IGuiRemoteProtocolMessages (Rendering - Dom)
 			}
 		}
 
-		void RequestRendererRenderDom(const Ptr<remoteprotocol::RenderingDom>& arguments) override
+		void Impl_RendererRenderDom(const Ptr<remoteprotocol::RenderingDom>& arguments)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const RenderingDom&)#"
 			CHECK_ERROR(!receivedElementMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with element messages in the same rendering cycle.");
@@ -276,7 +264,7 @@ IGuiRemoteProtocolMessages (Rendering - Dom)
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RequestRendererRenderDomDiff(const remoteprotocol::RenderingDom_DiffsInOrder& arguments) override
+		void Impl_RendererRenderDomDiff(const remoteprotocol::RenderingDom_DiffsInOrder& arguments)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const RenderingDom_DiffsInOrder&)#"
 			CHECK_ERROR(!receivedElementMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with element messages in the same rendering cycle.");
@@ -295,7 +283,7 @@ IGuiRemoteProtocolMessages (Rendering - Dom)
 IGuiRemoteProtocolMessages (Elements)
 ***********************************************************************/
 
-		void RequestRendererCreated(const Ptr<collections::List<remoteprotocol::RendererCreation>>& arguments) override
+		void Impl_RendererCreated(const Ptr<collections::List<remoteprotocol::RendererCreation>>& arguments)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererCreated(const Ptr<List<RendererCreation>>&)#"
 			if (arguments)
@@ -309,7 +297,7 @@ IGuiRemoteProtocolMessages (Elements)
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RequestRendererDestroyed(const Ptr<collections::List<vint>>& arguments) override
+		void Impl_RendererDestroyed(const Ptr<collections::List<vint>>& arguments)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererDestroyed(const Ptr<List<vint>>&)#"
 			if (arguments)
@@ -343,49 +331,49 @@ IGuiRemoteProtocolMessages (Elements)
 
 #define REQUEST_RENDERER_UPDATE_ELEMENT(RENDERER_TYPE) REQUEST_RENDERER_UPDATE_ELEMENT2(arguments, RENDERER_TYPE)
 
-		void RequestRendererUpdateElement_SolidBorder(const remoteprotocol::ElementDesc_SolidBorder& arguments) override
+		void Impl_RendererUpdateElement_SolidBorder(const remoteprotocol::ElementDesc_SolidBorder& arguments)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SolidBorder<TProtocol>::RequestRendererCreated(const ElementDesc_SolidBorder&)#"
 			REQUEST_RENDERER_UPDATE_ELEMENT(remoteprotocol::RendererType::SolidBorder);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RequestRendererUpdateElement_SinkBorder(const remoteprotocol::ElementDesc_SinkBorder& arguments) override
+		void Impl_RendererUpdateElement_SinkBorder(const remoteprotocol::ElementDesc_SinkBorder& arguments)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SinkBorder<TProtocol>::RequestRendererCreated(const ElementDesc_SinkBorder&)#"
 			REQUEST_RENDERER_UPDATE_ELEMENT(remoteprotocol::RendererType::SinkBorder);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RequestRendererUpdateElement_SinkSplitter(const remoteprotocol::ElementDesc_SinkSplitter& arguments) override
+		void Impl_RendererUpdateElement_SinkSplitter(const remoteprotocol::ElementDesc_SinkSplitter& arguments)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SinkSplitter<TProtocol>::RequestRendererCreated(const ElementDesc_SinkSplitter&)#"
 			REQUEST_RENDERER_UPDATE_ELEMENT(remoteprotocol::RendererType::SinkSplitter);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RequestRendererUpdateElement_SolidBackground(const remoteprotocol::ElementDesc_SolidBackground& arguments) override
+		void Impl_RendererUpdateElement_SolidBackground(const remoteprotocol::ElementDesc_SolidBackground& arguments)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SolidBackground<TProtocol>::RequestRendererCreated(const ElementDesc_SolidBackground&)#"
 			REQUEST_RENDERER_UPDATE_ELEMENT(remoteprotocol::RendererType::SolidBackground);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RequestRendererUpdateElement_GradientBackground(const remoteprotocol::ElementDesc_GradientBackground& arguments) override
+		void Impl_RendererUpdateElement_GradientBackground(const remoteprotocol::ElementDesc_GradientBackground& arguments)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_GradientBackground<TProtocol>::RequestRendererCreated(const ElementDesc_GradientBackground&)#"
 			REQUEST_RENDERER_UPDATE_ELEMENT(remoteprotocol::RendererType::GradientBackground);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RequestRendererUpdateElement_InnerShadow(const remoteprotocol::ElementDesc_InnerShadow& arguments) override
+		void Impl_RendererUpdateElement_InnerShadow(const remoteprotocol::ElementDesc_InnerShadow& arguments)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_InnerShadow<TProtocol>::RequestRendererCreated(const ElementDesc_InnerShadow&)#"
 			REQUEST_RENDERER_UPDATE_ELEMENT(remoteprotocol::RendererType::InnerShadow);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RequestRendererUpdateElement_Polygon(const remoteprotocol::ElementDesc_Polygon& arguments) override
+		void Impl_RendererUpdateElement_Polygon(const remoteprotocol::ElementDesc_Polygon& arguments)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_Polygon<TProtocol>::RequestRendererCreated(const ElementDesc_Polygon&)#"
 			REQUEST_RENDERER_UPDATE_ELEMENT(remoteprotocol::RendererType::Polygon);
@@ -543,7 +531,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RequestRendererUpdateElement_SolidLabel(const remoteprotocol::ElementDesc_SolidLabel& arguments) override
+		void Impl_RendererUpdateElement_SolidLabel(const remoteprotocol::ElementDesc_SolidLabel& arguments)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SolidLabel<TProtocol>::RequestRendererCreated(const ElementDesc_SolidLabel&)#"
 			auto element = arguments;
@@ -680,7 +668,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RequestImageCreated(vint id, const remoteprotocol::ImageCreation& arguments) override
+		void Impl_ImageCreated(vint id, const remoteprotocol::ImageCreation& arguments)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageCreated(vint, const vint&)#"
 			CHECK_ERROR(!loggedTrace.imageMetadatas->Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created or used.");
@@ -688,7 +676,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RequestImageDestroyed(const vint& arguments) override
+		void Impl_ImageDestroyed(const vint& arguments)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageDestroyed(const vint&)#"
 			CHECK_ERROR(loggedTrace.imageMetadatas->Keys().Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
@@ -697,7 +685,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RequestRendererUpdateElement_ImageFrame(const remoteprotocol::ElementDesc_ImageFrame& arguments) override
+		void Impl_RendererUpdateElement_ImageFrame(const remoteprotocol::ElementDesc_ImageFrame& arguments)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_ImageFrame<TProtocol>::RequestRendererCreated(const ElementDesc_ImageFrame&)#"
 			if (arguments.imageCreation)
@@ -734,42 +722,42 @@ IGuiRemoteProtocolMessages (Elements - Image)
 IGuiRemoteProtocolMessages (Elements - Document)
 ***********************************************************************/
 
-		void RequestRendererUpdateElement_DocumentParagraph(vint id, const remoteprotocol::ElementDesc_DocumentParagraph& arguments) override
+		void Impl_RendererUpdateElement_DocumentParagraph(vint id, const remoteprotocol::ElementDesc_DocumentParagraph& arguments)
 		{
 			CHECK_FAIL(L"Not implemented.");
 		}
 
-		void RequestDocumentParagraph_GetCaret(vint id, const remoteprotocol::GetCaretRequest& arguments) override
+		void Impl_DocumentParagraph_GetCaret(vint id, const remoteprotocol::GetCaretRequest& arguments)
 		{
 			CHECK_FAIL(L"Not implemented.");
 		}
 
-		void RequestDocumentParagraph_GetCaretBounds(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments) override
+		void Impl_DocumentParagraph_GetCaretBounds(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments)
 		{
 			CHECK_FAIL(L"Not implemented.");
 		}
 
-		void RequestDocumentParagraph_GetInlineObjectFromPoint(vint id, const Point& arguments) override
+		void Impl_DocumentParagraph_GetInlineObjectFromPoint(vint id, const Point& arguments)
 		{
 			CHECK_FAIL(L"Not implemented.");
 		}
 
-		void RequestDocumentParagraph_GetNearestCaretFromTextPos(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments) override
+		void Impl_DocumentParagraph_GetNearestCaretFromTextPos(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments)
 		{
 			CHECK_FAIL(L"Not implemented.");
 		}
 
-		void RequestDocumentParagraph_IsValidCaret(vint id, const vint& arguments) override
+		void Impl_DocumentParagraph_IsValidCaret(vint id, const vint& arguments)
 		{
 			CHECK_FAIL(L"Not implemented.");
 		}
 
-		void RequestDocumentParagraph_OpenCaret(const remoteprotocol::OpenCaretRequest& arguments) override
+		void Impl_DocumentParagraph_OpenCaret(const remoteprotocol::OpenCaretRequest& arguments)
 		{
 			CHECK_FAIL(L"Not implemented.");
 		}
 
-		void RequestDocumentParagraph_CloseCaret() override
+		void Impl_DocumentParagraph_CloseCaret()
 		{
 			CHECK_FAIL(L"Not implemented.");
 		}

@@ -16,8 +16,7 @@ namespace vl::presentation::unittest
 UnitTestRemoteProtocol
 ***********************************************************************/
 	
-	template<typename TProtocol>
-	class UnitTestRemoteProtocol_IOCommands : public TProtocol
+	class UnitTestRemoteProtocol_IOCommands : public virtual UnitTestRemoteProtocolBase
 	{
 	protected:
 		Nullable<NativePoint>				mousePosition;
@@ -66,9 +65,8 @@ UnitTestRemoteProtocol
 
 	public:
 
-		template<typename ...TArgs>
-		UnitTestRemoteProtocol_IOCommands(TArgs&& ...args)
-			: TProtocol(std::forward<TArgs&&>(args)...)
+		UnitTestRemoteProtocol_IOCommands(const UnitTestScreenConfig& _globalConfig)
+			: UnitTestRemoteProtocolBase(_globalConfig)
 		{
 		}
 
