@@ -54,6 +54,12 @@ Create another GacUI test case that simulating typing text to the GuiSinglelineT
 
 ## UPDATE
 
+#file:GuiUnitTestProtocol_Rendering.h has been splitted into header and cpp files, and sibling files are changed a little bit so that there is no more template in #file:GuiUnitTestProtocol.h
+
+Please review unfinished tasks and fix source references if necessary. Keep finished tasks untouched.
+
+## UPDATE
+
 Proposing a change to Task 1 and Task 2. The goal is to come out with a way to produce `runDiff` in `ElementDesc_DocumentParagraph`. `runDiff` means the difference between two `RendererUpdateElement_DocumentParagraph`.
 
 To make the protocol complete, `createdInlineObjects` and `removedInlineObjects` is added. And due to the fact that inline objects are always high proprity than text, changes should be applied:
@@ -184,7 +190,7 @@ When you split task 8, you should do this in order:
 - [x] TASK No.11: Add comprehensive test cases for nullable property scenarios in AddTextRun
 - [x] TASK No.12: Add comprehensive test cases for nullable property scenarios in MergeRuns
 - [x] TASK No.13: Implement `GuiRemoteGraphicsParagraph` class
-- [ ] TASK No.14: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
+- [ ] TASK No.14: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.cpp`
 - [ ] TASK No.15: Create basic `GuiSinglelineTextBox` test case
 - [ ] TASK No.16: Create typing simulation test case and complete typing helper functions
 
@@ -1451,55 +1457,55 @@ Header updates (if needed): `Source\PlatformProviders\Remote\GuiRemoteGraphics_D
 
 This is the core implementation that bridges `IGuiGraphicsParagraph` interface with the remote protocol. The three-category approach cleanly separates concerns: properties configure the paragraph, run methods modify formatting, query methods interact with the remote side. The lazy update strategy (only send when needed) optimizes protocol traffic. Text position conversion functions, though currently identity functions, provide future extensibility for surrogate pair handling or other text encoding complexities.
 
-## TASK No.14: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.h`
+## TASK No.14: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.cpp`
 
 ### description
 
-Implement the document-related protocol handler methods in `UnitTestRemoteProtocol_Rendering` template class in `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.h`.
+Implement the document-related protocol handler methods in `UnitTestRemoteProtocol_Rendering` class in `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.cpp`.
 
 **Learning from Task 6**: Protocol implementation should start simple and incrementally add complexity. When protocol data structures are complex, verify the actual types used in the schema before writing extensive code. Test basic message flow first before implementing all edge cases.
 
-The current file has placeholder implementations (mostly empty or throwing errors). Implement:
+The header file `GuiUnitTestProtocol_Rendering.h` declares the following methods that need implementation in the cpp file. Implement:
 
 **Main rendering handler**:
-- `RequestRendererUpdateElement_DocumentParagraph(const ElementDesc_DocumentParagraph& arguments)`: 
+- `Impl_RendererUpdateElement_DocumentParagraph(vint id, const ElementDesc_DocumentParagraph& arguments)`: 
   - Store paragraph text, wrapLine, maxWidth, alignment
   - Process `runsDiff` array to build internal run representation
   - Calculate paragraph size based on font metrics (similar to `CalculateSolidLabelSizeIfNecessary`)
   - Return calculated size
 
 **Caret navigation handlers**:
-- `RequestDocumentParagraph_GetCaret(vint id, const GetCaretRequest& arguments)`:
+- `Impl_DocumentParagraph_GetCaret(vint id, const GetCaretRequest& arguments)`:
   - Implement basic caret movement logic for CaretFirst, CaretLast, CaretLineFirst, CaretLineLast
   - For CaretMoveLeft/Right/Up/Down, calculate new position based on text layout
   - Return `GetCaretResponse` with new caret and preferFrontSide
 
-- `RequestDocumentParagraph_GetCaretBounds(vint id, const GetCaretBoundsRequest& arguments)`:
+- `Impl_DocumentParagraph_GetCaretBounds(vint id, const GetCaretBoundsRequest& arguments)`:
   - Calculate bounds rectangle for caret at given position
   - Consider frontSide flag for RTL/complex scripts
   - Return Rect with width=0, positioned at caret
 
-- `RequestDocumentParagraph_GetCaretFromPoint(vint id, const Point& arguments)`:
+- `Impl_DocumentParagraph_GetCaretFromPoint(vint id, const Point& arguments)`:
   - Perform hit testing to find nearest caret to given point
   - Consider line layout and character positions
 
 **Other query handlers**:
-- `RequestDocumentParagraph_GetInlineObjectFromPoint(vint id, const Point& arguments)`:
+- `Impl_DocumentParagraph_GetInlineObjectFromPoint(vint id, const Point& arguments)`:
   - Check if point intersects any inline object
   - Return DocumentRun with inline object info, or null
 
-- `RequestDocumentParagraph_GetNearestCaretFromTextPos(vint id, const GetCaretBoundsRequest& arguments)`:
+- `Impl_DocumentParagraph_GetNearestCaretFromTextPos(vint id, const GetCaretBoundsRequest& arguments)`:
   - Convert text position to nearest valid caret position
   - Consider frontSide preference
 
-- `RequestDocumentParagraph_IsValidCaret(vint id, const int& arguments)`:
+- `Impl_DocumentParagraph_IsValidCaret(vint id, const vint& arguments)`:
   - Validate if caret position is within valid range (0 to text.Length())
 
 **Caret display handlers**:
-- `RequestDocumentParagraph_OpenCaret(vint id, const OpenCaretRequest& arguments)`:
+- `Impl_DocumentParagraph_OpenCaret(const OpenCaretRequest& arguments)`:
   - Store caret state for rendering (position, color, frontSide)
 
-- `RequestDocumentParagraph_CloseCaret(vint id)`:
+- `Impl_DocumentParagraph_CloseCaret()`:
   - Clear stored caret state
 
 **Implementation approach**:
@@ -1511,20 +1517,21 @@ Follow the pattern from `CalculateSolidLabelSizeIfNecessary`:
 
 ### what to be done
 
-1. Implement `RequestRendererUpdateElement_DocumentParagraph` with paragraph state storage and size calculation
-2. Implement all caret navigation handlers (`GetCaret`, `GetCaretBounds`, `GetCaretFromPoint`)
-3. Implement query handlers (`GetInlineObjectFromPoint`, `GetNearestCaretFromTextPos`, `IsValidCaret`)
-4. Implement caret display handlers (`OpenCaret`, `CloseCaret`)
-5. Follow existing pattern for state management and font metrics
+1. Implement `Impl_RendererUpdateElement_DocumentParagraph` with paragraph state storage and size calculation
+2. Implement all caret navigation handlers (`Impl_DocumentParagraph_GetCaret`, `Impl_DocumentParagraph_GetCaretBounds`, `Impl_DocumentParagraph_GetCaretFromPoint`)
+3. Implement query handlers (`Impl_DocumentParagraph_GetInlineObjectFromPoint`, `Impl_DocumentParagraph_GetNearestCaretFromTextPos`, `Impl_DocumentParagraph_IsValidCaret`)
+4. Implement caret display handlers (`Impl_DocumentParagraph_OpenCaret`, `Impl_DocumentParagraph_CloseCaret`)
+5. Follow existing pattern in `GuiUnitTestProtocol_Rendering.cpp` for state management and font metrics
 6. Keep implementation simple but consistent for testing purposes
 
 ### how to test it
 
-Testing will be covered in subsequent tasks (Task 13-14) with GacUI test cases. This task provides the foundation for document control testing.
+Testing will be covered in subsequent tasks (Task No.15-16) with GacUI test cases. This task provides the foundation for document control testing.
 
 ### file locations
 
-Modified file: `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.h`
+Modified file: `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.cpp`
+Header file (declarations already present): `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.h`
 
 ### rationale
 
