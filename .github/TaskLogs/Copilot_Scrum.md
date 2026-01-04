@@ -175,6 +175,16 @@ When you split task 8, you should do this in order:
 - Adjust existing task numbers through the document first
 - Rewrite task 8 into 3 tasks
 
+## UPDATE
+
+I would like to add more information to Task No.14. In `GuiUnitTestProtocol_Rendering.cpp` line 394 you can see `auto w = (c < 128 ? 0.6 : 1) * size;`. It means that for `GuiSolidLabelElement` remote protocol implementation, characters are categorized into groups. Characters whose UTF-16 code point is smaller than 128, its width is 0.6 times the font size, otherwise the width is the font size. So I want remote protocol implementation of `IGuiGraphicsParagraph` to be implemented in the same way.
+
+And I would like you to add one more task at the end, so that both `GuiSolidLabelElement` and `IGuiGraphicsParagraph` remote protocol implementation in `GuiUnitTestProtocol_Rendering.cpp` should consider surrogate pairs. The current implementation does not take care of them. And keep Task No.14 not taking care of them.
+
+## UPDATE
+
+In Task.17 you don't have to implement surrogate pair detection by yourself, In Vlpp there are function to convert from `WString` to `U32String`. Just convert everything to `U32String` and everything will be just fine. The Regex tools used here also support U32String.
+
 # TASKS
 
 - [x] TASK No.1: Define `CaretRange` struct and run management functions
@@ -193,6 +203,7 @@ When you split task 8, you should do this in order:
 - [ ] TASK No.14: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.cpp`
 - [ ] TASK No.15: Create basic `GuiSinglelineTextBox` test case
 - [ ] TASK No.16: Create typing simulation test case and complete typing helper functions
+- [ ] TASK No.17: Add surrogate pair support to `GuiSolidLabelElement` and `IGuiGraphicsParagraph` protocol implementations
 
 ## TASK No.1: Define `CaretRange` struct and run management functions
 
@@ -1465,13 +1476,19 @@ Implement the document-related protocol handler methods in `UnitTestRemoteProtoc
 
 **Learning from Task 6**: Protocol implementation should start simple and incrementally add complexity. When protocol data structures are complex, verify the actual types used in the schema before writing extensive code. Test basic message flow first before implementing all edge cases.
 
+**Character width calculation**: Follow the same pattern as `GuiSolidLabelElement` in `CalculateSolidLabelSizeIfNecessary` (line 394 of `GuiUnitTestProtocol_Rendering.cpp`). Characters are categorized by their UTF-16 code point:
+- Characters with code point < 128: width = 0.6 × font size
+- Characters with code point >= 128: width = 1.0 × font size
+
+This simplified approach avoids complex font metrics while providing consistent character width calculations for testing purposes. Do NOT handle surrogate pairs in this task - that will be addressed in Task No.17.
+
 The header file `GuiUnitTestProtocol_Rendering.h` declares the following methods that need implementation in the cpp file. Implement:
 
 **Main rendering handler**:
 - `Impl_RendererUpdateElement_DocumentParagraph(vint id, const ElementDesc_DocumentParagraph& arguments)`: 
   - Store paragraph text, wrapLine, maxWidth, alignment
   - Process `runsDiff` array to build internal run representation
-  - Calculate paragraph size based on font metrics (similar to `CalculateSolidLabelSizeIfNecessary`)
+  - Calculate paragraph size based on font metrics using the character width formula above
   - Return calculated size
 
 **Caret navigation handlers**:
@@ -1717,6 +1734,134 @@ Test case: `Test\GacUISrc\UnitTest\TestControls_Editor_GuiSinglelineTextBox.cpp`
 ### rationale
 
 Typing simulation is essential for testing interactive text editing scenarios. The current unit test framework has mouse and keyboard primitives but no high-level typing functions. Adding these functions enables realistic user interaction testing. This test validates the complete paragraph editing pipeline: user input → text change → rendering update → visual verification. It's the most comprehensive test of the paragraph implementation and will catch issues that only appear during interactive editing.
+
+## TASK No.17: Add surrogate pair support to `GuiSolidLabelElement` and `IGuiGraphicsParagraph` protocol implementations
+
+### description
+
+Update the character width calculation logic in `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.cpp` to properly handle UTF-16 surrogate pairs for both `GuiSolidLabelElement` (in `CalculateSolidLabelSizeIfNecessary`) and `IGuiGraphicsParagraph` (in the document paragraph handlers).
+
+**Background**: UTF-16 uses surrogate pairs to represent characters outside the Basic Multilingual Plane (BMP), such as emojis and rare CJK characters. The current implementation iterates character-by-character using `line[i]`, which treats each `wchar_t` as a separate character. This causes surrogate pairs to be counted as two characters with two widths instead of one.
+
+**Simplified Approach using Vlpp**: Instead of manually detecting surrogate pairs, use the existing Vlpp functions `wtou32()` to convert `WString` to `U32String`. In `U32String`, each element is a complete Unicode code point (`char32_t`), so surrogate pairs are automatically handled. The Regex tools in Vlpp also support `U32String`.
+
+**What needs to change**:
+
+1. **Convert to U32String**: When iterating through characters, first convert the `WString` (or line) to `U32String` using `wtou32()`.
+
+2. **Iterate over char32_t**: Instead of iterating over `wchar_t` elements, iterate over `char32_t` elements in the `U32String`. Each element is a complete Unicode code point.
+
+3. **Width calculation**: Apply the same width rule but on `char32_t` values:
+   - ASCII characters (code point < 128): width = 0.6 × font size
+   - Non-ASCII characters (code point >= 128): width = 1.0 × font size
+
+**Affected code locations in `GuiUnitTestProtocol_Rendering.cpp`**:
+
+1. `CalculateSolidLabelSizeIfNecessary` - wrap line mode (around line 380-420):
+```cpp
+// Change from:
+for (vint i = 0; i < line.Length(); i++)
+{
+    auto c = line[i];
+    auto w = (c < 128 ? 0.6 : 1) * size;
+    // ...
+}
+
+// To:
+auto u32line = wtou32(line);
+for (vint i = 0; i < u32line.Length(); i++)
+{
+    auto c = u32line[i];
+    auto w = (c < 128 ? 0.6 : 1) * size;
+    // ...
+}
+```
+
+2. `CalculateSolidLabelSizeIfNecessary` - non-wrap line mode (around line 420-435):
+```cpp
+// Change from:
+textWidth = (vint)(size * From(lines)
+    .Select([](const WString& line)
+    {
+        double sum = 0;
+        for (vint i = 0; i < line.Length(); i++)
+        {
+            auto c = line[i];
+            sum += (c < 128 ? 0.6 : 1);
+        }
+        return sum;
+    })
+    .Max());
+
+// To:
+textWidth = (vint)(size * From(lines)
+    .Select([](const WString& line)
+    {
+        auto u32line = wtou32(line);
+        double sum = 0;
+        for (vint i = 0; i < u32line.Length(); i++)
+        {
+            auto c = u32line[i];
+            sum += (c < 128 ? 0.6 : 1);
+        }
+        return sum;
+    })
+    .Max());
+```
+
+3. Document paragraph handler implementations (Task No.14) - all places where character width is calculated should similarly convert to `U32String` first.
+
+**Key advantage**: Using `wtou32()` is simpler and less error-prone than manual surrogate pair detection. The conversion handles all edge cases (incomplete pairs, lone surrogates, etc.) correctly and consistently with how Vlpp handles Unicode throughout the codebase.
+
+### what to be done
+
+1. Update `CalculateSolidLabelSizeIfNecessary` wrap-line mode loop to convert line to `U32String` using `wtou32()` before iterating
+2. Update `CalculateSolidLabelSizeIfNecessary` non-wrap-line mode loop similarly
+3. Update all document paragraph character iteration in the implementations from Task No.14 to use the same `U32String` conversion pattern
+4. Ensure consistent usage of `wtou32()` across all affected code
+
+### how to test it
+
+Testing surrogate pair handling:
+
+1. **Existing tests should continue to pass**: All existing tests use ASCII or BMP characters and should not be affected by the surrogate pair changes.
+
+2. **New test case for GuiSolidLabelElement with emojis**: Create a test that sets `GuiSolidLabelElement` text containing emoji characters (which require surrogate pairs in UTF-16), and verify that:
+   - The measured width treats each emoji as a single character with width = font size
+   - Text containing "AB🎉CD" (4 ASCII + 1 emoji) should have width roughly = 4 × 0.6 × size + 1 × size
+
+3. **New test case for document paragraph with emojis**: Similar test for `IGuiGraphicsParagraph` rendered via document controls.
+
+4. **Edge cases to test**:
+   - Text with only ASCII characters (no change in behavior)
+   - Text with only non-ASCII BMP characters (no change in behavior)  
+   - Text with surrogate pairs in different positions (start, middle, end)
+   - Text with consecutive surrogate pairs (multiple emojis)
+
+### file locations
+
+Modified file: `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.cpp`
+
+New test cases can be added to:
+- Existing element test files for `GuiSolidLabelElement`
+- Test file from Task No.15 for document paragraph testing
+
+### rationale
+
+Using Vlpp's existing `wtou32()` function provides a simple and robust solution for handling surrogate pairs:
+
+1. **Simplicity**: Converting to `U32String` eliminates the need for manual surrogate pair detection logic
+2. **Consistency**: Uses the same approach as other parts of Vlpp (e.g., regex tools support `U32String`)
+3. **Correctness**: The conversion function handles all edge cases properly, including incomplete or invalid surrogate sequences
+4. **Maintainability**: Less custom code means fewer bugs and easier maintenance
+
+The original approach of manual surrogate pair detection would have required:
+- Checking for high surrogate (U+D800 to U+DBFF)
+- Checking for low surrogate (U+DC00 to U+DFFF)
+- Handling edge cases (lone surrogates, incomplete pairs at end of string)
+- Maintaining this logic in multiple places
+
+By using `wtou32()`, all this complexity is delegated to a well-tested library function. The only overhead is the string conversion, which is acceptable for the unit test protocol implementation.
 
 # Impact to the Knowledge Base
 
