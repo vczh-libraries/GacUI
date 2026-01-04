@@ -74,6 +74,16 @@ UnitTestRemoteProtocol
 			loggedTrace.frames = Ptr(new collections::List<remoteprotocol::UnitTest_RenderingFrame>);
 		}
 
+		const auto& GetLoggedTrace()
+		{
+			return this->loggedTrace;
+		}
+
+		const auto& GetLoggedFrames()
+		{
+			return this->loggedFrames;
+		}
+
 	protected:
 
 /***********************************************************************

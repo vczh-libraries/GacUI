@@ -10,7 +10,6 @@ Unit Test Snapsnot and other Utilities
 #include "GuiUnitTestProtocol_IO.h"
 #include "GuiUnitTestProtocol_MainWindow.h"
 #include "GuiUnitTestProtocol_Rendering.h"
-#include "GuiUnitTestProtocol_Logging.h"
 #include "GuiUnitTestProtocol_IOCommands.h"
 
 namespace vl::presentation::unittest
@@ -52,7 +51,6 @@ UnitTestRemoteProtocol
 		UnitTestRemoteProtocol_MainWindow,
 		UnitTestRemoteProtocol_IO,
 		UnitTestRemoteProtocol_Rendering,
-		UnitTestRemoteProtocol_Logging,
 		UnitTestRemoteProtocol_IOCommands
 	>::Type;
 
@@ -68,6 +66,52 @@ UnitTestRemoteProtocol
 		vint								lastFrameIndex = -1;
 		vint								nextEventIndex = 0;
 		bool								stopped = false;
+		
+	protected:
+		bool								everRendered = false;
+		Ptr<UnitTestLoggedFrame>			candidateFrame;
+		vint								idlingCounter = 0;
+
+		bool LogRenderingResult()
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol::LogRenderingResult()#"
+			if (auto lastFrame = this->TryGetLastRenderingFrameAndReset())
+			{
+				candidateFrame = lastFrame;
+				everRendered = true;
+			}
+			else if (everRendered)
+			{
+				if (candidateFrame)
+				{
+					idlingCounter = 0;
+					auto descs = Ptr(new collections::Dictionary<vint, ElementDescVariant>);
+					CopyFrom(*descs.Obj(), this->lastElementDescs);
+					this->loggedTrace.frames->Add({
+						candidateFrame->frameId,
+						{},
+						this->sizingConfig,
+						descs,
+						candidateFrame->renderingDom
+						});
+					candidateFrame = {};
+					return true;
+				}
+				else
+				{
+					idlingCounter++;
+					if (idlingCounter == 100)
+					{
+						CHECK_ERROR(
+							idlingCounter < 100,
+							ERROR_MESSAGE_PREFIX L"The last frame didn't trigger UI updating. The action registered by OnNextIdleFrame should always make any element or layout to change."
+							);
+					}
+				}
+			}
+			return false;
+#undef ERROR_MESSAGE_PREFIX
+		}
 
 	public:
 
