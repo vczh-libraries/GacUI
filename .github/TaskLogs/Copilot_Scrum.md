@@ -200,7 +200,7 @@ In Task.17 you don't have to implement surrogate pair detection by yourself, In 
 - [x] TASK No.11: Add comprehensive test cases for nullable property scenarios in AddTextRun
 - [x] TASK No.12: Add comprehensive test cases for nullable property scenarios in MergeRuns
 - [x] TASK No.13: Implement `GuiRemoteGraphicsParagraph` class
-- [ ] TASK No.14: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.cpp`
+- [x] TASK No.14: Implement document protocol handlers in `GuiUnitTestProtocol_Rendering.cpp`
 - [ ] TASK No.15: Create basic `GuiSinglelineTextBox` test case
 - [ ] TASK No.16: Create typing simulation test case and complete typing helper functions
 - [ ] TASK No.17: Add surrogate pair support to `GuiSolidLabelElement` and `IGuiGraphicsParagraph` protocol implementations

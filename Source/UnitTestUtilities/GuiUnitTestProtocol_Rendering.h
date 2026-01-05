@@ -9,9 +9,56 @@ Unit Test Snapsnot and other Utilities
 
 #include "GuiUnitTestProtocol_Shared.h"
 #include "../PlatformProviders/Remote/Protocol/FrameOperations/GuiRemoteProtocolSchema_FrameOperations.h"
+#include "../PlatformProviders/Remote/GuiRemoteGraphics_Document.h"
 
 namespace vl::presentation::unittest
 {
+
+/***********************************************************************
+DocumentParagraphState
+***********************************************************************/
+
+	struct DocumentParagraphCharLayout
+	{
+		double									x;               // X position of character start
+		double									width;           // Character width
+		vint									lineIndex;       // Which line this character belongs to
+		vint									height;          // Character height (font size or inline object height)
+		vint									baseline;        // Distance from top to baseline (for alignment)
+		bool									isInlineObject;  // True if this position is part of an inline object
+	};
+
+	struct DocumentParagraphLineInfo
+	{
+		vint									startPos;        // Text position of line start (inclusive)
+		vint									endPos;          // Text position of line end (exclusive)
+		vint									y;               // Y coordinate of line top
+		vint									height;          // Line height (computed from baseline alignment)
+		vint									baseline;        // Line baseline position from line top
+		vint									width;           // Line width (for alignment calculation)
+	};
+
+	struct DocumentParagraphState
+	{
+		WString									text;
+		bool									wrapLine = false;
+		vint									maxWidth = -1;
+		remoteprotocol::ElementHorizontalAlignment alignment = remoteprotocol::ElementHorizontalAlignment::Left;
+
+		elements::DocumentTextRunPropertyMap	textRuns;
+		elements::DocumentInlineObjectRunPropertyMap inlineObjectRuns;
+		elements::DocumentRunPropertyMap		mergedRuns;
+
+		collections::List<DocumentParagraphCharLayout> characterLayouts;
+		collections::List<DocumentParagraphLineInfo> lines;
+		Size									cachedSize;
+
+		bool									caretOpen = false;
+		vint									caretElementId = -1;
+		vint									caretPos = 0;
+		Color									caretColor;
+		bool									caretFrontSide = true;
+	};
 
 /***********************************************************************
 UnitTestRemoteProtocol
@@ -55,6 +102,8 @@ UnitTestRemoteProtocol
 
 		remoteprotocol::ElementMeasurings				measuringForNextRendering;
 		regex::Regex									regexCrLf{ L"/n|/r(/n)?" };
+
+		collections::Dictionary<vint, Ptr<DocumentParagraphState>> paragraphStates;
 
 		void ResetCreatedObjects()
 		{
