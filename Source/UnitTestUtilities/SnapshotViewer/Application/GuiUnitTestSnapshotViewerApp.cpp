@@ -112,7 +112,53 @@ namespace gaclib_controls
 			if (!paragraph)
 			{
 				auto text = desc.paragraph.text ? desc.paragraph.text.Value() : WString::Empty;
-				paragraph = GetGuiGraphicsResourceManager()->GetLayoutProvider()->CreateParagraph(text, renderTarget, nullptr);
+				paragraph = GetGuiGraphicsResourceManager()->GetLayoutProvider()->CreateParagraph(text, renderTarget, this);
+
+				paragraph->SetWrapLine(desc.paragraph.wrapLine);
+				paragraph->SetMaxWidth(desc.paragraph.maxWidth);
+				paragraph->SetParagraphAlignment(GetAlignment(desc.paragraph.alignment));
+
+				if (desc.paragraph.runsDiff)
+				{
+					for (auto run : *desc.paragraph.runsDiff.Obj())
+					{
+						auto length = run.caretEnd - run.caretBegin;
+						if (length <= 0) continue;
+
+						run.props.Apply(Overloading(
+							[&](const remoteprotocol::DocumentTextRunProperty& textProp)
+							{
+								paragraph->SetFont(run.caretBegin, length, textProp.fontProperties.fontFamily);
+								paragraph->SetSize(run.caretBegin, length, textProp.fontProperties.size);
+
+								IGuiGraphicsParagraph::TextStyle style = (IGuiGraphicsParagraph::TextStyle)0;
+								if (textProp.fontProperties.bold) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | IGuiGraphicsParagraph::Bold);
+								if (textProp.fontProperties.italic) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | IGuiGraphicsParagraph::Italic);
+								if (textProp.fontProperties.underline) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | IGuiGraphicsParagraph::Underline);
+								if (textProp.fontProperties.strikeline) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | IGuiGraphicsParagraph::Strikeline);
+								paragraph->SetStyle(run.caretBegin, length, style);
+
+								paragraph->SetColor(run.caretBegin, length, textProp.textColor);
+								paragraph->SetBackgroundColor(run.caretBegin, length, textProp.backgroundColor);
+							},
+							[&](const remoteprotocol::DocumentInlineObjectRunProperty& inlineProp)
+							{
+								IGuiGraphicsParagraph::InlineObjectProperties properties;
+								properties.size = inlineProp.size;
+								properties.baseline = inlineProp.baseline;
+								properties.breakCondition = inlineProp.breakCondition;
+								properties.callbackId = inlineProp.callbackId;
+								paragraph->SetInlineObject(run.caretBegin, length, properties);
+							}
+						));
+					}
+				}
+
+				if (desc.caret)
+				{
+					auto& caret = desc.caret.Value();
+					paragraph->OpenCaret(caret.caret, caret.caretColor, caret.frontSide);
+				}
 			}
 			paragraph->Render(bounds);
 		}
@@ -138,14 +184,26 @@ namespace gaclib_controls
 		Size OnRenderInlineObject(vint callbackId, Rect location) override
 		{
 			if (!desc.paragraph.runsDiff) return {};
+			Size result;
+			bool found = false;
 			for (auto&& run : *desc.paragraph.runsDiff.Obj())
 			{
-				if (auto props = run.props.TryGet<remoteprotocol::DocumentInlineObjectRunProperty>())
-				{
-					if (props->callbackId == callbackId)
+				run.props.Apply(Overloading(
+					[&](const remoteprotocol::DocumentTextRunProperty&)
 					{
-						return props->size;
+					},
+					[&](const remoteprotocol::DocumentInlineObjectRunProperty& inlineProp)
+					{
+						if (inlineProp.callbackId == callbackId)
+						{
+							result = inlineProp.size;
+							found = true;
+						}
 					}
+				));
+				if (found)
+				{
+					return result;
 				}
 			}
 			return {};
