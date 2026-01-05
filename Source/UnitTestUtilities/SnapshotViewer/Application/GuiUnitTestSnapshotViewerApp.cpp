@@ -113,128 +113,128 @@ namespace gaclib_controls
 			switch (trace.createdElements->Get(dom->content.element.Value()))
 			{
 			case remoteprotocol::RendererType::FocusRectangle:
-			{
-				auto element = Ptr(GuiFocusRectangleElement::Create());
-				bounds->SetOwnedElement(element);
-			}
-			break;
+				{
+					auto element = Ptr(GuiFocusRectangleElement::Create());
+					bounds->SetOwnedElement(element);
+				}
+				break;
 			case remoteprotocol::RendererType::Raw:
 				// Do Nothing
 				break;
 			case remoteprotocol::RendererType::SolidBorder:
-			{
-				auto element = Ptr(GuiSolidBorderElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidBorder>();
-
-				element->SetColor(desc.borderColor);
-				element->SetShape(desc.shape);
-			}
-			break;
-			case remoteprotocol::RendererType::SinkBorder:
-			{
-				auto element = Ptr(Gui3DBorderElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SinkBorder>();
-
-				element->SetColors(desc.leftTopColor, desc.rightBottomColor);
-			}
-			break;
-			case remoteprotocol::RendererType::SinkSplitter:
-			{
-				auto element = Ptr(Gui3DSplitterElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SinkSplitter>();
-
-				element->SetColors(desc.leftTopColor, desc.rightBottomColor);
-				element->SetDirection(desc.direction);
-			}
-			break;
-			case remoteprotocol::RendererType::SolidBackground:
-			{
-				auto element = Ptr(GuiSolidBackgroundElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidBackground>();
-
-				element->SetColor(desc.backgroundColor);
-				element->SetShape(desc.shape);
-			}
-			break;
-			case remoteprotocol::RendererType::GradientBackground:
-			{
-				auto element = Ptr(GuiGradientBackgroundElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_GradientBackground>();
-
-				element->SetColors(desc.leftTopColor, desc.rightBottomColor);
-				element->SetDirection(desc.direction);
-				element->SetShape(desc.shape);
-			}
-			break;
-			case remoteprotocol::RendererType::InnerShadow:
-			{
-				auto element = Ptr(GuiInnerShadowElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_InnerShadow>();
-
-				element->SetColor(desc.shadowColor);
-				element->SetThickness(desc.thickness);
-			}
-			break;
-			case remoteprotocol::RendererType::SolidLabel:
-			{
-				auto element = Ptr(GuiSolidLabelElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidLabel>();
-
-				element->SetColor(desc.textColor);
-				element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
-				element->SetWrapLine(desc.wrapLine);
-				element->SetWrapLineHeightCalculation(desc.wrapLineHeightCalculation);
-				element->SetEllipse(desc.ellipse);
-				element->SetMultiline(desc.multiline);
-				element->SetFont(desc.font.Value());
-				element->SetText(desc.text.Value());
-			}
-			break;
-			case remoteprotocol::RendererType::Polygon:
-			{
-				auto element = Ptr(GuiPolygonElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_Polygon>();
-
-				element->SetSize(desc.size);
-				element->SetBorderColor(desc.borderColor);
-				element->SetBackgroundColor(desc.backgroundColor);
-
-				if (desc.points && desc.points->Count() > 0)
 				{
-					element->SetPoints(&desc.points->Get(0), desc.points->Count());
+					auto element = Ptr(GuiSolidBorderElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidBorder>();
+
+					element->SetColor(desc.borderColor);
+					element->SetShape(desc.shape);
 				}
-			}
-			break;
-			case remoteprotocol::RendererType::ImageFrame:
-			{
-				auto element = Ptr(GuiImageFrameElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_ImageFrame>();
-
-				element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
-				element->SetStretch(desc.stretch);
-				element->SetEnabled(desc.enabled);
-
-				if (desc.imageId)
+				break;
+			case remoteprotocol::RendererType::SinkBorder:
 				{
-					vint index = trace.imageCreations->Keys().IndexOf(desc.imageId.Value());
-					if (index != -1)
+					auto element = Ptr(Gui3DBorderElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SinkBorder>();
+
+					element->SetColors(desc.leftTopColor, desc.rightBottomColor);
+				}
+				break;
+			case remoteprotocol::RendererType::SinkSplitter:
+				{
+					auto element = Ptr(Gui3DSplitterElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SinkSplitter>();
+
+					element->SetColors(desc.leftTopColor, desc.rightBottomColor);
+					element->SetDirection(desc.direction);
+				}
+				break;
+			case remoteprotocol::RendererType::SolidBackground:
+				{
+					auto element = Ptr(GuiSolidBackgroundElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidBackground>();
+
+					element->SetColor(desc.backgroundColor);
+					element->SetShape(desc.shape);
+				}
+				break;
+			case remoteprotocol::RendererType::GradientBackground:
+				{
+					auto element = Ptr(GuiGradientBackgroundElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_GradientBackground>();
+
+					element->SetColors(desc.leftTopColor, desc.rightBottomColor);
+					element->SetDirection(desc.direction);
+					element->SetShape(desc.shape);
+				}
+				break;
+			case remoteprotocol::RendererType::InnerShadow:
+				{
+					auto element = Ptr(GuiInnerShadowElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_InnerShadow>();
+
+					element->SetColor(desc.shadowColor);
+					element->SetThickness(desc.thickness);
+				}
+				break;
+			case remoteprotocol::RendererType::SolidLabel:
+				{
+					auto element = Ptr(GuiSolidLabelElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidLabel>();
+
+					element->SetColor(desc.textColor);
+					element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
+					element->SetWrapLine(desc.wrapLine);
+					element->SetWrapLineHeightCalculation(desc.wrapLineHeightCalculation);
+					element->SetEllipse(desc.ellipse);
+					element->SetMultiline(desc.multiline);
+					element->SetFont(desc.font.Value());
+					element->SetText(desc.text.Value());
+				}
+				break;
+			case remoteprotocol::RendererType::Polygon:
+				{
+					auto element = Ptr(GuiPolygonElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_Polygon>();
+
+					element->SetSize(desc.size);
+					element->SetBorderColor(desc.borderColor);
+					element->SetBackgroundColor(desc.backgroundColor);
+
+					if (desc.points && desc.points->Count() > 0)
 					{
-						auto binary = trace.imageCreations->Values()[index].imageData;
-						binary->SeekFromBegin(0);
-						element->SetImage(GetCurrentController()->ImageService()->CreateImageFromStream(*binary.Obj()), desc.imageFrame);
+						element->SetPoints(&desc.points->Get(0), desc.points->Count());
 					}
 				}
-			}
-			break;
+				break;
+			case remoteprotocol::RendererType::ImageFrame:
+				{
+					auto element = Ptr(GuiImageFrameElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_ImageFrame>();
+
+					element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
+					element->SetStretch(desc.stretch);
+					element->SetEnabled(desc.enabled);
+
+					if (desc.imageId)
+					{
+						vint index = trace.imageCreations->Keys().IndexOf(desc.imageId.Value());
+						if (index != -1)
+						{
+							auto binary = trace.imageCreations->Values()[index].imageData;
+							binary->SeekFromBegin(0);
+							element->SetImage(GetCurrentController()->ImageService()->CreateImageFromStream(*binary.Obj()), desc.imageFrame);
+						}
+					}
+				}
+				break;
 			default:
 				CHECK_FAIL(L"This element is not supported yet.");
 				break;
