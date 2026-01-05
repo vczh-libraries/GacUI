@@ -264,7 +264,7 @@ IGuiRemoteProtocolMessages (Rendering)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererEndRendering(vint id)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererEndRendering(vint)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererEndRendering(vint)#"
 		CHECK_ERROR(receivedElementMessage || receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"Either dom-diff or element message should be sent before this message.");
 
 		auto lastFrame = GetLastRenderingFrame();
@@ -289,7 +289,7 @@ IGuiRemoteProtocolMessages (Rendering - Element)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererBeginBoundary(const ElementBoundary& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererBeginBoundary(const ElementBoundary&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererBeginBoundary(const ElementBoundary&)#"
 		CHECK_ERROR(!receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with dom-diff messages in the same rendering cycle.");
 		if (!receivedElementMessage)
 		{
@@ -315,7 +315,7 @@ IGuiRemoteProtocolMessages (Rendering - Element)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererEndBoundary()
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererEndBoundary()#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererEndBoundary()#"
 		CHECK_ERROR(!receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with dom-diff messages in the same rendering cycle.");
 		if (!receivedElementMessage)
 		{
@@ -361,7 +361,7 @@ IGuiRemoteProtocolMessages (Rendering - Element)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererRenderElement(const ElementRendering& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const ElementRendering&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererRenderElement(const ElementRendering&)#"
 		CHECK_ERROR(!receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with dom-diff messages in the same rendering cycle.");
 		if (!receivedElementMessage)
 		{
@@ -409,7 +409,7 @@ IGuiRemoteProtocolMessages (Rendering - Dom)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererRenderDom(const Ptr<RenderingDom>& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const RenderingDom&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererRenderElement(const RenderingDom&)#"
 		CHECK_ERROR(!receivedElementMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with element messages in the same rendering cycle.");
 		if (!receivedDomDiffMessage)
 		{
@@ -424,7 +424,7 @@ IGuiRemoteProtocolMessages (Rendering - Dom)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererRenderDomDiff(const RenderingDom_DiffsInOrder& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const RenderingDom_DiffsInOrder&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererRenderElement(const RenderingDom_DiffsInOrder&)#"
 		CHECK_ERROR(!receivedElementMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with element messages in the same rendering cycle.");
 		if (!receivedDomDiffMessage)
 		{
@@ -443,7 +443,7 @@ IGuiRemoteProtocolMessages (Elements)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererCreated(const Ptr<List<RendererCreation>>& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererCreated(const Ptr<List<RendererCreation>>&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererCreated(const Ptr<List<RendererCreation>>&)#"
 		if (arguments)
 		{
 			for (auto creation : *arguments.Obj())
@@ -464,7 +464,7 @@ IGuiRemoteProtocolMessages (Elements)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererDestroyed(const Ptr<List<vint>>& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererDestroyed(const Ptr<List<vint>>&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererDestroyed(const Ptr<List<vint>>&)#"
 		if (arguments)
 		{
 			for (auto id : *arguments.Obj())
@@ -492,49 +492,49 @@ IGuiRemoteProtocolMessages (Elements)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SolidBorder(const ElementDesc_SolidBorder& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SolidBorder<TProtocol>::RequestRendererCreated(const ElementDesc_SolidBorder&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::Impl_RendererUpdateElement_SolidBorder(const ElementDesc_SolidBorder&)#"
 		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::SolidBorder);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SinkBorder(const ElementDesc_SinkBorder& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SinkBorder<TProtocol>::RequestRendererCreated(const ElementDesc_SinkBorder&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::Impl_RendererUpdateElement_SinkBorder(const ElementDesc_SinkBorder&)#"
 		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::SinkBorder);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SinkSplitter(const ElementDesc_SinkSplitter& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SinkSplitter<TProtocol>::RequestRendererCreated(const ElementDesc_SinkSplitter&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::Impl_RendererUpdateElement_SinkSplitter(const ElementDesc_SinkSplitter&)#"
 		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::SinkSplitter);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SolidBackground(const ElementDesc_SolidBackground& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SolidBackground<TProtocol>::RequestRendererCreated(const ElementDesc_SolidBackground&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::Impl_RendererUpdateElement_SolidBackground(const ElementDesc_SolidBackground&)#"
 		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::SolidBackground);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_GradientBackground(const ElementDesc_GradientBackground& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_GradientBackground<TProtocol>::RequestRendererCreated(const ElementDesc_GradientBackground&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::Impl_RendererUpdateElement_GradientBackground(const ElementDesc_GradientBackground&)#"
 		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::GradientBackground);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_InnerShadow(const ElementDesc_InnerShadow& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_InnerShadow<TProtocol>::RequestRendererCreated(const ElementDesc_InnerShadow&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::Impl_RendererUpdateElement_InnerShadow(const ElementDesc_InnerShadow&)#"
 		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::InnerShadow);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_Polygon(const ElementDesc_Polygon& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_Polygon<TProtocol>::RequestRendererCreated(const ElementDesc_Polygon&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::Impl_RendererUpdateElement_Polygon(const ElementDesc_Polygon&)#"
 		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::Polygon);
 #undef ERROR_MESSAGE_PREFIX
 	}
@@ -545,7 +545,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 
 	void UnitTestRemoteProtocol_Rendering::CalculateSolidLabelSizeIfNecessary(vint width, vint height, const ElementDesc_SolidLabel& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SolidLabel<TProtocol>::CalculateSolidLabelSizeIfNecessary(vint, vint, const ElementDesc_SolidLabel&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::CalculateSolidLabelSizeIfNecessary(vint, vint, const ElementDesc_SolidLabel&)#"
 
 		if (arguments.measuringRequest)
 		{
@@ -692,7 +692,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SolidLabel(const ElementDesc_SolidLabel& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SolidLabel<TProtocol>::RequestRendererCreated(const ElementDesc_SolidLabel&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::Impl_RendererUpdateElement_SolidLabel(const ElementDesc_SolidLabel&)#"
 		auto element = arguments;
 		if (!element.font || !element.text)
 		{
@@ -829,7 +829,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_ImageCreated(vint id, const ImageCreation& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageCreated(vint, const vint&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_ImageCreated(vint, const vint&)#"
 		CHECK_ERROR(!loggedTrace.imageMetadatas->Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created or used.");
 		this->GetEvents()->RespondImageCreated(id, MakeImageMetadata(arguments));
 #undef ERROR_MESSAGE_PREFIX
@@ -837,7 +837,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_ImageDestroyed(const vint& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageDestroyed(const vint&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_ImageDestroyed(const vint&)#"
 		CHECK_ERROR(loggedTrace.imageMetadatas->Keys().Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
 		CHECK_ERROR(!removedImageIds.Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has been destroyed.");
 		removedImageIds.Add(arguments);
@@ -846,7 +846,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_ImageFrame(const ElementDesc_ImageFrame& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_ImageFrame<TProtocol>::RequestRendererCreated(const ElementDesc_ImageFrame&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_ImageFrame(const ElementDesc_ImageFrame&)#"
 		if (arguments.imageCreation)
 		{
 			auto&& imageCreation = arguments.imageCreation.Value();
@@ -883,7 +883,7 @@ IGuiRemoteProtocolMessages (Elements - Document)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_DocumentParagraph(vint id, const ElementDesc_DocumentParagraph& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::Impl_RendererUpdateElement_DocumentParagraph#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_DocumentParagraph(vint, const ElementDesc_DocumentParagraph&)#"
 		vint index = paragraphStates.Keys().IndexOf(arguments.id);
 		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Paragraph not created.");
 		auto state = paragraphStates.Values()[index];
@@ -956,8 +956,36 @@ IGuiRemoteProtocolMessages (Elements - Document)
 		// Recalculate layout
 		CalculateParagraphLayout(*state.Obj());
 
-		// Store in lastElementDescs (following existing pattern)
-		lastElementDescs.Set(arguments.id, arguments);
+		{
+			index = loggedTrace.createdElements->Keys().IndexOf(arguments.id);
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
+
+			auto rendererType = loggedTrace.createdElements->Values()[index];
+			CHECK_ERROR(rendererType == RendererType::DocumentParagraph, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+
+			index = lastElementDescs.Keys().IndexOf(arguments.id);
+			ElementDesc_DocumentParagraphFull element;
+			if (index != -1)
+			{
+				auto paragraphRef = lastElementDescs.Values()[index].TryGet<ElementDesc_DocumentParagraphFull>();
+				CHECK_ERROR(paragraphRef, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+				element = *paragraphRef;
+			}
+			element.paragraph = arguments;
+			element.paragraph.text = state->text;
+			element.paragraph.createdInlineObjects = {};
+			element.paragraph.removedInlineObjects = {};
+			element.paragraph.runsDiff = Ptr(new List<remoteprotocol::DocumentRun>);
+			for (auto [range, props] : state->mergedRuns)
+			{
+				remoteprotocol::DocumentRun run;
+				run.caretBegin = range.caretBegin;
+				run.caretEnd = range.caretEnd;
+				run.props = props;
+				element.paragraph.runsDiff->Add(run);
+			}
+			lastElementDescs.Set(arguments.id, element);
+		}
 
 		// Send response with calculated size
 		GetEvents()->RespondRendererUpdateElement_DocumentParagraph(id, state->cachedSize);
@@ -966,7 +994,7 @@ IGuiRemoteProtocolMessages (Elements - Document)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetCaretBounds(vint id, const GetCaretBoundsRequest& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::Impl_DocumentParagraph_GetCaretBounds#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetCaretBounds(vint, const GetCaretBoundsRequest&)#"
 		vint index = paragraphStates.Keys().IndexOf(arguments.id);
 		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"No active paragraph.");
 		auto state = paragraphStates.Values()[index];
@@ -1034,7 +1062,7 @@ IGuiRemoteProtocolMessages (Elements - Document)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetCaret(vint id, const GetCaretRequest& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::Impl_DocumentParagraph_GetCaret#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetCaret(vint, const GetCaretRequest&)#"
 		vint index = paragraphStates.Keys().IndexOf(arguments.id);
 		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"No active paragraph.");
 		auto state = paragraphStates.Values()[index];
@@ -1152,7 +1180,7 @@ IGuiRemoteProtocolMessages (Elements - Document)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetNearestCaretFromTextPos(vint id, const GetCaretBoundsRequest& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::Impl_DocumentParagraph_GetNearestCaretFromTextPos#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetNearestCaretFromTextPos(vint, const GetCaretBoundsRequest&)#"
 		vint index = paragraphStates.Keys().IndexOf(arguments.id);
 		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"No active paragraph.");
 		auto state = paragraphStates.Values()[index];
@@ -1171,7 +1199,7 @@ IGuiRemoteProtocolMessages (Elements - Document)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetInlineObjectFromPoint(vint id, const GetInlineObjectFromPointRequest& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::Impl_DocumentParagraph_GetInlineObjectFromPoint#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetInlineObjectFromPoint(vint, const GetInlineObjectFromPointRequest&)#"
 		vint index = paragraphStates.Keys().IndexOf(arguments.id);
 		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"No active paragraph.");
 		auto state = paragraphStates.Values()[index];
@@ -1239,7 +1267,7 @@ IGuiRemoteProtocolMessages (Elements - Document)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_IsValidCaret(vint id, const IsValidCaretRequest& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::Impl_DocumentParagraph_IsValidCaret#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_IsValidCaret(vint, const IsValidCaretRequest&)#"
 		vint index = paragraphStates.Keys().IndexOf(arguments.id);
 		if (index == -1)
 		{
@@ -1276,25 +1304,46 @@ IGuiRemoteProtocolMessages (Elements - Document)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_OpenCaret(const OpenCaretRequest& arguments)
 	{
-		vint index = paragraphStates.Keys().IndexOf(arguments.id);
-		if (index == -1) return;
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_OpenCaret(const OpenCaretRequest&)#"
+		vint index = loggedTrace.createdElements->Keys().IndexOf(arguments.id);
+		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
 
-		auto state = paragraphStates.Values()[index];
-		state->caretOpen = true;
-		state->caretElementId = arguments.id;
-		state->caretPos = arguments.caret;
-		state->caretColor = arguments.caretColor;
-		state->caretFrontSide = arguments.frontSide;
+		auto rendererType = loggedTrace.createdElements->Values()[index];
+		CHECK_ERROR(rendererType == RendererType::DocumentParagraph, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+
+		index = lastElementDescs.Keys().IndexOf(arguments.id);
+		ElementDesc_DocumentParagraphFull element;
+		if (index != -1)
+		{
+			auto paragraphRef = lastElementDescs.Values()[index].TryGet<ElementDesc_DocumentParagraphFull>();
+			CHECK_ERROR(paragraphRef, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+			element = *paragraphRef;
+		}
+		element.caret = arguments;
+		lastElementDescs.Set(arguments.id, element);
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_CloseCaret(const vint& arguments)
 	{
-		// arguments itself is the element ID for CloseCaret
-		vint index = paragraphStates.Keys().IndexOf(arguments);
-		if (index == -1) return;
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_CloseCaret(const vint&)#"
+		vint index = loggedTrace.createdElements->Keys().IndexOf(arguments);
+		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
 
-		auto state = paragraphStates.Values()[index];
-		state->caretOpen = false;
+		auto rendererType = loggedTrace.createdElements->Values()[index];
+		CHECK_ERROR(rendererType == RendererType::DocumentParagraph, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+
+		index = lastElementDescs.Keys().IndexOf(arguments);
+		ElementDesc_DocumentParagraphFull element;
+		if (index != -1)
+		{
+			auto paragraphRef = lastElementDescs.Values()[index].TryGet<ElementDesc_DocumentParagraphFull>();
+			CHECK_ERROR(paragraphRef, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+			element = *paragraphRef;
+		}
+		element.caret.Reset();
+		lastElementDescs.Set(arguments, element);
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 #undef REQUEST_RENDERER_UPDATE_ELEMENT

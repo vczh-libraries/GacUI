@@ -51,6 +51,7 @@ namespace vl::presentation::remoteprotocol
 	struct RenderingDom;
 	struct RenderingDom_Diff;
 	struct RenderingDom_DiffsInOrder;
+	struct ElementDesc_DocumentParagraphFull;
 	struct UnitTest_RenderingFrame;
 	struct UnitTest_RenderingTrace;
 }
@@ -110,6 +111,7 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>> { static constexpr const wchar_t* Name = L"RenderingDom"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingDom_Diff> { static constexpr const wchar_t* Name = L"RenderingDom_Diff"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder> { static constexpr const wchar_t* Name = L"RenderingDom_DiffsInOrder"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull> { static constexpr const wchar_t* Name = L"ElementDesc_DocumentParagraphFull"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::UnitTest_RenderingFrame> { static constexpr const wchar_t* Name = L"UnitTest_RenderingFrame"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::UnitTest_RenderingTrace> { static constexpr const wchar_t* Name = L"UnitTest_RenderingTrace"; };
 }
@@ -187,7 +189,7 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::remoteprotocol::ElementDesc_Polygon,
 		::vl::presentation::remoteprotocol::ElementDesc_SolidLabel,
 		::vl::presentation::remoteprotocol::ElementDesc_ImageFrame,
-		::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph
+		::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull
 	>;
 
 	struct FontConfig
@@ -495,6 +497,12 @@ namespace vl::presentation::remoteprotocol
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RenderingDom_Diff>> diffsInOrder;
 	};
 
+	struct ElementDesc_DocumentParagraphFull
+	{
+		::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph paragraph;
+		::vl::Nullable<::vl::presentation::remoteprotocol::OpenCaretRequest> caret;
+	};
+
 	struct UnitTest_RenderingFrame
 	{
 		::vl::vint frameId;
@@ -582,6 +590,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDom>(const ::vl::presentation::remoteprotocol::RenderingDom & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDom_Diff>(const ::vl::presentation::remoteprotocol::RenderingDom_Diff & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder>(const ::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull>(const ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::UnitTest_RenderingFrame>(const ::vl::presentation::remoteprotocol::UnitTest_RenderingFrame & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::UnitTest_RenderingTrace>(const ::vl::presentation::remoteprotocol::UnitTest_RenderingTrace & value);
 
@@ -655,6 +664,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDom>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingDom& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDom_Diff>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingDom_Diff& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::UnitTest_RenderingFrame>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::UnitTest_RenderingFrame& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::UnitTest_RenderingTrace>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::UnitTest_RenderingTrace& value);
 

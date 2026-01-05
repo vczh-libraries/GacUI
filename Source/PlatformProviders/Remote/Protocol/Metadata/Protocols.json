@@ -3170,6 +3170,29 @@
         },
         "response": null
     }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ElementDesc_DocumentParagraphFull",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "paragraph",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementDesc_DocumentParagraph"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "caret",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "OpenCaretRequest"
+                }
+            }
+        }],
+        "type": "Struct"
+    }, {
         "$ast": "UnionDecl",
         "attributes": [],
         "name": "UnitTest_ElementDescVariant",
@@ -3202,7 +3225,7 @@
             "name": "ElementDesc_ImageFrame"
         }, {
             "$ast": "UnionMember",
-            "name": "ElementDesc_DocumentParagraph"
+            "name": "ElementDesc_DocumentParagraphFull"
         }]
     }, {
         "$ast": "StructDecl",

@@ -1,3 +1,9 @@
+struct ElementDesc_DocumentParagraphFull
+{
+    var paragraph : ElementDesc_DocumentParagraph;
+    var caret : OpenCaretRequest?;
+}
+
 union UnitTest_ElementDescVariant
 {
     ElementDesc_SolidBorder,
@@ -9,7 +15,7 @@ union UnitTest_ElementDescVariant
     ElementDesc_Polygon,
     ElementDesc_SolidLabel,
     ElementDesc_ImageFrame,
-    ElementDesc_DocumentParagraph,
+    ElementDesc_DocumentParagraphFull,
 }
 
 struct UnitTest_RenderingFrame

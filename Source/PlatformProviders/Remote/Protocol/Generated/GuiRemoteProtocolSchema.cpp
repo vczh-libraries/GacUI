@@ -804,6 +804,14 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull>(const ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"paragraph", value.paragraph);
+		ConvertCustomTypeToJsonField(node, L"caret", value.caret);
+		return node;
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::UnitTest_RenderingFrame>(const ::vl::presentation::remoteprotocol::UnitTest_RenderingFrame & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
@@ -1893,6 +1901,20 @@ namespace vl::presentation::remoteprotocol
 		for (auto field : jsonNode->fields)
 		{
 			if (field->name.value == L"diffsInOrder") ConvertJsonToCustomType(field->value, value.diffsInOrder); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"paragraph") ConvertJsonToCustomType(field->value, value.paragraph); else
+			if (field->name.value == L"caret") ConvertJsonToCustomType(field->value, value.caret); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX

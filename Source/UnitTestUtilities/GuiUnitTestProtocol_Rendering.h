@@ -40,24 +40,18 @@ DocumentParagraphState
 
 	struct DocumentParagraphState
 	{
-		WString									text;
-		bool									wrapLine = false;
-		vint									maxWidth = -1;
-		remoteprotocol::ElementHorizontalAlignment alignment = remoteprotocol::ElementHorizontalAlignment::Left;
+		WString											text;
+		bool											wrapLine = false;
+		vint											maxWidth = -1;
+		remoteprotocol::ElementHorizontalAlignment		alignment = remoteprotocol::ElementHorizontalAlignment::Left;
 
-		elements::DocumentTextRunPropertyMap	textRuns;
-		elements::DocumentInlineObjectRunPropertyMap inlineObjectRuns;
-		elements::DocumentRunPropertyMap		mergedRuns;
+		elements::DocumentTextRunPropertyMap			textRuns;
+		elements::DocumentInlineObjectRunPropertyMap	inlineObjectRuns;
+		elements::DocumentRunPropertyMap				mergedRuns;
 
-		collections::List<DocumentParagraphCharLayout> characterLayouts;
-		collections::List<DocumentParagraphLineInfo> lines;
-		Size									cachedSize;
-
-		bool									caretOpen = false;
-		vint									caretElementId = -1;
-		vint									caretPos = 0;
-		Color									caretColor;
-		bool									caretFrontSide = true;
+		collections::List<DocumentParagraphCharLayout>	characterLayouts;
+		collections::List<DocumentParagraphLineInfo>	lines;
+		Size											cachedSize;
 	};
 
 /***********************************************************************

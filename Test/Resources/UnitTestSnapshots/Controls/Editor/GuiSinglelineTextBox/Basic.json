@@ -355,29 +355,32 @@
         [
           23,
           [
-            "ElementDesc_DocumentParagraph",
+            "ElementDesc_DocumentParagraphFull",
             {
-              "id": 23,
-              "text": "Initial text",
-              "wrapLine": false,
-              "maxWidth": 1,
-              "alignment": "Left",
-              "runsDiff": [
-                {
-                  "caretBegin": 0,
-                  "caretEnd": 12,
-                  "props": [
-                    "DocumentTextRunProperty",
-                    {
-                      "textColor": "#FFFFFF",
-                      "backgroundColor": "#00000000",
-                      "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
-                    }
-                  ]
-                }
-              ],
-              "createdInlineObjects": [],
-              "removedInlineObjects": []
+              "paragraph": {
+                "id": 23,
+                "text": "Initial text",
+                "wrapLine": false,
+                "maxWidth": 1,
+                "alignment": "Left",
+                "runsDiff": [
+                  {
+                    "caretBegin": 0,
+                    "caretEnd": 12,
+                    "props": [
+                      "DocumentTextRunProperty",
+                      {
+                        "textColor": "#FFFFFF",
+                        "backgroundColor": "#00000000",
+                        "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                      }
+                    ]
+                  }
+                ],
+                "createdInlineObjects": null,
+                "removedInlineObjects": null
+              },
+              "caret": null
             }
           ]
         ]
@@ -1093,29 +1096,32 @@
         [
           24,
           [
-            "ElementDesc_DocumentParagraph",
+            "ElementDesc_DocumentParagraphFull",
             {
-              "id": 24,
-              "text": "Changed text",
-              "wrapLine": false,
-              "maxWidth": 86,
-              "alignment": "Left",
-              "runsDiff": [
-                {
-                  "caretBegin": 0,
-                  "caretEnd": 12,
-                  "props": [
-                    "DocumentTextRunProperty",
-                    {
-                      "textColor": "#FFFFFF",
-                      "backgroundColor": "#00000000",
-                      "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
-                    }
-                  ]
-                }
-              ],
-              "createdInlineObjects": [],
-              "removedInlineObjects": []
+              "paragraph": {
+                "id": 24,
+                "text": "Changed text",
+                "wrapLine": false,
+                "maxWidth": 86,
+                "alignment": "Left",
+                "runsDiff": [
+                  {
+                    "caretBegin": 0,
+                    "caretEnd": 12,
+                    "props": [
+                      "DocumentTextRunProperty",
+                      {
+                        "textColor": "#FFFFFF",
+                        "backgroundColor": "#00000000",
+                        "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                      }
+                    ]
+                  }
+                ],
+                "createdInlineObjects": null,
+                "removedInlineObjects": null
+              },
+              "caret": null
             }
           ]
         ]
