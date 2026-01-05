@@ -877,6 +877,7 @@ GuiRemoteGraphicsParagraph
 		}
 
 		remoteprotocol::OpenCaretRequest request;
+		request.id = id;
 		request.caret = NativeTextPosToRemoteTextPos(caret);
 		request.caretColor = color;
 		request.frontSide = frontSide;
@@ -896,7 +897,7 @@ GuiRemoteGraphicsParagraph
 		}
 
 		auto& messages = renderTarget->GetRemoteMessages();
-		messages.RequestDocumentParagraph_CloseCaret();
+		messages.RequestDocumentParagraph_CloseCaret(id);
 		bool disconnected = false;
 		messages.Submit(disconnected);
 		return !disconnected;
@@ -934,6 +935,7 @@ GuiRemoteGraphicsParagraph
 
 		auto& messages = renderTarget->GetRemoteMessages();
 		remoteprotocol::GetCaretRequest request;
+		request.id = id;
 		request.caret = NativeTextPosToRemoteTextPos(comparingCaret);
 		request.relativePosition = position;
 
@@ -959,6 +961,7 @@ GuiRemoteGraphicsParagraph
 		}
 
 		remoteprotocol::GetCaretBoundsRequest request;
+		request.id = id;
 		request.caret = NativeTextPosToRemoteTextPos(caret);
 		request.frontSide = frontSide;
 
@@ -988,6 +991,7 @@ GuiRemoteGraphicsParagraph
 		for (vint caret = 0; caret <= text.Length(); caret++)
 		{
 			remoteprotocol::GetCaretBoundsRequest request;
+			request.id = id;
 			request.caret = NativeTextPosToRemoteTextPos(caret);
 			request.frontSide = true;
 
@@ -1034,8 +1038,12 @@ GuiRemoteGraphicsParagraph
 			return {};
 		}
 
+		remoteprotocol::GetInlineObjectFromPointRequest request;
+		request.id = id;
+		request.point = point;
+
 		auto& messages = renderTarget->GetRemoteMessages();
-		vint requestId = messages.RequestDocumentParagraph_GetInlineObjectFromPoint(point);
+		vint requestId = messages.RequestDocumentParagraph_GetInlineObjectFromPoint(request);
 		bool disconnected = false;
 		messages.Submit(disconnected);
 		if (disconnected)
@@ -1072,6 +1080,7 @@ GuiRemoteGraphicsParagraph
 		}
 
 		remoteprotocol::GetCaretBoundsRequest request;
+		request.id = id;
 		request.caret = NativeTextPosToRemoteTextPos(textPos);
 		request.frontSide = frontSide;
 
@@ -1095,8 +1104,12 @@ GuiRemoteGraphicsParagraph
 			return false;
 		}
 
+		remoteprotocol::IsValidCaretRequest request;
+		request.id = id;
+		request.caret = NativeTextPosToRemoteTextPos(caret);
+
 		auto& messages = renderTarget->GetRemoteMessages();
-		vint requestId = messages.RequestDocumentParagraph_IsValidCaret(NativeTextPosToRemoteTextPos(caret));
+		vint requestId = messages.RequestDocumentParagraph_IsValidCaret(request);
 		bool disconnected = false;
 		messages.Submit(disconnected);
 		if (disconnected)

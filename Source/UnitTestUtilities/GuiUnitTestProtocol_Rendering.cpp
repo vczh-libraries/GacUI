@@ -659,7 +659,7 @@ IGuiRemoteProtocolMessages (Elements - Document)
 		CHECK_FAIL(L"Not implemented.");
 	}
 
-	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetInlineObjectFromPoint(vint id, const Point& arguments)
+	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetInlineObjectFromPoint(vint id, const remoteprotocol::GetInlineObjectFromPointRequest& arguments)
 	{
 		CHECK_FAIL(L"Not implemented.");
 	}
@@ -669,7 +669,7 @@ IGuiRemoteProtocolMessages (Elements - Document)
 		CHECK_FAIL(L"Not implemented.");
 	}
 
-	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_IsValidCaret(vint id, const vint& arguments)
+	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_IsValidCaret(vint id, const remoteprotocol::IsValidCaretRequest& arguments)
 	{
 		CHECK_FAIL(L"Not implemented.");
 	}
@@ -679,7 +679,7 @@ IGuiRemoteProtocolMessages (Elements - Document)
 		CHECK_FAIL(L"Not implemented.");
 	}
 
-	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_CloseCaret()
+	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_CloseCaret(const vint& arguments)
 	{
 		CHECK_FAIL(L"Not implemented.");
 	}

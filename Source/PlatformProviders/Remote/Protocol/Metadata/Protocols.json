@@ -2387,6 +2387,13 @@
         "name": "GetCaretRequest",
         "members": [{
             "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
             "name": "caret",
             "type": {
                 "$ast": "PrimitiveType",
@@ -2427,6 +2434,13 @@
         "name": "GetCaretBoundsRequest",
         "members": [{
             "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
             "name": "caret",
             "type": {
                 "$ast": "PrimitiveType",
@@ -2444,8 +2458,55 @@
     }, {
         "$ast": "StructDecl",
         "attributes": [],
+        "name": "GetInlineObjectFromPointRequest",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "point",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Point"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "IsValidCaretRequest",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "caret",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
         "name": "OpenCaretRequest",
         "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
             "$ast": "StructMember",
             "name": "caret",
             "type": {
@@ -2512,7 +2573,7 @@
             "$ast": "MessageRequest",
             "type": {
                 "$ast": "ReferenceType",
-                "name": "Point"
+                "name": "GetInlineObjectFromPointRequest"
             }
         },
         "response": {
@@ -2550,8 +2611,8 @@
         "request": {
             "$ast": "MessageRequest",
             "type": {
-                "$ast": "PrimitiveType",
-                "type": "Integer"
+                "$ast": "ReferenceType",
+                "name": "IsValidCaretRequest"
             }
         },
         "response": {
@@ -2577,7 +2638,13 @@
         "$ast": "MessageDecl",
         "attributes": [],
         "name": "DocumentParagraph_CloseCaret",
-        "request": null,
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        },
         "response": null
     }, {
         "$ast": "StructDecl",

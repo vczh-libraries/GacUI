@@ -66,6 +66,7 @@ message RendererUpdateElement_DocumentParagraph     { request: ElementDesc_Docum
 
 struct GetCaretRequest
 {
+    var id : int;
     var caret : int;
     var relativePosition : CaretRelativePosition;
 }
@@ -78,12 +79,26 @@ struct GetCaretResponse
 
 struct GetCaretBoundsRequest
 {
+    var id : int;
     var caret : int;
     var frontSide : bool;
 }
 
+struct GetInlineObjectFromPointRequest
+{
+    var id : int;
+    var point : Point;
+}
+
+struct IsValidCaretRequest
+{
+    var id : int;
+    var caret : int;
+}
+
 struct OpenCaretRequest
 {
+    var id : int;
     var caret : int;
     var caretColor : color;
     var frontSide : bool;
@@ -91,11 +106,11 @@ struct OpenCaretRequest
 
 message DocumentParagraph_GetCaret                      { request: GetCaretRequest; response: GetCaretResponse; }
 message DocumentParagraph_GetCaretBounds                { request: GetCaretBoundsRequest; response: Rect; }
-message DocumentParagraph_GetInlineObjectFromPoint      { request: Point; response: DocumentRun?; }
+message DocumentParagraph_GetInlineObjectFromPoint      { request: GetInlineObjectFromPointRequest; response: DocumentRun?; }
 message DocumentParagraph_GetNearestCaretFromTextPos    { request: GetCaretBoundsRequest; response: int; }
-message DocumentParagraph_IsValidCaret                  { request: int; response: bool; }
+message DocumentParagraph_IsValidCaret                  { request: IsValidCaretRequest; response: bool; }
 message DocumentParagraph_OpenCaret                     { request: OpenCaretRequest; }
-message DocumentParagraph_CloseCaret                    {}
+message DocumentParagraph_CloseCaret                    { request: int; }
 
 struct RenderInlineObjectRequest
 {

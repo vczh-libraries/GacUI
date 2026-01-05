@@ -10,31 +10,31 @@ namespace vl::presentation::remoteprotocol::json_visitor
 {
 	void AstVisitor::PrintFields(GuiRpArrayMapType* node)
 	{
-		BeginField(L"element");
+		BeginField(vl::WString::Unmanaged(L"element"));
 		WriteToken(node->element);
 		EndField();
-		BeginField(L"keyField");
+		BeginField(vl::WString::Unmanaged(L"keyField"));
 		WriteToken(node->keyField);
 		EndField();
 	}
 	void AstVisitor::PrintFields(GuiRpArrayType* node)
 	{
-		BeginField(L"element");
+		BeginField(vl::WString::Unmanaged(L"element"));
 		Print(node->element.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(GuiRpAttribute* node)
 	{
-		BeginField(L"cppType");
+		BeginField(vl::WString::Unmanaged(L"cppType"));
 		WriteToken(node->cppType);
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
 	}
 	void AstVisitor::PrintFields(GuiRpDeclaration* node)
 	{
-		BeginField(L"attributes");
+		BeginField(vl::WString::Unmanaged(L"attributes"));
 		BeginArray();
 		for (auto&& listItem : node->attributes)
 		{
@@ -44,13 +44,13 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
 	}
 	void AstVisitor::PrintFields(GuiRpEnumDecl* node)
 	{
-		BeginField(L"members");
+		BeginField(vl::WString::Unmanaged(L"members"));
 		BeginArray();
 		for (auto&& listItem : node->members)
 		{
@@ -63,89 +63,89 @@ namespace vl::presentation::remoteprotocol::json_visitor
 	}
 	void AstVisitor::PrintFields(GuiRpEnumMember* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
 	}
 	void AstVisitor::PrintFields(GuiRpEventDecl* node)
 	{
-		BeginField(L"request");
+		BeginField(vl::WString::Unmanaged(L"request"));
 		Print(node->request.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(GuiRpEventRequest* node)
 	{
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(GuiRpMapType* node)
 	{
-		BeginField(L"element");
+		BeginField(vl::WString::Unmanaged(L"element"));
 		Print(node->element.Obj());
 		EndField();
-		BeginField(L"keyType");
+		BeginField(vl::WString::Unmanaged(L"keyType"));
 		Print(node->keyType.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(GuiRpMessageDecl* node)
 	{
-		BeginField(L"request");
+		BeginField(vl::WString::Unmanaged(L"request"));
 		Print(node->request.Obj());
 		EndField();
-		BeginField(L"response");
+		BeginField(vl::WString::Unmanaged(L"response"));
 		Print(node->response.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(GuiRpMessageRequest* node)
 	{
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(GuiRpMessageResponse* node)
 	{
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(GuiRpOptionalType* node)
 	{
-		BeginField(L"element");
+		BeginField(vl::WString::Unmanaged(L"element"));
 		Print(node->element.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(GuiRpPrimitiveType* node)
 	{
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		switch (node->type)
 		{
 		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Binary:
-			WriteString(L"Binary");
+			WriteString(vl::WString::Unmanaged(L"Binary"));
 			break;
 		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Boolean:
-			WriteString(L"Boolean");
+			WriteString(vl::WString::Unmanaged(L"Boolean"));
 			break;
 		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Char:
-			WriteString(L"Char");
+			WriteString(vl::WString::Unmanaged(L"Char"));
 			break;
 		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Color:
-			WriteString(L"Color");
+			WriteString(vl::WString::Unmanaged(L"Color"));
 			break;
 		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Double:
-			WriteString(L"Double");
+			WriteString(vl::WString::Unmanaged(L"Double"));
 			break;
 		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Float:
-			WriteString(L"Float");
+			WriteString(vl::WString::Unmanaged(L"Float"));
 			break;
 		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Integer:
-			WriteString(L"Integer");
+			WriteString(vl::WString::Unmanaged(L"Integer"));
 			break;
 		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Key:
-			WriteString(L"Key");
+			WriteString(vl::WString::Unmanaged(L"Key"));
 			break;
 		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::String:
-			WriteString(L"String");
+			WriteString(vl::WString::Unmanaged(L"String"));
 			break;
 		default:
 			WriteNull();
@@ -154,13 +154,13 @@ namespace vl::presentation::remoteprotocol::json_visitor
 	}
 	void AstVisitor::PrintFields(GuiRpReferenceType* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
 	}
 	void AstVisitor::PrintFields(GuiRpSchema* node)
 	{
-		BeginField(L"declarations");
+		BeginField(vl::WString::Unmanaged(L"declarations"));
 		BeginArray();
 		for (auto&& listItem : node->declarations)
 		{
@@ -173,7 +173,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 	}
 	void AstVisitor::PrintFields(GuiRpStructDecl* node)
 	{
-		BeginField(L"members");
+		BeginField(vl::WString::Unmanaged(L"members"));
 		BeginArray();
 		for (auto&& listItem : node->members)
 		{
@@ -183,14 +183,14 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		switch (node->type)
 		{
 		case vl::presentation::remoteprotocol::GuiRpStructType::Class:
-			WriteString(L"Class");
+			WriteString(vl::WString::Unmanaged(L"Class"));
 			break;
 		case vl::presentation::remoteprotocol::GuiRpStructType::Struct:
-			WriteString(L"Struct");
+			WriteString(vl::WString::Unmanaged(L"Struct"));
 			break;
 		default:
 			WriteNull();
@@ -199,10 +199,10 @@ namespace vl::presentation::remoteprotocol::json_visitor
 	}
 	void AstVisitor::PrintFields(GuiRpStructMember* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"type");
+		BeginField(vl::WString::Unmanaged(L"type"));
 		Print(node->type.Obj());
 		EndField();
 	}
@@ -211,7 +211,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 	}
 	void AstVisitor::PrintFields(GuiRpUnionDecl* node)
 	{
-		BeginField(L"members");
+		BeginField(vl::WString::Unmanaged(L"members"));
 		BeginArray();
 		for (auto&& listItem : node->members)
 		{
@@ -224,7 +224,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 	}
 	void AstVisitor::PrintFields(GuiRpUnionMember* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
 	}
@@ -237,7 +237,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"PrimitiveType", node);
+		WriteType(vl::WString::Unmanaged(L"PrimitiveType"), node);
 		PrintFields(static_cast<GuiRpType*>(node));
 		PrintFields(static_cast<GuiRpPrimitiveType*>(node));
 		EndObject();
@@ -251,7 +251,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ReferenceType", node);
+		WriteType(vl::WString::Unmanaged(L"ReferenceType"), node);
 		PrintFields(static_cast<GuiRpType*>(node));
 		PrintFields(static_cast<GuiRpReferenceType*>(node));
 		EndObject();
@@ -265,7 +265,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"OptionalType", node);
+		WriteType(vl::WString::Unmanaged(L"OptionalType"), node);
 		PrintFields(static_cast<GuiRpType*>(node));
 		PrintFields(static_cast<GuiRpOptionalType*>(node));
 		EndObject();
@@ -279,7 +279,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ArrayType", node);
+		WriteType(vl::WString::Unmanaged(L"ArrayType"), node);
 		PrintFields(static_cast<GuiRpType*>(node));
 		PrintFields(static_cast<GuiRpArrayType*>(node));
 		EndObject();
@@ -293,7 +293,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ArrayMapType", node);
+		WriteType(vl::WString::Unmanaged(L"ArrayMapType"), node);
 		PrintFields(static_cast<GuiRpType*>(node));
 		PrintFields(static_cast<GuiRpArrayMapType*>(node));
 		EndObject();
@@ -307,7 +307,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"MapType", node);
+		WriteType(vl::WString::Unmanaged(L"MapType"), node);
 		PrintFields(static_cast<GuiRpType*>(node));
 		PrintFields(static_cast<GuiRpMapType*>(node));
 		EndObject();
@@ -321,7 +321,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"EnumDecl", node);
+		WriteType(vl::WString::Unmanaged(L"EnumDecl"), node);
 		PrintFields(static_cast<GuiRpDeclaration*>(node));
 		PrintFields(static_cast<GuiRpEnumDecl*>(node));
 		EndObject();
@@ -335,7 +335,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"UnionDecl", node);
+		WriteType(vl::WString::Unmanaged(L"UnionDecl"), node);
 		PrintFields(static_cast<GuiRpDeclaration*>(node));
 		PrintFields(static_cast<GuiRpUnionDecl*>(node));
 		EndObject();
@@ -349,7 +349,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"StructDecl", node);
+		WriteType(vl::WString::Unmanaged(L"StructDecl"), node);
 		PrintFields(static_cast<GuiRpDeclaration*>(node));
 		PrintFields(static_cast<GuiRpStructDecl*>(node));
 		EndObject();
@@ -363,7 +363,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"MessageDecl", node);
+		WriteType(vl::WString::Unmanaged(L"MessageDecl"), node);
 		PrintFields(static_cast<GuiRpDeclaration*>(node));
 		PrintFields(static_cast<GuiRpMessageDecl*>(node));
 		EndObject();
@@ -377,7 +377,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"EventDecl", node);
+		WriteType(vl::WString::Unmanaged(L"EventDecl"), node);
 		PrintFields(static_cast<GuiRpDeclaration*>(node));
 		PrintFields(static_cast<GuiRpEventDecl*>(node));
 		EndObject();
@@ -416,7 +416,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"Attribute", node);
+		WriteType(vl::WString::Unmanaged(L"Attribute"), node);
 		PrintFields(static_cast<GuiRpAttribute*>(node));
 		EndObject();
 	}
@@ -429,7 +429,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"EnumMember", node);
+		WriteType(vl::WString::Unmanaged(L"EnumMember"), node);
 		PrintFields(static_cast<GuiRpEnumMember*>(node));
 		EndObject();
 	}
@@ -442,7 +442,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"UnionMember", node);
+		WriteType(vl::WString::Unmanaged(L"UnionMember"), node);
 		PrintFields(static_cast<GuiRpUnionMember*>(node));
 		EndObject();
 	}
@@ -455,7 +455,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"StructMember", node);
+		WriteType(vl::WString::Unmanaged(L"StructMember"), node);
 		PrintFields(static_cast<GuiRpStructMember*>(node));
 		EndObject();
 	}
@@ -468,7 +468,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"MessageRequest", node);
+		WriteType(vl::WString::Unmanaged(L"MessageRequest"), node);
 		PrintFields(static_cast<GuiRpMessageRequest*>(node));
 		EndObject();
 	}
@@ -481,7 +481,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"MessageResponse", node);
+		WriteType(vl::WString::Unmanaged(L"MessageResponse"), node);
 		PrintFields(static_cast<GuiRpMessageResponse*>(node));
 		EndObject();
 	}
@@ -494,7 +494,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"EventRequest", node);
+		WriteType(vl::WString::Unmanaged(L"EventRequest"), node);
 		PrintFields(static_cast<GuiRpEventRequest*>(node));
 		EndObject();
 	}
@@ -507,7 +507,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"Schema", node);
+		WriteType(vl::WString::Unmanaged(L"Schema"), node);
 		PrintFields(static_cast<GuiRpSchema*>(node));
 		EndObject();
 	}

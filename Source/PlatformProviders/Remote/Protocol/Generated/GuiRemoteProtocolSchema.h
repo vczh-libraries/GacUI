@@ -36,6 +36,8 @@ namespace vl::presentation::remoteprotocol
 	struct GetCaretRequest;
 	struct GetCaretResponse;
 	struct GetCaretBoundsRequest;
+	struct GetInlineObjectFromPointRequest;
+	struct IsValidCaretRequest;
 	struct OpenCaretRequest;
 	struct RenderInlineObjectRequest;
 	struct RendererCreation;
@@ -93,6 +95,8 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GetCaretRequest> { static constexpr const wchar_t* Name = L"GetCaretRequest"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GetCaretResponse> { static constexpr const wchar_t* Name = L"GetCaretResponse"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GetCaretBoundsRequest> { static constexpr const wchar_t* Name = L"GetCaretBoundsRequest"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest> { static constexpr const wchar_t* Name = L"GetInlineObjectFromPointRequest"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::IsValidCaretRequest> { static constexpr const wchar_t* Name = L"IsValidCaretRequest"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::OpenCaretRequest> { static constexpr const wchar_t* Name = L"OpenCaretRequest"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderInlineObjectRequest> { static constexpr const wchar_t* Name = L"RenderInlineObjectRequest"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RendererCreation> { static constexpr const wchar_t* Name = L"RendererCreation"; };
@@ -371,6 +375,7 @@ namespace vl::presentation::remoteprotocol
 
 	struct GetCaretRequest
 	{
+		::vl::vint id;
 		::vl::vint caret;
 		::vl::presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition relativePosition;
 	};
@@ -383,12 +388,26 @@ namespace vl::presentation::remoteprotocol
 
 	struct GetCaretBoundsRequest
 	{
+		::vl::vint id;
 		::vl::vint caret;
 		bool frontSide;
 	};
 
+	struct GetInlineObjectFromPointRequest
+	{
+		::vl::vint id;
+		::vl::presentation::Point point;
+	};
+
+	struct IsValidCaretRequest
+	{
+		::vl::vint id;
+		::vl::vint caret;
+	};
+
 	struct OpenCaretRequest
 	{
+		::vl::vint id;
 		::vl::vint caret;
 		::vl::presentation::Color caretColor;
 		bool frontSide;
@@ -548,6 +567,8 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretRequest>(const ::vl::presentation::remoteprotocol::GetCaretRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretResponse>(const ::vl::presentation::remoteprotocol::GetCaretResponse & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretBoundsRequest>(const ::vl::presentation::remoteprotocol::GetCaretBoundsRequest & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest>(const ::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IsValidCaretRequest>(const ::vl::presentation::remoteprotocol::IsValidCaretRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::OpenCaretRequest>(const ::vl::presentation::remoteprotocol::OpenCaretRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderInlineObjectRequest>(const ::vl::presentation::remoteprotocol::RenderInlineObjectRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RendererCreation>(const ::vl::presentation::remoteprotocol::RendererCreation & value);
@@ -619,6 +640,8 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretResponse>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretResponse& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretBoundsRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IsValidCaretRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IsValidCaretRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::OpenCaretRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::OpenCaretRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderInlineObjectRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderInlineObjectRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RendererCreation>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RendererCreation& value);
@@ -676,11 +699,11 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(RendererUpdateElement_DocumentParagraph, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph, ::vl::presentation::Size, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_GetCaret, ::vl::presentation::remoteprotocol::GetCaretRequest, ::vl::presentation::remoteprotocol::GetCaretResponse, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_GetCaretBounds, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest, ::vl::presentation::Rect, REQ, RES, NODROP)\
-	HANDLER(DocumentParagraph_GetInlineObjectFromPoint, ::vl::presentation::Point, ::vl::Nullable<::vl::presentation::remoteprotocol::DocumentRun>, REQ, RES, NODROP)\
+	HANDLER(DocumentParagraph_GetInlineObjectFromPoint, ::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest, ::vl::Nullable<::vl::presentation::remoteprotocol::DocumentRun>, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_GetNearestCaretFromTextPos, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest, ::vl::vint, REQ, RES, NODROP)\
-	HANDLER(DocumentParagraph_IsValidCaret, ::vl::vint, bool, REQ, RES, NODROP)\
+	HANDLER(DocumentParagraph_IsValidCaret, ::vl::presentation::remoteprotocol::IsValidCaretRequest, bool, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_OpenCaret, ::vl::presentation::remoteprotocol::OpenCaretRequest, void, REQ, NORES, NODROP)\
-	HANDLER(DocumentParagraph_CloseCaret, void, void, NOREQ, NORES, NODROP)\
+	HANDLER(DocumentParagraph_CloseCaret, ::vl::vint, void, REQ, NORES, NODROP)\
 	HANDLER(RendererCreated, ::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RendererCreation>>, void, REQ, NORES, NODROP)\
 	HANDLER(RendererDestroyed, ::vl::Ptr<::vl::collections::List<::vl::vint>>, void, REQ, NORES, NODROP)\
 	HANDLER(RendererBeginRendering, ::vl::presentation::remoteprotocol::ElementBeginRendering, void, REQ, NORES, NODROP)\
@@ -721,7 +744,6 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::WString)\
 	HANDLER(::vl::presentation::NativeRect)\
 	HANDLER(::vl::presentation::NativeSize)\
-	HANDLER(::vl::presentation::Point)\
 	HANDLER(::vl::presentation::VKEY)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementBeginRendering)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementBoundary)\
@@ -738,7 +760,9 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::presentation::remoteprotocol::ElementRendering)\
 	HANDLER(::vl::presentation::remoteprotocol::GetCaretBoundsRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::GetCaretRequest)\
+	HANDLER(::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::ImageCreation)\
+	HANDLER(::vl::presentation::remoteprotocol::IsValidCaretRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::OpenCaretRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder)\
 	HANDLER(::vl::presentation::remoteprotocol::WindowShowing)\
