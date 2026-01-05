@@ -188,22 +188,12 @@ namespace gaclib_controls
 			bool found = false;
 			for (auto&& run : *desc.paragraph.runsDiff.Obj())
 			{
-				run.props.Apply(Overloading(
-					[&](const remoteprotocol::DocumentTextRunProperty&)
-					{
-					},
-					[&](const remoteprotocol::DocumentInlineObjectRunProperty& inlineProp)
-					{
-						if (inlineProp.callbackId == callbackId)
-						{
-							result = inlineProp.size;
-							found = true;
-						}
-					}
-				));
-				if (found)
+				if (auto props = run.props.TryGet<remoteprotocol::DocumentInlineObjectRunProperty>())
 				{
-					return result;
+					if (props->callbackId == callbackId)
+					{
+						return props->size;
+					}
 				}
 			}
 			return {};
