@@ -47,6 +47,90 @@ namespace gaclib_controls
 		}
 	}
 
+	class GuiGraphicsParagraphWrapperElement
+		: public Object
+		, public IGuiGraphicsElement
+		, protected IGuiGraphicsRenderer
+		, protected IGuiGraphicsRendererFactory
+	{
+	protected:
+		remoteprotocol::ElementDesc_DocumentParagraphFull	desc;
+		Ptr<IGuiGraphicsParagraph>							paragraph;
+		GuiGraphicsComposition*								ownerComposition = nullptr;
+		IGuiGraphicsRenderTarget*							renderTarget = nullptr;
+
+		void SetOwnerComposition(GuiGraphicsComposition* _ownerComposition) override
+		{
+			ownerComposition = _ownerComposition;
+		}
+
+	public:
+
+		GuiGraphicsParagraphWrapperElement(const remoteprotocol::ElementDesc_DocumentParagraphFull& _desc)
+			:desc(_desc)
+		{
+		}
+
+		IGuiGraphicsRenderer* GetRenderer() override
+		{
+			return this;
+		}
+
+		GuiGraphicsComposition* GetOwnerComposition() override
+		{
+			return ownerComposition;
+		}
+
+	protected:
+
+		IGuiGraphicsRendererFactory* GetFactory() override
+		{
+			return this;
+		}
+
+		void Initialize(IGuiGraphicsElement* element) override
+		{
+		}
+
+		void Finalize() override
+		{
+		}
+
+		void SetRenderTarget(IGuiGraphicsRenderTarget* _renderTarget) override
+		{
+			if (renderTarget != _renderTarget)
+			{
+				renderTarget = _renderTarget;
+				paragraph = nullptr;
+			}
+		}
+
+		void Render(Rect bounds) override
+		{
+			if (!renderTarget) return;
+			if (!paragraph)
+			{
+			}
+			paragraph->Render(bounds);
+		}
+
+		void OnElementStateChanged() override
+		{
+		}
+
+		Size GetMinSize() override
+		{
+			return {};
+		}
+
+	protected:
+
+		IGuiGraphicsRenderer* Create() override
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+	};
+
 	void InstallDom(
 		const remoteprotocol::UnitTest_RenderingTrace& trace,
 		const remoteprotocol::UnitTest_RenderingFrame& frame,
@@ -233,6 +317,13 @@ namespace gaclib_controls
 							element->SetImage(GetCurrentController()->ImageService()->CreateImageFromStream(*binary.Obj()), desc.imageFrame);
 						}
 					}
+				}
+				break;
+			case remoteprotocol::RendererType::DocumentParagraph:
+				{
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_DocumentParagraphFull>();
+					auto element = Ptr(new GuiGraphicsParagraphWrapperElement(desc));
+					bounds->SetOwnedElement(element);
 				}
 				break;
 			default:
