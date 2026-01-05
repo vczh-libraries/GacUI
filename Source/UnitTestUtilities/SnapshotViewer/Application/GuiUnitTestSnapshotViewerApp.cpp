@@ -52,6 +52,7 @@ namespace gaclib_controls
 		, public IGuiGraphicsElement
 		, protected IGuiGraphicsRenderer
 		, protected IGuiGraphicsRendererFactory
+		, protected IGuiGraphicsParagraphCallback
 	{
 	protected:
 		remoteprotocol::ElementDesc_DocumentParagraphFull	desc;
@@ -110,6 +111,8 @@ namespace gaclib_controls
 			if (!renderTarget) return;
 			if (!paragraph)
 			{
+				auto text = desc.paragraph.text ? desc.paragraph.text.Value() : WString::Empty;
+				paragraph = GetGuiGraphicsResourceManager()->GetLayoutProvider()->CreateParagraph(text, renderTarget, nullptr);
 			}
 			paragraph->Render(bounds);
 		}
@@ -128,6 +131,24 @@ namespace gaclib_controls
 		IGuiGraphicsRenderer* Create() override
 		{
 			CHECK_FAIL(L"Not Implemented!");
+		}
+
+	protected:
+
+		Size OnRenderInlineObject(vint callbackId, Rect location) override
+		{
+			if (!desc.paragraph.runsDiff) return {};
+			for (auto&& run : *desc.paragraph.runsDiff.Obj())
+			{
+				if (auto props = run.props.TryGet<remoteprotocol::DocumentInlineObjectRunProperty>())
+				{
+					if (props->callbackId == callbackId)
+					{
+						return props->size;
+					}
+				}
+			}
+			return {};
 		}
 	};
 
