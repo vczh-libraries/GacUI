@@ -1656,6 +1656,8 @@ Study existing `KeyPress`, `_KeyDown`, `_KeyUp` methods for pattern.
 
 Add a new test case in `Test\GacUISrc\UnitTest\TestControls_Editor_GuiSinglelineTextBox.cpp`:
 
+Reuse the simple window layout finalized in Task No.15: keep the lone `SinglelineTextBox` anchored with `<att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:-1"/>` and avoid wrapping it in extra tables or compositions. Ensure each `protocol->OnNextIdleFrame` introduces new observable work—merge frames that would otherwise repeat the same state, because redundant frames cause the unit test harness to error.
+
 ```cpp
 TEST_CASE(L"GuiSinglelineTextBox Typing")
 {
@@ -1699,6 +1701,8 @@ TEST_CASE(L"GuiSinglelineTextBox Typing")
     GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(...);
 }
 ```
+
+Follow the existing unit test style by only including `TestControls.h` in this file—do not add a `using namespace gacui_unittest_template;` line since the header already exposes the necessary symbols.
 
 Test cases should verify:
 - Basic character typing
