@@ -379,12 +379,12 @@ GuiRemoteGraphicsRenderTarget
 
 	void GuiRemoteGraphicsRenderTarget::RegisterParagraph(GuiRemoteGraphicsParagraph* paragraph)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GuiRemoteGraphicsRenderTarget::RegisterParagraph(GuiRemoteGraphicsParagraph*)#"
-		auto paragraphId = paragraph->GetParagraphId();
-		CHECK_ERROR(!paragraphs.Keys().Contains(paragraphId), ERROR_MESSAGE_PREFIX L"Duplicated paragraph id.");
-		paragraphs.Add(paragraphId, paragraph);
-		pendingParagraphCreations.Add({ paragraphId,remoteprotocol::RendererType::DocumentParagraph });
-#undef ERROR_MESSAGE_PREFIX
+		auto id = paragraph->GetParagraphId();
+		if (!paragraphs.Keys().Contains(id))
+		{
+			paragraphs.Add(id, paragraph);
+			pendingParagraphCreations.Add({ id,remoteprotocol::RendererType::DocumentParagraph });
+		}
 	}
 
 	void GuiRemoteGraphicsRenderTarget::UnregisterParagraph(vint id)
