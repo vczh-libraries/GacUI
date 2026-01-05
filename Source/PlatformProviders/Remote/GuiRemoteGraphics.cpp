@@ -63,27 +63,7 @@ GuiRemoteGraphicsRenderTarget
 		canvasSize = remote->remoteWindow.GetClientSize();
 		clipperValidArea = GetClipper();
 		renderingBatchId++;
-
-		if (destroyedRenderers.Count() > 0)
-		{
-			auto ids = Ptr(new List<vint>);
-			CopyFrom(*ids.Obj(), destroyedRenderers);
-			destroyedRenderers.Clear();
-			remote->remoteMessages.RequestRendererDestroyed(ids);
-		}
-
-		if (createdRenderers.Count() > 0 || pendingParagraphCreations.Count() > 0)
-		{
-			auto ids = Ptr(new List<remoteprotocol::RendererCreation>);
-			for (auto id : createdRenderers)
-			{
-				ids->Add({ id,renderers[id]->GetRendererType() });
-			}
-			CopyFrom(*ids.Obj(), pendingParagraphCreations, true);
-			createdRenderers.Clear();
-			pendingParagraphCreations.Clear();
-			remote->remoteMessages.RequestRendererCreated(ids);
-		}
+		EnsureRequestedRenderersCreated();
 
 		for (auto [id, renderer] : renderers)
 		{
@@ -281,6 +261,30 @@ GuiRemoteGraphicsRenderTarget
 
 	GuiRemoteGraphicsRenderTarget::~GuiRemoteGraphicsRenderTarget()
 	{
+	}
+
+	void GuiRemoteGraphicsRenderTarget::EnsureRequestedRenderersCreated()
+	{
+		if (destroyedRenderers.Count() > 0)
+		{
+			auto ids = Ptr(new List<vint>);
+			CopyFrom(*ids.Obj(), destroyedRenderers);
+			destroyedRenderers.Clear();
+			remote->remoteMessages.RequestRendererDestroyed(ids);
+		}
+
+		if (createdRenderers.Count() > 0 || pendingParagraphCreations.Count() > 0)
+		{
+			auto ids = Ptr(new List<remoteprotocol::RendererCreation>);
+			for (auto id : createdRenderers)
+			{
+				ids->Add({ id,renderers[id]->GetRendererType() });
+			}
+			CopyFrom(*ids.Obj(), pendingParagraphCreations, true);
+			createdRenderers.Clear();
+			pendingParagraphCreations.Clear();
+			remote->remoteMessages.RequestRendererCreated(ids);
+		}
 	}
 
 	void GuiRemoteGraphicsRenderTarget::OnControllerConnect()

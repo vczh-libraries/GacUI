@@ -106,7 +106,7 @@ namespace
 				auto& prop = inlineProp.Value();
 				info.width = (double)prop.size.x;
 				info.height = prop.size.y;
-				info.baseline = (double)((prop.baseline == -1) ? prop.size.y : prop.baseline);
+				info.baseline = (prop.baseline == -1) ? prop.size.y : prop.baseline;
 				info.isInlineObject = true;
 			}
 			else

@@ -75,6 +75,7 @@ GuiRemoteGraphicsRenderTarget
 			GuiRemoteGraphicsRenderTarget(GuiRemoteController* _remote, GuiHostedController* _hostedController);
 			~GuiRemoteGraphicsRenderTarget();
 
+			void								EnsureRequestedRenderersCreated();
 			void								OnControllerConnect();
 			void								OnControllerDisconnect();
 

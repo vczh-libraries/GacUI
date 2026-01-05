@@ -618,6 +618,8 @@ GuiRemoteGraphicsParagraph
 			return false;
 		}
 
+		renderTarget->EnsureRequestedRenderersCreated();
+
 		stagedRuns.Clear();
 		MergeRuns(textRuns, inlineObjectRuns, stagedRuns);
 
