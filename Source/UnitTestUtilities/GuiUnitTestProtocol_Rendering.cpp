@@ -104,9 +104,9 @@ namespace
 			if (isInline && inlineProp)
 			{
 				auto& prop = inlineProp.Value();
-				info.width = prop.size.x;
+				info.width = (double)prop.size.x;
 				info.height = prop.size.y;
-				info.baseline = (prop.baseline == -1) ? prop.size.y : prop.baseline;
+				info.baseline = (double)((prop.baseline == -1) ? prop.size.y : prop.baseline);
 				info.isInlineObject = true;
 			}
 			else
