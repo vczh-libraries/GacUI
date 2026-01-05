@@ -55,6 +55,9 @@
     <Filter Include="Source Files\Controls\Ribbon">
       <UniqueIdentifier>{a6b28b80-be09-4f8c-9192-c445df364e34}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Controls\Editor">
+      <UniqueIdentifier>{b7e4c5d2-9a3f-4e61-8c2b-1d5e8f7a9b0c}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Controls\Application">
       <UniqueIdentifier>{33233d69-b50c-4706-a1bd-d42b921c8ab1}</UniqueIdentifier>
     </Filter>
@@ -284,6 +287,9 @@
     </ClCompile>
     <ClCompile Include="TestControls_Ribbon_Gallery.cpp">
       <Filter>Source Files\Controls\Ribbon</Filter>
+    </ClCompile>
+    <ClCompile Include="TestControls_Editor_GuiSinglelineTextBox.cpp">
+      <Filter>Source Files\Controls\Editor</Filter>
     </ClCompile>
     <ClCompile Include="TestApplication_Tab.cpp">
       <Filter>Source Files\Controls\Application</Filter>
