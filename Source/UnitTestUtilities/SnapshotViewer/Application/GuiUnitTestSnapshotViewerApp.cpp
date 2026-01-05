@@ -143,6 +143,10 @@ namespace gaclib_controls
 							},
 							[&](const remoteprotocol::DocumentInlineObjectRunProperty& inlineProp)
 							{
+								if (inlineProp.backgroundElementId != -1)
+								{
+									CHECK_FAIL(L"Not Implemented!");
+								}
 								IGuiGraphicsParagraph::InlineObjectProperties properties;
 								properties.size = inlineProp.size;
 								properties.baseline = inlineProp.baseline;
