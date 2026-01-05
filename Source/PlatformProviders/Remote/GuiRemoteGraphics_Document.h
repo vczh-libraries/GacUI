@@ -109,10 +109,11 @@ GuiRemoteGraphicsParagraph
 		vint											NativeTextPosToRemoteTextPos(vint textPos);
 		vint											RemoteTextPosToNativeTextPos(vint textPos);
 		bool											TryBuildCaretRange(vint start, vint length, CaretRange& range);
+
+	public:
 		bool											EnsureRemoteParagraphSynced();
 		void											MarkParagraphDirty(bool invalidateSize);
 
-	public:
 		// =============================================================
 		// IGuiGraphicsParagraph
 		// =============================================================

@@ -79,10 +79,7 @@ GuiRemoteGraphicsRenderTarget
 			{
 				ids->Add({ id,renderers[id]->GetRendererType() });
 			}
-			for (auto&& creation : pendingParagraphCreations)
-			{
-				ids->Add(creation);
-			}
+			CopyFrom(*ids.Obj(), pendingParagraphCreations, true);
 			createdRenderers.Clear();
 			pendingParagraphCreations.Clear();
 			remote->remoteMessages.RequestRendererCreated(ids);
@@ -291,28 +288,37 @@ GuiRemoteGraphicsRenderTarget
 		fontHeights.Clear();
 		renderersAskingForCache.Clear();
 
-		if (renderers.Count() > 0)
+		if (renderers.Count() > 0 || paragraphs.Count() > 0)
 		{
-			{
-				auto ids = Ptr(new List<remoteprotocol::RendererCreation>);
-				for (auto renderer : renderers.Values())
-				{
-					ids->Add({ renderer->GetID(),renderer->GetRendererType() });
-					renderer->NotifyMinSizeCacheInvalidated();
-				}
-				createdRenderers.Clear();
-				remote->remoteMessages.RequestRendererCreated(ids);
-			}
-
+			auto ids = Ptr(new List<remoteprotocol::RendererCreation>);
 			for (auto renderer : renderers.Values())
 			{
-				renderer->SendUpdateElementMessages(true);
-				if (renderer->NeedUpdateMinSizeFromCache())
-				{
-					renderersAskingForCache.Add(renderer);
-				}
-				renderer->ResetUpdated();
+				ids->Add({ renderer->GetID(),renderer->GetRendererType() });
+				renderer->NotifyMinSizeCacheInvalidated();
 			}
+			for (auto paragraph : paragraphs.Values())
+			{
+				ids->Add({ paragraph->GetParagraphId(),remoteprotocol::RendererType::DocumentParagraph });
+			}
+			createdRenderers.Clear();
+			pendingParagraphCreations.Clear();
+			remote->remoteMessages.RequestRendererCreated(ids);
+		}
+
+		for (auto renderer : renderers.Values())
+		{
+			renderer->SendUpdateElementMessages(true);
+			if (renderer->NeedUpdateMinSizeFromCache())
+			{
+				renderersAskingForCache.Add(renderer);
+			}
+			renderer->ResetUpdated();
+		}
+
+		for (auto paragraph : paragraphs.Values())
+		{
+			paragraph->MarkParagraphDirty(false);
+			paragraph->EnsureRemoteParagraphSynced();
 		}
 	}
 
@@ -345,19 +351,18 @@ GuiRemoteGraphicsRenderTarget
 		vint id = renderer->GetID();
 		renderers.Remove(id);
 		renderersAskingForCache.Remove(renderer);
+
+		vint index = createdRenderers.IndexOf(id);
+		if (index == -1)
 		{
-			vint index = createdRenderers.IndexOf(id);
-			if (index == -1)
+			if (!destroyedRenderers.Contains(id))
 			{
-				if (!destroyedRenderers.Contains(id))
-				{
-					destroyedRenderers.Add(id);
-				}
+				destroyedRenderers.Add(id);
 			}
-			else
-			{
-				createdRenderers.RemoveAt(index);
-			}
+		}
+		else
+		{
+			createdRenderers.RemoveAt(index);
 		}
 	}
 
@@ -391,12 +396,14 @@ GuiRemoteGraphicsRenderTarget
 		}
 
 		paragraphs.Remove(id);
-		for (vint i = pendingParagraphCreations.Count() - 1; i >= 0; i--)
 		{
-			if (pendingParagraphCreations[i].id == id)
+			for (vint i = pendingParagraphCreations.Count() - 1; i >= 0; i--)
 			{
-				pendingParagraphCreations.RemoveAt(i);
-				return;
+				if (pendingParagraphCreations[i].id == id)
+				{
+					pendingParagraphCreations.RemoveAt(i);
+					return;
+				}
 			}
 		}
 		if (!destroyedRenderers.Contains(id))

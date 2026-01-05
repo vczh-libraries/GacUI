@@ -862,10 +862,7 @@ GuiRemoteGraphicsParagraph
 
 	Size GuiRemoteGraphicsParagraph::GetSize()
 	{
-		if (!EnsureRemoteParagraphSynced())
-		{
-			return cachedSize;
-		}
+		EnsureRemoteParagraphSynced();
 		return cachedSize;
 	}
 
