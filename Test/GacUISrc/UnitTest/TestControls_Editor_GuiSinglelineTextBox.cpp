@@ -53,6 +53,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox");
+					textBox->SetFocused();
 					textBox->SelectAll();
 					protocol->TypeString(L"Hello");
 				});
@@ -93,7 +94,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox");
 					TEST_ASSERT(textBox->GetText() == L"Replac");
-					auto caretPoint = protocol->LocationOf(textBox, 0.0, 0.5, 5, 0);
+					auto caretPoint = protocol->LocationOf(textBox, 0.0, 0.5, 2, 0);
 					protocol->LClick(caretPoint);
 					protocol->TypeString(L"Start ");
 				});
