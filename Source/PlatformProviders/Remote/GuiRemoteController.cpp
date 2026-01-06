@@ -413,7 +413,8 @@ GuiRemoteController (INativeController)
 
 	INativeClipboardService* GuiRemoteController::ClipboardService()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		// Use FakeClipboardService
+		return nullptr;
 	}
 
 	INativeImageService* GuiRemoteController::ImageService()
