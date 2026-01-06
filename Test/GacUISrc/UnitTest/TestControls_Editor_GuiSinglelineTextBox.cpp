@@ -44,5 +44,72 @@ TEST_FILE
 				resource
 			);
 		});
+
+		TEST_CASE(L"Typing")
+		{
+			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox");
+					textBox->SelectAll();
+					protocol->TypeString(L"Hello");
+				});
+				protocol->OnNextIdleFrame(L"Typed Hello", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox");
+					TEST_ASSERT(textBox->GetText() == L"Hello");
+					protocol->TypeString(L" World");
+				});
+				protocol->OnNextIdleFrame(L"Typed World", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox");
+					TEST_ASSERT(textBox->GetText() == L"Hello World");
+					protocol->KeyPress(VKEY::KEY_LEFT);
+					protocol->TypeString(L"!");
+				});
+				protocol->OnNextIdleFrame(L"Inserted punctuation", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox");
+					TEST_ASSERT(textBox->GetText() == L"Hello Worl!d");
+					textBox->SelectAll();
+					protocol->TypeString(L"Replaced");
+				});
+				protocol->OnNextIdleFrame(L"Selection replaced", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox");
+					TEST_ASSERT(textBox->GetText() == L"Replaced");
+					protocol->KeyPress(VKEY::KEY_BACK);
+					protocol->KeyPress(VKEY::KEY_LEFT);
+					protocol->KeyPress(VKEY::KEY_DELETE);
+				});
+				protocol->OnNextIdleFrame(L"Backspace/Delete applied", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox");
+					TEST_ASSERT(textBox->GetText() == L"Replac");
+					auto caretPoint = protocol->LocationOf(textBox, 0.0, 0.5, 5, 0);
+					protocol->LClick(caretPoint);
+					protocol->TypeString(L"Start ");
+				});
+				protocol->OnNextIdleFrame(L"Mouse typed at start", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox");
+					TEST_ASSERT(textBox->GetText() == L"Start Replac");
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/GuiSinglelineTextBox/Typing"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
 	});
 }

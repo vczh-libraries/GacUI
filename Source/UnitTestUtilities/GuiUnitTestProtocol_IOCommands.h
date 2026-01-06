@@ -63,6 +63,17 @@ UnitTestRemoteProtocol
 			return info;
 		}
 
+		NativeWindowCharInfo MakeCharInfo(wchar_t ch)
+		{
+			NativeWindowCharInfo info;
+			info.code = ch;
+			info.ctrl = IsPressing(VKEY::KEY_CONTROL) || IsPressing(VKEY::KEY_LCONTROL) || IsPressing(VKEY::KEY_RCONTROL);
+			info.shift = IsPressing(VKEY::KEY_SHIFT) || IsPressing(VKEY::KEY_LSHIFT) || IsPressing(VKEY::KEY_RSHIFT);
+			info.alt = IsPressing(VKEY::KEY_MENU) || IsPressing(VKEY::KEY_LMENU) || IsPressing(VKEY::KEY_RMENU);
+			info.capslock = capslockToggled;
+			return info;
+		}
+
 	public:
 
 		UnitTestRemoteProtocol_IOCommands(const UnitTestScreenConfig& _globalConfig)
@@ -141,6 +152,16 @@ Keys
 			if (alt) _KeyUp(VKEY::KEY_MENU);
 			if (shift) _KeyUp(VKEY::KEY_SHIFT);
 			if (ctrl) _KeyUp(VKEY::KEY_CONTROL);
+		}
+
+		// Emits plain IOChar events without synthesizing key presses; expand in future iterations when modifiers are required.
+		void TypeString(const WString& text)
+		{
+			if (text.Length() == 0) return;
+			for (vint i = 0; i < text.Length(); i++)
+			{
+				UseEvents().OnIOChar(MakeCharInfo(text[i]));
+			}
 		}
 
 /***********************************************************************
