@@ -1841,6 +1841,7 @@ Testing surrogate pair handling:
    - Text with only non-ASCII BMP characters (no change in behavior)  
    - Text with surrogate pairs in different positions (start, middle, end)
    - Text with consecutive surrogate pairs (multiple emojis)
+5. **Typing helpers require explicit focus**: if any surrogate-pair scenario injects characters through `protocol->TypeString`, call `SetFocused()` on the textbox before typing so IOChar events are honored, mirroring the latest unit test style.
 
 ### file locations
 
