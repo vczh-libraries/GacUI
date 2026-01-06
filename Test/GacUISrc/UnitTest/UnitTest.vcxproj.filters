@@ -291,6 +291,9 @@
     <ClCompile Include="TestControls_Editor_GuiSinglelineTextBox.cpp">
       <Filter>Source Files\Controls\Editor</Filter>
     </ClCompile>
+    <ClCompile Include="TestControls_Editor_GuiSinglelineTextBox_Key.cpp">
+      <Filter>Source Files\Controls\Editor</Filter>
+    </ClCompile>
     <ClCompile Include="TestApplication_Tab.cpp">
       <Filter>Source Files\Controls\Application</Filter>
     </ClCompile>
