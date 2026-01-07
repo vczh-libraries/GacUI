@@ -22,7 +22,6 @@
   - `## TASK No.X: The Task Title`: A task.
     - A comprehensive description about the goal of this task.
     - `### what to be done`: A clear definition of what needs to be changed or implemented.
-    - `### how to test it`: A clear definition of what needs to be tested in unit test.
     - `### rationale`: Reasons about why you think it is necessary to have this task, why you think it is the best for the task to be in this order.
 - `# Impact to the Knowledge Base`:
   - `## ProjectName`: What needs to be changed or added to the knowledge base in this project.

@@ -1,102 +1,153 @@
 ﻿# !!!SCRUM!!!
+
 # DESIGN REQUEST
+
+# Problem
+
 There are 4 controls inheriting from `GuiDocumentCommonInterface`. There differences are just twisting some rendering and user input. They share the same core design and implementation. At the moment we are focusing on designing test cases for `GuiSinglelineTextBox`.
 
-In  [TestControls_Editor_GuiSinglelineTextBox.cpp](Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox.cpp) there are already some basic test cases. But I would like you to create a `TestControls_Editor_GuiSinglelineTextBox_Key.cpp. It stores test cases for keyboard operations and typing.
+In  [TestControls_Editor_GuiSinglelineTextBox.cpp](Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox.cpp) there are already some basic test cases. But I would like you to add more test cases to the currently empty  `TestControls_Editor_GuiSinglelineTextBox_Key.cpp. It stores test cases for keyboard operations and typing.
 
-The first task would be create that file and put it in the project and the same solution explorer folder, with an empty `TEST_FILE` block.
-
-And then you need to analyse how many keyboard operations does `GuiSinglelineTextBox` supports. Categorize all of them and design multiple test cases covering all of them. Keyboard operations including key strokes combinations, predefined shortcut like ctrl+c etc, and typing.
+You need to analyse how many keyboard operations does `GuiSinglelineTextBox` supports. Categorize all of them and design multiple test cases covering all of them. Keyboard operations including key strokes combinations, predefined shortcut like ctrl+c etc, and typing. 
 
 `GuiSinglelineTextBox` is a text box for single line of plain text. Although it has rich text functions in its base class, but the constructor already configures all of them to perform plain text operations only. For example, changing font or text color will be ignores, pasting styled text will not apply styles, CrLf will be removed, etc.
 
 You need to do analysis right now, get the result, and categorize all keyboard operations test cases into multiple TEST_CATEGORY of multiple TEST_CASE. Each TEST_CATEGORY becomes a new task following the first one.  Analysing itself should not be a task in the scrum document because it does not edit source code.
+
 # UPDATES
-## UPDATE
-In each test case, you need to verify both text, selected text and caret range.
+
 # TASKS
-- [x] TASK No.1: Add GuiSinglelineTextBox keyboard test file stub
-- [ ] TASK No.2: Add navigation keyboard tests for GuiSinglelineTextBox
-- [ ] TASK No.3: Add deletion key tests for GuiSinglelineTextBox
-- [ ] TASK No.4: Add typing behavior tests for GuiSinglelineTextBox
-- [ ] TASK No.5: Add clipboard shortcut tests for GuiSinglelineTextBox
-- [ ] TASK No.6: Add undo/redo shortcut tests for GuiSinglelineTextBox
-## TASK No.1: Add GuiSinglelineTextBox keyboard test file stub
-Create `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`, include `TestControls.h`, and add an empty `TEST_FILE` block that will host upcoming keyboard-focused tests. Add the new file to `UnitTest.vcxproj` and its `.filters` entry under the same “Source Files\Controls\Editor” filter so it shows up next to the existing text box tests.
-### what to be done
-- Add the new `.cpp` with just `#include "TestControls.h"` and an empty `TEST_FILE {}` so future tasks have a compilation unit to modify.
-- Update `Test/GacUISrc/UnitTest/UnitTest.vcxproj` and `.filters` to include the file under the Controls\Editor grouping.
-### how to test it
-- Build the `UnitTest` project to ensure the new translation unit compiles cleanly despite being empty.
-### rationale
-- The new keyboard-focused tests need a dedicated compilation unit so they don't overgrow the existing general `GuiSinglelineTextBox` tests and so they can be enabled/disabled independently in Visual Studio’s test explorer folder.
 
-## TASK No.2: Add navigation keyboard tests for GuiSinglelineTextBox
-Introduce `TEST_CATEGORY(L"GuiSinglelineTextBox.Keys.Navigation")` inside the new file with cases that cover every caret-movement key path exposed by `GuiDocumentCommonInterface::ProcessKey`.
-### what to be done
-- Add a shared resource definition identical to the existing text box tests so both files operate on the same UI.
-- Implement test cases:
-  - `TEST_CASE(L"Arrow keys move caret and shift selection")` - type a known string, move caret left/right with and without `shift`, and assert `GetCaretBegin/End` track expected columns.
-  - `TEST_CASE(L"Home and End clamp caret to text edges")` - place caret mid-string, press `Home`/`End` (with and without `shift`) and verify caret or selection spans the start/end positions only.
-  - `TEST_CASE(L"Vertical and page keys keep caret on the only line")` - press `Up`, `Down`, `PageUp`, and `PageDown` and assert both caret positions stay unchanged because the control is single-line.
-- In every navigation test case, assert the resulting text (even if unchanged), the active selection range, and the caret begin/end indices after each simulated key sequence.
-### how to test it
-- Run the new category through the GacUI unit-test harness (e.g., `UnitTest` project) and ensure assertions on text content, caret positions, and selection boundaries succeed.
-### rationale
-- Navigation keys are the entry point for most keyboard interactions; verifying they move and select text as expected (or stay put when unsupported) ensures subsequent editing or typing tests can rely on predictable caret positions.
+- [ ] TASK No.1: Create GuiSinglelineTextBox key test scaffold
+- [ ] TASK No.2: Add TEST_CATEGORY for navigation and selection keys
+- [ ] TASK No.3: Add TEST_CATEGORY for deletion and Enter keys
+- [ ] TASK No.4: Add TEST_CATEGORY for clipboard shortcuts
+- [ ] TASK No.5: Add TEST_CATEGORY for undo/redo shortcuts
+- [ ] TASK No.6: Add TEST_CATEGORY for typing and char-input filtering
 
-## TASK No.3: Add deletion key tests for GuiSinglelineTextBox
-Add `TEST_CATEGORY(L"GuiSinglelineTextBox.Keys.Deletion")` to exercise `Backspace`, `Delete`, and `Return` paths that call `EditText`, ensuring single-line formatting is enforced.
-### what to be done
-- Add test cases:
-  - `TEST_CASE(L"Backspace and Delete remove characters or selection")` - cover both empty selections (one character removal) and multi-character selections, asserting resulting text and caret placement.
-  - `TEST_CASE(L"Enter and Ctrl+Enter flatten to single line")` - invoke `KeyPress(VKEY::KEY_RETURN)` with and without `ctrl` in the middle of text and confirm no `\r`/`\n` remains, and caret/selection behave like an insertion of nothing.
-- Ensure each deletion-focused test asserts the updated text content, the selection (e.g., `GetCaretBegin/End` before collapse), and the caret range after the key press.
-### how to test it
-- Run the category to ensure text, selection boundaries, and caret positions after each deletion scenario match expectations while remaining single-line.
-### rationale
-- These keys hit the special-case logic in `ProcessKey` plus the single-line formatting pipeline; exercising them ensures regressions in CR/LF flattening or deletion selection handling are caught quickly.
+## TASK No.1: Create GuiSinglelineTextBox key test scaffold
 
-## TASK No.4: Add typing behavior tests for GuiSinglelineTextBox
-Create `TEST_CATEGORY(L"GuiSinglelineTextBox.Keys.Typing")` covering ordinary character entry driven by `OnCharInput`, including tabs and replacement typing.
-### what to be done
-- Implement test cases:
-  - `TEST_CASE(L"Typing inserts characters at the caret")` - move caret across the text with navigation keys, call `TypeString`, and verify characters land at the caret without disturbing surrounding text.
-  - `TEST_CASE(L"Typing over a selection replaces it")` - select a range (e.g., via `Shift+Arrow` or `Ctrl+A`) and type to ensure the selection is overwritten and caret collapses to the insertion end.
-  - `TEST_CASE(L"Tab key inserts literal tab while control characters are ignored")` - call `TypeString(L"\t")` and assert a `\t` appears, then send keys such as `Esc` to confirm they do not insert printable content.
-- After each typing sequence, assert the widget text, the selected text span (if any), and the caret begin/end so the new requirement is satisfied.
-### how to test it
-- Execute the category via `UnitTest` and verify `GetText()` values, explicit selected range queries, and caret endpoints match expected values after each typing scenario.
-### rationale
-- Typing is the core scenario for end users; validating insertion, replacement, and acceptance of Tab (enabled via `SetAcceptTabInput`) ensures the control stays predictable for plain-text editing.
+Create a shared test window/resource and minimal helper flow in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp` so later categories can focus on keyboard behaviors without repeating boilerplate.
 
-## TASK No.5: Add clipboard shortcut tests for GuiSinglelineTextBox
-Add `TEST_CATEGORY(L"GuiSinglelineTextBox.Keys.Clipboard")` to cover `Ctrl+A/C/X/V` behaviors and plain-text enforcement during paste.
 ### what to be done
-- Implement test cases:
-  - `TEST_CASE(L"Ctrl+A selects all and Ctrl+C copies plain text")` - populate the text box, press `Ctrl+A`, ensure caret bounds cover full range, execute `Ctrl+C`, and read the fake clipboard to confirm text matches exactly.
-  - `TEST_CASE(L"Ctrl+X cuts selection and updates clipboard")` - select a substring, press `Ctrl+X`, verify text shrinks and clipboard now holds the removed slice.
-  - `TEST_CASE(L"Ctrl+V flattens multi-line or styled clipboard data")` - preload the clipboard with text containing CR/LF and with a styled `DocumentModel`, paste it, and assert the inserted text is single-line plain text with styles ignored.
-- Each clipboard shortcut test must validate the document text, the resulting selection span (for select-all/cut/paste), and the caret positions along with clipboard expectations.
-### how to test it
-- Use the unit tests to assert text-box content, selected range, caret bounds, and clipboard values after each shortcut.
-### rationale
-- The control configures `pasteAsPlainText` and single-line formatting; verifying clipboard shortcuts honors those guarantees prevents regressions where multi-line or styled content slips through.
 
-## TASK No.6: Add undo/redo shortcut tests for GuiSinglelineTextBox
-Introduce `TEST_CATEGORY(L"GuiSinglelineTextBox.Keys.UndoRedo")` that drives `Ctrl+Z`/`Ctrl+Y` through the shortcut manager to ensure editing history works with keyboard-only workflows.
-### what to be done
-- Implement test cases:
-  - `TEST_CASE(L"Ctrl+Z undoes recent typing and deletion")` - perform a sequence of typing and deletion steps, press `Ctrl+Z` repeatedly, and assert text/selection/`GetModified()` revert accordingly.
-  - `TEST_CASE(L"Ctrl+Y redoes operations after undo chain")` - after undoing multiple steps, press `Ctrl+Y` to ensure redo reapplies edits in order.
-- Throughout undo/redo sequences, verify the text snapshot, the selection (or lack thereof), and the caret begin/end after each shortcut so history restores the full editing state.
-### how to test it
-- Run the category to verify text state transitions, selection/caret restoration, and `GetModified()` reflect undo/redo actions, and ensure no unexpected side effects remain after closing the window.
+- Implement `TEST_FILE { ... }` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
+- Add a minimal resource XML (similar to `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox.cpp`) containing a `Window` with a `SinglelineTextBox ref.Name="textBox"`.
+- Ensure each test case:
+  - Brings focus to the textbox (`SetFocused()`).
+  - Starts from a known text value (preferably something index-friendly like `L"0123456789"` or `L"Hello World"`).
+  - Uses `UnitTestRemoteProtocol` helpers (`KeyPress`, `TypeString`) and asserts via `GetText()`, `GetSelectionText()`, `GetCaretBegin()/GetCaretEnd()` where needed.
+
 ### rationale
-- Undo/redo shortcuts are essential for editors; covering them ensures the internal undo stack and shortcut routing continue to behave correctly for single-line text boxes.
+
+- All subsequent tasks add `TEST_CATEGORY` blocks to the same file; a shared scaffold keeps those tasks small and consistent.
+- Using an index-friendly initial text makes it easy to assert caret/selection changes precisely.
+
+## TASK No.2: Add TEST_CATEGORY for navigation and selection keys
+
+Add test cases for caret movement and keyboard-driven selection extension in a single-line document.
+
+Keyboard operations covered by this category (from `GuiDocumentCommonInterface::ProcessKey` + modifiers): `Left/Right/Home/End/Up/Down/PageUp/PageDown`, and Shift/Ctrl combinations (Ctrl does not change caret semantics here; Shift extends selection).
+
+### what to be done
+
+- Add `TEST_CATEGORY(L"GuiSinglelineTextBox (Key) - Navigation")` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
+- Add multiple `TEST_CASE`s (examples; final names can be adjusted to match existing naming style):
+  - `ArrowKeys_MoveCaret`: start with known text, put caret at end, press `KEY_LEFT`/`KEY_RIGHT` and assert caret positions change as expected.
+  - `HomeEnd_MoveCaretToEdges`: place caret mid-text, press `KEY_HOME` then `KEY_END`, assert caret at column 0 / end column.
+  - `ShiftArrow_ExtendsSelection`: place caret, press `Shift+KEY_LEFT/RIGHT`, assert `GetSelectionText()` matches the selected substring and caret begin/end reflect selection direction.
+  - `ShiftHomeEnd_SelectToEdges`: from mid-text, `Shift+KEY_HOME` selects to start, `Shift+KEY_END` selects to end; assert selection text.
+  - `UpDown_NoEffectInSingleline`: assert `KEY_UP/KEY_DOWN` do not change caret/selection in a single-line textbox.
+  - `PageKeys_NoEffectInSingleline`: assert `KEY_PRIOR/KEY_NEXT` do not change caret/selection in a single-line textbox.
+  - `CtrlWithNavigation_DoesNotChangeBehavior`: spot-check `Ctrl+KEY_LEFT` (and/or `Ctrl+KEY_HOME`) behaves the same as without Ctrl for this control.
+
+### rationale
+
+- Caret movement and selection extension are the foundation for all other keyboard edit operations (delete/cut/copy/paste/undo), so they should be validated first.
+- Explicitly asserting that Up/Down and Page keys have no effect in singleline prevents accidental behavior regressions if paragraph/caret calculation changes.
+
+## TASK No.3: Add TEST_CATEGORY for deletion and Enter keys
+
+Add test cases for editing keys handled in `ProcessKey`: Backspace, Delete, Enter, and Ctrl+Enter, including behavior with and without a selection.
+
+In `GuiSinglelineTextBox`, Enter is processed but line breaks are flattened by configuration (`paragraphMode=Singleline`, `spaceForFlattenedLineBreak=false`), so no newline should remain in the resulting text.
+
+### what to be done
+
+- Add `TEST_CATEGORY(L"GuiSinglelineTextBox (Key) - Deletion")` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
+- Add multiple `TEST_CASE`s:
+  - `Backspace_DeletesPreviousChar`: set caret after a known character; press `KEY_BACK`; assert one character removed and caret moved appropriately.
+  - `Delete_DeletesNextChar`: set caret before a known character; press `KEY_DELETE`; assert one character removed.
+  - `Backspace_DeletesSelection` and `Delete_DeletesSelection`: create a selection via `Shift+Arrow` or `SelectAll()`, then press Backspace/Delete; assert selection removed.
+  - `BackspaceAtStart_NoChange` and `DeleteAtEnd_NoChange`: boundary behavior should not change text.
+  - `Enter_DoesNotInsertNewline_ButCanDeleteSelection`: with no selection, press `KEY_RETURN` and assert text unchanged; with a selection, press `KEY_RETURN` and assert selection removed.
+  - `CtrlEnter_DoesNotInsertNewline_ButCanDeleteSelection`: same as above but using `KeyPress(KEY_RETURN, ctrl=true, ...)`.
+
+### rationale
+
+- Backspace/Delete/Enter are the primary editing keys beyond typing; they have subtle selection-dependent behavior.
+- Single-line newline-flattening is a key “plain text” guarantee of `GuiSinglelineTextBox` and needs coverage.
+
+## TASK No.4: Add TEST_CATEGORY for clipboard shortcuts
+
+Add test cases for Ctrl+C/Ctrl+X/Ctrl+V, using the fake clipboard service in unit tests and validating single-line plain-text normalization on paste (CR/LF removed, styles ignored).
+
+### what to be done
+
+- Add `TEST_CATEGORY(L"GuiSinglelineTextBox (Key) - Clipboard")` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
+- Use `GetCurrentController()->ClipboardService()->WriteClipboard()` / `ReadClipboard()` in test code to set up and verify clipboard content.
+- Add multiple `TEST_CASE`s:
+  - `CtrlC_CopiesSelection_TextUnchanged`: create a selection, press `Ctrl+C`, assert textbox text unchanged and clipboard text equals the selection.
+  - `CtrlX_CutsSelection_TextUpdated`: create a selection, press `Ctrl+X`, assert textbox text removed selection and clipboard text equals the removed substring.
+  - `CtrlV_PastesAtCaret`: pre-fill clipboard text, place caret, press `Ctrl+V`, assert insertion at caret.
+  - `CtrlV_ReplacesSelection`: pre-fill clipboard, create selection, press `Ctrl+V`, assert selection replaced.
+  - `CtrlV_FlattensLineBreaks`: set clipboard text containing `\r\n` and/or `\n` (and optional double line breaks); paste and assert resulting textbox text contains no line breaks and joins segments without adding spaces (since `spaceForFlattenedLineBreak=false`).
+  - `CtrlV_EmptyClipboard_NoChange`: ensure clipboard has no text, press `Ctrl+V`, assert text unchanged.
+
+### rationale
+
+- Clipboard shortcuts are core keyboard operations and are explicitly registered as shortcuts in `GuiDocumentCommonInterface`.
+- Singleline + paste-as-plain-text behavior is easy to regress when document/clipboard handling changes; these tests pin expected normalization.
+
+## TASK No.5: Add TEST_CATEGORY for undo/redo shortcuts
+
+Add test cases for Ctrl+Z/Ctrl+Y and validate undo/redo behavior across representative edits (typing, deletion, paste) in a single-line textbox.
+
+### what to be done
+
+- Add `TEST_CATEGORY(L"GuiSinglelineTextBox (Key) - UndoRedo")` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
+- Add multiple `TEST_CASE`s:
+  - `CtrlZ_UndoesTyping_AndCtrlY_Redoes`: type a short string, press `Ctrl+Z` to undo, assert text restored; press `Ctrl+Y`, assert text re-applied.
+  - `CtrlZ_UndoesDeletion`: perform Backspace/Delete, then `Ctrl+Z` restores the deleted text.
+  - `CtrlZ_UndoesPaste_FlattenedText`: paste multi-line clipboard text (flattened), then undo/redo and assert consistent results.
+  - `UndoRedo_ModifiedFlags`: optionally assert `GetModified()`, `CanUndo()`, `CanRedo()` transitions are reasonable after edits and after undo back to the saved point (when `NotifyModificationSaved()` is used by initialization).
+
+### rationale
+
+- Undo/redo is a first-class keyboard feature (registered shortcuts) and must work with all major edit paths (char input, key deletions, paste normalization).
+- These tests provide coverage for `GuiDocumentUndoRedoProcessor` integration without requiring rich text features.
+
+## TASK No.6: Add TEST_CATEGORY for typing and char-input filtering
+
+Add test cases for the `OnCharInput` path: normal typing, tab input, control-modified typing being ignored, and newline characters being flattened/ignored as appropriate for single-line text.
+
+### what to be done
+
+- Add `TEST_CATEGORY(L"GuiSinglelineTextBox (Key) - Typing")` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
+- Add multiple `TEST_CASE`s:
+  - `TypeString_InsertsPlainText`: use `protocol->TypeString(L\"...\")` and assert text updates.
+  - `TypeString_InsertsTab_WhenAcceptTabInput`: type `L\"\\t\"` and assert a tab character appears in text.
+  - `TypeString_IgnoresWhenCtrlPressed`: use `protocol->_KeyDown(KEY_CONTROL)` + `TypeString(...)` + `_KeyUp(KEY_CONTROL)` and assert no text change.
+  - `TypeString_NewlineCharsFlattened`: type a string containing `\\n` and assert the resulting text contains no line breaks (flattened by formatting); also verify `\\r` (KEY_RETURN) is ignored by char input.
+  - `TypeString_ReplacesSelection`: create a selection (e.g. Shift+Arrow or `SelectAll()`), then `TypeString(...)` and assert replacement.
+
+### rationale
+
+- `GuiSinglelineTextBox` is configured to accept only plain text; char-input filtering + flattening is the core guarantee.
+- Explicitly testing tab and ctrl-modified typing prevents regressions in `OnCharInput` gating logic.
 
 # Impact to the Knowledge Base
-## GacUI
-No updates are required; all planned work is confined to unit tests and exercises existing documented behavior.
+
+## None
 
 # !!!FINISHED!!!
