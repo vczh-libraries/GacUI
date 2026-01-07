@@ -1,8 +1,11 @@
 # Execution
 
+- Checkout `Accessing Log Files and PowerShell Scripts` for context about mentioned `*.md` and `*.ps1` files.
+  - All `*.md` and `*.ps1` files should already be existing, you should not create any new files.
+
 ## Goal and Constraints
 
-- You are going to apply changes on the source code as well following `Copilot_Execution.md`.
+- You are going to apply changes to the source code following `Copilot_Execution.md`.
 
 ## Copilot_Execution.md Structure
 
@@ -16,14 +19,26 @@
 ## Step 1. Identify the Problem
 
 - The execution document is in `Copilot_Execution.md`
-- Find `# Update` in the LATEST chat message. Ignore any `# Update` in the chat history.
-- If there is an `# Update` section: it means I am going to propose some change to `Copilot_Execution.md` and the source code together.
-  - Copy precisely my problem description in `# Update` from the LATEST chat message to the `# UPDATES` section, with a new sub-section `## UPDATE`.
-  - Follow my update to change the execution document and the source code.
-- If there is nothing:
-  - Apply all code changes in `Copilot_Execution.md` to the source code.
-    - Make sure indentation and line breaks are applied correctly, following the same style in the target file.
-  - After applying each step in `Copilot_Execution.md`, mark the step as completed by appending `[DONE]` after the step title. This allow you to find where you are if you are interrupted.
+- Find `# Update` in the LATEST chat message.
+  - Ignore any these titles in the chat history.
+
+### Execute the Plan (only when no title appears in the LATEST chat message)
+
+Ignore this section if there is any title in the LATEST chat message
+I am starting a fresh new request.
+
+- Apply all code changes in `Copilot_Execution.md` to the source code.
+  - Make sure indentation and line breaks are applied correctly, following the same style in the target file.
+- After applying each step in `Copilot_Execution.md`, mark the step as completed by appending `[DONE]` after the step title. This allow you to find where you are if you are interrupted.
+
+### Update the Source Code and Document (only when "# Update" appears in the LATEST chat message)
+
+Ignore this section if there is no "# Update" in the LATEST chat message
+I am going to propose some change to the source code.
+
+- Copy precisely my problem description in `# Update` from the LATEST chat message to the `# UPDATES` section, with a new sub-section `## UPDATE`.
+- Follow my update to change the source code.
+- Update the document to keep it consistent with the source code.
 
 ## Step 2. Make Sure the Code Compiles but DO NOT Run Unit Test
 

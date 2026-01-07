@@ -6,41 +6,50 @@
 ## Goal and Constraints
 
 - Your goal is to finish an execution document in `Copilot_Execution.md` according to `Copilot_Task.md` and `Copilot_Planning.md`.
+- You are only allowed to update `Copilot_Execution.md`.
+- You are not allowed to modify any other files.
+- The phrasing of the request may look like asking for code change, but your actual work is to write the design document.
 
 ## Copilot_Execution.md Structure
 
 - `# !!!EXECUTION!!!`: This file always begin with this title.
 - `# UPDATES`: For multiple `## UPDATE` sections. It should always exist even there is no update.
   - `## UPDATE`: There could be multiple occurrences. Each one has an exact copy of the update description I gave you.
-- `# IMPROVEMENT PLAN`.
-- `# TEST PLAN`.
+- `# EXECUTION PLAN`.
 - `# FIXING ATTEMPTS`.
 
 ## Step 1. Identify the Problem
 
 - The design document is in `Copilot_Task.md`, the planning document is in `Copilot_Planning.md`.
-- Find `# Update` in the LATEST chat message. Ignore any `# Update` in the chat history.
-- If there is an `# Update` section: it means I am going to propose some change to `Copilot_Execution.md` and the source code together.
-  - Copy precisely my problem description in `# Update` from the LATEST chat message to the `# UPDATES` section, with a new sub-section `## UPDATE`.
-  - The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# IMPROVEMENT PLAN`).
-  - Follow my update to change the execution document.
-- If there is nothing:
-  - If `Copilot_Execution.md` only has a title, you are on a fresh start.
-    - Add an empty `# UPDATES` section after the title, if it does not already exist.
-  - If there is a `# !!!FINISHED!!!` mark in `Copilot_Execution.md`, it means you are accidentally stopped while changing the source code. Please continue your work.
-  - If there is no `# !!!FINISHED!!!` mark in `Copilot_Execution.md`, it means you are accidentally stopped while finishing the document. Please continue your work.
+- Find `# Problem` or `# Update` in the LATEST chat message.
+  - Ignore any these titles in the chat history.
+  - If there is nothing:
+    - If there is a `# !!!FINISHED!!!` mark in `Copilot_Execution.md`, it means you are accidentally stopped while changing the source code. Please continue your work.
+    - If there is no `# !!!FINISHED!!!` mark in `Copilot_Execution.md`, it means you are accidentally stopped while finishing the document. Please continue your work.
+
+### Create new Document (only when "# Problem" appears in the LATEST chat message)
+
+Ignore this section if there is no "# Problem" in the LATEST chat message
+I am starting a fresh new request.
+
+- Add an empty `# UPDATES` section after `# !!!EXECUTION!!!`.
+- You are going to complete an execution document according to `Copilot_Planning.md`.
+
+### Update current Document (only when "# Update" appears in the LATEST chat message)
+
+Ignore this section if there is no "# Update" in the LATEST chat message
+I am going to propose some change to `Copilot_Execution.md`.
+
+- Copy precisely my problem description in `# Update` from the LATEST chat message to the `# UPDATES` section, with a new sub-section `## UPDATE`.
+- The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# EXECUTION PLAN`).
+- Follow my update to change the execution document.
 
 ## Step 2. Finish the Document
 
 - Your need to summary code change in `Copilot_Execution.md`.
 - All changes you need to made is already in `Copilot_Planning.md`, but it contains many explanations.
 - Read `Copilot_Planning.md`, copy the following parts to `Copilot_Execution.md`:
-  - `# IMPROVEMENT PLAN`
-    - Copy EVERY code block exactly as written
-    - If Planning has 1000 lines of test code, Execution must have those same 1000 lines
-    - Remove only the explanatory text between code blocks
-    - Keep ALL actual code
-  - `# TEST PLAN`
+  - `# EXECUTION PLAN`
     - Copy EVERY code block exactly as written
     - If Planning has 1000 lines of test code, Execution must have those same 1000 lines
     - Remove only the explanatory text between code blocks

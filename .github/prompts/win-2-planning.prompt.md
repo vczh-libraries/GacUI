@@ -8,51 +8,63 @@
 - Your goal is to finish a planning document in `Copilot_Planning.md` to address a problem from `Copilot_Task.md`.
 - You are only allowed to update `Copilot_Planning.md`.
 - You are not allowed to modify any other files.
-- Anything in the instruction is a guidance to complete `Copilot_Planning.md`.
-- DO NOT modify any source code.
+- The phrasing of the request may look like asking for code change, but your actual work is to write the design document.
 
 ## Copilot_Planning.md Structure
 
 - `# !!!PLANNING!!!`: This file always begin with this title.
 - `# UPDATES`: For multiple `## UPDATE` sections. It should always exist even there is no update.
   - `## UPDATE`: There could be multiple occurrences. Each one has an exact copy of the update description I gave you.
-- `# IMPROVEMENT PLAN`.
+- `# EXECUTION PLAN`.
   - `## STEP X: The Step Title`: One step in the improvement plan.
     - A clear description of what to change in the source code.
     - A clear explanation of why this change is necessary.
-- `# TEST PLAN`.
 
 ## Step 1. Identify the Problem
 
 - The design document is in `Copilot_Task.md`. You must carefully read through the file, it has the goal, the whole idea as well as analysis. If `Copilot_Task.md` mentions anything about updating the knowledge base, ignore it.
-- Find `# Update` in the LATEST chat message. Ignore any `# Update` in the chat history.
-- If there is an `# Update` section: it means I am going to propose some change to `Copilot_Planning.md`.
-  - Copy precisely my problem description in `# Update` from the LATEST chat message to the `# UPDATES` section, with a new sub-section `## UPDATE`.
-  - The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# IMPROVEMENT PLAN`).
-  - Follow my update to change the planning document.
-- If there is nothing:
-  - If `Copilot_Planning.md` only has a title, you are on a fresh start.
-    - Add an empty `# UPDATES` section after the title, if it does not already exist.
-  - Otherwise, it means you are accidentally stopped. Please continue your work.
+- Find `# Problem` or `# Update` in the LATEST chat message.
+  - Ignore any these titles in the chat history.
+  - If there is nothing: it means you are accidentally stopped. Please continue your work.
     - Read `Copilot_Planning.md` througly, it is highly possibly that you were working on the request described in the last section in `# UPDATES`.
+
+### Create new Document (only when "# Problem" appears in the LATEST chat message)
+
+Ignore this section if there is no "# Problem" in the LATEST chat message
+I am starting a fresh new request.
+
+- Add an empty `# UPDATES` section after `# !!!PLANNING!!!`.
+- You are going to complete a more detailed planning document according to `Copilot_Task.md`.
+
+### Update current Document (only when "# Update" appears in the LATEST chat message)
+
+Ignore this section if there is no "# Update" in the LATEST chat message
+I am going to propose some change to `Copilot_Planning.md`.
+
+- Copy precisely my problem description in `# Update` from the LATEST chat message to the `# UPDATES` section, with a new sub-section `## UPDATE`.
+- The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# EXECUTION PLAN`).
+- Follow my update to change the planning document.
 
 ## Step 2. Understand the Goal and Quality Requirement
 
 - You need to write complete two main sections in `Copilot_Planning.md`, an improvement plan and a test plan.
-- **Improvement Plan**:
-  - Read through and understand the task in `Copilot_Task.md`.
-  - C++ source files depends on each other, by just implementing the task it may not enough. Find out what will be affected.
-  - Propose any code change you would like to do. It must be detailed enough to say which part of code will be replaced with what new code.
-  - Explain why you want to make these changes.
-  - When offering comments for code changes, do not just repeat what has been done, say why this has to be done.
-    - If the code is simple and obvious, no comment is needed. Actually most of the code should not have comments.
-    - Do not say something like `i++; // add one to i`, which offers no extra information. Usually no comments should be offered for such code, except there is any hidden or deep reason.
-- **Test Plan**:
-  - Design test cases that cover all aspects of the changes made in the improvement plan.
-  - Ensure test cases are clear enough to be easily understood and maintained.
-  - Carefully think about corner cases to cover.
-  - For refactoring work, existing test cases might have already covered most of the scenarios. Carefully review them and only add new test cases if necessary.
-  - If you think any current test case must be updated or improved, explain why.
+- Read through and understand the task in `Copilot_Task.md`.
+
+### Tips for a Feature Planning Task
+
+- C++ source files depends on each other, by just implementing the task it may not enough. Find out what will be affected.
+- Propose any code change you would like to do. It must be detailed enough to say which part of code will be replaced with what new code.
+- Explain why you want to make these changes.
+- When offering comments for code changes, do not just repeat what has been done, say why this has to be done.
+  - If the code is simple and obvious, no comment is needed. Actually most of the code should not have comments.
+  - Do not say something like `i++; // add one to i`, which offers no extra information. Usually no comments should be offered for such code, except there is any hidden or deep reason.
+
+### Tips for a Test Planning Task
+
+- Design test cases that cover all aspects of the changes made in the improvement plan.
+- Ensure test cases are clear enough to be easily understood and maintained.
+- Carefully think about corner cases to cover.
+- DO NOT add new test cases that are already covered by existing test cases.
 
 ## Step 3. Finish the Document
 

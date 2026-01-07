@@ -8,6 +8,8 @@
 - Your goal is to finish a design document in `Copilot_Scrum.md` to address a problem.
 - You are only allowed to update `Copilot_Scrum.md`.
 - You are not allowed to modify any other files.
+- The phrasing of the request may look like asking for code change, but your actual work is to write the design document.
+- "Task" in the request always mean a task under the `# TASKS` section in the design document.
 
 ## Copilot_Scrum.md Structure
 
@@ -28,28 +30,56 @@
 ## Step 1. Identify the Problem
 
 - The problem I would like to solve is in the chat messages sending with this request.
-- Find `# Problem` or `# Update` or `# Learn` in the LATEST chat message. Ignore any `# Problem` or `# Update` in the chat history.
-- If there is a `# Problem` section: it means I am starting a fresh new request.
-  - You should override `Copilot_Scrum.md` with only one title `# !!!SCRUM!!!`.
-    - At the moment, `Copilot_Scrum.md` may contain old tasks from previous requests, even it may look like the document is already finished for the current scrum, always clean it up.
-  - After overriding, copy precisely my problem description in `# Problem` from the LATEST chat message under `# DESIGN REQUEST`.
-  - Add an empty `# UPDATES` section after `# DESIGN REQUEST`.
-- If there is an `# Update` section: it means I am going to propose some change to `Copilot_Scrum.md`.
-  - Copy precisely my problem description in `# Update` from the LATEST chat message to the `# DESIGN REQUEST` section, with a new sub-section `## UPDATE`.
-  - The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# TASKS`).
-  - When the number of tasks needs to be changed, due to inserting/removing/splitting/merging tasks:
-    - Adjust task number of unaffected tasks accordingly, throughout the document.
-    - Replace the affected tasks with new content, DO NOT TOUCH unaffected tasks.
-  - Follow my update to change the design document.
-- If there is a `# Learn` section: it means I made important updates during the execution of the last task, you should apply them smart enough to future tasks. Find the `Optional Step for Learning` section for more instruction.
-- If there is nothing: it means you are accidentally stopped. Please continue your work.
+- Find `# Problem` or `# Update` or `# Learn` in the LATEST chat message. 
+  - Ignore any these titles in the chat history.
+  - If there is nothing: it means you are accidentally stopped. Please continue your work.
+
+### Create new Document (only when "# Problem" appears in the LATEST chat message)
+
+Ignore this section if there is no "# Problem" in the LATEST chat message
+I am starting a fresh new request.
+
+- You should override `Copilot_Scrum.md` with only one title `# !!!SCRUM!!!`.
+  - At the moment, `Copilot_Scrum.md` may contain old tasks from previous requests, even it may look like the document is already finished for the current scrum, always clean it up.
+- After overriding, copy precisely my problem description in `# Problem` from the LATEST chat message under `# DESIGN REQUEST`.
+- Add an empty `# UPDATES` section after `# DESIGN REQUEST`.
+
+### Update current Document (only when "# Update" appears in the LATEST chat message)
+
+Ignore this section if there is no "# Update" in the LATEST chat message
+I am going to propose some change to `Copilot_Scrum.md`.
+
+- Copy precisely my problem description in `# Update` from the LATEST chat message to the `# DESIGN REQUEST` section, with a new sub-section `## UPDATE`.
+- The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# TASKS`).
+- When the number of tasks needs to be changed, due to inserting/removing/splitting/merging tasks:
+  - Adjust task number of unaffected tasks accordingly, throughout the document.
+  - Replace the affected tasks with new content, DO NOT TOUCH unaffected tasks.
+- Follow my update to change the design document.
+
+### Learning (only when "# Learn" appears in the LATEST chat message)
+
+Ignore this section if there is no "# Learn" in the LATEST chat message
+I made important updates to the source code manually during the execution of the last task.
+
+- Skip every steps before Step 6.
+- Find the `Step 6. Learning` section for more instruction.
 
 ## Step 2. Understand the Goal and Quality Requirement
 
 - Your goal is to help me break down the problem into small tasks, write it down to `Copilot_Scrum.md`.
-- Each task should be small enough to only represent a single idea or feature upgrade.
-- Each task should be big enough to deliver a complete piece of functionality, do not make a task that only add code that will not be executed.
-- The order of tasks is important. At the end of each task, the project should be able to compile and test.
+- Each task should be:
+  - Small enough to only represent a single idea or feature upgrade.
+  - Deliver a complete piece of functionality.
+  - Not mixing functionality and test cases in the same task.
+    - In case when new unit test is required, writing new test cases should be in separate tasks.
+    - If test cases are better to be categorized and grouped with multiple `TEST_CATEGORY`, create each task for each `TEST_CATEGORY`.
+    - For refactoring work, existing test cases might have already covered most of the scenarios. Carefully review them and only add new test cases if necessary.
+    - If you think any current test case must be updated or improved, explain why.
+  - For a test planning task:
+    - The test plan is about writing unit test cases. Do not include end-to-end tests or manual tests.
+    - Sometimes it is difficult to make relevant unit test, for example a change to the UI, you can skip the test plan but you need to provide a rationale for it.
+    - You do not need to design test cases or think about code coverage at this moment. Instead consider about how to ensure testability, how many existing components are affected so that they need to be tested, and figure out if existing test cases already covered affected components or not.
+  - Well ordered. At the end of each task, the project should be able to compile or test.
 - During making the design document:
   - Take in consideration of the knowledge base, finding anything that would be helpful for the current problem.
   - Read through the code base carefully. The project is complicated, one small decision may have widely impact to the other part of the project.
@@ -57,20 +87,29 @@
 
 ## Step 3. Finish the Document
 
-- Break the problem in to tasks.
+- Break the problem into tasks.
 - In each task, describe a task in a high level and comprehensive description.
-  - A task must be at least updating some code, it must not be like learning or analysing or whatever just reading. Reading, thinking and planning is your immediate work to do.
+  - A task must be at least updating some code, it must not be like learning or analysing or whatever just reading.
+  - Reading, thinking and planning is your immediate work to do to complete the design document.
 - Following the description, there should also be:
   - `### what to be done`: A clear definition of what needs to be changed or implemented.
     - Keep it high-level, you can mention what should be done to update a certain group of classes, but do not include any actual code change.
-  - `### how to test it`: A clear definition of what needs to be tested in unit test.
-    - The test plan is about writing unit test cases. Do not include end-to-end tests or manual tests.
-    - Sometimes it is difficult to make relevant unit test, for example a change to the UI, you can skip the test plan but you need to provide a rationale for it.
-    - You do not need to design test cases or think about code coverage at this moment. Instead consider about how to ensure testability, how many existing components are affected so that they need to be tested, and figure out if existing test cases already covered affected components or not.
   - `### rationale`:
     - Reasons about why you think it is necessary to have this task, why you think it is the best for the task to be in this order.
     - Any support evidences from source code or knowledge base. 
       - If you can't find anything from the knowledge base, think about what can be added to the knowledge base, but you do not need to actually update the knowledge base at the moment.
+
+### Tips about Designing
+
+- Leverage the source code from dependencies in `Import` folder as much as you can.
+- Source code in the `Source` and `Test` folder is subject to modify.
+- The project should be highly organized in a modular way. In most of the cases you are using existing code as API to complete a new feature.
+- If you think any existing API in the current project should offer enough functionality, but it is currently missing something:
+  - Point it out. A separate task to update them is recommended.
+  - DO NOT make assumption that you can't prove.
+- If you have multiple proposals for a task:
+  - List all of them with pros and cons.
+  - You should decide which is the best one.
 
 ## Step 4. Identify Changes to Knowledge Base
 
@@ -88,9 +127,9 @@
 
 - Ensure there is a `# !!!FINISHED!!!` mark at the end of `Copilot_Scrum.md` to indicate the document reaches the end.
 
-## (Optional) Step 6. Learning (only when # Learn appears in the LATEST chat message)
+## Step 6. Learning (only when "# Learn" appears in the LATEST chat message)
 
-- Ignore this section if there is no `# Learn` in the LATEST chat message
+- Ignore this section if there is no "# Learn" in the LATEST chat message
 
 ### Step 6.1. Identify the Last Complteted Task
 
