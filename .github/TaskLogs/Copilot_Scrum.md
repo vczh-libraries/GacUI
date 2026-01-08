@@ -16,34 +16,86 @@ You need to do analysis right now, get the result, and categorize all keyboard o
 
 # UPDATES
 
+## UPDATE
+
+I would like to update the plan for sharing test cases to other editor control. In [TestControls_Editor_GuiSinglelineTextBox_Key.cpp](Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp) , the file structure should look like
+
+static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& controlName){...}
+
+TEST_FILE
+{
+    const auto resourceSinglelineTextBox = LR"GacUISrc(...)GacUISrc";
+    TEST_CATEGORY(L"GuiSinglelineTextBox")
+    {
+        RunSinglelineTextBoxTestCases(resourceSinglelineTextBox, WString::Unmanaged(L"GuiSinglelineTextBox"));
+    }
+}
+
+The first argument will be the XML description of the UI under test. The second will be part of the path, so that every test cases are logging using:
+WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/CATEGORY_CASE");, CATEGORY and CASE will be replaced with the actual name.
+
+In the `RunSinglelineTextBox` function, code like
+auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox");
+should be updated to
+auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+since my future plan is to share these test cases to all GuiDocumentLabel subclasses. But testing other controls are not included in the current document.
+
+As there will be a big TEST_CATEGORY in TEST_FILE, so your proposed
+TEST_CATEGORY(L"GuiSinglelineTextBox (Key) - Navigation")
+could be simplified to
+TEST_CATEGORY(L"Navigation"), applies to all other proposed category names.
+
+After fixing existing tasks, add one task that before all other task, to fix [TestControls_Editor_GuiSinglelineTextBox.cpp](Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox.cpp)  following the above way.
+
 # TASKS
 
-- [ ] TASK No.1: Create GuiSinglelineTextBox key test scaffold
-- [ ] TASK No.2: Add TEST_CATEGORY for navigation and selection keys
-- [ ] TASK No.3: Add TEST_CATEGORY for deletion and Enter keys
-- [ ] TASK No.4: Add TEST_CATEGORY for clipboard shortcuts
-- [ ] TASK No.5: Add TEST_CATEGORY for undo/redo shortcuts
-- [ ] TASK No.6: Add TEST_CATEGORY for typing and char-input filtering
+- [ ] TASK No.1: Refactor existing GuiSinglelineTextBox tests for reuse
+- [ ] TASK No.2: Create GuiSinglelineTextBox key test scaffold
+- [ ] TASK No.3: Add TEST_CATEGORY for navigation and selection keys
+- [ ] TASK No.4: Add TEST_CATEGORY for deletion and Enter keys
+- [ ] TASK No.5: Add TEST_CATEGORY for clipboard shortcuts
+- [ ] TASK No.6: Add TEST_CATEGORY for undo/redo shortcuts
+- [ ] TASK No.7: Add TEST_CATEGORY for typing and char-input filtering
 
-## TASK No.1: Create GuiSinglelineTextBox key test scaffold
+## TASK No.1: Refactor existing GuiSinglelineTextBox tests for reuse
 
-Create a shared test window/resource and minimal helper flow in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp` so later categories can focus on keyboard behaviors without repeating boilerplate.
+Restructure `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox.cpp` to follow the same “shared test cases + outer control category” pattern as the key test file, so the same test cases can be reused for other `GuiDocumentLabel` subclasses in the future.
 
 ### what to be done
 
-- Implement `TEST_FILE { ... }` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
-- Add a minimal resource XML (similar to `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox.cpp`) containing a `Window` with a `SinglelineTextBox ref.Name="textBox"`.
-- Ensure each test case:
-  - Brings focus to the textbox (`SetFocused()`).
-  - Starts from a known text value (preferably something index-friendly like `L"0123456789"` or `L"Hello World"`).
-  - Uses `UnitTestRemoteProtocol` helpers (`KeyPress`, `TypeString`) and asserts via `GetText()`, `GetSelectionText()`, `GetCaretBegin()/GetCaretEnd()` where needed.
+- Add `static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& controlName)` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox.cpp`.
+- Move existing `TEST_CASE(L"Basic")` and `TEST_CASE(L"Typing")` into `RunSinglelineTextBoxTestCases` (keeping their behavior the same).
+- Introduce (or update) a shared `RunSinglelineTextBox` helper so each test case logs to `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/CATEGORY_CASE")` (CATEGORY and CASE replaced by actual names, consistent with the key test plan but without the `/Key/` segment).
+- In `RunSinglelineTextBox`, change `FindObjectByName<GuiSinglelineTextBox>(window, L"textBox")` to `FindObjectByName<GuiDocumentLabel>(window, L"textBox")`.
+- Update `TEST_FILE` to contain only the resource XML + one outer `TEST_CATEGORY(L"GuiSinglelineTextBox") { RunSinglelineTextBoxTestCases(resource, WString::Unmanaged(L"GuiSinglelineTextBox")); }`.
 
 ### rationale
 
-- All subsequent tasks add `TEST_CATEGORY` blocks to the same file; a shared scaffold keeps those tasks small and consistent.
+- This keeps non-key and key tests consistent and makes it straightforward to reuse the same test cases for other editor controls inheriting from `GuiDocumentLabel` later.
+- Switching lookup to `GuiDocumentLabel` is a prerequisite for sharing without rewriting all test steps.
+
+## TASK No.2: Create GuiSinglelineTextBox key test scaffold
+
+Create a shared test window/resource and minimal helper flow in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp` so later categories can focus on keyboard behaviors without repeating boilerplate, and so the same test cases can be reused by other `GuiDocumentLabel` subclasses in the future.
+
+### what to be done
+
+- Add `static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& controlName)` to `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
+- Implement `TEST_FILE` using the structure:
+  - `const auto resourceSinglelineTextBox = LR"GacUISrc( ... )GacUISrc";`
+  - An outer `TEST_CATEGORY(L"GuiSinglelineTextBox") { RunSinglelineTextBoxTestCases(resourceSinglelineTextBox, WString::Unmanaged(L"GuiSinglelineTextBox")); }`.
+- Add (or update) a shared `RunSinglelineTextBox` helper that:
+  - Loads the UI from `resource` (XML) and starts the test using `GacUIUnitTest_StartFast_WithResourceAsText`.
+  - Builds per-test log paths as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/CATEGORY_CASE")` (CATEGORY and CASE replaced by actual names).
+  - Finds the target control by `FindObjectByName<GuiDocumentLabel>(window, L"textBox")`.
+- Ensure each test case establishes a consistent initial state (focus + known text like `L"0123456789"`) before exercising key operations via `UnitTestRemoteProtocol` (`KeyPress`, `TypeString`).
+
+### rationale
+
+- All subsequent tasks add `TEST_CATEGORY` blocks in `RunSinglelineTextBoxTestCases`; a shared scaffold keeps those tasks small and consistent.
 - Using an index-friendly initial text makes it easy to assert caret/selection changes precisely.
 
-## TASK No.2: Add TEST_CATEGORY for navigation and selection keys
+## TASK No.3: Add TEST_CATEGORY for navigation and selection keys
 
 Add test cases for caret movement and keyboard-driven selection extension in a single-line document.
 
@@ -51,7 +103,7 @@ Keyboard operations covered by this category (from `GuiDocumentCommonInterface::
 
 ### what to be done
 
-- Add `TEST_CATEGORY(L"GuiSinglelineTextBox (Key) - Navigation")` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
+- Add `TEST_CATEGORY(L"Navigation")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Add multiple `TEST_CASE`s (examples; final names can be adjusted to match existing naming style):
   - `ArrowKeys_MoveCaret`: start with known text, put caret at end, press `KEY_LEFT`/`KEY_RIGHT` and assert caret positions change as expected.
   - `HomeEnd_MoveCaretToEdges`: place caret mid-text, press `KEY_HOME` then `KEY_END`, assert caret at column 0 / end column.
@@ -66,7 +118,7 @@ Keyboard operations covered by this category (from `GuiDocumentCommonInterface::
 - Caret movement and selection extension are the foundation for all other keyboard edit operations (delete/cut/copy/paste/undo), so they should be validated first.
 - Explicitly asserting that Up/Down and Page keys have no effect in singleline prevents accidental behavior regressions if paragraph/caret calculation changes.
 
-## TASK No.3: Add TEST_CATEGORY for deletion and Enter keys
+## TASK No.4: Add TEST_CATEGORY for deletion and Enter keys
 
 Add test cases for editing keys handled in `ProcessKey`: Backspace, Delete, Enter, and Ctrl+Enter, including behavior with and without a selection.
 
@@ -74,7 +126,7 @@ In `GuiSinglelineTextBox`, Enter is processed but line breaks are flattened by c
 
 ### what to be done
 
-- Add `TEST_CATEGORY(L"GuiSinglelineTextBox (Key) - Deletion")` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
+- Add `TEST_CATEGORY(L"Deletion")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Add multiple `TEST_CASE`s:
   - `Backspace_DeletesPreviousChar`: set caret after a known character; press `KEY_BACK`; assert one character removed and caret moved appropriately.
   - `Delete_DeletesNextChar`: set caret before a known character; press `KEY_DELETE`; assert one character removed.
@@ -86,15 +138,15 @@ In `GuiSinglelineTextBox`, Enter is processed but line breaks are flattened by c
 ### rationale
 
 - Backspace/Delete/Enter are the primary editing keys beyond typing; they have subtle selection-dependent behavior.
-- Single-line newline-flattening is a key “plain text” guarantee of `GuiSinglelineTextBox` and needs coverage.
+- Single-line newline-flattening is a key "plain text" guarantee of `GuiSinglelineTextBox` and needs coverage.
 
-## TASK No.4: Add TEST_CATEGORY for clipboard shortcuts
+## TASK No.5: Add TEST_CATEGORY for clipboard shortcuts
 
 Add test cases for Ctrl+C/Ctrl+X/Ctrl+V, using the fake clipboard service in unit tests and validating single-line plain-text normalization on paste (CR/LF removed, styles ignored).
 
 ### what to be done
 
-- Add `TEST_CATEGORY(L"GuiSinglelineTextBox (Key) - Clipboard")` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
+- Add `TEST_CATEGORY(L"Clipboard")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Use `GetCurrentController()->ClipboardService()->WriteClipboard()` / `ReadClipboard()` in test code to set up and verify clipboard content.
 - Add multiple `TEST_CASE`s:
   - `CtrlC_CopiesSelection_TextUnchanged`: create a selection, press `Ctrl+C`, assert textbox text unchanged and clipboard text equals the selection.
@@ -109,13 +161,13 @@ Add test cases for Ctrl+C/Ctrl+X/Ctrl+V, using the fake clipboard service in uni
 - Clipboard shortcuts are core keyboard operations and are explicitly registered as shortcuts in `GuiDocumentCommonInterface`.
 - Singleline + paste-as-plain-text behavior is easy to regress when document/clipboard handling changes; these tests pin expected normalization.
 
-## TASK No.5: Add TEST_CATEGORY for undo/redo shortcuts
+## TASK No.6: Add TEST_CATEGORY for undo/redo shortcuts
 
 Add test cases for Ctrl+Z/Ctrl+Y and validate undo/redo behavior across representative edits (typing, deletion, paste) in a single-line textbox.
 
 ### what to be done
 
-- Add `TEST_CATEGORY(L"GuiSinglelineTextBox (Key) - UndoRedo")` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
+- Add `TEST_CATEGORY(L"UndoRedo")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Add multiple `TEST_CASE`s:
   - `CtrlZ_UndoesTyping_AndCtrlY_Redoes`: type a short string, press `Ctrl+Z` to undo, assert text restored; press `Ctrl+Y`, assert text re-applied.
   - `CtrlZ_UndoesDeletion`: perform Backspace/Delete, then `Ctrl+Z` restores the deleted text.
@@ -127,13 +179,13 @@ Add test cases for Ctrl+Z/Ctrl+Y and validate undo/redo behavior across represen
 - Undo/redo is a first-class keyboard feature (registered shortcuts) and must work with all major edit paths (char input, key deletions, paste normalization).
 - These tests provide coverage for `GuiDocumentUndoRedoProcessor` integration without requiring rich text features.
 
-## TASK No.6: Add TEST_CATEGORY for typing and char-input filtering
+## TASK No.7: Add TEST_CATEGORY for typing and char-input filtering
 
 Add test cases for the `OnCharInput` path: normal typing, tab input, control-modified typing being ignored, and newline characters being flattened/ignored as appropriate for single-line text.
 
 ### what to be done
 
-- Add `TEST_CATEGORY(L"GuiSinglelineTextBox (Key) - Typing")` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
+- Add `TEST_CATEGORY(L"Typing")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Add multiple `TEST_CASE`s:
   - `TypeString_InsertsPlainText`: use `protocol->TypeString(L\"...\")` and assert text updates.
   - `TypeString_InsertsTab_WhenAcceptTabInput`: type `L\"\\t\"` and assert a tab character appears in text.
