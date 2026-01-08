@@ -1,5 +1,15 @@
-#include "TestControls.h"
+﻿# !!!EXECUTION!!!
+# UPDATES
 
+# EXECUTION PLAN
+
+## STEP 1: Add RunSinglelineTextBoxTestCases function [DONE]
+
+**File:** `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox.cpp`
+
+**Action:** Insert after `#include "TestControls.h"` and before `TEST_FILE`:
+
+```cpp
 static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& controlName)
 {
 	TEST_CASE(L"Basic")
@@ -97,7 +107,15 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 		);
 	});
 }
+```
 
+## STEP 2: Update TEST_FILE to use the shared function [DONE]
+
+**File:** `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox.cpp`
+
+**Action:** Replace the entire `TEST_FILE` block with:
+
+```cpp
 TEST_FILE
 {
 	const auto resource = LR"GacUISrc(
@@ -119,3 +137,13 @@ TEST_FILE
 		RunSinglelineTextBoxTestCases(resource, WString::Unmanaged(L"GuiSinglelineTextBox"));
 	});
 }
+```
+
+## STEP 3: Verification [DONE]
+
+Run the existing GUI unit test suite to verify:
+- The `Basic` and `Typing` behaviors are unchanged (same assertions and end states).
+- Each test case routes logs to `Controls/Editor/GuiSinglelineTextBox/Basic` and `Controls/Editor/GuiSinglelineTextBox/Typing`.
+- The control lookup is `FindObjectByName<GuiSinglelineTextBox>(..., L"textBox")` and the test still passes.
+
+# !!!FINISHED!!!
