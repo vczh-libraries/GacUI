@@ -49,7 +49,7 @@ After fixing existing tasks, add one task that before all other task, to fix [Te
 
 # TASKS
 
-- [ ] TASK No.1: Refactor existing GuiSinglelineTextBox tests for reuse
+- [x] TASK No.1: Refactor existing GuiSinglelineTextBox tests for reuse
 - [ ] TASK No.2: Create GuiSinglelineTextBox key test scaffold
 - [ ] TASK No.3: Add TEST_CATEGORY for navigation and selection keys
 - [ ] TASK No.4: Add TEST_CATEGORY for deletion and Enter keys
