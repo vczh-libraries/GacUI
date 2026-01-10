@@ -103,6 +103,7 @@ Keyboard operations covered by this category (from `GuiDocumentCommonInterface::
 
 ### what to be done
 
+- Follow the established scaffold from TASK No.2: inline each `TEST_CASE` in `RunSinglelineTextBoxTestCases`, build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Navigation_<CASE>")`, and split key actions / assertions into separate idle frames when UI state is expected to change.
 - Add `TEST_CATEGORY(L"Navigation")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Add multiple `TEST_CASE`s (examples; final names can be adjusted to match existing naming style):
   - `ArrowKeys_MoveCaret`: start with known text, put caret at end, press `KEY_LEFT`/`KEY_RIGHT` and assert caret positions change as expected.
@@ -126,6 +127,7 @@ In `GuiSinglelineTextBox`, Enter is processed but line breaks are flattened by c
 
 ### what to be done
 
+- Follow the established scaffold from TASK No.2: inline each `TEST_CASE` in `RunSinglelineTextBoxTestCases`, build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Deletion_<CASE>")`, and split key actions / assertions into separate idle frames when UI state is expected to change.
 - Add `TEST_CATEGORY(L"Deletion")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Add multiple `TEST_CASE`s:
   - `Backspace_DeletesPreviousChar`: set caret after a known character; press `KEY_BACK`; assert one character removed and caret moved appropriately.
@@ -146,6 +148,7 @@ Add test cases for Ctrl+C/Ctrl+X/Ctrl+V, using the fake clipboard service in uni
 
 ### what to be done
 
+- Follow the established scaffold from TASK No.2: inline each `TEST_CASE` in `RunSinglelineTextBoxTestCases`, build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Clipboard_<CASE>")`, and split key actions / assertions into separate idle frames when UI state is expected to change (especially around paste).
 - Add `TEST_CATEGORY(L"Clipboard")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Use `GetCurrentController()->ClipboardService()->WriteClipboard()` / `ReadClipboard()` in test code to set up and verify clipboard content.
 - Add multiple `TEST_CASE`s:
@@ -167,6 +170,7 @@ Add test cases for Ctrl+Z/Ctrl+Y and validate undo/redo behavior across represen
 
 ### what to be done
 
+- Follow the established scaffold from TASK No.2: inline each `TEST_CASE` in `RunSinglelineTextBoxTestCases`, build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/UndoRedo_<CASE>")`, and split edit actions / undo/redo keystrokes / assertions into separate idle frames.
 - Add `TEST_CATEGORY(L"UndoRedo")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Add multiple `TEST_CASE`s:
   - `CtrlZ_UndoesTyping_AndCtrlY_Redoes`: type a short string, press `Ctrl+Z` to undo, assert text restored; press `Ctrl+Y`, assert text re-applied.
@@ -185,6 +189,7 @@ Add test cases for the `OnCharInput` path: normal typing, tab input, control-mod
 
 ### what to be done
 
+- Follow the established scaffold from TASK No.2: inline each `TEST_CASE` in `RunSinglelineTextBoxTestCases`, build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Typing_<CASE>")`, and split typing / assertions into separate idle frames when UI state is expected to change.
 - Add `TEST_CATEGORY(L"Typing")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Add multiple `TEST_CASE`s:
   - `TypeString_InsertsPlainText`: use `protocol->TypeString(L\"...\")` and assert text updates.

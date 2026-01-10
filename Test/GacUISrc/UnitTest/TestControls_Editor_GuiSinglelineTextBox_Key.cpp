@@ -22,17 +22,11 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 					TEST_ASSERT(textBox->GetText() == L"0123456789");
 					protocol->KeyPress(VKEY::KEY_LEFT);
-				});
-
-				protocol->OnNextIdleFrame(L"Moved Cursor", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 					protocol->TypeString(L"X");
 					TEST_ASSERT(textBox->GetText() == L"012345678X9");
 				});
 
-				protocol->OnNextIdleFrame(L"Edited", [=]()
+				protocol->OnNextIdleFrame(L"Moved Cursor and Edited", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
