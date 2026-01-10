@@ -47,15 +47,22 @@ TEST_CATEGORY(L"Navigation"), applies to all other proposed category names.
 
 After fixing existing tasks, add one task that before all other task, to fix [TestControls_Editor_GuiSinglelineTextBox.cpp](Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox.cpp)  following the above way.
 
+## UPDATE
+
+Firstly, `- Follow the established scaffold from TASK No.2 xxx` lines are added to all unfinished tasks. I would like to clarify that, performing change and assertion should be in one single frame. A frame can only be ended (except for the last one) when any UI element would be changed. A frame title reflects what has been done in the last frame (except for the first one). These are in the knowledge base. And I would like to keep the last frame as simple as possible, so that I can view generated logs easily.
+
+Secondly, please insert one task before all unfinished tasks. That's said to hijack the current time reading. There is a `TooltipTimer` in [TestApplication_Tooltip.cpp](Test/GacUISrc/UnitTest/TestApplication_Tooltip.cpp) . I would like you to move the class to [TestControls.h](Test/GacUISrc/UnitTest/TestControls.h) so it could be shared with text box test cases. And there is also one `extern` in that cpp file, delete it as it is not needed anymore, I forgot to do that. That cpp file demoed how to use `TooltipTimer`. Use it in every test cases in [TestControls_Editor_GuiSinglelineTextBox_Key.cpp](Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp)  and [TestControls_Editor_GuiSinglelineTextBox.cpp](Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox.cpp) 
+
 # TASKS
 
 - [x] TASK No.1: Refactor existing GuiSinglelineTextBox tests for reuse
 - [x] TASK No.2: Create GuiSinglelineTextBox key test scaffold
-- [ ] TASK No.3: Add TEST_CATEGORY for navigation and selection keys
-- [ ] TASK No.4: Add TEST_CATEGORY for deletion and Enter keys
-- [ ] TASK No.5: Add TEST_CATEGORY for clipboard shortcuts
-- [ ] TASK No.6: Add TEST_CATEGORY for undo/redo shortcuts
-- [ ] TASK No.7: Add TEST_CATEGORY for typing and char-input filtering
+- [ ] TASK No.3: Hijack current-time reading in editor unit tests
+- [ ] TASK No.4: Add TEST_CATEGORY for navigation and selection keys
+- [ ] TASK No.5: Add TEST_CATEGORY for deletion and Enter keys
+- [ ] TASK No.6: Add TEST_CATEGORY for clipboard shortcuts
+- [ ] TASK No.7: Add TEST_CATEGORY for undo/redo shortcuts
+- [ ] TASK No.8: Add TEST_CATEGORY for typing and char-input filtering
 
 ## TASK No.1: Refactor existing GuiSinglelineTextBox tests for reuse
 
@@ -95,7 +102,24 @@ Create a shared test window/resource and minimal helper flow in `Test/GacUISrc/U
 - All subsequent tasks add `TEST_CATEGORY` blocks in `RunSinglelineTextBoxTestCases`; a shared scaffold keeps those tasks small and consistent.
 - Using an index-friendly initial text makes it easy to assert caret/selection changes precisely.
 
-## TASK No.3: Add TEST_CATEGORY for navigation and selection keys
+## TASK No.3: Hijack current-time reading in editor unit tests
+
+Move the existing `TooltipTimer` (feature injection for `vl::IDateTimeImpl`) to a shared test header and use it in all single-line textbox unit tests, to ensure time-dependent behaviors (e.g. cursor blink / delayed behaviors) do not read the real system clock and cause flaky logs.
+
+### what to be done
+
+- Follow the established scaffold from TASK No.2 (frame rule): in `UnitTestRemoteProtocol::OnNextIdleFrame`, treat each rendered frame as "the UI change done in the previous callback + the assertions done in the current callback"; do not end a callback (except the last one) unless it performs an input that will change UI in the next frame; choose frame titles that describe what happened in the previous callback; keep the final callback minimal so the last logged frame is easy to inspect.
+- Move `TooltipTimer` from `Test/GacUISrc/UnitTest/TestApplication_Tooltip.cpp` to `Test/GacUISrc/UnitTest/TestControls.h` so it can be shared by other test files.
+- Remove the unnecessary `extern` declaration from `Test/GacUISrc/UnitTest/TestApplication_Tooltip.cpp` after moving `TooltipTimer`.
+- Update `Test/GacUISrc/UnitTest/TestApplication_Tooltip.cpp` to include and use the shared `TooltipTimer` from `TestControls.h` (no duplicated definition).
+- Use `TooltipTimer` in every `TEST_CASE` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp` and `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox.cpp` (construct a local `TooltipTimer` at the beginning of each test case so time is hijacked for the whole test).
+
+### rationale
+
+- `UnitTestRemoteProtocol` logs and assertions are frame-based; making time deterministic reduces flakiness and makes frame-by-frame logs easier to compare.
+- Centralizing `TooltipTimer` in `TestControls.h` avoids copy/paste and keeps time-hijacking consistent across editor test files.
+
+## TASK No.4: Add TEST_CATEGORY for navigation and selection keys
 
 Add test cases for caret movement and keyboard-driven selection extension in a single-line document.
 
@@ -103,7 +127,7 @@ Keyboard operations covered by this category (from `GuiDocumentCommonInterface::
 
 ### what to be done
 
-- Follow the established scaffold from TASK No.2: inline each `TEST_CASE` in `RunSinglelineTextBoxTestCases`, build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Navigation_<CASE>")`, and split key actions / assertions into separate idle frames when UI state is expected to change.
+- Follow the established scaffold from TASK No.2 (frame rule): in `UnitTestRemoteProtocol::OnNextIdleFrame`, treat each rendered frame as "the UI change done in the previous callback + the assertions done in the current callback"; do not end a callback (except the last one) unless it performs an input that will change UI in the next frame; choose frame titles that describe what happened in the previous callback; keep the final callback minimal so the last logged frame is easy to inspect; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Navigation_<CASE>")`.
 - Add `TEST_CATEGORY(L"Navigation")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Add multiple `TEST_CASE`s (examples; final names can be adjusted to match existing naming style):
   - `ArrowKeys_MoveCaret`: start with known text, put caret at end, press `KEY_LEFT`/`KEY_RIGHT` and assert caret positions change as expected.
@@ -119,7 +143,7 @@ Keyboard operations covered by this category (from `GuiDocumentCommonInterface::
 - Caret movement and selection extension are the foundation for all other keyboard edit operations (delete/cut/copy/paste/undo), so they should be validated first.
 - Explicitly asserting that Up/Down and Page keys have no effect in singleline prevents accidental behavior regressions if paragraph/caret calculation changes.
 
-## TASK No.4: Add TEST_CATEGORY for deletion and Enter keys
+## TASK No.5: Add TEST_CATEGORY for deletion and Enter keys
 
 Add test cases for editing keys handled in `ProcessKey`: Backspace, Delete, Enter, and Ctrl+Enter, including behavior with and without a selection.
 
@@ -127,7 +151,7 @@ In `GuiSinglelineTextBox`, Enter is processed but line breaks are flattened by c
 
 ### what to be done
 
-- Follow the established scaffold from TASK No.2: inline each `TEST_CASE` in `RunSinglelineTextBoxTestCases`, build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Deletion_<CASE>")`, and split key actions / assertions into separate idle frames when UI state is expected to change.
+- Follow the established scaffold from TASK No.2 (frame rule): in `UnitTestRemoteProtocol::OnNextIdleFrame`, treat each rendered frame as "the UI change done in the previous callback + the assertions done in the current callback"; do not end a callback (except the last one) unless it performs an input that will change UI in the next frame; choose frame titles that describe what happened in the previous callback; keep the final callback minimal so the last logged frame is easy to inspect; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Deletion_<CASE>")`.
 - Add `TEST_CATEGORY(L"Deletion")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Add multiple `TEST_CASE`s:
   - `Backspace_DeletesPreviousChar`: set caret after a known character; press `KEY_BACK`; assert one character removed and caret moved appropriately.
@@ -142,13 +166,13 @@ In `GuiSinglelineTextBox`, Enter is processed but line breaks are flattened by c
 - Backspace/Delete/Enter are the primary editing keys beyond typing; they have subtle selection-dependent behavior.
 - Single-line newline-flattening is a key "plain text" guarantee of `GuiSinglelineTextBox` and needs coverage.
 
-## TASK No.5: Add TEST_CATEGORY for clipboard shortcuts
+## TASK No.6: Add TEST_CATEGORY for clipboard shortcuts
 
 Add test cases for Ctrl+C/Ctrl+X/Ctrl+V, using the fake clipboard service in unit tests and validating single-line plain-text normalization on paste (CR/LF removed, styles ignored).
 
 ### what to be done
 
-- Follow the established scaffold from TASK No.2: inline each `TEST_CASE` in `RunSinglelineTextBoxTestCases`, build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Clipboard_<CASE>")`, and split key actions / assertions into separate idle frames when UI state is expected to change (especially around paste).
+- Follow the established scaffold from TASK No.2 (frame rule): in `UnitTestRemoteProtocol::OnNextIdleFrame`, treat each rendered frame as "the UI change done in the previous callback + the assertions done in the current callback"; do not end a callback (except the last one) unless it performs an input that will change UI in the next frame; choose frame titles that describe what happened in the previous callback; keep the final callback minimal so the last logged frame is easy to inspect; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Clipboard_<CASE>")`.
 - Add `TEST_CATEGORY(L"Clipboard")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Use `GetCurrentController()->ClipboardService()->WriteClipboard()` / `ReadClipboard()` in test code to set up and verify clipboard content.
 - Add multiple `TEST_CASE`s:
@@ -164,13 +188,13 @@ Add test cases for Ctrl+C/Ctrl+X/Ctrl+V, using the fake clipboard service in uni
 - Clipboard shortcuts are core keyboard operations and are explicitly registered as shortcuts in `GuiDocumentCommonInterface`.
 - Singleline + paste-as-plain-text behavior is easy to regress when document/clipboard handling changes; these tests pin expected normalization.
 
-## TASK No.6: Add TEST_CATEGORY for undo/redo shortcuts
+## TASK No.7: Add TEST_CATEGORY for undo/redo shortcuts
 
 Add test cases for Ctrl+Z/Ctrl+Y and validate undo/redo behavior across representative edits (typing, deletion, paste) in a single-line textbox.
 
 ### what to be done
 
-- Follow the established scaffold from TASK No.2: inline each `TEST_CASE` in `RunSinglelineTextBoxTestCases`, build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/UndoRedo_<CASE>")`, and split edit actions / undo/redo keystrokes / assertions into separate idle frames.
+- Follow the established scaffold from TASK No.2 (frame rule): in `UnitTestRemoteProtocol::OnNextIdleFrame`, treat each rendered frame as "the UI change done in the previous callback + the assertions done in the current callback"; do not end a callback (except the last one) unless it performs an input that will change UI in the next frame; choose frame titles that describe what happened in the previous callback; keep the final callback minimal so the last logged frame is easy to inspect; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/UndoRedo_<CASE>")`.
 - Add `TEST_CATEGORY(L"UndoRedo")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Add multiple `TEST_CASE`s:
   - `CtrlZ_UndoesTyping_AndCtrlY_Redoes`: type a short string, press `Ctrl+Z` to undo, assert text restored; press `Ctrl+Y`, assert text re-applied.
@@ -183,13 +207,13 @@ Add test cases for Ctrl+Z/Ctrl+Y and validate undo/redo behavior across represen
 - Undo/redo is a first-class keyboard feature (registered shortcuts) and must work with all major edit paths (char input, key deletions, paste normalization).
 - These tests provide coverage for `GuiDocumentUndoRedoProcessor` integration without requiring rich text features.
 
-## TASK No.7: Add TEST_CATEGORY for typing and char-input filtering
+## TASK No.8: Add TEST_CATEGORY for typing and char-input filtering
 
 Add test cases for the `OnCharInput` path: normal typing, tab input, control-modified typing being ignored, and newline characters being flattened/ignored as appropriate for single-line text.
 
 ### what to be done
 
-- Follow the established scaffold from TASK No.2: inline each `TEST_CASE` in `RunSinglelineTextBoxTestCases`, build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Typing_<CASE>")`, and split typing / assertions into separate idle frames when UI state is expected to change.
+- Follow the established scaffold from TASK No.2 (frame rule): in `UnitTestRemoteProtocol::OnNextIdleFrame`, treat each rendered frame as "the UI change done in the previous callback + the assertions done in the current callback"; do not end a callback (except the last one) unless it performs an input that will change UI in the next frame; choose frame titles that describe what happened in the previous callback; keep the final callback minimal so the last logged frame is easy to inspect; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Typing_<CASE>")`.
 - Add `TEST_CATEGORY(L"Typing")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Add multiple `TEST_CASE`s:
   - `TypeString_InsertsPlainText`: use `protocol->TypeString(L\"...\")` and assert text updates.
