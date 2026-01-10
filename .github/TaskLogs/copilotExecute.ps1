@@ -93,7 +93,8 @@ if ($existingFiles.Count -gt 0) {
     # Execute the selected executable with debug arguments and save output to log file
     $logFile = "$PSScriptRoot\Execute.log"
     $logFileUnfinished = "$logFile.unfinished"
-    & $latestFile.Path /C $debugArgs 2>&1 | Tee-Object -FilePath $logFileUnfinished
+    $commandLine = "`"$($latestFile.Path)`" /C $debugArgs"
+    & cmd.exe /S /C $commandLine 2>&1 | Tee-Object -FilePath $logFileUnfinished
     Rename-Item -Path $logFileUnfinished -NewName $logFile -Force
     exit $LASTEXITCODE
 } else {
