@@ -50,7 +50,7 @@ After fixing existing tasks, add one task that before all other task, to fix [Te
 # TASKS
 
 - [x] TASK No.1: Refactor existing GuiSinglelineTextBox tests for reuse
-- [ ] TASK No.2: Create GuiSinglelineTextBox key test scaffold
+- [x] TASK No.2: Create GuiSinglelineTextBox key test scaffold
 - [ ] TASK No.3: Add TEST_CATEGORY for navigation and selection keys
 - [ ] TASK No.4: Add TEST_CATEGORY for deletion and Enter keys
 - [ ] TASK No.5: Add TEST_CATEGORY for clipboard shortcuts
@@ -203,3 +203,4 @@ Add test cases for the `OnCharInput` path: normal typing, tab input, control-mod
 ## None
 
 # !!!FINISHED!!!
+
