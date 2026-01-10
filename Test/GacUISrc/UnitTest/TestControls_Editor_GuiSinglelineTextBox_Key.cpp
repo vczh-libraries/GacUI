@@ -1,11 +1,14 @@
 #include "TestControls.h"
 
+using namespace gacui_unittest_template;
+
 static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& controlName)
 {
 	TEST_CATEGORY(L"Scaffold")
 	{
 		TEST_CASE(L"SmokingTest")
 		{
+			TooltipTimer timer;
 			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				protocol->OnNextIdleFrame(L"Init", [=]()

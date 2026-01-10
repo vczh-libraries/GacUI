@@ -1,9 +1,12 @@
 #include "TestControls.h"
 
+using namespace gacui_unittest_template;
+
 static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& controlName)
 {
 	TEST_CASE(L"Basic")
 	{
+		TooltipTimer timer;
 		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 		{
 			protocol->OnNextIdleFrame(L"Ready", [=]()
@@ -31,6 +34,7 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 
 	TEST_CASE(L"Typing")
 	{
+		TooltipTimer timer;
 		GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 		{
 			protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
