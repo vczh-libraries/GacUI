@@ -27,6 +27,7 @@ This project is built on top of:
 - Find out the `Accessing the Knowledge Base` section, read `Index.md` of `KnowledgeBase` project in the current solution.
 - Before generating any code, if the file is changed, read it. Not all changes come from you, I will edit the file too. Do not generate code based on out-dated version in your memory.
 - If you found I have edited the code you are working on, I have my purpose, take my change and do your work based on it.
+- If a `*.prompt.md` file is referenced at the beginning of the LATEST chat message, I would like you to take action following instruction in that file.
 
 ## Solution and Project File Structure
 
