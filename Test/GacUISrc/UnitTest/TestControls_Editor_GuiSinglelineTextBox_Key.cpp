@@ -389,7 +389,11 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					TEST_ASSERT(textBox->GetCaretBegin() == TextPos(0, 4));
 					TEST_ASSERT(textBox->GetCaretEnd() == TextPos(0, 4));
 					TEST_ASSERT(textBox->GetSelectionText() == L"");
+				});
 
+				protocol->OnNextIdleFrame(L"Selected To Edges", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -426,7 +430,11 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					protocol->KeyPress(VKEY::KEY_DELETE);
 					TEST_ASSERT(textBox->GetText() == L"012346789");
 					TEST_ASSERT(textBox->GetSelectionText() == L"");
+				});
 
+				protocol->OnNextIdleFrame(L"Selected To Edges", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -539,7 +547,11 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					protocol->KeyPress(VKEY::KEY_BACK);
 					TEST_ASSERT(textBox->GetText() == L"0156789");
 					TEST_ASSERT(textBox->GetSelectionText() == L"");
+				});
 
+				protocol->OnNextIdleFrame(L"Selected To Edges", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -576,7 +588,11 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					protocol->KeyPress(VKEY::KEY_DELETE);
 					TEST_ASSERT(textBox->GetText() == L"0156789");
 					TEST_ASSERT(textBox->GetSelectionText() == L"");
+				});
 
+				protocol->OnNextIdleFrame(L"Selected To Edges", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
