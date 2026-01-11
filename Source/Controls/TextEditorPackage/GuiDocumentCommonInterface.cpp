@@ -190,6 +190,12 @@ GuiDocumentCommonInterface
 				case VKEY::KEY_RETURN:
 					if (editMode == GuiDocumentEditMode::Editable)
 					{
+						if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
+						{
+							// Singleline text boxes should ignore Enter entirely.
+							// In particular, Enter must not delete selection.
+							return true;
+						}
 						if (ctrl)
 						{
 							Array<WString> text(1);

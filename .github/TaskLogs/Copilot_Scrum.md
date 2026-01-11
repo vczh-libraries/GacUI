@@ -59,7 +59,7 @@ Secondly, please insert one task before all unfinished tasks. That's said to hij
 - [x] TASK No.2: Create GuiSinglelineTextBox key test scaffold
 - [x] TASK No.3: Hijack current-time reading in editor unit tests
 - [x] TASK No.4: Add TEST_CATEGORY for navigation and selection keys
-- [ ] TASK No.5: Add TEST_CATEGORY for deletion and Enter keys
+- [x] TASK No.5: Add TEST_CATEGORY for deletion and Enter keys
 - [ ] TASK No.6: Add TEST_CATEGORY for clipboard shortcuts
 - [ ] TASK No.7: Add TEST_CATEGORY for undo/redo shortcuts
 - [ ] TASK No.8: Add TEST_CATEGORY for typing and char-input filtering
