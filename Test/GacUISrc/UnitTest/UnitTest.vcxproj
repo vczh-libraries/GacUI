@@ -206,7 +206,7 @@
     <ClCompile Include="TestControls_CoreApplication_GuiControl.cpp" />
     <ClCompile Include="TestControls_CoreApplication_GuiLabel.cpp" />
     <ClCompile Include="TestControls_CoreApplication_GuiWindow.cpp" />
-    <ClCompile Include="TestControls_Editor_GuiSinglelineTextBox.cpp" />
+    <ClCompile Include="TestControls_Editor.cpp" />
     <ClCompile Include="TestControls_Editor_GuiSinglelineTextBox_Key.cpp" />
     <ClCompile Include="TestControls_List_DataGrid_Binding.cpp" />
     <ClCompile Include="TestControls_List_DataGrid_CellEditor.cpp" />
