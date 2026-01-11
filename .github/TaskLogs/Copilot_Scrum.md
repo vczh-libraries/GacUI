@@ -234,7 +234,13 @@ Add test cases for the `OnCharInput` path: normal typing, tab input, control-mod
 
 ### what to be done
 
-- Follow the established scaffold from TASK No.2 (frame rule, clarified + learned): use a setup frame to focus the control and seed initial text via `protocol->TypeString(...)`; in the next `UnitTestRemoteProtocol::OnNextIdleFrame`, perform the key input(s) and the assertions for the resulting state in the same callback; schedule a next callback (except the last one) only when the current callback issues an input that will change UI; keep frame titles as short titles and do not rename existing ones (frame titles describe what happened in the previous frame); if an input is issued, add one more final frame whose only job is `window->Hide();` so the last logged frame stays minimal; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Typing_<CASE>")`.
+- Follow the established scaffold from TASK No.2 (frame rule, clarified + learned): structure each interaction as an input frame followed by a verification frame.
+  - Input frame: issue one or more inputs (`TypeString`, `KeyPress`, `_KeyDown`, `_KeyUp`, etc) and do not assert.
+  - Verification frame: perform all assertions for the result *and* ensure the callback triggers a UI update (e.g. `window->SetText(textBox->GetText());`) so the harness accepts the frame.
+  - Schedule another frame (except the last one) only when the current frame issues an input that will change UI in the next frame.
+  - Keep frame titles short, and let titles describe what happened in the previous frame.
+  - Keep the last frame minimal and hide-only (`window->Hide();`).
+  - Build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Typing_<CASE>")`.
 - When asserting that a `WString` contains no line breaks, use `WString::IndexOf(L'\r')` and `WString::IndexOf(L'\n')` (character literals) instead of `L"\r"` / `L"\n"` to match the correct overload.
 - Add `TEST_CATEGORY(L"Typing")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Keep adding cases inside the existing template-based shared test function (i.e. continue using `FindObjectByName<TTextBox>` in test code, and do not hardcode `GuiDocumentLabel`).
@@ -263,6 +269,7 @@ This task is only about expanding the smoke-test coverage (reusing the existing 
   - `<DocumentTextBox/>` mapped to `GuiDocumentLabel`.
   - `<DocumentLabel/>` mapped to `GuiDocumentLabel`.
   - `<DocumentViewer/>` mapped to `GuiDocumetViewer`.
+- Follow the same frame semantics learned in TASK No.7 when adding new smoke-test invocations: keep inputs and assertions in separate frames when the input triggers an asynchronous UI update, and ensure assertion-only frames trigger a UI update (e.g. `window->SetText(...)`) so the harness accepts the frame.
 - Ensure the last 3 types have `EditMode="Editable"` set in the XML so the existing typing-based smoke tests are meaningful.
 - Keep log paths consistent with the existing pattern in `RunTextBoxSmokeTest`, so the output folders differentiate control types cleanly (e.g. `Controls/Editor/<ControlName>/Basic` and `.../Typing`).
 
