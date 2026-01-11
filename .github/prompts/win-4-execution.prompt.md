@@ -12,8 +12,7 @@
 - `# !!!EXECUTION!!!`: This file always begin with this title.
 - `# UPDATES`:
   - `## UPDATE`: There could be multiple occurrences. Each one has an exact copy of the update description I gave you.
-- `# IMPROVEMENT PLAN`.
-- `# TEST PLAN`.
+- `# EXECUTION PLAN`.
 - `# FIXING ATTEMPTS`.
 
 ## Step 1. Identify the Problem
