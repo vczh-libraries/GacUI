@@ -151,7 +151,7 @@ In `GuiSinglelineTextBox`, Enter is processed but line breaks are flattened by c
 
 ### what to be done
 
-- Follow the established scaffold from TASK No.2 (frame rule, clarified): in `UnitTestRemoteProtocol::OnNextIdleFrame`, perform the input(s) and the assertions for the resulting state in the same callback; schedule a next callback (except the last one) only when the current callback issues an input that will change UI; keep frame titles as short titles and do not rename existing ones; keep the final callback minimal so the last logged frame is easy to inspect; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Deletion_<CASE>")`.
+- Follow the established scaffold from TASK No.2 (frame rule, clarified + learned): use a setup frame to focus the control and seed initial text via `protocol->TypeString(...)`; in the next `UnitTestRemoteProtocol::OnNextIdleFrame`, perform the key input(s) and the assertions for the resulting state in the same callback; schedule a next callback (except the last one) only when the current callback issues an input that will change UI; keep frame titles as short titles and do not rename existing ones; keep the final callback minimal so the last logged frame is easy to inspect; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Deletion_<CASE>")`.
 - Add `TEST_CATEGORY(L"Deletion")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Add multiple `TEST_CASE`s:
   - `Backspace_DeletesPreviousChar`: set caret after a known character; press `KEY_BACK`; assert one character removed and caret moved appropriately.
@@ -172,7 +172,7 @@ Add test cases for Ctrl+C/Ctrl+X/Ctrl+V, using the fake clipboard service in uni
 
 ### what to be done
 
-- Follow the established scaffold from TASK No.2 (frame rule, clarified): in `UnitTestRemoteProtocol::OnNextIdleFrame`, perform the input(s) and the assertions for the resulting state in the same callback; schedule a next callback (except the last one) only when the current callback issues an input that will change UI; keep frame titles as short titles and do not rename existing ones; keep the final callback minimal so the last logged frame is easy to inspect; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Clipboard_<CASE>")`.
+- Follow the established scaffold from TASK No.2 (frame rule, clarified + learned): use a setup frame to focus the control and seed initial text via `protocol->TypeString(...)`; in the next `UnitTestRemoteProtocol::OnNextIdleFrame`, perform the key input(s) and the assertions for the resulting state in the same callback; schedule a next callback (except the last one) only when the current callback issues an input that will change UI; keep frame titles as short titles and do not rename existing ones; keep the final callback minimal so the last logged frame is easy to inspect; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Clipboard_<CASE>")`.
 - Add `TEST_CATEGORY(L"Clipboard")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Use `GetCurrentController()->ClipboardService()->WriteClipboard()` / `ReadClipboard()` in test code to set up and verify clipboard content.
 - Add multiple `TEST_CASE`s:
@@ -194,7 +194,7 @@ Add test cases for Ctrl+Z/Ctrl+Y and validate undo/redo behavior across represen
 
 ### what to be done
 
-- Follow the established scaffold from TASK No.2 (frame rule, clarified): in `UnitTestRemoteProtocol::OnNextIdleFrame`, perform the input(s) and the assertions for the resulting state in the same callback; schedule a next callback (except the last one) only when the current callback issues an input that will change UI; keep frame titles as short titles and do not rename existing ones; keep the final callback minimal so the last logged frame is easy to inspect; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/UndoRedo_<CASE>")`.
+- Follow the established scaffold from TASK No.2 (frame rule, clarified + learned): use a setup frame to focus the control and seed initial text via `protocol->TypeString(...)`; in the next `UnitTestRemoteProtocol::OnNextIdleFrame`, perform the key input(s) and the assertions for the resulting state in the same callback; schedule a next callback (except the last one) only when the current callback issues an input that will change UI; keep frame titles as short titles and do not rename existing ones; keep the final callback minimal so the last logged frame is easy to inspect; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/UndoRedo_<CASE>")`.
 - Add `TEST_CATEGORY(L"UndoRedo")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Add multiple `TEST_CASE`s:
   - `CtrlZ_UndoesTyping_AndCtrlY_Redoes`: type a short string, press `Ctrl+Z` to undo, assert text restored; press `Ctrl+Y`, assert text re-applied.
@@ -213,7 +213,7 @@ Add test cases for the `OnCharInput` path: normal typing, tab input, control-mod
 
 ### what to be done
 
-- Follow the established scaffold from TASK No.2 (frame rule, clarified): in `UnitTestRemoteProtocol::OnNextIdleFrame`, perform the input(s) and the assertions for the resulting state in the same callback; schedule a next callback (except the last one) only when the current callback issues an input that will change UI; keep frame titles as short titles and do not rename existing ones; keep the final callback minimal so the last logged frame is easy to inspect; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Typing_<CASE>")`.
+- Follow the established scaffold from TASK No.2 (frame rule, clarified + learned): use a setup frame to focus the control and seed initial text via `protocol->TypeString(...)`; in the next `UnitTestRemoteProtocol::OnNextIdleFrame`, perform the key input(s) and the assertions for the resulting state in the same callback; schedule a next callback (except the last one) only when the current callback issues an input that will change UI; keep frame titles as short titles and do not rename existing ones; keep the final callback minimal so the last logged frame is easy to inspect; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Typing_<CASE>")`.
 - Add `TEST_CATEGORY(L"Typing")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Add multiple `TEST_CASE`s:
   - `TypeString_InsertsPlainText`: use `protocol->TypeString(L\"...\")` and assert text updates.
