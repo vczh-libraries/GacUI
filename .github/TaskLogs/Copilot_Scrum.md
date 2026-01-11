@@ -213,6 +213,8 @@ Add test cases for Ctrl+Z/Ctrl+Y and validate undo/redo behavior across represen
 ### what to be done
 
 - Follow the established scaffold from TASK No.2 (frame rule, clarified + learned): use a setup frame to focus the control and seed initial text via `protocol->TypeString(...)`; in the next `UnitTestRemoteProtocol::OnNextIdleFrame`, perform the key input(s) and the assertions for the resulting state in the same callback; schedule a next callback (except the last one) only when the current callback issues an input that will change UI; keep frame titles as short titles and do not rename existing ones (frame titles describe what happened in the previous frame); if an input is issued, add one more final frame whose only job is `window->Hide();` so the last logged frame stays minimal; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/UndoRedo_<CASE>")`.
+- When asserting that a `WString` contains no line breaks, use `WString::IndexOf(L'\r')` and `WString::IndexOf(L'\n')` (character literals) instead of `L"\r"` / `L"\n"` to match the correct overload.
+- If additional state is helpful to inspect in frame logs (e.g. `CanUndo()` / `CanRedo()` transitions), set `window->SetText(...)` in the action frame, and keep the last frame minimal (hide-only) by scheduling a final callback.
 - Add `TEST_CATEGORY(L"UndoRedo")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Keep adding cases inside the existing template-based shared test function (i.e. continue using `FindObjectByName<TTextBox>` in test code, and do not hardcode `GuiDocumentLabel`).
 - Add multiple `TEST_CASE`s:
@@ -233,6 +235,7 @@ Add test cases for the `OnCharInput` path: normal typing, tab input, control-mod
 ### what to be done
 
 - Follow the established scaffold from TASK No.2 (frame rule, clarified + learned): use a setup frame to focus the control and seed initial text via `protocol->TypeString(...)`; in the next `UnitTestRemoteProtocol::OnNextIdleFrame`, perform the key input(s) and the assertions for the resulting state in the same callback; schedule a next callback (except the last one) only when the current callback issues an input that will change UI; keep frame titles as short titles and do not rename existing ones (frame titles describe what happened in the previous frame); if an input is issued, add one more final frame whose only job is `window->Hide();` so the last logged frame stays minimal; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Typing_<CASE>")`.
+- When asserting that a `WString` contains no line breaks, use `WString::IndexOf(L'\r')` and `WString::IndexOf(L'\n')` (character literals) instead of `L"\r"` / `L"\n"` to match the correct overload.
 - Add `TEST_CATEGORY(L"Typing")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
 - Keep adding cases inside the existing template-based shared test function (i.e. continue using `FindObjectByName<TTextBox>` in test code, and do not hardcode `GuiDocumentLabel`).
 - Add multiple `TEST_CASE`s:
