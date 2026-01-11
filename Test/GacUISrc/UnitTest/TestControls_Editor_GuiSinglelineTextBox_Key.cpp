@@ -629,11 +629,6 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 					textBox->SetCaret(TextPos(0, 5), TextPos(0, 5));
 					protocol->KeyPress(VKEY::KEY_V, true, false, false);
 					TEST_ASSERT(textBox->GetText() == L"0123456789");
-				});
-
-				protocol->OnNextIdleFrame(L"No Change", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
