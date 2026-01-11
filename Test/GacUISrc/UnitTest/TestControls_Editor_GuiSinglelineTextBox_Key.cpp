@@ -659,21 +659,13 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 					protocol->TypeString(L"0123456789");
 					textBox->ClearUndoRedo();
 					textBox->NotifyModificationSaved();
-				});
-
-				protocol->OnNextIdleFrame(L"Initialized", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 
 					TEST_ASSERT(!textBox->CanUndo());
 					TEST_ASSERT(!textBox->CanRedo());
 					TEST_ASSERT(!textBox->GetModified());
-
-					window->SetText(textBox->GetText());
 				});
 
-				protocol->OnNextIdleFrame(L"TypeX", [=]()
+				protocol->OnNextIdleFrame(L"Typing", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -682,7 +674,7 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 					protocol->TypeString(L"X");
 				});
 
-				protocol->OnNextIdleFrame(L"TypedX", [=]()
+				protocol->OnNextIdleFrame(L"Type X", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -691,16 +683,10 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 					TEST_ASSERT(textBox->CanUndo());
 					TEST_ASSERT(!textBox->CanRedo());
 					TEST_ASSERT(textBox->GetModified());
-
-					window->SetText(textBox->GetText());
-				});
-
-				protocol->OnNextIdleFrame(L"UndoShortcut", [=]()
-				{
 					protocol->KeyPress(VKEY::KEY_Z, true, false, false);
 				});
 
-				protocol->OnNextIdleFrame(L"Undid", [=]()
+				protocol->OnNextIdleFrame(L"Undo", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -709,16 +695,10 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 					TEST_ASSERT(!textBox->CanUndo());
 					TEST_ASSERT(textBox->CanRedo());
 					TEST_ASSERT(!textBox->GetModified());
-
-					window->SetText(textBox->GetText());
-				});
-
-				protocol->OnNextIdleFrame(L"RedoShortcut", [=]()
-				{
 					protocol->KeyPress(VKEY::KEY_Y, true, false, false);
 				});
 
-				protocol->OnNextIdleFrame(L"Redid", [=]()
+				protocol->OnNextIdleFrame(L"Redo", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -727,13 +707,6 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 					TEST_ASSERT(textBox->CanUndo());
 					TEST_ASSERT(!textBox->CanRedo());
 					TEST_ASSERT(textBox->GetModified());
-
-					window->SetText(textBox->GetText());
-				});
-
-				protocol->OnNextIdleFrame(L"UndoRedo", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -760,54 +733,31 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 
 					protocol->TypeString(L"0123456789");
 					textBox->ClearUndoRedo();
-				});
-
-				protocol->OnNextIdleFrame(L"Deletion", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-
 					textBox->SetCaret(TextPos(0, 5), TextPos(0, 5));
 					protocol->KeyPress(VKEY::KEY_BACK);
 				});
 
-				protocol->OnNextIdleFrame(L"Deleted", [=]()
+				protocol->OnNextIdleFrame(L"Delete", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					TEST_ASSERT(textBox->GetText() == L"012356789");
-					window->SetText(textBox->GetText());
-				});
-
-				protocol->OnNextIdleFrame(L"UndoShortcut", [=]()
-				{
 					protocol->KeyPress(VKEY::KEY_Z, true, false, false);
 				});
 
-				protocol->OnNextIdleFrame(L"Undid", [=]()
+				protocol->OnNextIdleFrame(L"Undo", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					TEST_ASSERT(textBox->GetText() == L"0123456789");
-					window->SetText(textBox->GetText());
-				});
-
-				protocol->OnNextIdleFrame(L"RedoShortcut", [=]()
-				{
 					protocol->KeyPress(VKEY::KEY_Y, true, false, false);
 				});
 
-				protocol->OnNextIdleFrame(L"Redid", [=]()
+				protocol->OnNextIdleFrame(L"Redo", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					TEST_ASSERT(textBox->GetText() == L"012356789");
-					window->SetText(textBox->GetText());
-				});
-
-				protocol->OnNextIdleFrame(L"UndoRedo", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -834,20 +784,12 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 
 					protocol->TypeString(L"0123456789");
 					textBox->ClearUndoRedo();
-				});
-
-				protocol->OnNextIdleFrame(L"Paste", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					auto clipboard = GetCurrentController()->ClipboardService();
-
 					{
 						auto writer = clipboard->WriteClipboard();
 						writer->SetText(L"12\r\n34\n\r\n56");
 						TEST_ASSERT(writer->Submit());
 					}
-
 					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
 					protocol->KeyPress(VKEY::KEY_V, true, false, false);
 				});
@@ -859,40 +801,24 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 					TEST_ASSERT(textBox->GetText() == L"1234560123456789");
 					TEST_ASSERT(textBox->GetText().IndexOf(L'\r') == -1);
 					TEST_ASSERT(textBox->GetText().IndexOf(L'\n') == -1);
-					window->SetText(textBox->GetText());
-				});
-
-				protocol->OnNextIdleFrame(L"UndoShortcut", [=]()
-				{
 					protocol->KeyPress(VKEY::KEY_Z, true, false, false);
 				});
 
-				protocol->OnNextIdleFrame(L"Undid", [=]()
+				protocol->OnNextIdleFrame(L"Undo", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					TEST_ASSERT(textBox->GetText() == L"0123456789");
-					window->SetText(textBox->GetText());
-				});
-
-				protocol->OnNextIdleFrame(L"RedoShortcut", [=]()
-				{
 					protocol->KeyPress(VKEY::KEY_Y, true, false, false);
 				});
 
-				protocol->OnNextIdleFrame(L"Redid", [=]()
+				protocol->OnNextIdleFrame(L"Redo", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					TEST_ASSERT(textBox->GetText() == L"1234560123456789");
 					TEST_ASSERT(textBox->GetText().IndexOf(L'\r') == -1);
 					TEST_ASSERT(textBox->GetText().IndexOf(L'\n') == -1);
-					window->SetText(textBox->GetText());
-				});
-
-				protocol->OnNextIdleFrame(L"UndoRedo", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -920,17 +846,17 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 					textBox->LoadTextAndClearUndoRedo(L"");
 					TEST_ASSERT(!textBox->CanUndo());
 					TEST_ASSERT(!textBox->CanRedo());
+
+					protocol->TypeString(L"ABC");
+					TEST_ASSERT(textBox->GetText() == L"ABC");
+					TEST_ASSERT(textBox->CanUndo());
+					TEST_ASSERT(!textBox->CanRedo());
 				});
 
 				protocol->OnNextIdleFrame(L"Typing", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-
-					protocol->TypeString(L"ABC");
-					TEST_ASSERT(textBox->GetText() == L"ABC");
-					TEST_ASSERT(textBox->CanUndo());
-					TEST_ASSERT(!textBox->CanRedo());
 
 					TEST_ASSERT(textBox->Undo());
 					TEST_ASSERT(textBox->GetText() == L"AB");
@@ -945,7 +871,7 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 					TEST_ASSERT(textBox->GetText() == L"AB");
 				});
 
-				protocol->OnNextIdleFrame(L"Cleared", [=]()
+				protocol->OnNextIdleFrame(L"Undo", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
@@ -971,19 +897,18 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					textBox->SetFocused();
-
 					textBox->LoadTextAndClearUndoRedo(L"");
+
+					protocol->TypeString(L"ABC");
+					TEST_ASSERT(textBox->GetText() == L"ABC");
+					TEST_ASSERT(textBox->CanUndo());
+					TEST_ASSERT(!textBox->CanRedo());
 				});
 
 				protocol->OnNextIdleFrame(L"Typing", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-
-					protocol->TypeString(L"ABC");
-					TEST_ASSERT(textBox->GetText() == L"ABC");
-					TEST_ASSERT(textBox->CanUndo());
-					TEST_ASSERT(!textBox->CanRedo());
 
 					while (textBox->CanUndo())
 					{
@@ -993,6 +918,12 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 					TEST_ASSERT(textBox->CanRedo());
 					TEST_ASSERT(textBox->GetText() == L"");
 					TEST_ASSERT(!textBox->Undo());
+				});
+
+				protocol->OnNextIdleFrame(L"Undo until the End", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 
 					while (textBox->CanRedo())
 					{
@@ -1002,11 +933,9 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 					TEST_ASSERT(textBox->CanUndo());
 					TEST_ASSERT(textBox->GetText() == L"ABC");
 					TEST_ASSERT(!textBox->Redo());
-
-					window->SetText(textBox->GetText());
 				});
 
-				protocol->OnNextIdleFrame(L"Exhausted", [=]()
+				protocol->OnNextIdleFrame(L"Redo until the end", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();

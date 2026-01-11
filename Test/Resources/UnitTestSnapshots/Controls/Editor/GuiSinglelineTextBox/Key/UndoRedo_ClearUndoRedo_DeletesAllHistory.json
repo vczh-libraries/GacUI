@@ -752,7 +752,7 @@
       }
     },
     {
-      "frameId": 8,
+      "frameId": 9,
       "frameName": "Typing",
       "windowSize": {
         "bounds": {
@@ -1076,12 +1076,34 @@
           ]
         ],
         [
-          24,
+          27,
           [
             "ElementDesc_DocumentParagraphFull",
             {
-              "paragraph": {"id": 24, "text": "", "wrapLine": false, "maxWidth": 1, "alignment": "Left", "runsDiff": [], "createdInlineObjects": null, "removedInlineObjects": null},
-              "caret": {"id": 24, "caret": 0, "caretColor": "#FFFFFF", "frontSide": true}
+              "paragraph": {
+                "id": 27,
+                "text": "ABC",
+                "wrapLine": false,
+                "maxWidth": 1,
+                "alignment": "Left",
+                "runsDiff": [
+                  {
+                    "caretBegin": 0,
+                    "caretEnd": 3,
+                    "props": [
+                      "DocumentTextRunProperty",
+                      {
+                        "textColor": "#FFFFFF",
+                        "backgroundColor": "#00000000",
+                        "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                      }
+                    ]
+                  }
+                ],
+                "createdInlineObjects": null,
+                "removedInlineObjects": null
+              },
+              "caret": null
             }
           ]
         ]
@@ -1445,13 +1467,13 @@
                                 },
                                 "children": [
                                   {
-                                    "id": 96,
+                                    "id": 108,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 24,
-                                      "bounds": {"x1": 16, "y1": 44, "x2": 17, "y2": 60},
-                                      "validArea": {"x1": 16, "y1": 44, "x2": 17, "y2": 60}
+                                      "element": 27,
+                                      "bounds": {"x1": 16, "y1": 44, "x2": 37, "y2": 60},
+                                      "validArea": {"x1": 16, "y1": 44, "x2": 37, "y2": 60}
                                     },
                                     "children": null
                                   }
@@ -1471,8 +1493,8 @@
       }
     },
     {
-      "frameId": 11,
-      "frameName": "Cleared",
+      "frameId": 12,
+      "frameName": "Undo",
       "windowSize": {
         "bounds": {
           "x1": {"value": 272},
@@ -1803,7 +1825,7 @@
                 "id": 28,
                 "text": "AB",
                 "wrapLine": false,
-                "maxWidth": 1,
+                "maxWidth": 21,
                 "alignment": "Left",
                 "runsDiff": [
                   {
