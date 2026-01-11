@@ -759,7 +759,7 @@
     },
     {
       "frameId": 9,
-      "frameName": "Backspace",
+      "frameName": "Typing",
       "windowSize": {
         "bounds": {
           "x1": {"value": 272},
@@ -1500,7 +1500,7 @@
     },
     {
       "frameId": 12,
-      "frameName": "Selected To Edges",
+      "frameName": "SetCaret and [BACKSPACE]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 272},

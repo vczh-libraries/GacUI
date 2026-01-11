@@ -377,7 +377,7 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					protocol->TypeString(L"0123456789");
 				});
 
-				protocol->OnNextIdleFrame(L"Backspace", [=]()
+				protocol->OnNextIdleFrame(L"Typing", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
@@ -391,7 +391,7 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					TEST_ASSERT(textBox->GetSelectionText() == L"");
 				});
 
-				protocol->OnNextIdleFrame(L"Selected To Edges", [=]()
+				protocol->OnNextIdleFrame(L"SetCaret and [BACKSPACE]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
@@ -420,7 +420,7 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					protocol->TypeString(L"0123456789");
 				});
 
-				protocol->OnNextIdleFrame(L"Delete", [=]()
+				protocol->OnNextIdleFrame(L"Typing", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
@@ -432,7 +432,7 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					TEST_ASSERT(textBox->GetSelectionText() == L"");
 				});
 
-				protocol->OnNextIdleFrame(L"Selected To Edges", [=]()
+				protocol->OnNextIdleFrame(L"SetCaret and [DELETE]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
@@ -461,7 +461,7 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					protocol->TypeString(L"0123456789");
 				});
 
-				protocol->OnNextIdleFrame(L"Backspace", [=]()
+				protocol->OnNextIdleFrame(L"Typing", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
@@ -499,7 +499,7 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					protocol->TypeString(L"0123456789");
 				});
 
-				protocol->OnNextIdleFrame(L"Delete", [=]()
+				protocol->OnNextIdleFrame(L"Typing", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
@@ -537,7 +537,7 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					protocol->TypeString(L"0123456789");
 				});
 
-				protocol->OnNextIdleFrame(L"Backspace", [=]()
+				protocol->OnNextIdleFrame(L"Typing", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
@@ -549,7 +549,7 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					TEST_ASSERT(textBox->GetSelectionText() == L"");
 				});
 
-				protocol->OnNextIdleFrame(L"Selected To Edges", [=]()
+				protocol->OnNextIdleFrame(L"SetCaret and [BACKSPACE]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
@@ -578,7 +578,7 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					protocol->TypeString(L"0123456789");
 				});
 
-				protocol->OnNextIdleFrame(L"Delete", [=]()
+				protocol->OnNextIdleFrame(L"Typing", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
@@ -590,7 +590,7 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					TEST_ASSERT(textBox->GetSelectionText() == L"");
 				});
 
-				protocol->OnNextIdleFrame(L"Selected To Edges", [=]()
+				protocol->OnNextIdleFrame(L"SetCaret and [DELETE]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
