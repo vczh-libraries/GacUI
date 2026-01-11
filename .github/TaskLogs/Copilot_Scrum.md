@@ -269,7 +269,7 @@ This task is only about expanding the smoke-test coverage (reusing the existing 
   - `<DocumentTextBox/>` mapped to `GuiDocumentLabel`.
   - `<DocumentLabel/>` mapped to `GuiDocumentLabel`.
   - `<DocumentViewer/>` mapped to `GuiDocumetViewer`.
-- Follow the same frame semantics learned in TASK No.7 when adding new smoke-test invocations: keep inputs and assertions in separate frames when the input triggers an asynchronous UI update, and ensure assertion-only frames trigger a UI update (e.g. `window->SetText(...)`) so the harness accepts the frame.
+- Follow the latest frame learnings (from TASK No.8 / Typing) when adding new smoke-test invocations: merge focus + input when possible; avoid adding `window->SetText(...)` just to force a render; if a step doesn’t naturally trigger a render, merge it into a frame that performs real input (or restructure so each intermediate frame does something that will change UI); keep the last frame hide-only when practical, but merge it when it avoids artificial UI changes.
 - Ensure the last 3 types have `EditMode="Editable"` set in the XML so the existing typing-based smoke tests are meaningful.
 - Keep log paths consistent with the existing pattern in `RunTextBoxSmokeTest`, so the output folders differentiate control types cleanly (e.g. `Controls/Editor/<ControlName>/Basic` and `.../Typing`).
 
