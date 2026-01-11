@@ -730,8 +730,13 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					textBox->SetFocused();
-
 					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Typing", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					textBox->ClearUndoRedo();
 					textBox->SetCaret(TextPos(0, 5), TextPos(0, 5));
 					protocol->KeyPress(VKEY::KEY_BACK);
@@ -784,6 +789,12 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 
 					protocol->TypeString(L"0123456789");
 					textBox->ClearUndoRedo();
+				});
+
+				protocol->OnNextIdleFrame(L"Typing", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					auto clipboard = GetCurrentController()->ClipboardService();
 					{
 						auto writer = clipboard->WriteClipboard();
