@@ -205,13 +205,23 @@ If multiple test cases are in the same file:
 - There can be multiple `TEST_CASE` in a `TEST_CATEGORY`.
 - There name will also appear in the arguments to `GacUIUnitTest_StartFast_WithResourceAsText` unless directed.
 
-In `GacUIUnitTest_SetGuiMainProxy`, there will be multiple `protocol->OnNextIdleFrame`. Each creates a new frame.
-Name of the frame does not say what to do in this frame, but actually what have been done previously.
-The code of the last frame is always closing the window.
+In `GacUIUnitTest_SetGuiMainProxy`, there will be multiple `protocol->OnNextIdleFrame`.
+Each call creates a frame, associating the name to the what the UI was before frame execution.
 
 If there are shared variable that updates in any frame in one `TEST_CASE`, they must be organized like this:
 - Shared variables should be only in `TEST_CASE`.
 - Lambda captures should be exactly like this example, `[&]` for the proxy and `[&, protocol]` for the frame.
+
+## Organizing Frames
+
+After an UI test case is executed, the whole UI will be captured and logged to files per frames.
+Each frame shows how the UI was before executing code inside a frame.
+In order to make these log human-familiar, please follow these rules:
+- Always name the first frame "Ready".
+- Name other frames for what the previous frame does. This is demoed in the example, as "Clicked this button" is the name of the second frame, while clicking the button happens in the first frame.
+- A frame should introduce UI changing. Otherwise the unit test will crash with a specific error.
+- Keep the last frame only calling `window->Hide();` if possible. But if no meaningful UI change is introduced in the previous frame, it is OK to merge them.
+- Do not introduce unnecessary UI change just to separate frames. UI change must be necessary and meaningful for the test case.
 
 ```C++
 TEST_CASE(L"Topic")
