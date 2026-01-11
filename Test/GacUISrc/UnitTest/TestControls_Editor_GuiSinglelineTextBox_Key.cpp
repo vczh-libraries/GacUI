@@ -364,6 +364,290 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 		});
 	});
 
+	TEST_CATEGORY(L"Clipboard")
+	{
+		TEST_CASE(L"CtrlC_CopiesSelection_TextUnchanged")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Init", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Typing", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto clipboard = GetCurrentController()->ClipboardService();
+
+					textBox->SetCaret(TextPos(0, 2), TextPos(0, 5));
+					TEST_ASSERT(textBox->GetSelectionText() == L"234");
+					TEST_ASSERT(textBox->GetText() == L"0123456789");
+
+					protocol->KeyPress(VKEY::KEY_C, true, false, false);
+
+					auto reader = clipboard->ReadClipboard();
+					window->SetText(reader->GetText());
+					TEST_ASSERT(reader->ContainsText());
+					TEST_ASSERT(reader->GetText() == L"234");
+					TEST_ASSERT(textBox->GetText() == L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Copied", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/Clipboard_CtrlC_CopiesSelection_TextUnchanged"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
+		TEST_CASE(L"CtrlX_CutsSelection_TextUpdated")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Init", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Typing", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto clipboard = GetCurrentController()->ClipboardService();
+
+					textBox->SetCaret(TextPos(0, 2), TextPos(0, 5));
+					TEST_ASSERT(textBox->GetSelectionText() == L"234");
+					protocol->KeyPress(VKEY::KEY_X, true, false, false);
+
+					auto reader = clipboard->ReadClipboard();
+					window->SetText(reader->GetText());
+					TEST_ASSERT(reader->ContainsText());
+					TEST_ASSERT(reader->GetText() == L"234");
+					TEST_ASSERT(textBox->GetText() == L"0156789");
+				});
+
+				protocol->OnNextIdleFrame(L"Cut", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/Clipboard_CtrlX_CutsSelection_TextUpdated"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
+		TEST_CASE(L"CtrlV_PastesAtCaret")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Init", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Typing", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto clipboard = GetCurrentController()->ClipboardService();
+
+					{
+						auto writer = clipboard->WriteClipboard();
+						writer->SetText(L"XX");
+						TEST_ASSERT(writer->Submit());
+					}
+
+					textBox->SetCaret(TextPos(0, 3), TextPos(0, 3));
+					protocol->KeyPress(VKEY::KEY_V, true, false, false);
+					TEST_ASSERT(textBox->GetText() == L"012XX3456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Pasted", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/Clipboard_CtrlV_PastesAtCaret"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
+		TEST_CASE(L"CtrlV_ReplacesSelection")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Init", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Typing", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto clipboard = GetCurrentController()->ClipboardService();
+
+					{
+						auto writer = clipboard->WriteClipboard();
+						writer->SetText(L"XX");
+						TEST_ASSERT(writer->Submit());
+					}
+
+					textBox->SetCaret(TextPos(0, 2), TextPos(0, 5));
+					TEST_ASSERT(textBox->GetSelectionText() == L"234");
+					protocol->KeyPress(VKEY::KEY_V, true, false, false);
+					TEST_ASSERT(textBox->GetText() == L"01XX56789");
+				});
+
+				protocol->OnNextIdleFrame(L"Pasted", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/Clipboard_CtrlV_ReplacesSelection"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
+		TEST_CASE(L"CtrlV_FlattensLineBreaks")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Init", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Typing", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto clipboard = GetCurrentController()->ClipboardService();
+
+					{
+						auto writer = clipboard->WriteClipboard();
+						writer->SetText(L"12\r\n34\n\r\n56");
+						TEST_ASSERT(writer->Submit());
+					}
+
+					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
+					protocol->KeyPress(VKEY::KEY_V, true, false, false);
+					TEST_ASSERT(textBox->GetText() == L"1234560123456789");
+					TEST_ASSERT(textBox->GetText().IndexOf(L'\r') == -1);
+					TEST_ASSERT(textBox->GetText().IndexOf(L'\n') == -1);
+				});
+
+				protocol->OnNextIdleFrame(L"Pasted", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/Clipboard_CtrlV_FlattensLineBreaks"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
+		TEST_CASE(L"CtrlV_EmptyClipboard_NoChange")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Init", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Typing", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto clipboard = GetCurrentController()->ClipboardService();
+
+					{
+						auto writer = clipboard->WriteClipboard();
+						TEST_ASSERT(writer->Submit());
+					}
+					TEST_ASSERT(!clipboard->ReadClipboard()->ContainsText());
+
+					textBox->SetCaret(TextPos(0, 5), TextPos(0, 5));
+					protocol->KeyPress(VKEY::KEY_V, true, false, false);
+					TEST_ASSERT(textBox->GetText() == L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"No Change", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/Clipboard_CtrlV_EmptyClipboard_NoChange"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+	});
+
 	TEST_CATEGORY(L"Deletion")
 	{
 		TEST_CASE(L"Backspace_DeletesPreviousChar")

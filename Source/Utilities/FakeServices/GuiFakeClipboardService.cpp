@@ -61,6 +61,7 @@ FakeClipboardWriter
 			FakeClipboardWriter(FakeClipboardService* _service)
 				: service(_service)
 			{
+				reader = Ptr(new FakeClipboardReader);
 			}
 
 			void SetText(const WString& value) override
