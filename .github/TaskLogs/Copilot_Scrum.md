@@ -53,6 +53,21 @@ Firstly, `- Follow the established scaffold from TASK No.2 xxx` lines are added 
 
 Secondly, please insert one task before all unfinished tasks. That's said to hijack the current time reading. There is a `TooltipTimer` in [TestApplication_Tooltip.cpp](Test/GacUISrc/UnitTest/TestApplication_Tooltip.cpp) . I would like you to move the class to [TestControls.h](Test/GacUISrc/UnitTest/TestControls.h) so it could be shared with text box test cases. And there is also one `extern` in that cpp file, delete it as it is not needed anymore, I forgot to do that. That cpp file demoed how to use `TooltipTimer`. Use it in every test cases in [TestControls_Editor_GuiSinglelineTextBox_Key.cpp](Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp)  and [TestControls_Editor_GuiSinglelineTextBox.cpp](Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox.cpp) 
 
+## UPDATE
+
+I made manual changes:
+- TestControls_Editor_GuiSinglelineTextBox.cpp has been renamed to TestControls_Editor.cpp
+- Two test case functions in #file:TestControls_Editor.cpp  and #file:TestControls_Editor_GuiSinglelineTextBox_Key.cpp has been changed from static to template function, preferring FindObjectByName<TTextBox> other than the previous GuiDocumentLabel.
+
+I would like you to do:
+- Update the scrum document to reflect the change in unfinished tasks.
+- Add a new task at the end, to update #file:TestControls_Editor.cpp to run `RunTextBoxSmokeTest` for 4 other text box types:
+  - <MultilineTextBox/>: GuiMultilineTextBox
+  - <DocumentTextBox/>: GuiDocumentLabel
+  - <DocumentLabel/>: GuiDocumentLabel
+  - <DocumentViewer/>: GuiDocumetViewer
+  - Need to set `EditMode="Editable"` for the last 3 text box types
+
 # TASKS
 
 - [x] TASK No.1: Refactor existing GuiSinglelineTextBox tests for reuse
@@ -63,6 +78,7 @@ Secondly, please insert one task before all unfinished tasks. That's said to hij
 - [ ] TASK No.6: Add TEST_CATEGORY for clipboard shortcuts
 - [ ] TASK No.7: Add TEST_CATEGORY for undo/redo shortcuts
 - [ ] TASK No.8: Add TEST_CATEGORY for typing and char-input filtering
+- [ ] TASK No.9: Run smoke tests for more editor text boxes
 
 ## TASK No.1: Refactor existing GuiSinglelineTextBox tests for reuse
 
@@ -175,6 +191,7 @@ Add test cases for Ctrl+C/Ctrl+X/Ctrl+V, using the fake clipboard service in uni
 - Follow the established scaffold from TASK No.2 (frame rule, clarified + learned): use a setup frame to focus the control and seed initial text via `protocol->TypeString(...)`; in the next `UnitTestRemoteProtocol::OnNextIdleFrame`, perform the key input(s) and the assertions for the resulting state in the same callback; schedule a next callback (except the last one) only when the current callback issues an input that will change UI; keep frame titles as short titles and do not rename existing ones; keep the final callback minimal so the last logged frame is easy to inspect; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Clipboard_<CASE>")`.
 - Follow the established scaffold from TASK No.2 (frame rule, clarified + learned): use a setup frame to focus the control and seed initial text via `protocol->TypeString(...)`; in the next `UnitTestRemoteProtocol::OnNextIdleFrame`, perform the key input(s) and the assertions for the resulting state in the same callback; schedule a next callback (except the last one) only when the current callback issues an input that will change UI; keep frame titles as short titles and do not rename existing ones (frame titles describe what happened in the previous frame); if an input is issued, add one more final frame whose only job is `window->Hide();` so the last logged frame stays minimal; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Clipboard_<CASE>")`.
 - Add `TEST_CATEGORY(L"Clipboard")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
+- Keep adding cases inside the existing template-based shared test function (i.e. continue using `FindObjectByName<TTextBox>` in test code, and do not hardcode `GuiDocumentLabel`).
 - Use `GetCurrentController()->ClipboardService()->WriteClipboard()` / `ReadClipboard()` in test code to set up and verify clipboard content.
 - Add multiple `TEST_CASE`s:
   - `CtrlC_CopiesSelection_TextUnchanged`: create a selection, press `Ctrl+C`, assert textbox text unchanged and clipboard text equals the selection.
@@ -197,6 +214,7 @@ Add test cases for Ctrl+Z/Ctrl+Y and validate undo/redo behavior across represen
 
 - Follow the established scaffold from TASK No.2 (frame rule, clarified + learned): use a setup frame to focus the control and seed initial text via `protocol->TypeString(...)`; in the next `UnitTestRemoteProtocol::OnNextIdleFrame`, perform the key input(s) and the assertions for the resulting state in the same callback; schedule a next callback (except the last one) only when the current callback issues an input that will change UI; keep frame titles as short titles and do not rename existing ones (frame titles describe what happened in the previous frame); if an input is issued, add one more final frame whose only job is `window->Hide();` so the last logged frame stays minimal; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/UndoRedo_<CASE>")`.
 - Add `TEST_CATEGORY(L"UndoRedo")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
+- Keep adding cases inside the existing template-based shared test function (i.e. continue using `FindObjectByName<TTextBox>` in test code, and do not hardcode `GuiDocumentLabel`).
 - Add multiple `TEST_CASE`s:
   - `CtrlZ_UndoesTyping_AndCtrlY_Redoes`: type a short string, press `Ctrl+Z` to undo, assert text restored; press `Ctrl+Y`, assert text re-applied.
   - `CtrlZ_UndoesDeletion`: perform Backspace/Delete, then `Ctrl+Z` restores the deleted text.
@@ -216,6 +234,7 @@ Add test cases for the `OnCharInput` path: normal typing, tab input, control-mod
 
 - Follow the established scaffold from TASK No.2 (frame rule, clarified + learned): use a setup frame to focus the control and seed initial text via `protocol->TypeString(...)`; in the next `UnitTestRemoteProtocol::OnNextIdleFrame`, perform the key input(s) and the assertions for the resulting state in the same callback; schedule a next callback (except the last one) only when the current callback issues an input that will change UI; keep frame titles as short titles and do not rename existing ones (frame titles describe what happened in the previous frame); if an input is issued, add one more final frame whose only job is `window->Hide();` so the last logged frame stays minimal; build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Typing_<CASE>")`.
 - Add `TEST_CATEGORY(L"Typing")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
+- Keep adding cases inside the existing template-based shared test function (i.e. continue using `FindObjectByName<TTextBox>` in test code, and do not hardcode `GuiDocumentLabel`).
 - Add multiple `TEST_CASE`s:
   - `TypeString_InsertsPlainText`: use `protocol->TypeString(L\"...\")` and assert text updates.
   - `TypeString_InsertsTab_WhenAcceptTabInput`: type `L\"\\t\"` and assert a tab character appears in text.
@@ -227,6 +246,27 @@ Add test cases for the `OnCharInput` path: normal typing, tab input, control-mod
 
 - `GuiSinglelineTextBox` is configured to accept only plain text; char-input filtering + flattening is the core guarantee.
 - Explicitly testing tab and ctrl-modified typing prevents regressions in `OnCharInput` gating logic.
+
+## TASK No.9: Run smoke tests for more editor text boxes
+
+Extend the existing editor smoke tests in #file:TestControls_Editor.cpp so the same `RunTextBoxSmokeTest<TTextBox>(resource, controlName)` flow (Basic + Typing) runs against the other `GuiDocumentCommonInterface`-based editor controls.
+
+This task is only about expanding the smoke-test coverage (reusing the existing shared test-case helper) and preparing the XML resources for each control type so failures can be compared via consistent log paths.
+
+### what to be done
+
+- In #file:TestControls_Editor.cpp, add additional resource XML strings (or a single combined resource that can host one control at a time) and add outer `TEST_CATEGORY` blocks to call `RunTextBoxSmokeTest` for:
+  - `<MultilineTextBox/>` mapped to `GuiMultilineTextBox`.
+  - `<DocumentTextBox/>` mapped to `GuiDocumentLabel`.
+  - `<DocumentLabel/>` mapped to `GuiDocumentLabel`.
+  - `<DocumentViewer/>` mapped to `GuiDocumetViewer`.
+- Ensure the last 3 types have `EditMode="Editable"` set in the XML so the existing typing-based smoke tests are meaningful.
+- Keep log paths consistent with the existing pattern in `RunTextBoxSmokeTest`, so the output folders differentiate control types cleanly (e.g. `Controls/Editor/<ControlName>/Basic` and `.../Typing`).
+
+### rationale
+
+- These editor controls share a large portion of `GuiDocumentCommonInterface` behavior; running the same smoke tests across them quickly detects regressions in shared code paths.
+- Doing this after the key-test categories are planned keeps scope contained: it reuses a proven smoke-test helper and adds only the minimum XML/control scaffolding needed.
 
 # Impact to the Knowledge Base
 
