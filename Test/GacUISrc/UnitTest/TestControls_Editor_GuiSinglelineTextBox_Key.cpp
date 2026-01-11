@@ -58,7 +58,13 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 					textBox->SetFocused();
-					textBox->SetText(L"0123456789");
+					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Typing", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 					textBox->SetCaret(TextPos(0, 10), TextPos(0, 10));
 					TEST_ASSERT(textBox->GetCaretBegin() == TextPos(0, 10));
 					TEST_ASSERT(textBox->GetCaretEnd() == TextPos(0, 10));
@@ -98,7 +104,14 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 					textBox->SetFocused();
-					textBox->SetText(L"0123456789");
+					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Typing", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+					textBox->SetCaret(TextPos(0, 10), TextPos(0, 10));
 					textBox->SetCaret(TextPos(0, 5), TextPos(0, 5));
 					TEST_ASSERT(textBox->GetSelectionText() == L"");
 
@@ -135,7 +148,14 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 					textBox->SetFocused();
-					textBox->SetText(L"0123456789");
+					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Typing", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+					textBox->SetCaret(TextPos(0, 10), TextPos(0, 10));
 					textBox->SetCaret(TextPos(0, 5), TextPos(0, 5));
 					TEST_ASSERT(textBox->GetSelectionText() == L"");
 
@@ -172,7 +192,14 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 					textBox->SetFocused();
-					textBox->SetText(L"0123456789");
+					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Typing", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+					textBox->SetCaret(TextPos(0, 10), TextPos(0, 10));
 					textBox->SetCaret(TextPos(0, 5), TextPos(0, 5));
 
 					protocol->KeyPress(VKEY::KEY_HOME, false, true, false);
@@ -215,7 +242,14 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 					textBox->SetFocused();
-					textBox->SetText(L"0123456789");
+					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Typing", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+					textBox->SetCaret(TextPos(0, 10), TextPos(0, 10));
 					textBox->SetCaret(TextPos(0, 5), TextPos(0, 5));
 
 					protocol->KeyPress(VKEY::KEY_UP);
@@ -253,7 +287,14 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 					textBox->SetFocused();
-					textBox->SetText(L"0123456789");
+					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Typing", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+					textBox->SetCaret(TextPos(0, 10), TextPos(0, 10));
 					textBox->SetCaret(TextPos(0, 5), TextPos(0, 5));
 
 					protocol->KeyPress(VKEY::KEY_PRIOR);
@@ -291,7 +332,14 @@ static void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 					textBox->SetFocused();
-					textBox->SetText(L"0123456789");
+					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Typing", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+					textBox->SetCaret(TextPos(0, 10), TextPos(0, 10));
 					textBox->SetCaret(TextPos(0, 5), TextPos(0, 5));
 
 					protocol->KeyPress(VKEY::KEY_LEFT, true, false, false);
