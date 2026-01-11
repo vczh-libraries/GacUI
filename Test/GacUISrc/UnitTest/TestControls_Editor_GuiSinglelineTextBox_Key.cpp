@@ -975,7 +975,7 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 				resource
 			);
 		});
-	}
+	});
 
 	TEST_CATEGORY(L"Deletion")
 	{
