@@ -144,6 +144,7 @@ TEST_FILE
 
 Please refer to the `Accessing the Knowledge Base` section for more information about advanced features in unit test.
 IMPORTANT: Unlike `TEST_FILE` which ends with `}`, `TEST_CASE` and `TEST_CATEGORY` ends with `});`.
+
 # Writing GacUI Unit Test
 
 Here are some basic rules.

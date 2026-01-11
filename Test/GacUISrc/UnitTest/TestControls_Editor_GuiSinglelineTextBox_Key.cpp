@@ -364,6 +364,146 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 		});
 	});
 
+	TEST_CATEGORY(L"Typing")
+	{
+		TEST_CASE(L"TypeString_InsertsPlainText")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Init", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"abc");
+				});
+
+				protocol->OnNextIdleFrame(L"Typed abc", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					TEST_ASSERT(textBox->GetText() == L"abc");
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/Typing_TypeString_InsertsPlainText"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
+		TEST_CASE(L"TypeString_InsertsTab_WhenAcceptTabInput")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Init", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					TEST_ASSERT(textBox->GetAcceptTabInput());
+					protocol->TypeString(L"\t");
+				});
+
+				protocol->OnNextIdleFrame(L"Typed Tab", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					TEST_ASSERT(textBox->GetText() == L"\t");
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/Typing_TypeString_InsertsTab_WhenAcceptTabInput"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
+		TEST_CASE(L"TypeString_IgnoresWhenCtrlPressed")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Init", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					textBox->SetText(L"012345");
+				});
+
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					protocol->_KeyDown(VKEY::KEY_CONTROL);
+					protocol->TypeString(L"abc");
+					protocol->_KeyUp(VKEY::KEY_CONTROL);
+					TEST_ASSERT(textBox->GetText() == L"012345");
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/Typing_TypeString_IgnoresWhenCtrlPressed"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
+		TEST_CASE(L"TypeString_ReplacesSelection")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Init", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					textBox->SetText(L"012345");
+				});
+
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(0, 6), TextPos(0, 6));
+					protocol->KeyPress(VKEY::KEY_LEFT, false, true, false);
+					protocol->KeyPress(VKEY::KEY_LEFT, false, true, false);
+					protocol->TypeString(L"X");
+					TEST_ASSERT(textBox->GetText() == L"0123X");
+				});
+
+				protocol->OnNextIdleFrame(L"Selected and typed", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/Typing_TypeString_ReplacesSelection"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+	});
+
 	TEST_CATEGORY(L"Clipboard")
 	{
 		TEST_CASE(L"CtrlC_CopiesSelection_TextUnchanged")
