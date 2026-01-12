@@ -122,57 +122,57 @@ TEST_FILE
 
 	const auto resource_MultilineTextBox = LR"GacUISrc(
 <Resource>
-	<Instance name="MainWindowResource">
-		<Instance ref.Class="gacuisrc_unittest::MainWindow">
-			<Window ref.Name="self" Text="GuiMultilineTextBox Test" ClientSize="x:480 y:320">
-				<MultilineTextBox ref.Name="textBox" Text="Initial text">
-					<att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
-				</MultilineTextBox>
-			</Window>
-		</Instance>
-	</Instance>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="GuiMultilineTextBox Test" ClientSize="x:480 y:320">
+        <MultilineTextBox ref.Name="textBox" Text="Initial text">
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+        </MultilineTextBox>
+      </Window>
+    </Instance>
+  </Instance>
 </Resource>
 )GacUISrc";
 
 	const auto resource_DocumentTextBox = LR"GacUISrc(
 <Resource>
-	<Instance name="MainWindowResource">
-		<Instance ref.Class="gacuisrc_unittest::MainWindow">
-			<Window ref.Name="self" Text="GuiDocumentTextBox Test" ClientSize="x:480 y:320">
-				<DocumentTextBox ref.Name="textBox" Text="Initial text" EditMode="Editable">
-					<att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:-1"/>
-				</DocumentTextBox>
-			</Window>
-		</Instance>
-	</Instance>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="GuiDocumentTextBox Test" ClientSize="x:480 y:320">
+        <DocumentTextBox ref.Name="textBox" Text="Initial text" EditMode="Editable">
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:-1"/>
+        </DocumentTextBox>
+      </Window>
+    </Instance>
+  </Instance>
 </Resource>
 )GacUISrc";
 
 	const auto resource_DocumentLabel = LR"GacUISrc(
 <Resource>
-	<Instance name="MainWindowResource">
-		<Instance ref.Class="gacuisrc_unittest::MainWindow">
-			<Window ref.Name="self" Text="GuiDocumentLabel Test" ClientSize="x:480 y:320">
-				<DocumentLabel ref.Name="textBox" Text="Initial text" EditMode="Editable">
-					<att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
-				</DocumentLabel>
-			</Window>
-		</Instance>
-	</Instance>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="GuiDocumentLabel Test" ClientSize="x:480 y:320">
+        <DocumentLabel ref.Name="textBox" Text="Initial text" EditMode="Editable">
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+        </DocumentLabel>
+      </Window>
+    </Instance>
+  </Instance>
 </Resource>
 )GacUISrc";
 
 	const auto resource_DocumentViewer = LR"GacUISrc(
 <Resource>
-	<Instance name="MainWindowResource">
-		<Instance ref.Class="gacuisrc_unittest::MainWindow">
-			<Window ref.Name="self" Text="GuiDocumentViewer Test" ClientSize="x:480 y:320">
-				<DocumentViewer ref.Name="textBox" Text="Initial text" EditMode="Editable">
-					<att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
-				</DocumentViewer>
-			</Window>
-		</Instance>
-	</Instance>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="GuiDocumentViewer Test" ClientSize="x:480 y:320">
+        <DocumentViewer ref.Name="textBox" Text="Initial text" EditMode="Editable">
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+        </DocumentViewer>
+      </Window>
+    </Instance>
+  </Instance>
 </Resource>
 )GacUISrc";
 
