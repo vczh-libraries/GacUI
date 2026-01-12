@@ -196,8 +196,7 @@ GuiDocumentCommonInterface
 							// In particular, Enter must not delete selection.
 							return true;
 						}
-						const auto paragraphMode = config.paragraphMode;
-						if (paragraphMode == GuiDocumentParagraphMode::Paragraph && ctrl && !config.pasteAsPlainText)
+						else if (ctrl && config.paragraphMode == GuiDocumentParagraphMode::Paragraph)
 						{
 							Array<WString> text(1);
 							text[0] = L"\r\n";
