@@ -1522,6 +1522,20 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+	const auto resource_MultilineTextBox = LR"GacUISrc(
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="GuiMultilineTextBox Test" ClientSize="x:480 y:320">
+        <MultilineTextBox ref.Name="textBox">
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+        </MultilineTextBox>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
 	const auto resource_DocumentTextBox = LR"GacUISrc(
 <Resource>
   <Instance name="MainWindowResource">
@@ -1536,13 +1550,56 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+	const auto resource_DocumentLabel = LR"GacUISrc(
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="GuiDocumentLabel Test" ClientSize="x:480 y:320">
+        <DocumentLabel ref.Name="textBox" EditMode="Editable">
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+        </DocumentLabel>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
+	const auto resource_DocumentViewer = LR"GacUISrc(
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="GuiDocumentViewer Test" ClientSize="x:480 y:320">
+        <DocumentViewer ref.Name="textBox" EditMode="Editable">
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+        </DocumentViewer>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
 	TEST_CATEGORY(L"GuiSinglelineTextBox")
 	{
 		RunSinglelineTextBoxTestCases<GuiSinglelineTextBox>(resource_SinglelineTextBox, WString::Unmanaged(L"GuiSinglelineTextBox"), true);
 	});
 
+	TEST_CATEGORY(L"GuiMultilineTextBox")
+	{
+		RunSinglelineTextBoxTestCases<GuiMultilineTextBox>(resource_MultilineTextBox, WString::Unmanaged(L"GuiMultilineTextBox"), false);
+	});
+
 	TEST_CATEGORY(L"GuiDocumentTextBox")
 	{
 		RunSinglelineTextBoxTestCases<GuiDocumentLabel>(resource_DocumentTextBox, WString::Unmanaged(L"GuiDocumentTextBox"), false);
+	});
+
+	TEST_CATEGORY(L"GuiDocumentLabel")
+	{
+		RunSinglelineTextBoxTestCases<GuiDocumentLabel>(resource_DocumentLabel, WString::Unmanaged(L"GuiDocumentLabel"), false);
+	});
+
+	TEST_CATEGORY(L"GuiDocumentViewer")
+	{
+		RunSinglelineTextBoxTestCases<GuiDocumentViewer>(resource_DocumentViewer, WString::Unmanaged(L"GuiDocumentViewer"), false);
 	});
 }
