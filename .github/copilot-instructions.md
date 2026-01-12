@@ -220,6 +220,7 @@ Each frame shows how the UI was before executing code inside a frame.
 In order to make these log human-familiar, please follow these rules:
 - Always name the first frame "Ready".
 - Name other frames for what the previous frame does. This is demoed in the example, as "Clicked this button" is the name of the second frame, while clicking the button happens in the first frame.
+- Action and verification are better to be in the same frame.
 - A frame should introduce UI changing. Otherwise the unit test will crash with a specific error.
 - Keep the last frame only calling `window->Hide();` if possible. But if no meaningful UI change is introduced in the previous frame, it is OK to merge them.
 - Do not introduce unnecessary UI change just to separate frames. UI change must be necessary and meaningful for the test case.

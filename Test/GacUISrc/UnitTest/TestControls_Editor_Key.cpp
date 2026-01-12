@@ -1752,40 +1752,30 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					textBox->SetCaret(TextPos(1, 0), TextPos(1, 0));
 					protocol->KeyPress(VKEY::KEY_LEFT);
 					protocol->TypeString(L"|");
-				});
 
-				protocol->OnNextIdleFrame(L"Pressed LEFT at line start", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					auto document = textBox->GetDocument();
 					TEST_ASSERT(document->paragraphs.Count() == 3);
 					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"AAA|");
 					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"BBB");
 					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CCC");
-					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
 				});
 
-				protocol->OnNextIdleFrame(L"Verified LEFT boundary", [=]()
+				protocol->OnNextIdleFrame(L"Caret at (1,0) and [LEFT]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					textBox->SetCaret(TextPos(1, 3), TextPos(1, 3));
 					protocol->KeyPress(VKEY::KEY_RIGHT);
 					protocol->TypeString(L"|");
-				});
 
-				protocol->OnNextIdleFrame(L"Pressed RIGHT at line end", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					auto document = textBox->GetDocument();
 					TEST_ASSERT(document->paragraphs.Count() == 3);
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"AAA|");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"BBB");
 					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"|CCC");
-					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
 				});
 
-				protocol->OnNextIdleFrame(L"Verified RIGHT boundary", [=]()
+				protocol->OnNextIdleFrame(L"Caret at (1,3) and [RIGHT]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
