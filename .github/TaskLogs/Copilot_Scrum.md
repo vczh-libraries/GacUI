@@ -15,7 +15,7 @@ In new test cases, you should not use GetText to assert the content of the contr
 
 # TASKS
 
-- [ ] TASK No.1: Split singleline-specific cases into RunTextBoxKeyTestCases_Singleline
+- [x] TASK No.1: Split singleline-specific cases into RunTextBoxKeyTestCases_Singleline
 - [ ] TASK No.2: Add GuiMultilineTextBox Enter/CRLF tests with GetDocument assertions
 - [ ] TASK No.3: Add multi-paragraph Enter/CRLF semantics tests with GetDocument assertions
 

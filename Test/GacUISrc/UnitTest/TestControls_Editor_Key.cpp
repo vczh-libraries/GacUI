@@ -3,7 +3,7 @@
 using namespace gacui_unittest_template;
 
 template<typename TTextBox>
-void RunTextBoxKeyTestCases(const wchar_t* resource, const WString& controlName, bool singleline)
+void RunTextBoxKeyTestCases(const wchar_t* resource, const WString& controlName)
 	requires(std::is_base_of_v<GuiControl, TTextBox>&& std::is_base_of_v<GuiDocumentCommonInterface, TTextBox>)
 {
 	TEST_CATEGORY(L"Scaffold")
@@ -693,57 +693,6 @@ void RunTextBoxKeyTestCases(const wchar_t* resource, const WString& controlName,
 			);
 		});
 
-		if (singleline)
-		{
-			TEST_CASE(L"CtrlV_FlattensLineBreaks")
-			{
-				TooltipTimer timer;
-				GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
-				{
-					protocol->OnNextIdleFrame(L"Init", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-						textBox->SetFocused();
-						protocol->TypeString(L"0123456789");
-					});
-
-					protocol->OnNextIdleFrame(L"Typing", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-						auto clipboard = GetCurrentController()->ClipboardService();
-
-						{
-							auto writer = clipboard->WriteClipboard();
-							writer->SetText(L"12\r\n34\n\r\n56");
-							TEST_ASSERT(writer->Submit());
-						}
-
-						textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
-						protocol->KeyPress(VKEY::KEY_V, true, false, false);
-						TEST_ASSERT(textBox->GetText() == L"1234560123456789");
-						TEST_ASSERT(textBox->GetText().IndexOf(L'\r') == -1);
-						TEST_ASSERT(textBox->GetText().IndexOf(L'\n') == -1);
-					});
-
-					protocol->OnNextIdleFrame(L"Pasted", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						window->Hide();
-					});
-				});
-
-				GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-					WString::Unmanaged(L"Controls/Editor/")
-					+ controlName
-					+ WString::Unmanaged(L"/Key/Clipboard_CtrlV_FlattensLineBreaks"),
-					WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-					resource
-				);
-			});
-		}
-
 		TEST_CASE(L"CtrlV_EmptyClipboard_NoChange")
 		{
 			TooltipTimer timer;
@@ -918,76 +867,6 @@ void RunTextBoxKeyTestCases(const wchar_t* resource, const WString& controlName,
 				resource
 			);
 		});
-
-		if (singleline)
-		{
-			TEST_CASE(L"CtrlZ_UndoesPaste_FlattenedText")
-			{
-				TooltipTimer timer;
-				GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
-				{
-					protocol->OnNextIdleFrame(L"Init", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-						textBox->SetFocused();
-
-						protocol->TypeString(L"0123456789");
-						textBox->ClearUndoRedo();
-					});
-
-					protocol->OnNextIdleFrame(L"Typing", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-						auto clipboard = GetCurrentController()->ClipboardService();
-						{
-							auto writer = clipboard->WriteClipboard();
-							writer->SetText(L"12\r\n34\n\r\n56");
-							TEST_ASSERT(writer->Submit());
-						}
-						textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
-						protocol->KeyPress(VKEY::KEY_V, true, false, false);
-					});
-
-					protocol->OnNextIdleFrame(L"Pasted", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-						TEST_ASSERT(textBox->GetText() == L"1234560123456789");
-						TEST_ASSERT(textBox->GetText().IndexOf(L'\r') == -1);
-						TEST_ASSERT(textBox->GetText().IndexOf(L'\n') == -1);
-						protocol->KeyPress(VKEY::KEY_Z, true, false, false);
-					});
-
-					protocol->OnNextIdleFrame(L"Undo", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-						TEST_ASSERT(textBox->GetText() == L"0123456789");
-						protocol->KeyPress(VKEY::KEY_Y, true, false, false);
-					});
-
-					protocol->OnNextIdleFrame(L"Redo", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-						TEST_ASSERT(textBox->GetText() == L"1234560123456789");
-						TEST_ASSERT(textBox->GetText().IndexOf(L'\r') == -1);
-						TEST_ASSERT(textBox->GetText().IndexOf(L'\n') == -1);
-						window->Hide();
-					});
-				});
-
-				GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-					WString::Unmanaged(L"Controls/Editor/")
-					+ controlName
-					+ WString::Unmanaged(L"/Key/UndoRedo_CtrlZ_UndoesPaste_FlattenedText"),
-					WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-					resource
-				);
-			});
-		}
 
 		TEST_CASE(L"ClearUndoRedo_DeletesAllHistory")
 		{
@@ -1352,157 +1231,283 @@ void RunTextBoxKeyTestCases(const wchar_t* resource, const WString& controlName,
 				resource
 			);
 		});
+	});
+}
 
-		if (singleline)
+template<typename TTextBox>
+void RunTextBoxKeyTestCases_Singleline(const wchar_t* resource, const WString& controlName)
+	requires(std::is_base_of_v<GuiControl, TTextBox>&& std::is_base_of_v<GuiDocumentCommonInterface, TTextBox>)
+{
+	TEST_CATEGORY(L"Clipboard (Singleline)")
+	{
+		TEST_CASE(L"CtrlV_FlattensLineBreaks")
 		{
-			TEST_CASE(L"Enter_Ignored_NoSelection_NoChange")
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				TooltipTimer timer;
-				GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+				protocol->OnNextIdleFrame(L"Init", [=]()
 				{
-					protocol->OnNextIdleFrame(L"Init", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-						textBox->SetFocused();
-						protocol->TypeString(L"0123456789");
-					});
-
-					protocol->OnNextIdleFrame(L"Enter", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-						textBox->SetCaret(TextPos(0, 5), TextPos(0, 5));
-						TEST_ASSERT(textBox->GetSelectionText() == L"");
-
-						protocol->KeyPress(VKEY::KEY_RETURN);
-						TEST_ASSERT(textBox->GetText() == L"0123456789");
-						TEST_ASSERT(textBox->GetSelectionText() == L"");
-
-						window->Hide();
-					});
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"0123456789");
 				});
 
-				GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-					WString::Unmanaged(L"Controls/Editor/")
-					+ controlName
-					+ WString::Unmanaged(L"/Key/Deletion_Enter_Ignored_NoSelection_NoChange"),
-					WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-					resource
-				);
-			});
-
-			TEST_CASE(L"Enter_Ignored_SelectionPreserved")
-			{
-				TooltipTimer timer;
-				GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+				protocol->OnNextIdleFrame(L"Typing", [=]()
 				{
-					protocol->OnNextIdleFrame(L"Init", [=]()
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto clipboard = GetCurrentController()->ClipboardService();
+
 					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-						textBox->SetFocused();
-						protocol->TypeString(L"0123456789");
-					});
+						auto writer = clipboard->WriteClipboard();
+						writer->SetText(L"12\r\n34\n\r\n56");
+						TEST_ASSERT(writer->Submit());
+					}
 
-					protocol->OnNextIdleFrame(L"Enter", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-						textBox->SetCaret(TextPos(0, 2), TextPos(0, 5));
-						TEST_ASSERT(textBox->GetSelectionText() == L"234");
-
-						protocol->KeyPress(VKEY::KEY_RETURN);
-						TEST_ASSERT(textBox->GetText() == L"0123456789");
-						TEST_ASSERT(textBox->GetSelectionText() == L"234");
-
-						window->Hide();
-					});
+					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
+					protocol->KeyPress(VKEY::KEY_V, true, false, false);
+					TEST_ASSERT(textBox->GetText() == L"1234560123456789");
+					TEST_ASSERT(textBox->GetText().IndexOf(L'\r') == -1);
+					TEST_ASSERT(textBox->GetText().IndexOf(L'\n') == -1);
 				});
 
-				GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-					WString::Unmanaged(L"Controls/Editor/")
-					+ controlName
-					+ WString::Unmanaged(L"/Key/Deletion_Enter_Ignored_SelectionPreserved"),
-					WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-					resource
-				);
+				protocol->OnNextIdleFrame(L"Pasted", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
 			});
 
-			TEST_CASE(L"CtrlEnter_Ignored_NoSelection_NoChange")
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/Clipboard_CtrlV_FlattensLineBreaks"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+	});
+
+	TEST_CATEGORY(L"UndoRedo (Singleline)")
+	{
+		TEST_CASE(L"CtrlZ_UndoesPaste_FlattenedText")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				TooltipTimer timer;
-				GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+				protocol->OnNextIdleFrame(L"Init", [=]()
 				{
-					protocol->OnNextIdleFrame(L"Init", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-						textBox->SetFocused();
-						protocol->TypeString(L"0123456789");
-					});
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
 
-					protocol->OnNextIdleFrame(L"Enter", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-						textBox->SetCaret(TextPos(0, 5), TextPos(0, 5));
-						TEST_ASSERT(textBox->GetSelectionText() == L"");
-
-						protocol->KeyPress(VKEY::KEY_RETURN, true, false, false);
-						TEST_ASSERT(textBox->GetText() == L"0123456789");
-						TEST_ASSERT(textBox->GetSelectionText() == L"");
-
-						window->Hide();
-					});
+					protocol->TypeString(L"0123456789");
+					textBox->ClearUndoRedo();
 				});
 
-				GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-					WString::Unmanaged(L"Controls/Editor/")
-					+ controlName
-					+ WString::Unmanaged(L"/Key/Deletion_CtrlEnter_Ignored_NoSelection_NoChange"),
-					WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-					resource
-				);
-			});
-
-			TEST_CASE(L"CtrlEnter_Ignored_SelectionPreserved")
-			{
-				TooltipTimer timer;
-				GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+				protocol->OnNextIdleFrame(L"Typing", [=]()
 				{
-					protocol->OnNextIdleFrame(L"Init", [=]()
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto clipboard = GetCurrentController()->ClipboardService();
 					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-						textBox->SetFocused();
-						protocol->TypeString(L"0123456789");
-					});
-
-					protocol->OnNextIdleFrame(L"Enter", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
-						textBox->SetCaret(TextPos(0, 2), TextPos(0, 5));
-						TEST_ASSERT(textBox->GetSelectionText() == L"234");
-
-						protocol->KeyPress(VKEY::KEY_RETURN, true, false, false);
-						TEST_ASSERT(textBox->GetText() == L"0123456789");
-						TEST_ASSERT(textBox->GetSelectionText() == L"234");
-
-						window->Hide();
-					});
+						auto writer = clipboard->WriteClipboard();
+						writer->SetText(L"12\r\n34\n\r\n56");
+						TEST_ASSERT(writer->Submit());
+					}
+					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
+					protocol->KeyPress(VKEY::KEY_V, true, false, false);
 				});
 
-				GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-					WString::Unmanaged(L"Controls/Editor/")
-					+ controlName
-					+ WString::Unmanaged(L"/Key/Deletion_CtrlEnter_Ignored_SelectionPreserved"),
-					WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-					resource
-				);
+				protocol->OnNextIdleFrame(L"Pasted", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					TEST_ASSERT(textBox->GetText() == L"1234560123456789");
+					TEST_ASSERT(textBox->GetText().IndexOf(L'\r') == -1);
+					TEST_ASSERT(textBox->GetText().IndexOf(L'\n') == -1);
+					protocol->KeyPress(VKEY::KEY_Z, true, false, false);
+				});
+
+				protocol->OnNextIdleFrame(L"Undo", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					TEST_ASSERT(textBox->GetText() == L"0123456789");
+					protocol->KeyPress(VKEY::KEY_Y, true, false, false);
+				});
+
+				protocol->OnNextIdleFrame(L"Redo", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					TEST_ASSERT(textBox->GetText() == L"1234560123456789");
+					TEST_ASSERT(textBox->GetText().IndexOf(L'\r') == -1);
+					TEST_ASSERT(textBox->GetText().IndexOf(L'\n') == -1);
+					window->Hide();
+				});
 			});
-		}
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/UndoRedo_CtrlZ_UndoesPaste_FlattenedText"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+	});
+
+	TEST_CATEGORY(L"Deletion (Singleline)")
+	{
+		TEST_CASE(L"Enter_Ignored_NoSelection_NoChange")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Init", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Enter", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(0, 5), TextPos(0, 5));
+					TEST_ASSERT(textBox->GetSelectionText() == L"");
+
+					protocol->KeyPress(VKEY::KEY_RETURN);
+					TEST_ASSERT(textBox->GetText() == L"0123456789");
+					TEST_ASSERT(textBox->GetSelectionText() == L"");
+
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/Deletion_Enter_Ignored_NoSelection_NoChange"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
+		TEST_CASE(L"Enter_Ignored_SelectionPreserved")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Init", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Enter", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(0, 2), TextPos(0, 5));
+					TEST_ASSERT(textBox->GetSelectionText() == L"234");
+
+					protocol->KeyPress(VKEY::KEY_RETURN);
+					TEST_ASSERT(textBox->GetText() == L"0123456789");
+					TEST_ASSERT(textBox->GetSelectionText() == L"234");
+
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/Deletion_Enter_Ignored_SelectionPreserved"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
+		TEST_CASE(L"CtrlEnter_Ignored_NoSelection_NoChange")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Init", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Enter", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(0, 5), TextPos(0, 5));
+					TEST_ASSERT(textBox->GetSelectionText() == L"");
+
+					protocol->KeyPress(VKEY::KEY_RETURN, true, false, false);
+					TEST_ASSERT(textBox->GetText() == L"0123456789");
+					TEST_ASSERT(textBox->GetSelectionText() == L"");
+
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/Deletion_CtrlEnter_Ignored_NoSelection_NoChange"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
+		TEST_CASE(L"CtrlEnter_Ignored_SelectionPreserved")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Init", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"0123456789");
+				});
+
+				protocol->OnNextIdleFrame(L"Enter", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(0, 2), TextPos(0, 5));
+					TEST_ASSERT(textBox->GetSelectionText() == L"234");
+
+					protocol->KeyPress(VKEY::KEY_RETURN, true, false, false);
+					TEST_ASSERT(textBox->GetText() == L"0123456789");
+					TEST_ASSERT(textBox->GetSelectionText() == L"234");
+
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/Deletion_CtrlEnter_Ignored_SelectionPreserved"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
 	});
 }
 
@@ -1580,26 +1585,27 @@ TEST_FILE
 
 	TEST_CATEGORY(L"GuiSinglelineTextBox")
 	{
-		RunTextBoxKeyTestCases<GuiSinglelineTextBox>(resource_SinglelineTextBox, WString::Unmanaged(L"GuiSinglelineTextBox"), true);
+		RunTextBoxKeyTestCases<GuiSinglelineTextBox>(resource_SinglelineTextBox, WString::Unmanaged(L"GuiSinglelineTextBox"));
+		RunTextBoxKeyTestCases_Singleline<GuiSinglelineTextBox>(resource_SinglelineTextBox, WString::Unmanaged(L"GuiSinglelineTextBox"));
 	});
 
 	TEST_CATEGORY(L"GuiMultilineTextBox")
 	{
-		RunTextBoxKeyTestCases<GuiMultilineTextBox>(resource_MultilineTextBox, WString::Unmanaged(L"GuiMultilineTextBox"), false);
+		RunTextBoxKeyTestCases<GuiMultilineTextBox>(resource_MultilineTextBox, WString::Unmanaged(L"GuiMultilineTextBox"));
 	});
 
 	TEST_CATEGORY(L"GuiDocumentTextBox")
 	{
-		RunTextBoxKeyTestCases<GuiDocumentLabel>(resource_DocumentTextBox, WString::Unmanaged(L"GuiDocumentTextBox"), false);
+		RunTextBoxKeyTestCases<GuiDocumentLabel>(resource_DocumentTextBox, WString::Unmanaged(L"GuiDocumentTextBox"));
 	});
 
 	TEST_CATEGORY(L"GuiDocumentLabel")
 	{
-		RunTextBoxKeyTestCases<GuiDocumentLabel>(resource_DocumentLabel, WString::Unmanaged(L"GuiDocumentLabel"), false);
+		RunTextBoxKeyTestCases<GuiDocumentLabel>(resource_DocumentLabel, WString::Unmanaged(L"GuiDocumentLabel"));
 	});
 
 	TEST_CATEGORY(L"GuiDocumentViewer")
 	{
-		RunTextBoxKeyTestCases<GuiDocumentViewer>(resource_DocumentViewer, WString::Unmanaged(L"GuiDocumentViewer"), false);
+		RunTextBoxKeyTestCases<GuiDocumentViewer>(resource_DocumentViewer, WString::Unmanaged(L"GuiDocumentViewer"));
 	});
 }
