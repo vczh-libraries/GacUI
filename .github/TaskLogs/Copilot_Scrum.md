@@ -78,7 +78,7 @@ I would like you to do:
 - [x] TASK No.6: Add TEST_CATEGORY for clipboard shortcuts
 - [x] TASK No.7: Add TEST_CATEGORY for undo/redo shortcuts
 - [x] TASK No.8: Add TEST_CATEGORY for typing and char-input filtering
-- [ ] TASK No.9: Run smoke tests for more editor text boxes
+- [x] TASK No.9: Run smoke tests for more editor text boxes
 
 ## TASK No.1: Refactor existing GuiSinglelineTextBox tests for reuse
 

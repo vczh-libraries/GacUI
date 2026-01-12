@@ -84,7 +84,7 @@ void RunTextBoxSmokeTest(const wchar_t* resource, const WString& controlName)
 				auto window = GetApplication()->GetMainWindow();
 				auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 				TEST_ASSERT(textBox->GetText() == L"Replac");
-				auto caretPoint = protocol->LocationOf(textBox, 0.0, 0.5, 2, 0);
+				auto caretPoint = protocol->LocationOf(textBox, 0.0, 0.0, 2, 8);
 				protocol->LClick(caretPoint);
 				protocol->TypeString(L"Start ");
 			});
@@ -106,7 +106,7 @@ void RunTextBoxSmokeTest(const wchar_t* resource, const WString& controlName)
 
 TEST_FILE
 {
-	const auto resource = LR"GacUISrc(
+	const auto resource_SinglelineTextBox = LR"GacUISrc(
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
@@ -120,8 +120,84 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+	const auto resource_MultilineTextBox = LR"GacUISrc(
+<Resource>
+	<Instance name="MainWindowResource">
+		<Instance ref.Class="gacuisrc_unittest::MainWindow">
+			<Window ref.Name="self" Text="GuiMultilineTextBox Test" ClientSize="x:480 y:320">
+				<MultilineTextBox ref.Name="textBox" Text="Initial text">
+					<att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+				</MultilineTextBox>
+			</Window>
+		</Instance>
+	</Instance>
+</Resource>
+)GacUISrc";
+
+	const auto resource_DocumentTextBox = LR"GacUISrc(
+<Resource>
+	<Instance name="MainWindowResource">
+		<Instance ref.Class="gacuisrc_unittest::MainWindow">
+			<Window ref.Name="self" Text="GuiDocumentTextBox Test" ClientSize="x:480 y:320">
+				<DocumentTextBox ref.Name="textBox" Text="Initial text" EditMode="Editable">
+					<att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:-1"/>
+				</DocumentTextBox>
+			</Window>
+		</Instance>
+	</Instance>
+</Resource>
+)GacUISrc";
+
+	const auto resource_DocumentLabel = LR"GacUISrc(
+<Resource>
+	<Instance name="MainWindowResource">
+		<Instance ref.Class="gacuisrc_unittest::MainWindow">
+			<Window ref.Name="self" Text="GuiDocumentLabel Test" ClientSize="x:480 y:320">
+				<DocumentLabel ref.Name="textBox" Text="Initial text" EditMode="Editable">
+					<att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+				</DocumentLabel>
+			</Window>
+		</Instance>
+	</Instance>
+</Resource>
+)GacUISrc";
+
+	const auto resource_DocumentViewer = LR"GacUISrc(
+<Resource>
+	<Instance name="MainWindowResource">
+		<Instance ref.Class="gacuisrc_unittest::MainWindow">
+			<Window ref.Name="self" Text="GuiDocumentViewer Test" ClientSize="x:480 y:320">
+				<DocumentViewer ref.Name="textBox" Text="Initial text" EditMode="Editable">
+					<att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+				</DocumentViewer>
+			</Window>
+		</Instance>
+	</Instance>
+</Resource>
+)GacUISrc";
+
 	TEST_CATEGORY(L"GuiSinglelineTextBox")
 	{
-		RunTextBoxSmokeTest<GuiSinglelineTextBox>(resource, WString::Unmanaged(L"GuiSinglelineTextBox"));
+		RunTextBoxSmokeTest<GuiSinglelineTextBox>(resource_SinglelineTextBox, WString::Unmanaged(L"GuiSinglelineTextBox"));
+	});
+
+	TEST_CATEGORY(L"GuiMultilineTextBox")
+	{
+		RunTextBoxSmokeTest<GuiMultilineTextBox>(resource_MultilineTextBox, WString::Unmanaged(L"GuiMultilineTextBox"));
+	});
+
+	TEST_CATEGORY(L"GuiDocumentTextBox")
+	{
+		RunTextBoxSmokeTest<GuiDocumentLabel>(resource_DocumentTextBox, WString::Unmanaged(L"GuiDocumentTextBox"));
+	});
+
+	TEST_CATEGORY(L"GuiDocumentLabel")
+	{
+		RunTextBoxSmokeTest<GuiDocumentLabel>(resource_DocumentLabel, WString::Unmanaged(L"GuiDocumentLabel"));
+	});
+
+	TEST_CATEGORY(L"GuiDocumentViewer")
+	{
+		RunTextBoxSmokeTest<GuiDocumentViewer>(resource_DocumentViewer, WString::Unmanaged(L"GuiDocumentViewer"));
 	});
 }
