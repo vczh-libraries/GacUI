@@ -1499,7 +1499,7 @@ void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& contr
 
 TEST_FILE
 {
-	const auto resourceSinglelineTextBox = LR"GacUISrc(
+	const auto resource_SinglelineTextBox = LR"GacUISrc(
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
@@ -1513,8 +1513,27 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+	const auto resource_DocumentTextBox = LR"GacUISrc(
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="GuiDocumentTextBox Test" ClientSize="x:480 y:320">
+        <DocumentTextBox ref.Name="textBox" EditMode="Editable">
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:-1"/>
+        </DocumentTextBox>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
 	TEST_CATEGORY(L"GuiSinglelineTextBox")
 	{
-		RunSinglelineTextBoxTestCases<GuiSinglelineTextBox>(resourceSinglelineTextBox, WString::Unmanaged(L"GuiSinglelineTextBox"));
+		RunSinglelineTextBoxTestCases<GuiSinglelineTextBox>(resource_SinglelineTextBox, WString::Unmanaged(L"GuiSinglelineTextBox"));
+	});
+
+	TEST_CATEGORY(L"GuiDocumentTextBox")
+	{
+		RunSinglelineTextBoxTestCases<GuiDocumentLabel>(resource_DocumentTextBox, WString::Unmanaged(L"GuiDocumentTextBox"));
 	});
 }
