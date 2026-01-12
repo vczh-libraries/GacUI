@@ -34,3 +34,9 @@ If the whole request is `!summarize`, treat it like
 summarize
 # Problem
 ```
+
+If the whole request is `!learn`, treat it like
+```
+scrum
+# Learn
+```

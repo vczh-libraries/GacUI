@@ -121,6 +121,7 @@ Per the latest UPDATE, this task must include real test cases so `RunTextBoxKeyT
 	- Any other navigation operations that are mode-sensitive for `GuiDocumentParagraphMode::Multiline` as discovered from existing tests and implementation.
 - In order to make caret movement visible in logs and to ensure each frame produces UI change:
 	- After each navigation key (or small sequence), type a character (or insert a marker) so the caret position becomes visually reflected and the frame is valid.
+	- When a step already causes a visible UI change (e.g. editing text), it is fine to put `window->Hide();` in a final dedicated frame to log the post-action UI state cleanly.
 - Avoid triggering line wrapping in these new cases:
 	- Keep each line/paragraph short enough to avoid wrapping in the unit-test renderer, so the tests primarily validate caret navigation rules rather than the stub wrapping algorithm.
 
@@ -162,6 +163,7 @@ All new assertions for content must use `GetDocument()` and `GetTextForReading()
 	- Multi-paragraph (Paragraph mode) semantics:
 		- `ENTER` creates a new paragraph (paragraph count increases).
 		- `CTRL+ENTER` inserts a line break inside the current paragraph (paragraph count unchanged).
+			- This behavior should be decided by `paragraphMode == Paragraph` (not by `pasteAsPlainText`), because there are plain-text paragraph-mode controls that still need in-paragraph line breaks.
 			- Typing/pasting with single CRLF results in a line break within a paragraph.
 			- Typing/pasting with double CRLF results in a paragraph break.
 			- Typing/pasting with 3 consecutive CRLF matches the expected parsing rule (e.g. `a\r\n\r\n\r\nb` => 2 paragraphs; the second paragraph begins with an empty line and then `b`).
@@ -199,6 +201,7 @@ Note: earlier request text used `RunTextBoxKeyTestCases_MultiParagraphs`; this d
 	- Any other navigation operations that are mode-sensitive for `GuiDocumentParagraphMode::Paragraph` as discovered from existing tests and implementation.
 - In order to make caret movement visible in logs and to ensure each frame produces UI change:
 	- After each navigation key (or small sequence), type a character (or insert a marker) so the caret position becomes visually reflected and the frame is valid.
+	- When a step already causes a visible UI change, prefer a final hide-only frame (`window->Hide();`) to capture the post-action UI state in logs.
 - Avoid triggering line wrapping in these new cases:
 	- Keep each line/paragraph short enough to avoid wrapping in the unit-test renderer, so the tests primarily validate caret navigation rules rather than the stub wrapping algorithm.
 
