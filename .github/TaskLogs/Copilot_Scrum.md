@@ -43,10 +43,14 @@ To clarify, `RunTextBoxKeyTestCases_Multiline` only applies to GuiMultilineTextB
 
 More clarification, since Task 2/3 is for `RunTextBoxKeyTestCases_Multiline`, so these 2 task should only focus on GuiMultilineTextBox, and update the GuiMultilineTextBox test category to call this function. Task 4/5 is for RunTextBoxKeyTestCases_MultiParagraph with other 3 controls. I see these two functions are mentioned in all 4 tasks, please clean the content of the task.
 
+## UPDATE
+
+You will still need to add test cases in Task 2/3, otherwise the `RunTextBoxKeyTestCases_Multiline` is empty.
+
 # TASKS
 
 - [x] TASK No.1: Split singleline-specific cases into RunTextBoxKeyTestCases_Singleline
-- [x] TASK No.2: Fix ENTER/CRLF semantics for multiline mode (GuiMultilineTextBox)
+- [ ] TASK No.2: Fix ENTER/CRLF semantics for multiline mode (GuiMultilineTextBox)
 - [ ] TASK No.3: Fix caret navigation semantics for multiline mode (GuiMultilineTextBox)
 - [ ] TASK No.4: Add Enter/CRLF tests with GetDocument assertions (Paragraph mode controls)
 - [ ] TASK No.5: Add keyboard caret navigation tests (Paragraph mode controls)
@@ -75,49 +79,65 @@ This task removes the `singleline` flag from `RunTextBoxKeyTestCases` and moves 
 
 ## TASK No.2: Fix ENTER/CRLF semantics for multiline mode (GuiMultilineTextBox)
 
-Implement or adjust ENTER and CRLF handling for `GuiDocumentParagraphMode::Multiline` so `GuiMultilineTextBox` behaves consistently with the expected semantics described in the DESIGN REQUEST.
+Add multiline-mode ENTER/CRLF coverage into `RunTextBoxKeyTestCases_Multiline` and fix implementation when necessary so `GuiMultilineTextBox` behaves consistently with the expected semantics described in the DESIGN REQUEST.
 
-This task focuses on behavior/implementation only (not unit tests), so that the following test tasks can rely on stable model semantics.
+Per the latest UPDATE, this task must include real test cases so `RunTextBoxKeyTestCases_Multiline` is not empty.
 
 ### what to be done
 
-- Review key handling and text insertion paths for `KEY_RETURN` / `Ctrl+KEY_RETURN` in #file:GuiTextCommonInterface.cpp and any shared document-editing code it calls.
-- Ensure `GuiDocumentParagraphMode::Multiline` semantics:
+- Implement (or fill in) `RunTextBoxKeyTestCases_Multiline` in Test/GacUISrc/UnitTest/TestControls_Editor_Key.cpp for `GuiMultilineTextBox`.
+	- Update the `GuiMultilineTextBox` test category in the same file to call `RunTextBoxKeyTestCases_Multiline`.
+- Add ENTER/CRLF test cases (modeled after the structure and assertion approach used by `RunTextBoxKeyTestCases_Singleline`) that validate multiline mode semantics:
 	- `ENTER` and `CTRL+ENTER` do the same thing.
 	- Both insert a CRLF into the text model.
 	- Any pasted or typed text containing CRLF is preserved and not flattened.
 		- CRLF separates lines (including multi-line clipboard paste and multi-line typing input).
-- Confirm the behaviors above are reflected in the underlying `DocumentModel` structure, since tests will validate via `GetDocument()` and `GetTextForReading()`.
-- Update the `GuiMultilineTextBox` test category in Test/GacUISrc/UnitTest/TestControls_Editor_Key.cpp to call `RunTextBoxKeyTestCases_Multiline` (wiring only; no new test coverage in this task).
+	- Include copy/paste cases that involve multiple lines of text (as clarified in UPDATE).
+- For every new assertion about text/document content:
+	- Do not call `GetText()`.
+	- Validate paragraph count in the `DocumentModel` returned by `GetDocument()`.
+	- Validate each paragraph’s content using `DocumentParagraphRun::GetTextForReading()`.
+- If any new multiline-mode test fails due to behavior mismatch, fix the underlying implementation in #file:GuiTextCommonInterface.cpp (or the document-editing code it calls) until the tests pass.
 
 ### rationale
 
-- ENTER/CRLF rules are core editing semantics and should be stabilized before writing tests that assert the document model.
-- This task is scoped to `GuiDocumentParagraphMode::Multiline` only, matching the clarified test-coverage design (multiline helper applies only to `GuiMultilineTextBox`).
-- Wiring `GuiMultilineTextBox` to the multiline helper makes the test structure reflect the intended mode split early, without adding coverage yet.
+- This task is scoped to `GuiDocumentParagraphMode::Multiline` only, matching the clarified design (multiline helper applies only to `GuiMultilineTextBox`).
+- Adding the ENTER/CRLF test cases here prevents `RunTextBoxKeyTestCases_Multiline` from staying empty and immediately locks down the editing semantics differences for multiline mode.
+- Validating via `GetDocument()` + `GetTextForReading()` ensures tests check the underlying model rather than any normalized string produced by `GetText()`.
 
 ## TASK No.3: Fix caret navigation semantics for multiline mode (GuiMultilineTextBox)
 
-Implement or adjust caret/cursor navigation behaviors so that keyboard navigation works consistently for `GuiDocumentParagraphMode::Multiline` in `GuiMultilineTextBox`.
+Add multiline-mode caret-navigation coverage into `RunTextBoxKeyTestCases_Multiline` and fix implementation when necessary so that keyboard navigation works consistently for `GuiDocumentParagraphMode::Multiline` in `GuiMultilineTextBox`.
 
-The UPDATE explicitly calls out HOME/END behavior and boundary navigation across lines/paragraphs; this task is the place to align implementation to those expectations without mixing the changes into test tasks.
+Per the latest UPDATE, this task must include real test cases so `RunTextBoxKeyTestCases_Multiline` is not empty beyond ENTER/CRLF.
 
 ### what to be done
 
+
+- Extend `RunTextBoxKeyTestCases_Multiline` in Test/GacUISrc/UnitTest/TestControls_Editor_Key.cpp with keyboard caret-navigation test cases that cover:
+	- `LEFT` / `RIGHT` boundary movement across line boundaries in multiline mode.
+	- `UP` / `DOWN` and `PAGE UP` / `PAGE DOWN` vertical movement.
+	- `HOME` / `END` behavior per the UPDATE (line → paragraph → document), and `CTRL+HOME` / `CTRL+END` (document).
+	- Any other navigation operations that are mode-sensitive for `GuiDocumentParagraphMode::Multiline` as discovered from existing tests and implementation.
+- In order to make caret movement visible in logs and to ensure each frame produces UI change:
+	- After each navigation key (or small sequence), type a character (or insert a marker) so the caret position becomes visually reflected and the frame is valid.
+- Avoid triggering line wrapping in these new cases:
+	- Keep each line/paragraph short enough to avoid wrapping in the unit-test renderer, so the tests primarily validate caret navigation rules rather than the stub wrapping algorithm.
+
 - Review keyboard navigation handling in #file:GuiTextCommonInterface.cpp (especially `KEY_HOME`, `KEY_END`, and boundary behaviors for `KEY_LEFT`/`KEY_RIGHT`).
-- Implement the requested HOME/END semantics:
+- Ensure the requested HOME/END semantics:
 	- `HOME` / `END` first targets the beginning/ending of the current line.
 	- If that would not move the caret (already at that position), it should target the beginning/ending of the current paragraph.
 	- If that still would not move the caret, it should target the beginning/ending of the whole document.
 	- `CTRL+HOME` / `CTRL+END` always targets the beginning/ending of the whole document.
 	- Ensure `LEFT`/`RIGHT` boundary movement matches expectations for multiline mode (line-level boundaries).
-- Confirm `UP`/`DOWN` and `PAGE UP`/`PAGE DOWN` perform vertical caret movement in a way that is compatible with the unit-test environment.
-- If new unit tests reveal mismatches caused by the unit-test rendering stub (caret bounds / caret movement), adjust #file:GuiUnitTestProtocol_Rendering.cpp minimally so caret navigation in tests reflects the intended behavior, while keeping line-wrapping out of scope.
+- If the new tests reveal mismatches, fix the implementation in #file:GuiTextCommonInterface.cpp until they pass.
+- If failures are caused by the unit-test rendering stub (caret bounds / caret movement), adjust #file:GuiUnitTestProtocol_Rendering.cpp minimally so caret navigation in tests reflects the intended behavior, while keeping line-wrapping out of scope.
 
 ### rationale
 
-- The navigation tests for multiline mode will be fragile unless caret movement semantics are implemented consistently first.
 - Scoping this task to multiline mode matches the clarified design: Task 2/3 focus on `GuiMultilineTextBox` and `RunTextBoxKeyTestCases_Multiline`.
+- Adding navigation test cases here ensures `RunTextBoxKeyTestCases_Multiline` contains real multiline-specific coverage beyond basic editing semantics.
 - The unit-test rendering layer participates in caret queries; when failures are caused by stub behavior, it should be fixed in isolation and as minimally as possible.
 
 ## TASK No.4: Add Enter/CRLF tests with GetDocument assertions (Paragraph mode controls)
