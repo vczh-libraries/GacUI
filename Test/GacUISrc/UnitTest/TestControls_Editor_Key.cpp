@@ -1814,41 +1814,31 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					textBox->SetCaret(TextPos(1, 2), TextPos(1, 2));
 					protocol->KeyPress(VKEY::KEY_UP);
-					protocol->TypeString(L"|");
-				});
+					protocol->TypeString(L"^");
 
-				protocol->OnNextIdleFrame(L"Pressed UP", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					auto document = textBox->GetDocument();
 					TEST_ASSERT(document->paragraphs.Count() == 3);
-					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"AA|AAA");
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"AA^AAA");
 					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"BBBBB");
 					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CCCCC");
-					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
 				});
 
-				protocol->OnNextIdleFrame(L"Verified UP", [=]()
+				protocol->OnNextIdleFrame(L"Caret at (1,2) and [UP]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					textBox->SetCaret(TextPos(1, 2), TextPos(1, 2));
 					protocol->KeyPress(VKEY::KEY_DOWN);
-					protocol->TypeString(L"|");
-				});
+					protocol->TypeString(L"v");
 
-				protocol->OnNextIdleFrame(L"Pressed DOWN", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					auto document = textBox->GetDocument();
 					TEST_ASSERT(document->paragraphs.Count() == 3);
-					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CC|CCC");
-					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"AA^AAA");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"BBBBB");
+					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CCvCCC");
 				});
 
-				protocol->OnNextIdleFrame(L"Verified DOWN", [=]()
+				protocol->OnNextIdleFrame(L"Caret at (1,2) and [DOWN]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
@@ -1888,48 +1878,60 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					textBox->SetCaret(TextPos(1, 1), TextPos(1, 1));
 					protocol->KeyPress(VKEY::KEY_HOME);
 					protocol->TypeString(L"|");
+
+					auto document = textBox->GetDocument();
+					TEST_ASSERT(document->paragraphs.Count() == 3);
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"AAA");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"|BBB");
+					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CCC");
 				});
 
-				protocol->OnNextIdleFrame(L"Pressed HOME (line)", [=]()
+				protocol->OnNextIdleFrame(L"Caret at (1,1) and [HOME]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					textBox->SetCaret(TextPos(1, 0), TextPos(1, 0));
 					protocol->KeyPress(VKEY::KEY_HOME);
 					protocol->TypeString(L"!");
+
+					auto document = textBox->GetDocument();
+					TEST_ASSERT(document->paragraphs.Count() == 3);
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"!AAA");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"|BBB");
+					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CCC");
 				});
 
-				protocol->OnNextIdleFrame(L"Pressed HOME (escalate to document)", [=]()
+				protocol->OnNextIdleFrame(L"Caret at (1,0) and [HOME]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					textBox->SetCaret(TextPos(1, 2), TextPos(1, 2));
 					protocol->KeyPress(VKEY::KEY_END);
 					protocol->TypeString(L"^");
+
+					auto document = textBox->GetDocument();
+					TEST_ASSERT(document->paragraphs.Count() == 3);
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"!AAA");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"|BBB^");
+					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CCC");
 				});
 
-				protocol->OnNextIdleFrame(L"Pressed END (line)", [=]()
+				protocol->OnNextIdleFrame(L"Caret at (1,2) and [END]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					textBox->SetCaret(TextPos(1, 5), TextPos(1, 5));
 					protocol->KeyPress(VKEY::KEY_END);
 					protocol->TypeString(L"$");
-				});
 
-				protocol->OnNextIdleFrame(L"Pressed END (escalate to document)", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					auto document = textBox->GetDocument();
 					TEST_ASSERT(document->paragraphs.Count() == 3);
 					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"!AAA");
 					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"|BBB^");
 					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CCC$");
-					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
 				});
 
-				protocol->OnNextIdleFrame(L"Verified", [=]()
+				protocol->OnNextIdleFrame(L"Caret at (1,5) and [END]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
@@ -1969,29 +1971,30 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					textBox->SetCaret(TextPos(1, 1), TextPos(1, 1));
 					protocol->KeyPress(VKEY::KEY_HOME, true, false, false);
 					protocol->TypeString(L"|");
+
+					auto document = textBox->GetDocument();
+					TEST_ASSERT(document->paragraphs.Count() == 3);
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"|AAA");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"BBB");
+					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CCC");
 				});
 
-				protocol->OnNextIdleFrame(L"Pressed CTRL+HOME", [=]()
+				protocol->OnNextIdleFrame(L"Caret at (1,1) and [CTRL+HOME]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					textBox->SetCaret(TextPos(1, 1), TextPos(1, 1));
 					protocol->KeyPress(VKEY::KEY_END, true, false, false);
 					protocol->TypeString(L"#");
-				});
 
-				protocol->OnNextIdleFrame(L"Pressed CTRL+END", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					auto document = textBox->GetDocument();
 					TEST_ASSERT(document->paragraphs.Count() == 3);
 					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"|AAA");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"BBB");
 					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CCC#");
-					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
 				});
 
-				protocol->OnNextIdleFrame(L"Verified", [=]()
+				protocol->OnNextIdleFrame(L"Caret at (1,1) and [CTRL+END]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
@@ -2034,12 +2037,6 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					textBox->SetCaret(TextPos(30, 1), TextPos(30, 1));
 					protocol->KeyPress(VKEY::KEY_PRIOR);
 					protocol->TypeString(L"^");
-				});
-
-				protocol->OnNextIdleFrame(L"Pressed PAGE UP", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					auto document = textBox->GetDocument();
 					TEST_ASSERT(document->paragraphs.Count() == 40);
 
@@ -2054,22 +2051,15 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					}
 					TEST_ASSERT(index != -1);
 					TEST_ASSERT(index < 30);
-					textBox->SetCaret(TextPos(index, 0), TextPos(index, 0));
 				});
 
-				protocol->OnNextIdleFrame(L"Verified PAGE UP", [=]()
+				protocol->OnNextIdleFrame(L"Caret at (30,1) and [PAGE UP]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					textBox->SetCaret(TextPos(5, 1), TextPos(5, 1));
 					protocol->KeyPress(VKEY::KEY_NEXT);
 					protocol->TypeString(L"v");
-				});
-
-				protocol->OnNextIdleFrame(L"Pressed PAGE DOWN", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					auto document = textBox->GetDocument();
 					TEST_ASSERT(document->paragraphs.Count() == 40);
 
@@ -2084,10 +2074,9 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					}
 					TEST_ASSERT(index != -1);
 					TEST_ASSERT(index > 5);
-					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
 				});
 
-				protocol->OnNextIdleFrame(L"Verified PAGE DOWN", [=]()
+				protocol->OnNextIdleFrame(L"Caret at (5,1) and [PAGE DOWN]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
