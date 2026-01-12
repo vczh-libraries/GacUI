@@ -746,8 +746,8 @@
                           "hitTestResult": null,
                           "cursor": null,
                           "element": 21,
-                          "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 307},
-                          "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 307}
+                          "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 63},
+                          "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 63}
                         },
                         "children": [
                           {
@@ -756,8 +756,8 @@
                               "hitTestResult": null,
                               "cursor": null,
                               "element": 22,
-                              "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 307},
-                              "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 307}
+                              "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 63},
+                              "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 63}
                             },
                             "children": [
                               {
@@ -766,8 +766,8 @@
                                   "hitTestResult": null,
                                   "cursor": "IBeam",
                                   "element": null,
-                                  "bounds": {"x1": 14, "y1": 42, "x2": 466, "y2": 306},
-                                  "validArea": {"x1": 14, "y1": 42, "x2": 466, "y2": 306}
+                                  "bounds": {"x1": 14, "y1": 42, "x2": 466, "y2": 62},
+                                  "validArea": {"x1": 14, "y1": 42, "x2": 466, "y2": 62}
                                 },
                                 "children": [
                                   {
@@ -1487,8 +1487,8 @@
                           "hitTestResult": null,
                           "cursor": null,
                           "element": 21,
-                          "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 307},
-                          "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 307}
+                          "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 63},
+                          "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 63}
                         },
                         "children": [
                           {
@@ -1497,8 +1497,8 @@
                               "hitTestResult": null,
                               "cursor": null,
                               "element": 22,
-                              "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 307},
-                              "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 307}
+                              "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 63},
+                              "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 63}
                             },
                             "children": [
                               {
@@ -1507,8 +1507,8 @@
                                   "hitTestResult": null,
                                   "cursor": "IBeam",
                                   "element": null,
-                                  "bounds": {"x1": 14, "y1": 42, "x2": 466, "y2": 306},
-                                  "validArea": {"x1": 14, "y1": 42, "x2": 466, "y2": 306}
+                                  "bounds": {"x1": 14, "y1": 42, "x2": 466, "y2": 62},
+                                  "validArea": {"x1": 14, "y1": 42, "x2": 466, "y2": 62}
                                 },
                                 "children": [
                                   {
@@ -2228,8 +2228,8 @@
                           "hitTestResult": null,
                           "cursor": null,
                           "element": 21,
-                          "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 307},
-                          "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 307}
+                          "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 63},
+                          "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 63}
                         },
                         "children": [
                           {
@@ -2238,8 +2238,8 @@
                               "hitTestResult": null,
                               "cursor": null,
                               "element": 22,
-                              "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 307},
-                              "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 307}
+                              "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 63},
+                              "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 63}
                             },
                             "children": [
                               {
@@ -2248,8 +2248,8 @@
                                   "hitTestResult": null,
                                   "cursor": "IBeam",
                                   "element": null,
-                                  "bounds": {"x1": 14, "y1": 42, "x2": 466, "y2": 306},
-                                  "validArea": {"x1": 14, "y1": 42, "x2": 466, "y2": 306}
+                                  "bounds": {"x1": 14, "y1": 42, "x2": 466, "y2": 62},
+                                  "validArea": {"x1": 14, "y1": 42, "x2": 466, "y2": 62}
                                 },
                                 "children": [
                                   {
@@ -2969,8 +2969,8 @@
                           "hitTestResult": null,
                           "cursor": null,
                           "element": 21,
-                          "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 307},
-                          "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 307}
+                          "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 63},
+                          "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 63}
                         },
                         "children": [
                           {
@@ -2979,8 +2979,8 @@
                               "hitTestResult": null,
                               "cursor": null,
                               "element": 22,
-                              "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 307},
-                              "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 307}
+                              "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 63},
+                              "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 63}
                             },
                             "children": [
                               {
@@ -2989,8 +2989,8 @@
                                   "hitTestResult": null,
                                   "cursor": "IBeam",
                                   "element": null,
-                                  "bounds": {"x1": 14, "y1": 42, "x2": 466, "y2": 306},
-                                  "validArea": {"x1": 14, "y1": 42, "x2": 466, "y2": 306}
+                                  "bounds": {"x1": 14, "y1": 42, "x2": 466, "y2": 62},
+                                  "validArea": {"x1": 14, "y1": 42, "x2": 466, "y2": 62}
                                 },
                                 "children": [
                                   {
@@ -3710,8 +3710,8 @@
                           "hitTestResult": null,
                           "cursor": null,
                           "element": 21,
-                          "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 307},
-                          "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 307}
+                          "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 63},
+                          "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 63}
                         },
                         "children": [
                           {
@@ -3720,8 +3720,8 @@
                               "hitTestResult": null,
                               "cursor": null,
                               "element": 22,
-                              "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 307},
-                              "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 307}
+                              "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 63},
+                              "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 63}
                             },
                             "children": [
                               {
@@ -3730,8 +3730,8 @@
                                   "hitTestResult": null,
                                   "cursor": "IBeam",
                                   "element": null,
-                                  "bounds": {"x1": 14, "y1": 42, "x2": 466, "y2": 306},
-                                  "validArea": {"x1": 14, "y1": 42, "x2": 466, "y2": 306}
+                                  "bounds": {"x1": 14, "y1": 42, "x2": 466, "y2": 62},
+                                  "validArea": {"x1": 14, "y1": 42, "x2": 466, "y2": 62}
                                 },
                                 "children": [
                                   {
@@ -4451,8 +4451,8 @@
                           "hitTestResult": null,
                           "cursor": null,
                           "element": 21,
-                          "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 307},
-                          "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 307}
+                          "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 63},
+                          "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 63}
                         },
                         "children": [
                           {
@@ -4461,8 +4461,8 @@
                               "hitTestResult": null,
                               "cursor": null,
                               "element": 22,
-                              "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 307},
-                              "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 307}
+                              "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 63},
+                              "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 63}
                             },
                             "children": [
                               {
@@ -4471,8 +4471,8 @@
                                   "hitTestResult": null,
                                   "cursor": "IBeam",
                                   "element": null,
-                                  "bounds": {"x1": 14, "y1": 42, "x2": 466, "y2": 306},
-                                  "validArea": {"x1": 14, "y1": 42, "x2": 466, "y2": 306}
+                                  "bounds": {"x1": 14, "y1": 42, "x2": 466, "y2": 62},
+                                  "validArea": {"x1": 14, "y1": 42, "x2": 466, "y2": 62}
                                 },
                                 "children": [
                                   {
@@ -4503,7 +4503,7 @@
     },
     {
       "frameId": 22,
-      "frameName": "Mouse typed at start",
+      "frameName": "Typed at start",
       "windowSize": {
         "bounds": {
           "x1": {"value": 272},
@@ -5192,8 +5192,8 @@
                           "hitTestResult": null,
                           "cursor": null,
                           "element": 21,
-                          "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 307},
-                          "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 307}
+                          "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 63},
+                          "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 63}
                         },
                         "children": [
                           {
@@ -5202,8 +5202,8 @@
                               "hitTestResult": null,
                               "cursor": null,
                               "element": 22,
-                              "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 307},
-                              "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 307}
+                              "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 63},
+                              "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 63}
                             },
                             "children": [
                               {
@@ -5212,8 +5212,8 @@
                                   "hitTestResult": null,
                                   "cursor": "IBeam",
                                   "element": null,
-                                  "bounds": {"x1": 14, "y1": 42, "x2": 466, "y2": 306},
-                                  "validArea": {"x1": 14, "y1": 42, "x2": 466, "y2": 306}
+                                  "bounds": {"x1": 14, "y1": 42, "x2": 466, "y2": 62},
+                                  "validArea": {"x1": 14, "y1": 42, "x2": 466, "y2": 62}
                                 },
                                 "children": [
                                   {

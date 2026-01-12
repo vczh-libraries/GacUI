@@ -6001,7 +6001,7 @@
     },
     {
       "frameId": 22,
-      "frameName": "Mouse typed at start",
+      "frameName": "Typed at start",
       "windowSize": {
         "bounds": {
           "x1": {"value": 272},

@@ -51,7 +51,7 @@ namespace gacuisrc_unittest
             }
             (<precompile>0 = textBox.BoundsComposition);
             {
-                (<precompile>0.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>0.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : (-1);} of (::presentation::Margin));
             }
             {
                 (textBox.Text = "Initial text");
