@@ -282,5 +282,11 @@ This task is only about expanding the smoke-test coverage (reusing the existing 
 
 ## None
 
+# LEARNINGS
+
+- Treat XML virtual types as first-class test targets: it is OK (and sometimes preferred) to run smoke tests with the runtime C++ type (e.g. `GuiDocumentLabel`) while keeping the category/log folder name aligned with the XML concept (e.g. `GuiDocumentTextBox`).
+- Prefer deterministic caret positioning via key operations (e.g. `Ctrl+Home`) rather than changing layout just to make a mouse click land reliably.
+- When embedding XML in C++ raw string literals for tests, use 2 spaces for indentation.
+
 # !!!FINISHED!!!
 
