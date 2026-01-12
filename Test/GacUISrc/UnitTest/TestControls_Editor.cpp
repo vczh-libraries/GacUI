@@ -86,6 +86,7 @@ void RunTextBoxSmokeTest(const wchar_t* resource, const WString& controlName)
 				TEST_ASSERT(textBox->GetText() == L"Replac");
 				auto caretPoint = protocol->LocationOf(textBox, 0.0, 0.0, 2, 8);
 				protocol->LClick(caretPoint);
+				protocol->KeyPress(VKEY::KEY_HOME, true, false, false);
 				protocol->TypeString(L"Start ");
 			});
 			protocol->OnNextIdleFrame(L"Mouse typed at start", [&, protocol]()
@@ -140,7 +141,7 @@ TEST_FILE
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <Window ref.Name="self" Text="GuiDocumentTextBox Test" ClientSize="x:480 y:320">
         <DocumentTextBox ref.Name="textBox" Text="Initial text" EditMode="Editable">
-          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:-1"/>
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
         </DocumentTextBox>
       </Window>
     </Instance>
