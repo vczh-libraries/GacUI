@@ -63,6 +63,7 @@ I am going to propose some change to `Copilot_Execution.md`.
       - Each code block only contain consecutive code to be written to the file.
       - If the original code block contains metadata, do not include it.
       - If the original code block contains code change in multiple places or even multiple files, split it.
+      - If the original code block omits surrounding code that is necessary to understand the change, expand it to complete.
 
 ## Step 3. Document Quality Check List
 

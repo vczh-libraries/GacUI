@@ -50,7 +50,7 @@ You will still need to add test cases in Task 2/3, otherwise the `RunTextBoxKeyT
 # TASKS
 
 - [x] TASK No.1: Split singleline-specific cases into RunTextBoxKeyTestCases_Singleline
-- [ ] TASK No.2: Fix ENTER/CRLF semantics for multiline mode (GuiMultilineTextBox)
+- [x] TASK No.2: Fix ENTER/CRLF semantics for multiline mode (GuiMultilineTextBox)
 - [ ] TASK No.3: Fix caret navigation semantics for multiline mode (GuiMultilineTextBox)
 - [ ] TASK No.4: Add Enter/CRLF tests with GetDocument assertions (Paragraph mode controls)
 - [ ] TASK No.5: Add keyboard caret navigation tests (Paragraph mode controls)

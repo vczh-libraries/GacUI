@@ -1511,6 +1511,222 @@ void RunTextBoxKeyTestCases_Singleline(const wchar_t* resource, const WString& c
 	});
 }
 
+template<typename TTextBox>
+void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& controlName)
+	requires(std::is_base_of_v<GuiControl, TTextBox>&& std::is_base_of_v<GuiDocumentCommonInterface, TTextBox>)
+{
+	TEST_CATEGORY(L"Enter/CRLF (Multiline)")
+	{
+		TEST_CASE(L"Enter_SplitsIntoTwoLines")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"ABCDE");
+				});
+
+				protocol->OnNextIdleFrame(L"Typed ABCDE", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+
+					textBox->SetCaret(TextPos(0, 2), TextPos(0, 2));
+					protocol->KeyPress(VKEY::KEY_RETURN);
+
+					auto document = textBox->GetDocument();
+					TEST_ASSERT(document->paragraphs.Count() == 2);
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"AB");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"CDE");
+				});
+
+				protocol->OnNextIdleFrame(L"Pressed Enter", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/EnterCRLF_Enter_SplitsIntoTwoLines"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
+		TEST_CASE(L"CtrlEnter_BehavesSameAsEnter")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"ABCDE");
+				});
+
+				protocol->OnNextIdleFrame(L"Typed ABCDE", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+
+					textBox->SetCaret(TextPos(0, 2), TextPos(0, 2));
+					protocol->KeyPress(VKEY::KEY_RETURN, true, false, false);
+
+					auto document = textBox->GetDocument();
+					TEST_ASSERT(document->paragraphs.Count() == 2);
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"AB");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"CDE");
+				});
+
+				protocol->OnNextIdleFrame(L"Pressed Ctrl+Enter", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/EnterCRLF_CtrlEnter_BehavesSameAsEnter"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+	});
+
+	TEST_CATEGORY(L"Clipboard (Multiline)")
+	{
+		TEST_CASE(L"CtrlV_PreservesMultipleLines")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto clipboard = GetCurrentController()->ClipboardService();
+					textBox->SetFocused();
+					{
+						auto writer = clipboard->WriteClipboard();
+						writer->SetText(L"12\r\n34\n\r\n56");
+						TEST_ASSERT(writer->Submit());
+					}
+
+					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
+					protocol->KeyPress(VKEY::KEY_V, true, false, false);
+				});
+
+				protocol->OnNextIdleFrame(L"Pasted", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto document = textBox->GetDocument();
+					TEST_ASSERT(document->paragraphs.Count() == 4);
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"12");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"34");
+					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"");
+					TEST_ASSERT(document->paragraphs[3]->GetTextForReading() == L"56");
+
+					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
+				});
+
+				protocol->OnNextIdleFrame(L"Verified", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/Clipboard_CtrlV_PreservesMultipleLines"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
+		TEST_CASE(L"CtrlC_CtrlV_Roundtrip_MultipleLines")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto clipboard = GetCurrentController()->ClipboardService();
+					{
+						auto writer = clipboard->WriteClipboard();
+						writer->SetText(L"12\r\n34\n\r\n56");
+						TEST_ASSERT(writer->Submit());
+					}
+
+					textBox->SetFocused();
+					protocol->KeyPress(VKEY::KEY_V, true, false, false);
+				});
+
+				protocol->OnNextIdleFrame(L"Pasted", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->KeyPress(VKEY::KEY_A, true, false, false);
+					protocol->KeyPress(VKEY::KEY_C, true, false, false);
+					protocol->KeyPress(VKEY::KEY_DELETE);
+				});
+
+				protocol->OnNextIdleFrame(L"Copied and Cleared", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->KeyPress(VKEY::KEY_V, true, false, false);
+				});
+
+				protocol->OnNextIdleFrame(L"Pasted Again", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto document = textBox->GetDocument();
+					TEST_ASSERT(document->paragraphs.Count() == 4);
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"12");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"34");
+					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"");
+					TEST_ASSERT(document->paragraphs[3]->GetTextForReading() == L"56");
+
+					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
+				});
+
+				protocol->OnNextIdleFrame(L"Verified", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/Clipboard_CtrlC_CtrlV_Roundtrip_MultipleLines"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+	});
+}
+
 TEST_FILE
 {
 	const auto resource_SinglelineTextBox = LR"GacUISrc(
@@ -1592,6 +1808,7 @@ TEST_FILE
 	TEST_CATEGORY(L"GuiMultilineTextBox")
 	{
 		RunTextBoxKeyTestCases<GuiMultilineTextBox>(resource_MultilineTextBox, WString::Unmanaged(L"GuiMultilineTextBox"));
+		RunTextBoxKeyTestCases_Multiline<GuiMultilineTextBox>(resource_MultilineTextBox, WString::Unmanaged(L"GuiMultilineTextBox"));
 	});
 
 	TEST_CATEGORY(L"GuiDocumentTextBox")

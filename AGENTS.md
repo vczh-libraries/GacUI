@@ -13,3 +13,24 @@ Read the first line of the request, and read an additional instruction file when
 
 The additional instruction contains the actual work I would like you to do,
 using additional information beginning from the second line to the end.
+
+Here are some shortcuts:
+
+If the whole request is `!design`, treat it like
+```
+design
+# Problem
+Next
+```
+
+If the whole request is `!plan`, treat it like
+```
+plan
+# Problem
+```
+
+If the whole request is `!summarize`, treat it like
+```
+summarize
+# Problem
+```
