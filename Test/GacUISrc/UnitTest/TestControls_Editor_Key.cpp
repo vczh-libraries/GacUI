@@ -3,7 +3,7 @@
 using namespace gacui_unittest_template;
 
 template<typename TTextBox>
-void RunSinglelineTextBoxTestCases(const wchar_t* resource, const WString& controlName, bool singleline)
+void RunTextBoxKeyTestCases(const wchar_t* resource, const WString& controlName, bool singleline)
 	requires(std::is_base_of_v<GuiControl, TTextBox>&& std::is_base_of_v<GuiDocumentCommonInterface, TTextBox>)
 {
 	TEST_CATEGORY(L"Scaffold")
@@ -1580,26 +1580,26 @@ TEST_FILE
 
 	TEST_CATEGORY(L"GuiSinglelineTextBox")
 	{
-		RunSinglelineTextBoxTestCases<GuiSinglelineTextBox>(resource_SinglelineTextBox, WString::Unmanaged(L"GuiSinglelineTextBox"), true);
+		RunTextBoxKeyTestCases<GuiSinglelineTextBox>(resource_SinglelineTextBox, WString::Unmanaged(L"GuiSinglelineTextBox"), true);
 	});
 
 	TEST_CATEGORY(L"GuiMultilineTextBox")
 	{
-		RunSinglelineTextBoxTestCases<GuiMultilineTextBox>(resource_MultilineTextBox, WString::Unmanaged(L"GuiMultilineTextBox"), false);
+		RunTextBoxKeyTestCases<GuiMultilineTextBox>(resource_MultilineTextBox, WString::Unmanaged(L"GuiMultilineTextBox"), false);
 	});
 
 	TEST_CATEGORY(L"GuiDocumentTextBox")
 	{
-		RunSinglelineTextBoxTestCases<GuiDocumentLabel>(resource_DocumentTextBox, WString::Unmanaged(L"GuiDocumentTextBox"), false);
+		RunTextBoxKeyTestCases<GuiDocumentLabel>(resource_DocumentTextBox, WString::Unmanaged(L"GuiDocumentTextBox"), false);
 	});
 
 	TEST_CATEGORY(L"GuiDocumentLabel")
 	{
-		RunSinglelineTextBoxTestCases<GuiDocumentLabel>(resource_DocumentLabel, WString::Unmanaged(L"GuiDocumentLabel"), false);
+		RunTextBoxKeyTestCases<GuiDocumentLabel>(resource_DocumentLabel, WString::Unmanaged(L"GuiDocumentLabel"), false);
 	});
 
 	TEST_CATEGORY(L"GuiDocumentViewer")
 	{
-		RunSinglelineTextBoxTestCases<GuiDocumentViewer>(resource_DocumentViewer, WString::Unmanaged(L"GuiDocumentViewer"), false);
+		RunTextBoxKeyTestCases<GuiDocumentViewer>(resource_DocumentViewer, WString::Unmanaged(L"GuiDocumentViewer"), false);
 	});
 }
