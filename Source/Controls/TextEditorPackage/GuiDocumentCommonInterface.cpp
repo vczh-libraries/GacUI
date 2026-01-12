@@ -137,30 +137,63 @@ GuiDocumentCommonInterface
 					break;
 				case VKEY::KEY_HOME:
 					{
+						if (ctrl)
+						{
+							Move(TextPos(0, 0), shift, true);
+							break;
+						}
+
 						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineFirst, frontSide);
 						if (newCaret == currentCaret)
 						{
 							newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretFirst, frontSide);
+						}
+						if (newCaret == currentCaret)
+						{
+							newCaret = TextPos(0, 0);
 						}
 						Move(newCaret, shift, frontSide);
 					}
 					break;
 				case VKEY::KEY_END:
 					{
+						if (ctrl)
+						{
+							vint lastIndex = documentElement->GetDocument()->paragraphs.Count() - 1;
+							auto lastParagraph = documentElement->GetDocument()->paragraphs[lastIndex];
+							Move(TextPos(lastIndex, lastParagraph->GetTextForCaret().Length()), shift, false);
+							break;
+						}
+
 						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineLast, frontSide);
 						if (newCaret == currentCaret)
 						{
 							newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLast, frontSide);
 						}
+						if (newCaret == currentCaret)
+						{
+							vint lastIndex = documentElement->GetDocument()->paragraphs.Count() - 1;
+							auto lastParagraph = documentElement->GetDocument()->paragraphs[lastIndex];
+							newCaret = TextPos(lastIndex, lastParagraph->GetTextForCaret().Length());
+						}
 						Move(newCaret, shift, frontSide);
 					}
-				break;
-					case VKEY::KEY_PRIOR:
-					{
-					}
 					break;
+				case VKEY::KEY_PRIOR:
 				case VKEY::KEY_NEXT:
 					{
+						if (config.paragraphMode == GuiDocumentParagraphMode::Singleline) break;
+						if (!documentMouseArea) break;
+						vint page = documentMouseArea->GetCachedBounds().Height();
+						if (page <= 0) break;
+
+						Rect caretBounds = documentElement->GetCaretBounds(currentCaret, frontSide);
+						vint x = caretBounds.x1;
+						vint y = (caretBounds.y1 + caretBounds.y2) / 2;
+						y += (code == VKEY::KEY_PRIOR ? -page : page);
+
+						TextPos newCaret = documentElement->CalculateCaretFromPoint(Point(x, y));
+						Move(newCaret, shift, frontSide);
 					}
 					break;
 				case VKEY::KEY_BACK:

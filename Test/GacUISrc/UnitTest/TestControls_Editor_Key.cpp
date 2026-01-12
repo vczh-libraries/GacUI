@@ -1725,6 +1725,365 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 			);
 		});
 	});
+
+	TEST_CATEGORY(L"Navigation (Multiline)")
+	{
+		TEST_CASE(L"LeftRight_Boundary_JumpsAcrossLines")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"AAA");
+					protocol->KeyPress(VKEY::KEY_RETURN);
+					protocol->TypeString(L"BBB");
+					protocol->KeyPress(VKEY::KEY_RETURN);
+					protocol->TypeString(L"CCC");
+				});
+
+				protocol->OnNextIdleFrame(L"LEFT boundary", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(1, 0), TextPos(1, 0));
+					protocol->KeyPress(VKEY::KEY_LEFT);
+					protocol->TypeString(L"|");
+				});
+
+				protocol->OnNextIdleFrame(L"Verify LEFT boundary", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto document = textBox->GetDocument();
+					TEST_ASSERT(document->paragraphs.Count() == 3);
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"AAA|");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"BBB");
+					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CCC");
+					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
+				});
+
+				protocol->OnNextIdleFrame(L"RIGHT boundary", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(1, 3), TextPos(1, 3));
+					protocol->KeyPress(VKEY::KEY_RIGHT);
+					protocol->TypeString(L"|");
+				});
+
+				protocol->OnNextIdleFrame(L"Verify RIGHT boundary", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto document = textBox->GetDocument();
+					TEST_ASSERT(document->paragraphs.Count() == 3);
+					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"|CCC");
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/NavigationMultiline_LeftRight_Boundary_JumpsAcrossLines"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
+		TEST_CASE(L"UpDown_MovesAcrossLines")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"AAAAA");
+					protocol->KeyPress(VKEY::KEY_RETURN);
+					protocol->TypeString(L"BBBBB");
+					protocol->KeyPress(VKEY::KEY_RETURN);
+					protocol->TypeString(L"CCCCC");
+				});
+
+				protocol->OnNextIdleFrame(L"UP", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(1, 2), TextPos(1, 2));
+					protocol->KeyPress(VKEY::KEY_UP);
+					protocol->TypeString(L"|");
+				});
+
+				protocol->OnNextIdleFrame(L"Verify UP", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto document = textBox->GetDocument();
+					TEST_ASSERT(document->paragraphs.Count() == 3);
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"AA|AAA");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"BBBBB");
+					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CCCCC");
+					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
+				});
+
+				protocol->OnNextIdleFrame(L"DOWN", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(1, 2), TextPos(1, 2));
+					protocol->KeyPress(VKEY::KEY_DOWN);
+					protocol->TypeString(L"|");
+				});
+
+				protocol->OnNextIdleFrame(L"Verify DOWN", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto document = textBox->GetDocument();
+					TEST_ASSERT(document->paragraphs.Count() == 3);
+					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CC|CCC");
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/NavigationMultiline_UpDown_MovesAcrossLines"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
+		TEST_CASE(L"HomeEnd_Escalation_Line_Paragraph_Document")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"AAA");
+					protocol->KeyPress(VKEY::KEY_RETURN);
+					protocol->TypeString(L"BBB");
+					protocol->KeyPress(VKEY::KEY_RETURN);
+					protocol->TypeString(L"CCC");
+				});
+
+				protocol->OnNextIdleFrame(L"HOME (line)", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(1, 1), TextPos(1, 1));
+					protocol->KeyPress(VKEY::KEY_HOME);
+					protocol->TypeString(L"|");
+				});
+
+				protocol->OnNextIdleFrame(L"HOME (escalate to document)", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(1, 0), TextPos(1, 0));
+					protocol->KeyPress(VKEY::KEY_HOME);
+					protocol->TypeString(L"!");
+				});
+
+				protocol->OnNextIdleFrame(L"END (line)", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(1, 2), TextPos(1, 2));
+					protocol->KeyPress(VKEY::KEY_END);
+					protocol->TypeString(L"^");
+				});
+
+				protocol->OnNextIdleFrame(L"END (escalate to document)", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(1, 5), TextPos(1, 5));
+					protocol->KeyPress(VKEY::KEY_END);
+					protocol->TypeString(L"$");
+				});
+
+				protocol->OnNextIdleFrame(L"Verify", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto document = textBox->GetDocument();
+					TEST_ASSERT(document->paragraphs.Count() == 3);
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"!AAA");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"|BBB^");
+					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CCC$");
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/NavigationMultiline_HomeEnd_Escalation_Line_Paragraph_Document"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
+		TEST_CASE(L"CtrlHomeEnd_JumpsToDocumentEdges")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					protocol->TypeString(L"AAA");
+					protocol->KeyPress(VKEY::KEY_RETURN);
+					protocol->TypeString(L"BBB");
+					protocol->KeyPress(VKEY::KEY_RETURN);
+					protocol->TypeString(L"CCC");
+				});
+
+				protocol->OnNextIdleFrame(L"CTRL+HOME", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(1, 1), TextPos(1, 1));
+					protocol->KeyPress(VKEY::KEY_HOME, true, false, false);
+					protocol->TypeString(L"|");
+				});
+
+				protocol->OnNextIdleFrame(L"CTRL+END", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(1, 1), TextPos(1, 1));
+					protocol->KeyPress(VKEY::KEY_END, true, false, false);
+					protocol->TypeString(L"#");
+				});
+
+				protocol->OnNextIdleFrame(L"Verify", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto document = textBox->GetDocument();
+					TEST_ASSERT(document->paragraphs.Count() == 3);
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"|AAA");
+					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CCC#");
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/NavigationMultiline_CtrlHomeEnd_JumpsToDocumentEdges"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
+		TEST_CASE(L"PageUpPageDown_MovesVerticallyByViewport")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					for (vint i = 0; i < 40; i++)
+					{
+						protocol->TypeString(WString::Unmanaged(L"L") + itow(i));
+						if (i != 39)
+						{
+							protocol->KeyPress(VKEY::KEY_RETURN);
+						}
+					}
+				});
+
+				protocol->OnNextIdleFrame(L"PAGE UP", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(30, 1), TextPos(30, 1));
+					protocol->KeyPress(VKEY::KEY_PRIOR);
+					protocol->TypeString(L"^");
+				});
+
+				protocol->OnNextIdleFrame(L"Verify PAGE UP", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto document = textBox->GetDocument();
+					TEST_ASSERT(document->paragraphs.Count() == 40);
+
+					vint index = -1;
+					for (vint i = 0; i < document->paragraphs.Count(); i++)
+					{
+						if (document->paragraphs[i]->GetTextForReading().IndexOf(L'^') != -1)
+						{
+							index = i;
+							break;
+						}
+					}
+					TEST_ASSERT(index != -1);
+					TEST_ASSERT(index < 30);
+					textBox->SetCaret(TextPos(index, 0), TextPos(index, 0));
+				});
+
+				protocol->OnNextIdleFrame(L"PAGE DOWN", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(5, 1), TextPos(5, 1));
+					protocol->KeyPress(VKEY::KEY_NEXT);
+					protocol->TypeString(L"v");
+				});
+
+				protocol->OnNextIdleFrame(L"Verify PAGE DOWN", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto document = textBox->GetDocument();
+					TEST_ASSERT(document->paragraphs.Count() == 40);
+
+					vint index = -1;
+					for (vint i = 0; i < document->paragraphs.Count(); i++)
+					{
+						if (document->paragraphs[i]->GetTextForReading().IndexOf(L'v') != -1)
+						{
+							index = i;
+							break;
+						}
+					}
+					TEST_ASSERT(index != -1);
+					TEST_ASSERT(index > 5);
+
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/NavigationMultiline_PageUpPageDown_MovesVerticallyByViewport"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+	});
 }
 
 TEST_FILE
