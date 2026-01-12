@@ -35,13 +35,21 @@ I would like you to adjust and switch part of content between Task 2 and Task 3,
 
 In Task 4 there are test cases invokcing copy/paste of multiple lines of text. Please make sure this also included in Task 2. And be awared that, in multiline mode (task 2), CRLF separates lines. In paragraph mode (task 4), double CRLF separates paragraphs and inside each paragraph CRLF separates lines. So when 3 consecutive CRLF happens, like a\r\n\r\n\r\nb, the first paragrpah consist one line a, the second paragraph consist of one emtpy line and one line b
 
+## UPDATE
+
+To clarify, `RunTextBoxKeyTestCases_Multiline` only applies to GuiMultilineTextBox because this is the only control that has Multiline paragraph mode. And `RunTextBoxKeyTestCases_MultiParagraph` only applies to the other 3 because those are in Paragraph mode. Control can't switch mode until created, so we only test their default options mentioned here.
+
+## UPDATE
+
+More clarification, since Task 2/3 is for `RunTextBoxKeyTestCases_Multiline`, so these 2 task should only focus on GuiMultilineTextBox, and update the GuiMultilineTextBox test category to call this function. Task 4/5 is for RunTextBoxKeyTestCases_MultiParagraph with other 3 controls. I see these two functions are mentioned in all 4 tasks, please clean the content of the task.
+
 # TASKS
 
 - [x] TASK No.1: Split singleline-specific cases into RunTextBoxKeyTestCases_Singleline
-- [ ] TASK No.2: Fix ENTER/CRLF semantics for multiline and paragraph modes
-- [ ] TASK No.3: Fix textbox caret navigation semantics (HOME/END, boundaries)
-- [ ] TASK No.4: Add Enter/CRLF tests with GetDocument assertions (multiline + multi-paragraph)
-- [ ] TASK No.5: Add keyboard caret navigation tests (multiline + multi-paragraph)
+- [x] TASK No.2: Fix ENTER/CRLF semantics for multiline mode (GuiMultilineTextBox)
+- [ ] TASK No.3: Fix caret navigation semantics for multiline mode (GuiMultilineTextBox)
+- [ ] TASK No.4: Add Enter/CRLF tests with GetDocument assertions (Paragraph mode controls)
+- [ ] TASK No.5: Add keyboard caret navigation tests (Paragraph mode controls)
 
 ## TASK No.1: Split singleline-specific cases into RunTextBoxKeyTestCases_Singleline
 
@@ -65,9 +73,9 @@ This task removes the `singleline` flag from `RunTextBoxKeyTestCases` and moves 
 - Preserving the log path while changing category names is important for existing log consumers and for comparing historical test runs.
 - Making singleline-only behaviors explicit creates a stable baseline for the next two tasks to build multiline and multi-paragraph semantics without adding more conditionals.
 
-## TASK No.2: Fix ENTER/CRLF semantics for multiline and paragraph modes
+## TASK No.2: Fix ENTER/CRLF semantics for multiline mode (GuiMultilineTextBox)
 
-Implement or adjust ENTER and CRLF handling so the three paragraph-mode groups behave consistently with the expected semantics described in the DESIGN REQUEST.
+Implement or adjust ENTER and CRLF handling for `GuiDocumentParagraphMode::Multiline` so `GuiMultilineTextBox` behaves consistently with the expected semantics described in the DESIGN REQUEST.
 
 This task focuses on behavior/implementation only (not unit tests), so that the following test tasks can rely on stable model semantics.
 
@@ -79,23 +87,18 @@ This task focuses on behavior/implementation only (not unit tests), so that the 
 	- Both insert a CRLF into the text model.
 	- Any pasted or typed text containing CRLF is preserved and not flattened.
 		- CRLF separates lines (including multi-line clipboard paste and multi-line typing input).
-- Ensure `GuiDocumentParagraphMode::Paragraph` (multi-paragraph) semantics for the non-`GuiMultilineTextBox` controls:
-	- `ENTER` creates a new paragraph.
-	- `CTRL+ENTER` creates a new line inside the current paragraph.
-		- Input/paste text with a single CRLF creates a line break in a paragraph; double CRLF creates a paragraph break.
-		- For multi-line input/paste parsing: double CRLF separates paragraphs; inside each paragraph CRLF separates lines.
-		- Ensure the 3-consecutive-CRLF edge case matches the expected rule, e.g. `a\r\n\r\n\r\nb` becomes two paragraphs where the second paragraph starts with an empty line then `b`.
-- Confirm the behaviors above are reflected in the underlying `DocumentModel` structure (paragraph count and per-paragraph run text), since tests will validate via `GetDocument()` and `GetTextForReading()`.
+- Confirm the behaviors above are reflected in the underlying `DocumentModel` structure, since tests will validate via `GetDocument()` and `GetTextForReading()`.
+- Update the `GuiMultilineTextBox` test category in Test/GacUISrc/UnitTest/TestControls_Editor_Key.cpp to call `RunTextBoxKeyTestCases_Multiline` (wiring only; no new test coverage in this task).
 
 ### rationale
 
 - ENTER/CRLF rules are core editing semantics and should be stabilized before writing tests that assert the document model.
-- Keeping this task implementation-only prevents mixing behavior fixes with test scaffolding changes.
-- Multiline and paragraph modes intentionally diverge; capturing the divergence explicitly avoids accidental regressions when editing shared logic.
+- This task is scoped to `GuiDocumentParagraphMode::Multiline` only, matching the clarified test-coverage design (multiline helper applies only to `GuiMultilineTextBox`).
+- Wiring `GuiMultilineTextBox` to the multiline helper makes the test structure reflect the intended mode split early, without adding coverage yet.
 
-## TASK No.3: Fix textbox caret navigation semantics (HOME/END, boundaries)
+## TASK No.3: Fix caret navigation semantics for multiline mode (GuiMultilineTextBox)
 
-Implement or adjust caret/cursor navigation behaviors so that keyboard navigation works consistently across paragraph modes that are covered by the upcoming unit tests.
+Implement or adjust caret/cursor navigation behaviors so that keyboard navigation works consistently for `GuiDocumentParagraphMode::Multiline` in `GuiMultilineTextBox`.
 
 The UPDATE explicitly calls out HOME/END behavior and boundary navigation across lines/paragraphs; this task is the place to align implementation to those expectations without mixing the changes into test tasks.
 
@@ -107,39 +110,36 @@ The UPDATE explicitly calls out HOME/END behavior and boundary navigation across
 	- If that would not move the caret (already at that position), it should target the beginning/ending of the current paragraph.
 	- If that still would not move the caret, it should target the beginning/ending of the whole document.
 	- `CTRL+HOME` / `CTRL+END` always targets the beginning/ending of the whole document.
-- Ensure `LEFT`/`RIGHT` boundary movement matches expectations for the paragraph mode under test (line-level in multiline mode and paragraph-level in multi-paragraph mode).
+	- Ensure `LEFT`/`RIGHT` boundary movement matches expectations for multiline mode (line-level boundaries).
 - Confirm `UP`/`DOWN` and `PAGE UP`/`PAGE DOWN` perform vertical caret movement in a way that is compatible with the unit-test environment.
 - If new unit tests reveal mismatches caused by the unit-test rendering stub (caret bounds / caret movement), adjust #file:GuiUnitTestProtocol_Rendering.cpp minimally so caret navigation in tests reflects the intended behavior, while keeping line-wrapping out of scope.
 
 ### rationale
 
-- The navigation tests in the UPDATE will be fragile unless caret movement semantics are implemented consistently first.
-- Separating editor behavior changes from unit test changes follows the repo guidance to avoid mixing functionality and tests in the same task.
+- The navigation tests for multiline mode will be fragile unless caret movement semantics are implemented consistently first.
+- Scoping this task to multiline mode matches the clarified design: Task 2/3 focus on `GuiMultilineTextBox` and `RunTextBoxKeyTestCases_Multiline`.
 - The unit-test rendering layer participates in caret queries; when failures are caused by stub behavior, it should be fixed in isolation and as minimally as possible.
 
-## TASK No.4: Add Enter/CRLF tests with GetDocument assertions (multiline + multi-paragraph)
+## TASK No.4: Add Enter/CRLF tests with GetDocument assertions (Paragraph mode controls)
 
-Add and/or extend key-test helpers so ENTER/CRLF behaviors are covered by unit tests for both paragraph modes:
+Add and/or extend a key-test helper so ENTER/CRLF behaviors are covered by unit tests for the Paragraph-mode editor controls (the three non-singleline, non-multiline controls in this test file).
 
-- `RunTextBoxKeyTestCases_Multiline` for `GuiMultilineTextBox`.
-- `RunTextBoxKeyTestCases_MultiParagraphs` for the other three text boxes.
+- `RunTextBoxKeyTestCases_MultiParagraph` for the other three editor controls.
 
 This task focuses on ENTER/CRLF behaviors only (no caret-navigation coverage in this task).
+
+Control paragraph mode can’t be switched until the control is created, so this task only tests each Paragraph-mode control’s default paragraph mode.
+
+Note: earlier request text used `RunTextBoxKeyTestCases_MultiParagraphs`; this document follows the latest update and uses `RunTextBoxKeyTestCases_MultiParagraph` as the helper name.
 
 All new assertions for content must use `GetDocument()` and `GetTextForReading()` rather than `GetText()`.
 
 ### what to be done
 
-- Implement `RunTextBoxKeyTestCases_Multiline` in Test/GacUISrc/UnitTest/TestControls_Editor_Key.cpp and call it only for `GuiMultilineTextBox`.
-- Implement `RunTextBoxKeyTestCases_MultiParagraphs` in the same file and call it for the remaining three editor controls (all non-singleline and non-multiline in this test file).
+- Implement `RunTextBoxKeyTestCases_MultiParagraph` in Test/GacUISrc/UnitTest/TestControls_Editor_Key.cpp.
+	- Update the other three editor-control test categories in the same file to call `RunTextBoxKeyTestCases_MultiParagraph`.
 - Add/extend test cases (modeled after the structure and coverage approach used by `RunTextBoxKeyTestCases_Singleline`) that validate:
-	- Multiline mode:
-		- `KEY_RETURN` inserts a CRLF into the model.
-		- `Ctrl+KEY_RETURN` matches `KEY_RETURN`.
-			- `Ctrl+V` pastes multi-line text containing CRLF without flattening.
-			- Copy/paste roundtrip for multi-line selections (e.g. `Ctrl+C` then `Ctrl+V`) preserves CRLF as line separators.
-			- `TypeString` with CRLF preserves CRLF semantics (not flattened).
-	- Multi-paragraph mode:
+	- Multi-paragraph (Paragraph mode) semantics:
 		- `ENTER` creates a new paragraph (paragraph count increases).
 		- `CTRL+ENTER` inserts a line break inside the current paragraph (paragraph count unchanged).
 			- Typing/pasting with single CRLF results in a line break within a paragraph.
@@ -158,22 +158,25 @@ All new assertions for content must use `GetDocument()` and `GetTextForReading()
 - Using `GetDocument()` + `GetTextForReading()` verifies the underlying model directly and avoids relying on a potentially-normalized `GetText()` string.
 - Keeping wrapping out of scope reduces sensitivity to the unit-test renderer’s stub layout, while still validating the intended editing semantics.
 
-## TASK No.5: Add keyboard caret navigation tests (multiline + multi-paragraph)
+## TASK No.5: Add keyboard caret navigation tests (Paragraph mode controls)
 
-Add keyboard caret navigation coverage into `RunTextBoxKeyTestCases_Multiline` and `RunTextBoxKeyTestCases_MultiParagraphs` to validate mode-specific boundary behaviors and HOME/END semantics.
+Add keyboard caret navigation coverage into `RunTextBoxKeyTestCases_MultiParagraph` to validate Paragraph-mode boundary behaviors and HOME/END semantics for the three Paragraph-mode controls.
 
 This task focuses on navigation only (ENTER/CRLF behaviors should already be covered by TASK No.4).
 
+As clarified in the latest update, only the default paragraph mode for each Paragraph-mode control is covered here (no mode switching within a control instance).
+
+Note: earlier request text used `RunTextBoxKeyTestCases_MultiParagraphs`; this document follows the latest update and uses `RunTextBoxKeyTestCases_MultiParagraph` as the helper name.
+
 ### what to be done
 
-- Add new test cases in `RunTextBoxKeyTestCases_Multiline` and `RunTextBoxKeyTestCases_MultiParagraphs` that cover:
+- Add new test cases in `RunTextBoxKeyTestCases_MultiParagraph` that cover:
 	- `LEFT` / `RIGHT` boundary movement:
-		- Multiline mode: beginning/ending of line jumps to previous/next line.
 		- Multi-paragraph mode: beginning/ending of paragraph jumps to previous/next paragraph when appropriate.
 	- `UP` / `DOWN` vertical caret movement.
 	- `PAGE UP` / `PAGE DOWN` vertical caret movement by page.
 	- `HOME` / `END` behavior per the UPDATE (line → paragraph → document), and `CTRL+HOME` / `CTRL+END` (document).
-	- Any other navigation operations that are mode-sensitive for `GuiDocumentParagraphMode::Multiline/Paragraph` as discovered from existing tests and implementation.
+	- Any other navigation operations that are mode-sensitive for `GuiDocumentParagraphMode::Paragraph` as discovered from existing tests and implementation.
 - In order to make caret movement visible in logs and to ensure each frame produces UI change:
 	- After each navigation key (or small sequence), type a character (or insert a marker) so the caret position becomes visually reflected and the frame is valid.
 - Avoid triggering line wrapping in these new cases:
