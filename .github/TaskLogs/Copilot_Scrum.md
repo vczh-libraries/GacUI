@@ -31,7 +31,7 @@ This task removes the `singleline` flag from `RunTextBoxKeyTestCases` and moves 
 - Introduce `RunTextBoxKeyTestCases_Singleline` and move all tests that were guarded by `if (singleline)` into that function.
 - Update `TEST_FILE` to:
 	- Call `RunTextBoxKeyTestCases_Singleline` only for `GuiSinglelineTextBox`.
-	- Append " (Singleline)" to the outer `TEST_CATEGORY` name for `GuiSinglelineTextBox`, while keeping `controlName` used in log paths unchanged so the log path stays stable.
+  - Keep the outer `TEST_CATEGORY(L"GuiSinglelineTextBox")` unchanged; in `RunTextBoxKeyTestCases_Singleline`, append " (Singleline)" to test category names (e.g. `Clipboard (Singleline)`).
 - Ensure the moved test cases keep the same per-test log identity string (the `Controls/Editor/<controlName>/Key/...` path) as before.
 - Fix any call-site or template-parameter mismatches exposed by the refactor so the file still compiles and the tests still find the correct `<... ref.Name="textBox"/>` control instance.
 
@@ -101,79 +101,6 @@ All new assertions for content must use `GetDocument()` and `GetTextForReading()
 ## GacUI
 
 - Consider adding a short knowledge base topic (or extending an existing unit testing topic) explaining how to assert editor control content via `GuiDocumentCommonInterface::GetDocument()` and per-paragraph `DocumentParagraphRun::GetTextForReading()`, especially for distinguishing singleline, multiline, and multi-paragraph controls.
-
-# !!!FINISHED!!!
-- Keep adding cases inside the existing template-based shared test function (i.e. continue using `FindObjectByName<TTextBox>` in test code, and do not hardcode `GuiDocumentLabel`).
-- Add multiple `TEST_CASE`s:
-  - `CtrlZ_UndoesTyping_AndCtrlY_Redoes`: type a short string, press `Ctrl+Z` to undo, assert text restored; press `Ctrl+Y`, assert text re-applied.
-  - `CtrlZ_UndoesDeletion`: perform Backspace/Delete, then `Ctrl+Z` restores the deleted text.
-  - `CtrlZ_UndoesPaste_FlattenedText`: paste multi-line clipboard text (flattened), then undo/redo and assert consistent results.
-  - `UndoRedo_ModifiedFlags`: optionally assert `GetModified()`, `CanUndo()`, `CanRedo()` transitions are reasonable after edits and after undo back to the saved point (when `NotifyModificationSaved()` is used by initialization).
-
-### rationale
-
-- Undo/redo is a first-class keyboard feature (registered shortcuts) and must work with all major edit paths (char input, key deletions, paste normalization).
-- These tests provide coverage for `GuiDocumentUndoRedoProcessor` integration without requiring rich text features.
-
-## TASK No.8: Add TEST_CATEGORY for typing and char-input filtering
-
-Add test cases for the `OnCharInput` path: normal typing, tab input, control-modified typing being ignored, and newline characters being flattened/ignored as appropriate for single-line text.
-
-### what to be done
-
-- Follow the established scaffold from TASK No.2 (frame rule, clarified + learned): structure each interaction as an input frame followed by a verification frame.
-  - Input frame: issue one or more inputs (`TypeString`, `KeyPress`, `_KeyDown`, `_KeyUp`, etc) and do not assert.
-  - Verification frame: perform all assertions for the result *and* ensure the callback triggers a UI update (e.g. `window->SetText(textBox->GetText());`) so the harness accepts the frame.
-  - Schedule another frame (except the last one) only when the current frame issues an input that will change UI in the next frame.
-  - Keep frame titles short, and let titles describe what happened in the previous frame.
-  - Keep the last frame minimal and hide-only (`window->Hide();`).
-  - Build the test log identity as `WString::Unmanaged(L"Controls/Editor/") + controlName + WString::Unmanaged(L"/Key/Typing_<CASE>")`.
-- When asserting that a `WString` contains no line breaks, use `WString::IndexOf(L'\r')` and `WString::IndexOf(L'\n')` (character literals) instead of `L"\r"` / `L"\n"` to match the correct overload.
-- Add `TEST_CATEGORY(L"Typing")` in `RunSinglelineTextBoxTestCases` in `Test/GacUISrc/UnitTest/TestControls_Editor_GuiSinglelineTextBox_Key.cpp`.
-- Keep adding cases inside the existing template-based shared test function (i.e. continue using `FindObjectByName<TTextBox>` in test code, and do not hardcode `GuiDocumentLabel`).
-- Add multiple `TEST_CASE`s:
-  - `TypeString_InsertsPlainText`: use `protocol->TypeString(L\"...\")` and assert text updates.
-  - `TypeString_InsertsTab_WhenAcceptTabInput`: type `L\"\\t\"` and assert a tab character appears in text.
-  - `TypeString_IgnoresWhenCtrlPressed`: use `protocol->_KeyDown(KEY_CONTROL)` + `TypeString(...)` + `_KeyUp(KEY_CONTROL)` and assert no text change.
-  - `TypeString_NewlineCharsFlattened`: type a string containing `\\n` and assert the resulting text contains no line breaks (flattened by formatting); also verify `\\r` (KEY_RETURN) is ignored by char input.
-  - `TypeString_ReplacesSelection`: create a selection (e.g. Shift+Arrow or `SelectAll()`), then `TypeString(...)` and assert replacement.
-
-### rationale
-
-- `GuiSinglelineTextBox` is configured to accept only plain text; char-input filtering + flattening is the core guarantee.
-- Explicitly testing tab and ctrl-modified typing prevents regressions in `OnCharInput` gating logic.
-
-## TASK No.9: Run smoke tests for more editor text boxes
-
-Extend the existing editor smoke tests in #file:TestControls_Editor.cpp so the same `RunTextBoxSmokeTest<TTextBox>(resource, controlName)` flow (Basic + Typing) runs against the other `GuiDocumentCommonInterface`-based editor controls.
-
-This task is only about expanding the smoke-test coverage (reusing the existing shared test-case helper) and preparing the XML resources for each control type so failures can be compared via consistent log paths.
-
-### what to be done
-
-- In #file:TestControls_Editor.cpp, add additional resource XML strings (or a single combined resource that can host one control at a time) and add outer `TEST_CATEGORY` blocks to call `RunTextBoxSmokeTest` for:
-  - `<MultilineTextBox/>` mapped to `GuiMultilineTextBox`.
-  - `<DocumentTextBox/>` mapped to `GuiDocumentLabel`.
-  - `<DocumentLabel/>` mapped to `GuiDocumentLabel`.
-  - `<DocumentViewer/>` mapped to `GuiDocumetViewer`.
-- Follow the latest frame learnings (from TASK No.8 / Typing) when adding new smoke-test invocations: merge focus + input when possible; avoid adding `window->SetText(...)` just to force a render; if a step doesn’t naturally trigger a render, merge it into a frame that performs real input (or restructure so each intermediate frame does something that will change UI); keep the last frame hide-only when practical, but merge it when it avoids artificial UI changes.
-- Ensure the last 3 types have `EditMode="Editable"` set in the XML so the existing typing-based smoke tests are meaningful.
-- Keep log paths consistent with the existing pattern in `RunTextBoxSmokeTest`, so the output folders differentiate control types cleanly (e.g. `Controls/Editor/<ControlName>/Basic` and `.../Typing`).
-
-### rationale
-
-- These editor controls share a large portion of `GuiDocumentCommonInterface` behavior; running the same smoke tests across them quickly detects regressions in shared code paths.
-- Doing this after the key-test categories are planned keeps scope contained: it reuses a proven smoke-test helper and adds only the minimum XML/control scaffolding needed.
-
-# Impact to the Knowledge Base
-
-## None
-
-# LEARNINGS
-
-- Treat XML virtual types as first-class test targets: it is OK (and sometimes preferred) to run smoke tests with the runtime C++ type (e.g. `GuiDocumentLabel`) while keeping the category/log folder name aligned with the XML concept (e.g. `GuiDocumentTextBox`).
-- Prefer deterministic caret positioning via key operations (e.g. `Ctrl+Home`) rather than changing layout just to make a mouse click land reliably.
-- When embedding XML in C++ raw string literals for tests, use 2 spaces for indentation.
 
 # !!!FINISHED!!!
 
