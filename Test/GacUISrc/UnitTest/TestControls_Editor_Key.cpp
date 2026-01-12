@@ -1745,7 +1745,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					protocol->TypeString(L"CCC");
 				});
 
-				protocol->OnNextIdleFrame(L"LEFT boundary", [=]()
+				protocol->OnNextIdleFrame(L"Typed 3 lines", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -1754,7 +1754,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					protocol->TypeString(L"|");
 				});
 
-				protocol->OnNextIdleFrame(L"Verify LEFT boundary", [=]()
+				protocol->OnNextIdleFrame(L"Pressed LEFT at line start", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -1766,7 +1766,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
 				});
 
-				protocol->OnNextIdleFrame(L"RIGHT boundary", [=]()
+				protocol->OnNextIdleFrame(L"Verified LEFT boundary", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -1775,13 +1775,19 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					protocol->TypeString(L"|");
 				});
 
-				protocol->OnNextIdleFrame(L"Verify RIGHT boundary", [=]()
+				protocol->OnNextIdleFrame(L"Pressed RIGHT at line end", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					auto document = textBox->GetDocument();
 					TEST_ASSERT(document->paragraphs.Count() == 3);
 					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"|CCC");
+					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
+				});
+
+				protocol->OnNextIdleFrame(L"Verified RIGHT boundary", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -1812,7 +1818,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					protocol->TypeString(L"CCCCC");
 				});
 
-				protocol->OnNextIdleFrame(L"UP", [=]()
+				protocol->OnNextIdleFrame(L"Typed 3 lines", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -1821,7 +1827,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					protocol->TypeString(L"|");
 				});
 
-				protocol->OnNextIdleFrame(L"Verify UP", [=]()
+				protocol->OnNextIdleFrame(L"Pressed UP", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -1833,7 +1839,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
 				});
 
-				protocol->OnNextIdleFrame(L"DOWN", [=]()
+				protocol->OnNextIdleFrame(L"Verified UP", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -1842,13 +1848,19 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					protocol->TypeString(L"|");
 				});
 
-				protocol->OnNextIdleFrame(L"Verify DOWN", [=]()
+				protocol->OnNextIdleFrame(L"Pressed DOWN", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 					auto document = textBox->GetDocument();
 					TEST_ASSERT(document->paragraphs.Count() == 3);
 					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CC|CCC");
+					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
+				});
+
+				protocol->OnNextIdleFrame(L"Verified DOWN", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -1879,7 +1891,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					protocol->TypeString(L"CCC");
 				});
 
-				protocol->OnNextIdleFrame(L"HOME (line)", [=]()
+				protocol->OnNextIdleFrame(L"Typed 3 lines", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -1888,7 +1900,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					protocol->TypeString(L"|");
 				});
 
-				protocol->OnNextIdleFrame(L"HOME (escalate to document)", [=]()
+				protocol->OnNextIdleFrame(L"Pressed HOME (line)", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -1897,7 +1909,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					protocol->TypeString(L"!");
 				});
 
-				protocol->OnNextIdleFrame(L"END (line)", [=]()
+				protocol->OnNextIdleFrame(L"Pressed HOME (escalate to document)", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -1906,7 +1918,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					protocol->TypeString(L"^");
 				});
 
-				protocol->OnNextIdleFrame(L"END (escalate to document)", [=]()
+				protocol->OnNextIdleFrame(L"Pressed END (line)", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -1915,7 +1927,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					protocol->TypeString(L"$");
 				});
 
-				protocol->OnNextIdleFrame(L"Verify", [=]()
+				protocol->OnNextIdleFrame(L"Pressed END (escalate to document)", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -1924,6 +1936,12 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"!AAA");
 					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"|BBB^");
 					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CCC$");
+					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
+				});
+
+				protocol->OnNextIdleFrame(L"Verified", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -1954,7 +1972,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					protocol->TypeString(L"CCC");
 				});
 
-				protocol->OnNextIdleFrame(L"CTRL+HOME", [=]()
+				protocol->OnNextIdleFrame(L"Typed 3 lines", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -1963,7 +1981,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					protocol->TypeString(L"|");
 				});
 
-				protocol->OnNextIdleFrame(L"CTRL+END", [=]()
+				protocol->OnNextIdleFrame(L"Pressed CTRL+HOME", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -1972,7 +1990,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					protocol->TypeString(L"#");
 				});
 
-				protocol->OnNextIdleFrame(L"Verify", [=]()
+				protocol->OnNextIdleFrame(L"Pressed CTRL+END", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -1980,6 +1998,12 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					TEST_ASSERT(document->paragraphs.Count() == 3);
 					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"|AAA");
 					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"CCC#");
+					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
+				});
+
+				protocol->OnNextIdleFrame(L"Verified", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -2013,7 +2037,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					}
 				});
 
-				protocol->OnNextIdleFrame(L"PAGE UP", [=]()
+				protocol->OnNextIdleFrame(L"Typed 40 lines", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -2022,7 +2046,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					protocol->TypeString(L"^");
 				});
 
-				protocol->OnNextIdleFrame(L"Verify PAGE UP", [=]()
+				protocol->OnNextIdleFrame(L"Pressed PAGE UP", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -2043,7 +2067,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					textBox->SetCaret(TextPos(index, 0), TextPos(index, 0));
 				});
 
-				protocol->OnNextIdleFrame(L"PAGE DOWN", [=]()
+				protocol->OnNextIdleFrame(L"Verified PAGE UP", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -2052,7 +2076,7 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					protocol->TypeString(L"v");
 				});
 
-				protocol->OnNextIdleFrame(L"Verify PAGE DOWN", [=]()
+				protocol->OnNextIdleFrame(L"Pressed PAGE DOWN", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
@@ -2070,7 +2094,12 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					}
 					TEST_ASSERT(index != -1);
 					TEST_ASSERT(index > 5);
+					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
+				});
 
+				protocol->OnNextIdleFrame(L"Verified PAGE DOWN", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
