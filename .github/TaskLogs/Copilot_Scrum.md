@@ -170,9 +170,12 @@ All new assertions for content must use `GetDocument()` and `GetTextForReading()
 			- Copy/paste roundtrip for multi-line / multi-paragraph selections preserves the paragraph/line structure.
 - For every new assertion about text/document content:
 	- Validate paragraph count in the `DocumentModel` returned by `GetDocument()`.
-	- Validate each paragraph’s content using `DocumentParagraphRun::GetTextForReading()`.
+	- Validate each paragraph's content using `DocumentParagraphRun::GetTextForReading()`.
+- Organize `protocol->OnNextIdleFrame(...)` frames per `## Organizing Frames` in `.github/copilot-instructions.md`:
+	- First frame is always `Ready`, and each subsequent frame name describes what the previous frame did.
+	- Prefer action + verification in the same frame, and keep a final hide-only frame (`window->Hide();`) when possible.
 - Avoid triggering line wrapping in these new cases:
-	- Keep each line/paragraph short enough to stay within half of the window width based on the unit-test renderer’s simplified width estimate (each character is approximately `0.6 * fontSize`).
+	- Keep each line/paragraph short enough to stay within half of the window width based on the unit-test renderer's simplified width estimate (each character is approximately `0.6 * fontSize`).
 
 ### rationale
 
@@ -202,6 +205,10 @@ Note: earlier request text used `RunTextBoxKeyTestCases_MultiParagraphs`; this d
 - In order to make caret movement visible in logs and to ensure each frame produces UI change:
 	- After each navigation key (or small sequence), type a character (or insert a marker) so the caret position becomes visually reflected and the frame is valid.
 	- When a step already causes a visible UI change, prefer a final hide-only frame (`window->Hide();`) to capture the post-action UI state in logs.
+- Organize `protocol->OnNextIdleFrame(...)` frames per `## Organizing Frames` in `.github/copilot-instructions.md`:
+	- First frame is always `Ready`, and each subsequent frame name describes what the previous frame did.
+	- Prefer action + verification in the same frame, and keep a final hide-only frame (`window->Hide();`) when possible.
+	- For `PAGE UP` / `PAGE DOWN`, avoid asserting an exact moved line count; prefer inserting a marker and locating it in `GetDocument()` to assert the caret moved in the expected direction.
 - Avoid triggering line wrapping in these new cases:
 	- Keep each line/paragraph short enough to avoid wrapping in the unit-test renderer, so the tests primarily validate caret navigation rules rather than the stub wrapping algorithm.
 
