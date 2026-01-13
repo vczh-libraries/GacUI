@@ -1106,9 +1106,19 @@ IGuiRemoteProtocolMessages (Elements - Document)
 			response.newCaret = state->lines[lineIdx].endPos;
 			if (response.newCaret > state->lines[lineIdx].startPos && response.newCaret > 0)
 			{
-				// Don't include the \n at end of line
-				if (state->text[response.newCaret - 1] == L'\n')
-					response.newCaret--;
+				// Don't include CR/LF at end of line
+				while (response.newCaret > state->lines[lineIdx].startPos && response.newCaret > 0)
+				{
+					auto ch = state->text[response.newCaret - 1];
+					if (ch == L'\r' || ch == L'\n')
+					{
+						response.newCaret--;
+					}
+					else
+					{
+						break;
+					}
+				}
 			}
 			break;
 		case CRP::CaretMoveLeft:
