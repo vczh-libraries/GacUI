@@ -1639,13 +1639,6 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"34");
 					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"");
 					TEST_ASSERT(document->paragraphs[3]->GetTextForReading() == L"56");
-
-					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
-				});
-
-				protocol->OnNextIdleFrame(L"Verified", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -1707,13 +1700,6 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"34");
 					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"");
 					TEST_ASSERT(document->paragraphs[3]->GetTextForReading() == L"56");
-
-					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
-				});
-
-				protocol->OnNextIdleFrame(L"Verified", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -2215,12 +2201,6 @@ void RunTextBoxKeyTestCases_MultiParagraph(const wchar_t* resource, const WStrin
 					auto document = textBox->GetDocument();
 					TEST_ASSERT(document->paragraphs.Count() == 1);
 					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"a\r\nb");
-					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
-				});
-
-				protocol->OnNextIdleFrame(L"Verified", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -2262,12 +2242,6 @@ void RunTextBoxKeyTestCases_MultiParagraph(const wchar_t* resource, const WStrin
 					TEST_ASSERT(document->paragraphs.Count() == 2);
 					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"a");
 					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"b");
-					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
-				});
-
-				protocol->OnNextIdleFrame(L"Verified", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -2309,12 +2283,6 @@ void RunTextBoxKeyTestCases_MultiParagraph(const wchar_t* resource, const WStrin
 					TEST_ASSERT(document->paragraphs.Count() == 2);
 					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"a");
 					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"\r\nb");
-					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
-				});
-
-				protocol->OnNextIdleFrame(L"Verified", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
