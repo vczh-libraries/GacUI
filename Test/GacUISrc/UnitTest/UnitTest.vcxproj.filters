@@ -342,6 +342,18 @@
     <ClCompile Include="TestItemProviders.cpp">
       <Filter>Source Files\ItemProviders</Filter>
     </ClCompile>
+    <ClCompile Include="TestControls_Editor_Key_Singleline.cpp">
+      <Filter>Source Files\Controls\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="TestControls_Editor_Key_Multiline.cpp">
+      <Filter>Source Files\Controls\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="TestControls_Editor_Key_Paragraph.cpp">
+      <Filter>Source Files\Controls\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="TestControls_Editor_Key_Shared.cpp">
+      <Filter>Source Files\Controls\Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">

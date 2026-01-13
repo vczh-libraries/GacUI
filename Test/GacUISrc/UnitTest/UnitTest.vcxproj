@@ -207,12 +207,16 @@
     <ClCompile Include="TestControls_CoreApplication_GuiLabel.cpp" />
     <ClCompile Include="TestControls_CoreApplication_GuiWindow.cpp" />
     <ClCompile Include="TestControls_Editor.cpp" />
-    <ClCompile Include="TestControls_Editor_Key.cpp">
+    <ClCompile Include="TestControls_Editor_Key.cpp" />
+    <ClCompile Include="TestControls_Editor_Key_Multiline.cpp" />
+    <ClCompile Include="TestControls_Editor_Key_Paragraph.cpp" />
+    <ClCompile Include="TestControls_Editor_Key_Shared.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="TestControls_Editor_Key_Singleline.cpp" />
     <ClCompile Include="TestControls_List_DataGrid_Binding.cpp" />
     <ClCompile Include="TestControls_List_DataGrid_CellEditor.cpp" />
     <ClCompile Include="TestControls_List_DataGrid_CellVisualizer.cpp" />
