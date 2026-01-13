@@ -225,6 +225,7 @@ Note: earlier request text used `RunTextBoxKeyTestCases_MultiParagraphs`; this d
 
 - Consider adding a short knowledge base topic (or extending an existing unit testing topic) explaining:
 	- How to assert editor control content via `GuiDocumentCommonInterface::GetDocument()` and per-paragraph `DocumentParagraphRun::GetTextForReading()`.
+	- Prefer deterministic expected strings / caret indices in unit tests; avoid “find CRLF” style assertions when the text is fully known.
 	- How to structure keyboard navigation tests so each frame introduces UI change (e.g. typing a marker after navigation to make caret location visible in rendering logs).
 	- Practical guidance for keeping test text short to avoid line wrapping in the unit-test renderer when wrapping behavior is intentionally out of scope.
 
