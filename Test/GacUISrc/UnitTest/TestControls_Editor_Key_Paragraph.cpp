@@ -379,21 +379,20 @@ void RunTextBoxKeyTestCases_MultiParagraph(const wchar_t* resource, const WStrin
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 
 					auto document = textBox->GetDocument();
-					auto p0 = document->paragraphs[0]->GetTextForReading();
-					auto crlf0 = p0.IndexOf(L"\r\n");
-					TEST_ASSERT(crlf0 != -1);
+					TEST_ASSERT(document->paragraphs.Count() == 2);
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"AAA\r\nBBB");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"CCC\r\nDDD");
 
 					// Place caret on the second line of paragraph 0.
-					textBox->SetCaret(TextPos(0, crlf0 + 2 + 1), TextPos(0, crlf0 + 2 + 1));
+					textBox->SetCaret(TextPos(0, 6), TextPos(0, 6));
 					protocol->KeyPress(VKEY::KEY_UP);
 					protocol->TypeString(L"^");
 
 					document = textBox->GetDocument();
 					TEST_ASSERT(document->paragraphs.Count() == 2);
-					// Marker should be inserted into the first line (before the CRLF).
-					auto updated0 = document->paragraphs[0]->GetTextForReading();
-					TEST_ASSERT(updated0.IndexOf(L"^") != -1);
-					TEST_ASSERT(updated0.IndexOf(L"^") < updated0.IndexOf(L"\r\n"));
+					// Marker should be inserted into the first line.
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"A^AA\r\nBBB");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"CCC\r\nDDD");
 				});
 
 				protocol->OnNextIdleFrame(L"Caret in p0 line2 and [UP]", [=]()
@@ -402,19 +401,20 @@ void RunTextBoxKeyTestCases_MultiParagraph(const wchar_t* resource, const WStrin
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 
 					auto document = textBox->GetDocument();
-					auto p0 = document->paragraphs[0]->GetTextForReading();
-					auto crlf0 = p0.IndexOf(L"\r\n");
-					TEST_ASSERT(crlf0 != -1);
+					TEST_ASSERT(document->paragraphs.Count() == 2);
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"A^AA\r\nBBB");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"CCC\r\nDDD");
 
 					// Place caret on the last line of paragraph 0.
-					textBox->SetCaret(TextPos(0, crlf0 + 2 + 1), TextPos(0, crlf0 + 2 + 1));
+					textBox->SetCaret(TextPos(0, 7), TextPos(0, 7));
 					protocol->KeyPress(VKEY::KEY_DOWN);
 					protocol->TypeString(L"v");
 
 					document = textBox->GetDocument();
 					TEST_ASSERT(document->paragraphs.Count() == 2);
 					// Marker should be inserted in paragraph 1 (moved across paragraph boundary).
-					TEST_ASSERT(document->paragraphs[1]->GetTextForReading().IndexOf(L'v') != -1);
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"A^AA\r\nBBB");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"CvCC\r\nDDD");
 				});
 
 				protocol->OnNextIdleFrame(L"Caret in p0 line2 and [DOWN]", [=]()
@@ -464,11 +464,10 @@ void RunTextBoxKeyTestCases_MultiParagraph(const wchar_t* resource, const WStrin
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 
 					auto document = textBox->GetDocument();
-					auto p1 = document->paragraphs[1]->GetTextForReading();
-					TEST_ASSERT(p1.IndexOf(L"\r\n") != -1);
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"AB\r\nCD");
 
 					// HOME (1): end of paragraph -> start of last line.
-					textBox->SetCaret(TextPos(1, p1.Length()), TextPos(1, p1.Length()));
+					textBox->SetCaret(TextPos(1, 6), TextPos(1, 6));
 					protocol->KeyPress(VKEY::KEY_HOME);
 					protocol->TypeString(L"|");
 
@@ -482,17 +481,15 @@ void RunTextBoxKeyTestCases_MultiParagraph(const wchar_t* resource, const WStrin
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 
 					auto document = textBox->GetDocument();
-					auto p1 = document->paragraphs[1]->GetTextForReading();
-					auto crlf = p1.IndexOf(L"\r\n");
-					TEST_ASSERT(crlf != -1);
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"AB\r\n|CD");
 
 					// HOME (2): at start of line -> escalate to paragraph start.
-					textBox->SetCaret(TextPos(1, crlf + 2), TextPos(1, crlf + 2));
+					textBox->SetCaret(TextPos(1, 4), TextPos(1, 4));
 					protocol->KeyPress(VKEY::KEY_HOME);
 					protocol->TypeString(L"!");
 
 					document = textBox->GetDocument();
-					TEST_ASSERT(document->paragraphs[1]->GetTextForReading().Left(1) == L"!");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"!AB\r\n|CD");
 				});
 
 				protocol->OnNextIdleFrame(L"Caret at start of p1 and [HOME]", [=]()
@@ -506,7 +503,7 @@ void RunTextBoxKeyTestCases_MultiParagraph(const wchar_t* resource, const WStrin
 					protocol->TypeString(L"$");
 
 					auto document = textBox->GetDocument();
-					TEST_ASSERT(document->paragraphs[0]->GetTextForReading().Left(1) == L"$");
+					TEST_ASSERT(document->paragraphs[0]->GetTextForReading() == L"$P0");
 				});
 
 				protocol->OnNextIdleFrame(L"Pressed [HOME] at paragraph start", [=]()
@@ -561,11 +558,7 @@ void RunTextBoxKeyTestCases_MultiParagraph(const wchar_t* resource, const WStrin
 					protocol->TypeString(L"^");
 
 					auto document = textBox->GetDocument();
-					auto p1 = document->paragraphs[1]->GetTextForReading();
-					auto crlf = p1.IndexOf(L"\r\n");
-					TEST_ASSERT(crlf != -1);
-					TEST_ASSERT(p1.IndexOf(L'^') != -1);
-					TEST_ASSERT(p1.IndexOf(L'^') < crlf);
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"AB^\r\nCD");
 				});
 
 				protocol->OnNextIdleFrame(L"Caret in p1 line1 and [END]", [=]()
@@ -574,17 +567,15 @@ void RunTextBoxKeyTestCases_MultiParagraph(const wchar_t* resource, const WStrin
 					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 
 					auto document = textBox->GetDocument();
-					auto p1 = document->paragraphs[1]->GetTextForReading();
-					auto crlf = p1.IndexOf(L"\r\n");
-					TEST_ASSERT(crlf != -1);
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"AB^\r\nCD");
 
 					// END (2): at end of line -> escalate to paragraph end.
-					textBox->SetCaret(TextPos(1, crlf), TextPos(1, crlf));
+					textBox->SetCaret(TextPos(1, 3), TextPos(1, 3));
 					protocol->KeyPress(VKEY::KEY_END);
 					protocol->TypeString(L"$");
 
 					document = textBox->GetDocument();
-					TEST_ASSERT(document->paragraphs[1]->GetTextForReading().Right(1) == L"$");
+					TEST_ASSERT(document->paragraphs[1]->GetTextForReading() == L"AB^\r\nCD$");
 				});
 
 				protocol->OnNextIdleFrame(L"Caret at end of p1 and [END]", [=]()
@@ -601,7 +592,7 @@ void RunTextBoxKeyTestCases_MultiParagraph(const wchar_t* resource, const WStrin
 					protocol->TypeString(L"#");
 
 					document = textBox->GetDocument();
-					TEST_ASSERT(document->paragraphs[2]->GetTextForReading().Right(1) == L"#");
+					TEST_ASSERT(document->paragraphs[2]->GetTextForReading() == L"P2#");
 				});
 
 				protocol->OnNextIdleFrame(L"Pressed [END] at paragraph end", [=]()
