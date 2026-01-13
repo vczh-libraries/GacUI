@@ -149,10 +149,15 @@ I made important updates to the source code manually during the execution of the
   - Any other difference is a user edit.
 - If there is no `# !!!VERIFIED!!!` in `Copilot_Execution.md`, it means you failed to deliver the task, either the code did not compile or some test cases failed. My edit will also reflects the final solution to the task.
 - Carefully read through and analyse all user edits, understand my tastes and preferences about the source code.
-- Add your finding to `Copilot_Execution.md` at the very end with the topic `# Comparing to User Edit`.
-  - If every changes are ignored by the rule above, or if you can't find any user edit, just write `No user edit found`.
 
-### Step 6.3 Learn
+### Step 6.3 Write Down Findings
+
+- If every changes are ignored by the rule above, skip thi step.
+- Create a new file `Copilot_Execution_Finding.md` with a topic `# Comparing to User Edit`.
+  - `Copilot_Execution_Finding.md` should stay in the same folder as `Copilot_Execution.md`.
+- Add your finding to `Copilot_Execution_Finding.md`.
+
+### Step 6.4 Learn
 
 - There will be multiple `# UPDATES` or `# FIXING ATTEMPTS` or `# Comparing to User Edit` sections in `Copilot_Task.md`, `Copilot_Planning.md` and `Copilot_Execution.md`.
 - These 3 files recorded how you interpreted the last completed task, and how I wanted you to adjust  your understanding.
@@ -160,12 +165,20 @@ I made important updates to the source code manually during the execution of the
 - Check all future tasks, apply what you have learned, and adjust your approach accordingly.
   - For each unfinished tasks that can be improved, update releated learnings in `Copilot_Scrum.md`.
 
-### Step 6.4 Backup
+### Step 6.5 Backup
 
 - You must only run this step after finishing all above steps.
   - In the above steps, necessary change will be updated to `Copilot_Execution.md` and `Copilot_Scrum.md`.
 - Find and execute `copilotPrepare.ps1 -Backup`. You MUST use the `-Backup` parameter.
+  - Remember the first line of the output, it has the absolute path to the backup folder.
   - By running the backup script, `Copilot_Task.md`, `Copilot_Planning.md` and `Copilot_Execution.md` will be backed up and deleted.
+  - If you created `Copilot_Execution_Finding.md`, in Step 6.3:
+    - In the backup folder, there will be a copied `Copilot_Execution.md`, append all contents from `Copilot_Execution_Finding.md` to the end of it.
+    - Delete the `Copilot_Execution_Finding.md` you created.
+- Run `git status` to make sure you have manipulate document files correctly:
+  - `Copilot_Scrum.md` is modified, unless nothing needs to be changed.
+  - `Copilot_Task.md`, `Copilot_Planning.md` and `Copilot_Execution.md` are created in a backup folder.
+  - There is no `Copilot_Execution_Finding.md`.
 
 # External Tools Environment and Context
 
