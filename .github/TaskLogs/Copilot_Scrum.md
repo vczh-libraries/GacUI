@@ -204,7 +204,8 @@ Note: earlier request text used `RunTextBoxKeyTestCases_MultiParagraphs`; this d
 	- Any other navigation operations that are mode-sensitive for `GuiDocumentParagraphMode::Paragraph` as discovered from existing tests and implementation.
 - In order to make caret movement visible in logs and to ensure each frame produces UI change:
 	- After each navigation key (or small sequence), type a character (or insert a marker) so the caret position becomes visually reflected and the frame is valid.
-	- When a step already causes a visible UI change, prefer a final hide-only frame (`window->Hide();`) to capture the post-action UI state in logs.
+	- Keep frame count minimal while still keeping logs readable.
+		- It is acceptable to merge `window->Hide();` into the last verification frame (instead of a dedicated hide-only frame) as long as each frame still introduces a UI change.
 - Organize `protocol->OnNextIdleFrame(...)` frames per `## Organizing Frames` in `.github/copilot-instructions.md`:
 	- First frame is always `Ready`, and each subsequent frame name describes what the previous frame did.
 	- Prefer action + verification in the same frame, and keep a final hide-only frame (`window->Hide();`) when possible.
