@@ -47,6 +47,29 @@ More clarification, since Task 2/3 is for `RunTextBoxKeyTestCases_Multiline`, so
 
 You will still need to add test cases in Task 2/3, otherwise the `RunTextBoxKeyTestCases_Multiline` is empty.
 
+## UPDATE
+
+I would like you to add more tasks for `GuiDocumentLabel`. Previous tasks test against all text box controls, but tasks here are only for `GuiDocumentLabel`, as they are for rich test editing.
+
+Rich textediting involves following property: font, font style, color and hyperlink. There are editing function in `GuiDocumentCommonInterface`. You are going to find them out.
+
+Task:
+You need to create a new test file `TestControls_Editor_RichText.cpp`. Remeber to put them in the same folder and same solution explorer folder with prior test files mentioned in this document. Remeber to add the file to the current filter so that it is included in the unit test execution. It it fine to have an empty TEST_FILE block as cases will be added later.
+
+Task:
+Test each property of rich text mentioned above in one paragraph, not including hyperlink. All test cases are in one test category, path begins with `RichText` instead of `Key` in prior test files mentioned in this document:
+- Test each property of rich text in one test case, with only one editing call.
+- One more test case to edit all properties on the same piece of text, with only one editing call per property.
+- Just a few test case to test that, multiple editing call with different or same property overlapping together.
+
+Task:
+This task creats a new test category.
+Just like the above task but this time involves single editing call across multiple paragraphs.
+
+Task for hyperlink
+This task creats a new test category
+`EditHyperlink` and `RemoveHyperlink` is for editing hyperlinks. A hyperlink attaches a `reference` to a piece of text, it works like an URL. When mouse hovers above or leaves from a hyperlink, `ActiveHyperlinkChanged` is executed. If a hyperlink is clicked, `ActiveHyperlinkExecuted` is executed. `GetActiveHyperlinkReference` returns the reference for the current hyperlink. It might be empty if no hyperlink is activated.You can use `GetCaretBounds` to determine the area of the first character of the hyperlink. Typically calling it with ({row, column}, false), row and column begins from 0. The bounds is in the coordinate space of the control's GetContainerComposition(). You need to convert it to the global space using `LocationOf`, calling it with (composition, 0.0, 0.0, 0, 0) to get the location of the left-top corner, and adds the center point from `GetCaretBounds` rectangle. You can extract it to a static function in the test file. You still need to covers single paragraph / multiple paragraph and overlapping. `EditHyperlink` and `RemoveHyperlink` only works on the specified piece of text. For example, if you remove a middle part of a hyperlink, it breaks into two with the same reference offered before.
+
 # TASKS
 
 - [x] TASK No.1: Split singleline-specific cases into RunTextBoxKeyTestCases_Singleline
@@ -54,6 +77,10 @@ You will still need to add test cases in Task 2/3, otherwise the `RunTextBoxKeyT
 - [x] TASK No.3: Fix caret navigation semantics for multiline mode (GuiMultilineTextBox)
 - [x] TASK No.4: Add Enter/CRLF tests with GetDocument assertions (Paragraph mode controls)
 - [x] TASK No.5: Add keyboard caret navigation tests (Paragraph mode controls)
+- [ ] TASK No.6: Add TestControls_Editor_RichText.cpp to unit test project
+- [ ] TASK No.7: Add single-paragraph rich text style editing tests (GuiDocumentLabel)
+- [ ] TASK No.8: Add multi-paragraph rich text style editing tests (GuiDocumentLabel)
+- [ ] TASK No.9: Add hyperlink editing + interaction tests (GuiDocumentLabel)
 
 ## TASK No.1: Split singleline-specific cases into RunTextBoxKeyTestCases_Singleline
 
@@ -217,7 +244,103 @@ Note: earlier request text used `RunTextBoxKeyTestCases_MultiParagraphs`; this d
 
 - Caret navigation is mode-sensitive and easy to regress; dedicated tests protect these behaviors when caret/line calculations change.
 - Splitting navigation tests from ENTER/CRLF tests keeps failures localized and helps diagnose whether a regression is in editing semantics or navigation semantics.
-- Typing after moving keeps frame logs readable and prevents “no UI change” frame crashes.
+- Typing after moving keeps frame logs readable and prevents "no UI change" frame crashes.
+
+## TASK No.6: Add TestControls_Editor_RichText.cpp to unit test project
+
+Create a new unit test source file for rich-text editing tests that target `GuiDocumentLabel` only, and wire it into the unit test project so it is compiled and executed.
+
+This task is only for test scaffolding. It is fine to have an empty `TEST_FILE` block initially, but later tasks in this scrum will fill it with test categories and cases.
+
+### what to be done
+
+- Create `Test/GacUISrc/UnitTest/TestControls_Editor_RichText.cpp` in the same physical folder as `TestControls_Editor.cpp` / `TestControls_Editor_Key.cpp`.
+- Add the new file to `Test/GacUISrc/UnitTest/UnitTest.vcxproj` so it is compiled as part of the unit test binary.
+- Add the new file to `Test/GacUISrc/UnitTest/UnitTest.vcxproj.filters` under the same solution explorer folder as the existing editor test files:
+	- Use `<Filter>Source Files\\Controls\\Editor</Filter>` (matching `TestControls_Editor_Key.cpp`).
+- Ensure the file contains a `TEST_FILE` block (can be empty in this task if needed).
+
+### rationale
+
+- Rich-text editing tests have different concerns (style runs, hyperlinks, mouse interaction) and are easier to evolve in a dedicated file without bloating key-navigation helpers.
+- Wiring the file into the `UnitTest` project and filter early prevents later test work from being blocked by project integration details.
+
+## TASK No.7: Add single-paragraph rich text style editing tests (GuiDocumentLabel)
+
+Add a new rich-text test category that verifies font, font style, and color editing behaviors in a single paragraph for `GuiDocumentLabel`.
+
+Per the UPDATE, this task does not include hyperlinks.
+
+All test cases in this task must be grouped under a single test category, and the log path must start with `RichText` (instead of `Key` as used by key-navigation tests).
+
+### what to be done
+
+- In `Test/GacUISrc/UnitTest/TestControls_Editor_RichText.cpp`, create a `TEST_FILE` that hosts a `GuiDocumentLabel` in editable mode (similar resource XML layout used in `TestControls_Editor_Key.cpp`).
+- Add exactly one `TEST_CATEGORY` for all single-paragraph, non-hyperlink rich-text tests for `GuiDocumentLabel`.
+	- Ensure each test case log path follows `Controls/Editor/GuiDocumentLabel/RichText/...` (or the equivalent existing `Controls/Editor/...` pattern) so it starts with `RichText` where `Key` is used in other files.
+- Use rich-text editing APIs from `GuiDocumentCommonInterface` to modify style:
+	- `EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style)` for font (e.g. `face`, `size`), font style (e.g. `bold`/`italic`/`underline`/`strikeline`), and color (e.g. `color`).
+	- Prefer verifying applied styles by calling `SummarizeStyle(begin, end)` on the edited range; if summary semantics are insufficient for overlap tests, inspect the underlying `DocumentModel` runs to ensure style segmentation is correct.
+- Add test cases (all in this single category):
+	- One test per property (font / font style / color), each using only one editing call.
+	- One test that edits all properties on the same piece of text, using only one editing call per property.
+	- A small set of overlap tests where multiple editing calls (different or same property) overlap and the final style state is verified.
+
+### rationale
+
+- Single-paragraph tests isolate style-run editing behavior without introducing paragraph-boundary concerns, making failures easier to interpret.
+- Keeping all cases in one category matches the UPDATE and keeps logs predictable while cases are iteratively added later.
+- Using `SummarizeStyle` provides a stable and direct way to assert computed style at a range, which is especially useful when edits cause run splitting/merging.
+
+## TASK No.8: Add multi-paragraph rich text style editing tests (GuiDocumentLabel)
+
+Add a second rich-text test category that repeats the non-hyperlink rich-text style scenarios from TASK No.7, but validates a single editing call spanning multiple paragraphs.
+
+Per the UPDATE, this task creates a new test category.
+
+### what to be done
+
+- In `Test/GacUISrc/UnitTest/TestControls_Editor_RichText.cpp`, add a new `TEST_CATEGORY` dedicated to multi-paragraph style editing for `GuiDocumentLabel`.
+- Create document content with multiple paragraphs and select a range that spans paragraph boundaries.
+- Add representative test cases to validate that a single `EditStyle(...)` call correctly applies the requested property across multiple paragraphs.
+	- Keep the number of cases small; focus on correctness across paragraph boundaries.
+- Verify the resulting style using `SummarizeStyle(...)` over sub-ranges within each paragraph (and/or by inspecting runs) to ensure the style is applied consistently across paragraphs.
+- Keep the log path prefix `Controls/Editor/GuiDocumentLabel/RichText/...` consistent with TASK No.7.
+
+### rationale
+
+- Multi-paragraph editing is a distinct behavior surface: range-to-run mapping must correctly split and apply styles across paragraph boundaries.
+- A dedicated category keeps the single-paragraph tests focused and avoids mixing concerns, matching the UPDATE’s requirement for a new category.
+
+## TASK No.9: Add hyperlink editing + interaction tests (GuiDocumentLabel)
+
+Add a hyperlink-focused rich-text test category for `GuiDocumentLabel`, covering hyperlink editing (`EditHyperlink` / `RemoveHyperlink`), hyperlink activation by mouse hover/leave, hyperlink execution by click, and correct reference reporting via `GetActiveHyperlinkReference`.
+
+Per the UPDATE, this task creates a new test category, and must cover both single-paragraph and multi-paragraph cases, including overlapping edit/remove scenarios.
+
+### what to be done
+
+- In `Test/GacUISrc/UnitTest/TestControls_Editor_RichText.cpp`, add a `TEST_CATEGORY` dedicated to hyperlink tests for `GuiDocumentLabel`.
+	- Ensure each test case log path starts with `Controls/Editor/GuiDocumentLabel/RichText/...` (not `Key`).
+- Use `GuiDocumentCommonInterface` hyperlink editing APIs:
+	- `EditHyperlink(paragraphIndex, begin, end, reference, normalStyleName, activeStyleName)`
+	- `RemoveHyperlink(paragraphIndex, begin, end)`
+- Extract a small static helper in the test file to compute a global mouse point for a caret position inside the document:
+	- Call `GetCaretBounds({row, column}, false)` to get the caret rectangle in the control’s container coordinate space.
+	- Convert it to global space by getting the container composition (`GetContainerComposition()`), calling `LocationOf(composition, 0.0, 0.0, 0, 0)` for the top-left, and then adding the center point of the caret bounds rectangle.
+- Add test coverage (keep count small but representative):
+	- Single-paragraph hyperlink creation/removal and reference visibility through `GetActiveHyperlinkReference`.
+	- Mouse hover/leave triggers `ActiveHyperlinkChanged`, and clicking triggers `ActiveHyperlinkExecuted`.
+	- Multi-paragraph scenarios (hyperlinks in different paragraphs) validating activation/execution in each paragraph.
+	- Overlap / partial removal behavior:
+		- Removing a middle part of a hyperlink breaks it into two hyperlinks with the same reference (as described in UPDATE).
+		- Editing/removing overlapping ranges behaves correctly and does not leave stale active references.
+
+### rationale
+
+- Hyperlink behavior spans document editing, hit-testing, and event dispatch; putting it in its own category isolates failures from style-only tests.
+- The caret-to-global-point helper keeps hyperlink interaction tests deterministic and avoids fragile pixel coordinates.
+- Covering overlap and partial removal prevents regressions in hyperlink range splitting/merging logic.
 
 # Impact to the Knowledge Base
 
@@ -225,9 +348,11 @@ Note: earlier request text used `RunTextBoxKeyTestCases_MultiParagraphs`; this d
 
 - Consider adding a short knowledge base topic (or extending an existing unit testing topic) explaining:
 	- How to assert editor control content via `GuiDocumentCommonInterface::GetDocument()` and per-paragraph `DocumentParagraphRun::GetTextForReading()`.
-	- Prefer deterministic expected strings / caret indices in unit tests; avoid “find CRLF” style assertions when the text is fully known.
+	- Prefer deterministic expected strings / caret indices in unit tests; avoid "find CRLF" style assertions when the text is fully known.
 	- How to structure keyboard navigation tests so each frame introduces UI change (e.g. typing a marker after navigation to make caret location visible in rendering logs).
 	- Practical guidance for keeping test text short to avoid line wrapping in the unit-test renderer when wrapping behavior is intentionally out of scope.
+	- How to assert rich-text properties using `GuiDocumentCommonInterface::SummarizeStyle(...)` and/or inspecting `DocumentModel` runs for style segmentation.
+	- How to build deterministic hyperlink interaction tests by converting `GetCaretBounds(...)` to a global mouse position via `GetContainerComposition()` + `LocationOf(...)`, and asserting `ActiveHyperlinkChanged` / `ActiveHyperlinkExecuted` + `GetActiveHyperlinkReference()`.
 
 # !!!FINISHED!!!
 
