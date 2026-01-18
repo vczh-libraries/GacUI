@@ -70,6 +70,10 @@ Task for hyperlink
 This task creats a new test category
 `EditHyperlink` and `RemoveHyperlink` is for editing hyperlinks. A hyperlink attaches a `reference` to a piece of text, it works like an URL. When mouse hovers above or leaves from a hyperlink, `ActiveHyperlinkChanged` is executed. If a hyperlink is clicked, `ActiveHyperlinkExecuted` is executed. `GetActiveHyperlinkReference` returns the reference for the current hyperlink. It might be empty if no hyperlink is activated.You can use `GetCaretBounds` to determine the area of the first character of the hyperlink. Typically calling it with ({row, column}, false), row and column begins from 0. The bounds is in the coordinate space of the control's GetContainerComposition(). You need to convert it to the global space using `LocationOf`, calling it with (composition, 0.0, 0.0, 0, 0) to get the location of the left-top corner, and adds the center point from `GetCaretBounds` rectangle. You can extract it to a static function in the test file. You still need to covers single paragraph / multiple paragraph and overlapping. `EditHyperlink` and `RemoveHyperlink` only works on the specified piece of text. For example, if you remove a middle part of a hyperlink, it breaks into two with the same reference offered before.
 
+## UPDATE
+
+In Task 6 you also needs to update UnitTest.vcxproj.user to activate the new test file
+
 # TASKS
 
 - [x] TASK No.1: Split singleline-specific cases into RunTextBoxKeyTestCases_Singleline
@@ -258,6 +262,7 @@ This task is only for test scaffolding. It is fine to have an empty `TEST_FILE` 
 - Add the new file to `Test/GacUISrc/UnitTest/UnitTest.vcxproj` so it is compiled as part of the unit test binary.
 - Add the new file to `Test/GacUISrc/UnitTest/UnitTest.vcxproj.filters` under the same solution explorer folder as the existing editor test files:
 	- Use `<Filter>Source Files\\Controls\\Editor</Filter>` (matching `TestControls_Editor_Key.cpp`).
+- Update `Test/GacUISrc/UnitTest/UnitTest.vcxproj.user` to activate the new test file.
 - Ensure the file contains a `TEST_FILE` block (can be empty in this task if needed).
 
 ### rationale
