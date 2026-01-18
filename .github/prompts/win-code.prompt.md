@@ -88,6 +88,7 @@
 - The only source of trust is the raw output of the compiler.
   - It is saved to `REPO-ROOT/.github/TaskLogs/Build.log`. `REPO-ROOT` is the root folder of the repo.
   - Wait for the task to finish before reading the log file. DO NOT HURRY.
+    - A temporary file `Build.log.unfinished` is created during building. It will be automatically deleted as soon as the building finishes . If you see this file, it means the building is not finished yet.
   - When build succeeds, the last several lines will show the following 3 lines, otherwise there are either warnings or errors. You can check the last 10 lines to make sure if build succceeded:
     - "Build succeeded."
     - "0 Warning(s)"
@@ -104,8 +105,60 @@
 - The only source of trust is the raw output of the unit test process.
   - It is saved to `REPO-ROOT/.github/TaskLogs/Execute.log`. `REPO-ROOT` is the root folder of the repo.
   - Wait for the task to finish before reading the log file. DO NOT HURRY.
+    - A temporary file `Execute.log.unfinished` is created during testing. It will be automatically deleted as soon as the testing finishes. If you see this file, it means the testing is not finished yet.
   - When all test case passes, the last several lines will show the following 2 lines, otherwise it crashed at the last showing test case. You can check the last 5 lines to make sure if all test cases passed:
     - "Passed test files: X/X"
     - "Passed test cases: Y/Y"
 - DO NOT TRUST related tools Visual Studio Code offers you, like `get_errors` or `get_task_output`, etc.
+
+## Understanding the Building Tools
+
+**WARNING**: Information offered in this section is for background knowledge only. You should always run `Build Unit Tests` and `Run Unit Tests` instead of running these scripts or calling msbuild or other executable by yourself. 
+
+`REPO-ROOT` is the root folder of the repo.
+`SOLUTION-ROOT` is the folder containing the solution file.
+`PROJECT-NAME` is the name of the project.
+
+When verifying test projects on Windows, msbuild is used to build a solution (`*.sln`) file.
+A solution contains many project (`*.vcxproj`) files, a project generates an executable (`*.exe`) file.
+
+The `Build Unit Tests` task calls msbuild to build the only solution which contains all test cases.
+Inside the task, it runs `copilotBuild.ps1`
+
+```
+cd SOLUTION-ROOT
+& REPO-ROOT\.github\TaskLogs\copilotBuild.ps1
+```
+
+The `Run Unit Tests` task runs all generated *.exe file for each *.vcxproj that is created for test cases.
+To run test cases in `SOLUTION-ROOT\PROJECT-NAME\PROJECT-NAME.vcxproj`
+
+```
+cd SOLUTION-ROOT
+& REPO-ROOT\.github\TaskLogs\copilotExecute.ps1 -Executable PROJECT-NAME
+```
+
+Test cases are organized in multiple test files.
+In `PROJECT-NAME\PROJECT-NAME.vcxproj.user` there is a filter, when it is effective, you will see filtered test files marked with `[SKIPPED]` in `Execute.log`.
+The filter is defined in this XPath: `/Project/PropertyGroup@Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"/LocalDebuggerCommandArguments`.
+The filter is effective only when the file exists and the element exists with one or multiple `/F:FILE-NAME.cpp`.
+If the element exists but there is no `/F:FILE-NAME.cpp`, all test files will be executed.
+
+**IMPORTANT**:
+
+ONLY WHEN test files you want to run is skipped, you can update the filter to activate it. This would typically happen when:
+- A new test file is added.
+- A test file is renamed.
+
+You can clean up the filter to remove unrelated files, that is either not existing or it is totally unrelated to the current task you are working.
+If the current task does not work on that test file, but it tests closely related topic, you should better keep it in the list.
+
+DO NOT delete this *.vcxproj.user file.
+DO NOT clean the filter (aka delete all `/FILE-NAME.cpp`) by yourself. I put a filter there because running everything is slow and unnecessary for the current task.
+
+### Unit Test Project Structure
+
+In this project, the only unit test solution is `REPO-ROOT\Test\GacUISrc\GacUISrc.sln` therefore `SOLUTION-ROOT` is `REPO-ROOT\Test\GacUISrc`.
+Here is the list of all unit test projects under this solution and they are executed in the following order:
+- UnitTest
 

@@ -126,9 +126,7 @@ This guidance is for accessing following files mentioned in this instruction:
 - `Build.log`
 - `Execute.log`
 
-They are in the `REPO-ROOT/.github/TaskLogs` folder.
-
-`REPO-ROOT` is the root folder of the repo.
+They are in the `REPO-ROOT/.github/TaskLogs` folder. `REPO-ROOT` is the root folder of the repo.
 
 ## If you are running in Visual Studio
 
