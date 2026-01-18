@@ -81,7 +81,7 @@ In Task 6 you also needs to update UnitTest.vcxproj.user to activate the new tes
 - [x] TASK No.3: Fix caret navigation semantics for multiline mode (GuiMultilineTextBox)
 - [x] TASK No.4: Add Enter/CRLF tests with GetDocument assertions (Paragraph mode controls)
 - [x] TASK No.5: Add keyboard caret navigation tests (Paragraph mode controls)
-- [ ] TASK No.6: Add TestControls_Editor_RichText.cpp to unit test project
+- [x] TASK No.6: Add TestControls_Editor_RichText.cpp to unit test project
 - [ ] TASK No.7: Add single-paragraph rich text style editing tests (GuiDocumentLabel)
 - [ ] TASK No.8: Add multi-paragraph rich text style editing tests (GuiDocumentLabel)
 - [ ] TASK No.9: Add hyperlink editing + interaction tests (GuiDocumentLabel)
