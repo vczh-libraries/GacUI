@@ -180,8 +180,8 @@ cd SOLUTION-ROOT
 Test cases are organized in multiple test files.
 In `PROJECT-NAME\PROJECT-NAME.vcxproj.user` there is a filter, when it is effective, you will see filtered test files marked with `[SKIPPED]` in `Execute.log`.
 The filter is defined in this XPath: `/Project/PropertyGroup@Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"/LocalDebuggerCommandArguments`.
-The filter is effective only when the file exists and the element exists with one or multiple `/F:FILE-NAME.cpp`.
-If the element exists but there is no `/F:FILE-NAME.cpp`, all test files will be executed.
+The filter is effective only when the file exists and the element exists with one or multiple `/F:FILE-NAME.cpp`, listing all test files to execute, unlited files are skipped.
+But if the element exists but there is no `/F:FILE-NAME.cpp`, it executes all test files, non is skipped.
 
 **IMPORTANT**:
 
