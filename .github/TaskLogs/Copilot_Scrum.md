@@ -88,7 +88,7 @@ And add a Task 10, following Task 6 to add two files: `TestControls_Editor_Inlin
 - [x] TASK No.4: Add Enter/CRLF tests with GetDocument assertions (Paragraph mode controls)
 - [x] TASK No.5: Add keyboard caret navigation tests (Paragraph mode controls)
 - [x] TASK No.6: Add TestControls_Editor_RichText.cpp to unit test project
-- [ ] TASK No.7: Add TestControls_Editor_InlineObject.cpp and TestControls_Editor_Styles.cpp to unit test project
+- [x] TASK No.7: Add TestControls_Editor_InlineObject.cpp and TestControls_Editor_Styles.cpp to unit test project
 - [ ] TASK No.8: Add single-paragraph rich text style editing tests (GuiDocumentLabel)
 - [ ] TASK No.9: Add multi-paragraph rich text style editing tests (GuiDocumentLabel)
 - [ ] TASK No.10: Add hyperlink editing + interaction tests (GuiDocumentLabel)
@@ -310,7 +310,7 @@ All test cases in this task must be grouped under a single test category, and th
 
 - In `Test/GacUISrc/UnitTest/TestControls_Editor_RichText.cpp`, create a `TEST_FILE` that hosts a `GuiDocumentLabel` in editable mode (similar resource XML layout used in `TestControls_Editor_Key.cpp`).
 - Add exactly one `TEST_CATEGORY` for all single-paragraph, non-hyperlink rich-text tests for `GuiDocumentLabel`.
-	- Ensure each test case log path follows `Controls/Editor/GuiDocumentLabel/RichText/...` (or the equivalent existing `Controls/Editor/...` pattern) so it starts with `RichText` where `Key` is used in other files.
+	- Ensure each test case log path follows `Controls/Editor/Features/RichText/...` (or the equivalent existing `Controls/Editor/...` pattern) so it starts with `RichText` where `Key` is used in other files.
 - Use rich-text editing APIs from `GuiDocumentCommonInterface` to modify style:
 	- `EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style)` for font (e.g. `face`, `size`), font style (e.g. `bold`/`italic`/`underline`/`strikeline`), and color (e.g. `color`).
 	- Prefer verifying applied styles by calling `SummarizeStyle(begin, end)` on the edited range; if summary semantics are insufficient for overlap tests, inspect the underlying `DocumentModel` runs to ensure style segmentation is correct.
@@ -338,7 +338,7 @@ Per the UPDATE, this task creates a new test category.
 - Add representative test cases to validate that a single `EditStyle(...)` call correctly applies the requested property across multiple paragraphs.
 	- Keep the number of cases small; focus on correctness across paragraph boundaries.
 - Verify the resulting style using `SummarizeStyle(...)` over sub-ranges within each paragraph (and/or by inspecting runs) to ensure the style is applied consistently across paragraphs.
-- Keep the log path prefix `Controls/Editor/GuiDocumentLabel/RichText/...` consistent with TASK No.8.
+- Keep the log path prefix `Controls/Editor/Features/RichText/...` consistent with TASK No.8.
 
 ### rationale
 
@@ -354,7 +354,7 @@ Per the UPDATE, this task creates a new test category, and must cover both singl
 ### what to be done
 
 - In `Test/GacUISrc/UnitTest/TestControls_Editor_RichText.cpp`, add a `TEST_CATEGORY` dedicated to hyperlink tests for `GuiDocumentLabel`.
-	- Ensure each test case log path starts with `Controls/Editor/GuiDocumentLabel/RichText/...` (not `Key`).
+	- Ensure each test case log path starts with `Controls/Editor/Features/RichText/...` (not `Key`).
 - Use `GuiDocumentCommonInterface` hyperlink editing APIs:
 	- `EditHyperlink(paragraphIndex, begin, end, reference, normalStyleName, activeStyleName)`
 	- `RemoveHyperlink(paragraphIndex, begin, end)`

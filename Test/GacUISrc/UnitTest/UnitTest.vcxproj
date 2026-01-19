@@ -209,6 +209,8 @@
     <ClCompile Include="TestControls_Editor.cpp" />
     <ClCompile Include="TestControls_Editor_Key.cpp" />
     <ClCompile Include="TestControls_Editor_RichText.cpp" />
+    <ClCompile Include="TestControls_Editor_InlineObject.cpp" />
+    <ClCompile Include="TestControls_Editor_Styles.cpp" />
     <ClCompile Include="TestControls_Editor_Key_Multiline.cpp" />
     <ClCompile Include="TestControls_Editor_Key_Paragraph.cpp" />
     <ClCompile Include="TestControls_Editor_Key_Shared.cpp">

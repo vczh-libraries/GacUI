@@ -297,6 +297,12 @@
     <ClCompile Include="TestControls_Editor_RichText.cpp">
       <Filter>Source Files\Controls\Editor</Filter>
     </ClCompile>
+    <ClCompile Include="TestControls_Editor_InlineObject.cpp">
+      <Filter>Source Files\Controls\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="TestControls_Editor_Styles.cpp">
+      <Filter>Source Files\Controls\Editor</Filter>
+    </ClCompile>
     <ClCompile Include="TestApplication_Tab.cpp">
       <Filter>Source Files\Controls\Application</Filter>
     </ClCompile>
