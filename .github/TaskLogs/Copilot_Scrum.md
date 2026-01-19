@@ -74,6 +74,12 @@ This task creats a new test category
 
 In Task 6 you also needs to update UnitTest.vcxproj.user to activate the new test file
 
+## UPDATE
+
+One thing need to change in Task 9, when calculating the clicking position of a hyperlink, you need to add (x=4, y=0) to the final result, as the center point of GetCaretBounds is the bounds of the caret itself, not the bounds of the character. So additional (x=4, y=0) to the final result to ensure it hits the character.
+
+And add a Task 10, following Task 6 to add two files: `TestControls_Editor_InlineObject.cpp` and `TestControls_Editor_Styles.cpp`
+
 # TASKS
 
 - [x] TASK No.1: Split singleline-specific cases into RunTextBoxKeyTestCases_Singleline
@@ -82,9 +88,10 @@ In Task 6 you also needs to update UnitTest.vcxproj.user to activate the new tes
 - [x] TASK No.4: Add Enter/CRLF tests with GetDocument assertions (Paragraph mode controls)
 - [x] TASK No.5: Add keyboard caret navigation tests (Paragraph mode controls)
 - [x] TASK No.6: Add TestControls_Editor_RichText.cpp to unit test project
-- [ ] TASK No.7: Add single-paragraph rich text style editing tests (GuiDocumentLabel)
-- [ ] TASK No.8: Add multi-paragraph rich text style editing tests (GuiDocumentLabel)
-- [ ] TASK No.9: Add hyperlink editing + interaction tests (GuiDocumentLabel)
+- [ ] TASK No.7: Add TestControls_Editor_InlineObject.cpp and TestControls_Editor_Styles.cpp to unit test project
+- [ ] TASK No.8: Add single-paragraph rich text style editing tests (GuiDocumentLabel)
+- [ ] TASK No.9: Add multi-paragraph rich text style editing tests (GuiDocumentLabel)
+- [ ] TASK No.10: Add hyperlink editing + interaction tests (GuiDocumentLabel)
 
 ## TASK No.1: Split singleline-specific cases into RunTextBoxKeyTestCases_Singleline
 
@@ -270,7 +277,28 @@ This task is only for test scaffolding. It is fine to have an empty `TEST_FILE` 
 - Rich-text editing tests have different concerns (style runs, hyperlinks, mouse interaction) and are easier to evolve in a dedicated file without bloating key-navigation helpers.
 - Wiring the file into the `UnitTest` project and filter early prevents later test work from being blocked by project integration details.
 
-## TASK No.7: Add single-paragraph rich text style editing tests (GuiDocumentLabel)
+## TASK No.7: Add TestControls_Editor_InlineObject.cpp and TestControls_Editor_Styles.cpp to unit test project
+
+Create two new unit test source files to host editor tests that are not key-navigation focused, and wire them into the unit test project so they are compiled and can be activated by `UnitTest.vcxproj.user`.
+
+This task is only for test scaffolding. It is fine to have empty `TEST_FILE` blocks initially, but later tasks can add test categories and cases.
+
+### what to be done
+
+- Create `Test/GacUISrc/UnitTest/TestControls_Editor_InlineObject.cpp` in the same physical folder as `TestControls_Editor.cpp` / `TestControls_Editor_Key.cpp`.
+- Create `Test/GacUISrc/UnitTest/TestControls_Editor_Styles.cpp` in the same physical folder as `TestControls_Editor.cpp` / `TestControls_Editor_Key.cpp`.
+- Add both new files to `Test/GacUISrc/UnitTest/UnitTest.vcxproj` so they are compiled as part of the unit test binary.
+- Add both new files to `Test/GacUISrc/UnitTest/UnitTest.vcxproj.filters` under the same solution explorer folder as the existing editor test files:
+	- Use `<Filter>Source Files\\Controls\\Editor</Filter>` (matching `TestControls_Editor_Key.cpp`).
+- Update `Test/GacUISrc/UnitTest/UnitTest.vcxproj.user` to activate both new test files (following the same pattern used for other editor test files).
+- Ensure each new file contains a `TEST_FILE` block (can be empty in this task if needed).
+
+### rationale
+
+- Splitting editor unit tests by feature area keeps `TestControls_Editor_Key.cpp` focused on keyboard behaviors and avoids turning a single file into a catch-all for unrelated editor coverage.
+- Adding project / filters / user entries upfront prevents later tasks from being blocked by solution integration details, and makes it easy to activate new editor-focused tests incrementally.
+
+## TASK No.8: Add single-paragraph rich text style editing tests (GuiDocumentLabel)
 
 Add a new rich-text test category that verifies font, font style, and color editing behaviors in a single paragraph for `GuiDocumentLabel`.
 
@@ -297,9 +325,9 @@ All test cases in this task must be grouped under a single test category, and th
 - Keeping all cases in one category matches the UPDATE and keeps logs predictable while cases are iteratively added later.
 - Using `SummarizeStyle` provides a stable and direct way to assert computed style at a range, which is especially useful when edits cause run splitting/merging.
 
-## TASK No.8: Add multi-paragraph rich text style editing tests (GuiDocumentLabel)
+## TASK No.9: Add multi-paragraph rich text style editing tests (GuiDocumentLabel)
 
-Add a second rich-text test category that repeats the non-hyperlink rich-text style scenarios from TASK No.7, but validates a single editing call spanning multiple paragraphs.
+Add a second rich-text test category that repeats the non-hyperlink rich-text style scenarios from TASK No.8, but validates a single editing call spanning multiple paragraphs.
 
 Per the UPDATE, this task creates a new test category.
 
@@ -310,14 +338,14 @@ Per the UPDATE, this task creates a new test category.
 - Add representative test cases to validate that a single `EditStyle(...)` call correctly applies the requested property across multiple paragraphs.
 	- Keep the number of cases small; focus on correctness across paragraph boundaries.
 - Verify the resulting style using `SummarizeStyle(...)` over sub-ranges within each paragraph (and/or by inspecting runs) to ensure the style is applied consistently across paragraphs.
-- Keep the log path prefix `Controls/Editor/GuiDocumentLabel/RichText/...` consistent with TASK No.7.
+- Keep the log path prefix `Controls/Editor/GuiDocumentLabel/RichText/...` consistent with TASK No.8.
 
 ### rationale
 
 - Multi-paragraph editing is a distinct behavior surface: range-to-run mapping must correctly split and apply styles across paragraph boundaries.
-- A dedicated category keeps the single-paragraph tests focused and avoids mixing concerns, matching the UPDATE’s requirement for a new category.
+- A dedicated category keeps the single-paragraph tests focused and avoids mixing concerns, matching the UPDATE's requirement for a new category.
 
-## TASK No.9: Add hyperlink editing + interaction tests (GuiDocumentLabel)
+## TASK No.10: Add hyperlink editing + interaction tests (GuiDocumentLabel)
 
 Add a hyperlink-focused rich-text test category for `GuiDocumentLabel`, covering hyperlink editing (`EditHyperlink` / `RemoveHyperlink`), hyperlink activation by mouse hover/leave, hyperlink execution by click, and correct reference reporting via `GetActiveHyperlinkReference`.
 
@@ -331,8 +359,9 @@ Per the UPDATE, this task creates a new test category, and must cover both singl
 	- `EditHyperlink(paragraphIndex, begin, end, reference, normalStyleName, activeStyleName)`
 	- `RemoveHyperlink(paragraphIndex, begin, end)`
 - Extract a small static helper in the test file to compute a global mouse point for a caret position inside the document:
-	- Call `GetCaretBounds({row, column}, false)` to get the caret rectangle in the control’s container coordinate space.
+	- Call `GetCaretBounds({row, column}, false)` to get the caret rectangle in the control's container coordinate space.
 	- Convert it to global space by getting the container composition (`GetContainerComposition()`), calling `LocationOf(composition, 0.0, 0.0, 0, 0)` for the top-left, and then adding the center point of the caret bounds rectangle.
+	- Add `(x=4, y=0)` to the final result to compensate that the caret bounds center is the caret itself, not the character cell.
 - Add test coverage (keep count small but representative):
 	- Single-paragraph hyperlink creation/removal and reference visibility through `GetActiveHyperlinkReference`.
 	- Mouse hover/leave triggers `ActiveHyperlinkChanged`, and clicking triggers `ActiveHyperlinkExecuted`.
