@@ -89,7 +89,7 @@ And add a Task 10, following Task 6 to add two files: `TestControls_Editor_Inlin
 - [x] TASK No.5: Add keyboard caret navigation tests (Paragraph mode controls)
 - [x] TASK No.6: Add TestControls_Editor_RichText.cpp to unit test project
 - [x] TASK No.7: Add TestControls_Editor_InlineObject.cpp and TestControls_Editor_Styles.cpp to unit test project
-- [ ] TASK No.8: Add single-paragraph rich text style editing tests (GuiDocumentLabel)
+- [x] TASK No.8: Add single-paragraph rich text style editing tests (GuiDocumentLabel)
 - [ ] TASK No.9: Add multi-paragraph rich text style editing tests (GuiDocumentLabel)
 - [ ] TASK No.10: Add hyperlink editing + interaction tests (GuiDocumentLabel)
 
