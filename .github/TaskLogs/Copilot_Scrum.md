@@ -333,7 +333,9 @@ Per the UPDATE, this task creates a new test category.
 
 ### what to be done
 
-- In `Test/GacUISrc/UnitTest/TestControls_Editor_RichText.cpp`, add a new `TEST_CATEGORY` dedicated to multi-paragraph style editing for `GuiDocumentLabel`.
+- In `Test/GacUISrc/UnitTest/TestControls_Editor_RichText.cpp`, add a new `TEST_CATEGORY` dedicated to multi-paragraph style editing for `GuiDocumentLabel`:
+	- Use a concise category name (e.g. `MultiParagraph`) since `RichText` and `GuiDocumentLabel` are already implied by the file name and log path.
+	- Keep the log path consistent with TASK No.8 (no extra folder segments for control/category), e.g. `Controls/Editor/Features/RichText/MultiParagraph_<CaseName>`.
 - Create document content with multiple paragraphs and select a range that spans paragraph boundaries.
 - Add representative test cases to validate that a single `EditStyle(...)` call correctly applies the requested property across multiple paragraphs.
 	- Keep the number of cases small; focus on correctness across paragraph boundaries.
@@ -354,7 +356,8 @@ Per the UPDATE, this task creates a new test category, and must cover both singl
 ### what to be done
 
 - In `Test/GacUISrc/UnitTest/TestControls_Editor_RichText.cpp`, add a `TEST_CATEGORY` dedicated to hyperlink tests for `GuiDocumentLabel`.
-	- Ensure each test case log path starts with `Controls/Editor/Features/RichText/...` (not `Key`).
+	- Use a concise category name (e.g. `Hyperlink`) since `RichText` and `GuiDocumentLabel` are already implied by the file name and log path.
+	- Ensure each test case log path starts with `Controls/Editor/Features/RichText/...` (not `Key`), and keep it consistent with TASK No.8, e.g. `Controls/Editor/Features/RichText/Hyperlink_<CaseName>`.
 - Use `GuiDocumentCommonInterface` hyperlink editing APIs:
 	- `EditHyperlink(paragraphIndex, begin, end, reference, normalStyleName, activeStyleName)`
 	- `RemoveHyperlink(paragraphIndex, begin, end)`
