@@ -6,16 +6,11 @@
 using namespace vl;
 using namespace vl::unittest;
 using namespace vl::collections;
+using namespace vl::presentation;
 using namespace vl::presentation::controls;
 using namespace vl::presentation::controls::list;
 using namespace vl::presentation::controls::tree;
 using namespace vl::reflection::description;
-
-template<typename T>
-using ItemProperty = vl::presentation::ItemProperty<T>;
-
-template<typename T>
-using WritableItemProperty = vl::presentation::WritableItemProperty<T>;
 
 namespace gacui_unittest_template
 {
