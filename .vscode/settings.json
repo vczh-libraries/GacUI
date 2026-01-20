@@ -53,7 +53,7 @@
         */
         "/^\\$\\w+\\s*=/": true,
         "/.*/": true,
-        "git": false,
+        "/git.*push/": false,
         "kill": false,
         "curl": false,
         "wget": false,
