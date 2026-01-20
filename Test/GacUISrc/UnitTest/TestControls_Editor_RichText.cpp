@@ -1,4 +1,5 @@
 #include "TestControls.h"
+#include "TestItemProviders.h"
 
 using namespace gacui_unittest_template;
 
@@ -44,6 +45,24 @@ namespace
 	Ptr<DocumentStyleProperties> Summarize(GuiDocumentLabel* textBox, vint row, vint begin, vint end)
 	{
 		return textBox->SummarizeStyle(TextPos(row, begin), TextPos(row, end));
+	}
+
+	static NativePoint CaretToGlobalPoint(UnitTestRemoteProtocol* protocol, GuiDocumentLabel* textBox, TextPos caret)
+	{
+		auto caretBounds = textBox->GetCaretBounds(caret, false);
+		auto container = textBox->GetContainerComposition();
+		auto topLeft = protocol->LocationOf(container, 0.0, 0.0, 0, 0);
+
+		auto x = topLeft.x + caretBounds.x1 + caretBounds.Width() / 2 + 4;
+		auto y = topLeft.y + caretBounds.y1 + caretBounds.Height() / 2;
+		return { x, y };
+	}
+
+	template<vint Count>
+	static void AssertEventLogAndClear(List<WString>& eventLog, const wchar_t* (&expected)[Count])
+	{
+		AssertCallbacks(eventLog, expected);
+		eventLog.Clear();
 	}
 }
 
@@ -359,6 +378,458 @@ TEST_FILE
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resource_DocumentLabel
 			);
+		});
+
+		TEST_CATEGORY(L"Hyperlink")
+		{
+			TEST_CASE(L"SingleParagraph_EditRemove_Model")
+			{
+				TooltipTimer timer;
+				GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+				{
+					protocol->OnNextIdleFrame(L"Ready", [=]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+						textBox->SetFocused();
+						textBox->LoadTextAndClearUndoRedo(L"0123456789");
+					});
+
+					protocol->OnNextIdleFrame(L"Loaded", [=]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+						textBox->EditHyperlink(
+							0, 2, 8,
+							WString::Unmanaged(L"refA"),
+							WString::Unmanaged(L"#NormalLink"),
+							WString::Unmanaged(L"#ActiveLink")
+						);
+					});
+
+					protocol->OnNextIdleFrame(L"Created Hyperlink", [=]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+						auto doc = textBox->GetDocument();
+
+						auto package = doc->GetHyperlink(0, 3, 3);
+						TEST_ASSERT(package->hyperlinks.Count() > 0);
+						TEST_ASSERT(package->hyperlinks[0]->reference == WString::Unmanaged(L"refA"));
+
+						textBox->EditHyperlink(
+							0, 2, 8,
+							WString::Unmanaged(L"refB"),
+							WString::Unmanaged(L"#NormalLink"),
+							WString::Unmanaged(L"#ActiveLink")
+						);
+					});
+
+					protocol->OnNextIdleFrame(L"Edited Hyperlink", [=]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+						auto doc = textBox->GetDocument();
+
+						auto package = doc->GetHyperlink(0, 4, 4);
+						TEST_ASSERT(package->hyperlinks.Count() > 0);
+						TEST_ASSERT(package->hyperlinks[0]->reference == WString::Unmanaged(L"refB"));
+
+						textBox->RemoveHyperlink(0, 4, 6);
+					});
+
+					protocol->OnNextIdleFrame(L"Removed Hyperlink", [=]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+						auto doc = textBox->GetDocument();
+
+						TEST_ASSERT(doc->GetHyperlink(0, 3, 3)->hyperlinks.Count() == 0);
+						TEST_ASSERT(doc->GetHyperlink(0, 7, 7)->hyperlinks.Count() == 0);
+
+						window->Hide();
+					});
+				});
+				GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+					WString::Unmanaged(L"Controls/Editor/Features/RichText/Hyperlink_SingleParagraph_EditRemove_Model"),
+					WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+					resource_DocumentLabel
+				);
+			});
+
+			TEST_CASE(L"SingleParagraph_ActivateExecute")
+			{
+				List<WString> events;
+				NativePoint inside = { 0,0 };
+				NativePoint outside = { 0,0 };
+
+				TooltipTimer timer;
+				GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+				{
+					protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+						textBox->SetFocused();
+						textBox->LoadTextAndClearUndoRedo(L"0123456789");
+					});
+
+					protocol->OnNextIdleFrame(L"Loaded", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+							textBox->EditHyperlink(
+							0, 2, 5,
+							WString::Unmanaged(L"refA"),
+							WString::Unmanaged(L"#NormalLink"),
+							WString::Unmanaged(L"#ActiveLink")
+							);
+
+						textBox->SetEditMode(GuiDocumentEditMode::ViewOnly);
+
+						textBox->ActiveHyperlinkChanged.AttachLambda([&, textBox](GuiGraphicsComposition*, GuiEventArgs&)
+						{
+							events.Add(L"Activated " + textBox->GetActiveHyperlinkReference());
+						});
+						textBox->ActiveHyperlinkExecuted.AttachLambda([&, textBox](GuiGraphicsComposition*, GuiEventArgs&)
+						{
+							events.Add(L"Executed " + textBox->GetActiveHyperlinkReference());
+						});
+
+						inside = CaretToGlobalPoint(protocol, textBox, TextPos(0, 3));
+						{
+							auto container = textBox->GetContainerComposition();
+							auto topLeft = protocol->LocationOf(container, 0.0, 0.0, 0, 0);
+							outside = { topLeft.x - 10, topLeft.y - 10 };
+						}
+					});
+
+					protocol->OnNextIdleFrame(L"Created Hyperlink", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+						protocol->MouseMove(inside);
+						TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L"refA"));
+						const wchar_t* expected[] = { L"Activated refA" };
+						AssertEventLogAndClear(events, expected);
+					});
+
+					protocol->OnNextIdleFrame(L"Hovered Hyperlink", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+						protocol->LClick(inside);
+						TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L"refA"));
+						const wchar_t* expected[] = { L"Executed refA" };
+						AssertEventLogAndClear(events, expected);
+					});
+
+					protocol->OnNextIdleFrame(L"Clicked Hyperlink", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+						protocol->MouseMove(outside);
+						TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L""));
+						const wchar_t* expected[] = { L"Activated " };
+						AssertEventLogAndClear(events, expected);
+
+						window->Hide();
+					});
+				});
+				GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+					WString::Unmanaged(L"Controls/Editor/Features/RichText/Hyperlink_SingleParagraph_ActivateExecute"),
+					WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+					resource_DocumentLabel
+				);
+			});
+
+			TEST_CASE(L"MultiParagraph_ActivateExecute")
+			{
+				List<WString> events;
+				NativePoint insideP0 = { 0,0 };
+				NativePoint insideP1 = { 0,0 };
+				NativePoint outside = { 0,0 };
+
+				TooltipTimer timer;
+				GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+				{
+					protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+						textBox->SetFocused();
+						textBox->LoadTextAndClearUndoRedo(L"012345\r\n\r\n6789AB\r\n\r\nCDEF");
+					});
+
+					protocol->OnNextIdleFrame(L"Loaded", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+							textBox->EditHyperlink(
+							0, 1, 3,
+							WString::Unmanaged(L"refP0"),
+							WString::Unmanaged(L"#NormalLink"),
+							WString::Unmanaged(L"#ActiveLink")
+							);
+					});
+
+					protocol->OnNextIdleFrame(L"Created P0", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+							textBox->EditHyperlink(
+							1, 2, 5,
+							WString::Unmanaged(L"refP1"),
+							WString::Unmanaged(L"#NormalLink"),
+							WString::Unmanaged(L"#ActiveLink")
+							);
+
+						textBox->SetEditMode(GuiDocumentEditMode::ViewOnly);
+
+						textBox->ActiveHyperlinkChanged.AttachLambda([&, textBox](GuiGraphicsComposition*, GuiEventArgs&)
+						{
+							events.Add(L"Activated " + textBox->GetActiveHyperlinkReference());
+						});
+						textBox->ActiveHyperlinkExecuted.AttachLambda([&, textBox](GuiGraphicsComposition*, GuiEventArgs&)
+						{
+							events.Add(L"Executed " + textBox->GetActiveHyperlinkReference());
+						});
+
+						insideP0 = CaretToGlobalPoint(protocol, textBox, TextPos(0, 2));
+						insideP1 = CaretToGlobalPoint(protocol, textBox, TextPos(1, 3));
+						{
+							auto container = textBox->GetContainerComposition();
+							auto topLeft = protocol->LocationOf(container, 0.0, 0.0, 0, 0);
+							outside = { topLeft.x - 10, topLeft.y - 10 };
+						}
+					});
+
+					protocol->OnNextIdleFrame(L"Created P1", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+						protocol->MouseMove(insideP0);
+						TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L"refP0"));
+						const wchar_t* expected[] = { L"Activated refP0" };
+						AssertEventLogAndClear(events, expected);
+					});
+
+					protocol->OnNextIdleFrame(L"Hovered P0", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+						protocol->LClick(insideP0);
+						TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L"refP0"));
+						const wchar_t* expected[] = { L"Executed refP0" };
+						AssertEventLogAndClear(events, expected);
+					});
+
+					protocol->OnNextIdleFrame(L"Clicked P0", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+						protocol->MouseMove(insideP1);
+						TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L"refP1"));
+						const wchar_t* expected[] = { L"Activated refP1" };
+						AssertEventLogAndClear(events, expected);
+					});
+
+					protocol->OnNextIdleFrame(L"Hovered P1", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+						protocol->LClick(insideP1);
+						TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L"refP1"));
+						const wchar_t* expected[] = { L"Executed refP1" };
+						AssertEventLogAndClear(events, expected);
+					});
+
+					protocol->OnNextIdleFrame(L"Clicked P1", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+						protocol->MouseMove(outside);
+						TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L""));
+						const wchar_t* expected[] = { L"Activated " };
+						AssertEventLogAndClear(events, expected);
+
+						window->Hide();
+					});
+				});
+				GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+					WString::Unmanaged(L"Controls/Editor/Features/RichText/Hyperlink_MultiParagraph_ActivateExecute"),
+					WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+					resource_DocumentLabel
+				);
+			});
+
+			TEST_CASE(L"Overlap_Remove_DoesNotLeaveStaleActive")
+			{
+				List<WString> events;
+				NativePoint insideA = { 0,0 };
+				NativePoint insideB = { 0,0 };
+				NativePoint outside = { 0,0 };
+				Ptr<DocumentStyleProperties> baselineOutside;
+
+				TooltipTimer timer;
+				GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+				{
+					protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+						textBox->SetFocused();
+						textBox->LoadTextAndClearUndoRedo(L"0123456789");
+					});
+
+					protocol->OnNextIdleFrame(L"Loaded", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+							textBox->EditHyperlink(
+							0, 2, 7,
+							WString::Unmanaged(L"refA"),
+							WString::Unmanaged(L"#NormalLink"),
+							WString::Unmanaged(L"#ActiveLink")
+							);
+					});
+
+					protocol->OnNextIdleFrame(L"Created A", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+							textBox->EditHyperlink(
+							0, 5, 9,
+							WString::Unmanaged(L"refB"),
+							WString::Unmanaged(L"#NormalLink"),
+							WString::Unmanaged(L"#ActiveLink")
+							);
+
+						baselineOutside = Summarize(textBox, 0, 0, 2);
+
+						textBox->SetEditMode(GuiDocumentEditMode::ViewOnly);
+						textBox->ActiveHyperlinkChanged.AttachLambda([&, textBox](GuiGraphicsComposition*, GuiEventArgs&)
+						{
+							events.Add(L"Activated " + textBox->GetActiveHyperlinkReference());
+						});
+
+						insideA = CaretToGlobalPoint(protocol, textBox, TextPos(0, 3));
+						insideB = CaretToGlobalPoint(protocol, textBox, TextPos(0, 8));
+						{
+							auto container = textBox->GetContainerComposition();
+							auto topLeft = protocol->LocationOf(container, 0.0, 0.0, 0, 0);
+							outside = { topLeft.x - 10, topLeft.y - 10 };
+						}
+					});
+
+					protocol->OnNextIdleFrame(L"Created B", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+						protocol->MouseMove(insideA);
+						TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L"refA"));
+						const wchar_t* expected[] = { L"Activated refA" };
+						AssertEventLogAndClear(events, expected);
+					});
+
+					protocol->OnNextIdleFrame(L"Hovered A", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+						protocol->MouseMove(insideB);
+						TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L"refB"));
+						const wchar_t* expected[] = { L"Activated refB" };
+						AssertEventLogAndClear(events, expected);
+					});
+
+					protocol->OnNextIdleFrame(L"Hovered B", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+							textBox->RemoveHyperlink(0, 6, 7);
+						events.Clear();
+					});
+
+					protocol->OnNextIdleFrame(L"Removed Overlap", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+						auto doc = textBox->GetDocument();
+
+						protocol->MouseMove(insideA);
+						auto package = doc->GetHyperlink(0, 3, 3);
+						auto expectedRef = package->hyperlinks.Count() == 0 ? WString::Unmanaged(L"") : package->hyperlinks[0]->reference;
+						WString expectedEvent = L"Activated " + expectedRef;
+						TEST_ASSERT(textBox->GetActiveHyperlinkReference() == expectedRef);
+						const wchar_t* expected[] = { expectedEvent.Buffer() };
+						AssertEventLogAndClear(events, expected);
+					});
+
+					protocol->OnNextIdleFrame(L"Hovered A After Remove", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+						auto doc = textBox->GetDocument();
+
+						protocol->MouseMove(insideB);
+						auto package = doc->GetHyperlink(0, 8, 8);
+						auto expectedRef = package->hyperlinks.Count() == 0 ? WString::Unmanaged(L"") : package->hyperlinks[0]->reference;
+						WString expectedEvent = L"Activated " + expectedRef;
+						TEST_ASSERT(textBox->GetActiveHyperlinkReference() == expectedRef);
+						const wchar_t* expected[] = { expectedEvent.Buffer() };
+						AssertEventLogAndClear(events, expected);
+					});
+
+					protocol->OnNextIdleFrame(L"Hovered B After Remove", [&, protocol]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+
+						protocol->MouseMove(outside);
+						TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L""));
+						const wchar_t* expected[] = { L"Activated " };
+						AssertEventLogAndClear(events, expected);
+
+						{
+							auto afterOutside = Summarize(textBox, 0, 0, 2);
+							TEST_ASSERT(baselineOutside->face == afterOutside->face);
+							TEST_ASSERT(baselineOutside->size == afterOutside->size);
+							TEST_ASSERT(baselineOutside->color == afterOutside->color);
+							TEST_ASSERT(baselineOutside->backgroundColor == afterOutside->backgroundColor);
+							TEST_ASSERT(baselineOutside->bold == afterOutside->bold);
+							TEST_ASSERT(baselineOutside->italic == afterOutside->italic);
+							TEST_ASSERT(baselineOutside->underline == afterOutside->underline);
+							TEST_ASSERT(baselineOutside->strikeline == afterOutside->strikeline);
+							TEST_ASSERT(baselineOutside->antialias == afterOutside->antialias);
+							TEST_ASSERT(baselineOutside->verticalAntialias == afterOutside->verticalAntialias);
+						}
+
+						window->Hide();
+					});
+				});
+				GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+					WString::Unmanaged(L"Controls/Editor/Features/RichText/Hyperlink_Overlap_Remove_DoesNotLeaveStaleActive"),
+					WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+					resource_DocumentLabel
+				);
+			});
 		});
 
 	TEST_CATEGORY(L"MultiParagraph")
