@@ -372,6 +372,7 @@ Per the UPDATE, this task creates a new test category, and must cover both singl
 	- Overlap / partial removal behavior:
 		- Removing a middle part of a hyperlink breaks it into two hyperlinks with the same reference (as described in UPDATE).
 		- Editing/removing overlapping ranges behaves correctly and does not leave stale active references.
+	- When validating “outside edited range” invariants (e.g. unaffected style fields), compare against a baseline captured before edits/hover rather than assuming `Nullable<>` fields are always `null` (theme/default styles may produce concrete values).
 
 ### rationale
 
