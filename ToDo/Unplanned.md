@@ -115,7 +115,8 @@
   - Default non-text element renderer using 2D drawing API.
     - Activated only when 2D drawing API is available and renderer implementations are unavailable.
   - Ensure OS providers without 2D drawing API still work.
-- restriction-based Meta2DElement.
+- Meta2DElement.
+  - Accept a list of draw commands at the same time, no layout feature offered, text measurement API offered.
   - If 2D drawing API is not available, display a text using `SolidLabel`.
 - Meta3DElement and Meta3D data structure.
   - Default Meta3DElement renderer using Meta2DElement with a surface sorting based algorithm.
@@ -134,7 +135,7 @@
     - Direct2d (**Normal**, **Hosted**, **Remote**)
     - UWP (Remote)
   - Linux
-    - gGac repo: improve development process for release
+    - wGac repo: improve development process for release
   - macOS
     - iGac repo: improve development process for release
   - Browser
