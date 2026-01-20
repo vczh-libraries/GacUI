@@ -1086,12 +1086,12 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 
-						textBox->EditHyperlink(
+					textBox->EditHyperlink(
 						0, 2, 5,
 						WString::Unmanaged(L"refA"),
 						WString::Unmanaged(L"#NormalLink"),
 						WString::Unmanaged(L"#ActiveLink")
-						);
+					);
 
 					textBox->SetEditMode(GuiDocumentEditMode::ViewOnly);
 
@@ -1108,7 +1108,7 @@ TEST_FILE
 					{
 						auto container = textBox->GetContainerComposition();
 						auto topLeft = protocol->LocationOf(container, 0.0, 0.0, 0, 0);
-						outside = { topLeft.x - 10, topLeft.y - 10 };
+						outside = { topLeft.x - 3, topLeft.y - 3 };
 					}
 				});
 
@@ -1129,8 +1129,9 @@ TEST_FILE
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 
 					protocol->LClick(inside);
-					TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L"refA"));
-					const wchar_t* expected[] = { L"Executed refA" };
+					protocol->MouseMove(outside);
+					TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L""));
+					const wchar_t* expected[] = { L"Executed refA", L"Activated " };
 					AssertEventLogAndClear(events, expected);
 				});
 
@@ -1138,11 +1139,8 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
-
-					protocol->MouseMove(outside);
 					TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L""));
-					const wchar_t* expected[] = { L"Activated " };
-					AssertEventLogAndClear(events, expected);
+					TEST_ASSERT(events.Count() == 0);
 
 					window->Hide();
 				});
@@ -1213,7 +1211,7 @@ TEST_FILE
 					{
 						auto container = textBox->GetContainerComposition();
 						auto topLeft = protocol->LocationOf(container, 0.0, 0.0, 0, 0);
-						outside = { topLeft.x - 10, topLeft.y - 10 };
+						outside = { topLeft.x - 3, topLeft.y - 3 };
 					}
 				});
 
@@ -1234,8 +1232,9 @@ TEST_FILE
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 
 					protocol->LClick(insideP0);
-					TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L"refP0"));
-					const wchar_t* expected[] = { L"Executed refP0" };
+					protocol->MouseMove(outside);
+					TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L""));
+					const wchar_t* expected[] = { L"Executed refP0", L"Activated " };
 					AssertEventLogAndClear(events, expected);
 				});
 
@@ -1256,8 +1255,9 @@ TEST_FILE
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 
 					protocol->LClick(insideP1);
-					TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L"refP1"));
-					const wchar_t* expected[] = { L"Executed refP1" };
+					protocol->MouseMove(outside);
+					TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L""));
+					const wchar_t* expected[] = { L"Executed refP1", L"Activated " };
 					AssertEventLogAndClear(events, expected);
 				});
 
@@ -1265,11 +1265,8 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto textBox = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
-
-					protocol->MouseMove(outside);
 					TEST_ASSERT(textBox->GetActiveHyperlinkReference() == WString::Unmanaged(L""));
-					const wchar_t* expected[] = { L"Activated " };
-					AssertEventLogAndClear(events, expected);
+					TEST_ASSERT(events.Count() == 0);
 
 					window->Hide();
 				});
@@ -1338,7 +1335,7 @@ TEST_FILE
 					{
 						auto container = textBox->GetContainerComposition();
 						auto topLeft = protocol->LocationOf(container, 0.0, 0.0, 0, 0);
-						outside = { topLeft.x - 10, topLeft.y - 10 };
+						outside = { topLeft.x - 3, topLeft.y - 3 };
 					}
 				});
 

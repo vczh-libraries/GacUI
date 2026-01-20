@@ -315,11 +315,19 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::SetActiveHyperlink(Ptr<DocumentHyperlinkRun::Package> package)
 			{
-				ActivateActiveHyperlink(false);
-				activeHyperlinks =
+				auto normalizedPackage =
 					!package ? nullptr :
 					package->hyperlinks.Count() == 0 ? nullptr :
 					package;
+
+				if (!activeHyperlinks && !normalizedPackage) return;
+				if (activeHyperlinks && normalizedPackage)
+				{
+					if (CompareEnumerable(activeHyperlinks->hyperlinks, normalizedPackage->hyperlinks) == 0) return;
+				}
+
+				ActivateActiveHyperlink(false);
+				activeHyperlinks = normalizedPackage;
 				ActivateActiveHyperlink(true);
 				ActiveHyperlinkChanged.Execute(documentControl->GetNotifyEventArguments());
 			}
