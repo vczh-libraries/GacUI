@@ -925,7 +925,7 @@ GuiRemoteGraphicsParagraph
 				auto newSize = callback->OnRenderInlineObject(callbackId, location);
 				if (newSize != location.GetSize())
 				{
-					needUpdate = true;
+					MarkParagraphDirty(false);
 					for (auto&& inlineObjectRun : inlineObjectRuns.Values())
 					{
 						if (inlineObjectRun.callbackId == callbackId)
@@ -937,6 +937,7 @@ GuiRemoteGraphicsParagraph
 					}
 				}
 			}
+			cachedInlineObjectBounds = {};
 		}
 
 		remoteprotocol::ElementRendering rendering;
