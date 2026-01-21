@@ -2324,7 +2324,7 @@ class presentation::DocumentImageRun : presentation::DocumentInlineObjectRun {
 
 class presentation::DocumentInlineObjectRun : presentation::DocumentContentRun {
     property baseline : system::Int32;
-    property size : presentation::Size;
+    property sizeOverride : presentation::Size?;
 
 }
 

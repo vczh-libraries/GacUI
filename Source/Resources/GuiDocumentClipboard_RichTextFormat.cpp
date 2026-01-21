@@ -128,8 +128,9 @@ namespace vl
 					if (run->image)
 					{
 						writer.WriteString(L"{\\pict\\pngblip");
-						writer.WriteString(L"\\picw" + itow(run->size.x) + L"\\pich" + itow(run->size.y));
-						writer.WriteString(L"\\picwgoal" + itow(run->size.x * 15) + L"\\pichgoal" + itow(run->size.y * 15) + L" ");
+						auto imageSize = run->GetSize();
+						writer.WriteString(L"\\picw" + itow(imageSize.x) + L"\\pich" + itow(imageSize.y));
+						writer.WriteString(L"\\picwgoal" + itow(imageSize.x * 15) + L"\\pichgoal" + itow(imageSize.y * 15) + L" ");
 
 						MemoryStream memoryStream;
 						run->image->SaveToStream(memoryStream, INativeImage::Png);

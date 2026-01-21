@@ -129,7 +129,8 @@ namespace vl
 				{
 					if (run->image)
 					{
-						writer.WriteString(L"<img width=\"" + itow(run->size.x) + L"\" height=\"" + itow(run->size.y) + L"\" src=\"data:image/");
+						auto imageSize = run->GetSize();
+						writer.WriteString(L"<img width=\"" + itow(imageSize.x) + L"\" height=\"" + itow(imageSize.y) + L"\" src=\"data:image/");
 						auto format = run->image->GetFormat();
 						if (format == INativeImage::Gif)
 						{

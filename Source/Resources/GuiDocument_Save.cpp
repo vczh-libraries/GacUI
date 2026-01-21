@@ -231,12 +231,20 @@ document_operation_visitors::SerializeRunVisitor
 					XmlElementWriter writer(parent);
 					writer
 						.Element(L"img")
-						.Attribute(L"width", itow(run->size.x))
-						.Attribute(L"height", itow(run->size.y))
-						.Attribute(L"baseline", itow(run->baseline))
 						.Attribute(L"frameIndex", itow(run->frameIndex))
 						.Attribute(L"source", run->source)
 						;
+					if(run->sizeOverride)
+					{
+						writer
+							.Attribute(L"width", itow(run->sizeOverride.Value().x))
+							.Attribute(L"height", itow(run->sizeOverride.Value().y))
+							;
+					}
+					if (run->baseline != -1)
+					{
+						writer.Attribute(L"baseline", itow(run->baseline));
+					}
 				}
 
 				void Visit(DocumentEmbeddedObjectRun* run)override

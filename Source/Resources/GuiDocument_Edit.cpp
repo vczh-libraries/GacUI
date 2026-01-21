@@ -428,8 +428,6 @@ DocumentModel::EditImage
 		Ptr<DocumentImageRun> DocumentModel::EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image)
 		{
 			auto imageRun = Ptr(new DocumentImageRun);
-			imageRun->size=image->GetImage()->GetFrame(image->GetFrameIndex())->GetSize();
-			imageRun->baseline=imageRun->size.y;
 			imageRun->image=image->GetImage();
 			imageRun->frameIndex=image->GetFrameIndex();
 

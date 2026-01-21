@@ -153,12 +153,17 @@ Rich Content Document (run)
 		class DocumentInlineObjectRun : public DocumentContentRun, public Description<DocumentInlineObjectRun>
 		{
 		public:
-			/// <summary>Size of the inline object.</summary>
-			Size							size;
-			/// <summary>Baseline of the inline object.</summary>
-			vint							baseline;
+			/// <summary>Size of the inline object. When it is empty, it either becomes the size of the image, or (1,1) if there is no image.</summary>
+			Nullable<Size>					sizeOverride;
+			/// <summary>Baseline of the inline object. When it is -1, it becomes sizeOverride.Value().y</summary>
+			vint							baseline = -1;
 
-			DocumentInlineObjectRun():baseline(-1){}
+			DocumentInlineObjectRun(){}
+
+			virtual Size GetSize()
+			{
+				return sizeOverride ? sizeOverride.Value() : Size(1, 1);
+			}
 		};
 				
 		/// <summary>Pepresents a image run.</summary>
@@ -170,11 +175,20 @@ Rich Content Document (run)
 			/// <summary>The image.</summary>
 			Ptr<INativeImage>				image;
 			/// <summary>The frame index.</summary>
-			vint							frameIndex;
+			vint							frameIndex = 0;
 			/// <summary>The image source string.</summary>
 			WString							source;
 
-			DocumentImageRun():frameIndex(0){}
+			DocumentImageRun(){}
+
+			Size GetSize() override
+			{
+				if (image && !sizeOverride && 0 <= frameIndex && frameIndex < image->GetFrameCount())
+				{
+					return image->GetFrame(frameIndex)->GetSize();
+				}
+				return DocumentInlineObjectRun::GetSize();
+			}
 			
 			WString							GetRepresentationText()override{return RepresentationText;}
 			void							Accept(IVisitor* visitor)override{visitor->Visit(this);}

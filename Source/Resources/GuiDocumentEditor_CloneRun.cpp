@@ -69,7 +69,7 @@ If clonedRun field is assigned then it will be added to the cloned container run
 				void Visit(DocumentImageRun* run)override
 				{
 					auto cloned = Ptr(new DocumentImageRun);
-					cloned->size = run->size;
+					cloned->sizeOverride = run->sizeOverride;
 					cloned->baseline = run->baseline;
 					cloned->image = run->image;
 					cloned->frameIndex = run->frameIndex;

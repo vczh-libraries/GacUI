@@ -92,22 +92,17 @@ document_operation_visitors::DeserializeNodeVisitor
 								{
 									run->image = imageData->GetImage();
 								}
-								if (run->image && run->image->GetFrameCount() > 0)
-								{
-									run->size = run->image->GetFrame(0)->GetSize();
-									run->frameIndex = 0;
-								}
 							}
 
 							for (auto att : node->attributes)
 							{
 								if (att->name.value == L"width")
 								{
-									run->size.x = wtoi(att->value.value);
+									run->sizeOverride = { wtoi(att->value.value),run->sizeOverride ? run->sizeOverride.Value().y : 0 };
 								}
 								else if (att->name.value == L"height")
 								{
-									run->size.y = wtoi(att->value.value);
+									run->sizeOverride = { run->sizeOverride ? run->sizeOverride.Value().x : 0,wtoi(att->value.value) };
 								}
 								else if (att->name.value == L"baseline")
 								{

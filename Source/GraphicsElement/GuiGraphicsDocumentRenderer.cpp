@@ -134,7 +134,7 @@ SetPropertiesVisitor
 						element->SetStretch(true);
 
 						IGuiGraphicsParagraph::InlineObjectProperties properties;
-						properties.size = run->size;
+						properties.size = run->GetSize();
 						properties.baseline = run->baseline;
 						properties.breakCondition = IGuiGraphicsParagraph::Alone;
 						properties.backgroundImage = element;

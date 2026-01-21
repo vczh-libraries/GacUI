@@ -26,10 +26,23 @@
     [24, "FocusRectangle"],
     [25, "SolidLabel"],
     [26, "DocumentParagraph"],
-    [27, "DocumentParagraph"]
+    [27, "DocumentParagraph"],
+    [28, "ImageFrame"]
   ],
-  "imageCreations": [],
-  "imageMetadatas": [],
+  "imageCreations": [
+    {"id": 18, "imageData": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAABiUlEQVR4nKWTv24TQRCHv4uu970BV1qi8OUNlgJIZ1PhzucKRGO\/AUdJZ7\/B0UF37tx500EV04Uq5wKJLrPdppoUe39CjELhkU47utXvm\/nNaiJV5ZSIN5eHhiDh8CAebn\/fvFl+mFT\/JVS21sdRVlbzotTRy1mmqjz1nXWVH4R4yC8yzp+fX2Wv8uypBqJqu9fx6xGXv4IwTRzWWtKhAd8Dpcmvbm5flMvUdoSysn3vXlVEtf4jWn2XI2vFV9HsvdXRu53pLTTkLz9gbR0re2C1la7iX9YEijwjcm6XTSsDELcTmGTtCySIh\/21AAPWm3Bvhg7xQrHaA+Du3A6IYrzg7mC1PSAtzQtpkgCwGNMIBhRTqI2hrmuKMoDiIIBJloBvWvcJ9joIP31ziIT\/0lRou+0AZjo\/8msulsAzPr4d4NyAWhwiCSIgsqd9\/ngxG0eL2fgIMP\/8UwHm60NXuY3JsM\/j41mHEAmzMelDsYRB88jCPwEeTL5p8nZP+n1pLUSnbuPZSWrgHpANDzKdUwRtAAAAAElFTkSuQmCC", "imageDataOmitted": false}
+  ],
+  "imageMetadatas": [
+    {
+      "id": 18,
+      "format": "Png",
+      "frames": [
+        {
+          "size": {"x": 16, "y": 16}
+        }
+      ]
+    }
+  ],
   "frames": [
     {
       "frameId": 4,
@@ -450,14 +463,40 @@
             {
               "paragraph": {
                 "id": 27,
-                "text": "This is the second paragraph.  After the image.",
+                "text": "This is the second paragraph. [Image] After the image.",
                 "wrapLine": true,
                 "maxWidth": 450,
                 "alignment": "Left",
                 "runsDiff": [
                   {
                     "caretBegin": 0,
-                    "caretEnd": 47,
+                    "caretEnd": 30,
+                    "props": [
+                      "DocumentTextRunProperty",
+                      {
+                        "textColor": "#FFFFFF",
+                        "backgroundColor": "#00000000",
+                        "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                      }
+                    ]
+                  },
+                  {
+                    "caretBegin": 30,
+                    "caretEnd": 37,
+                    "props": [
+                      "DocumentInlineObjectRunProperty",
+                      {
+                        "size": {"x": 16, "y": 16},
+                        "baseline": -1,
+                        "breakCondition": "Alone",
+                        "backgroundElementId": 28,
+                        "callbackId": -1
+                      }
+                    ]
+                  },
+                  {
+                    "caretBegin": 37,
+                    "caretEnd": 54,
                     "props": [
                       "DocumentTextRunProperty",
                       {
@@ -473,6 +512,13 @@
               },
               "caret": null
             }
+          ]
+        ],
+        [
+          28,
+          [
+            "ElementDesc_ImageFrame",
+            {"id": 28, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
           ]
         ]
       ],
@@ -841,8 +887,8 @@
                                   "hitTestResult": null,
                                   "cursor": null,
                                   "element": 27,
-                                  "bounds": {"x1": 15, "y1": 71, "x2": 465, "y2": 87},
-                                  "validArea": {"x1": 15, "y1": 71, "x2": 465, "y2": 87}
+                                  "bounds": {"x1": 15, "y1": 71, "x2": 465, "y2": 107},
+                                  "validArea": {"x1": 15, "y1": 71, "x2": 465, "y2": 107}
                                 },
                                 "children": null
                               }
