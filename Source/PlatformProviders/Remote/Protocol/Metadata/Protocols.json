@@ -2364,6 +2364,33 @@
         }],
         "type": "Struct"
     }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "UpdateElement_DocumentParagraphResponse",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "documentSize",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Size"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "inlineObjectBounds",
+            "type": {
+                "$ast": "MapType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "Rect"
+                },
+                "keyType": {
+                    "$ast": "PrimitiveType",
+                    "type": "Integer"
+                }
+            }
+        }],
+        "type": "Struct"
+    }, {
         "$ast": "MessageDecl",
         "attributes": [],
         "name": "RendererUpdateElement_DocumentParagraph",
@@ -2378,7 +2405,7 @@
             "$ast": "MessageResponse",
             "type": {
                 "$ast": "ReferenceType",
-                "name": "Size"
+                "name": "UpdateElement_DocumentParagraphResponse"
             }
         }
     }, {

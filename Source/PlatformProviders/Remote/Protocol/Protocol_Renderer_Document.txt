@@ -62,7 +62,13 @@ struct ElementDesc_DocumentParagraph
     var removedInlineObjects : int[];
 }
 
-message RendererUpdateElement_DocumentParagraph     { request: ElementDesc_DocumentParagraph; response: Size; }
+struct UpdateElement_DocumentParagraphResponse
+{
+    var documentSize : Size;
+    var inlineObjectBounds : Rect[int];
+}
+
+message RendererUpdateElement_DocumentParagraph     { request: ElementDesc_DocumentParagraph; response: UpdateElement_DocumentParagraphResponse; }
 
 struct GetCaretRequest
 {

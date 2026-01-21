@@ -646,6 +646,14 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse>(const ::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"documentSize", value.documentSize);
+		ConvertCustomTypeToJsonField(node, L"inlineObjectBounds", value.inlineObjectBounds);
+		return node;
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretRequest>(const ::vl::presentation::remoteprotocol::GetCaretRequest & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
@@ -1635,6 +1643,20 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"runsDiff") ConvertJsonToCustomType(field->value, value.runsDiff); else
 			if (field->name.value == L"createdInlineObjects") ConvertJsonToCustomType(field->value, value.createdInlineObjects); else
 			if (field->name.value == L"removedInlineObjects") ConvertJsonToCustomType(field->value, value.removedInlineObjects); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"documentSize") ConvertJsonToCustomType(field->value, value.documentSize); else
+			if (field->name.value == L"inlineObjectBounds") ConvertJsonToCustomType(field->value, value.inlineObjectBounds); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX

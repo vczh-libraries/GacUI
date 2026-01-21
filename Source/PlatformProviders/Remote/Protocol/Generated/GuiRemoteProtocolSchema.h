@@ -33,6 +33,7 @@ namespace vl::presentation::remoteprotocol
 	struct DocumentInlineObjectRunProperty;
 	struct DocumentRun;
 	struct ElementDesc_DocumentParagraph;
+	struct UpdateElement_DocumentParagraphResponse;
 	struct GetCaretRequest;
 	struct GetCaretResponse;
 	struct GetCaretBoundsRequest;
@@ -93,6 +94,7 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty> { static constexpr const wchar_t* Name = L"DocumentInlineObjectRunProperty"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::DocumentRun> { static constexpr const wchar_t* Name = L"DocumentRun"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph> { static constexpr const wchar_t* Name = L"ElementDesc_DocumentParagraph"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse> { static constexpr const wchar_t* Name = L"UpdateElement_DocumentParagraphResponse"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GetCaretRequest> { static constexpr const wchar_t* Name = L"GetCaretRequest"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GetCaretResponse> { static constexpr const wchar_t* Name = L"GetCaretResponse"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GetCaretBoundsRequest> { static constexpr const wchar_t* Name = L"GetCaretBoundsRequest"; };
@@ -375,6 +377,12 @@ namespace vl::presentation::remoteprotocol
 		::vl::Ptr<::vl::collections::List<::vl::vint>> removedInlineObjects;
 	};
 
+	struct UpdateElement_DocumentParagraphResponse
+	{
+		::vl::presentation::Size documentSize;
+		::vl::Ptr<::vl::collections::Dictionary<::vl::vint, ::vl::presentation::Rect>> inlineObjectBounds;
+	};
+
 	struct GetCaretRequest
 	{
 		::vl::vint id;
@@ -572,6 +580,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty>(const ::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::DocumentRun>(const ::vl::presentation::remoteprotocol::DocumentRun & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph>(const ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse>(const ::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretRequest>(const ::vl::presentation::remoteprotocol::GetCaretRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretResponse>(const ::vl::presentation::remoteprotocol::GetCaretResponse & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretBoundsRequest>(const ::vl::presentation::remoteprotocol::GetCaretBoundsRequest & value);
@@ -646,6 +655,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentRun>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::DocumentRun& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretResponse>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretResponse& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretBoundsRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest& value);
@@ -706,7 +716,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(ImageCreated, ::vl::presentation::remoteprotocol::ImageCreation, ::vl::presentation::remoteprotocol::ImageMetadata, REQ, RES, NODROP)\
 	HANDLER(ImageDestroyed, ::vl::vint, void, REQ, NORES, NODROP)\
 	HANDLER(RendererUpdateElement_ImageFrame, ::vl::presentation::remoteprotocol::ElementDesc_ImageFrame, void, REQ, NORES, NODROP)\
-	HANDLER(RendererUpdateElement_DocumentParagraph, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph, ::vl::presentation::Size, REQ, RES, NODROP)\
+	HANDLER(RendererUpdateElement_DocumentParagraph, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph, ::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_GetCaret, ::vl::presentation::remoteprotocol::GetCaretRequest, ::vl::presentation::remoteprotocol::GetCaretResponse, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_GetCaretBounds, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest, ::vl::presentation::Rect, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_GetInlineObjectFromPoint, ::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest, ::vl::Nullable<::vl::presentation::remoteprotocol::DocumentRun>, REQ, RES, NODROP)\
@@ -782,12 +792,12 @@ namespace vl::presentation::remoteprotocol
 #define GACUI_REMOTEPROTOCOL_MESSAGE_RESPONSE_TYPES(HANDLER)\
 	HANDLER(::vl::Nullable<::vl::presentation::remoteprotocol::DocumentRun>)\
 	HANDLER(::vl::presentation::Rect)\
-	HANDLER(::vl::presentation::Size)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementMeasurings)\
 	HANDLER(::vl::presentation::remoteprotocol::FontConfig)\
 	HANDLER(::vl::presentation::remoteprotocol::GetCaretResponse)\
 	HANDLER(::vl::presentation::remoteprotocol::ImageMetadata)\
 	HANDLER(::vl::presentation::remoteprotocol::ScreenConfig)\
+	HANDLER(::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse)\
 	HANDLER(::vl::presentation::remoteprotocol::WindowSizingConfig)\
 	HANDLER(::vl::vint)\
 	HANDLER(bool)\
