@@ -12,12 +12,12 @@ IGuiRemoteProtocolMessages (Rendering)
 
 	Ptr<UnitTestLoggedFrame> UnitTestRemoteProtocol_Rendering::GetLastRenderingFrame()
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::GetLastRenderingCommands()#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::GetLastRenderingCommands()#"
 		CHECK_ERROR(lastRenderingCommandsOpening, ERROR_MESSAGE_PREFIX L"The latest frame of commands is not accepting new commands.");
 		return loggedFrames[loggedFrames.Count() - 1];
 #undef ERROR_MESSAGE_PREFIX
 	}
-
+		
 	Ptr<UnitTestLoggedFrame> UnitTestRemoteProtocol_Rendering::TryGetLastRenderingFrameAndReset()
 	{
 		if (loggedFrames.Count() == 0) return nullptr;
@@ -104,7 +104,7 @@ IGuiRemoteProtocolMessages (Rendering - Element)
 
 	void UnitTestRemoteProtocol_Rendering::EnsureRenderedElement(vint id, Rect bounds)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::EnsureRenderedElement(id&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::EnsureRenderedElement(id&)#"
 
 		vint index = loggedTrace.createdElements->Keys().IndexOf(id);
 		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
@@ -266,49 +266,49 @@ IGuiRemoteProtocolMessages (Elements)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SolidBorder(const ElementDesc_SolidBorder& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::Impl_RendererUpdateElement_SolidBorder(const ElementDesc_SolidBorder&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SolidBorder(const ElementDesc_SolidBorder&)#"
 		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::SolidBorder);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SinkBorder(const ElementDesc_SinkBorder& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::Impl_RendererUpdateElement_SinkBorder(const ElementDesc_SinkBorder&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SinkBorder(const ElementDesc_SinkBorder&)#"
 		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::SinkBorder);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SinkSplitter(const ElementDesc_SinkSplitter& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::Impl_RendererUpdateElement_SinkSplitter(const ElementDesc_SinkSplitter&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SinkSplitter(const ElementDesc_SinkSplitter&)#"
 		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::SinkSplitter);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SolidBackground(const ElementDesc_SolidBackground& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::Impl_RendererUpdateElement_SolidBackground(const ElementDesc_SolidBackground&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SolidBackground(const ElementDesc_SolidBackground&)#"
 		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::SolidBackground);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_GradientBackground(const ElementDesc_GradientBackground& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::Impl_RendererUpdateElement_GradientBackground(const ElementDesc_GradientBackground&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_GradientBackground(const ElementDesc_GradientBackground&)#"
 		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::GradientBackground);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_InnerShadow(const ElementDesc_InnerShadow& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::Impl_RendererUpdateElement_InnerShadow(const ElementDesc_InnerShadow&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_InnerShadow(const ElementDesc_InnerShadow&)#"
 		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::InnerShadow);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_Polygon(const ElementDesc_Polygon& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::Impl_RendererUpdateElement_Polygon(const ElementDesc_Polygon&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_Polygon(const ElementDesc_Polygon&)#"
 		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::Polygon);
 #undef ERROR_MESSAGE_PREFIX
 	}
@@ -319,7 +319,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 
 	void UnitTestRemoteProtocol_Rendering::CalculateSolidLabelSizeIfNecessary(vint width, vint height, const ElementDesc_SolidLabel& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::CalculateSolidLabelSizeIfNecessary(vint, vint, const ElementDesc_SolidLabel&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::CalculateSolidLabelSizeIfNecessary(vint, vint, const ElementDesc_SolidLabel&)#"
 
 		if (arguments.measuringRequest)
 		{
@@ -466,7 +466,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SolidLabel(const ElementDesc_SolidLabel& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::Impl_RendererUpdateElement_SolidLabel(const ElementDesc_SolidLabel&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SolidLabel(const ElementDesc_SolidLabel&)#"
 		auto element = arguments;
 		if (!element.font || !element.text)
 		{
@@ -518,7 +518,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 
 	WString UnitTestRemoteProtocol_Rendering::GetBinaryKeyFromImage(Ptr<INativeImage> image)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::GetBinaryKeyFromImage(Ptr<INativeImage>)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::GetBinaryKeyFromImage(Ptr<INativeImage>)#"
 		auto remoteImage = image.Cast<GuiRemoteGraphicsImage>();
 		CHECK_ERROR(remoteImage, ERROR_MESSAGE_PREFIX L"The image object must be GuiRemoteGraphicsImage.");
 		return GetBinaryKeyFromBinary(remoteImage->GetBinaryData());
@@ -527,7 +527,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 
 	ImageMetadata UnitTestRemoteProtocol_Rendering::MakeImageMetadata(const ImageCreation& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::MakeImageMetadata(const remoteprotocol::ImageCreation)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::MakeImageMetadata(const remoteprotocol::ImageCreation)#"
 		if (!cachedImageMetadatas)
 		{
 			cachedImageMetadatas = Ptr(new Base64ToImageMetadataMap);

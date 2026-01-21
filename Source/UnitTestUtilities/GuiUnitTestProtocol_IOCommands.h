@@ -101,7 +101,7 @@ Helper Functions
 			return LocationOf(control->GetBoundsComposition(), ratioX, ratioY, offsetX, offsetY);
 		}
 
-#define CLASS_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_IOCommands<TProtocol>::"
+#define CLASS_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_IOCommands::"
 
 /***********************************************************************
 Keys
