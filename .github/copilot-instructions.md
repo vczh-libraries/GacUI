@@ -51,7 +51,7 @@ This project is built on top of:
 - DO NOT MODIFY any source code in the `Import` folder, they are dependencies.
 - DO NOT MODIFY any source code in the `Release` folder, they are generated release files.
 - You can modify source code in the `Source` and `Test` folder.
-- Use tabs for indentation in C++ source code.
+- Use tabs for indentation in C++ source code. For JSON or XML in a string literal, use double spaces.
 - Header files are guarded with macros instead of `#pragma once`.
 - Use `auto` to define variables if it is doable. Use `auto&&` when the type is big or when it is a collection type.
 - In header files, do not use `using namespace` statement, full name of types are always required. In a class/struct/union declaration, member names must be aligned in the same column at least in the same public, protected or private session. Please follow this coding style just like other part of the code.
