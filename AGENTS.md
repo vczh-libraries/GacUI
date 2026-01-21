@@ -1,6 +1,6 @@
 Read through REPO-ROOT/.github/copilot-instructions.md before performing any work.
 This is the guideline you should follow.
-Interpret the request following the steps:
+Interpret the request (in the latest chat message, not including conversation history) following the steps:
 
 ## Step 1
 
@@ -27,6 +27,13 @@ Read the second word if exists, convert it to a title `# THE-WORD`.
 Keep the remaining as is.
 Treat the processed request as "the LATEST chat message" in the additional instruction file.
 Follow the additional instruction file and start working immediately, there will be no more input.
+
+## Fixing Typos
+
+If the whole request has almost no new lines or punctuations,
+it means I am typing the text by voice,
+which would introduce a huge amount of typos,
+you need to carefully consider possible words with similar pronunciation.
 
 ## Examples
 
