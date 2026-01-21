@@ -47,6 +47,34 @@ namespace gaclib_controls
 		}
 	}
 
+	using ImageCreationMap = remoteprotocol::ArrayMap<vint, remoteprotocol::ImageCreation, &remoteprotocol::ImageCreation::id>;
+	using ElementDescMap = Dictionary<vint, remoteprotocol::UnitTest_ElementDescVariant>;
+
+	Ptr<GuiImageFrameElement> CreateImageElement(const remoteprotocol::ElementDesc_ImageFrame& desc, Ptr<ImageCreationMap> imageCreations)
+	{
+		auto element = Ptr(GuiImageFrameElement::Create());
+		element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
+		element->SetStretch(desc.stretch);
+		element->SetEnabled(desc.enabled);
+
+		if (desc.imageId)
+		{
+			vint index = imageCreations->Keys().IndexOf(desc.imageId.Value());
+			if (index != -1)
+			{
+				auto binary = imageCreations->Values()[index].imageData;
+				binary->SeekFromBegin(0);
+				element->SetImage(GetCurrentController()->ImageService()->CreateImageFromStream(*binary.Obj()), desc.imageFrame);
+			}
+		}
+
+		return element;
+	}
+
+	/***********************************************************************
+	GuiGraphicsParagraphWrapperElement
+	***********************************************************************/
+
 	class GuiGraphicsParagraphWrapperElement
 		: public Object
 		, public IGuiGraphicsElement
@@ -56,6 +84,9 @@ namespace gaclib_controls
 	{
 	protected:
 		remoteprotocol::ElementDesc_DocumentParagraphFull	desc;
+		Ptr<ElementDescMap>									elementDescs;
+		Ptr<ImageCreationMap>								imageCreations;
+
 		Ptr<IGuiGraphicsParagraph>							paragraph;
 		GuiGraphicsComposition*								ownerComposition = nullptr;
 		IGuiGraphicsRenderTarget*							renderTarget = nullptr;
@@ -67,8 +98,10 @@ namespace gaclib_controls
 
 	public:
 
-		GuiGraphicsParagraphWrapperElement(const remoteprotocol::ElementDesc_DocumentParagraphFull& _desc)
+		GuiGraphicsParagraphWrapperElement(const remoteprotocol::ElementDesc_DocumentParagraphFull& _desc, Ptr<ElementDescMap> _elementDescs, Ptr<ImageCreationMap> _imageCreations)
 			:desc(_desc)
+			, elementDescs(_elementDescs)
+			, imageCreations(_imageCreations)
 		{
 		}
 
@@ -143,15 +176,17 @@ namespace gaclib_controls
 							},
 							[&](const remoteprotocol::DocumentInlineObjectRunProperty& inlineProp)
 							{
-								if (inlineProp.backgroundElementId != -1)
-								{
-									CHECK_FAIL(L"Not Implemented!");
-								}
 								IGuiGraphicsParagraph::InlineObjectProperties properties;
 								properties.size = inlineProp.size;
 								properties.baseline = inlineProp.baseline;
 								properties.breakCondition = inlineProp.breakCondition;
 								properties.callbackId = inlineProp.callbackId;
+								if (inlineProp.backgroundElementId != -1)
+								{
+									auto& desc = elementDescs->Get(inlineProp.backgroundElementId).Get<remoteprotocol::ElementDesc_ImageFrame>();
+									auto element = CreateImageElement(desc, imageCreations);
+									properties.backgroundImage = element;
+								}
 								paragraph->SetInlineObject(run.caretBegin, length, properties);
 							}
 						));
@@ -372,30 +407,15 @@ namespace gaclib_controls
 				break;
 			case remoteprotocol::RendererType::ImageFrame:
 				{
-					auto element = Ptr(GuiImageFrameElement::Create());
-					bounds->SetOwnedElement(element);
 					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_ImageFrame>();
-
-					element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
-					element->SetStretch(desc.stretch);
-					element->SetEnabled(desc.enabled);
-
-					if (desc.imageId)
-					{
-						vint index = trace.imageCreations->Keys().IndexOf(desc.imageId.Value());
-						if (index != -1)
-						{
-							auto binary = trace.imageCreations->Values()[index].imageData;
-							binary->SeekFromBegin(0);
-							element->SetImage(GetCurrentController()->ImageService()->CreateImageFromStream(*binary.Obj()), desc.imageFrame);
-						}
-					}
+					auto element = CreateImageElement(desc, trace.imageCreations);
+					bounds->SetOwnedElement(element);
 				}
 				break;
 			case remoteprotocol::RendererType::DocumentParagraph:
 				{
 					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_DocumentParagraphFull>();
-					auto element = Ptr(new GuiGraphicsParagraphWrapperElement(desc));
+					auto element = Ptr(new GuiGraphicsParagraphWrapperElement(desc, frame.elements, trace.imageCreations));
 					bounds->SetOwnedElement(element);
 				}
 				break;
