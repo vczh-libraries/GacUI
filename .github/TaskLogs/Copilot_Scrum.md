@@ -91,7 +91,7 @@ And add a Task 10, following Task 6 to add two files: `TestControls_Editor_Inlin
 - [x] TASK No.7: Add TestControls_Editor_InlineObject.cpp and TestControls_Editor_Styles.cpp to unit test project
 - [x] TASK No.8: Add single-paragraph rich text style editing tests (GuiDocumentLabel)
 - [x] TASK No.9: Add multi-paragraph rich text style editing tests (GuiDocumentLabel)
-- [ ] TASK No.10: Add hyperlink editing + interaction tests (GuiDocumentLabel)
+- [x] TASK No.10: Add hyperlink editing + interaction tests (GuiDocumentLabel)
 
 ## TASK No.1: Split singleline-specific cases into RunTextBoxKeyTestCases_Singleline
 
@@ -361,6 +361,7 @@ Per the UPDATE, this task creates a new test category, and must cover both singl
 - Use `GuiDocumentCommonInterface` hyperlink editing APIs:
 	- `EditHyperlink(paragraphIndex, begin, end, reference, normalStyleName, activeStyleName)`
 	- `RemoveHyperlink(paragraphIndex, begin, end)`
+	- Note: in `GuiDocumentCommonInterface` / `GuiDocumentLabel` these functions are `void`; assert hyperlink changes by inspecting `GetDocument()->GetHyperlink(...)` (and other observable state) rather than by checking a boolean return value.
 - Extract a small static helper in the test file to compute a global mouse point for a caret position inside the document:
 	- Call `GetCaretBounds({row, column}, false)` to get the caret rectangle in the control's container coordinate space.
 	- Convert it to global space by getting the container composition (`GetContainerComposition()`), calling `LocationOf(composition, 0.0, 0.0, 0, 0)` for the top-left, and then adding the center point of the caret bounds rectangle.
@@ -372,7 +373,8 @@ Per the UPDATE, this task creates a new test category, and must cover both singl
 	- Overlap / partial removal behavior:
 		- Removing a middle part of a hyperlink breaks it into two hyperlinks with the same reference (as described in UPDATE).
 		- Editing/removing overlapping ranges behaves correctly and does not leave stale active references.
-	- When validating “outside edited range” invariants (e.g. unaffected style fields), compare against a baseline captured before edits/hover rather than assuming `Nullable<>` fields are always `null` (theme/default styles may produce concrete values).
+	- When validating "outside edited range" invariants (e.g. unaffected style fields), compare against a baseline captured before edits/hover rather than assuming `Nullable<>` fields are always `null` (theme/default styles may produce concrete values).
+	- Organize frames so each frame causes (or directly follows) a visible UI update; avoid leaving a final frame that only asserts state, because the unit-test framework will crash with "The last frame didn't trigger UI updating".
 
 ### rationale
 
