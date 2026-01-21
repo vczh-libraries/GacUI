@@ -113,7 +113,9 @@
 
 ## Understanding the Building Tools
 
-**WARNING**: Information offered in this section is for background knowledge only. You should always run `Build Unit Tests` and `Run Unit Tests` instead of running these scripts or calling msbuild or other executable by yourself. 
+**WARNING**: Information offered in this section is for background knowledge only.
+You should always run `Build Unit Tests` and `Run Unit Tests` instead of running these scripts or calling msbuild or other executable by yourself.
+Only when you cannot access tools offered by Visual Studio Code, scripts below are allowed to use.
 
 `REPO-ROOT` is the root folder of the repo.
 `SOLUTION-ROOT` is the folder containing the solution file.
