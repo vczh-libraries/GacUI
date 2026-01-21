@@ -45,7 +45,7 @@
   ],
   "frames": [
     {
-      "frameId": 4,
+      "frameId": 5,
       "frameName": "Ready",
       "windowSize": {
         "bounds": {
@@ -891,6 +891,53 @@
                                   "validArea": {"x1": 15, "y1": 71, "x2": 465, "y2": 107}
                                 },
                                 "children": null
+                              },
+                              {
+                                "id": 62,
+                                "content": {
+                                  "hitTestResult": null,
+                                  "cursor": "Arrow",
+                                  "element": null,
+                                  "bounds": {"x1": 223, "y1": 55, "x2": 295, "y2": 75},
+                                  "validArea": {"x1": 223, "y1": 55, "x2": 295, "y2": 75}
+                                },
+                                "children": [
+                                  {
+                                    "id": 88,
+                                    "content": {
+                                      "hitTestResult": null,
+                                      "cursor": null,
+                                      "element": 22,
+                                      "bounds": {"x1": 223, "y1": 55, "x2": 295, "y2": 75},
+                                      "validArea": {"x1": 223, "y1": 55, "x2": 295, "y2": 75}
+                                    },
+                                    "children": [
+                                      {
+                                        "id": 92,
+                                        "content": {
+                                          "hitTestResult": null,
+                                          "cursor": null,
+                                          "element": 23,
+                                          "bounds": {"x1": 223, "y1": 55, "x2": 295, "y2": 75},
+                                          "validArea": {"x1": 223, "y1": 55, "x2": 295, "y2": 75}
+                                        },
+                                        "children": [
+                                          {
+                                            "id": 100,
+                                            "content": {
+                                              "hitTestResult": null,
+                                              "cursor": null,
+                                              "element": 25,
+                                              "bounds": {"x1": 227, "y1": 57, "x2": 291, "y2": 73},
+                                              "validArea": {"x1": 227, "y1": 57, "x2": 291, "y2": 73}
+                                            },
+                                            "children": null
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
                               }
                             ]
                           }

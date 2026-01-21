@@ -95,6 +95,7 @@ GuiRemoteGraphicsParagraph
 		vint															maxWidth = -1;
 		Alignment														paragraphAlignment = Alignment::Left;
 		Size															cachedSize = Size(0, 0);
+		Ptr<collections::Dictionary<vint, Rect>>							cachedInlineObjectBounds;
 		bool															needUpdate = true;
 		vint															id = -1;
 		vuint64_t														lastRenderedBatchId = 0;

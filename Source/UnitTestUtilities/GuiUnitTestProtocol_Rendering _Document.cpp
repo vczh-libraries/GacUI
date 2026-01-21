@@ -339,8 +339,65 @@ IGuiRemoteProtocolMessages (Elements - Document)
 			lastElementDescs.Set(arguments.id, element);
 		}
 
-		// Send response with calculated size
-		GetEvents()->RespondRendererUpdateElement_DocumentParagraph(id, state->cachedSize);
+		// Send response with calculated size and inline object bounds
+		UpdateElement_DocumentParagraphResponse response;
+		response.documentSize = state->cachedSize;
+		{
+			auto bounds = Ptr(new Dictionary<vint, Rect>);
+			for (auto [range, prop] : state->inlineObjectRuns)
+			{
+				if (prop.callbackId == -1) continue;
+
+				bool hasBounds = false;
+				vint x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+				for (vint i = range.caretBegin; i < range.caretEnd && i < state->characterLayouts.Count(); i++)
+				{
+					auto& ch = state->characterLayouts[i];
+					if (!ch.isInlineObject) continue;
+
+					auto& line = state->lines[ch.lineIndex];
+					vint alignmentOffset = 0;
+					if (state->alignment == ElementHorizontalAlignment::Center)
+					{
+						alignmentOffset = (state->cachedSize.x - line.width) / 2;
+					}
+					else if (state->alignment == ElementHorizontalAlignment::Right)
+					{
+						alignmentOffset = state->cachedSize.x - line.width;
+					}
+
+					vint cx1 = (vint)ch.x + alignmentOffset;
+					vint cy1 = line.y + (line.baseline - ch.baseline);
+					vint cx2 = cx1 + (vint)ch.width;
+					vint cy2 = cy1 + ch.height;
+
+					if (!hasBounds)
+					{
+						x1 = cx1; y1 = cy1; x2 = cx2; y2 = cy2;
+						hasBounds = true;
+					}
+					else
+					{
+						if (x1 > cx1) x1 = cx1;
+						if (y1 > cy1) y1 = cy1;
+						if (x2 < cx2) x2 = cx2;
+						if (y2 < cy2) y2 = cy2;
+					}
+				}
+
+				if (hasBounds)
+				{
+					bounds->Set(prop.callbackId, Rect(Point(x1, y1), Size(x2 - x1, y2 - y1)));
+				}
+			}
+
+			if (bounds->Count() > 0)
+			{
+				response.inlineObjectBounds = bounds;
+			}
+		}
+
+		GetEvents()->RespondRendererUpdateElement_DocumentParagraph(id, response);
 #undef ERROR_MESSAGE_PREFIX
 	}
 

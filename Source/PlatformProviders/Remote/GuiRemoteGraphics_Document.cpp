@@ -656,7 +656,11 @@ GuiRemoteGraphicsParagraph
 			return false;
 		}
 
-		cachedSize = messages.RetrieveRendererUpdateElement_DocumentParagraph(requestId);
+		{
+			auto response = messages.RetrieveRendererUpdateElement_DocumentParagraph(requestId);
+			cachedSize = response.documentSize;
+			cachedInlineObjectBounds = response.inlineObjectBounds;
+		}
 		committedRuns = std::move(stagedRuns);
 		needUpdate = false;
 		return true;
@@ -912,6 +916,27 @@ GuiRemoteGraphicsParagraph
 		if (!EnsureRemoteParagraphSynced())
 		{
 			return;
+		}
+
+		if (callback && cachedInlineObjectBounds)
+		{
+			for (auto [callbackId, location] : *cachedInlineObjectBounds.Obj())
+			{
+				auto newSize = callback->OnRenderInlineObject(callbackId, location);
+				if (newSize != location.GetSize())
+				{
+					needUpdate = true;
+					for (auto&& inlineObjectRun : inlineObjectRuns.Values())
+					{
+						if (inlineObjectRun.callbackId == callbackId)
+						{
+							auto& editable = const_cast<remoteprotocol::DocumentInlineObjectRunProperty&>(inlineObjectRun);
+							editable.size = newSize;
+							break;
+						}
+					}
+				}
+			}
 		}
 
 		remoteprotocol::ElementRendering rendering;
