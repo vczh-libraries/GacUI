@@ -29,6 +29,9 @@ TEST_FILE
           <DocumentItem Name="Button">
             <Button Text="Click Me!">
               <att.BoundsComposition-set MinSizeLimitation="LimitToElementAndChildren"/>
+              <ev.Clicked-eval><![CDATA[{
+                self.Text = "Clicked!";
+              }]]></ev.Clicked-eval>
             </Button>
           </DocumentItem>
         </DocumentLabel>
@@ -41,6 +44,13 @@ TEST_FILE
 		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 		{
 			protocol->OnNextIdleFrame(L"Ready", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto button = FindControlByText<GuiButton>(window, L"Click Me!");
+				auto location = protocol->LocationOf(button);
+				protocol->LClick(location);
+			});
+			protocol->OnNextIdleFrame(L"Clicked", [=]()
 			{
 				auto window = GetApplication()->GetMainWindow();
 				window->Hide();

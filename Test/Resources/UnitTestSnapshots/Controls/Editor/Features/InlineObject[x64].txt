@@ -83,6 +83,13 @@ namespace gacuisrc_unittest
                 self.AddChild(textBox);
             }
             {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Clicked!");
+                };
+                attach(<precompile>1.Clicked, <event-handler>);
+            }
+            {
                 (textBox.Document = (cast (::presentation::DocumentModel^) <this>.ResolveResource("res", "InlineOptionDoc", true)));
             }
         }
