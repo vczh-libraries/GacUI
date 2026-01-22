@@ -62,6 +62,23 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Dialog Font")
 	{
+		TEST_CASE(L"Open and Close (Simple)")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Dialog_Font/OpenAndClose_Simple"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceOpenAndClose
+			);
+		});
+
 		TEST_CASE(L"Open and Close")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
