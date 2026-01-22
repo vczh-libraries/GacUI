@@ -63,20 +63,20 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
 				{
 					auto window = From(GetApplication()->GetWindows())
-						.Where([](GuiWindow* w) { return w->GetText() == L"Choose Dialog"; })
+						.Where([](GuiWindow* w) { return w->GetText() == L"Choose Color"; })
 						.First();
-					auto trackerRed = FindObjectByName<GuiScroll>(FindObjectByName<GuiInstanceRootObject>(window, L"colorRed"), L"tracker");
-					auto trackerGreen = FindObjectByName<GuiScroll>(FindObjectByName<GuiInstanceRootObject>(window, L"colorGreen"), L"tracker");
-					auto trackerBlue = FindObjectByName<GuiScroll>(FindObjectByName<GuiInstanceRootObject>(window, L"colorBlue"), L"tracker");
+					auto trackerRed = FindObjectByName<GuiScroll>(window, L"colorControl", L"colorRed", L"tracker");
+					auto trackerGreen = FindObjectByName<GuiScroll>(window, L"colorControl", L"colorGreen", L"tracker");
+					auto trackerBlue = FindObjectByName<GuiScroll>(window, L"colorControl", L"colorBlue", L"tracker");
 
 					trackerRed->SetPosition(0);
 					trackerGreen->SetPosition(128);
-					trackerGreen->SetPosition(255);
+					trackerBlue->SetPosition(255);
 				});
 				protocol->OnNextIdleFrame(L"Set Color", [=]()
 				{
 					auto window = From(GetApplication()->GetWindows())
-						.Where([](GuiWindow* w) { return w->GetText() == L"Choose Dialog"; })
+						.Where([](GuiWindow* w) { return w->GetText() == L"Choose Color"; })
 						.First();
 					auto button = FindControlByText<GuiButton>(window, L"OK");
 					auto location = protocol->LocationOf(button);

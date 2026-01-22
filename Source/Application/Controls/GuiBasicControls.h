@@ -481,6 +481,13 @@ Helper Functions
 #undef ERROR_MESSAGE_PREFIX
 			}
 
+			template<typename T, typename ...TArgs>
+			T* FindObjectByName(GuiInstanceRootObject* rootObject, const WString& firstName, TArgs&& ...remains)
+			{
+				auto firstObject = FindObjectByName<GuiInstanceRootObject>(rootObject, firstName);
+				return FindObjectByName<T>(firstObject, std::forward<TArgs&&>(remains)...);
+			}
+
 			template<typename T>
 				requires(std::is_base_of_v<controls::GuiControl, T>)
 			T* TryFindControlByText(GuiControl* rootObject, const WString& text)
