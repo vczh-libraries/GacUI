@@ -13,7 +13,7 @@ Helper Functions for Document Paragraph
 	vint GetFontSizeForPosition(
 		const DocumentParagraphState& state,
 		vint pos,
-		Nullable<DocumentInlineObjectRunProperty>& inlineProp)
+		Nullable<Pair<vint, DocumentInlineObjectRunProperty>>& inlineProp)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::GetFontSizeForPosition(...)#"
 		inlineProp.Reset();
@@ -28,7 +28,7 @@ Helper Functions for Document Paragraph
 				}
 				if (auto objProp = prop.TryGet<DocumentInlineObjectRunProperty>())
 				{
-					inlineProp = *objProp;
+					inlineProp = { range.caretEnd - range.caretBegin,*objProp };
 					return 0;
 				}
 			}
@@ -92,15 +92,15 @@ Helper Functions for Document Paragraph
 			}
 
 			// Get character properties
-			Nullable<DocumentInlineObjectRunProperty> inlineProp;
-			vint fontSize = GetFontSizeForPosition(state, i, inlineProp);
+			Nullable<Pair<vint, DocumentInlineObjectRunProperty>> inlinePair;
+			vint fontSize = GetFontSizeForPosition(state, i, inlinePair);
 
-			if (inlineProp)
+			if (inlinePair)
 			{
-				auto& prop = inlineProp.Value();
+				auto& prop = inlinePair.Value().value;
 				info.width = (double)prop.size.x;
 				info.height = prop.size.y;
-				info.inlineObjectProp = inlineProp;
+				info.inlineObjectProp = inlinePair.Value().value;
 			}
 			else
 			{
@@ -134,6 +134,11 @@ Helper Functions for Document Paragraph
 			info.x = currentX;
 			tempChars.Add(info);
 			currentX += info.width;
+
+			if(inlinePair)
+			{
+				i += inlinePair.Value().key - 1;
+			}
 		}
 
 		// Add final line
@@ -204,7 +209,7 @@ Helper Functions for Document Paragraph
 				if (info.inlineObjectProp)
 				{
 					auto&& prop = info.inlineObjectProp.Value();
-					if (prop.callbackId != -1 && !state.cachedInlineObjectBounds.Keys().Contains(prop.callbackId))
+					if (prop.callbackId != -1)
 					{
 						vint baseline = prop.baseline;
 						if (baseline == -1)
