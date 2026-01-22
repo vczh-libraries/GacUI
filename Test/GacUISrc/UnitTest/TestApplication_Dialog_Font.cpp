@@ -103,6 +103,10 @@ TEST_FILE
 					TEST_ASSERT(label->GetFont());
 					TEST_ASSERT(label->GetFont().Value().fontFamily == L"Segoe UI");
 					TEST_ASSERT(label->GetFont().Value().size == 24);
+					TEST_ASSERT(label->GetFont().Value().bold == false);
+					TEST_ASSERT(label->GetFont().Value().italic == false);
+					TEST_ASSERT(label->GetFont().Value().underline == false);
+					TEST_ASSERT(label->GetFont().Value().strikeline == false);
 					window->Hide();
 				});
 			});
@@ -127,7 +131,50 @@ TEST_FILE
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();;
+					auto button = FindControlByText<GuiButton>(window, L"Change Font");
+					auto location = protocol->LocationOf(button);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
+				{
+					auto window = From(GetApplication()->GetWindows())
+						.Where([](GuiWindow* w) { return w->GetText() == L"Choose Font"; })
+						.First();
+					auto textBoxFont = FindObjectByName<GuiSinglelineTextBox>(window, L"nameControl", L"textBox");
+					auto textBoxSize = FindObjectByName<GuiSinglelineTextBox>(window, L"sizeControl", L"textBox");
+
+					textBoxFont->SetText(L"Segoe UI");
+					textBoxSize->SetText(L"24");
+
+					FindObjectByName<GuiSelectableButton>(window, L"checkBold")->SetSelected(true);
+					FindObjectByName<GuiSelectableButton>(window, L"checkItalic")->SetSelected(true);
+					FindObjectByName<GuiSelectableButton>(window, L"checkUnderline")->SetSelected(true);
+					FindObjectByName<GuiSelectableButton>(window, L"checkStrikeline")->SetSelected(true);
+				});
+				protocol->OnNextIdleFrame(L"Set Font", [=]()
+				{
+					auto window = From(GetApplication()->GetWindows())
+						.Where([](GuiWindow* w) { return w->GetText() == L"Choose Font"; })
+						.First();
+					auto button = FindControlByText<GuiButton>(window, L"OK");
+					auto location = protocol->LocationOf(button);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"OK", [=]()
+				{
 					auto window = GetApplication()->GetMainWindow();
+					auto label = FindObjectByName<GuiLabel>(window, L"labelFont");
+					TEST_ASSERT(label->GetFont());
+					TEST_ASSERT(label->GetFont().Value().fontFamily == L"Segoe UI");
+					TEST_ASSERT(label->GetFont().Value().size == 24);
+					TEST_ASSERT(label->GetFont().Value().bold == true);
+					TEST_ASSERT(label->GetFont().Value().italic == true);
+					TEST_ASSERT(label->GetFont().Value().underline == true);
+					TEST_ASSERT(label->GetFont().Value().strikeline == true);
 					window->Hide();
 				});
 			});
