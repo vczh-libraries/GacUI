@@ -1166,10 +1166,10 @@ TEST_FILE
 			AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
 			bool result = AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
 			
-			TEST_ASSERT(result == false);
+			TEST_ASSERT(result == true);
 			
 			DocumentInlineObjectRunPropertyMap expectedMap;
-			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
+			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop2);
 			
 			AssertMap(inlineMap, expectedMap);
 		});

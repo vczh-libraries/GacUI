@@ -13,11 +13,9 @@ Helper Functions for Document Paragraph
 	vint GetFontSizeForPosition(
 		const DocumentParagraphState& state,
 		vint pos,
-		bool& isInlineObject,
 		Nullable<DocumentInlineObjectRunProperty>& inlineProp)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::GetFontSizeForPosition(...)#"
-		isInlineObject = false;
 		inlineProp.Reset();
 
 		for (auto [range, prop] : state.mergedRuns)
@@ -30,7 +28,6 @@ Helper Functions for Document Paragraph
 				}
 				if (auto objProp = prop.TryGet<DocumentInlineObjectRunProperty>())
 				{
-					isInlineObject = true;
 					inlineProp = *objProp;
 					return 0;
 				}
@@ -49,6 +46,8 @@ Helper Functions for Document Paragraph
 	{
 		state.characterLayouts.Clear();
 		state.lines.Clear();
+		state.cachedSize = Size(0, 16);
+		state.cachedInlineObjectBounds.Clear();
 
 		const WString& text = state.text;
 
@@ -63,7 +62,6 @@ Helper Functions for Document Paragraph
 			line.baseline = 12;
 			line.width = 0;
 			state.lines.Add(line);
-			state.cachedSize = Size(0, 16);
 			return;
 		}
 
@@ -73,8 +71,7 @@ Helper Functions for Document Paragraph
 			double x;
 			double width;
 			vint height;
-			vint baseline;
-			bool isInlineObject;
+			Nullable<DocumentInlineObjectRunProperty> inlineObjectProp;
 		};
 		List<TempCharInfo> tempChars;
 		List<Pair<vint, vint>> lineRanges; // [start, end) for each line
@@ -85,7 +82,7 @@ Helper Functions for Document Paragraph
 		for (vint i = 0; i < text.Length(); i++)
 		{
 			wchar_t c = text[i];
-			TempCharInfo info = { currentX, 0, 0, 0, false };
+			TempCharInfo info = { currentX, 0, 0, {} };
 
 			// Handle \r - zero width, no line break
 			if (c == L'\r')
@@ -95,25 +92,21 @@ Helper Functions for Document Paragraph
 			}
 
 			// Get character properties
-			bool isInline = false;
 			Nullable<DocumentInlineObjectRunProperty> inlineProp;
-			vint fontSize = GetFontSizeForPosition(state, i, isInline, inlineProp);
+			vint fontSize = GetFontSizeForPosition(state, i, inlineProp);
 
-			if (isInline && inlineProp)
+			if (inlineProp)
 			{
 				auto& prop = inlineProp.Value();
 				info.width = (double)prop.size.x;
 				info.height = prop.size.y;
-				info.baseline = (prop.baseline == -1) ? prop.size.y : prop.baseline;
-				info.isInlineObject = true;
+				info.inlineObjectProp = inlineProp;
 			}
 			else
 			{
 				if (fontSize <= 0) fontSize = 12;
 				info.width = GetCharacterWidth(c, fontSize);
-				info.height = fontSize + 4;
-				info.baseline = fontSize;
-				info.isInlineObject = false;
+				info.height = fontSize;
 			}
 
 			// Handle \n - always break line
@@ -165,28 +158,33 @@ Helper Functions for Document Paragraph
 			for (vint i = lineStart; i < lineEnd && i < tempChars.Count(); i++)
 			{
 				auto& info = tempChars[i];
-				if (info.width > 0)
+				if (info.inlineObjectProp)
 				{
-					if (info.baseline > maxAboveBaseline)
-						maxAboveBaseline = info.baseline;
-					vint belowBaseline = info.height - info.baseline;
-					if (belowBaseline > maxBelowBaseline)
-						maxBelowBaseline = belowBaseline;
+					auto&& prop = info.inlineObjectProp.Value();
+					vint baseline = prop.baseline;
+					if (baseline == -1)
+						baseline = info.height;
+					vint above = baseline;
+					vint below = info.height - baseline;
+					if (above < 0) above = 0;
+					if (below < 0) below = 0;
+					if (maxAboveBaseline < above)
+						maxAboveBaseline = above;
+					if (maxBelowBaseline < below)
+						maxBelowBaseline = below;
 				}
-			}
-
-			// Default line height if empty
-			if (maxAboveBaseline == 0 && maxBelowBaseline == 0)
-			{
-				maxAboveBaseline = 12;
-				maxBelowBaseline = 4;
+				else
+				{
+					if (maxAboveBaseline < info.height)
+						maxAboveBaseline = info.height;
+				}
 			}
 
 			DocumentParagraphLineInfo line;
 			line.startPos = lineStart;
 			line.endPos = lineEnd;
 			line.y = currentY;
-			line.height = maxAboveBaseline + maxBelowBaseline;
+			line.height = maxAboveBaseline + maxBelowBaseline + 4;
 			line.baseline = maxAboveBaseline;
 
 			// Calculate line width
@@ -197,6 +195,25 @@ Helper Functions for Document Paragraph
 				if (endX > lineWidth) lineWidth = endX;
 			}
 			line.width = (vint)lineWidth;
+
+			// Fill inline object bounds
+
+			for (vint i = lineStart; i < lineEnd && i < tempChars.Count(); i++)
+			{
+				auto& info = tempChars[i];
+				if (info.inlineObjectProp)
+				{
+					auto&& prop = info.inlineObjectProp.Value();
+					if (prop.callbackId != -1 && !state.cachedInlineObjectBounds.Keys().Contains(prop.callbackId))
+					{
+						vint baseline = prop.baseline;
+						if (baseline == -1)
+							baseline = info.height;
+						vint y = line.y + 2 + line.baseline - baseline;
+						state.cachedInlineObjectBounds.Add(prop.callbackId, Rect(Point((vint)info.x, y), prop.size));
+					}
+				}
+			}
 
 			state.lines.Add(line);
 			currentY += line.height;
@@ -215,8 +232,6 @@ Helper Functions for Document Paragraph
 			cl.width = tempChars[i].width;
 			cl.lineIndex = lineIdx;
 			cl.height = tempChars[i].height;
-			cl.baseline = tempChars[i].baseline;
-			cl.isInlineObject = tempChars[i].isInlineObject;
 			state.characterLayouts.Add(cl);
 		}
 
@@ -342,59 +357,10 @@ IGuiRemoteProtocolMessages (Elements - Document)
 		// Send response with calculated size and inline object bounds
 		UpdateElement_DocumentParagraphResponse response;
 		response.documentSize = state->cachedSize;
+		if (state->cachedInlineObjectBounds.Count() > 0)
 		{
-			auto bounds = Ptr(new Dictionary<vint, Rect>);
-			for (auto [range, prop] : state->inlineObjectRuns)
-			{
-				if (prop.callbackId == -1) continue;
-
-				bool hasBounds = false;
-				vint x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-				for (vint i = range.caretBegin; i < range.caretEnd && i < state->characterLayouts.Count(); i++)
-				{
-					auto& ch = state->characterLayouts[i];
-					if (!ch.isInlineObject) continue;
-
-					auto& line = state->lines[ch.lineIndex];
-					vint alignmentOffset = 0;
-					if (state->alignment == ElementHorizontalAlignment::Center)
-					{
-						alignmentOffset = (state->cachedSize.x - line.width) / 2;
-					}
-					else if (state->alignment == ElementHorizontalAlignment::Right)
-					{
-						alignmentOffset = state->cachedSize.x - line.width;
-					}
-
-					vint cx1 = (vint)ch.x + alignmentOffset;
-					vint cy1 = line.y + (line.baseline - ch.baseline);
-					vint cx2 = cx1 + (vint)ch.width;
-					vint cy2 = cy1 + ch.height;
-
-					if (!hasBounds)
-					{
-						x1 = cx1; y1 = cy1; x2 = cx2; y2 = cy2;
-						hasBounds = true;
-					}
-					else
-					{
-						if (x1 > cx1) x1 = cx1;
-						if (y1 > cy1) y1 = cy1;
-						if (x2 < cx2) x2 = cx2;
-						if (y2 < cy2) y2 = cy2;
-					}
-				}
-
-				if (hasBounds)
-				{
-					bounds->Set(prop.callbackId, Rect(Point(x1, y1), Size(x2 - x1, y2 - y1)));
-				}
-			}
-
-			if (bounds->Count() > 0)
-			{
-				response.inlineObjectBounds = bounds;
-			}
+			response.inlineObjectBounds = Ptr(new Dictionary<vint, Rect>);
+			CopyFrom(*response.inlineObjectBounds.Obj(), state->cachedInlineObjectBounds);
 		}
 
 		GetEvents()->RespondRendererUpdateElement_DocumentParagraph(id, response);

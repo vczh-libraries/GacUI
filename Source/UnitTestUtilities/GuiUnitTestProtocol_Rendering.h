@@ -52,6 +52,7 @@ DocumentParagraphState
 		collections::List<DocumentParagraphCharLayout>	characterLayouts;
 		collections::List<DocumentParagraphLineInfo>	lines;
 		Size											cachedSize;
+		collections::Dictionary<vint, Rect>				cachedInlineObjectBounds;
 	};
 
 /***********************************************************************

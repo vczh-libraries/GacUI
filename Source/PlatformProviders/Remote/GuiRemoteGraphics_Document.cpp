@@ -264,7 +264,11 @@ DiffRuns
 			vint firstOverlap = BinarySearchLambda(&map.Keys()[0], map.Keys().Count(), range, index, comparer);
 			
 			if (firstOverlap != -1)
-				return false;
+			{
+				if (map.Keys()[firstOverlap] != range) return false;
+				const_cast<remoteprotocol::DocumentInlineObjectRunProperty&>(map.Values()[firstOverlap]) = property;
+				return true;
+			}
 		}
 
 		map.Add(range, property);
