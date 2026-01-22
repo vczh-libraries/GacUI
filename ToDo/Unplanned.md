@@ -25,6 +25,7 @@
 - A new non-XML instance format
   - Integrate ez:Layout
   - New syntax to easily do control localization and UI animation
+    - Easy to define and apply template (e.g. menu cascading & toolstrip sharing, dialog button layout)
   - Compile to XML
 - Compact version of table's colummns and rows property so that they could also be written in attributes.
 - `<ez:Layout/>`
