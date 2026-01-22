@@ -123,5 +123,3 @@ struct RenderInlineObjectRequest
     var callbackId : int;
     var location : Rect;
 }
-
-event DocumentParagraph_RenderInlineObjects             { request: RenderInlineObjectRequest[]; }

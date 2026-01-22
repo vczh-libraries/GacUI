@@ -2694,20 +2694,6 @@
         }],
         "type": "Struct"
     }, {
-        "$ast": "EventDecl",
-        "attributes": [],
-        "name": "DocumentParagraph_RenderInlineObjects",
-        "request": {
-            "$ast": "EventRequest",
-            "type": {
-                "$ast": "ArrayType",
-                "element": {
-                    "$ast": "ReferenceType",
-                    "name": "RenderInlineObjectRequest"
-                }
-            }
-        }
-    }, {
         "$ast": "EnumDecl",
         "attributes": [],
         "name": "RendererType",

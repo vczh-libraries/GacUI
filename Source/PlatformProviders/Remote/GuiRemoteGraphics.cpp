@@ -471,11 +471,6 @@ GuiRemoteGraphicsResourceManager
 		renderTarget.OnControllerDisconnect();
 	}
 
-	void GuiRemoteGraphicsResourceManager::OnDocumentParagraph_RenderInlineObjects(collections::List<remoteprotocol::RenderInlineObjectRequest>& arguments)
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
 	IGuiGraphicsRenderTarget* GuiRemoteGraphicsResourceManager::GetRenderTarget(INativeWindow* window)
 	{
 		CHECK_ERROR(window == &remote->remoteWindow, L"vl::presentation::elements::GuiRemoteGraphicsResourceManager::GetRenderTarget(INativeWindow*)#GuiHostedController should call this function with the native window.");
