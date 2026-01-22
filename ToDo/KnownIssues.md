@@ -19,8 +19,6 @@
 
 - FakeDialogService
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
-  - Specify multiple extensions in one filter, exactly like Win32 API.
-  - Extensions not applied before checking file existance.
 - Expanding collapsing tree nodes cause the whole list to rebuild, which glitch during multiple passes of layout.
   - Only affected items need to rebuild.
 - For all list controls, adding item could cause flashing during rendering for about 1 flame.
