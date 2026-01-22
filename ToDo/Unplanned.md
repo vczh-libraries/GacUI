@@ -18,12 +18,15 @@
   - Implemented in both C++ and TypeScript
 - Strict check in different for-each loops.
 - A tool connect to LLM, updating GacUIXml and preview immediately.
+  - Make a previewer first, detecting file changing, released with a set of prompt to maintain the `new non-XML instance format`
 
-## GacUI XML Resource
+## GacUI XML Resource (ez:Layout)
 
 - A new non-XML instance format
+  - Integrate ez:Layout
+  - New syntax to easily do control localization and UI animation
+  - Compile to XML
 - Compact version of table's colummns and rows property so that they could also be written in attributes.
-- `<eval Eval="expression"/>` tags.
 - `<ez:Layout/>`
   - Thought: AlignInSecondLevel, when it is true, some top/bottom/left/right might be able to sync by creating a Table and some Cells.
     - For example, Rights in multiple Tops/Bottoms.
@@ -56,6 +59,10 @@
     - "NAME(initial value from expression)"
     - Need to be consistent with animation object
   - Consider multiple `-ani` batch control, state configuration and transition, story board, connection to animation coroutine, etc.
+
+## GacUI XML Resource
+
+- `<eval Eval="expression"/>` tags.
 - Facade (if `<ez:Layout/>` is implemented without the idea of facade, this would be canceled)
   - A facade is a class with following methods:
     - **AddChild**: Accept a child facade or a child object.
