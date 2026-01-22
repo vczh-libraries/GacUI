@@ -19,13 +19,18 @@
     [17, "SolidLabel"],
     [18, "Polygon"],
     [19, "ImageFrame"],
-    [20, "SolidLabel"]
+    [20, "SolidLabel"],
+    [21, "SolidBackground"],
+    [22, "SolidBackground"],
+    [23, "SolidBorder"],
+    [24, "FocusRectangle"],
+    [25, "SolidLabel"]
   ],
   "imageCreations": [],
   "imageMetadatas": [],
   "frames": [
     {
-      "frameId": 4,
+      "frameId": 5,
       "frameName": "Ready",
       "windowSize": {
         "bounds": {
@@ -323,6 +328,58 @@
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Dialog Color Test",
               "measuringRequest": "FontHeight"
+            }
+          ]
+        ],
+        [
+          21,
+          [
+            "ElementDesc_SolidBackground",
+            {
+              "id": 21,
+              "backgroundColor": "#FF0000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
+          ]
+        ],
+        [
+          22,
+          [
+            "ElementDesc_SolidBackground",
+            {
+              "id": 22,
+              "backgroundColor": "#3F3F46",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
+          ]
+        ],
+        [
+          23,
+          [
+            "ElementDesc_SolidBorder",
+            {
+              "id": 23,
+              "borderColor": "#54545C",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
+          ]
+        ],
+        [
+          25,
+          [
+            "ElementDesc_SolidLabel",
+            {
+              "id": 25,
+              "textColor": "#F1F1F1",
+              "horizontalAlignment": "Center",
+              "verticalAlignment": "Center",
+              "wrapLine": false,
+              "wrapLineHeightCalculation": false,
+              "ellipse": false,
+              "multiline": false,
+              "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+              "text": "Change Color",
+              "measuringRequest": "TotalSize"
             }
           ]
         ]
@@ -654,7 +711,54 @@
                       "bounds": {"x1": 8, "y1": 36, "x2": 472, "y2": 312},
                       "validArea": {"x1": 8, "y1": 36, "x2": 472, "y2": 312}
                     },
-                    "children": null
+                    "children": [
+                      {
+                        "id": 84,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": null,
+                          "element": 21,
+                          "bounds": {"x1": 13, "y1": 41, "x2": 107, "y2": 61},
+                          "validArea": {"x1": 13, "y1": 41, "x2": 107, "y2": 61}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 88,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": null,
+                          "element": 22,
+                          "bounds": {"x1": 13, "y1": 66, "x2": 107, "y2": 86},
+                          "validArea": {"x1": 13, "y1": 66, "x2": 107, "y2": 86}
+                        },
+                        "children": [
+                          {
+                            "id": 92,
+                            "content": {
+                              "hitTestResult": null,
+                              "cursor": null,
+                              "element": 23,
+                              "bounds": {"x1": 13, "y1": 66, "x2": 107, "y2": 86},
+                              "validArea": {"x1": 13, "y1": 66, "x2": 107, "y2": 86}
+                            },
+                            "children": [
+                              {
+                                "id": 100,
+                                "content": {
+                                  "hitTestResult": null,
+                                  "cursor": null,
+                                  "element": 25,
+                                  "bounds": {"x1": 17, "y1": 68, "x2": 103, "y2": 84},
+                                  "validArea": {"x1": 17, "y1": 68, "x2": 103, "y2": 84}
+                                },
+                                "children": null
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
                   }
                 ]
               }
