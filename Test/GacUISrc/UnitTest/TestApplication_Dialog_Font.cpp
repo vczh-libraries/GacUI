@@ -156,7 +156,12 @@ TEST_FILE
 					FindObjectByName<GuiSelectableButton>(window, L"checkItalic")->SetSelected(true);
 					FindObjectByName<GuiSelectableButton>(window, L"checkUnderline")->SetSelected(true);
 					FindObjectByName<GuiSelectableButton>(window, L"checkStrikeline")->SetSelected(true);
-
+				});
+				protocol->OnNextIdleFrame(L"Set Font", [=]()
+				{
+					auto window = From(GetApplication()->GetWindows())
+						.Where([](GuiWindow* w) { return w->GetText() == L"Choose Font"; })
+						.First();
 					auto colorBounds = FindObjectByName<GuiBoundsComposition>(window, L"colorBounds");
 					auto location = protocol->LocationOf(colorBounds);
 					GetApplication()->InvokeInMainThread(window, [=]()
