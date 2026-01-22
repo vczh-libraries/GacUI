@@ -8,7 +8,7 @@ TEST_FILE
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
-      <Window ref.Name="self" Text="Dialog Font Test" ClientSize="x:480 y:320">
+      <Window ref.Name="self" Text="Dialog Font Test" ClientSize="x:480 y:640">
         <FontDialog ref.Name="fontDialog" ShowEffect="true"/>
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
@@ -68,14 +68,56 @@ TEST_FILE
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();;
+					auto button = FindControlByText<GuiButton>(window, L"Change Font Simple");
+					auto location = protocol->LocationOf(button);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
+				{
+					auto window = From(GetApplication()->GetWindows())
+						.Where([](GuiWindow* w) { return w->GetText() == L"Choose Font"; })
+						.First();
+					auto textBoxFont = FindObjectByName<GuiSinglelineTextBox>(window, L"nameControl", L"textBox");
+					auto textBoxSize = FindObjectByName<GuiSinglelineTextBox>(window, L"sizeControl", L"textBox");
+
+					textBoxFont->SetText(L"Segoe UI");
+					textBoxSize->SetText(L"24");
+				});
+				protocol->OnNextIdleFrame(L"Set Font", [=]()
+				{
+					auto window = From(GetApplication()->GetWindows())
+						.Where([](GuiWindow* w) { return w->GetText() == L"Choose Font"; })
+						.First();
+					auto button = FindControlByText<GuiButton>(window, L"OK");
+					auto location = protocol->LocationOf(button);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"OK", [=]()
+				{
 					auto window = GetApplication()->GetMainWindow();
+					auto label = FindObjectByName<GuiLabel>(window, L"labelFont");
+					TEST_ASSERT(label->GetFont());
+					TEST_ASSERT(label->GetFont().Value().fontFamily == L"Segoe UI");
+					TEST_ASSERT(label->GetFont().Value().size == 24);
 					window->Hide();
 				});
 			});
+
+			UnitTestScreenConfig config;
+			config.FastInitialize(1024, 768);
+			config.fontConfig.supportedFonts->Add(L"Segoe UI");
+			config.fontConfig.supportedFonts->Add(L"Fake Font 1");
+			config.fontConfig.supportedFonts->Add(L"Fake Font 2");
+
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Dialog_Font/OpenAndClose_Simple"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-				resourceOpenAndClose
+				resourceOpenAndClose,
+				config
 			);
 		});
 
@@ -89,10 +131,18 @@ TEST_FILE
 					window->Hide();
 				});
 			});
+
+			UnitTestScreenConfig config;
+			config.FastInitialize(1024, 768);
+			config.fontConfig.supportedFonts->Add(L"Segoe UI");
+			config.fontConfig.supportedFonts->Add(L"Fake Font 1");
+			config.fontConfig.supportedFonts->Add(L"Fake Font 2");
+
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Dialog_Font/OpenAndClose"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-				resourceOpenAndClose
+				resourceOpenAndClose,
+				config
 			);
 		});
 	});
