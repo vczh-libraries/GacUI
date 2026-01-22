@@ -45,7 +45,7 @@
   ],
   "frames": [
     {
-      "frameId": 6,
+      "frameId": 7,
       "frameName": "Ready",
       "windowSize": {
         "bounds": {
@@ -428,7 +428,7 @@
                     "props": [
                       "DocumentInlineObjectRunProperty",
                       {
-                        "size": {"x": 9, "y": 5},
+                        "size": {"x": 72, "y": 20},
                         "baseline": -1,
                         "breakCondition": "Alone",
                         "backgroundElementId": -1,
@@ -876,8 +876,8 @@
                                   "hitTestResult": null,
                                   "cursor": null,
                                   "element": 26,
-                                  "bounds": {"x1": 15, "y1": 43, "x2": 465, "y2": 75},
-                                  "validArea": {"x1": 15, "y1": 43, "x2": 465, "y2": 75}
+                                  "bounds": {"x1": 15, "y1": 43, "x2": 465, "y2": 139},
+                                  "validArea": {"x1": 15, "y1": 43, "x2": 465, "y2": 139}
                                 },
                                 "children": null
                               },
@@ -887,10 +887,57 @@
                                   "hitTestResult": null,
                                   "cursor": null,
                                   "element": 27,
-                                  "bounds": {"x1": 15, "y1": 87, "x2": 465, "y2": 123},
-                                  "validArea": {"x1": 15, "y1": 87, "x2": 465, "y2": 123}
+                                  "bounds": {"x1": 15, "y1": 151, "x2": 465, "y2": 187},
+                                  "validArea": {"x1": 15, "y1": 151, "x2": 465, "y2": 187}
                                 },
                                 "children": null
+                              },
+                              {
+                                "id": 62,
+                                "content": {
+                                  "hitTestResult": null,
+                                  "cursor": "Arrow",
+                                  "element": null,
+                                  "bounds": {"x1": 223, "y1": 45, "x2": 295, "y2": 65},
+                                  "validArea": {"x1": 223, "y1": 45, "x2": 295, "y2": 65}
+                                },
+                                "children": [
+                                  {
+                                    "id": 88,
+                                    "content": {
+                                      "hitTestResult": null,
+                                      "cursor": null,
+                                      "element": 22,
+                                      "bounds": {"x1": 223, "y1": 45, "x2": 295, "y2": 65},
+                                      "validArea": {"x1": 223, "y1": 45, "x2": 295, "y2": 65}
+                                    },
+                                    "children": [
+                                      {
+                                        "id": 92,
+                                        "content": {
+                                          "hitTestResult": null,
+                                          "cursor": null,
+                                          "element": 23,
+                                          "bounds": {"x1": 223, "y1": 45, "x2": 295, "y2": 65},
+                                          "validArea": {"x1": 223, "y1": 45, "x2": 295, "y2": 65}
+                                        },
+                                        "children": [
+                                          {
+                                            "id": 100,
+                                            "content": {
+                                              "hitTestResult": null,
+                                              "cursor": null,
+                                              "element": 25,
+                                              "bounds": {"x1": 227, "y1": 47, "x2": 291, "y2": 63},
+                                              "validArea": {"x1": 227, "y1": 47, "x2": 291, "y2": 63}
+                                            },
+                                            "children": null
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
                               }
                             ]
                           }

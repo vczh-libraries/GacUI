@@ -941,7 +941,6 @@ GuiRemoteGraphicsParagraph
 					}
 				}
 			}
-			cachedInlineObjectBounds = {};
 		}
 
 		remoteprotocol::ElementRendering rendering;
