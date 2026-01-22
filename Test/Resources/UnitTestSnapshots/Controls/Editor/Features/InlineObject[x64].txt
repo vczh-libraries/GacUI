@@ -27,9 +27,6 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var textBox : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::controls::GuiDocumentItem^ = null of (::presentation::controls::GuiDocumentItem^);
 
         @cpp:Protected
@@ -40,6 +37,9 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var textBox : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -55,12 +55,12 @@ namespace gacuisrc_unittest
                 (textBox = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel));
                 <this>.SetNamedObject("textBox", textBox);
             }
+            {
+                (textBox.EditMode = Editable of (::presentation::controls::GuiDocumentEditMode));
+            }
             (<precompile>3 = textBox.BoundsComposition);
             {
                 (<precompile>3.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
-            {
-                (textBox.EditMode = Editable of (::presentation::controls::GuiDocumentEditMode));
             }
             (<precompile>0 = new (::presentation::controls::GuiDocumentItem^)("Button"));
             {
