@@ -46,9 +46,11 @@ TEST_FILE
               <ev.Clicked-eval><![CDATA[{
                 fontDialog.ShowEffect = true;
                 fontDialog.SelectedFont = labelFont.DisplayFont;
+                fontDialog.SelectedColor = labelFont.TextColor;
                 if (fontDialog.ShowDialog())
                 {
                   labelFont.Font = fontDialog.SelectedFont;
+                  labelFont.TextColor = fontDialog.SelectedColor;
                 }
               }]]></ev.Clicked-eval>
             </Button>
@@ -139,7 +141,7 @@ TEST_FILE
 						protocol->LClick(location);
 					});
 				});
-				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
+				protocol->OnNextIdleFrame(L"Show Font Dialog", [=]()
 				{
 					auto window = From(GetApplication()->GetWindows())
 						.Where([](GuiWindow* w) { return w->GetText() == L"Choose Font"; })
@@ -154,6 +156,35 @@ TEST_FILE
 					FindObjectByName<GuiSelectableButton>(window, L"checkItalic")->SetSelected(true);
 					FindObjectByName<GuiSelectableButton>(window, L"checkUnderline")->SetSelected(true);
 					FindObjectByName<GuiSelectableButton>(window, L"checkStrikeline")->SetSelected(true);
+
+					auto colorBounds = FindObjectByName<GuiBoundsComposition>(window, L"colorBounds");
+					auto location = protocol->LocationOf(colorBounds);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Show Color Dialog", [=]()
+				{
+					auto window = From(GetApplication()->GetWindows())
+						.Where([](GuiWindow* w) { return w->GetText() == L"Choose Color"; })
+						.First();
+					auto trackerRed = FindObjectByName<GuiScroll>(window, L"colorControl", L"colorRed", L"tracker");
+					auto trackerGreen = FindObjectByName<GuiScroll>(window, L"colorControl", L"colorGreen", L"tracker");
+					auto trackerBlue = FindObjectByName<GuiScroll>(window, L"colorControl", L"colorBlue", L"tracker");
+
+					trackerRed->SetPosition(0);
+					trackerGreen->SetPosition(128);
+					trackerBlue->SetPosition(255);
+				});
+				protocol->OnNextIdleFrame(L"Set Color", [=]()
+				{
+					auto window = From(GetApplication()->GetWindows())
+						.Where([](GuiWindow* w) { return w->GetText() == L"Choose Color"; })
+						.First();
+					auto button = FindControlByText<GuiButton>(window, L"OK");
+					auto location = protocol->LocationOf(button);
+					protocol->LClick(location);
 				});
 				protocol->OnNextIdleFrame(L"Set Font", [=]()
 				{
@@ -175,6 +206,7 @@ TEST_FILE
 					TEST_ASSERT(label->GetFont().Value().italic == true);
 					TEST_ASSERT(label->GetFont().Value().underline == true);
 					TEST_ASSERT(label->GetFont().Value().strikeline == true);
+					TEST_ASSERT(label->GetTextColor() == Color(0, 128, 255));
 					window->Hide();
 				});
 			});

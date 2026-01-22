@@ -170,9 +170,11 @@ namespace gacuisrc_unittest
                 {
                     (fontDialog.ShowEffect = true);
                     (fontDialog.SelectedFont = labelFont.DisplayFont);
+                    (fontDialog.SelectedColor = labelFont.TextColor);
                     if (fontDialog.ShowDialog())
                     {
                         (labelFont.Font = fontDialog.SelectedFont);
+                        (labelFont.TextColor = fontDialog.SelectedColor);
                     }
                 };
                 attach(<precompile>6.Clicked, <event-handler>);
