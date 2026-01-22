@@ -17,6 +17,7 @@
   - Multiple GUI mode (with a simple window manager, and a test app for displaying instructions)
   - Implemented in both C++ and TypeScript
 - Strict check in different for-each loops.
+- A tool connect to LLM, updating GacUIXml and preview immediately.
 
 ## GacUI XML Resource
 
