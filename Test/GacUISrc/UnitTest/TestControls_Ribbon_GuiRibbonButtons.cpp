@@ -88,6 +88,89 @@ TEST_FILE
   </Instance>
 </Resource>
 )GacUISrc";
+	const auto resourceRibbonButtonsWithIconLabels = LR"GacUISrc(
+<Resource>
+  <Folder name="UnitTestConfig" content="Link">ListViewImagesData.xml</Folder>
+  <Folder name="ListViewImages" content="Link">ListViewImagesFolder.xml</Folder>
+
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="GuiRibbonButtons (w/ IconLabels)" ClientSize="x:320 y:240">
+        <ToolstripCommand ref.Name="commandCert" Text="Cert" LargeImage-uri="res://ListViewImages/LargeImages/Cert" Image-uri="res://ListViewImages/SmallImages/Cert"/>
+        <ToolstripCommand ref.Name="commandData" Text="Data" LargeImage-uri="res://ListViewImages/LargeImages/Data" Image-uri="res://ListViewImages/SmallImages/Data"/>
+        <ToolstripCommand ref.Name="commandLink" Text="Link" LargeImage-uri="res://ListViewImages/LargeImages/Link" Image-uri="res://ListViewImages/SmallImages/Link"/>
+        <ToolstripCommand ref.Name="commandFolder" Text="Folder" LargeImage-uri="res://ListViewImages/LargeImages/Folder" Image-uri="res://ListViewImages/SmallImages/Folder"/>
+        <ToolstripCommand ref.Name="commandLight" Text="Light" LargeImage-uri="res://ListViewImages/LargeImages/Light" Image-uri="res://ListViewImages/SmallImages/Light"/>
+        <RibbonTab ref.Name="tab">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:5 right:0 bottom:-1"/>
+          <att.Pages>
+            <RibbonTabPage ref.Name="tabPageOptions" Text="Options">
+              <att.ContainerComposition-set PreferredMinSize="y:110"/>
+              <att.Groups>
+                <RibbonGroup ref.Name="group1" Text="Buttons" LargeImage-uri="res://ListViewImages/LargeImages/Cert" Expandable="true">
+                  <att.Items>
+                    <RibbonLargeDropdownButton ref.Name="buttonLarge" Text="Cert" LargeImage-uri="res://ListViewImages/LargeImages/Cert">
+                      <att.SubMenu-set>
+                        <MenuItemButton Command-eval="self.commandCert"/>
+                        <MenuItemButton Command-eval="self.commandData"/>
+                        <MenuItemButton Command-eval="self.commandLink"/>
+                        <MenuItemButton Command-eval="self.commandFolder"/>
+                        <MenuItemButton Command-eval="self.commandLight"/>
+                      </att.SubMenu-set>
+                    </RibbonLargeDropdownButton>
+                    <RibbonSplitter/>
+                    <RibbonButtons MaxSize="Large" MinSize="Icon">
+                      <att.Buttons>
+                        <ToolstripButton ref.Name="buttonCert" Command-eval="self.commandCert"/>
+                        <ToolstripDropdownButton ref.Name="buttonData" Command-eval="self.commandData">
+                          <att.SubMenu-set>
+                            <MenuItemButton Text="Data1"/>
+                            <MenuItemButton Text="Data2"/>
+                            <MenuSplitter/>
+                            <MenuItemButton Text="Data3"/>
+                          </att.SubMenu-set>
+                        </ToolstripDropdownButton>
+                        <ToolstripSplitButton ref.Name="buttonLink" Command-eval="self.commandLink">
+                          <att.SubMenu-set>
+                            <MenuItemButton Text="Link1"/>
+                            <MenuItemButton Text="Link2"/>
+                            <MenuSplitter/>
+                            <MenuItemButton Text="Link3"/>
+                          </att.SubMenu-set>
+                        </ToolstripSplitButton>
+                      </att.Buttons>
+                    </RibbonButtons>
+                    <RibbonSplitter/>
+                    <RibbonButtons MaxSize="Small" MinSize="Icon">
+                      <att.Buttons>
+                        <RibbonIconLabel Text="First" Image-uri="res://ListViewImages/SmallImages/Link">
+                          <SinglelineTextBox ref.Name="textBox1">
+                            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:36"/>
+                          </SinglelineTextBox>
+                        </RibbonIconLabel>
+                        <RibbonIconLabel Text="Second" Image-uri="res://ListViewImages/SmallImages/Folder">
+                          <SinglelineTextBox ref.Name="textBox2">
+                            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:36"/>
+                          </SinglelineTextBox>
+                        </RibbonIconLabel>
+                        <RibbonIconLabel Text="Third" Image-uri="res://ListViewImages/SmallImages/Light">
+                          <SinglelineTextBox ref.Name="textBox3">
+                            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:36"/>
+                          </SinglelineTextBox>
+                        </RibbonIconLabel>
+                      </att.Buttons>
+                    </RibbonButtons>
+                  </att.Items>
+                </RibbonGroup>
+              </att.Groups>
+            </RibbonTabPage>
+          </att.Pages>
+        </RibbonTab>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
 
 	const auto resourceRibbonToolstrips = LR"GacUISrc(
 <Resource>
@@ -270,6 +353,33 @@ TEST_FILE
 
 		TEST_CASE(L"GuiRibbonIconLabel")
 		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				TestReactiveView(protocol, L"Ready", 160, 320, 40, [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox1 = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox1");
+					auto textBox2 = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox2");
+					auto textBox3 = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox3");
+
+					textBox1->SetFocused();
+					protocol->TypeString(L"one");
+					textBox2->SetFocused();
+					protocol->TypeString(L"two");
+					textBox3->SetFocused();
+					protocol->TypeString(L"three");
+				});
+				protocol->OnNextIdleFrame(L"Typing", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Ribbon/GuiRibbonButtons/IconLabels"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceRibbonButtonsWithIconLabels
+				);
 		});
 
 		TEST_CASE(L"Toolstrips")
