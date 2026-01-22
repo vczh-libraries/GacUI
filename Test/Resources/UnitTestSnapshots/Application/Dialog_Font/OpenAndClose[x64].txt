@@ -27,6 +27,36 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
+        var fontDialog : ::presentation::controls::GuiFontDialog* = null of (::presentation::controls::GuiFontDialog*);
+
+        @cpp:Protected
+        var labelFont : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
         {
             (self = <this>);
@@ -35,6 +65,117 @@ namespace gacuisrc_unittest
             }
             {
                 (self.Text = "Dialog Font Test");
+            }
+            (fontDialog = new (::presentation::controls::GuiFontDialog*)());
+            <this>.SetNamedObject("fontDialog", fontDialog);
+            {
+                (fontDialog.ShowEffect = true);
+            }
+            {
+                self.AddComponent(fontDialog);
+            }
+            (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>0.CellPadding = 5 of (::system::Int64));
+            }
+            {
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>0.SetRowsAndColumns(4, 2);
+                <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(3, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                (<precompile>1.PreferredMinSize = {y : 20;} of (::presentation::Size));
+            }
+            {
+                <precompile>1.SetSite(0, 0, 1, 1);
+            }
+            {
+                (labelFont = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <this>.SetNamedObject("labelFont", labelFont);
+            }
+            {
+                (labelFont.Text = "Sample Text");
+            }
+            {
+                <precompile>1.AddChild(labelFont.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>1);
+            }
+            (<precompile>2 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>2.SetSite(1, 0, 1, 1);
+            }
+            {
+                (<precompile>3 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>4 = <precompile>3.BoundsComposition);
+            {
+                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>3.Text = "Change Font Simple");
+            }
+            {
+                <precompile>2.AddChild(<precompile>3.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>2);
+            }
+            (<precompile>5 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>5.SetSite(2, 0, 1, 1);
+            }
+            {
+                (<precompile>6 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>7 = <precompile>6.BoundsComposition);
+            {
+                (<precompile>7.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>6.Text = "Change Font");
+            }
+            {
+                <precompile>5.AddChild(<precompile>6.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>5);
+            }
+            {
+                self.ContainerComposition.AddChild(<precompile>0);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (fontDialog.ShowEffect = false);
+                    (fontDialog.SelectedFont = labelFont.DisplayFont);
+                    if (fontDialog.ShowDialog())
+                    {
+                        (labelFont.Font = fontDialog.SelectedFont);
+                    }
+                };
+                attach(<precompile>3.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (fontDialog.ShowEffect = true);
+                    (fontDialog.SelectedFont = labelFont.DisplayFont);
+                    if (fontDialog.ShowDialog())
+                    {
+                        (labelFont.Font = fontDialog.SelectedFont);
+                    }
+                };
+                attach(<precompile>6.Clicked, <event-handler>);
             }
         }
 
