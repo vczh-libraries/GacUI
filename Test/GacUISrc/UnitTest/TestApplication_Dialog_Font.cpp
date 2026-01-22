@@ -150,7 +150,7 @@ TEST_FILE
 					auto textBoxSize = FindObjectByName<GuiSinglelineTextBox>(window, L"sizeControl", L"textBox");
 
 					textBoxFont->SetText(L"Segoe UI");
-					textBoxSize->SetText(L"24");
+					textBoxSize->SetText(L"48");
 
 					FindObjectByName<GuiSelectableButton>(window, L"checkBold")->SetSelected(true);
 					FindObjectByName<GuiSelectableButton>(window, L"checkItalic")->SetSelected(true);
@@ -206,7 +206,7 @@ TEST_FILE
 					auto label = FindObjectByName<GuiLabel>(window, L"labelFont");
 					TEST_ASSERT(label->GetFont());
 					TEST_ASSERT(label->GetFont().Value().fontFamily == L"Segoe UI");
-					TEST_ASSERT(label->GetFont().Value().size == 24);
+					TEST_ASSERT(label->GetFont().Value().size == 48);
 					TEST_ASSERT(label->GetFont().Value().bold == true);
 					TEST_ASSERT(label->GetFont().Value().italic == true);
 					TEST_ASSERT(label->GetFont().Value().underline == true);
