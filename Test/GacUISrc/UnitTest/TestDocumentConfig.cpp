@@ -127,7 +127,7 @@ TEST_FILE
 			LR"XML(<Doc><Content><p><br/>      Unlike usual XML, spaces between texts and tags are never ignored.<br/>   <sp/></p></Content><Styles/></Doc>)XML",
 			LR"XML(<Doc><Content><p><nop>This is a paragraph without style.</nop><br/><nop>There is</nop><sp/><nop>for spaces</nop><br/><nop>and multiple lines in one paragraph.</nop></p></Content><Styles/></Doc>)XML",
 			LR"XML(<Doc><Content><p><nop>There are styles like </nop><b><nop>bold</nop></b><nop>, </nop><i><nop>italic</nop></i><nop>, </nop><u><nop>underline</nop></u><sp/>and<sp/><s><nop>strikeline</nop></s><nop>.</nop><br/><nop>These styles has a reverse version to for example </nop><b><nop>make </nop><b-><nop>part of the text not bold</nop></b-></b><nop>.</nop><br/><div style="Bold"><nop>It also works </nop><b-><nop>inside a div</nop></b-><nop>.</nop></div></p></Content><Styles><Style name="Bold"><b>true</b></Style></Styles></Doc>)XML",
-			LR"XML(<Doc><Content><p><object name="MyObject"/><nop> can be inserted into a document.</nop><br/><nop>So as </nop><img width="0" height="0" baseline="-1" frameIndex="0" source="not://existing"/><nop>.</nop></p></Content><Styles/></Doc>)XML",
+			LR"XML(<Doc><Content><p><object name="MyObject"/><nop> can be inserted into a document.</nop><br/><nop>So as </nop><img frameIndex="0" source="not://existing"/><nop>.</nop></p></Content><Styles/></Doc>)XML",
 		};
 
 		// TODO: Fix in Vlpp where indexed(FromArray(...)) crashes because the enumerable is destructed too early
@@ -492,7 +492,7 @@ TEST_FILE
 			},
 			{
 				LR"XML(<Doc><Content><p><nop>Text content</nop></p><p><img width="16" height="16" baseline="-1" frameIndex="0" source="test.png"/></p></Content></Doc>)XML",
-				LR"XML(<Doc><Content><p><nop>Text content</nop><sp/><img width="16" height="16" baseline="-1" frameIndex="0" source="test.png"/></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Text content</nop><sp/><img frameIndex="0" source="test.png" width="16" height="16"/></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			{
@@ -827,7 +827,7 @@ TEST_FILE
 			{
 				L"WithImageElement",
 				LR"XML(<Doc><Content><p><nop>Before<br/>Image</nop><img width="16" height="16" source="test.png"/><nop>After<br/>Image</nop></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><nop>Before</nop><sp/><nop>Image</nop><img width="16" height="16" baseline="-1" frameIndex="0" source="test.png"/><nop>After</nop><sp/><nop>Image</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Before</nop><sp/><nop>Image</nop><img frameIndex="0" source="test.png" width="16" height="16"/><nop>After</nop><sp/><nop>Image</nop></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			{

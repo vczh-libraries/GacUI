@@ -229,21 +229,21 @@ document_operation_visitors::SerializeRunVisitor
 				void Visit(DocumentImageRun* run)override
 				{
 					XmlElementWriter writer(parent);
-					writer
+					auto elementWriter = writer
 						.Element(L"img")
 						.Attribute(L"frameIndex", itow(run->frameIndex))
 						.Attribute(L"source", run->source)
 						;
 					if(run->sizeOverride)
 					{
-						writer
+						elementWriter
 							.Attribute(L"width", itow(run->sizeOverride.Value().x))
 							.Attribute(L"height", itow(run->sizeOverride.Value().y))
 							;
 					}
 					if (run->baseline != -1)
 					{
-						writer.Attribute(L"baseline", itow(run->baseline));
+						elementWriter.Attribute(L"baseline", itow(run->baseline));
 					}
 				}
 
