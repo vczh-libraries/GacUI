@@ -148,7 +148,7 @@ namespace gacui_unittest_template
 		Ptr<FileItemMock> ResolvePath(const WString& fullPath) const
 		{
 			if (fullPath == L"") return root;
-			if (!fullPath.StartsWith(L"/")) return nullptr;
+			if (fullPath[0] != L'/') return nullptr;
 
 			collections::List<WString> components;
 			SplitComponents(fullPath, components);

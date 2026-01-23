@@ -78,6 +78,9 @@
     <ClCompile Include="TestDocumentConfig.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestFileSystemMock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="TestHostedWindowManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
