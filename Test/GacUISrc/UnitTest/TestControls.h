@@ -128,7 +128,7 @@ namespace gacui_unittest_template
 	public:
 		FileSystemMock(Ptr<FileItemMock> _root)
 			: root(_root)
-			, regexSeparators(L"[///\\\\]+")
+			, regexSeparators(L"[///\\]+")
 		{
 			vl::filesystem::InjectFileSystemImpl(this);
 		}

@@ -153,6 +153,9 @@ Add a focused test category validating that `SetSelectedFolder` drives file list
 	- Nested folders with both files and subfolders.
 	- Names that include extension and no extension (to be reused by later tasks).
 - Create the view model via the cpp-only factory, passing a `FileSystemViewModelOptions` instance and the `FileSystemMock` root.
+- Rely on the verified `FileSystemMock` path semantics when asserting results:
+	- Root is `""`, non-root paths are absolute (begin with `/`) and normalized (duplicate separators collapsed, trailing separators removed, `.` and `..` resolved).
+	- Keep the separator split regex consistent with `vl::regex` escaping rules (verified pattern: `L"[\\/\\\\]+"`), so tests don’t accidentally depend on an implementation that later fails to parse.
 - Validate expected behavior:
 	- Default selected folder is root (path `""`) and `SetSelectedFolder` updates `GetSelectedFolder()`.
 	- After `SetSelectedFolder`, loop on `GetIsLoadingFiles()` until it completes, then assert:
@@ -264,3 +267,4 @@ This prevents incorrect behavior such as treating `abc` as an existing file, the
 	- Injecting UI prompts (message boxes) through a small interface to make view-model branching testable.
 	- Using an options struct to avoid brittle constructors and to keep test factories stable.
 	- Ensuring selection normalization (e.g. default extension appending) happens before existence checks in confirm logic (to keep `fileMustExist` and prompt behaviors correct).
+	- `vl::regex` escaping rule reminder when writing separator split patterns (verified example: `L"[\\/\\\\]+"` to match both `/` and `\\`).
