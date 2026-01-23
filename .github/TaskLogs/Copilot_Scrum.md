@@ -68,6 +68,14 @@ So the next task is to make any necessary mentioned change to [GuiFakeDialogServ
 
 # UPDATES
 
+## UPDATE
+
+there is a bug in `FileSystemViewModel::TryConfirm`, when the extension to automatically append is txt, and user enter abc, abc will be used to test if the file exist and then fix the file name to be abc.txt, this is clearly wrong. You need to cover this case and also fix the bug.
+
+## UPDATE
+
+you can merge the last two tasks together, complete the unit test first and then fix the function.
+
 # TASKS
 
 - [ ] TASK No.1: Add FileItemMock + FileSystemMock (IFileSystemImpl)
@@ -76,6 +84,7 @@ So the next task is to make any necessary mentioned change to [GuiFakeDialogServ
 - [ ] TASK No.4: TEST_CATEGORY for filter visibility + default extension behavior
 - [ ] TASK No.5: TEST_CATEGORY for ParseDisplayString + multi-selection normalization
 - [ ] TASK No.6: TEST_CATEGORY for TryConfirm message box interactions
+- [ ] TASK No.7: TDD for TryConfirm existence checks with auto-appended extension
 
 ## TASK No.1: Add FileItemMock + FileSystemMock (IFileSystemImpl)
 
@@ -217,6 +226,35 @@ Add tests validating `TryConfirm` branches that depend on prompt/result interact
 
 - The message-box driven branches are otherwise untestable and the largest source of combinatorial behavior; isolating them in a single category ensures comprehensive coverage while keeping the rest of the tests free from UI branching logic.
 
+## TASK No.7: TDD for TryConfirm existence checks with auto-appended extension
+
+Add a focused regression unit test proving `TryConfirm` checks existence using the final normalized filename (after extension auto-append), and then fix `FileSystemViewModel::TryConfirm` so that any required extension appending (from selected filter or from `FileSystemViewModelOptions::defaultExtension`) happens before checking `filesystem::File(path).Exists()` / `filesystem::Folder(path).Exists()` and before deciding `files` / `folders` / `unexistings`.
+
+This prevents incorrect behavior such as treating `abc` as an existing file, then returning a confirmed selection `abc.txt` that was never checked for existence.
+
+### what to be done
+
+- First, in `Test/GacUISrc/UnitTest/TestFileDialogViewModel.cpp`, add a dedicated `TEST_CATEGORY` with a small mocked filesystem containing both:
+	- A file `abc.txt` (but no `abc`), and optionally a folder `abc` for edge-case priority validation.
+- Configure the view model so that extension appending is required (either by selecting a filter whose default extension is `txt`, or by leaving filter extension empty but setting `FileSystemViewModelOptions::defaultExtension` to `txt`).
+- Add at least these subcases:
+	- **Existence is checked on appended name**: with `fileMustExist = true`, input `abc` should succeed (no message box) and confirm `abc.txt` when `abc.txt` exists.
+	- **Raw-name existence must not mask missing appended name**: with `fileMustExist = true`, if `abc` exists but `abc.txt` does not, `TryConfirm` must fail (and trigger the appropriate message box path), and must not confirm `abc.txt`.
+- Assert `IsConfirmed()` / `GetConfirmedSelection()` and message box fake call count to ensure the branch decisions are driven by the normalized target name.
+- Then, in `Source/Utilities/FakeServices/GuiFakeDialogServiceBase_FileDialog.cpp`, adjust `FileSystemViewModel::TryConfirm` so that:
+	- It still keeps the existing "single selection navigates into folder" behavior using the raw (non-appended) path.
+	- For file confirmation, it computes the expected extension (from `selectedFilter->GetDefaultExtension()` or options `defaultExtension`) and normalizes each candidate file path accordingly before existence checks.
+	- It uses the normalized paths for:
+		- Deciding membership in `files` / `unexistings`.
+		- Prompting (create/overwrite) messages (the relative paths shown should match the normalized target files).
+		- Populating `confirmedSelection` (so no late post-processing is needed to append extension after prompts).
+	- It does not append an extension to paths that resolve to folders (folder navigation and folder error reporting should remain folder-oriented).
+
+### rationale
+
+- Writing the failing regression test first locks in the intended behavior and prevents future refactors from reintroducing the "check-before-append" ordering.
+- `TryConfirm` must validate and prompt against the actual final target paths; doing extension normalization after existence checks breaks correctness for `fileMustExist`, `promptCreateFile`, and `promptOverriteFile` branches.
+
 # Impact to the Knowledge Base
 
 ## GacUI
@@ -225,3 +263,4 @@ Add tests validating `TryConfirm` branches that depend on prompt/result interact
 	- Implementing a deterministic `IFileSystemImpl` mock using a tree model (root `""`, normalized `/` paths).
 	- Injecting UI prompts (message boxes) through a small interface to make view-model branching testable.
 	- Using an options struct to avoid brittle constructors and to keep test factories stable.
+	- Ensuring selection normalization (e.g. default extension appending) happens before existence checks in confirm logic (to keep `fileMustExist` and prompt behaviors correct).
