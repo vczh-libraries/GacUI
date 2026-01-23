@@ -96,6 +96,214 @@ namespace gacui_unittest_template
 			return Previous()->Backward(osInternal, milliseconds);
 		}
 	};
+
+	class FileItemMock : public Object
+	{
+	public:
+		bool											isFile = false;
+		collections::Dictionary<WString, Ptr<FileItemMock>>	children;
+	};
+
+	class FileSystemMock : protected vl::feature_injection::FeatureImpl<vl::filesystem::IFileSystemImpl>
+	{
+	private:
+		Ptr<FileItemMock>	root;
+		vl::regex::Regex	regexSeparators;
+
+	private:
+		void SplitComponents(const WString& fullPath, collections::List<WString>& components) const
+		{
+			vl::regex::RegexMatch::List pieces;
+			regexSeparators.Split(fullPath, false, pieces);
+
+			components.Clear();
+			for (auto&& piece : pieces)
+			{
+				auto value = piece->Result().Value();
+				if (value == L"") continue;
+				components.Add(value);
+			}
+		}
+
+	public:
+		FileSystemMock(Ptr<FileItemMock> _root)
+			: root(_root)
+			, regexSeparators(L"[///\\\\]+")
+		{
+			vl::filesystem::InjectFileSystemImpl(this);
+		}
+
+		~FileSystemMock()
+		{
+			try
+			{
+				vl::filesystem::EjectFileSystemImpl(nullptr);
+			}
+			catch (...)
+			{
+			}
+		}
+
+	protected:
+		Ptr<FileItemMock> ResolvePath(const WString& fullPath) const
+		{
+			if (fullPath == L"") return root;
+			if (!fullPath.StartsWith(L"/")) return nullptr;
+
+			collections::List<WString> components;
+			SplitComponents(fullPath, components);
+
+			auto current = root;
+			for (auto&& name : components)
+			{
+				vint index = current->children.Keys().IndexOf(name);
+				if (index == -1) return nullptr;
+				current = current->children.Values()[index];
+			}
+			return current;
+		}
+
+		void Initialize(WString& fullPath) const override
+		{
+			if (fullPath == L"") return;
+
+			vl::regex::RegexMatch::List pieces;
+			regexSeparators.Split(fullPath, false, pieces);
+
+			collections::List<WString> components;
+			for (auto&& piece : pieces)
+			{
+				auto value = piece->Result().Value();
+				if (value == L"") continue;
+				if (value == L".") continue;
+				if (value == L"..")
+				{
+					if (components.Count() > 0) components.RemoveAt(components.Count() - 1);
+					continue;
+				}
+				components.Add(value);
+			}
+
+			WString normalized;
+			for (auto&& component : components)
+			{
+				normalized += L"/";
+				normalized += component;
+			}
+			fullPath = normalized;
+		}
+
+		bool IsFile(const WString& fullPath) const override
+		{
+			auto item = ResolvePath(fullPath);
+			return item && item->isFile;
+		}
+
+		bool IsFolder(const WString& fullPath) const override
+		{
+			auto item = ResolvePath(fullPath);
+			return item && !item->isFile;
+		}
+
+		bool IsRoot(const WString& fullPath) const override
+		{
+			return fullPath == L"";
+		}
+
+		bool GetFolders(const vl::filesystem::FilePath& folderPath, collections::List<vl::filesystem::Folder>& folders) const override
+		{
+			folders.Clear();
+			auto item = ResolvePath(folderPath.GetFullPath());
+			if (!item || item->isFile) return false;
+
+			for (vint i = 0; i < item->children.Count(); i++)
+			{
+				auto name = item->children.Keys()[i];
+				auto child = item->children.Values()[i];
+				if (!child->isFile)
+				{
+					auto childPath = folderPath.GetFullPath() + L"/" + name;
+					folders.Add(vl::filesystem::Folder(vl::filesystem::FilePath(childPath)));
+				}
+			}
+			return true;
+		}
+
+		bool GetFiles(const vl::filesystem::FilePath& folderPath, collections::List<vl::filesystem::File>& files) const override
+		{
+			files.Clear();
+			auto item = ResolvePath(folderPath.GetFullPath());
+			if (!item || item->isFile) return false;
+
+			for (vint i = 0; i < item->children.Count(); i++)
+			{
+				auto name = item->children.Keys()[i];
+				auto child = item->children.Values()[i];
+				if (child->isFile)
+				{
+					auto childPath = folderPath.GetFullPath() + L"/" + name;
+					files.Add(vl::filesystem::File(vl::filesystem::FilePath(childPath)));
+				}
+			}
+			return true;
+		}
+
+		WString GetRelativePathFor(const WString& fromPath, const WString& toPath) const override
+		{
+			auto baseFromPath = fromPath;
+			Initialize(baseFromPath);
+
+			auto normalizedToPath = toPath;
+			Initialize(normalizedToPath);
+
+			if (IsFile(baseFromPath))
+			{
+				auto index = INVLOC.FindLast(baseFromPath, L"/", Locale::None);
+				baseFromPath = index.key == -1 ? L"" : baseFromPath.Left(index.key);
+			}
+
+			collections::List<WString> fromComponents, toComponents;
+			SplitComponents(baseFromPath, fromComponents);
+			SplitComponents(normalizedToPath, toComponents);
+
+			vint common = 0;
+			while (common < fromComponents.Count()
+				&& common < toComponents.Count()
+				&& fromComponents[common] == toComponents[common])
+			{
+				common++;
+			}
+
+			collections::List<WString> resultComponents;
+			for (vint i = common; i < fromComponents.Count(); i++)
+			{
+				resultComponents.Add(L"..");
+			}
+			for (vint i = common; i < toComponents.Count(); i++)
+			{
+				resultComponents.Add(toComponents[i]);
+			}
+
+			WString relative;
+			for (vint i = 0; i < resultComponents.Count(); i++)
+			{
+				if (i > 0) relative += L"/";
+				relative += resultComponents[i];
+			}
+			return relative;
+		}
+
+		bool FileDelete(const vl::filesystem::FilePath&) const override					{ CHECK_FAIL(L"Not Implemented!"); return false; }
+		bool FileRename(const vl::filesystem::FilePath&, const WString&) const override	{ CHECK_FAIL(L"Not Implemented!"); return false; }
+		bool CreateFolder(const vl::filesystem::FilePath&) const override					{ CHECK_FAIL(L"Not Implemented!"); return false; }
+		bool DeleteFolder(const vl::filesystem::FilePath&) const override					{ CHECK_FAIL(L"Not Implemented!"); return false; }
+		bool FolderRename(const vl::filesystem::FilePath&, const WString&) const override	{ CHECK_FAIL(L"Not Implemented!"); return false; }
+		Ptr<vl::stream::IFileStreamImpl> GetFileStreamImpl(const WString&, vl::stream::FileStream::AccessRight) const override
+		{
+			CHECK_FAIL(L"Not Implemented!");
+			return nullptr;
+		}
+	};
 }
 
 #endif
