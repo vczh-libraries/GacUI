@@ -111,6 +111,6 @@ $debugArgs = GetDebugArgs $solutionFolder $latestFile
 $logFile = "$PSScriptRoot\Execute.log"
 $logFileUnfinished = "$logFile.unfinished"
 $commandLine = "`"$($latestFile.Path)`" /C $debugArgs"
-& cmd.exe /S /C $commandLine 2>&1 | Tee-Object -FilePath $logFileUnfinished
+& { $commandLine; & cmd.exe /S /C $commandLine 2>&1 } | Tee-Object -FilePath $logFileUnfinished
 Rename-Item -Path $logFileUnfinished -NewName $logFile -Force
 exit $LASTEXITCODE
