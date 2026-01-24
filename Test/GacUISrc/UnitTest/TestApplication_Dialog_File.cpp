@@ -77,6 +77,22 @@ namespace gacui_file_dialog_template
 		});
 	}
 
+	void ClickAndSelect(UnitTestRemoteProtocol* protocol, const WString& fileName, const WString& buttonText)
+	{
+		auto window = From(GetApplication()->GetWindows())
+			.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
+			.First();
+		auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"filePickerControl", L"textBox");
+		auto button = FindControlByText<GuiButton>(window, buttonText);
+		auto location = protocol->LocationOf(button);
+
+		textBox->SetText(fileName);
+		GetApplication()->InvokeInMainThread(window, [=]()
+		{
+			protocol->LClick(location);
+		});
+	}
+
 	void ChooseFilter(UnitTestRemoteProtocol* protocol, vint filterIndex)
 	{
 		auto window = From(GetApplication()->GetWindows())
@@ -156,11 +172,57 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Cancel", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto dialog = FindObjectByName<GuiOpenFileDialog>(window, L"dialogOpen");
+					TEST_ASSERT(dialog->GetFileNames().Count() == 0);
 					window->Hide();
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Dialog_File/OpenAndClose"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceFileDialogs,
+				CreateInstaller(fsMock)
+			);
+		});
+
+		TEST_CASE(L"Open and Select")
+		{
+			Ptr<FileSystemMock> fsMock;
+			GacUIUnitTest_SetGuiMainProxy([&fsMock](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();;
+					auto button = FindControlByText<GuiButton>(window, L"Open DefaultOptions");
+					auto location = protocol->LocationOf(button);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
+				{
+					TypeAndSelect(protocol, L"A", L"Open");
+				});
+				protocol->OnNextIdleFrame(L"Open: A", [=]()
+				{
+					ChooseFilter(protocol, 1);
+				});
+				protocol->OnNextIdleFrame(L"Filter: Text Files", [=]()
+				{
+					ClickAndSelect(protocol, L"a.txt", L"Open");
+				});
+				protocol->OnNextIdleFrame(L"Open", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dialog = FindObjectByName<GuiOpenFileDialog>(window, L"dialogOpen");
+					TEST_ASSERT(dialog->GetFileNames().Count() == 1);
+					TEST_ASSERT(dialog->GetFileNames()[0] == L"/A/a.txt");
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Dialog_File/OpenAndSelect"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceFileDialogs,
 				CreateInstaller(fsMock)
