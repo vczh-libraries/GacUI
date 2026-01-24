@@ -27,6 +27,9 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
+        var dialogOpen : ::presentation::controls::GuiOpenFileDialog* = null of (::presentation::controls::GuiOpenFileDialog*);
+
+        @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
         {
             (self = <this>);
@@ -35,6 +38,17 @@ namespace gacuisrc_unittest
             }
             {
                 (self.Text = "Dialog File Test");
+            }
+            (dialogOpen = new (::presentation::controls::GuiOpenFileDialog*)());
+            <this>.SetNamedObject("dialogOpen", dialogOpen);
+            {
+                (dialogOpen.Directory = "");
+            }
+            {
+                (dialogOpen.Filter = "All Files (*.*)|*.*|Text Files *.txt)|*.txt");
+            }
+            {
+                self.AddComponent(dialogOpen);
             }
         }
 
