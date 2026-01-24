@@ -200,12 +200,14 @@ TEST_FILE
 			WString::Unmanaged(L"Controls/CoreApplication/WindowMaximized"),
 			WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 			resource,
-			[](GuiWindow* window)
 			{
-				window->WindowOpened.AttachLambda([=](auto&&...)
+				.installWindow = [](GuiWindow* window)
 				{
-					window->ShowMaximized();
-				});
+					window->WindowOpened.AttachLambda([=](auto&&...)
+					{
+						window->ShowMaximized();
+					});
+				}
 			});
 	});
 }

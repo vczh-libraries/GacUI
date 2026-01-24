@@ -43,12 +43,34 @@ using namespace gacui_unittest_template;
 
 TEST_FILE
 {
-	const auto resourceOpenAndClose = LR"GacUISrc(
+	const auto resourceFileDialogs = LR"GacUISrc(
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
-      <Window ref.Name="self" Text="Dialog File Test" ClientSize="x:480 y:320">
-        <OpenFileDialog ref.Name="dialogOpen" Filter="All Files (*.*)|*.*|Text Files *.txt)|*.txt" Directory=""/>
+      <Window ref.Name="self" Text="Dialog File Test" ClientSize="x:640 y:640">
+        <OpenFileDialog ref.Name="dialogOpen" Title="OpenFileDialog" Filter="All Files (*.*)|*.*|Text Files *.txt)|*.txt" Directory=""/>
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <Button Text="Open DefaultOptions">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{
+                if (dialogOpen.ShowDialog())
+                {
+                  self.Text = "Opened";
+                }
+              }]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+        </Table>
       </Window>
     </Instance>
   </Instance>
@@ -59,20 +81,42 @@ TEST_FILE
 	{
 		TEST_CASE(L"Open and Close")
 		{
-			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			Ptr<FileSystemMock> fsMock;
+			GacUIUnitTest_SetGuiMainProxy([&fsMock](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				auto fsMock = Ptr(new FileSystemMock(CreateFileItemRoot()));
-				protocol->OnNextIdleFrame(L"Ready", [=, &fsMock]()
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();;
+					auto button = FindControlByText<GuiButton>(window, L"Open DefaultOptions");
+					auto location = protocol->LocationOf(button);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
+				{
+					auto window = From(GetApplication()->GetWindows())
+						.Where([](GuiWindow* w) { return w->GetText() == L"OpenFileDialog"; })
+						.First();
+					auto button = FindControlByText<GuiButton>(window, L"Cancel");
+					auto location = protocol->LocationOf(button);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Cancel", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
-					fsMock = {};
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Dialog_File/OpenAndClose"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-				resourceOpenAndClose
+				resourceFileDialogs,
+				{
+					.initialize = [&]() { fsMock = Ptr(new FileSystemMock(CreateFileItemRoot())); },
+					.finalize = [&]() { fsMock = {}; }
+				}
 			);
 		});
 	});

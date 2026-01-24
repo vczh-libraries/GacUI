@@ -123,7 +123,7 @@ TEST_FILE
 				WString::Unmanaged(L"Application/Dialog_Font/OpenAndClose_Simple"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceOpenAndClose,
-				config
+				{ .config = config }
 			);
 		});
 
@@ -226,7 +226,7 @@ TEST_FILE
 				WString::Unmanaged(L"Application/Dialog_Font/OpenAndClose"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceOpenAndClose,
-				config
+				{ .config = config }
 			);
 		});
 	});

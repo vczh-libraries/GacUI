@@ -31,12 +31,20 @@ extern vl::Ptr<vl::presentation::GuiResource>	GacUIUnitTest_CompileAndLoad(const
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
+struct GacUIUnitTest_Installer
+{
+	vl::Func<void()> initialize;
+	vl::Func<void()> finalize;
+	vl::Func<void(vl::presentation::controls::GuiWindow*)> installWindow;
+	vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config;
+};
+
 template<typename TTheme>
 void GacUIUnitTest_StartFast_WithResourceAsText(
 	const vl::WString& appName,
 	const vl::WString& windowTypeFullName,
-	const vl::WString& resourceText, vl::Func<void(vl::presentation::controls::GuiWindow*)> installWindow,
-	vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config
+	const vl::WString& resourceText,
+	GacUIUnitTest_Installer installer = {}
 )
 {
 	GacUIUnitTest_LinkGuiMainProxy([=](
@@ -57,55 +65,31 @@ void GacUIUnitTest_StartFast_WithResourceAsText(
 		auto theme = vl::Ptr(new TTheme);
 		vl::presentation::theme::RegisterTheme(theme);
 		{
+			if(installer.initialize)
+			{
+				installer.initialize();
+			}
 			auto windowValue = vl::reflection::description::Value::Create(windowTypeFullName);
 			TEST_ASSERT(windowValue.GetRawPtr());
 
 			auto window = vl::Ptr(windowValue.GetRawPtr()->SafeAggregationCast<vl::presentation::controls::GuiWindow>());
 			TEST_ASSERT(window);
 
-			if (installWindow)
+			if (installer.installWindow)
 			{
-				installWindow(window.Obj());
+				installer.installWindow(window.Obj());
 			}
 			window->MoveToScreenCenter();
 			previousMainProxy(protocol, context);
 			vl::presentation::controls::GetApplication()->Run(window.Obj());
+			if (installer.finalize)
+			{
+				installer.finalize();
+			}
 		}
 		vl::presentation::theme::UnregisterTheme(theme->Name);
 	});
-	GacUIUnitTest_Start_WithResourceAsText(appName, config, resourceText);
-}
-
-template<typename TTheme>
-void GacUIUnitTest_StartFast_WithResourceAsText(
-	const vl::WString& appName,
-	const vl::WString& windowTypeFullName,
-	const vl::WString& resourceText,
-	vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config
-)
-{
-	GacUIUnitTest_StartFast_WithResourceAsText<TTheme>(appName, windowTypeFullName, resourceText, {}, config);
-}
-
-template<typename TTheme>
-void GacUIUnitTest_StartFast_WithResourceAsText(
-	const vl::WString& appName,
-	const vl::WString& windowTypeFullName,
-	const vl::WString& resourceText,
-	vl::Func<void(vl::presentation::controls::GuiWindow*)> installWindow
-)
-{
-	GacUIUnitTest_StartFast_WithResourceAsText<TTheme>(appName, windowTypeFullName, resourceText, installWindow, {});
-}
-
-template<typename TTheme>
-void GacUIUnitTest_StartFast_WithResourceAsText(
-	const vl::WString& appName,
-	const vl::WString& windowTypeFullName,
-	const vl::WString& resourceText
-)
-{
-	GacUIUnitTest_StartFast_WithResourceAsText<TTheme>(appName, windowTypeFullName, resourceText, {}, {});
+	GacUIUnitTest_Start_WithResourceAsText(appName, installer.config, resourceText);
 }
 
 #endif

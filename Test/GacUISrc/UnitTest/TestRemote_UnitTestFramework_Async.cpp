@@ -65,7 +65,7 @@ TEST_FILE
 				WString::Unmanaged(L"UnitTestFramework/Channel/Async"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resource,
-				globalConfig
+				{ .config = globalConfig }
 				);
 		});
 

@@ -388,7 +388,7 @@ TEST_FILE
 				WString::Unmanaged(L"UnitTestFramework/Channel/Sync"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resource,
-				globalConfig
+				{ .config = globalConfig }
 				);
 		});
 
@@ -404,7 +404,7 @@ TEST_FILE
 				WString::Unmanaged(L"UnitTestFramework/Channel/DomDiff"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resource,
-				globalConfig
+				{ .config = globalConfig }
 				);
 		});
 
@@ -421,7 +421,7 @@ TEST_FILE
 				WString::Unmanaged(L"UnitTestFramework/Channel/Everything"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resource,
-				globalConfig
+				{ .config = globalConfig }
 				);
 		});
 	});
