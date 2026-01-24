@@ -2317,7 +2317,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\/A",
+              "text": "A",
               "measuringRequest": null
             }
           ]
@@ -2354,7 +2354,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\/A",
+              "text": "A",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -2425,7 +2425,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\/B",
+              "text": "B",
               "measuringRequest": null
             }
           ]
@@ -2462,7 +2462,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\/B",
+              "text": "B",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -2499,7 +2499,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\/README",
+              "text": "README",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -2536,7 +2536,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\/root.txt",
+              "text": "root.txt",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -3193,8 +3193,8 @@
                                       "hitTestResult": null,
                                       "cursor": null,
                                       "element": 126,
-                                      "bounds": {"x1": 286, "y1": 203, "x2": 338, "y2": 227},
-                                      "validArea": {"x1": 286, "y1": 203, "x2": 338, "y2": 227}
+                                      "bounds": {"x1": 286, "y1": 203, "x2": 331, "y2": 227},
+                                      "validArea": {"x1": 286, "y1": 203, "x2": 331, "y2": 227}
                                     },
                                     "children": [
                                       {
@@ -3214,8 +3214,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 128,
-                                          "bounds": {"x1": 306, "y1": 205, "x2": 320, "y2": 225},
-                                          "validArea": {"x1": 306, "y1": 205, "x2": 320, "y2": 225}
+                                          "bounds": {"x1": 306, "y1": 205, "x2": 313, "y2": 225},
+                                          "validArea": {"x1": 306, "y1": 205, "x2": 313, "y2": 225}
                                         },
                                         "children": null
                                       }
@@ -3227,8 +3227,8 @@
                                       "hitTestResult": null,
                                       "cursor": null,
                                       "element": 134,
-                                      "bounds": {"x1": 286, "y1": 227, "x2": 338, "y2": 251},
-                                      "validArea": {"x1": 286, "y1": 227, "x2": 338, "y2": 251}
+                                      "bounds": {"x1": 286, "y1": 227, "x2": 331, "y2": 251},
+                                      "validArea": {"x1": 286, "y1": 227, "x2": 331, "y2": 251}
                                     },
                                     "children": [
                                       {
@@ -3248,8 +3248,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 136,
-                                          "bounds": {"x1": 306, "y1": 229, "x2": 320, "y2": 249},
-                                          "validArea": {"x1": 306, "y1": 229, "x2": 320, "y2": 249}
+                                          "bounds": {"x1": 306, "y1": 229, "x2": 313, "y2": 249},
+                                          "validArea": {"x1": 306, "y1": 229, "x2": 313, "y2": 249}
                                         },
                                         "children": null
                                       }
@@ -3261,8 +3261,8 @@
                                       "hitTestResult": null,
                                       "cursor": null,
                                       "element": 137,
-                                      "bounds": {"x1": 286, "y1": 251, "x2": 374, "y2": 275},
-                                      "validArea": {"x1": 286, "y1": 251, "x2": 374, "y2": 275}
+                                      "bounds": {"x1": 286, "y1": 251, "x2": 367, "y2": 275},
+                                      "validArea": {"x1": 286, "y1": 251, "x2": 367, "y2": 275}
                                     },
                                     "children": [
                                       {
@@ -3282,8 +3282,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 139,
-                                          "bounds": {"x1": 306, "y1": 253, "x2": 356, "y2": 273},
-                                          "validArea": {"x1": 306, "y1": 253, "x2": 356, "y2": 273}
+                                          "bounds": {"x1": 306, "y1": 253, "x2": 349, "y2": 273},
+                                          "validArea": {"x1": 306, "y1": 253, "x2": 349, "y2": 273}
                                         },
                                         "children": null
                                       }
@@ -3295,8 +3295,8 @@
                                       "hitTestResult": null,
                                       "cursor": null,
                                       "element": 140,
-                                      "bounds": {"x1": 286, "y1": 275, "x2": 388, "y2": 299},
-                                      "validArea": {"x1": 286, "y1": 275, "x2": 388, "y2": 299}
+                                      "bounds": {"x1": 286, "y1": 275, "x2": 381, "y2": 299},
+                                      "validArea": {"x1": 286, "y1": 275, "x2": 381, "y2": 299}
                                     },
                                     "children": [
                                       {
@@ -3316,8 +3316,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 142,
-                                          "bounds": {"x1": 306, "y1": 277, "x2": 370, "y2": 297},
-                                          "validArea": {"x1": 306, "y1": 277, "x2": 370, "y2": 297}
+                                          "bounds": {"x1": 306, "y1": 277, "x2": 363, "y2": 297},
+                                          "validArea": {"x1": 306, "y1": 277, "x2": 363, "y2": 297}
                                         },
                                         "children": null
                                       }
@@ -4324,7 +4324,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\/A",
+              "text": "\\A",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -4929,7 +4929,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\/A",
+              "text": "A",
               "measuringRequest": null
             }
           ]
@@ -5000,7 +5000,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\/B",
+              "text": "B",
               "measuringRequest": null
             }
           ]
@@ -5069,7 +5069,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\/A\/AA",
+              "text": "AA",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -5106,7 +5106,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\/A\/a.txt",
+              "text": "a.txt",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -5143,7 +5143,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\/A\/noext",
+              "text": "noext",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -5800,8 +5800,8 @@
                                       "hitTestResult": null,
                                       "cursor": null,
                                       "element": 147,
-                                      "bounds": {"x1": 286, "y1": 203, "x2": 360, "y2": 227},
-                                      "validArea": {"x1": 286, "y1": 203, "x2": 360, "y2": 227}
+                                      "bounds": {"x1": 286, "y1": 203, "x2": 338, "y2": 227},
+                                      "validArea": {"x1": 286, "y1": 203, "x2": 338, "y2": 227}
                                     },
                                     "children": [
                                       {
@@ -5821,8 +5821,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 149,
-                                          "bounds": {"x1": 306, "y1": 205, "x2": 342, "y2": 225},
-                                          "validArea": {"x1": 306, "y1": 205, "x2": 342, "y2": 225}
+                                          "bounds": {"x1": 306, "y1": 205, "x2": 320, "y2": 225},
+                                          "validArea": {"x1": 306, "y1": 205, "x2": 320, "y2": 225}
                                         },
                                         "children": null
                                       }
@@ -5834,8 +5834,8 @@
                                       "hitTestResult": null,
                                       "cursor": null,
                                       "element": 150,
-                                      "bounds": {"x1": 286, "y1": 227, "x2": 381, "y2": 251},
-                                      "validArea": {"x1": 286, "y1": 227, "x2": 381, "y2": 251}
+                                      "bounds": {"x1": 286, "y1": 227, "x2": 360, "y2": 251},
+                                      "validArea": {"x1": 286, "y1": 227, "x2": 360, "y2": 251}
                                     },
                                     "children": [
                                       {
@@ -5855,8 +5855,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 152,
-                                          "bounds": {"x1": 306, "y1": 229, "x2": 363, "y2": 249},
-                                          "validArea": {"x1": 306, "y1": 229, "x2": 363, "y2": 249}
+                                          "bounds": {"x1": 306, "y1": 229, "x2": 342, "y2": 249},
+                                          "validArea": {"x1": 306, "y1": 229, "x2": 342, "y2": 249}
                                         },
                                         "children": null
                                       }
@@ -5868,8 +5868,8 @@
                                       "hitTestResult": null,
                                       "cursor": null,
                                       "element": 153,
-                                      "bounds": {"x1": 286, "y1": 251, "x2": 381, "y2": 275},
-                                      "validArea": {"x1": 286, "y1": 251, "x2": 381, "y2": 275}
+                                      "bounds": {"x1": 286, "y1": 251, "x2": 360, "y2": 275},
+                                      "validArea": {"x1": 286, "y1": 251, "x2": 360, "y2": 275}
                                     },
                                     "children": [
                                       {
@@ -5889,8 +5889,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 155,
-                                          "bounds": {"x1": 306, "y1": 253, "x2": 363, "y2": 273},
-                                          "validArea": {"x1": 306, "y1": 253, "x2": 363, "y2": 273}
+                                          "bounds": {"x1": 306, "y1": 253, "x2": 342, "y2": 273},
+                                          "validArea": {"x1": 306, "y1": 253, "x2": 342, "y2": 273}
                                         },
                                         "children": null
                                       }
@@ -6897,7 +6897,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\/A",
+              "text": "\\A",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -7502,7 +7502,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\/A",
+              "text": "A",
               "measuringRequest": null
             }
           ]
@@ -7573,7 +7573,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\/B",
+              "text": "B",
               "measuringRequest": null
             }
           ]
@@ -7642,7 +7642,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\/A\/AA",
+              "text": "AA",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -7679,7 +7679,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\/A\/a.txt",
+              "text": "a.txt",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -8336,8 +8336,8 @@
                                       "hitTestResult": null,
                                       "cursor": null,
                                       "element": 156,
-                                      "bounds": {"x1": 286, "y1": 203, "x2": 360, "y2": 227},
-                                      "validArea": {"x1": 286, "y1": 203, "x2": 360, "y2": 227}
+                                      "bounds": {"x1": 286, "y1": 203, "x2": 338, "y2": 227},
+                                      "validArea": {"x1": 286, "y1": 203, "x2": 338, "y2": 227}
                                     },
                                     "children": [
                                       {
@@ -8357,8 +8357,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 158,
-                                          "bounds": {"x1": 306, "y1": 205, "x2": 342, "y2": 225},
-                                          "validArea": {"x1": 306, "y1": 205, "x2": 342, "y2": 225}
+                                          "bounds": {"x1": 306, "y1": 205, "x2": 320, "y2": 225},
+                                          "validArea": {"x1": 306, "y1": 205, "x2": 320, "y2": 225}
                                         },
                                         "children": null
                                       }
@@ -8370,8 +8370,8 @@
                                       "hitTestResult": null,
                                       "cursor": null,
                                       "element": 159,
-                                      "bounds": {"x1": 286, "y1": 227, "x2": 381, "y2": 251},
-                                      "validArea": {"x1": 286, "y1": 227, "x2": 381, "y2": 251}
+                                      "bounds": {"x1": 286, "y1": 227, "x2": 360, "y2": 251},
+                                      "validArea": {"x1": 286, "y1": 227, "x2": 360, "y2": 251}
                                     },
                                     "children": [
                                       {
@@ -8391,8 +8391,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 161,
-                                          "bounds": {"x1": 306, "y1": 229, "x2": 363, "y2": 249},
-                                          "validArea": {"x1": 306, "y1": 229, "x2": 363, "y2": 249}
+                                          "bounds": {"x1": 306, "y1": 229, "x2": 342, "y2": 249},
+                                          "validArea": {"x1": 306, "y1": 229, "x2": 342, "y2": 249}
                                         },
                                         "children": null
                                       }

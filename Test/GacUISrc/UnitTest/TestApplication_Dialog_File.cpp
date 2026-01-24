@@ -1,4 +1,5 @@
 #include "TestControls.h"
+#include "TestControls_List.h"
 
 namespace gacui_unittest_template
 {
@@ -93,8 +94,21 @@ namespace gacui_file_dialog_template
 		auto window = From(GetApplication()->GetWindows())
 			.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
 			.First();
-		auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"filePickerControl", L"textBox");
-		textBox->SetText(fileName);
+		auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"filePickerControl", L"dataGrid");
+		auto itemProvider = dataGrid->GetItemProvider();
+
+		vint fileItemIndex = -1;
+		for (vint i = 0; i < itemProvider->Count(); i++)
+		{
+			if (itemProvider->GetTextValue(i) == fileName)
+			{
+				fileItemIndex = i;
+				break;
+			}
+		}
+
+		TEST_ASSERT(fileItemIndex != -1);
+		LClickListItem(protocol, dataGrid, fileItemIndex);
 	}
 
 	void ChooseFilter(UnitTestRemoteProtocol* protocol, vint filterIndex)
@@ -207,16 +221,15 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
 				{
-					TypeFile(protocol, L"A");
+					ClickFile(protocol, L"A");
 					PressOpen(protocol);
 				});
-				protocol->OnNextIdleFrame(L"Open: A", [=]()
-				{
-					ChooseFilter(protocol, 1);
-				});
-				protocol->OnNextIdleFrame(L"Filter: Text Files", [=]()
+				protocol->OnNextIdleFrame(L"Click: A", [=]()
 				{
 					ClickFile(protocol, L"a.txt");
+				});
+				protocol->OnNextIdleFrame(L"Click: a.txt", [=]()
+				{
 					PressOpen(protocol);
 				});
 				protocol->OnNextIdleFrame(L"Open", [=]()
@@ -224,7 +237,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dialog = FindObjectByName<GuiOpenFileDialog>(window, L"dialogOpen");
 					TEST_ASSERT(dialog->GetFileNames().Count() == 1);
-					TEST_ASSERT(dialog->GetFileNames()[0] == L"/A/a.txt");
+					TEST_ASSERT(dialog->GetFileNames()[0] == FilePath(L"/A/a.txt").GetFullPath());
 					window->Hide();
 				});
 			});

@@ -42,12 +42,21 @@ TEST_FILE
 		TestNormalize(L"//", L"");
 		TestNormalize(L"\\\\", L"");
 
+#if defined VCZH_MSVC
+		TestNormalize(L"/A/B/", L"\\A\\B");
+		TestNormalize(L"\\A\\B\\", L"\\A\\B");
+		TestNormalize(L"/A//B", L"\\A\\B");
+		TestNormalize(L"/A/B/../C", L"\\A\\C");
+		TestNormalize(L"/A/..", L"");
+		TestNormalize(L"/../A", L"\\A");
+#else
 		TestNormalize(L"/A/B/", L"/A/B");
 		TestNormalize(L"\\A\\B\\", L"/A/B");
 		TestNormalize(L"/A//B", L"/A/B");
 		TestNormalize(L"/A/B/../C", L"/A/C");
 		TestNormalize(L"/A/..", L"");
 		TestNormalize(L"/../A", L"/A");
+#endif
 	});
 
 	TEST_CASE(L"FileSystemMock: ExistenceAndType")
@@ -101,8 +110,14 @@ TEST_FILE
 		auto root = Ptr(new FileItemMock);
 		FileSystemMock mock(root);
 
+#if defined VCZH_MSVC
+		TEST_ASSERT(FilePath(L"").GetRelativePathFor(FilePath(L"/A/B")) == L"A\\B");
+		TEST_ASSERT(FilePath(L"/A").GetRelativePathFor(FilePath(L"/A/B")) == L"B");
+		TEST_ASSERT(FilePath(L"/a/b/c").GetRelativePathFor(FilePath(L"/a/d")) == L"..\\..\\d");
+#else
 		TEST_ASSERT(FilePath(L"").GetRelativePathFor(FilePath(L"/A/B")) == L"A/B");
 		TEST_ASSERT(FilePath(L"/A").GetRelativePathFor(FilePath(L"/A/B")) == L"B");
 		TEST_ASSERT(FilePath(L"/a/b/c").GetRelativePathFor(FilePath(L"/a/d")) == L"../../d");
+#endif
 	});
 }

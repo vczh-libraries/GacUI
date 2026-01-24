@@ -10,6 +10,7 @@
 #include "../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
 
 using namespace vl;
+using namespace vl::filesystem;
 using namespace vl::stream;
 using namespace vl::reflection::description;
 using namespace vl::presentation;
@@ -148,7 +149,7 @@ namespace gacui_unittest_template
 		Ptr<FileItemMock> ResolvePath(const WString& fullPath) const
 		{
 			if (fullPath == L"") return root;
-			if (fullPath[0] != L'/') return nullptr;
+			if (fullPath[0] != FilePath::Delimiter) return nullptr;
 
 			collections::List<WString> components;
 			SplitComponents(fullPath, components);
@@ -187,7 +188,7 @@ namespace gacui_unittest_template
 			WString normalized;
 			for (auto&& component : components)
 			{
-				normalized += L"/";
+				normalized += WString::FromChar(FilePath::Delimiter);
 				normalized += component;
 			}
 			fullPath = normalized;
@@ -222,7 +223,7 @@ namespace gacui_unittest_template
 				auto child = item->children.Values()[i];
 				if (!child->isFile)
 				{
-					auto childPath = folderPath.GetFullPath() + L"/" + name;
+					auto childPath = folderPath.GetFullPath() + WString::FromChar(FilePath::Delimiter) + name;
 					folders.Add(vl::filesystem::Folder(vl::filesystem::FilePath(childPath)));
 				}
 			}
@@ -241,7 +242,7 @@ namespace gacui_unittest_template
 				auto child = item->children.Values()[i];
 				if (child->isFile)
 				{
-					auto childPath = folderPath.GetFullPath() + L"/" + name;
+					auto childPath = folderPath.GetFullPath() + WString::FromChar(FilePath::Delimiter) + name;
 					files.Add(vl::filesystem::File(vl::filesystem::FilePath(childPath)));
 				}
 			}
@@ -258,7 +259,7 @@ namespace gacui_unittest_template
 
 			if (IsFile(baseFromPath))
 			{
-				auto index = INVLOC.FindLast(baseFromPath, L"/", Locale::None);
+				auto index = INVLOC.FindLast(baseFromPath, WString::FromChar(FilePath::Delimiter), Locale::None);
 				baseFromPath = index.key == -1 ? L"" : baseFromPath.Left(index.key);
 			}
 
@@ -287,7 +288,7 @@ namespace gacui_unittest_template
 			WString relative;
 			for (vint i = 0; i < resultComponents.Count(); i++)
 			{
-				if (i > 0) relative += L"/";
+				if (i > 0) relative += WString::FromChar(FilePath::Delimiter);
 				relative += resultComponents[i];
 			}
 			return relative;
