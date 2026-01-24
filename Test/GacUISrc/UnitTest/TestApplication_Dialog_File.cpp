@@ -112,10 +112,7 @@ TEST_FILE
 					auto location = protocol->LocationOf(button);
 
 					textBox->SetText(L"A");
-					GetApplication()->InvokeInMainThread(window, [=]()
-					{
-						protocol->LClick(location);
-					});
+					protocol->LClick(location);
 				});
 				protocol->OnNextIdleFrame(L"Open: A", [=]()
 				{
@@ -123,10 +120,7 @@ TEST_FILE
 						.Where([](GuiWindow* w) { return w->GetText() == L"OpenFileDialog"; })
 						.First();
 					auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"filePickerControl", L"comboBox");
-					GetApplication()->InvokeInMainThread(window, [=]()
-					{
-						comboBox->SetSelectedIndex(1);
-					});
+					comboBox->SetSelectedIndex(1);
 				});
 				protocol->OnNextIdleFrame(L"Filter: Text Files", [=]()
 				{

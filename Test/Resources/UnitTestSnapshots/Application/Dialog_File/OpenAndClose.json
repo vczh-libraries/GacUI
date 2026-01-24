@@ -3513,7 +3513,7 @@
       }
     },
     {
-      "frameId": 17,
+      "frameId": 16,
       "frameName": "Open: A",
       "windowSize": {
         "bounds": {
@@ -6086,7 +6086,7 @@
       }
     },
     {
-      "frameId": 21,
+      "frameId": 20,
       "frameName": "Filter: Text Files",
       "windowSize": {
         "bounds": {
@@ -8588,7 +8588,7 @@
       }
     },
     {
-      "frameId": 23,
+      "frameId": 22,
       "frameName": "Cancel",
       "windowSize": {
         "bounds": {
