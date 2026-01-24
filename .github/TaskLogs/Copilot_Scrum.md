@@ -76,15 +76,48 @@ there is a bug in `FileSystemViewModel::TryConfirm`, when the extension to autom
 
 you can merge the last two tasks together, complete the unit test first and then fix the function.
 
+## UPDATE
+
+The idea of testing against FileDialogViewModel is totally not working, because it requires resources from GacUI environment. So I would like you to:
+
+1. Remove Task No.2 as it is completely not necessary now
+2. Replan No.3 to No.7. Previously they are testing against navigation and filtering and anything else, now you need to actually open a file dialog.
+
+I have prepared you some sample test in [TestApplication_Dialog_File.cpp](Test/GacUISrc/UnitTest/TestApplication_Dialog_File.cpp) . It already has some helper function teaching you how to actually access controls in the opened file dialog.
+
+The definition of the file dialog is in [FileDialog.xml](Source/Utilities/FakeServices/Dialogs/FileDialog.xml) 
+meanwhile all localized text that working in the unit test can be found in [Resource.xml](Source/Utilities/FakeServices/Dialogs/Resource.xml) 
+For example, when the dialog is opened, you need to find the datagrid:
+
+firstly
+```
+		auto window = From(GetApplication()->GetWindows())
+			.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
+			.First();
+```
+The title of the file dialog is defined here
+```
+<OpenFileDialog ref.Name="dialogOpen" Title="FileDialog" Filter="All Files (*.*)|*|Text Files (*.txt)|*.txt" Directory=""/>
+```
+
+Secondly, there is a `filePickerControl` in the window (via ref.Name="filePickerControl"), inside it there is a dataGrid, that is a <BindableDataGrid>. So this is how
+```
+auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"filePickerControl", L"dataGrid");
+```
+works.
+
+Now you know how to iterate items in the datagrid by text according to `ClickFileInternal`, and now how to operate the data grid using helper functions in [TestControls_List.h](Test/GacUISrc/UnitTest/TestControls_List.h) 
+
+Please reuse the test case design in the scrum document but rework them to work on the file dialog.
+
 # TASKS
 
 - [x] TASK No.1: Add FileItemMock + FileSystemMock (IFileSystemImpl)
-- [ ] TASK No.2: Make FileDialogViewModel testable (options + message box + factory) and add empty test file
-- [ ] TASK No.3: TEST_CATEGORY for folder navigation + file listing
-- [ ] TASK No.4: TEST_CATEGORY for filter visibility + default extension behavior
-- [ ] TASK No.5: TEST_CATEGORY for ParseDisplayString + multi-selection normalization
-- [ ] TASK No.6: TEST_CATEGORY for TryConfirm message box interactions
-- [ ] TASK No.7: TDD for TryConfirm existence checks with auto-appended extension
+- [ ] TASK No.2: TEST_CATEGORY for file dialog open + folder navigation + listing
+- [ ] TASK No.3: TEST_CATEGORY for filter visibility + extension behavior (in dialog)
+- [ ] TASK No.4: TEST_CATEGORY for typed selection + multiple selection (in dialog)
+- [ ] TASK No.5: TEST_CATEGORY for dialog message box interactions (open/save options)
+- [ ] TASK No.6: TDD regression for existence checks after extension auto-append (in dialog)
 
 ## TASK No.1: Add FileItemMock + FileSystemMock (IFileSystemImpl)
 
@@ -110,161 +143,114 @@ Add an in-memory read-only file-system representation for unit tests, to determi
 - The file dialog UI is driven by filesystem queries; a deterministic in-memory implementation is the simplest way to write stable unit tests without depending on the host machine filesystem.
 - Making the mock explicitly read-only keeps scope tight and prevents accidental reliance on mutation behaviors that are not needed by the dialog view model tests.
 
-## TASK No.2: Make FileDialogViewModel testable (options + message box + factory) and add empty test file
+## TASK No.2: TEST_CATEGORY for file dialog open + folder navigation + listing
 
-Refactor the file dialog view model to enable unit tests to control message box outcomes and to observe confirmation results via `IFileDialogViewModel`, without exposing `FileDialogViewModel`’s concrete type in headers.
-
-### what to be done
-
-- Introduce `IFileSystemViewModelMessageBox` with a `ShowMessageBox` signature identical to the current usage inside `TryConfirm`.
-	- Store `Ptr<IFileSystemViewModelMessageBox>` in `FileSystemViewModel` (or the component that currently calls message boxes during confirmation).
-	- Ensure `TryConfirm` routes its single message-box decision through this interface (and only calls it once).
-- Introduce `FileSystemViewModelOptions` containing (at least) the fields specified in the request, plus the message box implementation pointer.
-	- Update `FileDialogViewModel` to store the options object instead of duplicating these fields as separate members.
-	- Fix all resulting build breaks in the places that construct/configure the view model.
-- Update fake services to wire a real message-box implementation in production/fake-dialog contexts:
-	- `Source/Utilities/FakeServices/GuiFakeDialogServiceBase.h`
-	- `Source/Utilities/FakeServices/GuiFakeDialogServiceBase_FileDialog.cpp`
-- Add test-only hooks to `IFileDialogViewModel` and update reflection:
-	- `bool IsConfirmed();`
-	- `const ...& GetConfirmedSelection();`
-	- `void ResetConfirmation();`
-- Add a cpp-only factory function (defined in the implementation `.cpp`) that returns `Ptr<IFileDialogViewModel>` to create a `FileDialogViewModel` instance for tests.
-	- Keep the concrete `FileDialogViewModel` type hidden from headers; unit tests only see `IFileDialogViewModel`.
-- Create an empty `TestFileDialogViewModel.cpp` placed alongside `Test/GacUISrc/UnitTest/TestDocumentConfig.cpp` and in the same solution explorer folder.
-	- Add it to the correct project file (`*.vcxproj` / `*.vcxitems`) and its `*.filters` entry so it builds (even if it contains no tests yet).
-
-### rationale
-
-- `TryConfirm` behavior depends on user prompts; injecting a message-box interface is the minimal way to make these branches unit-testable without driving UI.
-- Consolidating options into `FileSystemViewModelOptions` prevents the test factory from needing to reach into a growing list of constructor parameters or ad-hoc setters, and reduces future churn.
-- Exposing confirmation state and selection through the interface is necessary because the tests exercise `IFileDialogViewModel` directly.
-- Creating the test `.cpp` early ensures the plumbing (project inclusion, linkage for the factory function) is correct before investing in multiple test categories.
-
-## TASK No.3: TEST_CATEGORY for folder navigation + file listing
-
-Add a focused test category validating that `SetSelectedFolder` drives file listing correctly (root by default, and switching folders updates `GetFiles()`), using `FileSystemMock` to control the tree.
+Add dialog-driven unit tests (opening the real `GuiOpenFileDialog`) to validate folder navigation and file listing, using `FileSystemMock` to control dialog contents.
 
 ### what to be done
 
-- In `Test/GacUISrc/UnitTest/TestFileDialogViewModel.cpp`, add a `TEST_CATEGORY` dedicated to folder navigation / listing.
-- Create a representative `FileItemMock` tree including at least:
-	- Root files and folders.
-	- Nested folders with both files and subfolders.
-	- Names that include extension and no extension (to be reused by later tasks).
-- Create the view model via the cpp-only factory, passing a `FileSystemViewModelOptions` instance and the `FileSystemMock` root.
-- Rely on the verified `FileSystemMock` path semantics when asserting results:
-	- Root is `""`, non-root paths are absolute (begin with `/`) and normalized (duplicate separators collapsed, trailing separators removed, `.` and `..` resolved).
-	- Keep the separator split regex consistent with `vl::regex` escaping rules (verified pattern: `L"[\\/\\\\]+"`), so tests don’t accidentally depend on an implementation that later fails to parse.
-- Validate expected behavior:
-	- Default selected folder is root (path `""`) and `SetSelectedFolder` updates `GetSelectedFolder()`.
-	- After `SetSelectedFolder`, loop on `GetIsLoadingFiles()` until it completes, then assert:
-		- `GetRootFolder()` and `GetSelectedFolder()` are consistent.
-		- `GetFiles()` reflects children of the selected folder with correct file/folder distinction and full path formatting.
+- Extend `Test/GacUISrc/UnitTest/TestApplication_Dialog_File.cpp` by adding a `TEST_CATEGORY` for folder navigation / listing.
+- Reuse the existing patterns in the prepared sample:
+	- Launch via `GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(...)`.
+	- Find the opened dialog window by title `L"FileDialog"` (matching `GuiOpenFileDialog::Title` from the resource).
+	- Access key controls by name through `filePickerControl`:
+		- Data grid: `FindObjectByName<GuiBindableDataGrid>(window, L"filePickerControl", L"dataGrid")`.
+		- Text box: `FindObjectByName<GuiSinglelineTextBox>(window, L"filePickerControl", L"textBox")`.
+		- Filter combo box: `FindObjectByName<GuiComboBoxListControl>(window, L"filePickerControl", L"comboBox")`.
+- Add subcases that validate listing / navigation through the UI:
+	- Root listing contains expected items from `CreateFileItemRoot()` (e.g. `root.txt`, `README`, `A`, `B`).
+	- Double-clicking a folder in the data grid navigates into that folder (e.g. `DbClickFile(protocol, L"A")`), and the new listing matches expected children (e.g. `a.txt`, `noext`, `AA`).
+	- Navigating deeper (e.g. `AA`) updates listing accordingly.
+	- Cancelling closes the dialog with `GetFileNames().Count() == 0`.
+- When asserting listing, prefer reading from `dataGrid->GetItemProvider()` and comparing `GetTextValue(i)` results, following the sample `ClickFileInternal` pattern.
 
 ### rationale
 
-- Navigation and listing are the foundation for all later selection and confirmation tests; separating them keeps failure diagnosis straightforward.
+- The file dialog view model depends on localized resources and control templates; driving the real dialog keeps tests representative and avoids brittle “test-only” APIs.
+- Navigation and listing are the foundation for all later selection/confirmation tests; keeping them in a dedicated category keeps failures easy to diagnose.
 
-## TASK No.4: TEST_CATEGORY for filter visibility + default extension behavior
+## TASK No.3: TEST_CATEGORY for filter visibility + extension behavior (in dialog)
 
-Add tests validating `SetSelectedFilter` affects file visibility and determines the “expected extension” used by selection normalization.
+Add dialog-driven tests validating that changing the filter updates the listing, and that the selected filter affects typed selection / extension normalization.
 
 ### what to be done
 
-- Implement simple `IFileDialogFilter` instances in the test file:
-	- A filter that accepts all files (no default extension name).
-	- A filter that accepts only `*.txt` (default extension name is `txt`).
-- Before calling `SetSelectedFilter`, add all filters to the collection returned by `GetFilters()`.
-- In the test category:
-	- Select different folders and verify `GetFiles()` changes when the filter changes (files outside filter become invisible).
-	- Validate `GetSelectedFilter()` reflects the current filter selection.
-	- Cover extension-appending prerequisites:
-		- When a filter has an extension name, it must be the expected extension.
-		- When filter has no extension name, `defaultExtension` from options must become the expected extension (if non-empty).
+- In `Test/GacUISrc/UnitTest/TestApplication_Dialog_File.cpp`, add a `TEST_CATEGORY` dedicated to filter behaviors.
+- Reuse the test dialog’s `Filter="All Files (*.*)|*|Text Files (*.txt)|*.txt"` and drive the UI:
+	- Switch filters via `ChooseFilter(protocol, filterIndex)`.
+	- Assert that the data grid content changes accordingly (e.g. in `/A`, `a.txt` remains visible in `Text Files`, while non-`.txt` entries are hidden or shown according to the filter behavior).
+- Add typed-selection subcases that demonstrate the chosen filter’s expected extension behavior:
+	- Navigate into `/A`, choose `Text Files (*.txt)`, type `L"a"` and click `Open`; assert the returned filename is `/A/a.txt` (extension auto-append).
+	- Choose `All Files (*.*)`, type `L"README"` at root and click `Open`; assert the returned filename is `/README` (no auto-append under the all-files filter).
 
 ### rationale
 
-- Filtering is core dialog behavior and is tightly coupled to how selection strings are interpreted; establishing these invariants enables later selection/confirmation tests to be precise.
+- Filter correctness is core dialog behavior and is tightly coupled to selection parsing and extension normalization; validating it through the UI ensures `FileDialog.xml` bindings and localized text initialization are also exercised.
 
-## TASK No.5: TEST_CATEGORY for ParseDisplayString + multi-selection normalization
+## TASK No.4: TEST_CATEGORY for typed selection + multiple selection (in dialog)
 
-Add tests around `ParseDisplayString` behavior for one or multiple selections, including extension appending and full-path normalization.
+Add dialog-driven tests that focus on the selection string in the file name text box, including multiple selection behavior when enabled.
 
 ### what to be done
 
-- In a dedicated `TEST_CATEGORY`, create scenarios that call `ParseDisplayString` with:
-	- A single filename (relative to selected folder).
-	- Multiple filenames separated by `;`.
-	- Inputs containing both `/` and `\\` to ensure path normalization rules are applied consistently.
-	- Filenames with and without extensions, under both:
-		- Selected filter with extension name.
-		- Selected filter without extension name but options `defaultExtension` is non-empty.
-- After `ParseDisplayString`, call `TryConfirm` and assert via `IsConfirmed()` / `GetConfirmedSelection()` that:
-	- Selected items have the expected extension appended (when required).
-	- Confirmed selection contains full paths and matches folder + filename resolution rules.
-- Use `ResetConfirmation()` between subcases to avoid cross-case contamination.
+- In `Test/GacUISrc/UnitTest/TestApplication_Dialog_File.cpp`, add a `TEST_CATEGORY` for typed selection and multi-selection.
+- For typed selection:
+	- Navigate into a folder, set a specific filter, call `TypeFile(protocol, ...)`, and click `Open` / `Save`.
+	- Assert dialog output via `GuiOpenFileDialog::GetFileNames()` (or `GuiSaveFileDialog::GetFileName()` when using save dialog).
+- For multiple selection:
+	- Add a second dialog instance (or a second button) that enables multiple selection by setting `GuiFileDialogBase::Options` to include `INativeDialogService::FileDialogOptions::FileDialogAllowMultipleSelection`.
+	- Add a case that selects multiple files in the data grid using helpers from `Test/GacUISrc/UnitTest/TestControls_List.h` (e.g. ctrl-click) and then presses `Open`.
+	- Assert that `GetFileNames()` returns all expected full paths.
 
 ### rationale
 
-- `ParseDisplayString` is the primary entry point for typed selections and multi-select strings; keeping these cases in a dedicated category ensures coverage without mixing in message-box driven behaviors.
+- The file dialog’s user-facing contract is the selection string plus final selected file list; testing it through the actual dialog ensures `FilePickerControl`’s `Selection` logic (based on data grid selection and text box input) is covered.
 
-## TASK No.6: TEST_CATEGORY for TryConfirm message box interactions
+## TASK No.5: TEST_CATEGORY for dialog message box interactions (open/save options)
 
-Add tests validating `TryConfirm` branches that depend on prompt/result interactions, using a test fake for `IFileSystemViewModelMessageBox` that can preset the return value and record whether it was called.
+Add dialog-driven tests for error/prompt message boxes triggered by `TryConfirm`, by causing invalid selections and answering prompts in the UI.
 
 ### what to be done
 
-- Implement a minimal test fake `IFileSystemViewModelMessageBox`:
-	- Configurable “next result” return value.
-	- A flag/counter recording whether `ShowMessageBox` has been called.
-- Create multiple subcases, each configuring `FileSystemViewModelOptions` and filesystem state, then calling `ParseDisplayString` + `TryConfirm`:
-	- `fileMustExist` / `folderMustExist` failure path should trigger message box exactly once and return false (or follow the returned choice if applicable).
-	- `promptCreateFile` behavior when file does not exist.
-	- `promptOverriteFile` behavior when file exists.
-	- Confirm that when a message box is not needed, the fake is not called.
-- Assert that the view model’s confirmation and selection state matches each scenario and can be reset using `ResetConfirmation()`.
+- In `Test/GacUISrc/UnitTest/TestApplication_Dialog_File.cpp`, add a `TEST_CATEGORY` for message box interactions.
+- Reuse localized button texts from `Source/Utilities/FakeServices/Dialogs/Resource.xml` when finding buttons to click (`OK`, `Cancel`, `Yes`, `No`), so tests remain aligned with the dialog resources.
+- Cover at least these scenarios by configuring dialog options and filesystem state:
+	- **File must exist (open dialog)**: type a non-existing file name and press `Open`; assert a message box appears (using `GetApplication()->GetWindows()` to find it) and that clicking `OK` dismisses it while keeping the file dialog open.
+	- **Prompt create file (save dialog)**: enable `INativeDialogService::FileDialogOptions::FileDialogPromptCreateFile`, type a non-existing file name and press `Save`; assert the create prompt appears and validate both `Yes` (confirm selection) and `No` (stay in dialog) flows.
+	- **Prompt overwrite file (save dialog)**: enable `INativeDialogService::FileDialogOptions::FileDialogPromptOverwriteFile`, type an existing file name and press `Save`; assert the overwrite prompt and validate both `Yes`/`No` flows.
+	- **Multi-selection not enabled**: when multiple selection is disabled, attempt to confirm multiple selections and assert the “Multiple selection is not enabled” message box and dismissal behavior.
 
 ### rationale
 
-- The message-box driven branches are otherwise untestable and the largest source of combinatorial behavior; isolating them in a single category ensures comprehensive coverage while keeping the rest of the tests free from UI branching logic.
+- These behaviors are user-visible and driven by localized dialog resources; asserting them through the UI is the most reliable way to ensure the wiring between `FileDialog.xml`, `Resource.xml`, and `TryConfirm` stays correct.
 
-## TASK No.7: TDD for TryConfirm existence checks with auto-appended extension
+## TASK No.6: TDD regression for existence checks after extension auto-append (in dialog)
 
-Add a focused regression unit test proving `TryConfirm` checks existence using the final normalized filename (after extension auto-append), and then fix `FileSystemViewModel::TryConfirm` so that any required extension appending (from selected filter or from `FileSystemViewModelOptions::defaultExtension`) happens before checking `filesystem::File(path).Exists()` / `filesystem::Folder(path).Exists()` and before deciding `files` / `folders` / `unexistings`.
-
-This prevents incorrect behavior such as treating `abc` as an existing file, then returning a confirmed selection `abc.txt` that was never checked for existence.
+Write a failing dialog-driven unit test proving the dialog validates existence against the final normalized filename (after any auto-appended extension), then fix `FileSystemViewModel::TryConfirm` accordingly.
 
 ### what to be done
 
-- First, in `Test/GacUISrc/UnitTest/TestFileDialogViewModel.cpp`, add a dedicated `TEST_CATEGORY` with a small mocked filesystem containing both:
-	- A file `abc.txt` (but no `abc`), and optionally a folder `abc` for edge-case priority validation.
-- Configure the view model so that extension appending is required (either by selecting a filter whose default extension is `txt`, or by leaving filter extension empty but setting `FileSystemViewModelOptions::defaultExtension` to `txt`).
-- Add at least these subcases:
-	- **Existence is checked on appended name**: with `fileMustExist = true`, input `abc` should succeed (no message box) and confirm `abc.txt` when `abc.txt` exists.
-	- **Raw-name existence must not mask missing appended name**: with `fileMustExist = true`, if `abc` exists but `abc.txt` does not, `TryConfirm` must fail (and trigger the appropriate message box path), and must not confirm `abc.txt`.
-- Assert `IsConfirmed()` / `GetConfirmedSelection()` and message box fake call count to ensure the branch decisions are driven by the normalized target name.
-- Then, in `Source/Utilities/FakeServices/GuiFakeDialogServiceBase_FileDialog.cpp`, adjust `FileSystemViewModel::TryConfirm` so that:
-	- It still keeps the existing "single selection navigates into folder" behavior using the raw (non-appended) path.
-	- For file confirmation, it computes the expected extension (from `selectedFilter->GetDefaultExtension()` or options `defaultExtension`) and normalizes each candidate file path accordingly before existence checks.
-	- It uses the normalized paths for:
-		- Deciding membership in `files` / `unexistings`.
-		- Prompting (create/overwrite) messages (the relative paths shown should match the normalized target files).
-		- Populating `confirmedSelection` (so no late post-processing is needed to append extension after prompts).
-	- It does not append an extension to paths that resolve to folders (folder navigation and folder error reporting should remain folder-oriented).
+- In `Test/GacUISrc/UnitTest/TestApplication_Dialog_File.cpp`, add a dedicated `TEST_CASE` that reproduces the bug using the existing `CreateFileItemRoot()` content:
+	- Ensure there is a file without extension (already present: `README`) and no corresponding `.txt` file.
+	- Open the dialog, choose the `Text Files (*.txt)` filter, type `README`, and press `Open`.
+	- Expected behavior: the dialog should not close and should show the “File(s) not exist” message because the real target is `README.txt`.
+	- Buggy behavior (to lock down): the dialog closes and returns `README.txt` even though only `README` exists.
+- After the regression test fails, fix `FileSystemViewModel::TryConfirm` in `Source/Utilities/FakeServices/GuiFakeDialogServiceBase_FileDialog.cpp` so that:
+	- Any required extension auto-append (from the selected filter or default extension) happens before checking existence and before determining prompt/error branches.
+	- Folder navigation behavior still uses the raw, non-appended name when the selection resolves to a folder.
+- Re-run the same dialog-driven test case to confirm the fix.
 
 ### rationale
 
-- Writing the failing regression test first locks in the intended behavior and prevents future refactors from reintroducing the "check-before-append" ordering.
-- `TryConfirm` must validate and prompt against the actual final target paths; doing extension normalization after existence checks breaks correctness for `fileMustExist`, `promptCreateFile`, and `promptOverriteFile` branches.
+- This is a correctness issue that impacts the real dialog: existence checks, prompts, and confirmed selections must all agree on the same normalized target paths.
 
 # Impact to the Knowledge Base
 
 ## GacUI
 
-- Add a knowledge base note describing recommended patterns for unit-testing dialog/view-model logic:
-	- Implementing a deterministic `IFileSystemImpl` mock using a tree model (root `""`, normalized `/` paths).
-	- Injecting UI prompts (message boxes) through a small interface to make view-model branching testable.
-	- Using an options struct to avoid brittle constructors and to keep test factories stable.
-	- Ensuring selection normalization (e.g. default extension appending) happens before existence checks in confirm logic (to keep `fileMustExist` and prompt behaviors correct).
-	- `vl::regex` escaping rule reminder when writing separator split patterns (verified example: `L"[\\/\\\\]+"` to match both `/` and `\\`).
+- Add a knowledge base note describing recommended patterns for unit-testing fake dialog UI behavior:
+	- Implementing a deterministic `IFileSystemImpl` mock using a tree model (root `""`, normalized `/` paths) so dialogs enumerate predictable content.
+	- Using `GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>` + `UnitTestRemoteProtocol` to drive real dialogs instead of testing `FileDialogViewModel` directly (resource/template dependent).
+	- Finding dialog windows by `GuiWindow::GetText()` (e.g. `L"FileDialog"`) and accessing dialog internals by `ref.Name` via `FindObjectByName(...)` (e.g. `filePickerControl`, `dataGrid`, `textBox`, `comboBox`).
+	- Driving list controls using helpers from `Test/GacUISrc/UnitTest/TestControls_List.h` instead of re-implementing mouse/keyboard logic.
+	- Ensuring selection normalization (e.g. default extension appending) happens before existence checks in confirm logic (so file-must-exist and prompt behaviors remain correct).
