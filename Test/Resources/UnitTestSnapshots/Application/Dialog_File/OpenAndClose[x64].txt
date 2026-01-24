@@ -60,7 +60,7 @@ namespace gacuisrc_unittest
                 (dialogOpen.Filter = "All Files (*.*)|*|Text Files (*.txt)|*.txt");
             }
             {
-                (dialogOpen.Title = "OpenFileDialog");
+                (dialogOpen.Title = "FileDialog");
             }
             {
                 self.AddComponent(dialogOpen);

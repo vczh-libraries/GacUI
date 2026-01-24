@@ -1505,7 +1505,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "OpenFileDialog",
+              "text": "FileDialog",
               "measuringRequest": null
             }
           ]
@@ -3513,7 +3513,7 @@
       }
     },
     {
-      "frameId": 16,
+      "frameId": 17,
       "frameName": "Open: A",
       "windowSize": {
         "bounds": {
@@ -4127,7 +4127,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "OpenFileDialog",
+              "text": "FileDialog",
               "measuringRequest": null
             }
           ]
@@ -6086,7 +6086,7 @@
       }
     },
     {
-      "frameId": 20,
+      "frameId": 21,
       "frameName": "Filter: Text Files",
       "windowSize": {
         "bounds": {
@@ -6700,7 +6700,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "OpenFileDialog",
+              "text": "FileDialog",
               "measuringRequest": null
             }
           ]
@@ -8588,7 +8588,7 @@
       }
     },
     {
-      "frameId": 22,
+      "frameId": 23,
       "frameName": "Cancel",
       "windowSize": {
         "bounds": {

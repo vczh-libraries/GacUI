@@ -49,6 +49,45 @@ namespace gacui_unittest_template
 }
 using namespace gacui_unittest_template;
 
+namespace gacui_file_dialog_template
+{
+	void PressCancel(UnitTestRemoteProtocol* protocol)
+	{
+		auto window = From(GetApplication()->GetWindows())
+			.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
+			.First();
+		auto button = FindControlByText<GuiButton>(window, L"Cancel");
+		auto location = protocol->LocationOf(button);
+		protocol->LClick(location);
+	}
+
+	void TypeAndSelect(UnitTestRemoteProtocol* protocol, const WString& fileName, const WString& buttonText)
+	{
+		auto window = From(GetApplication()->GetWindows())
+			.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
+			.First();
+		auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"filePickerControl", L"textBox");
+		auto button = FindControlByText<GuiButton>(window, buttonText);
+		auto location = protocol->LocationOf(button);
+
+		textBox->SetText(fileName);
+		GetApplication()->InvokeInMainThread(window, [=]()
+		{
+			protocol->LClick(location);
+		});
+	}
+
+	void ChooseFilter(UnitTestRemoteProtocol* protocol, vint filterIndex)
+	{
+		auto window = From(GetApplication()->GetWindows())
+			.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
+			.First();
+		auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"filePickerControl", L"comboBox");
+		comboBox->SetSelectedIndex(filterIndex);
+	}
+}
+using namespace gacui_file_dialog_template;
+
 TEST_FILE
 {
 	const auto resourceFileDialogs = LR"GacUISrc(
@@ -56,7 +95,7 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <Window ref.Name="self" Text="Dialog File Test" ClientSize="x:640 y:640">
-        <OpenFileDialog ref.Name="dialogOpen" Title="OpenFileDialog" Filter="All Files (*.*)|*|Text Files (*.txt)|*.txt" Directory=""/>
+        <OpenFileDialog ref.Name="dialogOpen" Title="FileDialog" Filter="All Files (*.*)|*|Text Files (*.txt)|*.txt" Directory=""/>
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
             <_>composeType:MinSize</_>
@@ -104,32 +143,15 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
 				{
-					auto window = From(GetApplication()->GetWindows())
-						.Where([](GuiWindow* w) { return w->GetText() == L"OpenFileDialog"; })
-						.First();
-					auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"filePickerControl", L"textBox");
-					auto button = FindControlByText<GuiButton>(window, L"Open");
-					auto location = protocol->LocationOf(button);
-
-					textBox->SetText(L"A");
-					protocol->LClick(location);
+					TypeAndSelect(protocol, L"A", L"Open");
 				});
 				protocol->OnNextIdleFrame(L"Open: A", [=]()
 				{
-					auto window = From(GetApplication()->GetWindows())
-						.Where([](GuiWindow* w) { return w->GetText() == L"OpenFileDialog"; })
-						.First();
-					auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"filePickerControl", L"comboBox");
-					comboBox->SetSelectedIndex(1);
+					ChooseFilter(protocol, 1);
 				});
 				protocol->OnNextIdleFrame(L"Filter: Text Files", [=]()
 				{
-					auto window = From(GetApplication()->GetWindows())
-						.Where([](GuiWindow* w) { return w->GetText() == L"OpenFileDialog"; })
-						.First();
-					auto button = FindControlByText<GuiButton>(window, L"Cancel");
-					auto location = protocol->LocationOf(button);
-					protocol->LClick(location);
+					PressCancel(protocol);
 				});
 				protocol->OnNextIdleFrame(L"Cancel", [=]()
 				{
