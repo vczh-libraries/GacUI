@@ -46,7 +46,7 @@ namespace gacuisrc_unittest
         {
             (self = <this>);
             {
-                (self.ClientSize = {x : 640; y : 640;} of (::presentation::Size));
+                (self.ClientSize = {x : 640; y : 480;} of (::presentation::Size));
             }
             {
                 (self.Text = "Dialog File Test");
