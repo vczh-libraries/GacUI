@@ -51,46 +51,50 @@ using namespace gacui_unittest_template;
 
 namespace gacui_file_dialog_template
 {
+	void PressButton(UnitTestRemoteProtocol* protocol, const WString& buttonText)
+	{
+		auto window = From(GetApplication()->GetWindows())
+			.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
+			.First();
+		auto button = FindControlByText<GuiButton>(window, buttonText);
+		auto location = protocol->LocationOf(button);
+		GetApplication()->InvokeInMainThread(window, [=]()
+		{
+			protocol->LClick(location);
+		});
+	}
+
+	void PressOpen(UnitTestRemoteProtocol* protocol)
+	{
+		PressButton(protocol, L"Open");
+	}
+
+	void PressSave(UnitTestRemoteProtocol* protocol)
+	{
+		PressButton(protocol, L"Save");
+	}
+
 	void PressCancel(UnitTestRemoteProtocol* protocol)
 	{
-		auto window = From(GetApplication()->GetWindows())
-			.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
-			.First();
-		auto button = FindControlByText<GuiButton>(window, L"Cancel");
-		auto location = protocol->LocationOf(button);
-		protocol->LClick(location);
+		PressButton(protocol, L"Cancel");
 	}
 
-	void TypeAndSelect(UnitTestRemoteProtocol* protocol, const WString& fileName, const WString& buttonText)
+	void TypeFile(UnitTestRemoteProtocol* protocol, const WString& fileName)
 	{
 		auto window = From(GetApplication()->GetWindows())
 			.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
 			.First();
 		auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"filePickerControl", L"textBox");
-		auto button = FindControlByText<GuiButton>(window, buttonText);
-		auto location = protocol->LocationOf(button);
-
 		textBox->SetText(fileName);
-		GetApplication()->InvokeInMainThread(window, [=]()
-		{
-			protocol->LClick(location);
-		});
 	}
 
-	void ClickAndSelect(UnitTestRemoteProtocol* protocol, const WString& fileName, const WString& buttonText)
+	void ClickFile(UnitTestRemoteProtocol* protocol, const WString& fileName)
 	{
 		auto window = From(GetApplication()->GetWindows())
 			.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
 			.First();
 		auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"filePickerControl", L"textBox");
-		auto button = FindControlByText<GuiButton>(window, buttonText);
-		auto location = protocol->LocationOf(button);
-
 		textBox->SetText(fileName);
-		GetApplication()->InvokeInMainThread(window, [=]()
-		{
-			protocol->LClick(location);
-		});
 	}
 
 	void ChooseFilter(UnitTestRemoteProtocol* protocol, vint filterIndex)
@@ -159,7 +163,8 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
 				{
-					TypeAndSelect(protocol, L"A", L"Open");
+					TypeFile(protocol, L"A");
+					PressOpen(protocol);
 				});
 				protocol->OnNextIdleFrame(L"Open: A", [=]()
 				{
@@ -202,7 +207,8 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
 				{
-					TypeAndSelect(protocol, L"A", L"Open");
+					TypeFile(protocol, L"A");
+					PressOpen(protocol);
 				});
 				protocol->OnNextIdleFrame(L"Open: A", [=]()
 				{
@@ -210,7 +216,8 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Filter: Text Files", [=]()
 				{
-					ClickAndSelect(protocol, L"a.txt", L"Open");
+					ClickFile(protocol, L"a.txt");
+					PressOpen(protocol);
 				});
 				protocol->OnNextIdleFrame(L"Open", [=]()
 				{
