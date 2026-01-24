@@ -213,7 +213,7 @@ Dialogs
 			class GuiFileDialogBase abstract : public GuiDialogBase, public Description<GuiFileDialogBase>
 			{
 			protected:
-				WString												filter = L"All Files (*.*)|*.*";
+				WString												filter = L"All Files (*.*)|*";
 				vint												filterIndex = 0;
 				bool												enabledPreview = false;
 				WString												title;

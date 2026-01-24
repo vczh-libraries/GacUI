@@ -57,7 +57,7 @@ namespace gacuisrc_unittest
                 (dialogOpen.Directory = "");
             }
             {
-                (dialogOpen.Filter = "All Files (*.*)|*.*|Text Files *.txt)|*.txt");
+                (dialogOpen.Filter = "All Files (*.*)|*|Text Files (*.txt)|*.txt");
             }
             {
                 (dialogOpen.Title = "OpenFileDialog");

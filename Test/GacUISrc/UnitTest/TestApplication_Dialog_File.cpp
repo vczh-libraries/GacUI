@@ -38,6 +38,14 @@ namespace gacui_unittest_template
 
 		return root;
 	}
+
+	GacUIUnitTest_Installer CreateInstaller(Ptr<FileSystemMock>& fsMock)
+	{
+		return {
+			.initialize = [&]() { fsMock = Ptr(new FileSystemMock(CreateFileItemRoot())); },
+			.finalize = [&]() { fsMock = {}; }
+		};
+	}
 }
 using namespace gacui_unittest_template;
 
@@ -48,7 +56,7 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <Window ref.Name="self" Text="Dialog File Test" ClientSize="x:640 y:640">
-        <OpenFileDialog ref.Name="dialogOpen" Title="OpenFileDialog" Filter="All Files (*.*)|*.*|Text Files *.txt)|*.txt" Directory=""/>
+        <OpenFileDialog ref.Name="dialogOpen" Title="OpenFileDialog" Filter="All Files (*.*)|*|Text Files (*.txt)|*.txt" Directory=""/>
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
             <_>composeType:MinSize</_>
@@ -99,6 +107,32 @@ TEST_FILE
 					auto window = From(GetApplication()->GetWindows())
 						.Where([](GuiWindow* w) { return w->GetText() == L"OpenFileDialog"; })
 						.First();
+					auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"filePickerControl", L"textBox");
+					auto button = FindControlByText<GuiButton>(window, L"Open");
+					auto location = protocol->LocationOf(button);
+
+					textBox->SetText(L"A");
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Open: A", [=]()
+				{
+					auto window = From(GetApplication()->GetWindows())
+						.Where([](GuiWindow* w) { return w->GetText() == L"OpenFileDialog"; })
+						.First();
+					auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"filePickerControl", L"comboBox");
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						comboBox->SetSelectedIndex(1);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Filter: Text Files", [=]()
+				{
+					auto window = From(GetApplication()->GetWindows())
+						.Where([](GuiWindow* w) { return w->GetText() == L"OpenFileDialog"; })
+						.First();
 					auto button = FindControlByText<GuiButton>(window, L"Cancel");
 					auto location = protocol->LocationOf(button);
 					protocol->LClick(location);
@@ -113,10 +147,7 @@ TEST_FILE
 				WString::Unmanaged(L"Application/Dialog_File/OpenAndClose"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceFileDialogs,
-				{
-					.initialize = [&]() { fsMock = Ptr(new FileSystemMock(CreateFileItemRoot())); },
-					.finalize = [&]() { fsMock = {}; }
-				}
+				CreateInstaller(fsMock)
 			);
 		});
 	});
