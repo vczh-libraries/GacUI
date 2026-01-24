@@ -89,7 +89,7 @@ namespace gacui_file_dialog_template
 		textBox->SetText(fileName);
 	}
 
-	void ClickFile(UnitTestRemoteProtocol* protocol, const WString& fileName)
+	void ClickFileInternal(UnitTestRemoteProtocol* protocol, const WString& fileName, bool doubleClick)
 	{
 		auto window = From(GetApplication()->GetWindows())
 			.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
@@ -108,7 +108,24 @@ namespace gacui_file_dialog_template
 		}
 
 		TEST_ASSERT(fileItemIndex != -1);
-		LClickListItem(protocol, dataGrid, fileItemIndex);
+		if (doubleClick)
+		{
+			LDBClickListItem(protocol, dataGrid, fileItemIndex);
+		}
+		else
+		{
+			LClickListItem(protocol, dataGrid, fileItemIndex);
+		}
+	}
+
+	void ClickFile(UnitTestRemoteProtocol* protocol, const WString& fileName)
+	{
+		ClickFileInternal(protocol, fileName, false);
+	}
+
+	void DbClickFile(UnitTestRemoteProtocol* protocol, const WString& fileName)
+	{
+		ClickFileInternal(protocol, fileName, true);
 	}
 
 	void ChooseFilter(UnitTestRemoteProtocol* protocol, vint filterIndex)
@@ -221,10 +238,9 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
 				{
-					ClickFile(protocol, L"A");
-					PressOpen(protocol);
+					DbClickFile(protocol, L"A");
 				});
-				protocol->OnNextIdleFrame(L"Click: A", [=]()
+				protocol->OnNextIdleFrame(L"DbClick: A", [=]()
 				{
 					ClickFile(protocol, L"a.txt");
 				});
