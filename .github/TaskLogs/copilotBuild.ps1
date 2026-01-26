@@ -1,3 +1,5 @@
+. $PSScriptRoot\copilotShared.ps1
+
 # Remove log file if it exists
 $logFile = "$PSScriptRoot\Build.log"
 if (Test-Path $logFile) {
@@ -6,22 +8,8 @@ if (Test-Path $logFile) {
 }
 
 # Find the solution folder by looking for *.sln files
-$currentDir = Get-Location
-$solutionFile = $null
-
-while ($currentDir -ne $null) {
-    $solutionFiles = Get-ChildItem -Path $currentDir.Path -Filter "*.sln" -ErrorAction SilentlyContinue
-    if ($solutionFiles.Count -gt 0) {
-        $solutionFile = "$($currentDir.Path)\$($solutionFiles[0])"
-        Write-Host "Found solution file: $solutionFile"
-        break
-    }
-    $currentDir = $currentDir.Parent
-}
-
-if ($solutionFile -eq $null) {
-    throw "Could not find a solution file (*.sln file) in current directory or any parent directories."
-}
+$solutionFolder = GetSolutionDir
+$solutionFile = "$solutionFolder\$((Get-ChildItem -Path $solutionFolder -Filter "*.sln" -ErrorAction SilentlyContinue)[0])"
 
 $vsdevcmd = $env:VLPP_VSDEVCMD_PATH
 if ($vsdevcmd -eq $null) {
