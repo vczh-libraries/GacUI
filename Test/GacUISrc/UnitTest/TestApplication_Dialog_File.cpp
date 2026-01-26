@@ -1,5 +1,6 @@
 #include "TestControls.h"
 #include "TestControls_List.h"
+#include "TestItemProviders.h"
 
 namespace gacui_unittest_template
 {
@@ -116,6 +117,18 @@ namespace gacui_file_dialog_template
 		{
 			LClickListItem(protocol, dataGrid, fileItemIndex);
 		}
+	}
+
+	template<vint Count>
+	void AssertDataGridItems(GuiBindableDataGrid* dataGrid, const wchar_t* (&expected)[Count])
+	{
+		auto itemProvider = dataGrid->GetItemProvider();
+		collections::List<WString> actual;
+		for (vint i = 0; i < itemProvider->Count(); i++)
+		{
+			actual.Add(itemProvider->GetTextValue(i));
+		}
+		gacui_unittest_template::AssertCallbacks(actual, expected);
 	}
 
 	void ClickFile(UnitTestRemoteProtocol* protocol, const WString& fileName)
@@ -259,6 +272,175 @@ TEST_FILE
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Dialog_File/OpenAndSelect"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceFileDialogs,
+				CreateInstaller(fsMock)
+			);
+		});
+
+		TEST_CASE(L"Listing: Root + Filter")
+		{
+			Ptr<FileSystemMock> fsMock;
+
+			GacUIUnitTest_SetGuiMainProxy([&fsMock](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindControlByText<GuiButton>(window, L"Open DefaultOptions");
+					auto location = protocol->LocationOf(button);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+
+				protocol->OnNextIdleFrame(L"Show Dialog + Choose Filter: Text Files", [=]()
+				{
+					const wchar_t* expectedAll[] =
+					{
+						L"A",
+						L"B",
+						L"README",
+						L"root.txt",
+					};
+
+					auto dialogWindow = From(GetApplication()->GetWindows())
+						.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
+						.First();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(dialogWindow, L"filePickerControl", L"dataGrid");
+					AssertDataGridItems(dataGrid, expectedAll);
+					ChooseFilter(protocol, 1);
+				});
+
+				protocol->OnNextIdleFrame(L"Assert Root Filtered Listing", [=]()
+				{
+					const wchar_t* expectedTxt[] =
+					{
+						L"A",
+						L"B",
+						L"root.txt",
+					};
+
+					auto dialogWindow = From(GetApplication()->GetWindows())
+						.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
+						.First();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(dialogWindow, L"filePickerControl", L"dataGrid");
+					AssertDataGridItems(dataGrid, expectedTxt);
+					PressCancel(protocol);
+				});
+
+				protocol->OnNextIdleFrame(L"Cancel", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dialog = FindObjectByName<GuiOpenFileDialog>(window, L"dialogOpen");
+					TEST_ASSERT(dialog->GetFileNames().Count() == 0);
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Dialog_File/Listing_Root_Filter"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceFileDialogs,
+				CreateInstaller(fsMock)
+			);
+		});
+
+		TEST_CASE(L"Navigation + Listing: Root -> A -> AA")
+		{
+			Ptr<FileSystemMock> fsMock;
+
+			GacUIUnitTest_SetGuiMainProxy([&fsMock](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindControlByText<GuiButton>(window, L"Open DefaultOptions");
+					auto location = protocol->LocationOf(button);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+
+				protocol->OnNextIdleFrame(L"Show Dialog + DbClick: A", [=]()
+				{
+					const wchar_t* expectedRoot[] =
+					{
+						L"A",
+						L"B",
+						L"README",
+						L"root.txt",
+					};
+
+					auto dialogWindow = From(GetApplication()->GetWindows())
+						.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
+						.First();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(dialogWindow, L"filePickerControl", L"dataGrid");
+					AssertDataGridItems(dataGrid, expectedRoot);
+					DbClickFile(protocol, L"A");
+				});
+
+				protocol->OnNextIdleFrame(L"Assert A Listing + Choose Filter: Text Files", [=]()
+				{
+					const wchar_t* expectedA[] =
+					{
+						L"AA",
+						L"a.txt",
+						L"noext",
+					};
+
+					auto dialogWindow = From(GetApplication()->GetWindows())
+						.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
+						.First();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(dialogWindow, L"filePickerControl", L"dataGrid");
+					AssertDataGridItems(dataGrid, expectedA);
+					ChooseFilter(protocol, 1);
+				});
+
+				protocol->OnNextIdleFrame(L"Assert A Filtered Listing + DbClick: AA", [=]()
+				{
+					const wchar_t* expectedATxt[] =
+					{
+						L"AA",
+						L"a.txt",
+					};
+
+					auto dialogWindow = From(GetApplication()->GetWindows())
+						.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
+						.First();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(dialogWindow, L"filePickerControl", L"dataGrid");
+					AssertDataGridItems(dataGrid, expectedATxt);
+					DbClickFile(protocol, L"AA");
+				});
+
+				protocol->OnNextIdleFrame(L"Assert AA Listing", [=]()
+				{
+					const wchar_t* expectedAA[] =
+					{
+						L"deep.bin",
+					};
+
+					auto dialogWindow = From(GetApplication()->GetWindows())
+						.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
+						.First();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(dialogWindow, L"filePickerControl", L"dataGrid");
+					AssertDataGridItems(dataGrid, expectedAA);
+					PressCancel(protocol);
+				});
+
+				protocol->OnNextIdleFrame(L"Cancel", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dialog = FindObjectByName<GuiOpenFileDialog>(window, L"dialogOpen");
+					TEST_ASSERT(dialog->GetFileNames().Count() == 0);
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Dialog_File/Navigation_Listing_Root_A_AA"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceFileDialogs,
 				CreateInstaller(fsMock)
