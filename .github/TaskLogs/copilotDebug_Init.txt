@@ -1,0 +1,4 @@
+.lines
+l+s
+l+t
+.nvload "C:\Program Files\Microsoft Visual Studio\18\Community\Common7\Packages\Debugger\Visualizers\vlpp.natvis"

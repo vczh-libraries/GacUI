@@ -1,4 +1,12 @@
-
+function GetCDBPath {
+    if ($env:CDBPATH -eq $null) {
+        $MESSAGE_1 = "You have to add an environment variable named CDBPATH and set its value to the path of cdb.exe, e.g.:"
+        $MESSAGE_2 = "C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\cdb.exe"
+        $MESSAGE_3 = "To get cdb.exe, you need to install WDK via VS Installer (Individual Components page) followed by Windows WDK."
+        throw "$MESSAGE_1\r\n$MESSAGE_2\r\n$MESSAGE_3"
+    }
+    return $env:CDBPATH
+}
 
 function GetSolutionDir {
     $currentDir = Get-Location
