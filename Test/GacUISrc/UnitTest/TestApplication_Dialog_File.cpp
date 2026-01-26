@@ -197,7 +197,7 @@ TEST_FILE
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
-					auto window = GetApplication()->GetMainWindow();;
+					auto window = GetApplication()->GetMainWindow();
 					auto button = FindControlByText<GuiButton>(window, L"Open DefaultOptions");
 					auto location = protocol->LocationOf(button);
 					GetApplication()->InvokeInMainThread(window, [=]()
@@ -241,7 +241,7 @@ TEST_FILE
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
-					auto window = GetApplication()->GetMainWindow();;
+					auto window = GetApplication()->GetMainWindow();
 					auto button = FindControlByText<GuiButton>(window, L"Open DefaultOptions");
 					auto location = protocol->LocationOf(button);
 					GetApplication()->InvokeInMainThread(window, [=]()
