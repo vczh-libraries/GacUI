@@ -113,7 +113,7 @@ Please reuse the test case design in the scrum document but rework them to work 
 # TASKS
 
 - [x] TASK No.1: Add FileItemMock + FileSystemMock (IFileSystemImpl)
-- [ ] TASK No.2: TEST_CATEGORY for file dialog open + folder navigation + listing
+- [x] TASK No.2: TEST_CATEGORY for file dialog open + folder navigation + listing
 - [ ] TASK No.3: TEST_CATEGORY for filter visibility + extension behavior (in dialog)
 - [ ] TASK No.4: TEST_CATEGORY for typed selection + multiple selection (in dialog)
 - [ ] TASK No.5: TEST_CATEGORY for dialog message box interactions (open/save options)
