@@ -42,6 +42,15 @@ namespace gacuisrc_unittest
         var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
+        var <precompile>4 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
         {
             (self = <this>);
@@ -53,9 +62,6 @@ namespace gacuisrc_unittest
             }
             (dialogOpen = new (::presentation::controls::GuiOpenFileDialog*)());
             <this>.SetNamedObject("dialogOpen", dialogOpen);
-            {
-                (dialogOpen.Options = FileDialogFileMustExist of (::presentation::INativeDialogService::FileDialogOptions));
-            }
             {
                 (dialogOpen.Directory = "");
             }
@@ -76,9 +82,10 @@ namespace gacuisrc_unittest
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>0.SetRowsAndColumns(2, 2);
+                <precompile>0.SetRowsAndColumns(3, 2);
                 <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
@@ -102,18 +109,82 @@ namespace gacuisrc_unittest
             {
                 <precompile>0.AddChild(<precompile>1);
             }
+            (<precompile>4 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>4.SetSite(1, 0, 1, 1);
+            }
+            {
+                (<precompile>5 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>6 = <precompile>5.BoundsComposition);
+            {
+                (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>5.Text = "Open MultipleSelection");
+            }
+            {
+                <precompile>4.AddChild(<precompile>5.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>4);
+            }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
+                    (dialogOpen.Options = INativeDialogService::FileDialogOptions::FileDialogFileMustExist);
                     if (dialogOpen.ShowDialog())
                     {
-                        (self.Text = dialogOpen.FileName);
+                        var output : string = "";
+                        {
+                            var <for-enumerable>fileName = dialogOpen.FileNames of (::system::Enumerable^);
+                            var <for-enumerator>fileName = <for-enumerable>fileName.CreateEnumerator();
+                            while (<for-enumerator>fileName.Next())
+                            {
+                                var fileName = (cast (::system::String) <for-enumerator>fileName.GetCurrent());
+                                {
+                                    if ((output != ""))
+                                    {
+                                        (output = (output & ";"));
+                                    }
+                                    (output = (output & fileName));
+                                }
+                            }
+                        }
+                        (self.Text = output);
                     }
                 };
                 attach(<precompile>2.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (dialogOpen.Options = (INativeDialogService::FileDialogOptions::FileDialogFileMustExist | INativeDialogService::FileDialogOptions::FileDialogAllowMultipleSelection));
+                    if (dialogOpen.ShowDialog())
+                    {
+                        var output : string = "";
+                        {
+                            var <for-enumerable>fileName = dialogOpen.FileNames of (::system::Enumerable^);
+                            var <for-enumerator>fileName = <for-enumerable>fileName.CreateEnumerator();
+                            while (<for-enumerator>fileName.Next())
+                            {
+                                var fileName = (cast (::system::String) <for-enumerator>fileName.GetCurrent());
+                                {
+                                    if ((output != ""))
+                                    {
+                                        (output = (output & ";"));
+                                    }
+                                    (output = (output & fileName));
+                                }
+                            }
+                        }
+                        (self.Text = output);
+                    }
+                };
+                attach(<precompile>5.Clicked, <event-handler>);
             }
         }
 

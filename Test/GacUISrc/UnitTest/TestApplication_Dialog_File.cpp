@@ -211,10 +211,13 @@ TEST_FILE
 								dialogOpen.Options = INativeDialogService::FileDialogOptions::FileDialogFileMustExist;
 								if (dialogOpen.ShowDialog())
 								{
-									var output:string = "";
+									var output : string = "";
 									for (fileName in dialogOpen.FileNames)
 									{
-										if (output != "") output = output & ";";
+										if (output != "")
+										{
+											output = output & ";";
+										}
 										output = output & fileName;
 									}
 									self.Text = output;
@@ -229,10 +232,13 @@ TEST_FILE
 								dialogOpen.Options = INativeDialogService::FileDialogOptions::FileDialogFileMustExist | INativeDialogService::FileDialogOptions::FileDialogAllowMultipleSelection;
 								if (dialogOpen.ShowDialog())
 								{
-									var output:string = "";
+									var output : string = "";
 									for (fileName in dialogOpen.FileNames)
 									{
-										if (output != "") output = output & ";";
+										if (output != "")
+										{
+											output = output & ";";
+										}
 										output = output & fileName;
 									}
 									self.Text = output;
@@ -631,7 +637,7 @@ TEST_FILE
 					auto dialogWindow = GetOpeningFileDialog();
 					auto textBox = FindObjectByName<GuiSinglelineTextBox>(dialogWindow, L"filePickerControl", L"textBox");
 					auto selectionText = textBox->GetText();
-					TEST_ASSERT(selectionText == WString::Unmanaged(L"root.txt"));
+					TEST_ASSERT(selectionText == WString::Unmanaged(L"\"root.txt\""));
 					PressOpen(protocol);
 				});
 				protocol->OnNextIdleFrame(L"Pressed: Open", [=]()
