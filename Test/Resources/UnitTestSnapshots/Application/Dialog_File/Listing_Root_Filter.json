@@ -885,7 +885,7 @@
     },
     {
       "frameId": 11,
-      "frameName": "Show Dialog + Choose Filter: Text Files",
+      "frameName": "Show Dialog",
       "windowSize": {
         "bounds": {
           "x1": {"value": 192},
@@ -3507,7 +3507,7 @@
     },
     {
       "frameId": 15,
-      "frameName": "Assert Root Filtered Listing",
+      "frameName": "Choose Filter: Text Files",
       "windowSize": {
         "bounds": {
           "x1": {"value": 192},

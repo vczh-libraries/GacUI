@@ -295,7 +295,7 @@ TEST_FILE
 					});
 				});
 
-				protocol->OnNextIdleFrame(L"Show Dialog + Choose Filter: Text Files", [=]()
+				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
 				{
 					const wchar_t* expectedAll[] =
 					{
@@ -313,7 +313,7 @@ TEST_FILE
 					ChooseFilter(protocol, 1);
 				});
 
-				protocol->OnNextIdleFrame(L"Assert Root Filtered Listing", [=]()
+				protocol->OnNextIdleFrame(L"Choose Filter: Text Files", [=]()
 				{
 					const wchar_t* expectedTxt[] =
 					{
@@ -364,7 +364,7 @@ TEST_FILE
 					});
 				});
 
-				protocol->OnNextIdleFrame(L"Show Dialog + DbClick: A", [=]()
+				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
 				{
 					const wchar_t* expectedRoot[] =
 					{
@@ -382,7 +382,7 @@ TEST_FILE
 					DbClickFile(protocol, L"A");
 				});
 
-				protocol->OnNextIdleFrame(L"Assert A Listing + Choose Filter: Text Files", [=]()
+				protocol->OnNextIdleFrame(L"DbClick: A", [=]()
 				{
 					const wchar_t* expectedA[] =
 					{
@@ -399,7 +399,7 @@ TEST_FILE
 					ChooseFilter(protocol, 1);
 				});
 
-				protocol->OnNextIdleFrame(L"Assert A Filtered Listing + DbClick: AA", [=]()
+				protocol->OnNextIdleFrame(L"Choose Filter: Text Files", [=]()
 				{
 					const wchar_t* expectedATxt[] =
 					{
@@ -415,7 +415,7 @@ TEST_FILE
 					DbClickFile(protocol, L"AA");
 				});
 
-				protocol->OnNextIdleFrame(L"Assert AA Listing (Text Files) + Choose Filter: All Files", [=]()
+				protocol->OnNextIdleFrame(L"DbClick: AA", [=]()
 				{
 					auto dialogWindow = From(GetApplication()->GetWindows())
 						.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
@@ -425,7 +425,7 @@ TEST_FILE
 					ChooseFilter(protocol, 0);
 				});
 
-				protocol->OnNextIdleFrame(L"Assert AA Listing (All Files)", [=]()
+				protocol->OnNextIdleFrame(L"Choose Filter: All Files", [=]()
 				{
 					const wchar_t* expectedAA[] =
 					{
