@@ -179,6 +179,7 @@ Add dialog-driven tests validating that changing the filter updates the listing,
 - Reuse the test dialog’s `Filter="All Files (*.*)|*|Text Files (*.txt)|*.txt"` and drive the UI:
 	- Switch filters via `ChooseFilter(protocol, filterIndex)`.
 	- Assert that the data grid content changes accordingly (e.g. in `/A`, `a.txt` remains visible in `Text Files`, while non-`.txt` entries are hidden or shown according to the filter behavior).
+	- Verify the selected filter persists across folder navigation (e.g. choose `Text Files` in `/A`, navigate into `/A/AA` where there is no `*.txt`, and assert the listing is empty; then switch back to `All Files` and assert `deep.bin` appears).
 - Add typed-selection subcases that demonstrate the chosen filter’s expected extension behavior:
 	- Navigate into `/A`, choose `Text Files (*.txt)`, type `L"a"` and click `Open`; assert the returned filename is `/A/a.txt` (extension auto-append).
 	- Choose `All Files (*.*)`, type `L"README"` at root and click `Open`; assert the returned filename is `/README` (no auto-append under the all-files filter).
@@ -186,6 +187,7 @@ Add dialog-driven tests validating that changing the filter updates the listing,
 ### rationale
 
 - Filter correctness is core dialog behavior and is tightly coupled to selection parsing and extension normalization; validating it through the UI ensures `FileDialog.xml` bindings and localized text initialization are also exercised.
+- Filter persistence across navigation is part of the user-visible contract; tests must expect that a folder can legitimately show an empty list under a restrictive filter.
 
 ## TASK No.4: TEST_CATEGORY for typed selection + multiple selection (in dialog)
 
@@ -205,6 +207,7 @@ Add dialog-driven tests that focus on the selection string in the file name text
 ### rationale
 
 - The file dialog’s user-facing contract is the selection string plus final selected file list; testing it through the actual dialog ensures `FilePickerControl`’s `Selection` logic (based on data grid selection and text box input) is covered.
+- Selection outcomes depend on the active filter, which persists across navigation; tests should explicitly set the filter before selecting or typing file names.
 
 ## TASK No.5: TEST_CATEGORY for dialog message box interactions (open/save options)
 
