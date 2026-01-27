@@ -24,4 +24,4 @@ $debugArgs = GetDebugArgs $solutionFolder $latestFile $Executable
 $cdbpath = GetCDBPath
 $commandLine = "`"$($cdbpath)`" -server npipe:pipe=VlppUnitTest -cf `"$PSScriptRoot\copilotDebug_Init.txt`" -o `"$($latestFile.Path)`" $debugArgs"
 echo $commandLine
-cmd.exe /S /C $commandLine 2>&1
+cmd.exe /S /C $commandLine
