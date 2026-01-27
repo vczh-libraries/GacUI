@@ -54,6 +54,9 @@ namespace gacuisrc_unittest
             (dialogOpen = new (::presentation::controls::GuiOpenFileDialog*)());
             <this>.SetNamedObject("dialogOpen", dialogOpen);
             {
+                (dialogOpen.Options = FileDialogFileMustExist of (::presentation::INativeDialogService::FileDialogOptions));
+            }
+            {
                 (dialogOpen.Directory = "");
             }
             {
@@ -107,7 +110,7 @@ namespace gacuisrc_unittest
                 {
                     if (dialogOpen.ShowDialog())
                     {
-                        (self.Text = "Opened");
+                        (self.Text = dialogOpen.FileName);
                     }
                 };
                 attach(<precompile>2.Clicked, <event-handler>);

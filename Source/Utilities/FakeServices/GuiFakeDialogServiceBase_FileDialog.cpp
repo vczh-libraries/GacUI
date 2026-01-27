@@ -232,6 +232,8 @@ View Model (IFileDialogViewModel)
 			Regex						regexDisplayString{ L";" };
 
 		public:
+			FakeDialogServiceBase*      dialogService = nullptr;
+
 			bool						selectToSave = false;
 			bool						confirmed = false;
 			ConfirmedSelection			confirmedSelection;
@@ -469,49 +471,93 @@ View Model (IFileDialogViewModel)
 
 			bool TryConfirm(controls::GuiWindow* owner, Selection selectedPaths) override
 			{
+				CHECK_ERROR(dialogService, L"vl::presentation::FileDialogViewModel::TryConfirm()#dialogService is not initialized.");
 				auto wd = selectedFolder->folder.GetFilePath();
-				List<filesystem::FilePath> paths;
+				List<filesystem::FilePath> rawPaths;
 				CopyFrom(
-					paths,
+					rawPaths,
 					selectedPaths.Select([this, wd](auto path) { return wd / path; })
 					);
 
-				if (paths.Count() == 0)
+				if (rawPaths.Count() == 0)
 				{
-					GetCurrentController()->DialogService()->ShowMessageBox(
-						owner->GetNativeWindow(),
+					dialogService->ShowMessageBox(
+						owner ? owner->GetNativeWindow() : nullptr,
 						dialogErrorEmptySelection,
 						owner->GetText(),
 						INativeDialogService::DisplayOK,
 						INativeDialogService::DefaultFirst,
-						INativeDialogService::IconError
+						INativeDialogService::IconError,
+						INativeDialogService::ModalWindow
 						);
 					return false;
 				}
-				else if (paths.Count() == 1)
+
+				// folder navigation must use the raw selection (no extension append)
+				if (rawPaths.Count() == 1)
 				{
-					auto path = paths[0];
+					auto path = rawPaths[0];
 					if (filesystem::Folder(path).Exists())
 					{
 						SetSelectedFolderInternal(path, true);
 						return false;
 					}
 				}
-				else
+				else if (!enabledMultipleSelection)
 				{
-					if (!enabledMultipleSelection)
-					{
-						GetCurrentController()->DialogService()->ShowMessageBox(
-							owner->GetNativeWindow(),
-							dialogErrorMultipleSelectionNotEnabled,
-							owner->GetText(),
-							INativeDialogService::DisplayOK,
-							INativeDialogService::DefaultFirst,
-							INativeDialogService::IconError
-							);
-						return false;
-					}
+					dialogService->ShowMessageBox(
+						owner ? owner->GetNativeWindow() : nullptr,
+						dialogErrorMultipleSelectionNotEnabled,
+						owner->GetText(),
+						INativeDialogService::DisplayOK,
+						INativeDialogService::DefaultFirst,
+						INativeDialogService::IconError,
+						INativeDialogService::ModalWindow
+						);
+					return false;
 				}
+
+				Nullable<WString> extension;
+				bool extensionFromFilter = false;
+				if (selectedFilter)
+				{
+					extension = selectedFilter->GetDefaultExtension();
+					extensionFromFilter = extension;
+				}
+
+				if (!extensionFromFilter && defaultExtension != WString::Empty)
+				{
+					extension = defaultExtension;
+				}
+
+				auto normalized = [&](filesystem::FilePath path)
+				{
+					if (!extension) return path;
+
+					auto&& sExt = WString::Unmanaged(L".") + extension.Value();
+					vint lExt = sExt.Length();
+					auto full = path.GetFullPath();
+
+					if (extensionFromFilter)
+					{
+						if (full.Length() >= lExt && full.Right(lExt) == sExt)
+						{
+							return path;
+						}
+					}
+					else
+					{
+						auto selectedFileName = path.GetName();
+						if (INVLOC.FindFirst(selectedFileName, WString::Unmanaged(L"."), Locale::None).key != -1)
+						{
+							return path;
+						}
+					}
+					return filesystem::FilePath(full + sExt);
+				};
+
+				List<filesystem::FilePath> paths;
+				CopyFrom(paths, From(rawPaths).Select([&](auto path) { return normalized(path); }));
 
 				List<vint> files, folders, unexistings;
 				for (auto [path, index] : indexed(paths))
@@ -542,13 +588,14 @@ View Model (IFileDialogViewModel)
 							writer.WriteString(wd.GetRelativePathFor(paths[index]));
 						}
 					});
-					GetCurrentController()->DialogService()->ShowMessageBox(
-						owner->GetNativeWindow(),
+					dialogService->ShowMessageBox(
+						owner ? owner->GetNativeWindow() : nullptr,
 						message,
 						owner->GetText(),
 						INativeDialogService::DisplayOK,
 						INativeDialogService::DefaultFirst,
-						INativeDialogService::IconError
+						INativeDialogService::IconError,
+						INativeDialogService::ModalWindow
 						);
 					return false;
 				}
@@ -567,13 +614,14 @@ View Model (IFileDialogViewModel)
 								writer.WriteString(wd.GetRelativePathFor(paths[index]));
 							}
 						});
-						GetCurrentController()->DialogService()->ShowMessageBox(
-							owner->GetNativeWindow(),
+						dialogService->ShowMessageBox(
+							owner ? owner->GetNativeWindow() : nullptr,
 							message,
 							owner->GetText(),
 							INativeDialogService::DisplayOK,
 							INativeDialogService::DefaultFirst,
-							INativeDialogService::IconError
+							INativeDialogService::IconError,
+							INativeDialogService::ModalWindow
 							);
 						return false;
 					}
@@ -611,13 +659,14 @@ View Model (IFileDialogViewModel)
 									writer.WriteString(wd.GetRelativePathFor(path));
 								}
 							});
-							GetCurrentController()->DialogService()->ShowMessageBox(
-								owner->GetNativeWindow(),
+							dialogService->ShowMessageBox(
+								owner ? owner->GetNativeWindow() : nullptr,
 								message,
 								owner->GetText(),
 								INativeDialogService::DisplayOK,
 								INativeDialogService::DefaultFirst,
-								INativeDialogService::IconError
+								INativeDialogService::IconError,
+								INativeDialogService::ModalWindow
 								);
 							return false;
 						}
@@ -649,13 +698,14 @@ View Model (IFileDialogViewModel)
 							}
 						});
 
-						auto result = GetCurrentController()->DialogService()->ShowMessageBox(
-							owner->GetNativeWindow(),
+						auto result = dialogService->ShowMessageBox(
+							owner ? owner->GetNativeWindow() : nullptr,
 							message,
 							owner->GetText(),
 							INativeDialogService::DisplayOKCancel,
 							INativeDialogService::DefaultThird,
-							INativeDialogService::IconQuestion
+							INativeDialogService::IconQuestion,
+							INativeDialogService::ModalWindow
 							);
 
 						if (result == INativeDialogService::SelectCancel)
@@ -669,47 +719,6 @@ View Model (IFileDialogViewModel)
 					confirmedSelection,
 					From(paths).Select([](auto path) { return path.GetFullPath(); })
 					);
-
-				Nullable<WString> extension;
-				bool extensionFromFilter = false;
-				if (selectedFilter)
-				{
-					extension = selectedFilter->GetDefaultExtension();
-					extensionFromFilter = extension;
-				}
-
-				if (!extensionFromFilter && defaultExtension != WString::Empty)
-				{
-					extension = defaultExtension;
-				}
-
-				if (extension)
-				{
-					auto&& sExt = WString::Unmanaged(L".") + extension.Value();
-					vint lExt = sExt.Length();
-
-					// TODO: (enumerable) foreach
-					for (vint i = 0; i < confirmedSelection.Count(); i++)
-					{
-						WString& selection = confirmedSelection[i];
-						if (extensionFromFilter)
-						{
-							if (selection.Length() >= lExt && selection.Right(lExt) == sExt)
-							{
-								continue;
-							}
-						}
-						else
-						{
-							auto selectedFileName = filesystem::FilePath(selection).GetName();
-							if (INVLOC.FindFirst(selectedFileName, WString::Unmanaged(L"."), Locale::None).key != -1)
-							{
-								continue;
-							}
-						}
-						selection += sExt;
-					}
-				}
 
 				confirmed = true;
 				return true;
@@ -771,6 +780,7 @@ FakeDialogServiceBase
 		)
 		{
 			auto vm = Ptr(new FileDialogViewModel);
+			vm->dialogService = this;
 			vm->title = title;
 			vm->enabledMultipleSelection = (options & INativeDialogService::FileDialogAllowMultipleSelection) != 0;
 			vm->fileMustExist = (options & INativeDialogService::FileDialogFileMustExist) != 0;
