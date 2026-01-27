@@ -110,6 +110,10 @@ Now you know how to iterate items in the datagrid by text according to `ClickFil
 
 Please reuse the test case design in the scrum document but rework them to work on the file dialog.
 
+## UPDATE
+
+it looks like Task No.2 already covers some filtering, please examine Task 3 carefully, I guess we can remove some tests in Task 3 which are already covered in Test 2, and merge the rest with Task 6 (therefore there will be no Task6 after merging). I believe Task 6 is also about extension behavior, so merging it into 3 is reasonable.
+
 # TASKS
 
 - [x] TASK No.1: Add FileItemMock + FileSystemMock (IFileSystemImpl)
@@ -117,7 +121,6 @@ Please reuse the test case design in the scrum document but rework them to work 
 - [ ] TASK No.3: TEST_CATEGORY for filter visibility + extension behavior (in dialog)
 - [ ] TASK No.4: TEST_CATEGORY for typed selection + multiple selection (in dialog)
 - [ ] TASK No.5: TEST_CATEGORY for dialog message box interactions (open/save options)
-- [ ] TASK No.6: TDD regression for existence checks after extension auto-append (in dialog)
 
 ## TASK No.1: Add FileItemMock + FileSystemMock (IFileSystemImpl)
 
@@ -176,18 +179,18 @@ Add dialog-driven tests validating that changing the filter updates the listing,
 ### what to be done
 
 - In `Test/GacUISrc/UnitTest/TestApplication_Dialog_File.cpp`, add a `TEST_CATEGORY` dedicated to filter behaviors.
-- Reuse the test dialog’s `Filter="All Files (*.*)|*|Text Files (*.txt)|*.txt"` and drive the UI:
+- Reuse the test dialog’s `Filter="All Files (*.*)|*|Text Files (*.txt)|*.txt"` and drive the UI (avoid re-testing basic folder navigation and listing already covered by TASK No.2; only assert deltas caused by filter/extension logic):
 	- Switch filters via `ChooseFilter(protocol, filterIndex)`.
-	- Assert that the data grid content changes accordingly (e.g. in `/A`, `a.txt` remains visible in `Text Files`, while non-`.txt` entries are hidden or shown according to the filter behavior).
-	- Verify the selected filter persists across folder navigation (e.g. choose `Text Files` in `/A`, navigate into `/A/AA` where there is no `*.txt`, and assert the listing is empty; then switch back to `All Files` and assert `deep.bin` appears).
+	- Add a minimal visibility assertion (e.g. in `/A`, `a.txt` remains visible in `Text Files`, while a known non-`.txt` entry becomes invisible).
 - Add typed-selection subcases that demonstrate the chosen filter’s expected extension behavior:
 	- Navigate into `/A`, choose `Text Files (*.txt)`, type `L"a"` and click `Open`; assert the returned filename is `/A/a.txt` (extension auto-append).
 	- Choose `All Files (*.*)`, type `L"README"` at root and click `Open`; assert the returned filename is `/README` (no auto-append under the all-files filter).
+	- Regression: choose `Text Files (*.txt)`, type `L"README"` at root and click `Open`; expected behavior is the dialog stays open and shows the “File(s) not exist” message because the real target is `README.txt` (auto-append happens before existence checks). If the test fails, fix `FileSystemViewModel::TryConfirm` in `Source/Utilities/FakeServices/GuiFakeDialogServiceBase_FileDialog.cpp` so that extension auto-append happens before existence/prompt checks, while folder navigation still uses the raw, non-appended name when the selection resolves to a folder.
 
 ### rationale
 
 - Filter correctness is core dialog behavior and is tightly coupled to selection parsing and extension normalization; validating it through the UI ensures `FileDialog.xml` bindings and localized text initialization are also exercised.
-- Filter persistence across navigation is part of the user-visible contract; tests must expect that a folder can legitimately show an empty list under a restrictive filter.
+- Extension auto-append influences both the returned selection and validation logic (existence checks, prompts); the regression case ensures these stay consistent under a restrictive filter.
 
 ## TASK No.4: TEST_CATEGORY for typed selection + multiple selection (in dialog)
 
@@ -226,26 +229,6 @@ Add dialog-driven tests for error/prompt message boxes triggered by `TryConfirm`
 ### rationale
 
 - These behaviors are user-visible and driven by localized dialog resources; asserting them through the UI is the most reliable way to ensure the wiring between `FileDialog.xml`, `Resource.xml`, and `TryConfirm` stays correct.
-
-## TASK No.6: TDD regression for existence checks after extension auto-append (in dialog)
-
-Write a failing dialog-driven unit test proving the dialog validates existence against the final normalized filename (after any auto-appended extension), then fix `FileSystemViewModel::TryConfirm` accordingly.
-
-### what to be done
-
-- In `Test/GacUISrc/UnitTest/TestApplication_Dialog_File.cpp`, add a dedicated `TEST_CASE` that reproduces the bug using the existing `CreateFileItemRoot()` content:
-	- Ensure there is a file without extension (already present: `README`) and no corresponding `.txt` file.
-	- Open the dialog, choose the `Text Files (*.txt)` filter, type `README`, and press `Open`.
-	- Expected behavior: the dialog should not close and should show the “File(s) not exist” message because the real target is `README.txt`.
-	- Buggy behavior (to lock down): the dialog closes and returns `README.txt` even though only `README` exists.
-- After the regression test fails, fix `FileSystemViewModel::TryConfirm` in `Source/Utilities/FakeServices/GuiFakeDialogServiceBase_FileDialog.cpp` so that:
-	- Any required extension auto-append (from the selected filter or default extension) happens before checking existence and before determining prompt/error branches.
-	- Folder navigation behavior still uses the raw, non-appended name when the selection resolves to a folder.
-- Re-run the same dialog-driven test case to confirm the fix.
-
-### rationale
-
-- This is a correctness issue that impacts the real dialog: existence checks, prompts, and confirmed selections must all agree on the same normalized target paths.
 
 # Impact to the Knowledge Base
 
