@@ -71,6 +71,7 @@
   - If your change did not change the test result, make sure you followed `Step 2. Compile` to compile the code.
   - If the test result still not changed after redoing `Step 2. Compile` and `Step 3. Run Unit Test`, these two steps are absolutely no problem, the only reason is that your change is not correct.
 - You are able to debug the unit test following `Debugging Unit Test`. From there you can set break-points, walk through code by lines, and inspect variables.
+  - You must stop the debugger after you finish debugging.
 - You must carefully identify, if the cause is in the source code or in the failed test. In most of the cases, the cause is in the source code.
   - You can reference to `Copilot_Task.md` and `Copilot_Planning.md` for more details before making a decision, about fixing the test case or the source code.
 - DO NOT delete any test case.
@@ -170,6 +171,7 @@ CDB accepts exactly same commands as WinDBG.
 ### Start a Debugger
 
 `REPO-ROOT` is the root folder of the repo.
+`SOLUTION-ROOT` is the folder of the solution (*.sln) file where the unit test project is in.
 Find out `Unit Test Project Structure` to understand the solution folder and the unit test project name you are working with.
 Additional information could be found in THE FIRST LINE in `REPO-ROOT/.github/TaskLogs/Execute.log`.
 Execute the following powershell commands:
@@ -199,8 +201,10 @@ If there is any error message, it means the debugger is not alive, it is good.
 ### Sending Commands to Debugger
 
 ```
-& REPO-ROOT\.github\TaskLogs\copilotDebug_Stop.ps1 -Command "Commands"
+& REPO-ROOT\.github\TaskLogs\copilotDebug_RunCommand.ps1 -Command "Commands"
 ```
+
+The effect of commands lasts across multiple `copilotDebug_RunCommand.ps1` calls. For example, after you executed `.frame X`, you do not need to repeat it to use `dx` in later calls, as `.frame X` already effective.
 
 Multiple commands can be executed sequencially separated by ";".
 The debugger is configured to be using source mode, which means you can see source files and line numbers in the call stack, and step in/out/over are working line by line.
