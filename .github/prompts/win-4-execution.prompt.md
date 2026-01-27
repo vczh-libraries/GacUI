@@ -197,7 +197,7 @@ If there is any error message, it means the debugger is not alive, it is good.
 
 The effect of commands lasts across multiple `copilotDebug_RunCommand.ps1` calls. For example, after you executed `.frame X`, you do not need to repeat it to use `dx` under the same call stack frame in later calls, as `.frame X` already effective.
 
-Multiple commands can be executed sequencially separated by ";".
+Multiple commands can be executed sequentially separated by ";".
 The debugger is configured to be using source mode, which means you can see source files and line numbers in the call stack, and step in/out/over are working line by line.
 CDB accepts exactly same commands as WinDBG, and here are some recommended commands:
 - **g**: continue until hitting a break-point or crashing.
