@@ -45,9 +45,36 @@
 			}
 		},
 		{
+			"label": "Start Debugging Unit Test",
+			"type": "shell",
+			"windows": {
+				"command": "${workspaceFolder}/.github/TaskLogs/copilotDebug_Start.ps1 -Executable UnitTest"
+			},
+			"linux": {
+				"command": "false"
+			},
+			"options": {
+				"cwd": "${workspaceFolder}/Test/GacUISrc"
+			}
+		},
+		{
+			"label": "Stop Debugging Unit Test",
+			"type": "shell",
+			"windows": {
+				"command": "${workspaceFolder}/.github/TaskLogs/copilotDebug_Stop.ps1"
+			},
+			"linux": {
+				"command": "false"
+			},
+			"options": {
+				"cwd": "${workspaceFolder}/Test/GacUISrc"
+			}
+		},
+		{
 			"label": "Build and Run Unit Tests",
 			"dependsOrder": "sequence",
 			"dependsOn": [
+				"Stop Debugging Unit Test",
 				"Build Unit Tests",
 				"Run Unit Tests"
 			],

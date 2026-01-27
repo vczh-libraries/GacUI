@@ -58,6 +58,7 @@
 - If there are failed test cases, fix the code to make it work.
   - If your change did not change the test result, make sure you followed `Step 2. Compile` to compile the code.
   - If the test result still not changed after redoing `Step 2. Compile` and `Step 3. Run Unit Test`, these two steps are absolutely no problem, the only reason is that your change is not correct.
+- You are able to debug the unit test following `Debugging Unit Test`. From there you can set break-points, walk through code by lines, and inspect variables.
 - You must carefully identify, if the cause is in the source code or in the failed test. In most of the cases, the cause is in the source code.
 - DO NOT delete any test case.
 - After finishing fixing, exit the current sub agent and tell the main agent to go back to `Step 2. Compile`
@@ -111,6 +112,74 @@
     - "Passed test cases: Y/Y"
 - DO NOT TRUST related tools Visual Studio Code offers you, like `get_errors` or `get_task_output`, etc.
 
+## Debugging Unit Test
+
+Debugging would be useful when you lack of necessary information.
+In this section I offer you a set of powershell scripts that work with CDB (Microsoft's Console Debugger).
+CDB accepts exactly same commands as WinDBG.
+
+### Start a Debugger
+
+`REPO-ROOT` is the root folder of the repo.
+Find out `Unit Test Project Structure` to understand the solution folder and the unit test project name you are working with.
+Additional information could be found in THE FIRST LINE in `REPO-ROOT/.github/TaskLogs/Execute.log`.
+Execute the following powershell commands:
+
+```
+cd SOLUTION-ROOT
+& REPO-ROOT\.github\TaskLogs\copilotDebug_Start.ps1 -Executable PROJECT-NAME
+```
+
+The script will finish immediately, leaving a debugger running in the background. You can send commands to the debugger.
+The process being debugged is paused at the beginning, you are given a chance to set break-points.
+After you are prepared, send the `g` command to start running.
+
+### Stop a Debugger
+
+You must call this script do stop the debugger.
+Do not stop the debugger using any command.
+This script is also required to run before compiling only when Visual Studio Code tasks are not available to you.
+
+```
+& REPO-ROOT\.github\TaskLogs\copilotDebug_Stop.ps1
+```
+
+### Sending Commands to Debugger
+
+```
+& REPO-ROOT\.github\TaskLogs\copilotDebug_Stop.ps1 -Command "Commands"
+```
+
+Multiple commands can be executed sequencially separated by ";".
+The debugger is configured to be using source mode, which means you can see source files and line numbers in the call stack, and step in/out/over are working line by line.
+CDB accepts exactly same commands as WinDBG, and here are some recommended commands:
+- **g**: continue until hitting a break-point or crashing.
+- **k**n: print current call stack.
+- **kn LINES**: print first `LINES` of the current call stack.
+- **.frame NUMBER**: inspect the call stack frame labeled with `NUMBER`. `kn` will show the number, file and line along with the call stack.
+- **dv**: list all available variables in the current call stack frame.
+- **dx EXPRESSION**: evaluate the `EXPRESSION` and print the result. `EXPRESSION` can be any valid C programming language expression. When you specify a type (especially when doing casting), full namespaces are required, do not start with `::`.
+- **bp `FILE:LINE`**: set a break-point at the specified line in `FILE`, starting from 0. A pair of "`" characters are required around the target, this is not a markdown syntax.
+- **bl**, **.bpcmds**, **be NUMBERS**, **bd NUMBERS**, **bc NUMBERS**, **bsc NUMBER CONDITION**: list, list with attached commands, enable, disable, delete, attach a command to break-point(s).
+- **p**: step over, aka execute the complete current line.
+- **t**: step in, aka execute the currrent line, if any function is called, goes into the function.
+**pt**: step out, aka run until the end of the current function.
+
+An `.natvis` file is automatically offered with the debugger,
+it formats some primitive types defined in the `Vlpp` project,
+including `WString` and other string types, `Nullable`, `Variant`, container types, etc.
+The formmating applies to the **dx** command,
+when you want to see raw data instead of formatting printing,
+use **dx (EXPRESSION),!**.
+
+You can also use `dv -rX` to expand "X" levels of fields, the default option is `-r0` which only expand one level of fields.
+
+### Commands to Avoid
+
+- Only use **dv** without any parameters.
+- DO NOT use **dt**.
+- DO NOT use **q**, **qd**, **qq**, **qqd** etc to stop the debugger, always use `copilotDebug_Stop.ps1`.
+
 ## Understanding the Building Tools
 
 **WARNING**: Information offered in this section is for background knowledge only.
@@ -123,6 +192,12 @@ Only when you cannot access tools offered by Visual Studio Code, scripts below a
 
 When verifying test projects on Windows, msbuild is used to build a solution (`*.sln`) file.
 A solution contains many project (`*.vcxproj`) files, a project generates an executable (`*.exe`) file.
+
+Before building, ensure the debugger has stopped, otherwise the running unit test process will cause a linking failure.
+
+```
+& REPO-ROOT\.github\TaskLogs\copilotDebug_Stop.ps1
+```
 
 The `Build Unit Tests` task calls msbuild to build the only solution which contains all test cases.
 Inside the task, it runs `copilotBuild.ps1`

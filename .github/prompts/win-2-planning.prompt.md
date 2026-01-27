@@ -97,6 +97,9 @@ This guidance is for accessing following files mentioned in this instruction:
 - `copilotPrepare.ps1`
 - `copilotBuild.ps1`
 - `copilotExecute.ps1`
+- `copilotDebug_Start.ps1`
+- `copilotDebug_Stop.ps1`
+- `copilotDebug_RunCommand.ps1`
 - `Build.log`
 - `Execute.log`
 
