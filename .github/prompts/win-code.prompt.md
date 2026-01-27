@@ -127,9 +127,10 @@ Execute the following powershell commands:
 
 ```
 cd SOLUTION-ROOT
-& REPO-ROOT\.github\TaskLogs\copilotDebug_Start.ps1 -Executable PROJECT-NAME
+start powershell {& REPO-ROOT\.github\TaskLogs\copilotDebug_Start.ps1 -Executable PROJECT-NAME}
 ```
 
+The `start powershell {}` is necessary otherwise the script will block the execution forever causing you to wait infinitely.
 The script will finish immediately, leaving a debugger running in the background. You can send commands to the debugger.
 The process being debugged is paused at the beginning, you are given a chance to set break-points.
 After you are prepared, send the `g` command to start running.
@@ -207,7 +208,7 @@ Inside the task, it runs `copilotBuild.ps1`
 
 ```
 cd SOLUTION-ROOT
-start powershell {& REPO-ROOT\.github\TaskLogs\copilotBuild.ps1}
+& REPO-ROOT\.github\TaskLogs\copilotBuild.ps1
 ```
 
 The `Run Unit Tests` task runs all generated *.exe file for each *.vcxproj that is created for test cases.
