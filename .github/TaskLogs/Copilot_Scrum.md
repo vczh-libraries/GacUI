@@ -120,13 +120,18 @@ some hint, when a file dialog opens a message dialog, this is the way to get the
 
 so I would like you to add a small job to task 3, add GetOpeningFileDialog and GetOpeningMessageDialog, and clean up the current file to use the two functions. By the way, no matter the message dialog is opened or not, file dialog will always have a null native parent, so you can always add that parent check.
 
+## UPDATE
+
+backgrouhd: although GuiOpenFileDialog and GuiSaveFileDialog share the same implementation, but some options or flags is only valid on GuiSaveFileDialog, so the last task is going to add a save dialog anyway. But in order not to disturb other test cases' log files, I would like you to insert a new task before the current Task No.5, to add that save dialog and the button. So the current Task No.5 (which will become Task No.6) do not have to change the UI
+
 # TASKS
 
 - [x] TASK No.1: Add FileItemMock + FileSystemMock (IFileSystemImpl)
 - [x] TASK No.2: TEST_CATEGORY for file dialog open + folder navigation + listing
 - [x] TASK No.3: TEST_CATEGORY for filter visibility + extension behavior (in dialog)
 - [x] TASK No.4: TEST_CATEGORY for typed selection + multiple selection (in dialog)
-- [ ] TASK No.5: TEST_CATEGORY for dialog message box interactions (open/save options)
+- [ ] TASK No.5: Add save dialog + open buttons (in test UI)
+- [ ] TASK No.6: TEST_CATEGORY for dialog message box interactions (open/save options)
 
 ## TASK No.1: Add FileItemMock + FileSystemMock (IFileSystemImpl)
 
@@ -224,7 +229,25 @@ Add dialog-driven tests that focus on the selection string in the file name text
 - The file dialog’s user-facing contract is the selection string plus final selected file list; testing it through the actual dialog ensures `FilePickerControl`’s `Selection` logic (based on data grid selection and text box input) is covered.
 - Selection outcomes depend on the active filter, which persists across navigation; tests should explicitly set the filter before selecting or typing file names.
 
-## TASK No.5: TEST_CATEGORY for dialog message box interactions (open/save options)
+## TASK No.5: Add save dialog + open buttons (in test UI)
+
+Add a `GuiSaveFileDialog` entry point to the unit-test UI so save-only options (prompt create / prompt overwrite) can be exercised without changing the UI in later tasks.
+
+### what to be done
+
+- In `Test/GacUISrc/UnitTest/TestApplication_Dialog_File.cpp`, extend the `resourceFileDialogs` test resource:
+	- Add a `<SaveFileDialog ref.Name="dialogSave" .../>` alongside the existing `<OpenFileDialog ref.Name="dialogOpen" .../>` (reuse the same `Title`, `Filter`, and `Directory` defaults so existing helper functions keep working).
+	- Add button(s) that open the save dialog with the options needed by later message-box tests, using the same `Clicked` handler pattern as the existing open buttons (set `dialogSave.Options`, call `dialogSave.ShowDialog()`, and write the joined result to `self.Text`):
+		- A button that enables `INativeDialogService::FileDialogOptions::FileDialogPromptCreateFile`.
+		- A button that enables `INativeDialogService::FileDialogOptions::FileDialogPromptOverwriteFile`.
+- Keep existing open-dialog buttons unchanged (text and behavior) so previously completed navigation / selection tests remain stable.
+
+### rationale
+
+- Some `INativeDialogService::FileDialogOptions` are meaningful only for `GuiSaveFileDialog`; introducing it as an explicit, isolated task avoids mixing UI wiring changes with message-box behavior assertions.
+- Keeping UI changes out of the message-box test task reduces churn in later task logs and keeps failures attributable to logic rather than resource changes.
+
+## TASK No.6: TEST_CATEGORY for dialog message box interactions (open/save options)
 
 Add dialog-driven tests for error/prompt message boxes triggered by `TryConfirm`, by causing invalid selections and answering prompts in the UI.
 
@@ -234,15 +257,13 @@ Add dialog-driven tests for error/prompt message boxes triggered by `TryConfirm`
 - When adding proxy frames (`UnitTestRemoteProtocol::OnNextIdleFrame`), name each frame by what the previous frame has done, and ensure each frame makes a visible UI change (split “type”, “click confirm”, “close message box”, “assert output” into separate frames when needed).
 - Keep assertions deterministic (avoid `A || B`); when asserting selection display strings, control the selection order and assert the exact expected string.
 - When reading the file name text box (`filePickerControl.textBox`), expect `FileDialogViewModel::GetDisplayString(...)` to always quote file names; multi-selection display strings are formatted like `"a";"b"` (and single selection like `"a"`).
-- When editing Workflow in `resourceFileDialogs`, follow Workflow syntax (`var name : type`) and use `&` for string concatenation.
-- Prefer setting dialog options in each button’s `Clicked` handler (toggling `Options` before `ShowDialog()`) instead of introducing more dialog instances when only options differ.
 - Reuse localized button texts from `Source/Utilities/FakeServices/Dialogs/Resource.xml` when finding buttons to click (`OK`, `Cancel`, `Yes`, `No`), so tests remain aligned with the dialog resources.
 - Locate and close message dialogs by native-parent relationships (`GetOpeningMessageDialog`) instead of relying on titles or sending `Enter`; closing should be a real UI click (so the test harness observes a UI update).
-- Cover at least these scenarios by configuring dialog options and filesystem state:
-	- **File must exist (open dialog)**: type a non-existing file name and press `Open`; assert a message box appears (using `GetApplication()->GetWindows()` to find it) and that clicking `OK` dismisses it while keeping the file dialog open.
-	- **Prompt create file (save dialog)**: enable `INativeDialogService::FileDialogOptions::FileDialogPromptCreateFile`, type a non-existing file name and press `Save`; assert the create prompt appears and validate both `Yes` (confirm selection) and `No` (stay in dialog) flows.
-	- **Prompt overwrite file (save dialog)**: enable `INativeDialogService::FileDialogOptions::FileDialogPromptOverwriteFile`, type an existing file name and press `Save`; assert the overwrite prompt and validate both `Yes`/`No` flows.
-	- **Multi-selection not enabled**: when multiple selection is disabled, attempt to confirm multiple selections and assert the “Multiple selection is not enabled” message box and dismissal behavior.
+- Cover at least these scenarios (reusing the existing open/save buttons from `resourceFileDialogs` to open dialogs with the intended options):
+	- **File must exist (open dialog)**: click the open button that enables `FileDialogFileMustExist`, type a non-existing file name and press `Open`; assert a message box appears and that clicking `OK` dismisses it while keeping the file dialog open.
+	- **Prompt create file (save dialog)**: click the save button that enables `FileDialogPromptCreateFile`, type a non-existing file name and press `Save`; assert the create prompt appears and validate both `Yes` (confirm selection) and `No` (stay in dialog) flows.
+	- **Prompt overwrite file (save dialog)**: click the save button that enables `FileDialogPromptOverwriteFile`, type an existing file name and press `Save`; assert the overwrite prompt and validate both `Yes`/`No` flows.
+	- **Multi-selection not enabled**: open a dialog without `FileDialogAllowMultipleSelection`, attempt to confirm multiple selections and assert the “Multiple selection is not enabled” message box and dismissal behavior.
 
 ### rationale
 
