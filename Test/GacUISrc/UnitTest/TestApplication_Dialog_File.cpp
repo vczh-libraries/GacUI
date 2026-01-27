@@ -415,7 +415,17 @@ TEST_FILE
 					DbClickFile(protocol, L"AA");
 				});
 
-				protocol->OnNextIdleFrame(L"Assert AA Listing", [=]()
+				protocol->OnNextIdleFrame(L"Assert AA Listing (Text Files) + Choose Filter: All Files", [=]()
+				{
+					auto dialogWindow = From(GetApplication()->GetWindows())
+						.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; })
+						.First();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(dialogWindow, L"filePickerControl", L"dataGrid");
+					TEST_ASSERT(dataGrid->GetItemProvider()->Count() == 0);
+					ChooseFilter(protocol, 0);
+				});
+
+				protocol->OnNextIdleFrame(L"Assert AA Listing (All Files)", [=]()
 				{
 					const wchar_t* expectedAA[] =
 					{
