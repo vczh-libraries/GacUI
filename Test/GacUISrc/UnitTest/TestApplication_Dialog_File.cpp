@@ -25,6 +25,7 @@ namespace gacui_unittest_template
 		auto root = Ptr(new FileItemMock);
 
 		AddFile(root, L"root.txt");
+		AddFile(root, L"root2.txt");
 		AddFile(root, L"README");
 
 		auto folderA = AddFolder(root, L"A");
@@ -121,7 +122,7 @@ namespace gacui_file_dialog_template
 		textBox->SetText(fileName);
 	}
 
-	void ClickFileInternal(UnitTestRemoteProtocol* protocol, const WString& fileName, bool doubleClick)
+	void ClickFileInternal(UnitTestRemoteProtocol* protocol, const WString& fileName, bool ctrl, bool shift, bool alt, bool doubleClick)
 	{
 		auto window = GetOpeningFileDialog();
 		auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"filePickerControl", L"dataGrid");
@@ -144,7 +145,7 @@ namespace gacui_file_dialog_template
 		}
 		else
 		{
-			LClickListItem(protocol, dataGrid, fileItemIndex);
+			LClickListItem(protocol, dataGrid, ctrl, shift, alt, fileItemIndex);
 		}
 	}
 
@@ -162,12 +163,17 @@ namespace gacui_file_dialog_template
 
 	void ClickFile(UnitTestRemoteProtocol* protocol, const WString& fileName)
 	{
-		ClickFileInternal(protocol, fileName, false);
+		ClickFileInternal(protocol, fileName, false, false, false, false);
 	}
 
 	void DbClickFile(UnitTestRemoteProtocol* protocol, const WString& fileName)
 	{
-		ClickFileInternal(protocol, fileName, true);
+		ClickFileInternal(protocol, fileName, false, false, false, true);
+	}
+
+	void ClickFile(UnitTestRemoteProtocol* protocol, const WString& fileName, bool ctrl, bool shift, bool alt)
+	{
+		ClickFileInternal(protocol, fileName, ctrl, shift, alt, false);
 	}
 
 	void ChooseFilter(UnitTestRemoteProtocol* protocol, vint filterIndex)
@@ -186,29 +192,55 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <Window ref.Name="self" Text="Dialog File Test" ClientSize="x:640 y:480">
-        <OpenFileDialog ref.Name="dialogOpen" Title="FileDialog" Filter="All Files (*.*)|*|Text Files (*.txt)|*.txt" Directory="" Options="FileDialogFileMustExist"/>
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
-          <att.Rows>
-            <_>composeType:MinSize</_>
-            <_>composeType:Percentage percentage:1.0</_>
-          </att.Rows>
-          <att.Columns>
-            <_>composeType:MinSize</_>
-            <_>composeType:Percentage percentage:1.0</_>
-          </att.Columns>
+				<OpenFileDialog ref.Name="dialogOpen" Title="FileDialog" Filter="All Files (*.*)|*|Text Files (*.txt)|*.txt" Directory=""/>
+				<Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+					<att.Rows>
+						<_>composeType:MinSize</_>
+						<_>composeType:MinSize</_>
+						<_>composeType:Percentage percentage:1.0</_>
+					</att.Rows>
+					<att.Columns>
+						<_>composeType:MinSize</_>
+						<_>composeType:Percentage percentage:1.0</_>
+					</att.Columns>
 
-          <Cell Site="row:0 column:0">
-            <Button Text="Open DefaultOptions">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <ev.Clicked-eval><![CDATA[{
-                if (dialogOpen.ShowDialog())
-                {
-                  self.Text = dialogOpen.FileName;
-                }
-              }]]></ev.Clicked-eval>
-            </Button>
-          </Cell>
-        </Table>
+					<Cell Site="row:0 column:0">
+						<Button Text="Open DefaultOptions">
+							<att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+							<ev.Clicked-eval><![CDATA[{
+								dialogOpen.Options = INativeDialogService::FileDialogOptions::FileDialogFileMustExist;
+								if (dialogOpen.ShowDialog())
+								{
+									var output:string = "";
+									for (fileName in dialogOpen.FileNames)
+									{
+										if (output != "") output = output & ";";
+										output = output & fileName;
+									}
+									self.Text = output;
+								}
+							}]]></ev.Clicked-eval>
+						</Button>
+					</Cell>
+					<Cell Site="row:1 column:0">
+						<Button Text="Open MultipleSelection">
+							<att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+							<ev.Clicked-eval><![CDATA[{
+								dialogOpen.Options = INativeDialogService::FileDialogOptions::FileDialogFileMustExist | INativeDialogService::FileDialogOptions::FileDialogAllowMultipleSelection;
+								if (dialogOpen.ShowDialog())
+								{
+									var output:string = "";
+									for (fileName in dialogOpen.FileNames)
+									{
+										if (output != "") output = output & ";";
+										output = output & fileName;
+									}
+									self.Text = output;
+								}
+							}]]></ev.Clicked-eval>
+						</Button>
+					</Cell>
+				</Table>
       </Window>
     </Instance>
   </Instance>
@@ -329,6 +361,7 @@ TEST_FILE
 						L"B",
 						L"README",
 						L"root.txt",
+						L"root2.txt",
 					};
 
 					auto dialogWindow = GetOpeningFileDialog();
@@ -343,6 +376,7 @@ TEST_FILE
 						L"A",
 						L"B",
 						L"root.txt",
+						L"root2.txt",
 					};
 
 					auto dialogWindow = GetOpeningFileDialog();
@@ -391,6 +425,7 @@ TEST_FILE
 						L"B",
 						L"README",
 						L"root.txt",
+						L"root2.txt",
 					};
 
 					auto dialogWindow = GetOpeningFileDialog();
@@ -455,6 +490,162 @@ TEST_FILE
 
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Dialog_File/Navigation_Listing_Root_A_AA"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceFileDialogs,
+				CreateInstaller(fsMock)
+			);
+		});
+	});
+
+	TEST_CATEGORY(L"File Dialog Multiple Selection")
+	{
+		TEST_CASE(L"Multiple selection: All Files (root) -> selection string -> output list")
+		{
+			Ptr<FileSystemMock> fsMock;
+			GacUIUnitTest_SetGuiMainProxy([&fsMock](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindControlByText<GuiButton>(window, L"Open MultipleSelection");
+					auto location = protocol->LocationOf(button);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Clicked: Open MultipleSelection", [=]()
+				{
+					ClickFile(protocol, L"README");
+				});
+				protocol->OnNextIdleFrame(L"Selected: README", [=]()
+				{
+					ClickFile(protocol, L"root.txt", true, false, false);
+				});
+				protocol->OnNextIdleFrame(L"Ctrl-Selected: root.txt", [=]()
+				{
+					auto dialogWindow = GetOpeningFileDialog();
+					auto textBox = FindObjectByName<GuiSinglelineTextBox>(dialogWindow, L"filePickerControl", L"textBox");
+					auto selectionText = textBox->GetText();
+					TEST_ASSERT(selectionText == WString::Unmanaged(L"\"README\";\"root.txt\""));
+					PressOpen(protocol);
+				});
+				protocol->OnNextIdleFrame(L"Pressed: Open", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dialog = FindObjectByName<GuiOpenFileDialog>(window, L"dialogOpen");
+					auto&& fileNames = dialog->GetFileNames();
+					TEST_ASSERT(fileNames.Count() == 2);
+					TEST_ASSERT(fileNames.Contains(FilePath(L"/README").GetFullPath()));
+					TEST_ASSERT(fileNames.Contains(FilePath(L"/root.txt").GetFullPath()));
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Dialog_File/MultipleSelection_Root_AllFiles"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceFileDialogs,
+				CreateInstaller(fsMock)
+			);
+		});
+
+		TEST_CASE(L"Multiple selection: Text Files filter (root) -> selection string -> output list")
+		{
+			Ptr<FileSystemMock> fsMock;
+			GacUIUnitTest_SetGuiMainProxy([&fsMock](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindControlByText<GuiButton>(window, L"Open MultipleSelection");
+					auto location = protocol->LocationOf(button);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Clicked: Open MultipleSelection", [=]()
+				{
+					ChooseFilter(protocol, 1);
+				});
+				protocol->OnNextIdleFrame(L"Selected Filter: Text Files", [=]()
+				{
+					ClickFile(protocol, L"root.txt");
+				});
+				protocol->OnNextIdleFrame(L"Selected: root.txt", [=]()
+				{
+					ClickFile(protocol, L"root2.txt", true, false, false);
+				});
+				protocol->OnNextIdleFrame(L"Ctrl-Selected: root2.txt", [=]()
+				{
+					auto dialogWindow = GetOpeningFileDialog();
+					auto textBox = FindObjectByName<GuiSinglelineTextBox>(dialogWindow, L"filePickerControl", L"textBox");
+					auto selectionText = textBox->GetText();
+					TEST_ASSERT(selectionText == WString::Unmanaged(L"\"root.txt\";\"root2.txt\""));
+					PressOpen(protocol);
+				});
+				protocol->OnNextIdleFrame(L"Pressed: Open", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dialog = FindObjectByName<GuiOpenFileDialog>(window, L"dialogOpen");
+					auto&& fileNames = dialog->GetFileNames();
+					TEST_ASSERT(fileNames.Count() == 2);
+					TEST_ASSERT(fileNames.Contains(FilePath(L"/root.txt").GetFullPath()));
+					TEST_ASSERT(fileNames.Contains(FilePath(L"/root2.txt").GetFullPath()));
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Dialog_File/MultipleSelection_Root_TextFiles"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceFileDialogs,
+				CreateInstaller(fsMock)
+			);
+		});
+
+		TEST_CASE(L"Ctrl-click behaves like click when multiple selection is disabled")
+		{
+			Ptr<FileSystemMock> fsMock;
+			GacUIUnitTest_SetGuiMainProxy([&fsMock](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindControlByText<GuiButton>(window, L"Open DefaultOptions");
+					auto location = protocol->LocationOf(button);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Clicked: Open DefaultOptions", [=]()
+				{
+					ClickFile(protocol, L"README");
+				});
+				protocol->OnNextIdleFrame(L"Selected: README", [=]()
+				{
+					ClickFile(protocol, L"root.txt", true, false, false);
+				});
+				protocol->OnNextIdleFrame(L"Ctrl-Clicked: root.txt", [=]()
+				{
+					auto dialogWindow = GetOpeningFileDialog();
+					auto textBox = FindObjectByName<GuiSinglelineTextBox>(dialogWindow, L"filePickerControl", L"textBox");
+					auto selectionText = textBox->GetText();
+					TEST_ASSERT(selectionText == WString::Unmanaged(L"root.txt"));
+					PressOpen(protocol);
+				});
+				protocol->OnNextIdleFrame(L"Pressed: Open", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dialog = FindObjectByName<GuiOpenFileDialog>(window, L"dialogOpen");
+					auto&& fileNames = dialog->GetFileNames();
+					TEST_ASSERT(fileNames.Count() == 1);
+					TEST_ASSERT(fileNames[0] == FilePath(L"/root.txt").GetFullPath());
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Dialog_File/SingleSelection_CtrlClickBehavesLikeClick"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceFileDialogs,
 				CreateInstaller(fsMock)
