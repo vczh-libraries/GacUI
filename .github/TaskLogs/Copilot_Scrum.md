@@ -114,6 +114,12 @@ Please reuse the test case design in the scrum document but rework them to work 
 
 it looks like Task No.2 already covers some filtering, please examine Task 3 carefully, I guess we can remove some tests in Task 3 which are already covered in Test 2, and merge the rest with Task 6 (therefore there will be no Task6 after merging). I believe Task 6 is also about extension behavior, so merging it into 3 is reasonable.
 
+## UPDATE
+
+some hint, when a file dialog opens a message dialog, this is the way to get the object of both: before opening a message dialog, just like what it was done in the test ``` auto dialogWindow = From(GetApplication()->GetWindows()) 	.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; }) 	.First(); ``` after ``` auto dialogWindow = From(GetApplication()->GetWindows()) 	.Where([](GuiWindow* w) { return w->GetText() == L"FileDialog"; && w->GetNativeWindow()->GetParent() == nullptr; })  	.First(); ``` Both file dialog and message dialog have the same title, the one with null parent will be file dialog, otherwise will be message dialog. Refer to [TestApplication_Dialog_Message.cpp](Test/GacUISrc/UnitTest/TestApplication_Dialog_Message.cpp)  about how to react to a message dialog
+
+so I would like you to add a small job to task 3, add GetOpeningFileDialog and GetOpeningMessageDialog, and clean up the current file to use the two functions. By the way, no matter the message dialog is opened or not, file dialog will always have a null native parent, so you can always add that parent check.
+
 # TASKS
 
 - [x] TASK No.1: Add FileItemMock + FileSystemMock (IFileSystemImpl)
@@ -179,13 +185,17 @@ Add dialog-driven tests validating that changing the filter updates the listing,
 ### what to be done
 
 - In `Test/GacUISrc/UnitTest/TestApplication_Dialog_File.cpp`, add a `TEST_CATEGORY` dedicated to filter behaviors.
+- Add helper functions for selecting the correct opened dialog window when both file dialog and message dialog share the same title:
+	- `GetOpeningFileDialog`: find `GuiWindow::GetText() == L"FileDialog"` with `w->GetNativeWindow()->GetParent() == nullptr`.
+	- `GetOpeningMessageDialog`: find `GuiWindow::GetText() == L"FileDialog"` with `w->GetNativeWindow()->GetParent() != nullptr`.
+	- Refactor existing helper functions (e.g. `PressButton`, `TypeFile`, `ClickFileInternal`, `ChooseFilter`) to use `GetOpeningFileDialog` instead of duplicating `From(GetApplication()->GetWindows())...`.
 - Reuse the test dialog’s `Filter="All Files (*.*)|*|Text Files (*.txt)|*.txt"` and drive the UI (avoid re-testing basic folder navigation and listing already covered by TASK No.2; only assert deltas caused by filter/extension logic):
 	- Switch filters via `ChooseFilter(protocol, filterIndex)`.
 	- Add a minimal visibility assertion (e.g. in `/A`, `a.txt` remains visible in `Text Files`, while a known non-`.txt` entry becomes invisible).
 - Add typed-selection subcases that demonstrate the chosen filter’s expected extension behavior:
 	- Navigate into `/A`, choose `Text Files (*.txt)`, type `L"a"` and click `Open`; assert the returned filename is `/A/a.txt` (extension auto-append).
 	- Choose `All Files (*.*)`, type `L"README"` at root and click `Open`; assert the returned filename is `/README` (no auto-append under the all-files filter).
-	- Regression: choose `Text Files (*.txt)`, type `L"README"` at root and click `Open`; expected behavior is the dialog stays open and shows the “File(s) not exist” message because the real target is `README.txt` (auto-append happens before existence checks). If the test fails, fix `FileSystemViewModel::TryConfirm` in `Source/Utilities/FakeServices/GuiFakeDialogServiceBase_FileDialog.cpp` so that extension auto-append happens before existence/prompt checks, while folder navigation still uses the raw, non-appended name when the selection resolves to a folder.
+	- Regression: choose `Text Files (*.txt)`, type `L"README"` at root and click `Open`; expected behavior is the dialog stays open and shows the “File(s) not exist” message because the real target is `README.txt` (auto-append happens before existence checks). Use `GetOpeningMessageDialog` to locate the message dialog and close it (following patterns in `Test/GacUISrc/UnitTest/TestApplication_Dialog_Message.cpp`). If the test fails, fix `FileSystemViewModel::TryConfirm` in `Source/Utilities/FakeServices/GuiFakeDialogServiceBase_FileDialog.cpp` so that extension auto-append happens before existence/prompt checks, while folder navigation still uses the raw, non-appended name when the selection resolves to a folder.
 
 ### rationale
 
