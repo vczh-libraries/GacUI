@@ -185,6 +185,8 @@ This script is also required to run before compiling only when Visual Studio Cod
 & REPO-ROOT\.github\TaskLogs\copilotDebug_Stop.ps1
 ```
 
+If there is any error message, it means the debugger is not alive, it is good.
+
 ### Sending Commands to Debugger
 
 ```
@@ -235,6 +237,7 @@ When verifying test projects on Windows, msbuild is used to build a solution (`*
 A solution contains many project (`*.vcxproj`) files, a project generates an executable (`*.exe`) file.
 
 Before building, ensure the debugger has stopped, otherwise the running unit test process will cause a linking failure.
+If there is any error message, it means the debugger is not alive, it is good.
 
 ```
 & REPO-ROOT\.github\TaskLogs\copilotDebug_Stop.ps1
