@@ -231,6 +231,11 @@ Add dialog-driven tests for error/prompt message boxes triggered by `TryConfirm`
 ### what to be done
 
 - In `Test/GacUISrc/UnitTest/TestApplication_Dialog_File.cpp`, add a `TEST_CATEGORY` for message box interactions.
+- When adding proxy frames (`UnitTestRemoteProtocol::OnNextIdleFrame`), name each frame by what the previous frame has done, and ensure each frame makes a visible UI change (split “type”, “click confirm”, “close message box”, “assert output” into separate frames when needed).
+- Keep assertions deterministic (avoid `A || B`); when asserting selection display strings, control the selection order and assert the exact expected string.
+- When reading the file name text box (`filePickerControl.textBox`), expect `FileDialogViewModel::GetDisplayString(...)` to always quote file names; multi-selection display strings are formatted like `"a";"b"` (and single selection like `"a"`).
+- When editing Workflow in `resourceFileDialogs`, follow Workflow syntax (`var name : type`) and use `&` for string concatenation.
+- Prefer setting dialog options in each button’s `Clicked` handler (toggling `Options` before `ShowDialog()`) instead of introducing more dialog instances when only options differ.
 - Reuse localized button texts from `Source/Utilities/FakeServices/Dialogs/Resource.xml` when finding buttons to click (`OK`, `Cancel`, `Yes`, `No`), so tests remain aligned with the dialog resources.
 - Locate and close message dialogs by native-parent relationships (`GetOpeningMessageDialog`) instead of relying on titles or sending `Enter`; closing should be a real UI click (so the test harness observes a UI update).
 - Cover at least these scenarios by configuring dialog options and filesystem state:
