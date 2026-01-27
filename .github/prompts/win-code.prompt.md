@@ -170,7 +170,7 @@ CDB accepts exactly same commands as WinDBG, and here are some recommended comma
 - **bl**, **.bpcmds**, **be NUMBERS**, **bd NUMBERS**, **bc NUMBERS**, **bsc NUMBER CONDITION**: list, list with attached commands, enable, disable, delete, attach a command to break-point(s).
 - **p**: step over, aka execute the complete current line.
 - **t**: step in, aka execute the currrent line, if any function is called, goes into the function.
-**pt**: step out, aka run until the end of the current function.
+- **pt**: step out, aka run until the end of the current function.
 
 An `.natvis` file is automatically offered with the debugger,
 it formats some primitive types defined in the `Vlpp` project,
