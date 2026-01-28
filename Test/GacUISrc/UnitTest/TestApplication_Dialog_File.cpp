@@ -256,16 +256,7 @@ TEST_FILE
                 dialogSave.Options = INativeDialogService::FileDialogOptions::FileDialogPromptCreateFile;
                 if (dialogSave.ShowDialog())
                 {
-                  var output : string = "";
-                  for (fileName in dialogSave.FileNames)
-                  {
-                    if (output != "")
-                    {
-                      output = output & ";";
-                    }
-                    output = output & fileName;
-                  }
-                  self.Text = output;
+                  self.Text = dialogSave.FileName;
                 }
               }]]></ev.Clicked-eval>
             </Button>
@@ -277,16 +268,7 @@ TEST_FILE
                 dialogSave.Options = INativeDialogService::FileDialogOptions::FileDialogPromptOverwriteFile;
                 if (dialogSave.ShowDialog())
                 {
-                  var output : string = "";
-                  for (fileName in dialogSave.FileNames)
-                  {
-                    if (output != "")
-                    {
-                      output = output & ";";
-                    }
-                    output = output & fileName;
-                  }
-                  self.Text = output;
+                  self.Text = dialogSave.FileName;
                 }
               }]]></ev.Clicked-eval>
             </Button>
