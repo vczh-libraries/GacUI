@@ -14,9 +14,12 @@ Read the first word of the request, and read an additional instruction file when
 - "ask": REPO-ROOT/.github/prompts/win-ask.prompt.md
 - "code": REPO-ROOT/.github/prompts/win-code.prompt.md
 
-If the first word is not in the list:
-- Follow REPO-ROOT/.github/prompts/win-code.prompt.md
-- Skip `Step 2`
+### Exceptions
+
+- If the latest chat message is simply "execute and verify", it means do `execute` followed by `verify`.
+- If the first word is not in the list:
+  - Follow REPO-ROOT/.github/prompts/win-code.prompt.md
+  - Skip `Step 2`
 
 ## Step 2
 

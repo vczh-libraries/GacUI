@@ -130,7 +130,7 @@ backgrouhd: although GuiOpenFileDialog and GuiSaveFileDialog share the same impl
 - [x] TASK No.2: TEST_CATEGORY for file dialog open + folder navigation + listing
 - [x] TASK No.3: TEST_CATEGORY for filter visibility + extension behavior (in dialog)
 - [x] TASK No.4: TEST_CATEGORY for typed selection + multiple selection (in dialog)
-- [ ] TASK No.5: Add save dialog + open buttons (in test UI)
+- [x] TASK No.5: Add save dialog + open buttons (in test UI)
 - [ ] TASK No.6: TEST_CATEGORY for dialog message box interactions (open/save options)
 
 ## TASK No.1: Add FileItemMock + FileSystemMock (IFileSystemImpl)

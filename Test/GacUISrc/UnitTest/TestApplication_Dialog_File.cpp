@@ -193,8 +193,11 @@ TEST_FILE
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <Window ref.Name="self" Text="Dialog File Test" ClientSize="x:640 y:480">
 				<OpenFileDialog ref.Name="dialogOpen" Title="FileDialog" Filter="All Files (*.*)|*|Text Files (*.txt)|*.txt" Directory=""/>
+				<SaveFileDialog ref.Name="dialogSave" Title="FileDialog" Filter="All Files (*.*)|*|Text Files (*.txt)|*.txt" Directory=""/>
 				<Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
 					<att.Rows>
+						<_>composeType:MinSize</_>
+						<_>composeType:MinSize</_>
 						<_>composeType:MinSize</_>
 						<_>composeType:MinSize</_>
 						<_>composeType:Percentage percentage:1.0</_>
@@ -234,6 +237,48 @@ TEST_FILE
 								{
 									var output : string = "";
 									for (fileName in dialogOpen.FileNames)
+									{
+										if (output != "")
+										{
+											output = output & ";";
+										}
+										output = output & fileName;
+									}
+									self.Text = output;
+								}
+							}]]></ev.Clicked-eval>
+						</Button>
+					</Cell>
+					<Cell Site="row:2 column:0">
+						<Button Text="Save PromptCreateFile">
+							<att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+							<ev.Clicked-eval><![CDATA[{
+								dialogSave.Options = INativeDialogService::FileDialogOptions::FileDialogPromptCreateFile;
+								if (dialogSave.ShowDialog())
+								{
+									var output : string = "";
+									for (fileName in dialogSave.FileNames)
+									{
+										if (output != "")
+										{
+											output = output & ";";
+										}
+										output = output & fileName;
+									}
+									self.Text = output;
+								}
+							}]]></ev.Clicked-eval>
+						</Button>
+					</Cell>
+					<Cell Site="row:3 column:0">
+						<Button Text="Save PromptOverwriteFile">
+							<att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+							<ev.Clicked-eval><![CDATA[{
+								dialogSave.Options = INativeDialogService::FileDialogOptions::FileDialogPromptOverwriteFile;
+								if (dialogSave.ShowDialog())
+								{
+									var output : string = "";
+									for (fileName in dialogSave.FileNames)
 									{
 										if (output != "")
 										{
@@ -293,6 +338,76 @@ TEST_FILE
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Dialog_File/OpenAndClose"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceFileDialogs,
+				CreateInstaller(fsMock)
+			);
+		});
+
+		TEST_CASE(L"Save PromptCreateFile: Open and Close")
+		{
+			Ptr<FileSystemMock> fsMock;
+			GacUIUnitTest_SetGuiMainProxy([&fsMock](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindControlByText<GuiButton>(window, L"Save PromptCreateFile");
+					auto location = protocol->LocationOf(button);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
+				{
+					PressCancel(protocol);
+				});
+				protocol->OnNextIdleFrame(L"Cancel", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dialog = FindObjectByName<GuiSaveFileDialog>(window, L"dialogSave");
+					TEST_ASSERT(dialog->GetFileName().Length() == 0);
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Dialog_File/SavePromptCreateFile_OpenAndClose"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceFileDialogs,
+				CreateInstaller(fsMock)
+			);
+		});
+
+		TEST_CASE(L"Save PromptOverwriteFile: Open and Close")
+		{
+			Ptr<FileSystemMock> fsMock;
+			GacUIUnitTest_SetGuiMainProxy([&fsMock](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindControlByText<GuiButton>(window, L"Save PromptOverwriteFile");
+					auto location = protocol->LocationOf(button);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
+				{
+					PressCancel(protocol);
+				});
+				protocol->OnNextIdleFrame(L"Cancel", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dialog = FindObjectByName<GuiSaveFileDialog>(window, L"dialogSave");
+					TEST_ASSERT(dialog->GetFileName().Length() == 0);
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Dialog_File/SavePromptOverwriteFile_OpenAndClose"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceFileDialogs,
 				CreateInstaller(fsMock)
