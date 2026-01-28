@@ -282,7 +282,7 @@ Add dialog-driven tests for error/prompt message boxes triggered by `TryConfirm`
 - Locate and close message dialogs by native-parent relationships (`GetOpeningMessageDialog`) instead of relying on titles or sending `Enter`; closing should be a real UI click (so the test harness observes a UI update).
 - Cover at least these scenarios (reusing the existing open/save buttons from `resourceFileDialogs` to open dialogs with the intended options):
 	- **File must exist (open dialog)**: click the open button that enables `FileDialogFileMustExist`, type a non-existing file name and press `Open`; assert a message box appears and that clicking `OK` dismisses it while keeping the file dialog open.
-	- **Prompt create file (save dialog)**: click the save button that enables `FileDialogPromptCreateFile`, type a non-existing file name and press `Save`; assert the create prompt appears and validate both `OK` (confirm selection) and `Cancel` (stay in dialog) flows.
+	- **Prompt create file (open dialog)**: open a dialog that enables `FileDialogPromptCreateFile` (add a launcher button in `resourceFileDialogs` if needed), type a non-existing file name and press `Open`; assert the create prompt appears and validate both `OK` (confirm selection) and `Cancel` (stay in dialog) flows.
 	- **Prompt overwrite file (save dialog)**: click the save button that enables `FileDialogPromptOverwriteFile`, type an existing file name and press `Save`; assert the overwrite prompt and validate both `OK`/`Cancel` flows.
 	- **Multi-selection not enabled**: open a dialog without `FileDialogAllowMultipleSelection`, attempt to confirm multiple selections and assert the “Multiple selection is not enabled” message box and dismissal behavior.
 
