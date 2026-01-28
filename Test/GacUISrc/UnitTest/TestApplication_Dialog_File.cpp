@@ -309,27 +309,27 @@ TEST_FILE
               }]]></ev.Clicked-eval>
             </Button>
           </Cell>
-					<Cell Site="row:4 column:0">
-						<Button Text="Open PromptCreateFile">
-							<att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-							<ev.Clicked-eval><![CDATA[{
-								dialogOpen.Options = INativeDialogService::FileDialogOptions::FileDialogPromptCreateFile;
-								if (dialogOpen.ShowDialog())
-								{
-									var output : string = "";
-									for (fileName in dialogOpen.FileNames)
-									{
-										if (output != "")
-										{
-											output = output & ";";
-										}
-										output = output & fileName;
-									}
-									self.Text = output;
-								}
-							}]]></ev.Clicked-eval>
-						</Button>
-					</Cell>
+          <Cell Site="row:4 column:0">
+            <Button Text="Open PromptCreateFile">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{
+                dialogOpen.Options = INativeDialogService::FileDialogOptions::FileDialogPromptCreateFile;
+                if (dialogOpen.ShowDialog())
+                {
+                  var output : string = "";
+                  for (fileName in dialogOpen.FileNames)
+                  {
+                    if (output != "")
+                    {
+                      output = output & ";";
+                    }
+                    output = output & fileName;
+                  }
+                  self.Text = output;
+                }
+              }]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
         </Table>
       </Window>
     </Instance>
@@ -447,13 +447,7 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Popped up overwrite prompt", [=]()
 				{
-					auto messageWindow = GetOpeningMessageDialog();
-					auto buttonOk = FindControlByText<GuiButton>(messageWindow, L"OK");
-					auto location = protocol->LocationOf(buttonOk);
-					GetApplication()->InvokeInMainThread(messageWindow, [=]()
-					{
-						protocol->LClick(location);
-					});
+					PressMessageOK(protocol);
 				});
 				protocol->OnNextIdleFrame(L"Confirmed", [=]()
 				{
@@ -856,13 +850,7 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Popped up message dialog", [=]()
 				{
-					auto messageWindow = GetOpeningMessageDialog();
-					auto buttonOK = FindControlByText<GuiButton>(messageWindow, L"OK");
-					auto location = protocol->LocationOf(buttonOK);
-					GetApplication()->InvokeInMainThread(messageWindow, [=]()
-					{
-						protocol->LClick(location);
-					});
+					PressMessageOK(protocol);
 				});
 				protocol->OnNextIdleFrame(L"Attempt 2: All Files + README (pass)", [=]()
 				{
@@ -913,13 +901,7 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Popped up message dialog", [=]()
 				{
-					auto messageWindow = GetOpeningMessageDialog();
-					auto buttonOK = FindControlByText<GuiButton>(messageWindow, L"OK");
-					auto location = protocol->LocationOf(buttonOK);
-					GetApplication()->InvokeInMainThread(messageWindow, [=]()
-					{
-						protocol->LClick(location);
-					});
+					PressMessageOK(protocol);
 				});
 				protocol->OnNextIdleFrame(L"Attempt 2: Text Files + root (pass)", [=]()
 				{
@@ -970,13 +952,7 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Popped up message dialog", [=]()
 				{
-					auto messageWindow = GetOpeningMessageDialog();
-					auto buttonOK = FindControlByText<GuiButton>(messageWindow, L"OK");
-					auto location = protocol->LocationOf(buttonOK);
-					GetApplication()->InvokeInMainThread(messageWindow, [=]()
-					{
-						protocol->LClick(location);
-					});
+					PressMessageOK(protocol);
 				});
 				protocol->OnNextIdleFrame(L"Attempt 2: Text Files + root.txt (pass)", [=]()
 				{
