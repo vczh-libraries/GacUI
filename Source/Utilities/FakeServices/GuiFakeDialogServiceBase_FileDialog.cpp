@@ -671,47 +671,47 @@ View Model (IFileDialogViewModel)
 							return false;
 						}
 					}
+				}
 
-					WString questionMessage;
-					List<vint>* questionFiles = nullptr;
-					if (selectToSave && promptOverriteFile)
-					{
-						questionMessage = dialogAskOverrideFile;
-						questionFiles = &files;
-					}
-					if (!selectToSave && promptCreateFile)
-					{
-						questionMessage = dialogAskCreateFile;
-						questionFiles = &unexistings;
-					}
+				WString questionMessage;
+				List<vint>* questionFiles = nullptr;
+				if (selectToSave && promptOverriteFile)
+				{
+					questionMessage = dialogAskOverrideFile;
+					questionFiles = &files;
+				}
+				if (!selectToSave && promptCreateFile && unexistings.Count() > 0)
+				{
+					questionMessage = dialogAskCreateFile;
+					questionFiles = &unexistings;
+				}
 
-					if (questionFiles && questionFiles->Count() > 0)
+				if (questionFiles && questionFiles->Count() > 0)
+				{
+					auto message = stream::GenerateToStream([&](stream::TextWriter& writer)
 					{
-						auto message = stream::GenerateToStream([&](stream::TextWriter& writer)
+						writer.WriteString(questionMessage);
+						for (vint index : *questionFiles)
 						{
-							writer.WriteString(questionMessage);
-							for (vint index : *questionFiles)
-							{
-								writer.WriteLine(WString::Empty);
-								writer.WriteString(L"  ");
-								writer.WriteString(wd.GetRelativePathFor(paths[index]));
-							}
-						});
-
-						auto result = dialogService->ShowMessageBox(
-							owner ? owner->GetNativeWindow() : nullptr,
-							message,
-							owner->GetText(),
-							INativeDialogService::DisplayOKCancel,
-							INativeDialogService::DefaultThird,
-							INativeDialogService::IconQuestion,
-							INativeDialogService::ModalWindow
-							);
-
-						if (result == INativeDialogService::SelectCancel)
-						{
-							return false;
+							writer.WriteLine(WString::Empty);
+							writer.WriteString(L"  ");
+							writer.WriteString(wd.GetRelativePathFor(paths[index]));
 						}
+					});
+
+					auto result = dialogService->ShowMessageBox(
+						owner ? owner->GetNativeWindow() : nullptr,
+						message,
+						owner->GetText(),
+						INativeDialogService::DisplayOKCancel,
+						INativeDialogService::DefaultThird,
+						INativeDialogService::IconQuestion,
+						INativeDialogService::ModalWindow
+						);
+
+					if (result == INativeDialogService::SelectCancel)
+					{
+						return false;
 					}
 				}
 
