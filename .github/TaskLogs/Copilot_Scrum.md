@@ -124,6 +124,10 @@ so I would like you to add a small job to task 3, add GetOpeningFileDialog and G
 
 backgrouhd: although GuiOpenFileDialog and GuiSaveFileDialog share the same implementation, but some options or flags is only valid on GuiSaveFileDialog, so the last task is going to add a save dialog anyway. But in order not to disturb other test cases' log files, I would like you to insert a new task before the current Task No.5, to add that save dialog and the button. So the current Task No.5 (which will become Task No.6) do not have to change the UI
 
+## UPDATE
+
+add a new task before No.6. The finished No.5 made two duumy test cases for save dialog. You need to change the first one to type an unexisting file name and click OK, another one (with overriding prompt enabled) to click an existing file, click OK and solve the prompt.
+
 # TASKS
 
 - [x] TASK No.1: Add FileItemMock + FileSystemMock (IFileSystemImpl)
@@ -131,7 +135,8 @@ backgrouhd: although GuiOpenFileDialog and GuiSaveFileDialog share the same impl
 - [x] TASK No.3: TEST_CATEGORY for filter visibility + extension behavior (in dialog)
 - [x] TASK No.4: TEST_CATEGORY for typed selection + multiple selection (in dialog)
 - [x] TASK No.5: Add save dialog + open buttons (in test UI)
-- [ ] TASK No.6: TEST_CATEGORY for dialog message box interactions (open/save options)
+- [ ] TASK No.6: Update save dialog test cases (replace placeholders)
+- [ ] TASK No.7: TEST_CATEGORY for dialog message box interactions (open/save options)
 
 ## TASK No.1: Add FileItemMock + FileSystemMock (IFileSystemImpl)
 
@@ -247,7 +252,23 @@ Add a `GuiSaveFileDialog` entry point to the unit-test UI so save-only options (
 - Some `INativeDialogService::FileDialogOptions` are meaningful only for `GuiSaveFileDialog`; introducing it as an explicit, isolated task avoids mixing UI wiring changes with message-box behavior assertions.
 - Keeping UI changes out of the message-box test task reduces churn in later task logs and keeps failures attributable to logic rather than resource changes.
 
-## TASK No.6: TEST_CATEGORY for dialog message box interactions (open/save options)
+## TASK No.6: Update save dialog test cases (replace placeholders)
+
+Replace the placeholder save-dialog tests introduced during TASK No.5 with meaningful coverage that matches intended user interactions.
+
+### what to be done
+
+- In `Test/GacUISrc/UnitTest/TestApplication_Dialog_File.cpp`, locate the two placeholder save-dialog test cases introduced during TASK No.5 and update them:
+	- **Type an unexisting file name**: type a non-existing file name in the file-name text box and click `OK`.
+	- **Overwrite prompt (click existing file)**: enable overwrite prompting, click an existing file in the file list, click `OK`, and solve the overwrite prompt so the dialog closes with that selection.
+- Keep this task focused on making the save-dialog test cases realistic; comprehensive message-box interaction coverage stays in the next task.
+
+### rationale
+
+- The placeholder save-dialog tests from TASK No.5 are not aligned with the intended interaction sequences (typed new name vs. clicking an existing file and handling overwrite prompts).
+- A dedicated adjustment task keeps later message-box interaction tests focused on prompt logic instead of compensating for earlier placeholder behaviors.
+
+## TASK No.7: TEST_CATEGORY for dialog message box interactions (open/save options)
 
 Add dialog-driven tests for error/prompt message boxes triggered by `TryConfirm`, by causing invalid selections and answering prompts in the UI.
 
