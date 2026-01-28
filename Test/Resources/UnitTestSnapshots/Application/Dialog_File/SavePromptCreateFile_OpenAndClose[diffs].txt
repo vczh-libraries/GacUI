@@ -236,6 +236,19 @@
 ========================================
 12
 ========================================
+{"id": 432, "diffType": "Modified", "content": null, "children": [632]}
+{"id": 520, "diffType": "Deleted", "content": null, "children": null}
+{"id": 632, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 158, "bounds": {"x1": 167, "y1": 364, "x2": 168, "y2": 380}, "validArea": {"x1": 167, "y1": 364, "x2": 168, "y2": 380}}, "children": null}
+========================================
+13
+========================================
+{"id": 632, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 158, "bounds": {"x1": 167, "y1": 364, "x2": 217, "y2": 380}, "validArea": {"x1": 167, "y1": 364, "x2": 217, "y2": 380}}, "children": null}
+========================================
+14
+========================================
+========================================
+15
+========================================
 {"id": 8, "diffType": "Modified", "content": null, "children": [6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50, 54]}
 {"id": 148, "diffType": "Deleted", "content": null, "children": null}
 {"id": 152, "diffType": "Deleted", "content": null, "children": null}
@@ -268,7 +281,6 @@
 {"id": 472, "diffType": "Deleted", "content": null, "children": null}
 {"id": 476, "diffType": "Deleted", "content": null, "children": null}
 {"id": 484, "diffType": "Deleted", "content": null, "children": null}
-{"id": 520, "diffType": "Deleted", "content": null, "children": null}
 {"id": 532, "diffType": "Deleted", "content": null, "children": null}
 {"id": 536, "diffType": "Deleted", "content": null, "children": null}
 {"id": 544, "diffType": "Deleted", "content": null, "children": null}
@@ -292,6 +304,7 @@
 {"id": 620, "diffType": "Deleted", "content": null, "children": null}
 {"id": 624, "diffType": "Deleted", "content": null, "children": null}
 {"id": 628, "diffType": "Deleted", "content": null, "children": null}
+{"id": 632, "diffType": "Deleted", "content": null, "children": null}
 ========================================
-13
+16
 ========================================
