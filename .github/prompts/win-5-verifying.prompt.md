@@ -69,10 +69,15 @@
 
 - You can refer to `Copilot_Task.md` and `Copilot_Planning.md` to understand the context, keep the target unchanged.
 - Dig into related source code carefully, make your assumption about the root cause.
-  - Debug the unit test directly to get accurate clues if you are not confident of the assumption
-    - Follow `Debugging Unit Test` to start a debugger and run WinDBG commands.
-    - From there you can set break-points, walk through code by lines, and inspect variables.
-    - You must stop the debugger after you finish debugging.
+- `TEST_ASSERT` in test cases or `vl::console::Console::WriteLine` in the source code would help.
+  - They can make sure the expected code path is executed.
+  - They can print variable values after converting to strings.
+- Debug the unit test directly to get accurate clues if you are not confident of the assumption
+  - Follow `Debugging Unit Test` to start a debugger and run WinDBG commands.
+  - From there you can set break-points, walk through code by lines, and inspect variables.
+  - You must stop the debugger after you finish debugging.
+- When you have made a few guess but did not progress, you are recommended to debug the unit test directly.
+  - Break-points are very useful to ensure the expected code path is executed, and you can inspect variable values.
 
 #### Fix Failed Test Cases
 
