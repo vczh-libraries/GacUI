@@ -136,7 +136,7 @@ add a new task before No.6. The finished No.5 made two duumy test cases for save
 - [x] TASK No.4: TEST_CATEGORY for typed selection + multiple selection (in dialog)
 - [x] TASK No.5: Add save dialog + open buttons (in test UI)
 - [x] TASK No.6: Update save dialog test cases (replace placeholders)
-- [ ] TASK No.7: TEST_CATEGORY for dialog message box interactions (open/save options)
+- [x] TASK No.7: TEST_CATEGORY for dialog message box interactions (open/save options)
 
 ## TASK No.1: Add FileItemMock + FileSystemMock (IFileSystemImpl)
 
