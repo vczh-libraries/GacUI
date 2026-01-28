@@ -30,6 +30,9 @@ namespace gacuisrc_unittest
         var dialogOpen : ::presentation::controls::GuiOpenFileDialog* = null of (::presentation::controls::GuiOpenFileDialog*);
 
         @cpp:Protected
+        var dialogSave : ::presentation::controls::GuiSaveFileDialog* = null of (::presentation::controls::GuiSaveFileDialog*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
@@ -49,6 +52,24 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>7 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>8 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>9 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>10 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>11 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>12 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -74,6 +95,20 @@ namespace gacuisrc_unittest
             {
                 self.AddComponent(dialogOpen);
             }
+            (dialogSave = new (::presentation::controls::GuiSaveFileDialog*)());
+            <this>.SetNamedObject("dialogSave", dialogSave);
+            {
+                (dialogSave.Directory = "");
+            }
+            {
+                (dialogSave.Filter = "All Files (*.*)|*|Text Files (*.txt)|*.txt");
+            }
+            {
+                (dialogSave.Title = "FileDialog");
+            }
+            {
+                self.AddComponent(dialogSave);
+            }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
                 (<precompile>0.CellPadding = 5 of (::system::Int64));
@@ -82,10 +117,12 @@ namespace gacuisrc_unittest
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>0.SetRowsAndColumns(3, 2);
+                <precompile>0.SetRowsAndColumns(5, 2);
                 <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(3, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(4, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
@@ -128,6 +165,46 @@ namespace gacuisrc_unittest
             }
             {
                 <precompile>0.AddChild(<precompile>4);
+            }
+            (<precompile>7 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>7.SetSite(2, 0, 1, 1);
+            }
+            {
+                (<precompile>8 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>9 = <precompile>8.BoundsComposition);
+            {
+                (<precompile>9.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>8.Text = "Save PromptCreateFile");
+            }
+            {
+                <precompile>7.AddChild(<precompile>8.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>7);
+            }
+            (<precompile>10 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>10.SetSite(3, 0, 1, 1);
+            }
+            {
+                (<precompile>11 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>12 = <precompile>11.BoundsComposition);
+            {
+                (<precompile>12.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>11.Text = "Save PromptOverwriteFile");
+            }
+            {
+                <precompile>10.AddChild(<precompile>11.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>10);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
@@ -185,6 +262,28 @@ namespace gacuisrc_unittest
                     }
                 };
                 attach(<precompile>5.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (dialogSave.Options = INativeDialogService::FileDialogOptions::FileDialogPromptCreateFile);
+                    if (dialogSave.ShowDialog())
+                    {
+                        (self.Text = dialogSave.FileName);
+                    }
+                };
+                attach(<precompile>8.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (dialogSave.Options = INativeDialogService::FileDialogOptions::FileDialogPromptOverwriteFile);
+                    if (dialogSave.ShowDialog())
+                    {
+                        (self.Text = dialogSave.FileName);
+                    }
+                };
+                attach(<precompile>11.Clicked, <event-handler>);
             }
         }
 
