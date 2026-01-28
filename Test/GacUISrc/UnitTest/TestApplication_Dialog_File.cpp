@@ -58,7 +58,7 @@ namespace gacui_file_dialog_template
 	{
 		auto mainWindow = GetApplication()->GetMainWindow();
 		auto mainNativeWindow = mainWindow ? mainWindow->GetNativeWindow() : nullptr;
-		return From(GetApplication()->GetWindows())
+		auto openingDialog = From(GetApplication()->GetWindows())
 			.Where([](GuiWindow* w)
 			{
 				return w->GetText() == L"FileDialog";
@@ -70,14 +70,16 @@ namespace gacui_file_dialog_template
 				auto parent = nativeWindow->GetParent();
 				return parent == nullptr || parent == mainNativeWindow;
 			})
-			.First();
+			.First(nullptr);
+		TEST_ASSERT(openingDialog != nullptr);
+		return openingDialog;
 	}
 
 	GuiWindow* GetOpeningMessageDialog()
 	{
 		auto fileDialogWindow = GetOpeningFileDialog();
 		auto fileDialogNativeWindow = fileDialogWindow ? fileDialogWindow->GetNativeWindow() : nullptr;
-		return From(GetApplication()->GetWindows())
+		auto openingDialog = From(GetApplication()->GetWindows())
 			.Where([=](GuiWindow* w)
 			{
 				if (w == fileDialogWindow) return false;
@@ -87,6 +89,8 @@ namespace gacui_file_dialog_template
 				return nativeWindow->GetParent() != nullptr;
 			})
 			.First();
+		TEST_ASSERT(openingDialog != nullptr);
+		return openingDialog;
 	}
 
 	void PressButton(UnitTestRemoteProtocol* protocol, const WString& buttonText)
