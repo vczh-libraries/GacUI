@@ -343,13 +343,17 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
 				{
-					PressCancel(protocol);
+					TypeFile(protocol, L"new.txt");
 				});
-				protocol->OnNextIdleFrame(L"Cancel", [=]()
+				protocol->OnNextIdleFrame(L"Typed", [=]()
+				{
+					PressSave(protocol);
+				});
+				protocol->OnNextIdleFrame(L"Confirmed", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dialog = FindObjectByName<GuiSaveFileDialog>(window, L"dialogSave");
-					TEST_ASSERT(dialog->GetFileName().Length() == 0);
+					TEST_ASSERT(dialog->GetFileName() == FilePath(L"/new.txt").GetFullPath());
 					window->Hide();
 				});
 			});
@@ -378,13 +382,27 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
 				{
-					PressCancel(protocol);
+					ClickFile(protocol, L"root.txt");
 				});
-				protocol->OnNextIdleFrame(L"Cancel", [=]()
+				protocol->OnNextIdleFrame(L"Selected", [=]()
+				{
+					PressSave(protocol);
+				});
+				protocol->OnNextIdleFrame(L"Popped up overwrite prompt", [=]()
+				{
+					auto messageWindow = GetOpeningMessageDialog();
+					auto buttonOk = FindControlByText<GuiButton>(messageWindow, L"OK");
+					auto location = protocol->LocationOf(buttonOk);
+					GetApplication()->InvokeInMainThread(messageWindow, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Confirmed", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dialog = FindObjectByName<GuiSaveFileDialog>(window, L"dialogSave");
-					TEST_ASSERT(dialog->GetFileName().Length() == 0);
+					TEST_ASSERT(dialog->GetFileName() == FilePath(L"/root.txt").GetFullPath());
 					window->Hide();
 				});
 			});

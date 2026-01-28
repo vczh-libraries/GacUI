@@ -135,7 +135,7 @@ add a new task before No.6. The finished No.5 made two duumy test cases for save
 - [x] TASK No.3: TEST_CATEGORY for filter visibility + extension behavior (in dialog)
 - [x] TASK No.4: TEST_CATEGORY for typed selection + multiple selection (in dialog)
 - [x] TASK No.5: Add save dialog + open buttons (in test UI)
-- [ ] TASK No.6: Update save dialog test cases (replace placeholders)
+- [x] TASK No.6: Update save dialog test cases (replace placeholders)
 - [ ] TASK No.7: TEST_CATEGORY for dialog message box interactions (open/save options)
 
 ## TASK No.1: Add FileItemMock + FileSystemMock (IFileSystemImpl)
@@ -282,8 +282,8 @@ Add dialog-driven tests for error/prompt message boxes triggered by `TryConfirm`
 - Locate and close message dialogs by native-parent relationships (`GetOpeningMessageDialog`) instead of relying on titles or sending `Enter`; closing should be a real UI click (so the test harness observes a UI update).
 - Cover at least these scenarios (reusing the existing open/save buttons from `resourceFileDialogs` to open dialogs with the intended options):
 	- **File must exist (open dialog)**: click the open button that enables `FileDialogFileMustExist`, type a non-existing file name and press `Open`; assert a message box appears and that clicking `OK` dismisses it while keeping the file dialog open.
-	- **Prompt create file (save dialog)**: click the save button that enables `FileDialogPromptCreateFile`, type a non-existing file name and press `Save`; assert the create prompt appears and validate both `Yes` (confirm selection) and `No` (stay in dialog) flows.
-	- **Prompt overwrite file (save dialog)**: click the save button that enables `FileDialogPromptOverwriteFile`, type an existing file name and press `Save`; assert the overwrite prompt and validate both `Yes`/`No` flows.
+	- **Prompt create file (save dialog)**: click the save button that enables `FileDialogPromptCreateFile`, type a non-existing file name and press `Save`; assert the create prompt appears and validate both `OK` (confirm selection) and `Cancel` (stay in dialog) flows.
+	- **Prompt overwrite file (save dialog)**: click the save button that enables `FileDialogPromptOverwriteFile`, type an existing file name and press `Save`; assert the overwrite prompt and validate both `OK`/`Cancel` flows.
 	- **Multi-selection not enabled**: open a dialog without `FileDialogAllowMultipleSelection`, attempt to confirm multiple selections and assert the “Multiple selection is not enabled” message box and dismissal behavior.
 
 ### rationale
