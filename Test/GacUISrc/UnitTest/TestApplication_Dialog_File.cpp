@@ -192,106 +192,106 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <Window ref.Name="self" Text="Dialog File Test" ClientSize="x:640 y:480">
-				<OpenFileDialog ref.Name="dialogOpen" Title="FileDialog" Filter="All Files (*.*)|*|Text Files (*.txt)|*.txt" Directory=""/>
-				<SaveFileDialog ref.Name="dialogSave" Title="FileDialog" Filter="All Files (*.*)|*|Text Files (*.txt)|*.txt" Directory=""/>
-				<Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
-					<att.Rows>
-						<_>composeType:MinSize</_>
-						<_>composeType:MinSize</_>
-						<_>composeType:MinSize</_>
-						<_>composeType:MinSize</_>
-						<_>composeType:Percentage percentage:1.0</_>
-					</att.Rows>
-					<att.Columns>
-						<_>composeType:MinSize</_>
-						<_>composeType:Percentage percentage:1.0</_>
-					</att.Columns>
+        <OpenFileDialog ref.Name="dialogOpen" Title="FileDialog" Filter="All Files (*.*)|*|Text Files (*.txt)|*.txt" Directory=""/>
+        <SaveFileDialog ref.Name="dialogSave" Title="FileDialog" Filter="All Files (*.*)|*|Text Files (*.txt)|*.txt" Directory=""/>
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
 
-					<Cell Site="row:0 column:0">
-						<Button Text="Open DefaultOptions">
-							<att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-							<ev.Clicked-eval><![CDATA[{
-								dialogOpen.Options = INativeDialogService::FileDialogOptions::FileDialogFileMustExist;
-								if (dialogOpen.ShowDialog())
-								{
-									var output : string = "";
-									for (fileName in dialogOpen.FileNames)
-									{
-										if (output != "")
-										{
-											output = output & ";";
-										}
-										output = output & fileName;
-									}
-									self.Text = output;
-								}
-							}]]></ev.Clicked-eval>
-						</Button>
-					</Cell>
-					<Cell Site="row:1 column:0">
-						<Button Text="Open MultipleSelection">
-							<att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-							<ev.Clicked-eval><![CDATA[{
-								dialogOpen.Options = INativeDialogService::FileDialogOptions::FileDialogFileMustExist | INativeDialogService::FileDialogOptions::FileDialogAllowMultipleSelection;
-								if (dialogOpen.ShowDialog())
-								{
-									var output : string = "";
-									for (fileName in dialogOpen.FileNames)
-									{
-										if (output != "")
-										{
-											output = output & ";";
-										}
-										output = output & fileName;
-									}
-									self.Text = output;
-								}
-							}]]></ev.Clicked-eval>
-						</Button>
-					</Cell>
-					<Cell Site="row:2 column:0">
-						<Button Text="Save PromptCreateFile">
-							<att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-							<ev.Clicked-eval><![CDATA[{
-								dialogSave.Options = INativeDialogService::FileDialogOptions::FileDialogPromptCreateFile;
-								if (dialogSave.ShowDialog())
-								{
-									var output : string = "";
-									for (fileName in dialogSave.FileNames)
-									{
-										if (output != "")
-										{
-											output = output & ";";
-										}
-										output = output & fileName;
-									}
-									self.Text = output;
-								}
-							}]]></ev.Clicked-eval>
-						</Button>
-					</Cell>
-					<Cell Site="row:3 column:0">
-						<Button Text="Save PromptOverwriteFile">
-							<att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-							<ev.Clicked-eval><![CDATA[{
-								dialogSave.Options = INativeDialogService::FileDialogOptions::FileDialogPromptOverwriteFile;
-								if (dialogSave.ShowDialog())
-								{
-									var output : string = "";
-									for (fileName in dialogSave.FileNames)
-									{
-										if (output != "")
-										{
-											output = output & ";";
-										}
-										output = output & fileName;
-									}
-									self.Text = output;
-								}
-							}]]></ev.Clicked-eval>
-						</Button>
-					</Cell>
-				</Table>
+          <Cell Site="row:0 column:0">
+            <Button Text="Open DefaultOptions">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{
+                dialogOpen.Options = INativeDialogService::FileDialogOptions::FileDialogFileMustExist;
+                if (dialogOpen.ShowDialog())
+                {
+                  var output : string = "";
+                  for (fileName in dialogOpen.FileNames)
+                  {
+                    if (output != "")
+                    {
+                      output = output & ";";
+                    }
+                    output = output & fileName;
+                  }
+                  self.Text = output;
+                }
+              }]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:0">
+            <Button Text="Open MultipleSelection">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{
+                dialogOpen.Options = INativeDialogService::FileDialogOptions::FileDialogFileMustExist | INativeDialogService::FileDialogOptions::FileDialogAllowMultipleSelection;
+                if (dialogOpen.ShowDialog())
+                {
+                  var output : string = "";
+                  for (fileName in dialogOpen.FileNames)
+                  {
+                    if (output != "")
+                    {
+                      output = output & ";";
+                    }
+                    output = output & fileName;
+                  }
+                  self.Text = output;
+                }
+              }]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:2 column:0">
+            <Button Text="Save PromptCreateFile">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{
+                dialogSave.Options = INativeDialogService::FileDialogOptions::FileDialogPromptCreateFile;
+                if (dialogSave.ShowDialog())
+                {
+                  var output : string = "";
+                  for (fileName in dialogSave.FileNames)
+                  {
+                    if (output != "")
+                    {
+                      output = output & ";";
+                    }
+                    output = output & fileName;
+                  }
+                  self.Text = output;
+                }
+              }]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:3 column:0">
+            <Button Text="Save PromptOverwriteFile">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{
+                dialogSave.Options = INativeDialogService::FileDialogOptions::FileDialogPromptOverwriteFile;
+                if (dialogSave.ShowDialog())
+                {
+                  var output : string = "";
+                  for (fileName in dialogSave.FileNames)
+                  {
+                    if (output != "")
+                    {
+                      output = output & ";";
+                    }
+                    output = output & fileName;
+                  }
+                  self.Text = output;
+                }
+              }]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+        </Table>
       </Window>
     </Instance>
   </Instance>
