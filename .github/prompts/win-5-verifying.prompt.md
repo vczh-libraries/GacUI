@@ -53,7 +53,7 @@
     - The main agent should call different sub agent for each test-fix process.
     - Do not test and retrieve test results in the main agent.
 
-### Use a sub agent to run the following instructions (`Execute Unit Test` and `Fix Failed Test Cases`)
+### Use a sub agent to run the following instructions (`Execute Unit Test`, `Identify the Cause of Failure` and `Fix Failed Test Cases`)
 
 #### Execute Unit Test
 
@@ -65,15 +65,18 @@
     - In other source code, `vl::console::Console::WriteLine` would help. In `Vlpp` project, you should `#include` `Console.h`. In other projects, the `Console` class should just be available.
     - When added logging are not longer necessary, you should remove all of them.
 
+#### Identify the Cause of Failure
+
+- You can refer to `Copilot_Task.md` and `Copilot_Planning.md` to understand the context, keep the target unchanged.
+- Dig into related source code carefully, make your assumption about the root cause.
+  - Debug the unit test directly to get accurate clues if you are not confident of the assumption
+    - Follow `Debugging Unit Test` to start a debugger and run WinDBG commands.
+    - From there you can set break-points, walk through code by lines, and inspect variables.
+    - You must stop the debugger after you finish debugging.
+
 #### Fix Failed Test Cases
 
-- If there are failed test cases, fix the code to make it work.
-  - If your change did not change the test result, make sure you followed `Step 2. Compile` to compile the code.
-  - If the test result still not changed after redoing `Step 2. Compile` and `Step 3. Run Unit Test`, these two steps are absolutely no problem, the only reason is that your change is not correct.
-- You are able to debug the unit test following `Debugging Unit Test`. From there you can set break-points, walk through code by lines, and inspect variables.
-  - You must stop the debugger after you finish debugging.
-- You must carefully identify, if the cause is in the source code or in the failed test. In most of the cases, the cause is in the source code.
-  - You can reference to `Copilot_Task.md` and `Copilot_Planning.md` for more details before making a decision, about fixing the test case or the source code.
+- Apply fixings to source files.
 - DO NOT delete any test case.
 - For every attempt of fixing the source code:
   - Explain why the original change did not work.
@@ -81,6 +84,7 @@
   - Explain why you think it would solve the build break or test break.
   - Log these in `Copilot_Execution.md`, with section `## Fixing attempt No.<attempt_number>` in `# FIXING ATTEMPTS`.
 - After finishing fixing, exit the current sub agent and tell the main agent to go back to `Step 2. Compile`
+  - `Step 2. Compile` and `Step 3. Run Unit Test` are absolutely no problem. If you didn't see any progress, the only reason is that your change is not correct.
 
 ## Step 4. Check it Again
 

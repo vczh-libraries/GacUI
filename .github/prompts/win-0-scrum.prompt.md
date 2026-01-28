@@ -139,6 +139,7 @@ I made important updates to the source code manually during the execution of the
 
 - Read through `Copilot_Execution.md`. There may be some fixing attempts, that were done by you.
 - Compare existing source code with `Copilot_Execution.md`, finding what is changed.
+  - Don't rely on `git` to identify changes, as I always commit them periodaically. You need to compare the actual source code with `Copilot_Execution.md`.
   - During comparing, you need to take into consideration of the fixing attempts, as sometimes you didn't update the main content of the document.
 - Identify all differences between the document and the source code:
   - If it is caused by any fixing attempts, ignore it.
@@ -175,10 +176,6 @@ I made important updates to the source code manually during the execution of the
   - If you created `Copilot_Execution_Finding.md`, in Step 6.3:
     - In the backup folder, there will be a copied `Copilot_Execution.md`, append all contents from `Copilot_Execution_Finding.md` to the end of it.
     - Delete the `Copilot_Execution_Finding.md` you created.
-- Run `git status` to make sure you have manipulate document files correctly:
-  - `Copilot_Scrum.md` is modified, unless nothing needs to be changed.
-  - `Copilot_Task.md`, `Copilot_Planning.md` and `Copilot_Execution.md` are created in a backup folder.
-  - There is no `Copilot_Execution_Finding.md`.
 
 # External Tools Environment and Context
 
