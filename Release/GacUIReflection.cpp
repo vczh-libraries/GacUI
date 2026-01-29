@@ -776,7 +776,7 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(DocumentInlineObjectRun)
 				CLASS_MEMBER_BASE(DocumentContentRun)
 				
-				CLASS_MEMBER_FIELD(size)
+				CLASS_MEMBER_FIELD(sizeOverride)
 				CLASS_MEMBER_FIELD(baseline)
 			END_CLASS_MEMBER(DocumentInlineObjectRun)
 

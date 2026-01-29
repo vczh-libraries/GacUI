@@ -18,6 +18,5 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_IOCommands.h"
 #include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_MainWindow.h"
 #include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.h"
-#include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_Logging.h"
 #include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol.h"
 #include "..\..\Source\UnitTestUtilities\GuiUnitTestUtilities.h"

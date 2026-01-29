@@ -5,6 +5,1406 @@ DEVELOPER: Zihan Chen(vczh)
 #include "GacUI.UnitTest.h"
 
 /***********************************************************************
+.\GUIUNITTESTPROTOCOL_RENDERING _DOCUMENT.CPP
+***********************************************************************/
+
+namespace vl::presentation::unittest
+{
+	using namespace collections;
+	using namespace remoteprotocol;
+
+/***********************************************************************
+Helper Functions for Document Paragraph
+***********************************************************************/
+
+	vint GetFontSizeForPosition(
+		const DocumentParagraphState& state,
+		vint pos,
+		Nullable<Pair<vint, DocumentInlineObjectRunProperty>>& inlineProp)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::GetFontSizeForPosition(...)#"
+		inlineProp.Reset();
+
+		for (auto [range, prop] : state.mergedRuns)
+		{
+			if (pos >= range.caretBegin && pos < range.caretEnd)
+			{
+				if (auto textProp = prop.TryGet<DocumentTextRunProperty>())
+				{
+					return textProp->fontProperties.size;
+				}
+				if (auto objProp = prop.TryGet<DocumentInlineObjectRunProperty>())
+				{
+					inlineProp = { range.caretEnd - range.caretBegin,*objProp };
+					return 0;
+				}
+			}
+		}
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Every character is expected to have a font.");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	double GetCharacterWidth(wchar_t c, vint fontSize)
+	{
+		return (c < 128 ? 0.6 : 1.0) * fontSize;
+	}
+
+	void CalculateParagraphLayout(DocumentParagraphState& state)
+	{
+		state.characterLayouts.Clear();
+		state.lines.Clear();
+		state.cachedSize = Size(0, 16);
+		state.cachedInlineObjectBounds.Clear();
+
+		const WString& text = state.text;
+
+		if (text.Length() == 0)
+		{
+			// Empty paragraph has default size
+			DocumentParagraphLineInfo line;
+			line.startPos = 0;
+			line.endPos = 0;
+			line.y = 0;
+			line.height = 16; // Default: 12 (font) + 4
+			line.baseline = 12;
+			line.width = 0;
+			state.lines.Add(line);
+			return;
+		}
+
+		// First pass: calculate per-character metrics
+		struct TempCharInfo
+		{
+			double x;
+			double width;
+			vint height;
+			Nullable<DocumentInlineObjectRunProperty> inlineObjectProp;
+		};
+		List<TempCharInfo> tempChars;
+		List<Pair<vint, vint>> lineRanges; // [start, end) for each line
+
+		double currentX = 0;
+		vint currentLineStart = 0;
+
+		for (vint i = 0; i < text.Length(); i++)
+		{
+			wchar_t c = text[i];
+			TempCharInfo info = { currentX, 0, 0, {} };
+
+			// Handle \r - zero width, no line break
+			if (c == L'\r')
+			{
+				tempChars.Add(info);
+				continue;
+			}
+
+			// Get character properties
+			Nullable<Pair<vint, DocumentInlineObjectRunProperty>> inlinePair;
+			vint fontSize = GetFontSizeForPosition(state, i, inlinePair);
+
+			if (inlinePair)
+			{
+				auto& prop = inlinePair.Value().value;
+				info.width = (double)prop.size.x;
+				info.height = prop.size.y;
+				info.inlineObjectProp = inlinePair.Value().value;
+			}
+			else
+			{
+				if (fontSize <= 0) fontSize = 12;
+				info.width = GetCharacterWidth(c, fontSize);
+				info.height = fontSize;
+			}
+
+			// Handle \n - always break line
+			if (c == L'\n')
+			{
+				info.width = 0;
+				tempChars.Add(info);
+				lineRanges.Add({ currentLineStart, i + 1 });
+				currentLineStart = i + 1;
+				currentX = 0;
+				continue;
+			}
+
+			// Check word wrap
+			if (state.wrapLine && state.maxWidth > 0 && currentX > 0)
+			{
+				if (currentX + info.width > state.maxWidth)
+				{
+					lineRanges.Add({ currentLineStart, i });
+					currentLineStart = i;
+					currentX = 0;
+				}
+			}
+
+			info.x = currentX;
+			tempChars.Add(info);
+			currentX += info.width;
+
+			if(inlinePair)
+			{
+				i += inlinePair.Value().key - 1;
+			}
+		}
+
+		// Add final line
+		if (currentLineStart <= text.Length())
+		{
+			lineRanges.Add({ currentLineStart, text.Length() });
+		}
+
+		// Handle empty case
+		if (lineRanges.Count() == 0)
+		{
+			lineRanges.Add({ 0, 0 });
+		}
+
+		// Second pass: calculate line heights using baseline alignment
+		vint currentY = 0;
+		for (auto [lineStart, lineEnd] : lineRanges)
+		{
+			vint maxAboveBaseline = 0;
+			vint maxBelowBaseline = 0;
+
+			for (vint i = lineStart; i < lineEnd && i < tempChars.Count(); i++)
+			{
+				auto& info = tempChars[i];
+				if (info.inlineObjectProp)
+				{
+					auto&& prop = info.inlineObjectProp.Value();
+					vint baseline = prop.baseline;
+					if (baseline == -1)
+						baseline = info.height;
+					vint above = baseline;
+					vint below = info.height - baseline;
+					if (above < 0) above = 0;
+					if (below < 0) below = 0;
+					if (maxAboveBaseline < above)
+						maxAboveBaseline = above;
+					if (maxBelowBaseline < below)
+						maxBelowBaseline = below;
+				}
+				else
+				{
+					if (maxAboveBaseline < info.height)
+						maxAboveBaseline = info.height;
+				}
+			}
+
+			DocumentParagraphLineInfo line;
+			line.startPos = lineStart;
+			line.endPos = lineEnd;
+			line.y = currentY;
+			line.height = maxAboveBaseline + maxBelowBaseline + 4;
+			line.baseline = maxAboveBaseline;
+
+			// Calculate line width
+			double lineWidth = 0;
+			for (vint i = lineStart; i < lineEnd && i < tempChars.Count(); i++)
+			{
+				double endX = tempChars[i].x + tempChars[i].width;
+				if (endX > lineWidth) lineWidth = endX;
+			}
+			line.width = (vint)lineWidth;
+
+			// Fill inline object bounds
+
+			for (vint i = lineStart; i < lineEnd && i < tempChars.Count(); i++)
+			{
+				auto& info = tempChars[i];
+				if (info.inlineObjectProp)
+				{
+					auto&& prop = info.inlineObjectProp.Value();
+					if (prop.callbackId != -1)
+					{
+						vint baseline = prop.baseline;
+						if (baseline == -1)
+							baseline = info.height;
+						vint y = line.y + 2 + line.baseline - baseline;
+						state.cachedInlineObjectBounds.Add(prop.callbackId, Rect(Point((vint)info.x, y), prop.size));
+					}
+				}
+			}
+
+			state.lines.Add(line);
+			currentY += line.height;
+		}
+
+		// Third pass: create final character layouts with line indices
+		vint lineIdx = 0;
+		for (vint i = 0; i < tempChars.Count(); i++)
+		{
+			while (lineIdx < state.lines.Count() - 1 && i >= state.lines[lineIdx].endPos)
+			{
+				lineIdx++;
+			}
+			DocumentParagraphCharLayout cl;
+			cl.x = tempChars[i].x;
+			cl.width = tempChars[i].width;
+			cl.lineIndex = lineIdx;
+			cl.height = tempChars[i].height;
+			state.characterLayouts.Add(cl);
+		}
+
+		// Calculate total size
+		vint maxWidth = 0;
+		for (auto&& line : state.lines)
+		{
+			if (line.width > maxWidth) maxWidth = line.width;
+		}
+		state.cachedSize = Size(maxWidth, currentY > 0 ? currentY : 16);
+	}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Elements - Document)
+***********************************************************************/
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_DocumentParagraph(vint id, const ElementDesc_DocumentParagraph& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_DocumentParagraph(vint, const ElementDesc_DocumentParagraph&)#"
+		vint index = paragraphStates.Keys().IndexOf(arguments.id);
+		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Paragraph not created.");
+		auto state = paragraphStates.Values()[index];
+
+		// Apply text if provided (distinguish null vs empty string)
+		if (arguments.text)
+		{
+			state->text = arguments.text.Value();
+			// Text changed - clear run maps since positions may be invalid
+			state->textRuns.Clear();
+			state->inlineObjectRuns.Clear();
+		}
+
+		// Always update these
+		state->wrapLine = arguments.wrapLine;
+		state->maxWidth = arguments.maxWidth;
+		state->alignment = arguments.alignment;
+
+		// Process removed inline objects first
+		if (arguments.removedInlineObjects)
+		{
+			for (auto callbackId : *arguments.removedInlineObjects.Obj())
+			{
+				// Find the range for this inline object and reset it
+				for (auto [range, prop] : state->inlineObjectRuns)
+				{
+					if (prop.callbackId == callbackId)
+					{
+						elements::ResetInlineObjectRun(state->inlineObjectRuns, range);
+						break;
+					}
+				}
+			}
+		}
+
+		// Apply runsDiff using helper functions
+		if (arguments.runsDiff)
+		{
+			for (auto run : *arguments.runsDiff.Obj())
+			{
+				elements::CaretRange range{ run.caretBegin, run.caretEnd };
+
+				if (auto textProp = run.props.TryGet<DocumentTextRunProperty>())
+				{
+					elements::DocumentTextRunPropertyOverrides overrides;
+					overrides.textColor = textProp->textColor;
+					overrides.backgroundColor = textProp->backgroundColor;
+					overrides.fontFamily = textProp->fontProperties.fontFamily;
+					overrides.size = textProp->fontProperties.size;
+					// Convert bool flags back to TextStyle
+					elements::IGuiGraphicsParagraph::TextStyle style = (elements::IGuiGraphicsParagraph::TextStyle)0;
+					if (textProp->fontProperties.bold) style = (elements::IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)elements::IGuiGraphicsParagraph::TextStyle::Bold);
+					if (textProp->fontProperties.italic) style = (elements::IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)elements::IGuiGraphicsParagraph::TextStyle::Italic);
+					if (textProp->fontProperties.underline) style = (elements::IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)elements::IGuiGraphicsParagraph::TextStyle::Underline);
+					if (textProp->fontProperties.strikeline) style = (elements::IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)elements::IGuiGraphicsParagraph::TextStyle::Strikeline);
+					overrides.textStyle = style;
+					elements::AddTextRun(state->textRuns, range, overrides);
+				}
+				else if (auto inlineProp = run.props.TryGet<DocumentInlineObjectRunProperty>())
+				{
+					elements::AddInlineObjectRun(state->inlineObjectRuns, range, *inlineProp);
+				}
+			}
+		}
+
+		// Merge runs to create final result
+		state->mergedRuns.Clear();
+		elements::MergeRuns(state->textRuns, state->inlineObjectRuns, state->mergedRuns);
+
+		// Recalculate layout
+		CalculateParagraphLayout(*state.Obj());
+
+		{
+			index = loggedTrace.createdElements->Keys().IndexOf(arguments.id);
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
+
+			auto rendererType = loggedTrace.createdElements->Values()[index];
+			CHECK_ERROR(rendererType == RendererType::DocumentParagraph, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+
+			index = lastElementDescs.Keys().IndexOf(arguments.id);
+			ElementDesc_DocumentParagraphFull element;
+			if (index != -1)
+			{
+				auto paragraphRef = lastElementDescs.Values()[index].TryGet<ElementDesc_DocumentParagraphFull>();
+				CHECK_ERROR(paragraphRef, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+				element = *paragraphRef;
+			}
+			element.paragraph = arguments;
+			element.paragraph.text = state->text;
+			element.paragraph.createdInlineObjects = {};
+			element.paragraph.removedInlineObjects = {};
+			element.paragraph.runsDiff = Ptr(new List<remoteprotocol::DocumentRun>);
+			for (auto [range, props] : state->mergedRuns)
+			{
+				remoteprotocol::DocumentRun run;
+				run.caretBegin = range.caretBegin;
+				run.caretEnd = range.caretEnd;
+				run.props = props;
+				element.paragraph.runsDiff->Add(run);
+			}
+			lastElementDescs.Set(arguments.id, element);
+		}
+
+		// Send response with calculated size and inline object bounds
+		UpdateElement_DocumentParagraphResponse response;
+		response.documentSize = state->cachedSize;
+		if (state->cachedInlineObjectBounds.Count() > 0)
+		{
+			response.inlineObjectBounds = Ptr(new Dictionary<vint, Rect>);
+			CopyFrom(*response.inlineObjectBounds.Obj(), state->cachedInlineObjectBounds);
+		}
+
+		GetEvents()->RespondRendererUpdateElement_DocumentParagraph(id, response);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetCaretBounds(vint id, const GetCaretBoundsRequest& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetCaretBounds(vint, const GetCaretBoundsRequest&)#"
+		vint index = paragraphStates.Keys().IndexOf(arguments.id);
+		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"No active paragraph.");
+		auto state = paragraphStates.Values()[index];
+
+		vint caret = arguments.caret;
+
+		// Handle empty text
+		if (state->text.Length() == 0 || state->lines.Count() == 0)
+		{
+			auto& line = state->lines[0];
+			GetEvents()->RespondDocumentParagraph_GetCaretBounds(id, Rect(Point(0, line.y), Size(0, line.height)));
+			return;
+		}
+
+		// Clamp caret to valid range
+		if (caret < 0) caret = 0;
+		if (caret > state->text.Length()) caret = state->text.Length();
+
+		// Find which line the caret is on
+		vint lineIdx = 0;
+		for (vint i = 0; i < state->lines.Count(); i++)
+		{
+			if (caret >= state->lines[i].startPos && caret <= state->lines[i].endPos)
+			{
+				lineIdx = i;
+				break;
+			}
+			if (i == state->lines.Count() - 1)
+			{
+				lineIdx = i;
+			}
+		}
+
+		auto& line = state->lines[lineIdx];
+
+		// Calculate x position
+		vint x = 0;
+		if (caret > 0 && caret <= state->characterLayouts.Count())
+		{
+			// Caret is at the end of the previous character
+			auto& prevChar = state->characterLayouts[caret - 1];
+			x = (vint)(prevChar.x + prevChar.width);
+		}
+		else if (caret < state->characterLayouts.Count())
+		{
+			// Caret is at the start of this character
+			x = (vint)state->characterLayouts[caret].x;
+		}
+
+		// Apply alignment offset
+		vint alignmentOffset = 0;
+		if (state->alignment == ElementHorizontalAlignment::Center)
+		{
+			alignmentOffset = (state->cachedSize.x - line.width) / 2;
+		}
+		else if (state->alignment == ElementHorizontalAlignment::Right)
+		{
+			alignmentOffset = state->cachedSize.x - line.width;
+		}
+
+		Rect bounds(Point(x + alignmentOffset, line.y), Size(0, line.height));
+		GetEvents()->RespondDocumentParagraph_GetCaretBounds(id, bounds);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetCaret(vint id, const GetCaretRequest& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetCaret(vint, const GetCaretRequest&)#"
+		vint index = paragraphStates.Keys().IndexOf(arguments.id);
+		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"No active paragraph.");
+		auto state = paragraphStates.Values()[index];
+
+		vint caret = arguments.caret;
+		auto relPos = arguments.relativePosition;
+		GetCaretResponse response;
+		response.preferFrontSide = true;
+
+		vint textLen = state->text.Length();
+
+		// Clamp caret
+		if (caret < 0) caret = 0;
+		if (caret > textLen) caret = textLen;
+
+		// Find current line
+		vint lineIdx = 0;
+		for (vint i = 0; i < state->lines.Count(); i++)
+		{
+			if (caret >= state->lines[i].startPos && caret <= state->lines[i].endPos)
+			{
+				lineIdx = i;
+				break;
+			}
+		}
+
+		using CRP = elements::IGuiGraphicsParagraph::CaretRelativePosition;
+
+		switch (relPos)
+		{
+		case CRP::CaretFirst:
+			response.newCaret = 0;
+			break;
+		case CRP::CaretLast:
+			response.newCaret = textLen;
+			break;
+		case CRP::CaretLineFirst:
+			response.newCaret = state->lines[lineIdx].startPos;
+			break;
+		case CRP::CaretLineLast:
+			response.newCaret = state->lines[lineIdx].endPos;
+			if (response.newCaret > state->lines[lineIdx].startPos && response.newCaret > 0)
+			{
+				// Don't include CR/LF at end of line
+				while (response.newCaret > state->lines[lineIdx].startPos && response.newCaret > 0)
+				{
+					auto ch = state->text[response.newCaret - 1];
+					if (ch == L'\r' || ch == L'\n')
+					{
+						response.newCaret--;
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+			break;
+		case CRP::CaretMoveLeft:
+			response.newCaret = caret > 0 ? caret - 1 : 0;
+			break;
+		case CRP::CaretMoveRight:
+			response.newCaret = caret < textLen ? caret + 1 : textLen;
+			break;
+		case CRP::CaretMoveUp:
+			if (lineIdx > 0)
+			{
+				// Calculate x offset in current line
+				vint xOffset = 0;
+				if (caret > 0 && caret <= state->characterLayouts.Count())
+				{
+					auto& prevChar = state->characterLayouts[caret - 1];
+					xOffset = (vint)(prevChar.x + prevChar.width);
+				}
+				// Find corresponding position in previous line
+				auto& prevLine = state->lines[lineIdx - 1];
+				response.newCaret = prevLine.startPos;
+				for (vint i = prevLine.startPos; i < prevLine.endPos && i < state->characterLayouts.Count(); i++)
+				{
+					auto& ch = state->characterLayouts[i];
+					if (ch.x + ch.width / 2 > xOffset)
+						break;
+					response.newCaret = i + 1;
+				}
+			}
+			else
+			{
+				response.newCaret = caret;
+			}
+			break;
+		case CRP::CaretMoveDown:
+			if (lineIdx < state->lines.Count() - 1)
+			{
+				// Calculate x offset in current line
+				vint xOffset = 0;
+				if (caret > 0 && caret <= state->characterLayouts.Count())
+				{
+					auto& prevChar = state->characterLayouts[caret - 1];
+					xOffset = (vint)(prevChar.x + prevChar.width);
+				}
+				// Find corresponding position in next line
+				auto& nextLine = state->lines[lineIdx + 1];
+				response.newCaret = nextLine.startPos;
+				for (vint i = nextLine.startPos; i < nextLine.endPos && i < state->characterLayouts.Count(); i++)
+				{
+					auto& ch = state->characterLayouts[i];
+					if (ch.x + ch.width / 2 > xOffset)
+						break;
+					response.newCaret = i + 1;
+				}
+			}
+			else
+			{
+				response.newCaret = caret;
+			}
+			break;
+		default:
+			response.newCaret = caret;
+			break;
+		}
+
+		GetEvents()->RespondDocumentParagraph_GetCaret(id, response);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetNearestCaretFromTextPos(vint id, const GetCaretBoundsRequest& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetNearestCaretFromTextPos(vint, const GetCaretBoundsRequest&)#"
+		vint index = paragraphStates.Keys().IndexOf(arguments.id);
+		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"No active paragraph.");
+		auto state = paragraphStates.Values()[index];
+
+		vint textPos = arguments.caret;
+		vint textLen = state->text.Length();
+
+		// Clamp to valid range
+		if (textPos < 0) textPos = 0;
+		if (textPos > textLen) textPos = textLen;
+
+		// For simple implementation, text position equals caret position
+		GetEvents()->RespondDocumentParagraph_GetNearestCaretFromTextPos(id, textPos);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetInlineObjectFromPoint(vint id, const GetInlineObjectFromPointRequest& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetInlineObjectFromPoint(vint, const GetInlineObjectFromPointRequest&)#"
+		vint index = paragraphStates.Keys().IndexOf(arguments.id);
+		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"No active paragraph.");
+		auto state = paragraphStates.Values()[index];
+
+		Point pt = arguments.point;
+		Nullable<remoteprotocol::DocumentRun> result;
+
+		// Find the line containing the Y coordinate
+		vint lineIdx = -1;
+		for (vint i = 0; i < state->lines.Count(); i++)
+		{
+			if (pt.y >= state->lines[i].y && pt.y < state->lines[i].y + state->lines[i].height)
+			{
+				lineIdx = i;
+				break;
+			}
+		}
+
+		if (lineIdx >= 0)
+		{
+			auto& line = state->lines[lineIdx];
+
+			// Apply alignment offset
+			vint alignmentOffset = 0;
+			if (state->alignment == ElementHorizontalAlignment::Center)
+			{
+				alignmentOffset = (state->cachedSize.x - line.width) / 2;
+			}
+			else if (state->alignment == ElementHorizontalAlignment::Right)
+			{
+				alignmentOffset = state->cachedSize.x - line.width;
+			}
+			vint relativeX = pt.x - alignmentOffset;
+
+			// Check each character in the line
+			for (vint i = line.startPos; i < line.endPos && i < state->characterLayouts.Count(); i++)
+			{
+				auto& ch = state->characterLayouts[i];
+				if (ch.isInlineObject && relativeX >= ch.x && relativeX < ch.x + ch.width)
+				{
+					// Found an inline object - look up its properties
+					for (auto [range, prop] : state->mergedRuns)
+					{
+						if (i >= range.caretBegin && i < range.caretEnd)
+						{
+							if (auto inlineProp = prop.TryGet<DocumentInlineObjectRunProperty>())
+							{
+								remoteprotocol::DocumentRun run;
+								run.caretBegin = range.caretBegin;
+								run.caretEnd = range.caretEnd;
+								run.props = *inlineProp;
+								result = run;
+								break;
+							}
+						}
+					}
+					break;
+				}
+			}
+		}
+
+		GetEvents()->RespondDocumentParagraph_GetInlineObjectFromPoint(id, result);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_IsValidCaret(vint id, const IsValidCaretRequest& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_IsValidCaret(vint, const IsValidCaretRequest&)#"
+		vint index = paragraphStates.Keys().IndexOf(arguments.id);
+		if (index == -1)
+		{
+			GetEvents()->RespondDocumentParagraph_IsValidCaret(id, false);
+			return;
+		}
+		auto state = paragraphStates.Values()[index];
+
+		vint caret = arguments.caret;
+
+		// Check range: valid positions are 0 to text.Length() inclusive
+		if (caret < 0 || caret > state->text.Length())
+		{
+			GetEvents()->RespondDocumentParagraph_IsValidCaret(id, false);
+			return;
+		}
+
+		// Check if position is inside an inline object (not at the beginning)
+		// Inline objects occupy a range [caretBegin, caretEnd)
+		// Position at caretBegin is valid (cursor can be placed before the object)
+		// Positions inside (caretBegin < pos < caretEnd) are invalid
+		for (auto&& [range, _] : state->inlineObjectRuns)
+		{
+			if (caret > range.caretBegin && caret < range.caretEnd)
+			{
+				GetEvents()->RespondDocumentParagraph_IsValidCaret(id, false);
+				return;
+			}
+		}
+
+		GetEvents()->RespondDocumentParagraph_IsValidCaret(id, true);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_OpenCaret(const OpenCaretRequest& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_OpenCaret(const OpenCaretRequest&)#"
+		vint index = loggedTrace.createdElements->Keys().IndexOf(arguments.id);
+		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
+
+		auto rendererType = loggedTrace.createdElements->Values()[index];
+		CHECK_ERROR(rendererType == RendererType::DocumentParagraph, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+
+		index = lastElementDescs.Keys().IndexOf(arguments.id);
+		ElementDesc_DocumentParagraphFull element;
+		if (index != -1)
+		{
+			auto paragraphRef = lastElementDescs.Values()[index].TryGet<ElementDesc_DocumentParagraphFull>();
+			CHECK_ERROR(paragraphRef, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+			element = *paragraphRef;
+		}
+		element.caret = arguments;
+		lastElementDescs.Set(arguments.id, element);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_CloseCaret(const vint& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_CloseCaret(const vint&)#"
+		vint index = loggedTrace.createdElements->Keys().IndexOf(arguments);
+		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
+
+		auto rendererType = loggedTrace.createdElements->Values()[index];
+		CHECK_ERROR(rendererType == RendererType::DocumentParagraph, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+
+		index = lastElementDescs.Keys().IndexOf(arguments);
+		ElementDesc_DocumentParagraphFull element;
+		if (index != -1)
+		{
+			auto paragraphRef = lastElementDescs.Values()[index].TryGet<ElementDesc_DocumentParagraphFull>();
+			CHECK_ERROR(paragraphRef, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+			element = *paragraphRef;
+		}
+		element.caret.Reset();
+		lastElementDescs.Set(arguments, element);
+#undef ERROR_MESSAGE_PREFIX
+	}
+}
+
+
+/***********************************************************************
+.\GUIUNITTESTPROTOCOL_RENDERING.CPP
+***********************************************************************/
+
+namespace vl::presentation::unittest
+{
+	using namespace collections;
+	using namespace remoteprotocol;
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Rendering)
+***********************************************************************/
+
+	Ptr<UnitTestLoggedFrame> UnitTestRemoteProtocol_Rendering::GetLastRenderingFrame()
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::GetLastRenderingCommands()#"
+		CHECK_ERROR(lastRenderingCommandsOpening, ERROR_MESSAGE_PREFIX L"The latest frame of commands is not accepting new commands.");
+		return loggedFrames[loggedFrames.Count() - 1];
+#undef ERROR_MESSAGE_PREFIX
+	}
+		
+	Ptr<UnitTestLoggedFrame> UnitTestRemoteProtocol_Rendering::TryGetLastRenderingFrameAndReset()
+	{
+		if (loggedFrames.Count() == 0) return nullptr;
+		if (!lastRenderingCommandsOpening) return nullptr;
+		lastRenderingCommandsOpening = false;
+		return loggedFrames[loggedFrames.Count() - 1];
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererBeginRendering(const ElementBeginRendering& arguments)
+	{
+		receivedDomDiffMessage = false;
+		receivedElementMessage = false;
+		lastRenderingCommandsOpening = true;
+		auto frame = Ptr(new UnitTestLoggedFrame);
+		frame->frameId = arguments.frameId;
+		loggedFrames.Add(frame);
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererEndRendering(vint id)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererEndRendering(vint)#"
+		CHECK_ERROR(receivedElementMessage || receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"Either dom-diff or element message should be sent before this message.");
+
+		auto lastFrame = GetLastRenderingFrame();
+		if (receivedElementMessage)
+		{
+			lastFrame->renderingDom = renderingDomBuilder.RequestRendererEndRendering();
+		}
+		if (receivedDomDiffMessage)
+		{
+			// receivedDom will be updated in RequestRendererRenderDomDiff
+			// store a copy to log
+			lastFrame->renderingDom = CopyDom(receivedDom);
+		}
+		this->GetEvents()->RespondRendererEndRendering(id, measuringForNextRendering);
+		measuringForNextRendering = {};
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Rendering - Element)
+***********************************************************************/
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererBeginBoundary(const ElementBoundary& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererBeginBoundary(const ElementBoundary&)#"
+		CHECK_ERROR(!receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with dom-diff messages in the same rendering cycle.");
+		if (!receivedElementMessage)
+		{
+			renderingDomBuilder.RequestRendererBeginRendering();
+			receivedElementMessage = true;
+		}
+
+		renderingDomBuilder.RequestRendererBeginBoundary(arguments);
+
+		glr::json::JsonFormatting formatting;
+		formatting.spaceAfterColon = true;
+		formatting.spaceAfterComma = true;
+		formatting.crlf = false;
+		formatting.compact = true;
+
+		GetLastRenderingFrame()->renderingCommandsLog.Add(L"RequestRendererBeginBoundary: " + stream::GenerateToStream([&](stream::TextWriter& writer)
+		{
+			auto jsonLog = ConvertCustomTypeToJson(arguments);
+			writer.WriteString(glr::json::JsonToString(jsonLog, formatting));
+		}));
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererEndBoundary()
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererEndBoundary()#"
+		CHECK_ERROR(!receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with dom-diff messages in the same rendering cycle.");
+		if (!receivedElementMessage)
+		{
+			renderingDomBuilder.RequestRendererBeginRendering();
+			receivedElementMessage = true;
+		}
+
+		renderingDomBuilder.RequestRendererEndBoundary();
+		GetLastRenderingFrame()->renderingCommandsLog.Add(L"RequestRendererEndBoundary");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::EnsureRenderedElement(vint id, Rect bounds)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::EnsureRenderedElement(id&)#"
+
+		vint index = loggedTrace.createdElements->Keys().IndexOf(id);
+		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
+		auto rendererType = loggedTrace.createdElements->Values()[index];
+		if (rendererType == RendererType::FocusRectangle || rendererType == RendererType::Raw)
+		{
+			// FocusRectangle or Raw does not have a ElementDesc
+			return;
+		}
+
+		index = lastElementDescs.Keys().IndexOf(id);
+		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
+		lastElementDescs.Values()[index].Apply(Overloading(
+			[](RendererType)
+			{
+				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
+			},
+			[&](const ElementDesc_SolidLabel& solidLabel)
+			{
+				CalculateSolidLabelSizeIfNecessary(bounds.Width(), bounds.Height(), solidLabel);
+			},
+			[&](const auto& element)
+			{
+			}));
+
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererRenderElement(const ElementRendering& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererRenderElement(const ElementRendering&)#"
+		CHECK_ERROR(!receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with dom-diff messages in the same rendering cycle.");
+		if (!receivedElementMessage)
+		{
+			renderingDomBuilder.RequestRendererBeginRendering();
+			receivedElementMessage = true;
+		}
+
+		{
+			renderingDomBuilder.RequestRendererRenderElement(arguments);
+
+			glr::json::JsonFormatting formatting;
+			formatting.spaceAfterColon = true;
+			formatting.spaceAfterComma = true;
+			formatting.crlf = false;
+			formatting.compact = true;
+			GetLastRenderingFrame()->renderingCommandsLog.Add(L"RequestRendererRenderElement: " + stream::GenerateToStream([&](stream::TextWriter& writer)
+			{
+				auto jsonLog = ConvertCustomTypeToJson(arguments);
+				writer.WriteString(glr::json::JsonToString(jsonLog, formatting));
+			}));
+		}
+
+		EnsureRenderedElement(arguments.id, arguments.bounds);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Rendering - Dom)
+***********************************************************************/
+
+	void UnitTestRemoteProtocol_Rendering::CalculateSolidLabelSizesIfNecessary(Ptr<RenderingDom> dom)
+	{
+		if (dom->content.element)
+		{
+			EnsureRenderedElement(dom->content.element.Value(), dom->content.bounds);
+		}
+		if (dom->children)
+		{
+			for (auto child : *dom->children.Obj())
+			{
+				CalculateSolidLabelSizesIfNecessary(child);
+			}
+		}
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererRenderDom(const Ptr<RenderingDom>& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererRenderElement(const RenderingDom&)#"
+		CHECK_ERROR(!receivedElementMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with element messages in the same rendering cycle.");
+		if (!receivedDomDiffMessage)
+		{
+			receivedDomDiffMessage = true;
+		}
+
+		receivedDom = arguments;
+		BuildDomIndex(receivedDom, receivedDomIndex);
+		CalculateSolidLabelSizesIfNecessary(receivedDom);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererRenderDomDiff(const RenderingDom_DiffsInOrder& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererRenderElement(const RenderingDom_DiffsInOrder&)#"
+		CHECK_ERROR(!receivedElementMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with element messages in the same rendering cycle.");
+		if (!receivedDomDiffMessage)
+		{
+			receivedDomDiffMessage = true;
+		}
+		
+		UpdateDomInplace(receivedDom, receivedDomIndex, arguments);
+		GetLastRenderingFrame()->renderingDiffs = arguments;
+		CalculateSolidLabelSizesIfNecessary(receivedDom);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Elements)
+***********************************************************************/
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererCreated(const Ptr<List<RendererCreation>>& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererCreated(const Ptr<List<RendererCreation>>&)#"
+		if (arguments)
+		{
+			for (auto creation : *arguments.Obj())
+			{
+				CHECK_ERROR(!loggedTrace.createdElements->Keys().Contains(creation.id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has been created or used.");
+				loggedTrace.createdElements->Add(creation.id, creation.type);
+
+				// Create paragraph state for DocumentParagraph elements
+				if (creation.type == RendererType::DocumentParagraph)
+				{
+					auto state = Ptr(new DocumentParagraphState());
+					paragraphStates.Add(creation.id, state);
+				}
+			}
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererDestroyed(const Ptr<List<vint>>& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererDestroyed(const Ptr<List<vint>>&)#"
+		if (arguments)
+		{
+			for (auto id : *arguments.Obj())
+			{
+				CHECK_ERROR(loggedTrace.createdElements->Keys().Contains(id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
+				CHECK_ERROR(!removedElementIds.Contains(id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has been destroyed.");
+				removedElementIds.Add(id);
+				lastElementDescs.Remove(id);
+
+				// Remove paragraph state if this was a DocumentParagraph
+				paragraphStates.Remove(id);
+			}
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+#define REQUEST_RENDERER_UPDATE_ELEMENT2(ARGUMENTS, RENDERER_TYPE)\
+		RequestRendererUpdateElement<RENDERER_TYPE>(\
+			ARGUMENTS,\
+			ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.",\
+			ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type."\
+			)
+
+#define REQUEST_RENDERER_UPDATE_ELEMENT(RENDERER_TYPE) REQUEST_RENDERER_UPDATE_ELEMENT2(arguments, RENDERER_TYPE)
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SolidBorder(const ElementDesc_SolidBorder& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SolidBorder(const ElementDesc_SolidBorder&)#"
+		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::SolidBorder);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SinkBorder(const ElementDesc_SinkBorder& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SinkBorder(const ElementDesc_SinkBorder&)#"
+		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::SinkBorder);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SinkSplitter(const ElementDesc_SinkSplitter& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SinkSplitter(const ElementDesc_SinkSplitter&)#"
+		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::SinkSplitter);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SolidBackground(const ElementDesc_SolidBackground& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SolidBackground(const ElementDesc_SolidBackground&)#"
+		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::SolidBackground);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_GradientBackground(const ElementDesc_GradientBackground& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_GradientBackground(const ElementDesc_GradientBackground&)#"
+		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::GradientBackground);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_InnerShadow(const ElementDesc_InnerShadow& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_InnerShadow(const ElementDesc_InnerShadow&)#"
+		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::InnerShadow);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_Polygon(const ElementDesc_Polygon& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_Polygon(const ElementDesc_Polygon&)#"
+		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::Polygon);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Elements - SolidLabel)
+***********************************************************************/
+
+	void UnitTestRemoteProtocol_Rendering::CalculateSolidLabelSizeIfNecessary(vint width, vint height, const ElementDesc_SolidLabel& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::CalculateSolidLabelSizeIfNecessary(vint, vint, const ElementDesc_SolidLabel&)#"
+
+		if (arguments.measuringRequest)
+		{
+			switch (arguments.measuringRequest.Value())
+			{
+			case ElementSolidLabelMeasuringRequest::FontHeight:
+				CHECK_ERROR(arguments.font, ERROR_MESSAGE_PREFIX L"Font is missing for calculating font height.");
+				if (!measuringForNextRendering.fontHeights)
+				{
+					measuringForNextRendering.fontHeights = Ptr(new List<ElementMeasuring_FontHeight>);
+				}
+				{
+					ElementMeasuring_FontHeight measuring;
+					measuring.fontFamily = arguments.font.Value().fontFamily;
+					measuring.fontSize = arguments.font.Value().size;
+					measuring.height = measuring.fontSize + 4;
+					measuringForNextRendering.fontHeights->Add(measuring);
+				}
+				break;
+			case ElementSolidLabelMeasuringRequest::TotalSize:
+				{
+					// font and text has already been verified exist in RequestRendererUpdateElement_SolidLabel
+					vint size = arguments.font.Value().size;
+					auto text = arguments.text.Value();
+					vint textWidth = 0;
+					vint textHeight = 0;
+
+					List<WString> lines;
+					{
+						List<Ptr<regex::RegexMatch>> matches;
+						regexCrLf.Split(text, true, matches);
+
+						if (matches.Count() == 0)
+						{
+							// when there is no text, measure a space
+							lines.Add(WString::Unmanaged(L" "));
+						}
+						else if (arguments.multiline)
+						{
+							// add all lines, and if any line is empty, measure a space
+							for (auto match : matches)
+							{
+								auto line = match->Result().Value();
+								lines.Add(line.Length() ? line : WString::Unmanaged(L" "));
+							}
+						}
+						else
+						{
+							lines.Add(stream::GenerateToStream([&](stream::TextWriter& writer)
+							{
+								for (auto [match, index] : indexed(matches))
+								{
+									if (index > 0) writer.WriteChar(L' ');
+									auto line = match->Result().Value();
+									writer.WriteString(line);
+								}
+							}));
+							if(lines[0].Length() == 0)
+							{
+								// when there is no text, measure a space
+								lines[0] = WString::Unmanaged(L" ");
+							}
+						}
+					}
+
+					if (arguments.wrapLine)
+					{
+						// width of the text is 0
+						// insert a line break when there is no space horizontally
+						vint totalLines = 0;
+						for (auto&& line : lines)
+						{
+							if (line.Length() == 0)
+							{
+								totalLines++;
+								continue;
+							}
+
+							double accumulatedWidth = 0;
+							for (vint i = 0; i < line.Length(); i++)
+							{
+								auto c = line[i];
+								auto w = (c < 128 ? 0.6 : 1) * size;
+								if (accumulatedWidth + w > width)
+								{
+									if (accumulatedWidth == 0)
+									{
+										totalLines++;
+									}
+									else
+									{
+										totalLines++;
+										accumulatedWidth = w;
+									}
+								}
+								else
+								{
+									accumulatedWidth += w;
+								}
+							}
+							if (accumulatedWidth > 0)
+							{
+								totalLines++;
+							}
+						}
+						textHeight = 4 + size * totalLines;
+					}
+					else
+					{
+						// width of the text is width of the longest line
+						textWidth = (vint)(size * From(lines)
+							.Select([](const WString& line)
+							{
+								double sum = 0;
+								for (vint i = 0; i < line.Length(); i++)
+								{
+									auto c = line[i];
+									sum += (c < 128 ? 0.6 : 1);
+								}
+								return sum;
+							})
+							.Max());
+						textHeight = 4 + size * lines.Count();
+					}
+
+					if (!measuringForNextRendering.minSizes)
+					{
+						measuringForNextRendering.minSizes = Ptr(new List<ElementMeasuring_ElementMinSize>);
+					}
+					{
+						ElementMeasuring_ElementMinSize measuring;
+						measuring.id = arguments.id;
+						measuring.minSize = { textWidth,textHeight };
+						measuringForNextRendering.minSizes->Add(measuring);
+					}
+				}
+				break;
+			default:
+				CHECK_FAIL(L"Unknown value of ElementSolidLabelMeasuringRequest.");
+			}
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SolidLabel(const ElementDesc_SolidLabel& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SolidLabel(const ElementDesc_SolidLabel&)#"
+		auto element = arguments;
+		if (!element.font || !element.text)
+		{
+			vint index = loggedTrace.createdElements->Keys().IndexOf(element.id);
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
+
+			auto rendererType = loggedTrace.createdElements->Values()[index];
+			CHECK_ERROR(rendererType == RendererType::SolidLabel, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+
+			index = lastElementDescs.Keys().IndexOf(arguments.id);
+			if (index != -1)
+			{
+				auto solidLabel = lastElementDescs.Values()[index].TryGet<ElementDesc_SolidLabel>();
+				CHECK_ERROR(solidLabel, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+				if (!element.font) element.font = solidLabel->font;
+				if (!element.text) element.text = solidLabel->text;
+			}
+			else
+			{
+				if (!element.font) element.font = FontProperties();
+				if (!element.text) element.text = WString::Empty;
+			}
+		}
+		REQUEST_RENDERER_UPDATE_ELEMENT2(element, RendererType::SolidLabel);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Elements - Image)
+***********************************************************************/
+
+	WString UnitTestRemoteProtocol_Rendering::GetBinaryKeyFromBinary(stream::IStream& binary)
+	{
+		stream::MemoryStream base64WStringStream;
+		{
+			stream::UtfGeneralEncoder<wchar_t, char8_t> utf8ToWCharEncoder;
+			stream::EncoderStream utf8ToWCharStream(base64WStringStream, utf8ToWCharEncoder);
+			stream::Utf8Base64Encoder binaryToBase64Utf8Encoder;
+			stream::EncoderStream binaryToBase64Utf8Stream(utf8ToWCharStream, binaryToBase64Utf8Encoder);
+			binary.SeekFromBegin(0);
+			stream::CopyStream(binary, binaryToBase64Utf8Stream);
+		}
+		{
+			base64WStringStream.SeekFromBegin(0);
+			stream::StreamReader reader(base64WStringStream);
+			return reader.ReadToEnd();
+		}
+	}
+
+	WString UnitTestRemoteProtocol_Rendering::GetBinaryKeyFromImage(Ptr<INativeImage> image)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::GetBinaryKeyFromImage(Ptr<INativeImage>)#"
+		auto remoteImage = image.Cast<GuiRemoteGraphicsImage>();
+		CHECK_ERROR(remoteImage, ERROR_MESSAGE_PREFIX L"The image object must be GuiRemoteGraphicsImage.");
+		return GetBinaryKeyFromBinary(remoteImage->GetBinaryData());
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	ImageMetadata UnitTestRemoteProtocol_Rendering::MakeImageMetadata(const ImageCreation& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::MakeImageMetadata(const remoteprotocol::ImageCreation)#"
+		if (!cachedImageMetadatas)
+		{
+			cachedImageMetadatas = Ptr(new Base64ToImageMetadataMap);
+			for (auto resource : GetResourceManager()->GetLoadedResources())
+			{
+				if (auto xmlImageData = resource->GetValueByPath(WString::Unmanaged(L"UnitTestConfig/ImageData")).Cast<glr::xml::XmlDocument>())
+				{
+					for (auto elementImage : glr::xml::XmlGetElements(xmlImageData->rootElement, WString::Unmanaged(L"Image")))
+					{
+						WString path, format, frames = WString::Unmanaged(L"1"), width, height;
+
+						auto attPath = glr::xml::XmlGetAttribute(elementImage.Obj(), WString::Unmanaged(L"Path"));
+						auto attFormat = glr::xml::XmlGetAttribute(elementImage.Obj(), WString::Unmanaged(L"Format"));
+						auto attFrames = glr::xml::XmlGetAttribute(elementImage.Obj(), WString::Unmanaged(L"Frames"));
+						auto attWidth = glr::xml::XmlGetAttribute(elementImage.Obj(), WString::Unmanaged(L"Width"));
+						auto attHeight = glr::xml::XmlGetAttribute(elementImage.Obj(), WString::Unmanaged(L"Height"));
+
+						CHECK_ERROR(attPath, ERROR_MESSAGE_PREFIX L"Missing Path attribute in Image element in an UnitTestConfig/ImageData.");
+						CHECK_ERROR(attFormat, ERROR_MESSAGE_PREFIX L"Missing Format attribute in Image element in an UnitTestConfig/ImageData.");
+						CHECK_ERROR(attWidth, ERROR_MESSAGE_PREFIX L"Missing Width attribute in Image element in an UnitTestConfig/ImageData.");
+						CHECK_ERROR(attHeight, ERROR_MESSAGE_PREFIX L"Missing Height attribute in Image element in an UnitTestConfig/ImageData.");
+
+						path = attPath->value.value;
+						format = attFormat->value.value;
+						width = attWidth->value.value;
+						height = attHeight->value.value;
+						if (attFrames) frames = attFrames->value.value;
+
+						vint valueFrames = wtoi(frames);
+						vint valueWidth = wtoi(width);
+						vint valueHeight = wtoi(height);
+
+						CHECK_ERROR(itow(valueFrames) == frames, ERROR_MESSAGE_PREFIX L"Frames attribute must be an integer in Image element in an UnitTestConfig/ImageData.");
+						CHECK_ERROR(itow(valueWidth) == width, ERROR_MESSAGE_PREFIX L"Width attribute must be an integer in Image element in an UnitTestConfig/ImageData.");
+						CHECK_ERROR(itow(valueHeight) == height, ERROR_MESSAGE_PREFIX L"Height attribute must be an integer in Image element in an UnitTestConfig/ImageData.");
+
+						auto imageData = resource->GetImageByPath(path);
+						WString binaryKey = GetBinaryKeyFromImage(imageData->GetImage());
+
+						if (!cachedImageMetadatas->Keys().Contains(binaryKey))
+						{
+							ImageMetadata imageMetadata;
+							imageMetadata.id = -1;
+							imageMetadata.frames = Ptr(new List<ImageFrameMetadata>);
+							{
+								auto node = Ptr(new glr::json::JsonString);
+								node->content.value = format;
+								ConvertJsonToCustomType(node, imageMetadata.format);
+							}
+							for (vint frame = 0; frame < valueFrames; frame++)
+							{
+								imageMetadata.frames->Add({ {valueWidth,valueHeight} });
+							}
+
+							cachedImageMetadatas->Add(binaryKey, imageMetadata);
+						}
+					}
+				}
+			}
+		}
+
+		auto binaryKey = GetBinaryKeyFromBinary(*arguments.imageData.Obj());
+		vint binaryIndex = cachedImageMetadatas->Keys().IndexOf(binaryKey);
+		CHECK_ERROR(binaryIndex != -1, ERROR_MESSAGE_PREFIX L"The image is not registered in any UnitTestConfig/ImageData.");
+		auto metadata = cachedImageMetadatas->Values()[binaryIndex];
+		metadata.id = arguments.id;
+
+		loggedTrace.imageCreations->Add(arguments);
+		loggedTrace.imageMetadatas->Add(metadata);
+		return metadata;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_ImageCreated(vint id, const ImageCreation& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_ImageCreated(vint, const vint&)#"
+		CHECK_ERROR(!loggedTrace.imageMetadatas->Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created or used.");
+		this->GetEvents()->RespondImageCreated(id, MakeImageMetadata(arguments));
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_ImageDestroyed(const vint& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_ImageDestroyed(const vint&)#"
+		CHECK_ERROR(loggedTrace.imageMetadatas->Keys().Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
+		CHECK_ERROR(!removedImageIds.Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has been destroyed.");
+		removedImageIds.Add(arguments);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_ImageFrame(const ElementDesc_ImageFrame& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_ImageFrame(const ElementDesc_ImageFrame&)#"
+		if (arguments.imageCreation)
+		{
+			auto&& imageCreation = arguments.imageCreation.Value();
+			if (!imageCreation.imageDataOmitted)
+			{
+				CHECK_ERROR(arguments.imageId && arguments.imageId.Value() != !imageCreation.id, ERROR_MESSAGE_PREFIX L"It should satisfy that (arguments.imageId.Value()id == imageCreation.id).");
+				CHECK_ERROR(!loggedTrace.imageMetadatas->Keys().Contains(imageCreation.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
+				CHECK_ERROR(imageCreation.imageData, ERROR_MESSAGE_PREFIX L"When imageDataOmitted == false, imageData should not be null.");
+				if (!measuringForNextRendering.createdImages)
+				{
+					measuringForNextRendering.createdImages = Ptr(new List<ImageMetadata>);
+				}
+				measuringForNextRendering.createdImages->Add(MakeImageMetadata(imageCreation));
+			}
+			else
+			{
+				CHECK_ERROR(!imageCreation.imageData, ERROR_MESSAGE_PREFIX L"When imageDataOmitted == true, imageData should be null.");
+			}
+		}
+		else if (arguments.imageId)
+		{
+			CHECK_ERROR(loggedTrace.imageMetadatas->Keys().Contains(arguments.imageId.Value()), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
+		}
+
+		auto element = arguments;
+		element.imageCreation.Reset();
+		REQUEST_RENDERER_UPDATE_ELEMENT2(element, RendererType::ImageFrame);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+#undef REQUEST_RENDERER_UPDATE_ELEMENT
+#undef REQUEST_RENDERER_UPDATE_ELEMENT2
+}
+
+
+/***********************************************************************
 .\GUIUNITTESTPROTOCOL_SHARED.CPP
 ***********************************************************************/
 

@@ -18176,30 +18176,63 @@ GuiDocumentCommonInterface
 					break;
 				case VKEY::KEY_HOME:
 					{
+						if (ctrl)
+						{
+							Move(TextPos(0, 0), shift, true);
+							break;
+						}
+
 						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineFirst, frontSide);
 						if (newCaret == currentCaret)
 						{
 							newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretFirst, frontSide);
+						}
+						if (newCaret == currentCaret)
+						{
+							newCaret = TextPos(0, 0);
 						}
 						Move(newCaret, shift, frontSide);
 					}
 					break;
 				case VKEY::KEY_END:
 					{
+						if (ctrl)
+						{
+							vint lastIndex = documentElement->GetDocument()->paragraphs.Count() - 1;
+							auto lastParagraph = documentElement->GetDocument()->paragraphs[lastIndex];
+							Move(TextPos(lastIndex, lastParagraph->GetTextForCaret().Length()), shift, false);
+							break;
+						}
+
 						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineLast, frontSide);
 						if (newCaret == currentCaret)
 						{
 							newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLast, frontSide);
 						}
+						if (newCaret == currentCaret)
+						{
+							vint lastIndex = documentElement->GetDocument()->paragraphs.Count() - 1;
+							auto lastParagraph = documentElement->GetDocument()->paragraphs[lastIndex];
+							newCaret = TextPos(lastIndex, lastParagraph->GetTextForCaret().Length());
+						}
 						Move(newCaret, shift, frontSide);
 					}
-				break;
-					case VKEY::KEY_PRIOR:
-					{
-					}
 					break;
+				case VKEY::KEY_PRIOR:
 				case VKEY::KEY_NEXT:
 					{
+						if (config.paragraphMode == GuiDocumentParagraphMode::Singleline) break;
+						if (!documentMouseArea) break;
+						vint page = documentMouseArea->GetCachedBounds().Height();
+						if (page <= 0) break;
+
+						Rect caretBounds = documentElement->GetCaretBounds(currentCaret, frontSide);
+						vint x = caretBounds.x1;
+						vint y = (caretBounds.y1 + caretBounds.y2) / 2;
+						y += (code == VKEY::KEY_PRIOR ? -page : page);
+
+						TextPos newCaret = documentElement->CalculateCaretFromPoint(Point(x, y));
+						Move(newCaret, shift, frontSide);
 					}
 					break;
 				case VKEY::KEY_BACK:
@@ -18229,7 +18262,13 @@ GuiDocumentCommonInterface
 				case VKEY::KEY_RETURN:
 					if (editMode == GuiDocumentEditMode::Editable)
 					{
-						if (ctrl)
+						if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
+						{
+							// Singleline text boxes should ignore Enter entirely.
+							// In particular, Enter must not delete selection.
+							return true;
+						}
+						else if (ctrl && config.paragraphMode == GuiDocumentParagraphMode::Paragraph)
 						{
 							Array<WString> text(1);
 							text[0] = L"\r\n";
@@ -18315,11 +18354,19 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::SetActiveHyperlink(Ptr<DocumentHyperlinkRun::Package> package)
 			{
-				ActivateActiveHyperlink(false);
-				activeHyperlinks =
+				auto normalizedPackage =
 					!package ? nullptr :
 					package->hyperlinks.Count() == 0 ? nullptr :
 					package;
+
+				if (!activeHyperlinks && !normalizedPackage) return;
+				if (activeHyperlinks && normalizedPackage)
+				{
+					if (CompareEnumerable(activeHyperlinks->hyperlinks, normalizedPackage->hyperlinks) == 0) return;
+				}
+
+				ActivateActiveHyperlink(false);
+				activeHyperlinks = normalizedPackage;
 				ActivateActiveHyperlink(true);
 				ActiveHyperlinkChanged.Execute(documentControl->GetNotifyEventArguments());
 			}
@@ -29754,7 +29801,7 @@ SetPropertiesVisitor
 						element->SetStretch(true);
 
 						IGuiGraphicsParagraph::InlineObjectProperties properties;
-						properties.size = run->size;
+						properties.size = run->GetSize();
 						properties.baseline = run->baseline;
 						properties.breakCondition = IGuiGraphicsParagraph::Alone;
 						properties.backgroundImage = element;
@@ -35071,7 +35118,8 @@ GuiRemoteController (INativeController)
 
 	INativeClipboardService* GuiRemoteController::ClipboardService()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		// Use FakeClipboardService
+		return nullptr;
 	}
 
 	INativeImageService* GuiRemoteController::ImageService()
@@ -35402,14 +35450,6 @@ GuiRemoteEvents (events)
 	{
 		for (auto l : remote->remoteWindow.listeners) l->Char(arguments);
 	}
-
-	void GuiRemoteEvents::OnDocumentParagraph_RenderInlineObjects(const Ptr<collections::List<remoteprotocol::RenderInlineObjectRequest>>& arguments)
-	{
-		if (arguments)
-		{
-			remote->resourceManager->OnDocumentParagraph_RenderInlineObjects(*arguments.Obj());
-		}
-	}
 }
 
 /***********************************************************************
@@ -35474,30 +35514,7 @@ GuiRemoteGraphicsRenderTarget
 		canvasSize = remote->remoteWindow.GetClientSize();
 		clipperValidArea = GetClipper();
 		renderingBatchId++;
-
-		if (destroyedRenderers.Count() > 0)
-		{
-			auto ids = Ptr(new List<vint>);
-			CopyFrom(*ids.Obj(), destroyedRenderers);
-			destroyedRenderers.Clear();
-			remote->remoteMessages.RequestRendererDestroyed(ids);
-		}
-
-		if (createdRenderers.Count() > 0 || pendingParagraphCreations.Count() > 0)
-		{
-			auto ids = Ptr(new List<remoteprotocol::RendererCreation>);
-			for (auto id : createdRenderers)
-			{
-				ids->Add({ id,renderers[id]->GetRendererType() });
-			}
-			for (auto&& creation : pendingParagraphCreations)
-			{
-				ids->Add(creation);
-			}
-			createdRenderers.Clear();
-			pendingParagraphCreations.Clear();
-			remote->remoteMessages.RequestRendererCreated(ids);
-		}
+		EnsureRequestedRenderersCreated();
 
 		for (auto [id, renderer] : renderers)
 		{
@@ -35697,33 +35714,66 @@ GuiRemoteGraphicsRenderTarget
 	{
 	}
 
+	void GuiRemoteGraphicsRenderTarget::EnsureRequestedRenderersCreated()
+	{
+		if (destroyedRenderers.Count() > 0)
+		{
+			auto ids = Ptr(new List<vint>);
+			CopyFrom(*ids.Obj(), destroyedRenderers);
+			destroyedRenderers.Clear();
+			remote->remoteMessages.RequestRendererDestroyed(ids);
+		}
+
+		if (createdRenderers.Count() > 0 || pendingParagraphCreations.Count() > 0)
+		{
+			auto ids = Ptr(new List<remoteprotocol::RendererCreation>);
+			for (auto id : createdRenderers)
+			{
+				ids->Add({ id,renderers[id]->GetRendererType() });
+			}
+			CopyFrom(*ids.Obj(), pendingParagraphCreations, true);
+			createdRenderers.Clear();
+			pendingParagraphCreations.Clear();
+			remote->remoteMessages.RequestRendererCreated(ids);
+		}
+	}
+
 	void GuiRemoteGraphicsRenderTarget::OnControllerConnect()
 	{
 		fontHeights.Clear();
 		renderersAskingForCache.Clear();
 
-		if (renderers.Count() > 0)
+		if (renderers.Count() > 0 || paragraphs.Count() > 0)
 		{
-			{
-				auto ids = Ptr(new List<remoteprotocol::RendererCreation>);
-				for (auto renderer : renderers.Values())
-				{
-					ids->Add({ renderer->GetID(),renderer->GetRendererType() });
-					renderer->NotifyMinSizeCacheInvalidated();
-				}
-				createdRenderers.Clear();
-				remote->remoteMessages.RequestRendererCreated(ids);
-			}
-
+			auto ids = Ptr(new List<remoteprotocol::RendererCreation>);
 			for (auto renderer : renderers.Values())
 			{
-				renderer->SendUpdateElementMessages(true);
-				if (renderer->NeedUpdateMinSizeFromCache())
-				{
-					renderersAskingForCache.Add(renderer);
-				}
-				renderer->ResetUpdated();
+				ids->Add({ renderer->GetID(),renderer->GetRendererType() });
+				renderer->NotifyMinSizeCacheInvalidated();
 			}
+			for (auto paragraph : paragraphs.Values())
+			{
+				ids->Add({ paragraph->GetParagraphId(),remoteprotocol::RendererType::DocumentParagraph });
+			}
+			createdRenderers.Clear();
+			pendingParagraphCreations.Clear();
+			remote->remoteMessages.RequestRendererCreated(ids);
+		}
+
+		for (auto renderer : renderers.Values())
+		{
+			renderer->SendUpdateElementMessages(true);
+			if (renderer->NeedUpdateMinSizeFromCache())
+			{
+				renderersAskingForCache.Add(renderer);
+			}
+			renderer->ResetUpdated();
+		}
+
+		for (auto paragraph : paragraphs.Values())
+		{
+			paragraph->MarkParagraphDirty(false);
+			paragraph->EnsureRemoteParagraphSynced();
 		}
 	}
 
@@ -35756,19 +35806,18 @@ GuiRemoteGraphicsRenderTarget
 		vint id = renderer->GetID();
 		renderers.Remove(id);
 		renderersAskingForCache.Remove(renderer);
+
+		vint index = createdRenderers.IndexOf(id);
+		if (index == -1)
 		{
-			vint index = createdRenderers.IndexOf(id);
-			if (index == -1)
+			if (!destroyedRenderers.Contains(id))
 			{
-				if (!destroyedRenderers.Contains(id))
-				{
-					destroyedRenderers.Add(id);
-				}
+				destroyedRenderers.Add(id);
 			}
-			else
-			{
-				createdRenderers.RemoveAt(index);
-			}
+		}
+		else
+		{
+			createdRenderers.RemoveAt(index);
 		}
 	}
 
@@ -35785,12 +35834,12 @@ GuiRemoteGraphicsRenderTarget
 
 	void GuiRemoteGraphicsRenderTarget::RegisterParagraph(GuiRemoteGraphicsParagraph* paragraph)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GuiRemoteGraphicsRenderTarget::RegisterParagraph(GuiRemoteGraphicsParagraph*)#"
-		auto paragraphId = paragraph->GetParagraphId();
-		CHECK_ERROR(!paragraphs.Keys().Contains(paragraphId), ERROR_MESSAGE_PREFIX L"Duplicated paragraph id.");
-		paragraphs.Add(paragraphId, paragraph);
-		pendingParagraphCreations.Add({ paragraphId,remoteprotocol::RendererType::DocumentParagraph });
-#undef ERROR_MESSAGE_PREFIX
+		auto id = paragraph->GetParagraphId();
+		if (!paragraphs.Keys().Contains(id))
+		{
+			paragraphs.Add(id, paragraph);
+			pendingParagraphCreations.Add({ id,remoteprotocol::RendererType::DocumentParagraph });
+		}
 	}
 
 	void GuiRemoteGraphicsRenderTarget::UnregisterParagraph(vint id)
@@ -35802,12 +35851,14 @@ GuiRemoteGraphicsRenderTarget
 		}
 
 		paragraphs.Remove(id);
-		for (vint i = pendingParagraphCreations.Count() - 1; i >= 0; i--)
 		{
-			if (pendingParagraphCreations[i].id == id)
+			for (vint i = pendingParagraphCreations.Count() - 1; i >= 0; i--)
 			{
-				pendingParagraphCreations.RemoveAt(i);
-				return;
+				if (pendingParagraphCreations[i].id == id)
+				{
+					pendingParagraphCreations.RemoveAt(i);
+					return;
+				}
 			}
 		}
 		if (!destroyedRenderers.Contains(id))
@@ -35871,11 +35922,6 @@ GuiRemoteGraphicsResourceManager
 		renderTarget.OnControllerDisconnect();
 	}
 
-	void GuiRemoteGraphicsResourceManager::OnDocumentParagraph_RenderInlineObjects(collections::List<remoteprotocol::RenderInlineObjectRequest>& arguments)
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
 	IGuiGraphicsRenderTarget* GuiRemoteGraphicsResourceManager::GetRenderTarget(INativeWindow* window)
 	{
 		CHECK_ERROR(window == &remote->remoteWindow, L"vl::presentation::elements::GuiRemoteGraphicsResourceManager::GetRenderTarget(INativeWindow*)#GuiHostedController should call this function with the native window.");
@@ -35900,6 +35946,7 @@ GuiRemoteGraphicsResourceManager
 		return Ptr(elements_remoteprotocol::GuiRemoteRawElement::Create());
 	}
 }
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\GUIREMOTEGRAPHICS_BASICELEMENTS.CPP
@@ -36746,7 +36793,11 @@ DiffRuns
 			vint firstOverlap = BinarySearchLambda(&map.Keys()[0], map.Keys().Count(), range, index, comparer);
 			
 			if (firstOverlap != -1)
-				return false;
+			{
+				if (map.Keys()[firstOverlap] != range) return false;
+				const_cast<remoteprotocol::DocumentInlineObjectRunProperty&>(map.Values()[firstOverlap]) = property;
+				return true;
+			}
 		}
 
 		map.Add(range, property);
@@ -37100,6 +37151,8 @@ GuiRemoteGraphicsParagraph
 			return false;
 		}
 
+		renderTarget->EnsureRequestedRenderersCreated();
+
 		stagedRuns.Clear();
 		MergeRuns(textRuns, inlineObjectRuns, stagedRuns);
 
@@ -37136,7 +37189,11 @@ GuiRemoteGraphicsParagraph
 			return false;
 		}
 
-		cachedSize = messages.RetrieveRendererUpdateElement_DocumentParagraph(requestId);
+		{
+			auto response = messages.RetrieveRendererUpdateElement_DocumentParagraph(requestId);
+			cachedSize = response.documentSize;
+			cachedInlineObjectBounds = response.inlineObjectBounds;
+		}
 		committedRuns = std::move(stagedRuns);
 		needUpdate = false;
 		return true;
@@ -37344,10 +37401,7 @@ GuiRemoteGraphicsParagraph
 
 	Size GuiRemoteGraphicsParagraph::GetSize()
 	{
-		if (!EnsureRemoteParagraphSynced())
-		{
-			return cachedSize;
-		}
+		EnsureRemoteParagraphSynced();
 		return cachedSize;
 	}
 
@@ -37359,6 +37413,7 @@ GuiRemoteGraphicsParagraph
 		}
 
 		remoteprotocol::OpenCaretRequest request;
+		request.id = id;
 		request.caret = NativeTextPosToRemoteTextPos(caret);
 		request.caretColor = color;
 		request.frontSide = frontSide;
@@ -37378,7 +37433,7 @@ GuiRemoteGraphicsParagraph
 		}
 
 		auto& messages = renderTarget->GetRemoteMessages();
-		messages.RequestDocumentParagraph_CloseCaret();
+		messages.RequestDocumentParagraph_CloseCaret(id);
 		bool disconnected = false;
 		messages.Submit(disconnected);
 		return !disconnected;
@@ -37394,6 +37449,27 @@ GuiRemoteGraphicsParagraph
 		if (!EnsureRemoteParagraphSynced())
 		{
 			return;
+		}
+
+		if (callback && cachedInlineObjectBounds)
+		{
+			for (auto [callbackId, location] : *cachedInlineObjectBounds.Obj())
+			{
+				auto newSize = callback->OnRenderInlineObject(callbackId, location);
+				if (newSize != location.GetSize())
+				{
+					MarkParagraphDirty(false);
+					for (auto&& inlineObjectRun : inlineObjectRuns.Values())
+					{
+						if (inlineObjectRun.callbackId == callbackId)
+						{
+							auto& editable = const_cast<remoteprotocol::DocumentInlineObjectRunProperty&>(inlineObjectRun);
+							editable.size = newSize;
+							break;
+						}
+					}
+				}
+			}
 		}
 
 		remoteprotocol::ElementRendering rendering;
@@ -37416,6 +37492,7 @@ GuiRemoteGraphicsParagraph
 
 		auto& messages = renderTarget->GetRemoteMessages();
 		remoteprotocol::GetCaretRequest request;
+		request.id = id;
 		request.caret = NativeTextPosToRemoteTextPos(comparingCaret);
 		request.relativePosition = position;
 
@@ -37441,6 +37518,7 @@ GuiRemoteGraphicsParagraph
 		}
 
 		remoteprotocol::GetCaretBoundsRequest request;
+		request.id = id;
 		request.caret = NativeTextPosToRemoteTextPos(caret);
 		request.frontSide = frontSide;
 
@@ -37470,6 +37548,7 @@ GuiRemoteGraphicsParagraph
 		for (vint caret = 0; caret <= text.Length(); caret++)
 		{
 			remoteprotocol::GetCaretBoundsRequest request;
+			request.id = id;
 			request.caret = NativeTextPosToRemoteTextPos(caret);
 			request.frontSide = true;
 
@@ -37516,8 +37595,12 @@ GuiRemoteGraphicsParagraph
 			return {};
 		}
 
+		remoteprotocol::GetInlineObjectFromPointRequest request;
+		request.id = id;
+		request.point = point;
+
 		auto& messages = renderTarget->GetRemoteMessages();
-		vint requestId = messages.RequestDocumentParagraph_GetInlineObjectFromPoint(point);
+		vint requestId = messages.RequestDocumentParagraph_GetInlineObjectFromPoint(request);
 		bool disconnected = false;
 		messages.Submit(disconnected);
 		if (disconnected)
@@ -37554,6 +37637,7 @@ GuiRemoteGraphicsParagraph
 		}
 
 		remoteprotocol::GetCaretBoundsRequest request;
+		request.id = id;
 		request.caret = NativeTextPosToRemoteTextPos(textPos);
 		request.frontSide = frontSide;
 
@@ -37577,8 +37661,12 @@ GuiRemoteGraphicsParagraph
 			return false;
 		}
 
+		remoteprotocol::IsValidCaretRequest request;
+		request.id = id;
+		request.caret = NativeTextPosToRemoteTextPos(caret);
+
 		auto& messages = renderTarget->GetRemoteMessages();
-		vint requestId = messages.RequestDocumentParagraph_IsValidCaret(NativeTextPosToRemoteTextPos(caret));
+		vint requestId = messages.RequestDocumentParagraph_IsValidCaret(request);
 		bool disconnected = false;
 		messages.Submit(disconnected);
 		if (disconnected)
@@ -37594,6 +37682,7 @@ GuiRemoteGraphicsParagraph
 		return 0 <= textPos && textPos <= text.Length();
 	}
 }
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\GUIREMOTEGRAPHICS_IMAGESERVICE.CPP
@@ -41129,9 +41218,18 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse>(const ::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"documentSize", value.documentSize);
+		ConvertCustomTypeToJsonField(node, L"inlineObjectBounds", value.inlineObjectBounds);
+		return node;
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretRequest>(const ::vl::presentation::remoteprotocol::GetCaretRequest & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"id", value.id);
 		ConvertCustomTypeToJsonField(node, L"caret", value.caret);
 		ConvertCustomTypeToJsonField(node, L"relativePosition", value.relativePosition);
 		return node;
@@ -41148,14 +41246,32 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretBoundsRequest>(const ::vl::presentation::remoteprotocol::GetCaretBoundsRequest & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"id", value.id);
 		ConvertCustomTypeToJsonField(node, L"caret", value.caret);
 		ConvertCustomTypeToJsonField(node, L"frontSide", value.frontSide);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest>(const ::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"id", value.id);
+		ConvertCustomTypeToJsonField(node, L"point", value.point);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IsValidCaretRequest>(const ::vl::presentation::remoteprotocol::IsValidCaretRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"id", value.id);
+		ConvertCustomTypeToJsonField(node, L"caret", value.caret);
 		return node;
 	}
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::OpenCaretRequest>(const ::vl::presentation::remoteprotocol::OpenCaretRequest & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"id", value.id);
 		ConvertCustomTypeToJsonField(node, L"caret", value.caret);
 		ConvertCustomTypeToJsonField(node, L"caretColor", value.caretColor);
 		ConvertCustomTypeToJsonField(node, L"frontSide", value.frontSide);
@@ -41265,6 +41381,14 @@ namespace vl::presentation::remoteprotocol
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"diffsInOrder", value.diffsInOrder);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull>(const ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"paragraph", value.paragraph);
+		ConvertCustomTypeToJsonField(node, L"caret", value.caret);
 		return node;
 	}
 
@@ -42096,6 +42220,20 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"documentSize") ConvertJsonToCustomType(field->value, value.documentSize); else
+			if (field->name.value == L"inlineObjectBounds") ConvertJsonToCustomType(field->value, value.inlineObjectBounds); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretRequest& value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::GetCaretRequest&)#"
@@ -42103,6 +42241,7 @@ namespace vl::presentation::remoteprotocol
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
 		{
+			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
 			if (field->name.value == L"caret") ConvertJsonToCustomType(field->value, value.caret); else
 			if (field->name.value == L"relativePosition") ConvertJsonToCustomType(field->value, value.relativePosition); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
@@ -42131,8 +42270,37 @@ namespace vl::presentation::remoteprotocol
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
 		{
+			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
 			if (field->name.value == L"caret") ConvertJsonToCustomType(field->value, value.caret); else
 			if (field->name.value == L"frontSide") ConvertJsonToCustomType(field->value, value.frontSide); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
+			if (field->name.value == L"point") ConvertJsonToCustomType(field->value, value.point); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IsValidCaretRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IsValidCaretRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IsValidCaretRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::IsValidCaretRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
+			if (field->name.value == L"caret") ConvertJsonToCustomType(field->value, value.caret); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -42145,6 +42313,7 @@ namespace vl::presentation::remoteprotocol
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
 		{
+			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
 			if (field->name.value == L"caret") ConvertJsonToCustomType(field->value, value.caret); else
 			if (field->name.value == L"caretColor") ConvertJsonToCustomType(field->value, value.caretColor); else
 			if (field->name.value == L"frontSide") ConvertJsonToCustomType(field->value, value.frontSide); else
@@ -42326,6 +42495,20 @@ namespace vl::presentation::remoteprotocol
 		for (auto field : jsonNode->fields)
 		{
 			if (field->name.value == L"diffsInOrder") ConvertJsonToCustomType(field->value, value.diffsInOrder); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraphFull&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"paragraph") ConvertJsonToCustomType(field->value, value.paragraph); else
+			if (field->name.value == L"caret") ConvertJsonToCustomType(field->value, value.caret); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -43382,7 +43565,7 @@ namespace vl::presentation::remote_renderer
 		CHECK_FAIL(L"Not implemented.");
 	}
 
-	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetInlineObjectFromPoint(vint id, const Point& arguments)
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetInlineObjectFromPoint(vint id, const remoteprotocol::GetInlineObjectFromPointRequest& arguments)
 	{
 		CHECK_FAIL(L"Not implemented.");
 	}
@@ -43392,7 +43575,7 @@ namespace vl::presentation::remote_renderer
 		CHECK_FAIL(L"Not implemented.");
 	}
 
-	void GuiRemoteRendererSingle::RequestDocumentParagraph_IsValidCaret(vint id, const vint& arguments)
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_IsValidCaret(vint id, const remoteprotocol::IsValidCaretRequest& arguments)
 	{
 		CHECK_FAIL(L"Not implemented.");
 	}
@@ -43402,7 +43585,7 @@ namespace vl::presentation::remote_renderer
 		CHECK_FAIL(L"Not implemented.");
 	}
 
-	void GuiRemoteRendererSingle::RequestDocumentParagraph_CloseCaret()
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_CloseCaret(const vint& arguments)
 	{
 		CHECK_FAIL(L"Not implemented.");
 	}
@@ -44382,7 +44565,8 @@ namespace vl
 				{
 					if (run->image)
 					{
-						writer.WriteString(L"<img width=\"" + itow(run->size.x) + L"\" height=\"" + itow(run->size.y) + L"\" src=\"data:image/");
+						auto imageSize = run->GetSize();
+						writer.WriteString(L"<img width=\"" + itow(imageSize.x) + L"\" height=\"" + itow(imageSize.y) + L"\" src=\"data:image/");
 						auto format = run->image->GetFormat();
 						if (format == INativeImage::Gif)
 						{
@@ -44685,8 +44869,9 @@ namespace vl
 					if (run->image)
 					{
 						writer.WriteString(L"{\\pict\\pngblip");
-						writer.WriteString(L"\\picw" + itow(run->size.x) + L"\\pich" + itow(run->size.y));
-						writer.WriteString(L"\\picwgoal" + itow(run->size.x * 15) + L"\\pichgoal" + itow(run->size.y * 15) + L" ");
+						auto imageSize = run->GetSize();
+						writer.WriteString(L"\\picw" + itow(imageSize.x) + L"\\pich" + itow(imageSize.y));
+						writer.WriteString(L"\\picwgoal" + itow(imageSize.x * 15) + L"\\pichgoal" + itow(imageSize.y * 15) + L" ");
 
 						MemoryStream memoryStream;
 						run->image->SaveToStream(memoryStream, INativeImage::Png);
@@ -45472,7 +45657,7 @@ If clonedRun field is assigned then it will be added to the cloned container run
 				void Visit(DocumentImageRun* run)override
 				{
 					auto cloned = Ptr(new DocumentImageRun);
-					cloned->size = run->size;
+					cloned->sizeOverride = run->sizeOverride;
 					cloned->baseline = run->baseline;
 					cloned->image = run->image;
 					cloned->frameIndex = run->frameIndex;
@@ -47471,8 +47656,6 @@ DocumentModel::EditImage
 		Ptr<DocumentImageRun> DocumentModel::EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image)
 		{
 			auto imageRun = Ptr(new DocumentImageRun);
-			imageRun->size=image->GetImage()->GetFrame(image->GetFrameIndex())->GetSize();
-			imageRun->baseline=imageRun->size.y;
 			imageRun->image=image->GetImage();
 			imageRun->frameIndex=image->GetFrameIndex();
 
@@ -47865,22 +48048,17 @@ document_operation_visitors::DeserializeNodeVisitor
 								{
 									run->image = imageData->GetImage();
 								}
-								if (run->image && run->image->GetFrameCount() > 0)
-								{
-									run->size = run->image->GetFrame(0)->GetSize();
-									run->frameIndex = 0;
-								}
 							}
 
 							for (auto att : node->attributes)
 							{
 								if (att->name.value == L"width")
 								{
-									run->size.x = wtoi(att->value.value);
+									run->sizeOverride = { wtoi(att->value.value),run->sizeOverride ? run->sizeOverride.Value().y : 0 };
 								}
 								else if (att->name.value == L"height")
 								{
-									run->size.y = wtoi(att->value.value);
+									run->sizeOverride = { run->sizeOverride ? run->sizeOverride.Value().x : 0,wtoi(att->value.value) };
 								}
 								else if (att->name.value == L"baseline")
 								{
@@ -48502,14 +48680,22 @@ document_operation_visitors::SerializeRunVisitor
 				void Visit(DocumentImageRun* run)override
 				{
 					XmlElementWriter writer(parent);
-					writer
+					auto elementWriter = writer
 						.Element(L"img")
-						.Attribute(L"width", itow(run->size.x))
-						.Attribute(L"height", itow(run->size.y))
-						.Attribute(L"baseline", itow(run->baseline))
 						.Attribute(L"frameIndex", itow(run->frameIndex))
 						.Attribute(L"source", run->source)
 						;
+					if(run->sizeOverride)
+					{
+						elementWriter
+							.Attribute(L"width", itow(run->sizeOverride.Value().x))
+							.Attribute(L"height", itow(run->sizeOverride.Value().y))
+							;
+					}
+					if (run->baseline != -1)
+					{
+						elementWriter.Attribute(L"baseline", itow(run->baseline));
+					}
 				}
 
 				void Visit(DocumentEmbeddedObjectRun* run)override
@@ -51549,6 +51735,7 @@ FakeClipboardWriter
 			FakeClipboardWriter(FakeClipboardService* _service)
 				: service(_service)
 			{
+				reader = Ptr(new FakeClipboardReader);
 			}
 
 			void SetText(const WString& value) override
@@ -51951,6 +52138,8 @@ View Model (IFileDialogViewModel)
 			Regex						regexDisplayString{ L";" };
 
 		public:
+			FakeDialogServiceBase*      dialogService = nullptr;
+
 			bool						selectToSave = false;
 			bool						confirmed = false;
 			ConfirmedSelection			confirmedSelection;
@@ -52188,49 +52377,93 @@ View Model (IFileDialogViewModel)
 
 			bool TryConfirm(controls::GuiWindow* owner, Selection selectedPaths) override
 			{
+				CHECK_ERROR(dialogService, L"vl::presentation::FileDialogViewModel::TryConfirm()#dialogService is not initialized.");
 				auto wd = selectedFolder->folder.GetFilePath();
-				List<filesystem::FilePath> paths;
+				List<filesystem::FilePath> rawPaths;
 				CopyFrom(
-					paths,
+					rawPaths,
 					selectedPaths.Select([this, wd](auto path) { return wd / path; })
 					);
 
-				if (paths.Count() == 0)
+				if (rawPaths.Count() == 0)
 				{
-					GetCurrentController()->DialogService()->ShowMessageBox(
-						owner->GetNativeWindow(),
+					dialogService->ShowMessageBox(
+						owner ? owner->GetNativeWindow() : nullptr,
 						dialogErrorEmptySelection,
 						owner->GetText(),
 						INativeDialogService::DisplayOK,
 						INativeDialogService::DefaultFirst,
-						INativeDialogService::IconError
+						INativeDialogService::IconError,
+						INativeDialogService::ModalWindow
 						);
 					return false;
 				}
-				else if (paths.Count() == 1)
+
+				// folder navigation must use the raw selection (no extension append)
+				if (rawPaths.Count() == 1)
 				{
-					auto path = paths[0];
+					auto path = rawPaths[0];
 					if (filesystem::Folder(path).Exists())
 					{
 						SetSelectedFolderInternal(path, true);
 						return false;
 					}
 				}
-				else
+				else if (!enabledMultipleSelection)
 				{
-					if (!enabledMultipleSelection)
-					{
-						GetCurrentController()->DialogService()->ShowMessageBox(
-							owner->GetNativeWindow(),
-							dialogErrorMultipleSelectionNotEnabled,
-							owner->GetText(),
-							INativeDialogService::DisplayOK,
-							INativeDialogService::DefaultFirst,
-							INativeDialogService::IconError
-							);
-						return false;
-					}
+					dialogService->ShowMessageBox(
+						owner ? owner->GetNativeWindow() : nullptr,
+						dialogErrorMultipleSelectionNotEnabled,
+						owner->GetText(),
+						INativeDialogService::DisplayOK,
+						INativeDialogService::DefaultFirst,
+						INativeDialogService::IconError,
+						INativeDialogService::ModalWindow
+						);
+					return false;
 				}
+
+				Nullable<WString> extension;
+				bool extensionFromFilter = false;
+				if (selectedFilter)
+				{
+					extension = selectedFilter->GetDefaultExtension();
+					extensionFromFilter = extension;
+				}
+
+				if (!extensionFromFilter && defaultExtension != WString::Empty)
+				{
+					extension = defaultExtension;
+				}
+
+				auto normalized = [&](filesystem::FilePath path)
+				{
+					if (!extension) return path;
+
+					auto&& sExt = WString::Unmanaged(L".") + extension.Value();
+					vint lExt = sExt.Length();
+					auto full = path.GetFullPath();
+
+					if (extensionFromFilter)
+					{
+						if (full.Length() >= lExt && full.Right(lExt) == sExt)
+						{
+							return path;
+						}
+					}
+					else
+					{
+						auto selectedFileName = path.GetName();
+						if (INVLOC.FindFirst(selectedFileName, WString::Unmanaged(L"."), Locale::None).key != -1)
+						{
+							return path;
+						}
+					}
+					return filesystem::FilePath(full + sExt);
+				};
+
+				List<filesystem::FilePath> paths;
+				CopyFrom(paths, From(rawPaths).Select([&](auto path) { return normalized(path); }));
 
 				List<vint> files, folders, unexistings;
 				for (auto [path, index] : indexed(paths))
@@ -52261,13 +52494,14 @@ View Model (IFileDialogViewModel)
 							writer.WriteString(wd.GetRelativePathFor(paths[index]));
 						}
 					});
-					GetCurrentController()->DialogService()->ShowMessageBox(
-						owner->GetNativeWindow(),
+					dialogService->ShowMessageBox(
+						owner ? owner->GetNativeWindow() : nullptr,
 						message,
 						owner->GetText(),
 						INativeDialogService::DisplayOK,
 						INativeDialogService::DefaultFirst,
-						INativeDialogService::IconError
+						INativeDialogService::IconError,
+						INativeDialogService::ModalWindow
 						);
 					return false;
 				}
@@ -52286,13 +52520,14 @@ View Model (IFileDialogViewModel)
 								writer.WriteString(wd.GetRelativePathFor(paths[index]));
 							}
 						});
-						GetCurrentController()->DialogService()->ShowMessageBox(
-							owner->GetNativeWindow(),
+						dialogService->ShowMessageBox(
+							owner ? owner->GetNativeWindow() : nullptr,
 							message,
 							owner->GetText(),
 							INativeDialogService::DisplayOK,
 							INativeDialogService::DefaultFirst,
-							INativeDialogService::IconError
+							INativeDialogService::IconError,
+							INativeDialogService::ModalWindow
 							);
 						return false;
 					}
@@ -52330,57 +52565,59 @@ View Model (IFileDialogViewModel)
 									writer.WriteString(wd.GetRelativePathFor(path));
 								}
 							});
-							GetCurrentController()->DialogService()->ShowMessageBox(
-								owner->GetNativeWindow(),
+							dialogService->ShowMessageBox(
+								owner ? owner->GetNativeWindow() : nullptr,
 								message,
 								owner->GetText(),
 								INativeDialogService::DisplayOK,
 								INativeDialogService::DefaultFirst,
-								INativeDialogService::IconError
+								INativeDialogService::IconError,
+								INativeDialogService::ModalWindow
 								);
 							return false;
 						}
 					}
+				}
 
-					WString questionMessage;
-					List<vint>* questionFiles = nullptr;
-					if (selectToSave && promptOverriteFile)
-					{
-						questionMessage = dialogAskOverrideFile;
-						questionFiles = &files;
-					}
-					if (!selectToSave && promptCreateFile)
-					{
-						questionMessage = dialogAskCreateFile;
-						questionFiles = &unexistings;
-					}
+				WString questionMessage;
+				List<vint>* questionFiles = nullptr;
+				if (selectToSave && promptOverriteFile)
+				{
+					questionMessage = dialogAskOverrideFile;
+					questionFiles = &files;
+				}
+				if (!selectToSave && promptCreateFile && unexistings.Count() > 0)
+				{
+					questionMessage = dialogAskCreateFile;
+					questionFiles = &unexistings;
+				}
 
-					if (questionFiles && questionFiles->Count() > 0)
+				if (questionFiles && questionFiles->Count() > 0)
+				{
+					auto message = stream::GenerateToStream([&](stream::TextWriter& writer)
 					{
-						auto message = stream::GenerateToStream([&](stream::TextWriter& writer)
+						writer.WriteString(questionMessage);
+						for (vint index : *questionFiles)
 						{
-							writer.WriteString(questionMessage);
-							for (vint index : *questionFiles)
-							{
-								writer.WriteLine(WString::Empty);
-								writer.WriteString(L"  ");
-								writer.WriteString(wd.GetRelativePathFor(paths[index]));
-							}
-						});
-
-						auto result = GetCurrentController()->DialogService()->ShowMessageBox(
-							owner->GetNativeWindow(),
-							message,
-							owner->GetText(),
-							INativeDialogService::DisplayOKCancel,
-							INativeDialogService::DefaultThird,
-							INativeDialogService::IconQuestion
-							);
-
-						if (result == INativeDialogService::SelectCancel)
-						{
-							return false;
+							writer.WriteLine(WString::Empty);
+							writer.WriteString(L"  ");
+							writer.WriteString(wd.GetRelativePathFor(paths[index]));
 						}
+					});
+
+					auto result = dialogService->ShowMessageBox(
+						owner ? owner->GetNativeWindow() : nullptr,
+						message,
+						owner->GetText(),
+						INativeDialogService::DisplayOKCancel,
+						INativeDialogService::DefaultThird,
+						INativeDialogService::IconQuestion,
+						INativeDialogService::ModalWindow
+						);
+
+					if (result == INativeDialogService::SelectCancel)
+					{
+						return false;
 					}
 				}
 
@@ -52388,47 +52625,6 @@ View Model (IFileDialogViewModel)
 					confirmedSelection,
 					From(paths).Select([](auto path) { return path.GetFullPath(); })
 					);
-
-				Nullable<WString> extension;
-				bool extensionFromFilter = false;
-				if (selectedFilter)
-				{
-					extension = selectedFilter->GetDefaultExtension();
-					extensionFromFilter = extension;
-				}
-
-				if (!extensionFromFilter && defaultExtension != WString::Empty)
-				{
-					extension = defaultExtension;
-				}
-
-				if (extension)
-				{
-					auto&& sExt = WString::Unmanaged(L".") + extension.Value();
-					vint lExt = sExt.Length();
-
-					// TODO: (enumerable) foreach
-					for (vint i = 0; i < confirmedSelection.Count(); i++)
-					{
-						WString& selection = confirmedSelection[i];
-						if (extensionFromFilter)
-						{
-							if (selection.Length() >= lExt && selection.Right(lExt) == sExt)
-							{
-								continue;
-							}
-						}
-						else
-						{
-							auto selectedFileName = filesystem::FilePath(selection).GetName();
-							if (INVLOC.FindFirst(selectedFileName, WString::Unmanaged(L"."), Locale::None).key != -1)
-							{
-								continue;
-							}
-						}
-						selection += sExt;
-					}
-				}
 
 				confirmed = true;
 				return true;
@@ -52490,6 +52686,7 @@ FakeDialogServiceBase
 		)
 		{
 			auto vm = Ptr(new FileDialogViewModel);
+			vm->dialogService = this;
 			vm->title = title;
 			vm->enabledMultipleSelection = (options & INativeDialogService::FileDialogAllowMultipleSelection) != 0;
 			vm->fileMustExist = (options & INativeDialogService::FileDialogFileMustExist) != 0;

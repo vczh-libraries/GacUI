@@ -58,6 +58,198 @@ namespace gaclib_controls
 		}
 	}
 
+	using ImageCreationMap = remoteprotocol::ArrayMap<vint, remoteprotocol::ImageCreation, &remoteprotocol::ImageCreation::id>;
+	using ElementDescMap = Dictionary<vint, remoteprotocol::UnitTest_ElementDescVariant>;
+
+	Ptr<GuiImageFrameElement> CreateImageElement(const remoteprotocol::ElementDesc_ImageFrame& desc, Ptr<ImageCreationMap> imageCreations)
+	{
+		auto element = Ptr(GuiImageFrameElement::Create());
+		element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
+		element->SetStretch(desc.stretch);
+		element->SetEnabled(desc.enabled);
+
+		if (desc.imageId)
+		{
+			vint index = imageCreations->Keys().IndexOf(desc.imageId.Value());
+			if (index != -1)
+			{
+				auto binary = imageCreations->Values()[index].imageData;
+				binary->SeekFromBegin(0);
+				element->SetImage(GetCurrentController()->ImageService()->CreateImageFromStream(*binary.Obj()), desc.imageFrame);
+			}
+		}
+
+		return element;
+	}
+
+	/***********************************************************************
+	GuiGraphicsParagraphWrapperElement
+	***********************************************************************/
+
+	class GuiGraphicsParagraphWrapperElement
+		: public Object
+		, public IGuiGraphicsElement
+		, protected IGuiGraphicsRenderer
+		, protected IGuiGraphicsRendererFactory
+		, protected IGuiGraphicsParagraphCallback
+	{
+	protected:
+		remoteprotocol::ElementDesc_DocumentParagraphFull	desc;
+		Ptr<ElementDescMap>									elementDescs;
+		Ptr<ImageCreationMap>								imageCreations;
+
+		Ptr<IGuiGraphicsParagraph>							paragraph;
+		GuiGraphicsComposition*								ownerComposition = nullptr;
+		IGuiGraphicsRenderTarget*							renderTarget = nullptr;
+
+		void SetOwnerComposition(GuiGraphicsComposition* _ownerComposition) override
+		{
+			ownerComposition = _ownerComposition;
+		}
+
+	public:
+
+		GuiGraphicsParagraphWrapperElement(const remoteprotocol::ElementDesc_DocumentParagraphFull& _desc, Ptr<ElementDescMap> _elementDescs, Ptr<ImageCreationMap> _imageCreations)
+			:desc(_desc)
+			, elementDescs(_elementDescs)
+			, imageCreations(_imageCreations)
+		{
+		}
+
+		IGuiGraphicsRenderer* GetRenderer() override
+		{
+			return this;
+		}
+
+		GuiGraphicsComposition* GetOwnerComposition() override
+		{
+			return ownerComposition;
+		}
+
+	protected:
+
+		IGuiGraphicsRendererFactory* GetFactory() override
+		{
+			return this;
+		}
+
+		void Initialize(IGuiGraphicsElement* element) override
+		{
+		}
+
+		void Finalize() override
+		{
+		}
+
+		void SetRenderTarget(IGuiGraphicsRenderTarget* _renderTarget) override
+		{
+			if (renderTarget != _renderTarget)
+			{
+				renderTarget = _renderTarget;
+				paragraph = nullptr;
+			}
+		}
+
+		void Render(Rect bounds) override
+		{
+			if (!renderTarget) return;
+			if (!paragraph)
+			{
+				auto text = desc.paragraph.text ? desc.paragraph.text.Value() : WString::Empty;
+				paragraph = GetGuiGraphicsResourceManager()->GetLayoutProvider()->CreateParagraph(text, renderTarget, this);
+
+				paragraph->SetWrapLine(desc.paragraph.wrapLine);
+				paragraph->SetMaxWidth(desc.paragraph.maxWidth);
+				paragraph->SetParagraphAlignment(GetAlignment(desc.paragraph.alignment));
+
+				if (desc.paragraph.runsDiff)
+				{
+					for (auto run : *desc.paragraph.runsDiff.Obj())
+					{
+						auto length = run.caretEnd - run.caretBegin;
+						if (length <= 0) continue;
+
+						run.props.Apply(Overloading(
+							[&](const remoteprotocol::DocumentTextRunProperty& textProp)
+							{
+								paragraph->SetFont(run.caretBegin, length, textProp.fontProperties.fontFamily);
+								paragraph->SetSize(run.caretBegin, length, textProp.fontProperties.size);
+
+								IGuiGraphicsParagraph::TextStyle style = (IGuiGraphicsParagraph::TextStyle)0;
+								if (textProp.fontProperties.bold) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | IGuiGraphicsParagraph::Bold);
+								if (textProp.fontProperties.italic) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | IGuiGraphicsParagraph::Italic);
+								if (textProp.fontProperties.underline) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | IGuiGraphicsParagraph::Underline);
+								if (textProp.fontProperties.strikeline) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | IGuiGraphicsParagraph::Strikeline);
+								paragraph->SetStyle(run.caretBegin, length, style);
+
+								paragraph->SetColor(run.caretBegin, length, textProp.textColor);
+								paragraph->SetBackgroundColor(run.caretBegin, length, textProp.backgroundColor);
+							},
+							[&](const remoteprotocol::DocumentInlineObjectRunProperty& inlineProp)
+							{
+								IGuiGraphicsParagraph::InlineObjectProperties properties;
+								properties.size = inlineProp.size;
+								properties.baseline = inlineProp.baseline;
+								properties.breakCondition = inlineProp.breakCondition;
+								properties.callbackId = inlineProp.callbackId;
+								if (inlineProp.backgroundElementId != -1)
+								{
+									auto& desc = elementDescs->Get(inlineProp.backgroundElementId).Get<remoteprotocol::ElementDesc_ImageFrame>();
+									auto element = CreateImageElement(desc, imageCreations);
+									properties.backgroundImage = element;
+								}
+								paragraph->SetInlineObject(run.caretBegin, length, properties);
+							}
+						));
+					}
+				}
+
+				if (desc.caret)
+				{
+					auto& caret = desc.caret.Value();
+					paragraph->OpenCaret(caret.caret, caret.caretColor, caret.frontSide);
+				}
+			}
+			paragraph->Render(bounds);
+		}
+
+		void OnElementStateChanged() override
+		{
+		}
+
+		Size GetMinSize() override
+		{
+			return {};
+		}
+
+	protected:
+
+		IGuiGraphicsRenderer* Create() override
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+	protected:
+
+		Size OnRenderInlineObject(vint callbackId, Rect location) override
+		{
+			if (!desc.paragraph.runsDiff) return {};
+			Size result;
+			bool found = false;
+			for (auto&& run : *desc.paragraph.runsDiff.Obj())
+			{
+				if (auto props = run.props.TryGet<remoteprotocol::DocumentInlineObjectRunProperty>())
+				{
+					if (props->callbackId == callbackId)
+					{
+						return props->size;
+					}
+				}
+			}
+			return {};
+		}
+	};
+
 	void InstallDom(
 		const remoteprotocol::UnitTest_RenderingTrace& trace,
 		const remoteprotocol::UnitTest_RenderingFrame& frame,
@@ -124,128 +316,120 @@ namespace gaclib_controls
 			switch (trace.createdElements->Get(dom->content.element.Value()))
 			{
 			case remoteprotocol::RendererType::FocusRectangle:
-			{
-				auto element = Ptr(GuiFocusRectangleElement::Create());
-				bounds->SetOwnedElement(element);
-			}
-			break;
+				{
+					auto element = Ptr(GuiFocusRectangleElement::Create());
+					bounds->SetOwnedElement(element);
+				}
+				break;
 			case remoteprotocol::RendererType::Raw:
 				// Do Nothing
 				break;
 			case remoteprotocol::RendererType::SolidBorder:
-			{
-				auto element = Ptr(GuiSolidBorderElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidBorder>();
-
-				element->SetColor(desc.borderColor);
-				element->SetShape(desc.shape);
-			}
-			break;
-			case remoteprotocol::RendererType::SinkBorder:
-			{
-				auto element = Ptr(Gui3DBorderElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SinkBorder>();
-
-				element->SetColors(desc.leftTopColor, desc.rightBottomColor);
-			}
-			break;
-			case remoteprotocol::RendererType::SinkSplitter:
-			{
-				auto element = Ptr(Gui3DSplitterElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SinkSplitter>();
-
-				element->SetColors(desc.leftTopColor, desc.rightBottomColor);
-				element->SetDirection(desc.direction);
-			}
-			break;
-			case remoteprotocol::RendererType::SolidBackground:
-			{
-				auto element = Ptr(GuiSolidBackgroundElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidBackground>();
-
-				element->SetColor(desc.backgroundColor);
-				element->SetShape(desc.shape);
-			}
-			break;
-			case remoteprotocol::RendererType::GradientBackground:
-			{
-				auto element = Ptr(GuiGradientBackgroundElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_GradientBackground>();
-
-				element->SetColors(desc.leftTopColor, desc.rightBottomColor);
-				element->SetDirection(desc.direction);
-				element->SetShape(desc.shape);
-			}
-			break;
-			case remoteprotocol::RendererType::InnerShadow:
-			{
-				auto element = Ptr(GuiInnerShadowElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_InnerShadow>();
-
-				element->SetColor(desc.shadowColor);
-				element->SetThickness(desc.thickness);
-			}
-			break;
-			case remoteprotocol::RendererType::SolidLabel:
-			{
-				auto element = Ptr(GuiSolidLabelElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidLabel>();
-
-				element->SetColor(desc.textColor);
-				element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
-				element->SetWrapLine(desc.wrapLine);
-				element->SetWrapLineHeightCalculation(desc.wrapLineHeightCalculation);
-				element->SetEllipse(desc.ellipse);
-				element->SetMultiline(desc.multiline);
-				element->SetFont(desc.font.Value());
-				element->SetText(desc.text.Value());
-			}
-			break;
-			case remoteprotocol::RendererType::Polygon:
-			{
-				auto element = Ptr(GuiPolygonElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_Polygon>();
-
-				element->SetSize(desc.size);
-				element->SetBorderColor(desc.borderColor);
-				element->SetBackgroundColor(desc.backgroundColor);
-
-				if (desc.points && desc.points->Count() > 0)
 				{
-					element->SetPoints(&desc.points->Get(0), desc.points->Count());
+					auto element = Ptr(GuiSolidBorderElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidBorder>();
+
+					element->SetColor(desc.borderColor);
+					element->SetShape(desc.shape);
 				}
-			}
-			break;
-			case remoteprotocol::RendererType::ImageFrame:
-			{
-				auto element = Ptr(GuiImageFrameElement::Create());
-				bounds->SetOwnedElement(element);
-				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_ImageFrame>();
-
-				element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
-				element->SetStretch(desc.stretch);
-				element->SetEnabled(desc.enabled);
-
-				if (desc.imageId)
+				break;
+			case remoteprotocol::RendererType::SinkBorder:
 				{
-					vint index = trace.imageCreations->Keys().IndexOf(desc.imageId.Value());
-					if (index != -1)
+					auto element = Ptr(Gui3DBorderElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SinkBorder>();
+
+					element->SetColors(desc.leftTopColor, desc.rightBottomColor);
+				}
+				break;
+			case remoteprotocol::RendererType::SinkSplitter:
+				{
+					auto element = Ptr(Gui3DSplitterElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SinkSplitter>();
+
+					element->SetColors(desc.leftTopColor, desc.rightBottomColor);
+					element->SetDirection(desc.direction);
+				}
+				break;
+			case remoteprotocol::RendererType::SolidBackground:
+				{
+					auto element = Ptr(GuiSolidBackgroundElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidBackground>();
+
+					element->SetColor(desc.backgroundColor);
+					element->SetShape(desc.shape);
+				}
+				break;
+			case remoteprotocol::RendererType::GradientBackground:
+				{
+					auto element = Ptr(GuiGradientBackgroundElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_GradientBackground>();
+
+					element->SetColors(desc.leftTopColor, desc.rightBottomColor);
+					element->SetDirection(desc.direction);
+					element->SetShape(desc.shape);
+				}
+				break;
+			case remoteprotocol::RendererType::InnerShadow:
+				{
+					auto element = Ptr(GuiInnerShadowElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_InnerShadow>();
+
+					element->SetColor(desc.shadowColor);
+					element->SetThickness(desc.thickness);
+				}
+				break;
+			case remoteprotocol::RendererType::SolidLabel:
+				{
+					auto element = Ptr(GuiSolidLabelElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidLabel>();
+
+					element->SetColor(desc.textColor);
+					element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
+					element->SetWrapLine(desc.wrapLine);
+					element->SetWrapLineHeightCalculation(desc.wrapLineHeightCalculation);
+					element->SetEllipse(desc.ellipse);
+					element->SetMultiline(desc.multiline);
+					element->SetFont(desc.font.Value());
+					element->SetText(desc.text.Value());
+				}
+				break;
+			case remoteprotocol::RendererType::Polygon:
+				{
+					auto element = Ptr(GuiPolygonElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_Polygon>();
+
+					element->SetSize(desc.size);
+					element->SetBorderColor(desc.borderColor);
+					element->SetBackgroundColor(desc.backgroundColor);
+
+					if (desc.points && desc.points->Count() > 0)
 					{
-						auto binary = trace.imageCreations->Values()[index].imageData;
-						binary->SeekFromBegin(0);
-						element->SetImage(GetCurrentController()->ImageService()->CreateImageFromStream(*binary.Obj()), desc.imageFrame);
+						element->SetPoints(&desc.points->Get(0), desc.points->Count());
 					}
 				}
-			}
-			break;
+				break;
+			case remoteprotocol::RendererType::ImageFrame:
+				{
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_ImageFrame>();
+					auto element = CreateImageElement(desc, trace.imageCreations);
+					bounds->SetOwnedElement(element);
+				}
+				break;
+			case remoteprotocol::RendererType::DocumentParagraph:
+				{
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_DocumentParagraphFull>();
+					auto element = Ptr(new GuiGraphicsParagraphWrapperElement(desc, frame.elements, trace.imageCreations));
+					bounds->SetOwnedElement(element);
+				}
+				break;
 			default:
 				CHECK_FAIL(L"This element is not supported yet.");
 				break;
@@ -464,6 +648,7 @@ namespace gaclib_controls
 		GetFocusableComposition()->GetEventReceiver()->keyUp.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::OnKeyUp);
 	}
 }
+
 
 /***********************************************************************
 .\SOURCE\GUIUNITTESTSNAPSHOTVIEWER.CPP
