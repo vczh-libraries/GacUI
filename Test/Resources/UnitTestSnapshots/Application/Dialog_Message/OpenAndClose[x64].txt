@@ -27,27 +27,6 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var dialogDisplayOK : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
-
-        @cpp:Protected
-        var dialogDisplayOKCancel : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
-
-        @cpp:Protected
-        var dialogDisplayYesNo : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
-
-        @cpp:Protected
-        var dialogDisplayYesNoCancel : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
-
-        @cpp:Protected
-        var dialogDisplayRetryCancel : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
-
-        @cpp:Protected
-        var dialogDisplayAbortRetryIgnore : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
-
-        @cpp:Protected
-        var dialogDisplayCancelTryAgainContinue : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
@@ -96,6 +75,27 @@ namespace gacuisrc_unittest
         var <precompile>15 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
+        var dialogDisplayOK : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
+        var dialogDisplayOKCancel : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
+        var dialogDisplayYesNo : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
+        var dialogDisplayYesNoCancel : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
+        var dialogDisplayRetryCancel : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
+        var dialogDisplayAbortRetryIgnore : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
+        var dialogDisplayCancelTryAgainContinue : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
         var <precompile>16 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
@@ -126,13 +126,13 @@ namespace gacuisrc_unittest
             (dialogDisplayOK = new (::presentation::controls::GuiMessageDialog*)());
             <this>.SetNamedObject("dialogDisplayOK", dialogDisplayOK);
             {
-                (dialogDisplayOK.Title = "DisplayOK");
-            }
-            {
                 (dialogDisplayOK.DefaultButton = DefaultFirst of (::presentation::INativeDialogService::MessageBoxDefaultButton));
             }
             {
                 (dialogDisplayOK.Input = DisplayOK of (::presentation::INativeDialogService::MessageBoxButtonsInput));
+            }
+            {
+                (dialogDisplayOK.Title = "DisplayOK");
             }
             {
                 (dialogDisplayOK.Text = "Select a button!");
@@ -146,13 +146,13 @@ namespace gacuisrc_unittest
                 (dialogDisplayOKCancel.Icon = IconError of (::presentation::INativeDialogService::MessageBoxIcons));
             }
             {
-                (dialogDisplayOKCancel.Title = "DisplayOKCancel");
-            }
-            {
                 (dialogDisplayOKCancel.DefaultButton = DefaultSecond of (::presentation::INativeDialogService::MessageBoxDefaultButton));
             }
             {
                 (dialogDisplayOKCancel.Input = DisplayOKCancel of (::presentation::INativeDialogService::MessageBoxButtonsInput));
+            }
+            {
+                (dialogDisplayOKCancel.Title = "DisplayOKCancel");
             }
             {
                 (dialogDisplayOKCancel.Text = "Select a button!");
@@ -166,13 +166,13 @@ namespace gacuisrc_unittest
                 (dialogDisplayYesNo.Icon = IconWarning of (::presentation::INativeDialogService::MessageBoxIcons));
             }
             {
-                (dialogDisplayYesNo.Title = "DisplayYesNo");
-            }
-            {
                 (dialogDisplayYesNo.DefaultButton = DefaultSecond of (::presentation::INativeDialogService::MessageBoxDefaultButton));
             }
             {
                 (dialogDisplayYesNo.Input = DisplayYesNo of (::presentation::INativeDialogService::MessageBoxButtonsInput));
+            }
+            {
+                (dialogDisplayYesNo.Title = "DisplayYesNo");
             }
             {
                 (dialogDisplayYesNo.Text = "Select a button!");
@@ -186,13 +186,13 @@ namespace gacuisrc_unittest
                 (dialogDisplayYesNoCancel.Icon = IconQuestion of (::presentation::INativeDialogService::MessageBoxIcons));
             }
             {
-                (dialogDisplayYesNoCancel.Title = "DisplayYesNoCancel");
-            }
-            {
                 (dialogDisplayYesNoCancel.DefaultButton = DefaultSecond of (::presentation::INativeDialogService::MessageBoxDefaultButton));
             }
             {
                 (dialogDisplayYesNoCancel.Input = DisplayYesNoCancel of (::presentation::INativeDialogService::MessageBoxButtonsInput));
+            }
+            {
+                (dialogDisplayYesNoCancel.Title = "DisplayYesNoCancel");
             }
             {
                 (dialogDisplayYesNoCancel.Text = "Select a button!");
@@ -206,13 +206,13 @@ namespace gacuisrc_unittest
                 (dialogDisplayRetryCancel.Icon = IconInformation of (::presentation::INativeDialogService::MessageBoxIcons));
             }
             {
-                (dialogDisplayRetryCancel.Title = "DisplayRetryCancel");
-            }
-            {
                 (dialogDisplayRetryCancel.DefaultButton = DefaultSecond of (::presentation::INativeDialogService::MessageBoxDefaultButton));
             }
             {
                 (dialogDisplayRetryCancel.Input = DisplayRetryCancel of (::presentation::INativeDialogService::MessageBoxButtonsInput));
+            }
+            {
+                (dialogDisplayRetryCancel.Title = "DisplayRetryCancel");
             }
             {
                 (dialogDisplayRetryCancel.Text = "Select a button!");
@@ -223,13 +223,13 @@ namespace gacuisrc_unittest
             (dialogDisplayAbortRetryIgnore = new (::presentation::controls::GuiMessageDialog*)());
             <this>.SetNamedObject("dialogDisplayAbortRetryIgnore", dialogDisplayAbortRetryIgnore);
             {
-                (dialogDisplayAbortRetryIgnore.Title = "DisplayAbortRetryIgnore");
-            }
-            {
                 (dialogDisplayAbortRetryIgnore.DefaultButton = DefaultSecond of (::presentation::INativeDialogService::MessageBoxDefaultButton));
             }
             {
                 (dialogDisplayAbortRetryIgnore.Input = DisplayAbortRetryIgnore of (::presentation::INativeDialogService::MessageBoxButtonsInput));
+            }
+            {
+                (dialogDisplayAbortRetryIgnore.Title = "DisplayAbortRetryIgnore");
             }
             {
                 (dialogDisplayAbortRetryIgnore.Text = "Select a button!");
@@ -240,13 +240,13 @@ namespace gacuisrc_unittest
             (dialogDisplayCancelTryAgainContinue = new (::presentation::controls::GuiMessageDialog*)());
             <this>.SetNamedObject("dialogDisplayCancelTryAgainContinue", dialogDisplayCancelTryAgainContinue);
             {
-                (dialogDisplayCancelTryAgainContinue.Title = "DisplayCancelTryAgainContinue");
-            }
-            {
                 (dialogDisplayCancelTryAgainContinue.DefaultButton = DefaultSecond of (::presentation::INativeDialogService::MessageBoxDefaultButton));
             }
             {
                 (dialogDisplayCancelTryAgainContinue.Input = DisplayCancelTryAgainContinue of (::presentation::INativeDialogService::MessageBoxButtonsInput));
+            }
+            {
+                (dialogDisplayCancelTryAgainContinue.Title = "DisplayCancelTryAgainContinue");
             }
             {
                 (dialogDisplayCancelTryAgainContinue.Text = "Select a button!");

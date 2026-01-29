@@ -46,10 +46,10 @@ namespace gacuisrc_unittest
         {
             (self = <this>);
             {
-                (self.PreferredMinSize = {x : 32; y : 16;} of (::presentation::Size));
+                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (self.PreferredMinSize = {x : 32; y : 16;} of (::presentation::Size));
             }
             (<precompile>0 = new (::presentation::elements::GuiSolidBorderElement^)());
             {

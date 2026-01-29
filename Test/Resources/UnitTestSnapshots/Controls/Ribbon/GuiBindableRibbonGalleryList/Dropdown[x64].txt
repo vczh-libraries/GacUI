@@ -44,10 +44,10 @@ namespace gacuisrc_unittest
             (self = <this>);
             (ViewModel = <this>.ViewModel);
             {
-                (self.PreferredMinSize = {x : 72;} of (::presentation::Size));
+                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (self.PreferredMinSize = {x : 72;} of (::presentation::Size));
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
