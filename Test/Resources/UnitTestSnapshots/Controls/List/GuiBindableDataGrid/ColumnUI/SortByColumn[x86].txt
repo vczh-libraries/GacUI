@@ -359,6 +359,27 @@ namespace gacuisrc_unittest
                 attach(<precompile>8.SelectedChanged, <event-handler>);
             }
             {
+                (columnCompanies.Filter = new (IDataFilter^)
+                {
+                    override func SetCallback(value : IDataProcessorCallback*) : (void)
+                    {
+                        (self.filterByCompaniesCallback = value);
+                    }
+
+                    override func Filter(row : object) : (bool)
+                    {
+                        if (radioMicrosoft.Selected)
+                        {
+                            return ((cast (DataGridItem^) row).Company == Companies::Microsoft);
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                });
+            }
+            {
                 (columnCompanies.TextProperty = [ToString((cast (DataGridItem^) $1).Company)]);
             }
             {
@@ -386,27 +407,6 @@ namespace gacuisrc_unittest
                     }
                 };
                 attach(radioMicrosoft.SelectedChanged, <event-handler>);
-            }
-            {
-                (columnCompanies.Filter = new (IDataFilter^)
-                {
-                    override func SetCallback(value : IDataProcessorCallback*) : (void)
-                    {
-                        (self.filterByCompaniesCallback = value);
-                    }
-
-                    override func Filter(row : object) : (bool)
-                    {
-                        if (radioMicrosoft.Selected)
-                        {
-                            return ((cast (DataGridItem^) row).Company == Companies::Microsoft);
-                        }
-                        else
-                        {
-                            return true;
-                        }
-                    }
-                });
             }
             {
                 (dataGrid.ItemSource = self.items);

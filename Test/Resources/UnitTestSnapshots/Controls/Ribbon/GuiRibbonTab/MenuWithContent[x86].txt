@@ -217,10 +217,10 @@ namespace gacuisrc_unittest
             (<precompile>4 = ribbonMenu.ContentComposition);
             (<precompile>5 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>5.PreferredMinSize = {y : 80;} of (::presentation::Size));
+                (<precompile>5.BorderVisible = true);
             }
             {
-                (<precompile>5.BorderVisible = true);
+                (<precompile>5.PreferredMinSize = {y : 80;} of (::presentation::Size));
             }
             {
                 (<precompile>5.CellPadding = 5 of (::system::Int32));
