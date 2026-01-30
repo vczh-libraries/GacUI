@@ -140,6 +140,7 @@ UnitTestSnapshotFrame
 
 		Nullable<UnitTest_RenderingFrame>		frame;
 		Ptr<UnitTestSnapshotDomNode>			domRoot;
+		bool									initiated = false;
 
 	public:
 		UnitTestSnapshotFrame(vint _index, Nullable<WString> _frameName, UnitTest_RenderingTrace& _trace, FilePath _frameFilePath)
@@ -148,23 +149,6 @@ UnitTestSnapshotFrame
 			, frameFilePath(_frameFilePath)
 			, frameName(_frameName ? _frameName.Value() : itow(_index))
 		{
-			controls::GetApplication()->InvokeAsync([this]()
-			{
-				WString jsonText = File(frameFilePath).ReadAllTextByBom();
-				Ptr<JsonNode> jsonNode;
-				{
-					glr::json::Parser parser;
-					jsonNode = JsonParse(jsonText, parser);
-				}
-				UnitTest_RenderingFrame loadedFrame;
-				ConvertJsonToCustomType(jsonNode, loadedFrame);
-				controls::GetApplication()->InvokeInMainThread(controls::GetApplication()->GetMainWindow(), [this, loadedFrame = std::move(loadedFrame)]()
-				{
-					frame = std::move(loadedFrame);
-					domRoot = Ptr(new UnitTestSnapshotDomNode(trace, frame.Value(), frame.Value().root));
-					DomChanged();
-				});
-			});
 		}
 
 		WString GetName() override
@@ -174,6 +158,27 @@ UnitTestSnapshotFrame
 
 		Ptr<IUnitTestSnapshotDomNode> GetDom() override
 		{
+			if (!initiated)
+			{
+				initiated = true;
+				controls::GetApplication()->InvokeAsync([this]()
+				{
+					WString jsonText = File(frameFilePath).ReadAllTextByBom();
+					Ptr<JsonNode> jsonNode;
+					{
+						glr::json::Parser parser;
+						jsonNode = JsonParse(jsonText, parser);
+					}
+					UnitTest_RenderingFrame loadedFrame;
+					ConvertJsonToCustomType(jsonNode, loadedFrame);
+					controls::GetApplication()->InvokeInMainThread(controls::GetApplication()->GetMainWindow(), [this, loadedFrame = std::move(loadedFrame)]()
+					{
+						frame = std::move(loadedFrame);
+						domRoot = Ptr(new UnitTestSnapshotDomNode(trace, frame.Value(), frame.Value().root));
+						DomChanged();
+					});
+				});
+			}
 			return domRoot;
 		}
 	};
