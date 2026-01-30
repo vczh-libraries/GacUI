@@ -44,7 +44,7 @@
       interface IUnitTestSnapshotFrame
       {
         prop Name: string {const, not observe}
-        prop Dom: IUnitTestSnapshotDomNode^ {const, not observe}
+        prop Dom: IUnitTestSnapshotDomNode^ {const}
       }
 
       interface IUnitTestSnapshotFileNode

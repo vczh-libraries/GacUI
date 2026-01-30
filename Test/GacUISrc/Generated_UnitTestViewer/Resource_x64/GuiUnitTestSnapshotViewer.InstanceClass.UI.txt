@@ -589,7 +589,11 @@ namespace gaclib_controls
                 {
                     var <bind-cache>0 : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
 
+                    var <bind-cache>1 : ::gaclib_controls::IUnitTestSnapshotFrame^ = null of (::gaclib_controls::IUnitTestSnapshotFrame^);
+
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -597,11 +601,23 @@ namespace gaclib_controls
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = ((cast (IUnitTestSnapshotFrame^) <bind-cache>0.SelectedItem).Dom ?? null) of (::system::Object);
+                        var <bind-activator-result> = (<bind-cache>1.Dom ?? null) of (::system::Object);
                         ValueChanged(<bind-activator-result>);
                     }
 
                     func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        if (<bind-handler>1_0 is not null)
+                        {
+                            detach(<bind-cache>1.DomChanged, <bind-handler>1_0);
+                            (<bind-handler>1_0 = null);
+                        }
+                        (<bind-cache>1 = ((cast (IUnitTestSnapshotFrame^) <bind-cache>0.SelectedItem) ?? null of (::gaclib_controls::IUnitTestSnapshotFrame^)));
+                        (<bind-handler>1_0 = (attach(<bind-cache>1.DomChanged, <bind-callback>1_0) ?? null));
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0() : (::system::Void)
                     {
                         <bind-activator>();
                     }
@@ -612,7 +628,9 @@ namespace gaclib_controls
                         {
                             (<bind-opened> = true);
                             (<bind-cache>0 = (textListFrames ?? null of (::presentation::controls::GuiBindableTextList*)));
+                            (<bind-cache>1 = ((cast (IUnitTestSnapshotFrame^) <bind-cache>0.SelectedItem) ?? null of (::gaclib_controls::IUnitTestSnapshotFrame^)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.SelectionChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.DomChanged, <bind-callback>1_0) ?? null));
                             return true;
                         }
                         return false;
@@ -638,8 +656,15 @@ namespace gaclib_controls
                                 detach(<bind-cache>0.SelectionChanged, <bind-handler>0_0);
                                 (<bind-handler>0_0 = null);
                             }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.DomChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
                             (<bind-cache>0 = null of (::presentation::controls::GuiBindableTextList*));
+                            (<bind-cache>1 = null of (::gaclib_controls::IUnitTestSnapshotFrame^));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -1172,7 +1197,9 @@ namespace gaclib_controls
 
         func GetDom() : (IUnitTestSnapshotDomNode^);
 
-        prop Dom : IUnitTestSnapshotDomNode^{GetDom}
+        event DomChanged();
+
+        prop Dom : IUnitTestSnapshotDomNode^{GetDom : DomChanged}
     }
 
     interface IUnitTestSnapshotFileNode

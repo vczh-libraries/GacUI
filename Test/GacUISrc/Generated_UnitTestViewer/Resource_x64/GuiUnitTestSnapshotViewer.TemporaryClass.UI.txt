@@ -183,7 +183,9 @@ namespace gaclib_controls
 
         func GetDom() : (IUnitTestSnapshotDomNode^);
 
-        prop Dom : IUnitTestSnapshotDomNode^{GetDom}
+        event DomChanged();
+
+        prop Dom : IUnitTestSnapshotDomNode^{GetDom : DomChanged}
     }
 
     interface IUnitTestSnapshotFileNode

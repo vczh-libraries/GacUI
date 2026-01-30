@@ -103,6 +103,7 @@ namespace gaclib_controls
 	public:
 		virtual ::vl::WString GetName() = 0;
 		virtual ::vl::Ptr<::gaclib_controls::IUnitTestSnapshotDomNode> GetDom() = 0;
+		::vl::Event<void()> DomChanged;
 	};
 
 	class IUnitTestSnapshotViewerStringsStrings : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IUnitTestSnapshotViewerStringsStrings>
@@ -399,11 +400,14 @@ Closures
 		__vwsnc2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0);
 
 		::vl::presentation::controls::GuiBindableTextList* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::gaclib_controls::IUnitTestSnapshotFrame> __vwsn_bind_cache_1;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_1_0();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
