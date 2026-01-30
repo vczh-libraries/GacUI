@@ -118,6 +118,22 @@ File GacUIUnitTest_PrepareSnapshotFile(const WString& appName, const WString& ex
 #undef ERROR_MESSAGE_PREFIX
 }
 
+Folder GacUIUnitTest_PrepareSnapshotFramesFolder(const WString& appName)
+{
+#define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_PrepareSnapshotFile(const WString&, const WString&)#"
+	Folder snapshotRootFolder = GetUnitTestFrameworkConfig().snapshotFolder;
+	CHECK_ERROR(snapshotRootFolder.Exists(), ERROR_MESSAGE_PREFIX L"UnitTestFrameworkConfig::snapshotFolder does not point to an existing folder.");
+
+	Folder snapshotFramesFolder = snapshotRootFolder.GetFilePath() / appName;
+	if (!snapshotFramesFolder.Exists())
+	{
+		CHECK_ERROR(snapshotFramesFolder.Create(true), ERROR_MESSAGE_PREFIX L"Failed to create the folder containing frame snapshots.");
+	}
+
+	return snapshotFramesFolder;
+#undef ERROR_MESSAGE_PREFIX
+}
+
 void GacUIUnitTest_WriteSnapshotFileIfChanged(File& snapshotFile, const WString& textLog)
 {
 #define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_WriteSnapshotFileIfChanged(File&, const WString&)#"
@@ -142,6 +158,7 @@ void GacUIUnitTest_LogUI(const WString& appName, UnitTestRemoteProtocol& unitTes
 {
 #define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_LogUI(const WString&, UnitTestRemoteProtocol&)#"
 	File snapshotFile = GacUIUnitTest_PrepareSnapshotFile(appName, WString::Unmanaged(L".json"));
+	Folder snapshotFramesFolder = GacUIUnitTest_PrepareSnapshotFramesFolder(appName);
 
 	JsonFormatting formatting;
 	formatting.spaceAfterColon = true;
@@ -149,17 +166,52 @@ void GacUIUnitTest_LogUI(const WString& appName, UnitTestRemoteProtocol& unitTes
 	formatting.crlf = true;
 	formatting.compact = true;
 
+	auto renderingTrace = unitTestProtocol.GetLoggedTrace();
+	List<WString> frameTextLogs;
+	SortedList<WString> frameFileNames;
+	remoteprotocol::UnitTest_RenderingTrace deserialized;
+
 	auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(unitTestProtocol.GetLoggedTrace());
-	auto textLog = JsonToString(jsonLog, formatting);
 	{
-		remoteprotocol::UnitTest_RenderingTrace deserialized;
+		auto textLog = JsonToString(jsonLog, formatting);
 		remoteprotocol::ConvertJsonToCustomType(jsonLog, deserialized);
 		auto jsonLog2 = remoteprotocol::ConvertCustomTypeToJson(deserialized);
 		auto textLog2 = JsonToString(jsonLog2, formatting);
 		CHECK_ERROR(textLog == textLog2, ERROR_MESSAGE_PREFIX L"Serialization and deserialization doesn't match.");
 	}
 
-	GacUIUnitTest_WriteSnapshotFileIfChanged(snapshotFile, textLog);
+	if (renderingTrace.frames)
+	{
+		for (vint i = 0; i < renderingTrace.frames->Count(); i++)
+		{
+			auto&& frame = renderingTrace.frames->Get(i);
+			jsonLog = remoteprotocol::ConvertCustomTypeToJson(frame);
+			auto textLog = JsonToString(jsonLog, formatting);
+
+			WString frameFileName = L"frame_" + itow(i) + L".json";
+			frameFileNames.Add(frameFileName);
+			File snapshotFrameFile = snapshotFramesFolder.GetFilePath() / frameFileName;
+			GacUIUnitTest_WriteSnapshotFileIfChanged(snapshotFrameFile, textLog);
+
+			renderingTrace.frames->Set(i, { .frameId = frame.frameId });
+		}
+	}
+
+	{
+		jsonLog = remoteprotocol::ConvertCustomTypeToJson(unitTestProtocol.GetLoggedTrace());
+		auto textLog = JsonToString(jsonLog, formatting);
+		GacUIUnitTest_WriteSnapshotFileIfChanged(snapshotFile, textLog);
+	}
+
+	List<File> existingFrameFiles;
+	snapshotFramesFolder.GetFiles(existingFrameFiles);
+	for (auto&& file : existingFrameFiles)
+	{
+		if (!frameFileNames.Contains(file.GetFilePath().GetName()))
+		{
+			CHECK_ERROR(file.Delete(), ERROR_MESSAGE_PREFIX L"Failed to delete unnecessary frame file.");
+		}
+	}
 #undef ERROR_MESSAGE_PREFIX
 }
 
