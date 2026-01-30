@@ -153,7 +153,8 @@
                       <ColumnSplitter ColumnsToTheLeft="1"/>
 
                       <Cell Site="row:0 column:0">
-                        <ScrollContainer ref.Name="scRendering" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                        <Label ref.Name="labelLoading" Visible="false" Text="Loading ..." Font-bind="{fontFamily:self.DisplayFont.fontFamily size:self.DisplayFont.size antialias:true}"/>
+                        <ScrollContainer ref.Name="scRendering" Visible="false" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
                           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                         </ScrollContainer>
                       </Cell>

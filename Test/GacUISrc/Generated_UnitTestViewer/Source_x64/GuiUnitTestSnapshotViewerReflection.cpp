@@ -157,6 +157,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
 				CLASS_MEMBER_FIELD(ViewModel)
+				CLASS_MEMBER_FIELD(labelLoading)
 				CLASS_MEMBER_FIELD(scRendering)
 				CLASS_MEMBER_FIELD(self)
 				CLASS_MEMBER_FIELD(textListFrames)

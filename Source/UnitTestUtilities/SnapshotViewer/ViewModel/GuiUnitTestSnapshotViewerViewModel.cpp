@@ -26,27 +26,20 @@ UnitTestSnapshotDomNode
 	class UnitTestSnapshotDomNode : public Object, public virtual IUnitTestSnapshotDomNode
 	{
 	protected:
-		UnitTest_RenderingTrace&			trace;
-		UnitTest_RenderingFrame&			frame;
-		Ptr<RenderingDom>					renderingDom;
-		WString								name;
-		WString								dom;
-		WString								element;
-		List<Ptr<UnitTestSnapshotDomNode>>	children;
+		const UnitTest_RenderingTrace&					trace;
+		const UnitTest_RenderingFrame&					frame;
+		Ptr<RenderingDom>								renderingDom;
+		WString											name;
+		WString											dom;
+		WString											element;
+		Nullable<List<Ptr<UnitTestSnapshotDomNode>>>	children;
 
 	public:
-		UnitTestSnapshotDomNode(UnitTest_RenderingTrace& _trace, UnitTest_RenderingFrame& _frame, Ptr<RenderingDom> _renderingDom)
+		UnitTestSnapshotDomNode(const UnitTest_RenderingTrace& _trace, const UnitTest_RenderingFrame& _frame, Ptr<RenderingDom> _renderingDom)
 			: trace(_trace)
 			, frame(_frame)
 			, renderingDom(_renderingDom)
 		{
-			if (renderingDom->children)
-			{
-				for (auto child : *renderingDom->children.Obj())
-				{
-					children.Add(Ptr(new UnitTestSnapshotDomNode(trace, frame, child)));
-				}
-			}
 		}
 
 		WString GetName() override
@@ -117,7 +110,18 @@ UnitTestSnapshotDomNode
 
 		LazyList<Ptr<IUnitTestSnapshotDomNode>> GetChildren() override
 		{
-			return From(children).Cast<IUnitTestSnapshotDomNode>();
+			if (!children)
+			{
+				children = std::move(List<Ptr<UnitTestSnapshotDomNode>>());
+				if (renderingDom->children)
+				{
+					for (auto child : *renderingDom->children.Obj())
+					{
+						const_cast<List<Ptr<UnitTestSnapshotDomNode>>&>(children.Value()).Add(Ptr(new UnitTestSnapshotDomNode(trace, frame, child)));
+					}
+				}
+			}
+			return From(children.Value()).Cast<IUnitTestSnapshotDomNode>();
 		}
 	};
 
@@ -129,44 +133,54 @@ UnitTestSnapshotFrame
 	{
 		friend const remoteprotocol::UnitTest_RenderingFrame& GetRenderingFrame(Ptr<IUnitTestSnapshotFrame> frame);
 	protected:
-		vint							index;
-		UnitTest_RenderingTrace&		trace;
-		UnitTest_RenderingFrame			frame;
-		Ptr<UnitTestSnapshotDomNode>	domRoot;
+		vint									index;
+		UnitTest_RenderingTrace&				trace;
+		FilePath								frameFilePath;
+		WString									frameName;
+
+		Nullable<UnitTest_RenderingFrame>		frame;
+		Ptr<UnitTestSnapshotDomNode>			domRoot;
 
 	public:
-		UnitTestSnapshotFrame(vint _index, UnitTest_RenderingTrace& _trace, UnitTest_RenderingFrame _frame)
+		UnitTestSnapshotFrame(vint _index, Nullable<WString> _frameName, UnitTest_RenderingTrace& _trace, FilePath _frameFilePath)
 			: index(_index)
 			, trace(_trace)
-			, frame(_frame)
+			, frameFilePath(_frameFilePath)
+			, frameName(_frameName ? _frameName.Value() : itow(_index))
 		{
+			controls::GetApplication()->InvokeAsync([this]()
+			{
+				WString jsonText = File(frameFilePath).ReadAllTextByBom();
+				Ptr<JsonNode> jsonNode;
+				{
+					glr::json::Parser parser;
+					jsonNode = JsonParse(jsonText, parser);
+				}
+				UnitTest_RenderingFrame loadedFrame;
+				ConvertJsonToCustomType(jsonNode, loadedFrame);
+				controls::GetApplication()->InvokeInMainThread(controls::GetApplication()->GetMainWindow(), [this, loadedFrame = std::move(loadedFrame)]()
+				{
+					frame = std::move(loadedFrame);
+					domRoot = Ptr(new UnitTestSnapshotDomNode(trace, frame.Value(), frame.Value().root));
+					DomChanged();
+				});
+			});
 		}
 
 		WString GetName() override
 		{
-			if (frame.frameName)
-			{
-				return frame.frameName.Value();
-			}
-			else
-			{
-				return itow(index);
-			}
+			return frameName;
 		}
 
 		Ptr<IUnitTestSnapshotDomNode> GetDom() override
 		{
-			if (!domRoot)
-			{
-				domRoot = Ptr(new UnitTestSnapshotDomNode(trace, frame, frame.root));
-			}
 			return domRoot;
 		}
 	};
 
 	const remoteprotocol::UnitTest_RenderingFrame& GetRenderingFrame(Ptr<IUnitTestSnapshotFrame> frame)
 	{
-		return frame.Cast<UnitTestSnapshotFrame>()->frame;
+		return frame.Cast<UnitTestSnapshotFrame>()->frame.Value();
 	}
 
 /***********************************************************************
@@ -199,7 +213,9 @@ UnitTestSnapshotFileNode
 				{
 					for (auto [frame, index] : indexed(*renderingTrace->frames.Obj()))
 					{
-						frames.Add(Ptr(new UnitTestSnapshotFrame(index, *renderingTrace.Obj(), frame)));
+						auto filePath = file.GetFilePath().GetFullPath();
+						auto framePath = FilePath(filePath.Left(filePath.Length() - 5)) / (L"frame_" + itow(index) + L".json");
+						frames.Add(Ptr(new UnitTestSnapshotFrame(index, frame.frameName, *renderingTrace.Obj(), framePath)));
 					}
 				}
 			}

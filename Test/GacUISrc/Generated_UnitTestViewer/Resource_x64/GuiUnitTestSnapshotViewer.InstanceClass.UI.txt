@@ -135,6 +135,9 @@ namespace gaclib_controls
         var textListFrames : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
 
         @cpp:Protected
+        var labelLoading : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
         var scRendering : ::presentation::controls::GuiScrollContainer* = null of (::presentation::controls::GuiScrollContainer*);
 
         @cpp:Protected
@@ -316,8 +319,24 @@ namespace gaclib_controls
                 <precompile>16.SetSite(0, 0, 1, 1);
             }
             {
+                (labelLoading = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <this>.SetNamedObject("labelLoading", labelLoading);
+            }
+            {
+                (labelLoading.Visible = false);
+            }
+            {
+                (labelLoading.Text = "Loading ...");
+            }
+            {
+                <precompile>16.AddChild(labelLoading.BoundsComposition);
+            }
+            {
                 (scRendering = new (::presentation::controls::GuiScrollContainer*)(::presentation::theme::ThemeName::ScrollView));
                 <this>.SetNamedObject("scRendering", scRendering);
+            }
+            {
+                (scRendering.Visible = false);
             }
             {
                 (scRendering.HorizontalAlwaysVisible = false);
@@ -581,6 +600,97 @@ namespace gaclib_controls
                         return;
                     }
                     (textListFrames.ItemSource = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gaclib_controls::UnitTestSnapshotViewerWindow* = null of (::gaclib_controls::UnitTestSnapshotViewerWindow*);
+
+                    var <bind-cache>1 : ::gaclib_controls::UnitTestSnapshotViewerWindow* = null of (::gaclib_controls::UnitTestSnapshotViewerWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = {fontFamily : <bind-cache>0.DisplayFont.fontFamily; size : <bind-cache>1.DisplayFont.size; antialias : true;} of (::presentation::FontProperties?);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gaclib_controls::UnitTestSnapshotViewerWindow*)));
+                            (<bind-cache>1 = (self ?? null of (::gaclib_controls::UnitTestSnapshotViewerWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.DisplayFontChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.DisplayFontChanged, <bind-callback>1_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.DisplayFontChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.DisplayFontChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gaclib_controls::UnitTestSnapshotViewerWindow*));
+                            (<bind-cache>1 = null of (::gaclib_controls::UnitTestSnapshotViewerWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = labelLoading.Font;
+                    var <new> = (cast (::presentation::FontProperties?) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (labelLoading.Font = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
