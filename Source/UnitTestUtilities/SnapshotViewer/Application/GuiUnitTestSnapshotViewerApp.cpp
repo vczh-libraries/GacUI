@@ -545,6 +545,7 @@ namespace gaclib_controls
 						GetApplication()->InvokeInMainThread(GetApplication()->GetMainWindow(), [=]()
 						{
 							frame->DomChanged.Remove(context->handler);
+							context->handler = {};
 						});
 					}
 				});

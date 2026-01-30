@@ -32,7 +32,8 @@ UnitTestSnapshotDomNode
 		WString											name;
 		WString											dom;
 		WString											element;
-		Nullable<List<Ptr<UnitTestSnapshotDomNode>>>	children;
+		List<Ptr<UnitTestSnapshotDomNode>>				children;
+		bool											childrenLoaded = false;
 
 	public:
 		UnitTestSnapshotDomNode(const UnitTest_RenderingTrace& _trace, const UnitTest_RenderingFrame& _frame, Ptr<RenderingDom> _renderingDom)
@@ -110,18 +111,18 @@ UnitTestSnapshotDomNode
 
 		LazyList<Ptr<IUnitTestSnapshotDomNode>> GetChildren() override
 		{
-			if (!children)
+			if (!childrenLoaded)
 			{
-				children = std::move(List<Ptr<UnitTestSnapshotDomNode>>());
+				childrenLoaded = true;
 				if (renderingDom->children)
 				{
 					for (auto child : *renderingDom->children.Obj())
 					{
-						const_cast<List<Ptr<UnitTestSnapshotDomNode>>&>(children.Value()).Add(Ptr(new UnitTestSnapshotDomNode(trace, frame, child)));
+						children.Add(Ptr(new UnitTestSnapshotDomNode(trace, frame, child)));
 					}
 				}
 			}
-			return From(children.Value()).Cast<IUnitTestSnapshotDomNode>();
+			return From(children).Cast<IUnitTestSnapshotDomNode>();
 		}
 	};
 
