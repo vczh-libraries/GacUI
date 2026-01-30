@@ -793,7 +793,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -820,7 +820,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "[ALT]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -847,7 +847,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "[D]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -874,7 +874,7 @@
     },
     {
       "frameId": 25,
-      "frameName": null,
+      "frameName": "[Y]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -901,7 +901,7 @@
     },
     {
       "frameId": 27,
-      "frameName": null,
+      "frameName": "[UP]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -928,7 +928,7 @@
     },
     {
       "frameId": 31,
-      "frameName": null,
+      "frameName": "[ENTER] -> 1999-1-1",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -955,7 +955,7 @@
     },
     {
       "frameId": 36,
-      "frameName": null,
+      "frameName": "[ALT]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -982,7 +982,7 @@
     },
     {
       "frameId": 41,
-      "frameName": null,
+      "frameName": "[D]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1009,7 +1009,7 @@
     },
     {
       "frameId": 50,
-      "frameName": null,
+      "frameName": "[M]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1036,7 +1036,7 @@
     },
     {
       "frameId": 52,
-      "frameName": null,
+      "frameName": "[END]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1063,7 +1063,7 @@
     },
     {
       "frameId": 56,
-      "frameName": null,
+      "frameName": "[ENTER] -> 1999-12-1",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1090,7 +1090,7 @@
     },
     {
       "frameId": 61,
-      "frameName": null,
+      "frameName": "[ALT]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1117,7 +1117,7 @@
     },
     {
       "frameId": 66,
-      "frameName": null,
+      "frameName": "[D]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1144,7 +1144,7 @@
     },
     {
       "frameId": 68,
-      "frameName": null,
+      "frameName": "[D]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1171,7 +1171,7 @@
     },
     {
       "frameId": 70,
-      "frameName": null,
+      "frameName": "[3]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1198,7 +1198,7 @@
     },
     {
       "frameId": 73,
-      "frameName": null,
+      "frameName": "[1] -> 1999-12-31",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

@@ -80,7 +80,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -107,7 +107,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Show Label",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -134,7 +134,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Show Options",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -161,7 +161,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "[ALT]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -188,7 +188,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "[L]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -215,7 +215,7 @@
     },
     {
       "frameId": 26,
-      "frameName": null,
+      "frameName": "[ALT]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -242,7 +242,7 @@
     },
     {
       "frameId": 29,
-      "frameName": null,
+      "frameName": "[O]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -269,7 +269,7 @@
     },
     {
       "frameId": 31,
-      "frameName": null,
+      "frameName": "[ALT][A]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -296,7 +296,7 @@
     },
     {
       "frameId": 33,
-      "frameName": null,
+      "frameName": "[ALT][B]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -323,7 +323,7 @@
     },
     {
       "frameId": 36,
-      "frameName": null,
+      "frameName": "[ALT][L]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -350,7 +350,7 @@
     },
     {
       "frameId": 39,
-      "frameName": null,
+      "frameName": "[ALT][O]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

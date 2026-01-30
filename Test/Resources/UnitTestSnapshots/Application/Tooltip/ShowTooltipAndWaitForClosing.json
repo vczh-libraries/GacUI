@@ -37,7 +37,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -64,7 +64,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Mouse Hover on TooltipA",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -91,7 +91,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "After timer.Tooltip",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -118,7 +118,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "After timer.WaitForClosing",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

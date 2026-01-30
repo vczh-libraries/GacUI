@@ -466,7 +466,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -493,7 +493,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "Company = Microsoft",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -520,7 +520,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "IDEs > 1",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -547,7 +547,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Language = C++",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -574,7 +574,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "-Company",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -601,7 +601,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "-IDEs",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -628,7 +628,7 @@
     },
     {
       "frameId": 25,
-      "frameName": null,
+      "frameName": "-Language",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

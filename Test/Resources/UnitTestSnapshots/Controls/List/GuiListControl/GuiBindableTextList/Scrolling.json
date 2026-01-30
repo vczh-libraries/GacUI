@@ -112,7 +112,7 @@
   "frames": [
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -139,7 +139,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "10 Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -166,7 +166,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Highlight First",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -193,7 +193,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "Highlight Second",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -220,7 +220,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "20 Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -247,7 +247,7 @@
     },
     {
       "frameId": 25,
-      "frameName": null,
+      "frameName": "Ensure Last Item Visible",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -274,7 +274,7 @@
     },
     {
       "frameId": 29,
-      "frameName": null,
+      "frameName": "Ensure First Item Visible",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

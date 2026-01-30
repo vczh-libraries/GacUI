@@ -468,7 +468,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -495,7 +495,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Width [380]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -522,7 +522,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "Width [280]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -549,7 +549,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Width [180]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -576,7 +576,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Width [280]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -603,7 +603,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "Width [380]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -630,7 +630,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Width [480]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

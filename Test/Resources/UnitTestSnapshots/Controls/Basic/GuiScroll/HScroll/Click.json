@@ -31,7 +31,7 @@
   "frames": [
     {
       "frameId": 4,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -58,7 +58,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Big Increase",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -85,7 +85,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Small Increase",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -112,7 +112,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Big Increase*3",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -139,7 +139,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "Big Decrease",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -166,7 +166,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Small Decrease",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -193,7 +193,7 @@
     },
     {
       "frameId": 22,
-      "frameName": null,
+      "frameName": "Big Decrease*3",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

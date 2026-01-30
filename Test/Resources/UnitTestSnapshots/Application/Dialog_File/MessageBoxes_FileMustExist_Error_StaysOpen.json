@@ -217,7 +217,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -244,7 +244,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "Clicked: Open DefaultOptions",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -271,7 +271,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Typed: not-exist.txt",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -298,7 +298,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Pressed: Open",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -325,7 +325,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "Clicked: Message OK",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -352,7 +352,7 @@
     },
     {
       "frameId": 23,
-      "frameName": null,
+      "frameName": "Pressed: Cancel",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

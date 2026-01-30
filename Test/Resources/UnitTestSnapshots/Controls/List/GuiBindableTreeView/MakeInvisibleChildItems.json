@@ -98,7 +98,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -125,7 +125,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "5 Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -152,7 +152,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Remove all children of 2nd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -179,7 +179,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Add children to 3rd and select",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -206,7 +206,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Expand 3rd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

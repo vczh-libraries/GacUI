@@ -79,7 +79,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -106,7 +106,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "[ALT]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -133,7 +133,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "[L]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -160,7 +160,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "[ALT]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -187,7 +187,7 @@
     },
     {
       "frameId": 22,
-      "frameName": null,
+      "frameName": "[O]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -214,7 +214,7 @@
     },
     {
       "frameId": 24,
-      "frameName": null,
+      "frameName": "[ALT][A]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -241,7 +241,7 @@
     },
     {
       "frameId": 26,
-      "frameName": null,
+      "frameName": "[ALT][B]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -268,7 +268,7 @@
     },
     {
       "frameId": 29,
-      "frameName": null,
+      "frameName": "[ALT][L]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -295,7 +295,7 @@
     },
     {
       "frameId": 32,
-      "frameName": null,
+      "frameName": "[ALT][O]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

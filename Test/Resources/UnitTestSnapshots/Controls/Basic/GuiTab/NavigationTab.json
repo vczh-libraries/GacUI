@@ -61,7 +61,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -88,7 +88,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "[TAB]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -115,7 +115,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "[RIGHT]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -142,7 +142,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "[RIGHT]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -169,7 +169,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "[TAB]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -196,7 +196,7 @@
     },
     {
       "frameId": 20,
-      "frameName": null,
+      "frameName": "[RIGHT]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -223,7 +223,7 @@
     },
     {
       "frameId": 23,
-      "frameName": null,
+      "frameName": "[RIGHT]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -250,7 +250,7 @@
     },
     {
       "frameId": 25,
-      "frameName": null,
+      "frameName": "[SHIFT+TAB]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -277,7 +277,7 @@
     },
     {
       "frameId": 28,
-      "frameName": null,
+      "frameName": "[LEFT]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -304,7 +304,7 @@
     },
     {
       "frameId": 31,
-      "frameName": null,
+      "frameName": "[LEFT]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

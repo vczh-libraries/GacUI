@@ -538,7 +538,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -565,7 +565,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "IDEs > 1",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -592,7 +592,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "Sort by Company",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -619,7 +619,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "-IDEs",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -646,7 +646,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Unsort",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

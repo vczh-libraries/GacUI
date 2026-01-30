@@ -26,7 +26,7 @@
   "frames": [
     {
       "frameId": 4,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -53,7 +53,7 @@
     },
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "No Maximized Box",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -80,7 +80,7 @@
     },
     {
       "frameId": 8,
-      "frameName": null,
+      "frameName": "No Minimized Box",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -107,7 +107,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "No Border",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -134,7 +134,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "No Size Box",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -161,7 +161,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "No Icon",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -188,7 +188,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "No Title Bar",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -215,7 +215,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "Restored",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

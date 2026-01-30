@@ -44,7 +44,7 @@
   "frames": [
     {
       "frameId": 4,
-      "frameName": null,
+      "frameName": "Init",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -71,7 +71,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Typing",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -98,7 +98,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Undo",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

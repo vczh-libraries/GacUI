@@ -258,7 +258,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -285,7 +285,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "100 Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -312,7 +312,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Select 1st and Scroll to Bottom",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -339,7 +339,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "Change 1st, 2nd, 3rd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -366,7 +366,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "Scroll to Top",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

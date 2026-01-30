@@ -56,7 +56,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -83,7 +83,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Become RadioButton",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -110,7 +110,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Back to CheckBox",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

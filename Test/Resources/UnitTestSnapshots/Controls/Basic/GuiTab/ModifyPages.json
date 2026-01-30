@@ -44,7 +44,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -71,7 +71,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Add Second",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -98,7 +98,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Select Second",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -125,7 +125,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Add First(2) and Third",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -152,7 +152,7 @@
     },
     {
       "frameId": 23,
-      "frameName": null,
+      "frameName": "Delete Second",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -179,7 +179,7 @@
     },
     {
       "frameId": 27,
-      "frameName": null,
+      "frameName": "Delete Third",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

@@ -31,7 +31,7 @@
   "frames": [
     {
       "frameId": 4,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -58,7 +58,7 @@
     },
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Focused",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -85,7 +85,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "[END]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -112,7 +112,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "[HOME]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -139,7 +139,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "[PAGE DOWN]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -166,7 +166,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "[RIGHT]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -193,7 +193,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "[PAGE DOWN]*3",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -220,7 +220,7 @@
     },
     {
       "frameId": 24,
-      "frameName": null,
+      "frameName": "[PAGE UP]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -247,7 +247,7 @@
     },
     {
       "frameId": 27,
-      "frameName": null,
+      "frameName": "[LEFT]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -274,7 +274,7 @@
     },
     {
       "frameId": 30,
-      "frameName": null,
+      "frameName": "[PAGE UP]*3",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

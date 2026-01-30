@@ -57,7 +57,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -84,7 +84,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "Typed Hello",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -111,7 +111,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "Typed World",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -138,7 +138,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Inserted punctuation",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -165,7 +165,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "Selection replaced",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -192,7 +192,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "Backspace\/Delete applied",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -219,7 +219,7 @@
     },
     {
       "frameId": 24,
-      "frameName": null,
+      "frameName": "Typed at start",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

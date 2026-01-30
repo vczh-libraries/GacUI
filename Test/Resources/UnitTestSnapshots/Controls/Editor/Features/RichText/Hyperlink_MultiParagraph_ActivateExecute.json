@@ -31,7 +31,7 @@
   "frames": [
     {
       "frameId": 4,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -58,7 +58,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Loaded",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -85,7 +85,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "Created P0",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -112,7 +112,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "Created P1",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -139,7 +139,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Hovered P0",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -166,7 +166,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Clicked P0",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -193,7 +193,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "Hovered P1",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -220,7 +220,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Clicked P1",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

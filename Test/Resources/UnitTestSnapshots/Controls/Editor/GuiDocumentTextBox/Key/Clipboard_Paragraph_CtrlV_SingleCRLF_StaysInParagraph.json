@@ -30,7 +30,7 @@
   "frames": [
     {
       "frameId": 4,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -57,7 +57,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Pasted",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

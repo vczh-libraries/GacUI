@@ -54,7 +54,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -81,7 +81,7 @@
     },
     {
       "frameId": 8,
-      "frameName": null,
+      "frameName": "Click Option 1",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -108,7 +108,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Click Option 2",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -135,7 +135,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "Click Option 3",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -162,7 +162,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Click Option 4",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

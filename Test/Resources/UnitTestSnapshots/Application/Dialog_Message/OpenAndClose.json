@@ -331,7 +331,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -358,7 +358,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Show DisplayOK",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -385,7 +385,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "[ENTER]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -412,7 +412,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "Show DisplayOKCancel",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -439,7 +439,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "[ENTER]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -466,7 +466,7 @@
     },
     {
       "frameId": 26,
-      "frameName": null,
+      "frameName": "Show DisplayYesNo",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -493,7 +493,7 @@
     },
     {
       "frameId": 29,
-      "frameName": null,
+      "frameName": "[ENTER]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -520,7 +520,7 @@
     },
     {
       "frameId": 34,
-      "frameName": null,
+      "frameName": "Show DisplayYesNoCancel",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -547,7 +547,7 @@
     },
     {
       "frameId": 36,
-      "frameName": null,
+      "frameName": "[ENTER]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -574,7 +574,7 @@
     },
     {
       "frameId": 41,
-      "frameName": null,
+      "frameName": "Show DisplayRetryCancel",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -601,7 +601,7 @@
     },
     {
       "frameId": 44,
-      "frameName": null,
+      "frameName": "[ENTER]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -628,7 +628,7 @@
     },
     {
       "frameId": 49,
-      "frameName": null,
+      "frameName": "Show DisplayAbortRetryIgnore",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -655,7 +655,7 @@
     },
     {
       "frameId": 52,
-      "frameName": null,
+      "frameName": "[ENTER]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -682,7 +682,7 @@
     },
     {
       "frameId": 57,
-      "frameName": null,
+      "frameName": "Show DisplayCancelTryAgainContinue",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -709,7 +709,7 @@
     },
     {
       "frameId": 60,
-      "frameName": null,
+      "frameName": "[ENTER]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

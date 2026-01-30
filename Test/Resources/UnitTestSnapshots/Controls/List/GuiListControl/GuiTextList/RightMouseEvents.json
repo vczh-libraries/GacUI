@@ -140,7 +140,7 @@
   "frames": [
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -167,7 +167,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "20 Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -194,7 +194,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Hover 1st",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -221,7 +221,7 @@
     },
     {
       "frameId": 24,
-      "frameName": null,
+      "frameName": "Click 1st",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -248,7 +248,7 @@
     },
     {
       "frameId": 29,
-      "frameName": null,
+      "frameName": "Hover 2nd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -275,7 +275,7 @@
     },
     {
       "frameId": 33,
-      "frameName": null,
+      "frameName": "Scroll",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -302,7 +302,7 @@
     },
     {
       "frameId": 38,
-      "frameName": null,
+      "frameName": "Hover 20th",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -329,7 +329,7 @@
     },
     {
       "frameId": 43,
-      "frameName": null,
+      "frameName": "DbClick 20st",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

@@ -218,7 +218,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -245,7 +245,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "Attempt 1: All Files + README.txt (fail)",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -272,7 +272,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "Popped up message dialog",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -299,7 +299,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Attempt 2: All Files + README (pass)",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -326,7 +326,7 @@
     },
     {
       "frameId": 22,
-      "frameName": null,
+      "frameName": "Typed",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -353,7 +353,7 @@
     },
     {
       "frameId": 24,
-      "frameName": null,
+      "frameName": "Confirmed",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

@@ -69,7 +69,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -96,7 +96,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Created two SubWindows",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -123,7 +123,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "Click SubWindowA",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -150,7 +150,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Click SubWindowB",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

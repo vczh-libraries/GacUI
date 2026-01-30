@@ -202,7 +202,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -229,7 +229,7 @@
     },
     {
       "frameId": 8,
-      "frameName": null,
+      "frameName": "Reset ItemSource",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -256,7 +256,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "Set ItemSource",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -283,7 +283,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Change TextProperty on Language",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

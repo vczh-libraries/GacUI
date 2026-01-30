@@ -128,7 +128,7 @@
   "frames": [
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -155,7 +155,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "18",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -182,7 +182,7 @@
     },
     {
       "frameId": 20,
-      "frameName": null,
+      "frameName": "24",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -209,7 +209,7 @@
     },
     {
       "frameId": 24,
-      "frameName": null,
+      "frameName": "Reset",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -236,7 +236,7 @@
     },
     {
       "frameId": 28,
-      "frameName": null,
+      "frameName": "Scroll to End",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

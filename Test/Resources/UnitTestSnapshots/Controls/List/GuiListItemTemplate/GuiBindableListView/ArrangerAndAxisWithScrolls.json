@@ -3338,7 +3338,7 @@
   "frames": [
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -3365,7 +3365,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "20 Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -3392,7 +3392,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "Grid",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -3419,7 +3419,7 @@
     },
     {
       "frameId": 30,
-      "frameName": null,
+      "frameName": "Rotate (DownLeft)",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -3446,7 +3446,7 @@
     },
     {
       "frameId": 34,
-      "frameName": null,
+      "frameName": "Select First",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -3473,7 +3473,7 @@
     },
     {
       "frameId": 38,
-      "frameName": null,
+      "frameName": "Select Last",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -3500,7 +3500,7 @@
     },
     {
       "frameId": 47,
-      "frameName": null,
+      "frameName": "Rotate (LeftUp)",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -3527,7 +3527,7 @@
     },
     {
       "frameId": 51,
-      "frameName": null,
+      "frameName": "Select First",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -3554,7 +3554,7 @@
     },
     {
       "frameId": 56,
-      "frameName": null,
+      "frameName": "Select Last",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -3581,7 +3581,7 @@
     },
     {
       "frameId": 63,
-      "frameName": null,
+      "frameName": "Rotate (UpRight)",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -3608,7 +3608,7 @@
     },
     {
       "frameId": 65,
-      "frameName": null,
+      "frameName": "Select First",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -3635,7 +3635,7 @@
     },
     {
       "frameId": 72,
-      "frameName": null,
+      "frameName": "Select Last",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -3662,7 +3662,7 @@
     },
     {
       "frameId": 78,
-      "frameName": null,
+      "frameName": "Rotate (RightDown)",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -3689,7 +3689,7 @@
     },
     {
       "frameId": 80,
-      "frameName": null,
+      "frameName": "Select First",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -3716,7 +3716,7 @@
     },
     {
       "frameId": 85,
-      "frameName": null,
+      "frameName": "Select Last",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -3743,7 +3743,7 @@
     },
     {
       "frameId": 92,
-      "frameName": null,
+      "frameName": "Reset",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

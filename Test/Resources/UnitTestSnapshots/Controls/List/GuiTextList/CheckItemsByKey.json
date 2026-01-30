@@ -73,7 +73,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -100,7 +100,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "5 Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -127,7 +127,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Selected 3rd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -154,7 +154,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "[SPACE] to Check",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -181,7 +181,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "[SPACE] to Uncheck",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -208,7 +208,7 @@
     },
     {
       "frameId": 20,
-      "frameName": null,
+      "frameName": "Selected 2nd 3rd 5th",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -235,7 +235,7 @@
     },
     {
       "frameId": 22,
-      "frameName": null,
+      "frameName": "[SPACE] to Check",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -262,7 +262,7 @@
     },
     {
       "frameId": 24,
-      "frameName": null,
+      "frameName": "[SPACE] to Uncheck",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -289,7 +289,7 @@
     },
     {
       "frameId": 26,
-      "frameName": null,
+      "frameName": "Check 3rd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -316,7 +316,7 @@
     },
     {
       "frameId": 28,
-      "frameName": null,
+      "frameName": "[SPACE] to Check",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -343,7 +343,7 @@
     },
     {
       "frameId": 30,
-      "frameName": null,
+      "frameName": "[SPACE] to Uncheck",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

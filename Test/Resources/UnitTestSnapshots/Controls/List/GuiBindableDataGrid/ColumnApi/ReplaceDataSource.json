@@ -646,7 +646,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -673,7 +673,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "IDEs > 1, Sort by Company",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -700,7 +700,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "ItemSource = items2",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -727,7 +727,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Unsort",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -754,7 +754,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "Sort by Company",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -781,7 +781,7 @@
     },
     {
       "frameId": 20,
-      "frameName": null,
+      "frameName": "ItemSource = null",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -808,7 +808,7 @@
     },
     {
       "frameId": 24,
-      "frameName": null,
+      "frameName": "ItemSource = items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -835,7 +835,7 @@
     },
     {
       "frameId": 28,
-      "frameName": null,
+      "frameName": "Reset",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

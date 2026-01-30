@@ -163,7 +163,7 @@
   "frames": [
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -190,7 +190,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "30 Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -217,7 +217,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "Scroll Down",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -244,7 +244,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Scroll to End",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -271,7 +271,7 @@
     },
     {
       "frameId": 22,
-      "frameName": null,
+      "frameName": "Scroll Up",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -298,7 +298,7 @@
     },
     {
       "frameId": 25,
-      "frameName": null,
+      "frameName": "Scroll to Begin",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

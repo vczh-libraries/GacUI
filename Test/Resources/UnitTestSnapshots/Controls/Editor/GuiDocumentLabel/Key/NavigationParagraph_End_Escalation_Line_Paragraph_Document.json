@@ -44,7 +44,7 @@
   "frames": [
     {
       "frameId": 4,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -71,7 +71,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Typed 3 paragraphs (middle has 2 lines)",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -98,7 +98,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Caret in p1 line1 and [END]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -125,7 +125,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "Caret at end of p1 and [END]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -152,7 +152,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Pressed [END] at paragraph end",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

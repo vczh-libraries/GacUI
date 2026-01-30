@@ -54,7 +54,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -81,7 +81,7 @@
     },
     {
       "frameId": 8,
-      "frameName": null,
+      "frameName": "Focused button1",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -108,7 +108,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "[TAB]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -135,7 +135,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "[TAB]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -162,7 +162,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "[TAB]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -189,7 +189,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "[TAB]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -216,7 +216,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "[TAB]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -243,7 +243,7 @@
     },
     {
       "frameId": 20,
-      "frameName": null,
+      "frameName": "[SHIFT]+[TAB]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -270,7 +270,7 @@
     },
     {
       "frameId": 22,
-      "frameName": null,
+      "frameName": "[SHIFT]+[TAB]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -297,7 +297,7 @@
     },
     {
       "frameId": 24,
-      "frameName": null,
+      "frameName": "[SHIFT]+[TAB]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -324,7 +324,7 @@
     },
     {
       "frameId": 26,
-      "frameName": null,
+      "frameName": "[SHIFT]+[TAB]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -351,7 +351,7 @@
     },
     {
       "frameId": 28,
-      "frameName": null,
+      "frameName": "[SHIFT]+[TAB]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

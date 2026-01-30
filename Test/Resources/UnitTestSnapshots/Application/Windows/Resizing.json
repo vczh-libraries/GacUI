@@ -69,7 +69,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -96,7 +96,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Created two SubWindows",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -123,7 +123,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "Top Border Up",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -150,7 +150,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Top Border Down",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -177,7 +177,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "Bottom Border Down",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -204,7 +204,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "Bottom Border Up",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -231,7 +231,7 @@
     },
     {
       "frameId": 20,
-      "frameName": null,
+      "frameName": "Left Border Left",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -258,7 +258,7 @@
     },
     {
       "frameId": 22,
-      "frameName": null,
+      "frameName": "Left Border Right",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -285,7 +285,7 @@
     },
     {
       "frameId": 24,
-      "frameName": null,
+      "frameName": "Right Border Right",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -312,7 +312,7 @@
     },
     {
       "frameId": 26,
-      "frameName": null,
+      "frameName": "Right Border Left",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

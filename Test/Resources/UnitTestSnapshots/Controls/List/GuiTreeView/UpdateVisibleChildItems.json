@@ -78,7 +78,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -105,7 +105,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "5 Items and Expand 2nd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -132,7 +132,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Select 2nd\/1st",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -159,7 +159,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Change 2nd\/2nd Text",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -186,7 +186,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "Change 2nd\/1st Text",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

@@ -73,7 +73,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -100,7 +100,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "5 Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -127,7 +127,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Select 1st",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -154,7 +154,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "Check 3rd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -181,7 +181,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "Check 1st",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

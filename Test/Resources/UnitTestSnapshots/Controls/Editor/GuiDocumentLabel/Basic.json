@@ -29,7 +29,7 @@
   "frames": [
     {
       "frameId": 4,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -56,7 +56,7 @@
     },
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "After text change",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

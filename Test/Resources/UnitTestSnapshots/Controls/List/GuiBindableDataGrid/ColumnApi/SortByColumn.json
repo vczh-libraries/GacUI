@@ -1258,7 +1258,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1285,7 +1285,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "+Language",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1312,7 +1312,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "-Language",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1339,7 +1339,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "+MP",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1366,7 +1366,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "-MP",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1393,7 +1393,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "+IDEs",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1420,7 +1420,7 @@
     },
     {
       "frameId": 24,
-      "frameName": null,
+      "frameName": "-IDEs",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1447,7 +1447,7 @@
     },
     {
       "frameId": 27,
-      "frameName": null,
+      "frameName": "+Company",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1474,7 +1474,7 @@
     },
     {
       "frameId": 30,
-      "frameName": null,
+      "frameName": "-Company",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1501,7 +1501,7 @@
     },
     {
       "frameId": 33,
-      "frameName": null,
+      "frameName": "-Company by Name",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -1528,7 +1528,7 @@
     },
     {
       "frameId": 36,
-      "frameName": null,
+      "frameName": "Reset",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

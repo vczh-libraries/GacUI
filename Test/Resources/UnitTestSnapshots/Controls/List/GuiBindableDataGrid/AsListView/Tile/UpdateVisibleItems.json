@@ -108,7 +108,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -135,7 +135,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "5 Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -162,7 +162,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "Select 1st",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -189,7 +189,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Change 2nd Text",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -216,7 +216,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "Change 1st Text",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -243,7 +243,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "Change 1st sub Text",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

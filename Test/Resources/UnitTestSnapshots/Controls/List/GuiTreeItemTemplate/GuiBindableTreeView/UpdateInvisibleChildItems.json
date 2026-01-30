@@ -140,7 +140,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -167,7 +167,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "5 Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -194,7 +194,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Expand 2nd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -221,7 +221,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "Collapse 2nd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -248,7 +248,7 @@
     },
     {
       "frameId": 20,
-      "frameName": null,
+      "frameName": "Select 2nd and Change 2nd\/1st, 2nd\/2nd, 2nd\/3rd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -275,7 +275,7 @@
     },
     {
       "frameId": 24,
-      "frameName": null,
+      "frameName": "Expand 2nd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

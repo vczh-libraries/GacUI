@@ -143,7 +143,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -170,7 +170,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "20 Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -197,7 +197,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Hover 1st",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -224,7 +224,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Select 1st",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -251,7 +251,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "Hover 2nd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -278,7 +278,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Disabled",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -305,7 +305,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "Enabled",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

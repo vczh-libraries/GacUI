@@ -57,7 +57,7 @@
   "frames": [
     {
       "frameId": 4,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -84,7 +84,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Typed 3 lines",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -111,7 +111,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Caret at (1,1) and [HOME]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -138,7 +138,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "Caret at (1,0) and [HOME]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -165,7 +165,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Caret at (1,2) and [END]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -192,7 +192,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "Caret at (1,5) and [END]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

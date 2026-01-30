@@ -272,7 +272,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -299,7 +299,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "Show Font Dialog",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -326,7 +326,7 @@
     },
     {
       "frameId": 24,
-      "frameName": null,
+      "frameName": "Set Font",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -353,7 +353,7 @@
     },
     {
       "frameId": 30,
-      "frameName": null,
+      "frameName": "Show Color Dialog",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -380,7 +380,7 @@
     },
     {
       "frameId": 33,
-      "frameName": null,
+      "frameName": "Set Color",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -407,7 +407,7 @@
     },
     {
       "frameId": 36,
-      "frameName": null,
+      "frameName": "Set Font",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -434,7 +434,7 @@
     },
     {
       "frameId": 41,
-      "frameName": null,
+      "frameName": "OK",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

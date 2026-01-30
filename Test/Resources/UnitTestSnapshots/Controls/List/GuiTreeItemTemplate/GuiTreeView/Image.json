@@ -138,7 +138,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -165,7 +165,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "5 Items with 3rd Expanded",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

@@ -682,7 +682,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -709,7 +709,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "IDEs > 1, Sort by Company",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -736,7 +736,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Add VB at first",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -763,7 +763,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "Replace last with Foxpro",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -790,7 +790,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Delete Java",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -817,7 +817,7 @@
     },
     {
       "frameId": 23,
-      "frameName": null,
+      "frameName": "Reset",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -844,7 +844,7 @@
     },
     {
       "frameId": 26,
-      "frameName": null,
+      "frameName": "IDEs > 1, Sort by Company",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -871,7 +871,7 @@
     },
     {
       "frameId": 28,
-      "frameName": null,
+      "frameName": "Clear",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

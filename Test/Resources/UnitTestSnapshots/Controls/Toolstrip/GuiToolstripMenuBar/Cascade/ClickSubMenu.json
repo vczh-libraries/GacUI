@@ -117,7 +117,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -144,7 +144,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Click on File",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -171,7 +171,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Hover on Edit",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -198,7 +198,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "Hover on File",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -225,7 +225,7 @@
     },
     {
       "frameId": 22,
-      "frameName": null,
+      "frameName": "Hover on File\/New",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -252,7 +252,7 @@
     },
     {
       "frameId": 24,
-      "frameName": null,
+      "frameName": "Hover on File\/Save",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -279,7 +279,7 @@
     },
     {
       "frameId": 26,
-      "frameName": null,
+      "frameName": "Click",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

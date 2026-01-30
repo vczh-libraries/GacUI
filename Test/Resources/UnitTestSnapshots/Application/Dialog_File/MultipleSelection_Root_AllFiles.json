@@ -181,7 +181,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -208,7 +208,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "Clicked: Open MultipleSelection",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -235,7 +235,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Selected: README",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -262,7 +262,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "Ctrl-Selected: root.txt",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -289,7 +289,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Pressed: Open",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

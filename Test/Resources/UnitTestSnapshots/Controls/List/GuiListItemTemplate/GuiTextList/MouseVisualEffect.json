@@ -98,7 +98,7 @@
   "frames": [
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -125,7 +125,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "Hover 1st",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -152,7 +152,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Select 1st",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -179,7 +179,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "Hover 2nd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -206,7 +206,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "Disabled",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -233,7 +233,7 @@
     },
     {
       "frameId": 20,
-      "frameName": null,
+      "frameName": "Enabled",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

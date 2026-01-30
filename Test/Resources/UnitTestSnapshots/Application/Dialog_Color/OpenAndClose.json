@@ -97,7 +97,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -124,7 +124,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "Show Dialog",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -151,7 +151,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Set Color",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -178,7 +178,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "OK",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

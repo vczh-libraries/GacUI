@@ -39,7 +39,7 @@
   "frames": [
     {
       "frameId": 4,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -66,7 +66,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Maximized",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -93,7 +93,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "Extra Width",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -120,7 +120,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Scroll Horizontally",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -147,7 +147,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "Reset",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -174,7 +174,7 @@
     },
     {
       "frameId": 22,
-      "frameName": null,
+      "frameName": "Extra Height",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -201,7 +201,7 @@
     },
     {
       "frameId": 25,
-      "frameName": null,
+      "frameName": "Scroll Vertically",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -228,7 +228,7 @@
     },
     {
       "frameId": 29,
-      "frameName": null,
+      "frameName": "Reset",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -255,7 +255,7 @@
     },
     {
       "frameId": 32,
-      "frameName": null,
+      "frameName": "Extra Size",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -282,7 +282,7 @@
     },
     {
       "frameId": 35,
-      "frameName": null,
+      "frameName": "Scroll Both",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -309,7 +309,7 @@
     },
     {
       "frameId": 39,
-      "frameName": null,
+      "frameName": "Reset",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

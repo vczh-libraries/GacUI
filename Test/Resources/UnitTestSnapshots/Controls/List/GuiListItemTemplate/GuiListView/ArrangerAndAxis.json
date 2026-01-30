@@ -533,7 +533,7 @@
   "frames": [
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -560,7 +560,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "20 Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -587,7 +587,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "Grid",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -614,7 +614,7 @@
     },
     {
       "frameId": 28,
-      "frameName": null,
+      "frameName": "Rotate (DownLeft)",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -641,7 +641,7 @@
     },
     {
       "frameId": 37,
-      "frameName": null,
+      "frameName": "Rotate (LeftUp)",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -668,7 +668,7 @@
     },
     {
       "frameId": 43,
-      "frameName": null,
+      "frameName": "Rotate (UpRight)",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -695,7 +695,7 @@
     },
     {
       "frameId": 49,
-      "frameName": null,
+      "frameName": "Rotate (RightDown)",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -722,7 +722,7 @@
     },
     {
       "frameId": 57,
-      "frameName": null,
+      "frameName": "Reset",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

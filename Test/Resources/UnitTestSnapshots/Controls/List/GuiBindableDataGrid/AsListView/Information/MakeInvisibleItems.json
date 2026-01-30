@@ -558,7 +558,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -585,7 +585,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "100 Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -612,7 +612,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Scroll to Bottom",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -639,7 +639,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Add to Top and Select",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -666,7 +666,7 @@
     },
     {
       "frameId": 23,
-      "frameName": null,
+      "frameName": "Scroll to Top",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -693,7 +693,7 @@
     },
     {
       "frameId": 27,
-      "frameName": null,
+      "frameName": "Add to Last and Select",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -720,7 +720,7 @@
     },
     {
       "frameId": 31,
-      "frameName": null,
+      "frameName": "Scroll to Bottom",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -747,7 +747,7 @@
     },
     {
       "frameId": 36,
-      "frameName": null,
+      "frameName": "Remove Added Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -774,7 +774,7 @@
     },
     {
       "frameId": 38,
-      "frameName": null,
+      "frameName": "Select 3rd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -801,7 +801,7 @@
     },
     {
       "frameId": 40,
-      "frameName": null,
+      "frameName": "Update 3rd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -828,7 +828,7 @@
     },
     {
       "frameId": 42,
-      "frameName": null,
+      "frameName": "Select 3rd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -855,7 +855,7 @@
     },
     {
       "frameId": 46,
-      "frameName": null,
+      "frameName": "Scroll to Top",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

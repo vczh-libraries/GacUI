@@ -516,7 +516,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -543,7 +543,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "Width [280]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -570,7 +570,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Width [240]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -597,7 +597,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "Width [200]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -624,7 +624,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Width [160]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -651,7 +651,7 @@
     },
     {
       "frameId": 26,
-      "frameName": null,
+      "frameName": "Width [200]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -678,7 +678,7 @@
     },
     {
       "frameId": 33,
-      "frameName": null,
+      "frameName": "Width [240]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -705,7 +705,7 @@
     },
     {
       "frameId": 38,
-      "frameName": null,
+      "frameName": "Width [280]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -732,7 +732,7 @@
     },
     {
       "frameId": 42,
-      "frameName": null,
+      "frameName": "Width [320]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

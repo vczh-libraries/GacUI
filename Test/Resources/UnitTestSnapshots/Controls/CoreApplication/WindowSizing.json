@@ -26,7 +26,7 @@
   "frames": [
     {
       "frameId": 4,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -53,7 +53,7 @@
     },
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Maximized",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -80,7 +80,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "Minimized",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -107,7 +107,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "Restored",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -134,7 +134,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Resized",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -161,7 +161,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Maximized",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -188,7 +188,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "Minimized",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -215,7 +215,7 @@
     },
     {
       "frameId": 20,
-      "frameName": null,
+      "frameName": "Restored",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

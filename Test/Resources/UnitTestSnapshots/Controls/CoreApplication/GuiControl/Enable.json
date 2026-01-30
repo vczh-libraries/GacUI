@@ -56,7 +56,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -83,7 +83,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "Disable A",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -110,7 +110,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Disable B\/E",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -137,7 +137,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "Disable D\/E",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

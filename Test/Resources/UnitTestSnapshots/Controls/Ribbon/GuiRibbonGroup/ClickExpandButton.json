@@ -56,7 +56,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -83,7 +83,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Click Expand Button",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

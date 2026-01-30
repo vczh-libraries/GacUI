@@ -33,7 +33,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -60,7 +60,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Hover on File",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -87,7 +87,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "Left Mouse Down",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -114,7 +114,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "Left Mouse Up",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -141,7 +141,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Middle Click on Edit",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -168,7 +168,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Right Click on About",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

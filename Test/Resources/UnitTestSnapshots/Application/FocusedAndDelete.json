@@ -38,7 +38,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -65,7 +65,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Focused button1",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -92,7 +92,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Deleted button1",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

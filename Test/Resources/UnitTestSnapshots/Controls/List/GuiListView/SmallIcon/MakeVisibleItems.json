@@ -105,7 +105,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -132,7 +132,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "5 Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -159,7 +159,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Add to Top",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -186,7 +186,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "Add to Last",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -213,7 +213,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "Remove Added Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -240,7 +240,7 @@
     },
     {
       "frameId": 23,
-      "frameName": null,
+      "frameName": "Select 3rd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -267,7 +267,7 @@
     },
     {
       "frameId": 26,
-      "frameName": null,
+      "frameName": "Update 3rd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -294,7 +294,7 @@
     },
     {
       "frameId": 28,
-      "frameName": null,
+      "frameName": "Select 3rd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

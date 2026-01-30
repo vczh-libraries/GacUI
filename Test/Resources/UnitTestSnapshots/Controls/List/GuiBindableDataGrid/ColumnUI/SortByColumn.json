@@ -742,7 +742,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -769,7 +769,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "+Language",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -796,7 +796,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "-Language",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -823,7 +823,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "MP does not sort",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -850,7 +850,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "IDEs does not sort",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -877,7 +877,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "+Company",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -904,7 +904,7 @@
     },
     {
       "frameId": 22,
-      "frameName": null,
+      "frameName": "-Company",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -931,7 +931,7 @@
     },
     {
       "frameId": 25,
-      "frameName": null,
+      "frameName": "Reset",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

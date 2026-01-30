@@ -46,7 +46,7 @@
   "frames": [
     {
       "frameId": 4,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -73,7 +73,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Typed 2 paragraphs with line breaks",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -100,7 +100,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Caret in p0 line2 and [UP]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -127,7 +127,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "Caret in p0 line2 and [DOWN]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

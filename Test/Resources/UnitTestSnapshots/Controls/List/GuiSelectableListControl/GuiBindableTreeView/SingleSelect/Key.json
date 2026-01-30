@@ -138,7 +138,7 @@
   "frames": [
     {
       "frameId": 8,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -165,7 +165,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "[DOWN]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -192,7 +192,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "[DOWN]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -219,7 +219,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "[CTRL]+[DOWN]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -246,7 +246,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "[SHIFT]+[DOWN]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -273,7 +273,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "[CTRL]+[SHIFT]+[DOWN]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -300,7 +300,7 @@
     },
     {
       "frameId": 20,
-      "frameName": null,
+      "frameName": "[UP]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -327,7 +327,7 @@
     },
     {
       "frameId": 22,
-      "frameName": null,
+      "frameName": "[CTRL]+[HOME]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -354,7 +354,7 @@
     },
     {
       "frameId": 25,
-      "frameName": null,
+      "frameName": "[PAGE DOWN]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -381,7 +381,7 @@
     },
     {
       "frameId": 28,
-      "frameName": null,
+      "frameName": "[SHIFT]+[END]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -408,7 +408,7 @@
     },
     {
       "frameId": 31,
-      "frameName": null,
+      "frameName": "[PAGE UP]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -435,7 +435,7 @@
     },
     {
       "frameId": 33,
-      "frameName": null,
+      "frameName": "Clear",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

@@ -53,7 +53,7 @@
   "frames": [
     {
       "frameId": 4,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -80,7 +80,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Typed 2 paragraphs with a line break",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -107,7 +107,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Copied and Cleared",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -134,7 +134,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Pasted Again",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

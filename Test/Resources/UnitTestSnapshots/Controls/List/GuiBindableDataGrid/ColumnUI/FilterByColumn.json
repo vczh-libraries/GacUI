@@ -508,7 +508,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -535,7 +535,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "Expand IDEs",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -562,7 +562,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Click Multiple IDEs",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -589,7 +589,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "Close Popup",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -616,7 +616,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "Expand Companies",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -643,7 +643,7 @@
     },
     {
       "frameId": 24,
-      "frameName": null,
+      "frameName": "Click Microsoft",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -670,7 +670,7 @@
     },
     {
       "frameId": 26,
-      "frameName": null,
+      "frameName": "Close Popup",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -697,7 +697,7 @@
     },
     {
       "frameId": 28,
-      "frameName": null,
+      "frameName": "Expand IDEs",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -724,7 +724,7 @@
     },
     {
       "frameId": 32,
-      "frameName": null,
+      "frameName": "Click All IDE Count",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -751,7 +751,7 @@
     },
     {
       "frameId": 34,
-      "frameName": null,
+      "frameName": "Close Popup",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -778,7 +778,7 @@
     },
     {
       "frameId": 36,
-      "frameName": null,
+      "frameName": "Expand Companies",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -805,7 +805,7 @@
     },
     {
       "frameId": 40,
-      "frameName": null,
+      "frameName": "Click All Companies",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -832,7 +832,7 @@
     },
     {
       "frameId": 42,
-      "frameName": null,
+      "frameName": "Close Popup",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

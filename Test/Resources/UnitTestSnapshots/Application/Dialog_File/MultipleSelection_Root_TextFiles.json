@@ -193,7 +193,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -220,7 +220,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "Clicked: Open MultipleSelection",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -247,7 +247,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Selected Filter: Text Files",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -274,7 +274,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "Selected: root.txt",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -301,7 +301,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "Ctrl-Selected: root2.txt",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -328,7 +328,7 @@
     },
     {
       "frameId": 23,
-      "frameName": null,
+      "frameName": "Pressed: Open",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

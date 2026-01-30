@@ -165,7 +165,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -192,7 +192,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Click HOME",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -219,7 +219,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Select Second",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -246,7 +246,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "Hover Undo",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -273,7 +273,7 @@
     },
     {
       "frameId": 18,
-      "frameName": null,
+      "frameName": "Click",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

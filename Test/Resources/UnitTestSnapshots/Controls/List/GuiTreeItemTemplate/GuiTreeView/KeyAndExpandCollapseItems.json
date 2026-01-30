@@ -212,7 +212,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -239,7 +239,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "5 Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -266,7 +266,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Click 1st",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -293,7 +293,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "Expand 2nd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -320,7 +320,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "Expand 2nd\/2nd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -347,7 +347,7 @@
     },
     {
       "frameId": 25,
-      "frameName": null,
+      "frameName": "Expand 2nd\/3rd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -374,7 +374,7 @@
     },
     {
       "frameId": 28,
-      "frameName": null,
+      "frameName": "Collapse 2nd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -401,7 +401,7 @@
     },
     {
       "frameId": 32,
-      "frameName": null,
+      "frameName": "Expand 2nd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

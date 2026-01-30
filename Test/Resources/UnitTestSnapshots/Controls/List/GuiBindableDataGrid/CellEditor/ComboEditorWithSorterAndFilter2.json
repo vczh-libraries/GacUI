@@ -523,7 +523,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -550,7 +550,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "IDEs > 1 && Sort by Company",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -577,7 +577,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "Start Edit the Second Row",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -604,7 +604,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Change from Microsoft to IBM",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -631,7 +631,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "Reset Sorting",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -658,7 +658,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "Reset Filter",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -685,7 +685,7 @@
     },
     {
       "frameId": 24,
-      "frameName": null,
+      "frameName": "IDEs > 1 && Sort by Company",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

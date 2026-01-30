@@ -770,7 +770,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -797,7 +797,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "20 Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -824,7 +824,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "BigIcon",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -851,7 +851,7 @@
     },
     {
       "frameId": 22,
-      "frameName": null,
+      "frameName": "SmallIcon",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -878,7 +878,7 @@
     },
     {
       "frameId": 28,
-      "frameName": null,
+      "frameName": "List",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -905,7 +905,7 @@
     },
     {
       "frameId": 33,
-      "frameName": null,
+      "frameName": "Tile",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -932,7 +932,7 @@
     },
     {
       "frameId": 39,
-      "frameName": null,
+      "frameName": "Information",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -959,7 +959,7 @@
     },
     {
       "frameId": 44,
-      "frameName": null,
+      "frameName": "Detail",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

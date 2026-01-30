@@ -33,7 +33,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -60,7 +60,7 @@
     },
     {
       "frameId": 8,
-      "frameName": null,
+      "frameName": "1",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -87,7 +87,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "3",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -114,7 +114,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "10",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

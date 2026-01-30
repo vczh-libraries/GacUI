@@ -227,7 +227,7 @@
   "frames": [
     {
       "frameId": 4,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -254,7 +254,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "Dropdown Link",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -281,7 +281,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "Click Html",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

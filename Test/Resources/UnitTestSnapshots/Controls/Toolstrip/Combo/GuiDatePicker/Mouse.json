@@ -388,7 +388,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -415,7 +415,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Click Year",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -442,7 +442,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "[UP] + [ENTER] -> 1999-1-1",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -469,7 +469,7 @@
     },
     {
       "frameId": 28,
-      "frameName": null,
+      "frameName": "Click Month",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -496,7 +496,7 @@
     },
     {
       "frameId": 32,
-      "frameName": null,
+      "frameName": "[END] + [ENTER] -> 1999-12-1",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -523,7 +523,7 @@
     },
     {
       "frameId": 34,
-      "frameName": null,
+      "frameName": "Click 31 -> 1999-12-31",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

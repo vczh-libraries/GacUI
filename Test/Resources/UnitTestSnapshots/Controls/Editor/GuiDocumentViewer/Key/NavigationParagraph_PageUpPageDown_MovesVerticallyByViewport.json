@@ -214,7 +214,7 @@
   "frames": [
     {
       "frameId": 4,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -241,7 +241,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Typed 40 paragraphs",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -268,7 +268,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Caret at (30,1) and [PAGE UP]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -295,7 +295,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "Caret at (5,1) and [PAGE DOWN]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

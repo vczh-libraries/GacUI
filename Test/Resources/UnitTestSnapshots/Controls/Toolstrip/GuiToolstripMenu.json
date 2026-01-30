@@ -233,7 +233,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -260,7 +260,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Show Menu",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -287,7 +287,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "Undo",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -314,7 +314,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Show Menu",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -341,7 +341,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Show Sub Menu",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -368,7 +368,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "Click Rtf",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -395,7 +395,7 @@
     },
     {
       "frameId": 23,
-      "frameName": null,
+      "frameName": "[CTRL]+[L]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -422,7 +422,7 @@
     },
     {
       "frameId": 25,
-      "frameName": null,
+      "frameName": "[CTRL]+[C]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -449,7 +449,7 @@
     },
     {
       "frameId": 27,
-      "frameName": null,
+      "frameName": "[CTRL]+[R]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

@@ -191,7 +191,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -218,7 +218,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "Show Dialog",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -245,7 +245,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Choose Filter: Text Files",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -272,7 +272,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "Cancel",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

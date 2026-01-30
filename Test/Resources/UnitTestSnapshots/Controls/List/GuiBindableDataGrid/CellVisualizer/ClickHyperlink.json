@@ -206,7 +206,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -233,7 +233,7 @@
     },
     {
       "frameId": 8,
-      "frameName": null,
+      "frameName": "Hover second link",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -260,7 +260,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Click",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -287,7 +287,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "Move Away",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -314,7 +314,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Move Back",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

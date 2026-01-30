@@ -38,7 +38,7 @@
   "frames": [
     {
       "frameId": 4,
-      "frameName": null,
+      "frameName": "Init",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -65,7 +65,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Typing",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -92,7 +92,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "Selected To Edges",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

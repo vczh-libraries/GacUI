@@ -507,7 +507,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -534,7 +534,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "Width [280]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -561,7 +561,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Width [240]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -588,7 +588,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "Width [200]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -615,7 +615,7 @@
     },
     {
       "frameId": 20,
-      "frameName": null,
+      "frameName": "Width [160]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -642,7 +642,7 @@
     },
     {
       "frameId": 26,
-      "frameName": null,
+      "frameName": "Width [200]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -669,7 +669,7 @@
     },
     {
       "frameId": 31,
-      "frameName": null,
+      "frameName": "Width [240]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -696,7 +696,7 @@
     },
     {
       "frameId": 37,
-      "frameName": null,
+      "frameName": "Width [280]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -723,7 +723,7 @@
     },
     {
       "frameId": 41,
-      "frameName": null,
+      "frameName": "Width [320]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -750,7 +750,7 @@
     },
     {
       "frameId": 44,
-      "frameName": null,
+      "frameName": "Typing",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

@@ -47,7 +47,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -74,7 +74,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Select 3rd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -101,7 +101,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "Disabled",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -128,7 +128,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "Enabled",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -155,7 +155,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Select First",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -182,7 +182,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Select Last",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

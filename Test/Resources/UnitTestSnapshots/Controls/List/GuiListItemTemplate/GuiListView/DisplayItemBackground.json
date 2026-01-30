@@ -198,7 +198,7 @@
   "frames": [
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -225,7 +225,7 @@
     },
     {
       "frameId": 12,
-      "frameName": null,
+      "frameName": "Select 1st and Hover 2nd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -252,7 +252,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "DisplayItemBackground = false",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -279,7 +279,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "Select 3rd and Hover 2nd",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -306,7 +306,7 @@
     },
     {
       "frameId": 28,
-      "frameName": null,
+      "frameName": "DisplayItemBackground = true",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -333,7 +333,7 @@
     },
     {
       "frameId": 30,
-      "frameName": null,
+      "frameName": "Move",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

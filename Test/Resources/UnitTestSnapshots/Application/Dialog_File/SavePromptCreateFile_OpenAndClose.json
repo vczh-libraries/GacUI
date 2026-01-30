@@ -180,7 +180,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -207,7 +207,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "Show Dialog",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -234,7 +234,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Typed",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -261,7 +261,7 @@
     },
     {
       "frameId": 16,
-      "frameName": null,
+      "frameName": "Confirmed",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

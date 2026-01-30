@@ -252,7 +252,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -279,7 +279,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "Clicked: Save PromptOverwriteFile",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -306,7 +306,7 @@
     },
     {
       "frameId": 14,
-      "frameName": null,
+      "frameName": "Typed: root.txt",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -333,7 +333,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Pressed: Save",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -360,7 +360,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "Clicked: Message Cancel",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -387,7 +387,7 @@
     },
     {
       "frameId": 26,
-      "frameName": null,
+      "frameName": "Pressed: Save again",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -414,7 +414,7 @@
     },
     {
       "frameId": 28,
-      "frameName": null,
+      "frameName": "Clicked: Message OK",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

@@ -29,7 +29,7 @@
   "frames": [
     {
       "frameId": 4,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -56,7 +56,7 @@
     },
     {
       "frameId": 7,
-      "frameName": null,
+      "frameName": "Loaded",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -83,7 +83,7 @@
     },
     {
       "frameId": 9,
-      "frameName": null,
+      "frameName": "Created A",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -110,7 +110,7 @@
     },
     {
       "frameId": 11,
-      "frameName": null,
+      "frameName": "Created B",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -137,7 +137,7 @@
     },
     {
       "frameId": 13,
-      "frameName": null,
+      "frameName": "Hovered A",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -164,7 +164,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "Hovered B",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -191,7 +191,7 @@
     },
     {
       "frameId": 17,
-      "frameName": null,
+      "frameName": "Removed Overlap",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -218,7 +218,7 @@
     },
     {
       "frameId": 19,
-      "frameName": null,
+      "frameName": "Hovered A After Remove",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -245,7 +245,7 @@
     },
     {
       "frameId": 21,
-      "frameName": null,
+      "frameName": "Hovered B After Remove",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

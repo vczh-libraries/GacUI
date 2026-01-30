@@ -225,7 +225,7 @@
   "frames": [
     {
       "frameId": 5,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -252,7 +252,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "[ALT]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -279,7 +279,7 @@
     },
     {
       "frameId": 15,
-      "frameName": null,
+      "frameName": "[F]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -306,7 +306,7 @@
     },
     {
       "frameId": 20,
-      "frameName": null,
+      "frameName": "[N]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -333,7 +333,7 @@
     },
     {
       "frameId": 25,
-      "frameName": null,
+      "frameName": "[ESC]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -360,7 +360,7 @@
     },
     {
       "frameId": 30,
-      "frameName": null,
+      "frameName": "[ESC]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -387,7 +387,7 @@
     },
     {
       "frameId": 32,
-      "frameName": null,
+      "frameName": "[ESC]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -414,7 +414,7 @@
     },
     {
       "frameId": 37,
-      "frameName": null,
+      "frameName": "[ALT]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -441,7 +441,7 @@
     },
     {
       "frameId": 42,
-      "frameName": null,
+      "frameName": "[E]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -468,7 +468,7 @@
     },
     {
       "frameId": 47,
-      "frameName": null,
+      "frameName": "[ESC]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -495,7 +495,7 @@
     },
     {
       "frameId": 52,
-      "frameName": null,
+      "frameName": "[F]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -522,7 +522,7 @@
     },
     {
       "frameId": 54,
-      "frameName": null,
+      "frameName": "[S]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -549,7 +549,7 @@
     },
     {
       "frameId": 56,
-      "frameName": null,
+      "frameName": "[1]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

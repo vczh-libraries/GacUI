@@ -282,7 +282,7 @@
   "frames": [
     {
       "frameId": 6,
-      "frameName": null,
+      "frameName": "Ready",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -309,7 +309,7 @@
     },
     {
       "frameId": 10,
-      "frameName": null,
+      "frameName": "IDEs > 1 && Sort by Company",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
