@@ -1,0 +1,61 @@
+﻿{
+  "frameId": 2,
+  "frameName": null,
+  "windowSize": {
+    "bounds": {
+      "x1": {"value": 192},
+      "y1": {"value": 144},
+      "x2": {"value": 832},
+      "y2": {"value": 624}
+    },
+    "clientBounds": {
+      "x1": {"value": 192},
+      "y1": {"value": 144},
+      "x2": {"value": 832},
+      "y2": {"value": 624}
+    },
+    "sizeState": "Restored",
+    "customFramePadding": {
+      "left": {"value": 8},
+      "top": {"value": 8},
+      "right": {"value": 8},
+      "bottom": {"value": 8}
+    }
+  },
+  "elements": [
+    [
+      1,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 1,
+          "backgroundColor": "#FFFFFF",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ]
+  ],
+  "root": {
+    "id": -1,
+    "content": {
+      "hitTestResult": null,
+      "cursor": null,
+      "element": null,
+      "bounds": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
+      "validArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0}
+    },
+    "children": [
+      {
+        "id": 4,
+        "content": {
+          "hitTestResult": null,
+          "cursor": null,
+          "element": 1,
+          "bounds": {"x1": 0, "y1": 0, "x2": 640, "y2": 480},
+          "validArea": {"x1": 0, "y1": 0, "x2": 640, "y2": 480}
+        },
+        "children": null
+      }
+    ]
+  }
+}

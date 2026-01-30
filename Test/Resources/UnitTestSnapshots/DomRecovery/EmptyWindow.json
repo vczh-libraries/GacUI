@@ -10,61 +10,27 @@
       "frameName": null,
       "windowSize": {
         "bounds": {
-          "x1": {"value": 192},
-          "y1": {"value": 144},
-          "x2": {"value": 832},
-          "y2": {"value": 624}
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
         },
         "clientBounds": {
-          "x1": {"value": 192},
-          "y1": {"value": 144},
-          "x2": {"value": 832},
-          "y2": {"value": 624}
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
         },
-        "sizeState": "Restored",
+        "sizeState": "Minimized",
         "customFramePadding": {
-          "left": {"value": 8},
-          "top": {"value": 8},
-          "right": {"value": 8},
-          "bottom": {"value": 8}
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
         }
       },
-      "elements": [
-        [
-          1,
-          [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 1,
-              "backgroundColor": "#FFFFFF",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
-          ]
-        ]
-      ],
-      "root": {
-        "id": -1,
-        "content": {
-          "hitTestResult": null,
-          "cursor": null,
-          "element": null,
-          "bounds": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
-          "validArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0}
-        },
-        "children": [
-          {
-            "id": 4,
-            "content": {
-              "hitTestResult": null,
-              "cursor": null,
-              "element": 1,
-              "bounds": {"x1": 0, "y1": 0, "x2": 640, "y2": 480},
-              "validArea": {"x1": 0, "y1": 0, "x2": 640, "y2": 480}
-            },
-            "children": null
-          }
-        ]
-      }
+      "elements": null,
+      "root": null
     }
   ]
 }
