@@ -193,7 +193,7 @@ void GacUIUnitTest_LogUI(const WString& appName, UnitTestRemoteProtocol& unitTes
 			File snapshotFrameFile = snapshotFramesFolder.GetFilePath() / frameFileName;
 			GacUIUnitTest_WriteSnapshotFileIfChanged(snapshotFrameFile, textLog);
 
-			renderingTrace.frames->Set(i, { .frameId = frame.frameId });
+			renderingTrace.frames->Set(i, { .frameId = frame.frameId, .frameName = frame.frameName });
 		}
 	}
 

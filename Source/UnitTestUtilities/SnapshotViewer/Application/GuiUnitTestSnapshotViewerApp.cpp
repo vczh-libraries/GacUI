@@ -507,13 +507,48 @@ namespace gaclib_controls
 
 		if (node && node->GetNodeType() == UnitTestSnapshotFileNodeType::File && frame)
 		{
-			rootComposition = BuildRootComposition(GetRenderingTrace(node), GetRenderingFrame(frame));
-			scRendering->GetContainerComposition()->AddChild(rootComposition);
+			auto loadDom = [=, this]()
+			{
+				labelLoading->SetVisible(false);
+				scRendering->SetVisible(true);
 
-			rootComposition->GetEventReceiver()->mouseEnter.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComposition_MouseEnter);
-			rootComposition->GetEventReceiver()->mouseLeave.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComopsition_MouseLeave);
-			rootComposition->GetEventReceiver()->mouseMove.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComposition_MouseMove);
-			rootComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComposition_LeftButtonDown);
+				rootComposition = BuildRootComposition(GetRenderingTrace(node), GetRenderingFrame(frame));
+				scRendering->GetContainerComposition()->AddChild(rootComposition);
+
+				rootComposition->GetEventReceiver()->mouseEnter.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComposition_MouseEnter);
+				rootComposition->GetEventReceiver()->mouseLeave.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComopsition_MouseLeave);
+				rootComposition->GetEventReceiver()->mouseMove.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComposition_MouseMove);
+				rootComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComposition_LeftButtonDown);
+			};
+
+			if (frame->GetDom())
+			{
+				loadDom();
+			}
+			else
+			{
+				labelLoading->SetVisible(true);
+				scRendering->SetVisible(false);
+
+				struct LoadingContext
+				{
+					vint version;
+					Ptr<EventHandler> handler;
+				};
+				auto context = Ptr(new LoadingContext);
+				context->version = ++loadingFrameVersion;
+				context->handler = frame->DomChanged.Add([=, this]()
+				{
+					if (context->version == loadingFrameVersion)
+					{
+						loadDom();
+						GetApplication()->InvokeInMainThread(GetApplication()->GetMainWindow(), [=]()
+						{
+							frame->DomChanged.Remove(context->handler);
+						});
+					}
+				});
+			}
 		}
 	}
 

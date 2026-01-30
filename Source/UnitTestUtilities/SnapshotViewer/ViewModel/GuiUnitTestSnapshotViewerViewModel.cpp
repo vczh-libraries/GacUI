@@ -300,7 +300,8 @@ UnitTestSnapshotFolderNode
 					List<Folder> folders;
 					folder.GetFolders(folders);
 					for (auto name : From(folders)
-						.Select([](auto&& folder) {return folder.GetFilePath().GetName(); })
+						.Where([](auto&& folder) { return !File(folder.GetFilePath().GetFullPath() + L".json").Exists(); })
+						.Select([](auto&& folder) { return folder.GetFilePath().GetName(); })
 						.OrderBySelf())
 					{
 						children->Add(Ptr(new UnitTestSnapshotFolderNode(folder.GetFilePath() / name)));
