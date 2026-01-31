@@ -23,9 +23,9 @@ WindowsInputService
 			WString WindowsInputService::GetKeyNameInternal(VKEY code)
 			{
 				if ((vint)code < 8) return L"?";
-				wchar_t name[256]={0};
-				vint scanCode=MapVirtualKey((int)code, MAPVK_VK_TO_VSC)<<16;
-				switch((vint)code)
+				wchar_t name[256] = { 0 };
+				vint scanCode = MapVirtualKey((int)code, MAPVK_VK_TO_VSC) << 16;
+				switch ((vint)code)
 				{
 				case VK_INSERT:
 				case VK_DELETE:
@@ -37,23 +37,39 @@ WindowsInputService
 				case VK_RIGHT:
 				case VK_UP:
 				case VK_DOWN:
-					scanCode|=1<<24;
+					scanCode |= 1 << 24;
 					break;
 				case VK_CLEAR:
 				case VK_LSHIFT:
-				case VK_RSHIFT: 
+				case VK_RSHIFT:
 				case VK_LCONTROL:
 				case VK_RCONTROL:
 				case VK_LMENU:
 				case VK_RMENU:
 					return L"?";
 				}
-				GetKeyNameText((int)scanCode, name, sizeof(name)/sizeof(*name));
-				return name[0]?name:L"?";
+				GetKeyNameText((int)scanCode, name, sizeof(name) / sizeof(*name));
+				if (name[0])
+				{
+					WString result = name;
+					vint index = predefinedKeys.Keys().IndexOf(result);
+					if (index != -1 && predefinedKeys.Values()[index] == code)
+					{
+						return result;
+					}
+				}
+				return WString::Unmanaged(L"?");
 			}
 
 			void WindowsInputService::InitializeKeyNames()
 			{
+#define INITIALIZE_KEY_NAME(NAME, TEXT)\
+				keyNames[(vint)VKEY::KEY_ ## NAME] = WString::Unmanaged(TEXT);\
+				if (!predefinedKeys.Keys().Contains(WString::Unmanaged(TEXT))) predefinedKeys.Add(WString::Unmanaged(TEXT), VKEY::KEY_ ## NAME);\
+
+				GUI_DEFINE_KEYBOARD_WINDOWS_NAME(INITIALIZE_KEY_NAME)
+#undef INITIALIZE_KEY_NAME
+
 				for (vint i = 0; i < keyNames.Count(); i++)
 				{
 					keyNames[i] = GetKeyNameInternal((VKEY)i);
