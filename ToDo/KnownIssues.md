@@ -37,6 +37,7 @@
     - To load such text into `GuiMultilineTextBox` uses `LoadTextAndClearUndoRedo`.
     - To load prepared large document into `GuiDocumentViewer` uses `LoadDocumentAndClearUndoRedo`.
     - Future editing still work with undo.
+- GacUI_Controls/ProgressAndAsync tutorial: doesn't scroll to the very top after downloading (attempts but the scroll bar left 2 ticks to the top).
 
 ## Remote Protocol
 
