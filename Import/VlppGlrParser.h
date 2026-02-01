@@ -366,15 +366,28 @@ IAstInsReceiver
 			virtual Ptr<ParsingAstBase>					Finished() = 0;
 		};
 
-		class AstInsReceiverBase : public Object, public virtual IAstInsReceiver
+		namespace astins_slots
 		{
-		private:
 			struct TokenSlot
 			{
 				regex::RegexToken						token;
 				vint32_t								index = -1;
 
-				auto operator<=>(const TokenSlot&) const = default;
+				auto operator<=>(const TokenSlot& slot) const
+				{
+					auto result = token.length <=> slot.token.length;
+					if (result != 0) return result;
+					result = token.token <=> slot.token.token;
+					if (result != 0) return result;
+					result = token.reading <=> slot.token.reading;
+					if (result != 0) return result;
+					return index <=> slot.index;
+				}
+
+				bool operator==(const TokenSlot& slot) const
+				{
+					return (*this <=> slot) == 0;
+				}
 			};
 
 			struct EnumItemSlot
@@ -382,22 +395,71 @@ IAstInsReceiver
 				vint32_t								value = -1;
 
 				auto operator<=>(const EnumItemSlot&) const = default;
+				bool operator==(const EnumItemSlot& slot) const
+				{
+					return (*this <=> slot) == 0;
+				}
 			};
 
 			using SlotValue = Variant<TokenSlot, EnumItemSlot, Ptr<ParsingAstBase>>;
+
+			inline auto operator<=>(const SlotValue& a, const SlotValue& b)
+			{
+				auto result = a.Index() <=> b.Index();
+				if (result != 0) return result;
+				switch (a.Index())
+				{
+				case 0:
+					return a.Get<TokenSlot>() <=> b.Get<TokenSlot>();
+				case 1:
+					return a.Get<EnumItemSlot>() <=> b.Get<EnumItemSlot>();
+				case 2:
+					return a.Get<Ptr<ParsingAstBase>>() <=> b.Get<Ptr<ParsingAstBase>>();
+				default:
+					return std::strong_ordering::equal;
+				}
+			}
+
+			inline auto operator==(const SlotValue& a, const SlotValue& b)
+			{
+				return (a <=> b) == 0;
+			}
 
 			struct SlotStorage
 			{
 				SlotValue								value;
 				Ptr<collections::List<SlotValue>>		additionalValues;
 
-				auto operator<=>(const SlotStorage&) const = default;
+				auto operator<=>(const SlotStorage& slotStorage) const
+				{
+					auto result = value <=> slotStorage.value;
+					if (result != 0) return result;
+					result = static_cast<bool>(additionalValues) <=> static_cast<bool>(slotStorage.additionalValues);
+					if (result != 0) return result;
+
+					if (additionalValues)
+					{
+						result = collections::CompareEnumerable(*additionalValues.Obj(), *slotStorage.additionalValues.Obj());
+						if (result != 0) return result;
+					}
+					return std::strong_ordering::equal;
+				}
+
+				bool operator==(const SlotStorage& slotStorage) const
+				{
+					return (*this <=> slotStorage) == 0;
+				}
 			};
 			using SlotMap = collections::Dictionary<vint, SlotStorage>;
+		}
+
+		class AstInsReceiverBase : public Object, public virtual IAstInsReceiver
+		{
+		private:
 
 			struct StackFrame
 			{
-				SlotMap									slots;
+				astins_slots::SlotMap									slots;
 				ParsingTextPos							codeRangeStart;
 			};
 			using StackFrameList = collections::List<StackFrame>;
@@ -415,7 +477,7 @@ IAstInsReceiver
 			bool										corrupted = false;
 
 			void										EnsureContinuable();
-			void										SetField(ParsingAstBase* object, vint32_t field, const SlotValue& value, bool weakAssignment);
+			void										SetField(ParsingAstBase* object, vint32_t field, const astins_slots::SlotValue& value, bool weakAssignment);
 
 		protected:
 			virtual Ptr<ParsingAstBase>					CreateAstNode(vint32_t type) = 0;
