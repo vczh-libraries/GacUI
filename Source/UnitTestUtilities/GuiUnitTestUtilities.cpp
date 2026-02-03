@@ -483,7 +483,6 @@ void GacUIUnitTest_StartAsync(const WString& appName, Nullable<UnitTestScreenCon
 void GacUIUnitTest_Start_WithResourceAsText(const WString& appName, Nullable<UnitTestScreenConfig> config, const WString& resourceText)
 {
 #define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_Start_WithResourceAsText(const WString&, Nullable<UnitTestScreenConfig>, const WString&)#"
-	auto previousMainProxy = guiMainProxy;
 	GacUIUnitTest_LinkGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext* context, const UnitTestMainFunc& previousMainProxy)
 	{
 		auto resource = GacUIUnitTest_CompileAndLoad(resourceText);
