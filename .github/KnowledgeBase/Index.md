@@ -646,6 +646,13 @@ It provides a comprehensive testing framework, XML-to-C++ compilation, and integ
 - [Using Streams](./manual/vlppos/using-streams.md)
 - [Using Threads and Locks](./manual/vlppos/using-threads.md)
 
+## Vlpp Parser2
+
+- [AST Definition](./manual/vlppparser2/ast.md)
+- [Lexer Definition](./manual/vlppparser2/lexer.md)
+- [Syntax Definition](./manual/vlppparser2/syntax.md)
+- [Generated APIs](./manual/vlppparser2/apis.md)
+
 ## Workflow Script
 
 - [Running a Script](./manual/workflow/running.md)

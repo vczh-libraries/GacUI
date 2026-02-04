@@ -2,7 +2,82 @@
 
 A class can inherit multiple classes.
 
-When Derived inherits from Base, - Interfaces cannot inherit classes in Workflow script (this could happen in C++). - Classes cannot inherit interfaces in Workflow script (this could happen in C++). - **Derived** inherits all members from **Base**. - If the same method signature appears in multiple base classes, it will result in ambiguity when calling them. - If members in base classes share the same name with members in the derived class, members in base classes will never be considered as candidates. - You cannot call members of **Derived** on an object of type **Base**, even if it is or inherits **Derived**. - Constructors of base classes must be called by all constructors in the derived class, except default constructors of base classes.
+When Derived inherits from Base,
+- Interfaces cannot inherit classes in Workflow script (this could happen in C++).
+- Classes cannot inherit interfaces in Workflow script (this could happen in C++).
+- **Derived**inherits all members from**Base**.
+- If the same method signature appears in multiple base classes, it will result in ambiguity when calling them.
+- If members in base classes share the same name with members in the derived class, members in base classes will never be considered as candidates.
+- You cannot call members of**Derived**on an object of type**Base**, even if it is or inherits**Derived**.
+- Constructors of base classes must be called by all constructors in the derived class, except default constructors of base classes.
 
-``` module sampleModule; using system::reflection::*; class Base { prop Number: int = 0 {} new() { } new(number: int) { Number = number; } } class Derived : Base { @cpp:Private var r: string = ""; @cpp:Private var handler: EventHandler^ = null; @cpp:Protected func OnNumberChanged(): void { r = r & $"$(Number); "; } new(number: int) :Base(number) { handler = attach(NumberChanged, OnNumberChanged); } delete { detach(NumberChanged, handler); } func GetResult(): string { return r; } prop Result: string {GetResult} } func main(): string { var d = new Derived^(100); var number = d.Number; d.Number = 200; d.Number = 300; return $"$(number); $(d.Result)"; } ``` - **Derived** inherits from **Base**. - The constructor of **Derived** calls the constructor of **Base**. They don't have to be both **new** or **new***. - **delete** is the destructor, which will be called before a **Derived** object is deleted. - **@cpp:Private** and **@cpp:Protected** don't affect Workflow code, it only control how C++ code is generated. - The type of **d** is **Derived^**. - Function **main** returns **"100; 200; 300; "**.
+
+```
+module sampleModule;
+
+using system::reflection::*;
+
+class Base
+{
+    prop Number: int = 0 {}
+
+    new()
+    {
+    }
+
+    new(number: int)
+    {
+        Number = number;
+    }
+}
+
+class Derived : Base
+{
+    @cpp:Private
+    var r: string = "";
+
+    @cpp:Private
+    var handler: EventHandler^ = null;
+
+    @cpp:Protected
+    func OnNumberChanged(): void
+    {
+        r = r & $"$(Number); ";
+    }
+
+    new(number: int)
+        :Base(number)
+    {
+        handler = attach(NumberChanged, OnNumberChanged);
+    }
+
+    delete
+    {
+        detach(NumberChanged, handler);
+    }
+
+    func GetResult(): string
+    {
+        return r;
+    }
+
+    prop Result: string {GetResult}
+}
+
+func main(): string
+{
+    var d = new Derived^(100);
+    var number = d.Number;
+    d.Number = 200;
+    d.Number = 300;
+    return $"$(number); $(d.Result)";
+}
+```
+
+- **Derived**inherits from**Base**.
+- The constructor of**Derived**calls the constructor of**Base**. They don't have to be both**new**or**new***.
+- **delete**is the destructor, which will be called before a**Derived**object is deleted.
+- **@cpp:Private**and**@cpp:Protected**don't affect Workflow code, it only control how C++ code is generated.
+- The type of**d**is**Derived^**.
+- Function**main**returns**"100; 200; 300; "**.
 
