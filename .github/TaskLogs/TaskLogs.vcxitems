@@ -19,8 +19,12 @@
     <None Include="$(MSBuildThisFileDirectory)Copilot_Task.md" />
     <None Include="$(MSBuildThisFileDirectory)Copilot_Scrum.md" />
     <None Include="$(MSBuildThisFileDirectory).gitignore" />
+    <None Include="$(MSBuildThisFileDirectory)copilotShared.ps1" />
     <None Include="$(MSBuildThisFileDirectory)copilotPrepare.ps1" />
     <None Include="$(MSBuildThisFileDirectory)copilotExecute.ps1" />
     <None Include="$(MSBuildThisFileDirectory)copilotBuild.ps1" />
+    <None Include="$(MSBuildThisFileDirectory)copilotDebug_Start.ps1" />
+    <None Include="$(MSBuildThisFileDirectory)copilotDebug_Stop.ps1" />
+    <None Include="$(MSBuildThisFileDirectory)copilotDebug_RunCommand.ps1" />
   </ItemGroup>
 </Project>

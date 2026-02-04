@@ -830,3 +830,16 @@ It provides a comprehensive testing framework, XML-to-C++ compilation, and integ
   - [TAB and Control Focus](./manual/gacui/advanced/tab.md)
   - [Creating New List Controls](./manual/gacui/advanced/impllistcontrol.md)
   - [Porting GacUI to Other Platforms](./manual/gacui/advanced/implosprovider.md)
+- [Hosted Mode and Remote Protocol](./manual/gacui/modes/home.md)
+  - [Remote Protocol Core Application](./manual/gacui/modes/remote_core.md)
+  - [Remote Protocol Client Application](./manual/gacui/modes/remote_client.md)
+  - [Implementing a Communication Protocol](./manual/gacui/modes/remote_communication.md)
+
+## Unit Testing
+
+- [Using Unit Test Framework](./manual/unittest/vlpp.md)
+- [Running GacUI in Unit Test Framework](./manual/unittest/gacui.md)
+  - [Snapshots and Frames](./manual/unittest/gacui_frame.md)
+  - [IO Interaction](./manual/unittest/gacui_io.md)
+  - [Accessing Controls](./manual/unittest/gacui_controls.md)
+  - [Snapshot Viewer](./manual/unittest/gacui_snapshots.md)
