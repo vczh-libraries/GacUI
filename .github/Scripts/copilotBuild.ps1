@@ -1,11 +1,9 @@
 . $PSScriptRoot\copilotShared.ps1
 
-# Remove log file if it exists
+# Remove log files
 $logFile = "$PSScriptRoot\Build.log"
-if (Test-Path $logFile) {
-    Remove-Item $logFile -Force
-    Write-Host "Removed existing log file: $logFile"
-}
+$logFileUnfinished = "$logFile.unfinished"
+Remove-Item -Path $logFile, $logFileUnfinished -Force -ErrorAction SilentlyContinue
 
 # Find the solution folder by looking for *.sln files
 $solutionFolder = GetSolutionDir
@@ -18,15 +16,13 @@ if ($vsdevcmd -eq $null) {
     throw "$MESSAGE_1\r\n$MESSAGE_2"
 }
 
+# Execute msbuild with output to both console and log file
 $Configuration = "Debug"
 $Platform = "x64"
 $msbuild_arguments = "MSBUILD `"$solutionFile`" /m:8 $rebuildControl /p:Configuration=`"$Configuration`";Platform=`"$Platform`""
 $cmd_arguments = "`"`"$vsdevcmd`" & $msbuild_arguments"
 
-# Execute msbuild with output to both console and log file
-$logFile = "$PSScriptRoot\Build.log"
 $commandLine = "/c $cmd_arguments"
-$logFileUnfinished = "$logFile.unfinished"
 & $env:ComSpec $commandLine 2>&1 | Tee-Object -FilePath $logFileUnfinished
 Rename-Item -Path $logFileUnfinished -NewName $logFile -Force
 exit $LASTEXITCODE

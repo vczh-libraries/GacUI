@@ -17,7 +17,7 @@
 			"label": "Build Unit Tests",
 			"type": "shell",
 			"windows": {
-				"command": "${workspaceFolder}/.github/TaskLogs/copilotBuild.ps1"
+				"command": "${workspaceFolder}/.github/Scripts/copilotBuild.ps1"
 			},
 			"linux": {
 				"command": "false"
@@ -31,7 +31,7 @@
 			"label": "Run Unit Tests",
 			"type": "shell",
 			"windows": {
-				"command": "${workspaceFolder}/.github/TaskLogs/copilotExecute.ps1 -Executable UnitTest"
+				"command": "${workspaceFolder}/.github/Scripts/copilotExecute.ps1 -Executable UnitTest"
 			},
 			"linux": {
 				"command": "false"
@@ -48,7 +48,7 @@
 			"label": "Start Debugging Unit Test",
 			"type": "shell",
 			"windows": {
-				"command": "${workspaceFolder}/.github/TaskLogs/copilotDebug_Start.ps1 -Executable UnitTest"
+				"command": "${workspaceFolder}/.github/Scripts/copilotDebug_Start.ps1 -Executable UnitTest"
 			},
 			"linux": {
 				"command": "false"
@@ -61,7 +61,7 @@
 			"label": "Stop Debugging Unit Test",
 			"type": "shell",
 			"windows": {
-				"command": "${workspaceFolder}/.github/TaskLogs/copilotDebug_Stop.ps1"
+				"command": "${workspaceFolder}/.github/Scripts/copilotDebug_Stop.ps1"
 			},
 			"linux": {
 				"command": "false"

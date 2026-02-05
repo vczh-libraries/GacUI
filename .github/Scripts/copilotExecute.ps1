@@ -5,12 +5,10 @@ param(
 
 . $PSScriptRoot\copilotShared.ps1
 
-# Remove log file if it exists
+# Remove log files
 $logFile = "$PSScriptRoot\Execute.log"
-if (Test-Path $logFile) {
-    Remove-Item $logFile -Force
-    Write-Host "Removed existing log file: $logFile"
-}
+$logFileUnfinished = "$logFile.unfinished"
+Remove-Item -Path $logFile, $logFileUnfinished -Force -ErrorAction SilentlyContinue
 
 # Ensure the executable name has .exe extension
 if ($Executable.EndsWith(".exe")) {
@@ -29,8 +27,6 @@ Write-Host "Selected $executableName`: $($latestFile.Path) (Modified: $($latestF
 $debugArgs = GetDebugArgs $solutionFolder $latestFile $Executable
 
 # Execute the selected executable with debug arguments and save output to log file
-$logFile = "$PSScriptRoot\Execute.log"
-$logFileUnfinished = "$logFile.unfinished"
 $commandLine = "`"$($latestFile.Path)`" /C $debugArgs"
 & { $commandLine; & cmd.exe /S /C $commandLine 2>&1 } | Tee-Object -FilePath $logFileUnfinished
 Rename-Item -Path $logFileUnfinished -NewName $logFile -Force
