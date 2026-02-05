@@ -1,7 +1,8 @@
 # Scrum
 
-- Checkout `Accessing Log Files and PowerShell Scripts` for context about mentioned `*.md` and `*.ps1` files.
-  - All `*.md` and `*.ps1` files should already be existing, you should not create any new files.
+- Check out `Accessing Task Documents` and `Accessing Script Files` for context about mentioned `*.md` and `*.ps1` files.
+- All `*.md` and `*.ps1` files should exist; you should not create any new files unless explicitly instructed.
+- Following `Leveraging the Knowledge Base` in `REPO-ROOT/.github/copilot-instructions.md`, find knowledge and documents for this project in `REPO-ROOT/.github/KnowledgeBase/Index.md`.
 
 ## Goal and Constraints
 
@@ -9,11 +10,11 @@
 - You are only allowed to update `Copilot_Scrum.md`.
 - You are not allowed to modify any other files.
 - The phrasing of the request may look like asking for code change, but your actual work is to write the design document.
-- "Task" in the request always mean a task under the `# TASKS` section in the design document.
+- "Task" in the request always means a task under the `# TASKS` section in the design document.
 
 ## Copilot_Scrum.md Structure
 
-- `# !!!SCRUM!!!`: This file always begin with this title.
+- `# !!!SCRUM!!!`: This file always begins with this title.
 - `# DESIGN REQUEST`: An exact copy of the problem description I gave you.
 - `# UPDATES`: For multiple `## UPDATE` sections. It should always exist even there is no update.
   - `## UPDATE`: There could be multiple occurrences. Each one has an exact copy of the update description I gave you.
@@ -28,9 +29,9 @@
 
 ## Step 1. Identify the Problem
 
-- The problem I would like to solve is in the chat messages sending with this request.
+- The problem I would like to solve is in the chat messages sent with this request.
 - Find `# Problem` or `# Update` or `# Learn` in the LATEST chat message. 
-  - Ignore any these titles in the chat history.
+  - Ignore any of these titles in the chat history.
   - If there is nothing: it means you are accidentally stopped. Please continue your work.
 
 ### Create new Document (only when "# Problem" appears in the LATEST chat message)
@@ -130,7 +131,7 @@ I made important updates to the source code manually during the execution of the
 
 - Ignore this section if there is no "# Learn" in the LATEST chat message
 
-### Step 6.1. Identify the Last Complteted Task
+### Step 6.1. Identify the Last Completed Task
 
 - Identify the last completed task.
 - The current `Copilot_Task.md`, `Copilot_Planning.md` and `Copilot_Execution.md` are associated to that task.
@@ -139,32 +140,32 @@ I made important updates to the source code manually during the execution of the
 
 - Read through `Copilot_Execution.md`. There may be some fixing attempts, that were done by you.
 - Compare existing source code with `Copilot_Execution.md`, finding what is changed.
-  - Don't rely on `git` to identify changes, as I always commit them periodaically. You need to compare the actual source code with `Copilot_Execution.md`.
+  - Don't rely on `git` to identify changes, as I always commit them periodically. You need to compare the actual source code with `Copilot_Execution.md`.
   - During comparing, you need to take into consideration of the fixing attempts, as sometimes you didn't update the main content of the document.
 - Identify all differences between the document and the source code:
   - If it is caused by any fixing attempts, ignore it.
   - If it is caused by any `# UPDATE`, ignore it.
   - If any fixing attempt was reverted:
-    - It may be canceled by a further fixing attemp, ignore it.
+    - It may be canceled by a further fixing attempt, ignore it.
     - Otherwise it was a user edit.
   - Any other difference is a user edit.
-- If there is no `# !!!VERIFIED!!!` in `Copilot_Execution.md`, it means you failed to deliver the task, either the code did not compile or some test cases failed. My edit will also reflects the final solution to the task.
-- Carefully read through and analyse all user edits, understand my tastes and preferences about the source code.
+- If there is no `# !!!VERIFIED!!!` in `Copilot_Execution.md`, it means you failed to deliver the task, either the code did not compile or some test cases failed. My edit will also reflect the final solution to the task.
+- Carefully read through and analyze all user edits, understand my tastes and preferences about the source code.
 
 ### Step 6.3 Write Down Findings
 
-- If every changes are ignored by the rule above, skip thi step.
+- If every change is ignored by the rule above, skip this step.
 - Create a new file `Copilot_Execution_Finding.md` with a topic `# Comparing to User Edit`.
   - `Copilot_Execution_Finding.md` should stay in the same folder as `Copilot_Execution.md`.
 - Add your finding to `Copilot_Execution_Finding.md`.
 
 ### Step 6.4 Learn
 
-- There will be multiple `# UPDATES` or `# FIXING ATTEMPTS` or `# Comparing to User Edit` sections in `Copilot_Task.md`, `Copilot_Planning.md` and `Copilot_Execution.md`.
-- These 3 files recorded how you interpreted the last completed task, and how I wanted you to adjust  your understanding.
+- There will be multiple `# UPDATES` or `# FIXING ATTEMPTS` or `# Comparing to User Edit` sections in `Copilot_Task.md`, `Copilot_Planning.md`, `Copilot_Execution.md` and `Copilot_Execution_Finding.md`.
+- These 3 files recorded how you interpreted the last completed task, and how I wanted you to adjust your understanding.
 - Find out what you can learn from the updates, about my philosophy and preferences.
 - Check all future tasks, apply what you have learned, and adjust your approach accordingly.
-  - For each unfinished tasks that can be improved, update releated learnings in `Copilot_Scrum.md`.
+  - For each unfinished task that can be improved, update related learnings in `Copilot_Scrum.md`.
 
 ### Step 6.5 Backup
 
@@ -172,49 +173,4 @@ I made important updates to the source code manually during the execution of the
   - In the above steps, necessary change will be updated to `Copilot_Execution.md` and `Copilot_Scrum.md`.
 - Find and execute `copilotPrepare.ps1 -Backup`. You MUST use the `-Backup` parameter.
   - Remember the first line of the output, it has the absolute path to the backup folder.
-  - By running the backup script, `Copilot_Task.md`, `Copilot_Planning.md` and `Copilot_Execution.md` will be backed up and deleted.
-  - If you created `Copilot_Execution_Finding.md`, in Step 6.3:
-    - In the backup folder, there will be a copied `Copilot_Execution.md`, append all contents from `Copilot_Execution_Finding.md` to the end of it.
-    - Delete the `Copilot_Execution_Finding.md` you created.
-
-# External Tools Environment and Context
-
-- You are on Windows running in Visual Studio Code.
-- Submitting CLI commands is not recommended unless you have no choice.
-- There is some rules to follow to submit correct powershell commands:
-  - DO NOT call `msbuild` or other executable files by yourself.
-  - DO NOT create or delete any file unless explicitly directed.
-  - MUST run any powershell script in this format: `& absolute-path.ps1 parameters...`.
-  - MUST run tasks via Cursor for compiling and running test cases.
-
-# Accessing Log Files and PowerShell Scripts
-
-This guidance is for accessing following files mentioned in this instruction:
-- `Copilot_Scrum.md`
-- `Copilot_Task.md`
-- `Copilot_Planning.md`
-- `Copilot_Execution.md`
-- `Copilot_KB.md`
-- `copilotPrepare.ps1`
-- `copilotBuild.ps1`
-- `copilotExecute.ps1`
-- `copilotDebug_Start.ps1`
-- `copilotDebug_Stop.ps1`
-- `copilotDebug_RunCommand.ps1`
-- `Build.log`
-- `Execute.log`
-
-They are in the `REPO-ROOT/.github/TaskLogs` folder. `REPO-ROOT` is the root folder of the repo.
-
-## If you are running in Visual Studio
-
-You will find the `TaskLogs` project in the current solution, which should contain these files.
-
-## Important Rules for Markdown Document or Log
-
-- Do not print "````````" or "````````markdown" in markdown file.
-- It is totally fine to have multiple top level `# Topic`.
-- When mentioning a C++ name in markdown file:
-  - If it is defined in the standard C++ library or third-party library, use the full name.
-  - If it is defined in the source code, use the full name if there is ambiguity, and then mention the file containing its definition.
-
+  - By running the backup script, `Copilot_Task.md`, `Copilot_Planning.md`, `Copilot_Execution.md` and `Copilot_Execution_Finding.md` will be backed up and deleted.

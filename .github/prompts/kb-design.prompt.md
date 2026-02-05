@@ -34,21 +34,21 @@
   - Find `Steps for Execute` section for the complete instructions.
 
 - If there is nothing: it means you are accidentally stopped. Please continue your work.
-  - Read `Copilot_KB.md` througly, it is highly possibly that you were working on the request described in the last section in `# DOCUMENT REQUEST`.
+  - Read `Copilot_KB.md` thoroughly, it is highly possible that you were working on the request described in the last section in `# DOCUMENT REQUEST`.
 
-- Existing content in `# DOCUMENT REQUEST` should be frozen, you can change it only when you find out the analysis is incorrect during my clarification (try limit the scope to `## TOPIC`).
+- Existing content in `# DOCUMENT REQUEST` should be frozen, you can change it only when you find out the analysis is incorrect during my clarification (try to limit the scope to `## TOPIC`).
 
 ## Steps for Topic
 
 - Your goal is to complete a `### Insight` section in the `## TOPIC` of the `# DOCUMENT REQUEST` section.
 - The topic I would like you to research about is in the `# Topic` section in the LATEST chat message.
 - The topic is around a feature of the project. It involves multiple places of the source code across many components.
-- You need to find out the details of the code logic abount:
+- You need to find out the details of the code logic about:
   - The entry point.
   - The core part.
   - Whether there are multiple branches of cases, find all of them.
   - Whether there are recursive calls, find the structure.
-- Explain in details about the design and:
+- Explain in detail about the design and:
   - architecture
   - organization of components
   - execution flows
@@ -79,13 +79,13 @@
   - But at the moment only edit `Copilot_KB.md`, do not edit `Index.md`. You are drafting a document, it will be implemented in `Index.md` only after my approval.
 - Make a `# DRAFT-TITLE` section, you need to make a comprehensive but short title for the draft document.
 - Make a `# DRAFT-CONTENT` section, you need to complete the content of the draft document here.
-- The draft document is completedly based on the source code of the project, and all findings in the `# DOCUMENT REQUEST` section.
+- The draft document is completely based on the source code of the project, and all findings in the `# DOCUMENT REQUEST` section.
   - You must not miss any details, you must use every single point mentioned in the document.
   - Since `# DOCUMENT REQUEST` is organized as multiple rounds of questions and answers, it cannot be just directly used as a document. You must reorganize them.
-  - Similar knowledges under the same categories might be spread in different answers, pay attention to them, bring a well-organized document.
+  - Similar knowledge under the same categories might be spread in different answers, pay attention to them, bring a well-organized document.
 - Quality of the draft:
   - The document is for understanding the source code, so you must keep mentioning names instead of using a too high-level abstraction language.
-  - You must use everything in `# DOCUMENT REQUEST`. Do not just make a summarize, `# DOCUMENT REQUEST` is already a summarize.
+  - You must use everything in `# DOCUMENT REQUEST`. Do not just make a summary, `# DOCUMENT REQUEST` is already a summary.
   - Multiple levels of `#` markdown topic containing bullet points are favored.
 
 ## Steps for Improve
@@ -101,45 +101,3 @@
 - The title of the document is in the `# DRAFT-TITLE` section.
 - The content must be exactly and precisely the content under `# DRAFT-CONTENT`. But do not copy the `# DRAFT-CONTENT` title itself.
 - Keep `Copilot_KB.md` unchanged.
-
-# External Tools Environment and Context
-
-- You are on Windows running in Visual Studio Code.
-- Submitting CLI commands is not recommended unless you have no choice.
-- There is some rules to follow to submit correct powershell commands:
-  - DO NOT call `msbuild` or other executable files by yourself.
-  - DO NOT create or delete any file unless explicitly directed.
-  - MUST run any powershell script in this format: `& absolute-path.ps1 parameters...`.
-  - MUST run tasks via Cursor for compiling and running test cases.
-
-# Accessing Log Files and PowerShell Scripts
-
-This guidance is for accessing following files mentioned in this instruction:
-- `Copilot_Scrum.md`
-- `Copilot_Task.md`
-- `Copilot_Planning.md`
-- `Copilot_Execution.md`
-- `Copilot_KB.md`
-- `copilotPrepare.ps1`
-- `copilotBuild.ps1`
-- `copilotExecute.ps1`
-- `copilotDebug_Start.ps1`
-- `copilotDebug_Stop.ps1`
-- `copilotDebug_RunCommand.ps1`
-- `Build.log`
-- `Execute.log`
-
-They are in the `REPO-ROOT/.github/TaskLogs` folder. `REPO-ROOT` is the root folder of the repo.
-
-## If you are running in Visual Studio
-
-You will find the `TaskLogs` project in the current solution, which should contain these files.
-
-## Important Rules for Markdown Document or Log
-
-- Do not print "````````" or "````````markdown" in markdown file.
-- It is totally fine to have multiple top level `# Topic`.
-- When mentioning a C++ name in markdown file:
-  - If it is defined in the standard C++ library or third-party library, use the full name.
-  - If it is defined in the source code, use the full name if there is ambiguity, and then mention the file containing its definition.
-

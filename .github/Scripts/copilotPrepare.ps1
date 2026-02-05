@@ -20,7 +20,13 @@ $filesToCreate = @{
 # Backup each markdown file for learning
 $filesToBackup = @()
 foreach ($file in $filesToOverride.GetEnumerator()) {
-    $filePath = "$PSScriptRoot\$($file.Key)"
+    $filePath = "$PSScriptRoot\..\TaskLogs\$($file.Key)"
+    if (Test-Path $filePath) {
+        $filesToBackup += $filePath
+    }
+}
+{
+    $filePath = "$PSScriptRoot\..\TaskLogs\Copilot_Execution_Finding.md"
     if (Test-Path $filePath) {
         $filesToBackup += $filePath
     }
@@ -41,10 +47,18 @@ if ($filesToBackup.Count -gt 0) {
     }
 }
 
+{
+    $filePath = "$PSScriptRoot\..\TaskLogs\Copilot_Execution_Finding.md"
+    if (Test-Path $filePath) {
+        Write-Host "Deleting Copilot_Execution_Finding.md..."
+        Remove-Item -Path $filePath -Force
+    }
+}
+
 if ($Backup) {
     # Delete all files in $filesToOverride
     foreach ($file in $filesToOverride.GetEnumerator()) {
-        $filePath = "$PSScriptRoot\$($file.Key)"
+        $filePath = "$PSScriptRoot\..\TaskLogs\$($file.Key)"
         if (Test-Path $filePath) {
             Write-Host "Deleting $($file.Key)..."
             Remove-Item -Path $filePath -Force
@@ -53,14 +67,14 @@ if ($Backup) {
 } else {
     # Create each markdown file with the specified content
     foreach ($file in $filesToOverride.GetEnumerator()) {
-        $filePath = "$PSScriptRoot\$($file.Key)"
+        $filePath = "$PSScriptRoot\..\TaskLogs\$($file.Key)"
         Write-Host "Creating/overriding $($file.Key)..."
         $file.Value | Out-File -FilePath $filePath -Encoding UTF8
     }
 
     # Create files only if they don't exist
     foreach ($file in $filesToCreate.GetEnumerator()) {
-        $filePath = "$PSScriptRoot\$($file.Key)"
+        $filePath = "$PSScriptRoot\..\TaskLogs\$($file.Key)"
         if (-not (Test-Path $filePath)) {
             Write-Host "Creating $($file.Key)..."
             $file.Value | Out-File -FilePath $filePath -Encoding UTF8
