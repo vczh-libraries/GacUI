@@ -78,7 +78,6 @@
 
 - Windows
   - `INativeImage::SaveToStream` handle correctly for git format. It is possible that LoadFromStream need to process diff between git raw frames.
-- UI Automation.
 - Test Automation.
   - Standard test for OS providers, may need a test purpose automation service to do https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput
 
