@@ -5,8 +5,7 @@
 
 ## Implement the Knowledge Base
 
-- Find out the `Leveraging the Knowledge Base` section. Understand the organization of the knowledge base.
-- Read the `Index.md` of the knowledge base first.
+- Check out `Leveraging the Knowledge Base`, read the entry file and understand how it is organized: `REPO-ROOT/.github/KnowledgeBase/Index.md`.
 - There could be multiple places as the request might include multiple objectives. For each objective:
   - Find out which project does it belong to.
   - Read through all categories, find out which category is the best fit.
