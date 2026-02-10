@@ -142,7 +142,7 @@
   </Instance>
 
   <Instance name="MainWindowResource">
-    <Instance ref.Class="rptest::MainWindow" xmlns:rptest="rptest::*">
+    <Instance ref.Class="rptest::RpMainWindow" xmlns:rptest="rptest::*">
       <Window ref.Name="self" Text="Remote Protocol Test" ClientSize="x:640 y:480">
         <MessageDialog ref.Name="dialogQueryClose"
                        Input="DisplayOKCancel"

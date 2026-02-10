@@ -35,8 +35,8 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(rptest::DataGridTab)
 			IMPL_CPP_TYPE_INFO(rptest::DataGridTabConstructor)
 			IMPL_CPP_TYPE_INFO(rptest::DataItem)
-			IMPL_CPP_TYPE_INFO(rptest::MainWindow)
-			IMPL_CPP_TYPE_INFO(rptest::MainWindowConstructor)
+			IMPL_CPP_TYPE_INFO(rptest::RpMainWindow)
+			IMPL_CPP_TYPE_INFO(rptest::RpMainWindowConstructor)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -106,16 +106,16 @@ namespace vl
 				CLASS_MEMBER_PROPERTY(Title, GetTitle, SetTitle)
 			END_CLASS_MEMBER(::rptest::DataItem)
 
-			BEGIN_CLASS_MEMBER(::rptest::MainWindow)
+			BEGIN_CLASS_MEMBER(::rptest::RpMainWindow)
 				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiWindow)
-				CLASS_MEMBER_BASE(::rptest::MainWindowConstructor)
-				CLASS_MEMBER_CONSTRUCTOR(::rptest::MainWindow*(), NO_PARAMETER)
-			END_CLASS_MEMBER(::rptest::MainWindow)
+				CLASS_MEMBER_BASE(::rptest::RpMainWindowConstructor)
+				CLASS_MEMBER_CONSTRUCTOR(::rptest::RpMainWindow*(), NO_PARAMETER)
+			END_CLASS_MEMBER(::rptest::RpMainWindow)
 
-			BEGIN_CLASS_MEMBER(::rptest::MainWindowConstructor)
+			BEGIN_CLASS_MEMBER(::rptest::RpMainWindowConstructor)
 				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
-				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::rptest::MainWindowConstructor>(), NO_PARAMETER)
-				CLASS_MEMBER_METHOD(__vwsn_rptest_MainWindow_Initialize, { L"__vwsn_this_" })
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::rptest::RpMainWindowConstructor>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(__vwsn_rptest_RpMainWindow_Initialize, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_10)
@@ -163,7 +163,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(dialogQueryClose)
 				CLASS_MEMBER_FIELD(menuFileNew)
 				CLASS_MEMBER_FIELD(self)
-			END_CLASS_MEMBER(::rptest::MainWindowConstructor)
+			END_CLASS_MEMBER(::rptest::RpMainWindowConstructor)
 
 #undef _
 			class RemoteProtocolTestTypeLoader : public Object, public ITypeLoader
@@ -176,8 +176,8 @@ namespace vl
 					ADD_TYPE_INFO(::rptest::DataGridTab)
 					ADD_TYPE_INFO(::rptest::DataGridTabConstructor)
 					ADD_TYPE_INFO(::rptest::DataItem)
-					ADD_TYPE_INFO(::rptest::MainWindow)
-					ADD_TYPE_INFO(::rptest::MainWindowConstructor)
+					ADD_TYPE_INFO(::rptest::RpMainWindow)
+					ADD_TYPE_INFO(::rptest::RpMainWindowConstructor)
 				}
 
 				void Unload(ITypeManager* manager)

@@ -9,7 +9,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\MainWindow.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\RpMainWindow.h">
       <Filter>x64</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\RemoteProtocolTest.h">
@@ -21,7 +21,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\RemoteProtocolTestReflection.h">
       <Filter>x64</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\MainWindow.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\RpMainWindow.h">
       <Filter>x86</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\RemoteProtocolTest.h">
@@ -56,7 +56,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\RemoteProtocolTestResource.cpp">
       <Filter>x64</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\MainWindow.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\RpMainWindow.cpp">
       <Filter>x64</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\RemoteProtocolTest.cpp">
@@ -68,7 +68,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\RemoteProtocolTestResource.cpp">
       <Filter>x86</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\MainWindow.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\RpMainWindow.cpp">
       <Filter>x86</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\ClickMeTab.cpp">

@@ -13,6 +13,6 @@ https://github.com/vczh-libraries
 #include "RemoteProtocolTest.h"
 #include "ClickMeTab.h"
 #include "DataGridTab.h"
-#include "MainWindow.h"
+#include "RpMainWindow.h"
 
 #endif

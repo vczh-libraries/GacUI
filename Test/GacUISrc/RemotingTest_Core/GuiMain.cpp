@@ -1,5 +1,5 @@
 #include "DarkSkin.h"
-#include "MainWindow.h"
+#include "RpMainWindow.h"
 #include "CoreChannel.h"
 #include "Shared/NamedPipeShared.h"
 #include "Shared/HttpServer.h"
@@ -15,7 +15,7 @@ void GuiMain()
 {
 	theme::RegisterTheme(Ptr(new darkskin::Theme));
 	{
-		rptest::MainWindow window;
+		rptest::RpMainWindow window;
 		window.ForceCalculateSizeImmediately();
 		window.MoveToScreenCenter();
 		try

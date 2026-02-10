@@ -42,8 +42,8 @@ namespace vl
 			DECL_TYPE_INFO(::rptest::DataGridTab)
 			DECL_TYPE_INFO(::rptest::DataGridTabConstructor)
 			DECL_TYPE_INFO(::rptest::DataItem)
-			DECL_TYPE_INFO(::rptest::MainWindow)
-			DECL_TYPE_INFO(::rptest::MainWindowConstructor)
+			DECL_TYPE_INFO(::rptest::RpMainWindow)
+			DECL_TYPE_INFO(::rptest::RpMainWindowConstructor)
 #endif
 
 			extern bool LoadRemoteProtocolTestTypes();

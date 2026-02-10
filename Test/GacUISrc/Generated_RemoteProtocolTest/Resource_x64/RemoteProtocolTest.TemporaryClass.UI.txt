@@ -79,7 +79,7 @@ namespace rptest
 }
 
 ================================(3/4)================================
-module <instance>rptest::MainWindow;
+module <instance>rptest::RpMainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
 using presentation::compositions::Gui*Composition;
@@ -101,8 +101,8 @@ using presentation::theme::*;
 
 namespace rptest
 {
-    @cpp:File("MainWindow")
-    class MainWindow : ::presentation::controls::GuiWindow
+    @cpp:File("RpMainWindow")
+    class RpMainWindow : ::presentation::controls::GuiWindow
     {
         new* ()
             :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))

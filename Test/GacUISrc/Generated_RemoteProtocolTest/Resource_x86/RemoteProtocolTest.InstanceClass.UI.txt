@@ -525,7 +525,7 @@ namespace rptest
 }
 
 ================================(5/7)================================
-module <constructor>rptest::MainWindow;
+module <constructor>rptest::RpMainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
 using presentation::compositions::Gui*Composition;
@@ -547,10 +547,10 @@ using presentation::theme::*;
 
 namespace rptest
 {
-    class MainWindowConstructor
+    class RpMainWindowConstructor
     {
         @cpp:Protected
-        var self : ::rptest::MainWindow* = null of (::rptest::MainWindow*);
+        var self : ::rptest::RpMainWindow* = null of (::rptest::RpMainWindow*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
@@ -691,7 +691,7 @@ namespace rptest
         var menuFileNew : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
 
         @cpp:Protected
-        func <rptest-MainWindow>Initialize(<this> : ::rptest::MainWindow*) : (::system::Void)
+        func <rptest-RpMainWindow>Initialize(<this> : ::rptest::RpMainWindow*) : (::system::Void)
         {
             (self = <this>);
             {
@@ -1137,7 +1137,7 @@ namespace rptest
 }
 
 ================================(6/7)================================
-module <instance>rptest::MainWindow;
+module <instance>rptest::RpMainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
 using presentation::compositions::Gui*Composition;
@@ -1159,17 +1159,17 @@ using presentation::theme::*;
 
 namespace rptest
 {
-    @cpp:File("MainWindow")
-    @cpp:Friend(typeof(MainWindowConstructor))
-    class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
+    @cpp:File("RpMainWindow")
+    @cpp:Friend(typeof(RpMainWindowConstructor))
+    class RpMainWindow : ::presentation::controls::GuiWindow, RpMainWindowConstructor
     {
         new* ()
             :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
         {
-            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("rptest::MainWindow");
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("rptest::RpMainWindow");
             var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
             this.SetResourceResolver(<resolver>);
-            this.<rptest-MainWindow>Initialize(this);
+            this.<rptest-RpMainWindow>Initialize(this);
         }
 
         delete

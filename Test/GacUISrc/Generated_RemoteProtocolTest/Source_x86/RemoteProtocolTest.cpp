@@ -56,84 +56,84 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf10_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_::__vwsnf10_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(::rptest::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf10_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::__vwsnf10_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf10_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf10_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(__vwsnthis_0->self), vl::Func(::vl_workflow_global::__vwsnf11_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__(__vwsnthis_0)));
+		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(__vwsnthis_0->self), vl::Func(::vl_workflow_global::__vwsnf11_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__(__vwsnthis_0)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf11_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__::__vwsnf11_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__(::rptest::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf11_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__::__vwsnf11_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf11_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__::operator()() const
+	void __vwsnf11_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__::operator()() const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->Hide();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf12_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_::__vwsnf12_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(::rptest::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf12_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::__vwsnf12_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf12_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf12_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->Hide();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf13_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_::__vwsnf13_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(::rptest::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf13_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::__vwsnf13_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf13_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf13_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(__vwsnthis_0->self), vl::Func(::vl_workflow_global::__vwsnf14_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__(__vwsnthis_0)));
+		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(__vwsnthis_0->self), vl::Func(::vl_workflow_global::__vwsnf14_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__(__vwsnthis_0)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf14_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__::__vwsnf14_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__(::rptest::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf14_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__::__vwsnf14_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf14_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__::operator()() const
+	void __vwsnf14_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__::operator()() const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf15_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_::__vwsnf15_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(::rptest::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf15_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::__vwsnf15_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf15_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf15_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf16_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_::__vwsnf16_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(::rptest::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf16_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::__vwsnf16_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf16_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiRequestEventArgs* arguments) const
+	void __vwsnf16_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiRequestEventArgs* arguments) const
 	{
 		if ((::vl::__vwsn::This(__vwsnthis_0->dialogQueryClose)->ShowDialog() == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectCancel))
 		{
@@ -241,24 +241,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf8_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_::__vwsnf8_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(::rptest::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf8_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::__vwsnf8_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf8_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf8_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->dialogLocalShortcut)->ShowDialog();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf9_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_::__vwsnf9_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(::rptest::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf9_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::__vwsnf9_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf9_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf9_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->dialogGlobalShortcut)->ShowDialog();
 	}
@@ -618,10 +618,10 @@ Class (::rptest::DataItem)
 	}
 
 /***********************************************************************
-Class (::rptest::MainWindowConstructor)
+Class (::rptest::RpMainWindowConstructor)
 ***********************************************************************/
 
-	void MainWindowConstructor::__vwsn_rptest_MainWindow_Initialize(::rptest::MainWindow* __vwsn_this_)
+	void RpMainWindowConstructor::__vwsn_rptest_RpMainWindow_Initialize(::rptest::RpMainWindow* __vwsn_this_)
 	{
 		(this->self = __vwsn_this_);
 		{
@@ -986,27 +986,27 @@ Class (::rptest::MainWindowConstructor)
 			::vl::__vwsn::This(this->dialogGlobalShortcut)->SetTitle(::vl::__vwsn::This(this->self)->GetText());
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf8_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf8_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_0)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf9_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf9_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_1)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf10_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf10_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_18)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf12_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf12_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_19)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf13_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf13_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_21)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf15_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf15_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_22)->Clicked, __vwsn_event_handler_);
 		}
 		{
@@ -1025,13 +1025,13 @@ Class (::rptest::MainWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_32)->SetImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString::Unmanaged(L"res"), ::vl::WString::Unmanaged(L"ToolbarImages/Paste"), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf16_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf16_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->WindowClosing, __vwsn_event_handler_);
 		}
 	}
 
-	MainWindowConstructor::MainWindowConstructor()
-		: self(static_cast<::rptest::MainWindow*>(nullptr))
+	RpMainWindowConstructor::RpMainWindowConstructor()
+		: self(static_cast<::rptest::RpMainWindow*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))

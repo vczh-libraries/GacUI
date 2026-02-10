@@ -30,21 +30,21 @@ https://github.com/vczh-libraries
 #define GLOBAL_OBJ &::vl_workflow_global::RemoteProtocolTest::Instance()
 
 /***********************************************************************
-Class (::rptest::MainWindow)
+Class (::rptest::RpMainWindow)
 ***********************************************************************/
 
 namespace rptest
 {
-	MainWindow::MainWindow()
+	RpMainWindow::RpMainWindow()
 		: ::vl::presentation::controls::GuiWindow(::vl::presentation::theme::ThemeName::Window)
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"rptest::MainWindow"));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"rptest::RpMainWindow"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_rptest_MainWindow_Initialize(this);
+		::vl::__vwsn::This(this)->__vwsn_rptest_RpMainWindow_Initialize(this);
 	}
 
-	MainWindow::~MainWindow()
+	RpMainWindow::~RpMainWindow()
 	{
 		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControlHost*>(this));
 	}
