@@ -6,6 +6,8 @@
 - Isolate callbacks per test case (fresh log + callback) [2]
 - Prepare nodes (via `GetChildCount`) before asserting nested callbacks [1]
 - Empty item sources and empty `childrenProperty` only trigger `OnAttached` [1]
+- Prefer single cohesive smoke tests when setup-heavy [1]
+- Prefer comments that name the exercised interface [1]
 - Use `TEST_ERROR` for invalid bindings and out-of-range access [1]
 - `DetachCallback()` should fire `OnAttached(provider=nullptr)` [1]
 
@@ -26,6 +28,14 @@ When testing nested `ObservableList` changes (grandchildren and deeper), prepare
 ## Empty item sources and empty `childrenProperty` only trigger `OnAttached`
 
 In `TreeViewItemBindableRootProvider` tests, setting an empty item source / empty `childrenProperty` collection should only cause `OnAttached` to fire (with `newCount=0`) and should not produce `OnItemModified` noise. For null/empty children scenarios, assert the provider is safe and that callback counts reflect "nothing to prepare".
+
+## Prefer single cohesive smoke tests when setup-heavy
+
+For infrastructure-style test additions (new file + basic wiring), prefer a single cohesive smoke test case when it shares the same setup and the goal is “prove it compiles / links / runs”. Split into multiple test cases only when it improves diagnostics or isolates independent scenarios.
+
+## Prefer comments that name the exercised interface
+
+When a type implements multiple interfaces (common in item-provider tests), add brief comments that explicitly name which interface is being exercised for each operation, and keep the code direct. Avoid preemptive interface casts unless they are required to access the API.
 
 ## Use `TEST_ERROR` for invalid bindings and out-of-range access
 
