@@ -2,7 +2,7 @@
 
 # Orders
 
-- Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [3]
+- Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Capture dependent lambdas explicitly [2]
 - Don't assume observable changes are batched [2]
 - Prefer simple calls before interface casts [2]
@@ -17,6 +17,7 @@
 - Construct `Nullable<WString>` explicitly in function calls [1]
 - `collections::Dictionary` copy assignment is deleted (use move/swap) [1]
 - Dereference `Ptr<T>` via `.Obj()` (not `*ptr`) [1]
+- `vl::regex` separator regex: `L"[\\/\\\\]+"` [1]
 - Use 2-space indentation in embedded XML/JSON literals [1]
 
 # Refinements
@@ -90,3 +91,9 @@ When passing string literals to a function parameter typed as `Nullable<WString>
 ## Use 2-space indentation in embedded XML/JSON literals
 
 When writing XML or JSON inside a C++ string literal (e.g. `LR"GacUISrc(... )GacUISrc"` resources), indent the XML/JSON with 2 spaces (not tabs) to match the repo’s formatting rules for embedded structured text.
+
+## `vl::regex` separator regex: `L"[\\/\\\\]+"`
+
+In `vl::regex::Regex`, both `/` and `\\` are escaping characters, and incorrect escaping inside `[]` can throw errors like `Illegal character set definition.`
+
+To split paths by either `/` or `\\`, a verified pattern is `L"[\\/\\\\]+"`, and using `Regex::Split(..., keepEmptyMatch=false, ...)` conveniently drops empty components (so `//` behaves like `/`).

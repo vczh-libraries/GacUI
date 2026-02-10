@@ -16,6 +16,7 @@
 - `GuiDocumentCommonInterface::ProcessKey` ignores Enter in `GuiDocumentParagraphMode::Singleline` [1]
 - `GuiDocumentCommonInterface::ProcessKey` Enter/Ctrl+Enter depends on `GuiDocumentParagraphMode` [1]
 - `FakeClipboardWriter` initializes a fresh `FakeClipboardReader` for `WriteClipboard()` [1]
+- Fake file dialogs: use `FakeDialogServiceBase::ShowMessageBox` for prompts [1]
 - `<DocumentTextBox/>` is an XML virtual type backed by `GuiDocumentLabel` [1]
 - Use `id == -1` as paragraph registration state [1]
 - Register/unregister paragraphs on the render target [1]
@@ -94,6 +95,12 @@ In `vl::presentation::controls::GuiDocumentCommonInterface::ProcessKey` (`VKEY::
 In `Source/Utilities/FakeServices/GuiFakeClipboardService.cpp`, ensure `FakeClipboardService::WriteClipboard()` returns a writer that can deterministically populate (and clear) clipboard state for unit tests.
 
 `FakeClipboardWriter` should initialize its staging `reader` to a fresh `FakeClipboardReader` in the constructor, so `SetText(...)` + `Submit()` works and `Submit()` without setting text can represent “empty clipboard” (so `ReadClipboard()->ContainsText()` becomes `false`).
+
+## Fake file dialogs: use `FakeDialogServiceBase::ShowMessageBox` for prompts
+
+In fake dialog services, show prompts (e.g. “File(s) not exist”) using the fake dialog service’s GUI-rendered message box API, so UI-driven unit tests can locate and close the prompt window. Avoid calling the controller’s native `DialogService()->ShowMessageBox(...)` from fake view model code, since native message boxes may not appear in `GetApplication()->GetWindows()` or produce rendering changes detectable by the UI-test harness.
+
+If `FakeDialogServiceBase::ShowMessageBox(...)` requires a modal options argument, pass `INativeDialogService::ModalWindow` to preserve modal behavior.
 
 ## `<DocumentTextBox/>` is an XML virtual type backed by `GuiDocumentLabel`
 
