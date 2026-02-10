@@ -25,7 +25,7 @@
 ## Step 1. Find the Earliest Backup Folder
 
 - Find and execute `copilotPrepare.ps1 -Earliest` to get the absolute path to the earliest backup folder in `Learning`.
-- If no folder is found, stops.
+- If the script fails, it means there is no material to learn from, stops. Otherwise continue to process this folder.
 
 ## Step 2. Read All Documents
 
@@ -64,4 +64,5 @@
 
 ## Step 5. Delete the Processed Folder
 
-- After all learnings have been written, delete the earliest backup folder that was processed.
+- After all learnings from the earliest backup folder have been written, delete the earliest backup folder that was processed.
+  - No continuation for the second round required.
