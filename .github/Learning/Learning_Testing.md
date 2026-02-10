@@ -2,28 +2,32 @@
 
 # Orders
 
-- Don’t schedule redundant idle frames [5]
-- Keep test log paths stable during refactors [5]
-- Preserve existing idle-frame titles when requested [5]
-- Seed key-behavior tests via `protocol->TypeString` [5]
+- Keep test log paths stable during refactors [9]
+- Don’t schedule redundant idle frames [7]
+- Preserve existing idle-frame titles when requested [6]
+- Seed key-behavior tests via `protocol->TypeString` [6]
+- Remote protocol frames: actions must change UI; organize frames carefully [5]
 - Account for eager child preparation in item-provider tests [2]
 - Isolate callbacks per test case (fresh log + callback) [2]
 - Prefer comments that name the exercised interface [2]
 - Use `TEST_ERROR` for invalid bindings and out-of-range access [2]
 - `DetachCallback()` should fire `OnAttached(provider=nullptr)` [2]
-- Remote protocol frames: input then assert next frame (ensure UI updates) [2]
+- Add new unit test files to `UnitTest.vcxproj` and `.filters` [2]
 - Avoid duplicate tests across related categories [2]
 - Use `AssertItems`/`AssertCallbacks` for visible item lists [1]
 - Skip callback plumbing when not asserting callbacks [1]
 - Print actual vs expected on assertion failure [1]
-- Add new unit test files to `UnitTest.vcxproj` and `.filters` [1]
 - Disambiguate protocol types by namespace [1]
 - Use `Ptr<List<T>>` APIs for protocol descriptor outputs [1]
 - Use `TEST_ERROR(expr)` (not code blocks) [1]
 - `TEST_CATEGORY` / `TEST_CASE` blocks must end with `});` [1]
 - Undo/redo tests: clear baselines and respect history granularity [1]
+- Split singleline-only key cases into a dedicated helper [1]
+- Multiline editor assertions: validate `GetDocument()` model, not `GetText()` [1]
+- Caret navigation tests: type markers to expose caret [1]
 - Match existing test-file namespace style (avoid extra `using namespace`) [1]
 - Focus the control before simulating keyboard input [1]
+- Editor smoke tests: deterministic caret placement (`Ctrl+Home`) [1]
 - Prefer IOChar-only typing helpers first [1]
 - Prefer base-type lookups for reusable control tests [1]
 - Avoid over-abstraction in test scaffolds [1]
@@ -74,7 +78,9 @@ For custom assertions that compare complex data (e.g. run maps), follow the `Pri
 
 ## Add new unit test files to `UnitTest.vcxproj` and `.filters`
 
-When adding a new unit test `.cpp`, ensure it is included in `Test\\GacUISrc\\UnitTest\\UnitTest.vcxproj` and placed into the correct Solution Explorer filter in `Test\\GacUISrc\\UnitTest\\UnitTest.vcxproj.filters` (e.g. under `Source Files\\Remote` when appropriate), otherwise the file won’t be built or run.
+When adding/removing/renaming a unit test `.cpp`, keep `Test\\GacUISrc\\UnitTest\\UnitTest.vcxproj` and `Test\\GacUISrc\\UnitTest\\UnitTest.vcxproj.filters` in sync. A stale compile item that points to a deleted file can break the build (e.g. `error C1083: Cannot open source file`).
+
+When replacing one compile item with another, preserve any important per-file settings (e.g. additional options like `/bigobj`) that the project relies on.
 
 ## Disambiguate protocol types by namespace
 
@@ -106,6 +112,8 @@ If you need to record a value in the frame (e.g. clipboard text after Ctrl+C) an
 
 Don’t call `window->SetText(...)` just to force a UI update “for no reason”. If a frame would otherwise be a no-op, merge it into the previous/next frame instead of scheduling an extra idle frame.
 
+Similarly, avoid extra UI changes immediately after assertions (e.g. resetting caret position) just to satisfy the “UI changed” rule; instead, restructure frames or merge `window->Hide()` into the last meaningful verification frame.
+
 ## Focus the control before simulating keyboard input
 
 Remote IO command helpers only affect the currently focused control. In typing tests, explicitly focus the target control (e.g. `textBox->SetFocused()` or a click) before calling helpers like `TypeString`/`KeyPress`.
@@ -119,6 +127,14 @@ For the initial typing simulation helper, emitting sequential `OnIOChar` events 
 When refactoring an existing test file for reuse, preserve the existing `appName` path segment format for that file unless there is an explicit migration plan. Avoid introducing new `CATEGORY_CASE` path conventions if they’re intended for a different companion file.
 
 For key-behavior tests, prefer stable category/case naming like `.../Key/<Category>_<Case>` and build paths consistently (e.g. using `WString::Unmanaged(L"...")` segments).
+
+`TEST_CATEGORY(...)` names can change without affecting log folders when the log identity string is explicitly built from `controlName` + a hardcoded suffix. You can append postfixes like ` (Singleline)` to category names for clarity as long as `controlName` and the per-case `.../Key/...` suffix remain unchanged.
+
+## Split singleline-only key cases into a dedicated helper
+
+When a shared key-test scaffold starts accumulating singleline-only behavior, avoid a `singleline` boolean flag. Extract singleline-only cases into `RunTextBoxKeyTestCases_Singleline` (or a similarly named helper) and call it only for `GuiSinglelineTextBox`.
+
+For clarity, add a ` (Singleline)` postfix to the categories contributed by the singleline helper (e.g. `Clipboard (Singleline)`), while keeping per-test log identity strings unchanged.
 
 ## Prefer base-type lookups for reusable control tests
 
@@ -152,13 +168,16 @@ When writing such tests, ensure the corresponding production code uses `CHECK_ER
 
 Detaching a callback is observable: `DetachCallback()` should invoke `OnAttached(provider=nullptr)` to signal cleanup. When the test is validating callback logs around detachment, clear logs after the detachment step (not before), and ensure subsequent operations do not reach the detached callback.
 
-## Remote protocol frames: input then assert next frame (ensure UI updates)
+## Remote protocol frames: actions must change UI; organize frames carefully
 
-In `UnitTestRemoteProtocol::OnNextIdleFrame` GUI tests, keep the input and verification phases in separate frames when the input is expected to trigger rendering. Issue the input (`TypeString`, `KeyPress`, Ctrl+Z/Ctrl+Y shortcuts, etc.) in one frame, then assert the results in the next frame.
+In `UnitTestRemoteProtocol::OnNextIdleFrame` GUI tests, every idle-frame callback must introduce an observable UI change, or the test harness can fail with “The last frame didn't trigger UI updating”.
 
-Setup and input can be combined into a single frame when appropriate (e.g. focus + `TypeString(...)`), as long as the next frame is the one doing assertions.
+Prefer keeping frames minimal and meaningful:
 
-If an input is expected to be ignored (and therefore might not trigger any rendering), avoid scheduling a “verification-only” idle frame. Merge input + assertions + `window->Hide()` into the same frame, and avoid forcing UI updates unless you need to log diagnostics.
+- If a frame performs a UI-changing action (typing, paste, Enter, deletion, etc.), it is fine (and often better) to do action + verification in the same frame.
+- Avoid scheduling “verification-only” frames that don’t change UI; either merge them into an action frame or ensure the verification frame also changes UI for a real reason (e.g. logging a diagnostic value).
+
+Follow the KB naming convention that each frame title describes what happened in the previous frame.
 
 ## `TEST_CATEGORY` / `TEST_CASE` blocks must end with `});`
 
@@ -171,3 +190,27 @@ For `GuiDocumentCommonInterface`-based controls, use `LoadTextAndClearUndoRedo(.
 When validating end-of-history behavior, loop with `CanUndo()` / `CanRedo()` and assert `Undo()` / `Redo()` return `false` when history ends are reached.
 
 History granularity matters in expectations: setting `Text` in XML or calling `SetText(...)` creates an undo step; `protocol->TypeString(...)` creates one undo step per character; paste/edit series typically produce one undo step.
+
+## Editor smoke tests: deterministic caret placement (`Ctrl+Home`)
+
+When reusing shared “editor smoke test” helpers across multiple `GuiDocumentCommonInterface`-based controls (singleline + multiline + XML virtual types), make caret placement deterministic:
+
+- For multiline editors, click near the top-left so it hits the first line (e.g. `LocationOf(..., 0.0, 0.0, 2, 8)`).
+- If the click still doesn’t reliably place the caret at the beginning (notably for `<DocumentTextBox/>`), follow the click with `Ctrl+Home` (`KeyPress(VKEY::KEY_HOME, /*ctrl*/true, ...)`) before typing.
+
+Prefer making the interaction deterministic over changing XML layout just to make a click land reliably (keep singleline layout where appropriate).
+
+## Multiline editor assertions: validate `GetDocument()` model, not `GetText()`
+
+For multiline-mode key tests (e.g. `GuiMultilineTextBox` with `GuiDocumentParagraphMode::Multiline`), validate content through the document model:
+
+- Use `textBox->GetDocument()->paragraphs.Count()` for line/paragraph count.
+- Use `document->paragraphs[i]->GetTextForReading()` for per-line content.
+
+Avoid asserting on `GuiDocumentCommonInterface::GetText()` for these cases, because it can normalize/convert the model and hide structural differences that matter for multiline semantics (e.g. how `ENTER`, `CTRL+ENTER`, and CRLF-preserving paste are represented).
+
+## Caret navigation tests: type markers to expose caret
+
+For caret-navigation tests (especially multiline where caret movement isn’t directly observable in assertions), press the navigation key(s) and then immediately type a visible marker character. Assert the resulting `GetDocument()` paragraph texts to confirm the caret moved to the expected location.
+
+Keep paragraphs short to avoid line wrapping, so tests validate navigation rules rather than wrapping behavior.

@@ -14,7 +14,9 @@
 - Compare `IGuiGraphicsParagraph::TextStyle` flags against `(TextStyle)0` [1]
 - Extract helpers to remove duplicated conversion blocks [1]
 - `GuiDocumentCommonInterface::ProcessKey` ignores Enter in `GuiDocumentParagraphMode::Singleline` [1]
+- `GuiDocumentCommonInterface::ProcessKey` Enter/Ctrl+Enter depends on `GuiDocumentParagraphMode` [1]
 - `FakeClipboardWriter` initializes a fresh `FakeClipboardReader` for `WriteClipboard()` [1]
+- `<DocumentTextBox/>` is an XML virtual type backed by `GuiDocumentLabel` [1]
 - Use `id == -1` as paragraph registration state [1]
 - Register/unregister paragraphs on the render target [1]
 - Capture inline-object background element id before inserting runs [1]
@@ -80,11 +82,22 @@ In `vl::presentation::controls::GuiDocumentCommonInterface::ProcessKey`, treat `
 
 Enter must not mutate text and must not delete an existing selection in singleline mode.
 
+## `GuiDocumentCommonInterface::ProcessKey` Enter/Ctrl+Enter depends on `GuiDocumentParagraphMode`
+
+In `vl::presentation::controls::GuiDocumentCommonInterface::ProcessKey` (`VKEY::KEY_RETURN`):
+
+- `GuiDocumentParagraphMode::Multiline`: `ENTER` and `CTRL+ENTER` should do the same thing (create a new line, represented structurally rather than embedding `L"\r\n"` inside a paragraph).
+- `GuiDocumentParagraphMode::Paragraph`: keep the distinction: `ENTER` creates a new paragraph; `CTRL+ENTER` inserts an in-paragraph line break (`L"\r\n"`). Don’t gate this on `pasteAsPlainText` for plain-text paragraph-mode controls.
+
 ## `FakeClipboardWriter` initializes a fresh `FakeClipboardReader` for `WriteClipboard()`
 
 In `Source/Utilities/FakeServices/GuiFakeClipboardService.cpp`, ensure `FakeClipboardService::WriteClipboard()` returns a writer that can deterministically populate (and clear) clipboard state for unit tests.
 
 `FakeClipboardWriter` should initialize its staging `reader` to a fresh `FakeClipboardReader` in the constructor, so `SetText(...)` + `Submit()` works and `Submit()` without setting text can represent “empty clipboard” (so `ReadClipboard()->ContainsText()` becomes `false`).
+
+## `<DocumentTextBox/>` is an XML virtual type backed by `GuiDocumentLabel`
+
+`GuiDocumentTextBox` is an XML virtual type registered by the instance loader. At runtime, `<DocumentTextBox/>` creates a `GuiDocumentLabel`-backed control (with a different theme), so C++ code and tests should treat it as `GuiDocumentLabel` when a concrete runtime type is required.
 
 ## Use `id == -1` as paragraph registration state
 
