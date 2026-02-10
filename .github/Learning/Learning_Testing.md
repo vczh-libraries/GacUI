@@ -3,10 +3,10 @@
 # Orders
 
 - Keep test log paths stable during refactors [13]
+- Remote protocol frames: actions must change UI; organize frames carefully [8]
 - Don’t schedule redundant idle frames [7]
 - Preserve existing idle-frame titles when requested [6]
 - Seed key-behavior tests via `protocol->TypeString` [6]
-- Remote protocol frames: actions must change UI; organize frames carefully [8]
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
 - Avoid duplicate tests across related categories [3]
 - Account for eager child preparation in item-provider tests [2]
