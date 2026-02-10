@@ -186,13 +186,6 @@
             var counter : int = 0;
           ]]>
         </ref.Members>
-        <ref.Ctor>
-          <![CDATA[
-            {
-              self.AddAnimation(WaitingAnimation(animationBackground));
-            }
-          ]]>
-        </ref.Ctor>
         <TabPage ref.Name="self" Text="Animation">
           <Tab>
             <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
@@ -241,9 +234,31 @@
               </TabPage>
 
               <TabPage Text="Complex Animation">
-                <BoundsComposition ref.Name="animationBackground" AlignmentToParent="left:10 top:10 right:-1 bottom:-1" PreferredMinSize="x:200 y:200">
-                  <SolidBackground Color="#FFC929"/>
-                </BoundsComposition>
+                <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+                  <att.Rows>
+                    <_>composeType:MinSize</_>
+                    <_>composeType:Percentage percentage:1.0</_>
+                  </att.Rows>
+
+                  <att.Columns>
+                    <_>composeType:Percentage percentage:1.0</_>
+                  </att.Columns>
+
+                  <Cell Site="row:0 column:0">
+                    <Button Text="Start Animation" ref.Name="buttonStartAnimation">
+                      <ev.Clicked-eval>
+                          <![CDATA[{
+                        buttonStartAnimation.Enabled = false;
+                        self.AddAnimation(AnimationTabPage::WaitingAnimation(animationBackground));
+                      }]]></ev.Clicked-eval>
+                    </Button>
+                  </Cell>
+                  <Cell Site="row:1 column:0">
+                    <BoundsComposition ref.Name="animationBackground" AlignmentToParent="left:0 top:0 right:-1 bottom:-1" PreferredMinSize="x:200 y:200">
+                      <SolidBackground Color="#FFC929"/>
+                    </BoundsComposition>
+                  </Cell>
+                </Table>
               </TabPage>
             </att.Pages>
           </Tab>

@@ -7423,7 +7423,19 @@ namespace demo
         var <precompile>18 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>19 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+        var <precompile>19 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
+        var <precompile>20 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>21 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>22 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
+        var buttonStartAnimation : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
         var animationBackground : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -7569,23 +7581,66 @@ namespace demo
             {
                 (<precompile>18.Text = "Complex Animation");
             }
+            (<precompile>19 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>19.CellPadding = 5 of (::system::Int32));
+            }
+            {
+                (<precompile>19.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>19.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>19.SetRowsAndColumns(2, 1);
+                <precompile>19.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>19.SetRowOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>19.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>20 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>20.SetSite(0, 0, 1, 1);
+            }
+            {
+                (buttonStartAnimation = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonStartAnimation", buttonStartAnimation);
+            }
+            {
+                (buttonStartAnimation.Text = "Start Animation");
+            }
+            {
+                <precompile>20.AddChild(buttonStartAnimation.BoundsComposition);
+            }
+            {
+                <precompile>19.AddChild(<precompile>20);
+            }
+            (<precompile>21 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>21.SetSite(1, 0, 1, 1);
+            }
             (animationBackground = new (::presentation::compositions::GuiBoundsComposition*)());
             <this>.SetNamedObject("animationBackground", animationBackground);
             {
                 (animationBackground.PreferredMinSize = {x : 200; y : 200;} of (::presentation::Size));
             }
             {
-                (animationBackground.AlignmentToParent = {left : 10; top : 10; right : (-1); bottom : (-1);} of (::presentation::Margin));
+                (animationBackground.AlignmentToParent = {left : 0; top : 0; right : (-1); bottom : (-1);} of (::presentation::Margin));
             }
-            (<precompile>19 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            (<precompile>22 = new (::presentation::elements::GuiSolidBackgroundElement^)());
             {
-                (<precompile>19.Color = (cast (::presentation::Color) "#FFC929"));
-            }
-            {
-                (animationBackground.OwnedElement = <precompile>19);
+                (<precompile>22.Color = (cast (::presentation::Color) "#FFC929"));
             }
             {
-                <precompile>18.ContainerComposition.AddChild(animationBackground);
+                (animationBackground.OwnedElement = <precompile>22);
+            }
+            {
+                <precompile>21.AddChild(animationBackground);
+            }
+            {
+                <precompile>19.AddChild(<precompile>21);
+            }
+            {
+                <precompile>18.ContainerComposition.AddChild(<precompile>19);
             }
             {
                 var <collection> = <precompile>0.Pages;
@@ -8010,6 +8065,14 @@ namespace demo
                     self.PerformGradientAnimation(ColorDef::Sink());
                 };
                 attach(<precompile>16.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (buttonStartAnimation.Enabled = false);
+                    self.AddAnimation(AnimationTabPage::WaitingAnimation(animationBackground));
+                };
+                attach(buttonStartAnimation.Clicked, <event-handler>);
             }
         }
 
@@ -8444,12 +8507,6 @@ namespace demo
             var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
             this.SetResourceResolver(<resolver>);
             this.<demo-AnimationTabPage>Initialize(this);
-            <instance-ctor>();
-        }
-
-        func <instance-ctor>() : (::system::Void)
-        {
-            self.AddAnimation(WaitingAnimation(animationBackground));
         }
 
         delete
