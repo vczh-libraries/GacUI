@@ -27,7 +27,14 @@ Read the first word of the request, and read an additional instruction file when
 
 ## Step 2
 
-Read the second word if it exists, convert it to a title `# THE-WORD`.
+- Only applies when the first word is:
+  - "scrum"
+  - "design"
+  - "plan"
+  - "summary"
+  - "execute"
+  - "review"
+- Read the second word if it exists, convert it to a title `# THE-WORD`.
 
 ## Step 3
 

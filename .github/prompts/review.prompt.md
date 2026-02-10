@@ -8,9 +8,11 @@
 
 - Your goal is to review a document as one member of a 4-model review panel.
 - The `KnowledgeBase` and `Learning` folders mentioned in this document are in `REPO-ROOT/.github/`.
+- The mentioned `Copilot_Review.md` and `Copilot_Review_INDEX_MODEL.md` files are in `REPO-ROOT/.github/TaskLogs/`.
 - Each model writes its review to a separate file.
-- You are only allowed to create or update your own review file (except during `Final Review`).
-- Each round of review should consider learnings from `KnowledgeBase/Learning.md`, `Learning/Learning_Coding.md`, and `Learning/Learning_Testing.md` if they exist.
+- When you are asked to create a `Copilot_Review_INDEX_MODEL.md`, You are only allowed to create your own review file.
+- Each round of review should consider knowledges from the knowledge base.
+- Each round of review should consider learnings from `KnowledgeBase/Learning.md`, `KnowledgeBase/Learning.md`, `Learning/Learning_Coding.md`, and `Learning/Learning_Testing.md` if they exist.
 
 ## Identify Yourself
 
@@ -29,6 +31,7 @@
   - `# Plan`: review `Copilot_Planning.md`, begins from `# EXECUTION PLAN` until the end.
   - `# Execution`: review `Copilot_Execution.md`, begins from `# EXECUTION PLAN` until the end.
   - `# Final`: skip all remaining steps and go to the `Final Review` section.
+  - `# Apply`: skip all remaining steps and go to the `Apply Review` section.
 - If there is nothing: it means you are accidentally stopped. Please continue your work.
 
 ## Step 2. Determine the Current Round Index
@@ -104,8 +107,18 @@ Ignore this section if there is no `# Final` in the LATEST chat message.
 - Read all models' files in the last round.
 - Collect all unique ideas, feedback, and suggestions.
 - Consolidate them into `Copilot_Review.md` as a cohesive set of actionable feedback.
+  - The only title in this file should be `# Review Target: X.md`.
+  - The content should not contain any title.
 
-### Step F4. Apply the Review
+### Step F4. Clean Up
+
+- Delete all `Copilot_Review_*_*.md` files.
+
+## Apply Review (only when `# Apply` appears in the LATEST chat message)
+
+Ignore this section if there is no `# Apply` in the LATEST chat message.
+
+### Step A1. Identify the Target Document
 
 - Apply `Copilot_Review.md` to the target document as if it were a user comment:
   - According to the review target, follow one of the instruction files:
@@ -113,9 +126,14 @@ Ignore this section if there is no `# Final` in the LATEST chat message.
     - For `Copilot_Task.md`, follow `REPO-ROOT/.github/1-design.prompt.md`.
     - For `Copilot_Planning.md`, follow `REPO-ROOT/.github/2-planning.prompt.md`.
     - For `Copilot_Execution.md`, follow `REPO-ROOT/.github/4-execution.prompt.md`.
-  - Treat the LATEST chat message as `# Update` followed by the content of `Copilot_Review.md`.
-  - Update the target document content according to the review feedback.
 
-### Step F5. Clean Up
+### Step A2. Apply the Review
 
-- Delete all `Copilot_Review*.md` files, including the round files and `Copilot_Review.md` itself.
+- Treat the LATEST chat message as `# Update` followed by the content of `Copilot_Review.md`.
+  - Do not include the title of `Copilot_Review.md` in the content.
+- Update the target document content according to the review feedback.
+  - Skip the part that adding a new `# Update` section to the document.
+
+### Step A3. Clean Up
+
+- Delete `Copilot_Review.md`.
