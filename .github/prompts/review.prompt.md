@@ -24,10 +24,10 @@
 ## Step 1. Identify the Review Target
 
 - Find the title in the LATEST chat message:
-  - `# Scrum`: review `Copilot_Scrum.md`, focus only on unfinished tasks (those marked `- [ ]` instead of `- [*]`).
-  - `# Design`: review `Copilot_Task.md`.
-  - `# Plan`: review `Copilot_Planning.md`.
-  - `# Execution`: review `Copilot_Execution.md`.
+  - `# Scrum`: review `Copilot_Scrum.md`, begins from `# TASKS` until the end, focus only on unfinished tasks (those marked `- [ ]` instead of `- [*]`).
+  - `# Design`: review `Copilot_Task.md`, begins from `# INSIGHTS AND REASONING` until the end.
+  - `# Plan`: review `Copilot_Planning.md`, begins from `# EXECUTION PLAN` until the end.
+  - `# Execution`: review `Copilot_Execution.md`, begins from `# EXECUTION PLAN` until the end.
   - `# Final`: skip all remaining steps and go to the `Final Review` section.
 - If there is nothing: it means you are accidentally stopped. Please continue your work.
 
