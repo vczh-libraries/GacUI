@@ -2,8 +2,8 @@
 
 # Orders
 
-- Capture dependent lambdas explicitly [1]
-- Don't assume observable changes are batched [1]
+- Capture dependent lambdas explicitly [2]
+- Don't assume observable changes are batched [2]
 
 # Refinements
 
@@ -13,4 +13,4 @@ When a C++ lambda uses another local lambda (or any local variable), capture it 
 
 ## Don't assume observable changes are batched
 
-When verifying callbacks from an observable collection, do not assume multiple operations collapse into a single notification. For example, `Clear()` followed by multiple `Add()` calls typically triggers one event (and one callback pair) per operation; test expectations should match the actual per-operation granularity.
+When verifying callbacks from an observable collection, do not assume multiple operations collapse into a single notification. For example, for `vl::collections::ObservableList<T>`, `Clear()` followed by multiple `Add()` calls triggers one callback pair per operation; test expectations should match the actual per-operation granularity.

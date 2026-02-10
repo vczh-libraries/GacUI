@@ -2,8 +2,8 @@
 
 # Orders
 
+- `vl::collections::ObservableList<T>` element access and replacement [2]
 - `TreeViewItemBindableRootProvider::UpdateBindingProperties` is root-scoped [1]
-- `vl::collections::ObservableList<T>` element access and replacement [1]
 
 # Refinements
 
