@@ -1,8 +1,27 @@
 # Prepare Copilot workspace files
 
 param(
-    [switch]$Backup
+    [switch]$Backup,
+    [switch]$Earliest
 )
+
+if (@($Backup, $Earliest).Where({ $_ }).Count -gt 1) {
+    throw "At most one switch can be true: -Backup, -Earliest."
+}
+
+if ($Earliest) {
+    $learningRoot = Resolve-Path -LiteralPath "$PSScriptRoot\..\Learning"
+    $earliestFolder = Get-ChildItem -LiteralPath $learningRoot -Directory |
+        Sort-Object -Property Name |
+        Select-Object -First 1
+
+    if ($null -eq $earliestFolder) {
+        throw "No folder is found in '$learningRoot'."
+    }
+
+    Write-Output $earliestFolder.FullName
+    exit 0
+}
 
 # Create or override the markdown files with the specified content
 $filesToOverride = @{
