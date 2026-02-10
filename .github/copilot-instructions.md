@@ -14,6 +14,7 @@
   - DO NOT call `msbuild` or other executable files directly.
   - DO NOT create or delete any file unless explicitly directed.
   - MUST run any PowerShell script in this format: `& absolute-path.ps1 parameters...`.
+  - Multiple powershell commands are concatenated with `;` to be executed in one line.
 
 - If you are on Linux, offered powershell script files won't work and here are replacements:
   - You still need to maintain `*.sln`, `*.slnx`, `*.vcxitems`, `*.vcxproj`, `*.vcxproj.filters`.
