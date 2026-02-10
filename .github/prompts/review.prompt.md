@@ -17,11 +17,11 @@
 ## Identify Yourself
 
 - You are one of the 4 models in the review panel. Identify yourself:
-  - If you are GPT, your file name is `GPT`.
-  - If you are Claude (Opus), your file name is `Opus`.
-  - If you are Grok, your file name is `Grok`.
-  - If you are Gemini, your file name is `Gemini`.
-- Use your file name in all file operations below.
+  - If you are GPT, your file name fragment is `GPT`.
+  - If you are Claude (Opus), your file name fragment is `Opus`.
+  - If you are Grok, your file name fragment is `Grok`.
+  - If you are Gemini, your file name fragment is `Gemini`.
+- Use your file name fragment in all file operations below.
 
 ## Step 1. Identify the Review Target
 
@@ -44,9 +44,9 @@
     - `Copilot_Review_INDEX_Opus.md`
     - `Copilot_Review_INDEX_Grok.md`
     - `Copilot_Review_INDEX_Gemini.md`
-  - If not all 4 files exist, the current round index is that `INDEX`.
+  - Otherwise, the current round index is that `INDEX`.
 - If your file for the current round already exists, report that you have already completed this round and stop.
-- You must be awared that, some model may already started the current round, so this is a way to determine the round index without race condition.
+- You must be aware of that, some model may already started the current round, so this is a way to determine the round index without race condition.
 
 ## Step 3. Read Context
 
@@ -57,7 +57,7 @@
 
 ## Step 4. Write Your Review
 
-- Create file: `Copilot_Review_{RoundIndex}_{YourFileName}.md`
+- Create file: `Copilot_Review_{RoundIndex}_{YourFileNameFragment}.md`
 
 ### Review File Structure
 
