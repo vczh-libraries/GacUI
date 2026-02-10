@@ -15,6 +15,16 @@
   - Remove the two parameters from `IGuiPlugin`, the macro above already specified it clear enough.
   - Unrelated plugins are not allowed to depend on related plugins.
 
+## Vlpp
+
+- `indexed(FromArray(xs))` crashes, because the enumerable created by `FromArray` is released before for-loop calling `begin`.
+  - `indexed` takes a const reference might be the cause.
+  - Consider making a version for right-value reference.
+  - C++23 seems to extend the lifetime of the iterator object so that this will not crash. Confirm it.
+- `ProceduredThread` and `LambdaThread` cause small memory leak.
+  - `delete this;` eventually calls `SuspendThread` on the thread itself, making all following clean up code skipped.
+  - Windows confirmed, Linux need to test.
+
 ## Known Issues
 
 - FakeDialogService
@@ -23,13 +33,10 @@
   - Only affected items need to rebuild.
 - For all list controls, adding item could cause flashing during rendering for about 1 flame.
   - If this issue is solved, remove document in `Breaking changes from 1.0` and `List Controls`.
-- `ProceduredThread` and `LambdaThread` cause small memory leak.
-  - `delete this;` eventually calls `SuspendThread` on the thread itself, making all following clean up code skipped.
-  - Windows confirmed, Linux need to test.
 - `GuiDocumentViewer`
   - Loading super large text into one single paragraph (~0.2M lines) too slow
       - Workaround: Change paragraph mode to multiline.
-    - Demo: `https://github.com/vczh-libraries/GacUI/blob/master/Test/Resources/UnitTestSnapshots/Controls/Ribbon/GuiRibbonButtons/Dropdowns.json`
+    - Demo: `https://raw.githubusercontent.com/vczh-libraries/GacUI/d3406e86dc79d4bd150d0556d0ea64505262c88e/Test/Resources/UnitTestSnapshots/Controls/Ribbon/GuiRibbonButtons/Dropdowns.json`
     - **Paragraph mode** plus **doubleLineBreaksBetweenParagraph==true** plus **no empty line** causing the whole text loaded into one single `IGuiGraphicsParagraph`.
     - This is the default configuration for `GuiDocumentViewer` and `GuiDocumentLabel`, it could be changed with the `Behavior` property in XML.
     - Root cause in `IDWriteTextLayout::GetMetrics`, taking most of the time.
