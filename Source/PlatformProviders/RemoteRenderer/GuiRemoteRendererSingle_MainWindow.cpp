@@ -164,4 +164,9 @@ namespace vl::presentation::remote_renderer
 		suggestedMinSize.x = arguments.x + size.x - clientSize.x;
 		suggestedMinSize.y = arguments.y + size.y - clientSize.y;
 	}
+
+	void GuiRemoteRendererSingle::RequestWindowNotifySetCaret(const NativePoint& arguments)
+	{
+		window->SetCaretPoint(arguments);
+	}
 }

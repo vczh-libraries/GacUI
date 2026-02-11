@@ -105,6 +105,7 @@ IGuiRemoteProtocolMessages (Window)
 		void Impl_WindowNotifySetTitleBar(const bool& arguments)		{ styleConfig.titleBar = arguments;			this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
 		void Impl_WindowNotifyActivate()								{ styleConfig.activated = true; }
 		void Impl_WindowNotifyMinSize(const NativeSize& arguments)		{}
+		void Impl_WindowNotifySetCaret(const NativePoint& arguments)	{}
 	
 		void Impl_WindowNotifyShow(const WindowShowing& arguments)
 		{

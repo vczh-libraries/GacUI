@@ -700,6 +700,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(WindowNotifyActivate, void, void, NOREQ, NORES, DROPREP)\
 	HANDLER(WindowNotifyShow, ::vl::presentation::remoteprotocol::WindowShowing, void, REQ, NORES, DROPREP)\
 	HANDLER(WindowNotifyMinSize, ::vl::presentation::NativeSize, void, REQ, NORES, DROPREP)\
+	HANDLER(WindowNotifySetCaret, ::vl::presentation::NativePoint, void, REQ, NORES, DROPREP)\
 	HANDLER(IOUpdateGlobalShortcutKey, ::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::GlobalShortcutKey>>, void, REQ, NORES, NODROP)\
 	HANDLER(IORequireCapture, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(IOReleaseCapture, void, void, NOREQ, NORES, NODROP)\
@@ -761,6 +762,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::Ptr<::vl::collections::List<::vl::vint>>)\
 	HANDLER(::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>)\
 	HANDLER(::vl::WString)\
+	HANDLER(::vl::presentation::NativePoint)\
 	HANDLER(::vl::presentation::NativeRect)\
 	HANDLER(::vl::presentation::NativeSize)\
 	HANDLER(::vl::presentation::VKEY)\

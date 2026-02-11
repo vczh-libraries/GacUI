@@ -899,6 +899,22 @@
         },
         "response": null
     }, {
+        "$ast": "MessageDecl",
+        "attributes": [{
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
+        }],
+        "name": "WindowNotifySetCaret",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "NativePoint"
+            }
+        },
+        "response": null
+    }, {
         "$ast": "EventDecl",
         "attributes": [{
             "$ast": "Attribute",
