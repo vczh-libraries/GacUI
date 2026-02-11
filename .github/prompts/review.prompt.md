@@ -68,8 +68,9 @@
     - Your complete summarized feedback and suggestions for the target document.
     - You should not omit anything what is in any documents in the previous round, this is what complete means.
   - `## Replies`: this section exists only when the current round index is greater than `1`.
-    - `### Reply to {ModelName}`: Reply to the `## Opinion` of `Copilot_Review_{RoundIndex-1}_{ModelName}.md`.
-      - If you totally agree with their opinion, the title should be `### AGREE with {ModelName}` with no content. If you have anything to add, put them in your own `## Opinion`.
+    - Find `## Opinion` in every `Copilot_Review_{RoundIndex-1}_{ModelName}.md` except yours.
+    - If you totally agree with a model, add this section: `### AGREE with {ModelName}` with no content. If you have anything to add, put them in your own `## Opinion`.
+    - If you partially or totally disagree with a model, add this section: `### DISAGREE with {ModelName}` and explain why you disagree and what you think is correct.
 - The following sections are about what you need to pay attention to when reviewing the target document.
 - After finishing the review document, stops.
 
