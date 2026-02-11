@@ -15,6 +15,7 @@
 - `# !!!EXECUTION!!!`: This file always begins with this title.
 - `# UPDATES`:
   - `## UPDATE`: There could be multiple occurrences. Each one has an exact copy of the update description I gave you.
+- `# AFFECTED PROJECTS`.
 - `# EXECUTION PLAN`.
 - `# FIXING ATTEMPTS`.
 

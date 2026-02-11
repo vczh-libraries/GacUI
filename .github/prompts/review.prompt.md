@@ -142,7 +142,7 @@ Ignore this section if there is no `# Final` in the LATEST chat message.
 
 ### Step F3. Create the Summary
 
-- Read the `## Optnion` section from each review file from the last round.
+- Read the `## Opinion` section from each review file from the last round.
 - Consolidate all options into a single review opinion.
 - Write the review opinion to `Copilot_Review.md` as a cohesive set of actionable feedback.
   - The only title in this file should be `# Review Target: {TargetDocumentName}`.
@@ -159,10 +159,10 @@ Ignore this section if there is no `# Apply` in the LATEST chat message.
 
 - The title of `Copilot_Review.md` is `# Review Target: {TargetDocumentName}`. This is the target document to apply the review opinion.
 - According to the target document, follow one of the instruction files:
-  - For `Copilot_Scrum.md`, follow `REPO-ROOT/.github/0-scrum.prompt.md`.
-  - For `Copilot_Task.md`, follow `REPO-ROOT/.github/1-design.prompt.md`.
-  - For `Copilot_Planning.md`, follow `REPO-ROOT/.github/2-planning.prompt.md`.
-  - For `Copilot_Execution.md`, follow `REPO-ROOT/.github/4-execution.prompt.md`.
+  - For `Copilot_Scrum.md`, follow `REPO-ROOT/.github/prompts/0-scrum.prompt.md`.
+  - For `Copilot_Task.md`, follow `REPO-ROOT/.github/prompts/1-design.prompt.md`.
+  - For `Copilot_Planning.md`, follow `REPO-ROOT/.github/prompts/2-planning.prompt.md`.
+  - For `Copilot_Execution.md`, follow `REPO-ROOT/.github/prompts/4-execution.prompt.md`.
 
 ### Step A2. Apply the Review
 
