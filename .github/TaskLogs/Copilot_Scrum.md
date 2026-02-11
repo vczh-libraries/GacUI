@@ -30,18 +30,46 @@ Implement the client-side `IGuiGraphicsParagraph` integration in `GuiRemoteRende
 
 ### what to be done
 
-- Create a client-side element type that internally owns/hosts an `IGuiGraphicsParagraph` instance, so it can be stored and managed in the existing remote element table keyed by element id.
-- Construct the underlying paragraph implementation from `GetCurrentController()` using the platform text services available on the client.
-- Wire up element creation and deletion in `Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Rendering.cpp` so the remote protocol’s “paragraph-as-element” lifecycle is handled consistently with other remote elements.
-- Implement `RequestRendererUpdateElement_DocumentParagraph` to apply the incoming document/run diffs:
-  - The first update call for an element id contains a non-empty text and should initialize the underlying paragraph/document model.
-  - Subsequent updates for the same element id have an empty text; only apply run/attribute diffs and any other incremental changes supported by the protocol.
-  - Ensure the paragraph becomes ready immediately after updates so replies can query measurements/layout and return expected values.
-- Fill remaining paragraph-related request/response handlers in `Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Rendering_Document.cpp`, mapping as directly as possible to `IGuiGraphicsParagraph` members (and matching the mock behavior in `Source/UnitTestUtilities/GuiUnitTestProtocol_Rendering_Document.cpp`).
+- Fix document hygiene for this task: remove encoding/mojibake artifacts so the content is readable and searchable.
+- Define acceptance criteria tied to repo tooling:
+  - Must compile at least `Test/GacUISrc/GacUISrc.sln`.
+  - Include `Test/GacUISrc/UnitTest/UnitTest.vcxproj` as a compile sanity check for protocol handler completeness.
+- Implement a concrete wrapper design that matches the remote protocol model:
+  - Create a client-side `IGuiGraphicsElement` wrapper stored in `availableElements` by element id, so all paragraph protocol handlers can resolve state from id only.
+  - The wrapper owns the underlying `IGuiGraphicsParagraph` and paragraph-specific state (cached runs, inline-object bounds, caret state as needed).
+  - The wrapper implements `IGuiGraphicsParagraphCallback` (at least `OnRenderInlineObject`) and is passed to paragraph creation, otherwise inline objects cannot be measured/rendered.
+- Make thread-affinity explicit:
+  - Paragraph creation/update and any render-target interaction must run on the UI thread.
+  - If protocol handling can occur off-thread, marshal via `GetCurrentController()->AsyncService()->InvokeInMainThread(...)`.
+- Specify the exact paragraph creation API and ordering:
+  - Use `GetGuiGraphicsResourceManager()->GetLayoutProvider()->CreateParagraph(text, renderTarget, callback)`.
+  - Clarify what happens if updates arrive before a render target exists (defer creation vs `CHECK_ERROR`) and keep the behavior consistent across all handlers.
+- Define render-target lifecycle and registration rules:
+  - `IGuiGraphicsParagraph` is render-target-bound; on render target changes, invalidate and recreate the paragraph (and re-register as needed).
+  - Register/unregister paragraphs on the render target, and use `id == -1` as the single source of truth for "not registered / not available" (avoid parallel boolean flags).
+- Expand "apply run diffs" into a concrete, mock-aligned flow in `RequestRendererUpdateElement_DocumentParagraph`:
+  - Mirror behavior in `Source/UnitTestUtilities/GuiUnitTestProtocol_Rendering_Document.cpp` (do not re-invent semantics) for both text runs and inline-object runs.
+  - Apply known constraints/learnings: capture inline-object background element id before inserting runs; compare `IGuiGraphicsParagraph::TextStyle` flags against `(TextStyle)0`; `DiffRuns` must not drop old ranges (use `CHECK_ERROR`).
+  - Decide (and document) robustness for protocol violations (e.g. later updates containing non-empty `text`: reinitialize vs `CHECK_ERROR` vs ignore) and keep it consistent with the mock/protocol expectations.
+- Replace "fill remaining functions" with an explicit checklist of handlers to implement, mapping directly to `IGuiGraphicsParagraph` APIs:
+  - `RequestRendererUpdateElement_DocumentParagraph`
+  - `RequestDocumentParagraph_GetCaret`
+  - `RequestDocumentParagraph_GetCaretBounds`
+  - `RequestDocumentParagraph_GetInlineObjectFromPoint`
+  - `RequestDocumentParagraph_GetNearestCaretFromTextPos`
+  - `RequestDocumentParagraph_IsValidCaret`
+  - `RequestDocumentParagraph_OpenCaret`
+  - `RequestDocumentParagraph_CloseCaret`
+  - Plus any other paragraph queries required by the protocol.
+- Make response requirements explicit:
+  - Include paragraph size (`GetSize()`) and inline-object bounds (callback id -> `Rect`) so caret/hit-testing/nearest-caret queries can succeed.
+  - Clarify whether an explicit layout/render step (e.g. `Render()`) is required before answering measurement-related requests.
+- Reassert codebase conventions:
+  - Use `vint`, `WString`, `Ptr<>`, and `vl::collections::*` (avoid `std::*`); use tabs; keep header edits comment-free; extract helpers to avoid duplicated conversion/mapping blocks.
 
 ### rationale
 
-- The remote protocol treats `IGuiGraphicsParagraph` as if it were an `IGuiGraphicsElement`, but the actual API separation requires a wrapper element on the client to fit into the renderer’s element management and rendering pipeline.
+- The remote protocol treats `IGuiGraphicsParagraph` as if it were an `IGuiGraphicsElement`, but the actual API separation requires a wrapper element on the client to fit into the renderer's element management and rendering pipeline.
 - `GuiGraphicsParagraphWrapperElement` demonstrates the basic pattern, but it is static; the remote client needs a dynamic, incremental-update version to support `RequestRendererUpdateElement_DocumentParagraph` and match core-side behavior.
 - Handling creation/deletion in the central rendering file keeps ownership and lifetime rules consistent with other remote-rendered objects, reducing the chance of leaks, dangling references, or inconsistent ids.
 - Implementing the remaining functions as direct mappings lowers risk and keeps behavior aligned with the underlying `IGuiGraphicsParagraph` contract, while the unit test mock provides a ground truth for expected message-level behavior.
@@ -50,6 +78,6 @@ Implement the client-side `IGuiGraphicsParagraph` integration in `GuiRemoteRende
 
 ## GacUI
 
-- Consider adding a short knowledge-base note under the Remote Protocol / client renderer documentation to explain why paragraphs are wrapped as elements on the client, and how incremental run diffs are applied (static wrapper vs. remote-updated wrapper).
+- Consider adding a short knowledge-base note under the Remote Protocol / client renderer documentation to explain why paragraphs are wrapped as elements on the client, render-target binding/registration rules (`id == -1` state), and how incremental run diffs (text + inline-object runs) are applied to match `GuiUnitTestProtocol_Rendering_Document.cpp`.
 
 # !!!FINISHED!!!
