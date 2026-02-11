@@ -36,18 +36,14 @@
 
 ## Step 2. Determine the Current Round Index
 
-- Look for existing `Copilot_Review_*_*.md` files. The file name stands for `Copilot_Review_{RoundIndex}_{FileNameFragment}.md`.
-- If no review files exist, the current round index is `1`.
-- Otherwise find the highest `RoundIndex`:
-  - Here are a list of review files from the previous round:
-    - `Copilot_Review_*_GPT.md`
-    - `Copilot_Review_*_Opus.md`
-    - `Copilot_Review_*_Grok.md`
-    - `Copilot_Review_*_Gemini.md`
-  - If all files exist, the current round index is `RoundIndex + 1`.
-  - Otherwise, the current round index is that `RoundIndex`.
-- If your file for the current round already exists, report that you have already completed this round and stop.
-- You must be aware of that, some model may already started the current round, so this is a way to determine the round index without race condition.
+- Look for your own `Copilot_Review_PREVIOUSINDEX_{YourFileNameFragment}.md` file.
+  - If it exists, the current round index is biggest `PREVIOUSINDEX` + 1.
+  - If none exists, the current round index is `1`.
+- If the current round index is greater that 1, here are a list of review files from the previous round:
+  - `Copilot_Review_PREVIOUSINDEX_GPT.md`
+  - `Copilot_Review_PREVIOUSINDEX_Opus.md`
+  - `Copilot_Review_PREVIOUSINDEX_Grok.md`
+  - `Copilot_Review_PREVIOUSINDEX_Gemini.md`
 
 ## Step 3. Read Context
 
