@@ -1,7 +1,10 @@
 # Planning
 
-- Check out `Accessing Task Documents` and `Accessing Script Files` for context about mentioned `*.md` and `*.ps1` files.
+- Check out `Accessing Task Documents` and `Accessing Script Files` in `REPO-ROOT/.github/copilot-instructions.md` for context about mentioned `*.md` and `*.ps1` files.
 - All `*.md` and `*.ps1` files should exist; you should not create any new files unless explicitly instructed.
+  - The `Copilot_Task.md` file should already exist.
+  - If you cannot find the file, you are looking at a wrong folder.
+  - `Copilot_Planning.md` should be put in the same folder.
 - Following `Leveraging the Knowledge Base` in `REPO-ROOT/.github/copilot-instructions.md`, find knowledge and documents for this project in `REPO-ROOT/.github/KnowledgeBase/Index.md`.
 
 ## Goal and Constraints
@@ -9,7 +12,7 @@
 - Your goal is to finish a planning document in `Copilot_Planning.md` to address a problem from `Copilot_Task.md`.
 - You are only allowed to update `Copilot_Planning.md`.
 - You are not allowed to modify any other files.
-- The phrasing of the request may look like asking for code change, but your actual work is to write the design document.
+- The phrasing of the request may look like asking for code change, but your actual work is to write the planning document.
 
 ## Copilot_Planning.md Structure
 

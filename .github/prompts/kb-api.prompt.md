@@ -5,7 +5,7 @@
 
 ## Implement the Knowledge Base
 
-- Check out `Leveraging the Knowledge Base`, read the entry file and understand how it is organized: `REPO-ROOT/.github/KnowledgeBase/Index.md`.
+- Check out `Leveraging the Knowledge Base` in `REPO-ROOT/.github/copilot-instructions.md`, read the entry file and understand how it is organized: `REPO-ROOT/.github/KnowledgeBase/Index.md`.
 - There could be multiple places as the request might include multiple objectives. For each objective:
   - Find out which project does it belong to.
   - Read through all categories, find out which category is the best fit.

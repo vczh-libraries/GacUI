@@ -6,7 +6,7 @@
 - You are only allowed to update `Copilot_KB.md` and the knowledge base.
 - You are not allowed to modify any other files.
 - Code references must be wrapped in either `single-line` or ```multi-line``` quotes.
-- Check out `Leveraging the Knowledge Base`, read the entry file and understand how it is organized: `REPO-ROOT/.github/KnowledgeBase/Index.md`.
+- Check out `Leveraging the Knowledge Base` in `REPO-ROOT/.github/copilot-instructions.md`, read the entry file and understand how it is organized: `REPO-ROOT/.github/KnowledgeBase/Index.md`.
   - `Index.md` below means this file.
 
 ## Identify the Problem

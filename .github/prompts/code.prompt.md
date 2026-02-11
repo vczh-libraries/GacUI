@@ -1,6 +1,6 @@
 # Task
 
-- Check out `Accessing Task Documents` and `Accessing Script Files` for context about mentioned `*.md` and `*.ps1` files.
+- Check out `Accessing Task Documents` and `Accessing Script Files` in `REPO-ROOT/.github/copilot-instructions.md` for context about mentioned `*.md` and `*.ps1` files.
 - All `*.md` and `*.ps1` files should exist; you should not create any new files unless explicitly instructed.
 
 ## Goal and Constraints
@@ -27,7 +27,7 @@
 
 - Check out `REPO-ROOT/.github/Project.md` to find out what solutions you need to build.
 - Find out if there is any warning or error.
-  - `External Tools Environment and Context` has the instruction about how to check compile result.
+  - `External Tools Environment and Context` in `REPO-ROOT/.github/copilot-instructions.md` has the instruction about how to check compile result.
 
 #### Fix Compile Errors
 

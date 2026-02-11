@@ -1,7 +1,9 @@
 # Scrum
 
-- Check out `Accessing Task Documents` and `Accessing Script Files` for context about mentioned `*.md` and `*.ps1` files.
+- Check out `Accessing Task Documents` and `Accessing Script Files` in `REPO-ROOT/.github/copilot-instructions.md` for context about mentioned `*.md` and `*.ps1` files.
 - All `*.md` and `*.ps1` files should exist; you should not create any new files unless explicitly instructed.
+  - The `Copilot_Scrum.md` file should already exist, it may or may not contain content from the last scrum.
+  - If you cannot find the file, you are looking at a wrong folder.
 - Following `Leveraging the Knowledge Base` in `REPO-ROOT/.github/copilot-instructions.md`, find knowledge and documents for this project in `REPO-ROOT/.github/KnowledgeBase/Index.md`.
 
 ## Goal and Constraints

@@ -1,6 +1,6 @@
 # Refine
 
-- Check out `Accessing Script Files` for context about mentioned `*.ps1` files.
+- Check out `Accessing Script Files` in `REPO-ROOT/.github/copilot-instructions.md` for context about mentioned `*.ps1` files.
 - All `*.md` and `*.ps1` files should exist; you should not create any new files unless explicitly instructed.
 - Following `Leveraging the Knowledge Base` in `REPO-ROOT/.github/copilot-instructions.md`, find knowledge and documents for this project in `REPO-ROOT/.github/KnowledgeBase/Index.md`.
 
