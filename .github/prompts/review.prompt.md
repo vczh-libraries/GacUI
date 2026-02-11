@@ -148,10 +148,6 @@ Ignore this section if there is no `# Final` in the LATEST chat message.
   - The only title in this file should be `# Review Target: {TargetDocumentName}`.
   - The content should not contain any title.
   - DO NOT mention which model offers which opinion, the review opinion should be a cohesive whole, not a collection of separate opinions.
-
-### Step F4. Clean Up
-
-- Delete all `Copilot_Review_*_*.md` files.
 - Stops.
 
 ## Apply Review (only when `# Apply` appears in the LATEST chat message)
@@ -176,5 +172,6 @@ Ignore this section if there is no `# Apply` in the LATEST chat message.
 
 ### Step A3. Clean Up
 
+- Delete all `Copilot_Review_*_*.md` files.
 - Delete `Copilot_Review.md`.
 - Stops.
