@@ -81,6 +81,7 @@ If you need to find any document for the current working task, they are in the `
 
 If you need to find any script or log files, they are in the `REPO-ROOT/.github/Scripts` folder:
 - `copilotPrepare.ps1`
+- `copilotPrepareReview.ps1`
 - `copilotBuild.ps1`
 - `copilotExecute.ps1`
 - `copilotDebug_Start.ps1`
