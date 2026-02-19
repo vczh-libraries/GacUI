@@ -22,7 +22,7 @@ I suggest there should be only one task, in this task you should:
 
 # TASKS
 
-- [ ] TASK No.1: Remote Document Paragraph Rendering (Client)
+- [x] TASK No.1: Remote Document Paragraph Rendering (Client)
 
 ## TASK No.1: Remote Document Paragraph Rendering (Client)
 
