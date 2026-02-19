@@ -1,0 +1,174 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    overflow: hidden;
+    display: flex;
+}
+
+/* ---- Layout ---- */
+#left-part {
+    flex: 1;
+    min-width: 0;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#resize-bar {
+    width: 6px;
+    background: #ccc;
+    cursor: ew-resize;
+    flex-shrink: 0;
+}
+
+#resize-bar:hover {
+    background: #aaa;
+}
+
+#right-part {
+    width: 800px;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+/* ---- Job Status Bar ---- */
+#job-status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #2d2d2d;
+    border-bottom: 1px solid #444;
+    flex-shrink: 0;
+}
+
+#job-status-label {
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+    padding: 6px 16px;
+}
+
+#job-status-label.job-status-running {
+    color: #60a5fa;
+}
+
+#job-status-label.job-status-succeeded {
+    color: #4ade80;
+}
+
+#job-status-label.job-status-failed {
+    color: #f87171;
+}
+
+#job-status-label.job-status-canceled {
+    color: #fbbf24;
+}
+
+#stop-job-button {
+    font-size: 18px;
+    padding: 8px 24px;
+    cursor: pointer;
+    background: #dc2626;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+}
+
+#stop-job-button:hover:not(:disabled) {
+    background: #b91c1c;
+}
+
+#stop-job-button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+/* ---- Chart Container ---- */
+#chart-container {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 16px;
+}
+
+#chart-container > svg {
+    margin: auto;
+}
+
+/* ---- Job Part ---- */
+#job-part {
+    height: 100%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---- Session Response Part ---- */
+#session-response-part {
+    padding: 0;
+    height: 100%;
+    overflow: auto;
+}
+
+/* ---- Tab Control ---- */
+.tab-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.tab-headers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    border-bottom: 2px solid #444;
+    padding: 6px 16px 0;
+    flex-shrink: 0;
+    background: #2d2d2d;
+}
+
+.tab-header-btn {
+    padding: 8px 16px;
+    border: 1px solid #444;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    background: #3d3d3d;
+    color: #aaa;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.tab-header-btn:hover {
+    background: #4d4d4d;
+}
+
+.tab-header-btn.active {
+    background: #1e1e1e;
+    color: #fff;
+    border-color: #666;
+    font-weight: bold;
+}
+
+.tab-content {
+    flex: 1;
+    overflow: auto;
+    padding: 8px;
+}
+
+.session-renderer-container {
+    height: 100%;
+    overflow: auto;
+}

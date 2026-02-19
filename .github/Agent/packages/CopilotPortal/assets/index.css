@@ -1,0 +1,155 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    overflow: hidden;
+}
+
+/* ---- Setup UI ---- */
+#setup-ui {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 12px;
+}
+
+#setup-ui label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-weight: bold;
+    min-width: 400px;
+}
+
+#setup-ui select,
+#setup-ui input[type="text"] {
+    padding: 6px 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#setup-buttons {
+    display: flex;
+    justify-content: space-between;
+    min-width: 400px;
+}
+
+#setup-ui button {
+    padding: 8px 24px;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid #888;
+    border-radius: 4px;
+    background: #f8f8f8;
+}
+
+#setup-ui button:hover:not(:disabled) {
+    background: #e8e8e8;
+}
+
+#setup-ui button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ---- Session UI ---- */
+#session-ui {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+#session-part {
+    flex: 1;
+    min-height: 0;
+}
+
+#resize-bar {
+    height: 6px;
+    background: #ccc;
+    cursor: ns-resize;
+    flex-shrink: 0;
+}
+
+#resize-bar:hover {
+    background: #aaa;
+}
+
+#request-part {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    height: 300px;
+    min-height: 100px;
+    padding: 8px;
+}
+
+#task-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+#task-row label {
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+#task-row select {
+    flex: 1;
+    padding: 4px 8px;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#request-textarea {
+    flex: 1;
+    resize: none;
+    padding: 8px;
+    font-family: monospace;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    min-height: 0;
+}
+
+#request-buttons {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 6px;
+}
+
+#request-buttons-left {
+    display: flex;
+    gap: 6px;
+}
+
+#request-buttons button {
+    padding: 6px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    border: 1px solid #888;
+    border-radius: 4px;
+    background: #f8f8f8;
+}
+
+#request-buttons button:hover:not(:disabled) {
+    background: #e8e8e8;
+}
+
+#request-buttons button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

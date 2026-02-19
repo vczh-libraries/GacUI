@@ -1,0 +1,172 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    overflow: hidden;
+    display: flex;
+}
+
+/* ---- Layout ---- */
+#left-part {
+    flex: 1;
+    min-width: 0;
+    overflow: auto;
+}
+
+#resize-bar {
+    width: 6px;
+    background: #ccc;
+    cursor: ew-resize;
+    flex-shrink: 0;
+}
+
+#resize-bar:hover {
+    background: #aaa;
+}
+
+#right-part {
+    width: 800px;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+/* ---- Matrix Part ---- */
+#matrix-part {
+    padding: 16px;
+    height: 100%;
+}
+
+#matrix-table {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+#matrix-table th,
+#matrix-table td {
+    border: 1px solid #e0e0e0;
+    padding: 12px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#matrix-table .matrix-title {
+    text-align: center;
+    font-size: 34px;
+    font-weight: bold;
+    padding: 16px;
+}
+
+#matrix-table .matrix-stop-cell {
+    text-align: right;
+    padding: 16px;
+}
+
+#matrix-table .matrix-stop-cell button {
+    padding: 8px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: 1px solid #888;
+    border-radius: 4px;
+    background: #f8f8f8;
+}
+
+#matrix-table .matrix-stop-cell button:hover {
+    background: #e8e8e8;
+}
+
+#matrix-table .matrix-keyword {
+    font-weight: bold;
+    font-size: 30px;
+    white-space: nowrap;
+}
+
+#matrix-table td button {
+    width: 100%;
+    padding: 12px 10px;
+    font-size: 28px;
+    cursor: pointer;
+    border: 1px solid #888;
+    border-radius: 4px;
+    background: #f8f8f8;
+}
+
+#matrix-table td button:hover {
+    background: #e8e8e8;
+}
+
+.matrix-job-btn.selected {
+    font-weight: bold;
+    border-color: #357abd;
+    background: #e8f0fe;
+}
+
+.matrix-job-btn.selected:hover {
+    background: #d0e0f8;
+}
+
+.matrix-automate-btn {
+    background: #f0f0f0 !important;
+    border-color: #aaa !important;
+    font-style: italic;
+}
+
+/* ---- User Input Part ---- */
+#user-input-part {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 8px;
+}
+
+#user-input-textarea {
+    flex: 1;
+    resize: none;
+    padding: 8px;
+    font-family: monospace;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    min-height: 0;
+}
+
+#user-input-buttons {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 6px;
+    gap: 8px;
+}
+
+#user-input-buttons button {
+    padding: 8px 24px;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid #888;
+    border-radius: 4px;
+    background: #f8f8f8;
+}
+
+#user-input-buttons button:hover:not(:disabled) {
+    background: #e8e8e8;
+}
+
+#user-input-buttons button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#user-input-textarea:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f0f0f0;
+}

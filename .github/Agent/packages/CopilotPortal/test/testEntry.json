@@ -1,0 +1,219 @@
+{
+  "models": {
+    "driving": "gpt-4.1",
+    "planning": "gpt-4.1"
+  },
+  "promptVariables": {},
+  "grid": [
+    {
+      "keyword": "test",
+      "jobs": [
+        null,
+        { "name": "run", "jobName": "simple-job" },
+        { "name": "fail", "jobName": "fail-job" },
+        { "name": "input", "jobName": "input-job" }
+      ]
+    },
+    {
+      "keyword": "batch",
+      "jobs": [
+        { "name": "sequence", "jobName": "seq-job" },
+        { "name": "parallel", "jobName": "par-job" }
+      ]
+    }
+  ],
+  "tasks": {
+    "simple-task": {
+      "model": { "category": "planning" },
+      "prompt": ["Say hello and nothing else."],
+      "requireUserInput": false
+    },
+    "criteria-fail-task": {
+      "model": { "category": "planning" },
+      "prompt": ["Say hello and nothing else."],
+      "requireUserInput": false,
+      "criteria": {
+        "toolExecuted": ["job_prepare_document"],
+        "failureAction": { "retryTimes": 0 }
+      }
+    },
+    "input-task": {
+      "model": { "category": "planning" },
+      "prompt": ["Process this: $user-input"],
+      "requireUserInput": true
+    }
+  },
+  "jobs": {
+    "simple-job": {
+      "work": {
+        "kind": "Ref",
+        "workIdInJob": 0,
+        "taskId": "simple-task"
+      }
+    },
+    "input-job": {
+      "work": {
+        "kind": "Ref",
+        "workIdInJob": 0,
+        "taskId": "input-task"
+      }
+    },
+    "nested-seq-job": {
+      "work": {
+        "kind": "Seq",
+        "works": [
+          { "kind": "Ref", "workIdInJob": 0, "taskId": "simple-task" },
+          {
+            "kind": "Seq",
+            "works": [
+              { "kind": "Ref", "workIdInJob": 1, "taskId": "simple-task" },
+              {
+                "kind": "Seq",
+                "works": [
+                  { "kind": "Ref", "workIdInJob": 2, "taskId": "simple-task" }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "nested-par-job": {
+      "work": {
+        "kind": "Par",
+        "works": [
+          { "kind": "Ref", "workIdInJob": 0, "taskId": "simple-task" },
+          {
+            "kind": "Par",
+            "works": [
+              { "kind": "Ref", "workIdInJob": 1, "taskId": "simple-task" },
+              { "kind": "Ref", "workIdInJob": 2, "taskId": "simple-task" }
+            ]
+          }
+        ]
+      }
+    },
+    "seq-job": {
+      "work": {
+        "kind": "Seq",
+        "works": [
+          { "kind": "Ref", "workIdInJob": 0, "taskId": "simple-task" },
+          { "kind": "Ref", "workIdInJob": 1, "taskId": "simple-task" }
+        ]
+      }
+    },
+    "par-job": {
+      "work": {
+        "kind": "Par",
+        "works": [
+          { "kind": "Ref", "workIdInJob": 0, "taskId": "simple-task" },
+          { "kind": "Ref", "workIdInJob": 1, "taskId": "simple-task" }
+        ]
+      }
+    },
+    "fail-job": {
+      "work": {
+        "kind": "Ref",
+        "workIdInJob": 0,
+        "taskId": "criteria-fail-task"
+      }
+    },
+    "seq-fail-first-job": {
+      "work": {
+        "kind": "Seq",
+        "works": [
+          { "kind": "Ref", "workIdInJob": 0, "taskId": "criteria-fail-task" },
+          { "kind": "Ref", "workIdInJob": 1, "taskId": "simple-task" }
+        ]
+      }
+    },
+    "seq-fail-second-job": {
+      "work": {
+        "kind": "Seq",
+        "works": [
+          { "kind": "Ref", "workIdInJob": 0, "taskId": "simple-task" },
+          { "kind": "Ref", "workIdInJob": 1, "taskId": "criteria-fail-task" }
+        ]
+      }
+    },
+    "par-fail-one-job": {
+      "work": {
+        "kind": "Par",
+        "works": [
+          { "kind": "Ref", "workIdInJob": 0, "taskId": "simple-task" },
+          { "kind": "Ref", "workIdInJob": 1, "taskId": "criteria-fail-task" }
+        ]
+      }
+    },
+    "alt-true-job": {
+      "work": {
+        "kind": "Alt",
+        "condition": { "kind": "Ref", "workIdInJob": 0, "taskId": "simple-task" },
+        "trueWork": { "kind": "Ref", "workIdInJob": 1, "taskId": "simple-task" }
+      }
+    },
+    "alt-false-job": {
+      "work": {
+        "kind": "Alt",
+        "condition": { "kind": "Ref", "workIdInJob": 0, "taskId": "criteria-fail-task" },
+        "falseWork": { "kind": "Ref", "workIdInJob": 1, "taskId": "simple-task" }
+      }
+    },
+    "alt-true-undef-job": {
+      "work": {
+        "kind": "Alt",
+        "condition": { "kind": "Ref", "workIdInJob": 0, "taskId": "simple-task" },
+        "falseWork": { "kind": "Ref", "workIdInJob": 1, "taskId": "simple-task" }
+      }
+    },
+    "alt-false-undef-job": {
+      "work": {
+        "kind": "Alt",
+        "condition": { "kind": "Ref", "workIdInJob": 0, "taskId": "criteria-fail-task" },
+        "trueWork": { "kind": "Ref", "workIdInJob": 1, "taskId": "simple-task" }
+      }
+    },
+    "alt-true-fail-job": {
+      "work": {
+        "kind": "Alt",
+        "condition": { "kind": "Ref", "workIdInJob": 0, "taskId": "simple-task" },
+        "trueWork": { "kind": "Ref", "workIdInJob": 1, "taskId": "criteria-fail-task" }
+      }
+    },
+    "alt-false-fail-job": {
+      "work": {
+        "kind": "Alt",
+        "condition": { "kind": "Ref", "workIdInJob": 0, "taskId": "criteria-fail-task" },
+        "falseWork": { "kind": "Ref", "workIdInJob": 1, "taskId": "criteria-fail-task" }
+      }
+    },
+    "loop-pre-exit-job": {
+      "work": {
+        "kind": "Loop",
+        "preCondition": [true, { "kind": "Ref", "workIdInJob": 0, "taskId": "criteria-fail-task" }],
+        "body": { "kind": "Ref", "workIdInJob": 1, "taskId": "simple-task" }
+      }
+    },
+    "loop-pre-enter-job": {
+      "work": {
+        "kind": "Loop",
+        "preCondition": [true, { "kind": "Ref", "workIdInJob": 0, "taskId": "simple-task" }],
+        "body": { "kind": "Ref", "workIdInJob": 1, "taskId": "simple-task" }
+      }
+    },
+    "loop-body-fail-job": {
+      "work": {
+        "kind": "Loop",
+        "preCondition": [true, { "kind": "Ref", "workIdInJob": 0, "taskId": "simple-task" }],
+        "body": { "kind": "Ref", "workIdInJob": 1, "taskId": "criteria-fail-task" }
+      }
+    },
+    "loop-post-exit-job": {
+      "work": {
+        "kind": "Loop",
+        "body": { "kind": "Ref", "workIdInJob": 0, "taskId": "simple-task" },
+        "postCondition": [true, { "kind": "Ref", "workIdInJob": 1, "taskId": "criteria-fail-task" }]
+      }
+    }
+  }
+}

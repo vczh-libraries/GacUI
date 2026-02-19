@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Copilot Portal</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="messageBlock.css">
+    <link rel="stylesheet" href="sessionResponse.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div id="setup-ui">
+        <label>
+            Model
+            <select id="model-select"></select>
+        </label>
+        <label>
+            Working Directory
+            <input type="text" id="working-dir" placeholder="Absolute path...">
+        </label>
+        <div id="setup-buttons">
+            <button id="jobs-button">Jobs</button>
+            <button id="start-button" disabled>Start</button>
+        </div>
+    </div>
+
+    <div id="session-ui">
+        <div id="session-part"></div>
+        <div id="resize-bar"></div>
+        <div id="request-part">
+            <div id="task-row">
+                <label for="task-select">Choose a Task:&nbsp;</label>
+                <select id="task-select"><option value="">(none)</option></select>
+            </div>
+            <textarea id="request-textarea" placeholder="Type your request..."></textarea>
+            <div id="request-buttons">
+                <div id="request-buttons-left">
+                    <button id="stop-server-button">Stop Server</button>
+                    <button id="close-session-button">Close Session</button>
+                </div>
+                <button id="send-button" disabled>Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="index.js"></script>
+</body>
+</html>
