@@ -9,7 +9,7 @@
 
 # EXECUTION PLAN
 
-## STEP 1: Add factory method declaration (client)
+## STEP 1: Add factory method declaration (client) [DONE]
 
 ### File
 
@@ -25,7 +25,7 @@ In `class vl::presentation::remote_renderer::GuiRemoteRendererSingle`, in the `p
 		Ptr<elements::IGuiGraphicsElement>	CreateRemoteDocumentParagraphElement();
 ```
 
-## STEP 2: Implement the paragraph wrapper element (client)
+## STEP 2: Implement the paragraph wrapper element (client) [DONE]
 
 ### File
 
@@ -446,7 +446,7 @@ namespace vl::presentation::remote_renderer
 }
 ```
 
-## STEP 3: Create/store the wrapper in `availableElements`
+## STEP 3: Create/store the wrapper in `availableElements` [DONE]
 
 ### File
 
@@ -468,7 +468,7 @@ Keep the existing behavior that binds the render target immediately:
 element->GetRenderer()->SetRenderTarget(GetGuiGraphicsResourceManager()->GetRenderTarget(window));
 ```
 
-## STEP 4: Implement paragraph update + query handlers
+## STEP 4: Implement paragraph update + query handlers [DONE]
 
 ### File
 
@@ -540,7 +540,7 @@ void GuiRemoteRendererSingle::RequestDocumentParagraph_GetCaret(vint id, const G
 	};
 
 	auto async = GetCurrentController()->AsyncService();
-	if (async->IsInMainThread(window)) proc(); else async->InvokeInMainThreadAndWait(window, proc);
+	if (async->IsInMainThread(window)) proc(); else async->InvokeInMainThreadAndWait(window, proc, -1);
 }
 ```
 
@@ -695,7 +695,7 @@ void GuiRemoteRendererSingle::RequestDocumentParagraph_CloseCaret(const vint& ar
 }
 ```
 
-## STEP 5: Document hygiene (encoding / mojibake cleanup)
+## STEP 5: Document hygiene (encoding / mojibake cleanup) [DONE]
 
 Limit to files touched by this task:
 
@@ -708,7 +708,7 @@ Search patterns:
 
 - `rg -n "\uFFFD|Ã|Â|â" <files>`
 
-## STEP 6: Build/test validation (repo scripts only)
+## STEP 6: Build/test validation (repo scripts only) [DONE]
 
 1) Stop debugger (safe if not running):
 
@@ -726,7 +726,11 @@ Search patterns:
 
 # FIXING ATTEMPTS
 
-- N/A (fresh execution document).
+## Fixing attempt No.1
+
+- The build failed with an ambiguous `DocumentRun` reference in `Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_Rendering_Document.cpp`.
+- I qualified the protocol type with `remoteprotocol::DocumentRun` (including `Nullable<remoteprotocol::DocumentRun>`) to disambiguate between the protocol struct and the document model class.
+- This resolves the type ambiguity and allows the build to complete.
 
 # !!!FINISHED!!!
 

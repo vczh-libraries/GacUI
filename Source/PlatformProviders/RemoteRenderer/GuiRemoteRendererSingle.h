@@ -22,6 +22,8 @@ namespace vl::presentation::remote_renderer
 		, protected virtual INativeWindowListener
 		, protected virtual INativeControllerListener
 	{
+		friend class GuiRemoteDocumentParagraphElement;
+
 	protected:
 		INativeWindow*							window = nullptr;
 		INativeScreen*							screen = nullptr;
@@ -84,6 +86,7 @@ namespace vl::presentation::remote_renderer
 		remoteprotocol::ImageMetadata			CreateImageMetadata(vint id, INativeImage* image);
 		remoteprotocol::ImageMetadata			CreateImage(const remoteprotocol::ImageCreation& arguments);
 		void									CheckDom();
+		Ptr<elements::IGuiGraphicsElement>		CreateRemoteDocumentParagraphElement();
 
 	protected:
 		bool									supressPaint = false;
