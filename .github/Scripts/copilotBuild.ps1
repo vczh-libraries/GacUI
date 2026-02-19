@@ -7,7 +7,7 @@ Remove-Item -Path $logFile, $logFileUnfinished -Force -ErrorAction SilentlyConti
 
 # Find the solution folder by looking for *.sln files
 $solutionFolder = GetSolutionDir
-$solutionFile = "$solutionFolder\$((Get-ChildItem -Path $solutionFolder -Filter "*.sln" -ErrorAction SilentlyContinue)[0])"
+$solutionFile = "$solutionFolder\$((Get-ChildItem -Path $solutionFolder -Filter "*.sln" -ErrorAction SilentlyContinue)[0].Name)"
 
 $vsdevcmd = $env:VLPP_VSDEVCMD_PATH
 if ($vsdevcmd -eq $null) {

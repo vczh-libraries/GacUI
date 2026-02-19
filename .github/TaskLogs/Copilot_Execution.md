@@ -2,6 +2,11 @@
 
 # UPDATES
 
+## User Update Spotted
+
+- In `Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_Rendering_Document.cpp`, the `DocumentParagraph` handlers call `InvokeInMainThreadAndWait(window, proc, -1)` (explicit timeout) while the instructions omit the timeout argument.
+- In `Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_Rendering_Document.cpp`, the cached run maps are iterated via `Keys()`/`Values()` loops instead of the structured bindings shown in the instructions.
+
 # AFFECTED PROJECTS
 
 - Build the solution in folder Test\GacUISrc
@@ -733,4 +738,6 @@ Search patterns:
 - This resolves the type ambiguity and allows the build to complete.
 
 # !!!FINISHED!!!
+
+# !!!VERIFIED!!!
 
