@@ -70,7 +70,6 @@ GuiDocumentParagraphCache
 				GuiDocumentElement*						element = nullptr;
 				IGuiGraphicsRenderTarget*				renderTarget = nullptr;
 				IGuiGraphicsLayoutProvider*				layoutProvider = nullptr;
-				vint									defaultHeight = 0;
 
 				pg::ParagraphCacheArray					paragraphCaches;
 				pg::ParagraphSizeArray					paragraphSizes;
@@ -83,6 +82,8 @@ GuiDocumentParagraphCache
 			public:
 				GuiDocumentParagraphCache(IGuiGraphicsParagraphCallback* _callback);
 				~GuiDocumentParagraphCache();
+
+				static vint								GetDefaultHeight();
 
 				void									Initialize(GuiDocumentElement* _element);
 				void									RenderTargetChanged(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget);

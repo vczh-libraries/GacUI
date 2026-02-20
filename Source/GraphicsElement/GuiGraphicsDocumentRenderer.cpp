@@ -232,12 +232,18 @@ GuiDocumentParagraphCache
 			GuiDocumentParagraphCache::GuiDocumentParagraphCache(IGuiGraphicsParagraphCallback* _callback)
 				: callback(_callback)
 				, layoutProvider(GetGuiGraphicsResourceManager()->GetLayoutProvider())
-				, defaultHeight(GetCurrentController()->ResourceService()->GetDefaultFont().size)
 			{
 			}
 
 			GuiDocumentParagraphCache::~GuiDocumentParagraphCache()
 			{
+			}
+
+			vint GuiDocumentParagraphCache::GetDefaultHeight()
+			{
+				vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
+				if (defaultHeight < 8) defaultHeight = 8;
+				return defaultHeight;
 			}
 
 			void GuiDocumentParagraphCache::Initialize(GuiDocumentElement* _element)
@@ -325,6 +331,7 @@ GuiDocumentParagraphCache
 					paragraphCaches.Resize(document->paragraphs.Count());
 					paragraphSizes.Resize(document->paragraphs.Count());
 
+					vint defaultHeight = GetDefaultHeight();
 					for (vint i = 0; i < paragraphSizes.Count(); i++)
 					{
 						paragraphSizes[i] = { (i * defaultHeight),{0,defaultHeight}};
@@ -379,6 +386,7 @@ GuiDocumentParagraphCache
 				}
 				else
 				{
+					vint defaultHeight = GetDefaultHeight();
 					pg::ParagraphCacheArray oldCaches;
 					pg::ParagraphSizeArray oldSizes;
 
@@ -460,6 +468,8 @@ GuiDocumentParagraphCache
 				auto& cachedSize = paragraphSizes[paragraphIndex];
 				Size oldSize = cachedSize.cachedSize;
 				Size newSize = cache->graphicsParagraph->GetSize();
+
+				vint defaultHeight = GetDefaultHeight();
 				if(newSize.y < defaultHeight)
 				{
 					newSize.y = defaultHeight;
@@ -800,7 +810,7 @@ GuiDocumentElementRenderer
 
 			void GuiDocumentElementRenderer::NotifyParagraphPaddingUpdated(bool value)
 			{
-				vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
+				vint defaultHeight = GuiDocumentParagraphCache::GetDefaultHeight();
 				paragraphDistance = element->GetParagraphPadding() ? defaultHeight : 0;
 			}
 
