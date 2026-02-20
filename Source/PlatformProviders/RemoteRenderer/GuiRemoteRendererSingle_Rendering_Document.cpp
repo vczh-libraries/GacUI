@@ -49,6 +49,10 @@ namespace vl::presentation::remote_renderer
 		{
 		}
 
+		~GuiRemoteDocumentParagraphElement()
+		{
+		}
+
 		IGuiGraphicsParagraph* GetParagraph() const
 		{
 			return paragraph.Obj();
