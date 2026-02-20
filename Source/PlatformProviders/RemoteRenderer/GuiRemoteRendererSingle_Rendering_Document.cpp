@@ -125,15 +125,7 @@ namespace vl::presentation::remote_renderer
 
 		Size OnRenderInlineObject(vint callbackId, Rect location) override
 		{
-			if (inlineObjectBounds.Keys().Contains(callbackId))
-			{
-				inlineObjectBounds.Set(callbackId, location);
-			}
-			else
-			{
-				inlineObjectBounds.Add(callbackId, location);
-			}
-
+			inlineObjectBounds.Set(callbackId, location);
 			vint index = inlineObjectProps.Keys().IndexOf(callbackId);
 			if (index == -1) return {};
 			return inlineObjectProps.Values()[index].size;
@@ -275,9 +267,11 @@ namespace vl::presentation::remote_renderer
 					}
 
 					vint index = inlineObjectRanges.Keys().IndexOf(callbackId);
-					CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Removed inline object not found.");
-					auto range = inlineObjectRanges.Values()[index];
-					CHECK_ERROR(paragraph->ResetInlineObject(range.caretBegin, range.caretEnd - range.caretBegin), ERROR_MESSAGE_PREFIX L"ResetInlineObject failed.");
+					if (index != -1)
+					{
+						auto range = inlineObjectRanges.Values()[index];
+						paragraph->ResetInlineObject(range.caretBegin, range.caretEnd - range.caretBegin);
+					}
 					inlineObjectRanges.Remove(callbackId);
 					inlineObjectProps.Remove(callbackId);
 					inlineObjectBounds.Remove(callbackId);
@@ -286,71 +280,30 @@ namespace vl::presentation::remote_renderer
 
 			if (arguments.runsDiff)
 			{
-				for (auto&& run : *arguments.runsDiff.Obj())
+				for (auto run : *arguments.runsDiff.Obj())
 				{
 					elements::CaretRange range{ run.caretBegin, run.caretEnd };
-					auto start = run.caretBegin;
-					auto length = run.caretEnd - run.caretBegin;
-					if (length <= 0) continue;
 
-					run.props.Apply(Overloading(
-						[&](const remoteprotocol::DocumentTextRunProperty& textProp)
-						{
-							elements::DocumentTextRunPropertyOverrides overrides;
-							overrides.textColor = textProp.textColor;
-							overrides.backgroundColor = textProp.backgroundColor;
-							overrides.fontFamily = textProp.fontProperties.fontFamily;
-							overrides.size = textProp.fontProperties.size;
-
-							IGuiGraphicsParagraph::TextStyle style = (IGuiGraphicsParagraph::TextStyle)0;
-							if (textProp.fontProperties.bold) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)IGuiGraphicsParagraph::TextStyle::Bold);
-							if (textProp.fontProperties.italic) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)IGuiGraphicsParagraph::TextStyle::Italic);
-							if (textProp.fontProperties.underline) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)IGuiGraphicsParagraph::TextStyle::Underline);
-							if (textProp.fontProperties.strikeline) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)IGuiGraphicsParagraph::TextStyle::Strikeline);
-							overrides.textStyle = style;
-							elements::AddTextRun(textRuns, range, overrides);
-
-							paragraph->SetFont(start, length, textProp.fontProperties.fontFamily);
-							paragraph->SetSize(start, length, textProp.fontProperties.size);
-							paragraph->SetStyle(start, length, style);
-							paragraph->SetColor(start, length, textProp.textColor);
-							paragraph->SetBackgroundColor(start, length, textProp.backgroundColor);
-						},
-						[&](const remoteprotocol::DocumentInlineObjectRunProperty& inlineProp)
-						{
-							CHECK_ERROR(elements::AddInlineObjectRun(inlineObjectRuns, range, inlineProp), ERROR_MESSAGE_PREFIX L"AddInlineObjectRun failed.");
-
-							Ptr<IGuiGraphicsElement> background;
-							if (inlineProp.backgroundElementId != -1)
-							{
-								vint index = owner->availableElements.Keys().IndexOf(inlineProp.backgroundElementId);
-								CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"backgroundElementId not found.");
-								background = owner->availableElements.Values()[index];
-							}
-
-							IGuiGraphicsParagraph::InlineObjectProperties props;
-							props.size = inlineProp.size;
-							props.baseline = inlineProp.baseline;
-							props.breakCondition = (IGuiGraphicsParagraph::BreakCondition)inlineProp.breakCondition;
-							props.callbackId = inlineProp.callbackId;
-							props.backgroundImage = background;
-							CHECK_ERROR(paragraph->SetInlineObject(start, length, props), ERROR_MESSAGE_PREFIX L"SetInlineObject failed.");
-
-							auto cb = inlineProp.callbackId;
-							if (inlineObjectProps.Keys().Contains(cb))
-								inlineObjectProps.Set(cb, inlineProp);
-							else
-								inlineObjectProps.Add(cb, inlineProp);
-
-							elements::CaretRange cbRange;
-							cbRange.caretBegin = start;
-							cbRange.caretEnd = start + length;
-							if (inlineObjectRanges.Keys().Contains(cb))
-								inlineObjectRanges.Set(cb, cbRange);
-							else
-								inlineObjectRanges.Add(cb, cbRange);
-						}
-					));
+					if (auto textProp = run.props.TryGet<DocumentTextRunProperty>())
+					{
+						elements::DocumentTextRunPropertyOverrides overrides;
+						overrides.textColor = textProp->textColor;
+						overrides.backgroundColor = textProp->backgroundColor;
+						overrides.fontFamily = textProp->fontProperties.fontFamily;
+						overrides.size = textProp->fontProperties.size;
+						// Convert bool flags back to TextStyle
+						elements::IGuiGraphicsParagraph::TextStyle style = (elements::IGuiGraphicsParagraph::TextStyle)0;
+						if (textProp->fontProperties.bold) style = (elements::IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)elements::IGuiGraphicsParagraph::TextStyle::Bold);
+						if (textProp->fontProperties.italic) style = (elements::IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)elements::IGuiGraphicsParagraph::TextStyle::Italic);
+						if (textProp->fontProperties.underline) style = (elements::IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)elements::IGuiGraphicsParagraph::TextStyle::Underline);
+						if (textProp->fontProperties.strikeline) style = (elements::IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)elements::IGuiGraphicsParagraph::TextStyle::Strikeline);
+						overrides.textStyle = style;
+						elements::AddTextRun(textRuns, range, overrides);
+					}
+					else if (auto inlineProp = run.props.TryGet<DocumentInlineObjectRunProperty>())
+					{
+						elements::AddInlineObjectRun(inlineObjectRuns, range, *inlineProp);
+					}
 				}
 			}
 
