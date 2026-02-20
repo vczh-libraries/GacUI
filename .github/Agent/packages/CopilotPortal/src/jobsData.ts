@@ -70,6 +70,10 @@ const entryInput: Entry = {
             "- claude opus -> Copilot_Review_*_OPUS.md",
             "- gemini -> Copilot_Review_*_GEMINI.md",
         ],
+        copilotSdkTips: [
+            "NOTE: If you can't find the file, try different ways to make sure, including absolute path, relative path, powershell tool, view tool, slash and backslash, etc.",
+            "AVOID the glob tool to find any files, it does not work on Windows."
+        ],
         defineRepoRoot: [
             "REPO-ROOT is the root directory of the repo (aka the working directory you are currently in)"
         ],
@@ -78,6 +82,7 @@ const entryInput: Entry = {
         ],
         cppjob: [
             "$defineRepoRoot",
+            "$copilotSdkTips",
             "YOU MUST FOLLOW REPO-ROOT/.github/copilot-instructions.md as a general guideline for all your tasks."
         ],
         scrum: [
@@ -134,6 +139,7 @@ const entryInput: Entry = {
         ],
         simpleCondition: [
             "$defineRepoRoot",
+            "$copilotSdkTips",
             "$reportBoolean",
             "Use job_boolean_true tool if the below condition satisfies, or use job_boolean_false tool if it does not satisfy."
         ],
@@ -335,10 +341,7 @@ const entryInput: Entry = {
         "refine-task": {
             model: { category: "planning" },
             requireUserInput: false,
-            prompt: ["$cppjob", "$refine"],
-            availability: {
-                previousTasks: ["scrum-learn-task"]
-            }
+            prompt: ["$cppjob", "$refine"]
         },
         "review-scrum-task": {
             prompt: ["$cppjob", "$review", "$reportDocument", "# Scrum", "$reviewerBoardFiles"],
@@ -399,9 +402,6 @@ const entryInput: Entry = {
             model: { category: "planning" },
             requireUserInput: false,
             prompt: ["$cppjob", "$review", "# Apply", "$reviewerBoardFiles"],
-            availability: {
-                previousTasks: ["review-final-task"]
-            },
             criteria: {
                 runConditionInSameSession: false,
                 condition: ["$simpleCondition", "Every REPO-ROOT/.github/TaskLogs/Copilot_Review*.md must have been deleted."],
@@ -474,67 +474,113 @@ const entryInput: Entry = {
         // ---- evolution ----
         "scrum-learn": { work: makeCodingWork("scrum-learn-task") },
         "refine": { work: makeCodingWork("refine-task") },
+        // ---- review ----
+        "scrum-review": { work: { kind: "Seq", works: [makeReviewWork("scrum"), makeRefWork("git-commit")] } },
+        "design-review": { work: { kind: "Seq", works: [makeReviewWork("design"), makeRefWork("git-commit")] } },
+        "plan-review": { work: { kind: "Seq", works: [makeReviewWork("plan"), makeRefWork("git-commit")] } },
+        "summary-review": { work: { kind: "Seq", works: [makeReviewWork("summary"), makeRefWork("git-commit")] } },
         // ---- automation ----
-        "design-automate": { work: { kind: "Seq", works: [
-            makeDocumentWork("design-problem-next", "design"),
-            makeDocumentWork("plan-problem", "plan"),
-            makeDocumentWork("summary-problem", "summary"),
-            makeCodingWork("execute-task"),
-            makeCodingWork("verify-task"),
-            makeRefWork("git-push")
-        ]}},
-        "scrum-automate": { work: { kind: "Seq", works: [
-            makeDocumentWork("plan-problem", "plan"),
-            makeDocumentWork("summary-problem", "summary"),
-            makeCodingWork("execute-task"),
-            makeCodingWork("verify-task"),
-            makeRefWork("git-push")
-        ]}},
-        "summary-automate": { work: { kind: "Seq", works: [
-            makeDocumentWork("summary-problem", "summary"),
-            makeCodingWork("execute-task"),
-            makeCodingWork("verify-task"),
-            makeRefWork("git-push")
-        ]}},
-        "execute-automate": { work: { kind: "Seq", works: [
-            makeCodingWork("execute-task"),
-            makeCodingWork("verify-task"),
-            makeRefWork("git-push")
-        ]}},
-        "learn-automate": { work: { kind: "Seq", works: [
-            makeCodingWork("scrum-learn-task"),
-            makeCodingWork("refine-task"),
-            makeRefWork("git-push")
-        ]}},
+        "design-next-automate": {
+            work: {
+                kind: "Seq", works: [
+                    makeDocumentWork("design-problem-next", "design"),
+                    makeDocumentWork("plan-problem", "plan"),
+                    makeDocumentWork("summary-problem", "summary"),
+                    makeCodingWork("execute-task"),
+                    makeCodingWork("verify-task"),
+                    makeRefWork("git-push")
+                ]
+            }
+        },
+        "design-problem-automate": {
+            work: {
+                kind: "Seq", works: [
+                    makeDocumentWork("design-problem", "design"),
+                    makeDocumentWork("plan-problem", "plan"),
+                    makeDocumentWork("summary-problem", "summary"),
+                    makeCodingWork("execute-task"),
+                    makeCodingWork("verify-task"),
+                    makeRefWork("git-push")
+                ]
+            }
+        },
+        "plan-automate": {
+            work: {
+                kind: "Seq", works: [
+                    makeDocumentWork("plan-problem", "plan"),
+                    makeDocumentWork("summary-problem", "summary"),
+                    makeCodingWork("execute-task"),
+                    makeCodingWork("verify-task"),
+                    makeRefWork("git-push")
+                ]
+            }
+        },
+        "summary-automate": {
+            work: {
+                kind: "Seq", works: [
+                    makeDocumentWork("summary-problem", "summary"),
+                    makeCodingWork("execute-task"),
+                    makeCodingWork("verify-task"),
+                    makeRefWork("git-push")
+                ]
+            }
+        },
+        "execute-automate": {
+            work: {
+                kind: "Seq", works: [
+                    makeCodingWork("execute-task"),
+                    makeCodingWork("verify-task"),
+                    makeRefWork("git-push")
+                ]
+            }
+        },
+        "learn-automate": {
+            work: {
+                kind: "Seq", works: [
+                    makeCodingWork("scrum-learn-task"),
+                    makeCodingWork("refine-task"),
+                    makeRefWork("git-push")
+                ]
+            }
+        },
     },
     grid: [{
         keyword: "scrum",
         jobs: [
             undefined,
             { name: "problem", jobName: "scrum-problem" },
-            { name: "update", jobName: "scrum-update" }
+            { name: "update", jobName: "scrum-update" },
+            { name: "review", jobName: "scrum-review" }
         ]
     }, {
-        keyword: "design",
+        keyword: "design w/ scrum",
         jobs: [
-            { name: "code directly", jobName: "design-automate" },
+            { name: "code directly", jobName: "design-next-automate" },
             { name: "problem next", jobName: "design-problem-next" },
             { name: "update", jobName: "design-update" },
+            { name: "review", jobName: "design-review" }
+        ]
+    }, {
+        keyword: "design w/ task",
+        jobs: [
+            { name: "code directly", jobName: "design-problem-automate" },
             { name: "problem", jobName: "design-problem" }
         ]
     }, {
         keyword: "plan",
         jobs: [
-            { name: "code directly", jobName: "scrum-automate" },
+            { name: "code directly", jobName: "plan-automate" },
             { name: "problem", jobName: "plan-problem" },
-            { name: "update", jobName: "plan-update" }
+            { name: "update", jobName: "plan-update" },
+            { name: "review", jobName: "plan-review" }
         ]
     }, {
         keyword: "summary",
         jobs: [
             { name: "code directly", jobName: "summary-automate" },
             { name: "problem", jobName: "summary-problem" },
-            { name: "update", jobName: "summary-update" }
+            { name: "update", jobName: "summary-update" },
+            { name: "review", jobName: "summary-review" }
         ]
     }, {
         keyword: "execute",

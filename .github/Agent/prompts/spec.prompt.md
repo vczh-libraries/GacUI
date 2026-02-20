@@ -93,6 +93,8 @@ Having a test note doesn't mean it is enough to only cover what a test note says
 
 When any feature is changed, update the unit test as well.
 
+**IMPORTANT**: All test cases should pass, no matter if they are related to the current change or not.
+
 ## Post Implementation
 
 Remember to update `README.md` to describe:

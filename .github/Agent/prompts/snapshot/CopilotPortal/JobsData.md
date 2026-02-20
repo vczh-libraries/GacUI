@@ -60,15 +60,13 @@ Here are all checks that `validateEntry` needs to do:
 - `entry.models.driving`:
   - Should exist.
 - `entry.drivingSessionRetries`:
-  - The first modelId should equal to `entry.models.driving`.
+  - Contains at least one item and the first modelId should equal to `entry.models.driving`.
 - `entry.grid[rowIndex].jobs[columnIndex].jobName`:
   - Must be in keys of `entry.jobs`.
 - `entry.tasks[name].model.category`;
   - Must be in fields of `entry.models`.
 - `entry.tasks[name].requireUserInput`:
   - If it is true, its evaluated `prompt` should use `$user-input`, otherwise should not use.
-- `entry.tasks[name].availability.previousTasks[index]`:
-  - Must be in keys of `entry.tasks`.
 - `entry.tasks[name].criteria.toolExecuted[index]`:
   - Must be in `availableTools`.
 - Any `TaskWork` in `entry.jobs[name]`, needs to inspect recursively:
@@ -196,7 +194,6 @@ there will be no prerequisite checking,
 the task just run.
 
 All conditions must satisfy at the same time to run the task:
-- When `Task.availability.previousTasks` is defined, the previous task's name must be in the list.
 - When `Task.availability.condition` is defined, the condition must satisfy.
   - The driving session will run the prompt.
   - The condition satisfies when the `job_boolean_true` is called in this round of driving session response.

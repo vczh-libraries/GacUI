@@ -406,6 +406,11 @@ function startJobPolling() {
                     taskPollingActive: false,
                 };
 
+                // If the restarted work is currently inspected, clear tabs
+                if (inspectedWorkId === workId) {
+                    refreshSessionResponsePart();
+                }
+
                 // Update flow chart - running indicator
                 if (chartController) {
                     chartController.setRunning(workId);

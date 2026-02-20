@@ -17,7 +17,6 @@ export interface Task {
     prompt: Prompt;
     requireUserInput: boolean;
     availability?: {
-        previousTasks?: string[];
         condition?: Prompt;
     };
     criteria?: {
@@ -224,11 +223,12 @@ export function validateEntry(entry: Entry, codePath: string): Entry {
         throw new Error(`${codePath}entry.models.driving: Should exist.`);
     }
 
-    // Validate drivingSessionRetries[0].modelId equals models.driving
-    if (entry.drivingSessionRetries && entry.drivingSessionRetries.length > 0) {
-        if (entry.drivingSessionRetries[0].modelId !== entry.models.driving) {
-            throw new Error(`${codePath}entry.drivingSessionRetries: The first modelId should equal to entry.models.driving.`);
-        }
+    // Validate drivingSessionRetries contains at least one item and [0].modelId equals models.driving
+    if (!entry.drivingSessionRetries || entry.drivingSessionRetries.length === 0) {
+        throw new Error(`${codePath}entry.drivingSessionRetries: Should contain at least one item.`);
+    }
+    if (entry.drivingSessionRetries[0].modelId !== entry.models.driving) {
+        throw new Error(`${codePath}entry.drivingSessionRetries: The first modelId should equal to entry.models.driving.`);
     }
 
     const modelKeys = Object.keys(entry.models).filter(k => k !== "reviewers");
@@ -273,14 +273,6 @@ export function validateEntry(entry: Entry, codePath: string): Entry {
 
         // Validate availability
         if (task.availability) {
-            if (task.availability.previousTasks) {
-                for (let i = 0; i < task.availability.previousTasks.length; i++) {
-                    const pt = task.availability.previousTasks[i];
-                    if (!(pt in entry.tasks)) {
-                        throw new Error(`${taskBase}.availability.previousTasks[${i}]: "${pt}" is not a valid task name.`);
-                    }
-                }
-            }
             if (task.availability.condition) {
                 task.availability.condition = expandPromptStatic(entry, `${taskBase}.availability.condition`, task.availability.condition, true);
             }

@@ -160,6 +160,7 @@ describe("validateEntry (entry export)", () => {
         // Build a minimal entry with an invalid model to test error path format
         const badEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2", coding: "gpt-5.2-codex", reviewers: [] },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -263,6 +264,7 @@ describe("validateEntry requireUserInput", () => {
     it("throws when requireUserInput is true but prompt does not use $user-input", () => {
         const badEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2", coding: "gpt-5.2-codex", reviewers: [] },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -278,6 +280,7 @@ describe("validateEntry requireUserInput", () => {
     it("throws when requireUserInput is false but prompt uses $user-input", () => {
         const badEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2", coding: "gpt-5.2-codex", reviewers: [] },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -293,6 +296,7 @@ describe("validateEntry requireUserInput", () => {
     it("passes when requireUserInput matches prompt usage", () => {
         const goodEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2", coding: "gpt-5.2-codex", reviewers: [] },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -371,6 +375,7 @@ describe("validateEntry models.driving", () => {
     it("passes when models.driving exists", () => {
         const goodEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {},
@@ -407,12 +412,42 @@ describe("validateEntry models.driving", () => {
         const result = validateEntry(goodEntry, "test:");
         assert.ok(result);
     });
+
+    it("throws when drivingSessionRetries is empty", () => {
+        const badEntry = {
+            models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [],
+            promptVariables: {},
+            grid: [],
+            tasks: {},
+            jobs: {},
+        };
+        assert.throws(
+            () => validateEntry(badEntry, "test:"),
+            /drivingSessionRetries.*at least one item/
+        );
+    });
+
+    it("throws when drivingSessionRetries is undefined", () => {
+        const badEntry = {
+            models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            promptVariables: {},
+            grid: [],
+            tasks: {},
+            jobs: {},
+        };
+        assert.throws(
+            () => validateEntry(badEntry, "test:"),
+            /drivingSessionRetries.*at least one item/
+        );
+    });
 });
 
 describe("validateEntry jobs", () => {
     it("validates TaskWork.taskId must be in entry.tasks", () => {
         const badEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -434,6 +469,7 @@ describe("validateEntry jobs", () => {
     it("validates TaskWork.modelOverride.category must be in entry.models", () => {
         const badEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -455,6 +491,7 @@ describe("validateEntry jobs", () => {
     it("validates TaskWork.modelOverride must be defined if task has no model", () => {
         const badEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -476,6 +513,7 @@ describe("validateEntry jobs", () => {
     it("passes validation for valid job with TaskWork", () => {
         const goodEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -495,6 +533,7 @@ describe("validateEntry jobs", () => {
     it("passes validation for valid job with modelOverride on task without model", () => {
         const goodEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -516,6 +555,7 @@ describe("validateEntry grid jobName", () => {
     it("throws when grid jobName is not in entry.jobs", () => {
         const badEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [{
                 keyword: "test",
@@ -533,6 +573,7 @@ describe("validateEntry grid jobName", () => {
     it("passes when grid jobName exists in entry.jobs", () => {
         const goodEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [{
                 keyword: "test",
@@ -571,6 +612,7 @@ describe("validateEntry job requireUserInput", () => {
     it("fills requireUserInput=false for job referencing only non-input tasks", () => {
         const testEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -589,6 +631,7 @@ describe("validateEntry job requireUserInput", () => {
     it("fills requireUserInput=true for job referencing an input task", () => {
         const testEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -607,6 +650,7 @@ describe("validateEntry job requireUserInput", () => {
     it("fills requireUserInput=true for job with mixed tasks (Seq)", () => {
         const testEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -632,6 +676,7 @@ describe("validateEntry job requireUserInput", () => {
     it("passes when requireUserInput is defined correctly", () => {
         const testEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -651,6 +696,7 @@ describe("validateEntry job requireUserInput", () => {
     it("throws when requireUserInput is defined incorrectly", () => {
         const testEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -691,6 +737,7 @@ describe("validateEntry work simplification", () => {
     it("flattens nested SequentialWork", () => {
         const testEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -726,6 +773,7 @@ describe("validateEntry work simplification", () => {
     it("flattens multi-level nested SequentialWork", () => {
         const testEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -763,6 +811,7 @@ describe("validateEntry work simplification", () => {
     it("flattens nested ParallelWork", () => {
         const testEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -795,6 +844,7 @@ describe("validateEntry work simplification", () => {
     it("does not flatten Par inside Seq or vice versa", () => {
         const testEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -842,6 +892,7 @@ describe("validateEntry empty works rejection", () => {
     it("throws when SequentialWork has empty works", () => {
         const badEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -862,6 +913,7 @@ describe("validateEntry empty works rejection", () => {
     it("throws when ParallelWork has empty works", () => {
         const badEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -882,6 +934,7 @@ describe("validateEntry empty works rejection", () => {
     it("throws when nested ParallelWork inside SequentialWork has empty works", () => {
         const badEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
@@ -908,6 +961,7 @@ describe("validateEntry empty works rejection", () => {
     it("passes when SequentialWork has at least one element", () => {
         const goodEntry = {
             models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
             promptVariables: {},
             grid: [],
             tasks: {
