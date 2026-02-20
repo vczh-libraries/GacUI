@@ -24,8 +24,10 @@ namespace vl::presentation::remote_renderer
 		IGuiGraphicsRenderTarget*											renderTarget = nullptr;
 
 		Ptr<IGuiGraphicsParagraph>											paragraph;
-		WString																text;
-		bool																hasText = false;
+		Nullable<WString>													text;
+		bool																wrapLine = false;
+		vint																maxWidth = 1;
+		remoteprotocol::ElementHorizontalAlignment							alignment = remoteprotocol::ElementHorizontalAlignment::Left;
 		Nullable<remoteprotocol::OpenCaretRequest>							caret;
 
 		elements::DocumentTextRunPropertyMap								textRuns;
@@ -47,7 +49,13 @@ namespace vl::presentation::remote_renderer
 		{
 		}
 
+		IGuiGraphicsParagraph* GetParagraph() const
+		{
+			return paragraph.Obj();
+		}
+
 		// ===== IGuiGraphicsElement =====
+
 		IGuiGraphicsRenderer* GetRenderer() override
 		{
 			return this;
@@ -59,7 +67,9 @@ namespace vl::presentation::remote_renderer
 		}
 
 	protected:
+
 		// ===== IGuiGraphicsRenderer =====
+
 		IGuiGraphicsRendererFactory* GetFactory() override
 		{
 			return this;
@@ -77,10 +87,13 @@ namespace vl::presentation::remote_renderer
 		{
 			if (renderTarget != _renderTarget)
 			{
-				renderTarget = _renderTarget;
 				paragraph = nullptr;
-				inlineObjectBounds.Clear();
-				RecreateParagraphIfPossible();
+			}
+			renderTarget = _renderTarget;
+			paragraph = nullptr;
+			if (renderTarget)
+			{
+				TryRecreateParagraph();
 			}
 		}
 
@@ -102,12 +115,14 @@ namespace vl::presentation::remote_renderer
 		}
 
 		// ===== IGuiGraphicsRendererFactory =====
+
 		IGuiGraphicsRenderer* Create() override
 		{
 			CHECK_FAIL(L"vl::presentation::remote_renderer::GuiRemoteDocumentParagraphElement::Create()#Not supported.");
 		}
 
 		// ===== IGuiGraphicsParagraphCallback =====
+
 		Size OnRenderInlineObject(vint callbackId, Rect location) override
 		{
 			if (inlineObjectBounds.Keys().Contains(callbackId))
@@ -124,31 +139,31 @@ namespace vl::presentation::remote_renderer
 			return inlineObjectProps.Values()[index].size;
 		}
 
-	public:
-		bool HasParagraph() const
+	protected:
+
+		void ApplyProps()
 		{
-			return paragraph;
+			paragraph->SetWrapLine(wrapLine);
+			paragraph->SetMaxWidth(maxWidth);
+			paragraph->SetParagraphAlignment(owner->GetAlignment(alignment));
 		}
 
-		IGuiGraphicsParagraph* GetParagraph() const
+		void ApplyCaret()
 		{
-			return paragraph.Obj();
+			if (caret)
+			{
+				auto& c = caret.Value();
+				paragraph->OpenCaret(c.caret, c.caretColor, c.frontSide);
+			}
+			else
+			{
+				paragraph->CloseCaret();
+			}
 		}
 
-		void RecreateParagraphIfPossible()
+		void ApplyRuns()
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteDocumentParagraphElement::RecreateParagraphIfPossible()#"
-			if (!renderTarget) return;
-			if (!hasText) return;
-
-			auto resourceManager = GetGuiGraphicsResourceManager();
-			CHECK_ERROR(resourceManager != nullptr, ERROR_MESSAGE_PREFIX L"GetGuiGraphicsResourceManager() returns null.");
-
-			paragraph = resourceManager->GetLayoutProvider()->CreateParagraph(text, renderTarget, this);
-
-			mergedRuns.Clear();
-			elements::MergeRuns(textRuns, inlineObjectRuns, mergedRuns);
-
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteDocumentParagraphElement::TryApplyRuns()#"
 			auto&& mergedKeys = mergedRuns.Keys();
 			for (vint i = 0; i < mergedKeys.Count(); i++)
 			{
@@ -194,14 +209,25 @@ namespace vl::presentation::remote_renderer
 					}
 				));
 			}
-
-			if (caret)
-			{
-				auto& c = caret.Value();
-				paragraph->OpenCaret(c.caret, c.caretColor, c.frontSide);
-			}
 #undef ERROR_MESSAGE_PREFIX
 		}
+
+		void TryRecreateParagraph()
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteDocumentParagraphElement::TryRecreateParagraph()#"
+			if (!renderTarget) return;
+			if (!text) return;
+
+			auto resourceManager = GetGuiGraphicsResourceManager();
+			CHECK_ERROR(resourceManager != nullptr, ERROR_MESSAGE_PREFIX L"GetGuiGraphicsResourceManager() returns null.");
+			paragraph = resourceManager->GetLayoutProvider()->CreateParagraph(text.Value(), renderTarget, this);
+			ApplyProps();
+			ApplyRuns();
+			ApplyCaret();
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+	public:
 
 		bool TryGetInlineObjectRunProperty(vint callbackId, remoteprotocol::DocumentInlineObjectRunProperty& outProp) const
 		{
@@ -211,43 +237,24 @@ namespace vl::presentation::remote_renderer
 			return true;
 		}
 
-		void EnsureCreatedFromFirstUpdate(const remoteprotocol::ElementDesc_DocumentParagraph& arguments)
+		void ApplyUpdateAndFillResponse(const remoteprotocol::ElementDesc_DocumentParagraph& arguments, remoteprotocol::UpdateElement_DocumentParagraphResponse& response)
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteDocumentParagraphElement::EnsureCreatedFromFirstUpdate(const remoteprotocol::ElementDesc_DocumentParagraph&)#"
-			CHECK_ERROR(renderTarget != nullptr, ERROR_MESSAGE_PREFIX L"Render target is not available.");
-
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteDocumentParagraphElement::ApplyUpdateAndFillResponse(const remoteprotocol::ElementDesc_DocumentParagraph&, remoteprotocol::UpdateElement_DocumentParagraphResponse&)#"
 			if (!paragraph)
 			{
-				if (arguments.text)
-				{
-					text = arguments.text.Value();
-					hasText = true;
-					textRuns.Clear();
-					inlineObjectRuns.Clear();
-					mergedRuns.Clear();
-				}
-				else
-				{
-					CHECK_ERROR(hasText, ERROR_MESSAGE_PREFIX L"First update must contain text.");
-				}
-
-				RecreateParagraphIfPossible();
+				CHECK_ERROR(arguments.text, ERROR_MESSAGE_PREFIX L"First update must contain text.");
+				text = arguments.text;
 			}
 			else
 			{
 				CHECK_ERROR(!arguments.text, ERROR_MESSAGE_PREFIX L"Text is only allowed on first update.");
 			}
-#undef ERROR_MESSAGE_PREFIX
-		}
+			wrapLine = arguments.wrapLine;
+			maxWidth = arguments.maxWidth;
+			alignment = arguments.alignment;
 
-		void ApplyUpdateAndFillResponse(const remoteprotocol::ElementDesc_DocumentParagraph& arguments, remoteprotocol::UpdateElement_DocumentParagraphResponse& response)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteDocumentParagraphElement::ApplyUpdateAndFillResponse(const remoteprotocol::ElementDesc_DocumentParagraph&, remoteprotocol::UpdateElement_DocumentParagraphResponse&)#"
-			EnsureCreatedFromFirstUpdate(arguments);
-
-			paragraph->SetWrapLine(arguments.wrapLine);
-			paragraph->SetMaxWidth(arguments.maxWidth);
-			paragraph->SetParagraphAlignment(owner->GetAlignment(arguments.alignment));
+			CHECK_ERROR(renderTarget, ERROR_MESSAGE_PREFIX L"Render target is not set.");
+			TryRecreateParagraph();
 
 			inlineObjectBounds.Clear();
 
@@ -350,8 +357,11 @@ namespace vl::presentation::remote_renderer
 			mergedRuns.Clear();
 			elements::MergeRuns(textRuns, inlineObjectRuns, mergedRuns);
 
-			response.documentSize = paragraph->GetSize();
+			ApplyProps();
+			ApplyRuns();
+			ApplyCaret();
 
+			response.documentSize = paragraph->GetSize();
 			if (inlineObjectRuns.Count() > 0)
 			{
 				renderTarget->StartRendering();
@@ -400,7 +410,7 @@ namespace vl::presentation::remote_renderer
 
 #define PREPARE_DOCUMENT_WRAPPER(WRAPPER_NAME, ELEMENT_ID)																				\
 	PREPARE_DOCUMENT_WRAPPER_RAW(WRAPPER_NAME, ELEMENT_ID);																				\
-	CHECK_ERROR(WRAPPER_NAME->HasParagraph(), L"GuiRemoteRendererSingle::Request*()#The IGuiGraphicsParagraph is not created yet.")		\
+	CHECK_ERROR(WRAPPER_NAME->GetParagraph(), L"GuiRemoteRendererSingle::Request*()#The IGuiGraphicsParagraph is not created yet.")		\
 
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_DocumentParagraph(vint id, const remoteprotocol::ElementDesc_DocumentParagraph& arguments)
 	{
