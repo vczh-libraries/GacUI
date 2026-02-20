@@ -116,10 +116,6 @@ namespace vl::presentation::remote_renderer
 		events->RespondRendererEndRendering(id, elementMeasurings);
 		elementMeasurings = {};
 		fontHeightMeasurings.Clear();
-
-		// Ensure the client repaints on every completed core frame.
-		// Some frames may only contain element updates / measurements (or an empty dom diff).
-		needRefresh = true;
 	}
 
 /***********************************************************************
@@ -146,54 +142,7 @@ namespace vl::presentation::remote_renderer
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererRenderDomDiff(const RenderingDom_DiffsInOrder&)#"
 		CHECK_ERROR(renderingDom, ERROR_MESSAGE_PREFIX L"This function must be called after RequestRendererRenderDom.");
 
-		remoteprotocol::RenderingDom_DiffsInOrder filtered;
-		filtered.diffsInOrder = Ptr(new collections::List<remoteprotocol::RenderingDom_Diff>);
-
-		if (arguments.diffsInOrder)
-		{
-			for (auto&& diff : *arguments.diffsInOrder.Obj())
-			{
-				// dom id encoding (GuiRemoteProtocolSchema_FrameOperations.h):
-				// element: (elementId<<2)+0, parent-of-element: (elementId<<2)+1
-				bool isElementOrElementParent = (diff.id != -1) && (diff.id % 4 == 0 || diff.id % 4 == 1);
-
-				if (isElementOrElementParent && diff.diffType == remoteprotocol::RenderingDom_DiffType::Deleted)
-				{
-					// Partial-frame tolerance: do not drop existing element nodes just because
-					// they are not present in this rendering cycle's command stream.
-					// Invariant: DOM diffs manage structure; RequestRendererDestroyed + availableElements govern renderability.
-					continue;
-				}
-
-				if (isElementOrElementParent && diff.diffType == remoteprotocol::RenderingDom_DiffType::Created)
-				{
-					// NOTE: guard empty before taking &renderingDomIndex[0]
-					if (renderingDomIndex.Count() > 0)
-					{
-						vint insert = 0;
-						auto found = collections::BinarySearchLambda(
-							&renderingDomIndex[0],
-							renderingDomIndex.Count(),
-							diff.id,
-							insert,
-							[](const remoteprotocol::DomIndexItem& item, vint id) { return item.id <=> id; }
-							);
-
-						if (found != -1)
-						{
-							auto modified = diff;
-							modified.diffType = remoteprotocol::RenderingDom_DiffType::Modified;
-							filtered.diffsInOrder->Add(modified);
-							continue;
-						}
-					}
-				}
-
-				filtered.diffsInOrder->Add(diff);
-			}
-		}
-
-		UpdateDomInplace(renderingDom, renderingDomIndex, filtered);
+		UpdateDomInplace(renderingDom, renderingDomIndex, arguments);
 		CheckDom();
 #undef ERROR_MESSAGE_PREFIX
 	}

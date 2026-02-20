@@ -19,22 +19,22 @@ namespace vl::presentation::remote_renderer
 		, protected IGuiGraphicsParagraphCallback
 	{
 	protected:
-		GuiRemoteRendererSingle*					owner = nullptr;
-		compositions::GuiGraphicsComposition*		ownerComposition = nullptr;
-		IGuiGraphicsRenderTarget*					renderTarget = nullptr;
+		GuiRemoteRendererSingle*											owner = nullptr;
+		compositions::GuiGraphicsComposition*								ownerComposition = nullptr;
+		IGuiGraphicsRenderTarget*											renderTarget = nullptr;
 
-		Ptr<IGuiGraphicsParagraph>					paragraph;
-		WString										text;
-		bool										hasText = false;
-		Nullable<remoteprotocol::OpenCaretRequest>	caret;
+		Ptr<IGuiGraphicsParagraph>											paragraph;
+		WString																text;
+		bool																hasText = false;
+		Nullable<remoteprotocol::OpenCaretRequest>							caret;
 
-		elements::DocumentTextRunPropertyMap				textRuns;
-		elements::DocumentInlineObjectRunPropertyMap		inlineObjectRuns;
-		elements::DocumentRunPropertyMap					mergedRuns;
+		elements::DocumentTextRunPropertyMap								textRuns;
+		elements::DocumentInlineObjectRunPropertyMap						inlineObjectRuns;
+		elements::DocumentRunPropertyMap									mergedRuns;
 
-		Dictionary<vint, Rect>							inlineObjectBounds;
+		Dictionary<vint, Rect>												inlineObjectBounds;
 		Dictionary<vint, remoteprotocol::DocumentInlineObjectRunProperty>	inlineObjectProps;
-		Dictionary<vint, elements::CaretRange>			inlineObjectRanges;
+		Dictionary<vint, elements::CaretRange>								inlineObjectRanges;
 
 		void SetOwnerComposition(compositions::GuiGraphicsComposition* composition) override
 		{
@@ -392,14 +392,19 @@ namespace vl::presentation::remote_renderer
 		return Ptr(new GuiRemoteDocumentParagraphElement(this));
 	}
 
+#define PREPARE_DOCUMENT_WRAPPER_RAW(WRAPPER_NAME, ELEMENT_ID)																			\
+	vint index = availableElements.Keys().IndexOf(ELEMENT_ID);																			\
+	CHECK_ERROR(index != -1, L"GuiRemoteRendererSingle::Request*()#Failed to find IGuiGraphicsParagraph from element id.");				\
+	auto WRAPPER_NAME = availableElements.Values()[index].Cast<GuiRemoteDocumentParagraphElement>();									\
+	CHECK_ERROR(WRAPPER_NAME, L"GuiRemoteRendererSingle::Request*()#Failed to find IGuiGraphicsParagraph from element id.")				\
+
+#define PREPARE_DOCUMENT_WRAPPER(WRAPPER_NAME, ELEMENT_ID)																				\
+	PREPARE_DOCUMENT_WRAPPER_RAW(WRAPPER_NAME, ELEMENT_ID);																				\
+	CHECK_ERROR(WRAPPER_NAME->HasParagraph(), L"GuiRemoteRendererSingle::Request*()#The IGuiGraphicsParagraph is not created yet.")		\
+
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_DocumentParagraph(vint id, const remoteprotocol::ElementDesc_DocumentParagraph& arguments)
 	{
-		vint index = availableElements.Keys().IndexOf(arguments.id);
-		CHECK_ERROR(index != -1, L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererUpdateElement_DocumentParagraph(vint, const remoteprotocol::ElementDesc_DocumentParagraph&)#Paragraph not created.");
-
-		auto wrapper = availableElements.Values()[index].Cast<GuiRemoteDocumentParagraphElement>();
-		CHECK_ERROR(wrapper, L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererUpdateElement_DocumentParagraph(vint, const remoteprotocol::ElementDesc_DocumentParagraph&)#Unexpected element type.");
-
+		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments.id);
 		UpdateElement_DocumentParagraphResponse response;
 		wrapper->ApplyUpdateAndFillResponse(arguments, response);
 		events->RespondRendererUpdateElement_DocumentParagraph(id, response);
@@ -407,120 +412,69 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetCaret(vint id, const remoteprotocol::GetCaretRequest& arguments)
 	{
-		vint index = availableElements.Keys().IndexOf(arguments.id);
-		CHECK_ERROR(index != -1, L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestDocumentParagraph_GetCaret()#Paragraph not created.");
-		auto wrapper = availableElements.Values()[index].Cast<GuiRemoteDocumentParagraphElement>();
-		CHECK_ERROR(wrapper, L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestDocumentParagraph_GetCaret()#Unexpected element type.");
-
+		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments.id);
 		GetCaretResponse response;
-		response.preferFrontSide = true;
-
-		if (!wrapper->HasParagraph())
-		{
-			response.newCaret = arguments.caret;
-		}
-		else
-		{
-			bool preferFrontSide = true;
-			auto caret = wrapper->GetParagraph()->GetCaret(arguments.caret, arguments.relativePosition, preferFrontSide);
-			response.newCaret = caret;
-			response.preferFrontSide = preferFrontSide;
-		}
+		response.preferFrontSide = false;
+		response.newCaret = wrapper->GetParagraph()->GetCaret(arguments.caret, arguments.relativePosition, response.preferFrontSide);
 		events->RespondDocumentParagraph_GetCaret(id, response);
 	}
 
 	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetCaretBounds(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments)
 	{
-		Rect bounds;
-		vint index = availableElements.Keys().IndexOf(arguments.id);
-		if (index != -1)
-		{
-			auto wrapper = availableElements.Values()[index].Cast<GuiRemoteDocumentParagraphElement>();
-			if (wrapper && wrapper->HasParagraph())
-			{
-				bounds = wrapper->GetParagraph()->GetCaretBounds(arguments.caret, arguments.frontSide);
-			}
-		}
+		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments.id);
+		auto bounds = wrapper->GetParagraph()->GetCaretBounds(arguments.caret, arguments.frontSide);
 		events->RespondDocumentParagraph_GetCaretBounds(id, bounds);
 	}
 
 	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetInlineObjectFromPoint(vint id, const remoteprotocol::GetInlineObjectFromPointRequest& arguments)
 	{
+		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments.id);
 		Nullable<remoteprotocol::DocumentRun> result;
-
-		vint index = availableElements.Keys().IndexOf(arguments.id);
-		if (index != -1)
+		vint start = 0;
+		vint length = 0;
+		auto props = wrapper->GetParagraph()->GetInlineObjectFromPoint(arguments.point, start, length);
+		if (props)
 		{
-			auto wrapper = availableElements.Values()[index].Cast<GuiRemoteDocumentParagraphElement>();
-			if (wrapper && wrapper->HasParagraph())
+			vint cb = props.Value().callbackId;
+			remoteprotocol::DocumentInlineObjectRunProperty inlineProp;
+			if (wrapper->TryGetInlineObjectRunProperty(cb, inlineProp))
 			{
-				vint start = 0;
-				vint length = 0;
-				auto props = wrapper->GetParagraph()->GetInlineObjectFromPoint(arguments.point, start, length);
-				if (props)
-				{
-					vint cb = props.Value().callbackId;
-					remoteprotocol::DocumentInlineObjectRunProperty inlineProp;
-					if (wrapper->TryGetInlineObjectRunProperty(cb, inlineProp))
-					{
-						remoteprotocol::DocumentRun run;
-						run.caretBegin = start;
-						run.caretEnd = start + length;
-						run.props = inlineProp;
-						result = run;
-					}
-				}
+				remoteprotocol::DocumentRun run;
+				run.caretBegin = start;
+				run.caretEnd = start + length;
+				run.props = inlineProp;
+				result = run;
 			}
 		}
-
 		events->RespondDocumentParagraph_GetInlineObjectFromPoint(id, result);
 	}
 
 	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetNearestCaretFromTextPos(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments)
 	{
-		vint result = arguments.caret;
-		vint index = availableElements.Keys().IndexOf(arguments.id);
-		if (index != -1)
-		{
-			auto wrapper = availableElements.Values()[index].Cast<GuiRemoteDocumentParagraphElement>();
-			if (wrapper && wrapper->HasParagraph())
-			{
-				result = wrapper->GetParagraph()->GetNearestCaretFromTextPos(arguments.caret, arguments.frontSide);
-			}
-		}
+		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments.id);
+		auto result = wrapper->GetParagraph()->GetNearestCaretFromTextPos(arguments.caret, arguments.frontSide);
 		events->RespondDocumentParagraph_GetNearestCaretFromTextPos(id, result);
 	}
 
 	void GuiRemoteRendererSingle::RequestDocumentParagraph_IsValidCaret(vint id, const remoteprotocol::IsValidCaretRequest& arguments)
 	{
-		bool valid = false;
-		vint index = availableElements.Keys().IndexOf(arguments.id);
-		if (index != -1)
-		{
-			auto wrapper = availableElements.Values()[index].Cast<GuiRemoteDocumentParagraphElement>();
-			if (wrapper && wrapper->HasParagraph())
-			{
-				valid = wrapper->GetParagraph()->IsValidCaret(arguments.caret);
-			}
-		}
-		events->RespondDocumentParagraph_IsValidCaret(id, valid);
+		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments.id);
+		auto result = wrapper->GetParagraph()->IsValidCaret(arguments.caret);
+		events->RespondDocumentParagraph_IsValidCaret(id, result);
 	}
 
 	void GuiRemoteRendererSingle::RequestDocumentParagraph_OpenCaret(const remoteprotocol::OpenCaretRequest& arguments)
 	{
-		vint index = availableElements.Keys().IndexOf(arguments.id);
-		CHECK_ERROR(index != -1, L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestDocumentParagraph_OpenCaret()#Paragraph not created.");
-		auto wrapper = availableElements.Values()[index].Cast<GuiRemoteDocumentParagraphElement>();
-		CHECK_ERROR(wrapper, L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestDocumentParagraph_OpenCaret()#Unexpected element type.");
+		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments.id);
 		wrapper->OpenCaretAndStore(arguments);
 	}
 
 	void GuiRemoteRendererSingle::RequestDocumentParagraph_CloseCaret(const vint& arguments)
 	{
-		vint index = availableElements.Keys().IndexOf(arguments);
-		CHECK_ERROR(index != -1, L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestDocumentParagraph_CloseCaret()#Paragraph not created.");
-		auto wrapper = availableElements.Values()[index].Cast<GuiRemoteDocumentParagraphElement>();
-		CHECK_ERROR(wrapper, L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestDocumentParagraph_CloseCaret()#Unexpected element type.");
+		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments);
 		wrapper->CloseCaretAndStore();
 	}
+
+#undef PREPARE_DOCUMENT_WRAPPER
+#undef PREPARE_DOCUMENT_WRAPPER_RAW
 }
