@@ -53,7 +53,7 @@ Therefore you can just skip unit testing in the whole process, you need to mark 
 # TASKS
 
 - [x] TASK No.1: Remote Document Paragraph Rendering (Client)
-- [ ] TASK No.2: Fix Multi-Paragraph Document Rendering (Client)
+- [x] TASK No.2: Fix Multi-Paragraph Document Rendering (Client)
 
 ## TASK No.1: Remote Document Paragraph Rendering (Client)
 

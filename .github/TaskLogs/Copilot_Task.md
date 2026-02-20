@@ -1,217 +1,141 @@
 # !!!TASK!!!
 
 # PROBLEM DESCRIPTION
+## TASK No.2: Fix Multi-Paragraph Document Rendering (Client)
 
-## TASK No.1: Remote Document Paragraph Rendering (Client)
-
-Implement the client-side `IGuiGraphicsParagraph` integration in `GuiRemoteRendererSingle` so that the remote protocol can treat a paragraph as an element, while still behaving correctly under incremental updates (run diffs) from the core application. The result should compile and match the expected runtime behavior (even without end-to-end execution available in this environment).
+Fix the remote-rendered rich text document so that multiple paragraphs (created via Enter / Ctrl+Enter, depending on editor semantics) are all rendered, not just the last one. The fix must be in the client-side renderer (`GuiRemoteRendererSingle`) because the core remote protocol is already covered well by unit tests, and the symptom strongly suggests the client renderer is dropping or overwriting previously created paragraph elements during incremental updates.
 
 ### what to be done
 
-- Fix document hygiene for this task: remove encoding/mojibake artifacts so the content is readable and searchable.
-- Define acceptance criteria tied to repo tooling:
-  - Must compile at least `Test/GacUISrc/GacUISrc.sln`.
-  - Include `Test/GacUISrc/UnitTest/UnitTest.vcxproj` as a compile sanity check for protocol handler completeness.
-- Implement a concrete wrapper design that matches the remote protocol model:
-  - Create a client-side `IGuiGraphicsElement` wrapper stored in `availableElements` by element id, so all paragraph protocol handlers can resolve state from id only.
-  - The wrapper owns the underlying `IGuiGraphicsParagraph` and paragraph-specific state (cached runs, inline-object bounds, caret state as needed).
-  - The wrapper implements `IGuiGraphicsParagraphCallback` (at least `OnRenderInlineObject`) and is passed to paragraph creation, otherwise inline objects cannot be measured/rendered.
-- Make thread-affinity explicit:
-  - Paragraph creation/update and any render-target interaction must run on the UI thread.
-  - If protocol handling can occur off-thread, marshal via `GetCurrentController()->AsyncService()->InvokeInMainThread(...)`.
-- Specify the exact paragraph creation API and ordering:
-  - Use `GetGuiGraphicsResourceManager()->GetLayoutProvider()->CreateParagraph(text, renderTarget, callback)`.
-  - Clarify what happens if updates arrive before a render target exists (defer creation vs `CHECK_ERROR`) and keep the behavior consistent across all handlers.
-- Define render-target lifecycle and registration rules:
-  - `IGuiGraphicsParagraph` is render-target-bound; on render target changes, invalidate and recreate the paragraph (and re-register as needed).
-  - Register/unregister paragraphs on the render target, and use `id == -1` as the single source of truth for "not registered / not available" (avoid parallel boolean flags).
-- Expand "apply run diffs" into a concrete, mock-aligned flow in `RequestRendererUpdateElement_DocumentParagraph`:
-  - Mirror behavior in `Source/UnitTestUtilities/GuiUnitTestProtocol_Rendering_Document.cpp` (do not re-invent semantics) for both text runs and inline-object runs.
-  - Apply known constraints/learnings: capture inline-object background element id before inserting runs; compare `IGuiGraphicsParagraph::TextStyle` flags against `(TextStyle)0`; `DiffRuns` must not drop old ranges (use `CHECK_ERROR`).
-  - Be strict about protocol violations: later updates containing non-null `text` should be treated as an invariant break and fail fast with `CHECK_ERROR` (do not attempt to reinitialize).
-- Replace "fill remaining functions" with an explicit checklist of handlers to implement, mapping directly to `IGuiGraphicsParagraph` APIs:
-  - `RequestRendererUpdateElement_DocumentParagraph`
-  - `RequestDocumentParagraph_GetCaret`
-  - `RequestDocumentParagraph_GetCaretBounds`
-  - `RequestDocumentParagraph_GetInlineObjectFromPoint`
-  - `RequestDocumentParagraph_GetNearestCaretFromTextPos`
-  - `RequestDocumentParagraph_IsValidCaret`
-  - `RequestDocumentParagraph_OpenCaret`
-  - `RequestDocumentParagraph_CloseCaret`
-  - Plus any other paragraph queries required by the protocol.
-- Make response requirements explicit:
-  - Include paragraph size (`GetSize()`) and inline-object bounds (callback id -> `Rect`) so caret/hit-testing/nearest-caret queries can succeed.
-  - Clarify whether an explicit layout/render step (e.g. `Render()`) is required before answering measurement-related requests.
-- Reassert codebase conventions:
-  - Use `vint`, `WString`, `Ptr<>`, and `vl::collections::*` (avoid `std::*`); use tabs; keep header edits comment-free; extract helpers to avoid duplicated conversion/mapping blocks.
+- Reproduce the symptom by reasoning from editor semantics:
+  - Ctrl+Enter likely inserts a line break inside a single paragraph (single `RendererType::DocumentParagraph` element id), while Enter creates a new paragraph (multiple paragraph element ids in the DOM).
+  - Use this to guide where the bug must be: element scheduling / batching / redraw vs per-paragraph update logic.
+- Verify element id correctness and collisions:
+  - Confirm the core sends distinct element ids for each new paragraph created by Enter.
+  - Confirm the client does not overwrite prior entries in `availableElements` for different paragraphs (no accidental key reuse / collision).
+- Clarify whether the bug is composition-tree lifecycle vs render traversal:
+  - Verify paragraph wrapper elements are created and inserted into the composition / visual tree (not just stored in `availableElements`).
+  - Verify the rendering loop traverses and renders all paragraph nodes, not only the most recently updated one.
+- Ensure there is no shared global paragraph state:
+  - Ensure each paragraph element id maps to its own wrapper instance and its own underlying `IGuiGraphicsParagraph`.
+- Validate render-target binding & registration behavior per paragraph:
+  - Because `IGuiGraphicsParagraph` is render-target-bound, ensure per-paragraph registration/unregistration cannot inadvertently drop earlier paragraphs.
+  - Keep `id == -1` as the single source of truth for “not registered / not available”.
+- Investigate whether the renderer actually repaints after paragraph updates:
+  - In `GuiRemoteRendererSingle_Rendering.cpp`, `needRefresh` is set via `CheckDom()` (dom changes) and `Paint()` (OS repaint), but `RequestRendererUpdateElement_*` handlers do not trigger a refresh by themselves.
+  - Verify whether the core sends DOM diffs for Enter (new paragraph) vs Ctrl+Enter (no paragraph count change) and whether the client relies on `RequestRendererBeginRendering` / `RequestRendererEndRendering` as the “frame boundary” to trigger refresh.
+- Ensure paragraph updates and frame boundaries always schedule a redraw:
+  - Decide and implement a consistent policy: mark `needRefresh = true` on `RequestRendererEndRendering` (recommended), and/or on `RequestRendererUpdateElement_DocumentParagraph` when paragraph content/metrics changes.
+  - Make sure the policy covers the case where only element updates happen (DOM tree unchanged) so previously rendered paragraphs are not left stale or implicitly cleared.
+- Cross-check client behavior against the mock/spec implementation:
+  - Use `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering_Document.cpp` as the reference for update semantics and element lifecycle expectations (including multiple paragraphs).
+- Validate compilation using the normal build scripts; skip unit testing for this task.
+  - In future task documents created from this task, include in `## AFFECTED PROJECTS` a note that unit tests should not be run if the core remote protocol code is not changed.
 
 ### rationale
 
-- The remote protocol treats `IGuiGraphicsParagraph` as if it were an `IGuiGraphicsElement`, but the actual API separation requires a wrapper element on the client to fit into the renderer's element management and rendering pipeline.
-- `GuiGraphicsParagraphWrapperElement` demonstrates the basic pattern, but it is static; the remote client needs a dynamic, incremental-update version to support `RequestRendererUpdateElement_DocumentParagraph` and match core-side behavior.
-- Handling creation/deletion in the central rendering file keeps ownership and lifetime rules consistent with other remote-rendered objects, reducing the chance of leaks, dangling references, or inconsistent ids.
-- Implementing the remaining functions as direct mappings lowers risk and keeps behavior aligned with the underlying `IGuiGraphicsParagraph` contract, while the unit test mock provides a ground truth for expected message-level behavior.
+- The Ctrl+Enter vs Enter difference strongly suggests “single paragraph vs multiple paragraphs” is the triggering condition, so the most likely failures are:
+  - redraw scheduling (only the last updated paragraph causes a repaint), or
+  - DOM traversal / clipping behavior (multiple paragraph nodes exist but only one is rendered).
+- In the current client implementation, `needRefresh` is driven primarily by DOM updates (`CheckDom`) and OS paint events (`Paint`), so if the core sends element updates without an accompanying DOM diff, the client can fail to redraw updated content.
+- The core remote protocol is already well-covered by unit tests, while `GuiRemoteRendererSingle` is not and is hard to end-to-end test here, so this task should focus on making the renderer’s refresh / composition behavior robust and predictable without changing protocol semantics.
 
 # UPDATES
 
 # INSIGHTS AND REASONING
 
-## Context / Why this exists
+## Current rendering pipeline (core → client)
 
-- The remote protocol explicitly models a document paragraph as `RendererType::DocumentParagraph` and sends updates via `RendererUpdateElement_DocumentParagraph`.
-  - Schema: `remoteprotocol::ElementDesc_DocumentParagraph` and `remoteprotocol::UpdateElement_DocumentParagraphResponse` in `Source\PlatformProviders\Remote\Protocol\Generated\GuiRemoteProtocolSchema.h`.
-  - Protocol doc: `Source\PlatformProviders\Remote\Protocol\Protocol_Renderer_Document.txt`.
-- The client implementation (`Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_Rendering_Document.cpp`) currently has all document-paragraph handlers as `CHECK_FAIL(L"Not implemented.")`.
-- The protocol “treats” a paragraph like an element id (it participates in `RendererCreated/RendererDestroyed`), but `elements::IGuiGraphicsParagraph` is not an `elements::IGuiGraphicsElement`.
-  - We therefore need a client-side `IGuiGraphicsElement` wrapper that owns an `IGuiGraphicsParagraph` instance.
-  - Reference pattern: `GuiGraphicsParagraphWrapperElement` in `Source\UnitTestUtilities\SnapshotViewer\Application\GuiUnitTestSnapshotViewerApp.cpp`.
+- Core-side rendering (`Source\PlatformProviders\Remote\GuiRemoteGraphics*.cpp`) issues a **rendering cycle**:
+  - `RequestRendererBeginRendering(frameId)`
+  - a sequence of `RequestRendererRenderElement(...)` and optional `RequestRendererBeginBoundary/EndBoundary(...)` (generated by clippers)
+  - `RequestRendererEndRendering()`
+- The **dom-diff converter** (`Source\PlatformProviders\Remote\GuiRemoteProtocol_DomDiff.cpp`) intercepts the above and converts the per-frame rendering commands into:
+  - `RequestRendererRenderDom(dom)` on first frame, and then
+  - `RequestRendererRenderDomDiff(diffs)` on subsequent frames.
+- Client-side `GuiRemoteRendererSingle` (`Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_Rendering.cpp`) is currently implemented as:
+  - store the latest DOM / apply diffs (`RequestRendererRenderDom*`), which sets `needRefresh = true` via `CheckDom()`
+  - a timer (`GlobalTimer`) does `StartRendering()` → `Render(dom)` recursion → `StopRendering()` → `window->RedrawContent()`.
 
-## Core-side behavior that drives client requirements
+## What the symptom implies
 
-- Core-side remote paragraph (`elements::GuiRemoteGraphicsParagraph`) sends incremental updates using `DiffRuns` and expects a synchronous response containing:
-  - the measured paragraph size
-  - the bounds of inline objects keyed by callback id
-  - See `GuiRemoteGraphicsParagraph::EnsureRemoteParagraphSynced()` in `Source\PlatformProviders\Remote\GuiRemoteGraphics_Document.cpp`.
-- Critical semantic detail: text is only sent on the first update.
-  - `EnsureRemoteParagraphSynced()` sets `desc.text = text` only when `committedRuns.Count() == 0`.
-  - Subsequent updates rely on run diffs only; the client must not assume it can recreate the paragraph every time.
+- Ctrl+Enter producing “two lines” strongly suggests a **single paragraph element id** whose text contains a line break (or equivalent), meaning the client pipeline can draw multi-line text inside one `RendererType::DocumentParagraph`.
+- Enter producing “only the last paragraph” strongly suggests a **multi-paragraph scenario** (multiple `RendererType::DocumentParagraph` ids) where:
+  - earlier paragraph elements either disappear from the client DOM, or
+  - multiple paragraphs are laid out to the same bounds (overlap), so the last one drawn covers the others.
 
-## Proposed architecture (client-side)
+## Most likely root cause (client-side, systematic)
 
-### 1) Add a wrapper element type stored in `availableElements`
+### Hypothesis A (highest likelihood): DOM diffs represent a partial frame, but the client redraw is full-frame
 
-- Extend `GuiRemoteRendererSingle::RequestRendererCreated(...)` (in `Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_Rendering.cpp`) to handle:
-  - `remoteprotocol::RendererType::DocumentParagraph`
-- For each created paragraph id:
-  - create `Ptr<elements::IGuiGraphicsElement>` wrapper
-  - store it in `availableElements` just like other renderer-created elements
-  - call `wrapper->GetRenderer()->SetRenderTarget(GetGuiGraphicsResourceManager()->GetRenderTarget(window))` so paragraph creation can bind to a real render target
+Evidence from code:
 
-#### Wrapper responsibilities
+- The DOM is reconstructed from **rendering commands** (see `RenderingDomBuilder` in `GuiRemoteProtocolSchema_BuildFrame.cpp`). Those commands are naturally affected by:
+  - invalid regions / clipping (the underlying render pipeline may choose to paint only a portion of the window), and
+  - element-level culling (only elements intersecting the current clipper are rendered).
+- The client, however, treats the latest DOM as a **complete scene graph** and redraws the whole window from scratch each `needRefresh` tick.
 
-A single wrapper instance corresponds to one protocol paragraph id. Prefer introducing a dedicated wrapper type name to make code review and debugging easier (e.g. `GuiRemoteGraphicsParagraphElement`).
+Failure mode:
 
-- Implements `elements::IGuiGraphicsElement` so it fits the existing element map.
-- Owns the underlying `Ptr<elements::IGuiGraphicsParagraph>` and its render-target-bound lifecycle.
-- Implements `elements::IGuiGraphicsParagraphCallback`:
-  - `OnRenderInlineObject(vint callbackId, Rect location)` must:
-    - record `callbackId -> location` into a `collections::Dictionary<vint, Rect>` so the update response can provide `inlineObjectBounds`.
-    - return the inline object size for this `callbackId` (from cached inline-object properties that were applied from `runsDiff`).
-  - Add low-cost defensive checks (`CHECK_ERROR`) for unknown / duplicated callback ids to prevent silent protocol-state divergence.
-- Maintains minimal paragraph-specific state needed to apply incremental updates and answer queries:
-  - `callbackId -> CaretRange` (or equivalent) so `removedInlineObjects` can be translated back to `start/length`.
-  - `callbackId -> remoteprotocol::DocumentInlineObjectRunProperty` (or at least `callbackId -> Size`) so `OnRenderInlineObject` can return a stable size.
-  - the latest recorded `inlineObjectBounds` (`Dictionary<vint, Rect>`), cleared when the paragraph is recreated.
+- If the core paints only the region that contains the *newly inserted paragraph* (a common outcome for Enter: content below moves, invalidation may concentrate on the changed area), the reconstructed DOM for that frame can legally contain only the last paragraph.
+- `DiffDom(...)` will then generate **Deleted** diffs for DOM nodes that were not emitted in that frame.
+- Client applies deletions via `UpdateDomInplace(...)`, and then redraws from scratch → earlier paragraphs vanish.
 
-This wrapper can follow the snapshot viewer structure (single class implementing element + renderer + callback) but must support *incremental* updates (runs diffs) rather than one-time initialization.
+Why Ctrl+Enter differs:
 
-### 2) Render-target lifecycle rules
+- Ctrl+Enter modifies the same paragraph; invalidation tends to stay within the existing paragraph bounds, and the “only rendered paragraph in the frame” is still the correct one.
 
-- `elements::IGuiGraphicsParagraph` is render-target bound (`CreateParagraph(text, renderTarget, callback)` takes a render target), so:
-  - On `SetRenderTarget(newRt)` change, the wrapper must drop/recreate the underlying paragraph instance.
-  - Clear cached inline-object bounds and callbackId state when recreating.
-- If an update arrives before a valid render target is available:
-  - Prefer deterministic failure: `CHECK_ERROR(renderTarget != nullptr, ...)` (this is expected to be satisfied because `RequestRendererCreated` sets the element render target immediately from `GetGuiGraphicsResourceManager()->GetRenderTarget(window)`).
+### Hypothesis B (secondary): refresh scheduling is too DOM-driven
 
-### 3) Implement `RequestRendererUpdateElement_DocumentParagraph`
+- Client refresh is primarily driven by `CheckDom()` and `Paint()`.
+- If some text updates only cause `RequestRendererUpdateElement_DocumentParagraph` but do not produce a DOM diff (or if the diff is empty), the client may not refresh reliably.
 
-Design goal: mirror the unit test mock semantics (`Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering_Document.cpp`) while using the real `IGuiGraphicsParagraph` API.
+## Design proposals
 
-High-level algorithm:
+### Proposal 1 (recommended): make the client DOM-diff application robust against partial frames
 
-1. Resolve the wrapper from `availableElements` by `arguments.id`.
-2. Paragraph creation:
-   - Require a valid render target: `CHECK_ERROR(rt != nullptr, ...)`.
-   - If wrapper has no paragraph yet:
-     - Require `arguments.text` to exist (first update), then call
-       - `GetGuiGraphicsResourceManager()->GetLayoutProvider()->CreateParagraph(text, rt, callback)`
-   - If paragraph exists and `arguments.text` is non-null:
-     - Treat as protocol violation and fail fast: `CHECK_ERROR(false, ...)` (text is only sent on the first update per `GuiRemoteGraphicsParagraph::EnsureRemoteParagraphSynced()`).
-3. Always apply layout settings:
-   - `SetWrapLine(arguments.wrapLine)`
-   - `SetMaxWidth(arguments.maxWidth)`
-   - `SetParagraphAlignment(...)` (convert `remoteprotocol::ElementHorizontalAlignment` to `elements::Alignment`)
-4. Apply `arguments.removedInlineObjects` **before** `runsDiff` (match the unit test mock ordering):
-   - Use the cached `callbackId -> range` map to locate the range.
-   - Call `paragraph->ResetInlineObject(start, length)` and remove callbackId state (including any cached bounds).
-5. Apply `arguments.runsDiff`:
-   - For each `remoteprotocol::DocumentRun`:
-     - `start = run.caretBegin`, `length = run.caretEnd - run.caretBegin`
-     - If `DocumentTextRunProperty`:
-       - map to `SetFont/SetSize/SetStyle/SetColor/SetBackgroundColor`
-       - build `TextStyle` by OR-ing flags (initialize with `(TextStyle)0`, and compare flags against `(TextStyle)0`).
-     - If `DocumentInlineObjectRunProperty`:
-       - capture `backgroundElementId` and resolve the `IGuiGraphicsElement` **before** updating any run maps (avoid references into containers when mutating them).
-       - build `IGuiGraphicsParagraph::InlineObjectProperties` (size, baseline, breakCondition, callbackId, backgroundImage)
-       - call `paragraph->SetInlineObject(start, length, properties)`
-       - update wrapper caches (`callbackId -> size/property`, `callbackId -> range`) so later removal / hit-test can be answered.
-6. Collect response fields (per schema `UpdateElement_DocumentParagraphResponse`):
-   - `documentSize = paragraph->GetSize()`
-   - `inlineObjectBounds`:
-     - Inline-object rectangles are only observable via `IGuiGraphicsParagraphCallback::OnRenderInlineObject`, so do one “measurement render” pass after updates to populate the callbackId->Rect map.
-     - Performance note: skip the measurement render when there are no inline objects tracked.
-     - Backend safety note: avoid a “guaranteed-empty” clipper that might also skip inline-object callbacks; prefer rendering with bounds that cover the paragraph (e.g. `paragraph->Render(Rect(Point(0,0), documentSize))`) while keeping any clipper consistent with those bounds.
-     - Copy the recorded bounds into `inlineObjectBounds` when non-empty.
+Goal: avoid dropping previously known paragraph nodes just because they were not included in a partial repaint.
 
-Rationale for the explicit render:
-- `elements::IGuiGraphicsParagraph` does not expose inline-object bounds directly.
-- Windows GDI/Uniscribe triggers `OnRenderInlineObject` during render (`GuiGraphicsUniscribe.cpp`), so without calling `Render` the client cannot reliably respond with bounds.
+High-level approach:
 
-### 4) Implement caret / hit-test query handlers
+- Continue accepting `RenderDom` / `RenderDomDiff` as the primary protocol.
+- Change the client-side DOM-diff application so that **DOM deletions for element nodes are not treated as authoritative**.
+  - Use the DOM id encoding documented in `GuiRemoteProtocolSchema_FrameOperations.h`:
+    - element nodes: `id % 4 == 0` (and their virtual parents: `id % 4 == 1`)
+    - hit-test nodes: `id % 4 == 2/3`
+  - Filter out `RenderingDom_DiffType::Deleted` diffs where `diff.id % 4 == 0 || diff.id % 4 == 1`.
+    - This keeps paragraph nodes and avoids “only last paragraph remains”.
+  - Keep deletions for hit-test nodes (`%4 == 2/3`) so hit-testing/cursor updates do not accumulate stale nodes.
+- Element lifetime still remains correct because the actual renderable objects are managed by `RequestRendererCreated/Destroyed`, and render traversal already guards with `availableElements` lookups.
 
-All query handlers should:
-- resolve wrapper by `arguments.id`
-- ensure paragraph exists (if not, respond with safe defaults)
-- forward to `IGuiGraphicsParagraph` APIs and respond via `events->Respond...`
+Tradeoffs:
 
-Mappings:
+- Pros: client-only change; preserves correct rendering when the core emits a partial repaint; minimal risk to the protocol surface.
+- Cons: element DOM nodes can accumulate if the scene changes drastically without full redraws; however the element id map remains the authoritative existence check, and future modified diffs can still update bounds.
 
-- `RequestDocumentParagraph_GetCaret`:
-  - call `paragraph->GetCaret(arguments.caret, arguments.relativePosition, preferFrontSide)`
-  - return `remoteprotocol::GetCaretResponse{ newCaret, preferFrontSide }`
-- `RequestDocumentParagraph_GetCaretBounds`:
-  - call `paragraph->GetCaretBounds(arguments.caret, arguments.frontSide)`
-  - respond with `Rect`
-- `RequestDocumentParagraph_GetNearestCaretFromTextPos`:
-  - note: schema uses `GetCaretBoundsRequest`; treat `arguments.caret` as `textPos`.
-  - call `paragraph->GetNearestCaretFromTextPos(arguments.caret, arguments.frontSide)`
-  - respond with `vint`
-- `RequestDocumentParagraph_IsValidCaret`:
-  - call `paragraph->IsValidCaret(arguments.caret)`
-  - respond with `bool`
-- `RequestDocumentParagraph_GetInlineObjectFromPoint`:
-  - call `paragraph->GetInlineObjectFromPoint(arguments.point, start, length)`
-  - if found:
-    - return `remoteprotocol::DocumentRun` with `caretBegin=start`, `caretEnd=start+length`, `props=<DocumentInlineObjectRunProperty>` taken from wrapper caches
-  - else respond `Nullable<DocumentRun>()`
-- `RequestDocumentParagraph_OpenCaret` / `CloseCaret`:
-  - forward to `paragraph->OpenCaret(...)` / `paragraph->CloseCaret()` to affect rendering output
+### Proposal 2: enforce refresh on frame boundary and paragraph update
 
-### 5) Aligning with the unit test mock
+- Set `needRefresh = true` on:
+  - `RequestRendererEndRendering(...)` (frame boundary)
+  - and/or `RequestRendererUpdateElement_DocumentParagraph(...)` (content/metrics updates)
+- This addresses missed redraw cases, but does not alone prevent the “deleted DOM nodes due to partial frame” issue.
 
-- The mock implementation (`UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_DocumentParagraph`) demonstrates the intended ordering:
-  1. apply optional `text`
-  2. update wrap/maxWidth/alignment
-  3. apply `removedInlineObjects`
-  4. apply `runsDiff`
-  5. compute layout
-  6. respond with `documentSize` and `inlineObjectBounds`
+### Proposal 3 (fallback): support command-based rendering (BeginBoundary/RenderElement)
 
-The client implementation should keep the same ordering so that any future unit tests comparing behavior remain meaningful.
+- Implement `RequestRendererBeginBoundary`, `RequestRendererEndBoundary`, and `RequestRendererRenderElement` in `GuiRemoteRendererSingle` instead of failing.
+- This would allow a future mode where the client can paint exactly what the core paints (including partial invalid regions) without relying on DOM diffs.
+- This requires core-side configuration changes (disabling dom-diff converter) and is therefore not preferred for a “client-only” fix.
 
-## Error handling / robustness choices
+## Recommended decision
 
-- If the wrapper element cannot be found in `availableElements` for a paragraph id:
-  - treat as protocol misuse; recommended behavior is `CHECK_ERROR(false, ...)`.
-- If `arguments.text` is missing on the first update:
-  - fail fast: `CHECK_ERROR(arguments.text, ...)`.
-- If `arguments.text` is provided after the paragraph has already been created:
-  - treat as protocol violation: `CHECK_ERROR(false, ...)` (do not attempt to “reinitialize”, keep behavior strict and mock-aligned).
+Adopt Proposal 1 + Proposal 2:
+
+- Proposal 1 directly targets the most plausible disappearance mechanism (partial repaint → deletions → full redraw).
+- Proposal 2 improves stability in cases where only element updates happen.
 
 # AFFECTED PROJECTS
 
-- Build the solution in folder Test\GacUISrc
-  - Run Test Project UnitTest
+- Build the solution in folder REPO-ROOT\Test\GacUISrc
+  - Run Test Project UnitTest (optional; can be skipped for this task if core remote protocol code is not changed)
 
 # !!!FINISHED!!!
-
