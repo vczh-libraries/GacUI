@@ -404,7 +404,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_DocumentParagraph(vint id, const remoteprotocol::ElementDesc_DocumentParagraph& arguments)
 	{
-		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments.id);
+		PREPARE_DOCUMENT_WRAPPER_RAW(wrapper, arguments.id);
 		UpdateElement_DocumentParagraphResponse response;
 		wrapper->ApplyUpdateAndFillResponse(arguments, response);
 		events->RespondRendererUpdateElement_DocumentParagraph(id, response);
