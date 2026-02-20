@@ -25,6 +25,7 @@ Verification emphasis:
 # EXECUTION PLAN
 
 ## STEP 1: Make refresh scheduling frame-driven (client-side)
+[DONE]
 
 In `Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_Rendering.cpp`, ensure a redraw is scheduled when a rendering cycle ends, even if the DOM diff is empty.
 
@@ -48,6 +49,7 @@ If later confirmed that `RequestRendererUpdateElement_DocumentParagraph(...)` ca
 ---
 
 ## STEP 2: Tolerate partial-frame DOM diffs without “forgetting” previously rendered element nodes
+[DONE]
 
 In `Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_Rendering.cpp`, pre-process incoming diffs before applying them:
 
@@ -120,6 +122,7 @@ void GuiRemoteRendererSingle::RequestRendererRenderDomDiff(const remoteprotocol:
 ---
 
 ## STEP 3: Build and manual verification
+[DONE]
 
 ### Build
 
