@@ -90,28 +90,37 @@ Why Ctrl+Enter differs:
 - Client refresh is primarily driven by `CheckDom()` and `Paint()`.
 - If some text updates only cause `RequestRendererUpdateElement_DocumentParagraph` but do not produce a DOM diff (or if the diff is empty), the client may not refresh reliably.
 
+## Mandatory verification before implementation
+
+- Trace/log what requests are issued on **Enter** (new paragraph) vs **Ctrl+Enter** (line break):
+  - `RequestRendererBeginRendering` / `RequestRendererEndRendering`
+  - `RequestRendererRenderDomDiff` diff counts and whether any `Deleted` diffs appear
+  - `RequestRendererRenderElement` / `RequestRendererUpdateElement_DocumentParagraph` (element id + bounds)
+- Confirm whether paragraphs whose bounds change (shift) but are outside the dirty region still arrive as `Modified` with updated bounds, or are omitted and therefore appear as `Deleted` in `DiffDom(...)`.
+- Confirm whether `DiffDom(...)` classifies moved elements as `Modified` vs `Deleted`.
+
 ## Design proposals
 
-### Proposal 1 (recommended): make the client DOM-diff application robust against partial frames
+### Proposal 1 (conditional): tolerate partial-frame DOM diffs by not applying element-node deletions
 
-Goal: avoid dropping previously known paragraph nodes just because they were not included in a partial repaint.
+Goal: prevent “only last paragraph remains” when a frame contains only a partial repaint and `DiffDom(...)` produces `Deleted` diffs for element nodes not emitted in that frame.
 
-High-level approach:
+High-level approach (only if verification shows shifted paragraphs still receive updated bounds):
 
-- Continue accepting `RenderDom` / `RenderDomDiff` as the primary protocol.
-- Change the client-side DOM-diff application so that **DOM deletions for element nodes are not treated as authoritative**.
-  - Use the DOM id encoding documented in `GuiRemoteProtocolSchema_FrameOperations.h`:
-    - element nodes: `id % 4 == 0` (and their virtual parents: `id % 4 == 1`)
-    - hit-test nodes: `id % 4 == 2/3`
-  - Filter out `RenderingDom_DiffType::Deleted` diffs where `diff.id % 4 == 0 || diff.id % 4 == 1`.
-    - This keeps paragraph nodes and avoids “only last paragraph remains”.
-  - Keep deletions for hit-test nodes (`%4 == 2/3`) so hit-testing/cursor updates do not accumulate stale nodes.
-- Element lifetime still remains correct because the actual renderable objects are managed by `RequestRendererCreated/Destroyed`, and render traversal already guards with `availableElements` lookups.
+- Keep `RenderDom` / `RenderDomDiff` as the primary protocol.
+- When applying diffs client-side, ignore `RenderingDom_DiffType::Deleted` for **element nodes** (and their virtual parents) based on `GuiRemoteProtocolSchema_FrameOperations.h` id encoding:
+  - element nodes: `id % 4 == 0` (and virtual parents: `id % 4 == 1`)
+  - hit-test nodes: `id % 4 == 2/3`
+- Still apply deletions for hit-test nodes (`%4 == 2/3`) to avoid accumulating stale hit-test nodes.
+- Preserve existing lifecycle conventions:
+  - do not introduce parallel “existence tracking” beyond `RequestRendererCreated/Destroyed`
+  - keep `id == -1` registration state as authoritative
 
-Tradeoffs:
+Critical risk / why conditional:
 
-- Pros: client-only change; preserves correct rendering when the core emits a partial repaint; minimal risk to the protocol surface.
-- Cons: element DOM nodes can accumulate if the scene changes drastically without full redraws; however the element id map remains the authoritative existence check, and future modified diffs can still update bounds.
+- If a new paragraph is inserted, subsequent paragraphs may shift (bounds/Y changes).
+- If those shifted paragraphs are **not** sent with updated bounds in the same/next frames, keeping them client-side will retain stale bounds and can cause overlap/layout corruption (worse than missing paragraphs).
+- Therefore, if verification shows bounds updates for shifted paragraphs are omitted, this approach is not viable as-is; prefer core-side “full bounds update” behavior or command-based rendering (Proposal 3).
 
 ### Proposal 2: enforce refresh on frame boundary and paragraph update
 
@@ -128,10 +137,23 @@ Tradeoffs:
 
 ## Recommended decision
 
-Adopt Proposal 1 + Proposal 2:
+1) Do the mandatory verification first and decide based on evidence:
 
-- Proposal 1 directly targets the most plausible disappearance mechanism (partial repaint → deletions → full redraw).
-- Proposal 2 improves stability in cases where only element updates happen.
+- If shifted paragraphs **are** sent as `Modified` with updated bounds, focus on fixing DOM diff correctness (ID matching / diff classification / DOM building), and optionally apply Proposal 1 as a robustness layer against partial-frame deletions.
+- If shifted paragraphs **are not** sent with updated bounds (i.e. frames are partial and moved elements are omitted), do **not** apply Proposal 1 alone; instead:
+  - prefer a core-side change to ensure full frames (or at least bounds updates for all moved elements) when dom-diff mode is active, and/or
+  - move toward command-based rendering (Proposal 3) so the client consumes exactly what the core produces.
+
+2) Apply Proposal 2 regardless (refresh scheduling hygiene), since it improves stability when only element updates happen.
+
+## Verification requirements
+
+- Manual verification (required):
+  - Create 3+ paragraphs; insert a paragraph at the top/middle; ensure all paragraphs render and none overlap.
+  - Compare Enter vs Ctrl+Enter behavior.
+  - Scroll/resize to force repaints; ensure content persists.
+- Automated verification:
+  - Run any existing remote-renderer tests if available; otherwise document the exact manual steps above to prevent regressions.
 
 # AFFECTED PROJECTS
 
