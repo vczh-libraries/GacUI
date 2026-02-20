@@ -379,6 +379,34 @@ describe("validateEntry models.driving", () => {
         const result = validateEntry(goodEntry, "test:");
         assert.ok(result);
     });
+
+    it("throws when drivingSessionRetries[0].modelId doesn't match models.driving", () => {
+        const badEntry = {
+            models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "wrong-model", retries: 3 }],
+            promptVariables: {},
+            grid: [],
+            tasks: {},
+            jobs: {},
+        };
+        assert.throws(
+            () => validateEntry(badEntry, "test:"),
+            /drivingSessionRetries.*first modelId should equal/
+        );
+    });
+
+    it("passes when drivingSessionRetries[0].modelId matches models.driving", () => {
+        const goodEntry = {
+            models: { driving: "gpt-5-mini", planning: "gpt-5.2" },
+            drivingSessionRetries: [{ modelId: "gpt-5-mini", retries: 3 }],
+            promptVariables: {},
+            grid: [],
+            tasks: {},
+            jobs: {},
+        };
+        const result = validateEntry(goodEntry, "test:");
+        assert.ok(result);
+    });
 });
 
 describe("validateEntry jobs", () => {

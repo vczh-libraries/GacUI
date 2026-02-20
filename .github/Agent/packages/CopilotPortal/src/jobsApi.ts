@@ -19,14 +19,11 @@ import {
 import {
     type ICopilotTask,
     type ICopilotTaskCallback,
-    installedEntry,
-    installJobsEntry,
     startTask,
     errorToDetailedString,
 } from "./taskApi.js";
 
 export type { ICopilotTask, ICopilotTaskCallback };
-export { installJobsEntry };
 
 // ---- Types ----
 
@@ -59,14 +56,11 @@ let nextTaskId = 1;
 // ---- API Handlers ----
 
 export async function apiTaskList(
+    entry: Entry,
     req: http.IncomingMessage,
     res: http.ServerResponse,
 ): Promise<void> {
-    if (!installedEntry) {
-        jsonResponse(res, 200, { tasks: [] });
-        return;
-    }
-    const taskList = Object.entries(installedEntry.tasks).map(([name, task]) => ({
+    const taskList = Object.entries(entry.tasks).map(([name, task]) => ({
         name,
         requireUserInput: task.requireUserInput,
     }));
@@ -74,6 +68,7 @@ export async function apiTaskList(
 }
 
 export async function apiTaskStart(
+    entry: Entry,
     req: http.IncomingMessage,
     res: http.ServerResponse,
     taskName: string,
@@ -121,7 +116,7 @@ export async function apiTaskStart(
             },
         };
 
-        const copilotTask = await startTask(taskName, userInput, session, true, taskCallback, undefined, undefined, (err: unknown) => {
+        const copilotTask = await startTask(entry, taskName, userInput, session, true, taskCallback, undefined, undefined, (err: unknown) => {
             state.taskError = errorToDetailedString(err);
             pushResponse(state, { taskError: state.taskError });
             state.closed = true;
@@ -270,6 +265,7 @@ async function executeWork(
 
                     let startedTask: ICopilotTask | null = null;
                     startTask(
+                        entry,
                         taskName,
                         userInput,
                         undefined, // managed session mode for jobs
@@ -360,16 +356,12 @@ async function executeWork(
 // ---- startJob ----
 
 export async function startJob(
+    entry: Entry,
     jobName: string,
     userInput: string,
     workingDirectory: string,
     callback: ICopilotJobCallback
 ): Promise<ICopilotJob> {
-    if (!installedEntry) {
-        throw new Error("installJobsEntry has not been called.");
-    }
-
-    const entry = installedEntry;
     const job = entry.jobs[jobName];
     if (!job) {
         throw new Error(`Job "${jobName}" not found.`);
@@ -429,27 +421,25 @@ export async function startJob(
 // ---- Job API Handlers ----
 
 export async function apiJobList(
+    entry: Entry,
     req: http.IncomingMessage,
     res: http.ServerResponse,
 ): Promise<void> {
-    if (!installedEntry) {
-        jsonResponse(res, 200, { grid: [], jobs: {}, chart: {} });
-        return;
-    }
     // Build a combined chart from all jobs
     const chart: Record<string, ReturnType<typeof generateChartNodes>> = {};
-    for (const [jobName, job] of Object.entries(installedEntry.jobs)) {
+    for (const [jobName, job] of Object.entries(entry.jobs)) {
         chart[jobName] = generateChartNodes(job.work);
     }
-    jsonResponse(res, 200, { grid: installedEntry.grid, jobs: installedEntry.jobs, chart });
+    jsonResponse(res, 200, { grid: entry.grid, jobs: entry.jobs, chart });
 }
 
 export async function apiJobStart(
+    entry: Entry,
     req: http.IncomingMessage,
     res: http.ServerResponse,
     jobName: string,
 ): Promise<void> {
-    if (!installedEntry || !(jobName in installedEntry.jobs)) {
+    if (!(jobName in entry.jobs)) {
         jsonResponse(res, 200, { error: "JobNotFound" });
         return;
     }
@@ -496,7 +486,7 @@ export async function apiJobStart(
             },
         };
 
-        const copilotJob = await startJob(jobName, userInput, workingDirectory, jobCallback);
+        const copilotJob = await startJob(entry, jobName, userInput, workingDirectory, jobCallback);
         state.job = copilotJob;
         jobs.set(jobId, state);
 
@@ -565,7 +555,3 @@ export async function apiJobLive(
         jsonResponse(res, 200, response);
     }
 }
-
-// ---- Entry Export ----
-
-export { entry } from "./jobsData.js";

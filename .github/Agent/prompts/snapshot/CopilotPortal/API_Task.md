@@ -12,6 +12,18 @@ Read `README.md` to understand the whole picture of the project as well as speci
 Data structures about jobs and tasks are in `src/jobsDef.ts`.
 Its spec is in `JobsData.md`.
 
+If an api requires `Entry`:
+- The first argument of the api helper function must be `entry: Entry`.
+- `index.ts` will call `ensureInstalledEntry` for this argument.
+
+**TEST-NOTE-BEGIN**
+`yarn launch-for-test` will be used for unit testing therefore you have a chance to specify your own entry file.
+DO NOT use the default entry for testing.
+
+The free model "gpt-5-mini" must be used in every `Entry.models`.
+If the model is no longer available, choose a new one and update both spec and custom entry JSON files.
+**TEST-NOTE-END**
+
 ## Helpers (taskApi.ts) -----------------------------------------------------------------------------------------------------------------------------
 
 All helper functions and types are exported and API implementations should use them.
@@ -41,12 +53,6 @@ Also pushes `onGeneratedUserPrompt` to the driving session's response queue.
 `errorToDetailedString(err: unknown): string;`
 - Convert any error into a detailed JSON string representation including name, message, stack, and cause.
 
-### installJobsEntry
-
-`async installJobsEntry(entry: Entry): Promise<void>;`
-- Use the entry. It could be `entry` from `jobsData.ts` or whatever.
-- This function can only be called when no session is running, otherwise throws.
-
 ```typescript
 interface ICopilotTask {
   readonly drivingSession: ICopilotSession;
@@ -74,6 +80,7 @@ interface ICopilotTaskCallback {
 }
 
 async function startTask(
+  entry: Entry,
   taskName: string,
   userInput: string,
   drivingSession: ICopilotSession | undefined,
@@ -85,7 +92,6 @@ async function startTask(
 ): Promise<ICopilotTask>
 ```
 - Start a task.
-- Throw an error if `installJobsEntry` has not been called.
 - When `drivingSession` is defined:
   - the task is in borrowing session mode
 - When `drivingSession` is not defined:
@@ -93,34 +99,6 @@ async function startTask(
 - The `exceptionHandler` is called if the task execution throws an unhandled exception.
 
 ## API (taskApi.ts) ---------------------------------------------------------------------------------------------------------------------------------
-
-**TEST-NOTE-BEGIN**
-`yarn launch-for-test` will be used for unit testing therefore you have a chance to specify your own entry file.
-DO NOT use the default entry for testing.
-
-The free model "gpt-5.1-mini" must be used in every `Entry.models`.
-If the model is no longer available, choose a new one and update both spec and custom entry JSON files.
-**TEST-NOTE-END**
-
-### copilot/test/installJobsEntry
-
-Only available when `src/index.ts` is launched with `--test`.
-The body will be an absolute path of a custom JSON file for entry.
-The API will first check if the JSON file is in the `test` folder.
-It reads the JSON file, called `validateEntry` followed by `installJobsEntry`.
-
-Return in this schema:
-```typescript
-{
-  result: "OK" | "InvalidatePath" | "InvalidateEntry" | "Rejected",
-  error?: string
-}
-```
-
-Return "InvalidatePath" when the file is not in the `test` folder.
-Return "InvalidateEntry" when `validateEntry` throws.
-Return "Rejected" when `installJobsEntry` throws.
-"error" stores the exception message.
 
 ### copilot/task
 

@@ -1,14 +1,15 @@
 import type { ICopilotSession } from "./copilotSession.js";
 import type { Entry, Task, Prompt } from "./jobsDef.js";
-import { expandPromptDynamic, getModelId, MAX_CRASH_RETRIES, SESSION_CRASH_PREFIX } from "./jobsDef.js";
+import { expandPromptDynamic, getModelId, SESSION_CRASH_PREFIX } from "./jobsDef.js";
 import {
     helperSessionStart,
     helperSessionStop,
     helperPushSessionResponse,
-    hasRunningSessions,
 } from "./copilotApi.js";
 
 // ---- Error Formatting Helper ----
+
+const MAX_CRASH_RETRIES = 5;
 
 export function errorToDetailedString(err: unknown): string {
     if (err instanceof Error) {
@@ -42,22 +43,6 @@ export interface ICopilotTaskCallback {
     taskSessionStarted(taskSession: ICopilotSession, taskId: string, isDrivingSession: boolean): void;
     // Unavailable in borrowing session mode
     taskSessionStopped(taskSession: ICopilotSession, taskId: string, succeeded: boolean): void;
-}
-
-// ---- Entry Management ----
-
-export let installedEntry: Entry | null = null;
-
-export async function installJobsEntry(entryValue: Entry): Promise<void> {
-    if (hasRunningSessions()) {
-        throw new Error("Cannot call installJobsEntry while sessions are running.");
-    }
-    installedEntry = entryValue;
-}
-
-// For testing: reset the installed entry
-export function resetJobsEntry(): void {
-    installedEntry = null;
 }
 
 // ---- Runtime Variable Helpers ----
@@ -159,6 +144,7 @@ class CopilotTaskImpl implements ICopilotTask {
     }
 
     constructor(
+        entry: Entry,
         taskName: string,
         userInput: string,
         private assignedDrivingSession: ICopilotSession | undefined,
@@ -166,10 +152,7 @@ class CopilotTaskImpl implements ICopilotTask {
         private callback: ICopilotTaskCallback,
         taskModelIdOverride?: string,
         private workingDirectory?: string) {
-        if (!installedEntry) {
-            throw new Error("installJobsEntry has not been called.");
-        }
-        this.entry = installedEntry;
+        this.entry = entry;
         this.task = this.entry.tasks[taskName];
         if (!this.task) {
             throw new Error(`Task "${taskName}" not found.`);
@@ -205,6 +188,8 @@ class CopilotTaskImpl implements ICopilotTask {
         const [session, sessionId] = await helperSessionStart(modelId, this.workingDirectory);
         this.activeSessions.set(sessionId, session);
         this.callback.taskSessionStarted(session, sessionId, isDriving);
+        const sessionType = this.singleModel ? "task" : (isDriving ? "driving" : "task");
+        this.callback.taskDecision(`[SESSION STARTED] ${sessionType} session started with model ${modelId}`);
         if (isDriving && !this.primaryDrivingSession) this.primaryDrivingSession = session;
         return [session, sessionId];
     }
@@ -223,7 +208,41 @@ class CopilotTaskImpl implements ICopilotTask {
         modelId: string,
         isDriving: boolean,
     ): Promise<{ toolsCalled: Set<string>; booleanResult: boolean | null }> {
-        const maxAttempts = this.borrowingMode ? 1 : MAX_CRASH_RETRIES;
+        if (this.borrowingMode) {
+            // Borrowing mode: no retry
+            return this.sendMonitoredPromptOnce(sessionRef, prompt);
+        }
+
+        if (isDriving) {
+            return this.sendMonitoredPromptDriving(sessionRef, prompt, modelId);
+        } else {
+            return this.sendMonitoredPromptTask(sessionRef, prompt, modelId);
+        }
+    }
+
+    private async sendMonitoredPromptOnce(
+        sessionRef: { session: ICopilotSession; id: string },
+        prompt: string,
+    ): Promise<{ toolsCalled: Set<string>; booleanResult: boolean | null }> {
+        const monitor = monitorSessionTools(sessionRef.session, this.runtimeValues);
+        try {
+            helperPushSessionResponse(sessionRef.session, { callback: "onGeneratedUserPrompt", prompt });
+            await sessionRef.session.sendRequest(prompt);
+            monitor.cleanup();
+            return { toolsCalled: monitor.toolsCalled, booleanResult: monitor.booleanResult };
+        } catch (err) {
+            monitor.cleanup();
+            this.callback.taskDecision(`[SESSION CRASHED] ${errorToDetailedString(err)}`);
+            throw err;
+        }
+    }
+
+    private async sendMonitoredPromptTask(
+        sessionRef: { session: ICopilotSession; id: string },
+        prompt: string,
+        modelId: string,
+    ): Promise<{ toolsCalled: Set<string>; booleanResult: boolean | null }> {
+        const maxAttempts = MAX_CRASH_RETRIES;
         let lastError: unknown;
 
         for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -240,16 +259,76 @@ class CopilotTaskImpl implements ICopilotTask {
                 lastError = err;
                 this.callback.taskDecision(`[SESSION CRASHED] ${errorToDetailedString(err)}`);
 
-                if (!this.borrowingMode && attempt < maxAttempts - 1) {
+                if (attempt < maxAttempts - 1) {
                     try {
                         await this.closeExistingSession(sessionRef.session, sessionRef.id, false);
-                        const [newSession, newId] = await this.openSession(modelId, isDriving);
+                        const [newSession, newId] = await this.openSession(modelId, false);
                         sessionRef.session = newSession;
                         sessionRef.id = newId;
                     } catch (sessionErr) {
                         this.callback.taskDecision(`[SESSION CRASHED] Failed to create replacement session: ${errorToDetailedString(sessionErr)}`);
                         throw sessionErr;
                     }
+                }
+            }
+        }
+
+        throw lastError;
+    }
+
+    private async sendMonitoredPromptDriving(
+        sessionRef: { session: ICopilotSession; id: string },
+        prompt: string,
+        modelId: string,
+    ): Promise<{ toolsCalled: Set<string>; booleanResult: boolean | null }> {
+        // Refresh retry budget for each driving mission
+        const retryBudget = this.entry.drivingSessionRetries.map(r => r.retries);
+        let lastError: unknown;
+
+        // First attempt with the original model
+        {
+            const monitor = monitorSessionTools(sessionRef.session, this.runtimeValues);
+            try {
+                helperPushSessionResponse(sessionRef.session, { callback: "onGeneratedUserPrompt", prompt });
+                await sessionRef.session.sendRequest(prompt);
+                monitor.cleanup();
+                return { toolsCalled: monitor.toolsCalled, booleanResult: monitor.booleanResult };
+            } catch (err) {
+                monitor.cleanup();
+                lastError = err;
+                this.callback.taskDecision(`[SESSION CRASHED] ${errorToDetailedString(err)}`);
+            }
+        }
+
+        // Retry loop using drivingSessionRetries budget
+        while (retryBudget.some(b => b > 0)) {
+            for (let index = 0; index < this.entry.drivingSessionRetries.length; index++) {
+                if (retryBudget[index] <= 0) continue;
+                retryBudget[index]--;
+
+                const retryModelId = this.entry.drivingSessionRetries[index].modelId;
+                const actualPrompt = SESSION_CRASH_PREFIX + prompt;
+
+                try {
+                    await this.closeExistingSession(sessionRef.session, sessionRef.id, false);
+                    const [newSession, newId] = await this.openSession(retryModelId, true);
+                    sessionRef.session = newSession;
+                    sessionRef.id = newId;
+                } catch (sessionErr) {
+                    this.callback.taskDecision(`[SESSION CRASHED] Failed to create replacement session: ${errorToDetailedString(sessionErr)}`);
+                    throw sessionErr;
+                }
+
+                const monitor = monitorSessionTools(sessionRef.session, this.runtimeValues);
+                try {
+                    helperPushSessionResponse(sessionRef.session, { callback: "onGeneratedUserPrompt", prompt: actualPrompt });
+                    await sessionRef.session.sendRequest(actualPrompt);
+                    monitor.cleanup();
+                    return { toolsCalled: monitor.toolsCalled, booleanResult: monitor.booleanResult };
+                } catch (err) {
+                    monitor.cleanup();
+                    lastError = err;
+                    this.callback.taskDecision(`[SESSION CRASHED] ${errorToDetailedString(err)}`);
                 }
             }
         }
@@ -620,6 +699,7 @@ class CopilotTaskImpl implements ICopilotTask {
 }
 
 export async function startTask(
+    entry: Entry,
     taskName: string,
     userInput: string,
     drivingSession: ICopilotSession | undefined,
@@ -630,7 +710,18 @@ export async function startTask(
     exceptionHandler: (err: any) => void
 ): Promise<ICopilotTask> {
 
+    // Assert drivingSessionRetries[0].modelId === entry.models.driving
+    if (
+        entry.drivingSessionRetries.length > 0 &&
+        entry.drivingSessionRetries[0].modelId !== entry.models.driving
+    ) {
+        throw new Error(
+            `Assertion failed: entry.drivingSessionRetries[0].modelId ("${entry.drivingSessionRetries[0].modelId}") !== entry.models.driving ("${entry.models.driving}")`
+        );
+    }
+
     const copilotTask = new CopilotTaskImpl(
+        entry,
         taskName,
         userInput,
         drivingSession,

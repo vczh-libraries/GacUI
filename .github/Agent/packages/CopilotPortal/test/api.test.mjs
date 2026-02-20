@@ -51,11 +51,11 @@ describe("API: /api/copilot/models", () => {
         assert.ok(freeModels.length > 0, "should have at least one free model");
     });
 
-    it("gpt-4.1 model exists and is free", async () => {
+    it("gpt-5-mini model exists and is free", async () => {
         const data = await fetchJson("/api/copilot/models");
-        const model = data.models.find((m) => m.id === "gpt-4.1");
-        assert.ok(model, "gpt-4.1 model should exist");
-        assert.strictEqual(model.multiplier, 0, "gpt-4.1 should be free");
+        const model = data.models.find((m) => m.id === "gpt-5-mini");
+        assert.ok(model, "gpt-5-mini model should exist");
+        assert.strictEqual(model.multiplier, 0, "gpt-5-mini should be free");
     });
 });
 
@@ -218,21 +218,14 @@ describe("API: task not found errors", () => {
         assert.deepStrictEqual(data, { error: "TaskNotFound" });
     });
 
-    it("task start returns SessionNotFound for invalid session id", async () => {
-        const data = await fetchJson("/api/copilot/task/start/some-task/session/nonexistent", {
-            method: "POST",
-            body: "test input",
-        });
-        assert.deepStrictEqual(data, { error: "SessionNotFound" });
-    });
 });
 
 describe("API: copilot/test/installJobsEntry", () => {
-    it("returns empty tasks/jobs before entry is installed", async () => {
+    it("returns error for tasks/jobs before entry is installed", async () => {
         const tasks = await fetchJson("/api/copilot/task");
-        assert.deepStrictEqual(tasks, { tasks: [] });
+        assert.ok(tasks.error, "should return error when entry not installed");
         const jobs = await fetchJson("/api/copilot/job");
-        assert.deepStrictEqual(jobs, { grid: [], jobs: {}, chart: {} });
+        assert.ok(jobs.error, "should return error when entry not installed");
     });
 
     it("returns InvalidatePath for file outside test folder", async () => {
@@ -308,6 +301,14 @@ describe("API: copilot/test/installJobsEntry", () => {
 });
 
 describe("API: /api/copilot/task (after entry installed)", () => {
+    it("task start returns SessionNotFound for invalid session id", async () => {
+        const data = await fetchJson("/api/copilot/task/start/some-task/session/nonexistent", {
+            method: "POST",
+            body: "test input",
+        });
+        assert.deepStrictEqual(data, { error: "SessionNotFound" });
+    });
+
     it("returns a list of tasks", async () => {
         const data = await fetchJson("/api/copilot/task");
         assert.ok(Array.isArray(data.tasks), "tasks should be an array");

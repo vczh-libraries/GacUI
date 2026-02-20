@@ -1,8 +1,11 @@
 {
   "models": {
-    "driving": "gpt-4.1",
-    "planning": "gpt-4.1"
+    "driving": "gpt-5-mini",
+    "planning": "gpt-5-mini"
   },
+  "drivingSessionRetries": [
+    { "modelId": "gpt-5-mini", "retries": 3 }
+  ],
   "promptVariables": {},
   "grid": [
     {

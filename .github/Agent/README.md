@@ -102,7 +102,7 @@ File organization in these two folders are identical:
 │   │   │   ├── jobsChart.ts   # Flow chart graph generation from work trees
 │   │   │   ├── jobsData.ts    # Preloaded jobs/tasks data
 │   │   │   ├── sharedApi.ts   # Shared HTTP/live-polling utilities
-│   │   │   └── index.ts       # HTTP server, API routing, static files
+│   │   │   └── index.ts       # HTTP server, API routing, static files, entry management
 │   │   ├── assets/           # Static website files
 │   │   │   ├── index.html    # Main portal page
 │   │   │   ├── index.js      # Portal JS (session interaction, live polling)
@@ -153,7 +153,7 @@ File organization in these two folders are identical:
 - **Multiple Sessions**: Supports parallel sessions sharing a single CopilotClient
 - **Live Polling**: Sequential long-polling for real-time session callbacks
 - **Task System**: Job/task execution engine with availability checks, criteria validation, and retry logic
-- **Session Crash Retry**: `sendMonitoredPrompt` (private method on `CopilotTaskImpl`) automatically retries up to 5 times if a Copilot session crashes during prompt execution, creating new sessions when needed
+- **Session Crash Retry**: `sendMonitoredPrompt` (private method on `CopilotTaskImpl`) automatically retries if a Copilot session crashes during prompt execution, creating new sessions when needed. Driving sessions use `entry.drivingSessionRetries` budget with multi-model fallback; task sessions retry up to 5 times with the same model.
 - **Detailed Error Reporting**: `errorToDetailedString` helper converts errors to detailed JSON with name, message, stack, and recursive cause chain for comprehensive crash diagnostics
 - **Jobs API**: RESTful API for listing, starting, stopping, and monitoring tasks and jobs via live polling
 - **Live Polling Drain**: Live APIs (session/task/job) use a drain model — clients continue polling until receiving terminal `*Closed` or `*NotFound` errors, ensuring all buffered responses are consumed
@@ -168,8 +168,8 @@ File organization in these two folders are identical:
 - **Task Inspection**: Clicking a TaskNode in the flow chart opens a tab control showing session responses for that task's sessions
 - **Job Preview Mode**: Job tracking page supports a preview mode (no jobId) showing the flow chart without tracking, with no Stop Job button and "JOB: PREVIEW" status
 - **Job-Created Tasks**: Jobs create tasks in managed session mode; `startTask` manages driving session creation internally. Task live API provides real-time session updates with `sessionId` and `isDriving` fields
-- **Task Decision Reporting**: `taskDecision` callback reports all driving session decisions with categorized prefixes (`[OPERATION]`, `[CRITERIA]`, `[AVAILABILITY]`, `[SESSION CRASHED]`, `[TASK SUCCEEDED]`, `[TASK FAILED]`, `[DECISION]`) as User message blocks in the driving session tab
+- **Task Decision Reporting**: `taskDecision` callback reports all driving session decisions with categorized prefixes (`[SESSION STARTED]`, `[OPERATION]`, `[CRITERIA]`, `[AVAILABILITY]`, `[SESSION CRASHED]`, `[TASK SUCCEEDED]`, `[TASK FAILED]`, `[DECISION]`) as User message blocks in the driving session tab
 - **Driving Session Consolidation**: All driving sessions for a task are consolidated into a single "Driving" tab; when a driving session is replaced (e.g., due to crash retry), the new session reuses the same tab and renderer
 - **Borrowing Session Mode**: Tasks can run with an externally-provided session (borrowing mode); crashes in borrowing mode fail immediately without retry
 - **Managed Session Mode**: Tasks in managed mode create their own sessions — single model mode reuses one session, multiple models mode creates ephemeral sessions per mission
-- **Separated Retry Budgets**: Crash retries (per-call, 5 max) and criteria retries (per failure action) are independent; a crash during a criteria retry loop is treated as a failed iteration rather than killing the task
+- **Separated Retry Budgets**: Driving session crash retries use `entry.drivingSessionRetries` with multi-model fallback per driving mission; task session crash retries are per-call (5 max in `sendMonitoredPrompt`); criteria retries are per failure action loop. A crash exhausting its per-call budget during a criteria retry loop is treated as a failed iteration rather than killing the task

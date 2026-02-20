@@ -1,11 +1,11 @@
 // ---- Task ----
 
-export type Prompt = string[];
-
 export type Model =
     | { category: string; }
     | { id: string; }
     ;
+
+export type Prompt = string[];
 
 export interface TaskRetry {
     retryTimes: number;
@@ -92,7 +92,7 @@ export function assignWorkId(work: Work<never>): Work<number> {
                     falseWork: w.falseWork ? helper(w.falseWork, nextId) : undefined
                 };
             }
-        }   
+        }
     }
     return helper(work, [0]);
 }
@@ -116,8 +116,14 @@ export interface GridRow {
 
 // ---- Entry ----
 
+export interface ModelRetry {
+    modelId: string;
+    retries: number;
+}
+
 export interface Entry {
     models: { [key in string]: string };
+    drivingSessionRetries: ModelRetry[];
     promptVariables: { [key in string]: string[] };
     tasks: { [key in string]: Task };
     jobs: { [key in string]: Job };
@@ -151,7 +157,6 @@ export function getModelId(model: Model, entry: Entry): string {
 
 
 export const SESSION_CRASH_PREFIX = "The session crashed, please redo and here is the last request:\n";
-export const MAX_CRASH_RETRIES = 5;
 export const DEFAULT_CRITERIA_RETRIES = 5;
 
 export function retryWithNewSessionCondition(retryTimes: number = 3): TaskRetry {
@@ -217,6 +222,13 @@ export function validateEntry(entry: Entry, codePath: string): Entry {
     // Validate models.driving exists
     if (!("driving" in entry.models)) {
         throw new Error(`${codePath}entry.models.driving: Should exist.`);
+    }
+
+    // Validate drivingSessionRetries[0].modelId equals models.driving
+    if (entry.drivingSessionRetries && entry.drivingSessionRetries.length > 0) {
+        if (entry.drivingSessionRetries[0].modelId !== entry.models.driving) {
+            throw new Error(`${codePath}entry.drivingSessionRetries: The first modelId should equal to entry.models.driving.`);
+        }
     }
 
     const modelKeys = Object.keys(entry.models).filter(k => k !== "reviewers");

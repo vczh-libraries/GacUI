@@ -55,6 +55,12 @@ const entryInput: Entry = {
         reviewers2: "claude-opus-4.5",
         reviewers3: "gemini-3-pro-preview"
     },
+    drivingSessionRetries: [
+        { modelId: "gpt-5-mini", retries: 5 },
+        { modelId: "gpt-4.1", retries: 5 },
+        { modelId: "gpt-5.1-codex-mini", retries: 3 },
+        { modelId: "claude-haiku-4.5", retries: 3 },
+    ],
     promptVariables: {
         reviewerBoardFiles: [
             "## Your Identity",

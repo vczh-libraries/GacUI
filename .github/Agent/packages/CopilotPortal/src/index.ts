@@ -14,6 +14,7 @@ import {
     apiCopilotSessionStop,
     apiCopilotSessionQuery,
     apiCopilotSessionLive,
+    hasRunningSessions,
 } from "./copilotApi.js";
 import {
     apiTaskList,
@@ -24,10 +25,10 @@ import {
     apiJobStart,
     apiJobStop,
     apiJobLive,
-    installJobsEntry,
-    entry,
 } from "./jobsApi.js";
+import type { Entry } from "./jobsDef.js";
 import { validateEntry } from "./jobsDef.js";
+import { entry } from "./jobsData.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -76,6 +77,24 @@ function findRepoRoot(startDir: string): string {
     }
 }
 const repoRoot = findRepoRoot(__dirname);
+
+// ---- Entry Management ----
+
+let installedEntry: Entry | null = null;
+
+async function installJobsEntry(entryValue: Entry): Promise<void> {
+    if (hasRunningSessions()) {
+        throw new Error("Cannot call installJobsEntry while sessions are running.");
+    }
+    installedEntry = entryValue;
+}
+
+function ensureInstalledEntry(): Entry {
+    if (!installedEntry) {
+        throw new Error("installJobsEntry has not been called.");
+    }
+    return installedEntry;
+}
 
 // ---- Static File Serving ----
 
@@ -182,14 +201,14 @@ async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, ap
 
     // api/copilot/task (list all tasks)
     if (apiPath === "copilot/task") {
-        await apiTaskList(req, res);
+        await apiTaskList(ensureInstalledEntry(), req, res);
         return;
     }
 
     // api/copilot/task/start/{task-name}/session/{session-id}
     const taskStartMatch = apiPath.match(/^copilot\/task\/start\/([^\/]+)\/session\/([^\/]+)$/);
     if (taskStartMatch) {
-        await apiTaskStart(req, res, taskStartMatch[1], taskStartMatch[2]);
+        await apiTaskStart(ensureInstalledEntry(), req, res, taskStartMatch[1], taskStartMatch[2]);
         return;
     }
 
@@ -209,14 +228,14 @@ async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, ap
 
     // api/copilot/job (list all jobs)
     if (apiPath === "copilot/job") {
-        await apiJobList(req, res);
+        await apiJobList(ensureInstalledEntry(), req, res);
         return;
     }
 
     // api/copilot/job/start/{job-name}
     const jobStartMatch = apiPath.match(/^copilot\/job\/start\/([^\/]+)$/);
     if (jobStartMatch) {
-        await apiJobStart(req, res, jobStartMatch[1]);
+        await apiJobStart(ensureInstalledEntry(), req, res, jobStartMatch[1]);
         return;
     }
 

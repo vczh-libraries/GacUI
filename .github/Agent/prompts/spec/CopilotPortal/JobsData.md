@@ -59,6 +59,8 @@ it verifies that `job_boolean_true` or `job_boolean_false` must be mentioned in 
 Here are all checks that `validateEntry` needs to do:
 - `entry.models.driving`:
   - Should exist.
+- `entry.drivingSessionRetries`:
+  - The first modelId should equal to `entry.models.driving`.
 - `entry.grid[rowIndex].jobs[columnIndex].jobName`:
   - Must be in keys of `entry.jobs`.
 - `entry.tasks[name].model.category`;
@@ -117,10 +119,26 @@ Single model option will be enabled when one of the following conditions satisfi
 Every session is created and managed by the task.
 No matter single model or multiple models is selected:
 - If a session crashes, new session must be created to replace it.
-- If executing the same prompt results in 5 consecutive crashes, fail the task immediately.
+- If executing the same prompt results in consecutive crashes and eventually draining all retry budget, fail the task immediately.
 - Add `SESSION_CRASH_PREFIX` (const from `taskApi.ts`: `"The session crashed, please redo and here is the last request:\n"`) before the prompt when resend.
 - The crash retry logic is implemented in the private `sendMonitoredPrompt` method on `CopilotTaskImpl` in `taskApi.ts`.
 - The exception cannot be consumed silently, and every exception should be reported by `ICopilotTaskCallback.taskDecision`.
+
+#### Retry Budget
+
+Task session retry budget is defined in `Task.criteria.failureAction`.
+Driving session retry budget is defined in `entry.drivingSessionRetries`.
+When en single mode, retry budgets are still separately applying, depending on if the session is running driving session work (availability/criteria check) or task session work.
+
+Driving session retries in this way:
+- Ensure `entry.model.driving === entry.drivingSessionRetries[0].modelId`. This should have been ensured by `validateEntry` but assert in here again.
+  - This should be done in `startTask` and therefore assume it always satisfies.
+- Open a `number[]` array copying all `entry.drivingSessionRetries[index].retries`.
+- For each `entry.drivingSessionRetries[index]`, if `retryBudget[index]` > 0, decreases it and perform the retry.
+  - Retry with the appriopriate prompt for each using `modelId`.
+  - This mean try all candidate models in each round, but pay attention to the retry budget as they are different per model.
+- Keep doing until `retryBudget` contains only zeros, which means all retyr budget trained.
+- Budget refreshes for every driving mission (which the current implementation is already doing but it follows the old retry budget design).
 
 #### Managed Session Mode (single model)
 
@@ -224,6 +242,7 @@ In above sessions there are a lot of thing happenes in the driving session. A re
 - A final decision about the task succeeded or failed.
 
 Information passing to `taskDecision` should include the following prefix in order to better categories:
+- `[SESSION STARTED] (driving|task) session started with model {modelId}`, always say `task session` for single managed session mode.
 - `[SESSION CRASHED]` with detailed information from the exception.
 - `[TASK SUCCEEDED]`
 - `[TASK FAILED]`
