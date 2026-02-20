@@ -248,8 +248,6 @@ namespace vl::presentation::remote_renderer
 			CHECK_ERROR(renderTarget, ERROR_MESSAGE_PREFIX L"Render target is not set.");
 			TryRecreateParagraph();
 
-			inlineObjectBounds.Clear();
-
 			if (arguments.removedInlineObjects)
 			{
 				for (auto callbackId : *arguments.removedInlineObjects.Obj())
