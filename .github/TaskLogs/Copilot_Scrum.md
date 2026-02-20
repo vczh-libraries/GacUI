@@ -20,9 +20,40 @@ I suggest there should be only one task, in this task you should:
 
 # UPDATES
 
+## UPDATE
+
+I would like to add one task. The first task has been implemented, but there is a problem:
+
+When I hit ctrl+enter, I can see two lines. When I hit enter, I can only see the last paragraph.
+
+It probably means only the last paragraph is rendered.
+
+Fix it.
+
+The unit test does not cover GuiRemoteRendererSingle at all. The core part for the remote protocol has been covered carefully in the unit test so I believe that part should be no problem. Check GuiRemoteRendererSingle as it serves as the renderer part across process boundary. Unfortunately you don't have any way to test the application as UIA is not implemented for GacUI yet. So you need to make your guess systematically.
+
+Therefore you can just skip unit testing in the whole process, you need to mark in this new task in the scrum document that, mention in "## AFFECTED PROJECTS" in future documents creating from this task, not to run unit test if the core part is not actually changed.
+
+## UPDATE
+
+You accidentally stops, find Copilot_Scrum.md to continue your work, pay attention to the latest ## Update and the incomplete tasks. If anything is missing, here is the original task:
+-----------------------------------------------------------------------------------------------
+I would like to add one task. The first task has been implemented, but there is a problem:
+
+When I hit ctrl+enter, I can see two lines. When I hit enter, I can only see the last paragraph.
+
+It probably means only the last paragraph is rendered.
+
+Fix it.
+
+The unit test does not cover GuiRemoteRendererSingle at all. The core part for the remote protocol has been covered carefully in the unit test so I believe that part should be no problem. Check GuiRemoteRendererSingle as it serves as the renderer part across process boundary. Unfortunately you don't have any way to test the application as UIA is not implemented for GacUI yet. So you need to make your guess systematically.
+
+Therefore you can just skip unit testing in the whole process, you need to mark in this new task in the scrum document that, mention in "## AFFECTED PROJECTS" in future documents creating from this task, not to run unit test if the core part is not actually changed.
+
 # TASKS
 
 - [x] TASK No.1: Remote Document Paragraph Rendering (Client)
+- [ ] TASK No.2: Fix Multi-Paragraph Document Rendering (Client)
 
 ## TASK No.1: Remote Document Paragraph Rendering (Client)
 
@@ -31,6 +62,7 @@ Implement the client-side `IGuiGraphicsParagraph` integration in `GuiRemoteRende
 ### what to be done
 
 - Fix document hygiene for this task: remove encoding/mojibake artifacts so the content is readable and searchable.
+- (Note) This task was already executed and verified previously.
 - Define acceptance criteria tied to repo tooling:
   - Must compile at least `Test/GacUISrc/GacUISrc.sln`.
   - Include `Test/GacUISrc/UnitTest/UnitTest.vcxproj` as a compile sanity check for protocol handler completeness.
@@ -73,6 +105,45 @@ Implement the client-side `IGuiGraphicsParagraph` integration in `GuiRemoteRende
 - `GuiGraphicsParagraphWrapperElement` demonstrates the basic pattern, but it is static; the remote client needs a dynamic, incremental-update version to support `RequestRendererUpdateElement_DocumentParagraph` and match core-side behavior.
 - Handling creation/deletion in the central rendering file keeps ownership and lifetime rules consistent with other remote-rendered objects, reducing the chance of leaks, dangling references, or inconsistent ids.
 - Implementing the remaining functions as direct mappings lowers risk and keeps behavior aligned with the underlying `IGuiGraphicsParagraph` contract, while the unit test mock provides a ground truth for expected message-level behavior.
+
+## TASK No.2: Fix Multi-Paragraph Document Rendering (Client)
+
+Fix the remote-rendered rich text document so that multiple paragraphs (created via Enter / Ctrl+Enter, depending on editor semantics) are all rendered, not just the last one. The fix must be in the client-side renderer (`GuiRemoteRendererSingle`) because the core remote protocol is already covered well by unit tests, and the symptom strongly suggests the client renderer is dropping or overwriting previously created paragraph elements during incremental updates.
+
+### what to be done
+
+- Reproduce the symptom by reasoning from editor semantics:
+  - Ctrl+Enter likely inserts a line break inside a single paragraph (single `RendererType::DocumentParagraph` element id), while Enter creates a new paragraph (multiple paragraph element ids in the DOM).
+  - Use this to guide where the bug must be: element scheduling / batching / redraw vs per-paragraph update logic.
+- Verify element id correctness and collisions:
+  - Confirm the core sends distinct element ids for each new paragraph created by Enter.
+  - Confirm the client does not overwrite prior entries in `availableElements` for different paragraphs (no accidental key reuse / collision).
+- Clarify whether the bug is composition-tree lifecycle vs render traversal:
+  - Verify paragraph wrapper elements are created and inserted into the composition / visual tree (not just stored in `availableElements`).
+  - Verify the rendering loop traverses and renders all paragraph nodes, not only the most recently updated one.
+- Ensure there is no shared global paragraph state:
+  - Ensure each paragraph element id maps to its own wrapper instance and its own underlying `IGuiGraphicsParagraph`.
+- Validate render-target binding & registration behavior per paragraph:
+  - Because `IGuiGraphicsParagraph` is render-target-bound, ensure per-paragraph registration/unregistration cannot inadvertently drop earlier paragraphs.
+  - Keep `id == -1` as the single source of truth for “not registered / not available”.
+- Investigate whether the renderer actually repaints after paragraph updates:
+  - In `GuiRemoteRendererSingle_Rendering.cpp`, `needRefresh` is set via `CheckDom()` (dom changes) and `Paint()` (OS repaint), but `RequestRendererUpdateElement_*` handlers do not trigger a refresh by themselves.
+  - Verify whether the core sends DOM diffs for Enter (new paragraph) vs Ctrl+Enter (no paragraph count change) and whether the client relies on `RequestRendererBeginRendering` / `RequestRendererEndRendering` as the “frame boundary” to trigger refresh.
+- Ensure paragraph updates and frame boundaries always schedule a redraw:
+  - Decide and implement a consistent policy: mark `needRefresh = true` on `RequestRendererEndRendering` (recommended), and/or on `RequestRendererUpdateElement_DocumentParagraph` when paragraph content/metrics changes.
+  - Make sure the policy covers the case where only element updates happen (DOM tree unchanged) so previously rendered paragraphs are not left stale or implicitly cleared.
+- Cross-check client behavior against the mock/spec implementation:
+  - Use `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering_Document.cpp` as the reference for update semantics and element lifecycle expectations (including multiple paragraphs).
+- Validate compilation using the normal build scripts; skip unit testing for this task.
+  - In future task documents created from this task, include in `## AFFECTED PROJECTS` a note that unit tests should not be run if the core remote protocol code is not changed.
+
+### rationale
+
+- The Ctrl+Enter vs Enter difference strongly suggests “single paragraph vs multiple paragraphs” is the triggering condition, so the most likely failures are:
+  - redraw scheduling (only the last updated paragraph causes a repaint), or
+  - DOM traversal / clipping behavior (multiple paragraph nodes exist but only one is rendered).
+- In the current client implementation, `needRefresh` is driven primarily by DOM updates (`CheckDom`) and OS paint events (`Paint`), so if the core sends element updates without an accompanying DOM diff, the client can fail to redraw updated content.
+- The core remote protocol is already well-covered by unit tests, while `GuiRemoteRendererSingle` is not and is hard to end-to-end test here, so this task should focus on making the renderer’s refresh / composition behavior robust and predictable without changing protocol semantics.
 
 # Impact to the Knowledge Base
 
