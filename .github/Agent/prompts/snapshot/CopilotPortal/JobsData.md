@@ -20,9 +20,9 @@ Read `README.md` to understand the whole picture of the project as well as speci
 A function convert from `Prompt` to `Prompt` with only one string.
 `Prompt` is a string array, the function should join them with LF character.
 In each string there might be variables.
-An variable is $ followed by one or multiple words connected with hypens.
-When an variable is in `entry.promptVariables`, replace the variable with its values.
-When an variable is in `runtimeVariables`, keep them.
+A variable is $ followed by one or multiple words connected with hyphens.
+When a variable is in `entry.promptVariables`, replace the variable with its values.
+When a variable is in `runtimeVariables`, keep them.
 When it fails to look up the value, report an error `${codePath}: Cannot find prompt variable: ${variableName}.`.
 Be aware of that, the value is still a `Prompt`, so it is recursive.
 
@@ -44,7 +44,7 @@ When it fails to look up the value, use `<MISSING>` as its value.
 ### validateEntry
 
 **Referenced by**:
-- API.md: `### copilot/test/installJobsEntry`, `### sendMonitoredPrompt (crash retry)`
+- API_Task.md: `### copilot/test/installJobsEntry`
 
 Perform all verifications, verify and update all prompts with `expandPromptStatic`:
 - entry.tasks[name].prompt
@@ -73,7 +73,7 @@ Here are all checks that `validateEntry` needs to do:
   - `TaskWork.taskId` must be in `entry.tasks`.
   - `TaskWork.modelOverride.category` must be in fields of `entry.models`.
   - `TaskWork.modelOverride` must be defined if that task has no specified model.
-- Any `SequencialWork` and `ParallelWork`:
+- Any `SequentialWork` and `ParallelWork`:
   - `works` should have at least one element.
 - `entry.jobs[name].requireUserInput`.
   - Find out if a job requires user input by inspecting all `Task` record referenced by any `TaskWork` in this job.
@@ -82,8 +82,8 @@ Here are all checks that `validateEntry` needs to do:
   - If `requireUserInput` is undefined, fill it.
   - After `validateEntry` finishes, all `Job.requireUserInput` should be filled.
 - `entry.jobs[name].work`:
-  - Simplies the `work` tree:
-    - Expand nested `SequencialWork`, that a `SequencialWork` directly in another `SequencialWork` should be flattened. They could be multiple level.
+  - Simplifies the `work` tree:
+    - Expand nested `SequentialWork`, that a `SequentialWork` directly in another `SequentialWork` should be flattened. They could be multiple level.
     - Expand nested `ParallelWork`, that a `ParallelWork` directly in another `ParallelWork` should be flattened. They could be multiple level.
 
 If any validation runs directly in this function fails:
@@ -95,7 +95,7 @@ If any validation runs directly in this function fails:
 ## Running Tasks
 
 **Referenced by**:
-- API.md: `### sendMonitoredPrompt (crash retry)`
+- API_Task.md: `### sendMonitoredPrompt (crash retry)`
 - JobsData.md: `### TaskWork`
 
 A task is represented by type `Task`.
@@ -171,7 +171,7 @@ The following tools could be called in the driving or task session.
 
 **Referenced by**:
 - JobsData.md: `### TaskWork`, `### validateEntry`
-- API.md: `### copilot/task/start/{task-name}/session/{session-id}`
+- API_Task.md: `### copilot/task/start/{task-name}/session/{session-id}`
 
 If `Task.availability` is not defined,
 there will be no prerequisite checking,
@@ -190,13 +190,13 @@ indicating the task fails.
 
 **Referenced by**:
 - JobsData.md: `### TaskWork`, `### validateEntry`
-- API.md: `### copilot/task/start/{task-name}/session/{session-id}`
+- API_Task.md: `### copilot/task/start/{task-name}/session/{session-id}`
 
 If `Task.criteria` is not defined,
 there will be no criteria checking,
 the task is treat as succeeded.
 
-All conditions must be satisfy to indicate that the task succeeded:
+All conditions must satisfy to indicate that the task succeeded:
 - When `Task.criteria.toolExecuted` is defined, all tools in the list should have been executed in the last round of task session response.
   - When retrying the task due to `toolExecuted`, append `## Required Tool Not Called: {tool names ...}`.
 - When `Task.criteria.condition` is defined:
@@ -240,7 +240,7 @@ For `availability` and `criteria`, the information should at least contain:
 ## Running Jobs
 
 **Referenced by**:
-- API.md: `### sendMonitoredPrompt (crash retry)`
+- API_Task.md: `### sendMonitoredPrompt (crash retry)`
 
 A `Job` is workflow of multiple `Task`. If its work fails, the job fails.
 
@@ -248,7 +248,7 @@ A `Job` is workflow of multiple `Task`. If its work fails, the job fails.
 
 **Referenced by**:
 - JobsData.md: `### TaskWork`, `### Determine TaskWork.workId`
-- API.md: `### copilot/job/start/{job-name}`
+- API_Job.md: `### copilot/job/start/{job-name}`
 
 - `TaskWork`: run the task, if `modelOverride` is defined that model is used.
   - If `category` is defined, the model id is `entry.models[category]`.
@@ -289,7 +289,7 @@ More details for api and additional test notes could be found in `API.md`.
 **Referenced by**:
 - JobsData.md: `### Determine TaskWork.workId`
 
-When a task is executed by a `TaskWork`, it is in `managed session model`.
+When a task is executed by a `TaskWork`, it is in `managed session mode`.
 The job has to start all sessions.
 `TaskWork` fails if the last retry:
 - Does not pass `Task.availability` checking. Undefined means the check always succeeds.
@@ -298,7 +298,7 @@ The job has to start all sessions.
 ### Determine TaskWork.workId
 
 **Referenced by**:
-- API.md: `### copilot/job`
+- API_Job.md: `### copilot/job`
 
 Any `TaskWork` must have an unique `workIdInJob` in a Job.
 The `assignWorkId` function converts a `Work<never>` to `Work<number>` with property `workIdInJob` assigned.
@@ -307,7 +307,7 @@ When creating a `Work` AST, you can create one in `Work<never>` without worrying
 ### Exception Handling
 
 **Referenced by**:
-- API.md: `### sendMonitoredPrompt (crash retry)`
+- API_Task.md: `### sendMonitoredPrompt (crash retry)`
 
 If any task crashes:
 - The job stops immediately and marked failed.

@@ -106,7 +106,7 @@ When `ICopilotSessionCallbacks::onEndXXX` happens, the message block is complete
 
 The content of a "Tool" `MessageBlock` needs to be taken care of specially:
 - The first line should be in its title. It is easy to tell when the `title` property is empty.
-- `ICopilotSessionCallbacks::onEndToolExecution` will gives you optional extra information.
+- `ICopilotSessionCallbacks::onEndToolExecution` will give you optional extra information.
 Responses for different message blocks are identified by its id.
 
 Message blocks stack vertically from top to bottom.

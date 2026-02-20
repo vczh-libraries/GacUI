@@ -20,7 +20,7 @@ Put index.html specific javascript file in index.js.
 
 ### index.html
 
-#### Starting an Copilot Session
+#### Starting a Copilot Session
 
 **Referenced by**:
 - Jobs.md: `### jobs.html`
@@ -51,7 +51,7 @@ Only after the model list is loaded, "Start" is enabled.
 **Referenced by**:
 - Jobs.md: `### jobs.html`
 
-When I hit the "Jobs" button, it jumpts to `/jobs.html`.
+When I hit the "Jobs" button, it jumps to `/jobs.html`.
 The selected model is ignored, but the working directory should be brought to `/jobs.html`.
 
 #### Session Interaction
@@ -82,8 +82,8 @@ See `Shared.md` for `SessionResponseRenderer` specification.
 Live polling callbacks are forwarded to `sessionRenderer.processCallback(data)`.
 When its return value is `onIdle`, the send button is re-enabled.
 
-When not to run a task, any user request should call `sessionRenderer.addUserMessage(text)` to create a "User" message block.
-Call `sessionRenderer.setAwaiting(true)` when waiting for responses, and `sessionRenderer.setAwaiting(false)` when done (sync with "Send" button's enability).
+When not running a task, any user request should call `sessionRenderer.addUserMessage(text)` to create a "User" message block.
+Call `sessionRenderer.setAwaiting(true)` when waiting for responses, and `sessionRenderer.setAwaiting(false)` when done (sync with "Send" button's enabled state).
 
 #### Request Part
 
@@ -102,7 +102,7 @@ It does the same thing as pressing CTRL+ENTER.
 When the button is disabled, pressing CTRL+ENTER should also does nothing.
 `api/copilot/session/{session-id}/query` is used here.
 
-User request should generate a "User" message block, append the request and immediatelly complete it.
+User request should generate a "User" message block, append the request and immediately complete it.
 
 When a request is sent, the button is disabled.
 When `ICopilotSessionCallbacks::onIdle` triggers, it is enabled again.

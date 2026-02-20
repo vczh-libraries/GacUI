@@ -45,9 +45,13 @@ Delete the task from the spec after you complete it, keep `prompts/snapshot` and
 
 ### Maintaining "Referenced By"
 
-Right below each title of sections in all spec files,
-there will be a "referenced by" list showing that,
-changing the content in this section could affect how many other places.
+There are bullet lists under `**Referenced by**:` for most of the sessions, their format is:
+```
+- SpecFile.md: `# This Section`, `### That Section`...
+```
+Each file occupys one line.
+It means the behavior of those sections depend on the current section, when the current section is changed, those sections probably need to check.
+Maintain the list when you find new or outdated dependencies.
 
 ### Interface Changes
 

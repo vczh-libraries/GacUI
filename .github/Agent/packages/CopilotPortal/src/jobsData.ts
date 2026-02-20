@@ -421,21 +421,10 @@ const entryInput: Entry = {
             model: { category: "driving" },
             requireUserInput: false,
             prompt: [
-                "`git add` to add all files.",
-                "`git status` to list affected files.",
-                "`git commit -am` everything with this message: [BOT] Backup.",
-                "DO NOT run multiple commands at once.",
+                "$defineRepoRoot",
+                "Call REPO-ROOT/.github/Scripts/copilotGitCommit.ps1",
                 "DO NOT git push."
-            ],
-            criteria: {
-                runConditionInSameSession: true,
-                condition: [
-                    "$simpleCondition",
-                    "`git status` to list file affected, make sure there is nothing uncommited.",
-                    "But it is fine if all uncommited changes are only whitespace related."
-                ],
-                failureAction: retryFailedCondition()
-            }
+            ]
         },
         "git-push": {
             model: { category: "driving" },

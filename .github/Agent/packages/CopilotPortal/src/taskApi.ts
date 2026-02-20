@@ -1,6 +1,6 @@
 import type { ICopilotSession } from "./copilotSession.js";
 import type { Entry, Task, Prompt } from "./jobsDef.js";
-import { expandPromptDynamic, getModelId } from "./jobsDef.js";
+import { expandPromptDynamic, getModelId, MAX_CRASH_RETRIES, SESSION_CRASH_PREFIX } from "./jobsDef.js";
 import {
     helperSessionStart,
     helperSessionStop,
@@ -125,12 +125,6 @@ function monitorSessionTools(session: ICopilotSession, runtimeValues: Record<str
         },
     } as ToolMonitor;
 }
-
-// ---- Session Crash Retry ----
-
-const SESSION_CRASH_PREFIX = "The session crashed, please redo and here is the last request:\n";
-
-const MAX_CRASH_RETRIES = 5;
 
 // ---- startTask ----
 

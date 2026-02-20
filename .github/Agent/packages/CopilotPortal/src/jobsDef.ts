@@ -149,15 +149,20 @@ export function getModelId(model: Model, entry: Entry): string {
     }
 }
 
+
+export const SESSION_CRASH_PREFIX = "The session crashed, please redo and here is the last request:\n";
+export const MAX_CRASH_RETRIES = 5;
+export const DEFAULT_CRITERIA_RETRIES = 5;
+
 export function retryWithNewSessionCondition(retryTimes: number = 3): TaskRetry {
     return { retryTimes };
 }
 
-export function retryFailed(retryTimes: number = 3): TaskRetry {
+export function retryFailed(retryTimes: number = DEFAULT_CRITERIA_RETRIES): TaskRetry {
     return { retryTimes, additionalPrompt: ["Please continue as you seemed to be accidentally stopped."] };
 }
 
-export function retryFailedCondition(retryTimes: number = 3): TaskRetry {
+export function retryFailedCondition(retryTimes: number = DEFAULT_CRITERIA_RETRIES): TaskRetry {
     return { retryTimes, additionalPrompt: ["Please continue as you seemed to be accidentally stopped, because I spotted that: $reported-false-reason"] };
 }
 
