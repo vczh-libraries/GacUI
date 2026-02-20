@@ -9,7 +9,7 @@ Key recommendations to carry into implementation:
 - In `GuiRemoteRendererSingle::RequestRendererEndRendering(vint id)`, set `needRefresh = true` unconditionally at the end of each completed rendering cycle so the client repaints on every frame, even when the DOM diff is empty.
 - In `GuiRemoteRendererSingle::RequestRendererRenderDomDiff(...)`, pre-filter diffs to tolerate partial-frame updates:
   - Ignore `Deleted` diffs for element nodes and their virtual parents (`domId % 4 == 0/1`) so previously rendered element nodes are not dropped just because they were omitted from this cycle.
-  - Convert `Created` → `Modified` for such nodes when the node already exists client-side, to keep updates idempotent and avoid duplicate creation.
+  - Convert `Created` ? `Modified` for such nodes when the node already exists client-side, to keep updates idempotent and avoid duplicate creation.
   - Keep hit-test nodes (`domId % 4 == 2/3`) deletable.
   - Guard `renderingDomIndex.Count() > 0` before calling `collections::BinarySearchLambda(&renderingDomIndex[0], ...)`.
 
@@ -48,7 +48,7 @@ If later confirmed that `RequestRendererUpdateElement_DocumentParagraph(...)` ca
 
 ---
 
-## STEP 2: Tolerate partial-frame DOM diffs without “forgetting” previously rendered element nodes
+## STEP 2: Tolerate partial-frame DOM diffs without ?forgetting? previously rendered element nodes
 [DONE]
 
 In `Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_Rendering.cpp`, pre-process incoming diffs before applying them:
@@ -139,11 +139,11 @@ void GuiRemoteRendererSingle::RequestRendererRenderDomDiff(const remoteprotocol:
 3. Insert a paragraph in the middle.
 4. Delete a paragraph (select + Delete/Backspace).
 5. During rapid typing / pressing Enter, spot-check intermediate states.
-6. Use Ctrl+Enter (or the editor’s “line break” command) inside a paragraph.
+6. Use Ctrl+Enter (or the editor?s ?line break? command) inside a paragraph.
 7. Resize the window and scroll (if supported) to force multiple invalidations.
 
 Expected:
-- All paragraphs remain visible (no “only last paragraph”).
+- All paragraphs remain visible (no ?only last paragraph?).
 - No overlaps; bounds/Y-coordinates update correctly.
 - True deletions remove content and it does not reappear after typing/resize.
 
@@ -152,3 +152,6 @@ Expected:
 - N/A (execution document update only)
 
 # !!!FINISHED!!!
+
+# !!!VERIFIED!!!
+
