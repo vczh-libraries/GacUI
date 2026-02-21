@@ -286,7 +286,7 @@ A `Job` is workflow of multiple `Task`. If its work fails, the job fails.
 Need individual test cases for each type of `Work` in `work.test.mjs`, verifying details of each statement in the above bullet-point.
 Such test case could be implemented by making up a job and calls `api/copilot/job/start/{job-name}` to start a work.
 You can firstly obtain the updated work by calling `api/copilot/job`, find your target job, `workIdForJob` should have been attached to each `TaskWork`.
-By calling the `api/copilot/job/{job-id}/live` api, you are able to see the starting and ending order of each `TaskWork`, by their own `workIdForJob`.
+By calling the `api/copilot/job/{job-id}/live/{token}` api, you are able to see the starting and ending order of each `TaskWork`, by their own `workIdForJob`.
 
 With such information, you can verify:
 - If the job succeeded or failed as expected.

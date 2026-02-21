@@ -1,4 +1,5 @@
 import * as http from "node:http";
+import * as crypto from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { startSession, type ICopilotSession } from "./copilotSession.js";
@@ -7,9 +8,13 @@ import {
     stopCoplilotClient,
     readBody,
     jsonResponse,
-    pushResponse,
-    waitForResponse,
-    type LiveState,
+    getCountDownMs,
+    createLiveEntityState,
+    pushLiveResponse,
+    closeLiveEntity,
+    waitForLiveResponse,
+    shutdownLiveEntity,
+    type LiveEntityState,
     type LiveResponse
 } from "./sharedApi.js";
 
@@ -23,9 +28,10 @@ export interface ModelInfo {
     multiplier: number;
 }
 
-interface SessionState extends LiveState {
+interface SessionState {
     sessionId: string;
     session: ICopilotSession;
+    entity: LiveEntityState;
     sessionError: string | null;
     closed: boolean;
 }
@@ -38,44 +44,44 @@ let nextSessionId = 1;
 function createSessionCallbacks(state: SessionState) {
     return {
         onStartReasoning(reasoningId: string) {
-            pushResponse(state, { callback: "onStartReasoning", reasoningId });
+            pushLiveResponse(state.entity, { callback: "onStartReasoning", reasoningId });
         },
         onReasoning(reasoningId: string, delta: string) {
-            pushResponse(state, { callback: "onReasoning", reasoningId, delta });
+            pushLiveResponse(state.entity, { callback: "onReasoning", reasoningId, delta });
         },
         onEndReasoning(reasoningId: string, completeContent: string) {
-            pushResponse(state, { callback: "onEndReasoning", reasoningId, completeContent });
+            pushLiveResponse(state.entity, { callback: "onEndReasoning", reasoningId, completeContent });
         },
         onStartMessage(messageId: string) {
-            pushResponse(state, { callback: "onStartMessage", messageId });
+            pushLiveResponse(state.entity, { callback: "onStartMessage", messageId });
         },
         onMessage(messageId: string, delta: string) {
-            pushResponse(state, { callback: "onMessage", messageId, delta });
+            pushLiveResponse(state.entity, { callback: "onMessage", messageId, delta });
         },
         onEndMessage(messageId: string, completeContent: string) {
-            pushResponse(state, { callback: "onEndMessage", messageId, completeContent });
+            pushLiveResponse(state.entity, { callback: "onEndMessage", messageId, completeContent });
         },
         onStartToolExecution(toolCallId: string, parentToolCallId: string | undefined, toolName: string, toolArguments: string) {
-            pushResponse(state, { callback: "onStartToolExecution", toolCallId, parentToolCallId, toolName, toolArguments });
+            pushLiveResponse(state.entity, { callback: "onStartToolExecution", toolCallId, parentToolCallId, toolName, toolArguments });
         },
         onToolExecution(toolCallId: string, delta: string) {
-            pushResponse(state, { callback: "onToolExecution", toolCallId, delta });
+            pushLiveResponse(state.entity, { callback: "onToolExecution", toolCallId, delta });
         },
         onEndToolExecution(
             toolCallId: string,
             result: { content: string; detailedContent?: string } | undefined,
             error: { message: string; code?: string } | undefined
         ) {
-            pushResponse(state, { callback: "onEndToolExecution", toolCallId, result, error });
+            pushLiveResponse(state.entity, { callback: "onEndToolExecution", toolCallId, result, error });
         },
         onAgentStart(turnId: string) {
-            pushResponse(state, { callback: "onAgentStart", turnId });
+            pushLiveResponse(state.entity, { callback: "onAgentStart", turnId });
         },
         onAgentEnd(turnId: string) {
-            pushResponse(state, { callback: "onAgentEnd", turnId });
+            pushLiveResponse(state.entity, { callback: "onAgentEnd", turnId });
         },
         onIdle() {
-            pushResponse(state, { callback: "onIdle" });
+            pushLiveResponse(state.entity, { callback: "onIdle" });
         },
     };
 }
@@ -95,11 +101,13 @@ export async function helperGetModels(): Promise<ModelInfo[]> {
 export async function helperSessionStart(modelId: string, workingDirectory?: string): Promise<[ICopilotSession, string]> {
     const client = await ensureCopilotClient();
     const sessionId = `session-${nextSessionId++}`;
+    const entity = createLiveEntityState(getCountDownMs(), () => {
+        sessions.delete(sessionId);
+    });
     const state: SessionState = {
         sessionId,
         session: null as unknown as ICopilotSession,
-        responseQueue: [],
-        waitingResolve: null,
+        entity,
         sessionError: null,
         closed: false,
     };
@@ -112,17 +120,10 @@ export async function helperSessionStart(modelId: string, workingDirectory?: str
 
 export async function helperSessionStop(session: ICopilotSession): Promise<void> {
     await session.stop();
-    for (const [id, state] of sessions) {
+    for (const [, state] of sessions) {
         if (state.session === session) {
             state.closed = true;
-            // Don't delete yet — let live API drain remaining responses
-            // If there's a waiting resolve and no queued responses, resolve with SessionClosed
-            if (state.waitingResolve && state.responseQueue.length === 0) {
-                const resolve = state.waitingResolve;
-                state.waitingResolve = null;
-                resolve({ error: "SessionClosed" });
-                sessions.delete(id);
-            }
+            closeLiveEntity(state.entity);
             break;
         }
     }
@@ -136,7 +137,7 @@ export function helperGetSession(sessionId: string): ICopilotSession | undefined
 export function helperPushSessionResponse(session: ICopilotSession, response: LiveResponse): void {
     for (const [, state] of sessions) {
         if (state.session === session) {
-            pushResponse(state, response);
+            pushLiveResponse(state.entity, response);
             return;
         }
     }
@@ -152,15 +153,16 @@ export async function apiConfig(req: http.IncomingMessage, res: http.ServerRespo
     jsonResponse(res, 200, { repoRoot });
 }
 
+export async function apiToken(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
+    const token = crypto.randomUUID();
+    jsonResponse(res, 200, { token });
+}
+
 export function shutdownServer(server: http.Server): void {
     console.log("Shutting down...");
-    // Stop any running sessions
-    for (const [sessionId, state] of sessions) {
-        if (state.waitingResolve) {
-            const resolve = state.waitingResolve;
-            state.waitingResolve = null;
-            resolve({ error: "SessionNotFound" });
-        }
+    // Shutdown all session live entities
+    for (const [, state] of sessions) {
+        shutdownLiveEntity(state.entity);
     }
     sessions.clear();
     stopCoplilotClient();
@@ -220,13 +222,7 @@ export async function apiCopilotSessionStop(req: http.IncomingMessage, res: http
         return;
     }
     state.closed = true;
-    // If there's a waiting resolve and no queued responses, send SessionClosed
-    if (state.waitingResolve && state.responseQueue.length === 0) {
-        const resolve = state.waitingResolve;
-        state.waitingResolve = null;
-        resolve({ error: "SessionClosed" });
-        sessions.delete(sessionId);
-    }
+    closeLiveEntity(state.entity);
     jsonResponse(res, 200, { result: "Closed" });
 }
 
@@ -240,37 +236,19 @@ export async function apiCopilotSessionQuery(req: http.IncomingMessage, res: htt
     // Fire and forget the request - responses come through live polling
     state.session.sendRequest(body).catch((err: unknown) => {
         state.sessionError = String(err);
-        pushResponse(state, { sessionError: String(err) });
+        pushLiveResponse(state.entity, { sessionError: String(err) });
     });
     jsonResponse(res, 200, {});
 }
 
-export async function apiCopilotSessionLive(req: http.IncomingMessage, res: http.ServerResponse, sessionId: string): Promise<void> {
+export async function apiCopilotSessionLive(req: http.IncomingMessage, res: http.ServerResponse, sessionId: string, token: string): Promise<void> {
     const state = sessions.get(sessionId);
-    if (!state) {
-        jsonResponse(res, 200, { error: "SessionNotFound" });
-        return;
-    }
-    if (state.waitingResolve) {
-        jsonResponse(res, 200, { error: "ParallelCallNotSupported" });
-        return;
-    }
-    // If closed and no more responses in queue, return SessionClosed and remove
-    if (state.closed && state.responseQueue.length === 0) {
-        sessions.delete(sessionId);
-        jsonResponse(res, 200, { error: "SessionClosed" });
-        return;
-    }
-    const response = await waitForResponse(state, 5000);
-    if (response === null) {
-        // Check again if closed during wait
-        if (state.closed && state.responseQueue.length === 0) {
-            sessions.delete(sessionId);
-            jsonResponse(res, 200, { error: "SessionClosed" });
-            return;
-        }
-        jsonResponse(res, 200, { error: "HttpRequestTimeout" });
-    } else {
-        jsonResponse(res, 200, response);
-    }
+    const response = await waitForLiveResponse(
+        state?.entity,
+        token,
+        5000,
+        "SessionNotFound",
+        "SessionClosed",
+    );
+    jsonResponse(res, 200, response);
 }

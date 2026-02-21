@@ -95,13 +95,13 @@ File organization in these two folders are identical:
 │   ├── CopilotPortal/        # Web UI + RESTful API server
 │   │   ├── src/
 │   │   │   ├── copilotSession.ts # Copilot SDK session wrapper
-│   │   │   ├── copilotApi.ts  # Copilot session API routes and helpers
-│   │   │   ├── taskApi.ts     # Task execution engine (startTask, crash retry)
-│   │   │   ├── jobsApi.ts     # Job/task API routes and job execution
+│   │   │   ├── copilotApi.ts  # Copilot session API routes, token endpoint, and helpers
+│   │   │   ├── taskApi.ts     # Task execution engine and task API routes
+│   │   │   ├── jobsApi.ts     # Job API routes and job execution
 │   │   │   ├── jobsDef.ts     # Jobs/tasks data definitions and validation
 │   │   │   ├── jobsChart.ts   # Flow chart graph generation from work trees
 │   │   │   ├── jobsData.ts    # Preloaded jobs/tasks data
-│   │   │   ├── sharedApi.ts   # Shared HTTP/live-polling utilities
+│   │   │   ├── sharedApi.ts   # Shared HTTP utilities and token-based live entity state management
 │   │   │   └── index.ts       # HTTP server, API routing, static files, entry management
 │   │   ├── assets/           # Static website files
 │   │   │   ├── index.html    # Main portal page
@@ -151,13 +151,16 @@ File organization in these two folders are identical:
 - **Awaiting Status**: "Awaits responses ..." indicator shown in the session part while the agent is working
 - **Lazy CopilotClient**: Client starts on demand and closes when the server shuts down
 - **Multiple Sessions**: Supports parallel sessions sharing a single CopilotClient
-- **Live Polling**: Sequential long-polling for real-time session callbacks
+- **Live Polling**: Token-based sequential long-polling for real-time session/task/job callbacks. Clients acquire a token via `api/token`, then poll `live/{token}` endpoints. Responses are stored in a list with per-token reading positions, enabling multiple consumers to independently read the same response history
 - **Task System**: Job/task execution engine with availability checks, criteria validation, and retry logic
 - **Session Crash Retry**: `sendMonitoredPrompt` (private method on `CopilotTaskImpl`) automatically retries if a Copilot session crashes during prompt execution, creating new sessions when needed. Driving sessions use `entry.drivingSessionRetries` budget with multi-model fallback; task sessions retry up to 5 times with the same model.
 - **Detailed Error Reporting**: `errorToDetailedString` helper converts errors to detailed JSON with name, message, stack, and recursive cause chain for comprehensive crash diagnostics
 - **Jobs API**: RESTful API for listing, starting, stopping, and monitoring tasks and jobs via live polling
-- **Live Polling Drain**: Live APIs (session/task/job) use a drain model — clients continue polling until receiving terminal `*Closed` or `*NotFound` errors, ensuring all buffered responses are consumed
-- **Closed State Management**: Sessions, tasks, and jobs transition through a `closed` state that buffers remaining responses before cleanup, preventing lost data
+- **Running Jobs API**: `copilot/job/running` lists all running or recently finished (within an hour) jobs with name, status, and start time; `copilot/job/{job-id}/status` returns detailed job status including per-task statuses
+- **Running Jobs List**: The portal home page displays a list of running/recent jobs with name, status, and time, auto-loaded on page load. A "Refresh" button updates the list, and each item has a "View" button to inspect the job in the tracking page
+- **Initial Job Status Loading**: Job tracking page loads initial status via `copilot/job/{job-id}/status` on page load, applying task status indicators to the flow chart before live polling begins
+- **Live Polling Drain**: Live APIs (session/task/job) use a drain model — clients continue polling until receiving terminal `*Closed` or `*NotFound` errors, ensuring all buffered responses are consumed. Each entity has a configurable countdown (1 minute normal, 5 seconds in test mode) after closing, during which new tokens can still join and read history
+- **Closed State Management**: Sessions, tasks, and jobs use `LiveEntityState` with token-based lifecycle management — entities transition through open/closed states with countdown periods before cleanup, preventing lost data
 - **Test Mode API**: `copilot/test/installJobsEntry` endpoint (test mode only) for dynamically installing job entries during testing
 - **Job Workflow Engine**: Composable work tree execution supporting sequential, parallel, loop, and conditional (alt) work patterns
 - **Task Selection UI**: Combo box in the portal to select and run tasks within an active session
@@ -172,4 +175,5 @@ File organization in these two folders are identical:
 - **Driving Session Consolidation**: All driving sessions for a task are consolidated into a single "Driving" tab; when a driving session is replaced (e.g., due to crash retry), the new session reuses the same tab and renderer
 - **Borrowing Session Mode**: Tasks can run with an externally-provided session (borrowing mode); crashes in borrowing mode fail immediately without retry
 - **Managed Session Mode**: Tasks in managed mode create their own sessions — single model mode reuses one session, multiple models mode creates ephemeral sessions per mission
+- **Task Stopping via TaskStoppedError**: When a task is stopped, `guardedSendRequest` (a private helper wrapping `session.sendRequest`) throws `TaskStoppedError` if the task's `stopped` flag is set. Retry logic in `sendMonitoredPrompt` checks `this.stopped` after catching non-TaskStoppedError exceptions and converts them to `TaskStoppedError`, ensuring immediate task termination without unnecessary session replacement. Stopping a job also stops all its running tasks and emits a `jobCanceled` callback.
 - **Separated Retry Budgets**: Driving session crash retries use `entry.drivingSessionRetries` with multi-model fallback per driving mission; task session crash retries are per-call (5 max in `sendMonitoredPrompt`); criteria retries are per failure action loop. A crash exhausting its per-call budget during a criteria retry loop is treated as a failed iteration rather than killing the task

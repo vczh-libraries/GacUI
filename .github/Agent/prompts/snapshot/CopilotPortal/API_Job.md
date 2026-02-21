@@ -39,6 +39,8 @@ interface ICopilotJobCallback {
   jobSucceeded(): void;
   // Called when this job failed
   jobFailed(): void;
+  // Called when this job failed
+  jobCanceled(): void;
   // Called when a TaskWork started, taskId is the registered task for live polling
   workStarted(workId: number, taskId: string): void;
   // Called when a TaskWork stopped
@@ -56,6 +58,12 @@ async function startJob(
 
 ## API (jobsApi.ts) ---------------------------------------------------------------------------------------------------------------------------------
 
+All restful read arguments from the path and returns a JSON document.
+
+All title names below represents http:/*:port/api/TITLE
+
+Job hosting is implemented by and `src/jobsApi.ts`.
+
 ### copilot/job
 
 **Referenced by**:
@@ -72,6 +80,51 @@ List all jobs passed to `installJobsEntry` in this schema:
 ```
 
 Basically means it only keeps `grid` and `jobs` and drops all other fields, and calculate `chart` with `generateChartNodes`.
+
+### copilot/job/running
+
+List all jobs that:
+- Running
+- Finished less than an hour
+
+in this schema:
+
+```typescript
+{
+  jobs: {
+    jobId: string;
+    jobName: string;
+    startTime: Date;
+    status: "Running" | "Succeeded" | "Failed" | "Canceled";
+  }[];
+}
+```
+
+### copilot/job/{job-id}/status
+
+If a job is running or finished less than an hour, return in this schema:
+
+```typescript
+{
+  jobId: string;
+  jobName: string;
+  startTime: Date;
+  status: "Running" | "Succeeded" | "Failed" | "Canceled";
+  tasks: {
+    workIdInJob: number;
+    taskId?: string; // available only when running
+    status: "Running" | "Succeeded" | "Failed";
+  }[];
+}
+```
+
+otherwise:
+
+```typescript
+{
+  error: "JobNotFound"
+}
+```
 
 ### copilot/job/start/{job-name}
 
@@ -95,6 +148,8 @@ The first line will be an absolute path for working directory
 The rest of the body will be user input.
 
 Start a new job and return in this schema.
+The job remembers its `job-name` and start time.
+It also remembers status of all tasks. When a task restarts, status overrides.
 
 ```typescript
 {
@@ -134,13 +189,22 @@ or when error happens:
 }
 ```
 
-### copilot/job/{job-id}/live
+### copilot/job/{job-id}/live/{token}
 
 **Referenced by**:
 - Jobs.md: `### Job Part`, `### Session Response Part`, `### jobTracking.html`
 
-It works like `copilot/session/{session-id}/live` but it reacts to `ICopilotJobCallback`.
+It works like `copilot/session/{session-id}/live/{token}` but it reacts to `ICopilotJobCallback`.
 They should be implemented in the same way, but only respond in schemas mentioned below.
+`token` can be obtained by `/token` but no checking needs to perform.
+
+Returns in this schema when responses are available (batched, same as session live API):
+
+```typescript
+{
+  responses: LiveResponse[]
+}
+```
 
 Returns in this schema if any error happens
 
@@ -151,7 +215,7 @@ Returns in this schema if any error happens
 ```
 
 Special `JobNotFound` and `JobsClosed` handling for this API:
-- Works in the same way as `SessionNotFound` and `SessionClosed` in `copilot/session/{session-id}/live`. 
+- Works in the same way as `SessionNotFound` and `SessionClosed` in `copilot/session/{session-id}/live/{token}`. 
 
 **TEST-NOTE-BEGIN**
 Can't trigger "HttpRequestTimeout" stably in unit test so it is not covered.
@@ -159,7 +223,7 @@ It requires the underlying copilot agent to not generate any response for 5 seco
 which is almost impossible.
 **TEST-NOTE-END**
 
-Returns in this schema if an exception it thrown from inside the session
+An element in the `responses` array with this schema represents an exception thrown from inside the session
 
 ```typescript
 {
@@ -167,4 +231,4 @@ Returns in this schema if an exception it thrown from inside the session
 }
 ```
 
-Other response maps to all methods in `ICopilotJobCallback` in `src/jobsApi.ts`.
+Each element in the `responses` array maps to a method in `ICopilotJobCallback` in `src/jobsApi.ts`.

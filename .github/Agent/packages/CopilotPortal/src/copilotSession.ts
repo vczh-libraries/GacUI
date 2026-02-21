@@ -82,7 +82,16 @@ export async function startSession(
     streaming: true,
     workingDirectory,
     tools: jobTools,
-    onPermissionRequest: () => ({ kind: "approved" })
+    hooks: {
+      onPreToolUse: async (input) => {
+        if (input.toolName === "glob") {
+          return {
+            permissionDecision: "deny",
+            permissionDecisionReason: "Glob does not work on Windows."
+          }
+        }
+      }
+    }
   });
 
   const reasoningContentById = new Map<string, string>();

@@ -49,7 +49,7 @@ All helper functions and types are exported and API implementations should use t
 ### helperGetSession
 
 **Referenced by**:
-- API_Session.md: `### copilot/session/{session-id}/stop`, `### copilot/session/{session-id}/query`, `### copilot/session/{session-id}/live`
+- API_Session.md: `### copilot/session/{session-id}/stop`, `### copilot/session/{session-id}/query`, `### copilot/session/{session-id}/live/{token}`
 
 `helperGetSession(sessionId: string): ICopilotSession | undefined;`
 - Get a session by its id.
@@ -57,7 +57,7 @@ All helper functions and types are exported and API implementations should use t
 ### helperPushSessionResponse
 
 **Referenced by**:
-- API_Session.md: `### copilot/session/{session-id}/live`
+- API_Session.md: `### copilot/session/{session-id}/live/{token}`
 
 `helperPushSessionResponse(session: ICopilotSession, response: LiveResponse): void;`
 - Push a response to a session's response queue.
@@ -92,7 +92,7 @@ interface ICopilotSession {
 ### ICopilotSessionCallbacks
 
 **Referenced by**:
-- API_Session.md: `### copilot/session/{session-id}/live`, `### startSession`
+- API_Session.md: `### copilot/session/{session-id}/live/{token}`, `### startSession`
 - Index.md: `#### Session Interaction`, `#### Request Part`
 - Shared.md: `#### Session Response Rendering`
 
@@ -126,7 +126,7 @@ interface ICopilotSessionCallbacks {
 
 All restful read arguments from the path and returns a JSON document.
 
-All title names below represents http://localhost:port/api/TITLE
+All title names below represents http://*:port/api/TITLE
 
 Copilot hosting is implemented by `@github/copilot-sdk` and `src/copilotSession.ts`.
 
@@ -184,24 +184,50 @@ Returns in this schema
 }
 ```
 
-### copilot/session/{session-id}/live
+### copilot/session/{session-id}/live/{token}
 
 **Referenced by**:
 - Index.md: `#### Session Interaction`
 - Shared.md: `#### Session Response Rendering`
-- API_Task.md: `### copilot/task/{task-id}/live`
-- API_Job.md: `### copilot/job/{job-id}/live`
+- API_Task.md: `### copilot/task/{task-id}/live/{token}`
+- API_Job.md: `### copilot/job/{job-id}/live/{token}`
 - Jobs.md: `### jobTracking.html`
 
-This is a query to wait for one response back for this session.
-Each session generates many responses, storing in a queue.
-When the api comes, it pop one response and send back. Responses must be send back in its generating orders.
-If there is no response, do not reply the API. If there is no response after 5 seconds, send back a time out error.
+This is a query to wait for responses back for this session.
+Each session generates many responses, storing in a list.
+When the api comes, the current reading position needs to look up for the `token`, if `token` is not used with this `session-id`, create a record and put 0.
+
+Each query returns **all** available responses from the current position to the end of the list in a single batch, and the position advances past all returned responses.
+This ensures that when multiple tokens poll the same entity, they drain buffered responses instantly and converge to the same pending position, so all tokens receive new responses simultaneously.
+
+If there is no response, do not reply the API. If there is no response after 5 seconds, send back a `HttpRequestTimeout`.
 Be aware of that api requests and session responses could happen in any order.
 
-This api does not support parallel calling on the same id.
-If a call with a session-id is pending,
-the second call with the same session-id should return an error.
+This api does not support parallel calling on the (`session-id`, `token`).
+If a call with a (`session-id`, `token`) is pending,
+the second call with the same (`session-id`, `token`) should return `ParallelCallNotSupported`.
+
+#### Optimization
+
+When `onEndReasoning`/`onEndMessage` pushes to the responses list:
+- It should remove all `onReasoning`/`onMessage` for that id.
+- This would affect cached token positions. It is easy to fix by counting how many removed responses has been read.
+
+When a new response pushes to the responses list, causing a pending request to wake up:
+- The time of the last live api responding (not the requesting) needs to be recorded for the `token` and uses it as below.
+- Now the pending request will not return `HttpRequestTimeout`, but it will wait until 5 seconds after the last call.
+  - If it is already longer than 5 seconds, send new responses immediately.
+  - Whenever a live api request is responded, update the time for that `token`.
+
+#### API Schema
+
+Returns in this schema when responses are available:
+
+```typescript
+{
+  responses: LiveResponse[]
+}
+```
 
 Returns in this schema if any error happens
 
@@ -211,20 +237,50 @@ Returns in this schema if any error happens
 }
 ```
 
-Special `SessionNotFound` and `SessionClosed` handling for this API:
-- `SessionNotFound` returns when the `session-id` is never used.
+**TEST-NOTE-BEGIN**
+Can't trigger "HttpRequestTimeout" stably in unit test so it is not covered.
+It requires the underlying copilot agent to not generate any response for 5 seconds,
+which is almost impossible.
+If the server is launched with `--test` to enter a test mode, the 1 minute count down becomes 5 seconds, that enable you to test the logic efficiently.
+**TEST-NOTE-END**
+
+#### Session Life-cycle and Visibility
+
+When the session is running, its life-cycle remains.
+When the session is finished, it counts down for 1 minute.
+When count down ends, the life-cycle ends.
+
+If a `token` is used for the session during its life-cycle, the session will be forever visible to the token, until all responses are drained:
+- The `token` will be able to access all responses generated by this session in its life-cycle.
+  - The position 0 means the first response after the session starts, not the first response after a new token joined.
 - When a session is closed, but responses for this session is not drained by the API yet, the API still responses.
 - When there is no more response and the session already stopped, it returns `SessionClosed`.
 - After `SessionClosed`, the `session-id` will be no longer available for this api, future calls returns `SessionNotFound`.
 - Even the client received notification that a session stops from another API, it is recommended to keep reading until `SessionClosed` returns.
 
-**TEST-NOTE-BEGIN**
-Can't trigger "HttpRequestTimeout" stably in unit test so it is not covered.
-It requires the underlying copilot agent to not generate any response for 5 seconds,
-which is almost impossible.
-**TEST-NOTE-END**
+If the `session-id` does not exist, or a `token` is used after the session's life-cycle:
+- the session is not visible and it should return `SessionNotFound`.
 
-Returns in this schema if an exception it thrown from inside the session
+#### Session Response Storages
+
+Tips for implementation:
+- All responses will be adding to a list.
+- A map from token to one reading position and one pending api calls is maintained.
+- The 1 minute counting down do not need to involve a timer, it could be implemented by:
+  - Before the session ends, store `undefined` to the `count down begin`.
+  - When a new `token` comes:
+    - If `count down begin` is `undefined`, or it is defined but still in 1 minute, add this token to the map.
+    - Otherwise this session is not visible to the token, reject the call with `SessionNotFound`.
+  - After replying `SessionClosed` for a token, the token is removed from the map.
+  - After the map is empty, the session can be deleted.
+    - `ICopilotSession.stop` should be called when the session is no longer working.
+    - `session can be deleted` here only means the data structure maintained for token accessing.
+
+**TODO**: If a token is used but the client suddenly ends, since `SessionClosed` can never be sent to this client, memory leaks happens. But let us ignore this issue yet, it will be addressed in the future.
+
+#### Exception Handling
+
+An element in the `responses` array with this schema represents an exception thrown from inside the session
 
 ```typescript
 {
@@ -232,7 +288,9 @@ Returns in this schema if an exception it thrown from inside the session
 }
 ```
 
-Other response maps to all methods in `ICopilotSessionCallbacks` in `src/copilotSession.ts` in this schema
+#### Response Format
+
+Each element in the `responses` array maps to a method in `ICopilotSessionCallbacks` in `src/copilotSession.ts` in this schema
 
 ```typescript
 {
@@ -252,7 +310,7 @@ For example, when `onReasoning(reasoningId: string, delta: string): void;` is ca
 }
 ```
 
-When running a task, any driving session generated prompts will be reported in this schema
+When running a task, any generated prompts will be reported in this schema
 
 ```typescript
 {

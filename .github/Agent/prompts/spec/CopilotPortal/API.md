@@ -24,8 +24,8 @@ Its spec is in `JobsData.md`.
 - In src/index.ts it accepts command line options like this:
   - `--port 8888`: Specify the http server port. `8888` by default.
   - `--test`: `installJobsEntry` is not called, an extra API `copilot/test/installJobsEntry` is available only in this mode.
-- Website entry is http://localhost:port
-- API entry is http://localhost:port/api/...
+- Website entry is http://*:port
+- API entry is http://*:port/api/...
 - "yarn portal" to run src/index.ts.
 - "yarn portal-for-test" to run src/index.ts in test mode
 
@@ -36,9 +36,9 @@ Prints the following URL for shortcut:
 
 ## Running the Website
 
-- http://localhost:port is equivalent to http://localhost:port/index.html.
+- http://*:port is equivalent to http://*:port/index.html.
 - In the assets folder there stores all files for the website.
-- Requesting for http://localhost:port/index.html returns assets/index.html.
+- Requesting for http://*:port/index.html returns assets/index.html.
 
 ## Helpers (index.ts) --------------------------------------------------------------------------------------------------------------------------
 
@@ -74,7 +74,7 @@ All helper functions and types are exported and API implementations should use t
 
 All restful read arguments from the path and returns a JSON document.
 
-All title names below represents http://localhost:port/api/TITLE
+All title names below represents http:/*:port/api/TITLE
 
 Copilot hosting is implemented by `@github/copilot-sdk` and `src/copilotSession.ts`.
 
@@ -90,6 +90,11 @@ Returns the repo root path (detected by walking up from the server's directory u
   repoRoot: string;
 }
 ```
+
+### token
+
+Returns a random generated GUID everytime, no special meaning.
+No need to store generated tokens.
 
 ### stop
 

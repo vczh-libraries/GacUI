@@ -26,6 +26,7 @@ It exposes some APIs in this schema
 export class MessageBlock {
   constructor(blockType: "User" | "Reasoning" | "Tool" | "Message");
   appendData(data: string): void;
+  replaceData(data: string): void;
   complete(): void;
   get isCompleted(): boolean;
   get divElement(): HTMLDivElement;
@@ -101,8 +102,8 @@ Session responses generates 3 types of message block:
 Multiple of them could happen parallelly.
 
 When `ICopilotSessionCallbacks::onStartXXX` happens, a new message block should be created.
-When `ICopilotSessionCallbacks::onXXX` happens, the data should be appended to the message block.
-When `ICopilotSessionCallbacks::onEndXXX` happens, the message block is completed, no data needs to append to the message block.
+When `ICopilotSessionCallbacks::onXXX` happens, the data should be appended (`appendData`) to the message block.
+When `ICopilotSessionCallbacks::onEndReasoning/onEndMessage` happens, replace (`replaceData`) the message block with the complete contet.
 
 The content of a "Tool" `MessageBlock` needs to be taken care of specially:
 - The first line should be in its title. It is easy to tell when the `title` property is empty.

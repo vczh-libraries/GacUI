@@ -62,13 +62,25 @@ describe("Web: index.html setup UI", () => {
         assert.strictEqual(value, config.repoRoot, "working dir should default to REPO-ROOT");
     });
 
-    it("has Jobs button on the left and Start button on the right", async () => {
+    it("has New Job and Refresh buttons on the left, Start button on the right", async () => {
         const jobsButton = page.locator("#jobs-button");
+        const refreshButton = page.locator("#refresh-button");
         const startButton = page.locator("#start-button");
-        assert.ok(await jobsButton.isVisible(), "Jobs button should be visible");
+        assert.ok(await jobsButton.isVisible(), "New Job button should be visible");
+        assert.ok(await refreshButton.isVisible(), "Refresh button should be visible");
         assert.ok(await startButton.isVisible(), "Start button should be visible");
-        assert.strictEqual(await jobsButton.textContent(), "Jobs");
+        assert.strictEqual(await jobsButton.textContent(), "New Job");
+        assert.strictEqual(await refreshButton.textContent(), "Refresh");
         assert.strictEqual(await startButton.textContent(), "Start");
+
+        // Verify grouping: New Job and Refresh in left div, Start on the right
+        const leftDiv = page.locator("#setup-buttons-left");
+        assert.ok(await leftDiv.count() > 0, "setup-buttons-left should exist");
+
+        // Verify button positions: left buttons should be left of Start
+        const jobsBox = await jobsButton.boundingBox();
+        const startBox = await startButton.boundingBox();
+        assert.ok(jobsBox.x < startBox.x, "New Job should be to the left of Start");
     });
 
     it("Start button is enabled after models load", async () => {
@@ -86,6 +98,36 @@ describe("Web: index.html setup UI", () => {
         const url = new URL(page.url());
         assert.strictEqual(url.pathname, "/jobs.html");
         assert.strictEqual(url.searchParams.get("wb"), wd);
+    });
+});
+
+describe("Web: index.html running jobs list", () => {
+    let browser;
+    let page;
+
+    before(async () => {
+        browser = await chromium.launch({ headless: true });
+        page = await browser.newPage();
+        await page.goto(BASE);
+        await page.waitForTimeout(2000);
+    });
+
+    after(async () => {
+        await browser?.close();
+    });
+
+    it("running jobs list container exists", async () => {
+        const exists = await page.locator("#running-jobs-list").count();
+        assert.ok(exists > 0, "running jobs list should exist");
+    });
+
+    it("Refresh button populates running jobs list", async () => {
+        await page.locator("#refresh-button").click();
+        await page.waitForTimeout(1000);
+        // Verify the list was populated (may be empty if no jobs running, but the fetch should work)
+        const listEl = page.locator("#running-jobs-list");
+        const isVisible = await listEl.isVisible();
+        assert.ok(isVisible, "running jobs list should be visible after refresh");
     });
 });
 

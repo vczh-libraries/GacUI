@@ -116,6 +116,12 @@ export class MessageBlock {
         this.#bodyElement.scrollTop = this.#bodyElement.scrollHeight;
     }
 
+    replaceData(data) {
+        this.#rawData = data;
+        this.#bodyElement.textContent = this.#rawData;
+        this.#bodyElement.scrollTop = this.#bodyElement.scrollHeight;
+    }
+
     complete() {
         this.#completed = true;
         this.#collapsed = false;

@@ -176,10 +176,22 @@ function onInspect(workId) {
 
 async function pollLive(url, handler, shouldStop) {
     const terminalPattern = /^(Session|Task|Jobs?)(Closed|NotFound)$/;
+
+    // Acquire a token for this polling session
+    let token;
+    try {
+        const tokenRes = await fetch("/api/token");
+        const tokenData = await tokenRes.json();
+        token = tokenData.token;
+    } catch (err) {
+        console.error("Failed to acquire token:", err);
+        return;
+    }
+
     while (true) {
         if (shouldStop()) break;
         try {
-            const res = await fetch(`/api/${url}`);
+            const res = await fetch(`/api/${url}/${encodeURIComponent(token)}`);
             const data = await res.json();
             if (data.error === "HttpRequestTimeout") continue;
             if (data.error === "ParallelCallNotSupported") {
@@ -188,8 +200,12 @@ async function pollLive(url, handler, shouldStop) {
             }
             // Terminal: Closed or NotFound — drain complete
             if (data.error && terminalPattern.test(data.error)) break;
-            // Non-terminal error without callback: pass to handler and continue draining
-            handler(data);
+            // Batch response: process all responses in the batch
+            if (data.responses) {
+                for (const r of data.responses) {
+                    handler(r);
+                }
+            }
         } catch (err) {
             console.error(`Poll error for ${url}:`, err);
             break;
@@ -217,7 +233,7 @@ function startSessionPolling(sessionId, workId) {
                 sessionInfo.renderer.processCallback(response);
             }
         },
-        () => jobStopped
+        () => false // Always drain to server terminal response
     );
 }
 
@@ -368,7 +384,7 @@ function startTaskPolling(taskId, workId) {
                 }
             }
         },
-        () => jobStopped
+        () => false // Always drain to server terminal response
     );
 }
 
@@ -437,10 +453,51 @@ function startJobPolling() {
             } else if (cb === "jobFailed") {
                 jobStatus = "FAILED";
                 updateStatusLabel();
+            } else if (cb === "jobCanceled") {
+                jobStatus = "CANCELED";
+                updateStatusLabel();
             }
         },
-        () => jobStopped
+        () => false // Always drain to server terminal response
     );
+}
+
+// ---- Load initial job status ----
+async function loadInitialJobStatus() {
+    if (isPreviewMode || !jobId) return;
+    try {
+        const res = await fetch(`/api/copilot/job/${encodeURIComponent(jobId)}/status`);
+        const data = await res.json();
+        if (data.error) return;
+
+        // Update job status
+        if (data.status === "Succeeded") {
+            jobStatus = "SUCCEEDED";
+        } else if (data.status === "Failed") {
+            jobStatus = "FAILED";
+        } else if (data.status === "Canceled") {
+            jobStatus = "CANCELED";
+            jobStopped = true;
+        } else {
+            jobStatus = "RUNNING";
+        }
+        updateStatusLabel();
+
+        // Update task statuses on the chart
+        if (data.tasks && chartController) {
+            for (const task of data.tasks) {
+                if (task.status === "Running") {
+                    chartController.setRunning(task.workIdInJob);
+                } else if (task.status === "Succeeded") {
+                    chartController.setCompleted(task.workIdInJob);
+                } else if (task.status === "Failed") {
+                    chartController.setFailed(task.workIdInJob);
+                }
+            }
+        }
+    } catch (err) {
+        console.error("Failed to load initial job status:", err);
+    }
 }
 
 // ---- Load job data and render chart ----
@@ -479,6 +536,9 @@ async function loadJobData() {
 
         // Render with Mermaid
         chartController = await renderFlowChartMermaid(chart, chartContainer, isPreviewMode ? () => {} : onInspect);
+
+        // Load initial job status before starting live polling
+        await loadInitialJobStatus();
 
         // Start job live polling only when not in preview mode
         if (!isPreviewMode) {

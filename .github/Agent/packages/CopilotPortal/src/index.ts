@@ -5,10 +5,12 @@ import { fileURLToPath } from "node:url";
 import {
     jsonResponse,
     readBody,
+    setTestMode,
 } from "./sharedApi.js";
 import {
     apiConfig,
     apiStop,
+    apiToken,
     apiCopilotModels,
     apiCopilotSessionStart,
     apiCopilotSessionStop,
@@ -21,7 +23,11 @@ import {
     apiTaskStart,
     apiTaskStop,
     apiTaskLive,
+} from "./taskApi.js";
+import {
     apiJobList,
+    apiJobRunning,
+    apiJobStatus,
     apiJobStart,
     apiJobStop,
     apiJobLive,
@@ -44,6 +50,10 @@ for (let i = 0; i < args.length; i++) {
     } else if (args[i] === "--test") {
         testMode = true;
     }
+}
+
+if (testMode) {
+    setTestMode(true);
 }
 
 const mimeTypes: Record<string, string> = {
@@ -132,6 +142,12 @@ async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, ap
         return;
     }
 
+    // api/token
+    if (apiPath === "token") {
+        await apiToken(req, res);
+        return;
+    }
+
     // api/copilot/models
     if (apiPath === "copilot/models") {
         await apiCopilotModels(req, res);
@@ -192,10 +208,10 @@ async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, ap
         return;
     }
 
-    // api/copilot/session/{session-id}/live
-    const liveMatch = apiPath.match(/^copilot\/session\/([^\/]+)\/live$/);
+    // api/copilot/session/{session-id}/live/{token}
+    const liveMatch = apiPath.match(/^copilot\/session\/([^\/]+)\/live\/([^\/]+)$/);
     if (liveMatch) {
-        await apiCopilotSessionLive(req, res, liveMatch[1]);
+        await apiCopilotSessionLive(req, res, liveMatch[1], liveMatch[2]);
         return;
     }
 
@@ -219,16 +235,22 @@ async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, ap
         return;
     }
 
-    // api/copilot/task/{task-id}/live
-    const taskLiveMatch = apiPath.match(/^copilot\/task\/([^\/]+)\/live$/);
+    // api/copilot/task/{task-id}/live/{token}
+    const taskLiveMatch = apiPath.match(/^copilot\/task\/([^\/]+)\/live\/([^\/]+)$/);
     if (taskLiveMatch) {
-        await apiTaskLive(req, res, taskLiveMatch[1]);
+        await apiTaskLive(req, res, taskLiveMatch[1], taskLiveMatch[2]);
         return;
     }
 
     // api/copilot/job (list all jobs)
     if (apiPath === "copilot/job") {
         await apiJobList(ensureInstalledEntry(), req, res);
+        return;
+    }
+
+    // api/copilot/job/running
+    if (apiPath === "copilot/job/running") {
+        await apiJobRunning(req, res);
         return;
     }
 
@@ -239,6 +261,13 @@ async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, ap
         return;
     }
 
+    // api/copilot/job/{job-id}/status
+    const jobStatusMatch = apiPath.match(/^copilot\/job\/([^\/]+)\/status$/);
+    if (jobStatusMatch) {
+        await apiJobStatus(req, res, jobStatusMatch[1]);
+        return;
+    }
+
     // api/copilot/job/{job-id}/stop
     const jobStopMatch = apiPath.match(/^copilot\/job\/([^\/]+)\/stop$/);
     if (jobStopMatch) {
@@ -246,10 +275,10 @@ async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, ap
         return;
     }
 
-    // api/copilot/job/{job-id}/live
-    const jobLiveMatch = apiPath.match(/^copilot\/job\/([^\/]+)\/live$/);
+    // api/copilot/job/{job-id}/live/{token}
+    const jobLiveMatch = apiPath.match(/^copilot\/job\/([^\/]+)\/live\/([^\/]+)$/);
     if (jobLiveMatch) {
-        await apiJobLive(req, res, jobLiveMatch[1]);
+        await apiJobLive(req, res, jobLiveMatch[1], jobLiveMatch[2]);
         return;
     }
 

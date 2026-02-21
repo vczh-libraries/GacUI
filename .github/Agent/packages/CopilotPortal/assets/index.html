@@ -19,9 +19,13 @@
             <input type="text" id="working-dir" placeholder="Absolute path...">
         </label>
         <div id="setup-buttons">
-            <button id="jobs-button">Jobs</button>
+            <div id="setup-buttons-left">
+                <button id="jobs-button">New Job</button>
+                <button id="refresh-button">Refresh</button>
+            </div>
             <button id="start-button" disabled>Start</button>
         </div>
+        <div id="running-jobs-list"></div>
     </div>
 
     <div id="session-ui">

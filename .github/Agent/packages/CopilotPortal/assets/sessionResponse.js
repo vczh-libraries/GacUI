@@ -61,6 +61,7 @@ export class SessionResponseRenderer {
             block.appendData(data.delta);
         } else if (cb === "onEndReasoning") {
             const block = this.#getOrCreateBlock("Reasoning", data.reasoningId);
+            block.replaceData(data.completeContent);
             block.complete();
         }
 
@@ -72,6 +73,7 @@ export class SessionResponseRenderer {
             block.appendData(data.delta);
         } else if (cb === "onEndMessage") {
             const block = this.#getOrCreateBlock("Message", data.messageId);
+            block.replaceData(data.completeContent);
             block.complete();
         }
 

@@ -35,9 +35,16 @@ When the webpage is loaded, it renders a UI in the middle to let me input:
   - When there is no `project` argument, it becomes `REPO-ROOT`.
   - `REPO-ROOT` is the root folder of the repo that the source code of this project is in (no hardcoding).
 
-There are a row of buttons:
-- "Jobs" on the very left.
-- "Start" on the very right.
+There are a row of buttons with proper margin:
+- On the very left: "New Job", "Refresh"
+- On the very right: "Start"
+
+Below there is a list, displaying all running job's name, status, time.
+The list only refresh when the webpage is loaded or the "Refresh" button is clicked.
+It can be listed by `copilot/job/running`.
+At the very left of each item, there is a "View" button. It starts `/jobTracking.html` to inspect into the job.
+
+The list must be in the same width with the above part.
 
 ##### Start Button
 
@@ -51,7 +58,7 @@ Only after the model list is loaded, "Start" is enabled.
 **Referenced by**:
 - Jobs.md: `### jobs.html`
 
-When I hit the "Jobs" button, it jumps to `/jobs.html`.
+When I hit the "New Job" button, it jumps to `/jobs.html`.
 The selected model is ignored, but the working directory should be brought to `/jobs.html`.
 
 #### Session Interaction
@@ -64,7 +71,8 @@ The session part and the request part should always fill the whole webpage.
 Between two parts there is a bar to drag vertically to adjust the height of the request part which defaults to 300px.
 
 After the UI is loaded,
-the page must keep sending `api/copilot/session/{session-id}/live` to the server sequentially (aka not parallelly).
+call `api/token` for a token,
+the page must keep sending `api/copilot/session/{session-id}/live/{token}` to the server sequentially (aka not parallelly).
 When a timeout happens, resend the api.
 When it returns any response, process it and still keep sending the api.
 Whenever `ICopilotSessionCallbacks::METHOD` is mentioned, it means a response from this api.

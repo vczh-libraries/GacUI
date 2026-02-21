@@ -6,14 +6,17 @@ import type { Entry, Work, TaskWork, SequentialWork, ParallelWork, LoopWork, Alt
 import { getModelId } from "./jobsDef.js";
 import { generateChartNodes } from "./jobsChart.js";
 import {
-    helperGetSession,
     jsonResponse,
 } from "./copilotApi.js";
 import {
     readBody,
-    pushResponse,
-    waitForResponse,
-    type LiveState,
+    getCountDownMs,
+    createLiveEntityState,
+    pushLiveResponse,
+    closeLiveEntity,
+    waitForLiveResponse,
+    shutdownLiveEntity,
+    type LiveEntityState,
     type LiveResponse,
 } from "./sharedApi.js";
 import {
@@ -21,6 +24,7 @@ import {
     type ICopilotTaskCallback,
     startTask,
     errorToDetailedString,
+    registerJobTask,
 } from "./taskApi.js";
 
 export type { ICopilotTask, ICopilotTaskCallback };
@@ -36,161 +40,29 @@ export interface ICopilotJob {
 export interface ICopilotJobCallback {
     jobSucceeded(): void;
     jobFailed(): void;
+    // Called when this job failed
+    jobCanceled(): void;
     workStarted(workId: number, taskId: string): void;
     workStopped(workId: number, succeeded: boolean): void;
 }
 
-// ---- Task State ----
-
-interface TaskState extends LiveState {
-    taskId: string;
-    task: ICopilotTask;
-    taskError: string | null;
-    borrowingSessionMode: boolean;
-    closed: boolean;
-}
-
-const tasks = new Map<string, TaskState>();
-let nextTaskId = 1;
-
-// ---- API Handlers ----
-
-export async function apiTaskList(
-    entry: Entry,
-    req: http.IncomingMessage,
-    res: http.ServerResponse,
-): Promise<void> {
-    const taskList = Object.entries(entry.tasks).map(([name, task]) => ({
-        name,
-        requireUserInput: task.requireUserInput,
-    }));
-    jsonResponse(res, 200, { tasks: taskList });
-}
-
-export async function apiTaskStart(
-    entry: Entry,
-    req: http.IncomingMessage,
-    res: http.ServerResponse,
-    taskName: string,
-    sessionId: string,
-): Promise<void> {
-    const session = helperGetSession(sessionId);
-    if (!session) {
-        jsonResponse(res, 200, { error: "SessionNotFound" });
-        return;
-    }
-
-    const body = await readBody(req);
-    const userInput = body;
-
-    try {
-        const taskId = `task-${nextTaskId++}`;
-        const state: TaskState = {
-            taskId,
-            task: null as unknown as ICopilotTask,
-            responseQueue: [],
-            waitingResolve: null,
-            taskError: null,
-            borrowingSessionMode: true,
-            closed: false,
-        };
-
-        const taskCallback: ICopilotTaskCallback = {
-            taskSucceeded() {
-                pushResponse(state, { callback: "taskSucceeded" });
-                state.closed = true;
-            },
-            taskFailed() {
-                pushResponse(state, { callback: "taskFailed" });
-                state.closed = true;
-            },
-            taskDecision(reason: string) {
-                pushResponse(state, { callback: "taskDecision", reason });
-            },
-            // Unavailable in borrowing session mode - won't be called
-            taskSessionStarted(taskSession: ICopilotSession, taskId: string, isDrivingSession: boolean) {
-                pushResponse(state, { callback: "taskSessionStarted", sessionId: taskId, isDriving: isDrivingSession });
-            },
-            taskSessionStopped(taskSession: ICopilotSession, taskId: string, succeeded: boolean) {
-                pushResponse(state, { callback: "taskSessionStopped", sessionId: taskId, succeeded });
-            },
-        };
-
-        const copilotTask = await startTask(entry, taskName, userInput, session, true, taskCallback, undefined, undefined, (err: unknown) => {
-            state.taskError = errorToDetailedString(err);
-            pushResponse(state, { taskError: state.taskError });
-            state.closed = true;
-        });
-        state.task = copilotTask;
-        tasks.set(taskId, state);
-
-        jsonResponse(res, 200, { taskId });
-    } catch (err) {
-        jsonResponse(res, 200, { taskError: errorToDetailedString(err) });
-    }
-}
-
-export async function apiTaskStop(
-    req: http.IncomingMessage,
-    res: http.ServerResponse,
-    taskId: string,
-): Promise<void> {
-    const state = tasks.get(taskId);
-    if (!state) {
-        jsonResponse(res, 200, { error: "TaskNotFound" });
-        return;
-    }
-    if (state.borrowingSessionMode) {
-        jsonResponse(res, 200, { error: "TaskCannotClose" });
-        return;
-    }
-    state.task.stop();
-    tasks.delete(taskId);
-    if (state.waitingResolve) {
-        const resolve = state.waitingResolve;
-        state.waitingResolve = null;
-        resolve({ error: "TaskNotFound" });
-    }
-    jsonResponse(res, 200, { result: "Closed" });
-}
-
-export async function apiTaskLive(
-    req: http.IncomingMessage,
-    res: http.ServerResponse,
-    taskId: string,
-): Promise<void> {
-    const state = tasks.get(taskId);
-    if (!state) {
-        jsonResponse(res, 200, { error: "TaskNotFound" });
-        return;
-    }
-    if (state.waitingResolve) {
-        jsonResponse(res, 200, { error: "ParallelCallNotSupported" });
-        return;
-    }
-    // If closed and no more responses in queue, return TaskClosed and remove
-    if (state.closed && state.responseQueue.length === 0) {
-        tasks.delete(taskId);
-        jsonResponse(res, 200, { error: "TaskClosed" });
-        return;
-    }
-    const response = await waitForResponse(state, 5000);
-    if (response === null) {
-        jsonResponse(res, 200, { error: "HttpRequestTimeout" });
-    } else if (state.taskError) {
-        jsonResponse(res, 200, { taskError: state.taskError });
-    } else {
-        jsonResponse(res, 200, response);
-    }
-}
-
 // ---- Job State ----
 
-interface JobState extends LiveState {
+interface JobTaskStatus {
+    workIdInJob: number;
+    taskId?: string;
+    status: "Running" | "Succeeded" | "Failed";
+}
+
+interface JobState {
     jobId: string;
+    jobName: string;
+    startTime: Date;
     job: ICopilotJob;
+    entity: LiveEntityState;
     jobError: string | null;
-    closed: boolean;
+    canceledByStop: boolean;
+    taskStatuses: Map<number, JobTaskStatus>;
 }
 
 const jobs = new Map<string, JobState>();
@@ -222,44 +94,34 @@ async function executeWork(
             }
 
             // Register task state for live API
-            const taskId = `task-${nextTaskId++}`;
-            const taskState: TaskState = {
-                taskId,
-                task: null as unknown as ICopilotTask,
-                responseQueue: [],
-                waitingResolve: null,
-                taskError: null,
-                borrowingSessionMode: false,
-                closed: false,
-            };
-            tasks.set(taskId, taskState);
+            const reg = registerJobTask(false);
 
             runningIds.add(taskWork.workIdInJob);
-            callback.workStarted(taskWork.workIdInJob, taskId);
+            callback.workStarted(taskWork.workIdInJob, reg.taskId);
 
             try {
                 const result = await new Promise<boolean>((resolve, reject) => {
                     const taskCallback: ICopilotTaskCallback = {
                         taskSucceeded() {
-                            pushResponse(taskState, { callback: "taskSucceeded" });
-                            taskState.closed = true;
+                            reg.pushResponse({ callback: "taskSucceeded" });
+                            reg.setClosed();
                             const crashErr = startedTask?.crashError;
                             if (crashErr) { reject(crashErr); } else { resolve(true); }
                         },
                         taskFailed() {
-                            pushResponse(taskState, { callback: "taskFailed" });
-                            taskState.closed = true;
+                            reg.pushResponse({ callback: "taskFailed" });
+                            reg.setClosed();
                             const crashErr = startedTask?.crashError;
                             if (crashErr) { reject(crashErr); } else { resolve(false); }
                         },
                         taskDecision(reason: string) {
-                            pushResponse(taskState, { callback: "taskDecision", reason });
+                            reg.pushResponse({ callback: "taskDecision", reason });
                         },
                         taskSessionStarted(taskSession: ICopilotSession, taskId: string, isDrivingSession: boolean) {
-                            pushResponse(taskState, { callback: "taskSessionStarted", sessionId: taskId, isDriving: isDrivingSession });
+                            reg.pushResponse({ callback: "taskSessionStarted", sessionId: taskId, isDriving: isDrivingSession });
                         },
                         taskSessionStopped(taskSession: ICopilotSession, taskId: string, succeeded: boolean) {
-                            pushResponse(taskState, { callback: "taskSessionStopped", sessionId: taskId, succeeded });
+                            reg.pushResponse({ callback: "taskSessionStopped", sessionId: taskId, succeeded });
                         },
                     };
 
@@ -276,12 +138,12 @@ async function executeWork(
                         () => { }
                     ).then(t => {
                         startedTask = t;
-                        taskState.task = t;
+                        reg.setTask(t);
                         activeTasks.push(t);
                     }).catch(err => {
-                        taskState.taskError = errorToDetailedString(err);
-                        pushResponse(taskState, { taskError: taskState.taskError });
-                        taskState.closed = true;
+                        reg.setError(errorToDetailedString(err));
+                        reg.pushResponse({ taskError: errorToDetailedString(err) });
+                        reg.setClosed();
                         reject(err);
                     });
                 });
@@ -372,12 +234,15 @@ export async function startJob(
     const runningIds = new Set<number>();
     const activeTasks: ICopilotTask[] = [];
 
+    let canceledByStop = false;
+
     const copilotJob: ICopilotJob = {
         get runningWorkIds() { return Array.from(runningIds); },
         get status() { return status; },
         stop() {
             if (stopped) return;
             stopped = true;
+            canceledByStop = true;
             status = "Failed";
             for (const task of activeTasks) {
                 task.stop();
@@ -397,7 +262,11 @@ export async function startJob(
                 callback.jobSucceeded();
             } else {
                 status = "Failed";
-                callback.jobFailed();
+                if (canceledByStop) {
+                    callback.jobCanceled();
+                } else {
+                    callback.jobFailed();
+                }
             }
         } catch (err) {
             if (status === "Executing") {
@@ -407,7 +276,11 @@ export async function startJob(
             for (const task of activeTasks) {
                 task.stop();
             }
-            callback.jobFailed();
+            if (canceledByStop) {
+                callback.jobCanceled();
+            } else {
+                callback.jobFailed();
+            }
             throw err; // Don't consume silently
         }
     })();
@@ -460,29 +333,44 @@ export async function apiJobStart(
 
     try {
         const jobId = `job-${nextJobId++}`;
+        const entity = createLiveEntityState(getCountDownMs());
         const state: JobState = {
             jobId,
+            jobName,
+            startTime: new Date(),
             job: null as unknown as ICopilotJob,
-            responseQueue: [],
-            waitingResolve: null,
+            entity,
             jobError: null,
-            closed: false,
+            canceledByStop: false,
+            taskStatuses: new Map(),
         };
 
         const jobCallback: ICopilotJobCallback = {
             jobSucceeded() {
-                pushResponse(state, { callback: "jobSucceeded" });
-                state.closed = true;
+                pushLiveResponse(entity, { callback: "jobSucceeded" });
+                closeLiveEntity(entity);
             },
             jobFailed() {
-                pushResponse(state, { callback: "jobFailed" });
-                state.closed = true;
+                pushLiveResponse(entity, { callback: "jobFailed" });
+                closeLiveEntity(entity);
+            },
+            jobCanceled() {
+                pushLiveResponse(entity, { callback: "jobCanceled" });
+                closeLiveEntity(entity);
             },
             workStarted(workId: number, taskId: string) {
-                pushResponse(state, { callback: "workStarted", workId, taskId });
+                state.taskStatuses.set(workId, { workIdInJob: workId, taskId, status: "Running" });
+                pushLiveResponse(entity, { callback: "workStarted", workId, taskId });
             },
             workStopped(workId: number, succeeded: boolean) {
-                pushResponse(state, { callback: "workStopped", workId, succeeded });
+                const existing = state.taskStatuses.get(workId);
+                if (existing) {
+                    existing.status = succeeded ? "Succeeded" : "Failed";
+                    delete existing.taskId;
+                } else {
+                    state.taskStatuses.set(workId, { workIdInJob: workId, status: succeeded ? "Succeeded" : "Failed" });
+                }
+                pushLiveResponse(entity, { callback: "workStopped", workId, succeeded });
             },
         };
 
@@ -495,8 +383,8 @@ export async function apiJobStart(
         if (execPromise) {
             execPromise.catch((err: unknown) => {
                 state.jobError = errorToDetailedString(err);
-                pushResponse(state, { jobError: state.jobError });
-                state.closed = true;
+                pushLiveResponse(entity, { jobError: state.jobError });
+                closeLiveEntity(entity);
             });
         }
 
@@ -504,6 +392,66 @@ export async function apiJobStart(
     } catch (err) {
         jsonResponse(res, 200, { jobError: errorToDetailedString(err) });
     }
+}
+
+export async function apiJobRunning(
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+): Promise<void> {
+    const now = new Date();
+    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+    const result: { jobId: string; jobName: string; startTime: Date; status: "Running" | "Succeeded" | "Failed" | "Canceled" }[] = [];
+    const toDelete: string[] = [];
+    for (const [id, state] of jobs) {
+        let status: "Running" | "Succeeded" | "Failed" | "Canceled";
+        if (state.canceledByStop) {
+            status = "Canceled";
+        } else {
+            const s = state.job.status;
+            status = s === "Executing" ? "Running" : s;
+        }
+        if (status === "Running" || state.startTime >= oneHourAgo) {
+            result.push({ jobId: id, jobName: state.jobName, startTime: state.startTime, status });
+        } else {
+            toDelete.push(id);
+        }
+    }
+    for (const id of toDelete) { jobs.delete(id); }
+    jsonResponse(res, 200, { jobs: result });
+}
+
+export async function apiJobStatus(
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    jobId: string,
+): Promise<void> {
+    const state = jobs.get(jobId);
+    if (!state) {
+        jsonResponse(res, 200, { error: "JobNotFound" });
+        return;
+    }
+    const now = new Date();
+    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+    let status: "Running" | "Succeeded" | "Failed" | "Canceled";
+    if (state.canceledByStop) {
+        status = "Canceled";
+    } else {
+        const s = state.job.status;
+        status = s === "Executing" ? "Running" : s;
+    }
+    if (status !== "Running" && state.startTime < oneHourAgo) {
+        jsonResponse(res, 200, { error: "JobNotFound" });
+        return;
+    }
+    const tasks: { workIdInJob: number; taskId?: string; status: "Running" | "Succeeded" | "Failed" }[] = [];
+    for (const ts of state.taskStatuses.values()) {
+        const entry: { workIdInJob: number; taskId?: string; status: "Running" | "Succeeded" | "Failed" } = { workIdInJob: ts.workIdInJob, status: ts.status };
+        if (ts.taskId !== undefined) {
+            entry.taskId = ts.taskId;
+        }
+        tasks.push(entry);
+    }
+    jsonResponse(res, 200, { jobId, jobName: state.jobName, startTime: state.startTime, status, tasks });
 }
 
 export async function apiJobStop(
@@ -516,13 +464,10 @@ export async function apiJobStop(
         jsonResponse(res, 200, { error: "JobNotFound" });
         return;
     }
+    state.canceledByStop = true;
     state.job.stop();
-    jobs.delete(jobId);
-    if (state.waitingResolve) {
-        const resolve = state.waitingResolve;
-        state.waitingResolve = null;
-        resolve({ error: "JobNotFound" });
-    }
+    pushLiveResponse(state.entity, { callback: "jobCanceled" });
+    closeLiveEntity(state.entity);
     jsonResponse(res, 200, { result: "Closed" });
 }
 
@@ -530,28 +475,15 @@ export async function apiJobLive(
     req: http.IncomingMessage,
     res: http.ServerResponse,
     jobId: string,
+    token: string,
 ): Promise<void> {
     const state = jobs.get(jobId);
-    if (!state) {
-        jsonResponse(res, 200, { error: "JobNotFound" });
-        return;
-    }
-    if (state.waitingResolve) {
-        jsonResponse(res, 200, { error: "ParallelCallNotSupported" });
-        return;
-    }
-    // If closed and no more responses in queue, return JobsClosed and remove
-    if (state.closed && state.responseQueue.length === 0) {
-        jobs.delete(jobId);
-        jsonResponse(res, 200, { error: "JobsClosed" });
-        return;
-    }
-    const response = await waitForResponse(state, 5000);
-    if (response === null) {
-        jsonResponse(res, 200, { error: "HttpRequestTimeout" });
-    } else if (state.jobError) {
-        jsonResponse(res, 200, { jobError: state.jobError });
-    } else {
-        jsonResponse(res, 200, response);
-    }
+    const response = await waitForLiveResponse(
+        state?.entity,
+        token,
+        5000,
+        "JobNotFound",
+        "JobsClosed",
+    );
+    jsonResponse(res, 200, response);
 }

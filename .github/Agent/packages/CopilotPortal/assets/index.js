@@ -12,6 +12,8 @@ const modelSelect = document.getElementById("model-select");
 const workingDirInput = document.getElementById("working-dir");
 const startButton = document.getElementById("start-button");
 const jobsButton = document.getElementById("jobs-button");
+const refreshButton = document.getElementById("refresh-button");
+const runningJobsList = document.getElementById("running-jobs-list");
 const sessionPart = document.getElementById("session-part");
 const requestTextarea = document.getElementById("request-textarea");
 const sendButton = document.getElementById("send-button");
@@ -76,6 +78,53 @@ jobsButton.addEventListener("click", () => {
     window.location.href = `/jobs.html?wb=${encodeURIComponent(wd)}`;
 });
 
+// ---- Running Jobs List ----
+
+async function loadRunningJobs() {
+    try {
+        const res = await fetch("/api/copilot/job/running");
+        const data = await res.json();
+        runningJobsList.innerHTML = "";
+        if (data.jobs && data.jobs.length > 0) {
+            for (const job of data.jobs) {
+                const item = document.createElement("div");
+                item.className = "running-job-item";
+
+                const viewBtn = document.createElement("button");
+                viewBtn.textContent = "View";
+                viewBtn.className = "running-job-view-btn";
+                viewBtn.addEventListener("click", () => {
+                    window.open(`/jobTracking.html?jobName=${encodeURIComponent(job.jobName)}&jobId=${encodeURIComponent(job.jobId)}`, "_blank");
+                });
+                item.appendChild(viewBtn);
+
+                const nameSpan = document.createElement("span");
+                nameSpan.className = "running-job-name";
+                nameSpan.textContent = job.jobName;
+                item.appendChild(nameSpan);
+
+                const statusSpan = document.createElement("span");
+                statusSpan.className = `running-job-status running-job-status-${job.status.toLowerCase()}`;
+                statusSpan.textContent = job.status;
+                item.appendChild(statusSpan);
+
+                const timeSpan = document.createElement("span");
+                timeSpan.className = "running-job-time";
+                timeSpan.textContent = new Date(job.startTime).toLocaleString();
+                item.appendChild(timeSpan);
+
+                runningJobsList.appendChild(item);
+            }
+        }
+    } catch (err) {
+        console.error("Failed to load running jobs:", err);
+    }
+}
+
+refreshButton.addEventListener("click", () => {
+    loadRunningJobs();
+});
+
 // ---- Start Session ----
 
 startButton.addEventListener("click", async () => {
@@ -114,9 +163,20 @@ function startLivePolling() {
 }
 
 async function pollLive() {
+    // Acquire a token for this polling session
+    let token;
+    try {
+        const tokenRes = await fetch("/api/token");
+        const tokenData = await tokenRes.json();
+        token = tokenData.token;
+    } catch (err) {
+        console.error("Failed to acquire token:", err);
+        return;
+    }
+
     while (livePollingActive) {
         try {
-            const res = await fetch(`/api/copilot/session/${encodeURIComponent(sessionId)}/live`);
+            const res = await fetch(`/api/copilot/session/${encodeURIComponent(sessionId)}/live/${encodeURIComponent(token)}`);
             if (!livePollingActive) break;
             const data = await res.json();
             if (!livePollingActive) break;
@@ -125,16 +185,21 @@ async function pollLive() {
                 // Timeout, just resend
                 continue;
             }
-            if (data.error === "SessionNotFound") {
+            if (data.error === "SessionNotFound" || data.error === "SessionClosed") {
                 livePollingActive = false;
                 break;
             }
-            if (data.sessionError) {
-                console.error("Session error:", data.sessionError);
-                continue;
-            }
-            if (data.callback) {
-                processCallback(data);
+            // Batch response: process all responses in the batch
+            if (data.responses) {
+                for (const r of data.responses) {
+                    if (r.sessionError) {
+                        console.error("Session error:", r.sessionError);
+                        continue;
+                    }
+                    if (r.callback) {
+                        processCallback(r);
+                    }
+                }
             }
         } catch (err) {
             if (!livePollingActive) break;
@@ -290,3 +355,4 @@ async function loadTasks() {
 loadModels();
 initWorkingDir();
 loadTasks();
+loadRunningJobs();

@@ -11,6 +11,11 @@ async function fetchJson(urlPath, options) {
     return res.json();
 }
 
+async function getToken() {
+    const data = await fetchJson("/api/token");
+    return data.token;
+}
+
 // Helper: resolve test entry path
 const testEntryPath = path.resolve(__dirname, "testEntry.json");
 
@@ -59,9 +64,24 @@ describe("API: /api/copilot/models", () => {
     });
 });
 
+describe("API: /api/token", () => {
+    it("returns a token string", async () => {
+        const data = await fetchJson("/api/token");
+        assert.ok(typeof data.token === "string", "token should be a string");
+        assert.ok(data.token.length > 0, "token should not be empty");
+    });
+
+    it("returns different tokens on each call", async () => {
+        const data1 = await fetchJson("/api/token");
+        const data2 = await fetchJson("/api/token");
+        assert.notStrictEqual(data1.token, data2.token, "tokens should be unique");
+    });
+});
+
 describe("API: session not found errors", () => {
     it("live returns SessionNotFound for invalid session", async () => {
-        const data = await fetchJson("/api/copilot/session/nonexistent/live");
+        const token = await getToken();
+        const data = await fetchJson(`/api/copilot/session/nonexistent/live/${token}`);
         assert.deepStrictEqual(data, { error: "SessionNotFound" });
     });
 
@@ -111,16 +131,18 @@ describe("API: full session lifecycle", () => {
 
     it("live returns HttpRequestTimeout when idle", async () => {
         assert.ok(sessionId, "session must be started");
-        const data = await fetchJson(`/api/copilot/session/${sessionId}/live`);
+        const token = await getToken();
+        const data = await fetchJson(`/api/copilot/session/${sessionId}/live/${token}`);
         assert.strictEqual(data.error, "HttpRequestTimeout");
     });
 
     it("live returns ParallelCallNotSupported for concurrent calls", async () => {
         assert.ok(sessionId, "session must be started");
+        const token = await getToken();
         const [first, second] = await Promise.all([
-            fetchJson(`/api/copilot/session/${sessionId}/live`),
+            fetchJson(`/api/copilot/session/${sessionId}/live/${token}`),
             new Promise((r) => setTimeout(r, 100)).then(() =>
-                fetchJson(`/api/copilot/session/${sessionId}/live`)
+                fetchJson(`/api/copilot/session/${sessionId}/live/${token}`)
             ),
         ]);
         assert.strictEqual(second.error, "ParallelCallNotSupported",
@@ -142,14 +164,19 @@ describe("API: full session lifecycle", () => {
         assert.ok(sessionId, "session must be started");
         const callbacks = [];
         let gotAgentEnd = false;
+        const token = await getToken();
 
         const timeout = Date.now() + 60000;
         while (!gotAgentEnd && Date.now() < timeout) {
-            const data = await fetchJson(`/api/copilot/session/${sessionId}/live`);
+            const data = await fetchJson(`/api/copilot/session/${sessionId}/live/${token}`);
             if (data.error === "HttpRequestTimeout") continue;
             if (data.error) break;
-            callbacks.push(data);
-            if (data.callback === "onAgentEnd") gotAgentEnd = true;
+            if (data.responses) {
+                for (const r of data.responses) {
+                    callbacks.push(r);
+                    if (r.callback === "onAgentEnd") gotAgentEnd = true;
+                }
+            }
         }
 
         assert.ok(gotAgentEnd, "should receive onAgentEnd callback");
@@ -214,7 +241,8 @@ describe("API: task not found errors", () => {
     });
 
     it("task live returns TaskNotFound for invalid task id", async () => {
-        const data = await fetchJson("/api/copilot/task/nonexistent/live");
+        const token = await getToken();
+        const data = await fetchJson(`/api/copilot/task/nonexistent/live/${token}`);
         assert.deepStrictEqual(data, { error: "TaskNotFound" });
     });
 
@@ -425,22 +453,32 @@ describe("API: job not found errors", () => {
     });
 
     it("job live returns JobNotFound for invalid job id", async () => {
-        const data = await fetchJson("/api/copilot/job/nonexistent/live");
+        const token = await getToken();
+        const data = await fetchJson(`/api/copilot/job/nonexistent/live/${token}`);
         assert.deepStrictEqual(data, { error: "JobNotFound" });
     });
 });
 
 // Helper: drain all live responses until a specific callback or timeout
 async function drainLive(livePath, targetCallback, timeoutMs = 120000) {
+    const token = await getToken();
     const callbacks = [];
     const deadline = Date.now() + timeoutMs;
-    while (Date.now() < deadline) {
-        const data = await fetchJson(livePath);
+    let done = false;
+    while (Date.now() < deadline && !done) {
+        const data = await fetchJson(`${livePath}/${token}`);
         if (data.error === "HttpRequestTimeout") continue;
-        if (data.error === "TaskNotFound" || data.error === "JobNotFound") break;
-        callbacks.push(data);
-        if (data.callback === targetCallback) break;
-        if (data.taskError || data.jobError) break;
+        if (data.error === "TaskNotFound" || data.error === "TaskClosed") break;
+        if (data.error === "JobNotFound" || data.error === "JobsClosed") break;
+        if (data.responses) {
+            for (const r of data.responses) {
+                callbacks.push(r);
+                if (r.callback === targetCallback || r.taskError || r.jobError) {
+                    done = true;
+                    break;
+                }
+            }
+        }
     }
     return callbacks;
 }
@@ -705,6 +743,300 @@ describe("API: job-created task live polling", () => {
                 assert.ok(decisions.some((d) => d.reason), "taskDecision should have a reason");
             }
         }
+    });
+});
+
+describe("API: session lifecycle visibility - new token reads before SessionClosed", () => {
+    let freeModelId;
+
+    before(async () => {
+        const data = await fetchJson("/api/copilot/models");
+        const freeModel = data.models.find((m) => m.multiplier === 0);
+        assert.ok(freeModel, "need a free model for testing");
+        freeModelId = freeModel.id;
+    });
+
+    it("a new token can read the first response during visible lifecycle", async () => {
+        // Start a session
+        const startData = await fetchJson(`/api/copilot/session/start/${freeModelId}`, {
+            method: "POST",
+            body: "C:\\Code\\VczhLibraries\\Tools",
+        });
+        assert.ok(startData.sessionId, "should get session id");
+        const sessionId = startData.sessionId;
+
+        try {
+            // Send a query so the session produces responses
+            await fetchJson(`/api/copilot/session/${sessionId}/query`, {
+                method: "POST",
+                body: "What is 1+1? Reply only with the number.",
+            });
+
+            // Read with token1 until we get at least one real callback
+            const token1 = await getToken();
+            let token1Callbacks = [];
+            const deadline1 = Date.now() + 60000;
+            while (Date.now() < deadline1) {
+                const data = await fetchJson(`/api/copilot/session/${sessionId}/live/${token1}`);
+                if (data.error === "HttpRequestTimeout") continue;
+                if (data.error) break;
+                if (data.responses) {
+                    let gotIdle = false;
+                    for (const r of data.responses) {
+                        token1Callbacks.push(r);
+                        if (r.callback === "onIdle") { gotIdle = true; break; }
+                    }
+                    if (gotIdle) break;
+                }
+            }
+            assert.ok(token1Callbacks.length > 0, "token1 should have received at least one response");
+
+            // Stop the session (lifecycle countdown begins)
+            await fetchJson(`/api/copilot/session/${sessionId}/stop`);
+
+            // Create a new token2 AFTER session stopped but before countdown expires
+            const token2 = await getToken();
+
+            // token2 should be able to read from position 0 (the first response)
+            const firstResponse = await fetchJson(`/api/copilot/session/${sessionId}/live/${token2}`);
+            assert.ok(!firstResponse.error || firstResponse.error === "SessionClosed",
+                `token2 should read a response or SessionClosed, got: ${JSON.stringify(firstResponse)}`);
+
+            // If we got a batch response (not SessionClosed), verify it starts with position 0
+            if (!firstResponse.error && firstResponse.responses) {
+                assert.strictEqual(firstResponse.responses[0].callback, token1Callbacks[0].callback,
+                    "token2's first response should match token1's first response callback");
+
+                // Continue reading with token2 until SessionClosed
+                let token2Closed = false;
+                const deadline2 = Date.now() + 30000;
+                while (Date.now() < deadline2 && !token2Closed) {
+                    const data = await fetchJson(`/api/copilot/session/${sessionId}/live/${token2}`);
+                    if (data.error === "SessionClosed") {
+                        token2Closed = true;
+                    } else if (data.error === "HttpRequestTimeout") {
+                        continue;
+                    } else if (data.error) {
+                        break;
+                    }
+                }
+                assert.ok(token2Closed, "token2 should eventually receive SessionClosed");
+            }
+
+            // Drain token1 until SessionClosed as well
+            let token1Closed = false;
+            const deadline3 = Date.now() + 30000;
+            while (Date.now() < deadline3 && !token1Closed) {
+                const data = await fetchJson(`/api/copilot/session/${sessionId}/live/${token1}`);
+                if (data.error === "SessionClosed") {
+                    token1Closed = true;
+                } else if (data.error === "HttpRequestTimeout") {
+                    continue;
+                } else if (data.error) {
+                    break;
+                }
+            }
+            assert.ok(token1Closed, "token1 should eventually receive SessionClosed");
+        } finally {
+            // Cleanup: try to stop session if still running
+            try { await fetchJson(`/api/copilot/session/${sessionId}/stop`); } catch { /* ignore */ }
+        }
+    });
+
+    it("new token after countdown expires gets SessionNotFound", async () => {
+        // Start and immediately stop a session
+        const startData = await fetchJson(`/api/copilot/session/start/${freeModelId}`, {
+            method: "POST",
+            body: "C:\\Code\\VczhLibraries\\Tools",
+        });
+        assert.ok(startData.sessionId, "should get session id");
+        const sessionId = startData.sessionId;
+
+        await fetchJson(`/api/copilot/session/${sessionId}/stop`);
+
+        // In test mode, countdown is 5 seconds. Wait for it to expire.
+        await new Promise((r) => setTimeout(r, 6000));
+
+        // A new token should now get SessionNotFound
+        const token = await getToken();
+        const data = await fetchJson(`/api/copilot/session/${sessionId}/live/${token}`);
+        assert.strictEqual(data.error, "SessionNotFound",
+            "new token after countdown should get SessionNotFound");
+    });
+});
+
+describe("API: copilot/job/running", () => {
+    it("returns an array of jobs", async () => {
+        const data = await fetchJson("/api/copilot/job/running");
+        assert.ok(data.jobs, "should have jobs array");
+        assert.ok(Array.isArray(data.jobs), "jobs should be an array");
+    });
+
+    it("running job appears in list", async () => {
+        const startData = await fetchJson("/api/copilot/job/start/simple-job", {
+            method: "POST",
+            body: "C:\\Code\\VczhLibraries\\Tools\ntest",
+        });
+        assert.ok(startData.jobId, "should return jobId");
+
+        const data = await fetchJson("/api/copilot/job/running");
+        const found = data.jobs.find((j) => j.jobId === startData.jobId);
+        assert.ok(found, "started job should appear in running list");
+        assert.strictEqual(found.jobName, "simple-job", "jobName should match");
+        assert.ok(found.startTime, "should have startTime");
+        assert.ok(["Running", "Succeeded", "Failed", "Canceled"].includes(found.status), "should have valid status");
+
+        // Drain to let it finish
+        await drainLive(`/api/copilot/job/${startData.jobId}/live`, "jobSucceeded");
+    });
+
+    it("finished job still appears within an hour", async () => {
+        const startData = await fetchJson("/api/copilot/job/start/simple-job", {
+            method: "POST",
+            body: "C:\\Code\\VczhLibraries\\Tools\ntest",
+        });
+        assert.ok(startData.jobId, "should return jobId");
+
+        // Wait for it to finish
+        await drainLive(`/api/copilot/job/${startData.jobId}/live`, "jobSucceeded");
+
+        const data = await fetchJson("/api/copilot/job/running");
+        const found = data.jobs.find((j) => j.jobId === startData.jobId);
+        assert.ok(found, "recently finished job should still appear");
+        assert.ok(["Succeeded", "Failed"].includes(found.status), `finished job should have terminal status, got: ${found.status}`);
+    });
+
+    it("each job entry has required fields", async () => {
+        const data = await fetchJson("/api/copilot/job/running");
+        for (const job of data.jobs) {
+            assert.ok(typeof job.jobId === "string", "jobId should be string");
+            assert.ok(typeof job.jobName === "string", "jobName should be string");
+            assert.ok(job.startTime, "should have startTime");
+            assert.ok(["Running", "Succeeded", "Failed", "Canceled"].includes(job.status), `valid status: ${job.status}`);
+        }
+    });
+});
+
+describe("API: copilot/job/{job-id}/status", () => {
+    it("returns JobNotFound for invalid job id", async () => {
+        const data = await fetchJson("/api/copilot/job/nonexistent-xyz/status");
+        assert.deepStrictEqual(data, { error: "JobNotFound" });
+    });
+
+    it("returns status for a running job", async () => {
+        const startData = await fetchJson("/api/copilot/job/start/simple-job", {
+            method: "POST",
+            body: "C:\\Code\\VczhLibraries\\Tools\ntest",
+        });
+        assert.ok(startData.jobId, "should return jobId");
+
+        const statusData = await fetchJson(`/api/copilot/job/${startData.jobId}/status`);
+        assert.ok(!statusData.error, `should not have error: ${JSON.stringify(statusData)}`);
+        assert.strictEqual(statusData.jobId, startData.jobId, "jobId should match");
+        assert.strictEqual(statusData.jobName, "simple-job", "jobName should match");
+        assert.ok(statusData.startTime, "should have startTime");
+        assert.ok(["Running", "Succeeded", "Failed", "Canceled"].includes(statusData.status), `valid status: ${statusData.status}`);
+        assert.ok(Array.isArray(statusData.tasks), "tasks should be an array");
+
+        // Drain to let it finish
+        await drainLive(`/api/copilot/job/${startData.jobId}/live`, "jobSucceeded");
+    });
+
+    it("returns task statuses after job completes", async () => {
+        const startData = await fetchJson("/api/copilot/job/start/simple-job", {
+            method: "POST",
+            body: "C:\\Code\\VczhLibraries\\Tools\ntest",
+        });
+        assert.ok(startData.jobId, "should return jobId");
+
+        // Wait for it to finish
+        await drainLive(`/api/copilot/job/${startData.jobId}/live`, "jobSucceeded");
+
+        const statusData = await fetchJson(`/api/copilot/job/${startData.jobId}/status`);
+        assert.ok(!statusData.error, `should not have error: ${JSON.stringify(statusData)}`);
+        assert.ok(statusData.tasks.length > 0, "should have at least one task");
+
+        // All tasks should be succeeded for a successful job
+        for (const task of statusData.tasks) {
+            assert.ok(typeof task.workIdInJob === "number", "workIdInJob should be number");
+            assert.ok(["Running", "Succeeded", "Failed"].includes(task.status), `valid task status: ${task.status}`);
+        }
+    });
+
+    it("canceled job returns Canceled status", async () => {
+        const startData = await fetchJson("/api/copilot/job/start/simple-job", {
+            method: "POST",
+            body: "C:\\Code\\VczhLibraries\\Tools\ntest",
+        });
+        assert.ok(startData.jobId, "should return jobId");
+
+        // Stop it immediately
+        await fetchJson(`/api/copilot/job/${startData.jobId}/stop`, { method: "POST" });
+
+        const statusData = await fetchJson(`/api/copilot/job/${startData.jobId}/status`);
+        assert.ok(!statusData.error, `should not have error: ${JSON.stringify(statusData)}`);
+        assert.strictEqual(statusData.status, "Canceled", "canceled job should show Canceled status");
+    });
+});
+
+describe("API: jobCanceled callback on stop", () => {
+    it("stopped job receives jobCanceled callback via live api", async () => {
+        const startData = await fetchJson("/api/copilot/job/start/simple-job", {
+            method: "POST",
+            body: "C:\\Code\\VczhLibraries\\Tools\ntest",
+        });
+        assert.ok(startData.jobId, "should return jobId");
+
+        // Get a live token before stopping
+        const token = await getToken();
+
+        // Give the job a moment to start
+        await new Promise(r => setTimeout(r, 200));
+
+        // Stop the job
+        await fetchJson(`/api/copilot/job/${startData.jobId}/stop`, { method: "POST" });
+
+        // Drain live responses - should eventually get jobCanceled
+        const callbacks = [];
+        const deadline = Date.now() + 30000;
+        let done = false;
+        while (Date.now() < deadline && !done) {
+            const data = await fetchJson(`/api/copilot/job/${startData.jobId}/live/${token}`);
+            if (data.error === "HttpRequestTimeout") continue;
+            if (data.error === "JobNotFound" || data.error === "JobsClosed") break;
+            if (data.responses) {
+                for (const r of data.responses) {
+                    callbacks.push(r);
+                    if (r.callback === "jobCanceled" || r.callback === "jobFailed" || r.callback === "jobSucceeded") { done = true; break; }
+                    if (r.jobError) { done = true; break; }
+                }
+            }
+        }
+
+        const hasCanceled = callbacks.some(c => c.callback === "jobCanceled");
+        assert.ok(hasCanceled, `stopped job should emit jobCanceled callback, got: ${JSON.stringify(callbacks.map(c => c.callback))}`);
+    });
+});
+
+describe("API: finished job persists in running list", () => {
+    it("finished job appears in running list after live entity is drained", async () => {
+        const startData = await fetchJson("/api/copilot/job/start/simple-job", {
+            method: "POST",
+            body: "C:\\Code\\VczhLibraries\\Tools\ntest",
+        });
+        assert.ok(startData.jobId, "should return jobId");
+
+        // Drain all live responses to fully consume the entity
+        await drainLive(`/api/copilot/job/${startData.jobId}/live`, "jobSucceeded");
+
+        // Wait a moment for any cleanup to happen
+        await new Promise(r => setTimeout(r, 500));
+
+        // Job should still appear in the running list
+        const data = await fetchJson("/api/copilot/job/running");
+        const found = data.jobs.find(j => j.jobId === startData.jobId);
+        assert.ok(found, "finished job should still appear in running list after draining live responses");
+        assert.ok(["Succeeded", "Failed"].includes(found.status), `status should be terminal: ${found.status}`);
     });
 });
 

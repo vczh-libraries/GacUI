@@ -1,3 +1,4 @@
+import * as http from "node:http";
 import type { ICopilotSession } from "./copilotSession.js";
 import type { Entry, Task, Prompt } from "./jobsDef.js";
 import { expandPromptDynamic, getModelId, SESSION_CRASH_PREFIX } from "./jobsDef.js";
@@ -5,7 +6,20 @@ import {
     helperSessionStart,
     helperSessionStop,
     helperPushSessionResponse,
+    helperGetSession,
+    jsonResponse,
 } from "./copilotApi.js";
+import {
+    readBody,
+    getCountDownMs,
+    createLiveEntityState,
+    pushLiveResponse,
+    closeLiveEntity,
+    waitForLiveResponse,
+    shutdownLiveEntity,
+    type LiveEntityState,
+    type LiveResponse,
+} from "./sharedApi.js";
 
 // ---- Error Formatting Helper ----
 
@@ -24,6 +38,15 @@ export function errorToDetailedString(err: unknown): string {
     }
     if (typeof err === "string") return err;
     try { return JSON.stringify(err); } catch { return String(err); }
+}
+
+// ---- Task Stopped Error ----
+
+export class TaskStoppedError extends Error {
+    constructor() {
+        super("Task was stopped");
+        this.name = "TaskStoppedError";
+    }
 }
 
 // ---- Types ----
@@ -143,6 +166,14 @@ class CopilotTaskImpl implements ICopilotTask {
         this.activeSessions.clear();
     }
 
+    // Helper that wraps session.sendRequest with stopped guards.
+    // When this.stopped, throws TaskStoppedError so retrying won't issue.
+    private async guardedSendRequest(session: ICopilotSession, message: string, timeout?: number): Promise<void> {
+        if (this.stopped) throw new TaskStoppedError();
+        await session.sendRequest(message, timeout);
+        if (this.stopped) throw new TaskStoppedError();
+    }
+
     constructor(
         entry: Entry,
         taskName: string,
@@ -227,11 +258,12 @@ class CopilotTaskImpl implements ICopilotTask {
         const monitor = monitorSessionTools(sessionRef.session, this.runtimeValues);
         try {
             helperPushSessionResponse(sessionRef.session, { callback: "onGeneratedUserPrompt", prompt });
-            await sessionRef.session.sendRequest(prompt);
+            await this.guardedSendRequest(sessionRef.session, prompt);
             monitor.cleanup();
             return { toolsCalled: monitor.toolsCalled, booleanResult: monitor.booleanResult };
         } catch (err) {
             monitor.cleanup();
+            if (err instanceof TaskStoppedError) throw err;
             this.callback.taskDecision(`[SESSION CRASHED] ${errorToDetailedString(err)}`);
             throw err;
         }
@@ -251,11 +283,12 @@ class CopilotTaskImpl implements ICopilotTask {
 
             try {
                 helperPushSessionResponse(sessionRef.session, { callback: "onGeneratedUserPrompt", prompt: actualPrompt });
-                await sessionRef.session.sendRequest(actualPrompt);
+                await this.guardedSendRequest(sessionRef.session, actualPrompt);
                 monitor.cleanup();
                 return { toolsCalled: monitor.toolsCalled, booleanResult: monitor.booleanResult };
             } catch (err) {
                 monitor.cleanup();
+                if (err instanceof TaskStoppedError) throw err;
                 lastError = err;
                 this.callback.taskDecision(`[SESSION CRASHED] ${errorToDetailedString(err)}`);
 
@@ -290,11 +323,13 @@ class CopilotTaskImpl implements ICopilotTask {
             const monitor = monitorSessionTools(sessionRef.session, this.runtimeValues);
             try {
                 helperPushSessionResponse(sessionRef.session, { callback: "onGeneratedUserPrompt", prompt });
-                await sessionRef.session.sendRequest(prompt);
+                await this.guardedSendRequest(sessionRef.session, prompt);
                 monitor.cleanup();
                 return { toolsCalled: monitor.toolsCalled, booleanResult: monitor.booleanResult };
             } catch (err) {
                 monitor.cleanup();
+                if (err instanceof TaskStoppedError) throw err;
+                if (this.stopped) throw new TaskStoppedError();
                 lastError = err;
                 this.callback.taskDecision(`[SESSION CRASHED] ${errorToDetailedString(err)}`);
             }
@@ -322,11 +357,13 @@ class CopilotTaskImpl implements ICopilotTask {
                 const monitor = monitorSessionTools(sessionRef.session, this.runtimeValues);
                 try {
                     helperPushSessionResponse(sessionRef.session, { callback: "onGeneratedUserPrompt", prompt: actualPrompt });
-                    await sessionRef.session.sendRequest(actualPrompt);
+                    await this.guardedSendRequest(sessionRef.session, actualPrompt);
                     monitor.cleanup();
                     return { toolsCalled: monitor.toolsCalled, booleanResult: monitor.booleanResult };
                 } catch (err) {
                     monitor.cleanup();
+                    if (err instanceof TaskStoppedError) throw err;
+                    if (this.stopped) throw new TaskStoppedError();
                     lastError = err;
                     this.callback.taskDecision(`[SESSION CRASHED] ${errorToDetailedString(err)}`);
                 }
@@ -429,9 +466,10 @@ class CopilotTaskImpl implements ICopilotTask {
         const monitor = monitorSessionTools(borrowedSession, this.runtimeValues);
         try {
             helperPushSessionResponse(borrowedSession, { callback: "onGeneratedUserPrompt", prompt: promptText });
-            await borrowedSession.sendRequest(promptText);
+            await this.guardedSendRequest(borrowedSession, promptText);
         } catch (err) {
             monitor.cleanup();
+            if (err instanceof TaskStoppedError) throw err;
             this.callback.taskDecision(`[SESSION CRASHED] Task crashed in borrowing session mode: ${errorToDetailedString(err)}`);
             throw err;
         }
@@ -447,16 +485,16 @@ class CopilotTaskImpl implements ICopilotTask {
         if (!passed && this.criteria?.failureAction) {
             const maxRetries = this.criteria.failureAction.retryTimes;
             for (let i = 0; i < maxRetries && !passed; i++) {
-                if (this.stopped) return;
                 this.callback.taskDecision(`[OPERATION] Starting retry #${i + 1}`);
 
                 const retryPrompt = this.buildRetryPrompt(missingTools);
                 const retryMonitor = monitorSessionTools(borrowedSession, this.runtimeValues);
                 try {
                     helperPushSessionResponse(borrowedSession, { callback: "onGeneratedUserPrompt", prompt: retryPrompt });
-                    await borrowedSession.sendRequest(retryPrompt);
+                    await this.guardedSendRequest(borrowedSession, retryPrompt);
                 } catch (err) {
                     retryMonitor.cleanup();
+                    if (err instanceof TaskStoppedError) throw err;
                     this.callback.taskDecision(`[SESSION CRASHED] Crash during retry in borrowing mode: ${errorToDetailedString(err)}`);
                     throw err;
                 }
@@ -495,8 +533,6 @@ class CopilotTaskImpl implements ICopilotTask {
         const [session, sessionId] = await this.openSession(modelId, true);
         const ref = { session, id: sessionId };
 
-        if (this.stopped) return;
-
         // Check availability
         if (this.task.availability && !this.ignorePrerequisiteCheck) {
             if (this.task.availability.condition) {
@@ -513,8 +549,6 @@ class CopilotTaskImpl implements ICopilotTask {
             }
         }
 
-        if (this.stopped) return;
-
         // Execute prompt
         const promptText = expandPrompt(this.entry, this.task.prompt, this.runtimeValues);
         const { toolsCalled } = await this.sendMonitoredPrompt(ref, promptText, modelId, true);
@@ -528,7 +562,6 @@ class CopilotTaskImpl implements ICopilotTask {
         if (!passed && this.task.criteria?.failureAction) {
             const maxRetries = this.task.criteria.failureAction.retryTimes;
             for (let i = 0; i < maxRetries && !passed; i++) {
-                if (this.stopped) return;
                 this.callback.taskDecision(`[OPERATION] Starting retry #${i + 1}`);
 
                 const retryPrompt = this.buildRetryPrompt(missingTools);
@@ -567,8 +600,6 @@ class CopilotTaskImpl implements ICopilotTask {
         const tModelId = this.taskModelId || this.entry.models.driving;
         this.runtimeValues["task-model"] = tModelId;
 
-        if (this.stopped) return;
-
         // Check availability
         if (this.task.availability && !this.ignorePrerequisiteCheck) {
             if (this.task.availability.condition) {
@@ -597,8 +628,6 @@ class CopilotTaskImpl implements ICopilotTask {
             }
         }
 
-        if (this.stopped) return;
-
         // Execute prompt (task session)
         const [ts, tsId] = await this.openSession(tModelId, false);
         let taskRef = { session: ts, id: tsId };
@@ -618,7 +647,6 @@ class CopilotTaskImpl implements ICopilotTask {
         if (!passed && this.criteria?.failureAction) {
             const maxRetries = this.criteria.failureAction.retryTimes;
             for (let i = 0; i < maxRetries && !passed; i++) {
-                if (this.stopped) return;
                 this.callback.taskDecision(`[OPERATION] Starting retry #${i + 1}`);
 
                 // New task session for retry
@@ -733,4 +761,144 @@ export async function startTask(
 
     copilotTask.execute().catch(exceptionHandler);
     return copilotTask;
+}
+
+// ---- Task State for Live API ----
+
+interface TaskState {
+    taskId: string;
+    task: ICopilotTask | null;
+    entity: LiveEntityState;
+    taskError: string | null;
+    borrowingSessionMode: boolean;
+}
+
+const tasks = new Map<string, TaskState>();
+let nextTaskId = 1;
+
+// Export for jobsApi.ts to register tasks created during job execution
+export function registerJobTask(borrowingSessionMode: boolean): { taskId: string; entity: LiveEntityState; setTask: (t: ICopilotTask) => void; setError: (err: string) => void; setClosed: () => void; pushResponse: (resp: LiveResponse) => void } {
+    const taskId = `task-${nextTaskId++}`;
+    const entity = createLiveEntityState(getCountDownMs(), () => {
+        tasks.delete(taskId);
+    });
+    const state: TaskState = {
+        taskId,
+        task: null,
+        entity,
+        taskError: null,
+        borrowingSessionMode,
+    };
+    tasks.set(taskId, state);
+    return {
+        taskId,
+        entity,
+        setTask: (t: ICopilotTask) => { state.task = t; },
+        setError: (err: string) => { state.taskError = err; },
+        setClosed: () => { closeLiveEntity(state.entity); },
+        pushResponse: (resp: LiveResponse) => { pushLiveResponse(state.entity, resp); },
+    };
+}
+
+// ---- Task API Handlers ----
+
+export async function apiTaskList(
+    entry: Entry,
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+): Promise<void> {
+    const taskList = Object.entries(entry.tasks).map(([name, task]) => ({
+        name,
+        requireUserInput: task.requireUserInput,
+    }));
+    jsonResponse(res, 200, { tasks: taskList });
+}
+
+export async function apiTaskStart(
+    entry: Entry,
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    taskName: string,
+    sessionId: string,
+): Promise<void> {
+    const session = helperGetSession(sessionId);
+    if (!session) {
+        jsonResponse(res, 200, { error: "SessionNotFound" });
+        return;
+    }
+
+    const body = await readBody(req);
+    const userInput = body;
+
+    try {
+        const reg = registerJobTask(true);
+
+        const taskCallback: ICopilotTaskCallback = {
+            taskSucceeded() {
+                reg.pushResponse({ callback: "taskSucceeded" });
+                reg.setClosed();
+            },
+            taskFailed() {
+                reg.pushResponse({ callback: "taskFailed" });
+                reg.setClosed();
+            },
+            taskDecision(reason: string) {
+                reg.pushResponse({ callback: "taskDecision", reason });
+            },
+            // Unavailable in borrowing session mode - won't be called
+            taskSessionStarted(taskSession: ICopilotSession, taskId: string, isDrivingSession: boolean) {
+                reg.pushResponse({ callback: "taskSessionStarted", sessionId: taskId, isDriving: isDrivingSession });
+            },
+            taskSessionStopped(taskSession: ICopilotSession, taskId: string, succeeded: boolean) {
+                reg.pushResponse({ callback: "taskSessionStopped", sessionId: taskId, succeeded });
+            },
+        };
+
+        const copilotTask = await startTask(entry, taskName, userInput, session, true, taskCallback, undefined, undefined, (err: unknown) => {
+            reg.setError(errorToDetailedString(err));
+            reg.pushResponse({ taskError: errorToDetailedString(err) });
+            reg.setClosed();
+        });
+        reg.setTask(copilotTask);
+
+        jsonResponse(res, 200, { taskId: reg.taskId });
+    } catch (err) {
+        jsonResponse(res, 200, { taskError: errorToDetailedString(err) });
+    }
+}
+
+export async function apiTaskStop(
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    taskId: string,
+): Promise<void> {
+    const state = tasks.get(taskId);
+    if (!state) {
+        jsonResponse(res, 200, { error: "TaskNotFound" });
+        return;
+    }
+    if (state.borrowingSessionMode) {
+        jsonResponse(res, 200, { error: "TaskCannotClose" });
+        return;
+    }
+    if (state.task) state.task.stop();
+    closeLiveEntity(state.entity);
+    jsonResponse(res, 200, { result: "Closed" });
+}
+
+export async function apiTaskLive(
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    taskId: string,
+    token: string,
+): Promise<void> {
+    const state = tasks.get(taskId);
+    const response = await waitForLiveResponse(
+        state?.entity,
+        token,
+        5000,
+        "TaskNotFound",
+        "TaskClosed",
+    );
+    jsonResponse(res, 200, response);
 }
