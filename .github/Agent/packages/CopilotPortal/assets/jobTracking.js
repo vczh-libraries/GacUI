@@ -83,6 +83,25 @@ function updateStatusLabel() {
 
 // ---- Session Response Part Management ----
 
+function switchTabForWork(workId, sessionId) {
+    const data = workIdData[workId];
+    if (!data) return;
+    if (data.activeTabSessionId === sessionId) return;
+    data.activeTabSessionId = sessionId;
+
+    if (inspectedWorkId !== workId || !tabContainer) return;
+
+    const tabHeaders = tabContainer.querySelector(".tab-headers");
+    if (!tabHeaders) return;
+
+    for (const btn of tabHeaders.querySelectorAll(".tab-header-btn")) {
+        btn.classList.toggle("active", btn.dataset.sessionId === sessionId);
+    }
+    for (const [sid, sInfo] of data.sessions) {
+        sInfo.div.style.display = sid === sessionId ? "block" : "none";
+    }
+}
+
 function showJsonView() {
     sessionResponsePart.innerHTML = "";
     if (tabContainer) {
@@ -102,6 +121,9 @@ function showTaskSessionTabs(workId) {
         return;
     }
 
+    // Reset active tab tracking so the first switchTabForWork always applies
+    data.activeTabSessionId = null;
+
     tabContainer = document.createElement("div");
     tabContainer.className = "tab-container";
 
@@ -114,8 +136,6 @@ function showTaskSessionTabs(workId) {
     tabContainer.appendChild(tabContent);
 
     sessionResponsePart.appendChild(tabContainer);
-
-    let activeTab = null;
 
     // Ensure "Driving" tab always appears first
     const sortedEntries = [...data.sessions.entries()].sort((a, b) => {
@@ -130,7 +150,7 @@ function showTaskSessionTabs(workId) {
         tabBtn.textContent = sessionInfo.name;
         tabBtn.dataset.sessionId = sessionId;
         tabBtn.addEventListener("click", () => {
-            switchTab(tabBtn.dataset.sessionId);
+            switchTabForWork(workId, tabBtn.dataset.sessionId);
         });
         tabHeaders.appendChild(tabBtn);
 
@@ -142,20 +162,7 @@ function showTaskSessionTabs(workId) {
     // Activate the first tab
     const firstEntry = sortedEntries[0];
     if (firstEntry) {
-        switchTab(firstEntry[0]);
-    }
-
-    function switchTab(sessionId) {
-        if (activeTab === sessionId) return;
-        activeTab = sessionId;
-        // Update header buttons
-        for (const btn of tabHeaders.querySelectorAll(".tab-header-btn")) {
-            btn.classList.toggle("active", btn.dataset.sessionId === sessionId);
-        }
-        // Show/hide tab content
-        for (const [sid, sInfo] of data.sessions) {
-            sInfo.div.style.display = sid === sessionId ? "block" : "none";
-        }
+        switchTabForWork(workId, firstEntry[0]);
     }
 }
 
@@ -304,13 +311,7 @@ function startTaskPolling(taskId, workId) {
                                     tabBtn.textContent = "Driving";
                                     tabBtn.dataset.sessionId = sessionId;
                                     tabBtn.addEventListener("click", () => {
-                                        const targetId = tabBtn.dataset.sessionId;
-                                        for (const btn of tabHeaders.querySelectorAll(".tab-header-btn")) {
-                                            btn.classList.toggle("active", btn === tabBtn);
-                                        }
-                                        for (const [sid, sInfo] of data.sessions) {
-                                            sInfo.div.style.display = sid === targetId ? "block" : "none";
-                                        }
+                                        switchTabForWork(workId, tabBtn.dataset.sessionId);
                                     });
                                     tabHeaders.insertBefore(tabBtn, tabHeaders.firstChild);
                                     div.style.display = "none";
@@ -346,12 +347,7 @@ function startTaskPolling(taskId, workId) {
                                 tabBtn.textContent = name;
                                 tabBtn.dataset.sessionId = sessionId;
                                 tabBtn.addEventListener("click", () => {
-                                    for (const btn of tabHeaders.querySelectorAll(".tab-header-btn")) {
-                                        btn.classList.toggle("active", btn.dataset.sessionId === sessionId);
-                                    }
-                                    for (const [sid, sInfo] of data.sessions) {
-                                        sInfo.div.style.display = sid === sessionId ? "block" : "none";
-                                    }
+                                    switchTabForWork(workId, sessionId);
                                 });
                                 tabHeaders.appendChild(tabBtn);
 
@@ -420,6 +416,7 @@ function startJobPolling() {
                     sessions: new Map(),
                     attemptCount: 0,
                     taskPollingActive: false,
+                    activeTabSessionId: null,
                 };
 
                 // If the restarted work is currently inspected, clear tabs

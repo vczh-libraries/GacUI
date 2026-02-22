@@ -251,5 +251,4 @@ When a task is being inspected:
   - The first tab will always be `Driving` and all driving sessions come to here.
   - Each task session has its own tab.
 - Clicking a tab shows responses from a session using `Session Response Rendering` from `Shared.md`.
-  - **BUG**: Sometimes clicking tabs doesn't react.
 - When the selected `ChartNode` is restarted, tabs should be cleared before adding new sessions.

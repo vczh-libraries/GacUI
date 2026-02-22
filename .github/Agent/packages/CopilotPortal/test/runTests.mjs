@@ -7,6 +7,7 @@ const packageDir = path.resolve(__dirname, "..");
 
 // Collect all test files to run
 const testFiles = [
+    path.join(__dirname, "liveOptimize.test.mjs"),
     path.join(__dirname, "jobsData.test.mjs"),
     path.join(__dirname, "api.test.mjs"),
     path.join(__dirname, "work.test.mjs"),

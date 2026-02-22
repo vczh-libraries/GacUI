@@ -250,5 +250,5 @@ When a task is being inspected:
 - Each tab is a session, tab headers are names of sessions.
   - The first tab will always be `Driving` and all driving sessions come to here.
   - Each task session has its own tab.
-- Clicking a shows responses from a session using `Session Response Rendering` from `Shared.md`.
+- Clicking a tab shows responses from a session using `Session Response Rendering` from `Shared.md`.
 - When the selected `ChartNode` is restarted, tabs should be cleared before adding new sessions.

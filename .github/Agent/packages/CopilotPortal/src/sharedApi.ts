@@ -90,29 +90,95 @@ function resolveToken(entity: LiveEntityState, token: string, tokenState: TokenS
     }
 }
 
-export function pushLiveResponse(entity: LiveEntityState, response: LiveResponse): void {
-    // Optimization: when onEndReasoning/onEndMessage arrives, remove all matching delta entries.
-    // The end response carries the complete content so deltas are redundant.
-    if (response.callback === "onEndReasoning" || response.callback === "onEndMessage") {
-        const isReasoning = response.callback === "onEndReasoning";
-        const deltaCallback = isReasoning ? "onReasoning" : "onMessage";
-        const idKey = isReasoning ? "reasoningId" : "messageId";
-        const id = response[idKey] as string;
+function removeResponseAtIndex(entity: LiveEntityState, idx: number): void {
+    entity.responses.splice(idx, 1);
+    for (const [, ts] of entity.tokens) {
+        if (ts.position > idx) {
+            ts.position--;
+        }
+    }
+}
 
-        for (let i = entity.responses.length - 1; i >= 0; i--) {
-            if (entity.responses[i].callback === deltaCallback && entity.responses[i][idKey] === id) {
-                entity.responses.splice(i, 1);
-                // Adjust token positions for the removed entry
-                for (const [, ts] of entity.tokens) {
-                    if (ts.position > i) {
-                        ts.position--;
-                    }
-                }
-            }
+function mergeDeltas(entity: LiveEntityState, indices: number[]): void {
+    if (indices.length <= 1) return;
+    const sorted = [...indices].sort((a, b) => a - b);
+    const mergedDelta = sorted.map(i => entity.responses[i].delta as string).join("");
+    entity.responses[sorted[0]] = { ...entity.responses[sorted[0]], delta: mergedDelta };
+    // Remove from end to beginning, keeping the first (lowest index)
+    for (let j = sorted.length - 1; j >= 1; j--) {
+        removeResponseAtIndex(entity, sorted[j]);
+    }
+}
+
+function optimizeOnEnd(entity: LiveEntityState, response: LiveResponse): void {
+    const isReasoning = response.callback === "onEndReasoning";
+    const deltaCallback = isReasoning ? "onReasoning" : "onMessage";
+    const startCallback = isReasoning ? "onStartReasoning" : "onStartMessage";
+    const idKey = isReasoning ? "reasoningId" : "messageId";
+    const id = response[idKey] as string;
+
+    // Search from the end, stop at onStart, remove all deltas for this id
+    for (let i = entity.responses.length - 1; i >= 0; i--) {
+        const r = entity.responses[i];
+        if (r[idKey] === id && r.callback === startCallback) break;
+        if (r[idKey] === id && r.callback === deltaCallback) {
+            removeResponseAtIndex(entity, i);
+        }
+    }
+}
+
+function optimizeOnDelta(entity: LiveEntityState, response: LiveResponse): void {
+    const isReasoning = response.callback === "onReasoning";
+    const startCallback = isReasoning ? "onStartReasoning" : "onStartMessage";
+    const deltaCallback = response.callback as string;
+    const idKey = isReasoning ? "reasoningId" : "messageId";
+    const id = response[idKey] as string;
+
+    // Find all delta entries for this id, from end, stopping at start
+    const deltaIndices: number[] = [];
+    for (let i = entity.responses.length - 1; i >= 0; i--) {
+        const r = entity.responses[i];
+        if (r[idKey] === id && r.callback === startCallback) break;
+        if (r[idKey] === id && r.callback === deltaCallback) {
+            deltaIndices.push(i);
         }
     }
 
+    if (deltaIndices.length <= 1) return;
+
+    if (entity.tokens.size === 0) {
+        // No readers — merge all deltas
+        mergeDeltas(entity, deltaIndices);
+        return;
+    }
+
+    let largestPos = -Infinity;
+    let smallestPos = Infinity;
+    for (const [, ts] of entity.tokens) {
+        if (ts.position > largestPos) largestPos = ts.position;
+        if (ts.position < smallestPos) smallestPos = ts.position;
+    }
+
+    const unread = deltaIndices.filter(i => i >= largestPos);
+    const allRead = deltaIndices.filter(i => i < smallestPos);
+
+    // Merge unread first (higher indices), then allRead (lower indices)
+    mergeDeltas(entity, unread);
+    mergeDeltas(entity, allRead);
+}
+
+export function pushLiveResponse(entity: LiveEntityState, response: LiveResponse): void {
+    // Optimization: when onEndReasoning/onEndMessage, remove matching deltas (scoped to current block)
+    if (response.callback === "onEndReasoning" || response.callback === "onEndMessage") {
+        optimizeOnEnd(entity, response);
+    }
+
     entity.responses.push(response);
+
+    // Optimization: when onReasoning/onMessage, merge deltas
+    if (response.callback === "onReasoning" || response.callback === "onMessage") {
+        optimizeOnDelta(entity, response);
+    }
 
     // Notify pending tokens that have unread data and no batchTimeout already scheduled
     for (const [tok, ts] of entity.tokens) {

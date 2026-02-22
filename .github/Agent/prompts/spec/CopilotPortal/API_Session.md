@@ -209,9 +209,20 @@ the second call with the same (`session-id`, `token`) should return `ParallelCal
 
 #### Optimization
 
-When `onEndReasoning`/`onEndMessage` pushes to the responses list:
-- It should remove all `onReasoning`/`onMessage` for that id.
+When `onEndReasinong` is pushed to the responses list:
+- Focus on the same id, do not touch others.
+- Search from the end, stop at the `onStartReasoning`.
+- Remove all `onReasoning` for that id.
 - This would affect cached token positions. It is easy to fix by counting how many removed responses has been read.
+
+When `onReasoning` is pushed to the responses list:
+- Focus on the same id, do not touch others.
+- Search from the end, stop at the `onStartReasoning`.
+- For all `onReasoning` whose position >= `largest token reading position`, merge them to one. Concat all `delta` together without delimiter.
+- For all `onReasoning` whose position < `smallest token reading position`, merge them to one. Concat all `delta` together without delimiter.
+  - This would affect cached token positions. It is easy to fix by counting how many removed responses has been read.
+
+Applies above optimization to `onStartMessage`, `onMessage`, `onEndMessage`.
 
 When a new response pushes to the responses list, causing a pending request to wake up:
 - The time of the last live api responding (not the requesting) needs to be recorded for the `token` and uses it as below.
