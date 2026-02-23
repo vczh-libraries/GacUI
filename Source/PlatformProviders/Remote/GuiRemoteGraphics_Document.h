@@ -46,25 +46,60 @@ DiffRuns
 	using DocumentInlineObjectRunPropertyMap = collections::Dictionary<CaretRange, remoteprotocol::DocumentInlineObjectRunProperty>;
 	using DocumentRunPropertyMap = collections::Dictionary<CaretRange, remoteprotocol::DocumentRunProperty>;
 
+	/// <summary>
+	/// Updates style properties of a text run. Ranges will be splitted or merged accordingly.
+	/// </summary>
+	/// <param name="map">Current text runs</param>
+	/// <param name="range">Range of the text run to update</param>
+	/// <param name="propertyOverrides">Properties to override</param>
 	extern void AddTextRun(
 		DocumentTextRunPropertyMap& map,
 		CaretRange range,
 		const DocumentTextRunPropertyOverrides& propertyOverrides);
 
+	/// <summary>
+	/// Adds an inline object run. 
+	/// The function succeeds if the target range has no inline object or has an exactly same inline object.
+	/// Inline object runs cannot be splitted or merged.
+	/// To replace an inline object, call <see cref="ResetInlineObjectRun"/> to remove it first.
+	/// </summary>
+	/// <param name="map">Current inline object runs</param>
+	/// <param name="range">Range of the inline object run to add</param>
+	/// <param name="property">Properties of the inline object run</param>
+	/// <returns>Returns true if the inline object run was added successfully.</returns>
 	extern bool AddInlineObjectRun(
 		DocumentInlineObjectRunPropertyMap& map,
 		CaretRange range,
 		const remoteprotocol::DocumentInlineObjectRunProperty& property);
 
+	/// <summary>
+	/// Removes an inline object run. The function succeeds if the target range exactly matches an existing inline object run.
+	/// </summary>
+	/// <param name="map">Current inline object runs</param>
+	/// <param name="range">Range of the inline object run to remove</param>
+	/// <returns>Returns true if the inline object run was removed successfully.</returns>
 	extern bool ResetInlineObjectRun(
 		DocumentInlineObjectRunPropertyMap& map,
 		CaretRange range);
 
+	/// <summary>
+	/// Merge text runs and inline object runs into a single run map.
+	/// Inline object runs has a higher priority, if a text run and inline object run overlapps, only unoverlapping part of the text run survives.
+	/// </summary>
+	/// <param name="textRuns">Current text runs</param>
+	/// <param name="inlineObjectRuns">Current inline object runs</param>
+	/// <param name="result">Resulting merged run map</param>
 	extern void MergeRuns(
 		const DocumentTextRunPropertyMap& textRuns,
 		const DocumentInlineObjectRunPropertyMap& inlineObjectRuns,
 		DocumentRunPropertyMap& result);
 
+	/// <summary>
+	/// Build diff from two run maps.
+	/// </summary>
+	/// <param name="oldRuns">Old run maps</param>
+	/// <param name="newRuns">New run maps</param>
+	/// <param name="result">Resulting diff</param>
 	extern void DiffRuns(
 		const DocumentRunPropertyMap& oldRuns,
 		const DocumentRunPropertyMap& newRuns,

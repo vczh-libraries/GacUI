@@ -1084,6 +1084,7 @@ TEST_FILE
 	TEST_CATEGORY(L"AddInlineObjectRun")
 	{
 		// Success cases
+
 		TEST_CASE(L"Add to empty map")
 		{
 			DocumentInlineObjectRunPropertyMap inlineMap;
@@ -1156,21 +1157,46 @@ TEST_FILE
 			AssertMap(inlineMap, expectedMap);
 		});
 
-		// Failure cases
 		TEST_CASE(L"Complete overlap - exact match")
 		{
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			auto prop1 = CreateInlineProp(100);
 			auto prop2 = CreateInlineProp(200);
 			
-			AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
-			bool result = AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
-			
+			bool result = AddInlineObjectRun(inlineMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+			TEST_ASSERT(result == true);
+			result = AddInlineObjectRun(inlineMap, { .caretBegin = 10, .caretEnd = 20 }, prop2);
+			TEST_ASSERT(result == false);
+			result = AddInlineObjectRun(inlineMap, { .caretBegin = 10, .caretEnd = 20 }, prop1);
+			TEST_ASSERT(result == true);
+
+			result = ResetInlineObjectRun(inlineMap, { .caretBegin = 10, .caretEnd = 20 });
+			TEST_ASSERT(result == true);
+			result = AddInlineObjectRun(inlineMap, { .caretBegin = 10, .caretEnd = 20 }, prop2);
 			TEST_ASSERT(result == true);
 			
 			DocumentInlineObjectRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop2);
 			
+			AssertMap(inlineMap, expectedMap);
+		});
+
+		// Failure cases
+
+		TEST_CASE(L"Complete overlap - exact match with different props")
+		{
+			DocumentInlineObjectRunPropertyMap inlineMap;
+			auto prop1 = CreateInlineProp(100);
+			auto prop2 = CreateInlineProp(200);
+
+			bool result = AddInlineObjectRun(inlineMap, { .caretBegin = 10, .caretEnd = 20 }, prop1);
+			TEST_ASSERT(result == true);
+			result = AddInlineObjectRun(inlineMap, { .caretBegin = 10, .caretEnd = 20 }, prop2);
+			TEST_ASSERT(result == false);
+
+			DocumentInlineObjectRunPropertyMap expectedMap;
+			expectedMap.Add({ .caretBegin = 10, .caretEnd = 20 }, prop1);
+
 			AssertMap(inlineMap, expectedMap);
 		});
 
