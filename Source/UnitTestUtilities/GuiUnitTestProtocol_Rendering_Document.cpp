@@ -316,7 +316,8 @@ IGuiRemoteProtocolMessages (Elements - Document)
 				}
 				else if (auto inlineProp = run.props.TryGet<DocumentInlineObjectRunProperty>())
 				{
-					elements::AddInlineObjectRun(state->inlineObjectRuns, range, *inlineProp);
+					bool result = elements::AddInlineObjectRun(state->inlineObjectRuns, range, *inlineProp);
+					TEST_ASSERT(result);
 				}
 			}
 		}

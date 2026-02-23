@@ -53,6 +53,21 @@ TEST_FILE
 			protocol->OnNextIdleFrame(L"Clicked", [=]()
 			{
 				auto window = GetApplication()->GetMainWindow();
+				auto documentLabel = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+				documentLabel->SetCaret({ 0,1 }, { 0,1 });
+				documentLabel->SetFocused();
+			});
+			protocol->OnNextIdleFrame(L"Caret at 2nd character", [=]()
+			{
+				protocol->KeyPress(VKEY::KEY_RIGHT, false, true, false);
+			});
+			protocol->OnNextIdleFrame(L"[SHIFT]+[RIGHT]", [=]()
+			{
+				protocol->KeyPress(VKEY::KEY_RETURN);
+			});
+			protocol->OnNextIdleFrame(L"[ENTER] at beginning", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
 				window->Hide();
 			});
 		});

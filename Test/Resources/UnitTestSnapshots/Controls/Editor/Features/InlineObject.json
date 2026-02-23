@@ -27,7 +27,9 @@
     [25, "SolidLabel"],
     [26, "DocumentParagraph"],
     [27, "DocumentParagraph"],
-    [28, "ImageFrame"]
+    [28, "ImageFrame"],
+    [29, "DocumentParagraph"],
+    [30, "DocumentParagraph"]
   ],
   "imageCreations": [
     {"id": 18, "imageData": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAABiUlEQVR4nKWTv24TQRCHv4uu970BV1qi8OUNlgJIZ1PhzucKRGO\/AUdJZ7\/B0UF37tx500EV04Uq5wKJLrPdppoUe39CjELhkU47utXvm\/nNaiJV5ZSIN5eHhiDh8CAebn\/fvFl+mFT\/JVS21sdRVlbzotTRy1mmqjz1nXWVH4R4yC8yzp+fX2Wv8uypBqJqu9fx6xGXv4IwTRzWWtKhAd8Dpcmvbm5flMvUdoSysn3vXlVEtf4jWn2XI2vFV9HsvdXRu53pLTTkLz9gbR0re2C1la7iX9YEijwjcm6XTSsDELcTmGTtCySIh\/21AAPWm3Bvhg7xQrHaA+Du3A6IYrzg7mC1PSAtzQtpkgCwGNMIBhRTqI2hrmuKMoDiIIBJloBvWvcJ9joIP31ziIT\/0lRou+0AZjo\/8msulsAzPr4d4NyAWhwiCSIgsqd9\/ngxG0eL2fgIMP\/8UwHm60NXuY3JsM\/j41mHEAmzMelDsYRB88jCPwEeTL5p8nZP+n1pLUSnbuPZSWrgHpANDzKdUwRtAAAAAElFTkSuQmCC", "imageDataOmitted": false}
@@ -74,6 +76,87 @@
     {
       "frameId": 9,
       "frameName": "Clicked",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 11,
+      "frameName": "Caret at 2nd character",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 13,
+      "frameName": "[SHIFT]+[RIGHT]",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 17,
+      "frameName": "[ENTER] at beginning",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
