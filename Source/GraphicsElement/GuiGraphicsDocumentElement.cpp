@@ -316,7 +316,7 @@ GuiDocumentElement
 				{
 					if (auto elementRenderer = GetElementRenderer())
 					{
-						elementRenderer->NotifyParagraphStyleUpdated(paragraphIndex, 1);
+						elementRenderer->NotifyParagraphStyleUpdated({ paragraphIndex, begin }, { paragraphIndex,end });
 						InvokeOnCompositionStateChanged();
 					}
 				}
@@ -335,7 +335,7 @@ GuiDocumentElement
 				{
 					if (auto elementRenderer = GetElementRenderer())
 					{
-						elementRenderer->NotifyParagraphStyleUpdated(paragraphIndex, 1);
+						elementRenderer->NotifyParagraphStyleUpdated({ paragraphIndex, begin }, { paragraphIndex,end });
 						InvokeOnCompositionStateChanged();
 					}
 				}
