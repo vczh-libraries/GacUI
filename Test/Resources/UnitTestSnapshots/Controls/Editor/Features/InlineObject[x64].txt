@@ -55,12 +55,12 @@ namespace gacuisrc_unittest
                 (textBox = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel));
                 <this>.SetNamedObject("textBox", textBox);
             }
+            {
+                (textBox.EditMode = Editable of (::presentation::controls::GuiDocumentEditMode));
+            }
             (<precompile>3 = textBox.BoundsComposition);
             {
                 (<precompile>3.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
-            {
-                (textBox.EditMode = Editable of (::presentation::controls::GuiDocumentEditMode));
             }
             (<precompile>0 = new (::presentation::controls::GuiDocumentItem^)("Button"));
             {

@@ -251,7 +251,9 @@ IGuiDocumentElementRenderer
 			{
 			public:
 				virtual void									NotifyParagraphPaddingUpdated(bool value) = 0;
-				virtual void									NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText) = 0;
+				virtual void									NotifyParagraphTextUpdated(vint index, vint oldCount, vint newCount) = 0;
+				virtual void									NotifyParagraphStyleUpdated(TextPos begin, TextPos end) = 0;
+				virtual void									NotifyParagraphStyleUpdated(vint index, vint count) = 0;
 				virtual Ptr<DocumentHyperlinkRun::Package>		GetHyperlinkFromPoint(Point point) = 0;
 				virtual void									OpenCaret(TextPos caret, Color color, bool frontSide) = 0;
 				virtual void									CloseCaret(TextPos caret) = 0;

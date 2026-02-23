@@ -208,11 +208,21 @@ GuiDocumentElement
 			
 			void GuiDocumentElement::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GuiDocumentElement::NotifyParagraphUpdated(vint, vint, vint, bool)#"
 				if (auto elementRenderer = GetElementRenderer())
 				{
-					elementRenderer->NotifyParagraphUpdated(index, oldCount, newCount, updatedText);
+					if (updatedText)
+					{
+						elementRenderer->NotifyParagraphTextUpdated(index, oldCount, newCount);
+					}
+					else
+					{
+						CHECK_ERROR(oldCount == newCount, ERROR_MESSAGE_PREFIX L"updatedText must be true if oldCount is not equal to newCount");
+						elementRenderer->NotifyParagraphStyleUpdated(index, oldCount);
+					}
 					InvokeOnCompositionStateChanged();
 				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			void GuiDocumentElement::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy)
@@ -229,7 +239,7 @@ GuiDocumentElement
 				{
 					if (auto elementRenderer = GetElementRenderer())
 					{
-						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, newRows, true);
+						elementRenderer->NotifyParagraphTextUpdated(begin.row, end.row - begin.row + 1, newRows);
 						InvokeOnCompositionStateChanged();
 					}
 				}
@@ -249,7 +259,7 @@ GuiDocumentElement
 				{
 					if (auto elementRenderer = GetElementRenderer())
 					{
-						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, newRows, true);
+						elementRenderer->NotifyParagraphTextUpdated(begin.row, end.row - begin.row + 1, newRows);
 						InvokeOnCompositionStateChanged();
 					}
 				}
@@ -268,7 +278,7 @@ GuiDocumentElement
 				{
 					if (auto elementRenderer = GetElementRenderer())
 					{
-						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
+						elementRenderer->NotifyParagraphStyleUpdated(begin, end);
 						InvokeOnCompositionStateChanged();
 					}
 				}
@@ -287,7 +297,7 @@ GuiDocumentElement
 				{
 					if (auto elementRenderer = GetElementRenderer())
 					{
-						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, 1, true);
+						elementRenderer->NotifyParagraphTextUpdated(begin.row, end.row - begin.row + 1, 1);
 						InvokeOnCompositionStateChanged();
 					}
 				}
@@ -306,7 +316,7 @@ GuiDocumentElement
 				{
 					if (auto elementRenderer = GetElementRenderer())
 					{
-						elementRenderer->NotifyParagraphUpdated(paragraphIndex, 1, 1, false);
+						elementRenderer->NotifyParagraphStyleUpdated(paragraphIndex, 1);
 						InvokeOnCompositionStateChanged();
 					}
 				}
@@ -325,7 +335,7 @@ GuiDocumentElement
 				{
 					if (auto elementRenderer = GetElementRenderer())
 					{
-						elementRenderer->NotifyParagraphUpdated(paragraphIndex, 1, 1, false);
+						elementRenderer->NotifyParagraphStyleUpdated(paragraphIndex, 1);
 						InvokeOnCompositionStateChanged();
 					}
 				}
@@ -344,7 +354,7 @@ GuiDocumentElement
 				{
 					if (auto elementRenderer = GetElementRenderer())
 					{
-						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
+						elementRenderer->NotifyParagraphStyleUpdated(begin, end);
 						InvokeOnCompositionStateChanged();
 					}
 				}
@@ -363,7 +373,7 @@ GuiDocumentElement
 				{
 					if (auto elementRenderer = GetElementRenderer())
 					{
-						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
+						elementRenderer->NotifyParagraphStyleUpdated(begin, end);
 						InvokeOnCompositionStateChanged();
 					}
 				}
@@ -387,7 +397,7 @@ GuiDocumentElement
 				{
 					if (auto elementRenderer = GetElementRenderer())
 					{
-						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
+						elementRenderer->NotifyParagraphStyleUpdated(begin, end);
 						InvokeOnCompositionStateChanged();
 					}
 				}
@@ -406,7 +416,7 @@ GuiDocumentElement
 				{
 					if (auto elementRenderer = GetElementRenderer())
 					{
-						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
+						elementRenderer->NotifyParagraphStyleUpdated(begin, end);
 						InvokeOnCompositionStateChanged();
 					}
 				}
@@ -455,7 +465,10 @@ GuiDocumentElement
 					}
 					if (auto elementRenderer = GetElementRenderer())
 					{
-						elementRenderer->NotifyParagraphUpdated(first, alignments.Count(), alignments.Count(), false);
+						for (vint i = first; i <= last; i++)
+						{
+							elementRenderer->NotifyParagraphStyleUpdated({ i,0 }, { i,0 });
+						}
 						InvokeOnCompositionStateChanged();
 					}
 				}

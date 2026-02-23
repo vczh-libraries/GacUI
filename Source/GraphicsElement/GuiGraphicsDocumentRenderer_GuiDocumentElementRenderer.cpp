@@ -207,7 +207,7 @@ GuiDocumentElementRenderer
 						renderingParagraph = -1;
 
 						bool resized = false;
-						for(auto eo: cache->embeddedObjects.Values())
+						for (auto eo : cache->embeddedObjects.Values())
 						{
 							if (eo->resized)
 							{
@@ -234,12 +234,12 @@ GuiDocumentElementRenderer
 					// Calculate current visible range (currentBegin, currentCount)
 					vint currentBegin = -1;
 					vint currentCount = 0;
-					
+
 					// Determine currentBegin using existing GetParagraphFromY logic
 					Rect clipper = renderTarget->GetClipper();
 					vint y1 = clipper.Top() - bounds.Top();
 					vint y2 = y1 + clipper.Height();
-					
+
 					if (y1 < y2) // Only if there's visible area
 					{
 						currentBegin = pgCache.GetParagraphFromY(y1, paragraphDistance);
@@ -254,15 +254,15 @@ GuiDocumentElementRenderer
 							}
 						}
 					}
-					
+
 					UpdateRenderRangeAndCleanUp(currentBegin, currentCount);
 				}
 
 				FixMinSize();
 
-				for(auto p:paragraphsToReset)
+				for (auto p : paragraphsToReset)
 				{
-					NotifyParagraphUpdated(p, 1, 1, false);
+					NotifyParagraphStyleUpdated(p, 1);
 				}
 			}
 
@@ -279,20 +279,9 @@ GuiDocumentElementRenderer
 				FixMinSize();
 			}
 
-			void GuiDocumentElementRenderer::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
+			void GuiDocumentElementRenderer::NotifyParagraphUpdateLastTotalWidth(vint index, vint count)
 			{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#"
-				vint oldParagraphCount = pgCache.GetParagraphCount();
-				vint newParagraphCount = element->GetDocument()->paragraphs.Count();
-
-				CHECK_ERROR(oldCount >= 0, ERROR_MESSAGE_PREFIX L"oldCount cannot be negative.");
-				CHECK_ERROR(newCount >= 0, ERROR_MESSAGE_PREFIX L"newCount cannot be negative.");
-				CHECK_ERROR(0 <= index && index + oldCount <= oldParagraphCount, ERROR_MESSAGE_PREFIX L"index + oldCount is out of range.");
-				CHECK_ERROR(0 <= index && index + newCount <= newParagraphCount, ERROR_MESSAGE_PREFIX L"index + newCount is out of range.");
-				CHECK_ERROR(updatedText || oldCount == newCount, ERROR_MESSAGE_PREFIX L"updatedText must be true if oldCount is not equal to newCount.");
-				CHECK_ERROR(newParagraphCount - oldParagraphCount == newCount - oldCount, ERROR_MESSAGE_PREFIX L"newCount - oldCount does not reflect the actual paragraph count changing.");
-
-				for (vint i = 0; i < oldCount; i++)
+				for (vint i = 0; i < count; i++)
 				{
 					vint width = pgCache.GetParagraphSize(index + i).x;
 					if (lastTotalWidth == width)
@@ -301,15 +290,62 @@ GuiDocumentElementRenderer
 						break;
 					}
 				}
-				lastTotalHeightWithoutParagraphDistance += pgCache.ResetCache(index, oldCount, newCount, updatedText);
+			}
+
+			void GuiDocumentElementRenderer::NotifyParagraphTextUpdated(vint index, vint oldCount, vint newCount)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GuiDocumentElementRenderer::NotifyParagraphTextUpdated(vint, vint, vint)#"
+				vint oldParagraphCount = pgCache.GetParagraphCount();
+				vint newParagraphCount = element->GetDocument()->paragraphs.Count();
+
+				CHECK_ERROR(oldCount >= 0, ERROR_MESSAGE_PREFIX L"oldCount cannot be negative.");
+				CHECK_ERROR(newCount >= 0, ERROR_MESSAGE_PREFIX L"newCount cannot be negative.");
+				CHECK_ERROR(0 <= index && index + oldCount <= oldParagraphCount, ERROR_MESSAGE_PREFIX L"index + oldCount is out of range.");
+				CHECK_ERROR(0 <= index && index + newCount <= newParagraphCount, ERROR_MESSAGE_PREFIX L"index + newCount is out of range.");
+				CHECK_ERROR(newParagraphCount - oldParagraphCount == newCount - oldCount, ERROR_MESSAGE_PREFIX L"newCount - oldCount does not reflect the actual paragraph count changing.");
+
+				NotifyParagraphUpdateLastTotalWidth(index, oldCount);
+				lastTotalHeightWithoutParagraphDistance += pgCache.ResetCache(index, oldCount, newCount, true);
+				FixMinSize();
+				UpdateRenderRange(index, oldCount, newCount);
+
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			void GuiDocumentElementRenderer::NotifyParagraphStyleUpdated(TextPos begin, TextPos end)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GuiDocumentElementRenderer::NotifyParagraphStyleUpdated(vint, TextPos, TextPos)#"
+				vint paragraphCount = pgCache.GetParagraphCount();
+				CHECK_ERROR(paragraphCount == element->GetDocument()->paragraphs.Count(), ERROR_MESSAGE_PREFIX L"This function can only be called when only text style is updated.");
+				CHECK_ERROR(0 <= begin.row && begin.row < paragraphCount, ERROR_MESSAGE_PREFIX L"begin.row is out of range.");
+				CHECK_ERROR(0 <= end.row && end.row < paragraphCount, ERROR_MESSAGE_PREFIX L"end.row is out of range.");
+
+				vint count = end.row - begin.row + 1;
+				NotifyParagraphUpdateLastTotalWidth(begin.row, count);
+				lastTotalHeightWithoutParagraphDistance += pgCache.ResetCache(begin.row, count, count, false);
 				FixMinSize();
 
-				// Update render range if text was actually updated
-				if (updatedText)
-				{
-					UpdateRenderRange(index, oldCount, newCount);
-				}
+#undef ERROR_MESSAGE_PREFIX
+			}
 
+			void GuiDocumentElementRenderer::NotifyParagraphStyleUpdated(vint index, vint count)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GuiDocumentElementRenderer::NotifyParagraphTextUpdated(vint, vint, vint)#"
+				vint oldParagraphCount = pgCache.GetParagraphCount();
+				vint newParagraphCount = element->GetDocument()->paragraphs.Count();
+
+				CHECK_ERROR(count >= 0, ERROR_MESSAGE_PREFIX L"count cannot be negative.");
+				CHECK_ERROR(0 <= index && index + count <= newParagraphCount, ERROR_MESSAGE_PREFIX L"index + count is out of range.");
+				if (auto cache = pgCache.TryGetParagraphCache(index))
+				{
+					NotifyParagraphStyleUpdated({ index,0 }, { index,cache->fullText.Length() });
+				}
+				else
+				{
+					NotifyParagraphUpdateLastTotalWidth(index, count);
+					lastTotalHeightWithoutParagraphDistance += pgCache.ResetCache(index, count, count, false);
+					FixMinSize();
+				}
 #undef ERROR_MESSAGE_PREFIX
 			}
 
@@ -388,11 +424,15 @@ GuiDocumentElementRenderer
 
 							if (cache->selectionBegin != newBegin || cache->selectionEnd != newEnd)
 							{
+								vint selectionBegin = cache->selectionBegin;
+								vint selectionEnd = cache->selectionEnd;
+								if (newBegin < selectionBegin) selectionBegin = newBegin;
+								if (newEnd > selectionEnd) selectionEnd = newEnd;
 								cache->selectionBegin = newBegin;
 								cache->selectionEnd = newEnd;
 								if (cache->graphicsParagraph)
 								{
-									NotifyParagraphUpdated(i, 1, 1, false);
+									NotifyParagraphStyleUpdated({ i,selectionBegin }, { i,selectionEnd });
 								}
 							}
 						}
@@ -403,11 +443,13 @@ GuiDocumentElementRenderer
 						{
 							if (cache->selectionBegin != -1 || cache->selectionEnd != -1)
 							{
+								vint selectionBegin = cache->selectionBegin;
+								vint selectionEnd = cache->selectionEnd;
 								cache->selectionBegin = -1;
 								cache->selectionEnd = -1;
 								if (cache->graphicsParagraph)
 								{
-									NotifyParagraphUpdated(i, 1, 1, false);
+									NotifyParagraphStyleUpdated({ i,selectionBegin }, { i,selectionEnd });
 								}
 							}
 						}

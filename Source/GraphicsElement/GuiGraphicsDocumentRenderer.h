@@ -149,14 +149,19 @@ GuiDocumentElementRenderer
 				void									FixMinSize();
 				void									UpdateRenderRange(vint index, vint oldCount, vint newCount);
 				void									UpdateRenderRangeAndCleanUp(vint currentBegin, vint currentCount);
+				void									NotifyParagraphUpdateLastTotalWidth(vint index, vint count);
 
 			public:
 				GuiDocumentElementRenderer();
 
 				void									Render(Rect bounds) override;
 				void									OnElementStateChanged() override;
+
 				void									NotifyParagraphPaddingUpdated(bool value) override;
-				void									NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText) override;
+				void									NotifyParagraphTextUpdated(vint index, vint oldCount, vint newCount) override;
+				void									NotifyParagraphStyleUpdated(TextPos begin, TextPos end) override;
+				void									NotifyParagraphStyleUpdated(vint index, vint count) override;
+
 				Ptr<DocumentHyperlinkRun::Package>		GetHyperlinkFromPoint(Point point) override;
 
 				void									OpenCaret(TextPos caret, Color color, bool frontSide) override;
