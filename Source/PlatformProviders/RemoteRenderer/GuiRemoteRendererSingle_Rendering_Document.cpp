@@ -157,55 +157,70 @@ namespace vl::presentation::remote_renderer
 			}
 		}
 
+		void ApplyTextRun(elements::CaretRange range, const remoteprotocol::DocumentTextRunProperty& textProp)
+		{
+			auto start = range.caretBegin;
+			auto length = range.caretEnd - range.caretBegin;
+			if (length <= 0) return;
+
+			paragraph->SetFont(start, length, textProp.fontProperties.fontFamily);
+			paragraph->SetSize(start, length, textProp.fontProperties.size);
+
+			IGuiGraphicsParagraph::TextStyle style = (IGuiGraphicsParagraph::TextStyle)0;
+			if (textProp.fontProperties.bold) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)IGuiGraphicsParagraph::TextStyle::Bold);
+			if (textProp.fontProperties.italic) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)IGuiGraphicsParagraph::TextStyle::Italic);
+			if (textProp.fontProperties.underline) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)IGuiGraphicsParagraph::TextStyle::Underline);
+			if (textProp.fontProperties.strikeline) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)IGuiGraphicsParagraph::TextStyle::Strikeline);
+			paragraph->SetStyle(start, length, style);
+
+			paragraph->SetColor(start, length, textProp.textColor);
+			paragraph->SetBackgroundColor(start, length, textProp.backgroundColor);
+		}
+
+		void ApplyInlineObjectRun(elements::CaretRange range, const remoteprotocol::DocumentInlineObjectRunProperty& inlineProp)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteDocumentParagraphElement::ApplyInlineObjectRun(CaretRange, const DocumentInlineObjectRunProperty&)#"
+			auto start = range.caretBegin;
+			auto length = range.caretEnd - range.caretBegin;
+			if (length <= 0) return;
+
+			Ptr<IGuiGraphicsElement> background;
+			if (inlineProp.backgroundElementId != -1)
+			{
+				vint index = owner->availableElements.Keys().IndexOf(inlineProp.backgroundElementId);
+				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"backgroundElementId not found.");
+				background = owner->availableElements.Values()[index];
+			}
+
+			IGuiGraphicsParagraph::InlineObjectProperties props;
+			props.size = inlineProp.size;
+			props.baseline = inlineProp.baseline;
+			props.breakCondition = (IGuiGraphicsParagraph::BreakCondition)inlineProp.breakCondition;
+			props.callbackId = inlineProp.callbackId;
+			props.backgroundImage = background;
+			CHECK_ERROR(paragraph->SetInlineObject(start, length, props), ERROR_MESSAGE_PREFIX L"SetInlineObject failed.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
 		void ApplyRuns()
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteDocumentParagraphElement::TryApplyRuns()#"
 			auto&& mergedKeys = mergedRuns.Keys();
 			for (vint i = 0; i < mergedKeys.Count(); i++)
 			{
 				auto range = mergedKeys[i];
 				auto props = mergedRuns.Values()[i];
-				auto start = range.caretBegin;
-				auto length = range.caretEnd - range.caretBegin;
-				if (length <= 0) continue;
 
 				props.Apply(Overloading(
 					[&](const remoteprotocol::DocumentTextRunProperty& textProp)
 					{
-						paragraph->SetFont(start, length, textProp.fontProperties.fontFamily);
-						paragraph->SetSize(start, length, textProp.fontProperties.size);
-
-						IGuiGraphicsParagraph::TextStyle style = (IGuiGraphicsParagraph::TextStyle)0;
-						if (textProp.fontProperties.bold) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)IGuiGraphicsParagraph::TextStyle::Bold);
-						if (textProp.fontProperties.italic) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)IGuiGraphicsParagraph::TextStyle::Italic);
-						if (textProp.fontProperties.underline) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)IGuiGraphicsParagraph::TextStyle::Underline);
-						if (textProp.fontProperties.strikeline) style = (IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)IGuiGraphicsParagraph::TextStyle::Strikeline);
-						paragraph->SetStyle(start, length, style);
-
-						paragraph->SetColor(start, length, textProp.textColor);
-						paragraph->SetBackgroundColor(start, length, textProp.backgroundColor);
+						ApplyTextRun(range, textProp);
 					},
 					[&](const remoteprotocol::DocumentInlineObjectRunProperty& inlineProp)
 					{
-						Ptr<IGuiGraphicsElement> background;
-						if (inlineProp.backgroundElementId != -1)
-						{
-							vint index = owner->availableElements.Keys().IndexOf(inlineProp.backgroundElementId);
-							CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"backgroundElementId not found.");
-							background = owner->availableElements.Values()[index];
-						}
-
-						IGuiGraphicsParagraph::InlineObjectProperties props;
-						props.size = inlineProp.size;
-						props.baseline = inlineProp.baseline;
-						props.breakCondition = (IGuiGraphicsParagraph::BreakCondition)inlineProp.breakCondition;
-						props.callbackId = inlineProp.callbackId;
-						props.backgroundImage = background;
-						CHECK_ERROR(paragraph->SetInlineObject(start, length, props), ERROR_MESSAGE_PREFIX L"SetInlineObject failed.");
+						ApplyInlineObjectRun(range, inlineProp);
 					}
 				));
 			}
-#undef ERROR_MESSAGE_PREFIX
 		}
 
 		void TryRecreateParagraph()
@@ -246,8 +261,18 @@ namespace vl::presentation::remote_renderer
 				CHECK_ERROR(arguments.text, ERROR_MESSAGE_PREFIX L"First update must contain text.");
 				text = arguments.text;
 
-				CHECK_ERROR(renderTarget, ERROR_MESSAGE_PREFIX L"Render target is not set.");
-				TryRecreateParagraph();
+				// These should be unnecessary but keep them here so far.
+				textRuns.Clear();
+				inlineObjectRuns.Clear();
+				mergedRuns.Clear();
+				inlineObjectBounds.Clear();
+				inlineObjectProps.Clear();
+				inlineObjectRanges.Clear();
+
+				if (renderTarget)
+				{
+					TryRecreateParagraph();
+				}
 			}
 			else
 			{
@@ -272,14 +297,14 @@ namespace vl::presentation::remote_renderer
 					}
 
 					vint index = inlineObjectRanges.Keys().IndexOf(callbackId);
-					if (index != -1)
+					if (index != -1 && paragraph)
 					{
 						auto range = inlineObjectRanges.Values()[index];
 						paragraph->ResetInlineObject(range.caretBegin, range.caretEnd - range.caretBegin);
 					}
-					inlineObjectRanges.Remove(callbackId);
-					inlineObjectProps.Remove(callbackId);
 					inlineObjectBounds.Remove(callbackId);
+					inlineObjectProps.Remove(callbackId);
+					inlineObjectRanges.Remove(callbackId);
 				}
 			}
 
@@ -288,35 +313,52 @@ namespace vl::presentation::remote_renderer
 				for (auto run : *arguments.runsDiff.Obj())
 				{
 					elements::CaretRange range{ run.caretBegin, run.caretEnd };
-
-					if (auto textProp = run.props.TryGet<DocumentTextRunProperty>())
-					{
-						elements::DocumentTextRunPropertyOverrides overrides;
-						overrides.textColor = textProp->textColor;
-						overrides.backgroundColor = textProp->backgroundColor;
-						overrides.fontFamily = textProp->fontProperties.fontFamily;
-						overrides.size = textProp->fontProperties.size;
-						// Convert bool flags back to TextStyle
-						elements::IGuiGraphicsParagraph::TextStyle style = (elements::IGuiGraphicsParagraph::TextStyle)0;
-						if (textProp->fontProperties.bold) style = (elements::IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)elements::IGuiGraphicsParagraph::TextStyle::Bold);
-						if (textProp->fontProperties.italic) style = (elements::IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)elements::IGuiGraphicsParagraph::TextStyle::Italic);
-						if (textProp->fontProperties.underline) style = (elements::IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)elements::IGuiGraphicsParagraph::TextStyle::Underline);
-						if (textProp->fontProperties.strikeline) style = (elements::IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)elements::IGuiGraphicsParagraph::TextStyle::Strikeline);
-						overrides.textStyle = style;
-						elements::AddTextRun(textRuns, range, overrides);
-					}
-					else if (auto inlineProp = run.props.TryGet<DocumentInlineObjectRunProperty>())
-					{
-						elements::AddInlineObjectRun(inlineObjectRuns, range, *inlineProp);
-					}
+					run.props.Apply(Overloading(
+						[&](const remoteprotocol::DocumentTextRunProperty& textProp)
+						{
+							elements::DocumentTextRunPropertyOverrides overrides;
+							overrides.textColor = textProp.textColor;
+							overrides.backgroundColor = textProp.backgroundColor;
+							overrides.fontFamily = textProp.fontProperties.fontFamily;
+							overrides.size = textProp.fontProperties.size;
+							// Convert bool flags back to TextStyle
+							elements::IGuiGraphicsParagraph::TextStyle style = (elements::IGuiGraphicsParagraph::TextStyle)0;
+							if (textProp.fontProperties.bold) style = (elements::IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)elements::IGuiGraphicsParagraph::TextStyle::Bold);
+							if (textProp.fontProperties.italic) style = (elements::IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)elements::IGuiGraphicsParagraph::TextStyle::Italic);
+							if (textProp.fontProperties.underline) style = (elements::IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)elements::IGuiGraphicsParagraph::TextStyle::Underline);
+							if (textProp.fontProperties.strikeline) style = (elements::IGuiGraphicsParagraph::TextStyle)((vint)style | (vint)elements::IGuiGraphicsParagraph::TextStyle::Strikeline);
+							overrides.textStyle = style;
+							elements::AddTextRun(textRuns, range, overrides);
+						},
+						[&](const remoteprotocol::DocumentInlineObjectRunProperty& inlineProp)
+						{
+							elements::AddInlineObjectRun(inlineObjectRuns, range, inlineProp);
+						}
+					));
 				}
 			}
 
 			mergedRuns.Clear();
 			elements::MergeRuns(textRuns, inlineObjectRuns, mergedRuns);
 
-			ApplyRuns();
-			ApplyCaret();
+			if (arguments.runsDiff && paragraph)
+			{
+				for (auto run : *arguments.runsDiff.Obj())
+				{
+					elements::CaretRange range{ run.caretBegin, run.caretEnd };
+
+					run.props.Apply(Overloading(
+						[&](const remoteprotocol::DocumentTextRunProperty& textProp)
+						{
+							ApplyTextRun(range, textProp);
+						},
+						[&](const remoteprotocol::DocumentInlineObjectRunProperty& inlineProp)
+						{
+							ApplyInlineObjectRun(range, inlineProp);
+						}
+					));
+				}
+			}
 
 			response.documentSize = paragraph->GetSize();
 			if (inlineObjectRuns.Count() > 0)
