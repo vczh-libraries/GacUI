@@ -29,9 +29,9 @@ GuiRemoteProtocolElementRenderer
 	RENDERER_TEMPLATE_HEADER
 	void RENDERER_CLASS_TYPE::FinalizeInternal()
 	{
-		if (this->renderTarget && id != -1)
+		if (GetGuiGraphicsResourceManager() && id != -1)
 		{
-			this->renderTarget->UnregisterRenderer(this);
+			remoteRenderTarget->UnregisterRenderer(this);
 			id = -1;
 		}
 	}
@@ -39,19 +39,27 @@ GuiRemoteProtocolElementRenderer
 	RENDERER_TEMPLATE_HEADER
 	void RENDERER_CLASS_TYPE::RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget* oldRenderTarget, GuiRemoteGraphicsRenderTarget* newRenderTarget)
 	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements_remoteprotocol::GuiRemoteProtocolElementRenderer<TElement, TRenderer, RendererType>::RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget*, GuiRemoteGraphicsRenderTarget*)#"
 		if (oldRenderTarget == newRenderTarget) return;
-		if (oldRenderTarget && id != -1)
-		{
-			oldRenderTarget->UnregisterRenderer(this);
-			id = -1;
-		}
 		if (newRenderTarget)
 		{
-			id = newRenderTarget->AllocateNewElementId();
-			newRenderTarget->RegisterRenderer(this);
+			if (!remoteRenderTarget)
+			{
+				remoteRenderTarget = newRenderTarget;
+			}
+			else
+			{
+				CHECK_ERROR(remoteRenderTarget == newRenderTarget, ERROR_MESSAGE_PREFIX L"There should be only one global GuiRemoteGraphicsRenderTarget.");
+			}
+			if (id == -1)
+			{
+				id = newRenderTarget->AllocateNewElementId();
+				newRenderTarget->RegisterRenderer(this);
+			}
 			updated = true;
 			renderTargetChanged = true;
 		}
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	RENDERER_TEMPLATE_HEADER

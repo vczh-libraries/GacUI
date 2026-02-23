@@ -50,6 +50,7 @@ namespace vl::presentation::elements_remoteprotocol
 	{
 	protected:
 		vint							id = -1;
+		GuiRemoteGraphicsRenderTarget*	remoteRenderTarget = nullptr;
 		vuint64_t						renderingBatchId = 0;
 		bool							updated = true;
 		bool							renderTargetChanged = false;
