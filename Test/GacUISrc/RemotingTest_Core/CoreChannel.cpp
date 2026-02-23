@@ -1,5 +1,9 @@
 #include "CoreChannel.h"
 
+#ifdef _DEBUG
+// #define PRINT_PROTOCOL_JSON
+#endif
+
 void CoreChannel::OnReadStringThreadUnsafe(Ptr<List<WString>> strs)
 {
 	static WString filteredStrings[] = {
@@ -10,7 +14,7 @@ void CoreChannel::OnReadStringThreadUnsafe(Ptr<List<WString>> strs)
 	};
 	asyncChannel->ExecuteInChannelThread([this, strs]()
 	{
-#ifdef _DEBUG
+#ifdef PRINT_PROTOCOL_JSON
 		for (auto str : *strs.Obj())
 		{
 			for (auto&& filtered : filteredStrings)
@@ -109,7 +113,7 @@ IGuiRemoteProtocolChannelReceiver<WString>* CoreChannel::GetReceiver()
 
 void CoreChannel::Write(const WString& package)
 {
-#ifdef _DEBUG
+#ifdef PRINT_PROTOCOL_JSON
 	Console::WriteLine(L"Sent: " + package);
 #endif
 	if (pendingMessageCount < pendingMessages.Count())
@@ -134,7 +138,7 @@ void CoreChannel::Submit(bool& disconnected)
 	{
 		if (pendingMessageCount > 0)
 		{
-#ifdef _DEBUG
+#ifdef PRINT_PROTOCOL_JSON
 			Console::WriteLine(L"Submit");
 #endif
 			SendPendingMessages();
@@ -144,7 +148,7 @@ void CoreChannel::Submit(bool& disconnected)
 	{
 		if (pendingMessageCount > 0)
 		{
-#ifdef _DEBUG
+#ifdef PRINT_PROTOCOL_JSON
 			Console::WriteLine(L"Submit (unconnected)");
 #endif
 			pendingMessageCount = 0;
