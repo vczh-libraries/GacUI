@@ -236,21 +236,24 @@ namespace vl::presentation::remote_renderer
 		void ApplyUpdateAndFillResponse(const remoteprotocol::ElementDesc_DocumentParagraph& arguments, remoteprotocol::UpdateElement_DocumentParagraphResponse& response)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteDocumentParagraphElement::ApplyUpdateAndFillResponse(const remoteprotocol::ElementDesc_DocumentParagraph&, remoteprotocol::UpdateElement_DocumentParagraphResponse&)#"
-			if (!paragraph)
-			{
-				CHECK_ERROR(arguments.text, ERROR_MESSAGE_PREFIX L"First update must contain text.");
-				text = arguments.text;
-			}
-			else
-			{
-				CHECK_ERROR(!arguments.text, ERROR_MESSAGE_PREFIX L"Text is only allowed on first update.");
-			}
+
 			wrapLine = arguments.wrapLine;
 			maxWidth = arguments.maxWidth;
 			alignment = arguments.alignment;
 
-			CHECK_ERROR(renderTarget, ERROR_MESSAGE_PREFIX L"Render target is not set.");
-			TryRecreateParagraph();
+			if (!paragraph)
+			{
+				CHECK_ERROR(arguments.text, ERROR_MESSAGE_PREFIX L"First update must contain text.");
+				text = arguments.text;
+
+				CHECK_ERROR(renderTarget, ERROR_MESSAGE_PREFIX L"Render target is not set.");
+				TryRecreateParagraph();
+			}
+			else
+			{
+				CHECK_ERROR(!arguments.text, ERROR_MESSAGE_PREFIX L"Text is only allowed on first update.");
+				ApplyProps();
+			}
 
 			if (arguments.removedInlineObjects)
 			{
@@ -312,7 +315,6 @@ namespace vl::presentation::remote_renderer
 			mergedRuns.Clear();
 			elements::MergeRuns(textRuns, inlineObjectRuns, mergedRuns);
 
-			ApplyProps();
 			ApplyRuns();
 			ApplyCaret();
 
