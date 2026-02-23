@@ -133,22 +133,19 @@ GuiDocumentParagraphCache
 				}
 			}
 
-			vint GuiDocumentParagraphCache::ResetCache(vint index, vint oldCount, vint newCount, bool updatedText)
+			vint GuiDocumentParagraphCache::ResetTextCache(vint index, vint oldCount, vint newCount)
 			{
-				if (updatedText)
+				for (vint i = 0; i < oldCount; i++)
 				{
-					for (vint i = 0; i < oldCount; i++)
+					if (auto cache = paragraphCaches[i + index])
 					{
-						if (auto cache = paragraphCaches[i + index])
+						// TODO: (enumerable) foreach on dictionary
+						for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
 						{
-							// TODO: (enumerable) foreach on dictionary
-							for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
-							{
-								auto id = cache->embeddedObjects.Keys()[j];
-								auto name = cache->embeddedObjects.Values()[j]->name;
-								nameCallbackIdMap.Remove(name);
-								freeCallbackIds.Add(id);
-							}
+							auto id = cache->embeddedObjects.Keys()[j];
+							auto name = cache->embeddedObjects.Values()[j]->name;
+							nameCallbackIdMap.Remove(name);
+							freeCallbackIds.Add(id);
 						}
 					}
 				}
@@ -157,14 +154,7 @@ GuiDocumentParagraphCache
 				{
 					for (vint i = 0; i < oldCount; i++)
 					{
-						if (updatedText)
-						{
-							paragraphCaches[index + i] = nullptr;
-						}
-						else if (auto cache = paragraphCaches[index + i])
-						{
-							cache->outdatedStyles = true;
-						}
+						paragraphCaches[index + i] = nullptr;
 					}
 					return 0;
 				}
@@ -210,6 +200,30 @@ GuiDocumentParagraphCache
 					}
 					return newCount * defaultHeight - oldUpdatedTotalHeight;
 				}
+			}
+
+			vint GuiDocumentParagraphCache::ResetStyleCache(TextPos begin, TextPos end)
+			{
+				for (vint i = begin.row; i <= end.row; i++)
+				{
+					if (auto cache = paragraphCaches[i])
+					{
+						cache->outdatedStyles = true;
+					}
+				}
+				return 0;
+			}
+
+			vint GuiDocumentParagraphCache::ResetStyleCache(vint index, vint count)
+			{
+				for (vint i = 0; i < count; i++)
+				{
+					if (auto cache = paragraphCaches[index + i])
+					{
+						cache->outdatedStyles = true;
+					}
+				}
+				return 0;
 			}
 
 			vint GuiDocumentParagraphCache::EnsureParagraph(vint paragraphIndex, vint maxWidth)

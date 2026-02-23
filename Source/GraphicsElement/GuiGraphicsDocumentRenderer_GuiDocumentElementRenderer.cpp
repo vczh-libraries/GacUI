@@ -305,7 +305,7 @@ GuiDocumentElementRenderer
 				CHECK_ERROR(newParagraphCount - oldParagraphCount == newCount - oldCount, ERROR_MESSAGE_PREFIX L"newCount - oldCount does not reflect the actual paragraph count changing.");
 
 				NotifyParagraphUpdateLastTotalWidth(index, oldCount);
-				lastTotalHeightWithoutParagraphDistance += pgCache.ResetCache(index, oldCount, newCount, true);
+				lastTotalHeightWithoutParagraphDistance += pgCache.ResetTextCache(index, oldCount, newCount);
 				FixMinSize();
 				UpdateRenderRange(index, oldCount, newCount);
 
@@ -322,7 +322,7 @@ GuiDocumentElementRenderer
 
 				vint count = end.row - begin.row + 1;
 				NotifyParagraphUpdateLastTotalWidth(begin.row, count);
-				lastTotalHeightWithoutParagraphDistance += pgCache.ResetCache(begin.row, count, count, false);
+				lastTotalHeightWithoutParagraphDistance += pgCache.ResetStyleCache(begin, end);
 				FixMinSize();
 
 #undef ERROR_MESSAGE_PREFIX
@@ -336,16 +336,9 @@ GuiDocumentElementRenderer
 
 				CHECK_ERROR(count >= 0, ERROR_MESSAGE_PREFIX L"count cannot be negative.");
 				CHECK_ERROR(0 <= index && index + count <= newParagraphCount, ERROR_MESSAGE_PREFIX L"index + count is out of range.");
-				if (auto cache = pgCache.TryGetParagraphCache(index))
-				{
-					NotifyParagraphStyleUpdated({ index,0 }, { index,cache->fullText.Length() });
-				}
-				else
-				{
-					NotifyParagraphUpdateLastTotalWidth(index, count);
-					lastTotalHeightWithoutParagraphDistance += pgCache.ResetCache(index, count, count, false);
-					FixMinSize();
-				}
+				NotifyParagraphUpdateLastTotalWidth(index, count);
+				lastTotalHeightWithoutParagraphDistance += pgCache.ResetStyleCache(index, count);
+				FixMinSize();
 #undef ERROR_MESSAGE_PREFIX
 			}
 

@@ -95,9 +95,11 @@ GuiDocumentParagraphCache
 				vint									GetParagraphTopWithoutParagraphDistance(vint paragraphIndex);
 				vint									GetParagraphTop(vint paragraphIndex, vint paragraphDistance);
 
-				vint									ResetCache();																// returns total height
-				vint									ResetCache(vint index, vint oldCount, vint newCount, bool updatedText);		// returns the diff of total height
-				vint									EnsureParagraph(vint paragraphIndex, vint maxWidth);						// returns the diff of total height
+				vint									ResetCache();													// returns total height
+				vint									ResetTextCache(vint index, vint oldCount, vint newCount);		// returns the diff of total height
+				vint									ResetStyleCache(TextPos begin, TextPos end);					// returns the diff of total height
+				vint									ResetStyleCache(vint index, vint count);						// returns the diff of total height
+				vint									EnsureParagraph(vint paragraphIndex, vint maxWidth);			// returns the diff of total height
 				vint									GetParagraphFromY(vint y, vint paragraphDistance);
 				void									ReleaseParagraphs(vint index, vint count);
 			};
