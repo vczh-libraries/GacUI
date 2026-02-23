@@ -54,14 +54,18 @@ TEST_FILE
 			{
 				auto window = GetApplication()->GetMainWindow();
 				auto documentLabel = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
-				documentLabel->SetCaret({ 0,1 }, { 0,1 });
 				documentLabel->SetFocused();
-			});
-			protocol->OnNextIdleFrame(L"Caret at 2nd character", [=]()
-			{
+				documentLabel->SetCaret({ 0,1 }, { 0,1 });
 				protocol->KeyPress(VKEY::KEY_RIGHT, false, true, false);
 			});
-			protocol->OnNextIdleFrame(L"[SHIFT]+[RIGHT]", [=]()
+			protocol->OnNextIdleFrame(L"Select 2nd char @par1", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto documentLabel = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
+				documentLabel->SetCaret({ 1,1 }, { 1,1 });
+				protocol->KeyPress(VKEY::KEY_RIGHT, false, true, false);
+			});
+			protocol->OnNextIdleFrame(L"Select 2nd char @par2", [=]()
 			{
 				protocol->KeyPress(VKEY::KEY_RETURN);
 			});

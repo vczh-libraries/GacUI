@@ -127,6 +127,7 @@ SetPropertiesVisitor
 
 					void Visit(DocumentImageRun* run)override
 					{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::visitors::SetPropertiesVisitor::Visit(DocumentImageRun*)#"
 						length = run->GetRepresentationText().Length();
 
 						auto element = Ptr(GuiImageFrameElement::Create());
@@ -139,7 +140,8 @@ SetPropertiesVisitor
 						properties.breakCondition = IGuiGraphicsParagraph::Alone;
 						properties.backgroundImage = element;
 
-						paragraph->SetInlineObject(start, length, properties);
+						bool result = paragraph->SetInlineObject(start, length, properties);
+						CHECK_ERROR(result, ERROR_MESSAGE_PREFIX L"The specified range has already been occupied by another inline object.");
 
 						if (start < selectionEnd && selectionBegin < start + length)
 						{
@@ -148,10 +150,12 @@ SetPropertiesVisitor
 							ApplyColor(start, length, selectionStyle);
 						}
 						start += length;
+#undef ERROR_MESSAGE_PREFIX
 					}
 
 					void Visit(DocumentEmbeddedObjectRun* run)override
 					{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::visitors::SetPropertiesVisitor::Visit(DocumentEmbeddedObjectRun*)#"
 						length = run->GetRepresentationText().Length();
 
 						IGuiGraphicsParagraph::InlineObjectProperties properties;
@@ -199,7 +203,8 @@ SetPropertiesVisitor
 							}
 						}
 
-						paragraph->SetInlineObject(start, length, properties);
+						bool result = paragraph->SetInlineObject(start, length, properties);
+						CHECK_ERROR(result, ERROR_MESSAGE_PREFIX L"The specified range has already been occupied by another inline object.");
 
 						if (start < selectionEnd && selectionBegin < start + length)
 						{
@@ -208,6 +213,7 @@ SetPropertiesVisitor
 							ApplyColor(start, length, selectionStyle);
 						}
 						start += length;
+#undef ERROR_MESSAGE_PREFIX
 					}
 
 					void Visit(DocumentParagraphRun* run)override

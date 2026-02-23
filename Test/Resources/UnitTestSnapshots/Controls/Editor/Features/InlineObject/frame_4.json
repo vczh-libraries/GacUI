@@ -1,5 +1,5 @@
 ﻿{
-  "frameId": 17,
+  "frameId": 16,
   "frameName": "[ENTER] at beginning",
   "windowSize": {
     "bounds": {
@@ -353,20 +353,20 @@
       ]
     ],
     [
-      27,
+      26,
       [
         "ElementDesc_DocumentParagraphFull",
         {
           "paragraph": {
-            "id": 27,
-            "text": "This is the second paragraph. [Image] After the image.",
+            "id": 26,
+            "text": "This is the first paragraph. [EmbeddedObject] After the inline object.",
             "wrapLine": true,
             "maxWidth": 450,
             "alignment": "Left",
             "runsDiff": [
               {
                 "caretBegin": 0,
-                "caretEnd": 30,
+                "caretEnd": 29,
                 "props": [
                   "DocumentTextRunProperty",
                   {
@@ -377,73 +377,8 @@
                 ]
               },
               {
-                "caretBegin": 30,
-                "caretEnd": 37,
-                "props": [
-                  "DocumentInlineObjectRunProperty",
-                  {
-                    "size": {"x": 16, "y": 16},
-                    "baseline": -1,
-                    "breakCondition": "Alone",
-                    "backgroundElementId": 28,
-                    "callbackId": -1
-                  }
-                ]
-              },
-              {
-                "caretBegin": 37,
-                "caretEnd": 54,
-                "props": [
-                  "DocumentTextRunProperty",
-                  {
-                    "textColor": "#FFFFFF",
-                    "backgroundColor": "#00000000",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
-                  }
-                ]
-              }
-            ],
-            "createdInlineObjects": null,
-            "removedInlineObjects": null
-          },
-          "caret": null
-        }
-      ]
-    ],
-    [
-      28,
-      [
-        "ElementDesc_ImageFrame",
-        {"id": 28, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
-      ]
-    ],
-    [
-      29,
-      [
-        "ElementDesc_DocumentParagraphFull",
-        {
-          "paragraph": {
-            "id": 29,
-            "text": "is is the first paragraph. [EmbeddedObject] After the inline object.",
-            "wrapLine": true,
-            "maxWidth": 450,
-            "alignment": "Left",
-            "runsDiff": [
-              {
-                "caretBegin": 0,
-                "caretEnd": 27,
-                "props": [
-                  "DocumentTextRunProperty",
-                  {
-                    "textColor": "#FFFFFF",
-                    "backgroundColor": "#00000000",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
-                  }
-                ]
-              },
-              {
-                "caretBegin": 27,
-                "caretEnd": 43,
+                "caretBegin": 29,
+                "caretEnd": 45,
                 "props": [
                   "DocumentInlineObjectRunProperty",
                   {
@@ -456,8 +391,8 @@
                 ]
               },
               {
-                "caretBegin": 43,
-                "caretEnd": 68,
+                "caretBegin": 45,
+                "caretEnd": 70,
                 "props": [
                   "DocumentTextRunProperty",
                   {
@@ -482,6 +417,71 @@
         {
           "paragraph": {
             "id": 30,
+            "text": "is is the second paragraph. [Image] After the image.",
+            "wrapLine": true,
+            "maxWidth": 450,
+            "alignment": "Left",
+            "runsDiff": [
+              {
+                "caretBegin": 0,
+                "caretEnd": 28,
+                "props": [
+                  "DocumentTextRunProperty",
+                  {
+                    "textColor": "#FFFFFF",
+                    "backgroundColor": "#00000000",
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                  }
+                ]
+              },
+              {
+                "caretBegin": 28,
+                "caretEnd": 35,
+                "props": [
+                  "DocumentInlineObjectRunProperty",
+                  {
+                    "size": {"x": 16, "y": 16},
+                    "baseline": -1,
+                    "breakCondition": "Alone",
+                    "backgroundElementId": 31,
+                    "callbackId": -1
+                  }
+                ]
+              },
+              {
+                "caretBegin": 35,
+                "caretEnd": 52,
+                "props": [
+                  "DocumentTextRunProperty",
+                  {
+                    "textColor": "#FFFFFF",
+                    "backgroundColor": "#00000000",
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                  }
+                ]
+              }
+            ],
+            "createdInlineObjects": null,
+            "removedInlineObjects": null
+          },
+          "caret": null
+        }
+      ]
+    ],
+    [
+      31,
+      [
+        "ElementDesc_ImageFrame",
+        {"id": 31, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+      ]
+    ],
+    [
+      32,
+      [
+        "ElementDesc_DocumentParagraphFull",
+        {
+          "paragraph": {
+            "id": 32,
             "text": "T",
             "wrapLine": true,
             "maxWidth": 450,
@@ -857,35 +857,35 @@
                         },
                         "children": [
                           {
+                            "id": 104,
+                            "content": {
+                              "hitTestResult": null,
+                              "cursor": null,
+                              "element": 26,
+                              "bounds": {"x1": 15, "y1": 43, "x2": 465, "y2": 71},
+                              "validArea": {"x1": 15, "y1": 43, "x2": 465, "y2": 71}
+                            },
+                            "children": null
+                          },
+                          {
+                            "id": 128,
+                            "content": {
+                              "hitTestResult": null,
+                              "cursor": null,
+                              "element": 32,
+                              "bounds": {"x1": 15, "y1": 83, "x2": 465, "y2": 99},
+                              "validArea": {"x1": 15, "y1": 83, "x2": 465, "y2": 99}
+                            },
+                            "children": null
+                          },
+                          {
                             "id": 120,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
                               "element": 30,
-                              "bounds": {"x1": 15, "y1": 43, "x2": 465, "y2": 59},
-                              "validArea": {"x1": 15, "y1": 43, "x2": 465, "y2": 59}
-                            },
-                            "children": null
-                          },
-                          {
-                            "id": 116,
-                            "content": {
-                              "hitTestResult": null,
-                              "cursor": null,
-                              "element": 29,
-                              "bounds": {"x1": 15, "y1": 71, "x2": 465, "y2": 95},
-                              "validArea": {"x1": 15, "y1": 71, "x2": 465, "y2": 95}
-                            },
-                            "children": null
-                          },
-                          {
-                            "id": 108,
-                            "content": {
-                              "hitTestResult": null,
-                              "cursor": null,
-                              "element": 27,
-                              "bounds": {"x1": 15, "y1": 107, "x2": 465, "y2": 127},
-                              "validArea": {"x1": 15, "y1": 107, "x2": 465, "y2": 127}
+                              "bounds": {"x1": 15, "y1": 111, "x2": 465, "y2": 131},
+                              "validArea": {"x1": 15, "y1": 111, "x2": 465, "y2": 131}
                             },
                             "children": null
                           },
@@ -895,8 +895,8 @@
                               "hitTestResult": null,
                               "cursor": "Arrow",
                               "element": null,
-                              "bounds": {"x1": 209, "y1": 73, "x2": 281, "y2": 93},
-                              "validArea": {"x1": 209, "y1": 73, "x2": 281, "y2": 93}
+                              "bounds": {"x1": 223, "y1": 45, "x2": 295, "y2": 65},
+                              "validArea": {"x1": 223, "y1": 45, "x2": 295, "y2": 65}
                             },
                             "children": [
                               {
@@ -905,8 +905,8 @@
                                   "hitTestResult": null,
                                   "cursor": null,
                                   "element": 22,
-                                  "bounds": {"x1": 209, "y1": 73, "x2": 281, "y2": 93},
-                                  "validArea": {"x1": 209, "y1": 73, "x2": 281, "y2": 93}
+                                  "bounds": {"x1": 223, "y1": 45, "x2": 295, "y2": 65},
+                                  "validArea": {"x1": 223, "y1": 45, "x2": 295, "y2": 65}
                                 },
                                 "children": [
                                   {
@@ -915,8 +915,8 @@
                                       "hitTestResult": null,
                                       "cursor": null,
                                       "element": 23,
-                                      "bounds": {"x1": 209, "y1": 73, "x2": 281, "y2": 93},
-                                      "validArea": {"x1": 209, "y1": 73, "x2": 281, "y2": 93}
+                                      "bounds": {"x1": 223, "y1": 45, "x2": 295, "y2": 65},
+                                      "validArea": {"x1": 223, "y1": 45, "x2": 295, "y2": 65}
                                     },
                                     "children": [
                                       {
@@ -925,8 +925,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 25,
-                                          "bounds": {"x1": 213, "y1": 75, "x2": 277, "y2": 91},
-                                          "validArea": {"x1": 213, "y1": 75, "x2": 277, "y2": 91}
+                                          "bounds": {"x1": 227, "y1": 47, "x2": 291, "y2": 63},
+                                          "validArea": {"x1": 227, "y1": 47, "x2": 291, "y2": 63}
                                         },
                                         "children": null
                                       }

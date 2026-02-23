@@ -1,6 +1,6 @@
 ﻿{
   "frameId": 13,
-  "frameName": "[SHIFT]+[RIGHT]",
+  "frameName": "Select 2nd char @par2",
   "windowSize": {
     "bounds": {
       "x1": {"value": 272},
@@ -366,30 +366,6 @@
             "runsDiff": [
               {
                 "caretBegin": 0,
-                "caretEnd": 1,
-                "props": [
-                  "DocumentTextRunProperty",
-                  {
-                    "textColor": "#FFFFFF",
-                    "backgroundColor": "#00000000",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
-                  }
-                ]
-              },
-              {
-                "caretBegin": 1,
-                "caretEnd": 2,
-                "props": [
-                  "DocumentTextRunProperty",
-                  {
-                    "textColor": "#FFFFFF",
-                    "backgroundColor": "#007ACC",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
-                  }
-                ]
-              },
-              {
-                "caretBegin": 2,
                 "caretEnd": 29,
                 "props": [
                   "DocumentTextRunProperty",
@@ -430,7 +406,7 @@
             "createdInlineObjects": null,
             "removedInlineObjects": null
           },
-          "caret": {"id": 26, "caret": 2, "caretColor": "#FFFFFF", "frontSide": true}
+          "caret": null
         }
       ]
     ],
@@ -448,6 +424,30 @@
             "runsDiff": [
               {
                 "caretBegin": 0,
+                "caretEnd": 1,
+                "props": [
+                  "DocumentTextRunProperty",
+                  {
+                    "textColor": "#FFFFFF",
+                    "backgroundColor": "#00000000",
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                  }
+                ]
+              },
+              {
+                "caretBegin": 1,
+                "caretEnd": 2,
+                "props": [
+                  "DocumentTextRunProperty",
+                  {
+                    "textColor": "#FFFFFF",
+                    "backgroundColor": "#007ACC",
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                  }
+                ]
+              },
+              {
+                "caretBegin": 2,
                 "caretEnd": 30,
                 "props": [
                   "DocumentTextRunProperty",
@@ -467,7 +467,7 @@
                     "size": {"x": 16, "y": 16},
                     "baseline": -1,
                     "breakCondition": "Alone",
-                    "backgroundElementId": 28,
+                    "backgroundElementId": 29,
                     "callbackId": -1
                   }
                 ]
@@ -488,15 +488,15 @@
             "createdInlineObjects": null,
             "removedInlineObjects": null
           },
-          "caret": null
+          "caret": {"id": 27, "caret": 2, "caretColor": "#FFFFFF", "frontSide": true}
         }
       ]
     ],
     [
-      28,
+      29,
       [
         "ElementDesc_ImageFrame",
-        {"id": 28, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+        {"id": 29, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
       ]
     ]
   ],

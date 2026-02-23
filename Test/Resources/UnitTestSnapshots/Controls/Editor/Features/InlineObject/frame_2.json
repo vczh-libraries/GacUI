@@ -1,6 +1,6 @@
 ﻿{
   "frameId": 11,
-  "frameName": "Caret at 2nd character",
+  "frameName": "Select 2nd char @par1",
   "windowSize": {
     "bounds": {
       "x1": {"value": 272},
@@ -366,6 +366,30 @@
             "runsDiff": [
               {
                 "caretBegin": 0,
+                "caretEnd": 1,
+                "props": [
+                  "DocumentTextRunProperty",
+                  {
+                    "textColor": "#FFFFFF",
+                    "backgroundColor": "#00000000",
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                  }
+                ]
+              },
+              {
+                "caretBegin": 1,
+                "caretEnd": 2,
+                "props": [
+                  "DocumentTextRunProperty",
+                  {
+                    "textColor": "#FFFFFF",
+                    "backgroundColor": "#007ACC",
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                  }
+                ]
+              },
+              {
+                "caretBegin": 2,
                 "caretEnd": 29,
                 "props": [
                   "DocumentTextRunProperty",
@@ -406,7 +430,7 @@
             "createdInlineObjects": null,
             "removedInlineObjects": null
           },
-          "caret": {"id": 26, "caret": 1, "caretColor": "#FFFFFF", "frontSide": true}
+          "caret": {"id": 26, "caret": 2, "caretColor": "#FFFFFF", "frontSide": true}
         }
       ]
     ],

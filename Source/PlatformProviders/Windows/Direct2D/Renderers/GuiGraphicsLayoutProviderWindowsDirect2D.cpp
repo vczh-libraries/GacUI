@@ -655,32 +655,42 @@ WindowsDirect2DParagraph (Formatting)
 
 				bool SetInlineObject(vint start, vint length, const InlineObjectProperties& properties)override
 				{
-					if(inlineElements.Keys().Contains(properties.backgroundImage.Obj()))
+					if (inlineElements.Keys().Contains(properties.backgroundImage.Obj()))
 					{
 						return false;
 					}
 					// TODO: (enumerable) foreach
-					for(vint i=0;i<inlineElements.Count();i++)
+					for (vint i = 0; i < inlineElements.Count(); i++)
 					{
-						ComPtr<WindowsDirect2DElementInlineObject> inlineObject=inlineElements.Values().Get(i);
-						if(start<inlineObject->GetStart()+inlineObject->GetLength() && inlineObject->GetStart()<start+length)
+						ComPtr<WindowsDirect2DElementInlineObject> inlineObject = inlineElements.Values().Get(i);
+						if (start == inlineObject->GetStart() && length == inlineObject->GetLength())
+						{
+							auto&& inlineProps = inlineObject->GetProperties();
+							if (inlineProps.size != properties.size) return false;
+							if (inlineProps.baseline != properties.baseline) return false;
+							if (inlineProps.breakCondition != properties.breakCondition) return false;
+							if (inlineProps.callbackId != properties.callbackId) return false;
+							if (inlineProps.backgroundImage != properties.backgroundImage) return false;
+							return true;
+						}
+						if (start < inlineObject->GetStart() + inlineObject->GetLength() && inlineObject->GetStart() < start + length)
 						{
 							return false;
 						}
 					}
-					formatDataAvailable=false;
+					formatDataAvailable = false;
 
-					ComPtr<WindowsDirect2DElementInlineObject> inlineObject=new WindowsDirect2DElementInlineObject(properties, this, start, length);
+					ComPtr<WindowsDirect2DElementInlineObject> inlineObject = new WindowsDirect2DElementInlineObject(properties, this, start, length);
 					DWRITE_TEXT_RANGE range;
-					range.startPosition=(int)start;
-					range.length=(int)length;
-					HRESULT hr=textLayout->SetInlineObject(inlineObject.Obj(), range);
-					if(!FAILED(hr))
+					range.startPosition = (int)start;
+					range.length = (int)length;
+					HRESULT hr = textLayout->SetInlineObject(inlineObject.Obj(), range);
+					if (!FAILED(hr))
 					{
 						if (properties.backgroundImage)
 						{
-							IGuiGraphicsRenderer* renderer=properties.backgroundImage->GetRenderer();
-							if(renderer)
+							IGuiGraphicsRenderer* renderer = properties.backgroundImage->GetRenderer();
+							if (renderer)
 							{
 								renderer->SetRenderTarget(renderTarget);
 							}
