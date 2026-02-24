@@ -156,12 +156,12 @@ SetPropertiesVisitor
 							bool result = paragraph->SetInlineObject(start, length, properties);
 							CHECK_ERROR(result, ERROR_MESSAGE_PREFIX L"The specified range has already been occupied by another inline object.");
 
+							ResolvedStyle style = styles[styles.Count() - 1];
 							if (start < selectionEnd && selectionBegin < start + length)
 							{
-								ResolvedStyle style = styles[styles.Count() - 1];
-								ResolvedStyle selectionStyle = model->GetStyle(DocumentModel::SelectionStyleName, style);
-								ApplyColor(start, length, selectionStyle);
+								style = model->GetStyle(DocumentModel::SelectionStyleName, style);
 							}
+							ApplyColor(start, length, style);
 						}
 						start += length;
 #undef ERROR_MESSAGE_PREFIX
@@ -221,12 +221,12 @@ SetPropertiesVisitor
 							bool result = paragraph->SetInlineObject(start, length, properties);
 							CHECK_ERROR(result, ERROR_MESSAGE_PREFIX L"The specified range has already been occupied by another inline object.");
 
+							ResolvedStyle style = styles[styles.Count() - 1];
 							if (start < selectionEnd && selectionBegin < start + length)
 							{
-								ResolvedStyle style = styles[styles.Count() - 1];
-								ResolvedStyle selectionStyle = model->GetStyle(DocumentModel::SelectionStyleName, style);
-								ApplyColor(start, length, selectionStyle);
+								style = model->GetStyle(DocumentModel::SelectionStyleName, style);
 							}
+							ApplyColor(start, length, style);
 						}
 						start += length;
 #undef ERROR_MESSAGE_PREFIX

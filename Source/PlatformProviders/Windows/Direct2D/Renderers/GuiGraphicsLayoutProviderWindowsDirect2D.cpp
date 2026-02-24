@@ -37,13 +37,11 @@ WindowsDirect2DElementInlineObject
 
 			public:
 				WindowsDirect2DElementInlineObject(
-					const IGuiGraphicsParagraph::InlineObjectProperties& _properties,
 					IRendererCallback* _rendererCallback,
 					vint _start,
 					vint _length
 					)
 					:counter(1)
-					,properties(_properties)
 					,rendererCallback(_rendererCallback)
 					,start(_start)
 					,length(_length)
@@ -75,6 +73,11 @@ WindowsDirect2DElementInlineObject
 				const IGuiGraphicsParagraph::InlineObjectProperties& GetProperties()
 				{
 					return properties;
+				}
+
+				void SetProperties(const IGuiGraphicsParagraph::InlineObjectProperties& value)
+				{
+					properties=value;
 				}
 
 				Ptr<IGuiGraphicsElement> GetElement()
@@ -655,35 +658,41 @@ WindowsDirect2DParagraph (Formatting)
 
 				bool SetInlineObject(vint start, vint length, const InlineObjectProperties& properties)override
 				{
-					if (inlineElements.Keys().Contains(properties.backgroundImage.Obj()))
-					{
-						return false;
-					}
+					vint reuseIndex = -1;
 					// TODO: (enumerable) foreach
 					for (vint i = 0; i < inlineElements.Count(); i++)
 					{
-						ComPtr<WindowsDirect2DElementInlineObject> inlineObject = inlineElements.Values().Get(i);
+						auto inlineObject = inlineElements.Values().Get(i);
 						if (start == inlineObject->GetStart() && length == inlineObject->GetLength())
 						{
 							auto&& inlineProps = inlineObject->GetProperties();
 							if (inlineProps.callbackId != properties.callbackId) return false;
 							if (inlineProps.backgroundImage != properties.backgroundImage) return false;
+							reuseIndex = i;
 						}
-						if (start < inlineObject->GetStart() + inlineObject->GetLength() && inlineObject->GetStart() < start + length)
+						else
 						{
-							return false;
+							if (inlineElements.Keys().Contains(properties.backgroundImage.Obj()))
+							{
+								return false;
+							}
+							if (start < inlineObject->GetStart() + inlineObject->GetLength() && inlineObject->GetStart() < start + length)
+							{
+								return false;
+							}
 						}
 					}
 					formatDataAvailable = false;
 
-					ComPtr<WindowsDirect2DElementInlineObject> inlineObject = new WindowsDirect2DElementInlineObject(properties, this, start, length);
+					auto inlineObject = reuseIndex != -1 ? inlineElements.Values().Get(reuseIndex) : ComPtr(new WindowsDirect2DElementInlineObject(this, start, length));
+					inlineObject->SetProperties(properties);
 					DWRITE_TEXT_RANGE range;
 					range.startPosition = (int)start;
 					range.length = (int)length;
 					HRESULT hr = textLayout->SetInlineObject(inlineObject.Obj(), range);
 					if (!FAILED(hr))
 					{
-						if (properties.backgroundImage)
+						if (properties.backgroundImage && reuseIndex == -1)
 						{
 							IGuiGraphicsRenderer* renderer = properties.backgroundImage->GetRenderer();
 							if (renderer)
@@ -691,8 +700,8 @@ WindowsDirect2DParagraph (Formatting)
 								renderer->SetRenderTarget(renderTarget);
 							}
 							inlineElements.Add(properties.backgroundImage.Obj(), inlineObject);
+							SetMap(graphicsElements, start, length, properties.backgroundImage.Obj());
 						}
-						SetMap(graphicsElements, start, length, properties.backgroundImage.Obj());
 						return true;
 					}
 					else
