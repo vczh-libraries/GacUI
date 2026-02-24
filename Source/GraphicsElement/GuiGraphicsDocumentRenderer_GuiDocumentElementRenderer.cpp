@@ -161,6 +161,7 @@ GuiDocumentElementRenderer
 					&pgCache,
 					&imageCache,
 					cache,
+					paragraphIndex,
 					paragraph,
 					cache->selectionBegin,
 					cache->selectionEnd,

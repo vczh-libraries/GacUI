@@ -32,10 +32,15 @@ GuiDocumentImageCache
 
 			void GuiDocumentImageCache::ResetTextCache(vint index, vint oldCount, vint newCount)
 			{
+				// TODO: Delete affected caches
+				// array[index] -> (image, frameIndex)[]
 			}
 
-			Ptr<IGuiGraphicsElement> GuiDocumentImageCache::GetImageElement(Ptr<INativeImage> image, vint frameIndex)
+			Ptr<IGuiGraphicsElement> GuiDocumentImageCache::GetImageElement(Ptr<INativeImage> image, vint frameIndex, vint paragraphIndex, vint start)
 			{
+				// TODO: Cache create element with position
+				// map[(image, frameIndex)] -> (&array[index])[]
+				// map[(image, frameIndex)] -> element
 				auto element = Ptr(GuiImageFrameElement::Create());
 				element->SetImage(image, frameIndex);
 				element->SetStretch(true);

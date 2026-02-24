@@ -32,12 +32,14 @@ SetPropertiesVisitor
 					GuiDocumentImageCache*			imageCache;
 					Ptr<pg::ParagraphCache>			cache;
 					IGuiGraphicsParagraph*			paragraph;
+					vint							paragraphIndex;
 
 					SetPropertiesVisitor(
 						DocumentModel* _model,
 						GuiDocumentParagraphCache* _paragraphCache,
 						GuiDocumentImageCache* _imageCache,
 						Ptr<pg::ParagraphCache> _cache,
+						vint _paragraphIndex,
 						vint _selectionBegin,
 						vint _selectionEnd,
 						vint _rangeBegin,
@@ -47,6 +49,7 @@ SetPropertiesVisitor
 						, paragraphCache(_paragraphCache)
 						, imageCache(_imageCache)
 						, cache(_cache)
+						, paragraphIndex(_paragraphIndex)
 						, paragraph(_cache->graphicsParagraph.Obj())
 						, selectionBegin(_selectionBegin)
 						, selectionEnd(_selectionEnd)
@@ -148,7 +151,7 @@ SetPropertiesVisitor
 							properties.size = run->GetSize();
 							properties.baseline = run->baseline;
 							properties.breakCondition = IGuiGraphicsParagraph::Alone;
-							properties.backgroundImage = imageCache->GetImageElement(run->image, run->frameIndex);
+							properties.backgroundImage = imageCache->GetImageElement(run->image, run->frameIndex, paragraphIndex, start);
 
 							bool result = paragraph->SetInlineObject(start, length, properties);
 							CHECK_ERROR(result, ERROR_MESSAGE_PREFIX L"The specified range has already been occupied by another inline object.");
@@ -240,6 +243,7 @@ SetPropertiesVisitor
 					GuiDocumentParagraphCache* paragraphCache,
 					GuiDocumentImageCache* imageCache,
 					Ptr<pg::ParagraphCache> cache,
+					vint paragraphIndex,
 					Ptr<DocumentParagraphRun> run,
 					vint selectionBegin,
 					vint selectionEnd,
@@ -247,7 +251,7 @@ SetPropertiesVisitor
 					vint rangeEnd
 				)
 				{
-					SetPropertiesVisitor visitor(model, paragraphCache, imageCache, cache, selectionBegin, selectionEnd, rangeBegin, rangeEnd);
+					SetPropertiesVisitor visitor(model, paragraphCache, imageCache, cache, paragraphIndex, selectionBegin, selectionEnd, rangeBegin, rangeEnd);
 					run->Accept(&visitor);
 					return visitor.length;
 				}

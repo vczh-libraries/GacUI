@@ -128,7 +128,7 @@ GuiDocumentImageCache
 				void									Initialize(GuiDocumentElement* _element);
 				void									RenderTargetChanged(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget);
 				void									ResetTextCache(vint index, vint oldCount, vint newCount);
-				Ptr<IGuiGraphicsElement>				GetImageElement(Ptr<INativeImage> image, vint frameIndex);
+				Ptr<IGuiGraphicsElement>				GetImageElement(Ptr<INativeImage> image, vint frameIndex, vint paragraphIndex, vint start);
 			};
 
 /***********************************************************************
@@ -142,6 +142,7 @@ SetPropertiesVisitor
 					GuiDocumentParagraphCache* paragraphCache,
 					GuiDocumentImageCache* imageCache,
 					Ptr<pg::ParagraphCache> cache,
+					vint paragraphIndex,
 					Ptr<DocumentParagraphRun> run,
 					vint selectionBegin,
 					vint selectionEnd,
