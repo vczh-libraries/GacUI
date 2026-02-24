@@ -419,8 +419,8 @@ GuiDocumentElementRenderer
 							{
 								vint selectionBegin = cache->selectionBegin;
 								vint selectionEnd = cache->selectionEnd;
-								if (newBegin < selectionBegin) selectionBegin = newBegin;
-								if (newEnd > selectionEnd) selectionEnd = newEnd;
+								if (newBegin < selectionBegin || selectionBegin == -1) selectionBegin = newBegin;
+								if (newEnd > selectionEnd || selectionEnd == -1) selectionEnd = newEnd;
 								cache->selectionBegin = newBegin;
 								cache->selectionEnd = newEnd;
 								if (cache->graphicsParagraph)

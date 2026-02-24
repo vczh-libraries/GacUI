@@ -71,6 +71,10 @@ TEST_FILE
 			});
 			protocol->OnNextIdleFrame(L"[ENTER] at beginning", [=]()
 			{
+				protocol->KeyPress(VKEY::KEY_A, true, false ,false);
+			});
+			protocol->OnNextIdleFrame(L"Select All", [=]()
+			{
 				auto window = GetApplication()->GetMainWindow();
 				window->Hide();
 			});
