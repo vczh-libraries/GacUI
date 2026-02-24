@@ -317,7 +317,7 @@
         "ElementDesc_DocumentParagraphFull",
         {
           "paragraph": {"id": 32, "text": "", "wrapLine": true, "maxWidth": 450, "alignment": "Left", "runsDiff": [], "createdInlineObjects": null, "removedInlineObjects": null},
-          "caret": null
+          "caret": {"id": 32, "caret": 0, "caretColor": "#FFFFFF", "frontSide": true}
         }
       ]
     ]

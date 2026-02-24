@@ -484,7 +484,7 @@
             "createdInlineObjects": null,
             "removedInlineObjects": null
           },
-          "caret": null
+          "caret": {"id": 34, "caret": 6, "caretColor": "#FFFFFF", "frontSide": true}
         }
       ]
     ]
