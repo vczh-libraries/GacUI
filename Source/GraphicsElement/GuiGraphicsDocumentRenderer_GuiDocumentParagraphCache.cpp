@@ -269,7 +269,7 @@ GuiDocumentParagraphCache
 					{
 						if (value)
 						{
-							visitors::SetProperties(element->GetDocument().Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd);
+							visitors::SetProperties(element->GetDocument().Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd, 0, cache->fullText.Length());
 							cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
 							cache->graphicsParagraph->SetWrapLine(element->GetWrapLine());
 							cache->graphicsParagraph->SetMaxWidth(maxWidth);
@@ -277,7 +277,7 @@ GuiDocumentParagraphCache
 					},
 					[&, this](collections::Pair<vint, vint> range)
 					{
-						visitors::SetProperties(element->GetDocument().Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd);
+						visitors::SetProperties(element->GetDocument().Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd, range.key, range.value);
 						cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
 						cache->graphicsParagraph->SetWrapLine(element->GetWrapLine());
 						cache->graphicsParagraph->SetMaxWidth(maxWidth);

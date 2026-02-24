@@ -23,6 +23,8 @@ SetPropertiesVisitor
 					vint							length;
 					vint							selectionBegin;
 					vint							selectionEnd;
+					vint							rangeBegin;
+					vint							rangeEnd;
 					List<ResolvedStyle>				styles;
 
 					DocumentModel*					model;
@@ -30,7 +32,7 @@ SetPropertiesVisitor
 					Ptr<pg::ParagraphCache>			cache;
 					IGuiGraphicsParagraph*			paragraph;
 
-					SetPropertiesVisitor(DocumentModel* _model, GuiDocumentParagraphCache* _paragraphCache, Ptr<pg::ParagraphCache> _cache, vint _selectionBegin, vint _selectionEnd)
+					SetPropertiesVisitor(DocumentModel* _model, GuiDocumentParagraphCache* _paragraphCache, Ptr<pg::ParagraphCache> _cache, vint _selectionBegin, vint _selectionEnd, vint _rangeBegin, vint _rangeEnd)
 						: start(0)
 						, length(0)
 						, model(_model)
@@ -39,6 +41,8 @@ SetPropertiesVisitor
 						, paragraph(_cache->graphicsParagraph.Obj())
 						, selectionBegin(_selectionBegin)
 						, selectionEnd(_selectionEnd)
+						, rangeBegin(_rangeBegin)
+						, rangeEnd(_rangeEnd)
 					{
 						ResolvedStyle style;
 						style = model->GetStyle(DocumentModel::DefaultStyleName, style);
@@ -75,7 +79,7 @@ SetPropertiesVisitor
 					void Visit(DocumentTextRun* run)override
 					{
 						length = run->GetRepresentationText().Length();
-						if (length > 0)
+						if (length > 0 && start < rangeEnd && rangeBegin < start + length)
 						{
 							ResolvedStyle style = styles[styles.Count() - 1];
 							ApplyStyle(start, length, style);
@@ -129,25 +133,27 @@ SetPropertiesVisitor
 					{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::visitors::SetPropertiesVisitor::Visit(DocumentImageRun*)#"
 						length = run->GetRepresentationText().Length();
-
-						auto element = Ptr(GuiImageFrameElement::Create());
-						element->SetImage(run->image, run->frameIndex);
-						element->SetStretch(true);
-
-						IGuiGraphicsParagraph::InlineObjectProperties properties;
-						properties.size = run->GetSize();
-						properties.baseline = run->baseline;
-						properties.breakCondition = IGuiGraphicsParagraph::Alone;
-						properties.backgroundImage = element;
-
-						bool result = paragraph->SetInlineObject(start, length, properties);
-						CHECK_ERROR(result, ERROR_MESSAGE_PREFIX L"The specified range has already been occupied by another inline object.");
-
-						if (start < selectionEnd && selectionBegin < start + length)
+						if (start < rangeEnd && rangeBegin < start + length)
 						{
-							ResolvedStyle style = styles[styles.Count() - 1];
-							ResolvedStyle selectionStyle = model->GetStyle(DocumentModel::SelectionStyleName, style);
-							ApplyColor(start, length, selectionStyle);
+							auto element = Ptr(GuiImageFrameElement::Create());
+							element->SetImage(run->image, run->frameIndex);
+							element->SetStretch(true);
+
+							IGuiGraphicsParagraph::InlineObjectProperties properties;
+							properties.size = run->GetSize();
+							properties.baseline = run->baseline;
+							properties.breakCondition = IGuiGraphicsParagraph::Alone;
+							properties.backgroundImage = element;
+
+							bool result = paragraph->SetInlineObject(start, length, properties);
+							CHECK_ERROR(result, ERROR_MESSAGE_PREFIX L"The specified range has already been occupied by another inline object.");
+
+							if (start < selectionEnd && selectionBegin < start + length)
+							{
+								ResolvedStyle style = styles[styles.Count() - 1];
+								ResolvedStyle selectionStyle = model->GetStyle(DocumentModel::SelectionStyleName, style);
+								ApplyColor(start, length, selectionStyle);
+							}
 						}
 						start += length;
 #undef ERROR_MESSAGE_PREFIX
@@ -157,60 +163,62 @@ SetPropertiesVisitor
 					{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::visitors::SetPropertiesVisitor::Visit(DocumentEmbeddedObjectRun*)#"
 						length = run->GetRepresentationText().Length();
-
-						IGuiGraphicsParagraph::InlineObjectProperties properties;
-						properties.breakCondition = IGuiGraphicsParagraph::Alone;
-
-						if (run->name != L"")
+						if (start < rangeEnd && rangeBegin < start + length)
 						{
-							vint index = paragraphCache->nameCallbackIdMap.Keys().IndexOf(run->name);
-							if (index != -1)
+							IGuiGraphicsParagraph::InlineObjectProperties properties;
+							properties.breakCondition = IGuiGraphicsParagraph::Alone;
+
+							if (run->name != L"")
 							{
-								auto id = paragraphCache->nameCallbackIdMap.Values()[index];
-								index = cache->embeddedObjects.Keys().IndexOf(id);
+								vint index = paragraphCache->nameCallbackIdMap.Keys().IndexOf(run->name);
 								if (index != -1)
 								{
-									auto eo = cache->embeddedObjects.Values()[index];
-									if (eo->start == start)
+									auto id = paragraphCache->nameCallbackIdMap.Values()[index];
+									index = cache->embeddedObjects.Keys().IndexOf(id);
+									if (index != -1)
 									{
-										properties.size = eo->size;
-										properties.callbackId = id;
+										auto eo = cache->embeddedObjects.Values()[index];
+										if (eo->start == start)
+										{
+											properties.size = eo->size;
+											properties.callbackId = id;
+										}
 									}
-								}
-							}
-							else
-							{
-								auto eo = Ptr(new pg::EmbeddedObject);
-								eo->name = run->name;
-								eo->size = Size(0, 0);
-								eo->start = start;
-
-								vint id = -1;
-								vint count = paragraphCache->freeCallbackIds.Count();
-								if (count > 0)
-								{
-									id = paragraphCache->freeCallbackIds[count - 1];
-									paragraphCache->freeCallbackIds.RemoveAt(count - 1);
 								}
 								else
 								{
-									id = paragraphCache->usedCallbackIds++;
+									auto eo = Ptr(new pg::EmbeddedObject);
+									eo->name = run->name;
+									eo->size = Size(0, 0);
+									eo->start = start;
+
+									vint id = -1;
+									vint count = paragraphCache->freeCallbackIds.Count();
+									if (count > 0)
+									{
+										id = paragraphCache->freeCallbackIds[count - 1];
+										paragraphCache->freeCallbackIds.RemoveAt(count - 1);
+									}
+									else
+									{
+										id = paragraphCache->usedCallbackIds++;
+									}
+
+									paragraphCache->nameCallbackIdMap.Add(eo->name, id);
+									cache->embeddedObjects.Add(id, eo);
+									properties.callbackId = id;
 								}
-
-								paragraphCache->nameCallbackIdMap.Add(eo->name, id);
-								cache->embeddedObjects.Add(id, eo);
-								properties.callbackId = id;
 							}
-						}
 
-						bool result = paragraph->SetInlineObject(start, length, properties);
-						CHECK_ERROR(result, ERROR_MESSAGE_PREFIX L"The specified range has already been occupied by another inline object.");
+							bool result = paragraph->SetInlineObject(start, length, properties);
+							CHECK_ERROR(result, ERROR_MESSAGE_PREFIX L"The specified range has already been occupied by another inline object.");
 
-						if (start < selectionEnd && selectionBegin < start + length)
-						{
-							ResolvedStyle style = styles[styles.Count() - 1];
-							ResolvedStyle selectionStyle = model->GetStyle(DocumentModel::SelectionStyleName, style);
-							ApplyColor(start, length, selectionStyle);
+							if (start < selectionEnd && selectionBegin < start + length)
+							{
+								ResolvedStyle style = styles[styles.Count() - 1];
+								ResolvedStyle selectionStyle = model->GetStyle(DocumentModel::SelectionStyleName, style);
+								ApplyColor(start, length, selectionStyle);
+							}
 						}
 						start += length;
 #undef ERROR_MESSAGE_PREFIX
@@ -222,9 +230,18 @@ SetPropertiesVisitor
 					}
 				};
 
-				vint SetProperties(DocumentModel* model, GuiDocumentParagraphCache* paragraphCache, Ptr<pg::ParagraphCache> cache, Ptr<DocumentParagraphRun> run, vint selectionBegin, vint selectionEnd)
+				vint SetProperties(
+					DocumentModel* model,
+					GuiDocumentParagraphCache* paragraphCache,
+					Ptr<pg::ParagraphCache> cache,
+					Ptr<DocumentParagraphRun> run,
+					vint selectionBegin,
+					vint selectionEnd,
+					vint rangeBegin,
+					vint rangeEnd
+				)
 				{
-					SetPropertiesVisitor visitor(model, paragraphCache, cache, selectionBegin, selectionEnd);
+					SetPropertiesVisitor visitor(model, paragraphCache, cache, selectionBegin, selectionEnd, rangeBegin, rangeEnd);
 					run->Accept(&visitor);
 					return visitor.length;
 				}

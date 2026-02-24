@@ -467,7 +467,7 @@
                     "size": {"x": 16, "y": 16},
                     "baseline": -1,
                     "breakCondition": "Alone",
-                    "backgroundElementId": 29,
+                    "backgroundElementId": 28,
                     "callbackId": -1
                   }
                 ]
@@ -493,10 +493,10 @@
       ]
     ],
     [
-      29,
+      28,
       [
         "ElementDesc_ImageFrame",
-        {"id": 29, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+        {"id": 28, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
       ]
     ]
   ],

@@ -114,10 +114,10 @@
 ========================================
 14
 ========================================
-{"id": 58, "diffType": "Modified", "content": null, "children": [104, 128, 120, 62]}
+{"id": 58, "diffType": "Modified", "content": null, "children": [104, 124, 116, 62]}
 {"id": 108, "diffType": "Deleted", "content": null, "children": null}
-{"id": 120, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 30, "bounds": {"x1": 15, "y1": 111, "x2": 465, "y2": 131}, "validArea": {"x1": 15, "y1": 111, "x2": 465, "y2": 131}}, "children": null}
-{"id": 128, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 32, "bounds": {"x1": 15, "y1": 83, "x2": 465, "y2": 99}, "validArea": {"x1": 15, "y1": 83, "x2": 465, "y2": 99}}, "children": null}
+{"id": 116, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 29, "bounds": {"x1": 15, "y1": 111, "x2": 465, "y2": 131}, "validArea": {"x1": 15, "y1": 111, "x2": 465, "y2": 131}}, "children": null}
+{"id": 124, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 31, "bounds": {"x1": 15, "y1": 83, "x2": 465, "y2": 99}, "validArea": {"x1": 15, "y1": 83, "x2": 465, "y2": 99}}, "children": null}
 ========================================
 15
 ========================================

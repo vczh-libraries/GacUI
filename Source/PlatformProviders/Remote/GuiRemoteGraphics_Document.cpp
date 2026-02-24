@@ -267,11 +267,9 @@ DiffRuns
 			{
 				if (map.Keys()[firstOverlap] != range) return false;
 				auto&& inlinedProps = const_cast<remoteprotocol::DocumentInlineObjectRunProperty&>(map.Values()[firstOverlap]);
-				if (inlinedProps.size != property.size) return false;
-				if (inlinedProps.baseline != property.baseline) return false;
-				if (inlinedProps.breakCondition != property.breakCondition) return false;
 				if (inlinedProps.callbackId != property.callbackId) return false;
 				if (inlinedProps.backgroundElementId != property.backgroundElementId) return false;
+				inlinedProps = property;
 				return true;
 			}
 		}

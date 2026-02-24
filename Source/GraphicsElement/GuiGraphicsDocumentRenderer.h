@@ -111,7 +111,16 @@ SetPropertiesVisitor
 
 			namespace visitors
 			{
-				extern vint SetProperties(DocumentModel* model, GuiDocumentParagraphCache* paragraphCache, Ptr<pg::ParagraphCache> cache, Ptr<DocumentParagraphRun> run, vint selectionBegin, vint selectionEnd);
+				extern vint SetProperties(
+					DocumentModel* model,
+					GuiDocumentParagraphCache* paragraphCache,
+					Ptr<pg::ParagraphCache> cache,
+					Ptr<DocumentParagraphRun> run,
+					vint selectionBegin,
+					vint selectionEnd,
+					vint rangeBegin,
+					vint rangeEnd
+				);
 			}
 
 /***********************************************************************
