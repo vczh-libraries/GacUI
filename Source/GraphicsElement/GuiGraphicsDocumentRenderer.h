@@ -64,6 +64,9 @@ GuiDocumentParagraphCache
 				typedef collections::Array<ParagraphSize>			ParagraphSizeArray;
 			}
 
+			/// <summary>
+			/// Maintain cached <see cref="IGuiGraphicsParagraph"/> for each paragraph in the document as well as their rendering positions.
+			/// </summary>
 			class GuiDocumentParagraphCache : public Object
 			{
 				friend class visitors::SetPropertiesVisitor;
@@ -113,13 +116,26 @@ GuiDocumentImageCache
 
 			namespace pg
 			{
-				using ImageKey = collections::Pair<Ptr<INativeImage>, vint>;
+				using ImageKey = Tuple<INativeImage*, vint, vint>;
+				using ImageElementMap = collections::Dictionary<ImageKey, Ptr<IGuiGraphicsElement>>;
+
+				struct ParagraphImageCache
+				{
+					ImageElementMap						elements;
+				};
+
+				using ParagraphImageCacheArray = collections::Array<Ptr<ParagraphImageCache>>;
 			}
 
+			/// <summary>
+			/// Manage the life-cycle of <see cref="GuiImageFrameElement"> for each occurances of images in the document.
+			/// The same element should be used until the <see cref="DocumentImageRun"/> is removed from the document.
+			/// </summary>
 			class GuiDocumentImageCache : public Object
 			{
 			protected:
 				GuiDocumentElement*						element = nullptr;
+				pg::ParagraphImageCacheArray			caches;
 
 			public:
 				GuiDocumentImageCache();
@@ -127,6 +143,7 @@ GuiDocumentImageCache
 
 				void									Initialize(GuiDocumentElement* _element);
 				void									RenderTargetChanged(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget);
+				void									ResetCache();
 				void									ResetTextCache(vint index, vint oldCount, vint newCount);
 				Ptr<IGuiGraphicsElement>				GetImageElement(Ptr<INativeImage> image, vint frameIndex, vint paragraphIndex, vint start);
 			};

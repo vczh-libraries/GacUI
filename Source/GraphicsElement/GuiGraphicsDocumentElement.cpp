@@ -64,9 +64,12 @@ GuiDocumentElement
 
 			void GuiDocumentElement::SetDocument(Ptr<DocumentModel> value)
 			{
-				document=value;
-				InvokeOnElementStateChanged();
-				SetCaret(TextPos(), TextPos(), false);
+				if (document != value)
+				{
+					document = value;
+					InvokeOnElementStateChanged();
+					SetCaret(TextPos(), TextPos(), false);
+				}
 			}
 
 			bool GuiDocumentElement::GetParagraphPadding()
@@ -94,8 +97,11 @@ GuiDocumentElement
 
 			void GuiDocumentElement::SetWrapLine(bool value)
 			{
-				wrapLine = value;
-				InvokeOnElementStateChanged();
+				if (wrapLine != value)
+				{
+					wrapLine = value;
+					InvokeOnElementStateChanged();
+				}
 			}
 
 			wchar_t GuiDocumentElement::GetPasswordChar()
@@ -105,9 +111,9 @@ GuiDocumentElement
 
 			void GuiDocumentElement::SetPasswordChar(wchar_t value)
 			{
-				if(passwordChar!=value)
+				if (passwordChar != value)
 				{
-					passwordChar=value;
+					passwordChar = value;
 					InvokeOnElementStateChanged();
 				}
 			}

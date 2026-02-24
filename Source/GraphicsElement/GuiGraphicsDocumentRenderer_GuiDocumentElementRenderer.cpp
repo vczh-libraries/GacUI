@@ -301,6 +301,7 @@ GuiDocumentElementRenderer
 
 			void GuiDocumentElementRenderer::OnElementStateChanged()
 			{
+				imageCache.ResetCache();
 				lastTotalWidth = 0;
 				lastTotalHeightWithoutParagraphDistance = pgCache.ResetCache();
 				FixMinSize();
