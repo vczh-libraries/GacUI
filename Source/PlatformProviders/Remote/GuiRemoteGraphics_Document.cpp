@@ -670,6 +670,7 @@ GuiRemoteGraphicsParagraph
 		}
 		committedRuns = std::move(stagedRuns);
 		needUpdate = false;
+		ResetCaretBoundsCache();
 		return true;
 	}
 
@@ -682,6 +683,15 @@ GuiRemoteGraphicsParagraph
 		range.caretBegin = NativeTextPosToRemoteTextPos(start);
 		range.caretEnd = NativeTextPosToRemoteTextPos(start + length);
 		return true;
+	}
+
+	void GuiRemoteGraphicsParagraph::ResetCaretBoundsCache()
+	{
+		caretBoundsFrontSide.Resize(text.Length() + 1);
+		caretBoundsBackSide.Resize(text.Length() + 1);
+		size_t size = (size_t)(sizeof(Rect) * (text.Length() + 1));
+		memset(&caretBoundsFrontSide[0], 0, size);
+		memset(&caretBoundsBackSide[0], 0, size);
 	}
 
 	void GuiRemoteGraphicsParagraph::MarkParagraphDirty(bool invalidateSize)
@@ -995,21 +1005,27 @@ GuiRemoteGraphicsParagraph
 			return {};
 		}
 
-		remoteprotocol::GetCaretBoundsRequest request;
-		request.id = id;
-		request.caret = NativeTextPosToRemoteTextPos(caret);
-		request.frontSide = frontSide;
-
-		auto& messages = renderTarget->GetRemoteMessages();
-		vint requestId = messages.RequestDocumentParagraph_GetCaretBounds(request);
-		bool disconnected = false;
-		messages.Submit(disconnected);
-		if (disconnected)
+		Rect& cached = frontSide ? caretBoundsFrontSide[caret] : caretBoundsBackSide[caret];
+		if (cached == Rect{})
 		{
-			return {};
+			remoteprotocol::GetCaretBoundsRequest request;
+			request.id = id;
+			request.caret = NativeTextPosToRemoteTextPos(caret);
+			request.frontSide = frontSide;
+
+			auto& messages = renderTarget->GetRemoteMessages();
+			vint requestId = messages.RequestDocumentParagraph_GetCaretBounds(request);
+			bool disconnected = false;
+			messages.Submit(disconnected);
+			if (disconnected)
+			{
+				return {};
+			}
+
+			cached = messages.RetrieveDocumentParagraph_GetCaretBounds(requestId);
 		}
 
-		return messages.RetrieveDocumentParagraph_GetCaretBounds(requestId);
+		return cached;
 	}
 
 	vint GuiRemoteGraphicsParagraph::GetCaretFromPoint(Point point)

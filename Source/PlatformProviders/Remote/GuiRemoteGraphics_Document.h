@@ -130,10 +130,12 @@ GuiRemoteGraphicsParagraph
 		vint															maxWidth = -1;
 		Alignment														paragraphAlignment = Alignment::Left;
 		Size															cachedSize = Size(0, 0);
-		Ptr<collections::Dictionary<vint, Rect>>							cachedInlineObjectBounds;
+		Ptr<collections::Dictionary<vint, Rect>>						cachedInlineObjectBounds;
 		bool															needUpdate = true;
 		vint															id = -1;
 		vuint64_t														lastRenderedBatchId = 0;
+
+		collections::Array<Rect>										caretBoundsFrontSide, caretBoundsBackSide;
 
 	public:
 		GuiRemoteGraphicsParagraph(const WString& _text, GuiRemoteController* _remote, GuiRemoteGraphicsResourceManager* _resourceManager, GuiRemoteGraphicsRenderTarget* _renderTarget, IGuiGraphicsParagraphCallback* _callback);
@@ -145,6 +147,7 @@ GuiRemoteGraphicsParagraph
 		vint											NativeTextPosToRemoteTextPos(vint textPos);
 		vint											RemoteTextPosToNativeTextPos(vint textPos);
 		bool											TryBuildCaretRange(vint start, vint length, CaretRange& range);
+		void											ResetCaretBoundsCache();
 
 	public:
 		bool											EnsureRemoteParagraphSynced();
