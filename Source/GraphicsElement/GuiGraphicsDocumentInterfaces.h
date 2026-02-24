@@ -168,14 +168,16 @@ IGuiGraphicsParagraph
 				/// <returns>The layouted size.</returns>
 				virtual Size								GetSize()=0;
 				/// <summary>Make the caret visible so that it will be rendered in the paragraph.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <returns>Returns true if the caret is valid.</returns>
 				/// <param name="caret">The caret.</param>
 				/// <param name="color">The color of the caret.</param>
 				/// <param name="frontSide">Set to true to display the caret for the character before it.</param>
-				virtual bool								OpenCaret(vint caret, Color color, bool frontSide)=0;
+				virtual bool								EnableCaret(vint caret, Color color, bool frontSide)=0;
 				/// <summary>Make the caret invisible.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				virtual bool								CloseCaret()=0;
+				virtual void								DisableCaret()=0;
+				/// <summary>Blink the caret, switching between visible and not visible once, available when caret is enabled.</summary>
+				/// <returns>Returns true if needs to redraw.</returns>
+				virtual bool								BlinkCaret() = 0;
 				/// <summary>Render the graphics element using a specified bounds.</summary>
 				/// <param name="bounds">Bounds to decide the size and position of the binded graphics element.</param>
 				virtual void								Render(Rect bounds)=0;
@@ -255,8 +257,9 @@ IGuiDocumentElementRenderer
 				virtual void									NotifyParagraphStyleUpdated(TextPos begin, TextPos end) = 0;
 				virtual void									NotifyParagraphStyleUpdated(vint index, vint count) = 0;
 				virtual Ptr<DocumentHyperlinkRun::Package>		GetHyperlinkFromPoint(Point point) = 0;
-				virtual void									OpenCaret(TextPos caret, Color color, bool frontSide) = 0;
-				virtual void									CloseCaret(TextPos caret) = 0;
+				virtual void									EnableCaret(TextPos caret, Color color, bool frontSide) = 0;
+				virtual void									DisableCaret(TextPos caret) = 0;
+				virtual bool									BlinkCaret() = 0;
 				virtual void									SetSelection(TextPos begin, TextPos end) = 0;
 				virtual TextPos									CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide) = 0;
 				virtual TextPos									CalculateCaretFromPoint(Point point) = 0;

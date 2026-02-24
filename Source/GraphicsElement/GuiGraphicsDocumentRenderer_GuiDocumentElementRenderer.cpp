@@ -392,7 +392,7 @@ GuiDocumentElementRenderer
 				return document->GetHyperlink(index, caret, caret);
 			}
 
-			void GuiDocumentElementRenderer::OpenCaret(TextPos caret, Color color, bool frontSide)
+			void GuiDocumentElementRenderer::EnableCaret(TextPos caret, Color color, bool frontSide)
 			{
 				CloseCaret(caret);
 				lastCaret = caret;
@@ -402,21 +402,34 @@ GuiDocumentElementRenderer
 				auto cache = pgCache.TryGetParagraphCache(lastCaret.row);
 				if (cache && cache->graphicsParagraph)
 				{
-					cache->graphicsParagraph->OpenCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
+					cache->graphicsParagraph->EnableCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
 				}
 			}
 
-			void GuiDocumentElementRenderer::CloseCaret(TextPos caret)
+			void GuiDocumentElementRenderer::DisableCaret(TextPos caret)
 			{
 				if (lastCaret != TextPos(-1, -1))
 				{
 					auto cache = pgCache.TryGetParagraphCache(lastCaret.row);
 					if (cache && cache->graphicsParagraph)
 					{
-						cache->graphicsParagraph->CloseCaret();
+						cache->graphicsParagraph->DisableCaret();
 					}
 				}
 				lastCaret = caret;
+			}
+
+			bool GuiDocumentElementRenderer::BlinkCaret()
+			{
+				if (lastCaret != TextPos(-1, -1))
+				{
+					auto cache = pgCache.TryGetParagraphCache(lastCaret.row);
+					if (cache && cache->graphicsParagraph)
+					{
+						return cache->graphicsParagraph->BlinkCaret();
+					}
+				}
+				return false;
 			}
 
 			void GuiDocumentElementRenderer::SetSelection(TextPos begin, TextPos end)

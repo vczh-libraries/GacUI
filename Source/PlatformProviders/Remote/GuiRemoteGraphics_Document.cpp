@@ -879,7 +879,7 @@ GuiRemoteGraphicsParagraph
 		return cachedSize;
 	}
 
-	bool GuiRemoteGraphicsParagraph::OpenCaret(vint caret, Color color, bool frontSide)
+	bool GuiRemoteGraphicsParagraph::EnableCaret(vint caret, Color color, bool frontSide)
 	{
 		if (!EnsureRemoteParagraphSynced())
 		{
@@ -899,18 +899,22 @@ GuiRemoteGraphicsParagraph
 		return !disconnected;
 	}
 
-	bool GuiRemoteGraphicsParagraph::CloseCaret()
+	void GuiRemoteGraphicsParagraph::DisableCaret()
 	{
 		if (id == -1 || !renderTarget)
 		{
-			return false;
+			return;
 		}
 
 		auto& messages = renderTarget->GetRemoteMessages();
 		messages.RequestDocumentParagraph_CloseCaret(id);
 		bool disconnected = false;
 		messages.Submit(disconnected);
-		return !disconnected;
+	}
+
+	bool GuiRemoteGraphicsParagraph::BlinkCaret()
+	{
+		return false;
 	}
 
 	void GuiRemoteGraphicsParagraph::Render(Rect bounds)

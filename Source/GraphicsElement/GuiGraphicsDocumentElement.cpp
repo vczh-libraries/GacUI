@@ -30,11 +30,11 @@ GuiDocumentElement
 					elementRenderer->SetSelection(caretBegin, caretEnd);
 					if (caretVisible)
 					{
-						elementRenderer->OpenCaret(caretEnd, caretColor, caretFrontSide);
+						elementRenderer->EnableCaret(caretEnd, caretColor, caretFrontSide);
 					}
 					else
 					{
-						elementRenderer->CloseCaret(caretEnd);
+						elementRenderer->DisableCaret(caretEnd);
 					}
 					InvokeOnCompositionStateChanged();
 				}
@@ -171,6 +171,17 @@ GuiDocumentElement
 			{
 				caretVisible=value;
 				UpdateCaret();
+			}
+
+			void GuiDocumentElement::BlinkCaret()
+			{
+				if (auto elementRenderer = GetElementRenderer())
+				{
+					if (elementRenderer->BlinkCaret())
+					{
+						InvokeOnCompositionStateChanged();
+					}
+				}
 			}
 
 			Color GuiDocumentElement::GetCaretColor()

@@ -89,7 +89,10 @@ GuiDocumentCommonInterface
 				TextPos newBegin=shift?begin:caret;
 				TextPos newEnd=caret;
 				documentElement->SetCaret(newBegin, newEnd, frontSide);
-				documentElement->SetCaretVisible(true);
+				if (editMode != GuiDocumentEditMode::ViewOnly && documentControl && documentControl->GetVisuallyEnabled() && documentControl->GetFocused())
+				{
+					documentElement->SetCaretVisible(true);
+				}
 				EnsureDocumentRectVisible(documentElement->GetCaretBounds(newEnd, frontSide));
 				UpdateCaretPoint();
 				SelectionChanged.Execute(documentControl->GetNotifyEventArguments());
@@ -460,24 +463,18 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnCaretNotify(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				if (documentControl->GetVisuallyEnabled())
+				if (documentControl->GetVisuallyEnabled() && editMode != GuiDocumentEditMode::ViewOnly)
 				{
-					if (editMode != GuiDocumentEditMode::ViewOnly)
-					{
-						documentElement->SetCaretVisible(!documentElement->GetCaretVisible());
-					}
+					documentElement->BlinkCaret();
 				}
 			}
 
 			void GuiDocumentCommonInterface::OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				if (documentControl->GetVisuallyEnabled())
+				if (documentControl->GetVisuallyEnabled() && editMode != GuiDocumentEditMode::ViewOnly)
 				{
-					if (editMode != GuiDocumentEditMode::ViewOnly)
-					{
-						documentElement->SetCaretVisible(true);
-						UpdateCaretPoint();
-					}
+					documentElement->SetCaretVisible(true);
+					UpdateCaretPoint();
 				}
 			}
 

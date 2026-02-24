@@ -172,8 +172,9 @@ GuiRemoteGraphicsParagraph
 		bool											ResetInlineObject(vint start, vint length) override;
 
 		Size											GetSize() override;
-		bool											OpenCaret(vint caret, Color color, bool frontSide) override;
-		bool											CloseCaret() override;
+		bool											EnableCaret(vint caret, Color color, bool frontSide) override;
+		void											DisableCaret() override;
+		bool											BlinkCaret() override;
 		void											Render(Rect bounds) override;
 
 		vint											GetCaret(vint comparingCaret, CaretRelativePosition position, bool& preferFrontSide) override;

@@ -224,8 +224,9 @@ GuiDocumentElementRenderer
 
 				Ptr<DocumentHyperlinkRun::Package>		GetHyperlinkFromPoint(Point point) override;
 
-				void									OpenCaret(TextPos caret, Color color, bool frontSide) override;
-				void									CloseCaret(TextPos caret) override;
+				void									EnableCaret(TextPos caret, Color color, bool frontSide) override;
+				void									DisableCaret(TextPos caret) override;
+				bool									BlinkCaret() override;
 				void									SetSelection(TextPos begin, TextPos end) override;
 				TextPos									CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide) override;
 				TextPos									CalculateCaretFromPoint(Point point) override;

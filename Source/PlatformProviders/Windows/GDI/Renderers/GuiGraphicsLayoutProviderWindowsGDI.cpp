@@ -78,7 +78,7 @@ WindowsGDIParagraph
 
 				~WindowsGDIParagraph()
 				{
-					CloseCaret();
+					DisableCaret();
 				}
 
 				IGuiGraphicsLayoutProvider* GetProvider()override
@@ -248,23 +248,37 @@ WindowsGDIParagraph
 						paragraph->bounds.Height());
 				}
 
-				bool OpenCaret(vint _caret, Color _color, bool _frontSide)override
+				bool EnableCaret(vint _caret, Color _color, bool _frontSide)override
 				{
-					if(!IsValidCaret(_caret)) return false;
-					if(caret!=-1) CloseCaret();
-					caret=_caret;
-					caretColor=_color;
-					caretFrontSide=_frontSide;
-					caretPen=GetWindowsGDIResourceManager()->CreateGdiPen(caretColor);
+					if (!IsValidCaret(_caret)) return false;
+					if (caret != -1) DisableCaret();
+					caret = _caret;
+					caretColor = _color;
+					caretFrontSide = _frontSide;
+					caretPen = GetWindowsGDIResourceManager()->CreateGdiPen(caretColor);
 					return true;
 				}
 
-				bool CloseCaret()override
+				void DisableCaret()override
 				{
-					if(caret==-1) return false;
-					caret=-1;
+					if (caret == -1) return;
+					caret = -1;
 					GetWindowsGDIResourceManager()->DestroyGdiPen(caretColor);
-					caretPen=0;
+					caretPen = {};
+				}
+
+				bool BlinkCaret()override
+				{
+					if (caret == -1) return false;
+					if (caretPen)
+					{
+						GetWindowsGDIResourceManager()->DestroyGdiPen(caretColor);
+						caretPen = {};
+					}
+					else
+					{
+						caretPen = GetWindowsGDIResourceManager()->CreateGdiPen(caretColor);
+					}
 					return true;
 				}
 
@@ -304,7 +318,7 @@ WindowsGDIParagraph
 					paragraph->Render(this, false);
 					paragraphDC = 0;
 
-					if (caret != -1)
+					if (caret != -1 && caretPen)
 					{
 						Rect caretBounds = GetCaretBounds(caret, caretFrontSide);
 						vint x = caretBounds.x1 + bounds.x1;

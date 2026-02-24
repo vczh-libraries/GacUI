@@ -149,11 +149,11 @@ namespace vl::presentation::remote_renderer
 			if (caret)
 			{
 				auto& c = caret.Value();
-				paragraph->OpenCaret(c.caret, c.caretColor, c.frontSide);
+				paragraph->EnableCaret(c.caret, c.caretColor, c.frontSide);
 			}
 			else
 			{
-				paragraph->CloseCaret();
+				paragraph->DisableCaret();
 			}
 		}
 
@@ -380,19 +380,13 @@ namespace vl::presentation::remote_renderer
 		void OpenCaretAndStore(const remoteprotocol::OpenCaretRequest& arguments)
 		{
 			caret = arguments;
-			if (paragraph)
-			{
-				paragraph->OpenCaret(arguments.caret, arguments.caretColor, arguments.frontSide);
-			}
+			ApplyCaret();
 		}
 
 		void CloseCaretAndStore()
 		{
 			caret.Reset();
-			if (paragraph)
-			{
-				paragraph->CloseCaret();
-			}
+			ApplyCaret();
 		}
 	};
 

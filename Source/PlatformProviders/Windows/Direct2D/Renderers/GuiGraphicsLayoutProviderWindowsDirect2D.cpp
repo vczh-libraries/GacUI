@@ -493,7 +493,7 @@ WindowsDirect2DParagraph (Initialization)
 
 				~WindowsDirect2DParagraph()
 				{
-					CloseCaret();
+					DisableCaret();
 					for (auto color : usedColors)
 					{
 						renderTarget->DestroyDirect2DBrush(color);
@@ -770,23 +770,37 @@ WindowsDirect2DParagraph (IRenderingCallback)
 WindowsDirect2DParagraph (Rendering)
 ***********************************************************************/
 
-				bool OpenCaret(vint _caret, Color _color, bool _frontSide)override
+				bool EnableCaret(vint _caret, Color _color, bool _frontSide)override
 				{
-					if(!IsValidCaret(_caret)) return false;
-					if(caret!=-1) CloseCaret();
-					caret=_caret;
-					caretColor=_color;
-					caretFrontSide=_frontSide;
-					caretBrush=renderTarget->CreateDirect2DBrush(caretColor);
+					if (!IsValidCaret(_caret)) return false;
+					if (caret != -1) DisableCaret();
+					caret = _caret;
+					caretColor = _color;
+					caretFrontSide = _frontSide;
+					caretBrush = renderTarget->CreateDirect2DBrush(caretColor);
 					return true;
 				}
 
-				bool CloseCaret()override
+				void DisableCaret()override
 				{
-					if(caret==-1) return false;
-					caret=-1;
+					if (caret == -1) return;
+					caret = -1;
 					renderTarget->DestroyDirect2DBrush(caretColor);
-					caretBrush=0;
+					caretBrush = nullptr;
+				}
+
+				bool BlinkCaret()override
+				{
+					if (caret == -1) return false;
+					if (caretBrush)
+					{
+						renderTarget->DestroyDirect2DBrush(caretColor);
+						caretBrush = nullptr;
+					}
+					else
+					{
+						caretBrush = renderTarget->CreateDirect2DBrush(caretColor);
+					}
 					return true;
 				}
 
@@ -899,7 +913,7 @@ WindowsDirect2DParagraph (Rendering)
 						defaultTextColor,
 						D2D1_DRAW_TEXT_OPTIONS_NO_SNAP);
 
-					if (caret != -1)
+					if (caret != -1 && caretBrush)
 					{
 						Rect caretBounds = GetCaretBounds(caret, caretFrontSide);
 						vint x = caretBounds.x1 + bounds.x1;

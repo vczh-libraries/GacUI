@@ -136,6 +136,10 @@ GuiDocumentElement
 				/// <param name="value">True if the caret will be rendered.</param>
 				void										SetCaretVisible(bool value);
 				/// <summary>
+				/// Switch between rendering or not rendering the caret.
+				/// </summary>
+				void										BlinkCaret();
+				/// <summary>
 				/// Get the color of the caret.
 				/// </summary>
 				/// <returns>The color of the caret.</returns>

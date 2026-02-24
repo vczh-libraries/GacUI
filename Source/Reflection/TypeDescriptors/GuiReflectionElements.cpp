@@ -192,6 +192,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_FAST(CaretVisible)
 				CLASS_MEMBER_PROPERTY_FAST(CaretColor)
 
+				CLASS_MEMBER_METHOD(BlinkCaret, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(IsCaretEndPreferFrontSide, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetCaret, {L"begin" _ L"end" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(CalculateCaret, {L"comparingCaret" _ L"position" _ L"preferFrontSide"})
