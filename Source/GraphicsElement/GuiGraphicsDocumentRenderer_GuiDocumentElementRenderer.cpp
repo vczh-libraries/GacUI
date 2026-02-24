@@ -34,6 +34,7 @@ GuiDocumentElementRenderer
 			void GuiDocumentElementRenderer::InitializeInternal()
 			{
 				pgCache.Initialize(element);
+				imageCache.Initialize(element);
 				NotifyParagraphPaddingUpdated(element->GetParagraphPadding());
 			}
 
@@ -44,6 +45,7 @@ GuiDocumentElementRenderer
 			void GuiDocumentElementRenderer::RenderTargetChangedInternal(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget)
 			{
 				pgCache.RenderTargetChanged(oldRenderTarget, newRenderTarget);
+				imageCache.RenderTargetChanged(oldRenderTarget, newRenderTarget);
 			}
 
 			Ptr<pg::ParagraphCache> GuiDocumentElementRenderer::EnsureParagraph(vint paragraphIndex)
@@ -150,8 +152,32 @@ GuiDocumentElementRenderer
 				}
 			}
 
+			void GuiDocumentElementRenderer::ApplyPropertiesOnParagraph(vint paragraphIndex, vint start, vint end, vint maxWidth)
+			{
+				auto cache = pgCache.GetParagraphCache(paragraphIndex, true);
+				auto paragraph = element->GetDocument()->paragraphs[paragraphIndex];
+				visitors::SetProperties(
+					element->GetDocument().Obj(),
+					&pgCache,
+					&imageCache,
+					cache,
+					paragraph,
+					cache->selectionBegin,
+					cache->selectionEnd,
+					start,
+					end
+				);
+				cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
+				cache->graphicsParagraph->SetWrapLine(element->GetWrapLine());
+				cache->graphicsParagraph->SetMaxWidth(maxWidth);
+			}
+
 			GuiDocumentElementRenderer::GuiDocumentElementRenderer()
 				: pgCache(this)
+			{
+			}
+
+			GuiDocumentElementRenderer::~GuiDocumentElementRenderer()
 			{
 			}
 
@@ -304,6 +330,7 @@ GuiDocumentElementRenderer
 				CHECK_ERROR(0 <= index && index + newCount <= newParagraphCount, ERROR_MESSAGE_PREFIX L"index + newCount is out of range.");
 				CHECK_ERROR(newParagraphCount - oldParagraphCount == newCount - oldCount, ERROR_MESSAGE_PREFIX L"newCount - oldCount does not reflect the actual paragraph count changing.");
 
+				imageCache.ResetTextCache(index, oldCount, newCount);
 				NotifyParagraphUpdateLastTotalWidth(index, oldCount);
 				lastTotalHeightWithoutParagraphDistance += pgCache.ResetTextCache(index, oldCount, newCount);
 				FixMinSize();

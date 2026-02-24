@@ -13,8 +13,9 @@ namespace vl
 GuiDocumentParagraphCache
 ***********************************************************************/
 
-			GuiDocumentParagraphCache::GuiDocumentParagraphCache(IGuiGraphicsParagraphCallback* _callback)
-				: callback(_callback)
+			GuiDocumentParagraphCache::GuiDocumentParagraphCache(GuiDocumentElementRenderer* _renderer)
+				: renderer(_renderer)
+				, callback(_renderer)
 				, layoutProvider(GetGuiGraphicsResourceManager()->GetLayoutProvider())
 			{
 			}
@@ -67,10 +68,6 @@ GuiDocumentParagraphCache
 				if (requireParagraph)
 				{
 					CHECK_ERROR(cache && cache->graphicsParagraph && cache->invalidation.TryGet<bool>() && cache->invalidation.Get<bool>() == false, ERROR_MESSAGE_PREFIX L"The specified paragraph is not created.");
-				}
-				else
-				{
-					return cache;
 				}
 				return cache;
 #undef ERROR_MESSAGE_PREFIX
@@ -282,21 +279,16 @@ GuiDocumentParagraphCache
 					{
 						if (value)
 						{
-							visitors::SetProperties(element->GetDocument().Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd, 0, cache->fullText.Length());
-							cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
-							cache->graphicsParagraph->SetWrapLine(element->GetWrapLine());
-							cache->graphicsParagraph->SetMaxWidth(maxWidth);
+							cache->invalidation = false;
+							renderer->ApplyPropertiesOnParagraph(paragraphIndex, 0, cache->fullText.Length(), maxWidth);
 						}
 					},
 					[&, this](collections::Pair<vint, vint> range)
 					{
-						visitors::SetProperties(element->GetDocument().Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd, range.key, range.value);
-						cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
-						cache->graphicsParagraph->SetWrapLine(element->GetWrapLine());
-						cache->graphicsParagraph->SetMaxWidth(maxWidth);
+						cache->invalidation = false;
+						renderer->ApplyPropertiesOnParagraph(paragraphIndex, range.key, range.value, maxWidth);
 					}
 				));
-				cache->invalidation = false;
 
 				auto& cachedSize = paragraphSizes[paragraphIndex];
 				Size oldSize = cachedSize.cachedSize;

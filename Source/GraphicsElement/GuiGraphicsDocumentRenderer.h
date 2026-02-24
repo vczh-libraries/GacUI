@@ -21,6 +21,7 @@ namespace vl
 			{
 				class SetPropertiesVisitor;
 			}
+			class GuiDocumentElementRenderer;
 
 /***********************************************************************
 GuiDocumentParagraphCache
@@ -67,6 +68,7 @@ GuiDocumentParagraphCache
 			{
 				friend class visitors::SetPropertiesVisitor;
 			protected:
+				GuiDocumentElementRenderer*				renderer = nullptr;
 				IGuiGraphicsParagraphCallback*			callback = nullptr;
 				GuiDocumentElement*						element = nullptr;
 				IGuiGraphicsRenderTarget*				renderTarget = nullptr;
@@ -81,7 +83,7 @@ GuiDocumentParagraphCache
 				vint									usedCallbackIds = 0;
 
 			public:
-				GuiDocumentParagraphCache(IGuiGraphicsParagraphCallback* _callback);
+				GuiDocumentParagraphCache(GuiDocumentElementRenderer* _renderer);
 				~GuiDocumentParagraphCache();
 
 				static vint								GetDefaultHeight();
@@ -106,6 +108,30 @@ GuiDocumentParagraphCache
 			};
 
 /***********************************************************************
+GuiDocumentImageCache
+***********************************************************************/
+
+			namespace pg
+			{
+				using ImageKey = collections::Pair<Ptr<INativeImage>, vint>;
+			}
+
+			class GuiDocumentImageCache : public Object
+			{
+			protected:
+				GuiDocumentElement*						element = nullptr;
+
+			public:
+				GuiDocumentImageCache();
+				~GuiDocumentImageCache();
+
+				void									Initialize(GuiDocumentElement* _element);
+				void									RenderTargetChanged(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget);
+				void									ResetTextCache(vint index, vint oldCount, vint newCount);
+				Ptr<IGuiGraphicsElement>				GetImageElement(Ptr<INativeImage> image, vint frameIndex);
+			};
+
+/***********************************************************************
 SetPropertiesVisitor
 ***********************************************************************/
 
@@ -114,6 +140,7 @@ SetPropertiesVisitor
 				extern vint SetProperties(
 					DocumentModel* model,
 					GuiDocumentParagraphCache* paragraphCache,
+					GuiDocumentImageCache* imageCache,
 					Ptr<pg::ParagraphCache> cache,
 					Ptr<DocumentParagraphRun> run,
 					vint selectionBegin,
@@ -132,8 +159,7 @@ GuiDocumentElementRenderer
 				, private virtual IGuiGraphicsParagraphCallback
 			{
 				friend class GuiElementRendererBase<GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget, IGuiDocumentElementRenderer>;
-			protected:
-
+				friend class GuiDocumentParagraphCache;
 			private:
 
 				Size									OnRenderInlineObject(vint callbackId, Rect location)override;
@@ -143,6 +169,7 @@ GuiDocumentElementRenderer
 				vint									lastTotalWidth = 0;
 				vint									lastTotalHeightWithoutParagraphDistance = 0;
 				GuiDocumentParagraphCache				pgCache;
+				GuiDocumentImageCache					imageCache;
 
 				vint									previousRenderBegin = -1;	// -1 indicates invalid/uninitialized range
 				vint									previousRenderCount = 0;	// Invalid when begin == -1
@@ -162,9 +189,12 @@ GuiDocumentElementRenderer
 				void									UpdateRenderRange(vint index, vint oldCount, vint newCount);
 				void									UpdateRenderRangeAndCleanUp(vint currentBegin, vint currentCount);
 				void									NotifyParagraphUpdateLastTotalWidth(vint index, vint count);
+				void									ApplyPropertiesOnParagraph(vint paragraphIndex, vint start, vint end, vint maxWidth);
 
 			public:
 				GuiDocumentElementRenderer();
+				~GuiDocumentElementRenderer();
+
 
 				void									Render(Rect bounds) override;
 				void									OnElementStateChanged() override;

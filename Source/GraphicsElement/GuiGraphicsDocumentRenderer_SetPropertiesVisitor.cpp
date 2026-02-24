@@ -19,8 +19,8 @@ SetPropertiesVisitor
 				{
 					typedef DocumentModel::ResolvedStyle					ResolvedStyle;
 				public:
-					vint							start;
-					vint							length;
+					vint							start = 0;
+					vint							length = 0;
 					vint							selectionBegin;
 					vint							selectionEnd;
 					vint							rangeBegin;
@@ -29,14 +29,23 @@ SetPropertiesVisitor
 
 					DocumentModel*					model;
 					GuiDocumentParagraphCache*		paragraphCache;
+					GuiDocumentImageCache*			imageCache;
 					Ptr<pg::ParagraphCache>			cache;
 					IGuiGraphicsParagraph*			paragraph;
 
-					SetPropertiesVisitor(DocumentModel* _model, GuiDocumentParagraphCache* _paragraphCache, Ptr<pg::ParagraphCache> _cache, vint _selectionBegin, vint _selectionEnd, vint _rangeBegin, vint _rangeEnd)
-						: start(0)
-						, length(0)
-						, model(_model)
+					SetPropertiesVisitor(
+						DocumentModel* _model,
+						GuiDocumentParagraphCache* _paragraphCache,
+						GuiDocumentImageCache* _imageCache,
+						Ptr<pg::ParagraphCache> _cache,
+						vint _selectionBegin,
+						vint _selectionEnd,
+						vint _rangeBegin,
+						vint _rangeEnd
+					)
+						: model(_model)
 						, paragraphCache(_paragraphCache)
+						, imageCache(_imageCache)
 						, cache(_cache)
 						, paragraph(_cache->graphicsParagraph.Obj())
 						, selectionBegin(_selectionBegin)
@@ -135,15 +144,11 @@ SetPropertiesVisitor
 						length = run->GetRepresentationText().Length();
 						if (start < rangeEnd && rangeBegin < start + length)
 						{
-							auto element = Ptr(GuiImageFrameElement::Create());
-							element->SetImage(run->image, run->frameIndex);
-							element->SetStretch(true);
-
 							IGuiGraphicsParagraph::InlineObjectProperties properties;
 							properties.size = run->GetSize();
 							properties.baseline = run->baseline;
 							properties.breakCondition = IGuiGraphicsParagraph::Alone;
-							properties.backgroundImage = element;
+							properties.backgroundImage = imageCache->GetImageElement(run->image, run->frameIndex);
 
 							bool result = paragraph->SetInlineObject(start, length, properties);
 							CHECK_ERROR(result, ERROR_MESSAGE_PREFIX L"The specified range has already been occupied by another inline object.");
@@ -233,6 +238,7 @@ SetPropertiesVisitor
 				vint SetProperties(
 					DocumentModel* model,
 					GuiDocumentParagraphCache* paragraphCache,
+					GuiDocumentImageCache* imageCache,
 					Ptr<pg::ParagraphCache> cache,
 					Ptr<DocumentParagraphRun> run,
 					vint selectionBegin,
@@ -241,7 +247,7 @@ SetPropertiesVisitor
 					vint rangeEnd
 				)
 				{
-					SetPropertiesVisitor visitor(model, paragraphCache, cache, selectionBegin, selectionEnd, rangeBegin, rangeEnd);
+					SetPropertiesVisitor visitor(model, paragraphCache, imageCache, cache, selectionBegin, selectionEnd, rangeBegin, rangeEnd);
 					run->Accept(&visitor);
 					return visitor.length;
 				}
