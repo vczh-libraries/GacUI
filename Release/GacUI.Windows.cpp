@@ -2979,13 +2979,11 @@ WindowsDirect2DElementInlineObject
 
 			public:
 				WindowsDirect2DElementInlineObject(
-					const IGuiGraphicsParagraph::InlineObjectProperties& _properties,
 					IRendererCallback* _rendererCallback,
 					vint _start,
 					vint _length
 					)
 					:counter(1)
-					,properties(_properties)
 					,rendererCallback(_rendererCallback)
 					,start(_start)
 					,length(_length)
@@ -3017,6 +3015,11 @@ WindowsDirect2DElementInlineObject
 				const IGuiGraphicsParagraph::InlineObjectProperties& GetProperties()
 				{
 					return properties;
+				}
+
+				void SetProperties(const IGuiGraphicsParagraph::InlineObjectProperties& value)
+				{
+					properties=value;
 				}
 
 				Ptr<IGuiGraphicsElement> GetElement()
@@ -3597,38 +3600,50 @@ WindowsDirect2DParagraph (Formatting)
 
 				bool SetInlineObject(vint start, vint length, const InlineObjectProperties& properties)override
 				{
-					if(inlineElements.Keys().Contains(properties.backgroundImage.Obj()))
-					{
-						return false;
-					}
+					vint reuseIndex = -1;
 					// TODO: (enumerable) foreach
-					for(vint i=0;i<inlineElements.Count();i++)
+					for (vint i = 0; i < inlineElements.Count(); i++)
 					{
-						ComPtr<WindowsDirect2DElementInlineObject> inlineObject=inlineElements.Values().Get(i);
-						if(start<inlineObject->GetStart()+inlineObject->GetLength() && inlineObject->GetStart()<start+length)
+						auto inlineObject = inlineElements.Values().Get(i);
+						if (start == inlineObject->GetStart() && length == inlineObject->GetLength())
 						{
-							return false;
+							auto&& inlineProps = inlineObject->GetProperties();
+							if (inlineProps.callbackId != properties.callbackId) return false;
+							if (inlineProps.backgroundImage != properties.backgroundImage) return false;
+							reuseIndex = i;
+						}
+						else
+						{
+							if (inlineElements.Keys().Contains(properties.backgroundImage.Obj()))
+							{
+								return false;
+							}
+							if (start < inlineObject->GetStart() + inlineObject->GetLength() && inlineObject->GetStart() < start + length)
+							{
+								return false;
+							}
 						}
 					}
-					formatDataAvailable=false;
+					formatDataAvailable = false;
 
-					ComPtr<WindowsDirect2DElementInlineObject> inlineObject=new WindowsDirect2DElementInlineObject(properties, this, start, length);
+					auto inlineObject = reuseIndex != -1 ? inlineElements.Values().Get(reuseIndex) : ComPtr(new WindowsDirect2DElementInlineObject(this, start, length));
+					inlineObject->SetProperties(properties);
 					DWRITE_TEXT_RANGE range;
-					range.startPosition=(int)start;
-					range.length=(int)length;
-					HRESULT hr=textLayout->SetInlineObject(inlineObject.Obj(), range);
-					if(!FAILED(hr))
+					range.startPosition = (int)start;
+					range.length = (int)length;
+					HRESULT hr = textLayout->SetInlineObject(inlineObject.Obj(), range);
+					if (!FAILED(hr))
 					{
-						if (properties.backgroundImage)
+						if (properties.backgroundImage && reuseIndex == -1)
 						{
-							IGuiGraphicsRenderer* renderer=properties.backgroundImage->GetRenderer();
-							if(renderer)
+							IGuiGraphicsRenderer* renderer = properties.backgroundImage->GetRenderer();
+							if (renderer)
 							{
 								renderer->SetRenderTarget(renderTarget);
 							}
 							inlineElements.Add(properties.backgroundImage.Obj(), inlineObject);
+							SetMap(graphicsElements, start, length, properties.backgroundImage.Obj());
 						}
-						SetMap(graphicsElements, start, length, properties.backgroundImage.Obj());
 						return true;
 					}
 					else
@@ -13906,9 +13921,9 @@ WindowsInputService
 			WString WindowsInputService::GetKeyNameInternal(VKEY code)
 			{
 				if ((vint)code < 8) return L"?";
-				wchar_t name[256]={0};
-				vint scanCode=MapVirtualKey((int)code, MAPVK_VK_TO_VSC)<<16;
-				switch((vint)code)
+				wchar_t name[256] = { 0 };
+				vint scanCode = MapVirtualKey((int)code, MAPVK_VK_TO_VSC) << 16;
+				switch ((vint)code)
 				{
 				case VK_INSERT:
 				case VK_DELETE:
@@ -13920,23 +13935,39 @@ WindowsInputService
 				case VK_RIGHT:
 				case VK_UP:
 				case VK_DOWN:
-					scanCode|=1<<24;
+					scanCode |= 1 << 24;
 					break;
 				case VK_CLEAR:
 				case VK_LSHIFT:
-				case VK_RSHIFT: 
+				case VK_RSHIFT:
 				case VK_LCONTROL:
 				case VK_RCONTROL:
 				case VK_LMENU:
 				case VK_RMENU:
 					return L"?";
 				}
-				GetKeyNameText((int)scanCode, name, sizeof(name)/sizeof(*name));
-				return name[0]?name:L"?";
+				GetKeyNameText((int)scanCode, name, sizeof(name) / sizeof(*name));
+				if (name[0])
+				{
+					WString result = name;
+					vint index = predefinedKeys.Keys().IndexOf(result);
+					if (index != -1 && predefinedKeys.Values()[index] == code)
+					{
+						return result;
+					}
+				}
+				return WString::Unmanaged(L"?");
 			}
 
 			void WindowsInputService::InitializeKeyNames()
 			{
+#define INITIALIZE_KEY_NAME(NAME, TEXT)\
+				keyNames[(vint)VKEY::KEY_ ## NAME] = WString::Unmanaged(TEXT);\
+				if (!predefinedKeys.Keys().Contains(WString::Unmanaged(TEXT))) predefinedKeys.Add(WString::Unmanaged(TEXT), VKEY::KEY_ ## NAME);\
+
+				GUI_DEFINE_KEYBOARD_WINDOWS_NAME(INITIALIZE_KEY_NAME)
+#undef INITIALIZE_KEY_NAME
+
 				for (vint i = 0; i < keyNames.Count(); i++)
 				{
 					keyNames[i] = GetKeyNameInternal((VKEY)i);

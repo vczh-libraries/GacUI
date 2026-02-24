@@ -2068,6 +2068,7 @@ namespace vl
 
 				collections::Array<WString>				keyNames;
 				collections::Dictionary<WString, VKEY>	keys;
+				collections::Dictionary<WString, VKEY>	predefinedKeys;
 
 				WString									GetKeyNameInternal(VKEY code);
 				void									InitializeKeyNames();

@@ -81,7 +81,8 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(GetDom, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetName, NO_PARAMETER)
-				CLASS_MEMBER_PROPERTY_READONLY(Dom, GetDom)
+				CLASS_MEMBER_EVENT(DomChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY(Dom, GetDom, DomChanged)
 				CLASS_MEMBER_PROPERTY_READONLY(Name, GetName)
 			END_INTERFACE_MEMBER(::gaclib_controls::IUnitTestSnapshotFrame)
 
@@ -164,6 +165,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
 				CLASS_MEMBER_FIELD(ViewModel)
+				CLASS_MEMBER_FIELD(labelLoading)
 				CLASS_MEMBER_FIELD(scRendering)
 				CLASS_MEMBER_FIELD(self)
 				CLASS_MEMBER_FIELD(textListFrames)

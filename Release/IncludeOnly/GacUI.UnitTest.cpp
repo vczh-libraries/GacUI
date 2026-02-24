@@ -4,7 +4,7 @@ DEVELOPER: Zihan Chen(vczh)
 ***********************************************************************/
 #include "GacUI.UnitTest.h"
 
-#include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering _Document.cpp"
 #include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.cpp"
+#include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering_Document.cpp"
 #include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_Shared.cpp"
 #include "..\..\Source\UnitTestUtilities\GuiUnitTestUtilities.cpp"

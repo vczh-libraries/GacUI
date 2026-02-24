@@ -985,15 +985,15 @@ ITEM(F11,					L"F11")\
 ITEM(F12,					L"F12")\
 ITEM(NUMLOCK,				L"Pause")\
 ITEM(SCROLL,				L"Scroll Lock")\
-ITEM(BROWSER_HOME,			L"M")\
-ITEM(VOLUME_MUTE,			L"D")\
-ITEM(VOLUME_DOWN,			L"C")\
-ITEM(VOLUME_UP,				L"B")\
-ITEM(MEDIA_NEXT_TRACK,		L"P")\
-ITEM(MEDIA_PREV_TRACK,		L"Q")\
-ITEM(MEDIA_STOP,			L"J")\
-ITEM(MEDIA_PLAY_PAUSE,		L"G")\
-ITEM(LAUNCH_APP2,			L"F")\
+ITEM(BROWSER_HOME,			L"BROWSER_HOME")\
+ITEM(VOLUME_MUTE,			L"VOLUME_MUTE")\
+ITEM(VOLUME_DOWN,			L"VOLUME_DOWN")\
+ITEM(VOLUME_UP,				L"VOLUME_UP")\
+ITEM(MEDIA_NEXT_TRACK,		L"MEDIA_NEXT_TRACK")\
+ITEM(MEDIA_PREV_TRACK,		L"MEDIA_PREV_TRACK")\
+ITEM(MEDIA_STOP,			L"MEDIA_STOP")\
+ITEM(MEDIA_PLAY_PAUSE,		L"MEDIA_PLAY_PAUSE")\
+ITEM(LAUNCH_APP2,			L"LAUNCH_APP2")\
 ITEM(OEM_PLUS,				L"=")\
 ITEM(OEM_COMMA,				L",")\
 ITEM(OEM_MINUS,				L"-")\
@@ -12135,7 +12135,9 @@ IGuiDocumentElementRenderer
 			{
 			public:
 				virtual void									NotifyParagraphPaddingUpdated(bool value) = 0;
-				virtual void									NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText) = 0;
+				virtual void									NotifyParagraphTextUpdated(vint index, vint oldCount, vint newCount) = 0;
+				virtual void									NotifyParagraphStyleUpdated(TextPos begin, TextPos end) = 0;
+				virtual void									NotifyParagraphStyleUpdated(vint index, vint count) = 0;
 				virtual Ptr<DocumentHyperlinkRun::Package>		GetHyperlinkFromPoint(Point point) = 0;
 				virtual void									OpenCaret(TextPos caret, Color color, bool frontSide) = 0;
 				virtual void									CloseCaret(TextPos caret) = 0;
@@ -20299,6 +20301,7 @@ namespace vl
 			{
 				class SetPropertiesVisitor;
 			}
+			class GuiDocumentElementRenderer;
 
 /***********************************************************************
 GuiDocumentParagraphCache
@@ -20317,11 +20320,12 @@ GuiDocumentParagraphCache
 				typedef collections::Dictionary<WString, vint>					NameIdMap;
 				typedef collections::List<vint>									FreeIdList;
 				typedef collections::Dictionary<vint, Ptr<EmbeddedObject>>		IdEmbeddedObjectMap;
+				typedef Variant<bool, collections::Pair<vint, vint>>			CacheInvalidation;
 
 				struct ParagraphCache
 				{
 					Ptr<IGuiGraphicsParagraph>			graphicsParagraph;
-					bool								outdatedStyles = true;
+					CacheInvalidation					invalidation = false;
 
 					WString								fullText;
 					IdEmbeddedObjectMap					embeddedObjects;
@@ -20340,15 +20344,18 @@ GuiDocumentParagraphCache
 				typedef collections::Array<ParagraphSize>			ParagraphSizeArray;
 			}
 
+			/// <summary>
+			/// Maintain cached <see cref="IGuiGraphicsParagraph"/> for each paragraph in the document as well as their rendering positions.
+			/// </summary>
 			class GuiDocumentParagraphCache : public Object
 			{
 				friend class visitors::SetPropertiesVisitor;
 			protected:
+				GuiDocumentElementRenderer*				renderer = nullptr;
 				IGuiGraphicsParagraphCallback*			callback = nullptr;
 				GuiDocumentElement*						element = nullptr;
 				IGuiGraphicsRenderTarget*				renderTarget = nullptr;
 				IGuiGraphicsLayoutProvider*				layoutProvider = nullptr;
-				vint									defaultHeight = 0;
 
 				pg::ParagraphCacheArray					paragraphCaches;
 				pg::ParagraphSizeArray					paragraphSizes;
@@ -20359,8 +20366,10 @@ GuiDocumentParagraphCache
 				vint									usedCallbackIds = 0;
 
 			public:
-				GuiDocumentParagraphCache(IGuiGraphicsParagraphCallback* _callback);
+				GuiDocumentParagraphCache(GuiDocumentElementRenderer* _renderer);
 				~GuiDocumentParagraphCache();
+
+				static vint								GetDefaultHeight();
 
 				void									Initialize(GuiDocumentElement* _element);
 				void									RenderTargetChanged(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget);
@@ -20372,12 +20381,72 @@ GuiDocumentParagraphCache
 				vint									GetParagraphTopWithoutParagraphDistance(vint paragraphIndex);
 				vint									GetParagraphTop(vint paragraphIndex, vint paragraphDistance);
 
-				vint									ResetCache();																// returns total height
-				vint									ResetCache(vint index, vint oldCount, vint newCount, bool updatedText);		// returns the diff of total height
-				vint									EnsureParagraph(vint paragraphIndex, vint maxWidth);						// returns the diff of total height
+				vint									ResetCache();													// returns total height
+				vint									ResetTextCache(vint index, vint oldCount, vint newCount);		// returns the diff of total height
+				vint									ResetStyleCache(TextPos begin, TextPos end);					// returns the diff of total height
+				vint									ResetStyleCache(vint index, vint count);						// returns the diff of total height
+				vint									EnsureParagraph(vint paragraphIndex, vint maxWidth);			// returns the diff of total height
 				vint									GetParagraphFromY(vint y, vint paragraphDistance);
 				void									ReleaseParagraphs(vint index, vint count);
 			};
+
+/***********************************************************************
+GuiDocumentImageCache
+***********************************************************************/
+
+			namespace pg
+			{
+				using ImageKey = Tuple<INativeImage*, vint, vint>;
+				using ImageElementMap = collections::Dictionary<ImageKey, Ptr<IGuiGraphicsElement>>;
+
+				struct ParagraphImageCache
+				{
+					ImageElementMap						elements;
+				};
+
+				using ParagraphImageCacheArray = collections::Array<Ptr<ParagraphImageCache>>;
+			}
+
+			/// <summary>
+			/// Manage the life-cycle of <see cref="GuiImageFrameElement"> for each occurances of images in the document.
+			/// The same element should be used until the <see cref="DocumentImageRun"/> is removed from the document.
+			/// </summary>
+			class GuiDocumentImageCache : public Object
+			{
+			protected:
+				GuiDocumentElement*						element = nullptr;
+				pg::ParagraphImageCacheArray			caches;
+
+			public:
+				GuiDocumentImageCache();
+				~GuiDocumentImageCache();
+
+				void									Initialize(GuiDocumentElement* _element);
+				void									RenderTargetChanged(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget);
+				void									ResetCache();
+				void									ResetTextCache(vint index, vint oldCount, vint newCount);
+				Ptr<IGuiGraphicsElement>				GetImageElement(Ptr<INativeImage> image, vint frameIndex, vint paragraphIndex, vint start);
+			};
+
+/***********************************************************************
+SetPropertiesVisitor
+***********************************************************************/
+
+			namespace visitors
+			{
+				extern vint SetProperties(
+					DocumentModel* model,
+					GuiDocumentParagraphCache* paragraphCache,
+					GuiDocumentImageCache* imageCache,
+					Ptr<pg::ParagraphCache> cache,
+					vint paragraphIndex,
+					Ptr<DocumentParagraphRun> run,
+					vint selectionBegin,
+					vint selectionEnd,
+					vint rangeBegin,
+					vint rangeEnd
+				);
+			}
 
 /***********************************************************************
 GuiDocumentElementRenderer
@@ -20388,8 +20457,7 @@ GuiDocumentElementRenderer
 				, private virtual IGuiGraphicsParagraphCallback
 			{
 				friend class GuiElementRendererBase<GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget, IGuiDocumentElementRenderer>;
-			protected:
-
+				friend class GuiDocumentParagraphCache;
 			private:
 
 				Size									OnRenderInlineObject(vint callbackId, Rect location)override;
@@ -20399,6 +20467,7 @@ GuiDocumentElementRenderer
 				vint									lastTotalWidth = 0;
 				vint									lastTotalHeightWithoutParagraphDistance = 0;
 				GuiDocumentParagraphCache				pgCache;
+				GuiDocumentImageCache					imageCache;
 
 				vint									previousRenderBegin = -1;	// -1 indicates invalid/uninitialized range
 				vint									previousRenderCount = 0;	// Invalid when begin == -1
@@ -20417,14 +20486,22 @@ GuiDocumentElementRenderer
 				void									FixMinSize();
 				void									UpdateRenderRange(vint index, vint oldCount, vint newCount);
 				void									UpdateRenderRangeAndCleanUp(vint currentBegin, vint currentCount);
+				void									NotifyParagraphUpdateLastTotalWidth(vint index, vint count);
+				void									ApplyPropertiesOnParagraph(vint paragraphIndex, vint start, vint end, vint maxWidth);
 
 			public:
 				GuiDocumentElementRenderer();
+				~GuiDocumentElementRenderer();
+
 
 				void									Render(Rect bounds) override;
 				void									OnElementStateChanged() override;
+
 				void									NotifyParagraphPaddingUpdated(bool value) override;
-				void									NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText) override;
+				void									NotifyParagraphTextUpdated(vint index, vint oldCount, vint newCount) override;
+				void									NotifyParagraphStyleUpdated(TextPos begin, TextPos end) override;
+				void									NotifyParagraphStyleUpdated(vint index, vint count) override;
+
 				Ptr<DocumentHyperlinkRun::Package>		GetHyperlinkFromPoint(Point point) override;
 
 				void									OpenCaret(TextPos caret, Color color, bool frontSide) override;
@@ -21523,6 +21600,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(WindowNotifyActivate, void, void, NOREQ, NORES, DROPREP)\
 	HANDLER(WindowNotifyShow, ::vl::presentation::remoteprotocol::WindowShowing, void, REQ, NORES, DROPREP)\
 	HANDLER(WindowNotifyMinSize, ::vl::presentation::NativeSize, void, REQ, NORES, DROPREP)\
+	HANDLER(WindowNotifySetCaret, ::vl::presentation::NativePoint, void, REQ, NORES, DROPREP)\
 	HANDLER(IOUpdateGlobalShortcutKey, ::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::GlobalShortcutKey>>, void, REQ, NORES, NODROP)\
 	HANDLER(IORequireCapture, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(IOReleaseCapture, void, void, NOREQ, NORES, NODROP)\
@@ -21584,6 +21662,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::Ptr<::vl::collections::List<::vl::vint>>)\
 	HANDLER(::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>)\
 	HANDLER(::vl::WString)\
+	HANDLER(::vl::presentation::NativePoint)\
 	HANDLER(::vl::presentation::NativeRect)\
 	HANDLER(::vl::presentation::NativeSize)\
 	HANDLER(::vl::presentation::VKEY)\
@@ -21689,25 +21768,60 @@ DiffRuns
 	using DocumentInlineObjectRunPropertyMap = collections::Dictionary<CaretRange, remoteprotocol::DocumentInlineObjectRunProperty>;
 	using DocumentRunPropertyMap = collections::Dictionary<CaretRange, remoteprotocol::DocumentRunProperty>;
 
+	/// <summary>
+	/// Updates style properties of a text run. Ranges will be splitted or merged accordingly.
+	/// </summary>
+	/// <param name="map">Current text runs</param>
+	/// <param name="range">Range of the text run to update</param>
+	/// <param name="propertyOverrides">Properties to override</param>
 	extern void AddTextRun(
 		DocumentTextRunPropertyMap& map,
 		CaretRange range,
 		const DocumentTextRunPropertyOverrides& propertyOverrides);
 
+	/// <summary>
+	/// Adds an inline object run. 
+	/// The function succeeds if the target range has no inline object or has an exactly same inline object.
+	/// Inline object runs cannot be splitted or merged.
+	/// To replace an inline object, call <see cref="ResetInlineObjectRun"/> to remove it first.
+	/// </summary>
+	/// <param name="map">Current inline object runs</param>
+	/// <param name="range">Range of the inline object run to add</param>
+	/// <param name="property">Properties of the inline object run</param>
+	/// <returns>Returns true if the inline object run was added successfully.</returns>
 	extern bool AddInlineObjectRun(
 		DocumentInlineObjectRunPropertyMap& map,
 		CaretRange range,
 		const remoteprotocol::DocumentInlineObjectRunProperty& property);
 
+	/// <summary>
+	/// Removes an inline object run. The function succeeds if the target range exactly matches an existing inline object run.
+	/// </summary>
+	/// <param name="map">Current inline object runs</param>
+	/// <param name="range">Range of the inline object run to remove</param>
+	/// <returns>Returns true if the inline object run was removed successfully.</returns>
 	extern bool ResetInlineObjectRun(
 		DocumentInlineObjectRunPropertyMap& map,
 		CaretRange range);
 
+	/// <summary>
+	/// Merge text runs and inline object runs into a single run map.
+	/// Inline object runs has a higher priority, if a text run and inline object run overlapps, only unoverlapping part of the text run survives.
+	/// </summary>
+	/// <param name="textRuns">Current text runs</param>
+	/// <param name="inlineObjectRuns">Current inline object runs</param>
+	/// <param name="result">Resulting merged run map</param>
 	extern void MergeRuns(
 		const DocumentTextRunPropertyMap& textRuns,
 		const DocumentInlineObjectRunPropertyMap& inlineObjectRuns,
 		DocumentRunPropertyMap& result);
 
+	/// <summary>
+	/// Build diff from two run maps.
+	/// </summary>
+	/// <param name="oldRuns">Old run maps</param>
+	/// <param name="newRuns">New run maps</param>
+	/// <param name="result">Resulting diff</param>
 	extern void DiffRuns(
 		const DocumentRunPropertyMap& oldRuns,
 		const DocumentRunPropertyMap& newRuns,
@@ -22112,6 +22226,7 @@ namespace vl::presentation::elements_remoteprotocol
 	{
 	protected:
 		vint							id = -1;
+		GuiRemoteGraphicsRenderTarget*	remoteRenderTarget = nullptr;
 		vuint64_t						renderingBatchId = 0;
 		bool							updated = true;
 		bool							renderTargetChanged = false;
@@ -23782,6 +23897,8 @@ namespace vl::presentation::remote_renderer
 		, protected virtual INativeWindowListener
 		, protected virtual INativeControllerListener
 	{
+		friend class GuiRemoteDocumentParagraphElement;
+
 	protected:
 		INativeWindow*							window = nullptr;
 		INativeScreen*							screen = nullptr;
@@ -23844,6 +23961,7 @@ namespace vl::presentation::remote_renderer
 		remoteprotocol::ImageMetadata			CreateImageMetadata(vint id, INativeImage* image);
 		remoteprotocol::ImageMetadata			CreateImage(const remoteprotocol::ImageCreation& arguments);
 		void									CheckDom();
+		Ptr<elements::IGuiGraphicsElement>		CreateRemoteDocumentParagraphElement();
 
 	protected:
 		bool									supressPaint = false;
@@ -23907,6 +24025,7 @@ namespace vl::presentation::remote_renderer
 }
 
 #endif
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_DOMDIFF.H
