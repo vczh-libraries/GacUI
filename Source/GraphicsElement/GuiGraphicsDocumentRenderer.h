@@ -39,11 +39,12 @@ GuiDocumentParagraphCache
 				typedef collections::Dictionary<WString, vint>					NameIdMap;
 				typedef collections::List<vint>									FreeIdList;
 				typedef collections::Dictionary<vint, Ptr<EmbeddedObject>>		IdEmbeddedObjectMap;
+				typedef Variant<bool, collections::Pair<vint, vint>>			CacheInvalidation;
 
 				struct ParagraphCache
 				{
 					Ptr<IGuiGraphicsParagraph>			graphicsParagraph;
-					bool								outdatedStyles = true;
+					CacheInvalidation					invalidation = false;
 
 					WString								fullText;
 					IdEmbeddedObjectMap					embeddedObjects;

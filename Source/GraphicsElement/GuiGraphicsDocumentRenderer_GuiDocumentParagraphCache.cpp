@@ -44,7 +44,7 @@ GuiDocumentParagraphCache
 					if (auto cache = paragraphCaches[i].Obj())
 					{
 						cache->graphicsParagraph = nullptr;
-						cache->outdatedStyles = true;
+						cache->invalidation = true;
 					}
 				}
 			}
@@ -64,7 +64,14 @@ GuiDocumentParagraphCache
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GuiDocumentParagraphCache::GetParagraphCache(vint)#"
 				auto cache = paragraphCaches[paragraphIndex];
-				CHECK_ERROR(cache && (!requireParagraph || (cache->graphicsParagraph && !cache->outdatedStyles)), ERROR_MESSAGE_PREFIX L"The specified paragraph is not created.");
+				if (requireParagraph)
+				{
+					CHECK_ERROR(cache && cache->graphicsParagraph && cache->invalidation.TryGet<bool>() && cache->invalidation.Get<bool>() == false, ERROR_MESSAGE_PREFIX L"The specified paragraph is not created.");
+				}
+				else
+				{
+					return cache;
+				}
 				return cache;
 #undef ERROR_MESSAGE_PREFIX
 			}
@@ -208,7 +215,10 @@ GuiDocumentParagraphCache
 				{
 					if (auto cache = paragraphCaches[i])
 					{
-						cache->outdatedStyles = true;
+						cache->invalidation = Pair(
+							(i == begin.row ? begin.column : 0),
+							(i == end.row ? end.column : cache->fullText.Length())
+						);
 					}
 				}
 				return 0;
@@ -220,7 +230,7 @@ GuiDocumentParagraphCache
 				{
 					if (auto cache = paragraphCaches[index + i])
 					{
-						cache->outdatedStyles = true;
+						cache->invalidation = true;
 					}
 				}
 				return 0;
@@ -251,17 +261,29 @@ GuiDocumentParagraphCache
 						paragraphText = &passwordText[0];
 					}
 					cache->graphicsParagraph = layoutProvider->CreateParagraph(paragraphText, renderTarget, callback);
-					cache->outdatedStyles = true;
+					cache->invalidation = true;
 				}
 
-				if (cache->outdatedStyles)
-				{
-					cache->outdatedStyles = false;
-					visitors::SetProperties(element->GetDocument().Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd);
-					cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
-					cache->graphicsParagraph->SetWrapLine(element->GetWrapLine());
-					cache->graphicsParagraph->SetMaxWidth(maxWidth);
-				}
+				cache->invalidation.Apply(Overloading(
+					[&, this](bool value)
+					{
+						if (value)
+						{
+							visitors::SetProperties(element->GetDocument().Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd);
+							cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
+							cache->graphicsParagraph->SetWrapLine(element->GetWrapLine());
+							cache->graphicsParagraph->SetMaxWidth(maxWidth);
+						}
+					},
+					[&, this](collections::Pair<vint, vint> range)
+					{
+						visitors::SetProperties(element->GetDocument().Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd);
+						cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
+						cache->graphicsParagraph->SetWrapLine(element->GetWrapLine());
+						cache->graphicsParagraph->SetMaxWidth(maxWidth);
+					}
+				));
+				cache->invalidation = false;
 
 				auto& cachedSize = paragraphSizes[paragraphIndex];
 				Size oldSize = cachedSize.cachedSize;
