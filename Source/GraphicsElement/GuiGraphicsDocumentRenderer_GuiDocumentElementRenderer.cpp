@@ -50,6 +50,9 @@ GuiDocumentElementRenderer
 
 			Ptr<pg::ParagraphCache> GuiDocumentElementRenderer::EnsureParagraph(vint paragraphIndex)
 			{
+				auto cache = pgCache.TryGetParagraphCache(paragraphIndex);
+				bool paragraphAlreadyCreated = cache && cache->graphicsParagraph;
+
 				lastTotalHeightWithoutParagraphDistance += pgCache.EnsureParagraph(paragraphIndex, lastMaxWidth);
 				vint width = pgCache.GetParagraphSize(paragraphIndex).x;
 				if (lastTotalWidth < width)
@@ -57,7 +60,13 @@ GuiDocumentElementRenderer
 					lastTotalWidth = width;
 				}
 				FixMinSize();
-				return pgCache.GetParagraphCache(paragraphIndex, true);
+				cache = pgCache.GetParagraphCache(paragraphIndex, true);
+
+				if (!paragraphAlreadyCreated && paragraphIndex == lastCaret.row && element->GetCaretVisible())
+				{
+					cache->graphicsParagraph->EnableCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
+				}
+				return cache;
 			}
 
 			void GuiDocumentElementRenderer::FixMinSize()
@@ -213,14 +222,7 @@ GuiDocumentElementRenderer
 					for (vint i = startParagraph; i < paragraphCount; i++)
 					{
 						Ptr<DocumentParagraphRun> paragraph = document->paragraphs[i];
-						auto cache = pgCache.TryGetParagraphCache(i);
-						bool paragraphAlreadyCreated = cache && cache->graphicsParagraph;
-
-						cache = EnsureParagraph(i);
-						if (!paragraphAlreadyCreated && i == lastCaret.row && element->GetCaretVisible())
-						{
-							cache->graphicsParagraph->OpenCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
-						}
+						auto cache = EnsureParagraph(i);
 
 						vint y = pgCache.GetParagraphTop(i, paragraphDistance);
 						if (y >= y2)
@@ -394,7 +396,7 @@ GuiDocumentElementRenderer
 
 			void GuiDocumentElementRenderer::EnableCaret(TextPos caret, Color color, bool frontSide)
 			{
-				CloseCaret(caret);
+				DisableCaret(caret);
 				lastCaret = caret;
 				lastCaretColor = color;
 				lastCaretFrontSide = frontSide;
