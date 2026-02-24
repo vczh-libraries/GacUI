@@ -215,10 +215,23 @@ GuiDocumentParagraphCache
 				{
 					if (auto cache = paragraphCaches[i])
 					{
-						cache->invalidation = Pair(
-							(i == begin.row ? begin.column : 0),
-							(i == end.row ? end.column : cache->fullText.Length())
-						);
+						vint rangeBegin = i == begin.row ? begin.column : 0;
+						vint rangeEnd = i == end.row ? end.column : cache->fullText.Length();
+						cache->invalidation.Apply(Overloading(
+							[&, this](bool value)
+							{
+								if (!value)
+								{
+									cache->invalidation = Pair(rangeBegin, rangeEnd);
+								}
+							},
+							[&, this](collections::Pair<vint, vint> range)
+							{
+								if (rangeBegin > range.key) rangeBegin = range.key;
+								if (rangeEnd < range.value) rangeEnd = range.value;
+								cache->invalidation = Pair(rangeBegin, rangeEnd);
+							}
+						));
 					}
 				}
 				return 0;
