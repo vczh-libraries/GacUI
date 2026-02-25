@@ -396,19 +396,21 @@ GuiDocumentElementRenderer
 
 			void GuiDocumentElementRenderer::EnableCaret(TextPos caret, Color color, bool frontSide)
 			{
-				DisableCaret(caret);
-				lastCaret = caret;
-				lastCaretColor = color;
-				lastCaretFrontSide = frontSide;
-
-				auto cache = pgCache.TryGetParagraphCache(lastCaret.row);
-				if (cache && cache->graphicsParagraph)
+				if (lastCaret != caret || lastCaretColor != color || lastCaretFrontSide != frontSide)
 				{
-					cache->graphicsParagraph->EnableCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
+					lastCaret = caret;
+					lastCaretColor = color;
+					lastCaretFrontSide = frontSide;
+
+					auto cache = pgCache.TryGetParagraphCache(lastCaret.row);
+					if (cache && cache->graphicsParagraph)
+					{
+						cache->graphicsParagraph->EnableCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
+					}
 				}
 			}
 
-			void GuiDocumentElementRenderer::DisableCaret(TextPos caret)
+			void GuiDocumentElementRenderer::DisableCaret()
 			{
 				if (lastCaret != TextPos(-1, -1))
 				{
@@ -418,7 +420,7 @@ GuiDocumentElementRenderer
 						cache->graphicsParagraph->DisableCaret();
 					}
 				}
-				lastCaret = caret;
+				lastCaret = TextPos(-1, -1);
 			}
 
 			bool GuiDocumentElementRenderer::BlinkCaret()

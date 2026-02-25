@@ -114,12 +114,13 @@ namespace vl::presentation::remote_renderer
 			config.clientBounds.x2 = config.bounds.x2 + dx2;
 			config.clientBounds.y2 = config.bounds.y2 + dy2;
 
-			events->OnWindowBoundsUpdated(config);
+			pendingWindowBoundsUpdate = config;
 		}
 	}
 
 	void GuiRemoteRendererSingle::Moved()
 	{
+		pendingWindowBoundsUpdate.Reset();
 		UpdateConfigsIfNecessary();
 	}
 

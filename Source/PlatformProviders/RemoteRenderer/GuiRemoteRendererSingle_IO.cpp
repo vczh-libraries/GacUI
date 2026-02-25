@@ -237,5 +237,10 @@ namespace vl::presentation::remote_renderer
 			events->OnIOKeyDown(pendingKeyAutoDown.Value());
 			pendingKeyAutoDown.Reset();
 		}
+		if (pendingWindowBoundsUpdate)
+		{
+			events->OnWindowBoundsUpdated(pendingWindowBoundsUpdate.Value());
+			pendingWindowBoundsUpdate.Reset();
+		}
 	}
 }

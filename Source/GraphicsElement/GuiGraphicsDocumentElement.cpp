@@ -34,7 +34,7 @@ GuiDocumentElement
 					}
 					else
 					{
-						elementRenderer->DisableCaret(caretEnd);
+						elementRenderer->DisableCaret();
 					}
 					InvokeOnCompositionStateChanged();
 				}

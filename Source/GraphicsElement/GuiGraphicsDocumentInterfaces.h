@@ -258,7 +258,7 @@ IGuiDocumentElementRenderer
 				virtual void									NotifyParagraphStyleUpdated(vint index, vint count) = 0;
 				virtual Ptr<DocumentHyperlinkRun::Package>		GetHyperlinkFromPoint(Point point) = 0;
 				virtual void									EnableCaret(TextPos caret, Color color, bool frontSide) = 0;
-				virtual void									DisableCaret(TextPos caret) = 0;
+				virtual void									DisableCaret() = 0;
 				virtual bool									BlinkCaret() = 0;
 				virtual void									SetSelection(TextPos begin, TextPos end) = 0;
 				virtual TextPos									CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide) = 0;
