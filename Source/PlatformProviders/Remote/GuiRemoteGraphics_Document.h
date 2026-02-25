@@ -49,10 +49,11 @@ DiffRuns
 	/// <summary>
 	/// Updates style properties of a text run. Ranges will be splitted or merged accordingly.
 	/// </summary>
+	/// <returns>Returns true if the map is changed semantically.</returns>
 	/// <param name="map">Current text runs</param>
 	/// <param name="range">Range of the text run to update</param>
 	/// <param name="propertyOverrides">Properties to override</param>
-	extern void AddTextRun(
+	extern bool AddTextRun(
 		DocumentTextRunPropertyMap& map,
 		CaretRange range,
 		const DocumentTextRunPropertyOverrides& propertyOverrides);
@@ -132,6 +133,7 @@ GuiRemoteGraphicsParagraph
 		Size															cachedSize = Size(0, 0);
 		Ptr<collections::Dictionary<vint, Rect>>						cachedInlineObjectBounds;
 		bool															needUpdate = true;
+		bool															needUpdateCaretBoundsCache = true;
 		vint															id = -1;
 		vuint64_t														lastRenderedBatchId = 0;
 
@@ -151,7 +153,7 @@ GuiRemoteGraphicsParagraph
 
 	public:
 		bool											EnsureRemoteParagraphSynced();
-		void											MarkParagraphDirty(bool invalidateSize);
+		void											MarkParagraphDirty(bool invalidateSize, bool invalidateCaretBoundsCache);
 
 		// =============================================================
 		// IGuiGraphicsParagraph
