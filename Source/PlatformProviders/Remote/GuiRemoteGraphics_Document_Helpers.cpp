@@ -55,8 +55,15 @@ AddTextRun
 
 	DocumentTextRunPropertyOverrides ApplyOverrides(
 		const DocumentTextRunPropertyOverrides& base,
-		const DocumentTextRunPropertyOverrides& overrides)
+		const DocumentTextRunPropertyOverrides& overrides,
+		bool& propertyOverrides)
 	{
+		if (overrides.textColor && base.textColor == overrides.textColor) propertyOverrides = true;
+		if (overrides.backgroundColor && base.backgroundColor == overrides.backgroundColor) propertyOverrides = true;
+		if (overrides.fontFamily && base.fontFamily == overrides.fontFamily) propertyOverrides = true;
+		if (overrides.size && base.size == overrides.size) propertyOverrides = true;
+		if (overrides.textStyle && base.textStyle == overrides.textStyle) propertyOverrides = true;
+
 		DocumentTextRunPropertyOverrides result;
 		result.textColor = overrides.textColor ? overrides.textColor : base.textColor;
 		result.backgroundColor = overrides.backgroundColor ? overrides.backgroundColor : base.backgroundColor;
@@ -72,6 +79,7 @@ AddTextRun
 		const DocumentTextRunPropertyOverrides& propertyOverrides)
 	{
 		vint firstOverlap = -1;
+		bool semanticallyUpdated = false;
 		
 		if (map.Count() > 0)
 		{
@@ -160,10 +168,11 @@ AddTextRun
 				if (currentPos < oldRange.caretBegin)
 				{
 					map.Add(CaretRange{currentPos, oldRange.caretBegin}, propertyOverrides);
+					semanticallyUpdated = true;
 				}
 				
 				// Add the overlapping portion with merged properties
-				auto mergedProp = ApplyOverrides(oldProp, propertyOverrides);
+				auto mergedProp = ApplyOverrides(oldProp, propertyOverrides, semanticallyUpdated);
 				map.Add(oldRange, mergedProp);
 				
 				currentPos = oldRange.caretEnd;
@@ -173,12 +182,14 @@ AddTextRun
 			if (currentPos < range.caretEnd)
 			{
 				map.Add(CaretRange{currentPos, range.caretEnd}, propertyOverrides);
+				semanticallyUpdated = true;
 			}
 		}
 		else
 		{
 			// No overlaps - add the entire range with new properties
 			map.Add(range, propertyOverrides);
+			semanticallyUpdated = true;
 		}
 
 		// Find the first key within the original range for merging
@@ -193,54 +204,55 @@ AddTextRun
 			}
 		}
 		
-		if (newIndex == -1)
-			return;
-		
-		while (newIndex > 0)
+		if (newIndex != -1)
 		{
-			CaretRange leftKey = map.Keys()[newIndex - 1];
-			CaretRange currentKey = map.Keys()[newIndex];
-			
-			if (leftKey.caretEnd == currentKey.caretBegin &&
-				AreEqual(map[leftKey], map[currentKey]))
+			while (newIndex > 0)
 			{
-				CaretRange mergedRange{ leftKey.caretBegin, currentKey.caretEnd };
-				auto mergedProperty = map[leftKey];
-				
-				map.Remove(leftKey);
-				map.Remove(currentKey);
-				map.Add(mergedRange, mergedProperty);
-				
-				newIndex = map.Keys().IndexOf(mergedRange);
-			}
-			else
-			{
-				break;
-			}
-		}
+				CaretRange leftKey = map.Keys()[newIndex - 1];
+				CaretRange currentKey = map.Keys()[newIndex];
 
-		while (newIndex < map.Keys().Count() - 1)
-		{
-			CaretRange currentKey = map.Keys()[newIndex];
-			CaretRange rightKey = map.Keys()[newIndex + 1];
-			
-			if (currentKey.caretEnd == rightKey.caretBegin &&
-				AreEqual(map[currentKey], map[rightKey]))
-			{
-				CaretRange mergedRange{ currentKey.caretBegin, rightKey.caretEnd };
-				auto mergedProperty = map[currentKey];
-				
-				map.Remove(currentKey);
-				map.Remove(rightKey);
-				map.Add(mergedRange, mergedProperty);
-				
-				newIndex = map.Keys().IndexOf(mergedRange);
+				if (leftKey.caretEnd == currentKey.caretBegin &&
+					AreEqual(map[leftKey], map[currentKey]))
+				{
+					CaretRange mergedRange{ leftKey.caretBegin, currentKey.caretEnd };
+					auto mergedProperty = map[leftKey];
+
+					map.Remove(leftKey);
+					map.Remove(currentKey);
+					map.Add(mergedRange, mergedProperty);
+
+					newIndex = map.Keys().IndexOf(mergedRange);
+				}
+				else
+				{
+					break;
+				}
 			}
-			else
+
+			while (newIndex < map.Keys().Count() - 1)
 			{
-				break;
+				CaretRange currentKey = map.Keys()[newIndex];
+				CaretRange rightKey = map.Keys()[newIndex + 1];
+
+				if (currentKey.caretEnd == rightKey.caretBegin &&
+					AreEqual(map[currentKey], map[rightKey]))
+				{
+					CaretRange mergedRange{ currentKey.caretBegin, rightKey.caretEnd };
+					auto mergedProperty = map[currentKey];
+
+					map.Remove(currentKey);
+					map.Remove(rightKey);
+					map.Add(mergedRange, mergedProperty);
+
+					newIndex = map.Keys().IndexOf(mergedRange);
+				}
+				else
+				{
+					break;
+				}
 			}
 		}
+		return semanticallyUpdated;
 	}
 
 /***********************************************************************
