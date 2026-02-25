@@ -102,6 +102,8 @@ namespace vl::presentation::remote_renderer
 		INativeWindowListener::HitTestResult	HitTest(NativePoint location) override;
 
 	protected:
+		Nullable<NativeWindowMouseInfo>			pendingMouseMove, pendingHWheel, pendingVWheel;
+		Nullable<NativeWindowKeyInfo>			pendingKeyAutoDown;
 
 		void									LeftButtonDown(const NativeWindowMouseInfo& info) override;
 		void									LeftButtonUp(const NativeWindowMouseInfo& info) override;

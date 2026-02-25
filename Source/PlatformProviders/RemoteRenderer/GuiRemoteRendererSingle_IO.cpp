@@ -73,6 +73,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::LeftButtonDown(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Left;
 		arguments.info = info;
@@ -81,6 +82,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::LeftButtonUp(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Left;
 		arguments.info = info;
@@ -89,6 +91,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::LeftButtonDoubleClick(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Left;
 		arguments.info = info;
@@ -97,6 +100,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RightButtonDown(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Right;
 		arguments.info = info;
@@ -105,6 +109,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RightButtonUp(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Right;
 		arguments.info = info;
@@ -113,6 +118,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RightButtonDoubleClick(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Right;
 		arguments.info = info;
@@ -121,6 +127,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::MiddleButtonDown(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Middle;
 		arguments.info = info;
@@ -129,6 +136,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::MiddleButtonUp(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Middle;
 		arguments.info = info;
@@ -137,6 +145,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::MiddleButtonDoubleClick(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Middle;
 		arguments.info = info;
@@ -145,19 +154,21 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::HorizontalWheel(const NativeWindowMouseInfo& info)
 	{
-		// TODO: Accumulate values, sent when idle.
-		events->OnIOHWheel(info);
+		auto copy = info;
+		if (pendingHWheel) copy.wheel += pendingHWheel.Value().wheel;
+		pendingHWheel = copy;
 	}
 
 	void GuiRemoteRendererSingle::VerticalWheel(const NativeWindowMouseInfo& info)
 	{
-		// TODO: Accumulate values, sent when idle.
-		events->OnIOVWheel(info);
+		auto copy = info;
+		if (pendingVWheel) copy.wheel += pendingVWheel.Value().wheel;
+		pendingVWheel = copy;
 	}
 
 	void GuiRemoteRendererSingle::MouseMoving(const NativeWindowMouseInfo& info)
 	{
-		// TODO: Keep the last one, sent when idle, canceled by any other mouse events.
+		pendingMouseMove = info;
 		if (renderingDom)
 		{
 			INativeWindowListener::HitTestResult hitTestResult = INativeWindowListener::NoDecision;
@@ -165,7 +176,6 @@ namespace vl::presentation::remote_renderer
 			HitTest(renderingDom, window->Convert(NativePoint{ info.x,info.y }), hitTestResult, cursor);
 			window->SetWindowCursor(cursor);
 		}
-		events->OnIOMouseMoving(info);
 	}
 
 	void GuiRemoteRendererSingle::MouseEntered()
@@ -180,12 +190,19 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::KeyDown(const NativeWindowKeyInfo& info)
 	{
-		// TODO: For autoRepeatKeyDown, keep the last one, sent when idle, canceled by any other mouse events.
-		events->OnIOKeyDown(info);
+		if (info.autoRepeatKeyDown)
+		{
+			pendingKeyAutoDown = info;
+		}
+		else
+		{
+			events->OnIOKeyDown(info);
+		}
 	}
 
 	void GuiRemoteRendererSingle::KeyUp(const NativeWindowKeyInfo& info)
 	{
+		pendingKeyAutoDown.Reset();
 		if (!info.ctrl && !info.shift && info.code == VKEY::KEY_MENU)
 		{
 			window->SupressAlt();
@@ -200,5 +217,25 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::SendAccumulatedMessages()
 	{
+		if (pendingMouseMove)
+		{
+			events->OnIOMouseMoving(pendingMouseMove.Value());
+			pendingMouseMove.Reset();
+		}
+		if (pendingHWheel)
+		{
+			events->OnIOHWheel(pendingHWheel.Value());
+			pendingHWheel.Reset();
+		}
+		if (pendingVWheel)
+		{
+			events->OnIOVWheel(pendingVWheel.Value());
+			pendingVWheel.Reset();
+		}
+		if (pendingKeyAutoDown)
+		{
+			events->OnIOKeyDown(pendingKeyAutoDown.Value());
+			pendingKeyAutoDown.Reset();
+		}
 	}
 }
