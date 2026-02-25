@@ -129,7 +129,7 @@ GuiRemoteProtocolElementRenderer
 		arguments.id = id;
 		arguments.bounds = bounds;
 		arguments.areaClippedByParent = this->renderTarget->GetClipperValidArea();
-		this->renderTarget->GetRemoteMessages().RequestRendererRenderElement(arguments);
+		this->remoteRenderTarget->GetRemoteMessages().RequestRendererRenderElement(arguments);
 		renderingBatchId = this->renderTarget->renderingBatchId;
 	}
 
@@ -215,7 +215,7 @@ GuiSolidBorderElementRenderer
 		arguments.id = id;
 		arguments.borderColor = element->GetColor();
 		arguments.shape = element->GetShape();
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_SolidBorder(arguments);
+		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_SolidBorder(arguments);
 	}
 
 /***********************************************************************
@@ -232,7 +232,7 @@ Gui3DBorderElementRenderer
 		arguments.id = id;
 		arguments.leftTopColor = element->GetColor1();
 		arguments.rightBottomColor = element->GetColor2();
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_SinkBorder(arguments);
+		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_SinkBorder(arguments);
 	}
 
 /***********************************************************************
@@ -250,7 +250,7 @@ Gui3DSplitterElementRenderer
 		arguments.leftTopColor = element->GetColor1();
 		arguments.rightBottomColor = element->GetColor2();
 		arguments.direction = element->GetDirection();
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_SinkSplitter(arguments);
+		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_SinkSplitter(arguments);
 	}
 
 /***********************************************************************
@@ -267,7 +267,7 @@ GuiSolidBackgroundElementRenderer
 		arguments.id = id;
 		arguments.backgroundColor = element->GetColor();
 		arguments.shape = element->GetShape();
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_SolidBackground(arguments);
+		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_SolidBackground(arguments);
 	}
 
 /***********************************************************************
@@ -286,7 +286,7 @@ GuiGradientBackgroundElementRenderer
 		arguments.rightBottomColor = element->GetColor2();
 		arguments.direction = element->GetDirection();
 		arguments.shape = element->GetShape();
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_GradientBackground(arguments);
+		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_GradientBackground(arguments);
 	}
 
 /***********************************************************************
@@ -303,7 +303,7 @@ GuiInnerShadowElementRenderer
 		arguments.id = id;
 		arguments.shadowColor = element->GetColor();
 		arguments.thickness = element->GetThickness();
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_InnerShadow(arguments);
+		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_InnerShadow(arguments);
 	}
 
 /***********************************************************************
@@ -432,7 +432,7 @@ GuiSolidLabelElementRenderer
 			}
 		}
 
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_SolidLabel(arguments);
+		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_SolidLabel(arguments);
 	}
 
 /***********************************************************************
@@ -559,7 +559,7 @@ GuiImageFrameElementRenderer
 			arguments.imageCreation = image->GenerateImageCreation();
 		}
 
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_ImageFrame(arguments);
+		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_ImageFrame(arguments);
 	}
 
 /***********************************************************************
@@ -581,6 +581,6 @@ GuiPolygonElementRenderer
 		arguments.backgroundColor = element->GetBackgroundColor();
 		arguments.points = Ptr(new List<Point>);
 		CopyFrom(*arguments.points.Obj(), element->GetPointsArray());
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_Polygon(arguments);
+		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_Polygon(arguments);
 	}
 }
