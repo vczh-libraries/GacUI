@@ -58,11 +58,11 @@ AddTextRun
 		const DocumentTextRunPropertyOverrides& overrides,
 		bool& propertyOverrides)
 	{
-		if (overrides.textColor && base.textColor == overrides.textColor) propertyOverrides = true;
-		if (overrides.backgroundColor && base.backgroundColor == overrides.backgroundColor) propertyOverrides = true;
-		if (overrides.fontFamily && base.fontFamily == overrides.fontFamily) propertyOverrides = true;
-		if (overrides.size && base.size == overrides.size) propertyOverrides = true;
-		if (overrides.textStyle && base.textStyle == overrides.textStyle) propertyOverrides = true;
+		if (overrides.textColor && base.textColor != overrides.textColor)					propertyOverrides = true;
+		if (overrides.backgroundColor && base.backgroundColor != overrides.backgroundColor)	propertyOverrides = true;
+		if (overrides.fontFamily && base.fontFamily != overrides.fontFamily)				propertyOverrides = true;
+		if (overrides.size && base.size != overrides.size)									propertyOverrides = true;
+		if (overrides.textStyle && base.textStyle != overrides.textStyle)					propertyOverrides = true;
 
 		DocumentTextRunPropertyOverrides result;
 		result.textColor = overrides.textColor ? overrides.textColor : base.textColor;

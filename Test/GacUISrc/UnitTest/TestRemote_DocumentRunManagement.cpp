@@ -1030,7 +1030,7 @@ TEST_FILE
 				Nullable<Color>(),
 				Nullable<Color>(),
 				Nullable<IGuiGraphicsParagraph::TextStyle>());
-			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, allNull) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, allNull) == false);
 			
 			// All-null update preserves all existing properties
 			// Should result in three fragments, middle has all properties from original
@@ -1047,11 +1047,13 @@ TEST_FILE
 			
 			// Initial: only font defined
 			auto initial = CreateTextPropWithFont(L"Arial");
-			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 12}, initial) == true);
+			TEST_ASSERT(AddTextRun(textMap, { .caretBegin = 0, .caretEnd = 11 }, initial) == true);
+			TEST_ASSERT(AddTextRun(textMap, { .caretBegin = 11, .caretEnd = 20 }, initial) == true);
 			
 			// Update with same font
 			auto update = CreateTextPropWithFont(L"Arial");
-			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, update) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, update) == false);
 			
 			// Properties are identical (font="Arial", all others null)
 			// After split and merge, should merge back to single run
