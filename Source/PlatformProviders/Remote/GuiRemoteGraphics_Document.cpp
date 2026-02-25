@@ -121,8 +121,8 @@ GuiRemoteGraphicsParagraph
 		caretBoundsFrontSide.Resize(text.Length() + 1);
 		caretBoundsBackSide.Resize(text.Length() + 1);
 		size_t size = (size_t)(sizeof(Rect) * (text.Length() + 1));
-		memset(&caretBoundsFrontSide[0], 0, size);
-		memset(&caretBoundsBackSide[0], 0, size);
+		memset(&caretBoundsFrontSide[0], -2, size);
+		memset(&caretBoundsBackSide[0], -2, size);
 	}
 
 	void GuiRemoteGraphicsParagraph::MarkParagraphDirty(bool invalidateSize, bool invalidateCaretBoundsCache)
@@ -435,8 +435,10 @@ GuiRemoteGraphicsParagraph
 
 	bool GuiRemoteGraphicsParagraph::GetCaretBoundsInternal(vint caret, bool frontSide, Rect& bounds)
 	{
+		Rect invalidRect;
+		memset(&invalidRect, -2, sizeof(invalidRect));
 		Rect& cached = frontSide ? caretBoundsFrontSide[caret] : caretBoundsBackSide[caret];
-		if (cached == Rect{})
+		if (cached == invalidRect)
 		{
 			remoteprotocol::GetCaretBoundsRequest request;
 			request.id = id;
