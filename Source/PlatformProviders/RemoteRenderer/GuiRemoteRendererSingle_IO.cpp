@@ -57,12 +57,14 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestIOIsKeyPressing(vint id, const VKEY& arguments)
 	{
-		CHECK_FAIL(L"Not Implemented");
+		bool result = GetCurrentController()->InputService()->IsKeyPressing(arguments);
+		events->RespondIOIsKeyPressing(id, result);
 	}
 
 	void GuiRemoteRendererSingle::RequestIOIsKeyToggled(vint id, const VKEY& arguments)
 	{
-		CHECK_FAIL(L"Not Implemented");
+		bool result = GetCurrentController()->InputService()->IsKeyToggled(arguments);
+		events->RespondIOIsKeyToggled(id, result);
 	}
 
 /***********************************************************************
@@ -143,16 +145,19 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::HorizontalWheel(const NativeWindowMouseInfo& info)
 	{
+		// TODO: Set a flag, accumulate values, send the message while idle.
 		events->OnIOHWheel(info);
 	}
 
 	void GuiRemoteRendererSingle::VerticalWheel(const NativeWindowMouseInfo& info)
 	{
+		// TODO: Set a flag, accumulate values, send the message while idle.
 		events->OnIOVWheel(info);
 	}
 
 	void GuiRemoteRendererSingle::MouseMoving(const NativeWindowMouseInfo& info)
 	{
+		// TODO: Set a flag, discard unsent one, send the message while idle.
 		if (renderingDom)
 		{
 			INativeWindowListener::HitTestResult hitTestResult = INativeWindowListener::NoDecision;
@@ -175,6 +180,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::KeyDown(const NativeWindowKeyInfo& info)
 	{
+		// TODO: For autoRepeatKeyDown, set a flag, discard unsent one, send the message while idle.
 		events->OnIOKeyDown(info);
 	}
 
