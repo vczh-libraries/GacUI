@@ -150,6 +150,7 @@ GuiRemoteGraphicsParagraph
 		vint											RemoteTextPosToNativeTextPos(vint textPos);
 		bool											TryBuildCaretRange(vint start, vint length, CaretRange& range);
 		void											ResetCaretBoundsCache();
+		bool											GetCaretBoundsInternal(vint caret, bool frontSide, Rect& bounds);
 
 	public:
 		bool											EnsureRemoteParagraphSynced();

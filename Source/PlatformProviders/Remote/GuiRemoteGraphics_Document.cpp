@@ -433,13 +433,8 @@ GuiRemoteGraphicsParagraph
 		return RemoteTextPosToNativeTextPos(response.newCaret);
 	}
 
-	Rect GuiRemoteGraphicsParagraph::GetCaretBounds(vint caret, bool frontSide)
+	bool GuiRemoteGraphicsParagraph::GetCaretBoundsInternal(vint caret, bool frontSide, Rect& bounds)
 	{
-		if (!EnsureRemoteParagraphSynced())
-		{
-			return {};
-		}
-
 		Rect& cached = frontSide ? caretBoundsFrontSide[caret] : caretBoundsBackSide[caret];
 		if (cached == Rect{})
 		{
@@ -454,13 +449,25 @@ GuiRemoteGraphicsParagraph
 			messages.Submit(disconnected);
 			if (disconnected)
 			{
-				return {};
+				return false;
 			}
 
 			cached = messages.RetrieveDocumentParagraph_GetCaretBounds(requestId);
 		}
+		bounds = cached;
+		return true;
+	}
 
-		return cached;
+	Rect GuiRemoteGraphicsParagraph::GetCaretBounds(vint caret, bool frontSide)
+	{
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return {};
+		}
+
+		Rect bounds;
+		GetCaretBoundsInternal(caret, frontSide, bounds);
+		return bounds;
 	}
 
 	vint GuiRemoteGraphicsParagraph::GetCaretFromPoint(Point point)
@@ -476,20 +483,12 @@ GuiRemoteGraphicsParagraph
 
 		for (vint caret = 0; caret <= text.Length(); caret++)
 		{
-			remoteprotocol::GetCaretBoundsRequest request;
-			request.id = id;
-			request.caret = NativeTextPosToRemoteTextPos(caret);
-			request.frontSide = true;
-
-			bool disconnected = false;
-			vint requestId = messages.RequestDocumentParagraph_GetCaretBounds(request);
-			messages.Submit(disconnected);
-			if (disconnected)
+			Rect bounds;
+			if (!GetCaretBoundsInternal(caret, true, bounds))
 			{
 				return bestCaret;
 			}
 
-			Rect bounds = messages.RetrieveDocumentParagraph_GetCaretBounds(requestId);
 			if (bounds.x1 <= point.x && point.x < bounds.x2 && bounds.y1 <= point.y && point.y < bounds.y2)
 			{
 				return caret;
