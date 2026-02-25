@@ -120,6 +120,7 @@ namespace vl::presentation::remote_renderer
 		void									KeyDown(const NativeWindowKeyInfo& info) override;
 		void									KeyUp(const NativeWindowKeyInfo& info) override;
 		void									Char(const NativeWindowCharInfo& info) override;
+		void									SendAccumulatedMessages();
 
 	public:
 		GuiRemoteRendererSingle();

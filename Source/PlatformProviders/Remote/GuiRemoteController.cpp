@@ -366,6 +366,7 @@ GuiRemoteController
 #elif defined VCZH_WCHAR_UTF32
 		remoteGlobalConfig.documentCaretFromEncoding = remoteprotocol::CharacterEncoding::UTF32;
 #endif
+		remoteFontConfig.defaultFont.size = 12;
 	}
 
 	GuiRemoteController::~GuiRemoteController()

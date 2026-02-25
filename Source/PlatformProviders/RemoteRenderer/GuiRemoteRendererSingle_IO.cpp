@@ -145,19 +145,19 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::HorizontalWheel(const NativeWindowMouseInfo& info)
 	{
-		// TODO: Set a flag, accumulate values, send the message while idle.
+		// TODO: Accumulate values, sent when idle.
 		events->OnIOHWheel(info);
 	}
 
 	void GuiRemoteRendererSingle::VerticalWheel(const NativeWindowMouseInfo& info)
 	{
-		// TODO: Set a flag, accumulate values, send the message while idle.
+		// TODO: Accumulate values, sent when idle.
 		events->OnIOVWheel(info);
 	}
 
 	void GuiRemoteRendererSingle::MouseMoving(const NativeWindowMouseInfo& info)
 	{
-		// TODO: Set a flag, discard unsent one, send the message while idle.
+		// TODO: Keep the last one, sent when idle, canceled by any other mouse events.
 		if (renderingDom)
 		{
 			INativeWindowListener::HitTestResult hitTestResult = INativeWindowListener::NoDecision;
@@ -180,7 +180,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::KeyDown(const NativeWindowKeyInfo& info)
 	{
-		// TODO: For autoRepeatKeyDown, set a flag, discard unsent one, send the message while idle.
+		// TODO: For autoRepeatKeyDown, keep the last one, sent when idle, canceled by any other mouse events.
 		events->OnIOKeyDown(info);
 	}
 
@@ -196,5 +196,9 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::Char(const NativeWindowCharInfo& info)
 	{
 		events->OnIOChar(info);
+	}
+
+	void GuiRemoteRendererSingle::SendAccumulatedMessages()
+	{
 	}
 }

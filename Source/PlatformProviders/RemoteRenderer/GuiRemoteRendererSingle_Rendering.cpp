@@ -281,6 +281,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::GlobalTimer()
 	{
+		SendAccumulatedMessages();
 		if (!needRefresh) return;
 		needRefresh = false;
 		if (!window) return;
