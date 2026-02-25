@@ -494,7 +494,7 @@ TEST_FILE
 			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1) == true);
 			
 			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
@@ -508,8 +508,8 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
-			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2) == true);
 			
 			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
@@ -524,8 +524,8 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2) == true);
 			
 			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
@@ -539,8 +539,8 @@ TEST_FILE
 			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1) == true);
 			
 			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 20}, prop1);
@@ -554,8 +554,8 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2) == true);
 			
 			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop2);
@@ -569,8 +569,8 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 30}, prop1);
-			AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 20}, prop2);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 30}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 20}, prop2) == true);
 			
 			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 5, .caretEnd = 20}, prop2);
@@ -585,8 +585,8 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 30}, prop1);
-			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 35}, prop2);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 30}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 35}, prop2) == true);
 			
 			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
@@ -601,8 +601,8 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {.caretBegin = 15, .caretEnd = 25}, prop1);
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 30}, prop2);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 15, .caretEnd = 25}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 30}, prop2) == true);
 			
 			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 10, .caretEnd = 30}, prop2);
@@ -616,8 +616,8 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 40}, prop1);
-			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 40}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2) == true);
 			
 			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 10, .caretEnd = 20}, prop1);
@@ -635,10 +635,10 @@ TEST_FILE
 			auto prop3 = CreateTextProp(140);
 			auto propNew = CreateTextProp(200);
 			
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
-			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2);
-			AddTextRun(textMap, {.caretBegin = 30, .caretEnd = 40}, prop3);
-			AddTextRun(textMap, {.caretBegin = 15, .caretEnd = 35}, propNew);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 30, .caretEnd = 40}, prop3) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 15, .caretEnd = 35}, propNew) == true);
 			
 			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 10, .caretEnd = 15}, prop1);
@@ -653,9 +653,9 @@ TEST_FILE
 			DocumentTextRunPropertyMap textMap;
 			auto prop1 = CreateTextProp(100);
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
-			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop1);
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1) == true);
 			
 			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 30}, prop1);
@@ -669,9 +669,9 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
-			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2);
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1) == true);
 			
 			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 20}, prop1);
@@ -686,9 +686,9 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop2);
-			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop1);
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop2) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop1) == true);
 			
 			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop2);
@@ -704,9 +704,9 @@ TEST_FILE
 			auto prop2 = CreateTextProp(150);
 			auto prop3 = CreateTextProp(200);
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
-			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop3);
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop3) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2) == true);
 			
 			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 10}, prop1);
@@ -722,9 +722,9 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 50}, prop1);
-			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2);
-			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop1);  // Replace prop2 with prop1
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 50}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop1) == true);  // Replace prop2 with prop1
 			
 			DocumentTextRunPropertyMap expectedMap;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 50}, prop1);  // All merged back
@@ -739,11 +739,11 @@ TEST_FILE
 		{
 			DocumentTextRunPropertyMap textMap;
 			auto initial = CreateTextProp(100);  // All properties defined
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial) == true);
 			
 			// Update only font, leaving others null
 			auto fontUpdate = CreateTextPropWithFont(L"NewFont");
-			AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, fontUpdate);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, fontUpdate) == true);
 			
 			// Expected: three fragments
 			// [0,5]: original properties
@@ -768,10 +768,10 @@ TEST_FILE
 		{
 			DocumentTextRunPropertyMap textMap;
 			auto initial = CreateTextProp(100);
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial) == true);
 			
 			auto colorUpdate = CreateTextPropWithColor(Color(255, 0, 0));  // Red
-			AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, colorUpdate);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, colorUpdate) == true);
 			
 			DocumentTextRunPropertyMap expectedMap;
 			
@@ -792,10 +792,10 @@ TEST_FILE
 		{
 			DocumentTextRunPropertyMap textMap;
 			auto initial = CreateTextProp(100);
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial) == true);
 			
 			auto sizeUpdate = CreateTextPropWithSize(16);
-			AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, sizeUpdate);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, sizeUpdate) == true);
 			
 			DocumentTextRunPropertyMap expectedMap;
 			
@@ -816,7 +816,7 @@ TEST_FILE
 		{
 			DocumentTextRunPropertyMap textMap;
 			auto initial = CreateTextProp(100);
-		AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial) == true);
 		
 		// Update font and color, leave others null
 		auto update = CreateTextPropPartial(
@@ -825,8 +825,9 @@ TEST_FILE
 			Color(0, 255, 0),   // green
 			Nullable<Color>(),  // backgroundColor null
 			Nullable<IGuiGraphicsParagraph::TextStyle>());  // style null
-		AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, update);			DocumentTextRunPropertyMap expectedMap;
-			
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, update) == true);
+
+			DocumentTextRunPropertyMap expectedMap;
 			auto fragment1 = initial;
 			expectedMap.Add({.caretBegin = 0, .caretEnd = 5}, fragment1);
 			
@@ -849,8 +850,8 @@ TEST_FILE
 			auto prop1 = CreateTextPropWithFont(L"Arial");
 			auto prop2 = CreateTextPropWithFont(L"Arial");
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2) == true);
 			
 			// Should merge because all properties (including nullability) match
 			DocumentTextRunPropertyMap expectedMap;
@@ -872,8 +873,9 @@ TEST_FILE
 			Nullable<vint>(),
 			Color(255, 0, 0),  // Red - defined
 			Nullable<Color>(),
-			Nullable<IGuiGraphicsParagraph::TextStyle>());			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
+			Nullable<IGuiGraphicsParagraph::TextStyle>());
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2) == true);
 			
 			// Should NOT merge (color differs: null vs Red)
 			DocumentTextRunPropertyMap expectedMap;
@@ -896,8 +898,8 @@ TEST_FILE
 			Nullable<IGuiGraphicsParagraph::TextStyle>());			// Second run: font defined, color null
 			auto prop2 = CreateTextPropWithFont(L"Arial");
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2) == true);
 			
 			// Should NOT merge (color differs: Red vs null)
 			DocumentTextRunPropertyMap expectedMap;
@@ -915,8 +917,8 @@ TEST_FILE
 			auto prop1 = CreateTextPropWithFont(L"Courier");
 			auto prop2 = CreateTextPropWithFont(L"Courier");
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, prop2) == true);
 			
 			// All properties match (including multiple nulls), should merge
 			DocumentTextRunPropertyMap expectedMap;
@@ -931,11 +933,11 @@ TEST_FILE
 			
 			// Step 1: Add font only
 			auto fontOnly = CreateTextPropWithFont(L"Arial");
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, fontOnly);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, fontOnly) == true);
 			
 			// Step 2: Add size only (same range)
 			auto sizeOnly = CreateTextPropWithSize(14);
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, sizeOnly);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, sizeOnly) == true);
 			
 		// Should merge into single run with both properties
 		DocumentTextRunPropertyMap expectedMap;
@@ -954,15 +956,15 @@ TEST_FILE
 			
 			// Step 1: Add font for full range
 			auto fontOnly = CreateTextPropWithFont(L"Arial");
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, fontOnly);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, fontOnly) == true);
 			
 			// Step 2: Add size for half range
 			auto sizeOnly = CreateTextPropWithSize(14);
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, sizeOnly);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, sizeOnly) == true);
 			
 			// Step 3: Add color for different half range
 			auto colorOnly = CreateTextPropWithColor(Color(0, 0, 255));
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, colorOnly);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 20}, colorOnly) == true);
 			
 			// Should result in two runs with different property combinations
 			DocumentTextRunPropertyMap expectedMap;
@@ -989,13 +991,13 @@ TEST_FILE
 			DocumentTextRunPropertyMap textMap;
 			
 			// Step 1: Font for [0, 30]
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 30}, CreateTextPropWithFont(L"Arial"));
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 30}, CreateTextPropWithFont(L"Arial")) == true);
 			
 			// Step 2: Size for [0, 20]
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, CreateTextPropWithSize(12));
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, CreateTextPropWithSize(12)) == true);
 			
 			// Step 3: Color for [10, 30]
-			AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 30}, CreateTextPropWithColor(Color(255, 0, 0)));
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 10, .caretEnd = 30}, CreateTextPropWithColor(Color(255, 0, 0))) == true);
 			
 			// Expected three regions with different property combinations:
 		// [0,10]: font+size
@@ -1019,7 +1021,7 @@ TEST_FILE
 			
 			// Start with fully defined properties
 			auto initial = CreateTextProp(100);
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial) == true);
 			
 			// Add run with all properties null
 			auto allNull = CreateTextPropPartial(
@@ -1028,7 +1030,7 @@ TEST_FILE
 				Nullable<Color>(),
 				Nullable<Color>(),
 				Nullable<IGuiGraphicsParagraph::TextStyle>());
-			AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, allNull);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, allNull) == true);
 			
 			// All-null update preserves all existing properties
 			// Should result in three fragments, middle has all properties from original
@@ -1045,11 +1047,11 @@ TEST_FILE
 			
 			// Initial: only font defined
 			auto initial = CreateTextPropWithFont(L"Arial");
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial) == true);
 			
 			// Update with same font
 			auto update = CreateTextPropWithFont(L"Arial");
-			AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, update);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, update) == true);
 			
 			// Properties are identical (font="Arial", all others null)
 			// After split and merge, should merge back to single run
@@ -1065,11 +1067,11 @@ TEST_FILE
 			
 			// Initial: only font defined as Arial
 			auto initial = CreateTextPropWithFont(L"Arial");
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, initial) == true);
 			
 			// Update with different font (Courier)
 			auto update = CreateTextPropWithFont(L"Courier");
-			AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, update);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 5, .caretEnd = 15}, update) == true);
 			
 			// Should create three fragments with different fonts
 			DocumentTextRunPropertyMap expectedMap;
@@ -1683,8 +1685,8 @@ TEST_FILE
 			auto prop1 = CreateTextProp(100);
 			auto prop2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
-			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, prop2) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			DocumentRunPropertyMap result;
@@ -1726,8 +1728,8 @@ TEST_FILE
 			auto textProp1 = CreateTextProp(100);
 			auto textProp2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, textProp1);
-			AddTextRun(textMap, {.caretBegin = 40, .caretEnd = 50}, textProp2);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, textProp1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 40, .caretEnd = 50}, textProp2) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			auto inlineProp = CreateInlineProp(200);
@@ -1750,7 +1752,7 @@ TEST_FILE
 		{
 			DocumentTextRunPropertyMap textMap;
 			auto textProp = CreateTextProp(100);
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 30}, textProp);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 30}, textProp) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			auto inlineProp = CreateInlineProp(200);
@@ -1773,7 +1775,7 @@ TEST_FILE
 		{
 			DocumentTextRunPropertyMap textMap;
 			auto textProp = CreateTextProp(100);
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 25}, textProp);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 25}, textProp) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			auto inlineProp = CreateInlineProp(200);
@@ -1795,7 +1797,7 @@ TEST_FILE
 		{
 			DocumentTextRunPropertyMap textMap;
 			auto textProp = CreateTextProp(100);
-			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 40}, textProp);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 40}, textProp) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			auto inlineProp = CreateInlineProp(200);
@@ -1817,7 +1819,7 @@ TEST_FILE
 		{
 			DocumentTextRunPropertyMap textMap;
 			auto textProp = CreateTextProp(100);
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 50}, textProp);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 50}, textProp) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			auto inlineProp1 = CreateInlineProp(201, 5);
@@ -1852,8 +1854,8 @@ TEST_FILE
 			auto textProp1 = CreateTextProp(100);
 			auto textProp2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 15}, textProp1);
-			AddTextRun(textMap, {.caretBegin = 25, .caretEnd = 40}, textProp2);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 15}, textProp1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 25, .caretEnd = 40}, textProp2) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			auto inlineProp = CreateInlineProp(200);
@@ -1878,8 +1880,8 @@ TEST_FILE
 			auto textProp1 = CreateTextProp(100);
 			auto textProp2 = CreateTextProp(150);
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, textProp1);
-			AddTextRun(textMap, {.caretBegin = 25, .caretEnd = 35}, textProp2);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, textProp1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 25, .caretEnd = 35}, textProp2) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			auto inlineProp1 = CreateInlineProp(200);
@@ -1906,8 +1908,8 @@ TEST_FILE
 			DocumentTextRunPropertyMap textMap;
 			auto textProp = CreateTextProp(100);  // Same property
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, textProp);
-			AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, textProp);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, textProp) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 20, .caretEnd = 30}, textProp) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			auto inlineProp = CreateInlineProp(200);
@@ -1933,9 +1935,9 @@ TEST_FILE
 			auto textProp2 = CreateTextProp(120);
 			auto textProp3 = CreateTextProp(140);
 			
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 25}, textProp1);
-			AddTextRun(textMap, {.caretBegin = 35, .caretEnd = 55}, textProp2);
-			AddTextRun(textMap, {.caretBegin = 65, .caretEnd = 100}, textProp3);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 25}, textProp1) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 35, .caretEnd = 55}, textProp2) == true);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 65, .caretEnd = 100}, textProp3) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			auto inlineProp1 = CreateInlineProp(201);
@@ -1978,7 +1980,7 @@ TEST_FILE
 				Color(100, 100, 100),     // textColor defined
 				Color(150, 150, 150),     // backgroundColor defined
 				(IGuiGraphicsParagraph::TextStyle)0);  // textStyle defined
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			DocumentRunPropertyMap result;
@@ -1997,7 +1999,7 @@ TEST_FILE
 				Color(100, 100, 100),     // textColor defined
 				Color(150, 150, 150),     // backgroundColor defined
 				(IGuiGraphicsParagraph::TextStyle)0);  // textStyle defined
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			DocumentRunPropertyMap result;
@@ -2016,7 +2018,7 @@ TEST_FILE
 				Nullable<Color>(),            // textColor null - should use default
 				Nullable<Color>(),            // backgroundColor null - should use default
 				Nullable<IGuiGraphicsParagraph::TextStyle>());  // textStyle null - should use default
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			DocumentRunPropertyMap result;
@@ -2051,7 +2053,7 @@ TEST_FILE
 				Nullable<Color>(),            // null textColor
 				Color(200, 200, 200),         // backgroundColor defined
 				(IGuiGraphicsParagraph::TextStyle)0);
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			DocumentRunPropertyMap result;
@@ -2077,7 +2079,7 @@ TEST_FILE
 				Color(100, 100, 100),         // textColor defined
 				Nullable<Color>(),            // null backgroundColor
 				(IGuiGraphicsParagraph::TextStyle)0);
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			DocumentRunPropertyMap result;
@@ -2103,7 +2105,7 @@ TEST_FILE
 				Color(100, 100, 100),
 				Color(150, 150, 150),
 				Nullable<IGuiGraphicsParagraph::TextStyle>());  // null textStyle
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			DocumentRunPropertyMap result;
@@ -2128,7 +2130,7 @@ TEST_FILE
 				Nullable<Color>(),            // null textColor
 				Nullable<Color>(),            // null backgroundColor
 				Nullable<IGuiGraphicsParagraph::TextStyle>());  // null textStyle
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, prop);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 20}, prop) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			DocumentRunPropertyMap result;
@@ -2162,7 +2164,7 @@ TEST_FILE
 				Nullable<Color>(),            // null textColor
 				Color(100, 100, 100),         // backgroundColor defined
 				Nullable<IGuiGraphicsParagraph::TextStyle>());  // null textStyle
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 30}, textProp);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 30}, textProp) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			auto inlineProp = CreateInlineProp(100);
@@ -2199,7 +2201,7 @@ TEST_FILE
 				Color(50, 50, 50),            // textColor defined
 				Nullable<Color>(),            // null backgroundColor
 				Nullable<IGuiGraphicsParagraph::TextStyle>());  // null textStyle
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 50}, textProp);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 50}, textProp) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			auto inlineProp1 = CreateInlineProp(101, 5);
@@ -2246,7 +2248,7 @@ TEST_FILE
 				Nullable<Color>(),            // null textColor
 				Color(100, 100, 100),         // backgroundColor defined
 				(IGuiGraphicsParagraph::TextStyle)0);
-			AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 0, .caretEnd = 10}, prop1) == true);
 			
 			auto prop2 = CreateTextPropPartial(
 				WString(L"Font2"),
@@ -2254,7 +2256,7 @@ TEST_FILE
 				Color(200, 0, 0),             // textColor defined
 				Nullable<Color>(),            // null backgroundColor
 				Nullable<IGuiGraphicsParagraph::TextStyle>());  // null textStyle
-			AddTextRun(textMap, {.caretBegin = 25, .caretEnd = 35}, prop2);
+			TEST_ASSERT(AddTextRun(textMap, {.caretBegin = 25, .caretEnd = 35}, prop2) == true);
 			
 			DocumentInlineObjectRunPropertyMap inlineMap;
 			auto inlineProp1 = CreateInlineProp(201);

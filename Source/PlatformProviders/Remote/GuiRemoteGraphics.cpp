@@ -321,7 +321,7 @@ GuiRemoteGraphicsRenderTarget
 
 		for (auto paragraph : paragraphs.Values())
 		{
-			paragraph->MarkParagraphDirty(false);
+			paragraph->MarkParagraphDirty(false, true);
 			paragraph->EnsureRemoteParagraphSynced();
 		}
 	}
