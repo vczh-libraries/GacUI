@@ -830,7 +830,7 @@ UniscribeEmbeddedObjectRun
 
 			vint UniscribeEmbeddedObjectRun::SumWidth(vint charStart, vint charLength)
 			{
-				return properties.size.x;
+				return charLength > 0 ? properties.size.x : 0;
 			}
 
 			vint UniscribeEmbeddedObjectRun::SumHeight()
@@ -1136,11 +1136,9 @@ UniscribeLine
 					vint startRunOffset = 0;
 					vint lastRun = 0;
 					vint lastRunOffset = 0;
-					vint currentWidth = 0;
 
 					while (startRun < scriptRuns.Count())
 					{
-						vint lastCompletedRunOffset = 0;
 						vint currentWidth = 0;
 						bool firstRun = true;
 						// search for a range to fit in the given width
@@ -1154,23 +1152,14 @@ UniscribeLine
 
 							if (charLength == run->length - lastRunOffset)
 							{
-								lastCompletedRunOffset = run->length;
 								lastRun = i + 1;
 								lastRunOffset = 0;
 								currentWidth += charAdvances;
 							}
 							else
 							{
-								if (lastRunOffset == 0 && charLength == 0)
-								{
-									lastRun--;
-									lastRunOffset = lastCompletedRunOffset;
-								}
-								else
-								{
-									lastRun = i;
-									lastRunOffset = lastRunOffset + charLength;
-								}
+								lastRun = i;
+								lastRunOffset = lastRunOffset + charLength;
 								break;
 							}
 						}
@@ -1322,7 +1311,7 @@ UniscribeLine
 						{
 							Rect bounds = fragmentBounds.bounds;
 							if (minX > bounds.Left()) minX = bounds.Left();
-							if (minY > bounds.Top()) minX = bounds.Top();
+							if (minY > bounds.Top()) minY = bounds.Top();
 							if (maxX < bounds.Right()) maxX = bounds.Right();
 							if (maxY < bounds.Bottom()) maxY = bounds.Bottom();
 						}
@@ -1491,7 +1480,7 @@ UniscribeParagraph (Initialization)
 				{
 					Rect bounds = line->bounds;
 					if (minX > bounds.Left()) minX = bounds.Left();
-					if (minY > bounds.Top()) minX = bounds.Top();
+					if (minY > bounds.Top()) minY = bounds.Top();
 					if (maxX < bounds.Right()) maxX = bounds.Right();
 					if (maxY < bounds.Bottom()) maxY = bounds.Bottom();
 				}
