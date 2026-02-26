@@ -1178,7 +1178,7 @@ UniscribeLine
 								if (endRunOffset == 0 && charLength == 0)
 								{
 									endRun--;
-									endRunOffset = run->length;
+									endRunOffset = scriptRuns[endRun]->length;
 								}
 								else
 								{
@@ -1219,7 +1219,7 @@ UniscribeLine
 
 							// render all runs inside this range
 							vint beginRunFirstFragment = scriptRuns[beginRun]->fragmentBounds.Count();
-							for (vint i = 0; i <= levels.Count(); i++)
+							for (vint i = 0; i < levels.Count(); i++)
 							{
 								vint runIndex = runVisualToLogical[i] + beginRun;
 								UniscribeRun* run = scriptRuns[runIndex].Obj();
@@ -1233,8 +1233,8 @@ UniscribeLine
 								fragmentBounds.startFromRun = start;
 								fragmentBounds.length = length;
 								fragmentBounds.bounds = Rect(
-									Point(cx, cy + maxHeight - runWidth),
-									Size(runWidth, runWidth)
+									Point(cx, cy + maxHeight - runHeight),
+									Size(runWidth, runHeight)
 								);
 								run->fragmentBounds.Add(fragmentBounds);
 
@@ -1383,7 +1383,6 @@ UniscribeParagraph (Initialization)
 					fragment->fontObject=0;
 				}
 				lines.Clear();
-				lastAvailableWidth=-1;
 			}
 
 			bool UniscribeParagraph::BuildUniscribeData(WinDC* dc)
@@ -1474,10 +1473,6 @@ UniscribeParagraph (Initialization)
 
 			void UniscribeParagraph::Layout(bool wrapLine, vint availableWidth, Alignment alignment)
 			{
-				if (lastWrapLine == wrapLine && lastAvailableWidth == availableWidth && paragraphAlignment == alignment)
-				{
-					return;
-				}
 				lastWrapLine = wrapLine;
 				lastAvailableWidth = availableWidth;
 				paragraphAlignment = alignment;
