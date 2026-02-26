@@ -1140,12 +1140,6 @@ UniscribeLine
 
 					while (startRun < scriptRuns.Count())
 					{
-						if (startRunOffset == scriptRuns[startRun]->length)
-						{
-							startRun++;
-							startRunOffset = 0;
-							continue;
-						}
 						vint lastCompletedRunOffset = 0;
 						vint currentWidth = 0;
 						bool firstRun = true;
