@@ -44,7 +44,7 @@ int StartClient(TClient& client)
 
 	rendererChannel = &clientRendererChannel;
 	renderer = &remoteRenderer;
-	int result = SetupRawWindowsGDIRenderer();
+	int result = SetupRawWindowsDirect2DRenderer();
 	client.Stop();
 	clientRendererChannel.WaitForDisconnected();
 	renderer = nullptr;
