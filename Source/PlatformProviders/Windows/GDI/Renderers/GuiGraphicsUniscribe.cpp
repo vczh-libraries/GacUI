@@ -1140,6 +1140,12 @@ UniscribeLine
 
 					while (startRun < scriptRuns.Count())
 					{
+						if (startRunOffset == scriptRuns[startRun]->length)
+						{
+							startRun++;
+							startRunOffset = 0;
+							continue;
+						}
 						vint lastCompletedRunOffset = 0;
 						vint currentWidth = 0;
 						bool firstRun = true;
@@ -1154,7 +1160,7 @@ UniscribeLine
 
 							if (charLength == run->length - lastRunOffset)
 							{
-								lastCompletedRunOffset = lastRunOffset;
+								lastCompletedRunOffset = run->length;
 								lastRun = i + 1;
 								lastRunOffset = 0;
 								currentWidth += charAdvances;
@@ -1653,11 +1659,11 @@ UniscribeParagraph (Formatting Helper)
 						f2=fe;
 						fe++;
 						vint length=fragmentEnd->text.Length();
-						Ptr<UniscribeFragment> leftFragment=fragmentStart->Copy(0, se);
+						Ptr<UniscribeFragment> leftFragment= fragmentEnd->Copy(0, se);
 						Ptr<UniscribeFragment> rightFragment=fragmentEnd->Copy(se, length-se);
-						documentFragments.RemoveAt(fe);
-						documentFragments.Insert(fe, leftFragment);
-						documentFragments.Insert(fe+1, rightFragment);
+						documentFragments.RemoveAt(fe-1);
+						documentFragments.Insert(fe-1, leftFragment);
+						documentFragments.Insert(fe, rightFragment);
 					}
 				}
 				return true;
