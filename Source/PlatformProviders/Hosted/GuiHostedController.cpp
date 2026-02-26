@@ -533,12 +533,12 @@ GuiHostedController::INativeWindowListener (PostAction)
 		{
 			if (!capturingWindow && !wmWindow && selectedWindow && selectedWindow != mainWindow && selectedWindow->IsEnabled())
 			{
-				auto x = info.x.value - hoveringWindow->wmWindow.bounds.x1.value;
-				auto y = info.y.value - hoveringWindow->wmWindow.bounds.y1.value;
-				auto hitTestResult = PerformHitTest(From(hoveringWindow->listeners), { {x},{y} });
+				auto x = info.x.value - selectedWindow->wmWindow.bounds.x1.value;
+				auto y = info.y.value - selectedWindow->wmWindow.bounds.y1.value;
+				auto hitTestResult = PerformHitTest(From(selectedWindow->listeners), { {x},{y} });
 				if (hitTestResult == INativeWindowListener::ButtonClose)
 				{
-					hoveringWindow->Hide(true);
+					selectedWindow->Hide(true);
 				}
 			}
 
