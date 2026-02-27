@@ -155,7 +155,7 @@ GuiRemoteGraphicsParagraph
 	public:
 		bool											EnsureRemoteParagraphSynced();
 		void											MarkParagraphDirty(bool invalidateSize, bool invalidateCaretBoundsCache);
-		void											SetInlineObjectBoundS(vint callbackId, const Rect& bounds);
+		void											SetInlineObjectBounds(vint callbackId, const Rect& bounds);
 
 		// =============================================================
 		// IGuiGraphicsParagraph

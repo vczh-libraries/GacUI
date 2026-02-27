@@ -129,7 +129,7 @@ GuiRemoteGraphicsParagraph
 		}
 	}
 
-	void GuiRemoteGraphicsParagraph::SetInlineObjectBoundS(vint callbackId, const Rect& bounds)
+	void GuiRemoteGraphicsParagraph::SetInlineObjectBounds(vint callbackId, const Rect& bounds)
 	{
 		cachedInlineObjectBounds.Set(callbackId, bounds);
 	}

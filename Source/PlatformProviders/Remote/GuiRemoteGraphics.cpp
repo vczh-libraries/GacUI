@@ -154,6 +154,19 @@ GuiRemoteGraphicsRenderTarget
 			}
 		}
 
+		if (measuring.inlineObjectBounds)
+		{
+			for (auto&& inlineObjectBound : *measuring.inlineObjectBounds.Obj())
+			{
+				vint index = paragraphs.Keys().IndexOf(inlineObjectBound.elementId);
+				if (index != -1)
+				{
+					auto paragraph = paragraphs.Values()[index];
+					paragraph->SetInlineObjectBounds(inlineObjectBound.callbackId, inlineObjectBound.bounds);
+				}
+			}
+		}
+
 		if (minSizeChanged)
 		{
 			hostedController->RequestRefresh();
