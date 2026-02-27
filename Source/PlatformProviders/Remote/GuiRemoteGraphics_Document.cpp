@@ -92,7 +92,7 @@ GuiRemoteGraphicsParagraph
 		{
 			auto response = messages.RetrieveRendererUpdateElement_DocumentParagraph(requestId);
 			cachedSize = response.documentSize;
-			cachedInlineObjectBounds = response.inlineObjectBounds;
+			cachedInlineObjectBounds.Clear();
 		}
 		committedRuns = std::move(stagedRuns);
 		needUpdate = false;
@@ -100,7 +100,7 @@ GuiRemoteGraphicsParagraph
 		if (needUpdateCaretBoundsCache)
 		{
 			needUpdateCaretBoundsCache = false;
-			ResetCaretBoundsCache();
+			cachedCaretBounds = {};
 		}
 		return true;
 	}
@@ -116,15 +116,6 @@ GuiRemoteGraphicsParagraph
 		return true;
 	}
 
-	void GuiRemoteGraphicsParagraph::ResetCaretBoundsCache()
-	{
-		caretBoundsFrontSide.Resize(text.Length() + 1);
-		caretBoundsBackSide.Resize(text.Length() + 1);
-		size_t size = (size_t)(sizeof(Rect) * (text.Length() + 1));
-		memset(&caretBoundsFrontSide[0], -2, size);
-		memset(&caretBoundsBackSide[0], -2, size);
-	}
-
 	void GuiRemoteGraphicsParagraph::MarkParagraphDirty(bool invalidateSize, bool invalidateCaretBoundsCache)
 	{
 		needUpdate = true;
@@ -136,6 +127,11 @@ GuiRemoteGraphicsParagraph
 		{
 			needUpdateCaretBoundsCache = true;
 		}
+	}
+
+	void GuiRemoteGraphicsParagraph::SetInlineObjectBoundS(vint callbackId, const Rect& bounds)
+	{
+		cachedInlineObjectBounds.Set(callbackId, bounds);
 	}
 
 	vint GuiRemoteGraphicsParagraph::NativeTextPosToRemoteTextPos(vint textPos)
@@ -374,9 +370,9 @@ GuiRemoteGraphicsParagraph
 			return;
 		}
 
-		if (callback && cachedInlineObjectBounds)
+		if (callback)
 		{
-			for (auto [callbackId, location] : *cachedInlineObjectBounds.Obj())
+			for (auto [callbackId, location] : cachedInlineObjectBounds)
 			{
 				auto newSize = callback->OnRenderInlineObject(callbackId, location);
 				if (newSize != location.GetSize())
@@ -435,10 +431,7 @@ GuiRemoteGraphicsParagraph
 
 	bool GuiRemoteGraphicsParagraph::GetCaretBoundsInternal(vint caret, bool frontSide, Rect& bounds)
 	{
-		Rect invalidRect;
-		memset(&invalidRect, -2, sizeof(invalidRect));
-		Rect& cached = frontSide ? caretBoundsFrontSide[caret] : caretBoundsBackSide[caret];
-		if (cached == invalidRect)
+		if (!cachedCaretBounds.frontSideBounds || !cachedCaretBounds.backSideBounds)
 		{
 			remoteprotocol::GetCaretBoundsRequest request;
 			request.id = id;
@@ -454,9 +447,17 @@ GuiRemoteGraphicsParagraph
 				return false;
 			}
 
-			cached = messages.RetrieveDocumentParagraph_GetCaretBounds(requestId);
+			cachedCaretBounds = messages.RetrieveDocumentParagraph_GetCaretBounds(requestId);
 		}
-		bounds = cached;
+
+		if (frontSide)
+		{
+			bounds = cachedCaretBounds.frontSideBounds->Get(caret);
+		}
+		else
+		{
+			bounds = cachedCaretBounds.backSideBounds->Get(caret);
+		}
 		return true;
 	}
 

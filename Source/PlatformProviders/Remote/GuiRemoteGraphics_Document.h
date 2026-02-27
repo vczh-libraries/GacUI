@@ -130,14 +130,15 @@ GuiRemoteGraphicsParagraph
 		bool															wrapLine = false;
 		vint															maxWidth = -1;
 		Alignment														paragraphAlignment = Alignment::Left;
-		Size															cachedSize = Size(0, 0);
-		Ptr<collections::Dictionary<vint, Rect>>						cachedInlineObjectBounds;
-		bool															needUpdate = true;
-		bool															needUpdateCaretBoundsCache = true;
+
 		vint															id = -1;
 		vuint64_t														lastRenderedBatchId = 0;
 
-		collections::Array<Rect>										caretBoundsFrontSide, caretBoundsBackSide;
+		Size															cachedSize = Size(0, 0);
+		collections::Dictionary<vint, Rect>								cachedInlineObjectBounds;
+		remoteprotocol::GetCaretBoundsResponse							cachedCaretBounds;
+		bool															needUpdate = true;
+		bool															needUpdateCaretBoundsCache = true;
 
 	public:
 		GuiRemoteGraphicsParagraph(const WString& _text, GuiRemoteController* _remote, GuiRemoteGraphicsResourceManager* _resourceManager, GuiRemoteGraphicsRenderTarget* _renderTarget, IGuiGraphicsParagraphCallback* _callback);
@@ -149,12 +150,12 @@ GuiRemoteGraphicsParagraph
 		vint											NativeTextPosToRemoteTextPos(vint textPos);
 		vint											RemoteTextPosToNativeTextPos(vint textPos);
 		bool											TryBuildCaretRange(vint start, vint length, CaretRange& range);
-		void											ResetCaretBoundsCache();
 		bool											GetCaretBoundsInternal(vint caret, bool frontSide, Rect& bounds);
 
 	public:
 		bool											EnsureRemoteParagraphSynced();
 		void											MarkParagraphDirty(bool invalidateSize, bool invalidateCaretBoundsCache);
+		void											SetInlineObjectBoundS(vint callbackId, const Rect& bounds);
 
 		// =============================================================
 		// IGuiGraphicsParagraph
