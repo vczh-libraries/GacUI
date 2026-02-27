@@ -48,7 +48,7 @@
   ],
   "frames": [
     {
-      "frameId": 7,
+      "frameId": 9,
       "frameName": "Ready",
       "windowSize": {
         "bounds": {
@@ -75,7 +75,7 @@
       "root": null
     },
     {
-      "frameId": 9,
+      "frameId": 11,
       "frameName": "Clicked",
       "windowSize": {
         "bounds": {
@@ -102,7 +102,7 @@
       "root": null
     },
     {
-      "frameId": 11,
+      "frameId": 15,
       "frameName": "Select 2nd char @par1",
       "windowSize": {
         "bounds": {
@@ -129,7 +129,7 @@
       "root": null
     },
     {
-      "frameId": 13,
+      "frameId": 19,
       "frameName": "Select 2nd char @par2",
       "windowSize": {
         "bounds": {
@@ -156,7 +156,7 @@
       "root": null
     },
     {
-      "frameId": 16,
+      "frameId": 22,
       "frameName": "[ENTER] at beginning",
       "windowSize": {
         "bounds": {
@@ -183,7 +183,7 @@
       "root": null
     },
     {
-      "frameId": 18,
+      "frameId": 26,
       "frameName": "Select All",
       "windowSize": {
         "bounds": {

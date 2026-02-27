@@ -398,14 +398,24 @@ GuiDocumentElementRenderer
 			{
 				if (lastCaret != caret || lastCaretColor != color || lastCaretFrontSide != frontSide)
 				{
+					if (auto cache = pgCache.TryGetParagraphCache(lastCaret.row))
+					{
+						if (cache->graphicsParagraph)
+						{
+							cache->graphicsParagraph->DisableCaret();
+						}
+					}
+
 					lastCaret = caret;
 					lastCaretColor = color;
 					lastCaretFrontSide = frontSide;
 
-					auto cache = pgCache.TryGetParagraphCache(lastCaret.row);
-					if (cache && cache->graphicsParagraph)
+					if (auto cache = pgCache.TryGetParagraphCache(lastCaret.row))
 					{
-						cache->graphicsParagraph->EnableCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
+						if (cache->graphicsParagraph)
+						{
+							cache->graphicsParagraph->EnableCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
+						}
 					}
 				}
 			}

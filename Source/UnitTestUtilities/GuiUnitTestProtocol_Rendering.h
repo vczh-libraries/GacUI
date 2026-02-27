@@ -24,6 +24,7 @@ DocumentParagraphState
 		double									width;           // Character width
 		vint									lineIndex;       // Which line this character belongs to
 		vint									height;          // Character height (font size or inline object height)
+		vint									length;          // Character length in text (1 for normal characters, more for inline objects)
 		vint									baseline;        // Distance from top to baseline (for alignment)
 		bool									isInlineObject;  // True if this position is part of an inline object
 	};

@@ -74,6 +74,7 @@ Helper Functions for Document Paragraph
 			double x;
 			double width;
 			vint height;
+			vint length;
 			Nullable<DocumentInlineObjectRunProperty> inlineObjectProp;
 		};
 		List<TempCharInfo> tempChars;
@@ -85,7 +86,7 @@ Helper Functions for Document Paragraph
 		for (vint i = 0; i < text.Length(); i++)
 		{
 			wchar_t c = text[i];
-			TempCharInfo info = { currentX, 0, 0, {} };
+			TempCharInfo info = { currentX, 0, 0, 1, {} };
 
 			// Handle \r - zero width, no line break
 			if (c == L'\r')
@@ -103,6 +104,7 @@ Helper Functions for Document Paragraph
 				auto& prop = inlinePair.Value().value;
 				info.width = (double)prop.size.x;
 				info.height = prop.size.y;
+				info.length = inlinePair.Value().key;
 				info.inlineObjectProp = inlinePair.Value().value;
 			}
 			else
@@ -240,6 +242,7 @@ Helper Functions for Document Paragraph
 			cl.width = tempChars[i].width;
 			cl.lineIndex = lineIdx;
 			cl.height = tempChars[i].height;
+			cl.length = tempChars[i].length;
 			state.characterLayouts.Add(cl);
 		}
 
@@ -407,22 +410,26 @@ IGuiRemoteProtocolMessages (Elements - Document)
 		}
 		else
 		{
-			for (vint i = 0; i < state->characterLayouts.Count(); i++)
+			vint i = 0;
+			for (auto&& layout : state->characterLayouts)
 			{
-				auto&& layout = state->characterLayouts[i];
-				vint x1 = (vint)layout.x;
-				vint y1 = state->lines[layout.lineIndex].y;
-				vint x2 = (vint)(layout.x + layout.width);
-				vint y2 = y1 + layout.height;
-				response.backSideBounds->Add(Rect(x1, y1, x1, y2));
-				if (i == 0)
+				for (vint ci = 0; ci < layout.length; ci++)
 				{
-					response.frontSideBounds->Add(Rect(x1, y1, x1, y2));
-				}
-				response.frontSideBounds->Add(Rect(x2, y1, x2, y2));
-				if (i == state->characterLayouts.Count() - 1)
-				{
-					response.backSideBounds->Add(Rect(x2, y1, x2, y2));
+					vint x1 = (vint)layout.x;
+					vint y1 = state->lines[layout.lineIndex].y;
+					vint x2 = (vint)(layout.x + layout.width);
+					vint y2 = y1 + layout.height;
+					response.backSideBounds->Add(Rect(x1, y1, x1, y2));
+					if (i == 0)
+					{
+						response.frontSideBounds->Add(Rect(x1, y1, x1, y2));
+					}
+					response.frontSideBounds->Add(Rect(x2, y1, x2, y2));
+					if (i == state->characterLayouts.Count() - 1)
+					{
+						response.backSideBounds->Add(Rect(x2, y1, x2, y2));
+					}
+					i++;
 				}
 			}
 		}
