@@ -73,7 +73,7 @@ namespace vl::presentation::remote_renderer
 					element = Ptr(GuiImageFrameElement::Create());
 					break;
 				case RendererType::DocumentParagraph:
-					element = CreateRemoteDocumentParagraphElement();
+					element = CreateRemoteDocumentParagraphElement(rc.id);
 					break;
 				default:;
 				}

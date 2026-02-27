@@ -20,6 +20,7 @@ namespace vl::presentation::remote_renderer
 	{
 	protected:
 		GuiRemoteRendererSingle*											owner = nullptr;
+		vint																paragraphId = -1;
 		compositions::GuiGraphicsComposition*								ownerComposition = nullptr;
 		IGuiGraphicsRenderTarget*											renderTarget = nullptr;
 
@@ -44,8 +45,9 @@ namespace vl::presentation::remote_renderer
 		}
 
 	public:
-		GuiRemoteDocumentParagraphElement(GuiRemoteRendererSingle* _owner)
+		GuiRemoteDocumentParagraphElement(GuiRemoteRendererSingle* _owner, vint _paragraphId)
 			: owner(_owner)
+			, paragraphId(_paragraphId)
 		{
 		}
 
@@ -134,8 +136,23 @@ namespace vl::presentation::remote_renderer
 
 		Size OnRenderInlineObject(vint callbackId, Rect location) override
 		{
-			inlineObjectBounds.Set(callbackId, location);
-			vint index = inlineObjectProps.Keys().IndexOf(callbackId);
+			vint index = inlineObjectBounds.Keys().IndexOf(callbackId);
+			if (index == -1 || inlineObjectBounds.Values()[index] != location)
+			{
+				inlineObjectBounds.Set(callbackId, location);
+
+				remoteprotocol::ElementMeasuring_InlineObjectBounds bounds;
+				bounds.elementId = paragraphId;
+				bounds.callbackId = callbackId;
+				bounds.bounds = location;
+
+				if (!owner->elementMeasurings.inlineObjectBounds)
+				{
+					owner->elementMeasurings.inlineObjectBounds = Ptr(new List<remoteprotocol::ElementMeasuring_InlineObjectBounds>);
+				}
+				owner->elementMeasurings.inlineObjectBounds->Add(bounds);
+			}
+			index = inlineObjectProps.Keys().IndexOf(callbackId);
 			if (index == -1) return {};
 			return inlineObjectProps.Values()[index].size;
 		}
@@ -382,9 +399,9 @@ namespace vl::presentation::remote_renderer
 		}
 	};
 
-	Ptr<IGuiGraphicsElement> GuiRemoteRendererSingle::CreateRemoteDocumentParagraphElement()
+	Ptr<IGuiGraphicsElement> GuiRemoteRendererSingle::CreateRemoteDocumentParagraphElement(vint paragraphId)
 	{
-		return Ptr(new GuiRemoteDocumentParagraphElement(this));
+		return Ptr(new GuiRemoteDocumentParagraphElement(this, paragraphId));
 	}
 
 #define PREPARE_DOCUMENT_WRAPPER_RAW(WRAPPER_NAME, ELEMENT_ID)																			\

@@ -86,7 +86,7 @@ namespace vl::presentation::remote_renderer
 		remoteprotocol::ImageMetadata			CreateImageMetadata(vint id, INativeImage* image);
 		remoteprotocol::ImageMetadata			CreateImage(const remoteprotocol::ImageCreation& arguments);
 		void									CheckDom();
-		Ptr<elements::IGuiGraphicsElement>		CreateRemoteDocumentParagraphElement();
+		Ptr<elements::IGuiGraphicsElement>		CreateRemoteDocumentParagraphElement(vint paragraphId);
 
 	protected:
 		bool									supressPaint = false;
