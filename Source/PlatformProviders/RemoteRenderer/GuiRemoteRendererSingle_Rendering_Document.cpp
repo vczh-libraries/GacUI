@@ -53,6 +53,11 @@ namespace vl::presentation::remote_renderer
 		{
 		}
 
+		const WString& GetText()
+		{
+			return text ? text.Value() : WString::Empty;
+		}
+
 		IGuiGraphicsParagraph* GetParagraph() const
 		{
 			return paragraph.Obj();
@@ -361,19 +366,6 @@ namespace vl::presentation::remote_renderer
 			}
 
 			response.documentSize = paragraph->GetSize();
-			if (inlineObjectRuns.Count() > 0)
-			{
-				renderTarget->StartRendering();
-				paragraph->Render(Rect(Point(0, 0), response.documentSize));
-				auto failure = renderTarget->StopRendering();
-				(void)failure;
-
-				if (inlineObjectBounds.Count() > 0)
-				{
-					response.inlineObjectBounds = Ptr(new Dictionary<vint, Rect>);
-					CopyFrom(*response.inlineObjectBounds.Obj(), inlineObjectBounds);
-				}
-			}
 #undef ERROR_MESSAGE_PREFIX
 		}
 
@@ -425,8 +417,18 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetCaretBounds(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments)
 	{
 		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments.id);
-		auto bounds = wrapper->GetParagraph()->GetCaretBounds(arguments.caret, arguments.frontSide);
-		events->RespondDocumentParagraph_GetCaretBounds(id, bounds);
+		remoteprotocol::GetCaretBoundsResponse response;
+		response.frontSideBounds = Ptr(new List<Rect>);
+		response.backSideBounds = Ptr(new List<Rect>);
+
+		vint length = wrapper->GetText().Length();
+		auto paragraph = wrapper->GetParagraph();
+		for (vint i = 0; i <= length; i++)
+		{
+			response.frontSideBounds->Add(paragraph->GetCaretBounds(i, true));
+			response.backSideBounds->Add(paragraph->GetCaretBounds(i, false));
+		}
+		events->RespondDocumentParagraph_GetCaretBounds(id, response);
 	}
 
 	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetInlineObjectFromPoint(vint id, const remoteprotocol::GetInlineObjectFromPointRequest& arguments)
@@ -452,10 +454,10 @@ namespace vl::presentation::remote_renderer
 		events->RespondDocumentParagraph_GetInlineObjectFromPoint(id, result);
 	}
 
-	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetNearestCaretFromTextPos(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments)
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetNearestCaretFromTextPos(vint id, const remoteprotocol::GetNearestCaretFromTextPosRequest& arguments)
 	{
 		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments.id);
-		auto result = wrapper->GetParagraph()->GetNearestCaretFromTextPos(arguments.caret, arguments.frontSide);
+		auto result = wrapper->GetParagraph()->GetNearestCaretFromTextPos(arguments.textPos, arguments.frontSide);
 		events->RespondDocumentParagraph_GetNearestCaretFromTextPos(id, result);
 	}
 
