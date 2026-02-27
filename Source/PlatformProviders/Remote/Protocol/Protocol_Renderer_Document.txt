@@ -85,8 +85,6 @@ struct GetCaretResponse
 struct GetCaretBoundsRequest
 {
     var id : int;
-    var caret : int;
-    var frontSide : bool;
 }
 
 struct GetCaretBoundsResponse
@@ -99,6 +97,13 @@ struct GetInlineObjectFromPointRequest
 {
     var id : int;
     var point : Point;
+}
+
+struct GetNearestCaretFromTextPosRequest
+{
+    var id : int;
+    var textPos : int;
+    var frontSide : bool;
 }
 
 struct IsValidCaretRequest
@@ -118,7 +123,7 @@ struct OpenCaretRequest
 message DocumentParagraph_GetCaret                      { request: GetCaretRequest; response: GetCaretResponse; }
 message DocumentParagraph_GetCaretBounds                { request: GetCaretBoundsRequest; response: GetCaretBoundsResponse; }
 message DocumentParagraph_GetInlineObjectFromPoint      { request: GetInlineObjectFromPointRequest; response: DocumentRun?; }
-message DocumentParagraph_GetNearestCaretFromTextPos    { request: GetCaretBoundsRequest; response: int; }
+message DocumentParagraph_GetNearestCaretFromTextPos    { request: GetNearestCaretFromTextPosRequest; response: int; }
 message DocumentParagraph_IsValidCaret                  { request: IsValidCaretRequest; response: bool; }
 message DocumentParagraph_OpenCaret                     { request: OpenCaretRequest; }
 message DocumentParagraph_CloseCaret                    { request: int; }

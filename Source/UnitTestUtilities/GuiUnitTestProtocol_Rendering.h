@@ -194,7 +194,7 @@ IGuiRemoteProtocolMessages (Elements - Document)
 		void								Impl_DocumentParagraph_GetCaret(vint id, const remoteprotocol::GetCaretRequest& arguments);
 		void								Impl_DocumentParagraph_GetCaretBounds(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments);
 		void								Impl_DocumentParagraph_GetInlineObjectFromPoint(vint id, const remoteprotocol::GetInlineObjectFromPointRequest & arguments);
-		void								Impl_DocumentParagraph_GetNearestCaretFromTextPos(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments);
+		void								Impl_DocumentParagraph_GetNearestCaretFromTextPos(vint id, const remoteprotocol::GetNearestCaretFromTextPosRequest& arguments);
 		void								Impl_DocumentParagraph_IsValidCaret(vint id, const remoteprotocol::IsValidCaretRequest& arguments);
 		void								Impl_DocumentParagraph_OpenCaret(const remoteprotocol::OpenCaretRequest& arguments);
 		void								Impl_DocumentParagraph_CloseCaret(const vint& arguments);

@@ -435,8 +435,6 @@ GuiRemoteGraphicsParagraph
 		{
 			remoteprotocol::GetCaretBoundsRequest request;
 			request.id = id;
-			request.caret = NativeTextPosToRemoteTextPos(caret);
-			request.frontSide = frontSide;
 
 			auto& messages = renderTarget->GetRemoteMessages();
 			vint requestId = messages.RequestDocumentParagraph_GetCaretBounds(request);
@@ -567,9 +565,9 @@ GuiRemoteGraphicsParagraph
 			return textPos;
 		}
 
-		remoteprotocol::GetCaretBoundsRequest request;
+		remoteprotocol::GetNearestCaretFromTextPosRequest request;
 		request.id = id;
-		request.caret = NativeTextPosToRemoteTextPos(textPos);
+		request.textPos = NativeTextPosToRemoteTextPos(textPos);
 		request.frontSide = frontSide;
 
 		auto& messages = renderTarget->GetRemoteMessages();

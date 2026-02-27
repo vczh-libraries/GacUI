@@ -10,6 +10,9 @@ namespace vl::presentation::unittest
 Helper Functions for Document Paragraph
 ***********************************************************************/
 
+	constexpr vint DefaultFontSize = 12;
+	constexpr vint DefaultLineHeight = 16;
+
 	vint GetFontSizeForPosition(
 		const DocumentParagraphState& state,
 		vint pos,
@@ -46,7 +49,7 @@ Helper Functions for Document Paragraph
 	{
 		state.characterLayouts.Clear();
 		state.lines.Clear();
-		state.cachedSize = Size(0, 16);
+		state.cachedSize = Size(0, DefaultLineHeight);
 		state.cachedInlineObjectBounds.Clear();
 
 		const WString& text = state.text;
@@ -58,8 +61,8 @@ Helper Functions for Document Paragraph
 			line.startPos = 0;
 			line.endPos = 0;
 			line.y = 0;
-			line.height = 16; // Default: 12 (font) + 4
-			line.baseline = 12;
+			line.height = DefaultLineHeight; // Default: 12 (font) + 4
+			line.baseline = DefaultFontSize;
 			line.width = 0;
 			state.lines.Add(line);
 			return;
@@ -104,7 +107,7 @@ Helper Functions for Document Paragraph
 			}
 			else
 			{
-				if (fontSize <= 0) fontSize = 12;
+				if (fontSize <= 0) fontSize = DefaultFontSize;
 				info.width = GetCharacterWidth(c, fontSize);
 				info.height = fontSize;
 			}
@@ -246,7 +249,7 @@ Helper Functions for Document Paragraph
 		{
 			if (line.width > maxWidth) maxWidth = line.width;
 		}
-		state.cachedSize = Size(maxWidth, currentY > 0 ? currentY : 16);
+		state.cachedSize = Size(maxWidth, currentY > 0 ? currentY : DefaultLineHeight);
 	}
 
 /***********************************************************************
@@ -363,13 +366,24 @@ IGuiRemoteProtocolMessages (Elements - Document)
 		// Send response with calculated size and inline object bounds
 		UpdateElement_DocumentParagraphResponse response;
 		response.documentSize = state->cachedSize;
+		GetEvents()->RespondRendererUpdateElement_DocumentParagraph(id, response);
+
+		// Store inlineObjectBounds
 		if (state->cachedInlineObjectBounds.Count() > 0)
 		{
-			response.inlineObjectBounds = Ptr(new Dictionary<vint, Rect>);
-			CopyFrom(*response.inlineObjectBounds.Obj(), state->cachedInlineObjectBounds);
+			if (!measuringForNextRendering.inlineObjectBounds)
+			{
+				measuringForNextRendering.inlineObjectBounds = Ptr(new List<ElementMeasuring_InlineObjectBounds>);
+			}
+			for (vint i = 0; i < state->cachedInlineObjectBounds.Count(); i++)
+			{
+				ElementMeasuring_InlineObjectBounds bounds;
+				bounds.elementId = arguments.id;
+				bounds.callbackId = state->cachedInlineObjectBounds.Keys()[i];
+				bounds.bounds = state->cachedInlineObjectBounds.Values()[i];
+				measuringForNextRendering.inlineObjectBounds.Obj()->Add(bounds);
+			}
 		}
-
-		GetEvents()->RespondRendererUpdateElement_DocumentParagraph(id, response);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
@@ -380,64 +394,39 @@ IGuiRemoteProtocolMessages (Elements - Document)
 		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"No active paragraph.");
 		auto state = paragraphStates.Values()[index];
 
-		vint caret = arguments.caret;
+		GetCaretBoundsResponse response;
+		response.frontSideBounds = Ptr(new List<Rect>);
+		response.backSideBounds = Ptr(new List<Rect>);
 
 		// Handle empty text
-		if (state->text.Length() == 0 || state->lines.Count() == 0)
+		if (state->text.Length() == 0)
 		{
-			auto& line = state->lines[0];
-			GetEvents()->RespondDocumentParagraph_GetCaretBounds(id, Rect(Point(0, line.y), Size(0, line.height)));
-			return;
+			Rect bounds = { 0,0,0,DefaultLineHeight };
+			response.frontSideBounds->Add(bounds);
+			response.backSideBounds->Add(bounds);
 		}
-
-		// Clamp caret to valid range
-		if (caret < 0) caret = 0;
-		if (caret > state->text.Length()) caret = state->text.Length();
-
-		// Find which line the caret is on
-		vint lineIdx = 0;
-		for (vint i = 0; i < state->lines.Count(); i++)
+		else
 		{
-			if (caret >= state->lines[i].startPos && caret <= state->lines[i].endPos)
+			for (vint i = 0; i < state->characterLayouts.Count(); i++)
 			{
-				lineIdx = i;
-				break;
+				auto&& layout = state->characterLayouts[i];
+				vint x1 = (vint)layout.x;
+				vint y1 = state->lines[layout.lineIndex].y;
+				vint x2 = (vint)(layout.x + layout.width);
+				vint y2 = y1 + layout.height;
+				response.backSideBounds->Add(Rect(x1, y1, x1, y2));
+				if (i == 0)
+				{
+					response.frontSideBounds->Add(Rect(x1, y1, x1, y2));
+				}
+				response.frontSideBounds->Add(Rect(x2, y1, x2, y2));
+				if (i == state->characterLayouts.Count() - 1)
+				{
+					response.backSideBounds->Add(Rect(x2, y1, x2, y2));
+				}
 			}
-			if (i == state->lines.Count() - 1)
-			{
-				lineIdx = i;
-			}
 		}
-
-		auto& line = state->lines[lineIdx];
-
-		// Calculate x position
-		vint x = 0;
-		if (caret > 0 && caret <= state->characterLayouts.Count())
-		{
-			// Caret is at the end of the previous character
-			auto& prevChar = state->characterLayouts[caret - 1];
-			x = (vint)(prevChar.x + prevChar.width);
-		}
-		else if (caret < state->characterLayouts.Count())
-		{
-			// Caret is at the start of this character
-			x = (vint)state->characterLayouts[caret].x;
-		}
-
-		// Apply alignment offset
-		vint alignmentOffset = 0;
-		if (state->alignment == ElementHorizontalAlignment::Center)
-		{
-			alignmentOffset = (state->cachedSize.x - line.width) / 2;
-		}
-		else if (state->alignment == ElementHorizontalAlignment::Right)
-		{
-			alignmentOffset = state->cachedSize.x - line.width;
-		}
-
-		Rect bounds(Point(x + alignmentOffset, line.y), Size(0, line.height));
-		GetEvents()->RespondDocumentParagraph_GetCaretBounds(id, bounds);
+		GetEvents()->RespondDocumentParagraph_GetCaretBounds(id, response);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
@@ -569,14 +558,14 @@ IGuiRemoteProtocolMessages (Elements - Document)
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetNearestCaretFromTextPos(vint id, const GetCaretBoundsRequest& arguments)
+	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetNearestCaretFromTextPos(vint id, const GetNearestCaretFromTextPosRequest& arguments)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetNearestCaretFromTextPos(vint, const GetCaretBoundsRequest&)#"
 		vint index = paragraphStates.Keys().IndexOf(arguments.id);
 		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"No active paragraph.");
 		auto state = paragraphStates.Values()[index];
 
-		vint textPos = arguments.caret;
+		vint textPos = arguments.textPos;
 		vint textLen = state->text.Length();
 
 		// Clamp to valid range

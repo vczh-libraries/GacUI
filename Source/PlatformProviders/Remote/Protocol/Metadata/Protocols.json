@@ -2468,20 +2468,6 @@
                 "$ast": "PrimitiveType",
                 "type": "Integer"
             }
-        }, {
-            "$ast": "StructMember",
-            "name": "caret",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Integer"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "frontSide",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
         }],
         "type": "Struct"
     }, {
@@ -2527,6 +2513,33 @@
             "type": {
                 "$ast": "ReferenceType",
                 "name": "Point"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "GetNearestCaretFromTextPosRequest",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "textPos",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "frontSide",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
             }
         }],
         "type": "Struct"
@@ -2649,7 +2662,7 @@
             "$ast": "MessageRequest",
             "type": {
                 "$ast": "ReferenceType",
-                "name": "GetCaretBoundsRequest"
+                "name": "GetNearestCaretFromTextPosRequest"
             }
         },
         "response": {

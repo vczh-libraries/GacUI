@@ -674,8 +674,6 @@ namespace vl::presentation::remoteprotocol
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"id", value.id);
-		ConvertCustomTypeToJsonField(node, L"caret", value.caret);
-		ConvertCustomTypeToJsonField(node, L"frontSide", value.frontSide);
 		return node;
 	}
 
@@ -692,6 +690,15 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"id", value.id);
 		ConvertCustomTypeToJsonField(node, L"point", value.point);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest>(const ::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"id", value.id);
+		ConvertCustomTypeToJsonField(node, L"textPos", value.textPos);
+		ConvertCustomTypeToJsonField(node, L"frontSide", value.frontSide);
 		return node;
 	}
 
@@ -1715,8 +1722,6 @@ namespace vl::presentation::remoteprotocol
 		for (auto field : jsonNode->fields)
 		{
 			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
-			if (field->name.value == L"caret") ConvertJsonToCustomType(field->value, value.caret); else
-			if (field->name.value == L"frontSide") ConvertJsonToCustomType(field->value, value.frontSide); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -1745,6 +1750,21 @@ namespace vl::presentation::remoteprotocol
 		{
 			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
 			if (field->name.value == L"point") ConvertJsonToCustomType(field->value, value.point); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
+			if (field->name.value == L"textPos") ConvertJsonToCustomType(field->value, value.textPos); else
+			if (field->name.value == L"frontSide") ConvertJsonToCustomType(field->value, value.frontSide); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
