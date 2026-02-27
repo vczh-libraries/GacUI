@@ -2390,20 +2390,6 @@
                 "$ast": "ReferenceType",
                 "name": "Size"
             }
-        }, {
-            "$ast": "StructMember",
-            "name": "inlineObjectBounds",
-            "type": {
-                "$ast": "MapType",
-                "element": {
-                    "$ast": "ReferenceType",
-                    "name": "Rect"
-                },
-                "keyType": {
-                    "$ast": "PrimitiveType",
-                    "type": "Integer"
-                }
-            }
         }],
         "type": "Struct"
     }, {
@@ -2495,6 +2481,32 @@
             "type": {
                 "$ast": "PrimitiveType",
                 "type": "Boolean"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "GetCaretBoundsResponse",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "frontSideBounds",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "Rect"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "backSideBounds",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "Rect"
+                }
             }
         }],
         "type": "Struct"
@@ -2605,7 +2617,7 @@
             "$ast": "MessageResponse",
             "type": {
                 "$ast": "ReferenceType",
-                "name": "Rect"
+                "name": "GetCaretBoundsResponse"
             }
         }
     }, {
@@ -2937,6 +2949,33 @@
     }, {
         "$ast": "StructDecl",
         "attributes": [],
+        "name": "ElementMeasuring_InlineObjectBounds",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "elementId",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "callbackId",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "bounds",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Rect"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
         "name": "ElementMeasurings",
         "members": [{
             "$ast": "StructMember",
@@ -2966,6 +3005,16 @@
                 "element": {
                     "$ast": "ReferenceType",
                     "name": "ImageMetadata"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "inlineObjectBounds",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "ElementMeasuring_InlineObjectBounds"
                 }
             }
         }],

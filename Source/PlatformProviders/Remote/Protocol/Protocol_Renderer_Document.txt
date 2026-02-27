@@ -65,7 +65,6 @@ struct ElementDesc_DocumentParagraph
 struct UpdateElement_DocumentParagraphResponse
 {
     var documentSize : Size;
-    var inlineObjectBounds : Rect[int];
 }
 
 message RendererUpdateElement_DocumentParagraph     { request: ElementDesc_DocumentParagraph; response: UpdateElement_DocumentParagraphResponse; }
@@ -90,6 +89,12 @@ struct GetCaretBoundsRequest
     var frontSide : bool;
 }
 
+struct GetCaretBoundsResponse
+{
+    var frontSideBounds : Rect[];
+    var backSideBounds : Rect[];
+}
+
 struct GetInlineObjectFromPointRequest
 {
     var id : int;
@@ -111,7 +116,7 @@ struct OpenCaretRequest
 }
 
 message DocumentParagraph_GetCaret                      { request: GetCaretRequest; response: GetCaretResponse; }
-message DocumentParagraph_GetCaretBounds                { request: GetCaretBoundsRequest; response: Rect; }
+message DocumentParagraph_GetCaretBounds                { request: GetCaretBoundsRequest; response: GetCaretBoundsResponse; }
 message DocumentParagraph_GetInlineObjectFromPoint      { request: GetInlineObjectFromPointRequest; response: DocumentRun?; }
 message DocumentParagraph_GetNearestCaretFromTextPos    { request: GetCaretBoundsRequest; response: int; }
 message DocumentParagraph_IsValidCaret                  { request: IsValidCaretRequest; response: bool; }

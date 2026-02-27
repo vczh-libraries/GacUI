@@ -57,11 +57,19 @@ struct ElementMeasuring_ElementMinSize
     var minSize : Size;
 }
 
+struct ElementMeasuring_InlineObjectBounds
+{
+    var elementId : int;
+    var callbackId : int;
+    var bounds : Rect;
+}
+
 struct ElementMeasurings
 {
     var fontHeights : ElementMeasuring_FontHeight[];
     var minSizes : ElementMeasuring_ElementMinSize[];
     var createdImages : ImageMetadata[];
+    var inlineObjectBounds : ElementMeasuring_InlineObjectBounds[];
 }
 
 message RendererBeginRendering                      { request: ElementBeginRendering; }
