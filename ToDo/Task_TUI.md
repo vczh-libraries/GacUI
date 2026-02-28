@@ -34,11 +34,10 @@ GacUI rendered on CLI should be able to:
 
 ## ToDo
 
-Need a class to handle TUI interaction.
-Need a class to draw elements, like lines, texts, blocks, etc.
-Above two could be in Vlpp, and when it starts, Console::Read/Write will be redirected to callbacks.
-Need a class to convert them to OS provider.
-
+- Need a class to handle TUI interaction.
+- Need a class to draw elements, like lines, texts, blocks, etc.
+- Above two could be in Vlpp, and when it starts, Console::Read/Write will be redirected to callbacks.
+- Need a class to convert them to OS provider.
 
 ## References
 
