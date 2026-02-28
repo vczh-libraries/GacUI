@@ -27,7 +27,7 @@ GuiDocumentParagraphCache
 			vint GuiDocumentParagraphCache::GetDefaultHeight()
 			{
 				vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
-				if (defaultHeight < 12) defaultHeight = 12;
+				if (defaultHeight < 1) defaultHeight = 1;
 				return defaultHeight;
 			}
 

@@ -1,8 +1,6 @@
 # UI Automation
 
-# TODO
-
-## Milestone
+# Goal
 
 - UI Automation
   - An interface to create an object and store in a control.
