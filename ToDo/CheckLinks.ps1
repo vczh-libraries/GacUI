@@ -1,5 +1,5 @@
 param(
-	[string]$Path = (Join-Path $PSScriptRoot '1.6.0.0.md'),
+	[string]$FileName,
 	[int]$TimeoutSec = 20,
 	[int]$MaxRedirect = 5
 )
@@ -7,6 +7,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+$Path = Join-Path $PSScriptRoot $FileName
 if (-not (Test-Path -LiteralPath $Path))
 {
 	throw "File not found: $Path"
