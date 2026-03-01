@@ -153,15 +153,15 @@ SetPropertiesVisitor
 							properties.breakCondition = IGuiGraphicsParagraph::Alone;
 							properties.backgroundImage = imageCache->GetImageElement(run->image, run->frameIndex, paragraphIndex, start);
 
-							bool result = paragraph->SetInlineObject(start, length, properties);
-							CHECK_ERROR(result, ERROR_MESSAGE_PREFIX L"The specified range has already been occupied by another inline object.");
-
 							ResolvedStyle style = styles[styles.Count() - 1];
 							if (start < selectionEnd && selectionBegin < start + length)
 							{
 								style = model->GetStyle(DocumentModel::SelectionStyleName, style);
 							}
-							paragraph->SetBackgroundColor(start, length, style.backgroundColor);
+							properties.backgroundColor = style.backgroundColor;
+
+							bool result = paragraph->SetInlineObject(start, length, properties);
+							CHECK_ERROR(result, ERROR_MESSAGE_PREFIX L"The specified range has already been occupied by another inline object.");
 						}
 						start += length;
 #undef ERROR_MESSAGE_PREFIX

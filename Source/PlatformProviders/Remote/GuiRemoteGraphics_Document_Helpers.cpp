@@ -44,6 +44,7 @@ Comparison
 			return inlineA.size == inlineB.size &&
 				inlineA.baseline == inlineB.baseline &&
 				inlineA.breakCondition == inlineB.breakCondition &&
+				inlineA.backgroundColor == inlineB.backgroundColor &&
 				inlineA.backgroundElementId == inlineB.backgroundElementId &&
 				inlineA.callbackId == inlineB.callbackId;
 		}

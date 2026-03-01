@@ -385,6 +385,7 @@
                     "size": {"x": 72, "y": 20},
                     "baseline": -1,
                     "breakCondition": "Alone",
+                    "backgroundColor": "#00000000",
                     "backgroundElementId": -1,
                     "callbackId": 0
                   }
@@ -443,6 +444,7 @@
                     "size": {"x": 16, "y": 16},
                     "baseline": -1,
                     "breakCondition": "Alone",
+                    "backgroundColor": "#00000000",
                     "backgroundElementId": 30,
                     "callbackId": -1
                   }

@@ -276,6 +276,7 @@ GuiRemoteGraphicsParagraph
 		remoteProp.size = properties.size;
 		remoteProp.baseline = properties.baseline;
 		remoteProp.breakCondition = properties.breakCondition;
+		remoteProp.backgroundColor = properties.backgroundColor;
 		remoteProp.backgroundElementId = backgroundElementId;
 		remoteProp.callbackId = properties.callbackId;
 
