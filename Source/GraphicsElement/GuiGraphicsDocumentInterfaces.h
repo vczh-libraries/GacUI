@@ -88,13 +88,10 @@ IGuiGraphicsParagraph
 					BreakCondition				breakCondition;
 					/// <summary>The background image, nullable.</summary>
 					Ptr<IGuiGraphicsElement>	backgroundImage;
+					/// <summary>The background color. The default value is #00000000.</summary>
+					Color						backgroundColor = Color(0, 0, 0, 0);
 					/// <summary>The id for callback. If the value is -1, then no callback will be received .</summary>
 					vint						callbackId = -1;
-
-					InlineObjectProperties()
-						:baseline(-1)
-					{
-					}
 				};
 
 				/// <summary>Get the <see cref="IGuiGraphicsLayoutProvider"/> object that created this paragraph.</summary>

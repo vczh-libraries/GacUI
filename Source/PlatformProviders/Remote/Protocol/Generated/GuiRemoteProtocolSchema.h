@@ -360,6 +360,7 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::Size size;
 		::vl::vint baseline;
 		::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition breakCondition;
+		::vl::presentation::Color backgroundColor;
 		::vl::vint backgroundElementId;
 		::vl::vint callbackId;
 	};

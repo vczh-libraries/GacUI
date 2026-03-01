@@ -33,6 +33,7 @@ struct DocumentInlineObjectRunProperty
     var size : Size;
     var baseline : int;
     var breakCondition : BreakCondition;
+    var backgroundColor : color;
     var backgroundElementId : int;
     var callbackId : int;
 }

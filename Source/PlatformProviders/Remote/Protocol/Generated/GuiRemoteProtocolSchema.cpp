@@ -618,6 +618,7 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"size", value.size);
 		ConvertCustomTypeToJsonField(node, L"baseline", value.baseline);
 		ConvertCustomTypeToJsonField(node, L"breakCondition", value.breakCondition);
+		ConvertCustomTypeToJsonField(node, L"backgroundColor", value.backgroundColor);
 		ConvertCustomTypeToJsonField(node, L"backgroundElementId", value.backgroundElementId);
 		ConvertCustomTypeToJsonField(node, L"callbackId", value.callbackId);
 		return node;
@@ -1630,6 +1631,7 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"size") ConvertJsonToCustomType(field->value, value.size); else
 			if (field->name.value == L"baseline") ConvertJsonToCustomType(field->value, value.baseline); else
 			if (field->name.value == L"breakCondition") ConvertJsonToCustomType(field->value, value.breakCondition); else
+			if (field->name.value == L"backgroundColor") ConvertJsonToCustomType(field->value, value.backgroundColor); else
 			if (field->name.value == L"backgroundElementId") ConvertJsonToCustomType(field->value, value.backgroundElementId); else
 			if (field->name.value == L"callbackId") ConvertJsonToCustomType(field->value, value.callbackId); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");

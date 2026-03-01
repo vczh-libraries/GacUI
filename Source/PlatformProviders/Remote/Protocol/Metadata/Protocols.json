@@ -2253,6 +2253,13 @@
             }
         }, {
             "$ast": "StructMember",
+            "name": "backgroundColor",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Color"
+            }
+        }, {
+            "$ast": "StructMember",
             "name": "backgroundElementId",
             "type": {
                 "$ast": "PrimitiveType",

@@ -180,6 +180,7 @@ GuiGraphicsParagraphWrapperElement
 								properties.size = inlineProp.size;
 								properties.baseline = inlineProp.baseline;
 								properties.breakCondition = inlineProp.breakCondition;
+								properties.backgroundColor = inlineProp.backgroundColor;
 								properties.callbackId = inlineProp.callbackId;
 								if (inlineProp.backgroundElementId != -1)
 								{

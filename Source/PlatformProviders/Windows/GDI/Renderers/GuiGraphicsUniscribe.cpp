@@ -875,7 +875,7 @@ UniscribeEmbeddedObjectRun
 					rect.right=(int)(fragment.bounds.Right()+offsetX)+2;
 					rect.bottom=(int)(fragment.bounds.Bottom()+offsetY)+2;
 
-					Color backgroundColor=documentFragment->colors.Values()[0].backgroundColor;
+					Color backgroundColor = properties.backgroundColor;
 
 					if(backgroundColor.a>0)
 					{

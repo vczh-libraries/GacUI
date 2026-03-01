@@ -132,7 +132,7 @@ WindowsDirect2DElementInlineObject
 						}
 					}
 
-					Color color=rendererCallback->GetBackgroundColor(start);
+					Color color = properties.backgroundColor;
 					if(color.a!=0)
 					{
 						color.a/=2;

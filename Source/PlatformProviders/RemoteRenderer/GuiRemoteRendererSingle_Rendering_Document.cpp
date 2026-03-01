@@ -217,7 +217,8 @@ namespace vl::presentation::remote_renderer
 			IGuiGraphicsParagraph::InlineObjectProperties props;
 			props.size = inlineProp.size;
 			props.baseline = inlineProp.baseline;
-			props.breakCondition = (IGuiGraphicsParagraph::BreakCondition)inlineProp.breakCondition;
+			props.breakCondition = inlineProp.breakCondition;
+			props.backgroundColor = inlineProp.backgroundColor;
 			props.callbackId = inlineProp.callbackId;
 			props.backgroundImage = background;
 			CHECK_ERROR(paragraph->SetInlineObject(start, length, props), ERROR_MESSAGE_PREFIX L"SetInlineObject failed.");
