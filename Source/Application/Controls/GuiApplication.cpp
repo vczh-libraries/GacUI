@@ -97,6 +97,14 @@ GuiApplication
 				}
 			}
 
+			void GuiApplication::EnvironmentChanged()
+			{
+				for (auto window : windows)
+				{
+					window->NotifyUpdateDisplayFont();
+				}
+			}
+
 			GuiApplication::GuiApplication()
 				:locale(Locale::UserDefault())
 			{

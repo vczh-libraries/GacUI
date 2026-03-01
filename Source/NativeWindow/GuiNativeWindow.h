@@ -1454,6 +1454,10 @@ INativeCallbackService
 			/// </summary>
 			/// <param name="window">The argument to the callback.</param>
 			virtual void					InvokeNativeWindowDestroying(INativeWindow* window)=0;
+			/// <summary>
+			/// Invoke <see cref="INativeControllerListener::EnvironmentChanged"/> of all installed listeners. 
+			/// </summary>
+			virtual void					InvokeEnvironmentChanged()=0;
 		};
 		
 		/// <summary>
@@ -1781,6 +1785,10 @@ Native Window Controller
 			/// </summary>
 			/// <param name="window">The destroying window.</param>
 			virtual void					NativeWindowDestroying(INativeWindow* window);
+			/// <summary>
+			/// Called when global configurations are changed. An native OS provider should not trigger this callback.
+			/// </summary>
+			virtual void					EnvironmentChanged();
 		};
 
 		/// <summary>

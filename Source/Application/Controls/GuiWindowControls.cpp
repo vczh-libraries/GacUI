@@ -632,6 +632,11 @@ GuiControlHost
 				return false;
 			}
 
+			void GuiControlHost::NotifyUpdateDisplayFont()
+			{
+				UpdateDisplayFont();
+			}
+
 /***********************************************************************
 GuiWindow
 ***********************************************************************/

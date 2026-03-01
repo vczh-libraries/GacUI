@@ -184,6 +184,10 @@ INativeControllerListener
 		{
 		}
 
+		void INativeControllerListener::EnvironmentChanged()
+		{
+		}
+
 /***********************************************************************
 Native Window Provider
 ***********************************************************************/

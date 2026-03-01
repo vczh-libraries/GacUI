@@ -324,6 +324,7 @@ GuiRemoteController (events)
 		remoteWindow.OnControllerConnect();
 		imageService.OnControllerConnect();
 		resourceManager->OnControllerConnect();
+		callbackService.InvokeEnvironmentChanged();
 	}
 
 	void GuiRemoteController::OnControllerDisconnect()

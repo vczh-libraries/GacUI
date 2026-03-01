@@ -39,6 +39,7 @@ namespace vl
 			void											InvokeGlobalShortcutKeyActivated(vint id) override;
 			void											InvokeNativeWindowCreated(INativeWindow* window) override;
 			void											InvokeNativeWindowDestroying(INativeWindow* window) override;
+			void											InvokeEnvironmentChanged() override;
 		};
 	}
 }

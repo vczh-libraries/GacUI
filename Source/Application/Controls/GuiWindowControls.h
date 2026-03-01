@@ -226,6 +226,9 @@ Control Host
 				/// <summary>Test is the window opened.</summary>
 				/// <returns>Returns true if the window is opened.</returns>
 				bool											GetOpening();
+
+				/// <summary>Ask the window to recalculate its fonts.</summary>
+				void											NotifyUpdateDisplayFont();
 			};
 
 /***********************************************************************
