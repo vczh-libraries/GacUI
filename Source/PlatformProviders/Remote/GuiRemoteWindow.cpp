@@ -342,6 +342,7 @@ GuiRemoteWindow (INativeWindow)
 	void GuiRemoteWindow::SetCaretPoint(NativePoint point)
 	{
 		styleCaret = point;
+		remoteMessages.RequestWindowNotifySetCaret(point);
 	}
 
 	INativeWindow* GuiRemoteWindow::GetParent()
