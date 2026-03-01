@@ -282,6 +282,10 @@ GuiDocumentParagraphCache
 							cache->invalidation = false;
 							renderer->ApplyPropertiesOnParagraph(paragraphIndex, 0, cache->fullText.Length(), maxWidth);
 						}
+						else
+						{
+							cache->graphicsParagraph->SetMaxWidth(maxWidth);
+						}
 					},
 					[&, this](collections::Pair<vint, vint> range)
 					{

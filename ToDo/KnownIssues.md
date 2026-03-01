@@ -52,6 +52,10 @@
 - `GuiRemoteGraphicsRenderTarget::fontHeights` could be moved to `GuiRemoteGraphicsResourceManager` as the measuring should not be different.
 - `RemotingTest_Rendering_Win32`
   - Clicking `Fatal Error` in `RemotingTest_Rendering_Win32 /Pipe` sometimes hang.
+- Client not being able to inject implementation of
+  - date time
+  - file system
+  - clipboard
 
 ## Unit Test
 

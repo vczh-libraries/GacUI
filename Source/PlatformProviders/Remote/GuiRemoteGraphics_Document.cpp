@@ -178,7 +178,10 @@ GuiRemoteGraphicsParagraph
 		if (maxWidth != value)
 		{
 			maxWidth = value;
-			MarkParagraphDirty(true, true);
+			if (wrapLine)
+			{
+				MarkParagraphDirty(true, true);
+			}
 		}
 	}
 
