@@ -32,6 +32,20 @@ GacUI rendered on CLI should be able to:
   - For example, always prepare a character buffer before rendering, since rendering is platform independent, and handle the buffer to platform-specific implementation later.
   - Measuring text might be platform-specific, it is fine therefore the abstraction layer should support injecting such differences, e.g. using virtual functions or anything.
 
+## ToDo
+
+- Need a class to handle TUI interaction.
+- Need a class to draw elements, like lines, texts, blocks, etc.
+- Above two could be in Vlpp, and when it starts, Console::Read/Write will be redirected to callbacks.
+  - On Windows, CLI/GUI share the same key code.
+  - Move keycode definition and naming to Vlpp/TUI.
+  - Offer linux/macos TUI implementation.
+- Need a class to convert them to OS provider.
+
+## References
+
+https://en.wikipedia.org/wiki/Box-drawing_characters
+
 ## Instructions
 
 You goal is to make a detailed plan to implement `# Goal`.
