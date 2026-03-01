@@ -2402,6 +2402,7 @@ class presentation::controls::GuiControlHost : presentation::controls::GuiContro
     function GetShowInTaskBar() : system::Boolean;
     function GetTopMost() : system::Boolean;
     function Hide() : system::Void;
+    function NotifyUpdateDisplayFont() : system::Void;
     function SetBounds(location : presentation::NativePoint, size : presentation::Size) : system::Void;
     function SetClientSize(value : presentation::Size) : system::Void;
     function SetEnabledActivate(value : system::Boolean) : system::Void;
@@ -4231,6 +4232,7 @@ class presentation::elements::GuiDocumentElement : presentation::elements::IGuiG
     property PasswordChar : system::Char { get:GetPasswordChar set:SetPasswordChar }
     property WrapLine : system::Boolean { get:GetWrapLine set:SetWrapLine }
 
+    function BlinkCaret() : system::Void;
     function CalculateCaret(comparingCaret : presentation::TextPos, position : presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition, preferFrontSide : system::Boolean) : presentation::TextPos;
     function CalculateCaretFromPoint(point : presentation::Point) : presentation::TextPos;
     function ClearStyle(begin : presentation::TextPos, end : presentation::TextPos) : system::Void;
