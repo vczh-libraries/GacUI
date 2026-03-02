@@ -2,36 +2,6 @@
 
 # UPDATES
 
-## UPDATE
-The execution plan is directionally correct: inline objects break the 1:1 mapping between `textPos` and layout indices, so layouts must be stored sparsely keyed by caret position.
-
-Actionable improvements to make the plan robust and consistent with repo learnings:
-
-- Clarify and enforce the data-structure contract:
-  - Explain why both `collections::Dictionary<vint, DocumentParagraphCharLayout>` (fast lookup by caret) and an ordered key container are required (ordered iteration / range queries).
-  - Prevent drift by enforcing that *all* mutations go through `ClearCaretLayouts()` / `AddCaretLayout()` (no direct writes to either container).
-  - Define duplicate-caret behavior in `AddCaretLayout()` and enforce it with `CHECK_ERROR` + `ERROR_MESSAGE_PREFIX` (prefer “duplicates are a bug”).
-  - Ensure `caretLayoutKeys` stays sorted: either insert at the correct position or assert that additions are monotonic; do not rely on “usually added in order” without enforcement.
-
-- Make the binary-search helpers precise and safe:
-  - Guard empty containers before taking `&caretLayoutKeys[0]`.
-  - Use an orderer returning `std::strong_ordering` (e.g. `key <=> search`).
-  - Ensure `FindLayoutCaretLE(textPos)` returns an exact match when present, and returns the inline-object’s `caretBegin` when `textPos` falls inside `[caretBegin+1, caretEnd)`.
-
-- Specify required edge-case semantics:
-  - `text.Length()` must be a valid caret even though it has no layout entry; geometry APIs must define the returned position (end of last drawable entry on the last line; `(0,0)` for empty paragraph).
-  - Treat `\r\n` atomically in navigation and line-end calculations; “End” must not land between `\r` and `\n`.
-  - Make left/right stepping rules explicit around inline objects (skip invalid carets inside inline spans; RIGHT at `caretBegin` should jump to `caretEnd`; handle adjacent inline objects).
-
-- Testing additions needed to prove correctness:
-  - Cover `IsValidCaret(text.Length())`, `GetCaretBounds(text.Length())`, and `GetNearestCaretFromTextPos` for positions inside inline-object spans for both `frontSide==true/false`.
-  - Add cases: inline object at end of paragraph/document, mixed text + inline objects on same line, inline-only paragraph, empty paragraph.
-  - Verify Home/End/Left/Right across inline objects and across CRLF boundaries.
-  - Ensure the editor/control is focused before key simulation, and consider using typed markers after navigation to make caret positions observable.
-
-- Repo hygiene:
-  - Search for existing code/tests referencing `characterLayouts` and confirm they are updated or remain correct under the caret-keyed design.
-
 # AFFECTED PROJECTS
 - Build the solution in folder REPO-ROOT\Test\GacUISrc
   - Run Test Project UnitTest
