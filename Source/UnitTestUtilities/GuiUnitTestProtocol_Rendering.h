@@ -50,7 +50,8 @@ DocumentParagraphState
 		elements::DocumentInlineObjectRunPropertyMap	inlineObjectRuns;
 		elements::DocumentRunPropertyMap				mergedRuns;
 
-		collections::List<DocumentParagraphCharLayout>	characterLayouts;
+		collections::Dictionary<vint, DocumentParagraphCharLayout>	caretLayouts;
+		collections::SortedList<vint>								caretLayoutKeys;
 		collections::List<DocumentParagraphLineInfo>	lines;
 		Size											cachedSize;
 		collections::Dictionary<vint, Rect>				cachedInlineObjectBounds;

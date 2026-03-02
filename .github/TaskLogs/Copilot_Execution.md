@@ -8,13 +8,13 @@
 
 # EXECUTION PLAN
 
-## Step 1: Inspect current coordinate mismatch
+## Step 1: Inspect current coordinate mismatch [DONE]
 - Open `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering_Document.cpp`.
 - Locate `DocumentParagraphState` and all uses of the existing `characterLayouts` that assume `textPos == layoutIndex` (e.g. indexing layouts by `DocumentParagraphLineInfo::{startPos,endPos}`, `caret`, or `textPos`).
 - Confirm the mock inline-object rule: an inline object occupies a text range `[caretBegin, caretEnd)` but only `caretBegin` is a valid caret.
 - Repo hygiene: search for any other code/tests referencing `characterLayouts` and confirm they are updated or remain correct under the caret-keyed design.
 
-## Step 2: Replace `characterLayouts` with caret-keyed layouts
+## Step 2: Replace `characterLayouts` with caret-keyed layouts [DONE]
 In `DocumentParagraphState` (in `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering_Document.cpp`):
 - Replace the linear `characterLayouts : List<DocumentParagraphCharLayout>` with:
   - `collections::Dictionary<vint, DocumentParagraphCharLayout> caretLayouts;` (fast lookup by caret)
@@ -31,7 +31,7 @@ In `DocumentParagraphState` (in `Source\UnitTestUtilities\GuiUnitTestProtocol_Re
   - A valid caret is a text position where navigation may land.
   - A drawable layout entry exists only when there is a glyph/object after that caret; therefore `text.Length()` is a valid caret but must not appear in `caretLayouts` / `caretLayoutKeys`.
 
-## Step 3: Add binary-search helpers for nearest caret keys
+## Step 3: Add binary-search helpers for nearest caret keys [DONE]
 Implement helpers (same file) using `collections::BinarySearchLambda` over `caretLayoutKeys`:
 - Guard the empty-container case; return `-1` when no match (do this before taking `&caretLayoutKeys[0]`).
 - Use an orderer returning `std::strong_ordering` (e.g. `key <=> search`).
@@ -41,7 +41,7 @@ Implement helpers (same file) using `collections::BinarySearchLambda` over `care
   - `vint FindLayoutCaretGT(vint textPos);`  // smallest key `> textPos`, or `-1`
 - Ensure `FindLayoutCaretLE(textPos)` returns an exact match when present.
 
-## Step 4: Update paragraph APIs to use caret-keyed layouts
+## Step 4: Update paragraph APIs to use caret-keyed layouts [DONE]
 Update implementations in `UnitTestRemoteProtocol_Rendering` (in `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering_Document.cpp`) to avoid indexing a list by `textPos`:
 
 - `Impl_DocumentParagraph_IsValidCaret`
@@ -75,7 +75,7 @@ Update implementations in `UnitTestRemoteProtocol_Rendering` (in `Source\UnitTes
     - RIGHT at `caretBegin` should jump to `caretEnd`.
     - Handle adjacent inline objects deterministically.
 
-## Step 5: Add unit test `InlineObjectWithCaret`
+## Step 5: Add unit test `InlineObjectWithCaret` [DONE]
 Edit existing test file `Test\GacUISrc\UnitTest\TestControls_Editor_InlineObject.cpp`:
 - Create a new test case `InlineObjectWithCaret` next to the existing `InlineObject` test.
 - Setup editor content with two lines:
@@ -93,5 +93,20 @@ Edit existing test file `Test\GacUISrc\UnitTest\TestControls_Editor_InlineObject
   - If navigation-only frames do not produce an update reliably, type a marker character after navigation (then verify document text) so each frame has a visible change.
 
 # FIXING ATTEMPTS
+
+## Fixing attempt No.1
+- Build failed because `Nullable<...>` was compared to `nullptr` and tests accessed `GuiDocumentLabel::GetElement()` which does not exist.
+- Updated layout builder to cast nullable to bool, and refactored the new test to use `GuiDocumentLabel` APIs plus remote protocol requests for nearest caret checks.
+- This removes the invalid comparison, uses supported control APIs, and should resolve the compile errors in UnitTest.
+
+## Fixing attempt No.2
+- Build failed because the test called protocol request/retrieve methods that are not exposed on `IGuiRemoteProtocolMessages`, and used `GuiDocumentLabel::CalculateCaret`.
+- Simplified the test to rely on public `GuiDocumentLabel` methods (`GetCaretBounds`, `SetCaret`, key presses) and removed direct protocol and `CalculateCaret` calls.
+- This aligns the test with available APIs and should fix the remaining compilation errors.
+
+## Fixing attempt No.3
+- Build still failed because the test retained remote protocol request/retrieve calls.
+- Removed the remaining protocol calls from the test.
+- This should eliminate the unresolved method errors.
 
 # !!!FINISHED!!!
