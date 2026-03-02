@@ -1,6 +1,6 @@
 ﻿{
-  "frameId": 22,
-  "frameName": "[ENTER] at beginning",
+  "frameId": 20,
+  "frameName": "End on second line",
   "windowSize": {
     "bounds": {
       "x1": {"value": 272},
@@ -295,8 +295,8 @@
           "ellipse": true,
           "multiline": false,
           "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "Clicked!",
-          "measuringRequest": null
+          "text": "GuiDocumentLabel InlineObject Caret Test",
+          "measuringRequest": "FontHeight"
         }
       ]
     ],
@@ -314,92 +314,54 @@
     [
       22,
       [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 22,
-          "backgroundColor": "#54545C",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      23,
-      [
-        "ElementDesc_SolidBorder",
-        {
-          "id": 23,
-          "borderColor": "#6A6A75",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      25,
-      [
-        "ElementDesc_SolidLabel",
-        {
-          "id": 25,
-          "textColor": "#F1F1F1",
-          "horizontalAlignment": "Center",
-          "verticalAlignment": "Center",
-          "wrapLine": false,
-          "wrapLineHeightCalculation": false,
-          "ellipse": false,
-          "multiline": false,
-          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "Click Me!",
-          "measuringRequest": "TotalSize"
-        }
-      ]
-    ],
-    [
-      26,
-      [
         "ElementDesc_DocumentParagraphFull",
         {
           "paragraph": {
-            "id": 26,
-            "text": "This is the first paragraph. [EmbeddedObject] After the inline object.",
+            "id": 22,
+            "text": "[Image]x[Image]",
             "wrapLine": true,
             "maxWidth": 450,
             "alignment": "Left",
             "runsDiff": [
               {
                 "caretBegin": 0,
-                "caretEnd": 29,
-                "props": [
-                  "DocumentTextRunProperty",
-                  {
-                    "textColor": "#FFFFFF",
-                    "backgroundColor": "#00000000",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
-                  }
-                ]
-              },
-              {
-                "caretBegin": 29,
-                "caretEnd": 45,
+                "caretEnd": 7,
                 "props": [
                   "DocumentInlineObjectRunProperty",
                   {
-                    "size": {"x": 72, "y": 20},
+                    "size": {"x": 16, "y": 16},
                     "baseline": -1,
                     "breakCondition": "Alone",
                     "backgroundColor": "#00000000",
-                    "backgroundElementId": -1,
-                    "callbackId": 0
+                    "backgroundElementId": 23,
+                    "callbackId": -1
                   }
                 ]
               },
               {
-                "caretBegin": 45,
-                "caretEnd": 70,
+                "caretBegin": 7,
+                "caretEnd": 8,
                 "props": [
                   "DocumentTextRunProperty",
                   {
                     "textColor": "#FFFFFF",
                     "backgroundColor": "#00000000",
                     "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                  }
+                ]
+              },
+              {
+                "caretBegin": 8,
+                "caretEnd": 15,
+                "props": [
+                  "DocumentInlineObjectRunProperty",
+                  {
+                    "size": {"x": 16, "y": 16},
+                    "baseline": -1,
+                    "breakCondition": "Alone",
+                    "backgroundColor": "#00000000",
+                    "backgroundElementId": 24,
+                    "callbackId": -1
                   }
                 ]
               }
@@ -412,79 +374,27 @@
       ]
     ],
     [
-      29,
-      [
-        "ElementDesc_DocumentParagraphFull",
-        {
-          "paragraph": {
-            "id": 29,
-            "text": "is is the second paragraph. [Image] After the image.",
-            "wrapLine": true,
-            "maxWidth": 450,
-            "alignment": "Left",
-            "runsDiff": [
-              {
-                "caretBegin": 0,
-                "caretEnd": 28,
-                "props": [
-                  "DocumentTextRunProperty",
-                  {
-                    "textColor": "#FFFFFF",
-                    "backgroundColor": "#00000000",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
-                  }
-                ]
-              },
-              {
-                "caretBegin": 28,
-                "caretEnd": 35,
-                "props": [
-                  "DocumentInlineObjectRunProperty",
-                  {
-                    "size": {"x": 16, "y": 16},
-                    "baseline": -1,
-                    "breakCondition": "Alone",
-                    "backgroundColor": "#00000000",
-                    "backgroundElementId": 30,
-                    "callbackId": -1
-                  }
-                ]
-              },
-              {
-                "caretBegin": 35,
-                "caretEnd": 52,
-                "props": [
-                  "DocumentTextRunProperty",
-                  {
-                    "textColor": "#FFFFFF",
-                    "backgroundColor": "#00000000",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
-                  }
-                ]
-              }
-            ],
-            "createdInlineObjects": null,
-            "removedInlineObjects": null
-          },
-          "caret": {"id": 29, "caret": 0, "caretColor": "#FFFFFF", "frontSide": true}
-        }
-      ]
-    ],
-    [
-      30,
+      23,
       [
         "ElementDesc_ImageFrame",
-        {"id": 30, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+        {"id": 23, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
       ]
     ],
     [
-      31,
+      24,
+      [
+        "ElementDesc_ImageFrame",
+        {"id": 24, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+      ]
+    ],
+    [
+      25,
       [
         "ElementDesc_DocumentParagraphFull",
         {
           "paragraph": {
-            "id": 31,
-            "text": "T",
+            "id": 25,
+            "text": "y[Image]z",
             "wrapLine": true,
             "maxWidth": 450,
             "alignment": "Left",
@@ -500,6 +410,33 @@
                     "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
                   }
                 ]
+              },
+              {
+                "caretBegin": 1,
+                "caretEnd": 8,
+                "props": [
+                  "DocumentInlineObjectRunProperty",
+                  {
+                    "size": {"x": 16, "y": 16},
+                    "baseline": -1,
+                    "breakCondition": "Alone",
+                    "backgroundColor": "#00000000",
+                    "backgroundElementId": 26,
+                    "callbackId": -1
+                  }
+                ]
+              },
+              {
+                "caretBegin": 8,
+                "caretEnd": 9,
+                "props": [
+                  "DocumentTextRunProperty",
+                  {
+                    "textColor": "#FFFFFF",
+                    "backgroundColor": "#00000000",
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                  }
+                ]
               }
             ],
             "createdInlineObjects": null,
@@ -507,6 +444,65 @@
           },
           "caret": null
         }
+      ]
+    ],
+    [
+      26,
+      [
+        "ElementDesc_ImageFrame",
+        {"id": 26, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+      ]
+    ],
+    [
+      27,
+      [
+        "ElementDesc_DocumentParagraphFull",
+        {
+          "paragraph": {"id": 27, "text": "", "wrapLine": true, "maxWidth": 450, "alignment": "Left", "runsDiff": [], "createdInlineObjects": null, "removedInlineObjects": null},
+          "caret": null
+        }
+      ]
+    ],
+    [
+      28,
+      [
+        "ElementDesc_DocumentParagraphFull",
+        {
+          "paragraph": {
+            "id": 28,
+            "text": "[Image]",
+            "wrapLine": true,
+            "maxWidth": 450,
+            "alignment": "Left",
+            "runsDiff": [
+              {
+                "caretBegin": 0,
+                "caretEnd": 7,
+                "props": [
+                  "DocumentInlineObjectRunProperty",
+                  {
+                    "size": {"x": 16, "y": 16},
+                    "baseline": -1,
+                    "breakCondition": "Alone",
+                    "backgroundColor": "#00000000",
+                    "backgroundElementId": 29,
+                    "callbackId": -1
+                  }
+                ]
+              }
+            ],
+            "createdInlineObjects": null,
+            "removedInlineObjects": null
+          },
+          "caret": {"id": 28, "caret": 7, "caretColor": "#FFFFFF", "frontSide": true}
+        }
+      ]
+    ],
+    [
+      29,
+      [
+        "ElementDesc_ImageFrame",
+        {"id": 29, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
       ]
     ]
   ],
@@ -859,84 +855,48 @@
                         },
                         "children": [
                           {
-                            "id": 104,
+                            "id": 88,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 26,
-                              "bounds": {"x1": 15, "y1": 43, "x2": 465, "y2": 83},
-                              "validArea": {"x1": 15, "y1": 43, "x2": 465, "y2": 83}
+                              "element": 22,
+                              "bounds": {"x1": 15, "y1": 43, "x2": 465, "y2": 63},
+                              "validArea": {"x1": 15, "y1": 43, "x2": 465, "y2": 63}
                             },
                             "children": null
                           },
                           {
-                            "id": 124,
+                            "id": 100,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 31,
-                              "bounds": {"x1": 15, "y1": 95, "x2": 465, "y2": 111},
-                              "validArea": {"x1": 15, "y1": 95, "x2": 465, "y2": 111}
+                              "element": 25,
+                              "bounds": {"x1": 15, "y1": 75, "x2": 465, "y2": 95},
+                              "validArea": {"x1": 15, "y1": 75, "x2": 465, "y2": 95}
                             },
                             "children": null
                           },
                           {
-                            "id": 116,
+                            "id": 108,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 29,
-                              "bounds": {"x1": 15, "y1": 123, "x2": 465, "y2": 143},
-                              "validArea": {"x1": 15, "y1": 123, "x2": 465, "y2": 143}
+                              "element": 27,
+                              "bounds": {"x1": 15, "y1": 107, "x2": 465, "y2": 123},
+                              "validArea": {"x1": 15, "y1": 107, "x2": 465, "y2": 123}
                             },
                             "children": null
                           },
                           {
-                            "id": 62,
+                            "id": 112,
                             "content": {
                               "hitTestResult": null,
-                              "cursor": "Arrow",
-                              "element": null,
-                              "bounds": {"x1": 223, "y1": 45, "x2": 295, "y2": 65},
-                              "validArea": {"x1": 223, "y1": 45, "x2": 295, "y2": 65}
+                              "cursor": null,
+                              "element": 28,
+                              "bounds": {"x1": 15, "y1": 135, "x2": 465, "y2": 155},
+                              "validArea": {"x1": 15, "y1": 135, "x2": 465, "y2": 155}
                             },
-                            "children": [
-                              {
-                                "id": 88,
-                                "content": {
-                                  "hitTestResult": null,
-                                  "cursor": null,
-                                  "element": 22,
-                                  "bounds": {"x1": 223, "y1": 45, "x2": 295, "y2": 65},
-                                  "validArea": {"x1": 223, "y1": 45, "x2": 295, "y2": 65}
-                                },
-                                "children": [
-                                  {
-                                    "id": 92,
-                                    "content": {
-                                      "hitTestResult": null,
-                                      "cursor": null,
-                                      "element": 23,
-                                      "bounds": {"x1": 223, "y1": 45, "x2": 295, "y2": 65},
-                                      "validArea": {"x1": 223, "y1": 45, "x2": 295, "y2": 65}
-                                    },
-                                    "children": [
-                                      {
-                                        "id": 100,
-                                        "content": {
-                                          "hitTestResult": null,
-                                          "cursor": null,
-                                          "element": 25,
-                                          "bounds": {"x1": 227, "y1": 47, "x2": 291, "y2": 63},
-                                          "validArea": {"x1": 227, "y1": 47, "x2": 291, "y2": 63}
-                                        },
-                                        "children": null
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
+                            "children": null
                           }
                         ]
                       }

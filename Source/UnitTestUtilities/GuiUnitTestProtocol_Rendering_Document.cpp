@@ -537,53 +537,40 @@ IGuiRemoteProtocolMessages (Elements - Document)
 		response.frontSideBounds = Ptr(new List<Rect>);
 		response.backSideBounds = Ptr(new List<Rect>);
 
-		// Handle empty text
 		if (state->text.Length() == 0)
 		{
 			Rect bounds = { 0,0,0,DefaultLineHeight };
 			response.frontSideBounds->Add(bounds);
 			response.backSideBounds->Add(bounds);
+			GetEvents()->RespondDocumentParagraph_GetCaretBounds(id, response);
+			return;
 		}
-		else
+
+		for (vint caret = 0; caret <= state->text.Length(); caret++)
 		{
-			for (vint caret = 0; caret <= state->text.Length(); caret++)
+			vint anchorCaret = FindLayoutCaretLE(*state.Obj(), caret);
+			if (anchorCaret == -1) anchorCaret = FindLayoutCaretGT(*state.Obj(), caret);
+			if (anchorCaret == -1)
 			{
-				DocumentParagraphCharLayout layout;
-				if (TryGetLayoutAtCaret(*state.Obj(), caret, layout))
-				{
-					vint x1 = (vint)layout.x;
-					vint y1 = state->lines[layout.lineIndex].y;
-					vint x2 = (vint)(layout.x + layout.width);
-					vint y2 = y1 + layout.height;
-					response.backSideBounds->Add(Rect(x1, y1, x1, y2));
-					response.frontSideBounds->Add(Rect(x2, y1, x2, y2));
-				}
-				else
-				{
-					vint anchorCaret = FindLayoutCaretLE(*state.Obj(), caret);
-					if (anchorCaret == -1) anchorCaret = FindLayoutCaretGT(*state.Obj(), caret);
-					if (anchorCaret == -1)
-					{
-						Rect bounds = { 0,0,0,DefaultLineHeight };
-						response.frontSideBounds->Add(bounds);
-						response.backSideBounds->Add(bounds);
-					}
-					else
-					{
-						auto anchorLayout = state->caretLayouts[anchorCaret];
-						vint lineIndex = anchorLayout.lineIndex;
-						vint y1 = state->lines[lineIndex].y;
-						vint y2 = y1 + state->lines[lineIndex].height;
-						vint x = (vint)(anchorLayout.x + anchorLayout.width);
-						if (caret <= anchorCaret)
-						{
-							x = (vint)anchorLayout.x;
-						}
-						response.backSideBounds->Add(Rect(x, y1, x, y2));
-						response.frontSideBounds->Add(Rect(x, y1, x, y2));
-					}
-				}
+				Rect bounds = { 0,0,0,DefaultLineHeight };
+				response.frontSideBounds->Add(bounds);
+				response.backSideBounds->Add(bounds);
+				continue;
 			}
+
+			auto anchorLayout = state->caretLayouts[anchorCaret];
+			vint lineIndex = anchorLayout.lineIndex;
+			vint y1 = state->lines[lineIndex].y;
+			vint y2 = y1 + state->lines[lineIndex].height;
+			vint x = (vint)anchorLayout.x;
+
+			if (caret >= anchorCaret + anchorLayout.length)
+			{
+				x = (vint)(anchorLayout.x + anchorLayout.width);
+			}
+
+			response.backSideBounds->Add(Rect(x, y1, x, y2));
+			response.frontSideBounds->Add(Rect(x, y1, x, y2));
 		}
 		GetEvents()->RespondDocumentParagraph_GetCaretBounds(id, response);
 #undef ERROR_MESSAGE_PREFIX
