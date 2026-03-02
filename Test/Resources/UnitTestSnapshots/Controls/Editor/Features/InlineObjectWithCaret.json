@@ -157,7 +157,7 @@
     },
     {
       "frameId": 12,
-      "frameName": "End and Home",
+      "frameName": "[END] from the end of 1st line",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -184,7 +184,7 @@
     },
     {
       "frameId": 14,
-      "frameName": "Home",
+      "frameName": "[HOME]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -265,7 +265,7 @@
     },
     {
       "frameId": 20,
-      "frameName": "End on second line",
+      "frameName": "[END] from the end of 2nd line",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -292,7 +292,7 @@
     },
     {
       "frameId": 23,
-      "frameName": "Insert CRLF",
+      "frameName": "[CTRL+ENTER]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -319,7 +319,7 @@
     },
     {
       "frameId": 25,
-      "frameName": "End respects CRLF",
+      "frameName": "[END] from the beginning of 1st line",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

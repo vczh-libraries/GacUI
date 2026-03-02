@@ -135,6 +135,11 @@ TEST_FILE
 				TEST_ASSERT(documentLabel->GetCaretBounds(TextPos(3, document->paragraphs[3]->GetTextForCaret().Length()), true).Width() == 0);
 				documentLabel->SetCaret({ 0, 0 }, { 0, 0 });
 				protocol->KeyPress(VKEY::KEY_RIGHT);
+
+				auto caretBegin = documentLabel->GetCaretBegin();
+				auto caretEnd = documentLabel->GetCaretEnd();
+				TEST_ASSERT(caretBegin == caretEnd);
+				TEST_ASSERT(caretBegin == TextPos(0, 7));
 			});
 			protocol->OnNextIdleFrame(L"Move right over first inline", [=]()
 			{
@@ -145,6 +150,11 @@ TEST_FILE
 				protocol->KeyPress(VKEY::KEY_RIGHT);
 				documentLabel->SetCaret(currentCaret, currentCaret);
 				protocol->KeyPress(VKEY::KEY_RIGHT);
+
+				auto caretBegin = documentLabel->GetCaretBegin();
+				auto caretEnd = documentLabel->GetCaretEnd();
+				TEST_ASSERT(caretBegin == caretEnd);
+				TEST_ASSERT(caretBegin == TextPos(0, 8));
 			});
 			protocol->OnNextIdleFrame(L"Move right to end inline", [=]()
 			{
@@ -152,6 +162,11 @@ TEST_FILE
 				auto documentLabel = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 				TEST_ASSERT(documentLabel->GetCaretBegin().row == 0);
 				protocol->KeyPress(VKEY::KEY_RIGHT);
+
+				auto caretBegin = documentLabel->GetCaretBegin();
+				auto caretEnd = documentLabel->GetCaretEnd();
+				TEST_ASSERT(caretBegin == caretEnd);
+				TEST_ASSERT(caretBegin == TextPos(0, 15));
 			});
 			protocol->OnNextIdleFrame(L"Move right over second inline", [=]()
 			{
@@ -159,16 +174,26 @@ TEST_FILE
 				auto documentLabel = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 				TEST_ASSERT(documentLabel->GetCaretBegin().row == 0);
 				protocol->KeyPress(VKEY::KEY_END);
+
+				auto caretBegin = documentLabel->GetCaretBegin();
+				auto caretEnd = documentLabel->GetCaretEnd();
+				TEST_ASSERT(caretBegin == caretEnd);
+				TEST_ASSERT(caretBegin == TextPos(3, 7));
 			});
-			protocol->OnNextIdleFrame(L"End and Home", [=]()
+			protocol->OnNextIdleFrame(L"[END] from the end of 1st line", [=]()
 			{
 				auto window = GetApplication()->GetMainWindow();
 				auto documentLabel = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 				auto caret = documentLabel->GetCaretBegin();
 				TEST_ASSERT(caret.row >= 0);
 				protocol->KeyPress(VKEY::KEY_HOME);
+
+				auto caretBegin = documentLabel->GetCaretBegin();
+				auto caretEnd = documentLabel->GetCaretEnd();
+				TEST_ASSERT(caretBegin == caretEnd);
+				TEST_ASSERT(caretBegin == TextPos(3, 0));
 			});
-			protocol->OnNextIdleFrame(L"Home", [=]()
+			protocol->OnNextIdleFrame(L"[HOME]", [=]()
 			{
 				auto window = GetApplication()->GetMainWindow();
 				auto documentLabel = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
@@ -177,6 +202,11 @@ TEST_FILE
 				auto caretText = documentLabel->GetDocument()->paragraphs[0]->GetTextForCaret();
 				documentLabel->SetCaret(TextPos(0, caretText.Length()), TextPos(0, caretText.Length()));
 				protocol->KeyPress(VKEY::KEY_LEFT);
+
+				auto caretBegin = documentLabel->GetCaretBegin();
+				auto caretEnd = documentLabel->GetCaretEnd();
+				TEST_ASSERT(caretBegin == caretEnd);
+				TEST_ASSERT(caretBegin == TextPos(0, 8));
 			});
 			protocol->OnNextIdleFrame(L"Right skips inline", [=]()
 			{
@@ -185,6 +215,11 @@ TEST_FILE
 				TEST_ASSERT(documentLabel->GetCaretBegin().row == 0);
 				protocol->KeyPress(VKEY::KEY_RIGHT);
 				protocol->KeyPress(VKEY::KEY_DOWN);
+
+				auto caretBegin = documentLabel->GetCaretBegin();
+				auto caretEnd = documentLabel->GetCaretEnd();
+				TEST_ASSERT(caretBegin == caretEnd);
+				TEST_ASSERT(caretBegin == TextPos(1, 9));
 			});
 			protocol->OnNextIdleFrame(L"Down across lines", [=]()
 			{
@@ -192,16 +227,26 @@ TEST_FILE
 				auto documentLabel = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 				TEST_ASSERT(documentLabel->GetCaretBegin().row == 1);
 				protocol->KeyPress(VKEY::KEY_END);
+
+				auto caretBegin = documentLabel->GetCaretBegin();
+				auto caretEnd = documentLabel->GetCaretEnd();
+				TEST_ASSERT(caretBegin == caretEnd);
+				TEST_ASSERT(caretBegin == TextPos(3, 7));
 			});
-			protocol->OnNextIdleFrame(L"End on second line", [=]()
+			protocol->OnNextIdleFrame(L"[END] from the end of 2nd line", [=]()
 			{
 				auto window = GetApplication()->GetMainWindow();
 				auto documentLabel = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
 				auto text = documentLabel->GetDocument()->paragraphs[1]->GetTextForReading();
 				TEST_ASSERT(documentLabel->GetCaretBegin().row >= 0);
 				protocol->KeyPress(VKEY::KEY_RETURN, true, false, false);
+
+				auto caretBegin = documentLabel->GetCaretBegin();
+				auto caretEnd = documentLabel->GetCaretEnd();
+				TEST_ASSERT(caretBegin == caretEnd);
+				TEST_ASSERT(caretBegin == TextPos(3, 9));
 			});
-			protocol->OnNextIdleFrame(L"Insert CRLF", [=]()
+			protocol->OnNextIdleFrame(L"[CTRL+ENTER]", [=]()
 			{
 				auto window = GetApplication()->GetMainWindow();
 				auto documentLabel = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
@@ -218,8 +263,13 @@ TEST_FILE
 				TEST_ASSERT(crIndex >= -1);
 				documentLabel->SetCaret({ 1, 0 }, { 1, 0 });
 				protocol->KeyPress(VKEY::KEY_END);
+
+				auto caretBegin = documentLabel->GetCaretBegin();
+				auto caretEnd = documentLabel->GetCaretEnd();
+				TEST_ASSERT(caretBegin == caretEnd);
+				TEST_ASSERT(caretBegin == TextPos(1, 9));
 			});
-			protocol->OnNextIdleFrame(L"End respects CRLF", [=]()
+			protocol->OnNextIdleFrame(L"[END] from the beginning of 1st line", [=]()
 			{
 				auto window = GetApplication()->GetMainWindow();
 				auto documentLabel = FindObjectByName<GuiDocumentLabel>(window, L"textBox");
