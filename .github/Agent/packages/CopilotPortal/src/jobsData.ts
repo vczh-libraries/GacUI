@@ -52,7 +52,7 @@ const entryInput: Entry = {
         planning: "gpt-5.2",
         coding: "gpt-5.2-codex",
         reviewers1: "gpt-5.3-codex",
-        reviewers2: "claude-opus-4.5",
+        reviewers2: "claude-opus-4.6",
         reviewers3: "claude-sonnet-4.6"
     },
     drivingSessionRetries: [

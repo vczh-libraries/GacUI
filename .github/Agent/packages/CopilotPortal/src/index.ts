@@ -17,6 +17,7 @@ import {
     apiCopilotSessionQuery,
     apiCopilotSessionLive,
     hasRunningSessions,
+    helperGetModels,
 } from "./copilotApi.js";
 import {
     apiTaskList,
@@ -95,6 +96,19 @@ let installedEntry: Entry | null = null;
 async function installJobsEntry(entryValue: Entry): Promise<void> {
     if (hasRunningSessions()) {
         throw new Error("Cannot call installJobsEntry while sessions are running.");
+    }
+    const models = await helperGetModels();
+    const validModelIds = new Set(models.map(m => m.id));
+    for (const [category, modelId] of Object.entries(entryValue.models)) {
+        if (!validModelIds.has(modelId)) {
+            throw new Error(`entry.models["${category}"] refers to model "${modelId}" which is not a valid model.`);
+        }
+    }
+    for (let i = 0; i < entryValue.drivingSessionRetries.length; i++) {
+        const modelId = entryValue.drivingSessionRetries[i].modelId;
+        if (!validModelIds.has(modelId)) {
+            throw new Error(`entry.drivingSessionRetries[${i}].modelId refers to model "${modelId}" which is not a valid model.`);
+        }
     }
     installedEntry = entryValue;
 }
@@ -308,12 +322,15 @@ const server = http.createServer((req, res) => {
     serveStaticFile(res, filePath);
 });
 
-// Install the jobs entry (only if not in test mode)
-if (!testMode) {
-    installJobsEntry(entry);
+// Install the jobs entry (only if not in test mode), then start server
+async function startServer(): Promise<void> {
+    if (!testMode) {
+        await installJobsEntry(entry);
+    }
+    server.listen(port, () => {
+        console.log(`http://localhost:${port}`);
+        console.log(`http://localhost:${port}/api/stop`);
+    });
 }
 
-server.listen(port, () => {
-    console.log(`http://localhost:${port}`);
-    console.log(`http://localhost:${port}/api/stop`);
-});
+startServer();

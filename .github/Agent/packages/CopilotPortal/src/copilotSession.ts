@@ -1,4 +1,4 @@
-import { CopilotClient, defineTool, type CopilotSession } from "@github/copilot-sdk";
+import { CopilotClient, defineTool, approveAll, type CopilotSession } from "@github/copilot-sdk";
 
 export interface ICopilotSession {
   get rawSection(): CopilotSession;
@@ -82,6 +82,7 @@ export async function startSession(
     streaming: true,
     workingDirectory,
     tools: jobTools,
+    onPermissionRequest: approveAll,
     hooks: {
       onPreToolUse: async (input) => {
         if (input.toolName === "glob") {

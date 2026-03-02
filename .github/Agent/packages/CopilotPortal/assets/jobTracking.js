@@ -21,6 +21,7 @@ let chartController = null; // returned from renderFlowChartMermaid
 let jobStatus = isPreviewMode ? "PREVIEW" : "RUNNING"; // PREVIEW | RUNNING | SUCCEEDED | FAILED | CANCELED
 let jobStopped = false;
 
+
 // Map: workId -> { taskId, sessions: Map<sessionId, { name, renderer, div, active }>, attemptCount }
 const workIdData = {};
 
@@ -116,13 +117,6 @@ function showJsonView() {
 function showTaskSessionTabs(workId) {
     sessionResponsePart.innerHTML = "";
     const data = workIdData[workId];
-    if (!data) {
-        sessionResponsePart.textContent = "No session data for this task.";
-        return;
-    }
-
-    // Reset active tab tracking so the first switchTabForWork always applies
-    data.activeTabSessionId = null;
 
     tabContainer = document.createElement("div");
     tabContainer.className = "tab-container";
@@ -137,33 +131,56 @@ function showTaskSessionTabs(workId) {
 
     sessionResponsePart.appendChild(tabContainer);
 
-    // Ensure "Driving" tab always appears first
-    const sortedEntries = [...data.sessions.entries()].sort((a, b) => {
-        if (a[1].name === "Driving") return -1;
-        if (b[1].name === "Driving") return 1;
-        return 0;
-    });
+    if (!data || data.sessions.size === 0) {
+        // No session data yet — show placeholder in tab content
+        const placeholder = document.createElement("div");
+        placeholder.style.padding = "16px";
+        placeholder.textContent = "No session data for this task.";
+        tabContent.appendChild(placeholder);
+    } else {
+        // Reset active tab tracking so the first switchTabForWork always applies
+        data.activeTabSessionId = null;
 
-    for (const [sessionId, sessionInfo] of sortedEntries) {
-        const tabBtn = document.createElement("button");
-        tabBtn.className = "tab-header-btn";
-        tabBtn.textContent = sessionInfo.name;
-        tabBtn.dataset.sessionId = sessionId;
-        tabBtn.addEventListener("click", () => {
-            switchTabForWork(workId, tabBtn.dataset.sessionId);
+        // Ensure "Driving" tab always appears first
+        const sortedEntries = [...data.sessions.entries()].sort((a, b) => {
+            if (a[1].name === "Driving") return -1;
+            if (b[1].name === "Driving") return 1;
+            return 0;
         });
-        tabHeaders.appendChild(tabBtn);
 
-        // Append the session's div to tab content (hidden by default)
-        sessionInfo.div.style.display = "none";
-        tabContent.appendChild(sessionInfo.div);
+        for (const [sessionId, sessionInfo] of sortedEntries) {
+            const tabBtn = document.createElement("button");
+            tabBtn.className = "tab-header-btn";
+            tabBtn.textContent = sessionInfo.name;
+            tabBtn.dataset.sessionId = sessionId;
+            tabBtn.addEventListener("click", () => {
+                switchTabForWork(workId, tabBtn.dataset.sessionId);
+            });
+            tabHeaders.appendChild(tabBtn);
+
+            // Append the session's div to tab content (hidden by default)
+            sessionInfo.div.style.display = "none";
+            tabContent.appendChild(sessionInfo.div);
+        }
+
+        // Activate the first tab
+        const firstEntry = sortedEntries[0];
+        if (firstEntry) {
+            switchTabForWork(workId, firstEntry[0]);
+        }
     }
 
-    // Activate the first tab
-    const firstEntry = sortedEntries[0];
-    if (firstEntry) {
-        switchTabForWork(workId, firstEntry[0]);
-    }
+    // Add "Back" button (visible only in phone mode via CSS)
+    const backBtn = document.createElement("button");
+    backBtn.className = "phone-back-btn";
+    backBtn.textContent = "Back";
+    backBtn.addEventListener("click", () => {
+        // Unselect the inspected node
+        inspectedWorkId = null;
+        rightPart.classList.remove("phone-visible");
+        showJsonView();
+    });
+    tabHeaders.appendChild(backBtn);
 }
 
 function refreshSessionResponsePart() {
@@ -177,6 +194,12 @@ function refreshSessionResponsePart() {
 function onInspect(workId) {
     inspectedWorkId = workId;
     refreshSessionResponsePart();
+    if (workId !== null) {
+        // In phone mode CSS makes this a full-screen overlay; on desktop it has no effect
+        rightPart.classList.add("phone-visible");
+    } else {
+        rightPart.classList.remove("phone-visible");
+    }
 }
 
 // ---- Live Polling Helpers ----
@@ -317,6 +340,9 @@ function startTaskPolling(taskId, workId) {
                                     div.style.display = "none";
                                     tabContent.insertBefore(div, tabContent.firstChild);
                                 }
+                                // Ensure Back button stays at the end
+                                const existingBackBtn = tabHeaders.querySelector(".phone-back-btn");
+                                if (existingBackBtn) tabHeaders.appendChild(existingBackBtn);
                             }
                         }
 
@@ -349,7 +375,13 @@ function startTaskPolling(taskId, workId) {
                                 tabBtn.addEventListener("click", () => {
                                     switchTabForWork(workId, sessionId);
                                 });
-                                tabHeaders.appendChild(tabBtn);
+                                // Insert before phone Back button if present
+                                const phoneBackBtn = tabHeaders.querySelector(".phone-back-btn");
+                                if (phoneBackBtn) {
+                                    tabHeaders.insertBefore(tabBtn, phoneBackBtn);
+                                } else {
+                                    tabHeaders.appendChild(tabBtn);
+                                }
 
                                 div.style.display = "none";
                                 tabContent.appendChild(div);

@@ -172,3 +172,54 @@ html, body {
     height: 100%;
     overflow: auto;
 }
+
+/* ---- Phone-specific layout ---- */
+
+/* Back button: hidden on desktop, visible only in phone mode */
+.phone-back-btn {
+    display: none;
+    padding: 8px 16px;
+    border: 1px solid #444;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    background: #dc2626;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.phone-back-btn:hover {
+    background: #b91c1c;
+}
+
+@media (max-width: 768px) {
+    .phone-back-btn {
+        display: block;
+    }
+
+    #resize-bar {
+        display: none !important;
+    }
+
+    #right-part {
+        display: none !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        height: 100%;
+        z-index: 1000;
+        background: #ffffff;
+    }
+
+    #right-part.phone-visible {
+        display: flex !important;
+    }
+
+    #left-part {
+        width: 100% !important;
+        flex: none;
+    }
+}

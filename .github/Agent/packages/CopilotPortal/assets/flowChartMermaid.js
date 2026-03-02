@@ -138,17 +138,52 @@ async function renderFlowChartMermaid(chart, container, onInspect) {
     const zoomMin = 0.2;
     const zoomMax = 3;
     const zoomStep = 0.1;
-    container.addEventListener("wheel", (e) => {
-        if (!e.ctrlKey) return;
-        e.preventDefault();
-        const delta = e.deltaY > 0 ? -zoomStep : zoomStep;
-        zoomLevel = Math.min(zoomMax, Math.max(zoomMin, zoomLevel + delta));
+
+    function applyZoom() {
         const svgInner = container.querySelector("svg");
         if (svgInner) {
             svgInner.style.transformOrigin = "top left";
             svgInner.style.transform = `scale(${zoomLevel})`;
         }
+    }
+
+    container.addEventListener("wheel", (e) => {
+        if (!e.ctrlKey) return;
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -zoomStep : zoomStep;
+        zoomLevel = Math.min(zoomMax, Math.max(zoomMin, zoomLevel + delta));
+        applyZoom();
     }, { passive: false });
+
+    // Touch pinch-to-zoom (two fingers)
+    let lastTouchDist = null;
+    container.addEventListener("touchstart", (e) => {
+        if (e.touches.length === 2) {
+            e.preventDefault();
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            lastTouchDist = Math.hypot(dx, dy);
+        }
+    }, { passive: false });
+
+    container.addEventListener("touchmove", (e) => {
+        if (e.touches.length === 2 && lastTouchDist !== null) {
+            e.preventDefault();
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            const newDist = Math.hypot(dx, dy);
+            const scale = newDist / lastTouchDist;
+            zoomLevel = Math.min(zoomMax, Math.max(zoomMin, zoomLevel * scale));
+            lastTouchDist = newDist;
+            applyZoom();
+        }
+    }, { passive: false });
+
+    container.addEventListener("touchend", (e) => {
+        if (e.touches.length < 2) {
+            lastTouchDist = null;
+        }
+    });
 
     // Track currently selected TaskNode/CondNode
     let currentSelectedGroup = null;
