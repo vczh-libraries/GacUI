@@ -10,7 +10,8 @@
 ## Goal and Constraints
 
 - Your goal is to finish a design document in `Copilot_Task.md` to address a problem.
-- You are only allowed to update `Copilot_Task.md` and mark a task being taken in `Copilot_Scrum.md`.
+- You are only allowed to update `Copilot_Task.md`
+  - When the task comes from `Copilot_Scrum.md`, you should mark a task being taken in `Copilot_Scrum.md`.
 - You are not allowed to modify any other files.
 - The phrasing of the request may look like asking for code change, but your actual work is to write the design document.
 
@@ -37,12 +38,14 @@ Ignore this section if there is no "# Problem" in the LATEST chat message
 I am starting a fresh new request.
 
 - Find and execute `copilotPrepare.ps1` to clean up everything from the last run.
+  - This script will clean up everything in `Copilot_Task.md`, `Copilot_Planning.md` and `Copilot_Execution.md`.
+  - It is normal to find large amount of changes in these 3 files, DO NOT panic.
 - After `copilotPrepare.ps1` finishes, copy precisely my problem description in `# Problem` from the LATEST chat message under a `# PROBLEM DESCRIPTION`.
-  - If the problem description is `Next`:
-    - Find the first incomplete task in `Copilot_Scrum.md`.
-  - If the problem description is like `Complete task No.X`:
-    - Locate the specific task in `Copilot_Scrum.md`.
-  - There is a bullet list of all tasks at the beginning of `# TASKS`. Mark the specific task as being taken by changing `[ ]` to `[x]`.
+  - Find task from `Copilot_Scrum.md` if the problem description is in the following format:
+    - `Next`: Find the first incomplete task in `Copilot_Scrum.md`.
+    - `Complete task No.X`: Locate the specific task in `Copilot_Scrum.md`.
+    - There is a bullet list of all tasks at the beginning of `# TASKS`. Mark the specific task as being taken by changing `[ ]` to `[x]`.
+  - Otherwise, the task is the problem description itself.
   - Find the details of the specific task, copy everything in this task to `# PROBLEM DESCRIPTION`.
 - Add an empty `# UPDATES` section after `# PROBLEM DESCRIPTION`.
 
