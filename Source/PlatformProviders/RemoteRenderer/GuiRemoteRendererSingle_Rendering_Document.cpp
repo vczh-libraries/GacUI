@@ -400,6 +400,20 @@ namespace vl::presentation::remote_renderer
 		}
 	};
 
+	void GuiRemoteRendererSingle::OnCaretNotify()
+	{
+		for (auto element : From(focusedParagraphElements.Values()).Cast<GuiRemoteDocumentParagraphElement>())
+		{
+			if (auto paragraph = element->GetParagraph())
+			{
+				if (paragraph->BlinkCaret())
+				{
+					needRefresh = true;
+				}
+			}
+		}
+	}
+
 	Ptr<IGuiGraphicsElement> GuiRemoteRendererSingle::CreateRemoteDocumentParagraphElement(vint paragraphId)
 	{
 		return Ptr(new GuiRemoteDocumentParagraphElement(this, paragraphId));
@@ -490,12 +504,14 @@ namespace vl::presentation::remote_renderer
 	{
 		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments.id);
 		wrapper->OpenCaretAndStore(arguments);
+		focusedParagraphElements.Set(arguments.id, wrapper);
 	}
 
 	void GuiRemoteRendererSingle::RequestDocumentParagraph_CloseCaret(const vint& arguments)
 	{
 		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments);
 		wrapper->CloseCaretAndStore();
+		focusedParagraphElements.Remove(arguments);
 	}
 
 #undef PREPARE_DOCUMENT_WRAPPER

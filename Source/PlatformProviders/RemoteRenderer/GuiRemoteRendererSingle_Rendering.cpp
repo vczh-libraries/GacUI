@@ -101,6 +101,7 @@ namespace vl::presentation::remote_renderer
 		{
 			for (auto id : *arguments.Obj())
 			{
+				focusedParagraphElements.Remove(id);
 				availableElements.Remove(id);
 				solidLabelMeasurings.Remove(id);
 			}
@@ -281,7 +282,14 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::GlobalTimer()
 	{
+		DateTime now = DateTime::UtcTime();
+		if (now.osMilliseconds - lastCaretTime >= CaretInterval)
+		{
+			lastCaretTime = now.osMilliseconds;
+			OnCaretNotify();
+		}
 		SendAccumulatedMessages();
+
 		if (!needRefresh) return;
 		needRefresh = false;
 		if (!window) return;

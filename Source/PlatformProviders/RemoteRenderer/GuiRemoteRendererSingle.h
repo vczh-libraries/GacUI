@@ -86,9 +86,16 @@ namespace vl::presentation::remote_renderer
 		remoteprotocol::ImageMetadata			CreateImageMetadata(vint id, INativeImage* image);
 		remoteprotocol::ImageMetadata			CreateImage(const remoteprotocol::ImageCreation& arguments);
 		void									CheckDom();
+
+	protected:
+		ElementMap								focusedParagraphElements;
+
+		void									OnCaretNotify();
 		Ptr<elements::IGuiGraphicsElement>		CreateRemoteDocumentParagraphElement(vint paragraphId);
 
 	protected:
+		static const vuint64_t					CaretInterval = 500;
+		vuint64_t								lastCaretTime = 0;
 		bool									supressPaint = false;
 		bool									needRefresh = false;
 

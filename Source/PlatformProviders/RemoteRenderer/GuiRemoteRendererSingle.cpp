@@ -89,6 +89,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::AfterClosing()
 	{
 		renderingDom = nullptr;
+		focusedParagraphElements.Clear();
 		availableElements.Clear();
 		availableImages.Clear();
 	}

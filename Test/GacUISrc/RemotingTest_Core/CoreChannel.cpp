@@ -1,7 +1,7 @@
 #include "CoreChannel.h"
 
 #ifdef _DEBUG
-#define PRINT_PROTOCOL_JSON
+//#define PRINT_PROTOCOL_JSON
 #endif
 
 void CoreChannel::OnReadStringThreadUnsafe(Ptr<List<WString>> strs)
