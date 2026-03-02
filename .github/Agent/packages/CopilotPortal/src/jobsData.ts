@@ -53,7 +53,7 @@ const entryInput: Entry = {
         coding: "gpt-5.2-codex",
         reviewers1: "gpt-5.3-codex",
         reviewers2: "claude-opus-4.5",
-        reviewers3: "gemini-3-pro-preview"
+        reviewers3: "claude-sonnet-4.6"
     },
     drivingSessionRetries: [
         { modelId: "gpt-5-mini", retries: 5 },
@@ -64,121 +64,123 @@ const entryInput: Entry = {
     promptVariables: {
         reviewerBoardFiles: [
             "## Your Identity",
-            "You are $task-model, one of the reviewers in the review board.",
+            "- You are $task-model, one of the reviewers in the review board.",
+            "- The review document you are going to create is Copilot_Review_Writing_{YOUR-MODEL}.md",
+            "- You are going to review a target document, as well as any existing Copilot_Review_Finished_{OTHER-MODEL}.md.",
             "## Reviewer Board Files",
             "- gpt -> Copilot_Review_*_GPT.md",
             "- claude opus -> Copilot_Review_*_OPUS.md",
-            "- gemini -> Copilot_Review_*_GEMINI.md",
+            "- claude sonnet -> Copilot_Review_*_SONNET.md",
         ],
         copilotSdkTips: [
-            "NOTE: If you can't find the file, try different ways to make sure, including absolute path, relative path, powershell tool, view tool, slash and backslash, etc.",
-            "AVOID the glob tool to find any files, it does not work on Windows."
+            "- NOTE: If you can't find the file, try different ways to make sure, including absolute path, relative path, powershell tool, view tool, slash and backslash, etc.",
+            "- AVOID the glob tool to find any files, it does not work on Windows."
         ],
         defineRepoRoot: [
-            "REPO-ROOT is the root directory of the repo (aka the working directory you are currently in)"
+            "- REPO-ROOT is the root directory of the repo (aka the working directory you are currently in)"
         ],
         noQuestion: [
-            "DO NOT ask user if you can start doing something, especially after you made a plan, always perform your job automatically and proactively til the end."
+            "- DO NOT ask user if you can start doing something, especially after you made a plan, always perform your job automatically and proactively til the end."
         ],
         cppjob: [
             "$defineRepoRoot",
             "$copilotSdkTips",
-            "YOU MUST FOLLOW REPO-ROOT/.github/copilot-instructions.md as a general guideline for all your tasks."
+            "- YOU MUST FOLLOW REPO-ROOT/.github/copilot-instructions.md as a general guideline for all your tasks."
         ],
         scrum: [
-            "Execute the instruction in REPO-ROOT/.github/prompts/0-scrum.prompt.md immediately.",
+            "- Execute the instruction in REPO-ROOT/.github/prompts/0-scrum.prompt.md immediately.",
             "$noQuestion"
         ],
         design: [
-            "Execute the instruction in REPO-ROOT/.github/prompts/1-design.prompt.md immediately.",
+            "- Execute the instruction in REPO-ROOT/.github/prompts/1-design.prompt.md immediately.",
             "$noQuestion"
         ],
         plan: [
-            "Execute the instruction in REPO-ROOT/.github/prompts/2-planning.prompt.md immediately.",
+            "- Execute the instruction in REPO-ROOT/.github/prompts/2-planning.prompt.md immediately.",
             "$noQuestion"
         ],
         summary: [
-            "Execute the instruction in REPO-ROOT/.github/prompts/3-summarizing.prompt.md immediately.",
+            "- Execute the instruction in REPO-ROOT/.github/prompts/3-summarizing.prompt.md immediately.",
             "$noQuestion"
         ],
         codingPrefix: [
-            "**IMPORT**: It is FORBIDDEN to modify any script files in `REPO-ROOT/.github/Scripts`. If you are getting trouble, the only reason is your code has problem. Fix the code instead of any other kind of working around.",
+            "- **IMPORT**: It is FORBIDDEN to modify any script files in `REPO-ROOT/.github/Scripts`. If you are getting trouble, the only reason is your code has problem. Fix the code instead of any other kind of working around.",
         ],
         execute: [
             "$codingPrefix",
-            "Execute the instruction in REPO-ROOT/.github/prompts/4-execution.prompt.md immediately.",
+            "- Execute the instruction in REPO-ROOT/.github/prompts/4-execution.prompt.md immediately.",
             "$noQuestion"
         ],
         verify: [
             "$codingPrefix",
-            "Execute the instruction in REPO-ROOT/.github/prompts/5-verifying.prompt.md immediately.",
+            "- Execute the instruction in REPO-ROOT/.github/prompts/5-verifying.prompt.md immediately.",
             "$noQuestion"
         ],
         refine: [
-            "Execute the instruction in REPO-ROOT/.github/prompts/refine.prompt.md immediately.",
+            "- Execute the instruction in REPO-ROOT/.github/prompts/refine.prompt.md immediately.",
             "$noQuestion"
         ],
         review: [
-            "Execute the instruction in REPO-ROOT/.github/prompts/review.prompt.md immediately.",
+            "- Execute the instruction in REPO-ROOT/.github/prompts/review.prompt.md immediately.",
             "$noQuestion"
         ],
         ask: [
-            "Execute the instruction in REPO-ROOT/.github/prompts/ask.prompt.md immediately.",
+            "- Execute the instruction in REPO-ROOT/.github/prompts/ask.prompt.md immediately.",
             "$noQuestion"
         ],
         code: [
-            "Execute the instruction in REPO-ROOT/.github/prompts/code.prompt.md immediately.",
+            "- Execute the instruction in REPO-ROOT/.github/prompts/code.prompt.md immediately.",
             "$noQuestion"
         ],
         reportDocument: [
-            "YOU MUST use the job_prepare_document tool with an argument: an absolute path of the document you are about to create or update.",
-            "YOU MUST use the job_prepare_document tool even when you think nothing needs to be updated, it is to make sure you are clear about which document to work on."
+            "- YOU MUST use the job_prepare_document tool with an argument: an absolute path of the document you are about to create or update.",
+            "- YOU MUST use the job_prepare_document tool even when you think nothing needs to be updated, it is to make sure you are clear about which document to work on."
         ],
         reportBoolean: [
-            "YOU MUST use either job_boolean_true tool or job_boolean_false tool to answer an yes/no question, with the reason in the argument."
+            "- YOU MUST use either job_boolean_true tool or job_boolean_false tool to answer an yes/no question, with the reason in the argument."
         ],
         simpleCondition: [
             "$defineRepoRoot",
             "$copilotSdkTips",
             "$reportBoolean",
-            "Use job_boolean_true tool if the below condition satisfies, or use job_boolean_false tool if it does not satisfy."
+            "- Use job_boolean_true tool if the below condition satisfies, or use job_boolean_false tool if it does not satisfy."
         ],
         scrumDocReady: [
             "$simpleCondition",
-            "REPO-ROOT/.github/TaskLogs/Copilot_Scrum.md should exist and its content should not be just a title."
+            "- REPO-ROOT/.github/TaskLogs/Copilot_Scrum.md should exist and its content should not be just a title."
         ],
         designDocReady: [
             "$simpleCondition",
-            "REPO-ROOT/.github/TaskLogs/Copilot_Task.md should exist and its content should not be just a title."
+            "- REPO-ROOT/.github/TaskLogs/Copilot_Task.md should exist and its content should not be just a title."
         ],
         planDocReady: [
             "$simpleCondition",
-            "REPO-ROOT/.github/TaskLogs/Copilot_Planning.md should exist and its content should not be just a title."
+            "- REPO-ROOT/.github/TaskLogs/Copilot_Planning.md should exist and its content should not be just a title."
         ],
         execDocReady: [
             "$simpleCondition",
-            "REPO-ROOT/.github/TaskLogs/Copilot_Execution.md should exist and its content should not be just a title."
+            "- REPO-ROOT/.github/TaskLogs/Copilot_Execution.md should exist and its content should not be just a title."
         ],
         execDocVerified: [
             "$simpleCondition",
-            "REPO-ROOT/.github/TaskLogs/Copilot_Execution.md should exist and it has a `# !!!VERIFIED!!!`."
+            "- REPO-ROOT/.github/TaskLogs/Copilot_Execution.md should exist and it has a `# !!!VERIFIED!!!`."
         ],
         reviewDocReady: [
             "$simpleCondition",
-            "REPO-ROOT/.github/TaskLogs/Copilot_Review.md should exist and its content should not be just a title."
+            "- REPO-ROOT/.github/TaskLogs/Copilot_Review.md should exist and its content should not be just a title."
         ],
         reportedDocReady: [
             "$simpleCondition",
-            "$reported-document should exist and its content should not be just a title."
+            "- $reported-document should exist and its content should not be just a title."
         ],
         clearBuildTestLog: [
-            "In REPO-ROOT/.github/Scripts, delete both Build.log and Execute.log."
+            "- In REPO-ROOT/.github/Scripts, delete both Build.log and Execute.log."
         ],
         buildSucceededFragment: [
-            "REPO-ROOT/.github/Scripts/Build.log must exist and the last several lines shows there is no error"
+            "- REPO-ROOT/.github/Scripts/Build.log must exist and the last several lines shows there is no error"
         ],
         testPassedFragment: [
-            "REPO-ROOT/.github/Scripts/Execute.log must exist and the last several lines shows how many test files and test cases passed"
+            "- REPO-ROOT/.github/Scripts/Execute.log must exist and the last several lines shows how many test files and test cases passed"
         ]
     },
     tasks: {
@@ -334,7 +336,7 @@ const entryInput: Entry = {
             },
             criteria: {
                 runConditionInSameSession: false,
-                condition: ["$simpleCondition", "All REPO-ROOT/.github/TaskLogs/Copilot_(Task|Planning|Execution).md must have been deleted."],
+                condition: ["$simpleCondition", "- All REPO-ROOT/.github/TaskLogs/Copilot_(Task|Planning|Execution).md must have been deleted."],
                 failureAction: retryFailedCondition()
             }
         },
@@ -404,7 +406,7 @@ const entryInput: Entry = {
             prompt: ["$cppjob", "$review", "# Apply", "$reviewerBoardFiles"],
             criteria: {
                 runConditionInSameSession: false,
-                condition: ["$simpleCondition", "Every REPO-ROOT/.github/TaskLogs/Copilot_Review*.md must have been deleted."],
+                condition: ["$simpleCondition", "- Every REPO-ROOT/.github/TaskLogs/Copilot_Review*.md must have been deleted."],
                 failureAction: retryFailedCondition()
             }
         },
@@ -419,7 +421,7 @@ const entryInput: Entry = {
             prompt: ["$cppjob", "$code", "$user-input"],
             criteria: {
                 runConditionInSameSession: true,
-                condition: ["$simpleCondition", "Both conditions satisfy: 1) $buildSucceededFragment; 2) $testPassedFragment."],
+                condition: ["$simpleCondition", "- Both conditions satisfy: 1) $buildSucceededFragment; 2) $testPassedFragment."],
                 failureAction: retryFailedCondition()
             }
         },
@@ -428,27 +430,27 @@ const entryInput: Entry = {
             requireUserInput: false,
             prompt: [
                 "$defineRepoRoot",
-                "Call REPO-ROOT/.github/Scripts/copilotGitCommit.ps1",
-                "DO NOT git push."
+                "- Call REPO-ROOT/.github/Scripts/copilotGitCommit.ps1",
+                "- DO NOT git push."
             ]
         },
         "git-push": {
             model: { category: "driving" },
             requireUserInput: false,
             prompt: [
-                "`git add` to add all files.",
-                "`git status` to list affected files.",
-                "`git commit -am` everything with this message: [BOT] Backup.",
-                "`git branch` to see the current branch.",
-                "`git push` to the current branch.",
-                "DO NOT run multiple commands at once."
+                "- `git add` to add all files.",
+                "- `git status` to list affected files.",
+                "- `git commit -am` everything with this message: [BOT] Backup.",
+                "- `git branch` to see the current branch.",
+                "- `git push` to the current branch.",
+                "- DO NOT run multiple commands at once."
             ],
             criteria: {
                 runConditionInSameSession: true,
                 condition: [
                     "$simpleCondition",
-                    "`git status` to list file affected, make sure there is nothing uncommited.",
-                    "But it is fine if all uncommited changes are only whitespace related."
+                    "- `git status` to list file affected, make sure there is nothing uncommited.",
+                    "- But it is fine if all uncommited changes are only whitespace related."
                 ],
                 failureAction: retryFailedCondition()
             }
