@@ -34,9 +34,9 @@ namespace gaclib_controls
 
 	const WString DomProp::PropertyName = WString::Unmanaged(L"DomID");
 
-	/***********************************************************************
-	Helper Functions
-	***********************************************************************/
+/***********************************************************************
+Helper Functions
+***********************************************************************/
 
 	Alignment GetAlignment(remoteprotocol::ElementHorizontalAlignment alignment)
 	{
@@ -82,9 +82,9 @@ namespace gaclib_controls
 		return element;
 	}
 
-	/***********************************************************************
-	GuiGraphicsParagraphWrapperElement
-	***********************************************************************/
+/***********************************************************************
+GuiGraphicsParagraphWrapperElement
+***********************************************************************/
 
 	class GuiGraphicsParagraphWrapperElement
 		: public Object
@@ -191,6 +191,7 @@ namespace gaclib_controls
 								properties.size = inlineProp.size;
 								properties.baseline = inlineProp.baseline;
 								properties.breakCondition = inlineProp.breakCondition;
+								properties.backgroundColor = inlineProp.backgroundColor;
 								properties.callbackId = inlineProp.callbackId;
 								if (inlineProp.backgroundElementId != -1)
 								{
@@ -207,7 +208,7 @@ namespace gaclib_controls
 				if (desc.caret)
 				{
 					auto& caret = desc.caret.Value();
-					paragraph->OpenCaret(caret.caret, caret.caretColor, caret.frontSide);
+					paragraph->EnableCaret(caret.caret, caret.caretColor, caret.frontSide);
 				}
 			}
 			paragraph->Render(bounds);
@@ -475,9 +476,9 @@ namespace gaclib_controls
 		return focusComposition;
 	}
 
-	/***********************************************************************
-	UnitTestSnapshotViewerAppWindow
-	***********************************************************************/
+/***********************************************************************
+UnitTestSnapshotViewerAppWindow
+***********************************************************************/
 
 	void UnitTestSnapshotViewerAppWindow::Highlight(GuiBoundsComposition*& target, remoteprotocol::RenderingDom& renderingDom, Color color)
 	{

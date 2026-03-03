@@ -3590,6 +3590,10 @@ INativeCallbackService
 			/// </summary>
 			/// <param name="window">The argument to the callback.</param>
 			virtual void					InvokeNativeWindowDestroying(INativeWindow* window)=0;
+			/// <summary>
+			/// Invoke <see cref="INativeControllerListener::EnvironmentChanged"/> of all installed listeners. 
+			/// </summary>
+			virtual void					InvokeEnvironmentChanged()=0;
 		};
 		
 		/// <summary>
@@ -3917,6 +3921,10 @@ Native Window Controller
 			/// </summary>
 			/// <param name="window">The destroying window.</param>
 			virtual void					NativeWindowDestroying(INativeWindow* window);
+			/// <summary>
+			/// Called when global configurations are changed. An native OS provider should not trigger this callback.
+			/// </summary>
+			virtual void					EnvironmentChanged();
 		};
 
 		/// <summary>
@@ -10404,6 +10412,9 @@ Control Host
 				/// <summary>Test is the window opened.</summary>
 				/// <returns>Returns true if the window is opened.</returns>
 				bool											GetOpening();
+
+				/// <summary>Ask the window to recalculate its fonts.</summary>
+				void											NotifyUpdateDisplayFont();
 			};
 
 /***********************************************************************
@@ -10731,6 +10742,7 @@ Application
 				void											InvokeClipboardNotify(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
 				void											ClipboardUpdated()override;
 				void											GlobalShortcutKeyActivated(vint id)override;
+				void											EnvironmentChanged()override;
 
 			protected:
 				using WindowMap = collections::Dictionary<INativeWindow*, GuiWindow*>;
@@ -11972,13 +11984,10 @@ IGuiGraphicsParagraph
 					BreakCondition				breakCondition;
 					/// <summary>The background image, nullable.</summary>
 					Ptr<IGuiGraphicsElement>	backgroundImage;
+					/// <summary>The background color. The default value is #00000000.</summary>
+					Color						backgroundColor = Color(0, 0, 0, 0);
 					/// <summary>The id for callback. If the value is -1, then no callback will be received .</summary>
 					vint						callbackId = -1;
-
-					InlineObjectProperties()
-						:baseline(-1)
-					{
-					}
 				};
 
 				/// <summary>Get the <see cref="IGuiGraphicsLayoutProvider"/> object that created this paragraph.</summary>
@@ -12052,14 +12061,16 @@ IGuiGraphicsParagraph
 				/// <returns>The layouted size.</returns>
 				virtual Size								GetSize()=0;
 				/// <summary>Make the caret visible so that it will be rendered in the paragraph.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <returns>Returns true if the caret is valid.</returns>
 				/// <param name="caret">The caret.</param>
 				/// <param name="color">The color of the caret.</param>
 				/// <param name="frontSide">Set to true to display the caret for the character before it.</param>
-				virtual bool								OpenCaret(vint caret, Color color, bool frontSide)=0;
+				virtual bool								EnableCaret(vint caret, Color color, bool frontSide)=0;
 				/// <summary>Make the caret invisible.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				virtual bool								CloseCaret()=0;
+				virtual void								DisableCaret()=0;
+				/// <summary>Blink the caret, switching between visible and not visible once, available when caret is enabled.</summary>
+				/// <returns>Returns true if needs to redraw.</returns>
+				virtual bool								BlinkCaret() = 0;
 				/// <summary>Render the graphics element using a specified bounds.</summary>
 				/// <param name="bounds">Bounds to decide the size and position of the binded graphics element.</param>
 				virtual void								Render(Rect bounds)=0;
@@ -12139,8 +12150,9 @@ IGuiDocumentElementRenderer
 				virtual void									NotifyParagraphStyleUpdated(TextPos begin, TextPos end) = 0;
 				virtual void									NotifyParagraphStyleUpdated(vint index, vint count) = 0;
 				virtual Ptr<DocumentHyperlinkRun::Package>		GetHyperlinkFromPoint(Point point) = 0;
-				virtual void									OpenCaret(TextPos caret, Color color, bool frontSide) = 0;
-				virtual void									CloseCaret(TextPos caret) = 0;
+				virtual void									EnableCaret(TextPos caret, Color color, bool frontSide) = 0;
+				virtual void									DisableCaret() = 0;
+				virtual bool									BlinkCaret() = 0;
 				virtual void									SetSelection(TextPos begin, TextPos end) = 0;
 				virtual TextPos									CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide) = 0;
 				virtual TextPos									CalculateCaretFromPoint(Point point) = 0;
@@ -19403,6 +19415,10 @@ GuiDocumentElement
 				/// <param name="value">True if the caret will be rendered.</param>
 				void										SetCaretVisible(bool value);
 				/// <summary>
+				/// Switch between rendering or not rendering the caret.
+				/// </summary>
+				void										BlinkCaret();
+				/// <summary>
 				/// Get the color of the caret.
 				/// </summary>
 				/// <returns>The color of the caret.</returns>
@@ -20504,8 +20520,9 @@ GuiDocumentElementRenderer
 
 				Ptr<DocumentHyperlinkRun::Package>		GetHyperlinkFromPoint(Point point) override;
 
-				void									OpenCaret(TextPos caret, Color color, bool frontSide) override;
-				void									CloseCaret(TextPos caret) override;
+				void									EnableCaret(TextPos caret, Color color, bool frontSide) override;
+				void									DisableCaret() override;
+				bool									BlinkCaret() override;
 				void									SetSelection(TextPos begin, TextPos end) override;
 				TextPos									CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide) override;
 				TextPos									CalculateCaretFromPoint(Point point) override;
@@ -20937,7 +20954,9 @@ namespace vl::presentation::remoteprotocol
 	struct GetCaretRequest;
 	struct GetCaretResponse;
 	struct GetCaretBoundsRequest;
+	struct GetCaretBoundsResponse;
 	struct GetInlineObjectFromPointRequest;
+	struct GetNearestCaretFromTextPosRequest;
 	struct IsValidCaretRequest;
 	struct OpenCaretRequest;
 	struct RenderInlineObjectRequest;
@@ -20947,6 +20966,7 @@ namespace vl::presentation::remoteprotocol
 	struct ElementBoundary;
 	struct ElementMeasuring_FontHeight;
 	struct ElementMeasuring_ElementMinSize;
+	struct ElementMeasuring_InlineObjectBounds;
 	struct ElementMeasurings;
 	struct RenderingDomContent;
 	struct RenderingDom;
@@ -20998,7 +21018,9 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GetCaretRequest> { static constexpr const wchar_t* Name = L"GetCaretRequest"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GetCaretResponse> { static constexpr const wchar_t* Name = L"GetCaretResponse"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GetCaretBoundsRequest> { static constexpr const wchar_t* Name = L"GetCaretBoundsRequest"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GetCaretBoundsResponse> { static constexpr const wchar_t* Name = L"GetCaretBoundsResponse"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest> { static constexpr const wchar_t* Name = L"GetInlineObjectFromPointRequest"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest> { static constexpr const wchar_t* Name = L"GetNearestCaretFromTextPosRequest"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::IsValidCaretRequest> { static constexpr const wchar_t* Name = L"IsValidCaretRequest"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::OpenCaretRequest> { static constexpr const wchar_t* Name = L"OpenCaretRequest"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderInlineObjectRequest> { static constexpr const wchar_t* Name = L"RenderInlineObjectRequest"; };
@@ -21008,6 +21030,7 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementBoundary> { static constexpr const wchar_t* Name = L"ElementBoundary"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight> { static constexpr const wchar_t* Name = L"ElementMeasuring_FontHeight"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize> { static constexpr const wchar_t* Name = L"ElementMeasuring_ElementMinSize"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementMeasuring_InlineObjectBounds> { static constexpr const wchar_t* Name = L"ElementMeasuring_InlineObjectBounds"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementMeasurings> { static constexpr const wchar_t* Name = L"ElementMeasurings"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingDomContent> { static constexpr const wchar_t* Name = L"RenderingDomContent"; };
 	template<> struct JsonNameHelper<::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>> { static constexpr const wchar_t* Name = L"RenderingDom"; };
@@ -21079,6 +21102,18 @@ namespace vl::presentation::remoteprotocol
 	using DocumentRunProperty = ::vl::Variant<
 		::vl::presentation::remoteprotocol::DocumentTextRunProperty,
 		::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty
+	>;
+
+	using OrdinaryElementDescVariant = ::vl::Variant<
+		::vl::presentation::remoteprotocol::ElementDesc_SolidBorder,
+		::vl::presentation::remoteprotocol::ElementDesc_SinkBorder,
+		::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter,
+		::vl::presentation::remoteprotocol::ElementDesc_SolidBackground,
+		::vl::presentation::remoteprotocol::ElementDesc_GradientBackground,
+		::vl::presentation::remoteprotocol::ElementDesc_InnerShadow,
+		::vl::presentation::remoteprotocol::ElementDesc_Polygon,
+		::vl::presentation::remoteprotocol::ElementDesc_SolidLabel,
+		::vl::presentation::remoteprotocol::ElementDesc_ImageFrame
 	>;
 
 	using UnitTest_ElementDescVariant = ::vl::Variant<
@@ -21254,6 +21289,7 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::Size size;
 		::vl::vint baseline;
 		::vl::presentation::elements::IGuiGraphicsParagraph::BreakCondition breakCondition;
+		::vl::presentation::Color backgroundColor;
 		::vl::vint backgroundElementId;
 		::vl::vint callbackId;
 	};
@@ -21280,7 +21316,6 @@ namespace vl::presentation::remoteprotocol
 	struct UpdateElement_DocumentParagraphResponse
 	{
 		::vl::presentation::Size documentSize;
-		::vl::Ptr<::vl::collections::Dictionary<::vl::vint, ::vl::presentation::Rect>> inlineObjectBounds;
 	};
 
 	struct GetCaretRequest
@@ -21299,14 +21334,25 @@ namespace vl::presentation::remoteprotocol
 	struct GetCaretBoundsRequest
 	{
 		::vl::vint id;
-		::vl::vint caret;
-		bool frontSide;
+	};
+
+	struct GetCaretBoundsResponse
+	{
+		::vl::Ptr<::vl::collections::List<::vl::presentation::Rect>> frontSideBounds;
+		::vl::Ptr<::vl::collections::List<::vl::presentation::Rect>> backSideBounds;
 	};
 
 	struct GetInlineObjectFromPointRequest
 	{
 		::vl::vint id;
 		::vl::presentation::Point point;
+	};
+
+	struct GetNearestCaretFromTextPosRequest
+	{
+		::vl::vint id;
+		::vl::vint textPos;
+		bool frontSide;
 	};
 
 	struct IsValidCaretRequest
@@ -21338,6 +21384,7 @@ namespace vl::presentation::remoteprotocol
 	struct ElementBeginRendering
 	{
 		::vl::vint frameId;
+		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::OrdinaryElementDescVariant>> updatedElements;
 	};
 
 	struct ElementRendering
@@ -21369,11 +21416,19 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::Size minSize;
 	};
 
+	struct ElementMeasuring_InlineObjectBounds
+	{
+		::vl::vint elementId;
+		::vl::vint callbackId;
+		::vl::presentation::Rect bounds;
+	};
+
 	struct ElementMeasurings
 	{
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>> fontHeights;
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>> minSizes;
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::ImageMetadata>> createdImages;
+		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::ElementMeasuring_InlineObjectBounds>> inlineObjectBounds;
 	};
 
 	struct RenderingDomContent
@@ -21484,7 +21539,9 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretRequest>(const ::vl::presentation::remoteprotocol::GetCaretRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretResponse>(const ::vl::presentation::remoteprotocol::GetCaretResponse & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretBoundsRequest>(const ::vl::presentation::remoteprotocol::GetCaretBoundsRequest & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretBoundsResponse>(const ::vl::presentation::remoteprotocol::GetCaretBoundsResponse & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest>(const ::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest>(const ::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IsValidCaretRequest>(const ::vl::presentation::remoteprotocol::IsValidCaretRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::OpenCaretRequest>(const ::vl::presentation::remoteprotocol::OpenCaretRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderInlineObjectRequest>(const ::vl::presentation::remoteprotocol::RenderInlineObjectRequest & value);
@@ -21494,6 +21551,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementBoundary>(const ::vl::presentation::remoteprotocol::ElementBoundary & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(const ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>(const ::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasuring_InlineObjectBounds>(const ::vl::presentation::remoteprotocol::ElementMeasuring_InlineObjectBounds & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasurings>(const ::vl::presentation::remoteprotocol::ElementMeasurings & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDomContent>(const ::vl::presentation::remoteprotocol::RenderingDomContent & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDom>(const ::vl::presentation::remoteprotocol::RenderingDom & value);
@@ -21559,7 +21617,9 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretResponse>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretResponse& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretBoundsRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretBoundsResponse>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretBoundsResponse& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IsValidCaretRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IsValidCaretRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::OpenCaretRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::OpenCaretRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderInlineObjectRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderInlineObjectRequest& value);
@@ -21569,6 +21629,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementBoundary>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementBoundary& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_InlineObjectBounds>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasuring_InlineObjectBounds& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasurings>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasurings& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDomContent>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingDomContent& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDom>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingDom& value);
@@ -21606,22 +21667,13 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(IOReleaseCapture, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(IOIsKeyPressing, ::vl::presentation::VKEY, bool, REQ, RES, NODROP)\
 	HANDLER(IOIsKeyToggled, ::vl::presentation::VKEY, bool, REQ, RES, NODROP)\
-	HANDLER(RendererUpdateElement_SolidBorder, ::vl::presentation::remoteprotocol::ElementDesc_SolidBorder, void, REQ, NORES, NODROP)\
-	HANDLER(RendererUpdateElement_SinkBorder, ::vl::presentation::remoteprotocol::ElementDesc_SinkBorder, void, REQ, NORES, NODROP)\
-	HANDLER(RendererUpdateElement_SinkSplitter, ::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter, void, REQ, NORES, NODROP)\
-	HANDLER(RendererUpdateElement_SolidBackground, ::vl::presentation::remoteprotocol::ElementDesc_SolidBackground, void, REQ, NORES, NODROP)\
-	HANDLER(RendererUpdateElement_GradientBackground, ::vl::presentation::remoteprotocol::ElementDesc_GradientBackground, void, REQ, NORES, NODROP)\
-	HANDLER(RendererUpdateElement_InnerShadow, ::vl::presentation::remoteprotocol::ElementDesc_InnerShadow, void, REQ, NORES, NODROP)\
-	HANDLER(RendererUpdateElement_Polygon, ::vl::presentation::remoteprotocol::ElementDesc_Polygon, void, REQ, NORES, NODROP)\
-	HANDLER(RendererUpdateElement_SolidLabel, ::vl::presentation::remoteprotocol::ElementDesc_SolidLabel, void, REQ, NORES, NODROP)\
 	HANDLER(ImageCreated, ::vl::presentation::remoteprotocol::ImageCreation, ::vl::presentation::remoteprotocol::ImageMetadata, REQ, RES, NODROP)\
 	HANDLER(ImageDestroyed, ::vl::vint, void, REQ, NORES, NODROP)\
-	HANDLER(RendererUpdateElement_ImageFrame, ::vl::presentation::remoteprotocol::ElementDesc_ImageFrame, void, REQ, NORES, NODROP)\
 	HANDLER(RendererUpdateElement_DocumentParagraph, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph, ::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_GetCaret, ::vl::presentation::remoteprotocol::GetCaretRequest, ::vl::presentation::remoteprotocol::GetCaretResponse, REQ, RES, NODROP)\
-	HANDLER(DocumentParagraph_GetCaretBounds, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest, ::vl::presentation::Rect, REQ, RES, NODROP)\
+	HANDLER(DocumentParagraph_GetCaretBounds, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest, ::vl::presentation::remoteprotocol::GetCaretBoundsResponse, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_GetInlineObjectFromPoint, ::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest, ::vl::Nullable<::vl::presentation::remoteprotocol::DocumentRun>, REQ, RES, NODROP)\
-	HANDLER(DocumentParagraph_GetNearestCaretFromTextPos, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest, ::vl::vint, REQ, RES, NODROP)\
+	HANDLER(DocumentParagraph_GetNearestCaretFromTextPos, ::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest, ::vl::vint, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_IsValidCaret, ::vl::presentation::remoteprotocol::IsValidCaretRequest, bool, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_OpenCaret, ::vl::presentation::remoteprotocol::OpenCaretRequest, void, REQ, NORES, NODROP)\
 	HANDLER(DocumentParagraph_CloseCaret, ::vl::vint, void, REQ, NORES, NODROP)\
@@ -21669,19 +21721,11 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::presentation::remoteprotocol::ElementBeginRendering)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementBoundary)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_GradientBackground)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_ImageFrame)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_InnerShadow)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_Polygon)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_SinkBorder)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_SolidBackground)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_SolidBorder)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_SolidLabel)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementRendering)\
 	HANDLER(::vl::presentation::remoteprotocol::GetCaretBoundsRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::GetCaretRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest)\
+	HANDLER(::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::ImageCreation)\
 	HANDLER(::vl::presentation::remoteprotocol::IsValidCaretRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::OpenCaretRequest)\
@@ -21692,9 +21736,9 @@ namespace vl::presentation::remoteprotocol
 
 #define GACUI_REMOTEPROTOCOL_MESSAGE_RESPONSE_TYPES(HANDLER)\
 	HANDLER(::vl::Nullable<::vl::presentation::remoteprotocol::DocumentRun>)\
-	HANDLER(::vl::presentation::Rect)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementMeasurings)\
 	HANDLER(::vl::presentation::remoteprotocol::FontConfig)\
+	HANDLER(::vl::presentation::remoteprotocol::GetCaretBoundsResponse)\
 	HANDLER(::vl::presentation::remoteprotocol::GetCaretResponse)\
 	HANDLER(::vl::presentation::remoteprotocol::ImageMetadata)\
 	HANDLER(::vl::presentation::remoteprotocol::ScreenConfig)\
@@ -21771,10 +21815,11 @@ DiffRuns
 	/// <summary>
 	/// Updates style properties of a text run. Ranges will be splitted or merged accordingly.
 	/// </summary>
+	/// <returns>Returns true if the map is changed semantically.</returns>
 	/// <param name="map">Current text runs</param>
 	/// <param name="range">Range of the text run to update</param>
 	/// <param name="propertyOverrides">Properties to override</param>
-	extern void AddTextRun(
+	extern bool AddTextRun(
 		DocumentTextRunPropertyMap& map,
 		CaretRange range,
 		const DocumentTextRunPropertyOverrides& propertyOverrides);
@@ -21851,11 +21896,15 @@ GuiRemoteGraphicsParagraph
 		bool															wrapLine = false;
 		vint															maxWidth = -1;
 		Alignment														paragraphAlignment = Alignment::Left;
-		Size															cachedSize = Size(0, 0);
-		Ptr<collections::Dictionary<vint, Rect>>							cachedInlineObjectBounds;
-		bool															needUpdate = true;
+
 		vint															id = -1;
 		vuint64_t														lastRenderedBatchId = 0;
+
+		Size															cachedSize = Size(0, 0);
+		collections::Dictionary<vint, Rect>								cachedInlineObjectBounds;
+		remoteprotocol::GetCaretBoundsResponse							cachedCaretBounds;
+		bool															needUpdate = true;
+		bool															needUpdateCaretBoundsCache = true;
 
 	public:
 		GuiRemoteGraphicsParagraph(const WString& _text, GuiRemoteController* _remote, GuiRemoteGraphicsResourceManager* _resourceManager, GuiRemoteGraphicsRenderTarget* _renderTarget, IGuiGraphicsParagraphCallback* _callback);
@@ -21867,10 +21916,12 @@ GuiRemoteGraphicsParagraph
 		vint											NativeTextPosToRemoteTextPos(vint textPos);
 		vint											RemoteTextPosToNativeTextPos(vint textPos);
 		bool											TryBuildCaretRange(vint start, vint length, CaretRange& range);
+		bool											GetCaretBoundsInternal(vint caret, bool frontSide, Rect& bounds);
 
 	public:
 		bool											EnsureRemoteParagraphSynced();
-		void											MarkParagraphDirty(bool invalidateSize);
+		void											MarkParagraphDirty(bool invalidateSize, bool invalidateCaretBoundsCache);
+		void											SetInlineObjectBounds(vint callbackId, const Rect& bounds);
 
 		// =============================================================
 		// IGuiGraphicsParagraph
@@ -21894,8 +21945,9 @@ GuiRemoteGraphicsParagraph
 		bool											ResetInlineObject(vint start, vint length) override;
 
 		Size											GetSize() override;
-		bool											OpenCaret(vint caret, Color color, bool frontSide) override;
-		bool											CloseCaret() override;
+		bool											EnableCaret(vint caret, Color color, bool frontSide) override;
+		void											DisableCaret() override;
+		bool											BlinkCaret() override;
 		void											Render(Rect bounds) override;
 
 		vint											GetCaret(vint comparingCaret, CaretRelativePosition position, bool& preferFrontSide) override;
@@ -22087,6 +22139,7 @@ GuiRemoteGraphicsRenderTarget
 			collections::SortedList<vint>								createdRenderers;
 			collections::SortedList<vint>								destroyedRenderers;
 			RendererSet													renderersAskingForCache;
+			bool														needFullElementUpdateOnNextFrame = false;
 			Nullable<Rect>												clipperValidArea;
 			collections::List<HitTestResult>							hitTestResults;
 			collections::List<SystemCursorType>							cursors;
@@ -22200,7 +22253,7 @@ namespace vl::presentation::elements_remoteprotocol
 		virtual remoteprotocol::RendererType	GetRendererType() = 0;
 		virtual bool							IsUpdated() = 0;
 		virtual void							ResetUpdated() = 0;
-		virtual void							SendUpdateElementMessages(bool fullContent) = 0;
+		virtual void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) = 0;
 		virtual bool							IsRenderedInLastBatch() = 0;
 
 		virtual bool							NeedUpdateMinSizeFromCache() = 0;
@@ -22261,7 +22314,7 @@ namespace vl::presentation::elements_remoteprotocol
 
 		bool							IsUpdated() override;
 		void							ResetUpdated() override;
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 		void							OnElementStateChanged() override;
 	};
 
@@ -22273,7 +22326,7 @@ namespace vl::presentation::elements_remoteprotocol
 
 		bool							IsUpdated() override;
 		void							ResetUpdated() override;
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 		void							OnElementStateChanged() override;
 	};
 
@@ -22283,7 +22336,7 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		GuiSolidBorderElementRenderer();
 
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 
 	class Gui3DBorderElementRenderer : public GuiRemoteProtocolElementRenderer<Gui3DBorderElement, Gui3DBorderElementRenderer, remoteprotocol::RendererType::SinkBorder>
@@ -22292,7 +22345,7 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		Gui3DBorderElementRenderer();
 
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 
 	class Gui3DSplitterElementRenderer : public GuiRemoteProtocolElementRenderer<Gui3DSplitterElement, Gui3DSplitterElementRenderer, remoteprotocol::RendererType::SinkSplitter>
@@ -22301,7 +22354,7 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		Gui3DSplitterElementRenderer();
 
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 
 	class GuiSolidBackgroundElementRenderer : public GuiRemoteProtocolElementRenderer<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, remoteprotocol::RendererType::SolidBackground>
@@ -22310,7 +22363,7 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		GuiSolidBackgroundElementRenderer();
 
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 
 	class GuiGradientBackgroundElementRenderer : public GuiRemoteProtocolElementRenderer<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, remoteprotocol::RendererType::GradientBackground>
@@ -22319,7 +22372,7 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		GuiGradientBackgroundElementRenderer();
 
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 
 	class GuiInnerShadowElementRenderer : public GuiRemoteProtocolElementRenderer<GuiInnerShadowElement, GuiInnerShadowElementRenderer, remoteprotocol::RendererType::InnerShadow>
@@ -22328,7 +22381,7 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		GuiInnerShadowElementRenderer();
 
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 
 	class GuiSolidLabelElementRenderer : public GuiRemoteProtocolElementRenderer<GuiSolidLabelElement, GuiSolidLabelElementRenderer, remoteprotocol::RendererType::SolidLabel>
@@ -22350,7 +22403,7 @@ namespace vl::presentation::elements_remoteprotocol
 		void							UpdateMinSize(Size size) override;
 		void							NotifyMinSizeCacheInvalidated() override;
 
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 
 	class GuiImageFrameElementRenderer : public GuiRemoteProtocolElementRenderer<GuiImageFrameElement, GuiImageFrameElementRenderer, remoteprotocol::RendererType::ImageFrame>
@@ -22366,7 +22419,7 @@ namespace vl::presentation::elements_remoteprotocol
 
 		bool							NeedUpdateMinSizeFromCache() override;
 		void							TryFetchMinSizeFromCache() override;
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 
 	class GuiPolygonElementRenderer : public GuiRemoteProtocolElementRenderer<GuiPolygonElement, GuiPolygonElementRenderer, remoteprotocol::RendererType::Polygon>
@@ -22375,11 +22428,12 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		GuiPolygonElementRenderer();
 
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 }
 
 #endif
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_SHARED.H
@@ -23961,9 +24015,16 @@ namespace vl::presentation::remote_renderer
 		remoteprotocol::ImageMetadata			CreateImageMetadata(vint id, INativeImage* image);
 		remoteprotocol::ImageMetadata			CreateImage(const remoteprotocol::ImageCreation& arguments);
 		void									CheckDom();
-		Ptr<elements::IGuiGraphicsElement>		CreateRemoteDocumentParagraphElement();
 
 	protected:
+		ElementMap								focusedParagraphElements;
+
+		void									OnCaretNotify();
+		Ptr<elements::IGuiGraphicsElement>		CreateRemoteDocumentParagraphElement(vint paragraphId);
+
+	protected:
+		static const vuint64_t					CaretInterval = 500;
+		vuint64_t								lastCaretTime = 0;
 		bool									supressPaint = false;
 		bool									needRefresh = false;
 
@@ -23995,6 +24056,24 @@ namespace vl::presentation::remote_renderer
 		void									KeyDown(const NativeWindowKeyInfo& info) override;
 		void									KeyUp(const NativeWindowKeyInfo& info) override;
 		void									Char(const NativeWindowCharInfo& info) override;
+
+	protected:
+		Nullable<NativeWindowMouseInfo>					pendingMouseMove, pendingHWheel, pendingVWheel;
+		Nullable<NativeWindowKeyInfo>					pendingKeyAutoDown;
+		Nullable<remoteprotocol::WindowSizingConfig>	pendingWindowBoundsUpdate;
+
+		void									SendAccumulatedMessages();
+
+	private:
+		void									RequestRendererUpdateElement_SolidBorder(const remoteprotocol::ElementDesc_SolidBorder& arguments);
+		void									RequestRendererUpdateElement_SinkBorder(const remoteprotocol::ElementDesc_SinkBorder& arguments);
+		void									RequestRendererUpdateElement_SinkSplitter(const remoteprotocol::ElementDesc_SinkSplitter& arguments);
+		void									RequestRendererUpdateElement_SolidBackground(const remoteprotocol::ElementDesc_SolidBackground& arguments);
+		void									RequestRendererUpdateElement_GradientBackground(const remoteprotocol::ElementDesc_GradientBackground& arguments);
+		void									RequestRendererUpdateElement_InnerShadow(const remoteprotocol::ElementDesc_InnerShadow& arguments);
+		void									RequestRendererUpdateElement_Polygon(const remoteprotocol::ElementDesc_Polygon& arguments);
+		void									RequestRendererUpdateElement_SolidLabel(const remoteprotocol::ElementDesc_SolidLabel& arguments);
+		void									RequestRendererUpdateElement_ImageFrame(const remoteprotocol::ElementDesc_ImageFrame& arguments);
 
 	public:
 		GuiRemoteRendererSingle();
@@ -28455,6 +28534,7 @@ namespace vl
 			void											InvokeGlobalShortcutKeyActivated(vint id) override;
 			void											InvokeNativeWindowCreated(INativeWindow* window) override;
 			void											InvokeNativeWindowDestroying(INativeWindow* window) override;
+			void											InvokeEnvironmentChanged() override;
 		};
 	}
 }

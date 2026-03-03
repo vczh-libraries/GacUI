@@ -724,6 +724,7 @@ DocumentParagraphState
 		double									width;           // Character width
 		vint									lineIndex;       // Which line this character belongs to
 		vint									height;          // Character height (font size or inline object height)
+		vint									length;          // Character length in text (1 for normal characters, more for inline objects)
 		vint									baseline;        // Distance from top to baseline (for alignment)
 		bool									isInlineObject;  // True if this position is part of an inline object
 	};
@@ -749,7 +750,8 @@ DocumentParagraphState
 		elements::DocumentInlineObjectRunPropertyMap	inlineObjectRuns;
 		elements::DocumentRunPropertyMap				mergedRuns;
 
-		collections::List<DocumentParagraphCharLayout>	characterLayouts;
+		collections::Dictionary<vint, DocumentParagraphCharLayout>	caretLayouts;
+		collections::SortedList<vint>								caretLayoutKeys;
 		collections::List<DocumentParagraphLineInfo>	lines;
 		Size											cachedSize;
 		collections::Dictionary<vint, Rect>				cachedInlineObjectBounds;
@@ -894,7 +896,7 @@ IGuiRemoteProtocolMessages (Elements - Document)
 		void								Impl_DocumentParagraph_GetCaret(vint id, const remoteprotocol::GetCaretRequest& arguments);
 		void								Impl_DocumentParagraph_GetCaretBounds(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments);
 		void								Impl_DocumentParagraph_GetInlineObjectFromPoint(vint id, const remoteprotocol::GetInlineObjectFromPointRequest & arguments);
-		void								Impl_DocumentParagraph_GetNearestCaretFromTextPos(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments);
+		void								Impl_DocumentParagraph_GetNearestCaretFromTextPos(vint id, const remoteprotocol::GetNearestCaretFromTextPosRequest& arguments);
 		void								Impl_DocumentParagraph_IsValidCaret(vint id, const remoteprotocol::IsValidCaretRequest& arguments);
 		void								Impl_DocumentParagraph_OpenCaret(const remoteprotocol::OpenCaretRequest& arguments);
 		void								Impl_DocumentParagraph_CloseCaret(const vint& arguments);
@@ -902,6 +904,7 @@ IGuiRemoteProtocolMessages (Elements - Document)
 }
 
 #endif
+
 
 /***********************************************************************
 .\GUIUNITTESTPROTOCOL.H

@@ -2579,6 +2579,8 @@ Type Declaration (Class)
 				CLASS_MEMBER_METHOD(Hide, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Close, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetOpening, NO_PARAMETER)
+
+				CLASS_MEMBER_METHOD(NotifyUpdateDisplayFont, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiControlHost)
 
 			BEGIN_CLASS_MEMBER(GuiWindow)
@@ -3364,6 +3366,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_FAST(CaretVisible)
 				CLASS_MEMBER_PROPERTY_FAST(CaretColor)
 
+				CLASS_MEMBER_METHOD(BlinkCaret, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(IsCaretEndPreferFrontSide, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetCaret, {L"begin" _ L"end" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(CalculateCaret, {L"comparingCaret" _ L"position" _ L"preferFrontSide"})

@@ -263,6 +263,14 @@ GuiApplication
 				}
 			}
 
+			void GuiApplication::EnvironmentChanged()
+			{
+				for (auto window : windows)
+				{
+					window->NotifyUpdateDisplayFont();
+				}
+			}
+
 			GuiApplication::GuiApplication()
 				:locale(Locale::UserDefault())
 			{
@@ -2619,6 +2627,11 @@ GuiControlHost
 					return window->IsVisible();
 				}
 				return false;
+			}
+
+			void GuiControlHost::NotifyUpdateDisplayFont()
+			{
+				UpdateDisplayFont();
 			}
 
 /***********************************************************************
@@ -18128,7 +18141,10 @@ GuiDocumentCommonInterface
 				TextPos newBegin=shift?begin:caret;
 				TextPos newEnd=caret;
 				documentElement->SetCaret(newBegin, newEnd, frontSide);
-				documentElement->SetCaretVisible(true);
+				if (editMode != GuiDocumentEditMode::ViewOnly && documentControl && documentControl->GetVisuallyEnabled() && documentControl->GetFocused())
+				{
+					documentElement->SetCaretVisible(true);
+				}
 				EnsureDocumentRectVisible(documentElement->GetCaretBounds(newEnd, frontSide));
 				UpdateCaretPoint();
 				SelectionChanged.Execute(documentControl->GetNotifyEventArguments());
@@ -18499,24 +18515,18 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnCaretNotify(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				if (documentControl->GetVisuallyEnabled())
+				if (documentControl->GetVisuallyEnabled() && editMode != GuiDocumentEditMode::ViewOnly)
 				{
-					if (editMode != GuiDocumentEditMode::ViewOnly)
-					{
-						documentElement->SetCaretVisible(!documentElement->GetCaretVisible());
-					}
+					documentElement->BlinkCaret();
 				}
 			}
 
 			void GuiDocumentCommonInterface::OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				if (documentControl->GetVisuallyEnabled())
+				if (documentControl->GetVisuallyEnabled() && editMode != GuiDocumentEditMode::ViewOnly)
 				{
-					if (editMode != GuiDocumentEditMode::ViewOnly)
-					{
-						documentElement->SetCaretVisible(true);
-						UpdateCaretPoint();
-					}
+					documentElement->SetCaretVisible(true);
+					UpdateCaretPoint();
 				}
 			}
 
@@ -29208,11 +29218,11 @@ GuiDocumentElement
 					elementRenderer->SetSelection(caretBegin, caretEnd);
 					if (caretVisible)
 					{
-						elementRenderer->OpenCaret(caretEnd, caretColor, caretFrontSide);
+						elementRenderer->EnableCaret(caretEnd, caretColor, caretFrontSide);
 					}
 					else
 					{
-						elementRenderer->CloseCaret(caretEnd);
+						elementRenderer->DisableCaret();
 					}
 					InvokeOnCompositionStateChanged();
 				}
@@ -29349,6 +29359,17 @@ GuiDocumentElement
 			{
 				caretVisible=value;
 				UpdateCaret();
+			}
+
+			void GuiDocumentElement::BlinkCaret()
+			{
+				if (auto elementRenderer = GetElementRenderer())
+				{
+					if (elementRenderer->BlinkCaret())
+					{
+						InvokeOnCompositionStateChanged();
+					}
+				}
 			}
 
 			Color GuiDocumentElement::GetCaretColor()
@@ -29736,6 +29757,9 @@ GuiDocumentElementRenderer
 
 			Ptr<pg::ParagraphCache> GuiDocumentElementRenderer::EnsureParagraph(vint paragraphIndex)
 			{
+				auto cache = pgCache.TryGetParagraphCache(paragraphIndex);
+				bool paragraphAlreadyCreated = cache && cache->graphicsParagraph;
+
 				lastTotalHeightWithoutParagraphDistance += pgCache.EnsureParagraph(paragraphIndex, lastMaxWidth);
 				vint width = pgCache.GetParagraphSize(paragraphIndex).x;
 				if (lastTotalWidth < width)
@@ -29743,7 +29767,13 @@ GuiDocumentElementRenderer
 					lastTotalWidth = width;
 				}
 				FixMinSize();
-				return pgCache.GetParagraphCache(paragraphIndex, true);
+				cache = pgCache.GetParagraphCache(paragraphIndex, true);
+
+				if (!paragraphAlreadyCreated && paragraphIndex == lastCaret.row && element->GetCaretVisible())
+				{
+					cache->graphicsParagraph->EnableCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
+				}
+				return cache;
 			}
 
 			void GuiDocumentElementRenderer::FixMinSize()
@@ -29899,14 +29929,7 @@ GuiDocumentElementRenderer
 					for (vint i = startParagraph; i < paragraphCount; i++)
 					{
 						Ptr<DocumentParagraphRun> paragraph = document->paragraphs[i];
-						auto cache = pgCache.TryGetParagraphCache(i);
-						bool paragraphAlreadyCreated = cache && cache->graphicsParagraph;
-
-						cache = EnsureParagraph(i);
-						if (!paragraphAlreadyCreated && i == lastCaret.row && element->GetCaretVisible())
-						{
-							cache->graphicsParagraph->OpenCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
-						}
+						auto cache = EnsureParagraph(i);
 
 						vint y = pgCache.GetParagraphTop(i, paragraphDistance);
 						if (y >= y2)
@@ -30078,31 +30101,56 @@ GuiDocumentElementRenderer
 				return document->GetHyperlink(index, caret, caret);
 			}
 
-			void GuiDocumentElementRenderer::OpenCaret(TextPos caret, Color color, bool frontSide)
+			void GuiDocumentElementRenderer::EnableCaret(TextPos caret, Color color, bool frontSide)
 			{
-				CloseCaret(caret);
-				lastCaret = caret;
-				lastCaretColor = color;
-				lastCaretFrontSide = frontSide;
-
-				auto cache = pgCache.TryGetParagraphCache(lastCaret.row);
-				if (cache && cache->graphicsParagraph)
+				if (lastCaret != caret || lastCaretColor != color || lastCaretFrontSide != frontSide)
 				{
-					cache->graphicsParagraph->OpenCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
+					if (auto cache = pgCache.TryGetParagraphCache(lastCaret.row))
+					{
+						if (cache->graphicsParagraph)
+						{
+							cache->graphicsParagraph->DisableCaret();
+						}
+					}
+
+					lastCaret = caret;
+					lastCaretColor = color;
+					lastCaretFrontSide = frontSide;
+
+					if (auto cache = pgCache.TryGetParagraphCache(lastCaret.row))
+					{
+						if (cache->graphicsParagraph)
+						{
+							cache->graphicsParagraph->EnableCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
+						}
+					}
 				}
 			}
 
-			void GuiDocumentElementRenderer::CloseCaret(TextPos caret)
+			void GuiDocumentElementRenderer::DisableCaret()
 			{
 				if (lastCaret != TextPos(-1, -1))
 				{
 					auto cache = pgCache.TryGetParagraphCache(lastCaret.row);
 					if (cache && cache->graphicsParagraph)
 					{
-						cache->graphicsParagraph->CloseCaret();
+						cache->graphicsParagraph->DisableCaret();
 					}
 				}
-				lastCaret = caret;
+				lastCaret = TextPos(-1, -1);
+			}
+
+			bool GuiDocumentElementRenderer::BlinkCaret()
+			{
+				if (lastCaret != TextPos(-1, -1))
+				{
+					auto cache = pgCache.TryGetParagraphCache(lastCaret.row);
+					if (cache && cache->graphicsParagraph)
+					{
+						return cache->graphicsParagraph->BlinkCaret();
+					}
+				}
+				return false;
 			}
 
 			void GuiDocumentElementRenderer::SetSelection(TextPos begin, TextPos end)
@@ -30422,7 +30470,7 @@ GuiDocumentParagraphCache
 			vint GuiDocumentParagraphCache::GetDefaultHeight()
 			{
 				vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
-				if (defaultHeight < 8) defaultHeight = 8;
+				if (defaultHeight < 1) defaultHeight = 1;
 				return defaultHeight;
 			}
 
@@ -30676,6 +30724,10 @@ GuiDocumentParagraphCache
 						{
 							cache->invalidation = false;
 							renderer->ApplyPropertiesOnParagraph(paragraphIndex, 0, cache->fullText.Length(), maxWidth);
+						}
+						else
+						{
+							cache->graphicsParagraph->SetMaxWidth(maxWidth);
 						}
 					},
 					[&, this](collections::Pair<vint, vint> range)
@@ -30931,15 +30983,15 @@ SetPropertiesVisitor
 							properties.breakCondition = IGuiGraphicsParagraph::Alone;
 							properties.backgroundImage = imageCache->GetImageElement(run->image, run->frameIndex, paragraphIndex, start);
 
-							bool result = paragraph->SetInlineObject(start, length, properties);
-							CHECK_ERROR(result, ERROR_MESSAGE_PREFIX L"The specified range has already been occupied by another inline object.");
-
 							ResolvedStyle style = styles[styles.Count() - 1];
 							if (start < selectionEnd && selectionBegin < start + length)
 							{
 								style = model->GetStyle(DocumentModel::SelectionStyleName, style);
 							}
-							ApplyColor(start, length, style);
+							properties.backgroundColor = style.backgroundColor;
+
+							bool result = paragraph->SetInlineObject(start, length, properties);
+							CHECK_ERROR(result, ERROR_MESSAGE_PREFIX L"The specified range has already been occupied by another inline object.");
 						}
 						start += length;
 #undef ERROR_MESSAGE_PREFIX
@@ -30996,15 +31048,15 @@ SetPropertiesVisitor
 								}
 							}
 
-							bool result = paragraph->SetInlineObject(start, length, properties);
-							CHECK_ERROR(result, ERROR_MESSAGE_PREFIX L"The specified range has already been occupied by another inline object.");
-
 							ResolvedStyle style = styles[styles.Count() - 1];
 							if (start < selectionEnd && selectionBegin < start + length)
 							{
 								style = model->GetStyle(DocumentModel::SelectionStyleName, style);
 							}
-							ApplyColor(start, length, style);
+							properties.backgroundColor = style.backgroundColor;
+
+							bool result = paragraph->SetInlineObject(start, length, properties);
+							CHECK_ERROR(result, ERROR_MESSAGE_PREFIX L"The specified range has already been occupied by another inline object.");
 						}
 						start += length;
 #undef ERROR_MESSAGE_PREFIX
@@ -32022,6 +32074,10 @@ INativeControllerListener
 		}
 
 		void INativeControllerListener::NativeWindowDestroying(INativeWindow* window)
+		{
+		}
+
+		void INativeControllerListener::EnvironmentChanged()
 		{
 		}
 
@@ -33110,12 +33166,12 @@ GuiHostedController::INativeWindowListener (PostAction)
 		{
 			if (!capturingWindow && !wmWindow && selectedWindow && selectedWindow != mainWindow && selectedWindow->IsEnabled())
 			{
-				auto x = info.x.value - hoveringWindow->wmWindow.bounds.x1.value;
-				auto y = info.y.value - hoveringWindow->wmWindow.bounds.y1.value;
-				auto hitTestResult = PerformHitTest(From(hoveringWindow->listeners), { {x},{y} });
+				auto x = info.x.value - selectedWindow->wmWindow.bounds.x1.value;
+				auto y = info.y.value - selectedWindow->wmWindow.bounds.y1.value;
+				auto hitTestResult = PerformHitTest(From(selectedWindow->listeners), { {x},{y} });
 				if (hitTestResult == INativeWindowListener::ButtonClose)
 				{
-					hoveringWindow->Hide(true);
+					selectedWindow->Hide(true);
 				}
 			}
 
@@ -35323,6 +35379,7 @@ GuiRemoteController (events)
 		remoteWindow.OnControllerConnect();
 		imageService.OnControllerConnect();
 		resourceManager->OnControllerConnect();
+		callbackService.InvokeEnvironmentChanged();
 	}
 
 	void GuiRemoteController::OnControllerDisconnect()
@@ -35365,6 +35422,7 @@ GuiRemoteController
 #elif defined VCZH_WCHAR_UTF32
 		remoteGlobalConfig.documentCaretFromEncoding = remoteprotocol::CharacterEncoding::UTF32;
 #endif
+		remoteFontConfig.defaultFont.size = 12;
 	}
 
 	GuiRemoteController::~GuiRemoteController()
@@ -35810,25 +35868,46 @@ GuiRemoteGraphicsRenderTarget
 		renderingBatchId++;
 		EnsureRequestedRenderersCreated();
 
-		for (auto [id, renderer] : renderers)
-		{
-			if (renderer->IsUpdated())
-			{
-				renderer->SendUpdateElementMessages(false);
-				if (renderer->NeedUpdateMinSizeFromCache())
-				{
-					if (!renderersAskingForCache.Contains(renderer))
-					{
-						renderersAskingForCache.Add(renderer);
-					}
-				}
-				renderer->ResetUpdated();
-			}
-		}
-
 		{
 			remoteprotocol::ElementBeginRendering arguments;
 			arguments.frameId = ++usedFrameIds;
+			arguments.updatedElements = Ptr(new List<remoteprotocol::OrdinaryElementDescVariant>);
+
+			if (needFullElementUpdateOnNextFrame)
+			{
+				for (auto renderer : renderers.Values())
+				{
+					renderer->SendUpdateElementMessages(true, *arguments.updatedElements.Obj());
+					if (renderer->NeedUpdateMinSizeFromCache())
+					{
+						if (!renderersAskingForCache.Contains(renderer))
+						{
+							renderersAskingForCache.Add(renderer);
+						}
+					}
+					renderer->ResetUpdated();
+				}
+				needFullElementUpdateOnNextFrame = false;
+			}
+			else
+			{
+				for (auto [id, renderer] : renderers)
+				{
+					if (renderer->IsUpdated())
+					{
+						renderer->SendUpdateElementMessages(false, *arguments.updatedElements.Obj());
+						if (renderer->NeedUpdateMinSizeFromCache())
+						{
+							if (!renderersAskingForCache.Contains(renderer))
+							{
+								renderersAskingForCache.Add(renderer);
+							}
+						}
+						renderer->ResetUpdated();
+					}
+				}
+			}
+
 			remote->remoteMessages.RequestRendererBeginRendering(arguments);
 		}
 	}
@@ -35895,6 +35974,19 @@ GuiRemoteGraphicsRenderTarget
 					{
 						minSizeChanged = true;
 					}
+				}
+			}
+		}
+
+		if (measuring.inlineObjectBounds)
+		{
+			for (auto&& inlineObjectBound : *measuring.inlineObjectBounds.Obj())
+			{
+				vint index = paragraphs.Keys().IndexOf(inlineObjectBound.elementId);
+				if (index != -1)
+				{
+					auto paragraph = paragraphs.Values()[index];
+					paragraph->SetInlineObjectBounds(inlineObjectBound.callbackId, inlineObjectBound.bounds);
 				}
 			}
 		}
@@ -36054,19 +36146,11 @@ GuiRemoteGraphicsRenderTarget
 			remote->remoteMessages.RequestRendererCreated(ids);
 		}
 
-		for (auto renderer : renderers.Values())
-		{
-			renderer->SendUpdateElementMessages(true);
-			if (renderer->NeedUpdateMinSizeFromCache())
-			{
-				renderersAskingForCache.Add(renderer);
-			}
-			renderer->ResetUpdated();
-		}
+		needFullElementUpdateOnNextFrame = true;
 
 		for (auto paragraph : paragraphs.Values())
 		{
-			paragraph->MarkParagraphDirty(false);
+			paragraph->MarkParagraphDirty(false, true);
 			paragraph->EnsureRemoteParagraphSynced();
 		}
 	}
@@ -36374,7 +36458,7 @@ GuiRemoteProtocolElementRenderer
 		arguments.id = id;
 		arguments.bounds = bounds;
 		arguments.areaClippedByParent = this->renderTarget->GetClipperValidArea();
-		this->renderTarget->GetRemoteMessages().RequestRendererRenderElement(arguments);
+		this->remoteRenderTarget->GetRemoteMessages().RequestRendererRenderElement(arguments);
 		renderingBatchId = this->renderTarget->renderingBatchId;
 	}
 
@@ -36412,7 +36496,7 @@ GuiFocusRectangleElementRenderer
 		// nothing to update
 	}
 
-	void GuiFocusRectangleElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiFocusRectangleElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		// nothing to update
 	}
@@ -36441,7 +36525,7 @@ GuiRawElementRenderer
 		// nothing to update
 	}
 
-	void GuiRawElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiRawElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		// nothing to update
 	}
@@ -36454,13 +36538,13 @@ GuiSolidBorderElementRenderer
 	{
 	}
 
-	void GuiSolidBorderElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiSolidBorderElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		ElementDesc_SolidBorder arguments;
 		arguments.id = id;
 		arguments.borderColor = element->GetColor();
 		arguments.shape = element->GetShape();
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_SolidBorder(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************
@@ -36471,13 +36555,13 @@ Gui3DBorderElementRenderer
 	{
 	}
 
-	void Gui3DBorderElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void Gui3DBorderElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		ElementDesc_SinkBorder arguments;
 		arguments.id = id;
 		arguments.leftTopColor = element->GetColor1();
 		arguments.rightBottomColor = element->GetColor2();
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_SinkBorder(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************
@@ -36488,14 +36572,14 @@ Gui3DSplitterElementRenderer
 	{
 	}
 
-	void Gui3DSplitterElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void Gui3DSplitterElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		ElementDesc_SinkSplitter arguments;
 		arguments.id = id;
 		arguments.leftTopColor = element->GetColor1();
 		arguments.rightBottomColor = element->GetColor2();
 		arguments.direction = element->GetDirection();
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_SinkSplitter(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************
@@ -36506,13 +36590,13 @@ GuiSolidBackgroundElementRenderer
 	{
 	}
 
-	void GuiSolidBackgroundElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiSolidBackgroundElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		ElementDesc_SolidBackground arguments;
 		arguments.id = id;
 		arguments.backgroundColor = element->GetColor();
 		arguments.shape = element->GetShape();
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_SolidBackground(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************
@@ -36523,7 +36607,7 @@ GuiGradientBackgroundElementRenderer
 	{
 	}
 
-	void GuiGradientBackgroundElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiGradientBackgroundElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		ElementDesc_GradientBackground arguments;
 		arguments.id = id;
@@ -36531,7 +36615,7 @@ GuiGradientBackgroundElementRenderer
 		arguments.rightBottomColor = element->GetColor2();
 		arguments.direction = element->GetDirection();
 		arguments.shape = element->GetShape();
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_GradientBackground(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************
@@ -36542,13 +36626,13 @@ GuiInnerShadowElementRenderer
 	{
 	}
 
-	void GuiInnerShadowElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiInnerShadowElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		ElementDesc_InnerShadow arguments;
 		arguments.id = id;
 		arguments.shadowColor = element->GetColor();
 		arguments.thickness = element->GetThickness();
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_InnerShadow(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************
@@ -36614,7 +36698,7 @@ GuiSolidLabelElementRenderer
 		needFontHeight = IsNeedFontHeight(request);
 	}
 
-	void GuiSolidLabelElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiSolidLabelElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		ElementDesc_SolidLabel arguments;
 		arguments.id = id;
@@ -36677,7 +36761,7 @@ GuiSolidLabelElementRenderer
 			}
 		}
 
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_SolidLabel(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************
@@ -36741,7 +36825,7 @@ GuiImageFrameElementRenderer
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void GuiImageFrameElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiImageFrameElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		auto image = GetRemoteImage();
 		if (image)
@@ -36804,7 +36888,7 @@ GuiImageFrameElementRenderer
 			arguments.imageCreation = image->GenerateImageCreation();
 		}
 
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_ImageFrame(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************
@@ -36815,7 +36899,7 @@ GuiPolygonElementRenderer
 	{
 	}
 
-	void GuiPolygonElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiPolygonElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		minSize = element->GetSize();
 
@@ -36826,12 +36910,631 @@ GuiPolygonElementRenderer
 		arguments.backgroundColor = element->GetBackgroundColor();
 		arguments.points = Ptr(new List<Point>);
 		CopyFrom(*arguments.points.Obj(), element->GetPointsArray());
-		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_Polygon(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 }
 
+
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\GUIREMOTEGRAPHICS_DOCUMENT.CPP
+***********************************************************************/
+
+namespace vl::presentation::elements
+{
+	using namespace collections;
+
+/***********************************************************************
+GuiRemoteGraphicsParagraph
+***********************************************************************/
+
+	GuiRemoteGraphicsParagraph::GuiRemoteGraphicsParagraph(const WString& _text, GuiRemoteController* _remote, GuiRemoteGraphicsResourceManager* _resourceManager, GuiRemoteGraphicsRenderTarget* _renderTarget, IGuiGraphicsParagraphCallback* _callback)
+		: text(_text)
+		, remote(_remote)
+		, resourceManager(_resourceManager)
+		, renderTarget(_renderTarget)
+		, callback(_callback)
+	{
+		if (renderTarget)
+		{
+			id = renderTarget->AllocateNewElementId();
+			renderTarget->RegisterParagraph(this);
+		}
+	}
+
+	GuiRemoteGraphicsParagraph::~GuiRemoteGraphicsParagraph()
+	{
+		if (renderTarget && id != -1)
+		{
+			renderTarget->UnregisterParagraph(id);
+			id = -1;
+		}
+	}
+
+	vint GuiRemoteGraphicsParagraph::GetParagraphId() const
+	{
+		return id;
+	}
+
+	bool GuiRemoteGraphicsParagraph::EnsureRemoteParagraphSynced()
+	{
+		if (!needUpdate)
+		{
+			return id != -1;
+		}
+
+		if (id == -1 || !renderTarget)
+		{
+			return false;
+		}
+
+		renderTarget->EnsureRequestedRenderersCreated();
+
+		stagedRuns.Clear();
+		MergeRuns(textRuns, inlineObjectRuns, stagedRuns);
+
+		remoteprotocol::ElementDesc_DocumentParagraph desc;
+		if (committedRuns.Count() == 0)
+		{
+			desc.text = text;
+		}
+
+		switch (paragraphAlignment)
+		{
+		case Alignment::Right:
+			desc.alignment = remoteprotocol::ElementHorizontalAlignment::Right;
+			break;
+		case Alignment::Center:
+			desc.alignment = remoteprotocol::ElementHorizontalAlignment::Center;
+			break;
+		default:
+			desc.alignment = remoteprotocol::ElementHorizontalAlignment::Left;
+			break;
+		}
+
+		desc.wrapLine = wrapLine;
+		desc.maxWidth = maxWidth;
+		desc.id = id;
+		DiffRuns(committedRuns, stagedRuns, desc);
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		vint requestId = messages.RequestRendererUpdateElement_DocumentParagraph(desc);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		if (disconnected)
+		{
+			return false;
+		}
+
+		{
+			auto response = messages.RetrieveRendererUpdateElement_DocumentParagraph(requestId);
+			cachedSize = response.documentSize;
+			cachedInlineObjectBounds.Clear();
+		}
+		committedRuns = std::move(stagedRuns);
+		needUpdate = false;
+
+		if (needUpdateCaretBoundsCache)
+		{
+			needUpdateCaretBoundsCache = false;
+			cachedCaretBounds = {};
+		}
+		return true;
+	}
+
+	bool GuiRemoteGraphicsParagraph::TryBuildCaretRange(vint start, vint length, CaretRange& range)
+	{
+		if (length <= 0 || start < 0 || start + length > text.Length())
+		{
+			return false;
+		}
+		range.caretBegin = NativeTextPosToRemoteTextPos(start);
+		range.caretEnd = NativeTextPosToRemoteTextPos(start + length);
+		return true;
+	}
+
+	void GuiRemoteGraphicsParagraph::MarkParagraphDirty(bool invalidateSize, bool invalidateCaretBoundsCache)
+	{
+		needUpdate = true;
+		if (invalidateSize)
+		{
+			cachedSize = Size(0, 0);
+		}
+		if (invalidateCaretBoundsCache)
+		{
+			needUpdateCaretBoundsCache = true;
+		}
+	}
+
+	void GuiRemoteGraphicsParagraph::SetInlineObjectBounds(vint callbackId, const Rect& bounds)
+	{
+		cachedInlineObjectBounds.Set(callbackId, bounds);
+	}
+
+	vint GuiRemoteGraphicsParagraph::NativeTextPosToRemoteTextPos(vint textPos)
+	{
+		return textPos;
+	}
+
+	vint GuiRemoteGraphicsParagraph::RemoteTextPosToNativeTextPos(vint textPos)
+	{
+		return textPos;
+	}
+
+	IGuiGraphicsLayoutProvider* GuiRemoteGraphicsParagraph::GetProvider()
+	{
+		return resourceManager;
+	}
+
+	IGuiGraphicsRenderTarget* GuiRemoteGraphicsParagraph::GetRenderTarget()
+	{
+		return renderTarget;
+	}
+
+	bool GuiRemoteGraphicsParagraph::GetWrapLine()
+	{
+		return wrapLine;
+	}
+
+	void GuiRemoteGraphicsParagraph::SetWrapLine(bool value)
+	{
+		if (wrapLine != value)
+		{
+			wrapLine = value;
+			MarkParagraphDirty(true, true);
+		}
+	}
+
+	vint GuiRemoteGraphicsParagraph::GetMaxWidth()
+	{
+		return maxWidth;
+	}
+
+	void GuiRemoteGraphicsParagraph::SetMaxWidth(vint value)
+	{
+		if (maxWidth != value)
+		{
+			maxWidth = value;
+			if (wrapLine)
+			{
+				MarkParagraphDirty(true, true);
+			}
+		}
+	}
+
+	Alignment GuiRemoteGraphicsParagraph::GetParagraphAlignment()
+	{
+		return paragraphAlignment;
+	}
+
+	void GuiRemoteGraphicsParagraph::SetParagraphAlignment(Alignment value)
+	{
+		if (paragraphAlignment != value)
+		{
+			paragraphAlignment = value;
+			MarkParagraphDirty(true, true);
+		}
+	}
+
+	bool GuiRemoteGraphicsParagraph::SetFont(vint start, vint length, const WString& value)
+	{
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		DocumentTextRunPropertyOverrides overrides;
+		overrides.fontFamily = value;
+		bool updated = AddTextRun(textRuns, range, overrides);
+		MarkParagraphDirty(true, updated);
+		return true;
+	}
+
+	bool GuiRemoteGraphicsParagraph::SetSize(vint start, vint length, vint value)
+	{
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		DocumentTextRunPropertyOverrides overrides;
+		overrides.size = value;
+		bool updated = AddTextRun(textRuns, range, overrides);
+		MarkParagraphDirty(true, updated);
+		return true;
+	}
+
+	bool GuiRemoteGraphicsParagraph::SetStyle(vint start, vint length, TextStyle value)
+	{
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		DocumentTextRunPropertyOverrides overrides;
+		overrides.textStyle = value;
+		bool updated = AddTextRun(textRuns, range, overrides);
+		MarkParagraphDirty(true, updated);
+		return true;
+	}
+
+	bool GuiRemoteGraphicsParagraph::SetColor(vint start, vint length, Color value)
+	{
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		DocumentTextRunPropertyOverrides overrides;
+		overrides.textColor = value;
+		AddTextRun(textRuns, range, overrides);
+		MarkParagraphDirty(true, false);
+		return true;
+	}
+
+	bool GuiRemoteGraphicsParagraph::SetBackgroundColor(vint start, vint length, Color value)
+	{
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		DocumentTextRunPropertyOverrides overrides;
+		overrides.backgroundColor = value;
+		AddTextRun(textRuns, range, overrides);
+		MarkParagraphDirty(true, false);
+		return true;
+	}
+
+	bool GuiRemoteGraphicsParagraph::SetInlineObject(vint start, vint length, const InlineObjectProperties& properties)
+	{
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+
+		vint backgroundElementId = -1;
+		IGuiGraphicsRenderer* renderer = properties.backgroundImage ? properties.backgroundImage->GetRenderer() : nullptr;
+		if (renderer)
+		{
+			renderer->SetRenderTarget(renderTarget);
+			if (auto remoteRenderer = dynamic_cast<elements_remoteprotocol::IGuiRemoteProtocolElementRender*>(renderer))
+			{
+				backgroundElementId = remoteRenderer->GetID();
+			}
+		}
+
+		remoteprotocol::DocumentInlineObjectRunProperty remoteProp;
+		remoteProp.size = properties.size;
+		remoteProp.baseline = properties.baseline;
+		remoteProp.breakCondition = properties.breakCondition;
+		remoteProp.backgroundColor = properties.backgroundColor;
+		remoteProp.backgroundElementId = backgroundElementId;
+		remoteProp.callbackId = properties.callbackId;
+
+		if (!AddInlineObjectRun(inlineObjectRuns, range, remoteProp))
+		{
+			return false;
+		}
+
+		inlineObjectProperties.Remove(range);
+		inlineObjectProperties.Add(range, properties);
+		MarkParagraphDirty(true, true);
+		return true;
+	}
+
+	bool GuiRemoteGraphicsParagraph::ResetInlineObject(vint start, vint length)
+	{
+		CaretRange range;
+		if (!TryBuildCaretRange(start, length, range)) return false;
+		if (!ResetInlineObjectRun(inlineObjectRuns, range)) return false;
+
+		vint index = inlineObjectProperties.Keys().IndexOf(range);
+		if (index != -1)
+		{
+			auto stored = inlineObjectProperties.Values()[index];
+			if (stored.backgroundImage)
+			{
+				if (auto renderer = stored.backgroundImage->GetRenderer())
+				{
+					renderer->SetRenderTarget(nullptr);
+				}
+			}
+			inlineObjectProperties.Remove(range);
+		}
+
+		MarkParagraphDirty(true, true);
+		return true;
+	}
+
+	Size GuiRemoteGraphicsParagraph::GetSize()
+	{
+		EnsureRemoteParagraphSynced();
+		return cachedSize;
+	}
+
+	bool GuiRemoteGraphicsParagraph::EnableCaret(vint caret, Color color, bool frontSide)
+	{
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return false;
+		}
+
+		remoteprotocol::OpenCaretRequest request;
+		request.id = id;
+		request.caret = NativeTextPosToRemoteTextPos(caret);
+		request.caretColor = color;
+		request.frontSide = frontSide;
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		messages.RequestDocumentParagraph_OpenCaret(request);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		return !disconnected;
+	}
+
+	void GuiRemoteGraphicsParagraph::DisableCaret()
+	{
+		if (id == -1 || !renderTarget)
+		{
+			return;
+		}
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		messages.RequestDocumentParagraph_CloseCaret(id);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+	}
+
+	bool GuiRemoteGraphicsParagraph::BlinkCaret()
+	{
+		return false;
+	}
+
+	void GuiRemoteGraphicsParagraph::Render(Rect bounds)
+	{
+		if (!renderTarget)
+		{
+			return;
+		}
+
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return;
+		}
+
+		if (callback)
+		{
+			for (auto [callbackId, location] : cachedInlineObjectBounds)
+			{
+				auto newSize = callback->OnRenderInlineObject(callbackId, location);
+				if (newSize != location.GetSize())
+				{
+					MarkParagraphDirty(false, true);
+					for (auto&& inlineObjectRun : inlineObjectRuns.Values())
+					{
+						if (inlineObjectRun.callbackId == callbackId)
+						{
+							auto& editable = const_cast<remoteprotocol::DocumentInlineObjectRunProperty&>(inlineObjectRun);
+							editable.size = newSize;
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		remoteprotocol::ElementRendering rendering;
+		rendering.id = id;
+		rendering.bounds = bounds;
+		rendering.areaClippedByParent = renderTarget->GetClipperValidArea();
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		messages.RequestRendererRenderElement(rendering);
+		lastRenderedBatchId = renderTarget->renderingBatchId;
+	}
+
+	vint GuiRemoteGraphicsParagraph::GetCaret(vint comparingCaret, CaretRelativePosition position, bool& preferFrontSide)
+	{
+		if (!EnsureRemoteParagraphSynced())
+		{
+			preferFrontSide = false;
+			return comparingCaret;
+		}
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		remoteprotocol::GetCaretRequest request;
+		request.id = id;
+		request.caret = NativeTextPosToRemoteTextPos(comparingCaret);
+		request.relativePosition = position;
+
+		vint requestId = messages.RequestDocumentParagraph_GetCaret(request);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		if (disconnected)
+		{
+			preferFrontSide = false;
+			return comparingCaret;
+		}
+
+		auto response = messages.RetrieveDocumentParagraph_GetCaret(requestId);
+		preferFrontSide = response.preferFrontSide;
+		return RemoteTextPosToNativeTextPos(response.newCaret);
+	}
+
+	bool GuiRemoteGraphicsParagraph::GetCaretBoundsInternal(vint caret, bool frontSide, Rect& bounds)
+	{
+		if (!cachedCaretBounds.frontSideBounds || !cachedCaretBounds.backSideBounds)
+		{
+			remoteprotocol::GetCaretBoundsRequest request;
+			request.id = id;
+
+			auto& messages = renderTarget->GetRemoteMessages();
+			vint requestId = messages.RequestDocumentParagraph_GetCaretBounds(request);
+			bool disconnected = false;
+			messages.Submit(disconnected);
+			if (disconnected)
+			{
+				return false;
+			}
+
+			cachedCaretBounds = messages.RetrieveDocumentParagraph_GetCaretBounds(requestId);
+		}
+
+		if (frontSide)
+		{
+			bounds = cachedCaretBounds.frontSideBounds->Get(caret);
+		}
+		else
+		{
+			bounds = cachedCaretBounds.backSideBounds->Get(caret);
+		}
+		return true;
+	}
+
+	Rect GuiRemoteGraphicsParagraph::GetCaretBounds(vint caret, bool frontSide)
+	{
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return {};
+		}
+
+		Rect bounds;
+		GetCaretBoundsInternal(caret, frontSide, bounds);
+		return bounds;
+	}
+
+	vint GuiRemoteGraphicsParagraph::GetCaretFromPoint(Point point)
+	{
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return 0;
+		}
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		vint bestCaret = 0;
+		vint bestDistance = -1;
+
+		for (vint caret = 0; caret <= text.Length(); caret++)
+		{
+			Rect bounds;
+			if (!GetCaretBoundsInternal(caret, true, bounds))
+			{
+				return bestCaret;
+			}
+
+			if (bounds.x1 <= point.x && point.x < bounds.x2 && bounds.y1 <= point.y && point.y < bounds.y2)
+			{
+				return caret;
+			}
+
+			vint horizontalDistance = 0;
+			if (point.x < bounds.x1) horizontalDistance = bounds.x1 - point.x;
+			else if (point.x > bounds.x2) horizontalDistance = point.x - bounds.x2;
+
+			vint verticalDistance = 0;
+			if (point.y < bounds.y1) verticalDistance = bounds.y1 - point.y;
+			else if (point.y > bounds.y2) verticalDistance = point.y - bounds.y2;
+
+			vint distance = horizontalDistance + verticalDistance;
+			if (bestDistance == -1 || distance < bestDistance)
+			{
+				bestDistance = distance;
+				bestCaret = caret;
+			}
+		}
+
+		return bestCaret;
+	}
+
+	Nullable<IGuiGraphicsParagraph::InlineObjectProperties> GuiRemoteGraphicsParagraph::GetInlineObjectFromPoint(Point point, vint& start, vint& length)
+	{
+		start = 0;
+		length = 0;
+
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return {};
+		}
+
+		remoteprotocol::GetInlineObjectFromPointRequest request;
+		request.id = id;
+		request.point = point;
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		vint requestId = messages.RequestDocumentParagraph_GetInlineObjectFromPoint(request);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		if (disconnected)
+		{
+			return {};
+		}
+
+		auto response = messages.RetrieveDocumentParagraph_GetInlineObjectFromPoint(requestId);
+		if (!response)
+		{
+			return {};
+		}
+
+		CaretRange range;
+		range.caretBegin = response.Value().caretBegin;
+		range.caretEnd = response.Value().caretEnd;
+
+		vint index = inlineObjectProperties.Keys().IndexOf(range);
+		if (index == -1)
+		{
+			return {};
+		}
+
+		start = RemoteTextPosToNativeTextPos(range.caretBegin);
+		length = RemoteTextPosToNativeTextPos(range.caretEnd) - start;
+		return inlineObjectProperties.Values()[index];
+	}
+
+	vint GuiRemoteGraphicsParagraph::GetNearestCaretFromTextPos(vint textPos, bool frontSide)
+	{
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return textPos;
+		}
+
+		remoteprotocol::GetNearestCaretFromTextPosRequest request;
+		request.id = id;
+		request.textPos = NativeTextPosToRemoteTextPos(textPos);
+		request.frontSide = frontSide;
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		vint requestId = messages.RequestDocumentParagraph_GetNearestCaretFromTextPos(request);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		if (disconnected)
+		{
+			return textPos;
+		}
+
+		auto response = messages.RetrieveDocumentParagraph_GetNearestCaretFromTextPos(requestId);
+		return RemoteTextPosToNativeTextPos(response);
+	}
+
+	bool GuiRemoteGraphicsParagraph::IsValidCaret(vint caret)
+	{
+		if (!EnsureRemoteParagraphSynced())
+		{
+			return false;
+		}
+
+		remoteprotocol::IsValidCaretRequest request;
+		request.id = id;
+		request.caret = NativeTextPosToRemoteTextPos(caret);
+
+		auto& messages = renderTarget->GetRemoteMessages();
+		vint requestId = messages.RequestDocumentParagraph_IsValidCaret(request);
+		bool disconnected = false;
+		messages.Submit(disconnected);
+		if (disconnected)
+		{
+			return false;
+		}
+
+		return messages.RetrieveDocumentParagraph_IsValidCaret(requestId);
+	}
+
+	bool GuiRemoteGraphicsParagraph::IsValidTextPos(vint textPos)
+	{
+		return 0 <= textPos && textPos <= text.Length();
+	}
+}
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEGRAPHICS_DOCUMENT_HELPERS.CPP
 ***********************************************************************/
 
 namespace vl::presentation::elements
@@ -36875,19 +37578,27 @@ Comparison
 			return inlineA.size == inlineB.size &&
 				inlineA.baseline == inlineB.baseline &&
 				inlineA.breakCondition == inlineB.breakCondition &&
+				inlineA.backgroundColor == inlineB.backgroundColor &&
 				inlineA.backgroundElementId == inlineB.backgroundElementId &&
 				inlineA.callbackId == inlineB.callbackId;
 		}
 	}
 
 /***********************************************************************
-DiffRuns
+AddTextRun
 ***********************************************************************/
 
 	DocumentTextRunPropertyOverrides ApplyOverrides(
 		const DocumentTextRunPropertyOverrides& base,
-		const DocumentTextRunPropertyOverrides& overrides)
+		const DocumentTextRunPropertyOverrides& overrides,
+		bool& propertyOverrides)
 	{
+		if (overrides.textColor && base.textColor != overrides.textColor)					propertyOverrides = true;
+		if (overrides.backgroundColor && base.backgroundColor != overrides.backgroundColor)	propertyOverrides = true;
+		if (overrides.fontFamily && base.fontFamily != overrides.fontFamily)				propertyOverrides = true;
+		if (overrides.size && base.size != overrides.size)									propertyOverrides = true;
+		if (overrides.textStyle && base.textStyle != overrides.textStyle)					propertyOverrides = true;
+
 		DocumentTextRunPropertyOverrides result;
 		result.textColor = overrides.textColor ? overrides.textColor : base.textColor;
 		result.backgroundColor = overrides.backgroundColor ? overrides.backgroundColor : base.backgroundColor;
@@ -36897,12 +37608,13 @@ DiffRuns
 		return result;
 	}
 
-	void AddTextRun(
+	bool AddTextRun(
 		DocumentTextRunPropertyMap& map,
 		CaretRange range,
 		const DocumentTextRunPropertyOverrides& propertyOverrides)
 	{
 		vint firstOverlap = -1;
+		bool semanticallyUpdated = false;
 		
 		if (map.Count() > 0)
 		{
@@ -36991,10 +37703,11 @@ DiffRuns
 				if (currentPos < oldRange.caretBegin)
 				{
 					map.Add(CaretRange{currentPos, oldRange.caretBegin}, propertyOverrides);
+					semanticallyUpdated = true;
 				}
 				
 				// Add the overlapping portion with merged properties
-				auto mergedProp = ApplyOverrides(oldProp, propertyOverrides);
+				auto mergedProp = ApplyOverrides(oldProp, propertyOverrides, semanticallyUpdated);
 				map.Add(oldRange, mergedProp);
 				
 				currentPos = oldRange.caretEnd;
@@ -37004,12 +37717,14 @@ DiffRuns
 			if (currentPos < range.caretEnd)
 			{
 				map.Add(CaretRange{currentPos, range.caretEnd}, propertyOverrides);
+				semanticallyUpdated = true;
 			}
 		}
 		else
 		{
 			// No overlaps - add the entire range with new properties
 			map.Add(range, propertyOverrides);
+			semanticallyUpdated = true;
 		}
 
 		// Find the first key within the original range for merging
@@ -37024,55 +37739,60 @@ DiffRuns
 			}
 		}
 		
-		if (newIndex == -1)
-			return;
-		
-		while (newIndex > 0)
+		if (newIndex != -1)
 		{
-			CaretRange leftKey = map.Keys()[newIndex - 1];
-			CaretRange currentKey = map.Keys()[newIndex];
-			
-			if (leftKey.caretEnd == currentKey.caretBegin &&
-				AreEqual(map[leftKey], map[currentKey]))
+			while (newIndex > 0)
 			{
-				CaretRange mergedRange{ leftKey.caretBegin, currentKey.caretEnd };
-				auto mergedProperty = map[leftKey];
-				
-				map.Remove(leftKey);
-				map.Remove(currentKey);
-				map.Add(mergedRange, mergedProperty);
-				
-				newIndex = map.Keys().IndexOf(mergedRange);
-			}
-			else
-			{
-				break;
-			}
-		}
+				CaretRange leftKey = map.Keys()[newIndex - 1];
+				CaretRange currentKey = map.Keys()[newIndex];
 
-		while (newIndex < map.Keys().Count() - 1)
-		{
-			CaretRange currentKey = map.Keys()[newIndex];
-			CaretRange rightKey = map.Keys()[newIndex + 1];
-			
-			if (currentKey.caretEnd == rightKey.caretBegin &&
-				AreEqual(map[currentKey], map[rightKey]))
-			{
-				CaretRange mergedRange{ currentKey.caretBegin, rightKey.caretEnd };
-				auto mergedProperty = map[currentKey];
-				
-				map.Remove(currentKey);
-				map.Remove(rightKey);
-				map.Add(mergedRange, mergedProperty);
-				
-				newIndex = map.Keys().IndexOf(mergedRange);
+				if (leftKey.caretEnd == currentKey.caretBegin &&
+					AreEqual(map[leftKey], map[currentKey]))
+				{
+					CaretRange mergedRange{ leftKey.caretBegin, currentKey.caretEnd };
+					auto mergedProperty = map[leftKey];
+
+					map.Remove(leftKey);
+					map.Remove(currentKey);
+					map.Add(mergedRange, mergedProperty);
+
+					newIndex = map.Keys().IndexOf(mergedRange);
+				}
+				else
+				{
+					break;
+				}
 			}
-			else
+
+			while (newIndex < map.Keys().Count() - 1)
 			{
-				break;
+				CaretRange currentKey = map.Keys()[newIndex];
+				CaretRange rightKey = map.Keys()[newIndex + 1];
+
+				if (currentKey.caretEnd == rightKey.caretBegin &&
+					AreEqual(map[currentKey], map[rightKey]))
+				{
+					CaretRange mergedRange{ currentKey.caretBegin, rightKey.caretEnd };
+					auto mergedProperty = map[currentKey];
+
+					map.Remove(currentKey);
+					map.Remove(rightKey);
+					map.Add(mergedRange, mergedProperty);
+
+					newIndex = map.Keys().IndexOf(mergedRange);
+				}
+				else
+				{
+					break;
+				}
 			}
 		}
+		return semanticallyUpdated;
 	}
+
+/***********************************************************************
+AddInlineObjectRun
+***********************************************************************/
 
 	bool AddInlineObjectRun(
 		DocumentInlineObjectRunPropertyMap& map,
@@ -37109,12 +37829,20 @@ DiffRuns
 		return true;
 	}
 
+/***********************************************************************
+ResetInlineObjectRun
+***********************************************************************/
+
 	bool ResetInlineObjectRun(
 		DocumentInlineObjectRunPropertyMap& map,
 		CaretRange range)
 	{
 		return map.Remove(range);
 	}
+
+/***********************************************************************
+MergeRuns
+***********************************************************************/
 
 	remoteprotocol::DocumentTextRunProperty ConvertToFullProperty(const DocumentTextRunPropertyOverrides& propertyOverrides)
 	{
@@ -37255,6 +37983,10 @@ DiffRuns
 			}
 		}
 	}
+
+/***********************************************************************
+DiffRuns
+***********************************************************************/
 
 	void DiffRuns(
 		const DocumentRunPropertyMap& oldRuns,
@@ -37410,581 +38142,6 @@ DiffRuns
 				result.removedInlineObjects->Add(id);
 			}
 		}
-	}
-
-/***********************************************************************
-GuiRemoteGraphicsParagraph
-***********************************************************************/
-
-	GuiRemoteGraphicsParagraph::GuiRemoteGraphicsParagraph(const WString& _text, GuiRemoteController* _remote, GuiRemoteGraphicsResourceManager* _resourceManager, GuiRemoteGraphicsRenderTarget* _renderTarget, IGuiGraphicsParagraphCallback* _callback)
-		: text(_text)
-		, remote(_remote)
-		, resourceManager(_resourceManager)
-		, renderTarget(_renderTarget)
-		, callback(_callback)
-	{
-		if (renderTarget)
-		{
-			id = renderTarget->AllocateNewElementId();
-			renderTarget->RegisterParagraph(this);
-		}
-	}
-
-	GuiRemoteGraphicsParagraph::~GuiRemoteGraphicsParagraph()
-	{
-		if (renderTarget && id != -1)
-		{
-			renderTarget->UnregisterParagraph(id);
-			id = -1;
-		}
-	}
-
-	vint GuiRemoteGraphicsParagraph::GetParagraphId() const
-	{
-		return id;
-	}
-
-	bool GuiRemoteGraphicsParagraph::EnsureRemoteParagraphSynced()
-	{
-		if (!needUpdate)
-		{
-			return id != -1;
-		}
-
-		if (id == -1 || !renderTarget)
-		{
-			return false;
-		}
-
-		renderTarget->EnsureRequestedRenderersCreated();
-
-		stagedRuns.Clear();
-		MergeRuns(textRuns, inlineObjectRuns, stagedRuns);
-
-		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		if (committedRuns.Count() == 0)
-		{
-			desc.text = text;
-		}
-
-		switch (paragraphAlignment)
-		{
-		case Alignment::Right:
-			desc.alignment = remoteprotocol::ElementHorizontalAlignment::Right;
-			break;
-		case Alignment::Center:
-			desc.alignment = remoteprotocol::ElementHorizontalAlignment::Center;
-			break;
-		default:
-			desc.alignment = remoteprotocol::ElementHorizontalAlignment::Left;
-			break;
-		}
-
-		desc.wrapLine = wrapLine;
-		desc.maxWidth = maxWidth;
-		desc.id = id;
-		DiffRuns(committedRuns, stagedRuns, desc);
-
-		auto& messages = renderTarget->GetRemoteMessages();
-		vint requestId = messages.RequestRendererUpdateElement_DocumentParagraph(desc);
-		bool disconnected = false;
-		messages.Submit(disconnected);
-		if (disconnected)
-		{
-			return false;
-		}
-
-		{
-			auto response = messages.RetrieveRendererUpdateElement_DocumentParagraph(requestId);
-			cachedSize = response.documentSize;
-			cachedInlineObjectBounds = response.inlineObjectBounds;
-		}
-		committedRuns = std::move(stagedRuns);
-		needUpdate = false;
-		return true;
-	}
-
-	bool GuiRemoteGraphicsParagraph::TryBuildCaretRange(vint start, vint length, CaretRange& range)
-	{
-		if (length <= 0 || start < 0 || start + length > text.Length())
-		{
-			return false;
-		}
-		range.caretBegin = NativeTextPosToRemoteTextPos(start);
-		range.caretEnd = NativeTextPosToRemoteTextPos(start + length);
-		return true;
-	}
-
-	void GuiRemoteGraphicsParagraph::MarkParagraphDirty(bool invalidateSize)
-	{
-		needUpdate = true;
-		if (invalidateSize)
-		{
-			cachedSize = Size(0, 0);
-		}
-	}
-
-	vint GuiRemoteGraphicsParagraph::NativeTextPosToRemoteTextPos(vint textPos)
-	{
-		return textPos;
-	}
-
-	vint GuiRemoteGraphicsParagraph::RemoteTextPosToNativeTextPos(vint textPos)
-	{
-		return textPos;
-	}
-
-	IGuiGraphicsLayoutProvider* GuiRemoteGraphicsParagraph::GetProvider()
-	{
-		return resourceManager;
-	}
-
-	IGuiGraphicsRenderTarget* GuiRemoteGraphicsParagraph::GetRenderTarget()
-	{
-		return renderTarget;
-	}
-
-	bool GuiRemoteGraphicsParagraph::GetWrapLine()
-	{
-		return wrapLine;
-	}
-
-	void GuiRemoteGraphicsParagraph::SetWrapLine(bool value)
-	{
-		if (wrapLine != value)
-		{
-			wrapLine = value;
-			MarkParagraphDirty(true);
-		}
-	}
-
-	vint GuiRemoteGraphicsParagraph::GetMaxWidth()
-	{
-		return maxWidth;
-	}
-
-	void GuiRemoteGraphicsParagraph::SetMaxWidth(vint value)
-	{
-		if (maxWidth != value)
-		{
-			maxWidth = value;
-			MarkParagraphDirty(true);
-		}
-	}
-
-	Alignment GuiRemoteGraphicsParagraph::GetParagraphAlignment()
-	{
-		return paragraphAlignment;
-	}
-
-	void GuiRemoteGraphicsParagraph::SetParagraphAlignment(Alignment value)
-	{
-		if (paragraphAlignment != value)
-		{
-			paragraphAlignment = value;
-			MarkParagraphDirty(true);
-		}
-	}
-
-	bool GuiRemoteGraphicsParagraph::SetFont(vint start, vint length, const WString& value)
-	{
-		CaretRange range;
-		if (!TryBuildCaretRange(start, length, range)) return false;
-
-		DocumentTextRunPropertyOverrides overrides;
-		overrides.fontFamily = value;
-		AddTextRun(textRuns, range, overrides);
-		MarkParagraphDirty(true);
-		return true;
-	}
-
-	bool GuiRemoteGraphicsParagraph::SetSize(vint start, vint length, vint value)
-	{
-		CaretRange range;
-		if (!TryBuildCaretRange(start, length, range)) return false;
-
-		DocumentTextRunPropertyOverrides overrides;
-		overrides.size = value;
-		AddTextRun(textRuns, range, overrides);
-		MarkParagraphDirty(true);
-		return true;
-	}
-
-	bool GuiRemoteGraphicsParagraph::SetStyle(vint start, vint length, TextStyle value)
-	{
-		CaretRange range;
-		if (!TryBuildCaretRange(start, length, range)) return false;
-
-		DocumentTextRunPropertyOverrides overrides;
-		overrides.textStyle = value;
-		AddTextRun(textRuns, range, overrides);
-		MarkParagraphDirty(true);
-		return true;
-	}
-
-	bool GuiRemoteGraphicsParagraph::SetColor(vint start, vint length, Color value)
-	{
-		CaretRange range;
-		if (!TryBuildCaretRange(start, length, range)) return false;
-
-		DocumentTextRunPropertyOverrides overrides;
-		overrides.textColor = value;
-		AddTextRun(textRuns, range, overrides);
-		MarkParagraphDirty(true);
-		return true;
-	}
-
-	bool GuiRemoteGraphicsParagraph::SetBackgroundColor(vint start, vint length, Color value)
-	{
-		CaretRange range;
-		if (!TryBuildCaretRange(start, length, range)) return false;
-
-		DocumentTextRunPropertyOverrides overrides;
-		overrides.backgroundColor = value;
-		AddTextRun(textRuns, range, overrides);
-		MarkParagraphDirty(true);
-		return true;
-	}
-
-	bool GuiRemoteGraphicsParagraph::SetInlineObject(vint start, vint length, const InlineObjectProperties& properties)
-	{
-		CaretRange range;
-		if (!TryBuildCaretRange(start, length, range)) return false;
-
-		vint backgroundElementId = -1;
-		IGuiGraphicsRenderer* renderer = properties.backgroundImage ? properties.backgroundImage->GetRenderer() : nullptr;
-		if (renderer)
-		{
-			renderer->SetRenderTarget(renderTarget);
-			if (auto remoteRenderer = dynamic_cast<elements_remoteprotocol::IGuiRemoteProtocolElementRender*>(renderer))
-			{
-				backgroundElementId = remoteRenderer->GetID();
-			}
-		}
-
-		remoteprotocol::DocumentInlineObjectRunProperty remoteProp;
-		remoteProp.size = properties.size;
-		remoteProp.baseline = properties.baseline;
-		remoteProp.breakCondition = properties.breakCondition;
-		remoteProp.backgroundElementId = backgroundElementId;
-		remoteProp.callbackId = properties.callbackId;
-
-		if (!AddInlineObjectRun(inlineObjectRuns, range, remoteProp))
-		{
-			return false;
-		}
-
-		inlineObjectProperties.Remove(range);
-		inlineObjectProperties.Add(range, properties);
-		MarkParagraphDirty(true);
-		return true;
-	}
-
-	bool GuiRemoteGraphicsParagraph::ResetInlineObject(vint start, vint length)
-	{
-		CaretRange range;
-		if (!TryBuildCaretRange(start, length, range)) return false;
-		if (!ResetInlineObjectRun(inlineObjectRuns, range)) return false;
-
-		vint index = inlineObjectProperties.Keys().IndexOf(range);
-		if (index != -1)
-		{
-			auto stored = inlineObjectProperties.Values()[index];
-			if (stored.backgroundImage)
-			{
-				if (auto renderer = stored.backgroundImage->GetRenderer())
-				{
-					renderer->SetRenderTarget(nullptr);
-				}
-			}
-			inlineObjectProperties.Remove(range);
-		}
-
-		MarkParagraphDirty(true);
-		return true;
-	}
-
-	Size GuiRemoteGraphicsParagraph::GetSize()
-	{
-		EnsureRemoteParagraphSynced();
-		return cachedSize;
-	}
-
-	bool GuiRemoteGraphicsParagraph::OpenCaret(vint caret, Color color, bool frontSide)
-	{
-		if (!EnsureRemoteParagraphSynced())
-		{
-			return false;
-		}
-
-		remoteprotocol::OpenCaretRequest request;
-		request.id = id;
-		request.caret = NativeTextPosToRemoteTextPos(caret);
-		request.caretColor = color;
-		request.frontSide = frontSide;
-
-		auto& messages = renderTarget->GetRemoteMessages();
-		messages.RequestDocumentParagraph_OpenCaret(request);
-		bool disconnected = false;
-		messages.Submit(disconnected);
-		return !disconnected;
-	}
-
-	bool GuiRemoteGraphicsParagraph::CloseCaret()
-	{
-		if (id == -1 || !renderTarget)
-		{
-			return false;
-		}
-
-		auto& messages = renderTarget->GetRemoteMessages();
-		messages.RequestDocumentParagraph_CloseCaret(id);
-		bool disconnected = false;
-		messages.Submit(disconnected);
-		return !disconnected;
-	}
-
-	void GuiRemoteGraphicsParagraph::Render(Rect bounds)
-	{
-		if (!renderTarget)
-		{
-			return;
-		}
-
-		if (!EnsureRemoteParagraphSynced())
-		{
-			return;
-		}
-
-		if (callback && cachedInlineObjectBounds)
-		{
-			for (auto [callbackId, location] : *cachedInlineObjectBounds.Obj())
-			{
-				auto newSize = callback->OnRenderInlineObject(callbackId, location);
-				if (newSize != location.GetSize())
-				{
-					MarkParagraphDirty(false);
-					for (auto&& inlineObjectRun : inlineObjectRuns.Values())
-					{
-						if (inlineObjectRun.callbackId == callbackId)
-						{
-							auto& editable = const_cast<remoteprotocol::DocumentInlineObjectRunProperty&>(inlineObjectRun);
-							editable.size = newSize;
-							break;
-						}
-					}
-				}
-			}
-		}
-
-		remoteprotocol::ElementRendering rendering;
-		rendering.id = id;
-		rendering.bounds = bounds;
-		rendering.areaClippedByParent = renderTarget->GetClipperValidArea();
-
-		auto& messages = renderTarget->GetRemoteMessages();
-		messages.RequestRendererRenderElement(rendering);
-		lastRenderedBatchId = renderTarget->renderingBatchId;
-	}
-
-	vint GuiRemoteGraphicsParagraph::GetCaret(vint comparingCaret, CaretRelativePosition position, bool& preferFrontSide)
-	{
-		if (!EnsureRemoteParagraphSynced())
-		{
-			preferFrontSide = false;
-			return comparingCaret;
-		}
-
-		auto& messages = renderTarget->GetRemoteMessages();
-		remoteprotocol::GetCaretRequest request;
-		request.id = id;
-		request.caret = NativeTextPosToRemoteTextPos(comparingCaret);
-		request.relativePosition = position;
-
-		vint requestId = messages.RequestDocumentParagraph_GetCaret(request);
-		bool disconnected = false;
-		messages.Submit(disconnected);
-		if (disconnected)
-		{
-			preferFrontSide = false;
-			return comparingCaret;
-		}
-
-		auto response = messages.RetrieveDocumentParagraph_GetCaret(requestId);
-		preferFrontSide = response.preferFrontSide;
-		return RemoteTextPosToNativeTextPos(response.newCaret);
-	}
-
-	Rect GuiRemoteGraphicsParagraph::GetCaretBounds(vint caret, bool frontSide)
-	{
-		if (!EnsureRemoteParagraphSynced())
-		{
-			return {};
-		}
-
-		remoteprotocol::GetCaretBoundsRequest request;
-		request.id = id;
-		request.caret = NativeTextPosToRemoteTextPos(caret);
-		request.frontSide = frontSide;
-
-		auto& messages = renderTarget->GetRemoteMessages();
-		vint requestId = messages.RequestDocumentParagraph_GetCaretBounds(request);
-		bool disconnected = false;
-		messages.Submit(disconnected);
-		if (disconnected)
-		{
-			return {};
-		}
-
-		return messages.RetrieveDocumentParagraph_GetCaretBounds(requestId);
-	}
-
-	vint GuiRemoteGraphicsParagraph::GetCaretFromPoint(Point point)
-	{
-		if (!EnsureRemoteParagraphSynced())
-		{
-			return 0;
-		}
-
-		auto& messages = renderTarget->GetRemoteMessages();
-		vint bestCaret = 0;
-		vint bestDistance = -1;
-
-		for (vint caret = 0; caret <= text.Length(); caret++)
-		{
-			remoteprotocol::GetCaretBoundsRequest request;
-			request.id = id;
-			request.caret = NativeTextPosToRemoteTextPos(caret);
-			request.frontSide = true;
-
-			bool disconnected = false;
-			vint requestId = messages.RequestDocumentParagraph_GetCaretBounds(request);
-			messages.Submit(disconnected);
-			if (disconnected)
-			{
-				return bestCaret;
-			}
-
-			Rect bounds = messages.RetrieveDocumentParagraph_GetCaretBounds(requestId);
-			if (bounds.x1 <= point.x && point.x < bounds.x2 && bounds.y1 <= point.y && point.y < bounds.y2)
-			{
-				return caret;
-			}
-
-			vint horizontalDistance = 0;
-			if (point.x < bounds.x1) horizontalDistance = bounds.x1 - point.x;
-			else if (point.x > bounds.x2) horizontalDistance = point.x - bounds.x2;
-
-			vint verticalDistance = 0;
-			if (point.y < bounds.y1) verticalDistance = bounds.y1 - point.y;
-			else if (point.y > bounds.y2) verticalDistance = point.y - bounds.y2;
-
-			vint distance = horizontalDistance + verticalDistance;
-			if (bestDistance == -1 || distance < bestDistance)
-			{
-				bestDistance = distance;
-				bestCaret = caret;
-			}
-		}
-
-		return bestCaret;
-	}
-
-	Nullable<IGuiGraphicsParagraph::InlineObjectProperties> GuiRemoteGraphicsParagraph::GetInlineObjectFromPoint(Point point, vint& start, vint& length)
-	{
-		start = 0;
-		length = 0;
-
-		if (!EnsureRemoteParagraphSynced())
-		{
-			return {};
-		}
-
-		remoteprotocol::GetInlineObjectFromPointRequest request;
-		request.id = id;
-		request.point = point;
-
-		auto& messages = renderTarget->GetRemoteMessages();
-		vint requestId = messages.RequestDocumentParagraph_GetInlineObjectFromPoint(request);
-		bool disconnected = false;
-		messages.Submit(disconnected);
-		if (disconnected)
-		{
-			return {};
-		}
-
-		auto response = messages.RetrieveDocumentParagraph_GetInlineObjectFromPoint(requestId);
-		if (!response)
-		{
-			return {};
-		}
-
-		CaretRange range;
-		range.caretBegin = response.Value().caretBegin;
-		range.caretEnd = response.Value().caretEnd;
-
-		vint index = inlineObjectProperties.Keys().IndexOf(range);
-		if (index == -1)
-		{
-			return {};
-		}
-
-		start = RemoteTextPosToNativeTextPos(range.caretBegin);
-		length = RemoteTextPosToNativeTextPos(range.caretEnd) - start;
-		return inlineObjectProperties.Values()[index];
-	}
-
-	vint GuiRemoteGraphicsParagraph::GetNearestCaretFromTextPos(vint textPos, bool frontSide)
-	{
-		if (!EnsureRemoteParagraphSynced())
-		{
-			return textPos;
-		}
-
-		remoteprotocol::GetCaretBoundsRequest request;
-		request.id = id;
-		request.caret = NativeTextPosToRemoteTextPos(textPos);
-		request.frontSide = frontSide;
-
-		auto& messages = renderTarget->GetRemoteMessages();
-		vint requestId = messages.RequestDocumentParagraph_GetNearestCaretFromTextPos(request);
-		bool disconnected = false;
-		messages.Submit(disconnected);
-		if (disconnected)
-		{
-			return textPos;
-		}
-
-		auto response = messages.RetrieveDocumentParagraph_GetNearestCaretFromTextPos(requestId);
-		return RemoteTextPosToNativeTextPos(response);
-	}
-
-	bool GuiRemoteGraphicsParagraph::IsValidCaret(vint caret)
-	{
-		if (!EnsureRemoteParagraphSynced())
-		{
-			return false;
-		}
-
-		remoteprotocol::IsValidCaretRequest request;
-		request.id = id;
-		request.caret = NativeTextPosToRemoteTextPos(caret);
-
-		auto& messages = renderTarget->GetRemoteMessages();
-		vint requestId = messages.RequestDocumentParagraph_IsValidCaret(request);
-		bool disconnected = false;
-		messages.Submit(disconnected);
-		if (disconnected)
-		{
-			return false;
-		}
-
-		return messages.RetrieveDocumentParagraph_IsValidCaret(requestId);
-	}
-
-	bool GuiRemoteGraphicsParagraph::IsValidTextPos(vint textPos)
-	{
-		return 0 <= textPos && textPos <= text.Length();
 	}
 }
 
@@ -39974,6 +40131,7 @@ GuiRemoteWindow (INativeWindow)
 	void GuiRemoteWindow::SetCaretPoint(NativePoint point)
 	{
 		styleCaret = point;
+		remoteMessages.RequestWindowNotifySetCaret(point);
 	}
 
 	INativeWindow* GuiRemoteWindow::GetParent()
@@ -41495,6 +41653,7 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"size", value.size);
 		ConvertCustomTypeToJsonField(node, L"baseline", value.baseline);
 		ConvertCustomTypeToJsonField(node, L"breakCondition", value.breakCondition);
+		ConvertCustomTypeToJsonField(node, L"backgroundColor", value.backgroundColor);
 		ConvertCustomTypeToJsonField(node, L"backgroundElementId", value.backgroundElementId);
 		ConvertCustomTypeToJsonField(node, L"callbackId", value.callbackId);
 		return node;
@@ -41527,7 +41686,6 @@ namespace vl::presentation::remoteprotocol
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"documentSize", value.documentSize);
-		ConvertCustomTypeToJsonField(node, L"inlineObjectBounds", value.inlineObjectBounds);
 		return node;
 	}
 
@@ -41552,8 +41710,14 @@ namespace vl::presentation::remoteprotocol
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"id", value.id);
-		ConvertCustomTypeToJsonField(node, L"caret", value.caret);
-		ConvertCustomTypeToJsonField(node, L"frontSide", value.frontSide);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetCaretBoundsResponse>(const ::vl::presentation::remoteprotocol::GetCaretBoundsResponse & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"frontSideBounds", value.frontSideBounds);
+		ConvertCustomTypeToJsonField(node, L"backSideBounds", value.backSideBounds);
 		return node;
 	}
 
@@ -41562,6 +41726,15 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"id", value.id);
 		ConvertCustomTypeToJsonField(node, L"point", value.point);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest>(const ::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"id", value.id);
+		ConvertCustomTypeToJsonField(node, L"textPos", value.textPos);
+		ConvertCustomTypeToJsonField(node, L"frontSide", value.frontSide);
 		return node;
 	}
 
@@ -41603,6 +41776,7 @@ namespace vl::presentation::remoteprotocol
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"frameId", value.frameId);
+		ConvertCustomTypeToJsonField(node, L"updatedElements", value.updatedElements);
 		return node;
 	}
 
@@ -41643,12 +41817,22 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasuring_InlineObjectBounds>(const ::vl::presentation::remoteprotocol::ElementMeasuring_InlineObjectBounds & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"elementId", value.elementId);
+		ConvertCustomTypeToJsonField(node, L"callbackId", value.callbackId);
+		ConvertCustomTypeToJsonField(node, L"bounds", value.bounds);
+		return node;
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasurings>(const ::vl::presentation::remoteprotocol::ElementMeasurings & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"fontHeights", value.fontHeights);
 		ConvertCustomTypeToJsonField(node, L"minSizes", value.minSizes);
 		ConvertCustomTypeToJsonField(node, L"createdImages", value.createdImages);
+		ConvertCustomTypeToJsonField(node, L"inlineObjectBounds", value.inlineObjectBounds);
 		return node;
 	}
 
@@ -42483,6 +42667,7 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"size") ConvertJsonToCustomType(field->value, value.size); else
 			if (field->name.value == L"baseline") ConvertJsonToCustomType(field->value, value.baseline); else
 			if (field->name.value == L"breakCondition") ConvertJsonToCustomType(field->value, value.breakCondition); else
+			if (field->name.value == L"backgroundColor") ConvertJsonToCustomType(field->value, value.backgroundColor); else
 			if (field->name.value == L"backgroundElementId") ConvertJsonToCustomType(field->value, value.backgroundElementId); else
 			if (field->name.value == L"callbackId") ConvertJsonToCustomType(field->value, value.callbackId); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
@@ -42533,7 +42718,6 @@ namespace vl::presentation::remoteprotocol
 		for (auto field : jsonNode->fields)
 		{
 			if (field->name.value == L"documentSize") ConvertJsonToCustomType(field->value, value.documentSize); else
-			if (field->name.value == L"inlineObjectBounds") ConvertJsonToCustomType(field->value, value.inlineObjectBounds); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -42576,8 +42760,20 @@ namespace vl::presentation::remoteprotocol
 		for (auto field : jsonNode->fields)
 		{
 			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
-			if (field->name.value == L"caret") ConvertJsonToCustomType(field->value, value.caret); else
-			if (field->name.value == L"frontSide") ConvertJsonToCustomType(field->value, value.frontSide); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretBoundsResponse>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetCaretBoundsResponse& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetCaretBoundsResponse>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::GetCaretBoundsResponse&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"frontSideBounds") ConvertJsonToCustomType(field->value, value.frontSideBounds); else
+			if (field->name.value == L"backSideBounds") ConvertJsonToCustomType(field->value, value.backSideBounds); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -42592,6 +42788,21 @@ namespace vl::presentation::remoteprotocol
 		{
 			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
 			if (field->name.value == L"point") ConvertJsonToCustomType(field->value, value.point); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
+			if (field->name.value == L"textPos") ConvertJsonToCustomType(field->value, value.textPos); else
+			if (field->name.value == L"frontSide") ConvertJsonToCustomType(field->value, value.frontSide); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -42663,6 +42874,7 @@ namespace vl::presentation::remoteprotocol
 		for (auto field : jsonNode->fields)
 		{
 			if (field->name.value == L"frameId") ConvertJsonToCustomType(field->value, value.frameId); else
+			if (field->name.value == L"updatedElements") ConvertJsonToCustomType(field->value, value.updatedElements); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -42729,6 +42941,21 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_InlineObjectBounds>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasuring_InlineObjectBounds& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_InlineObjectBounds>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementMeasuring_InlineObjectBounds&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"elementId") ConvertJsonToCustomType(field->value, value.elementId); else
+			if (field->name.value == L"callbackId") ConvertJsonToCustomType(field->value, value.callbackId); else
+			if (field->name.value == L"bounds") ConvertJsonToCustomType(field->value, value.bounds); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasurings>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasurings& value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasurings>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementMeasurings&)#"
@@ -42739,6 +42966,7 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"fontHeights") ConvertJsonToCustomType(field->value, value.fontHeights); else
 			if (field->name.value == L"minSizes") ConvertJsonToCustomType(field->value, value.minSizes); else
 			if (field->name.value == L"createdImages") ConvertJsonToCustomType(field->value, value.createdImages); else
+			if (field->name.value == L"inlineObjectBounds") ConvertJsonToCustomType(field->value, value.inlineObjectBounds); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -42948,6 +43176,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::AfterClosing()
 	{
 		renderingDom = nullptr;
+		focusedParagraphElements.Clear();
 		availableElements.Clear();
 		availableImages.Clear();
 	}
@@ -42973,12 +43202,13 @@ namespace vl::presentation::remote_renderer
 			config.clientBounds.x2 = config.bounds.x2 + dx2;
 			config.clientBounds.y2 = config.bounds.y2 + dy2;
 
-			events->OnWindowBoundsUpdated(config);
+			pendingWindowBoundsUpdate = config;
 		}
 	}
 
 	void GuiRemoteRendererSingle::Moved()
 	{
+		pendingWindowBoundsUpdate.Reset();
 		UpdateConfigsIfNecessary();
 	}
 
@@ -43161,12 +43391,14 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestIOIsKeyPressing(vint id, const VKEY& arguments)
 	{
-		CHECK_FAIL(L"Not Implemented");
+		bool result = GetCurrentController()->InputService()->IsKeyPressing(arguments);
+		events->RespondIOIsKeyPressing(id, result);
 	}
 
 	void GuiRemoteRendererSingle::RequestIOIsKeyToggled(vint id, const VKEY& arguments)
 	{
-		CHECK_FAIL(L"Not Implemented");
+		bool result = GetCurrentController()->InputService()->IsKeyToggled(arguments);
+		events->RespondIOIsKeyToggled(id, result);
 	}
 
 /***********************************************************************
@@ -43175,6 +43407,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::LeftButtonDown(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Left;
 		arguments.info = info;
@@ -43183,6 +43416,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::LeftButtonUp(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Left;
 		arguments.info = info;
@@ -43191,6 +43425,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::LeftButtonDoubleClick(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Left;
 		arguments.info = info;
@@ -43199,6 +43434,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RightButtonDown(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Right;
 		arguments.info = info;
@@ -43207,6 +43443,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RightButtonUp(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Right;
 		arguments.info = info;
@@ -43215,6 +43452,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RightButtonDoubleClick(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Right;
 		arguments.info = info;
@@ -43223,6 +43461,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::MiddleButtonDown(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Middle;
 		arguments.info = info;
@@ -43231,6 +43470,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::MiddleButtonUp(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Middle;
 		arguments.info = info;
@@ -43239,6 +43479,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::MiddleButtonDoubleClick(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove.Reset();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Middle;
 		arguments.info = info;
@@ -43247,16 +43488,21 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::HorizontalWheel(const NativeWindowMouseInfo& info)
 	{
-		events->OnIOHWheel(info);
+		auto copy = info;
+		if (pendingHWheel) copy.wheel += pendingHWheel.Value().wheel;
+		pendingHWheel = copy;
 	}
 
 	void GuiRemoteRendererSingle::VerticalWheel(const NativeWindowMouseInfo& info)
 	{
-		events->OnIOVWheel(info);
+		auto copy = info;
+		if (pendingVWheel) copy.wheel += pendingVWheel.Value().wheel;
+		pendingVWheel = copy;
 	}
 
 	void GuiRemoteRendererSingle::MouseMoving(const NativeWindowMouseInfo& info)
 	{
+		pendingMouseMove = info;
 		if (renderingDom)
 		{
 			INativeWindowListener::HitTestResult hitTestResult = INativeWindowListener::NoDecision;
@@ -43264,7 +43510,6 @@ namespace vl::presentation::remote_renderer
 			HitTest(renderingDom, window->Convert(NativePoint{ info.x,info.y }), hitTestResult, cursor);
 			window->SetWindowCursor(cursor);
 		}
-		events->OnIOMouseMoving(info);
 	}
 
 	void GuiRemoteRendererSingle::MouseEntered()
@@ -43279,11 +43524,19 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::KeyDown(const NativeWindowKeyInfo& info)
 	{
-		events->OnIOKeyDown(info);
+		if (info.autoRepeatKeyDown)
+		{
+			pendingKeyAutoDown = info;
+		}
+		else
+		{
+			events->OnIOKeyDown(info);
+		}
 	}
 
 	void GuiRemoteRendererSingle::KeyUp(const NativeWindowKeyInfo& info)
 	{
+		pendingKeyAutoDown.Reset();
 		if (!info.ctrl && !info.shift && info.code == VKEY::KEY_MENU)
 		{
 			window->SupressAlt();
@@ -43294,6 +43547,35 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::Char(const NativeWindowCharInfo& info)
 	{
 		events->OnIOChar(info);
+	}
+
+	void GuiRemoteRendererSingle::SendAccumulatedMessages()
+	{
+		if (pendingMouseMove)
+		{
+			events->OnIOMouseMoving(pendingMouseMove.Value());
+			pendingMouseMove.Reset();
+		}
+		if (pendingHWheel)
+		{
+			events->OnIOHWheel(pendingHWheel.Value());
+			pendingHWheel.Reset();
+		}
+		if (pendingVWheel)
+		{
+			events->OnIOVWheel(pendingVWheel.Value());
+			pendingVWheel.Reset();
+		}
+		if (pendingKeyAutoDown)
+		{
+			events->OnIOKeyDown(pendingKeyAutoDown.Value());
+			pendingKeyAutoDown.Reset();
+		}
+		if (pendingWindowBoundsUpdate)
+		{
+			events->OnWindowBoundsUpdated(pendingWindowBoundsUpdate.Value());
+			pendingWindowBoundsUpdate.Reset();
+		}
 	}
 }
 
@@ -43549,7 +43831,7 @@ namespace vl::presentation::remote_renderer
 					element = Ptr(GuiImageFrameElement::Create());
 					break;
 				case RendererType::DocumentParagraph:
-					element = CreateRemoteDocumentParagraphElement();
+					element = CreateRemoteDocumentParagraphElement(rc.id);
 					break;
 				default:;
 				}
@@ -43577,6 +43859,7 @@ namespace vl::presentation::remote_renderer
 		{
 			for (auto id : *arguments.Obj())
 			{
+				focusedParagraphElements.Remove(id);
 				availableElements.Remove(id);
 				solidLabelMeasurings.Remove(id);
 			}
@@ -43585,6 +43868,23 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments)
 	{
+		if (arguments.updatedElements)
+		{
+			for (auto&& desc : *arguments.updatedElements.Obj())
+			{
+				desc.Apply(Overloading(
+					[&](const remoteprotocol::ElementDesc_SolidBorder& d) { RequestRendererUpdateElement_SolidBorder(d); },
+					[&](const remoteprotocol::ElementDesc_SinkBorder& d) { RequestRendererUpdateElement_SinkBorder(d); },
+					[&](const remoteprotocol::ElementDesc_SinkSplitter& d) { RequestRendererUpdateElement_SinkSplitter(d); },
+					[&](const remoteprotocol::ElementDesc_SolidBackground& d) { RequestRendererUpdateElement_SolidBackground(d); },
+					[&](const remoteprotocol::ElementDesc_GradientBackground& d) { RequestRendererUpdateElement_GradientBackground(d); },
+					[&](const remoteprotocol::ElementDesc_InnerShadow& d) { RequestRendererUpdateElement_InnerShadow(d); },
+					[&](const remoteprotocol::ElementDesc_Polygon& d) { RequestRendererUpdateElement_Polygon(d); },
+					[&](const remoteprotocol::ElementDesc_SolidLabel& d) { RequestRendererUpdateElement_SolidLabel(d); },
+					[&](const remoteprotocol::ElementDesc_ImageFrame& d) { RequestRendererUpdateElement_ImageFrame(d); }
+				));
+			}
+		}
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererEndRendering(vint id)
@@ -43757,6 +44057,14 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::GlobalTimer()
 	{
+		DateTime now = DateTime::UtcTime();
+		if (now.osMilliseconds - lastCaretTime >= CaretInterval)
+		{
+			lastCaretTime = now.osMilliseconds;
+			OnCaretNotify();
+		}
+		SendAccumulatedMessages();
+
 		if (!needRefresh) return;
 		needRefresh = false;
 		if (!window) return;
@@ -43830,6 +44138,7 @@ namespace vl::presentation::remote_renderer
 	{
 	protected:
 		GuiRemoteRendererSingle*											owner = nullptr;
+		vint																paragraphId = -1;
 		compositions::GuiGraphicsComposition*								ownerComposition = nullptr;
 		IGuiGraphicsRenderTarget*											renderTarget = nullptr;
 
@@ -43854,13 +44163,19 @@ namespace vl::presentation::remote_renderer
 		}
 
 	public:
-		GuiRemoteDocumentParagraphElement(GuiRemoteRendererSingle* _owner)
+		GuiRemoteDocumentParagraphElement(GuiRemoteRendererSingle* _owner, vint _paragraphId)
 			: owner(_owner)
+			, paragraphId(_paragraphId)
 		{
 		}
 
 		~GuiRemoteDocumentParagraphElement()
 		{
+		}
+
+		const WString& GetText()
+		{
+			return text ? text.Value() : WString::Empty;
 		}
 
 		IGuiGraphicsParagraph* GetParagraph() const
@@ -43939,8 +44254,23 @@ namespace vl::presentation::remote_renderer
 
 		Size OnRenderInlineObject(vint callbackId, Rect location) override
 		{
-			inlineObjectBounds.Set(callbackId, location);
-			vint index = inlineObjectProps.Keys().IndexOf(callbackId);
+			vint index = inlineObjectBounds.Keys().IndexOf(callbackId);
+			if (index == -1 || inlineObjectBounds.Values()[index] != location)
+			{
+				inlineObjectBounds.Set(callbackId, location);
+
+				remoteprotocol::ElementMeasuring_InlineObjectBounds bounds;
+				bounds.elementId = paragraphId;
+				bounds.callbackId = callbackId;
+				bounds.bounds = location;
+
+				if (!owner->elementMeasurings.inlineObjectBounds)
+				{
+					owner->elementMeasurings.inlineObjectBounds = Ptr(new List<remoteprotocol::ElementMeasuring_InlineObjectBounds>);
+				}
+				owner->elementMeasurings.inlineObjectBounds->Add(bounds);
+			}
+			index = inlineObjectProps.Keys().IndexOf(callbackId);
 			if (index == -1) return {};
 			return inlineObjectProps.Values()[index].size;
 		}
@@ -43959,11 +44289,11 @@ namespace vl::presentation::remote_renderer
 			if (caret)
 			{
 				auto& c = caret.Value();
-				paragraph->OpenCaret(c.caret, c.caretColor, c.frontSide);
+				paragraph->EnableCaret(c.caret, c.caretColor, c.frontSide);
 			}
 			else
 			{
-				paragraph->CloseCaret();
+				paragraph->DisableCaret();
 			}
 		}
 
@@ -44005,7 +44335,8 @@ namespace vl::presentation::remote_renderer
 			IGuiGraphicsParagraph::InlineObjectProperties props;
 			props.size = inlineProp.size;
 			props.baseline = inlineProp.baseline;
-			props.breakCondition = (IGuiGraphicsParagraph::BreakCondition)inlineProp.breakCondition;
+			props.breakCondition = inlineProp.breakCondition;
+			props.backgroundColor = inlineProp.backgroundColor;
 			props.callbackId = inlineProp.callbackId;
 			props.backgroundImage = background;
 			CHECK_ERROR(paragraph->SetInlineObject(start, length, props), ERROR_MESSAGE_PREFIX L"SetInlineObject failed.");
@@ -44171,44 +44502,39 @@ namespace vl::presentation::remote_renderer
 			}
 
 			response.documentSize = paragraph->GetSize();
-			if (inlineObjectRuns.Count() > 0)
-			{
-				renderTarget->StartRendering();
-				paragraph->Render(Rect(Point(0, 0), response.documentSize));
-				auto failure = renderTarget->StopRendering();
-				(void)failure;
-
-				if (inlineObjectBounds.Count() > 0)
-				{
-					response.inlineObjectBounds = Ptr(new Dictionary<vint, Rect>);
-					CopyFrom(*response.inlineObjectBounds.Obj(), inlineObjectBounds);
-				}
-			}
 #undef ERROR_MESSAGE_PREFIX
 		}
 
 		void OpenCaretAndStore(const remoteprotocol::OpenCaretRequest& arguments)
 		{
 			caret = arguments;
-			if (paragraph)
-			{
-				paragraph->OpenCaret(arguments.caret, arguments.caretColor, arguments.frontSide);
-			}
+			ApplyCaret();
 		}
 
 		void CloseCaretAndStore()
 		{
 			caret.Reset();
-			if (paragraph)
-			{
-				paragraph->CloseCaret();
-			}
+			ApplyCaret();
 		}
 	};
 
-	Ptr<IGuiGraphicsElement> GuiRemoteRendererSingle::CreateRemoteDocumentParagraphElement()
+	void GuiRemoteRendererSingle::OnCaretNotify()
 	{
-		return Ptr(new GuiRemoteDocumentParagraphElement(this));
+		for (auto element : From(focusedParagraphElements.Values()).Cast<GuiRemoteDocumentParagraphElement>())
+		{
+			if (auto paragraph = element->GetParagraph())
+			{
+				if (paragraph->BlinkCaret())
+				{
+					needRefresh = true;
+				}
+			}
+		}
+	}
+
+	Ptr<IGuiGraphicsElement> GuiRemoteRendererSingle::CreateRemoteDocumentParagraphElement(vint paragraphId)
+	{
+		return Ptr(new GuiRemoteDocumentParagraphElement(this, paragraphId));
 	}
 
 #define PREPARE_DOCUMENT_WRAPPER_RAW(WRAPPER_NAME, ELEMENT_ID)																			\
@@ -44241,8 +44567,18 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetCaretBounds(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments)
 	{
 		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments.id);
-		auto bounds = wrapper->GetParagraph()->GetCaretBounds(arguments.caret, arguments.frontSide);
-		events->RespondDocumentParagraph_GetCaretBounds(id, bounds);
+		remoteprotocol::GetCaretBoundsResponse response;
+		response.frontSideBounds = Ptr(new List<Rect>);
+		response.backSideBounds = Ptr(new List<Rect>);
+
+		vint length = wrapper->GetText().Length();
+		auto paragraph = wrapper->GetParagraph();
+		for (vint i = 0; i <= length; i++)
+		{
+			response.frontSideBounds->Add(paragraph->GetCaretBounds(i, true));
+			response.backSideBounds->Add(paragraph->GetCaretBounds(i, false));
+		}
+		events->RespondDocumentParagraph_GetCaretBounds(id, response);
 	}
 
 	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetInlineObjectFromPoint(vint id, const remoteprotocol::GetInlineObjectFromPointRequest& arguments)
@@ -44268,10 +44604,10 @@ namespace vl::presentation::remote_renderer
 		events->RespondDocumentParagraph_GetInlineObjectFromPoint(id, result);
 	}
 
-	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetNearestCaretFromTextPos(vint id, const remoteprotocol::GetCaretBoundsRequest& arguments)
+	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetNearestCaretFromTextPos(vint id, const remoteprotocol::GetNearestCaretFromTextPosRequest& arguments)
 	{
 		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments.id);
-		auto result = wrapper->GetParagraph()->GetNearestCaretFromTextPos(arguments.caret, arguments.frontSide);
+		auto result = wrapper->GetParagraph()->GetNearestCaretFromTextPos(arguments.textPos, arguments.frontSide);
 		events->RespondDocumentParagraph_GetNearestCaretFromTextPos(id, result);
 	}
 
@@ -44286,12 +44622,14 @@ namespace vl::presentation::remote_renderer
 	{
 		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments.id);
 		wrapper->OpenCaretAndStore(arguments);
+		focusedParagraphElements.Set(arguments.id, wrapper);
 	}
 
 	void GuiRemoteRendererSingle::RequestDocumentParagraph_CloseCaret(const vint& arguments)
 	{
 		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments);
 		wrapper->CloseCaretAndStore();
+		focusedParagraphElements.Remove(arguments);
 	}
 
 #undef PREPARE_DOCUMENT_WRAPPER
@@ -63080,6 +63418,15 @@ SharedCallbackService
 			for(vint i=0;i<listeners.Count();i++)
 			{
 				listeners[i]->NativeWindowDestroying(window);
+			}
+		}
+
+		void SharedCallbackService::InvokeEnvironmentChanged()
+		{
+			// TODO: (enumerable) foreach
+			for(vint i=0;i<listeners.Count();i++)
+			{
+				listeners[i]->EnvironmentChanged();
 			}
 		}
 	}

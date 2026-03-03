@@ -3074,7 +3074,7 @@ WindowsDirect2DElementInlineObject
 						}
 					}
 
-					Color color=rendererCallback->GetBackgroundColor(start);
+					Color color = properties.backgroundColor;
 					if(color.a!=0)
 					{
 						color.a/=2;
@@ -3435,7 +3435,7 @@ WindowsDirect2DParagraph (Initialization)
 
 				~WindowsDirect2DParagraph()
 				{
-					CloseCaret();
+					DisableCaret();
 					for (auto color : usedColors)
 					{
 						renderTarget->DestroyDirect2DBrush(color);
@@ -3712,23 +3712,37 @@ WindowsDirect2DParagraph (IRenderingCallback)
 WindowsDirect2DParagraph (Rendering)
 ***********************************************************************/
 
-				bool OpenCaret(vint _caret, Color _color, bool _frontSide)override
+				bool EnableCaret(vint _caret, Color _color, bool _frontSide)override
 				{
-					if(!IsValidCaret(_caret)) return false;
-					if(caret!=-1) CloseCaret();
-					caret=_caret;
-					caretColor=_color;
-					caretFrontSide=_frontSide;
-					caretBrush=renderTarget->CreateDirect2DBrush(caretColor);
+					if (!IsValidCaret(_caret)) return false;
+					if (caret != -1) DisableCaret();
+					caret = _caret;
+					caretColor = _color;
+					caretFrontSide = _frontSide;
+					caretBrush = renderTarget->CreateDirect2DBrush(caretColor);
 					return true;
 				}
 
-				bool CloseCaret()override
+				void DisableCaret()override
 				{
-					if(caret==-1) return false;
-					caret=-1;
+					if (caret == -1) return;
+					caret = -1;
 					renderTarget->DestroyDirect2DBrush(caretColor);
-					caretBrush=0;
+					caretBrush = nullptr;
+				}
+
+				bool BlinkCaret()override
+				{
+					if (caret == -1) return false;
+					if (caretBrush)
+					{
+						renderTarget->DestroyDirect2DBrush(caretColor);
+						caretBrush = nullptr;
+					}
+					else
+					{
+						caretBrush = renderTarget->CreateDirect2DBrush(caretColor);
+					}
 					return true;
 				}
 
@@ -3841,7 +3855,7 @@ WindowsDirect2DParagraph (Rendering)
 						defaultTextColor,
 						D2D1_DRAW_TEXT_OPTIONS_NO_SNAP);
 
-					if (caret != -1)
+					if (caret != -1 && caretBrush)
 					{
 						Rect caretBounds = GetCaretBounds(caret, caretFrontSide);
 						vint x = caretBounds.x1 + bounds.x1;
@@ -8502,7 +8516,7 @@ WindowsGDIParagraph
 
 				~WindowsGDIParagraph()
 				{
-					CloseCaret();
+					DisableCaret();
 				}
 
 				IGuiGraphicsLayoutProvider* GetProvider()override
@@ -8672,23 +8686,37 @@ WindowsGDIParagraph
 						paragraph->bounds.Height());
 				}
 
-				bool OpenCaret(vint _caret, Color _color, bool _frontSide)override
+				bool EnableCaret(vint _caret, Color _color, bool _frontSide)override
 				{
-					if(!IsValidCaret(_caret)) return false;
-					if(caret!=-1) CloseCaret();
-					caret=_caret;
-					caretColor=_color;
-					caretFrontSide=_frontSide;
-					caretPen=GetWindowsGDIResourceManager()->CreateGdiPen(caretColor);
+					if (!IsValidCaret(_caret)) return false;
+					if (caret != -1) DisableCaret();
+					caret = _caret;
+					caretColor = _color;
+					caretFrontSide = _frontSide;
+					caretPen = GetWindowsGDIResourceManager()->CreateGdiPen(caretColor);
 					return true;
 				}
 
-				bool CloseCaret()override
+				void DisableCaret()override
 				{
-					if(caret==-1) return false;
-					caret=-1;
+					if (caret == -1) return;
+					caret = -1;
 					GetWindowsGDIResourceManager()->DestroyGdiPen(caretColor);
-					caretPen=0;
+					caretPen = {};
+				}
+
+				bool BlinkCaret()override
+				{
+					if (caret == -1) return false;
+					if (caretPen)
+					{
+						GetWindowsGDIResourceManager()->DestroyGdiPen(caretColor);
+						caretPen = {};
+					}
+					else
+					{
+						caretPen = GetWindowsGDIResourceManager()->CreateGdiPen(caretColor);
+					}
 					return true;
 				}
 
@@ -8728,7 +8756,7 @@ WindowsGDIParagraph
 					paragraph->Render(this, false);
 					paragraphDC = 0;
 
-					if (caret != -1)
+					if (caret != -1 && caretPen)
 					{
 						Rect caretBounds = GetCaretBounds(caret, caretFrontSide);
 						vint x = caretBounds.x1 + bounds.x1;
@@ -10522,7 +10550,10 @@ UniscribeEmbeddedObjectRun
 
 			vint UniscribeEmbeddedObjectRun::SumWidth(vint charStart, vint charLength)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements_windows_gdi::UniscribeEmbeddedObjectRun::SumWidth(...)#"
+				CHECK_ERROR(charStart == 0 && charLength == length, ERROR_MESSAGE_PREFIX L"Object can't split.");
 				return properties.size.x;
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			vint UniscribeEmbeddedObjectRun::SumHeight()
@@ -10537,9 +10568,11 @@ UniscribeEmbeddedObjectRun
 
 			void UniscribeEmbeddedObjectRun::SearchForLineBreak(vint tempStart, bool wrapLine, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements_windows_gdi::UniscribeEmbeddedObjectRun::SearchForLineBreak(...)#"
+				CHECK_ERROR(tempStart == 0, ERROR_MESSAGE_PREFIX L"Object can't split.");
 				if (firstRun || !wrapLine || properties.size.x <= maxWidth)
 				{
-					charLength = length - tempStart;
+					charLength = length;
 					charAdvances = properties.size.x;
 				}
 				else
@@ -10547,6 +10580,7 @@ UniscribeEmbeddedObjectRun
 					charLength = 0;
 					charAdvances = 0;
 				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			void UniscribeEmbeddedObjectRun::Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)
@@ -10561,7 +10595,7 @@ UniscribeEmbeddedObjectRun
 					rect.right=(int)(fragment.bounds.Right()+offsetX)+2;
 					rect.bottom=(int)(fragment.bounds.Bottom()+offsetY)+2;
 
-					Color backgroundColor=documentFragment->colors.Values()[0].backgroundColor;
+					Color backgroundColor = properties.backgroundColor;
 
 					if(backgroundColor.a>0)
 					{
@@ -10824,62 +10858,65 @@ UniscribeLine
 					}
 
 					// render this line into lines with auto line wrapping
-					vint startRun = 0;
-					vint startRunOffset = 0;
-					vint lastRun = 0;
-					vint lastRunOffset = 0;
+					vint beginRun = 0;
+					vint beginRunOffset = 0;
+					vint endRun = 0;
+					vint endRunOffset = 0;
 					vint currentWidth = 0;
 
-					while (startRun < scriptRuns.Count())
+					while (beginRun < scriptRuns.Count())
 					{
-						vint lastCompletedRunOffset = 0;
 						vint currentWidth = 0;
 						bool firstRun = true;
+
 						// search for a range to fit in the given width
-						for (vint i = startRun; i < scriptRuns.Count(); i++)
+						while (endRun < scriptRuns.Count())
 						{
 							vint charLength = 0;
 							vint charAdvances = 0;
-							UniscribeRun* run = scriptRuns[i].Obj();
-							run->SearchForLineBreak(lastRunOffset, wrapLine, availableWidth - currentWidth, firstRun, charLength, charAdvances);
+							UniscribeRun* run = scriptRuns[endRun].Obj();
+							run->SearchForLineBreak(endRunOffset, wrapLine, availableWidth - currentWidth, firstRun, charLength, charAdvances);
 							firstRun = false;
 
-							if (charLength == run->length - lastRunOffset)
+							if (charLength == run->length - endRunOffset)
 							{
-								lastCompletedRunOffset = lastRunOffset;
-								lastRun = i + 1;
-								lastRunOffset = 0;
-								currentWidth += charAdvances;
-							}
-							else
-							{
-								if (lastRunOffset == 0 && charLength == 0)
+								if (endRun == scriptRuns.Count() - 1)
 								{
-									lastRun--;
-									lastRunOffset = lastCompletedRunOffset;
+									endRunOffset = run->length;
+									currentWidth += charAdvances;
+									break;
 								}
 								else
 								{
-									lastRun = i;
-									lastRunOffset = lastRunOffset + charLength;
+									endRun++;
+									endRunOffset = 0;
+									currentWidth += charAdvances;
+								}
+							}
+							else
+							{
+								if (endRunOffset == 0 && charLength == 0)
+								{
+									endRun--;
+									endRunOffset = scriptRuns[endRun]->length;
+								}
+								else
+								{
+									endRunOffset = endRunOffset + charLength;
+									currentWidth += charAdvances;
 								}
 								break;
 							}
 						}
 
 						// if the range is empty, than this should be the end of line, ignore it
-						if (startRun < lastRun || (startRun == lastRun && startRunOffset < lastRunOffset))
+						if (beginRun < endRun || (beginRun == endRun && beginRunOffset < endRunOffset))
 						{
 							// calculate the max line height in this range;
-							vint availableLastRun = lastRun < scriptRuns.Count() - 1 ? lastRun : scriptRuns.Count() - 1;
 							vint maxHeight = 0;
 							vint maxTextHeight = 0;
-							for (vint i = startRun; i <= availableLastRun; i++)
+							for (vint i = beginRun; i <= endRun; i++)
 							{
-								if (i == lastRun && lastRunOffset == 0)
-								{
-									break;
-								}
 								{
 									vint size = scriptRuns[i]->SumHeight();
 									if (maxHeight < size) maxHeight = size;
@@ -10891,40 +10928,37 @@ UniscribeLine
 							}
 
 							// determine the rendering order for all runs inside this range
-							Array<BYTE> levels(availableLastRun - startRun + 1);
+							Array<BYTE> levels(endRun - beginRun + 1);
 							Array<int> runVisualToLogical(levels.Count());
 							Array<int> runLogicalToVisual(levels.Count());
-							for (vint i = startRun; i <= availableLastRun; i++)
+							for (vint i = beginRun; i <= endRun; i++)
 							{
-								levels[i - startRun] = scriptRuns[i]->scriptItem->scriptItem.a.s.uBidiLevel;
+								levels[i - beginRun] = scriptRuns[i]->scriptItem->scriptItem.a.s.uBidiLevel;
 							}
 							ScriptLayout((int)levels.Count(), &levels[0], &runVisualToLogical[0], &runLogicalToVisual[0]);
 
 							// render all runs inside this range
-							vint startRunFragmentCount = -1;
-							for (vint i = startRun; i <= availableLastRun; i++)
+							vint beginRunFirstFragment = scriptRuns[beginRun]->fragmentBounds.Count();
+							for (vint i = 0; i < levels.Count(); i++)
 							{
-								vint runIndex = runVisualToLogical[i - startRun] + startRun;
+								vint runIndex = runVisualToLogical[i] + beginRun;
 								UniscribeRun* run = scriptRuns[runIndex].Obj();
-								vint start = runIndex == startRun ? startRunOffset : 0;
-								vint end = runIndex == lastRun ? lastRunOffset : run->length;
+								vint start = runIndex == beginRun ? beginRunOffset : 0;
+								vint end = runIndex == endRun ? endRunOffset : run->length;
 								vint length = end - start;
-
-								if (runIndex == startRun)
-								{
-									startRunFragmentCount = run->fragmentBounds.Count();
-								}
+								vint runWidth = run->SumWidth(start, length);
+								vint runHeight = run->SumHeight();
 
 								UniscribeRun::RunFragmentBounds fragmentBounds;
 								fragmentBounds.startFromRun = start;
 								fragmentBounds.length = length;
 								fragmentBounds.bounds = Rect(
-									Point(cx, cy + maxHeight - run->SumHeight()),
-									Size(run->SumWidth(start, length), run->SumHeight())
+									Point(cx, cy + maxHeight - runHeight),
+									Size(runWidth, runHeight)
 								);
 								run->fragmentBounds.Add(fragmentBounds);
 
-								cx += run->SumWidth(start, length);
+								cx += runWidth;
 							}
 
 							// adjust alignment
@@ -10942,10 +10976,10 @@ UniscribeLine
 							// shift all bounds using alignment
 							if (cxOffset != 0)
 							{
-								for (vint i = startRun; i <= availableLastRun; i++)
+								for (vint i = beginRun; i <= endRun; i++)
 								{
 									UniscribeRun* run = scriptRuns[i].Obj();
-									for (vint j = (i == startRun ? startRunFragmentCount : 0); j < run->fragmentBounds.Count(); j++)
+									for (vint j = (i == beginRun ? beginRunFirstFragment : 0); j < run->fragmentBounds.Count(); j++)
 									{
 										UniscribeRun::RunFragmentBounds& fragmentBounds = run->fragmentBounds[j];
 										fragmentBounds.bounds.x1 += cxOffset;
@@ -10957,11 +10991,10 @@ UniscribeLine
 							// create a virtual line
 							{
 								auto virtualLine = Ptr(new UniscribeVirtualLine);
-								virtualLine->firstRunIndex = startRun;
-								virtualLine->firstRunBoundsIndex = startRunFragmentCount;
-								virtualLine->lastRunIndex = availableLastRun;
-								virtualLine->lastRunBoundsIndex = scriptRuns[availableLastRun]->fragmentBounds.Count() - 1;
-
+								virtualLine->firstRunIndex = beginRun;
+								virtualLine->firstRunBoundsIndex = beginRunFirstFragment;
+								virtualLine->lastRunIndex = endRun;
+								virtualLine->lastRunBoundsIndex = scriptRuns[endRun]->fragmentBounds.Count() - 1;
 								UniscribeRun* firstRun = scriptRuns[virtualLine->firstRunIndex].Obj();
 								UniscribeRun* lastRun = scriptRuns[virtualLine->lastRunIndex].Obj();
 								UniscribeRun::RunFragmentBounds& firstBounds = firstRun->fragmentBounds[virtualLine->firstRunBoundsIndex];
@@ -10972,10 +11005,10 @@ UniscribeLine
 								virtualLine->runText = lineText.Buffer() + virtualLine->startFromLine;
 
 								bool updateBounds = false;
-								for (vint i = startRun; i <= availableLastRun; i++)
+								for (vint i = beginRun; i <= endRun; i++)
 								{
 									UniscribeRun* run = scriptRuns[i].Obj();
-									for (vint j = (i == startRun ? startRunFragmentCount : 0); j < run->fragmentBounds.Count(); j++)
+									for (vint j = (i == beginRun ? beginRunFirstFragment : 0); j < run->fragmentBounds.Count(); j++)
 									{
 										UniscribeRun::RunFragmentBounds& fragmentBounds = run->fragmentBounds[j];
 										if (updateBounds)
@@ -10999,8 +11032,14 @@ UniscribeLine
 							cy += (vint)(maxHeight + maxTextHeight * 0.5);
 						}
 
-						startRun = lastRun;
-						startRunOffset = lastRunOffset;
+						// prepare for the next virtual line
+						if (endRunOffset == scriptRuns[endRun]->length)
+						{
+							endRun++;
+							endRunOffset = 0;
+						}
+						beginRun = endRun;
+						beginRunOffset = endRunOffset;
 					}
 
 					// calculate line bounds
@@ -11014,7 +11053,7 @@ UniscribeLine
 						{
 							Rect bounds = fragmentBounds.bounds;
 							if (minX > bounds.Left()) minX = bounds.Left();
-							if (minY > bounds.Top()) minX = bounds.Top();
+							if (minY > bounds.Top()) minY = bounds.Top();
 							if (maxX < bounds.Right()) maxX = bounds.Right();
 							if (maxY < bounds.Bottom()) maxY = bounds.Bottom();
 						}
@@ -11064,7 +11103,6 @@ UniscribeParagraph (Initialization)
 					fragment->fontObject=0;
 				}
 				lines.Clear();
-				lastAvailableWidth=-1;
 			}
 
 			bool UniscribeParagraph::BuildUniscribeData(WinDC* dc)
@@ -11155,10 +11193,6 @@ UniscribeParagraph (Initialization)
 
 			void UniscribeParagraph::Layout(bool wrapLine, vint availableWidth, Alignment alignment)
 			{
-				if (lastWrapLine == wrapLine && lastAvailableWidth == availableWidth && paragraphAlignment == alignment)
-				{
-					return;
-				}
 				lastWrapLine = wrapLine;
 				lastAvailableWidth = availableWidth;
 				paragraphAlignment = alignment;
@@ -11183,7 +11217,7 @@ UniscribeParagraph (Initialization)
 				{
 					Rect bounds = line->bounds;
 					if (minX > bounds.Left()) minX = bounds.Left();
-					if (minY > bounds.Top()) minX = bounds.Top();
+					if (minY > bounds.Top()) minY = bounds.Top();
 					if (maxX < bounds.Right()) maxX = bounds.Right();
 					if (maxY < bounds.Bottom()) maxY = bounds.Bottom();
 				}
@@ -11345,11 +11379,11 @@ UniscribeParagraph (Formatting Helper)
 						f2=fe;
 						fe++;
 						vint length=fragmentEnd->text.Length();
-						Ptr<UniscribeFragment> leftFragment=fragmentStart->Copy(0, se);
+						Ptr<UniscribeFragment> leftFragment= fragmentEnd->Copy(0, se);
 						Ptr<UniscribeFragment> rightFragment=fragmentEnd->Copy(se, length-se);
-						documentFragments.RemoveAt(fe);
-						documentFragments.Insert(fe, leftFragment);
-						documentFragments.Insert(fe+1, rightFragment);
+						documentFragments.RemoveAt(fe-1);
+						documentFragments.Insert(fe-1, leftFragment);
+						documentFragments.Insert(fe, rightFragment);
 					}
 				}
 				return true;

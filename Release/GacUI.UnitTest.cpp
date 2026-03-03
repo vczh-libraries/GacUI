@@ -38,9 +38,32 @@ IGuiRemoteProtocolMessages (Rendering)
 		receivedDomDiffMessage = false;
 		receivedElementMessage = false;
 		lastRenderingCommandsOpening = true;
+
 		auto frame = Ptr(new UnitTestLoggedFrame);
 		frame->frameId = arguments.frameId;
 		loggedFrames.Add(frame);
+
+		if (arguments.updatedElements && arguments.updatedElements.Obj()->Count() > 0)
+		{
+			// Apply element updates first so event logs remain backward-compatible:
+			// Updated(...), Updated(...), ..., Begin()
+			for (auto&& desc : *arguments.updatedElements.Obj())
+			{
+				desc.Apply(Overloading(
+					[&](const ElementDesc_SolidBorder& d) { Impl_RendererUpdateElement_SolidBorder(d); },
+					[&](const ElementDesc_SinkBorder& d) { Impl_RendererUpdateElement_SinkBorder(d); },
+					[&](const ElementDesc_SinkSplitter& d) { Impl_RendererUpdateElement_SinkSplitter(d); },
+					[&](const ElementDesc_SolidBackground& d) { Impl_RendererUpdateElement_SolidBackground(d); },
+					[&](const ElementDesc_GradientBackground& d) { Impl_RendererUpdateElement_GradientBackground(d); },
+					[&](const ElementDesc_InnerShadow& d) { Impl_RendererUpdateElement_InnerShadow(d); },
+					[&](const ElementDesc_Polygon& d) { Impl_RendererUpdateElement_Polygon(d); },
+					[&](const ElementDesc_SolidLabel& d) { Impl_RendererUpdateElement_SolidLabel(d); },
+					[&](const ElementDesc_ImageFrame& d) { Impl_RendererUpdateElement_ImageFrame(d); }
+				));
+			}
+
+			renderingDomBuilder.RequestRendererBeginRendering();
+		}
 	}
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererEndRendering(vint id)
@@ -676,6 +699,141 @@ namespace vl::presentation::unittest
 Helper Functions for Document Paragraph
 ***********************************************************************/
 
+	constexpr vint DefaultFontSize = 12;
+	constexpr vint DefaultLineHeight = 16;
+
+	void ClearCaretLayouts(DocumentParagraphState& state)
+	{
+		state.caretLayouts.Clear();
+		state.caretLayoutKeys.Clear();
+	}
+
+	void AddCaretLayout(DocumentParagraphState& state, vint caret, const DocumentParagraphCharLayout& layout)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::AddCaretLayout(DocumentParagraphState&, vint, const DocumentParagraphCharLayout&)#"
+		if (state.caretLayoutKeys.Count() > 0)
+		{
+			CHECK_ERROR(state.caretLayoutKeys[state.caretLayoutKeys.Count() - 1] < caret, ERROR_MESSAGE_PREFIX L"Duplicate or out-of-order caret.");
+		}
+		state.caretLayoutKeys.Add(caret);
+		state.caretLayouts.Add(caret, layout);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	vint FindLayoutCaretLE(const DocumentParagraphState& state, vint textPos)
+	{
+		if (state.caretLayoutKeys.Count() == 0) return -1;
+		vint index = -1;
+		auto comparer = [&](const vint& key, const vint& search) -> std::strong_ordering
+		{
+			return key <=> search;
+		};
+		auto hit = BinarySearchLambda(&state.caretLayoutKeys[0], state.caretLayoutKeys.Count(), textPos, index, comparer);
+		if (hit != -1) return state.caretLayoutKeys[hit];
+		if (index < 0) return -1;
+		if (state.caretLayoutKeys[index] < textPos) return state.caretLayoutKeys[index];
+		if (index == 0) return -1;
+		return state.caretLayoutKeys[index - 1];
+	}
+
+	vint FindLayoutCaretGT(const DocumentParagraphState& state, vint textPos)
+	{
+		if (state.caretLayoutKeys.Count() == 0) return -1;
+		vint index = -1;
+		auto comparer = [&](const vint& key, const vint& search) -> std::strong_ordering
+		{
+			return key <=> search;
+		};
+		auto hit = BinarySearchLambda(&state.caretLayoutKeys[0], state.caretLayoutKeys.Count(), textPos, index, comparer);
+		if (hit != -1)
+		{
+			if (hit + 1 < state.caretLayoutKeys.Count()) return state.caretLayoutKeys[hit + 1];
+			return -1;
+		}
+		if (index < 0) return state.caretLayoutKeys[0];
+		if (state.caretLayoutKeys[index] > textPos) return state.caretLayoutKeys[index];
+		if (index + 1 < state.caretLayoutKeys.Count()) return state.caretLayoutKeys[index + 1];
+		return -1;
+	}
+
+	vint FindFirstCaretKeyAtOrAfter(const DocumentParagraphState& state, vint textPos)
+	{
+		if (state.caretLayoutKeys.Count() == 0) return -1;
+		vint index = -1;
+		auto comparer = [&](const vint& key, const vint& search) -> std::strong_ordering
+		{
+			return key <=> search;
+		};
+		auto hit = BinarySearchLambda(&state.caretLayoutKeys[0], state.caretLayoutKeys.Count(), textPos, index, comparer);
+		if (hit != -1) return hit;
+		if (index < 0) return 0;
+		if (state.caretLayoutKeys[index] < textPos)
+		{
+			if (index + 1 < state.caretLayoutKeys.Count()) return index + 1;
+			return -1;
+		}
+		return index;
+	}
+
+	bool TryGetLayoutAtCaret(const DocumentParagraphState& state, vint caret, DocumentParagraphCharLayout& layout)
+	{
+		if (!state.caretLayoutKeys.Contains(caret)) return false;
+		layout = state.caretLayouts[caret];
+		return true;
+	}
+
+	bool TryGetInlineObjectRangeContaining(const DocumentParagraphState& state, vint caret, elements::CaretRange& range)
+	{
+		for (auto&& [inlineRange, _] : state.inlineObjectRuns)
+		{
+			if (caret > inlineRange.caretBegin && caret < inlineRange.caretEnd)
+			{
+				range = inlineRange;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool TryGetInlineObjectRangeAtBegin(const DocumentParagraphState& state, vint caret, elements::CaretRange& range)
+	{
+		for (auto&& [inlineRange, _] : state.inlineObjectRuns)
+		{
+			if (caret == inlineRange.caretBegin)
+			{
+				range = inlineRange;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool TryGetInlineObjectRangeAtEnd(const DocumentParagraphState& state, vint caret, elements::CaretRange& range)
+	{
+		for (auto&& [inlineRange, _] : state.inlineObjectRuns)
+		{
+			if (caret == inlineRange.caretEnd)
+			{
+				range = inlineRange;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool IsValidCaretPosition(const DocumentParagraphState& state, vint caret)
+	{
+		if (caret < 0 || caret > state.text.Length()) return false;
+		for (auto&& [range, _] : state.inlineObjectRuns)
+		{
+			if (caret > range.caretBegin && caret < range.caretEnd)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	vint GetFontSizeForPosition(
 		const DocumentParagraphState& state,
 		vint pos,
@@ -710,9 +868,9 @@ Helper Functions for Document Paragraph
 
 	void CalculateParagraphLayout(DocumentParagraphState& state)
 	{
-		state.characterLayouts.Clear();
+		ClearCaretLayouts(state);
 		state.lines.Clear();
-		state.cachedSize = Size(0, 16);
+		state.cachedSize = Size(0, DefaultLineHeight);
 		state.cachedInlineObjectBounds.Clear();
 
 		const WString& text = state.text;
@@ -724,8 +882,8 @@ Helper Functions for Document Paragraph
 			line.startPos = 0;
 			line.endPos = 0;
 			line.y = 0;
-			line.height = 16; // Default: 12 (font) + 4
-			line.baseline = 12;
+			line.height = DefaultLineHeight; // Default: 12 (font) + 4
+			line.baseline = DefaultFontSize;
 			line.width = 0;
 			state.lines.Add(line);
 			return;
@@ -734,9 +892,11 @@ Helper Functions for Document Paragraph
 		// First pass: calculate per-character metrics
 		struct TempCharInfo
 		{
+			vint caret;
 			double x;
 			double width;
 			vint height;
+			vint length;
 			Nullable<DocumentInlineObjectRunProperty> inlineObjectProp;
 		};
 		List<TempCharInfo> tempChars;
@@ -748,7 +908,7 @@ Helper Functions for Document Paragraph
 		for (vint i = 0; i < text.Length(); i++)
 		{
 			wchar_t c = text[i];
-			TempCharInfo info = { currentX, 0, 0, {} };
+			TempCharInfo info = { i, currentX, 0, 0, 1, {} };
 
 			// Handle \r - zero width, no line break
 			if (c == L'\r')
@@ -766,11 +926,12 @@ Helper Functions for Document Paragraph
 				auto& prop = inlinePair.Value().value;
 				info.width = (double)prop.size.x;
 				info.height = prop.size.y;
+				info.length = inlinePair.Value().key;
 				info.inlineObjectProp = inlinePair.Value().value;
 			}
 			else
 			{
-				if (fontSize <= 0) fontSize = 12;
+				if (fontSize <= 0) fontSize = DefaultFontSize;
 				info.width = GetCharacterWidth(c, fontSize);
 				info.height = fontSize;
 			}
@@ -826,9 +987,9 @@ Helper Functions for Document Paragraph
 			vint maxAboveBaseline = 0;
 			vint maxBelowBaseline = 0;
 
-			for (vint i = lineStart; i < lineEnd && i < tempChars.Count(); i++)
+			for (auto&& info : tempChars)
 			{
-				auto& info = tempChars[i];
+				if (info.caret < lineStart || info.caret >= lineEnd) continue;
 				if (info.inlineObjectProp)
 				{
 					auto&& prop = info.inlineObjectProp.Value();
@@ -860,18 +1021,19 @@ Helper Functions for Document Paragraph
 
 			// Calculate line width
 			double lineWidth = 0;
-			for (vint i = lineStart; i < lineEnd && i < tempChars.Count(); i++)
+			for (auto&& info : tempChars)
 			{
-				double endX = tempChars[i].x + tempChars[i].width;
+				if (info.caret < lineStart || info.caret >= lineEnd) continue;
+				double endX = info.x + info.width;
 				if (endX > lineWidth) lineWidth = endX;
 			}
 			line.width = (vint)lineWidth;
 
 			// Fill inline object bounds
 
-			for (vint i = lineStart; i < lineEnd && i < tempChars.Count(); i++)
+			for (auto&& info : tempChars)
 			{
-				auto& info = tempChars[i];
+				if (info.caret < lineStart || info.caret >= lineEnd) continue;
 				if (info.inlineObjectProp)
 				{
 					auto&& prop = info.inlineObjectProp.Value();
@@ -892,18 +1054,21 @@ Helper Functions for Document Paragraph
 
 		// Third pass: create final character layouts with line indices
 		vint lineIdx = 0;
-		for (vint i = 0; i < tempChars.Count(); i++)
+		for (auto&& info : tempChars)
 		{
-			while (lineIdx < state.lines.Count() - 1 && i >= state.lines[lineIdx].endPos)
+			while (lineIdx < state.lines.Count() - 1 && info.caret >= state.lines[lineIdx].endPos)
 			{
 				lineIdx++;
 			}
 			DocumentParagraphCharLayout cl;
-			cl.x = tempChars[i].x;
-			cl.width = tempChars[i].width;
+			cl.x = info.x;
+			cl.width = info.width;
 			cl.lineIndex = lineIdx;
-			cl.height = tempChars[i].height;
-			state.characterLayouts.Add(cl);
+			cl.height = info.height;
+			cl.length = info.length;
+			cl.baseline = 0;
+			cl.isInlineObject = (bool)info.inlineObjectProp;
+			AddCaretLayout(state, info.caret, cl);
 		}
 
 		// Calculate total size
@@ -912,7 +1077,7 @@ Helper Functions for Document Paragraph
 		{
 			if (line.width > maxWidth) maxWidth = line.width;
 		}
-		state.cachedSize = Size(maxWidth, currentY > 0 ? currentY : 16);
+		state.cachedSize = Size(maxWidth, currentY > 0 ? currentY : DefaultLineHeight);
 	}
 
 /***********************************************************************
@@ -1029,13 +1194,24 @@ IGuiRemoteProtocolMessages (Elements - Document)
 		// Send response with calculated size and inline object bounds
 		UpdateElement_DocumentParagraphResponse response;
 		response.documentSize = state->cachedSize;
+		GetEvents()->RespondRendererUpdateElement_DocumentParagraph(id, response);
+
+		// Store inlineObjectBounds
 		if (state->cachedInlineObjectBounds.Count() > 0)
 		{
-			response.inlineObjectBounds = Ptr(new Dictionary<vint, Rect>);
-			CopyFrom(*response.inlineObjectBounds.Obj(), state->cachedInlineObjectBounds);
+			if (!measuringForNextRendering.inlineObjectBounds)
+			{
+				measuringForNextRendering.inlineObjectBounds = Ptr(new List<ElementMeasuring_InlineObjectBounds>);
+			}
+			for (vint i = 0; i < state->cachedInlineObjectBounds.Count(); i++)
+			{
+				ElementMeasuring_InlineObjectBounds bounds;
+				bounds.elementId = arguments.id;
+				bounds.callbackId = state->cachedInlineObjectBounds.Keys()[i];
+				bounds.bounds = state->cachedInlineObjectBounds.Values()[i];
+				measuringForNextRendering.inlineObjectBounds.Obj()->Add(bounds);
+			}
 		}
-
-		GetEvents()->RespondRendererUpdateElement_DocumentParagraph(id, response);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
@@ -1046,64 +1222,46 @@ IGuiRemoteProtocolMessages (Elements - Document)
 		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"No active paragraph.");
 		auto state = paragraphStates.Values()[index];
 
-		vint caret = arguments.caret;
+		GetCaretBoundsResponse response;
+		response.frontSideBounds = Ptr(new List<Rect>);
+		response.backSideBounds = Ptr(new List<Rect>);
 
-		// Handle empty text
-		if (state->text.Length() == 0 || state->lines.Count() == 0)
+		if (state->text.Length() == 0)
 		{
-			auto& line = state->lines[0];
-			GetEvents()->RespondDocumentParagraph_GetCaretBounds(id, Rect(Point(0, line.y), Size(0, line.height)));
+			Rect bounds = { 0,0,0,DefaultLineHeight };
+			response.frontSideBounds->Add(bounds);
+			response.backSideBounds->Add(bounds);
+			GetEvents()->RespondDocumentParagraph_GetCaretBounds(id, response);
 			return;
 		}
 
-		// Clamp caret to valid range
-		if (caret < 0) caret = 0;
-		if (caret > state->text.Length()) caret = state->text.Length();
-
-		// Find which line the caret is on
-		vint lineIdx = 0;
-		for (vint i = 0; i < state->lines.Count(); i++)
+		for (vint caret = 0; caret <= state->text.Length(); caret++)
 		{
-			if (caret >= state->lines[i].startPos && caret <= state->lines[i].endPos)
+			vint anchorCaret = FindLayoutCaretLE(*state.Obj(), caret);
+			if (anchorCaret == -1) anchorCaret = FindLayoutCaretGT(*state.Obj(), caret);
+			if (anchorCaret == -1)
 			{
-				lineIdx = i;
-				break;
+				Rect bounds = { 0,0,0,DefaultLineHeight };
+				response.frontSideBounds->Add(bounds);
+				response.backSideBounds->Add(bounds);
+				continue;
 			}
-			if (i == state->lines.Count() - 1)
+
+			auto anchorLayout = state->caretLayouts[anchorCaret];
+			vint lineIndex = anchorLayout.lineIndex;
+			vint y1 = state->lines[lineIndex].y;
+			vint y2 = y1 + state->lines[lineIndex].height;
+			vint x = (vint)anchorLayout.x;
+
+			if (caret >= anchorCaret + anchorLayout.length)
 			{
-				lineIdx = i;
+				x = (vint)(anchorLayout.x + anchorLayout.width);
 			}
-		}
 
-		auto& line = state->lines[lineIdx];
-
-		// Calculate x position
-		vint x = 0;
-		if (caret > 0 && caret <= state->characterLayouts.Count())
-		{
-			// Caret is at the end of the previous character
-			auto& prevChar = state->characterLayouts[caret - 1];
-			x = (vint)(prevChar.x + prevChar.width);
+			response.backSideBounds->Add(Rect(x, y1, x, y2));
+			response.frontSideBounds->Add(Rect(x, y1, x, y2));
 		}
-		else if (caret < state->characterLayouts.Count())
-		{
-			// Caret is at the start of this character
-			x = (vint)state->characterLayouts[caret].x;
-		}
-
-		// Apply alignment offset
-		vint alignmentOffset = 0;
-		if (state->alignment == ElementHorizontalAlignment::Center)
-		{
-			alignmentOffset = (state->cachedSize.x - line.width) / 2;
-		}
-		else if (state->alignment == ElementHorizontalAlignment::Right)
-		{
-			alignmentOffset = state->cachedSize.x - line.width;
-		}
-
-		Rect bounds(Point(x + alignmentOffset, line.y), Size(0, line.height));
-		GetEvents()->RespondDocumentParagraph_GetCaretBounds(id, bounds);
+		GetEvents()->RespondDocumentParagraph_GetCaretBounds(id, response);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
@@ -1148,6 +1306,14 @@ IGuiRemoteProtocolMessages (Elements - Document)
 			break;
 		case CRP::CaretLineFirst:
 			response.newCaret = state->lines[lineIdx].startPos;
+			if (!IsValidCaretPosition(*state.Obj(), response.newCaret))
+			{
+				auto candidate = FindLayoutCaretGT(*state.Obj(), response.newCaret);
+				if (candidate != -1 && candidate < state->lines[lineIdx].endPos)
+				{
+					response.newCaret = candidate;
+				}
+			}
 			break;
 		case CRP::CaretLineLast:
 			response.newCaret = state->lines[lineIdx].endPos;
@@ -1167,32 +1333,88 @@ IGuiRemoteProtocolMessages (Elements - Document)
 					}
 				}
 			}
+			if (!IsValidCaretPosition(*state.Obj(), response.newCaret))
+			{
+				auto candidate = FindLayoutCaretLE(*state.Obj(), response.newCaret);
+				if (candidate != -1 && candidate >= state->lines[lineIdx].startPos)
+				{
+					response.newCaret = candidate;
+				}
+			}
 			break;
 		case CRP::CaretMoveLeft:
-			response.newCaret = caret > 0 ? caret - 1 : 0;
+			if (caret > 0)
+			{
+				elements::CaretRange inlineRange;
+				if (TryGetInlineObjectRangeAtEnd(*state.Obj(), caret, inlineRange))
+				{
+					response.newCaret = inlineRange.caretBegin;
+				}
+				else if (TryGetInlineObjectRangeContaining(*state.Obj(), caret - 1, inlineRange))
+				{
+					response.newCaret = inlineRange.caretBegin;
+				}
+				else
+				{
+					response.newCaret = caret - 1;
+				}
+			}
+			else
+			{
+				response.newCaret = 0;
+			}
 			break;
 		case CRP::CaretMoveRight:
-			response.newCaret = caret < textLen ? caret + 1 : textLen;
+			if (caret < textLen)
+			{
+				elements::CaretRange inlineRange;
+				if (TryGetInlineObjectRangeAtBegin(*state.Obj(), caret, inlineRange))
+				{
+					response.newCaret = inlineRange.caretEnd;
+				}
+				else if (TryGetInlineObjectRangeContaining(*state.Obj(), caret + 1, inlineRange))
+				{
+					response.newCaret = inlineRange.caretEnd;
+				}
+				else
+				{
+					response.newCaret = caret + 1;
+				}
+			}
+			else
+			{
+				response.newCaret = textLen;
+			}
 			break;
 		case CRP::CaretMoveUp:
 			if (lineIdx > 0)
 			{
 				// Calculate x offset in current line
 				vint xOffset = 0;
-				if (caret > 0 && caret <= state->characterLayouts.Count())
+				if (caret > 0)
 				{
-					auto& prevChar = state->characterLayouts[caret - 1];
-					xOffset = (vint)(prevChar.x + prevChar.width);
+					DocumentParagraphCharLayout prevLayout;
+					auto layoutCaret = FindLayoutCaretLE(*state.Obj(), caret - 1);
+					if (layoutCaret != -1 && TryGetLayoutAtCaret(*state.Obj(), layoutCaret, prevLayout))
+					{
+						xOffset = (vint)(prevLayout.x + prevLayout.width);
+					}
 				}
 				// Find corresponding position in previous line
 				auto& prevLine = state->lines[lineIdx - 1];
 				response.newCaret = prevLine.startPos;
-				for (vint i = prevLine.startPos; i < prevLine.endPos && i < state->characterLayouts.Count(); i++)
+				auto keyIndex = FindFirstCaretKeyAtOrAfter(*state.Obj(), prevLine.startPos);
+				if (keyIndex != -1)
 				{
-					auto& ch = state->characterLayouts[i];
-					if (ch.x + ch.width / 2 > xOffset)
-						break;
-					response.newCaret = i + 1;
+					for (vint i = keyIndex; i < state->caretLayoutKeys.Count(); i++)
+					{
+						auto caretKey = state->caretLayoutKeys[i];
+						if (caretKey >= prevLine.endPos) break;
+						auto& ch = state->caretLayouts[caretKey];
+						if (ch.x + ch.width / 2 > xOffset)
+							break;
+						response.newCaret = caretKey + ch.length;
+					}
 				}
 			}
 			else
@@ -1205,20 +1427,30 @@ IGuiRemoteProtocolMessages (Elements - Document)
 			{
 				// Calculate x offset in current line
 				vint xOffset = 0;
-				if (caret > 0 && caret <= state->characterLayouts.Count())
+				if (caret > 0)
 				{
-					auto& prevChar = state->characterLayouts[caret - 1];
-					xOffset = (vint)(prevChar.x + prevChar.width);
+					DocumentParagraphCharLayout prevLayout;
+					auto layoutCaret = FindLayoutCaretLE(*state.Obj(), caret - 1);
+					if (layoutCaret != -1 && TryGetLayoutAtCaret(*state.Obj(), layoutCaret, prevLayout))
+					{
+						xOffset = (vint)(prevLayout.x + prevLayout.width);
+					}
 				}
 				// Find corresponding position in next line
 				auto& nextLine = state->lines[lineIdx + 1];
 				response.newCaret = nextLine.startPos;
-				for (vint i = nextLine.startPos; i < nextLine.endPos && i < state->characterLayouts.Count(); i++)
+				auto keyIndex = FindFirstCaretKeyAtOrAfter(*state.Obj(), nextLine.startPos);
+				if (keyIndex != -1)
 				{
-					auto& ch = state->characterLayouts[i];
-					if (ch.x + ch.width / 2 > xOffset)
-						break;
-					response.newCaret = i + 1;
+					for (vint i = keyIndex; i < state->caretLayoutKeys.Count(); i++)
+					{
+						auto caretKey = state->caretLayoutKeys[i];
+						if (caretKey >= nextLine.endPos) break;
+						auto& ch = state->caretLayouts[caretKey];
+						if (ch.x + ch.width / 2 > xOffset)
+							break;
+						response.newCaret = caretKey + ch.length;
+					}
 				}
 			}
 			else
@@ -1230,27 +1462,79 @@ IGuiRemoteProtocolMessages (Elements - Document)
 			response.newCaret = caret;
 			break;
 		}
+		while (!IsValidCaretPosition(*state.Obj(), response.newCaret))
+		{
+			if (response.newCaret < caret)
+			{
+				auto candidate = FindLayoutCaretLE(*state.Obj(), response.newCaret);
+				if (candidate == -1) break;
+				if (candidate == response.newCaret) break;
+				response.newCaret = candidate;
+			}
+			else if (response.newCaret > caret)
+			{
+				auto candidate = FindLayoutCaretGT(*state.Obj(), response.newCaret);
+				if (candidate == -1) break;
+				if (candidate == response.newCaret) break;
+				response.newCaret = candidate;
+			}
+			else
+			{
+				break;
+			}
+		}
+		if (!IsValidCaretPosition(*state.Obj(), response.newCaret))
+		{
+			response.newCaret = caret;
+		}
 
 		GetEvents()->RespondDocumentParagraph_GetCaret(id, response);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetNearestCaretFromTextPos(vint id, const GetCaretBoundsRequest& arguments)
+	void UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetNearestCaretFromTextPos(vint id, const GetNearestCaretFromTextPosRequest& arguments)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_DocumentParagraph_GetNearestCaretFromTextPos(vint, const GetCaretBoundsRequest&)#"
 		vint index = paragraphStates.Keys().IndexOf(arguments.id);
 		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"No active paragraph.");
 		auto state = paragraphStates.Values()[index];
 
-		vint textPos = arguments.caret;
+		vint textPos = arguments.textPos;
 		vint textLen = state->text.Length();
 
 		// Clamp to valid range
 		if (textPos < 0) textPos = 0;
 		if (textPos > textLen) textPos = textLen;
 
-		// For simple implementation, text position equals caret position
-		GetEvents()->RespondDocumentParagraph_GetNearestCaretFromTextPos(id, textPos);
+		if (IsValidCaretPosition(*state.Obj(), textPos))
+		{
+			GetEvents()->RespondDocumentParagraph_GetNearestCaretFromTextPos(id, textPos);
+			return;
+		}
+
+		vint caret = -1;
+		if (arguments.frontSide && textPos == textLen)
+		{
+			caret = textLen;
+		}
+		else if (arguments.frontSide)
+		{
+			caret = FindLayoutCaretLE(*state.Obj(), textPos);
+			if (caret == -1)
+			{
+				caret = FindLayoutCaretGT(*state.Obj(), textPos);
+			}
+		}
+		else
+		{
+			caret = FindLayoutCaretGT(*state.Obj(), textPos);
+			if (caret == -1)
+			{
+				caret = FindLayoutCaretLE(*state.Obj(), textPos);
+			}
+		}
+		if (caret == -1) caret = 0;
+		GetEvents()->RespondDocumentParagraph_GetNearestCaretFromTextPos(id, caret);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
@@ -1292,28 +1576,34 @@ IGuiRemoteProtocolMessages (Elements - Document)
 			vint relativeX = pt.x - alignmentOffset;
 
 			// Check each character in the line
-			for (vint i = line.startPos; i < line.endPos && i < state->characterLayouts.Count(); i++)
+			auto keyIndex = FindFirstCaretKeyAtOrAfter(*state.Obj(), line.startPos);
+			if (keyIndex != -1)
 			{
-				auto& ch = state->characterLayouts[i];
-				if (ch.isInlineObject && relativeX >= ch.x && relativeX < ch.x + ch.width)
+				for (vint i = keyIndex; i < state->caretLayoutKeys.Count(); i++)
 				{
-					// Found an inline object - look up its properties
-					for (auto [range, prop] : state->mergedRuns)
+					auto caretKey = state->caretLayoutKeys[i];
+					if (caretKey >= line.endPos) break;
+					auto& ch = state->caretLayouts[caretKey];
+					if (ch.isInlineObject && relativeX >= ch.x && relativeX < ch.x + ch.width)
 					{
-						if (i >= range.caretBegin && i < range.caretEnd)
+						// Found an inline object - look up its properties
+						for (auto [range, prop] : state->mergedRuns)
 						{
-							if (auto inlineProp = prop.TryGet<DocumentInlineObjectRunProperty>())
+							if (caretKey >= range.caretBegin && caretKey < range.caretEnd)
 							{
-								remoteprotocol::DocumentRun run;
-								run.caretBegin = range.caretBegin;
-								run.caretEnd = range.caretEnd;
-								run.props = *inlineProp;
-								result = run;
-								break;
+								if (auto inlineProp = prop.TryGet<DocumentInlineObjectRunProperty>())
+								{
+									remoteprotocol::DocumentRun run;
+									run.caretBegin = range.caretBegin;
+									run.caretEnd = range.caretEnd;
+									run.props = *inlineProp;
+									result = run;
+									break;
+								}
 							}
 						}
+						break;
 					}
-					break;
 				}
 			}
 		}
@@ -1335,27 +1625,7 @@ IGuiRemoteProtocolMessages (Elements - Document)
 
 		vint caret = arguments.caret;
 
-		// Check range: valid positions are 0 to text.Length() inclusive
-		if (caret < 0 || caret > state->text.Length())
-		{
-			GetEvents()->RespondDocumentParagraph_IsValidCaret(id, false);
-			return;
-		}
-
-		// Check if position is inside an inline object (not at the beginning)
-		// Inline objects occupy a range [caretBegin, caretEnd)
-		// Position at caretBegin is valid (cursor can be placed before the object)
-		// Positions inside (caretBegin < pos < caretEnd) are invalid
-		for (auto&& [range, _] : state->inlineObjectRuns)
-		{
-			if (caret > range.caretBegin && caret < range.caretEnd)
-			{
-				GetEvents()->RespondDocumentParagraph_IsValidCaret(id, false);
-				return;
-			}
-		}
-
-		GetEvents()->RespondDocumentParagraph_IsValidCaret(id, true);
+		GetEvents()->RespondDocumentParagraph_IsValidCaret(id, IsValidCaretPosition(*state.Obj(), caret));
 #undef ERROR_MESSAGE_PREFIX
 	}
 

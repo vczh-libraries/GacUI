@@ -96,6 +96,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics.cpp"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics_BasicElements.cpp"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics_Document.cpp"
+#include "..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics_Document_Helpers.cpp"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics_ImageService.cpp"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteProtocolSchemaShared.cpp"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channel_Async.cpp"

@@ -1314,6 +1314,9 @@ UniscribeParagraph
 				void							Layout(bool wrapLine, vint availableWidth, Alignment alignment);
 				void							Render(UniscribeRun::IRendererCallback* callback, bool renderBackground);
 
+				// fs, fe: range in fragment index
+				// ss, se: range in char index in each fragment
+				// f1, f2: after cutting, the range is complete fragments from f1 to f2
 				void							SearchFragment(vint start, vint length, vint& fs, vint& ss, vint& fe, vint& se);
 				bool							CutFragment(vint fs, vint ss, vint fe, vint se, vint& f1, vint& f2);
 				void							CutFragmentColors(vint fs, vint ss, vint fe, vint se, Color UniscribeColor::* colorField, Color color);
