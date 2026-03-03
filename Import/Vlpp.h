@@ -3349,11 +3349,12 @@ namespace vl
 				}
 			}
 			
-			/// <summary>Remove a value associated to a specified key.</summary>
+			/// <summary>
+			/// Remove a value associated to a specified key.
+			/// If this value is associated to the key for multiple times, only the first one will be removed.
+			/// </summary>
 			/// <returns>
 			/// Returns true if the value is removed.
-			/// If this value is associated to the key for jultiple times, only the first one will be removed.
-			/// If this value is associated to the key for jultiple times, only the first one will be removed.
 			/// </returns>
 			/// <param name="key">The key to find.</param>
 			/// <param name="value">The value to remove.</param>
