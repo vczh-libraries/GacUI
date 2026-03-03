@@ -24,7 +24,7 @@ namespace vl::presentation::elements_remoteprotocol
 		virtual remoteprotocol::RendererType	GetRendererType() = 0;
 		virtual bool							IsUpdated() = 0;
 		virtual void							ResetUpdated() = 0;
-		virtual void							SendUpdateElementMessages(bool fullContent) = 0;
+		virtual void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) = 0;
 		virtual bool							IsRenderedInLastBatch() = 0;
 
 		virtual bool							NeedUpdateMinSizeFromCache() = 0;
@@ -85,7 +85,7 @@ namespace vl::presentation::elements_remoteprotocol
 
 		bool							IsUpdated() override;
 		void							ResetUpdated() override;
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 		void							OnElementStateChanged() override;
 	};
 
@@ -97,7 +97,7 @@ namespace vl::presentation::elements_remoteprotocol
 
 		bool							IsUpdated() override;
 		void							ResetUpdated() override;
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 		void							OnElementStateChanged() override;
 	};
 
@@ -107,7 +107,7 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		GuiSolidBorderElementRenderer();
 
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 
 	class Gui3DBorderElementRenderer : public GuiRemoteProtocolElementRenderer<Gui3DBorderElement, Gui3DBorderElementRenderer, remoteprotocol::RendererType::SinkBorder>
@@ -116,7 +116,7 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		Gui3DBorderElementRenderer();
 
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 
 	class Gui3DSplitterElementRenderer : public GuiRemoteProtocolElementRenderer<Gui3DSplitterElement, Gui3DSplitterElementRenderer, remoteprotocol::RendererType::SinkSplitter>
@@ -125,7 +125,7 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		Gui3DSplitterElementRenderer();
 
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 
 	class GuiSolidBackgroundElementRenderer : public GuiRemoteProtocolElementRenderer<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, remoteprotocol::RendererType::SolidBackground>
@@ -134,7 +134,7 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		GuiSolidBackgroundElementRenderer();
 
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 
 	class GuiGradientBackgroundElementRenderer : public GuiRemoteProtocolElementRenderer<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, remoteprotocol::RendererType::GradientBackground>
@@ -143,7 +143,7 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		GuiGradientBackgroundElementRenderer();
 
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 
 	class GuiInnerShadowElementRenderer : public GuiRemoteProtocolElementRenderer<GuiInnerShadowElement, GuiInnerShadowElementRenderer, remoteprotocol::RendererType::InnerShadow>
@@ -152,7 +152,7 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		GuiInnerShadowElementRenderer();
 
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 
 	class GuiSolidLabelElementRenderer : public GuiRemoteProtocolElementRenderer<GuiSolidLabelElement, GuiSolidLabelElementRenderer, remoteprotocol::RendererType::SolidLabel>
@@ -174,7 +174,7 @@ namespace vl::presentation::elements_remoteprotocol
 		void							UpdateMinSize(Size size) override;
 		void							NotifyMinSizeCacheInvalidated() override;
 
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 
 	class GuiImageFrameElementRenderer : public GuiRemoteProtocolElementRenderer<GuiImageFrameElement, GuiImageFrameElementRenderer, remoteprotocol::RendererType::ImageFrame>
@@ -190,7 +190,7 @@ namespace vl::presentation::elements_remoteprotocol
 
 		bool							NeedUpdateMinSizeFromCache() override;
 		void							TryFetchMinSizeFromCache() override;
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 
 	class GuiPolygonElementRenderer : public GuiRemoteProtocolElementRenderer<GuiPolygonElement, GuiPolygonElementRenderer, remoteprotocol::RendererType::Polygon>
@@ -199,7 +199,7 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		GuiPolygonElementRenderer();
 
-		void							SendUpdateElementMessages(bool fullContent) override;
+		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 }
 

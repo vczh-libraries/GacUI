@@ -50,6 +50,7 @@ GuiRemoteGraphicsRenderTarget
 			collections::SortedList<vint>								createdRenderers;
 			collections::SortedList<vint>								destroyedRenderers;
 			RendererSet													renderersAskingForCache;
+			bool														needFullElementUpdateOnNextFrame = false;
 			Nullable<Rect>												clipperValidArea;
 			collections::List<HitTestResult>							hitTestResults;
 			collections::List<SystemCursorType>							cursors;

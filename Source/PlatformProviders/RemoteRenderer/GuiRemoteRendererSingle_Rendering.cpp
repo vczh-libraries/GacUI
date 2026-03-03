@@ -110,6 +110,23 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments)
 	{
+		if (arguments.updatedElements)
+		{
+			for (auto&& desc : *arguments.updatedElements.Obj())
+			{
+				desc.Apply(Overloading(
+					[&](const remoteprotocol::ElementDesc_SolidBorder& d) { RequestRendererUpdateElement_SolidBorder(d); },
+					[&](const remoteprotocol::ElementDesc_SinkBorder& d) { RequestRendererUpdateElement_SinkBorder(d); },
+					[&](const remoteprotocol::ElementDesc_SinkSplitter& d) { RequestRendererUpdateElement_SinkSplitter(d); },
+					[&](const remoteprotocol::ElementDesc_SolidBackground& d) { RequestRendererUpdateElement_SolidBackground(d); },
+					[&](const remoteprotocol::ElementDesc_GradientBackground& d) { RequestRendererUpdateElement_GradientBackground(d); },
+					[&](const remoteprotocol::ElementDesc_InnerShadow& d) { RequestRendererUpdateElement_InnerShadow(d); },
+					[&](const remoteprotocol::ElementDesc_Polygon& d) { RequestRendererUpdateElement_Polygon(d); },
+					[&](const remoteprotocol::ElementDesc_SolidLabel& d) { RequestRendererUpdateElement_SolidLabel(d); },
+					[&](const remoteprotocol::ElementDesc_ImageFrame& d) { RequestRendererUpdateElement_ImageFrame(d); }
+				));
+			}
+		}
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererEndRendering(vint id)

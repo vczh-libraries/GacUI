@@ -31,9 +31,33 @@ IGuiRemoteProtocolMessages (Rendering)
 		receivedDomDiffMessage = false;
 		receivedElementMessage = false;
 		lastRenderingCommandsOpening = true;
+
 		auto frame = Ptr(new UnitTestLoggedFrame);
 		frame->frameId = arguments.frameId;
 		loggedFrames.Add(frame);
+
+		if (arguments.updatedElements && arguments.updatedElements.Obj()->Count() > 0)
+		{
+			// Apply element updates first so event logs remain backward-compatible:
+			// Updated(...), Updated(...), ..., Begin()
+			for (auto&& desc : *arguments.updatedElements.Obj())
+			{
+				desc.Apply(Overloading(
+					[&](const ElementDesc_SolidBorder& d) { Impl_RendererUpdateElement_SolidBorder(d); },
+					[&](const ElementDesc_SinkBorder& d) { Impl_RendererUpdateElement_SinkBorder(d); },
+					[&](const ElementDesc_SinkSplitter& d) { Impl_RendererUpdateElement_SinkSplitter(d); },
+					[&](const ElementDesc_SolidBackground& d) { Impl_RendererUpdateElement_SolidBackground(d); },
+					[&](const ElementDesc_GradientBackground& d) { Impl_RendererUpdateElement_GradientBackground(d); },
+					[&](const ElementDesc_InnerShadow& d) { Impl_RendererUpdateElement_InnerShadow(d); },
+					[&](const ElementDesc_Polygon& d) { Impl_RendererUpdateElement_Polygon(d); },
+					[&](const ElementDesc_SolidLabel& d) { Impl_RendererUpdateElement_SolidLabel(d); },
+					[&](const ElementDesc_ImageFrame& d) { Impl_RendererUpdateElement_ImageFrame(d); }
+				));
+			}
+
+			renderingDomBuilder.RequestRendererBeginRendering();
+			receivedElementMessage = true;
+		}
 	}
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererEndRendering(vint id)

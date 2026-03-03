@@ -46,4 +46,3 @@ struct ElementDesc_ImageFrame
     var imageCreation : ImageCreation?;
 }
 
-message RendererUpdateElement_ImageFrame            { request: ElementDesc_ImageFrame; }

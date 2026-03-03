@@ -167,7 +167,7 @@ GuiFocusRectangleElementRenderer
 		// nothing to update
 	}
 
-	void GuiFocusRectangleElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiFocusRectangleElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		// nothing to update
 	}
@@ -196,7 +196,7 @@ GuiRawElementRenderer
 		// nothing to update
 	}
 
-	void GuiRawElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiRawElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		// nothing to update
 	}
@@ -209,13 +209,13 @@ GuiSolidBorderElementRenderer
 	{
 	}
 
-	void GuiSolidBorderElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiSolidBorderElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		ElementDesc_SolidBorder arguments;
 		arguments.id = id;
 		arguments.borderColor = element->GetColor();
 		arguments.shape = element->GetShape();
-		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_SolidBorder(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************
@@ -226,13 +226,13 @@ Gui3DBorderElementRenderer
 	{
 	}
 
-	void Gui3DBorderElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void Gui3DBorderElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		ElementDesc_SinkBorder arguments;
 		arguments.id = id;
 		arguments.leftTopColor = element->GetColor1();
 		arguments.rightBottomColor = element->GetColor2();
-		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_SinkBorder(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************
@@ -243,14 +243,14 @@ Gui3DSplitterElementRenderer
 	{
 	}
 
-	void Gui3DSplitterElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void Gui3DSplitterElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		ElementDesc_SinkSplitter arguments;
 		arguments.id = id;
 		arguments.leftTopColor = element->GetColor1();
 		arguments.rightBottomColor = element->GetColor2();
 		arguments.direction = element->GetDirection();
-		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_SinkSplitter(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************
@@ -261,13 +261,13 @@ GuiSolidBackgroundElementRenderer
 	{
 	}
 
-	void GuiSolidBackgroundElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiSolidBackgroundElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		ElementDesc_SolidBackground arguments;
 		arguments.id = id;
 		arguments.backgroundColor = element->GetColor();
 		arguments.shape = element->GetShape();
-		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_SolidBackground(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************
@@ -278,7 +278,7 @@ GuiGradientBackgroundElementRenderer
 	{
 	}
 
-	void GuiGradientBackgroundElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiGradientBackgroundElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		ElementDesc_GradientBackground arguments;
 		arguments.id = id;
@@ -286,7 +286,7 @@ GuiGradientBackgroundElementRenderer
 		arguments.rightBottomColor = element->GetColor2();
 		arguments.direction = element->GetDirection();
 		arguments.shape = element->GetShape();
-		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_GradientBackground(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************
@@ -297,13 +297,13 @@ GuiInnerShadowElementRenderer
 	{
 	}
 
-	void GuiInnerShadowElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiInnerShadowElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		ElementDesc_InnerShadow arguments;
 		arguments.id = id;
 		arguments.shadowColor = element->GetColor();
 		arguments.thickness = element->GetThickness();
-		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_InnerShadow(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************
@@ -369,7 +369,7 @@ GuiSolidLabelElementRenderer
 		needFontHeight = IsNeedFontHeight(request);
 	}
 
-	void GuiSolidLabelElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiSolidLabelElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		ElementDesc_SolidLabel arguments;
 		arguments.id = id;
@@ -432,7 +432,7 @@ GuiSolidLabelElementRenderer
 			}
 		}
 
-		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_SolidLabel(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************
@@ -496,7 +496,7 @@ GuiImageFrameElementRenderer
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void GuiImageFrameElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiImageFrameElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		auto image = GetRemoteImage();
 		if (image)
@@ -559,7 +559,7 @@ GuiImageFrameElementRenderer
 			arguments.imageCreation = image->GenerateImageCreation();
 		}
 
-		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_ImageFrame(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************
@@ -570,7 +570,7 @@ GuiPolygonElementRenderer
 	{
 	}
 
-	void GuiPolygonElementRenderer::SendUpdateElementMessages(bool fullContent)
+	void GuiPolygonElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		minSize = element->GetSize();
 
@@ -581,6 +581,6 @@ GuiPolygonElementRenderer
 		arguments.backgroundColor = element->GetBackgroundColor();
 		arguments.points = Ptr(new List<Point>);
 		CopyFrom(*arguments.points.Obj(), element->GetPointsArray());
-		remoteRenderTarget->GetRemoteMessages().RequestRendererUpdateElement_Polygon(arguments);
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 }

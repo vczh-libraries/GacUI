@@ -65,25 +65,46 @@ GuiRemoteGraphicsRenderTarget
 		renderingBatchId++;
 		EnsureRequestedRenderersCreated();
 
-		for (auto [id, renderer] : renderers)
-		{
-			if (renderer->IsUpdated())
-			{
-				renderer->SendUpdateElementMessages(false);
-				if (renderer->NeedUpdateMinSizeFromCache())
-				{
-					if (!renderersAskingForCache.Contains(renderer))
-					{
-						renderersAskingForCache.Add(renderer);
-					}
-				}
-				renderer->ResetUpdated();
-			}
-		}
-
 		{
 			remoteprotocol::ElementBeginRendering arguments;
 			arguments.frameId = ++usedFrameIds;
+			arguments.updatedElements = Ptr(new List<remoteprotocol::OrdinaryElementDescVariant>);
+
+			if (needFullElementUpdateOnNextFrame)
+			{
+				for (auto renderer : renderers.Values())
+				{
+					renderer->SendUpdateElementMessages(true, *arguments.updatedElements.Obj());
+					if (renderer->NeedUpdateMinSizeFromCache())
+					{
+						if (!renderersAskingForCache.Contains(renderer))
+						{
+							renderersAskingForCache.Add(renderer);
+						}
+					}
+					renderer->ResetUpdated();
+				}
+				needFullElementUpdateOnNextFrame = false;
+			}
+			else
+			{
+				for (auto [id, renderer] : renderers)
+				{
+					if (renderer->IsUpdated())
+					{
+						renderer->SendUpdateElementMessages(false, *arguments.updatedElements.Obj());
+						if (renderer->NeedUpdateMinSizeFromCache())
+						{
+							if (!renderersAskingForCache.Contains(renderer))
+							{
+								renderersAskingForCache.Add(renderer);
+							}
+						}
+						renderer->ResetUpdated();
+					}
+				}
+			}
+
 			remote->remoteMessages.RequestRendererBeginRendering(arguments);
 		}
 	}
@@ -322,15 +343,7 @@ GuiRemoteGraphicsRenderTarget
 			remote->remoteMessages.RequestRendererCreated(ids);
 		}
 
-		for (auto renderer : renderers.Values())
-		{
-			renderer->SendUpdateElementMessages(true);
-			if (renderer->NeedUpdateMinSizeFromCache())
-			{
-				renderersAskingForCache.Add(renderer);
-			}
-			renderer->ResetUpdated();
-		}
+		needFullElementUpdateOnNextFrame = true;
 
 		for (auto paragraph : paragraphs.Values())
 		{

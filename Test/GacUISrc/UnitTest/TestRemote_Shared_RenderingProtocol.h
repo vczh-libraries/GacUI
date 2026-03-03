@@ -285,6 +285,23 @@ namespace remote_protocol_tests
 
 		void RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments) override
 		{
+			if (arguments.updatedElements && arguments.updatedElements.Obj()->Count() > 0)
+			{
+				for (auto&& desc : *arguments.updatedElements.Obj())
+				{
+					desc.Apply(vl::Overloading(
+						[&](const ElementDesc_SolidBorder& d) { RequestRendererUpdateElement_SolidBorder(d); },
+						[&](const ElementDesc_SinkBorder& d) { RequestRendererUpdateElement_SinkBorder(d); },
+						[&](const ElementDesc_SinkSplitter& d) { RequestRendererUpdateElement_SinkSplitter(d); },
+						[&](const ElementDesc_SolidBackground& d) { RequestRendererUpdateElement_SolidBackground(d); },
+						[&](const ElementDesc_GradientBackground& d) { RequestRendererUpdateElement_GradientBackground(d); },
+						[&](const ElementDesc_InnerShadow& d) { RequestRendererUpdateElement_InnerShadow(d); },
+						[&](const ElementDesc_Polygon& d) { RequestRendererUpdateElement_Polygon(d); },
+						[&](const ElementDesc_SolidLabel& d) { RequestRendererUpdateElement_SolidLabel(d); },
+						[&](const ElementDesc_ImageFrame& d) { RequestRendererUpdateElement_ImageFrame(d); }
+					));
+				}
+			}
 			eventLogs.Add(WString::Unmanaged(L"Begin()"));
 		}
 
@@ -323,7 +340,7 @@ namespace remote_protocol_tests
 				);
 		}
 
-		void RequestRendererUpdateElement_SolidBorder(const ElementDesc_SolidBorder& arguments) override
+		void RequestRendererUpdateElement_SolidBorder(const ElementDesc_SolidBorder& arguments)
 		{
 			eventLogs.Add(
 				L"Updated("
@@ -334,7 +351,7 @@ namespace remote_protocol_tests
 				);
 		}
 
-		void RequestRendererUpdateElement_SinkBorder(const ElementDesc_SinkBorder& arguments) override
+		void RequestRendererUpdateElement_SinkBorder(const ElementDesc_SinkBorder& arguments)
 		{
 			eventLogs.Add(
 				L"Updated("
@@ -345,7 +362,7 @@ namespace remote_protocol_tests
 				);
 		}
 
-		void RequestRendererUpdateElement_SinkSplitter(const ElementDesc_SinkSplitter& arguments) override
+		void RequestRendererUpdateElement_SinkSplitter(const ElementDesc_SinkSplitter& arguments)
 		{
 			eventLogs.Add(
 				L"Updated("
@@ -357,7 +374,7 @@ namespace remote_protocol_tests
 				);
 		}
 
-		void RequestRendererUpdateElement_SolidBackground(const ElementDesc_SolidBackground& arguments) override
+		void RequestRendererUpdateElement_SolidBackground(const ElementDesc_SolidBackground& arguments)
 		{
 			eventLogs.Add(
 				L"Updated("
@@ -368,7 +385,7 @@ namespace remote_protocol_tests
 				);
 		}
 
-		void RequestRendererUpdateElement_GradientBackground(const ElementDesc_GradientBackground& arguments) override
+		void RequestRendererUpdateElement_GradientBackground(const ElementDesc_GradientBackground& arguments)
 		{
 			eventLogs.Add(
 				L"Updated("
@@ -381,7 +398,7 @@ namespace remote_protocol_tests
 				);
 		}
 
-		void RequestRendererUpdateElement_InnerShadow(const ElementDesc_InnerShadow& arguments) override
+		void RequestRendererUpdateElement_InnerShadow(const ElementDesc_InnerShadow& arguments)
 		{
 			eventLogs.Add(
 				L"Updated("
@@ -392,7 +409,7 @@ namespace remote_protocol_tests
 				);
 		}
 
-		void RequestRendererUpdateElement_Polygon(const ElementDesc_Polygon& arguments) override
+		void RequestRendererUpdateElement_Polygon(const ElementDesc_Polygon& arguments)
 		{
 			eventLogs.Add(
 				L"Updated("
@@ -405,7 +422,7 @@ namespace remote_protocol_tests
 				);
 		}
 
-		void RequestRendererUpdateElement_SolidLabel(const ElementDesc_SolidLabel& arguments) override
+		void RequestRendererUpdateElement_SolidLabel(const ElementDesc_SolidLabel& arguments)
 		{
 			eventLogs.Add(
 				L"Updated("
@@ -448,7 +465,7 @@ namespace remote_protocol_tests
 				);
 		}
 
-		void RequestRendererUpdateElement_ImageFrame(const ElementDesc_ImageFrame& arguments) override
+		void RequestRendererUpdateElement_ImageFrame(const ElementDesc_ImageFrame& arguments)
 		{
 			eventLogs.Add(
 				L"Updated("

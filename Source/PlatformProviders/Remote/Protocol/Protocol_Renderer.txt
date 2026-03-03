@@ -23,9 +23,23 @@ struct RendererCreation
 message RendererCreated                             { request: RendererCreation[]; }
 message RendererDestroyed                           { request: int[]; }
 
+union OrdinaryElementDescVariant
+{
+    ElementDesc_SolidBorder,
+    ElementDesc_SinkBorder,
+    ElementDesc_SinkSplitter,
+    ElementDesc_SolidBackground,
+    ElementDesc_GradientBackground,
+    ElementDesc_InnerShadow,
+    ElementDesc_Polygon,
+    ElementDesc_SolidLabel,
+    ElementDesc_ImageFrame,
+}
+
 struct ElementBeginRendering
 {
     var frameId : int;
+    var updatedElements : OrdinaryElementDescVariant[];
 }
 
 struct ElementRendering

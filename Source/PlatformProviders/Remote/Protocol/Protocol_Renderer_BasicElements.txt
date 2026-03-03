@@ -122,11 +122,3 @@ struct ElementDesc_SolidLabel
     var measuringRequest : ElementSolidLabelMeasuringRequest?;
 }
 
-message RendererUpdateElement_SolidBorder           { request: ElementDesc_SolidBorder; }
-message RendererUpdateElement_SinkBorder            { request: ElementDesc_SinkBorder; }
-message RendererUpdateElement_SinkSplitter          { request: ElementDesc_SinkSplitter; }
-message RendererUpdateElement_SolidBackground       { request: ElementDesc_SolidBackground; }
-message RendererUpdateElement_GradientBackground    { request: ElementDesc_GradientBackground; }
-message RendererUpdateElement_InnerShadow           { request: ElementDesc_InnerShadow; }
-message RendererUpdateElement_Polygon               { request: ElementDesc_Polygon; }
-message RendererUpdateElement_SolidLabel            { request: ElementDesc_SolidLabel; }

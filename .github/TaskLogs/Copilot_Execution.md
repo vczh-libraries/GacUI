@@ -10,7 +10,7 @@
 
 # EXECUTION PLAN
 
-## STEP 1: Update protocol definitions (remove 9 messages, add batched updates)
+## STEP 1: Update protocol definitions (remove 9 messages, add batched updates) [DONE]
 
 ### 1.1 Delete 8 messages in REPO-ROOT\Source\PlatformProviders\Remote\Protocol\Protocol_Renderer_BasicElements.txt
 
@@ -70,7 +70,7 @@ struct ElementBeginRendering
 }
 ```
 
-## STEP 2: Regenerate remote protocol code
+## STEP 2: Regenerate remote protocol code [DONE]
 
 Run the CLI project Metadata_UpdateProtocol using repository wrapper scripts (exact invocation):
 ```powershell
@@ -80,7 +80,7 @@ cd REPO-ROOT\Test\GacUISrc
 
 Then ensure the generated protocol code compiles before continuing with code fixes.
 
-## STEP 3: Core side: collect ordinary element updates into ElementBeginRendering.updatedElements
+## STEP 3: Core side: collect ordinary element updates into ElementBeginRendering.updatedElements [DONE]
 
 Files:
 - REPO-ROOT\Source\PlatformProviders\Remote\GuiRemoteGraphics_BasicElements.h
@@ -175,7 +175,7 @@ Finally send begin-rendering:
 remote->remoteMessages.RequestRendererBeginRendering(arguments);
 ```
 
-## STEP 4: Remote renderer side: apply updatedElements in RequestRendererBeginRendering (keep per-element handlers)
+## STEP 4: Remote renderer side: apply updatedElements in RequestRendererBeginRendering (keep per-element handlers) [DONE]
 
 Files:
 - REPO-ROOT\Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_Rendering.cpp
@@ -229,7 +229,7 @@ void GuiRemoteRendererSingle::RequestRendererBeginRendering(const remoteprotocol
 }
 ```
 
-## STEP 5: Unit test remote protocol: apply updatedElements in Impl_RendererBeginRendering (keep handlers unchanged)
+## STEP 5: Unit test remote protocol: apply updatedElements in Impl_RendererBeginRendering (keep handlers unchanged) [DONE]
 
 Files:
 - REPO-ROOT\Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.cpp

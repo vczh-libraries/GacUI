@@ -187,6 +187,18 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty
 	>;
 
+	using OrdinaryElementDescVariant = ::vl::Variant<
+		::vl::presentation::remoteprotocol::ElementDesc_SolidBorder,
+		::vl::presentation::remoteprotocol::ElementDesc_SinkBorder,
+		::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter,
+		::vl::presentation::remoteprotocol::ElementDesc_SolidBackground,
+		::vl::presentation::remoteprotocol::ElementDesc_GradientBackground,
+		::vl::presentation::remoteprotocol::ElementDesc_InnerShadow,
+		::vl::presentation::remoteprotocol::ElementDesc_Polygon,
+		::vl::presentation::remoteprotocol::ElementDesc_SolidLabel,
+		::vl::presentation::remoteprotocol::ElementDesc_ImageFrame
+	>;
+
 	using UnitTest_ElementDescVariant = ::vl::Variant<
 		::vl::presentation::remoteprotocol::ElementDesc_SolidBorder,
 		::vl::presentation::remoteprotocol::ElementDesc_SinkBorder,
@@ -455,6 +467,7 @@ namespace vl::presentation::remoteprotocol
 	struct ElementBeginRendering
 	{
 		::vl::vint frameId;
+		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::OrdinaryElementDescVariant>> updatedElements;
 	};
 
 	struct ElementRendering
@@ -737,17 +750,8 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(IOReleaseCapture, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(IOIsKeyPressing, ::vl::presentation::VKEY, bool, REQ, RES, NODROP)\
 	HANDLER(IOIsKeyToggled, ::vl::presentation::VKEY, bool, REQ, RES, NODROP)\
-	HANDLER(RendererUpdateElement_SolidBorder, ::vl::presentation::remoteprotocol::ElementDesc_SolidBorder, void, REQ, NORES, NODROP)\
-	HANDLER(RendererUpdateElement_SinkBorder, ::vl::presentation::remoteprotocol::ElementDesc_SinkBorder, void, REQ, NORES, NODROP)\
-	HANDLER(RendererUpdateElement_SinkSplitter, ::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter, void, REQ, NORES, NODROP)\
-	HANDLER(RendererUpdateElement_SolidBackground, ::vl::presentation::remoteprotocol::ElementDesc_SolidBackground, void, REQ, NORES, NODROP)\
-	HANDLER(RendererUpdateElement_GradientBackground, ::vl::presentation::remoteprotocol::ElementDesc_GradientBackground, void, REQ, NORES, NODROP)\
-	HANDLER(RendererUpdateElement_InnerShadow, ::vl::presentation::remoteprotocol::ElementDesc_InnerShadow, void, REQ, NORES, NODROP)\
-	HANDLER(RendererUpdateElement_Polygon, ::vl::presentation::remoteprotocol::ElementDesc_Polygon, void, REQ, NORES, NODROP)\
-	HANDLER(RendererUpdateElement_SolidLabel, ::vl::presentation::remoteprotocol::ElementDesc_SolidLabel, void, REQ, NORES, NODROP)\
 	HANDLER(ImageCreated, ::vl::presentation::remoteprotocol::ImageCreation, ::vl::presentation::remoteprotocol::ImageMetadata, REQ, RES, NODROP)\
 	HANDLER(ImageDestroyed, ::vl::vint, void, REQ, NORES, NODROP)\
-	HANDLER(RendererUpdateElement_ImageFrame, ::vl::presentation::remoteprotocol::ElementDesc_ImageFrame, void, REQ, NORES, NODROP)\
 	HANDLER(RendererUpdateElement_DocumentParagraph, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph, ::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_GetCaret, ::vl::presentation::remoteprotocol::GetCaretRequest, ::vl::presentation::remoteprotocol::GetCaretResponse, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_GetCaretBounds, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest, ::vl::presentation::remoteprotocol::GetCaretBoundsResponse, REQ, RES, NODROP)\
@@ -800,15 +804,6 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::presentation::remoteprotocol::ElementBeginRendering)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementBoundary)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_GradientBackground)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_ImageFrame)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_InnerShadow)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_Polygon)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_SinkBorder)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_SolidBackground)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_SolidBorder)\
-	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_SolidLabel)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementRendering)\
 	HANDLER(::vl::presentation::remoteprotocol::GetCaretBoundsRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::GetCaretRequest)\

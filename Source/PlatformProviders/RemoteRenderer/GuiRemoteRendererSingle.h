@@ -135,6 +135,17 @@ namespace vl::presentation::remote_renderer
 
 		void									SendAccumulatedMessages();
 
+	private:
+		void									RequestRendererUpdateElement_SolidBorder(const remoteprotocol::ElementDesc_SolidBorder& arguments);
+		void									RequestRendererUpdateElement_SinkBorder(const remoteprotocol::ElementDesc_SinkBorder& arguments);
+		void									RequestRendererUpdateElement_SinkSplitter(const remoteprotocol::ElementDesc_SinkSplitter& arguments);
+		void									RequestRendererUpdateElement_SolidBackground(const remoteprotocol::ElementDesc_SolidBackground& arguments);
+		void									RequestRendererUpdateElement_GradientBackground(const remoteprotocol::ElementDesc_GradientBackground& arguments);
+		void									RequestRendererUpdateElement_InnerShadow(const remoteprotocol::ElementDesc_InnerShadow& arguments);
+		void									RequestRendererUpdateElement_Polygon(const remoteprotocol::ElementDesc_Polygon& arguments);
+		void									RequestRendererUpdateElement_SolidLabel(const remoteprotocol::ElementDesc_SolidLabel& arguments);
+		void									RequestRendererUpdateElement_ImageFrame(const remoteprotocol::ElementDesc_ImageFrame& arguments);
+
 	public:
 		GuiRemoteRendererSingle();
 		~GuiRemoteRendererSingle();

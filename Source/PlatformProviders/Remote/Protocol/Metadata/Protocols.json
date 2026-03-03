@@ -1828,102 +1828,6 @@
         }],
         "type": "Struct"
     }, {
-        "$ast": "MessageDecl",
-        "attributes": [],
-        "name": "RendererUpdateElement_SolidBorder",
-        "request": {
-            "$ast": "MessageRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "ElementDesc_SolidBorder"
-            }
-        },
-        "response": null
-    }, {
-        "$ast": "MessageDecl",
-        "attributes": [],
-        "name": "RendererUpdateElement_SinkBorder",
-        "request": {
-            "$ast": "MessageRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "ElementDesc_SinkBorder"
-            }
-        },
-        "response": null
-    }, {
-        "$ast": "MessageDecl",
-        "attributes": [],
-        "name": "RendererUpdateElement_SinkSplitter",
-        "request": {
-            "$ast": "MessageRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "ElementDesc_SinkSplitter"
-            }
-        },
-        "response": null
-    }, {
-        "$ast": "MessageDecl",
-        "attributes": [],
-        "name": "RendererUpdateElement_SolidBackground",
-        "request": {
-            "$ast": "MessageRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "ElementDesc_SolidBackground"
-            }
-        },
-        "response": null
-    }, {
-        "$ast": "MessageDecl",
-        "attributes": [],
-        "name": "RendererUpdateElement_GradientBackground",
-        "request": {
-            "$ast": "MessageRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "ElementDesc_GradientBackground"
-            }
-        },
-        "response": null
-    }, {
-        "$ast": "MessageDecl",
-        "attributes": [],
-        "name": "RendererUpdateElement_InnerShadow",
-        "request": {
-            "$ast": "MessageRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "ElementDesc_InnerShadow"
-            }
-        },
-        "response": null
-    }, {
-        "$ast": "MessageDecl",
-        "attributes": [],
-        "name": "RendererUpdateElement_Polygon",
-        "request": {
-            "$ast": "MessageRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "ElementDesc_Polygon"
-            }
-        },
-        "response": null
-    }, {
-        "$ast": "MessageDecl",
-        "attributes": [],
-        "name": "RendererUpdateElement_SolidLabel",
-        "request": {
-            "$ast": "MessageRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "ElementDesc_SolidLabel"
-            }
-        },
-        "response": null
-    }, {
         "$ast": "EnumDecl",
         "attributes": [{
             "$ast": "Attribute",
@@ -2128,18 +2032,6 @@
             }
         }],
         "type": "Struct"
-    }, {
-        "$ast": "MessageDecl",
-        "attributes": [],
-        "name": "RendererUpdateElement_ImageFrame",
-        "request": {
-            "$ast": "MessageRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "ElementDesc_ImageFrame"
-            }
-        },
-        "response": null
     }, {
         "$ast": "EnumDecl",
         "attributes": [{
@@ -2833,6 +2725,38 @@
         },
         "response": null
     }, {
+        "$ast": "UnionDecl",
+        "attributes": [],
+        "name": "OrdinaryElementDescVariant",
+        "members": [{
+            "$ast": "UnionMember",
+            "name": "ElementDesc_SolidBorder"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_SinkBorder"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_SinkSplitter"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_SolidBackground"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_GradientBackground"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_InnerShadow"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_Polygon"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_SolidLabel"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_ImageFrame"
+        }]
+    }, {
         "$ast": "StructDecl",
         "attributes": [],
         "name": "ElementBeginRendering",
@@ -2842,6 +2766,16 @@
             "type": {
                 "$ast": "PrimitiveType",
                 "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "updatedElements",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "OrdinaryElementDescVariant"
+                }
             }
         }],
         "type": "Struct"
