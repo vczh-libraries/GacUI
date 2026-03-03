@@ -1,3 +1,15 @@
+param(
+    [string]$Configuration = "Debug",
+    [string]$Platform = "x64"
+)
+
+if (($Configuration -ne "Debug") -and ($Configuration -ne "Release")) {
+    throw "Invalid configuration: $Configuration. Allowed values are Debug or Release."
+}
+if (($Platform -ne "x64") -and ($Platform -ne "Win32")) {
+    throw "Invalid platform: $Platform. Allowed values are x64 or Win32."
+}
+
 . $PSScriptRoot\copilotShared.ps1
 
 # Remove log files
@@ -17,8 +29,6 @@ if ($vsdevcmd -eq $null) {
 }
 
 # Execute msbuild with output to both console and log file
-$Configuration = "Debug"
-$Platform = "x64"
 $msbuild_arguments = "MSBUILD `"$solutionFile`" /m:8 $rebuildControl /p:Configuration=`"$Configuration`";Platform=`"$Platform`""
 $cmd_arguments = "`"`"$vsdevcmd`" & $msbuild_arguments"
 

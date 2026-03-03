@@ -18,8 +18,15 @@ And then run test cases in `SOLUTION-ROOT\PROJECT-NAME\PROJECT-NAME.vcxproj`:
 
 ```
 cd SOLUTION-ROOT
-& REPO-ROOT\.github\Scripts\copilotExecute.ps1 -Executable PROJECT-NAME
+& REPO-ROOT\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable PROJECT-NAME
 ```
+
+`-Configuration` and `-Platform` arguments are available to specify the target configuration:
+- When both arguments are omitted, the last build configuration will be picked up.
+- Both arguments should be omitted or not omitted at the same time.
+- `-Configuration` could be `Debug` (default) or `Release`.
+- `-Platform` could be `x64` (default) or `Win32`
+- Pick the default option (omit both arguments) when there is no specific requirements.
 
 ## Ensure Expected Test Files are Selected
 

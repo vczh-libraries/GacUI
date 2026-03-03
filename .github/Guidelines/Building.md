@@ -20,6 +20,13 @@ cd SOLUTION-ROOT
 & REPO-ROOT\.github\Scripts\copilotBuild.ps1
 ```
 
+## Ensure Target Configuration
+
+`-Configuration` and `-Platform` arguments are available to specify the target configuration:
+- `-Configuration` could be `Debug` (default) or `Release`.
+- `-Platform` could be `x64` (default) or `Win32`
+- Pick the default option (omit both arguments) when there is no specific requirements.
+
 ## The Correct Way to Read Compiler Result
 
 - The only source of trust is the raw output of the compiler.

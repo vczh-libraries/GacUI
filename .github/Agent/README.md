@@ -5,7 +5,10 @@ A TypeScript-based application for interacting with GitHub Copilot models, featu
 ## Prerequisites
 
 - [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli) must be installed and authenticated
-- Node.js 18+ and Yarn
+- Node.js 24+ and Yarn
+- Powershell 7
+
+**IMPORTANT**: You'd better upgrade both copilot cli and sdk to the latest version before using it.
 
 ## Setup
 

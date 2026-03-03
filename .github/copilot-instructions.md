@@ -44,7 +44,7 @@ otherwise it won't work properly.
 - Building a Solution: `REPO-ROOT/.github/Guidelines/Building.md`
 - Running a Project:
   - Unit Test: `REPO-ROOT/.github/Guidelines/Running-UnitTest.md`
-  - CLI Application: `REPO-ROOT/.github/Guidelines/Running-CLI.md` (to edit ...)
+  - CLI Application: `REPO-ROOT/.github/Guidelines/Running-CLI.md`
   - GacUI Application: `REPO-ROOT/.github/Guidelines/Running-GacUI.md` (to edit ...)
 - Debugging a Project: `REPO-ROOT/.github/Guidelines/Debugging.md`
 - Using Unit Test Framework: `REPO-ROOT/.github/KnowledgeBase/manual/unittest/vlpp.md`

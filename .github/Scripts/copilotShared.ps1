@@ -28,14 +28,37 @@ function GetSolutionDir {
     return $solutionFolder
 }
 
-function GetLatestModifiedExecutable($solutionFolder, $executableName) {
-    # Define configuration to path mappings
-    $configToPathMap = @{
+function GetExecutableMap($solutionFolder, $executableName) {
+    return @{
         "Debug|Win32" = "$solutionFolder\Debug\$executableName"
         "Release|Win32" = "$solutionFolder\Release\$executableName"
         "Debug|x64" = "$solutionFolder\x64\Debug\$executableName"
         "Release|x64" = "$solutionFolder\x64\Release\$executableName"
     }
+}
+
+function GetSpecifiedExecutable($solutionFolder, $executableName, $configuration, $platform) {
+    # Define configuration to path mappings
+    $configToPathMap = GetExecutableMap $solutionFolder $executableName
+
+    # Find existing files and get their modification times with configuration info
+    $path = $configToPathMap["$configuration|$platform"];
+    
+    if (Test-Path $path) {
+        $fileInfo = Get-Item $path
+        return [PSCustomObject]@{
+            Path = $path
+            Configuration = $config
+            LastWriteTime = $fileInfo.LastWriteTime
+        }
+    } else {
+        throw "No $executableName for $configuration|$platform does not exist, please make sure the build was successful."
+    }
+}
+
+function GetLatestModifiedExecutable($solutionFolder, $executableName) {
+    # Define configuration to path mappings
+    $configToPathMap = GetExecutableMap $solutionFolder $executableName
 
     # Find existing files and get their modification times with configuration info
     $existingFiles = @()
@@ -52,7 +75,7 @@ function GetLatestModifiedExecutable($solutionFolder, $executableName) {
     }
 
     if ($existingFiles.Count -eq 0) {
-        throw "No $executableName files found in any of the expected locations."
+        throw "No $executableName files found in any of the expected locations, please make sure the build was successful."
     }
 
     return $existingFiles | Sort-Object LastWriteTime -Descending | Select-Object -First 1
