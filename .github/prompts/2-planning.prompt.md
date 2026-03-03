@@ -48,6 +48,7 @@ I am going to propose some change to `Copilot_Planning.md`.
 
 - Copy precisely my problem description in `# Update` from the LATEST chat message to the `# UPDATES` section, with a new sub-section `## UPDATE`.
 - The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# AFFECTED PROJECTS`).
+  - **NOTICE**: When the update is triggered by the automatic review process (aka `review.prompt.md`), do not insert such `## UPDATE`.
 - Follow my update to change the planning document.
 
 ## Step 2. Understand the Goal and Quality Requirement
@@ -76,12 +77,20 @@ I am going to propose some change to `Copilot_Planning.md`.
 - Your goal is to write a design document to `Copilot_Planning.md`. DO NOT update any other file including source code.
 - The code change proposed in the improvement plan must contain actual code. I need to review them before going to the next phase.
 - DO NOT copy `# UPDATES` from `Copilot_Task.md` to `Copilot_Planning.md`.
-- Fill the `# AFFECTED PROJECTS` section:
-  - Solutions and projects you need to work on could be found in `REPO-ROOT/.github/Project.md`.
-  - When creating `Copilot_Planning.md` from the first time, copy `# AFFECTED PROJECTS` section from `Copilot_Task.md`. Otherwise, review the list whenever `Copilot_Planning.md` is updated, and fix this section in the following format:
-    - Identify affected solutions, write `- Build the solution in folder <SOLUTION-ROOT>`.
-    - For each solution, identify affected unit test projects, write `  - Run Test Project <PROJECT-NAME>`.
-      - The list should only include unit test projects.
+
+## Step 3.1. Fill the "# AFFECTED PROJECTS" section
+
+- Solutions and projects you need to work on could be found in `REPO-ROOT/.github/Project.md`.
+- When creating `Copilot_Planning.md` from the first time, copy `# AFFECTED PROJECTS` section from `Copilot_Task.md`.
+- When updating `Copilot_Planning.md`, carefully review `# AFFECTED PROJECTS` and fix this section if necessary.
+  - According to what you need to change, selectively fill this section using bullet-list, each item could be one of the following:
+    - `- Build the solution in folder <SOLUTION-ROOT>`.
+      - When the configuration is important, also specify the configuration, e.g., `Debug|x64`.
+    - `- Run CLI|UnitTest project <PROJECT-NAME>`.
+      - When the configuration is important, also specify the configuration, e.g., `Debug|x64`.
+    - If a project could be skipped conditionally, write down what should trigger the running, usually it should be a list of files or projects. But you can describe it in a high level instead of listing all files.
+    - If a project should always run, use `Always Run` instead of just `Run`.
+  - The bullet-list will be executed in its order in the future.
 
 ## Step 4. Mark the Completion
 

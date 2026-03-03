@@ -43,22 +43,22 @@ I am going to propose some change to the source code.
 - Follow my update to change the source code.
 - Update the document to keep it consistent with the source code.
 
-## Step 2. Make Sure the Code Compiles but DO NOT Run Unit Test
+## Step 2. Make Sure the Code Compiles
 
 - Check out `External Tools Environment and Context` in `REPO-ROOT/.github/copilot-instructions.md` for accessing scripts for building.
   - Strictly follow the instruction above as this repo does not use ordinary tools.
 - Each attempt of build-fix process should be executed in a sub agent.
-  - One build-fix process includes one attempt following `Build Unit Test` and `Fix Compile Errors`.
+  - One build-fix process includes one attempt with the following instructions.
   - The main agent should call different sub agent for each build-fix process.
   - Do not build and retrieve build results in the main agent.
 
-### Use a sub agent to run the following instructions (`Build Unit Test` and `Fix Compile Errors`)
+### Use a sub agent to run all following instructions (`Build the Solution`, `Fix Compile Errors`, `Code Generation`, `Finishing Code Change`)
 
-#### Build Unit Test
+#### Build the Solution
 
 - Check out `# AFFECTED PROJECTS` in `Copilot_Execution.md` to find out what solutions you need to build.
 - Find out if there is any warning or error.
-  - `External Tools Environment and Context` has the instruction about how to check compile result.
+  - `External Tools Environment and Context` in `REPO-ROOT/.github/copilot-instructions.md` has the instruction about how to check compile result.
 
 #### Fix Compile Errors
 
@@ -70,11 +70,28 @@ I am going to propose some change to the source code.
     - Explain what you need to do.
     - Explain why you think it would solve the build break.
     - Log these in `Copilot_Execution.md`, with section `## Fixing attempt No.<attempt_number>` in `# FIXING ATTEMPTS`.
-- After finishing fixing, exit the current sub agent and tell the main agent to go back to `Step 2. Make Sure the Code Compiles but DO NOT Run Unit Test`.
-- When the code compiles:
-  - DO NOT run any tests, the code will be verified in future tasks.
 
-## Step 3. Verify Coding Style
+### Code Generation
+
+- Check out `## Projects for Verification` in `REPO-ROOT/.github/Project.md`.
+- Check out `# AFFECTED PROJECTS` in `Copilot_Execution.md`.
+- Find out if any code generation is necessary.
+  - If there is no need to run any code generation, you can skip this step.
+  - Otherwise, pay attention to:
+    - What configuration is needed to build the solution.
+    - What project should be executed, and what configuration is needed.
+    - It is possible that a project needs to be executed multiple times in different configuration.
+    - It is possible that building is required between two runs of code generation projects.
+      - The building and future code generation project execution should be handled by the next sub agent.
+- If a unit test project is also a code generation project, execute it accordingly.
+- If a unit test project is not a code generation project, DO NOT execute it. Pure unit test projects will be executed in the future.
+
+### Finishing Code Change
+
+- Exit the current sub agent and tell the main agent to go back to `Step 2. Make Sure the Code Compiles`.
+  - If there is any unfinished work according to `Code Generation`, make sure to tell the main agent about them.
+
+## Step 4. Verify Coding Style
 
 - Code changes in `Copilot_Execution.md` may not have correct indentation and coding style.
   - Go over each code change and ensure:

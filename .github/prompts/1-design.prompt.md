@@ -56,6 +56,7 @@ I am going to propose some change to `Copilot_Task.md`.
 
 - Copy precisely my problem description in `# Update` from the LATEST chat message to the `# PROBLEM DESCRIPTION` section, with a new sub-section `## UPDATE`.
 - The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# INSIGHTS AND REASONING`).
+  - **NOTICE**: When the update is triggered by the automatic review process (aka `review.prompt.md`), do not insert such `## UPDATE`.
 - Follow my update to change the design document.
 
 ## Step 2. Understand the Goal and Quality Requirement
@@ -85,12 +86,19 @@ I am going to propose some change to `Copilot_Task.md`.
 
 - Your goal is to write a design document to `Copilot_Task.md`. DO NOT update any other file including source code.
 - Whatever you think or found, write it down in the `# INSIGHTS AND REASONING` section.
-- Fill the `# AFFECTED PROJECTS` section:
-  - Solutions and projects you need to work on could be found in `REPO-ROOT/.github/Project.md`.
-  - Complete this section in this format:
-    - Identify affected solutions, write `- Build the solution in folder <SOLUTION-ROOT>`.
-    - For each solution, identify affected unit test projects, write `  - Run Test Project <PROJECT-NAME>`.
-      - The list should only include unit test projects.
+
+## Step 3.1. Fill the "# AFFECTED PROJECTS" section
+
+- Solutions and projects you need to work on could be found in `REPO-ROOT/.github/Project.md`.
+- Identify all changes you need to make in a high level.
+- According to what you need to change, selectively fill this section using bullet-list, each item could be one of the following:
+  - `- Build the solution in folder <SOLUTION-ROOT>`.
+    - When the configuration is important, also specify the configuration, e.g., `Debug|x64`.
+  - `- Run CLI|UnitTest project <PROJECT-NAME>`.
+    - When the configuration is important, also specify the configuration, e.g., `Debug|x64`.
+  - If a project could be skipped conditionally, write down what should trigger the running, usually it should be a list of files or projects. But you can describe it in a high level instead of listing all files.
+  - If a project should always run, use `Always Run` instead of just `Run`.
+- The bullet-list will be executed in its order in the future.
 
 ## Step 4. Mark the Completion
 

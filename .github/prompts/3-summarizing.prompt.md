@@ -47,6 +47,7 @@ I am going to propose some change to `Copilot_Execution.md`.
 
 - Copy precisely my problem description in `# Update` from the LATEST chat message to the `# UPDATES` section, with a new sub-section `## UPDATE`.
 - The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# AFFECTED PROJECTS`).
+  - **NOTICE**: When the update is triggered by the automatic review process (aka `review.prompt.md`), do not insert such `## UPDATE`.
 - Follow my update to change the execution document.
 
 ## Step 2. Finish the Document
@@ -74,12 +75,20 @@ I am going to propose some change to `Copilot_Execution.md`.
 
 - Is `Copilot_Execution.md` contains enough information so that one can follow the document to make actual code change, without having to refer to `Copilot_Planning.md`?
 - Does `Copilot_Execution.md` include all code changes mentioned in `Copilot_Planning.md`?
-- Fill the `# AFFECTED PROJECTS` section:
-  - Solutions and projects you need to work on could be found in `REPO-ROOT/.github/Project.md`.
-  - When creating `Copilot_Execution.md` from the first time, copy `# AFFECTED PROJECTS` section from `Copilot_Planning.md`. Otherwise, review the list whenever `Copilot_Execution.md` is updated, and fix this section in the following format:
-    - Identify affected solutions, write `- Build the solution in folder <SOLUTION-ROOT>`.
-    - For each solution, identify affected unit test projects, write `  - Run Test Project <PROJECT-NAME>`.
-      - The list should only include unit test projects.
+
+## Step 3.1. Fill the "# AFFECTED PROJECTS" section
+
+- Solutions and projects you need to work on could be found in `REPO-ROOT/.github/Project.md`.
+- When creating `Copilot_Execution.md` from the first time, copy `# AFFECTED PROJECTS` section from `Copilot_Planning.md`.
+- When updating `Copilot_Execution.md`, carefully review `# AFFECTED PROJECTS` and fix this section if necessary.
+  - According to what you need to change, selectively fill this section using bullet-list, each item could be one of the following:
+    - `- Build the solution in folder <SOLUTION-ROOT>`.
+      - When the configuration is important, also specify the configuration, e.g., `Debug|x64`.
+    - `- Run CLI|UnitTest project <PROJECT-NAME>`.
+      - When the configuration is important, also specify the configuration, e.g., `Debug|x64`.
+    - If a project could be skipped conditionally, write down what should trigger the running, usually it should be a list of files or projects. But you can describe it in a high level instead of listing all files.
+    - If a project should always run, use `Always Run` instead of just `Run`.
+  - The bullet-list will be executed in its order in the future.
 
 ## Step 4. Completion
 - Ensure there is a `# !!!FINISHED!!!` mark at the end of `Copilot_Execution.md` to indicate the document reaches the end.

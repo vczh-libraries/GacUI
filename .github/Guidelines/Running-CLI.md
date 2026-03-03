@@ -18,7 +18,7 @@ And then run test cases in `SOLUTION-ROOT\PROJECT-NAME\PROJECT-NAME.vcxproj`:
 
 ```
 cd SOLUTION-ROOT
-& REPO-ROOT\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -CLI PROJECT-NAME
+& REPO-ROOT\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable PROJECT-NAME
 ```
 
 `-Configuration` and `-Platform` arguments are available to specify the target configuration:

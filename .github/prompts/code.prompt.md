@@ -12,18 +12,18 @@
 
 - Follow the chat message to implement the task.
 
-## Step 2. Compile
+## Step 2. Make Sure the Code Compiles
 
 - Check out `External Tools Environment and Context` in `REPO-ROOT/.github/copilot-instructions.md` for accessing scripts for building.
   - Strictly follow the instruction above as this repo does not use ordinary tools.
 - Each attempt of build-fix process should be executed in a sub agent.
-  - One build-fix process includes one attempt following `Build Unit Test` and `Fix Compile Errors`.
+  - One build-fix process includes one attempt with the following instructions.
   - The main agent should call different sub agent for each build-fix process.
   - Do not build and retrieve build results in the main agent.
 
-### Use a sub agent to run the following instructions (`Build Unit Test` and `Fix Compile Errors`)
+### Use a sub agent to run all following instructions (`Build the Solution`, `Fix Compile Errors`, `Code Generation`, `Finishing Code Change`)
 
-#### Build Unit Test
+#### Build the Solution
 
 - Check out `REPO-ROOT/.github/Project.md` to find out what solutions you need to build.
 - Find out if there is any warning or error.
@@ -34,7 +34,26 @@
 - If there is any compilation error, address all of them:
   - If there is any compile warning, only fix warnings that caused by your code change. Do not fix any other warnings.
   - If there is any compile error, you need to carefully identify, is the issue in the callee side or the caller side. Check out similar code before making a decision.
-- After finishing fixing, exit the current sub agent and tell the main agent to go back to `Step 2. Compile`
+- After finishing fixing, exit the current sub agent and tell the main agent to go back to `Step 2. Make Sure the Code Compiles`
+
+### Code Generation
+
+- Check out `## Projects for Verification` in `REPO-ROOT/.github/Project.md`.
+- Find out if any code generation is necessary.
+  - If there is no need to run any code generation, you can skip this step.
+  - Otherwise, pay attention to:
+    - What configuration is needed to build the solution.
+    - What project should be executed, and what configuration is needed.
+    - It is possible that a project needs to be executed multiple times in different configuration.
+    - It is possible that building is required between two runs of code generation projects.
+      - The building and future code generation project execution should be handled by the next sub agent.
+- If a unit test project is also a code generation project, execute it accordingly.
+- If a unit test project is not a code generation project, DO NOT execute it. Pure unit test projects will be executed in the future.
+
+### Finishing Code Change
+
+- Exit the current sub agent and tell the main agent to go back to `Step 2. Make Sure the Code Compiles`.
+  - If there is any unfinished work according to `Code Generation`, make sure to tell the main agent about them.
 
 ## Step 3. Run Unit Test
 
@@ -75,9 +94,9 @@
 
 - Apply fixes to source files.
 - DO NOT delete any test case.
-- After finishing fixing, exit the current sub agent and tell the main agent to go back to `Step 2. Compile`
-  - `Step 2. Compile` and `Step 3. Run Unit Test` are absolutely no problem. If you didn't see any progress, the only reason is that your change is not correct.
+- After finishing fixing, exit the current sub agent and tell the main agent to go back to `Step 2. Make Sure the Code Compiles`
+  - `Step 2. Make Sure the Code Compiles` and `Step 3. Run Unit Test` are absolutely no problem. If you didn't see any progress, the only reason is that your change is not correct.
 
 ## Step 4. Check it Again
 
-- Go back to `Step 2. Compile`, follow all instructions and all steps again.
+- Go back to `Step 2. Make Sure the Code Compiles`, follow all instructions and all steps again.
