@@ -226,7 +226,7 @@
   ],
   "frames": [
     {
-      "frameId": 4,
+      "frameId": 5,
       "frameName": "Ready",
       "windowSize": {
         "bounds": {
@@ -253,7 +253,7 @@
       "root": null
     },
     {
-      "frameId": 6,
+      "frameId": 7,
       "frameName": "Click Align",
       "windowSize": {
         "bounds": {
@@ -280,7 +280,7 @@
       "root": null
     },
     {
-      "frameId": 11,
+      "frameId": 12,
       "frameName": "Dropdown Align",
       "windowSize": {
         "bounds": {
@@ -307,7 +307,7 @@
       "root": null
     },
     {
-      "frameId": 13,
+      "frameId": 14,
       "frameName": "Click Align Right",
       "windowSize": {
         "bounds": {

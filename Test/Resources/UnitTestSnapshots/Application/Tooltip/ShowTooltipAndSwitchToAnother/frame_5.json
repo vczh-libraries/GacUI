@@ -403,6 +403,44 @@
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
+    ],
+    [
+      33,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 33,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Left",
+          "verticalAlignment": "Top",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "This is Tooltip B",
+          "measuringRequest": "TotalSize"
+        }
+      ]
+    ],
+    [
+      34,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 34,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Left",
+          "verticalAlignment": "Top",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "This is Tooltip A",
+          "measuringRequest": "TotalSize"
+        }
+      ]
     ]
   ],
   "root": {
