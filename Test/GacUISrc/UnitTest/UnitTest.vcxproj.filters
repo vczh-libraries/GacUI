@@ -28,9 +28,6 @@
     <Filter Include="Source Files\Controls">
       <UniqueIdentifier>{c392e1d3-f657-4d8f-b1a1-b2233efff208}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Remote\Rendering">
-      <UniqueIdentifier>{cdc94559-2132-4009-b95d-6df8409d17d3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Controls\CoreApplication">
       <UniqueIdentifier>{f0494749-4078-454d-a60d-e1950c92705f}</UniqueIdentifier>
     </Filter>
@@ -149,18 +146,6 @@
     </ClCompile>
     <ClCompile Include="TestRemote_GraphicsHost_KeyShortcut.cpp">
       <Filter>Source Files\Remote\GraphicsHost</Filter>
-    </ClCompile>
-    <ClCompile Include="TestRemote_GraphicsHost_BasicElements.cpp">
-      <Filter>Source Files\Remote\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="TestRemote_GraphicsHost_SolidLabel.cpp">
-      <Filter>Source Files\Remote\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="TestRemote_GraphicsHost_HitTest.cpp">
-      <Filter>Source Files\Remote\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="TestRemote_GraphicsHost_ImageFrame.cpp">
-      <Filter>Source Files\Remote\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="TestControls_CoreApplication_GuiWindow.cpp">
       <Filter>Source Files\Controls\CoreApplication</Filter>
@@ -365,6 +350,9 @@
     </ClCompile>
     <ClCompile Include="TestControls_Editor_Key_Shared.cpp">
       <Filter>Source Files\Controls\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="TestRemote_GraphicsHost_HitTest.cpp">
+      <Filter>Source Files\Remote\GraphicsHost</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

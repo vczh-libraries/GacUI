@@ -56,7 +56,6 @@ IGuiRemoteProtocolMessages (Rendering)
 			}
 
 			renderingDomBuilder.RequestRendererBeginRendering();
-			receivedElementMessage = true;
 		}
 	}
 
