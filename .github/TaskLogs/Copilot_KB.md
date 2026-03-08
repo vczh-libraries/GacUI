@@ -197,6 +197,10 @@ If an IO action triggers a blocking function (like `ShowDialog`), the frame call
 
 ## IMPROVEMENTS
 
+### IMPROVEMENT
+
+I updated a little bit of your draft to change it from a design to api explanation. I would like you to provide a comprehensive example at the beginning of your draft, giving user or other coding agent a brief idea.
+
 ## API EXPLANATION (GacUI)
 
 Title: Remote Protocol Unit Test Framework
@@ -210,6 +214,99 @@ This document describes the API of the remote protocol based unit test framework
 The remote protocol unit test framework allows testing GacUI applications without real OS windows or rendering. It reuses the same remote protocol architecture as production remote deployment, replacing the renderer side with a mock implementation (`UnitTestRemoteProtocol`) that captures rendering results as snapshots and feeds simulated user input through the protocol pipeline. The GacUI core side runs identically to production.
 
 Implementation lives in `Source/UnitTestUtilities/`.
+
+## Comprehensive Example
+
+Below is a complete example demonstrating the key concepts of the framework: test executable setup, GacUI XML resource definition, frame-based interaction with named snapshots, control lookup, and mouse input simulation.
+
+### Test Executable Entry Point
+
+The test executable's `main` function initializes the framework once, runs all test cases, and finalizes:
+
+```cpp
+int UnitTestMain(int argc, T* argv[])
+{
+    UnitTestFrameworkConfig config;
+    config.snapshotFolder = GetTestSnapshotPath();
+    config.resourceFolder = GetTestDataPath();
+
+    GacUIUnitTest_Initialize(&config);
+    int result = UnitTest::RunAndDisposeTests(argc, argv);
+    GacUIUnitTest_Finalize();
+    return result;
+}
+```
+
+### A Test Case: Clicking a Button
+
+This example defines a GacUI XML resource with a window containing an OK button, then tests hovering, pressing, and releasing the button in separate frames. Each frame callback describes the action it performs; the frame name is assigned to the **rendering snapshot that results from the previous frame's action**.
+
+```cpp
+const auto resource = LR"GacUISrc(
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="Hello, world!" ClientSize="x:320 y:240">
+        <Button ref.Name="buttonOK" Text="OK">
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:-1 bottom:-1"/>
+          <ev.Clicked-eval><![CDATA {
+            Application::GetApplication().InvokeInMainThread(self, func():void{
+              // changing UI structures that affects the sender of an event
+              // is supposed to be put in InvokeInMainThread
+              // Otherwise followed up events on the same control may gone
+              self.Close();
+            });
+          }]]></ev.Clicked-eval>
+        </Button>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
+TEST_CASE(L"Click Button and Close in Separated IO Commands")
+{
+    GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+    {
+        // Frame 0: snapshot named "Ready" — shows the initial rendering after the window opens.
+        // Callback action: move the mouse to hover over the OK button.
+        protocol->OnNextIdleFrame(L"Ready", [=]()
+        {
+            auto window = GetApplication()->GetMainWindow();
+            auto buttonOK = TryFindObjectByName<GuiButton>(window, L"buttonOK");
+            protocol->MouseMove(protocol->LocationOf(buttonOK));
+        });
+        // Frame 1: snapshot named "Hover" — shows the button in hover state (result of MouseMove above).
+        // Callback action: press the left mouse button down.
+        protocol->OnNextIdleFrame(L"Hover", [=]()
+        {
+            protocol->_LDown();
+        });
+        // Frame 2: snapshot named "Press" — shows the button in pressed state (result of _LDown above).
+        // Callback action: release the left mouse button, triggering Clicked → window closes.
+        protocol->OnNextIdleFrame(L"Press", [=]()
+        {
+            protocol->_LUp();
+        });
+    });
+    GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+        WString::Unmanaged(L"UnitTestFramework/WindowWithOKButton_ClickInSteps"),
+        WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+        resource
+        );
+});
+```
+
+### What This Example Demonstrates
+
+- **`GacUIUnitTest_SetGuiMainProxy`**: Registers the test's frame callback function. It receives `UnitTestRemoteProtocol*` (for input simulation and snapshot access) and `IUnitTestContext*`.
+- **`OnNextIdleFrame(name, callback)`**: Registers a callback to run after the next rendering frame settles. The `name` is attached to the snapshot that was just captured (the rendering result), not to what the callback will do.
+- **`TryFindObjectByName<T>(window, name)`**: Looks up a named control from the GacUI XML resource by its `ref.Name`.
+- **`protocol->LocationOf(control)`**: Computes the absolute screen coordinate of the center of a control, for use with mouse input methods.
+- **`MouseMove`, `_LDown`, `_LUp`**: Low-level mouse input simulation methods. For a single click, use `LClick(location)` instead.
+- **`GacUIUnitTest_StartFast_WithResourceAsText<Theme>`**: Compiles the XML resource, registers the theme, creates the window, runs the application, and captures snapshots — all in one call.
+- **Frame name semantics**: `"Ready"` names the initial rendering; `"Hover"` names the rendering after the mouse moved; `"Press"` names the rendering after the button was pressed down. Each snapshot file (`frame_0.json`, `frame_1.json`, `frame_2.json`) records the full rendering DOM at that point.
+- **`InvokeInMainThread` in `ev.Clicked-eval`**: The button's click handler uses `InvokeInMainThread` to defer `self.Hide()`. This is necessary because `Hide()` would otherwise be called synchronously inside the IO event dispatch, which could block the frame callback (see the blocking function caveat below).
 
 ## Test Executable Initialization and Finalization
 
