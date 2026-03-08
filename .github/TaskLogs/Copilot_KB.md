@@ -198,6 +198,293 @@ Events flow in the reverse direction through the same stack.
 
 ## IMPROVEMENTS
 
-## (API|DESIGN) EXPLANATION
+## DESIGN EXPLANATION (GacUI)
+
+This document covers the **renderer side** of the remote protocol architecture and the **channel/serialization layer** that enables real remote deployment. It is a companion to the existing "Remote Protocol Core Architecture" design explanation, which covers the core side (`GuiRemoteController`, `GuiRemoteMessages`, rendering pipeline, DOM diff, etc.). This document specifically covers:
+- `GuiRemoteRendererSingle` — the renderer-side protocol endpoint that translates protocol messages into real native window rendering and captures OS events back as protocol events.
+- The layered channel architecture — `IGuiRemoteProtocolChannel<TPackage>`, serializer/deserializer templates, JSON envelope format, async thread separation, and UTF string conversion.
+- The demo project pair (`RemotingTest_Core` and `RemotingTest_Rendering_Win32`) that demonstrates a complete real remote deployment.
+
+Place as a new `#### Remote Protocol Renderer and Channel Architecture` under `### Design Explanation` in the GacUI section, after the existing `#### Remote Protocol Core Architecture`.
 
 ## DOCUMENT
+
+# Remote Protocol Renderer and Channel Architecture
+
+The remote protocol separates GacUI into a **core side** (application logic, layout, composition tree) and a **renderer side** (real OS window, graphics rendering, input capture). The core side is covered in `KB_GacUI_Design_RemoteProtocolCoreArchitecture.md`. This document covers the renderer side implementation (`GuiRemoteRendererSingle`), the serialization and channel layers that connect both sides, and the demo projects that demonstrate real remote deployment.
+
+## GuiRemoteRendererSingle
+
+`GuiRemoteRendererSingle` (in `Source/PlatformProviders/RemoteRenderer/`) is the renderer-side endpoint. It receives protocol messages from the core side (rendering commands, window style notifications, IO requests) and translates them into real native window operations. It also captures OS-level events (mouse, keyboard, window lifecycle) and forwards them as protocol events back to the core side.
+
+### Class Hierarchy
+
+`GuiRemoteRendererSingle` inherits from:
+- `Object` — standard base class
+- `IGuiRemoteProtocol` (virtual) — receives all protocol messages from the core side
+- `INativeWindowListener` (protected virtual) — listens to native window events (mouse, keyboard, painting, hit testing, window lifecycle)
+- `INativeControllerListener` (protected virtual) — listens to global timer and shortcut key events
+
+It is NOT a full `INativeController`. It relies on a real platform provider already running (e.g., Windows Direct2D via `SetupRawWindowsDirect2DRenderer()`). The class registers itself as a listener on a native window created by that platform provider, then translates between the `IGuiRemoteProtocol` message interface and real native operations.
+
+### Key Data Members
+
+- `window` / `screen` / `events`: The native window, current screen, and the `IGuiRemoteProtocolEvents` callback for firing events to the core side.
+- `availableElements` (`Dictionary<vint, Ptr<IGuiGraphicsElement>>`): Maps element IDs to real graphics element instances (e.g., `GuiSolidBorderElement`, `GuiSolidLabelElement`, `GuiImageFrameElement`).
+- `availableImages` (`Dictionary<vint, Ptr<INativeImage>>`): Maps image IDs to loaded native images.
+- `renderingDom` / `renderingDomIndex`: The current rendering DOM tree received from the core side, used for on-screen rendering and hit testing.
+- `solidLabelMeasurings` / `fontHeightMeasurings`: Caches and measurement tracking for text elements, supporting the measurement feedback loop with the core side.
+- `pendingMouseMove`, `pendingHWheel`, `pendingVWheel`, `pendingKeyAutoDown`, `pendingWindowBoundsUpdate`: Accumulation fields for high-frequency events that are coalesced before sending.
+- `globalShortcuts` (`Dictionary<vint, GlobalShortcutKey>`): Global keyboard shortcut registrations received from the core side.
+- `focusedParagraphElements`: Tracks paragraph elements with active carets for caret blink notifications.
+
+### Source File Organization
+
+The implementation is split across multiple files by responsibility:
+
+- `GuiRemoteRendererSingle.cpp`: Construction, destruction, `RegisterMainWindow`/`UnregisterMainWindow`, connection lifecycle (`Opened`, `BeforeClosing`, `Closed`), screen and configuration management.
+- `GuiRemoteRendererSingle_Controller.cpp`: Controller-level requests — `RequestControllerGetFontConfig`, `RequestControllerGetScreenConfig`, `RequestControllerConnectionEstablished`, `RequestControllerConnectionStopped`. These query the real platform's resource service and screen service.
+- `GuiRemoteRendererSingle_MainWindow.cpp`: Window style notifications — `RequestWindowNotifySetBounds`, `RequestWindowNotifySetTitle`, `RequestWindowNotifySetEnabled`, `RequestWindowNotifyShow`, `RequestWindowNotifySetCustomFrameMode`, etc. Each maps directly to the corresponding `INativeWindow` method on the real window.
+- `GuiRemoteRendererSingle_IO.cpp`: IO requests (global shortcuts, mouse capture, key state queries) and native input event forwarding. Contains `SendAccumulatedMessages()` which flushes coalesced high-frequency events.
+- `GuiRemoteRendererSingle_Rendering.cpp`: Core rendering pipeline — element creation/destruction (`RequestRendererCreated`, `RequestRendererDestroyed`), begin/end rendering (`RequestRendererBeginRendering`, `RequestRendererEndRendering`), DOM rendering (`Render` recursive traversal), hit testing, and the `GlobalTimer`/`Paint`-driven refresh.
+- `GuiRemoteRendererSingle_Rendering_Elements.cpp`: Updates properties on ordinary graphics elements — solid border, sink border, splitter, solid background, gradient background, inner shadow, polygon.
+- `GuiRemoteRendererSingle_Rendering_Label.cpp`: Solid label measurement and property updates. Measures font heights and label sizes using the real rendering engine.
+- `GuiRemoteRendererSingle_Rendering_Image.cpp`: Image creation from `Ptr<MemoryStream>`, metadata extraction, and image frame element updates.
+- `GuiRemoteRendererSingle_Rendering_Document.cpp`: Document paragraph element handling via `GuiRemoteDocumentParagraphElement` inner class.
+
+### Element Lifecycle on the Renderer Side
+
+1. The core side sends `RequestRendererCreated` with a list of `RendererCreation` items (each containing an `id` and `type`).
+2. The renderer creates the corresponding real `IGuiGraphicsElement` instance (e.g., `GuiFocusRectangleElement`, `GuiSolidBorderElement`, `GuiSolidLabelElement`, `GuiImageFrameElement`) and stores it in `availableElements[id]`.
+3. On `RequestRendererDestroyed`, the element is removed from `availableElements` and released.
+
+### Rendering Pipeline
+
+The rendering pipeline is driven by `GlobalTimer()` and `Paint()`:
+
+1. **Element update**: When `RequestRendererBeginRendering` arrives with an `ElementBeginRendering` containing `updatedElements` (a list of `OrdinaryElementDescVariant`), each variant is dispatched via `Apply(Overloading(...))` to the corresponding `RequestRendererUpdateElement_*` helper. These helpers look up the element by ID in `availableElements` and set its properties on the real graphics element.
+2. **DOM update**: The core sends `RequestRendererRenderDom` (full DOM) or `RequestRendererRenderDomDiff` (incremental diff) to update the rendering DOM tree stored in `renderingDom`. The old command-based rendering (`RequestRendererBeginBoundary`/`RequestRendererEndBoundary`/`RequestRendererRenderElement`) is disabled and raises `CHECK_FAIL`.
+3. **Actual rendering**: In `GlobalTimer()`, if `needRefresh` is true, `Render(renderingDom, rt)` recursively traverses the DOM tree, rendering each element with proper clipping via the native render target. This draws the actual pixels on screen.
+4. **Measurement feedback**: After rendering, the renderer checks if label measurements changed and populates `elementMeasurings` with `fontHeights`, `minSizes`, `createdImages` metadata, and `inlineObjectBounds`. The response is sent via `RespondRendererEndRendering(id, elementMeasurings)`.
+
+### Event Forwarding
+
+`GuiRemoteRendererSingle` implements all `INativeWindowListener` mouse and keyboard callbacks. Events are forwarded to the core side via `IGuiRemoteProtocolEvents`:
+
+- **Discrete events** (button clicks, key press/release): Sent immediately as `OnIOButtonDown`, `OnIOButtonUp`, `OnIOKeyDown`, `OnIOKeyUp`, `OnIOChar`, etc.
+- **High-frequency events** (mouse move, wheel scroll, key auto-repeat): Accumulated and coalesced to reduce protocol traffic:
+  - `pendingMouseMove`: Only the latest mouse position is kept.
+  - `pendingHWheel` / `pendingVWheel`: Wheel deltas are summed.
+  - `pendingKeyAutoDown`: Only the latest auto-repeat key info is kept.
+  - `SendAccumulatedMessages()` is called from `GlobalTimer()` to flush all accumulated events in a single batch.
+- **Window lifecycle events**: `Opened` → `OnControllerConnect`, `BeforeClosing` → `OnControllerRequestExit`, `Moved` → `OnWindowBoundsUpdated`, `DpiChanged` → `OnControllerScreenUpdated`, `RenderingAsActivated`/`RenderingAsDeactivated` → `OnWindowActivatedUpdated`.
+
+### Hit Testing
+
+Hit testing is performed locally in the renderer by traversing the rendering DOM tree via `HitTestInternal`. Each DOM node carries `hitTestResult` and `cursor` attributes set by the core side. The renderer walks the tree to find the matching node for a given screen point. This avoids network round-trips for every mouse move — the renderer resolves hit testing locally and only sends the final mouse event with the resolved position.
+
+### Caret Handling
+
+Paragraph elements with active carets are tracked in `focusedParagraphElements`. The `GlobalTimer()` method handles caret blinking by checking elapsed time against `CaretInterval` (500ms) and calling `OnCaretNotify()` on focused paragraph elements.
+
+## Protocol Serialization and Channel Architecture
+
+The channel layer provides a composable, layered architecture for transforming typed protocol calls into serialized data suitable for network transport. All channel types are defined in `Source/PlatformProviders/Remote/`.
+
+### Core Interfaces
+
+- `IGuiRemoteProtocolChannelReceiver<TPackage>`: Receives packages via `OnReceive(const TPackage& package)`.
+- `IGuiRemoteProtocolChannel<TPackage>`: A bidirectional channel with `Initialize(receiver)`, `Write(package)`, `Submit(disconnected)`, `GetReceiver()`, `GetExecutablePath()`, and `GetRemoteEventProcessor()`.
+
+These interfaces are generic over `TPackage`, enabling type-safe composition of channel transformers.
+
+### Channel Transformer Pattern
+
+`GuiRemoteProtocolChannelTransformerBase<TFrom, TTo>` bridges two channel types. It implements `IGuiRemoteProtocolChannel<TFrom>` while wrapping `IGuiRemoteProtocolChannel<TTo>`. Two specializations handle the direction of conversion:
+
+- `GuiRemoteProtocolChannelSerializer<TSerialization>`: On `Write`, calls `TSerialization::Serialize` to convert from `SourceType` to `DestType` and writes to the inner channel. On `OnReceive`, calls `TSerialization::Deserialize` to convert back and forwards to the outer receiver.
+- `GuiRemoteProtocolChannelDeserializer<TSerialization>`: The reversed direction — calls `Deserialize` on `Write` and `Serialize` on `OnReceive`.
+
+The `TSerialization` concept requires a struct with:
+- `SourceType` — the outer type
+- `DestType` — the inner type
+- `ContextType` — additional context (can be `std::nullptr_t`)
+- `static void Serialize(const ContextType&, const SourceType&, DestType&)`
+- `static void Deserialize(const ContextType&, const DestType&, SourceType&)`
+
+### Layer 1: IGuiRemoteProtocol ↔ JSON Channel
+
+Two adapter classes convert between typed `IGuiRemoteProtocol` calls and `IGuiRemoteProtocolChannel<Ptr<JsonObject>>`:
+
+**`GuiRemoteProtocolFromJsonChannel`** (in `GuiRemoteProtocol_Channel_Json.h`):
+- Implements `IGuiRemoteProtocol` and `IJsonChannelReceiver`
+- Wraps an `IJsonChannel*` (i.e., `IGuiRemoteProtocolChannel<Ptr<JsonObject>>`)
+- When a `RequestNAME(arguments)` method is called, it serializes the arguments to JSON via `ConvertCustomTypeToJson()`, packs them into a JSON envelope with `JsonChannelPack()`, and calls `channel->Write(package)`
+- When `OnReceive(jsonPackage)` is called, it unpacks the envelope with `JsonChannelUnpack()`, dispatches by name to the appropriate event or response handler, deserializes via `ConvertJsonToCustomType()`, and calls the corresponding `events->OnNAME()` or `events->RespondNAME()`
+- Exposes `BeforeWrite` and `BeforeOnReceive` events for external hooks (used by the demo projects for caching)
+
+**`GuiRemoteJsonChannelFromProtocol`** (in `GuiRemoteProtocol_Channel_Json.h`):
+- The reverse adapter — implements `IJsonChannel` and `IGuiRemoteProtocolEvents`
+- Wraps an `IGuiRemoteProtocol*`
+- When `Write(jsonPackage)` is called, it unpacks the envelope, deserializes arguments, and calls the protocol's `RequestNAME()`
+- When protocol events or responses fire, it serializes them to JSON and calls the receiver's `OnReceive()`
+- Also exposes `BeforeWrite` and `BeforeOnReceive` events
+
+### JSON Envelope Format
+
+Every package is wrapped in a JSON object by `JsonChannelPack()` / `JsonChannelUnpack()` with the following fields:
+- `"semantic"` (string): One of `"Message"`, `"Request"`, `"Response"`, `"Event"`, `"Unknown"`
+- `"id"` (number, optional): Present only when `id != -1`; used for request/response correlation
+- `"name"` (string): The message name (e.g., `"ControllerGetFontConfig"`, `"IOMouseMoving"`)
+- `"arguments"` (object, optional): The serialized arguments, present only when provided
+
+Semantic meanings:
+- `"Message"`: A one-way notification with no response expected
+- `"Request"`: A request expecting a response, paired with an `"id"`
+- `"Response"`: A response to a previous request, paired with the matching `"id"`
+- `"Event"`: An asynchronous event from the other side
+
+`ChannelPackageSemanticUnpack()` extracts the semantic and ID from any package without full deserialization — this is used by the async channel for response routing.
+
+### JSON Serialization of Protocol Types
+
+Protocol types are code-generated from `Protocol/*.txt` files into `GuiRemoteProtocolSchema.h`/`.cpp`. Each struct gets a `JsonHelper<T>` specialization with `ToJson` and `FromJson` methods. The shared infrastructure in `GuiRemoteProtocolSchemaShared.h` provides:
+- Primitive type serializers: `bool`, `vint`, `float`, `double`, `WString`, `wchar_t`, `VKEY`, `Color`, `Ptr<MemoryStream>` (Base64-encoded)
+- Generic container serializers: `Nullable<T>`, `Ptr<T>`, `List<T>`, `ArrayMap<K,V,F>`, `Dictionary<K,V>`
+- `Variant` types serialized with a type discriminator field
+- `ConvertCustomTypeToJsonField` for adding named fields to a JSON object
+
+### Layer 2: JSON ↔ String Channel
+
+`JsonToStringSerializer` handles `Ptr<JsonObject>` ↔ `WString` conversion:
+- `SourceType = Ptr<glr::json::JsonObject>`
+- `DestType = WString`
+- `ContextType = Ptr<glr::json::Parser>` (the JSON parser instance)
+- `Serialize`: Converts JSON to compact string via `JsonToString`
+- `Deserialize`: Parses string to JSON via `JsonParse`
+
+Type aliases:
+- `GuiRemoteJsonChannelStringSerializer` = `GuiRemoteProtocolChannelSerializer<JsonToStringSerializer>`
+- `GuiRemoteJsonChannelStringDeserializer` = `GuiRemoteProtocolChannelDeserializer<JsonToStringSerializer>`
+
+### Layer 3: String ↔ Transport (User-Implemented)
+
+The user provides an `IGuiRemoteProtocolChannel<WString>` that sends and receives strings over any transport mechanism (named pipe, HTTP, WebSocket, etc.). GacUI does not provide transport implementations directly — the demo projects show how to build them.
+
+### Optional: UTF String Conversion
+
+`UtfStringSerializer<TFrom, TTo>` (defined in `GuiRemoteProtocol_Channel_Shared.h`) converts between different `ObjectString` character types using `ConvertUtfString()`. This enables transport over channels with different string encodings:
+- `GuiRemoteUtfStringChannelSerializer<TFrom, TTo>` = `GuiRemoteProtocolChannelSerializer<UtfStringSerializer<TFrom, TTo>>`
+- `GuiRemoteUtfStringChannelDeserializer<TFrom, TTo>` = `GuiRemoteProtocolChannelDeserializer<UtfStringSerializer<TFrom, TTo>>`
+
+### Async Channel (Thread Separation)
+
+`GuiRemoteProtocolAsyncChannelSerializer<TPackage>` (in `GuiRemoteProtocol_Channel_Async.h`) provides dual-thread separation between UI logic and IO operations. The JSON-specialized type alias is `GuiRemoteProtocolAsyncJsonChannelSerializer`.
+
+#### Dual-Thread Architecture
+
+- **UI thread** (`UIThreadProc`): Executes the user-provided `uiMainProc` callback, which sets up the GacUI application. All `Write()` calls from the UI thread queue packages in `uiPendingPackages`. The `Submit()` call transfers queued packages to the channel thread and blocks until all expected responses arrive.
+- **Channel thread** (`ChannelThreadProc`): Runs in a loop, executing queued IO tasks. All actual `channel->Write()` and `channel->Submit()` calls to the underlying channel happen here.
+- `Start(channel, uiMainProc, startingProc)` initializes and launches both threads. The `startingProc` callback is responsible for creating the actual threads (allowing the caller to choose the threading mechanism).
+
+#### Request/Response Correlation
+
+When `Submit()` is called on the UI thread:
+1. All pending packages are grouped into a `PendingRequestGroup` containing all request IDs and the current `connectionCounter`.
+2. The batch is queued for the channel thread to write.
+3. The UI thread blocks on `eventAutoResponses` (an `EventObject`).
+4. When `OnReceive()` is called from the channel thread:
+   - Events (semantic `"Event"`) are added to `queuedEvents` (protected by `lockEvents`).
+   - Responses (semantic `"Response"`) are added to `queuedResponses` map by ID (protected by `lockResponses`).
+5. `AreCurrentPendingRequestGroupSatisfied()` checks whether all request IDs in the current group have responses, or whether the connection has been lost.
+6. When satisfied, `eventAutoResponses` is signaled, unblocking the UI thread.
+7. The UI thread collects all responses for the current request IDs and forwards them to the receiver.
+
+#### Connection Tracking
+
+`connectionCounter` is incremented on each connection/disconnection event. If a disconnection occurs while requests are pending, `AreCurrentPendingRequestGroupSatisfied()` detects the counter mismatch and unblocks `Submit()`, preventing deadlocks.
+
+#### Cross-Thread Execution
+
+`ExecuteInChannelThread(func)` queues a lambda to be executed on the channel thread. This is used by transport implementations that receive data on a network thread and need to route it to the channel thread for processing.
+
+## Demo Project Pair
+
+Two demo projects demonstrate a complete real remote deployment using named pipes or HTTP transport. They are not part of the GacUI library itself but serve as reference implementations.
+
+### RemotingTest_Core (Core Side — Console Application)
+
+Located at `Test/GacUISrc/RemotingTest_Core/`.
+
+#### Protocol Stack Setup
+
+The `StartServer<TServer>` template function in `GuiMain.cpp` builds the core-side protocol stack:
+
+```
+SetupRemoteNativeController(protocol)
+  → GuiRemoteProtocolDomDiffConverter(&filteredProtocol)
+    → GuiRemoteProtocolFilter(&channelSender)
+      → GuiRemoteProtocolFromJsonChannel(asyncChannel)
+        → GuiRemoteProtocolAsyncJsonChannelSerializer
+          → GuiRemoteJsonChannelStringSerializer(&serverCoreChannel, jsonParser)
+            → CoreChannel (IGuiRemoteProtocolChannel<WString>)
+              → INetworkProtocol (named pipe / HTTP server)
+```
+
+Messages flow from `SetupRemoteNativeController` outward through the stack to the network. Events and responses flow inward from the network through the same stack in reverse.
+
+#### CoreChannel
+
+`CoreChannel` implements `IGuiRemoteProtocolChannel<WString>` and `INetworkProtocolCoreCallback`:
+- `Write(WString)`: Accumulates messages in `pendingMessages`.
+- `Submit()`: Dispatches all accumulated messages to the network via `networkProtocol->SendStringArray()`.
+- `OnReadStringThreadUnsafe()`: Called when strings arrive from the network on a network thread. Routes them to the channel thread via `asyncChannel->ExecuteInChannelThread()`.
+- Detects `ControllerConnect` event JSON (by string matching `"ControllerConnect"`) to track connection state.
+- On reconnection (`OnReconnectedUnsafe`): Injects a synthetic `ControllerDisconnect` event to notify the core side of the previous disconnection before the new connection is established.
+
+### RemotingTest_Rendering_Win32 (Renderer Side — Windows Application)
+
+Located at `Test/GacUISrc/RemotingTest_Rendering_Win32/`.
+
+#### Protocol Stack Setup
+
+The `StartClient<TClient>` template function in `GuiMain.cpp` builds the renderer-side protocol stack:
+
+```
+INetworkProtocol (named pipe / HTTP client)
+  → RendererChannel
+    → GuiRemoteJsonChannelStringDeserializer(&channelReceiver, jsonParser)
+      → GuiRemoteJsonChannelFromProtocol(&remoteRenderer)
+        → GuiRemoteRendererSingle (IGuiRemoteProtocol)
+          → Native window rendering (via real platform provider)
+```
+
+Messages arrive from the network and flow inward to `GuiRemoteRendererSingle`. Events and responses flow outward from `GuiRemoteRendererSingle` through the same stack to the network.
+
+#### RendererChannel
+
+`RendererChannel` bridges between the network transport and the JSON string channel:
+- `OnReadStringThreadUnsafe()`: Receives strings from the network on a network thread, dispatches to the UI thread via `InvokeInMainThread()`. Handles error strings (prefixed with `!`) by showing a `MessageBox` and calling `renderer->ForceExitByFatelError()`.
+- `OnReceive(WString)`: Called by the string channel when the renderer side produces output. Implements a response-caching mechanism to batch network sends.
+
+#### Response Caching Mechanism
+
+`RendererChannel` hooks into `GuiRemoteJsonChannelFromProtocol`'s `BeforeWrite` and `BeforeOnReceive` events to implement caching:
+1. `BeforeWrite(info)`: When a `Request` semantic is about to be written to the inner protocol, sets `isCaching = true`.
+2. While caching is active, all outgoing packages from `OnReceive()` are accumulated in `cachedPackages` instead of being sent immediately.
+3. `BeforeOnReceive(info)`: When a `Response` semantic is about to be delivered to the inner protocol, sets `isCaching = false`.
+4. On the next `OnReceive()` after caching is disabled, all cached packages plus the current package are sent as a single batch via `networkProtocol->SendStringArray()`.
+
+This batching ensures that a request and all its side-effect messages (responses, notifications) are sent together, reducing network round-trips.
+
+### Shared Network Protocol Interface
+
+Both demo projects share `Shared/ProtocolCallback.h` defining:
+- `INetworkProtocol`: Interface with `SendStringArray(msgs)` for sending and a callback for receiving strings.
+- `INetworkProtocolCoreCallback` / `INetworkProtocolCallback`: Callbacks for receiving strings and lifecycle events (reconnection, errors).
+
+Transport implementations (named pipe server/client, HTTP server/client) are in `Shared/` and implement `INetworkProtocol`. These are demonstration implementations and not part of the GacUI library.
+
+### Key Design Point
+
+The transport layer (`INetworkProtocol`) is intentionally decoupled from GacUI. GacUI provides everything above the `IGuiRemoteProtocolChannel<WString>` level. Users implement their own `IGuiRemoteProtocolChannel<WString>` (or `IGuiRemoteProtocolChannel<ObjectString<char>>` with UTF conversion) to plug in any transport mechanism. The demo projects show how to do this for named pipes and HTTP.
