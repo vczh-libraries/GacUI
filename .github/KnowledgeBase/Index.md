@@ -649,6 +649,21 @@ It provides a comprehensive testing framework, XML-to-C++ compilation, and integ
 
 [Design Explanation](./KB_GacUI_Design_HostedModeWindowManagement.md)
 
+#### Remote Protocol Core Architecture
+
+- Remote protocol mode separates GacUI into a core side (application logic) and a renderer side (rendering and OS services), communicating through `IGuiRemoteProtocol`.
+- Messages flow core → renderer via `IGuiRemoteProtocolMessages`; events and responses flow renderer → core via `IGuiRemoteProtocolEvents`.
+- `GuiRemoteMessages` provides synchronous batched request-response with auto-incrementing IDs and blocking `Submit()`.
+- `GuiRemoteController` implements `INativeController` and all sub-services as virtual stubs: single window only, intentionally null clipboard/dialog services, synchronous key state queries.
+- Connection lifecycle: `SetupRemoteNativeController` creates a layered stack (`GuiRemoteController` → `GuiHostedController` → resource managers), with connect/disconnect/reconnection handling that re-sends all window state.
+- Rendering pipeline: element lifecycle via ID allocation, diff-based element updates, frame rendering flow (`StartRenderingOnNativeWindow` → traversal → `StopRenderingOnNativeWindow`), and measurement feedback loop (font heights, min sizes, image metadata, inline object bounds).
+- `GuiRemoteGraphicsParagraph` handles rich text with run property system, incremental diff synchronization, delegated layout queries, and caret bounds caching.
+- DOM diff layer (`GuiRemoteProtocolDomDiffConverter`) converts per-frame command streams into diffed tree structures.
+- Protocol combinator and filter layers enable composable transformations and traffic optimization via `[@DropRepeat]`/`[@DropConsecutive]` annotations.
+- Channel layer (`IGuiRemoteProtocolChannel`, `GuiRemoteProtocolAsyncChannelSerializer`) supports real remote deployment with async IO on a separate thread.
+
+[Design Explanation](./KB_GacUI_Design_RemoteProtocolCoreArchitecture.md)
+
 ## Experiences and Learnings
 
 # Copy of Online Manual
