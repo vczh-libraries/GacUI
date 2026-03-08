@@ -85,7 +85,7 @@ The cycle repeats until `connectionStopped` is true (the application closes).
 
 ## Starting Multiple Test Applications
 
-There is no mechanism for launching multiple separate GacUI application instances in a single test case. Each call to `GacUIUnitTest_Start` runs one complete application lifecycle (from `GuiMain()` to window close).
+Each call to `GacUIUnitTest_Start` runs one complete application lifecycle (from `GuiMain()` to window close). Usually one for each `TEST_CASE`.
 
 However, multiple windows can be created within the same application instance:
 - The `GacUIUnitTest_StartFast_WithResourceAsText` template creates a main window from a GacUI XML resource. Inside frame callbacks, additional windows can be created using `Value::Create(L"namespace::ClassName")` and shown with `Show()`, `ShowModal()`, or `ShowDialog()`.
