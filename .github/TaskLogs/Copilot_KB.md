@@ -201,6 +201,11 @@ If an IO action triggers a blocking function (like `ShowDialog`), the frame call
 
 I updated a little bit of your draft to change it from a design to api explanation. I would like you to provide a comprehensive example at the beginning of your draft, giving user or other coding agent a brief idea.
 
+### IMPROVEMENT
+
+The test case sample at the beginning of the draft is not accurate, I recommend to use ->LClick as a click.
+Add a new commented out frame to tell user, what should be done if the user interaction in prior frames does not exit an application.
+
 ## API EXPLANATION (GacUI)
 
 Title: Remote Protocol Unit Test Framework
@@ -264,33 +269,39 @@ const auto resource = LR"GacUISrc(
 </Resource>
 )GacUISrc";
 
-TEST_CASE(L"Click Button and Close in Separated IO Commands")
+TEST_CASE(L"Click Button")
 {
     GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
     {
         // Frame 0: snapshot named "Ready" — shows the initial rendering after the window opens.
-        // Callback action: move the mouse to hover over the OK button.
+        // Callback action: move the mouse on the OK button.
         protocol->OnNextIdleFrame(L"Ready", [=]()
         {
             auto window = GetApplication()->GetMainWindow();
             auto buttonOK = TryFindObjectByName<GuiButton>(window, L"buttonOK");
+            // MouseMove(location) + LClick() could be merged into one operation
+            // LClick(location) will perform both
+            // but when the side effect of MouseMove is important
+            // you are given choices
             protocol->MouseMove(protocol->LocationOf(buttonOK));
         });
         // Frame 1: snapshot named "Hover" — shows the button in hover state (result of MouseMove above).
-        // Callback action: press the left mouse button down.
+        // Callback action: click the OK button, triggering Clicked → window closes.
         protocol->OnNextIdleFrame(L"Hover", [=]()
         {
-            protocol->_LDown();
+            protocol->LClick();
         });
-        // Frame 2: snapshot named "Press" — shows the button in pressed state (result of _LDown above).
-        // Callback action: release the left mouse button, triggering Clicked → window closes.
-        protocol->OnNextIdleFrame(L"Press", [=]()
-        {
-            protocol->_LUp();
-        });
+        // If the user interaction above does not cause the application to exit,
+        // an additional frame is needed to close the window explicitly:
+        //
+        // protocol->OnNextIdleFrame(L"Frame name describing what the previous frame does", [=]()
+        // {
+        //     auto window = GetApplication()->GetMainWindow();
+        //     window->Hide();
+        // });
     });
     GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-        WString::Unmanaged(L"UnitTestFramework/WindowWithOKButton_ClickInSteps"),
+        WString::Unmanaged(L"UnitTestFramework/WindowWithOKButton"),
         WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
         resource
         );
@@ -303,10 +314,10 @@ TEST_CASE(L"Click Button and Close in Separated IO Commands")
 - **`OnNextIdleFrame(name, callback)`**: Registers a callback to run after the next rendering frame settles. The `name` is attached to the snapshot that was just captured (the rendering result), not to what the callback will do.
 - **`TryFindObjectByName<T>(window, name)`**: Looks up a named control from the GacUI XML resource by its `ref.Name`.
 - **`protocol->LocationOf(control)`**: Computes the absolute screen coordinate of the center of a control, for use with mouse input methods.
-- **`MouseMove`, `_LDown`, `_LUp`**: Low-level mouse input simulation methods. For a single click, use `LClick(location)` instead.
+- **`LClick(location)`**: Simulates a full left mouse click (mouse move + button down + button up) at the given location. Use this for simple clicks instead of separate `_LDown`/`_LUp` calls.
 - **`GacUIUnitTest_StartFast_WithResourceAsText<Theme>`**: Compiles the XML resource, registers the theme, creates the window, runs the application, and captures snapshots — all in one call.
-- **Frame name semantics**: `"Ready"` names the initial rendering; `"Hover"` names the rendering after the mouse moved; `"Press"` names the rendering after the button was pressed down. Each snapshot file (`frame_0.json`, `frame_1.json`, `frame_2.json`) records the full rendering DOM at that point.
-- **`InvokeInMainThread` in `ev.Clicked-eval`**: The button's click handler uses `InvokeInMainThread` to defer `self.Hide()`. This is necessary because `Hide()` would otherwise be called synchronously inside the IO event dispatch, which could block the frame callback (see the blocking function caveat below).
+- **Frame name semantics**: `"Ready"` names the initial rendering. Each snapshot file (`frame_0.json`) records the full rendering DOM at that point.
+- **Closing the window**: The button's click handler uses `InvokeInMainThread` to defer `self.Close()`. This is necessary because `Close()` would otherwise be called synchronously inside the IO event dispatch, which could block the frame callback (see the blocking function caveat below). If user interaction does not cause the application to exit, an extra frame must be added at the end to call `window->Hide()` explicitly.
 
 ## Test Executable Initialization and Finalization
 
