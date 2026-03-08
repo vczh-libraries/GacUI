@@ -549,6 +549,24 @@ It provides a comprehensive testing framework, XML-to-C++ compilation, and integ
 
 ### Choosing APIs
 
+#### Remote Protocol Unit Test Framework
+
+Testing GacUI applications without real OS windows or rendering, using the remote protocol architecture with a mock renderer (`UnitTestRemoteProtocol`) that captures rendering snapshots and simulates user input.
+
+- Use `GacUIUnitTest_Initialize` and `GacUIUnitTest_Finalize` for global test executable setup and teardown.
+- Use `GacUIUnitTest_SetGuiMainProxy` to register frame-based test callbacks per test case.
+- Use `GacUIUnitTest_LinkGuiMainProxy` for decorator-style proxy chaining to compose setup layers.
+- Use `GacUIUnitTest_StartFast_WithResourceAsText<Theme>` for the most common entry point that compiles XML resources, registers themes, creates windows, and runs the application.
+- Use `GacUIUnitTest_Start` and `GacUIUnitTest_StartAsync` for synchronous and async protocol stack tests.
+- Use `OnNextIdleFrame(name, callback)` on `UnitTestRemoteProtocol` to register frame callbacks; the name describes the rendering result, not the upcoming action.
+- Use `LocationOf(controlOrComposition)` to compute absolute screen coordinates for input simulation.
+- Use `LClick`, `RClick`, `MClick`, `LDBClick`, `MouseMove` for mouse input simulation.
+- Use `KeyPress`, `KeyDown`, `KeyUp`, `TypeString` for keyboard input simulation.
+- Use `TryFindObjectByName<T>(window, name)` to look up named controls from GacUI XML resources.
+- Use `GetApplication()->InvokeInMainThread` to defer IO actions that would trigger blocking functions like `ShowDialog`.
+
+[API Explanation](./KB_GacUI_RemoteProtocolUnitTestFramework.md)
+
 ### Design Explanation
 
 #### Platform Initialization and Multi-Platform Architecture
