@@ -637,6 +637,18 @@ It provides a comprehensive testing framework, XML-to-C++ compilation, and integ
 
 [Design Explanation](./KB_GacUI_Design_AddingNewControl.md)
 
+#### Hosted Mode Window Management
+
+- Hosted mode runs the entire GUI application inside a single OS native window, virtualizing all sub-windows, dialogs, popups, and menus as graphics within that window.
+- `GuiHostedController` is the central class wrapping a real native controller, implementing its own window manager, input dispatching, and service delegation while replacing the global `INativeController`.
+- The window manager template `hosted_window_manager::WindowManager<T>` maintains z-ordered lists (ordinary and top-most), a parent-child tree, and handles activation, focus, hit testing, dragging, and resizing.
+- `GuiHostedWindow` implements `INativeWindow` with a proxy pattern: `PlaceholderProxy` for unassigned windows, `MainProxy` delegating to the real native window, and `NonMainProxy` operating purely through the window manager.
+- Input dispatching uses `HandleMouseCallback` templates with pluggable PreAction/GetSelectedWindow/PostAction strategies, and `HandleKeyboardCallback` routes to the active window.
+- The rendering pipeline renders all hosted windows in a single begin/end session via `StartHostedRendering`/`StopHostedRendering`, with per-window offset via `GetRenderingOffset()`.
+- Remote mode inherently requires hosted mode, with `GuiHostedController` wrapping `GuiRemoteController` in the same architecture.
+
+[Design Explanation](./KB_GacUI_Design_HostedModeWindowManagement.md)
+
 ## Experiences and Learnings
 
 # Copy of Online Manual
