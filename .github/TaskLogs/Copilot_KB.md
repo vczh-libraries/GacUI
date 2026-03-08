@@ -197,11 +197,11 @@ If an IO action triggers a blocking function (like `ShowDialog`), the frame call
 
 ## IMPROVEMENTS
 
-## DESIGN EXPLANATION (GacUI)
+## API EXPLANATION (GacUI)
 
 Title: Remote Protocol Unit Test Framework
 
-This document describes the design and implementation of the remote protocol based unit test framework for GacUI. It would be added under `### Design Explanation` in the GacUI section of `Index.md`, after the existing `Remote Protocol Renderer and Serialization` entry.
+This document describes the API of the remote protocol based unit test framework for GacUI. It would be added under `### Choosing APIs` in the GacUI section of `Index.md`.
 
 ## DOCUMENT
 
