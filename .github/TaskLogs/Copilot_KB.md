@@ -2,309 +2,455 @@
 
 # DESIGN REQUEST
 
-You are going to research on the topic about hosted mode.
-Normally each GuiWindow would require a dedicated OS native window, but hosted mode put everything in one. The only OS native window would render the main window, and it implements its own window management to render and operate all other windows. The research will ends up in a design explaration so you must focused on finding how the hosted mode is implemented, besides of how to use hosted mode.
+You are going to research about the remote protocol mode. Remote protocol delegates rendering and OS provider to a command-based protocol. But in this topic, ignore actual protocol serialization/deserialization, ignore GuiSingleRendererSingle, ignore unit test that builds on top of remote protocol. You are going to finish a design explanation of how remote protocol is implemented, focus on the starting/stopping, connection establishing, and other details as well as the API design. Those "ignored" parts will be covered in another future topic, here let us focus on the core part.
 
 # INSIGHT
 
 ## Overview
 
-Hosted mode is a GacUI operating mode in which the entire GUI application runs inside a single OS native window. Instead of creating one native window per `GuiWindow`, all sub-windows, dialogs, popups, and menus are rendered as graphics within the sole native window. The hosted mode implements its own window manager to handle z-ordering, hit testing, focus/activation, dragging, resizing, and input dispatching — functions normally provided by the OS.
+Remote protocol mode allows a GacUI application to delegate rendering and OS-level services (window management, input, screen) to a remote side through a command-based protocol. The GacUI application logic runs locally, but all visual output and user input are communicated through `IGuiRemoteProtocol`. Remote mode always runs on top of hosted mode (`GuiHostedController` wraps `GuiRemoteController`).
 
-The implementation lives primarily in `Source/PlatformProviders/Hosted/` with these files:
-- `GuiHostedController.h/.cpp` — the core controller wrapping a native controller
-- `GuiHostedWindow.h/.cpp` — virtual window implementing `INativeWindow`
-- `GuiHostedWindowManager.h` — template-based window management algorithm
-- `GuiHostedGraphics.h/.cpp` — graphics resource manager wrapper
-- `GuiHostedApplication.h/.cpp` — global hosted application accessor
-- `GuiHostedWindowProxy_Main.cpp` — proxy for the main window
-- `GuiHostedWindowProxy_NonMain.cpp` — proxy for non-main windows
-- `GuiHostedWindowProxy_Placeholder.cpp` — proxy for windows before role assignment
+The implementation lives in `Source/PlatformProviders/Remote/` with these key files:
+- `GuiRemoteProtocol_Shared.h` — defines `IGuiRemoteProtocol`, `IGuiRemoteProtocolEvents`, `IGuiRemoteProtocolMessages`, `IGuiRemoteProtocolConfig`, `IGuiRemoteEventProcessor`, combinator base classes
+- `GuiRemoteProtocol.h` — umbrella include for all protocol layers
+- `GuiRemoteController.h/.cpp` — the core `GuiRemoteController` implementing `INativeController` via protocol
+- `GuiRemoteControllerSetup.cpp` — `SetupRemoteNativeController()` entry point
+- `GuiRemoteWindow.h/.cpp` — `GuiRemoteWindow` implementing `INativeWindow` via protocol messages
+- `GuiRemoteEvents.h/.cpp` — `GuiRemoteMessages` (request/response tracking) and `GuiRemoteEvents` (event dispatching)
+- `GuiRemoteGraphics.h/.cpp` — `GuiRemoteGraphicsRenderTarget` and `GuiRemoteGraphicsResourceManager`
+- `GuiRemoteGraphics_ImageService.h/.cpp` — `GuiRemoteGraphicsImageService` and `GuiRemoteGraphicsImage`
+- `GuiRemoteProtocol_Filter.h/.cpp` — `GuiRemoteProtocolFilter` for dropping repeated/consecutive messages and events
+- `GuiRemoteProtocol_FilterVerifier.h/.cpp` — `GuiRemoteProtocolFilterVerifier` for verifying filter correctness
+- `GuiRemoteProtocol_DomDiff.h/.cpp` — `GuiRemoteProtocolDomDiffConverter` for converting rendering commands to DOM diff
+- `GuiRemoteProtocol_Channel_Shared.h` — `IGuiRemoteProtocolChannel<T>` and channel transformer base
+- `GuiRemoteProtocol_Channel_Json.h/.cpp` — `GuiRemoteProtocolFromJsonChannel` / `GuiRemoteJsonChannelFromProtocol` for JSON-based protocol
+- `GuiRemoteProtocol_Channel_Async.h/.cpp` — `GuiRemoteProtocolAsyncChannelSerializer<T>` for running protocol IO on a separate thread
+- `GuiRemoteProtocolSchemaShared.h` — JSON serialization helpers, `ArrayMap`
+- `Protocol/` — protocol definition text files and generated schema code
 
-## Entry Points
+## Protocol Definition
 
-Hosted mode is activated through specific setup functions:
-- `SetupHostedWindowsDirect2DRenderer()` calls `SetupWindowsDirect2DRendererInternal(true, false)`
-- `SetupHostedWindowsGDIRenderer()` calls `SetupWindowsGDIRendererInternal(true, false)`
-- `SetupRemoteNativeController(protocol)` creates a `GuiHostedController` wrapping `GuiRemoteController` — remote mode inherently requires hosted mode
+Protocol messages, events, and data types are defined in `Protocol/*.txt` files:
+- `Protocols.txt` — lists all protocol files to include
+- `Protocol_Controller.txt` — controller lifecycle messages: `ControllerGetFontConfig`, `ControllerGetScreenConfig`, `ControllerConnectionEstablished`, `ControllerConnectionStopped`; and data types `FontConfig`, `ScreenConfig`, `ControllerGlobalConfig`
+- `Protocol_MainWindow.txt` — window management messages: `WindowGetBounds`, `WindowNotifySet*` (Title, Enabled, TopMost, ShowInTaskBar, CustomFrameMode, MaximizedBox, MinimizedBox, Border, SizeBox, IconVisible, TitleBar, Bounds, ClientSize), `WindowNotifyActivate`, `WindowNotifyShow`, `WindowNotifyMinSize`, `WindowNotifySetCaret`; and events `WindowBoundsUpdated`, `WindowActivatedUpdated`
+- `Protocol_IO.txt` — IO messages: `IOUpdateGlobalShortcutKey`, `IORequireCapture`, `IOReleaseCapture`, `IOIsKeyPressing`, `IOIsKeyToggled`; and IO events: `IOButtonDown`, `IOButtonDoubleClick`, `IOButtonUp`, `IOHWheel`, `IOVWheel`, `IOMouseMoving`, `IOMouseEntered`, `IOMouseLeaved`, `IOKeyDown`, `IOKeyUp`, `IOChar`, `IOGlobalShortcutKey`
+- `Protocol_Renderer.txt` — renderer messages: `RendererCreated`, `RendererDestroyed`, `RendererBeginRendering`, `RendererEndRendering`, `RendererBeginBoundary`, `RendererEndBoundary`, `RendererRenderElement`; plus DOM messages `RendererRenderDom`, `RendererRenderDomDiff`
+- `Protocol_SyncDom.txt` — defines `RenderingDom`, `RenderingDom_Diff`, `RenderingDom_DiffsInOrder`
 
-The internal setup functions (`SetupWindowsDirect2DRendererInternal`, `SetupWindowsGDIRendererInternal`) take a `bool hosted` parameter. When `hosted` is true:
-1. `StartWindowsNativeController(hInstance)` creates the real native controller
-2. A `GuiHostedController` is created wrapping the native controller
-3. `SetNativeController(hostedController)` replaces the global native controller
-4. `SetHostedApplication(hostedController->GetHostedApplication())` sets the hosted application global
-5. `RendererMainDirect2D/RendererMainGDI(hostedController, raw)` is called
-6. Inside the renderer main, `GuiHostedGraphicsResourceManager` wraps the native resource manager
-7. `hostedController->Initialize()` creates the single native window
-8. `GuiApplicationMain()` runs the application
-9. `hostedController->Finalize()` tears down
+The generated code is in `Protocol/Generated/GuiRemoteProtocolSchema.h` which produces:
+- `GACUI_REMOTEPROTOCOL_MESSAGES(HANDLER)` macro — lists all messages with `HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG)` format. `REQTAG` is `REQ`/`NOREQ`, `RESTAG` is `RES`/`NORES`, `DROPTAG` is `NODROP`/`DROPREP` (drop repeat)
+- `GACUI_REMOTEPROTOCOL_EVENTS(HANDLER)` macro — lists all events with `HANDLER(NAME, REQUEST, REQTAG, DROPTAG)` format. `DROPTAG` is `NODROP`/`DROPREP` (drop repeat)/`DROPCON` (drop consecutive)
 
-For remote mode in `SetupRemoteNativeController`:
-1. `GuiRemoteController` wraps the protocol
-2. `GuiHostedController` wraps the `GuiRemoteController`
-3. Both remote and hosted resource managers are created in a chain
-4. The same initialize/run/finalize sequence applies
+Messages are **requests from the GacUI side to the remote side** (optionally with responses). Events are **notifications from the remote side to the GacUI side**.
 
-## GuiHostedController Architecture
+## Core Protocol Interfaces
 
-`GuiHostedController` is the central class. It inherits from:
-- `INativeController` — to replace the real native controller for the rest of GacUI
-- `WindowManager<GuiHostedWindow*>` — the window management algorithm
-- `INativeWindowListener` — to listen to events on the single real native window
-- `INativeControllerListener` — to receive global timer, clipboard, and shortcut events
-- `INativeAsyncService` — to redirect async operations through the real native controller
-- `INativeScreenService` / `INativeScreen` — to provide a virtual single screen
-- `INativeWindowService` — to create/destroy/manage virtual windows
-- `IGuiHostedApplication` — to expose the native window host
+### IGuiRemoteProtocolMessages
+
+Generated via `GACUI_REMOTEPROTOCOL_MESSAGES`, has pure virtual methods for each message:
+- `RequestNAME()` or `RequestNAME(id)` or `RequestNAME(arguments)` or `RequestNAME(id, arguments)` — depending on whether the message has a request payload and/or expects a response (id is needed for matching responses)
+
+### IGuiRemoteProtocolEvents
+
+Generated via `GACUI_REMOTEPROTOCOL_EVENTS` and `GACUI_REMOTEPROTOCOL_MESSAGES`, has:
+- `OnNAME()` or `OnNAME(arguments)` for each event
+- `RespondNAME(id, arguments)` for each message that has a response — this is how the remote side delivers responses back
+
+### IGuiRemoteProtocolConfig
+
+- `GetExecutablePath()` — returns the executable path, used by `INativeController::GetExecutablePath()`
+
+### IGuiRemoteProtocol
+
+Combines `IGuiRemoteProtocolConfig` and `IGuiRemoteProtocolMessages`, plus:
+- `Initialize(IGuiRemoteProtocolEvents* events)` — gives the protocol the event callback interface
+- `Submit(bool& disconnected)` — flushes all queued messages and waits for responses; sets `disconnected` on failure
+- `GetRemoteEventProcessor()` — returns `IGuiRemoteEventProcessor` (or `nullptr`), whose `ProcessRemoteEvents()` is called to pump incoming events
+
+### IGuiRemoteEventProcessor
+
+- `ProcessRemoteEvents()` — processes any pending incoming events from the remote side; called from `GuiRemoteController::RunOneCycle()`
+
+## GuiRemoteMessages and GuiRemoteEvents
+
+### GuiRemoteMessages
+
+Wraps `IGuiRemoteProtocol` with an auto-incrementing `id` counter for request/response matching:
+- For messages with response: `RequestNAME(...)` allocates an `id`, calls `remoteProtocol->RequestNAME(id, ...)`, returns the `id`
+- For messages without response: `RequestNAME(...)` calls `remoteProtocol->RequestNAME(...)`
+- `Submit(bool& disconnected)` calls `remoteProtocol->Submit(disconnected)`
+- `RespondNAME(id, arguments)` stores the response in a `Dictionary<vint, RESPONSE>`
+- `RetrieveNAME(id)` removes and returns the response
+
+The call pattern is: queue one or more requests → `Submit()` → retrieve responses by id. `Submit()` is a blocking synchronous call that flushes all queued messages and waits for all responses.
+
+### GuiRemoteEvents
+
+Implements `IGuiRemoteProtocolEvents`:
+- Response methods delegate to `GuiRemoteMessages::RespondNAME(id, arguments)`
+- Event methods dispatch to the appropriate handlers:
+  - `OnControllerConnect(globalConfig)` → calls `remoteMessages.RequestControllerConnectionEstablished()`, then `remote->OnControllerConnect(globalConfig)`, then `Submit()`
+  - `OnControllerDisconnect()` → `remote->OnControllerDisconnect()`
+  - `OnControllerRequestExit()` → `remote->OnControllerRequestExit()`
+  - `OnControllerForceExit()` → `remote->OnControllerForceExit()`
+  - `OnControllerScreenUpdated(screenConfig)` → `remote->OnControllerScreenUpdated(screenConfig)`
+  - `OnWindowBoundsUpdated(sizingConfig)` → `remote->remoteWindow.OnWindowBoundsUpdated(sizingConfig)`
+  - `OnWindowActivatedUpdated(activated)` → `remote->remoteWindow.OnWindowActivatedUpdated(activated)`
+  - `OnIOGlobalShortcutKey(id)` → `remote->callbackService.InvokeGlobalShortcutKeyActivated(id)`
+  - `OnIOButtonDown/DoubleClick/Up(info)` → dispatches to `remoteWindow.listeners` based on `info.button` (Left/Middle/Right)
+  - `OnIOHWheel/VWheel/MouseMoving/MouseEntered/MouseLeaved(info)` → dispatches to `remoteWindow.listeners`
+  - `OnIOKeyDown/KeyUp/Char(info)` → dispatches to `remoteWindow.listeners`
+- `ClearResponses()` is available to clear all pending responses
+
+## GuiRemoteController Architecture
+
+`GuiRemoteController` is the core class. It inherits from:
+- `Object`
+- `INativeController` — to serve as the native controller for the GacUI framework
+- `INativeResourceService` (protected) — font and cursor services
+- `INativeInputService` (protected) — timer, key state, global shortcut keys
+- `INativeScreenService` / `INativeScreen` (protected) — virtual single screen
+- `INativeWindowService` (protected) — single-window creation and run loop
+
+Key members:
+- `IGuiRemoteProtocol* remoteProtocol` — the underlying protocol implementation
+- `GuiRemoteMessages remoteMessages` — request/response tracking wrapper
+- `GuiRemoteEvents remoteEvents` — event dispatcher (implements `IGuiRemoteProtocolEvents`)
+- `GuiRemoteWindow remoteWindow` — the single virtual native window
+- `GuiRemoteGraphicsResourceManager* resourceManager` — set after construction
+- `SharedCallbackService callbackService` — framework callback service (timer, window lifecycle, shortcut)
+- `SharedAsyncService asyncService` — async task execution service
+- `GuiRemoteGraphicsImageService imageService` — remote image service
+- `bool applicationRunning` — true during `Run()` message loop
+- `bool connectionForcedToStop` — set by `OnControllerForceExit()`
+- `bool connectionStopped` — set by `DestroyNativeWindow()`, ends the run loop
+- `ControllerGlobalConfig remoteGlobalConfig` — received from `OnControllerConnect`, contains `documentCaretFromEncoding`
+- `FontConfig remoteFontConfig` — fetched from `ControllerGetFontConfig` during connect
+- `ScreenConfig remoteScreenConfig` — fetched from `ControllerGetScreenConfig` during connect
 
 ### Service Delegation
 
-The controller delegates most services to the underlying native controller:
-- `ResourceService()` → `nativeController->ResourceService()`
-- `ClipboardService()` → `nativeController->ClipboardService()`
-- `ImageService()` → `nativeController->ImageService()`
-- `InputService()` → `nativeController->InputService()`
-- `DialogService()` → returns `nullptr` (replaced by `FakeDialogServiceBase`)
-
-Services it implements itself:
+`GuiRemoteController` implements `INativeController` with service dispatch:
 - `CallbackService()` → local `SharedCallbackService`
-- `AsyncService()` → itself (delegates internally to native async service but translates window references)
-- `ScreenService()` → itself (provides a single virtual screen)
-- `WindowService()` → itself (manages virtual hosted windows)
+- `ResourceService()` → itself (implements `INativeResourceService`)
+- `AsyncService()` → local `SharedAsyncService`
+- `ClipboardService()` → `nullptr` (use `FakeClipboardService`)
+- `ImageService()` → local `GuiRemoteGraphicsImageService`
+- `InputService()` → itself (implements `INativeInputService`)
+- `DialogService()` → `nullptr` (use `FakeDialogServiceBase`)
+- `ScreenService()` → itself (implements `INativeScreenService`)
+- `WindowService()` → itself (implements `INativeWindowService`)
 
-### Virtual Screen
+Unlike hosted mode with a real native controller underneath, everything in remote mode is virtual. Services that return `nullptr` cause GacUI to fall back to built-in fake implementations (`FakeDialogServiceBase`, `FakeClipboardService`).
 
-`GuiHostedController` acts as `INativeScreenService` and `INativeScreen`:
+### INativeResourceService Implementation
+
+- `GetSystemCursor(type)` — creates and caches `GuiRemoteCursor` objects (local stubs, only `SystemCursorType` stored)
+- `GetDefaultFont()` / `SetDefaultFont()` — reads/writes `remoteFontConfig.defaultFont`
+- `EnumerateFonts(fonts)` — copies from `remoteFontConfig.supportedFonts`
+
+### INativeInputService Implementation
+
+- `StartTimer()` / `StopTimer()` / `IsTimerEnabled()` — toggles local `timerEnabled` flag
+- `IsKeyPressing(code)` / `IsKeyToggled(code)` — synchronous request/submit/retrieve pattern via `remoteMessages.RequestIOIsKeyPressing` / `RequestIOIsKeyToggled` with immediate `Submit()`
+- Key name mapping: lazy-initialized `keyNames` / `keyCodes` dictionaries from `GUI_DEFINE_KEYBOARD_WINDOWS_NAME` macro
+- `RegisterGlobalShortcutKey(ctrl, shift, alt, key)` — adds to local `hotKeySet` / `hotKeyIds`, sends `RequestIOUpdateGlobalShortcutKey`, submits
+- `UnregisterGlobalShortcutKey(id)` — removes from local tracking, sends update, submits
+
+### INativeScreenService / INativeScreen Implementation
+
 - `GetScreenCount()` returns 1
 - `GetScreen()` returns itself
-- Screen bounds are derived from the native window's client size
-- DPI scaling is forwarded from the real screen
+- `GetBounds()` / `GetClientBounds()` return `remoteScreenConfig.bounds` / `.clientBounds`
+- `GetScalingX()` / `GetScalingY()` return `remoteScreenConfig.scalingX` / `.scalingY`
+
+### INativeWindowService Implementation
 
-### Native Window Lifecycle
+- `GetMainWindowFrameConfig()` / `GetNonMainWindowFrameConfig()` — both return `NativeWindowFrameConfig::Default` (since hosted mode handles frame configs)
+- `CreateNativeWindow(windowMode)` — can only be called once (CHECK_ERROR). Sets `windowCreated`, assigns `windowMode` to `remoteWindow`, fires `InvokeNativeWindowCreated`, returns `&remoteWindow`
+- `DestroyNativeWindow(window)` — can only be called once (CHECK_ERROR). Fires `Closed`, `Destroying`, `InvokeNativeWindowDestroying`, `Destroyed` on listeners. Sets `connectionStopped = true`
+- `GetMainWindow()` — returns `&remoteWindow` if created and not destroyed
+- `Run(window)` — sets `applicationRunning = true`, calls `window->Show()`, loops on `RunOneCycle()`, executes remaining async tasks, sets `applicationRunning = false`
+- `RunOneCycle()` — if not `connectionStopped`: calls `processor->ProcessRemoteEvents()` if available, calls `remoteMessages.Submit()`, if `timerEnabled` and not disconnected calls `callbackService.InvokeGlobalTimer()`, executes async tasks. Returns `!connectionStopped`
+
+## Connection Lifecycle
+
+### Entry Point: SetupRemoteNativeController (GuiRemoteControllerSetup.cpp)
+
+```
+int SetupRemoteNativeController(IGuiRemoteProtocol* protocol)
+```
+
+1. Creates `GuiRemoteController remoteController(protocol)` on stack
+2. Creates `GuiHostedController hostedController(&remoteController)` wrapping it
+3. Creates `GuiRemoteGraphicsResourceManager remoteResourceManager(&remoteController, &hostedController)` — remote render target
+4. Creates `GuiHostedGraphicsResourceManager hostedResourceManager(&hostedController, &remoteResourceManager)` — hosted graphics wrapper
+5. Sets globals: `SetNativeController(&hostedController)`, `SetGuiGraphicsResourceManager(&hostedResourceManager)`, `SetHostedApplication(hostedController.GetHostedApplication())`
+6. Initialization sequence: `remoteController.Initialize()` → `remoteResourceManager.Initialize()` → `hostedController.Initialize()`
+7. Runs `GuiApplicationMain()`
+8. Finalization sequence: `hostedController.Finalize()` → `remoteResourceManager.Finalize()` → `remoteController.Finalize()`
+9. Clears globals and returns 0
+
+### Initialize
+
+`GuiRemoteController::Initialize()`:
+- Calls `remoteProtocol->Initialize(&remoteEvents)` — gives the protocol the event handler
+- Calls `imageService.Initialize()`
+
+### Connection Establishing (OnControllerConnect)
+
+The remote side fires `OnControllerConnect(ControllerGlobalConfig)` event. `GuiRemoteEvents::OnControllerConnect()`:
+1. Sends `RequestControllerConnectionEstablished()` notification to remote
+2. Calls `remote->OnControllerConnect(globalConfig)`
+
+`GuiRemoteController::OnControllerConnect(globalConfig)`:
+1. Stores `remoteGlobalConfig = globalConfig` (contains `documentCaretFromEncoding`)
+2. Calls `UpdateGlobalShortcutKey()` to resend hotkey registrations
+3. Requests `ControllerGetFontConfig` and `ControllerGetScreenConfig` in the same batch
+4. Calls `Submit()` to flush and receive responses
+5. Stores `remoteFontConfig` and `remoteScreenConfig` from responses
+6. Calls `remoteWindow.OnControllerConnect()`, `imageService.OnControllerConnect()`, `resourceManager->OnControllerConnect()`
+7. Calls `callbackService.InvokeEnvironmentChanged()`
+
+`GuiRemoteWindow::OnControllerConnect()`:
+- Clears `controllerDisconnected` flag
+- Sets `sizingConfigInvalidated = true`
+- Sends `RequestWindowNotifySetBounds`, then `RequestGetBounds()` (synchronous submit + retrieve)
+- Fires `DpiChanged(true)` / `DpiChanged(false)` on listeners (workaround for `GuiWindow::UpdateCustomFramePadding`)
+- If `applicationRunning`: re-sends all window style properties (title, enabled, topMost, border options, etc.) and capture state
+
+### Disconnection (OnControllerDisconnect)
+
+The remote side fires `OnControllerDisconnect()`. This calls:
+- `remoteWindow.OnControllerDisconnect()` — sets `controllerDisconnected = true`
+- `imageService.OnControllerDisconnect()`
+- `resourceManager->OnControllerDisconnect()`
+
+### Graceful Exit (OnControllerRequestExit)
+
+Remote fires `OnControllerRequestExit()`. This calls `remoteWindow.Hide(true)`, which:
+1. Fires `BeforeClosing(cancel)` on listeners — if any cancels, returns without closing
+2. Fires `AfterClosing()` on listeners
+3. Schedules `DestroyNativeWindow` via `AsyncService()->InvokeInMainThread()`
+
+### Forced Exit (OnControllerForceExit)
+
+Remote fires `OnControllerForceExit()`. Sets `connectionForcedToStop = true`, then calls `remoteWindow.Hide(true)`. The `connectionForcedToStop` flag bypasses the `BeforeClosing` listener check in `Hide()`.
+
+### Finalize
+
+`GuiRemoteController::Finalize()`:
+- Calls `imageService.Finalize()`
+- Sends `RequestControllerConnectionStopped()` message to remote
+- Calls `Submit()` to flush
 
-`Initialize()` creates one real native OS window via `nativeController->WindowService()->CreateNativeWindow()` and installs itself as `INativeWindowListener` on it.
+### Run Loop
 
-`Finalize()` destroys the native window and uninstalls listeners.
+`GuiRemoteController::Run(window)`:
+1. Sets `applicationRunning = true`
+2. Calls `window->Show()` — triggers `ShowWithSizeState()` which sends `WindowNotifyShow` and fires `Opened()` and `SetActivated()` on the window
+3. Loops on `RunOneCycle()` until `connectionStopped`
+4. Executes remaining async tasks
+5. Sets `applicationRunning = false`
 
-## Window Management
+`RunOneCycle()`:
+1. If `connectionStopped`, returns false
+2. If `remoteProtocol->GetRemoteEventProcessor()` exists, calls `processor->ProcessRemoteEvents()`
+3. Calls `remoteMessages.Submit(disconnected)` — flushes all queued messages
+4. If `timerEnabled` and not disconnected, calls `callbackService.InvokeGlobalTimer()` — this triggers hosted controller's global timer which drives rendering
+5. Calls `asyncService.ExecuteAsyncTasks()`
+6. Returns `!connectionStopped`
 
-### WindowManager<T> Template (GuiHostedWindowManager.h)
+## GuiRemoteWindow
 
-The core window management algorithm is a template class `hosted_window_manager::WindowManager<T>` parameterized by window ID type. It maintains:
-- `registeredWindows` — dictionary of all registered windows
-- `ordinaryWindowsInOrder` — z-ordered list of normal windows (front to back)
-- `topMostedWindowsInOrder` — z-ordered list of top-most windows (front to back)
-- `mainWindow` — the root window
-- `activeWindow` — currently focused window
-- `needRefresh` — dirty flag for rendering
+`GuiRemoteWindow` implements `INativeWindow` for the single remote window. The `GuiHostedController` wrapping `GuiRemoteController` sees `GuiRemoteWindow` as a native window.
 
-### Window<T> Template
+Key characteristics:
+- `IsActivelyRefreshing()` returns `true` — tells hosted mode to always render
+- `GetRenderingOffset()` returns `{0,0}` — rendering offset is handled by hosted mode
+- Coordinate conversion uses `scalingX`/`scalingY` received from the remote screen config
+- `GetBounds()` and `GetClientSize()` use `remoteWindowSizingConfig` (received from remote), and if `sizingConfigInvalidated` is true, triggers synchronous `RequestGetBounds()`
+- `SetBounds()` / `SetClientSize()` update local config and send `WindowNotifySetBounds` / `WindowNotifySetClientSize`, setting `sizingConfigInvalidated = true`
+- Style changes (title, border, enabled, etc.) use `SET_REMOTE_WINDOW_STYLE` / `SET_REMOTE_WINDOW_STYLE_INVALIDATE` macros that check for value change and send the corresponding `WindowNotifySet*` message. The `_INVALIDATE` variant also sets `sizingConfigInvalidated = true` for style changes that affect window bounds.
+- `SetParent()`, `EnableActivate()`, `DisableActivate()` → `CHECK_FAIL` — not supposed to be called, since hosted controller manages these
+- `Show()` / `ShowMaximized()` / `ShowMinimized()` / `ShowRestored()` / `ShowDeactivated()` → call `ShowWithSizeState()` which sends `WindowNotifyShow` with activate flag and size state, then fires `Opened()` and `SetActivated()` locally
+- `Hide(true)` — unless `connectionForcedToStop`, iterates `BeforeClosing(cancel)` / `AfterClosing()` on listeners, then schedules `DestroyNativeWindow` via async main thread invocation
+- `RequireCapture()` / `ReleaseCapture()` — toggle `statusCapturing`, send `IORequireCapture` / `IOReleaseCapture` with immediate `Submit()`
+- `SetCaretPoint(point)` — stores locally and sends `WindowNotifySetCaret`
+- `RedrawContent()` — no-op (rendering is driven by hosted controller's global timer)
 
-Each `Window<T>` has:
-- `parent` — parent window pointer (tree structure)
-- `children` — child windows list
-- `bounds` — position and size in client coordinate space
-- `topMost`, `visible`, `enabled`, `active`, `renderedAsActive` — state flags
+### Reconnection Support
 
-Key operations:
-- `SetParent(value)` — reparents window; null parent defaults to main window; updates z-order via `FixWindowInOrder`
-- `SetVisible(bool)` — shows/hides; triggers `FixWindowInOrder` and `OnOpened`/`OnClosed` callbacks
-- `SetTopMost(bool)` — toggles top-most status; moves window between ordinary and top-most z-order lists
-- `SetEnabled(bool)` — enables/disables; triggers callbacks
-- `BringToFront()` — moves window and its visible subtree to front of z-order within their priority level
-- `Activate()` — sets focus; finds common parent with previously active window; updates `renderedAsActive` chain; calls `BringToFront`
-- `Deactivate()` — walks up parent chain to find next enabled window to activate
-- `Show()` — shorthand for `SetVisible(true) + Activate()`
+`GuiRemoteWindow::OnControllerConnect()` resends all current window state to the remote side if `applicationRunning` is true. This enables reconnection scenarios where the remote side reconnects and the GacUI side restores its visual state.
 
-Z-ordering uses two separate lists (ordinary and topMost). `IsEventuallyTopMost()` checks if a window or any ancestor is top-most and visible. `FixWindowInOrder` ensures windows are in the correct list based on their top-most status and parent ordering. `EnsureChildrenMovedInFrontOf` maintains the invariant that children appear before (in front of) their parent in the z-order.
+## GuiRemoteGraphicsResourceManager
 
-### HitTest
+`GuiRemoteGraphicsResourceManager` inherits from `GuiGraphicsResourceManager` and `IGuiGraphicsLayoutProvider`. Key members:
+- `GuiRemoteController* remote`
+- `GuiRemoteGraphicsRenderTarget renderTarget` — the remote render target
+- `GuiHostedController* hostedController` — for refresh requests
 
-`WindowManager::HitTest(position)` iterates `topMostedWindowsInOrder` then `ordinaryWindowsInOrder`, returning the first visible window whose bounds contain the position — giving top-most windows priority.
+Service methods:
+- `GetRenderTarget(window)` — returns `&renderTarget` (single render target)
+- `RecreateRenderTarget(window)` / `ResizeRenderTarget(window)` — no-ops (managed by hosted controller)
+- `GetLayoutProvider()` — returns itself
+- `CreateRawElement()` — creates a `GuiRemoteGraphicsElement`
 
-### Start/Stop
+The `GuiHostedGraphicsResourceManager` in the chain wraps this, providing the same single render target for all hosted windows.
 
-`WindowManager::Start(mainWindow)` makes orphan windows children of the main window. `WindowManager::Stop()` clears all state and fires deactivation/close events.
+## GuiRemoteGraphicsRenderTarget
 
-## GuiHostedWindow — Virtual INativeWindow
+Inherits from `GuiGraphicsRenderTarget`. Manages remote rendering state:
+- `canvasSize` — current canvas size from `remoteWindow.GetClientSize()`
+- `usedFrameIds` / `usedElementIds` / `usedCompositionIds` — auto-incrementing ID counters
+- `renderers` — map of element ID to `IGuiRemoteProtocolElementRender*`
+- `createdRenderers` / `destroyedRenderers` — pending create/destroy batches
+- `renderersAskingForCache` — renderers needing min size from remote
+- `needFullElementUpdateOnNextFrame` — set on reconnect
+- `fontHeights` — cached font height measurements from remote
+- `hitTestResults` / `cursors` — stacks for tracking rendering boundaries
 
-`GuiHostedWindow` implements `INativeWindow` and inherits from `GuiHostedWindowData` (which holds all window properties like title, icon, cursor, size state, border options, etc.). Each `GuiHostedWindow` contains a `Window<GuiHostedWindow*> wmWindow` embedded in the data struct.
+`StartRenderingOnNativeWindow()`:
+1. Gets canvas size from remote window
+2. Increments `usedFrameIds`, builds `ElementBeginRendering` with updated elements
+3. If `needFullElementUpdateOnNextFrame` (reconnect mode), collects all elements' updates
+4. Otherwise collects only changed elements
+5. Sends `RequestRendererBeginRendering`
 
-### Proxy Pattern
+`StopRenderingOnNativeWindow()`:
+1. Sends `RequestRendererEndRendering`, submits, retrieves `ElementMeasurings` response
+2. Processes `fontHeights`, `minSizes`, `createdImages`, `inlineObjectBounds` from response
+3. If min sizes changed, calls `hostedController->RequestRefresh()`
+4. Returns `ResizeWhileRendering` if canvas size changed during rendering, otherwise `None`
 
-`GuiHostedWindow` delegates behavior to an `IGuiHostedWindowProxy`. There are three proxy types:
-1. **PlaceholderProxy** — initial no-op proxy for newly created windows before role assignment
-2. **MainProxy** (`GuiMainHostedWindowProxy`) — for the main window; delegates title, icon, size, border properties, maximized/minimized/show/hide to the real native window
-3. **NonMainProxy** (`GuiNonMainHostedWindowProxy`) — for all other windows; operates purely through the window manager; disallows maximized/minimized boxes; enforces custom frame mode when system borders are used
+Clipper push/pop methods (`AfterPushedClipper`, `AfterPoppedClipper`) send `RequestRendererBeginBoundary` / `RequestRendererEndBoundary` messages tracking hit test results and cursor types per composition boundary.
 
-`BecomeMainWindow()` and `BecomeNonMainWindow()` switch the proxy. This happens in `SettingHostedWindowsBeforeRunning()` when the main window is known, and in `CreateNativeWindow()` for windows created after the main window.
+`OnControllerConnect()` — on reconnect, re-registers all existing renderers and paragraphs via `RequestRendererCreated`, sets `needFullElementUpdateOnNextFrame = true`, marks all paragraphs dirty.
 
-### Coordinate System
+## Protocol Combinator Layer
 
-- `GetRenderingOffset()` returns the window's top-left position in the native window's client space as `NativeSize`
-- `GetBounds()` returns the `wmWindow.bounds` directly (position is in parent's client space)
-- `GetClientSize()` equals `GetBounds().GetSize()` (no frame for hosted windows)
-- `GetClientBoundsInScreen()` equals `GetBounds()` (screen = client area of native window)
-- DPI conversion functions delegate to the real native window
+### GuiRemoteEventCombinator
 
-### Capture and Cursor
+Base class with `IGuiRemoteProtocolEvents* targetEvents`. Subclasses override event/response methods and optionally forward to `targetEvents`.
 
-- `RequireCapture()` sets `controller->capturingWindow` and calls `nativeWindow->RequireCapture()`
-- `ReleaseCapture()` clears `controller->capturingWindow` and calls `nativeWindow->ReleaseCapture()`
-- `SetWindowCursor()` only updates the real native window cursor if this is the currently hovering window
-- `SetCaretPoint()` adjusts by `GetRenderingOffset()` and sets on the real native window if this is the active window
+### GuiRemoteProtocolCombinator<TEvents>
 
-## Input Event Dispatching
+Template wrapping `IGuiRemoteProtocol* targetProtocol` with a `TEvents eventCombinator`. `Initialize()` chains: `eventCombinator.targetEvents = _events`, then `targetProtocol->Initialize(&eventCombinator)`. This creates a pipeline where events flow through the combinator before reaching the final handler.
 
-### Mouse Events
+### Passing-Through Variants
 
-`GuiHostedController` listens to mouse events on the single native window. Mouse dispatching uses a template-based system:
+`GuiRemoteEventCombinator_PassingThrough` and `GuiRemoteProtocolCombinator_PassingThrough<TEvents>` — forward all messages and events unchanged. Subclasses selectively override specific methods.
 
-`HandleMouseCallback<PreAction, GetSelectedWindow, PostAction, Callback>` is the core:
-1. Call `PreAction` (may trigger window manager operations)
-2. If not in a window-manager operation (`wmWindow == nullptr`), call `GetSelectedWindow` to find the target
-3. Adjust mouse coordinates by subtracting the target window's `wmWindow.bounds` top-left
-4. Dispatch to the target window's listeners
-5. Call `PostAction`
+## Protocol Filter Layer (GuiRemoteProtocol_Filter.h)
 
-Three `GetSelectedWindow` strategies:
-- `GetSelectedWindow_MouseDown` — closes popup windows not in the hovering chain, returns `capturingWindow` or `hoveringWindow`
-- `GetSelectedWindow_MouseMoving` — updates `hoveringWindow` via `UpdateHoveringWindow` and `enteringWindow` via `UpdateEnteringWindow`
-- `GetSelectedWindow_Other` — returns `capturingWindow` or `hoveringWindow`
+### GuiRemoteProtocolFilter
 
-Macros `IMPLEMENT_MOUSE_CALLBACK` wire each mouse event to the right combination. For example:
-- `LeftButtonDown` uses `PreAction_LeftButtonDown` / `GetSelectedWindow_MouseDown` / `PostAction_Other`
-- `MouseMoving` uses `PreAction_MouseMoving` / `GetSelectedWindow_MouseMoving` / `PostAction_Other`
+Wraps `IGuiRemoteProtocol` to optimize protocol traffic by dropping redundant messages:
+- Messages annotated `[@DropRepeat]` in protocol definitions: if the same message is sent with the same arguments, the repeated one is dropped. Tracked via `lastDropRepeatRequest*` indices.
+- Events annotated `[@DropRepeat]` or `[@DropConsecutive]`: repeated or consecutive duplicate events are dropped before delivery. Tracked via `lastDropRepeatEvent*` / `lastDropConsecutiveEvent*` indices.
 
-### Window Manager Dragging and Resizing
+Uses `FilteredRequest` / `FilteredResponse` / `FilteredEvent` structs that store messages in a variant-typed queue with drop tracking.
 
-`PreAction_LeftButtonDown` checks non-main enabled windows for hit test results (Title, BorderLeft, BorderRight, etc.). If a border/title hit is detected:
-- Sets `wmOperation` to the appropriate `WindowManagerOperation` enum
-- Stores `wmWindow` pointer and `wmRelative` offset
-- Captures the native window
+`Submit()` calls `ProcessRequests()` first (filters, then forwards non-dropped requests), then delegates to `targetProtocol->Submit()`.
 
-`PreAction_MouseMoving` handles ongoing drag/resize when `wmWindow` is set: recalculates bounds based on mouse position and operation type, calls `Moving` and `Moved` listeners.
+### GuiRemoteProtocolFilterVerifier
 
-`PostAction_LeftButtonUp` checks for `ButtonClose` hit test to close windows, and ends window manager operations.
+A separate combinator that verifies the filter's correctness. It tracks whether messages/events should have been dropped and validates.
 
-### Mouse Hovering and Entering
+## Protocol DOM Diff Layer (GuiRemoteProtocol_DomDiff.h)
 
-- `UpdateHoveringWindow(location)` stores mouse position and calls `HitTestInClientSpace` to find the window under cursor
-- `UpdateEnteringWindow(window)` fires `MouseLeaved` on old entering window and `MouseEntered` on new one
-- `MouseLeaved` on the native window calls `UpdateEnteringWindow(nullptr)`
+### GuiRemoteProtocolDomDiffConverter
 
-### Keyboard Events
+Wraps `IGuiRemoteProtocol`. Intercepts rendering messages and converts them from per-frame rendering commands into a DOM diff format:
+- Overrides `RequestRendererBeginRendering`, `RequestRendererEndRendering`, `RequestRendererBeginBoundary`, `RequestRendererEndBoundary`, `RequestRendererRenderElement`
+- Uses `RenderingDomBuilder` to build a `RenderingDom` tree during rendering
+- On `RequestRendererEndRendering`:
+  - If first frame (no `lastDom`): sends `RequestRendererRenderDom` with the full DOM
+  - Otherwise: computes diff using `DomIndex` and sends `RequestRendererRenderDomDiff` with `RenderingDom_DiffsInOrder`
+- Stores `lastDom` and `lastDomIndex` for next frame comparison
+- On `OnControllerConnect`: clears `lastDom` and `lastDomIndex` to force full DOM send on reconnect
 
-`HandleKeyboardCallback` dispatches keyboard events (KeyDown, KeyUp, Char) to the active window's listeners.
+## Channel Layer (IGuiRemoteProtocolChannel<T>)
 
-### Mouse-Down Activation
+### IGuiRemoteProtocolChannel<T>
 
-`PreAction_MouseDown` activates the hovering window when mouse button is pressed (if the window is enabled and activation-enabled).
+Generic bidirectional communication channel interface:
+- `Initialize(IGuiRemoteProtocolChannelReceiver<T>* receiver)` — sets up the receiving end
+- `GetReceiver()` — returns the receiver
+- `Write(const T& package)` — sends a package
+- `GetExecutablePath()` — returns executable path
+- `Submit(bool& disconnected)` — flushes the channel
+- `GetRemoteEventProcessor()` — returns event processor
 
-### Popup Closure on Click
+### GuiRemoteProtocolChannelTransformerBase<TFrom, TTo>
 
-`GetSelectedWindow_MouseDown` implements the pattern of closing popup windows (non-Normal mode windows) that are not ancestors of the clicked window.
+Bridges two channel types. Implements `IGuiRemoteProtocolChannel<TFrom>` by wrapping `IGuiRemoteProtocolChannel<TTo>`. Used by `GuiRemoteProtocolChannelSerializer` and `GuiRemoteProtocolChannelDeserializer` to transform between serialized and deserialized package formats.
 
-## Rendering Pipeline
+### JSON Channel (GuiRemoteProtocol_Channel_Json.h)
 
-### Hosted Rendering in GlobalTimer
+`GuiRemoteProtocolFromJsonChannel` — adapts `IGuiRemoteProtocolChannel<Ptr<JsonObject>>` to `IGuiRemoteProtocol`. Converts protocol messages to JSON objects for writing and parses incoming JSON back to typed protocol events/responses. Uses handler maps (`onReceiveEventHandlers`, `onReceiveResponseHandlers`) for efficient dispatch.
 
-`GuiHostedController::GlobalTimer()` drives the rendering cycle. On each global timer tick:
-1. Skip if the native window is not visible or already in hosted rendering
-2. Check all visible windows' listeners for `NeedRefresh()` — if any returns true, set `needRefresh`
-3. If no refresh needed and nothing was updated last frame, skip rendering
-4. Enter rendering loop:
-   - Call `renderTarget->StartHostedRendering()` on the native resource manager's render target
-   - Iterate ordinary windows (back to front, reversed list order) then top-most windows
-   - For each window, call each listener's `ForceRefresh(false, updated, failureByResized, failureByLostDevice)`
-   - Call `renderTarget->StopHostedRendering()`
-   - Handle failures: `LostDevice` → `RecreateRenderTarget`; `ResizeWhileRendering` → `ResizeRenderTarget`
-   - On success, call `nativeWindow->RedrawContent()` and break
+`GuiRemoteJsonChannelFromProtocol` — adapts `IGuiRemoteProtocol` to `IGuiRemoteProtocolChannel<Ptr<JsonObject>>` (the reverse direction). Intercepts protocol events and converts them to JSON for channel transport.
 
-### Hosted Rendering Protocol (GuiGraphicsRenderTarget)
+`JsonToStringSerializer` — provides `Serialize`/`Deserialize` between `Ptr<JsonObject>` and `WString`. Used by `GuiRemoteJsonChannelStringSerializer` / `GuiRemoteJsonChannelStringDeserializer` type aliases.
 
-`GuiGraphicsRenderTarget` (base class for D2D/GDI render targets) supports hosted rendering:
-- `StartHostedRendering()` sets `hostedRendering = true` and calls `StartRenderingOnNativeWindow()` once
-- During hosted rendering, individual `StartRendering()`/`StopRendering()` pairs do NOT call `StartRenderingOnNativeWindow()`/`StopRenderingOnNativeWindow()` — they just set the `rendering` flag
-- `StopHostedRendering()` calls `StopRenderingOnNativeWindow()` once
-- This means all hosted windows render within a single begin/end rendering session on the native render target
+### Async Channel (GuiRemoteProtocol_Channel_Async.h)
 
-### Per-Window Rendering (GuiGraphicsHost)
+`GuiRemoteProtocolAsyncChannelSerializer<TPackage>` — runs protocol IO on a separate channel thread while GacUI runs on the UI thread. Inherits from `GuiRemoteProtocolAsyncChannelSerializerBase` (which provides cross-thread task queues).
 
-`GuiGraphicsHost::Render()` (called from `ForceRefresh`) does:
-1. `hostRecord.renderTarget->StartRendering()`
-2. `auto nativeOffset = hostRecord.nativeWindow->GetRenderingOffset()` — for hosted windows this returns the window position
-3. `auto localOffset = hostRecord.nativeWindow->Convert(nativeOffset)` — converts to logical pixels
-4. `windowComposition->Render(localOffset)` — renders the composition tree with the offset
-5. `hostRecord.renderTarget->StopRendering()`
-6. `hostRecord.nativeWindow->RedrawContent()` — no-op in hosted mode
+Threading model:
+- **UI thread**: runs `uiMainProc` which calls `SetupRemoteNativeController` — the GacUI application loop
+- **Channel thread**: runs a loop waiting for tasks from the UI thread, executing channel IO operations
 
-The rendering offset mechanism is the key: in non-hosted mode, `GetRenderingOffset()` returns (0,0) because each window has its own render target. In hosted mode, it returns the window's position in the shared native window coordinate space, so all window content is rendered at the correct position within the single render target.
+`Start(_channel, _uiMainProc, startingProc)`:
+1. Creates auto events (`eventAutoResponses`, `eventAutoChannelTaskQueued`) and manual events (`eventManualChannelThreadStopped`, `eventManualUIThreadStopped`)
+2. `startingProc` is called with two callables: one for the channel thread, one for the UI thread. The caller is responsible for launching both threads.
 
-### GuiHostedGraphicsResourceManager
+`Write(package)` — called from UI thread, accumulates packages in `uiPendingPackages`
 
-`GuiHostedGraphicsResourceManager` wraps the native resource manager:
-- `GetRenderTarget(window)` always returns the native render target for the single native window, regardless of which hosted window asks
-- `RecreateRenderTarget(window)` and `ResizeRenderTarget(window)` are no-ops (managed by the global timer loop)
-- All other methods (element registration, renderer factories, layout provider) delegate to the native manager
+`Submit(disconnected)` — called from UI thread:
+1. Checks connection availability; if disconnected, returns immediately
+2. Groups all pending packages into a `PendingRequestGroup` (tracks request IDs)
+3. Queues channel thread task: writes all packages to channel, calls `channel->Submit()`
+4. Blocks on `eventAutoResponses` waiting for all responses
+5. If disconnect detected (by `connectionCounter` mismatch), sets `disconnected`
+6. Collects and delivers responses to `receiver->OnReceive()`
 
-## Native Window Event Forwarding
+`ProcessRemoteEvents()` — called from UI thread:
+1. Queues `channel->GetRemoteEventProcessor()->ProcessRemoteEvents()` to channel thread
+2. Fetches and executes UI thread tasks
+3. Processes queued events from channel thread
+4. Special handling for `ControllerConnect` event: updates `connectionCounter` and `connectionAvailable`
 
-`GuiHostedController` as `INativeWindowListener` on the single real native window forwards events:
-- `HitTest(location)` — if main window is enabled and cursor is on it, performs hit test via main window's listeners
-- `Moving(bounds)` — adjusts bounds to main window's coordinate space and forwards to main window's listeners
-- `Moved()` — syncs main window bounds to native window client size
-- `DpiChanged(preparing)` — recreates render target and broadcasts to all hosted windows
-- `GotFocus()` — reactivates last focused window (or main window)
-- `LostFocus()` — stores last focused window and deactivates all
-- `BeforeClosing(cancel)` / `AfterClosing()` — forwards to main window's listeners
-- `Opened()` — forwards to main window's listeners
+`OnReceive(package)` — called from any thread (typically channel thread):
+- If response: stores in `queuedResponses` under lock; if all pending responses satisfied, signals `eventAutoResponses`
+- If event: stores in `queuedEvents` under lock
 
-## Dialog Service
+The async channel uses `ChannelPackageSemanticUnpack()` (argument-dependent lookup) to classify incoming packages as events or responses.
 
-`GuiHostedController::DialogService()` returns `nullptr`, which causes GacUI to use `FakeDialogServiceBase` — GacUI-implemented dialogs rendered inside the hosted environment. This is critical because OS-native dialogs would create separate windows outside the hosted environment.
+Shutdown sequence:
+1. `UIThreadProc` finishes → sets `stopping = true` → signals `eventAutoChannelTaskQueued`
+2. Channel thread processes remaining tasks → signals `eventManualChannelThreadStopped`
+3. UI thread processes remaining tasks → signals `eventManualUIThreadStopped`
 
-The `FakeDialogServiceBase` provides view models (`IMessageBoxDialogViewModel`, `IColorDialogViewModel`, `IFontDialogViewModel`, `IOpenFileDialogViewModel`, `ISaveFileDialogViewModel`) and creates corresponding GacUI windows that appear as hosted sub-windows.
+The typical protocol stack for async remote operation:
+`GuiRemoteProtocolDomDiffConverter` over `GuiRemoteProtocolFilter` over `GuiRemoteProtocolFromJsonChannel` over `GuiRemoteProtocolAsyncChannelSerializer<Ptr<JsonObject>>`
 
-## NativeWindowFrameConfig
+## Image Service
 
-`GuiHostedController` provides two frame configs:
-- `GetMainWindowFrameConfig()` — delegates to the native controller (the main window gets real OS frame)
-- `GetNonMainWindowFrameConfig()` — returns a static config with `MaximizedBoxOption = AlwaysFalse`, `MinimizedBoxOption = AlwaysFalse`, `CustomFrameEnabled = AlwaysTrue` (non-main windows are always custom-frame rendered)
+`GuiRemoteGraphicsImageService` implements `INativeImageService` remotely:
+- `CreateImageFromStream(stream)` — creates a `GuiRemoteGraphicsImage` with a binary copy, assigns an ID
+- `CreateImageFromFile(path)` — reads file into stream, calls `CreateImageFromStream`
+- Each `GuiRemoteGraphicsImage` lazily requests its metadata from the remote side via `ImageCreated` message when first accessed (`EnsureMetadata()`)
+- `OnControllerConnect()` — re-registers all existing images on reconnect via `ImageCreated` messages
+- `OnControllerDisconnect()` — resets metadata state to `Uninitialized`
 
-## Window Creation and Destruction
+## Screen Config Updates
 
-`CreateNativeWindow(windowMode)`:
-1. Creates a `GuiHostedWindow` with placeholder proxy
-2. Adds to `createdWindows` sorted list
-3. Registers with `wmManager`
-4. Fires `InvokeNativeWindowCreated` callback
-5. If main window already exists, calls `BecomeNonMainWindow()`
-
-`DestroyNativeWindow(window)`:
-1. Clears references (entering, hovering, capturing, wm-tracking)
-2. Fires `Destroying` on listeners
-3. Fires `InvokeNativeWindowDestroying` callback
-4. Unregisters from `wmManager` (which reparents children)
-5. Removes from `createdWindows`
-
-`Run(window)`:
-1. Sets `mainWindow`
-2. Calls `SettingHostedWindowsBeforeRunning()` which:
-   - Switches all windows to their proper proxies (main/non-main)
-   - Centers native window on screen
-   - Calls `wmManager->Start(&mainWindow->wmWindow)`
-3. Delegates to `nativeController->WindowService()->Run(nativeWindow)` for the message loop
-4. Handles exceptions in unit test mode
-5. Calls `DestroyHostedWindowsAfterRunning()` to tear down all hosted windows
-
-## Remote Mode Integration
-
-Remote mode (`SetupRemoteNativeController`) always uses hosted mode:
-- `GuiRemoteController` implements `INativeController` through protocol communication
-- `GuiHostedController` wraps `GuiRemoteController` just as it wraps Windows native controllers
-- `GuiRemoteGraphicsResourceManager` wraps `GuiRemoteController`, then `GuiHostedGraphicsResourceManager` wraps that
-- The single native window in remote mode is the `GuiRemoteWindow`, which is also virtual — it sends rendering commands through the protocol rather than to a real screen
+When the remote side notifies `OnControllerScreenUpdated(ScreenConfig)`:
+- `GuiRemoteController` stores the new `remoteScreenConfig`
+- `GuiRemoteWindow::OnControllerScreenUpdated()` — if scaling changed, updates `scalingX`/`scalingY` and fires `DpiChanged(true)` / `DpiChanged(false)` on listeners
 
 # ASKS
 
@@ -314,316 +460,6 @@ Remote mode (`SetupRemoteNativeController`) always uses hosted mode:
 
 ## IMPROVEMENTS
 
-## DESIGN EXPLANATION (GacUI)
-
-Under `### Design Explanation` of the `## GacUI` project in `Index.md`, add a new section `#### Hosted Mode Window Management` with a link to `KB_GacUI_Design_HostedModeWindowManagement.md`. This section describes the architecture and implementation of hosted mode, where all GacUI windows are virtualized within a single native OS window, including the controller, window manager, proxy pattern, input dispatching, rendering pipeline, and integration with remote mode.
+## (API|DESIGN) EXPLANATION
 
 ## DOCUMENT
-
-Hosted Mode Window Management
-
-Hosted mode is a GacUI operating mode in which the entire GUI application runs inside a single OS native window. Instead of creating one native window per `GuiWindow`, all sub-windows, dialogs, popups, and menus are rendered as graphics within the sole native window. The hosted mode implements its own window manager to handle z-ordering, hit testing, focus, activation, dragging, resizing, and input dispatching — functions normally provided by the OS.
-
-The implementation lives in `Source/PlatformProviders/Hosted/` with these files:
-- `GuiHostedController.h/.cpp` — the core controller wrapping a native controller
-- `GuiHostedWindow.h/.cpp` — virtual window implementing `INativeWindow`
-- `GuiHostedWindowManager.h` — template-based window management algorithm
-- `GuiHostedGraphics.h/.cpp` — graphics resource manager wrapper
-- `GuiHostedApplication.h/.cpp` — global hosted application accessor
-- `GuiHostedWindowProxy_Main.cpp` — proxy for the main window
-- `GuiHostedWindowProxy_NonMain.cpp` — proxy for non-main windows
-- `GuiHostedWindowProxy_Placeholder.cpp` — proxy for windows before role assignment
-
-## Entry Points and Activation
-
-Hosted mode is activated through specific setup functions:
-- `SetupHostedWindowsDirect2DRenderer()` calls `SetupWindowsDirect2DRendererInternal(true, false)`
-- `SetupHostedWindowsGDIRenderer()` calls `SetupWindowsGDIRendererInternal(true, false)`
-- `SetupRemoteNativeController(protocol)` creates a `GuiHostedController` wrapping `GuiRemoteController` — remote mode inherently requires hosted mode
-
-The internal setup functions (`SetupWindowsDirect2DRendererInternal`, `SetupWindowsGDIRendererInternal`) take a `bool hosted` parameter. When `hosted` is true:
-1. `StartWindowsNativeController(hInstance)` creates the real native controller
-2. A `GuiHostedController` is created wrapping the native controller
-3. `SetNativeController(hostedController)` replaces the global native controller
-4. `SetHostedApplication(hostedController->GetHostedApplication())` sets the hosted application global
-5. `RendererMainDirect2D` / `RendererMainGDI` is called with the hosted controller
-6. Inside the renderer main, `GuiHostedGraphicsResourceManager` wraps the native resource manager
-7. `hostedController->Initialize()` creates the single native window
-8. `GuiApplicationMain()` runs the application
-9. `hostedController->Finalize()` tears down
-
-For remote mode in `SetupRemoteNativeController`:
-1. `GuiRemoteController` wraps the protocol
-2. `GuiHostedController` wraps the `GuiRemoteController`
-3. Both remote and hosted resource managers are created in a chain
-4. The same initialize/run/finalize sequence applies
-
-## GuiHostedController Architecture
-
-`GuiHostedController` is the central class of hosted mode. It inherits from:
-- `Object` — the GacUI base class
-- `hosted_window_manager::WindowManager<GuiHostedWindow*>` — the window management algorithm
-- `INativeWindowListener` — to listen to events on the single real native window
-- `INativeControllerListener` — to receive global timer, clipboard, and shortcut events
-- `INativeController` — to replace the real native controller for the rest of GacUI
-- `INativeAsyncService` — to redirect async operations through the real native controller
-- `INativeScreenService` / `INativeScreen` — to provide a virtual single screen
-- `INativeWindowService` — to create, destroy, and manage virtual windows
-- `IGuiHostedApplication` — to expose the native window host
-
-### Service Delegation
-
-The controller delegates most services to the underlying native controller:
-- `ResourceService()` → `nativeController->ResourceService()`
-- `ClipboardService()` → `nativeController->ClipboardService()`
-- `ImageService()` → `nativeController->ImageService()`
-- `InputService()` → `nativeController->InputService()`
-- `DialogService()` → returns `nullptr` (replaced by `FakeDialogServiceBase`)
-
-Services it implements itself:
-- `CallbackService()` → local `SharedCallbackService` instance
-- `AsyncService()` → itself (delegates internally to native async service, translates window references)
-- `ScreenService()` → itself (provides a single virtual screen)
-- `WindowService()` → itself (manages virtual hosted windows)
-
-### Virtual Screen
-
-`GuiHostedController` acts as both `INativeScreenService` and `INativeScreen`:
-- `GetScreenCount()` returns 1
-- `GetScreen()` returns itself
-- Screen bounds are derived from the native window's client size
-- DPI scaling is forwarded from the real screen
-
-### Native Window Lifecycle
-
-`Initialize()` creates one real native OS window via `nativeController->WindowService()->CreateNativeWindow()` and installs itself as `INativeWindowListener` on it.
-
-`Finalize()` destroys the native window and uninstalls listeners.
-
-### Window Frame Configuration
-
-`GuiHostedController` provides two frame configs:
-- `GetMainWindowFrameConfig()` — delegates to the native controller (the main window gets the real OS frame)
-- `GetNonMainWindowFrameConfig()` — returns a static config with `MaximizedBoxOption = AlwaysFalse`, `MinimizedBoxOption = AlwaysFalse`, `CustomFrameEnabled = AlwaysTrue` (non-main windows are always custom-frame rendered)
-
-## Window Manager Template
-
-### WindowManager<T> (GuiHostedWindowManager.h)
-
-The core window management algorithm is template class `hosted_window_manager::WindowManager<T>` parameterized by window ID type. It maintains:
-- `registeredWindows` — dictionary of all registered windows
-- `ordinaryWindowsInOrder` — z-ordered list of normal windows (front to back)
-- `topMostedWindowsInOrder` — z-ordered list of top-most windows (front to back)
-- `mainWindow` — the root window
-- `activeWindow` — currently focused window
-- `needRefresh` — dirty flag for rendering
-
-Pure virtual callbacks used by `GuiHostedController`:
-- `OnOpened` / `OnClosed` — fire `Opened` / `Closed` events on hosted window listeners
-- `OnEnabled` / `OnDisabled` — fire `Enabled` / `Disabled` events
-- `OnGotFocus` / `OnLostFocus` — fire `GotFocus` / `LostFocus` events
-- `OnActivated` / `OnDeactivated` — fire `Activated` / `Deactivated` events
-
-### Window<T>
-
-Each `Window<T>` holds:
-- `parent` — parent window pointer forming a tree structure
-- `children` — child windows list
-- `bounds` — position and size in the parent's client coordinate space
-- `topMost`, `visible`, `enabled`, `active`, `renderedAsActive` — state flags
-
-Key operations:
-- `SetParent(value)` — reparents the window; null parent defaults to main window; updates z-order via `FixWindowInOrder`
-- `SetVisible(bool)` — shows or hides; triggers `FixWindowInOrder` and `OnOpened`/`OnClosed` callbacks
-- `SetTopMost(bool)` — toggles top-most status; moves window between ordinary and top-most z-order lists
-- `SetEnabled(bool)` — enables or disables; triggers callbacks
-- `BringToFront()` — moves window and its visible subtree to the front of z-order within its priority level
-- `Activate()` — sets focus; finds common parent with previously active window; updates `renderedAsActive` chain; calls `BringToFront`
-- `Deactivate()` — walks up parent chain to find next enabled window to activate
-- `Show()` — shorthand for `SetVisible(true)` + `Activate()`
-
-### Z-Ordering
-
-Two separate lists (`ordinaryWindowsInOrder` and `topMostedWindowsInOrder`) track window order. `IsEventuallyTopMost()` checks if a window or any ancestor is top-most and visible. `FixWindowInOrder` ensures windows are placed in the correct list based on their top-most status. `EnsureChildrenMovedInFrontOf` maintains the invariant that children appear before (in front of) their parent in the z-order list.
-
-### HitTest
-
-`WindowManager::HitTest(position)` iterates `topMostedWindowsInOrder` then `ordinaryWindowsInOrder`, returning the first visible window whose bounds contain the position — giving top-most windows priority.
-
-### Start and Stop
-
-`WindowManager::Start(mainWindow)` makes orphan windows children of the main window. `WindowManager::Stop()` clears all state and fires deactivation/close events.
-
-## GuiHostedWindow — Virtual INativeWindow
-
-`GuiHostedWindow` implements `INativeWindow` and inherits from `GuiHostedWindowData`, which holds all window properties (title, icon, cursor, size state, border options, etc.). Each `GuiHostedWindow` contains a `hosted_window_manager::Window<GuiHostedWindow*> wmWindow` embedded in its data.
-
-### Proxy Pattern
-
-`GuiHostedWindow` delegates behavior to an `IGuiHostedWindowProxy`. There are three proxy types:
-1. **PlaceholderProxy** (`GuiHostedWindowProxy_Placeholder.cpp`) — initial no-op proxy for newly created windows before role assignment
-2. **MainProxy** (`GuiHostedWindowProxy_Main.cpp`, `GuiMainHostedWindowProxy`) — for the main window; delegates title, icon, size, border properties, maximized/minimized/show/hide to the real native window
-3. **NonMainProxy** (`GuiHostedWindowProxy_NonMain.cpp`, `GuiNonMainHostedWindowProxy`) — for all other windows; operates purely through the window manager; disallows maximized/minimized boxes; enforces custom frame mode when system borders are used
-
-`BecomeMainWindow()` and `BecomeNonMainWindow()` switch the proxy. This happens in `SettingHostedWindowsBeforeRunning()` when the main window is known, and in `CreateNativeWindow()` for windows created after the main window.
-
-### Coordinate System
-
-- `GetRenderingOffset()` returns the window's top-left position in the native window's client space as `NativeSize`
-- `GetBounds()` returns `wmWindow.bounds` directly (position is in parent's client space)
-- `GetClientSize()` equals `GetBounds().GetSize()` (no frame for hosted windows)
-- `GetClientBoundsInScreen()` equals `GetBounds()` (screen = client area of native window)
-- DPI conversion functions delegate to the real native window
-
-### Capture and Cursor
-
-- `RequireCapture()` sets `controller->capturingWindow` and calls `nativeWindow->RequireCapture()`
-- `ReleaseCapture()` clears `controller->capturingWindow` and calls `nativeWindow->ReleaseCapture()`
-- `SetWindowCursor()` only updates the real native window cursor if this is the currently hovering window
-- `SetCaretPoint()` adjusts by `GetRenderingOffset()` and sets on the real native window if this is the active window
-
-## Window Creation and Destruction
-
-### CreateNativeWindow(windowMode)
-
-1. Creates a `GuiHostedWindow` with placeholder proxy
-2. Adds to `createdWindows` sorted list
-3. Registers with `wmManager`
-4. Fires `InvokeNativeWindowCreated` callback
-5. If main window already exists, calls `BecomeNonMainWindow()`
-
-### DestroyNativeWindow(window)
-
-1. Clears references (`enteringWindow`, `hoveringWindow`, `capturingWindow`, and WM-tracking pointers)
-2. Fires `Destroying` on listeners
-3. Fires `InvokeNativeWindowDestroying` callback
-4. Unregisters from `wmManager` (which reparents children)
-5. Removes from `createdWindows`
-
-### Run(window)
-
-1. Sets `mainWindow`
-2. Calls `SettingHostedWindowsBeforeRunning()` which:
-   - Switches all windows to their proper proxies (main/non-main)
-   - Centers native window on screen
-   - Calls `wmManager->Start(&mainWindow->wmWindow)`
-3. Delegates to `nativeController->WindowService()->Run(nativeWindow)` for the message loop
-4. Handles exceptions in unit test mode
-5. Calls `DestroyHostedWindowsAfterRunning()` to tear down all hosted windows
-
-## Input Event Dispatching
-
-### Mouse Events
-
-`GuiHostedController` listens to mouse events on the single native window. Mouse dispatching uses a template-based system:
-
-`HandleMouseCallback<PreAction, GetSelectedWindow, PostAction, Callback>` is the core template:
-1. Calls `PreAction` (may trigger window manager operations)
-2. If not in a window-manager operation (`wmWindow == nullptr`), calls `GetSelectedWindow` to find the target
-3. Adjusts mouse coordinates by subtracting the target window's `wmWindow.bounds` top-left
-4. Dispatches to the target window's listeners
-5. Calls `PostAction`
-
-Three `GetSelectedWindow` strategies:
-- `GetSelectedWindow_MouseDown` — closes popup windows not in the hovering chain, returns `capturingWindow` or `hoveringWindow`
-- `GetSelectedWindow_MouseMoving` — updates `hoveringWindow` via `UpdateHoveringWindow` and `enteringWindow` via `UpdateEnteringWindow`
-- `GetSelectedWindow_Other` — returns `capturingWindow` or `hoveringWindow`
-
-Individual mouse event methods (`LeftButtonDown`, `MouseMoving`, etc.) are wired to the right combination of PreAction/GetSelectedWindow/PostAction via `IMPLEMENT_MOUSE_CALLBACK` macros.
-
-### Window Manager Dragging and Resizing
-
-`PreAction_LeftButtonDown` checks non-main enabled windows for hit test results (Title, BorderLeft, BorderRight, etc.). If a border/title hit is detected:
-- Sets `wmOperation` to the appropriate `WindowManagerOperation` enum value
-- Stores `wmWindow` pointer and `wmRelative` offset
-- Captures the native window
-
-`PreAction_MouseMoving` handles ongoing drag/resize when `wmWindow` is set: recalculates bounds based on mouse position and operation type, calls `Moving` and `Moved` listeners.
-
-`PostAction_LeftButtonUp` checks for `ButtonClose` hit test to close windows, and ends window manager operations.
-
-### Mouse Hovering and Entering
-
-- `UpdateHoveringWindow(location)` stores mouse position and calls `HitTestInClientSpace` to find the window under cursor
-- `UpdateEnteringWindow(window)` fires `MouseLeaved` on the old entering window and `MouseEntered` on the new one
-- `MouseLeaved` on the native window calls `UpdateEnteringWindow(nullptr)`
-
-### Mouse-Down Activation
-
-`PreAction_MouseDown` activates the hovering window when a mouse button is pressed (if the window is enabled and activation-enabled).
-
-### Popup Closure on Click
-
-`GetSelectedWindow_MouseDown` implements the pattern of closing popup windows (non-`Normal` mode windows) that are not ancestors of the clicked window.
-
-### Keyboard Events
-
-`HandleKeyboardCallback` dispatches keyboard events (`KeyDown`, `KeyUp`, `Char`) to the active window's listeners.
-
-## Rendering Pipeline
-
-### Hosted Rendering in GlobalTimer
-
-`GuiHostedController::GlobalTimer()` drives the rendering cycle. On each global timer tick:
-1. Skip if the native window is not visible or already in hosted rendering
-2. Check all visible windows' listeners for `NeedRefresh()` — if any returns true, set `needRefresh`
-3. If no refresh is needed and nothing was updated last frame, skip rendering
-4. Enter rendering loop:
-   - Call `renderTarget->StartHostedRendering()` on the native resource manager's render target
-   - Iterate ordinary windows (back to front, reversed list order) then top-most windows
-   - For each window, call each listener's `ForceRefresh(false, updated, failureByResized, failureByLostDevice)`
-   - Call `renderTarget->StopHostedRendering()`
-   - Handle failures: `LostDevice` → `RecreateRenderTarget`; `ResizeWhileRendering` → `ResizeRenderTarget`
-   - On success, call `nativeWindow->RedrawContent()` and break
-
-### Hosted Rendering Protocol (GuiGraphicsRenderTarget)
-
-`GuiGraphicsRenderTarget` (base class for D2D/GDI render targets) supports hosted rendering:
-- `StartHostedRendering()` sets `hostedRendering = true` and calls `StartRenderingOnNativeWindow()` once
-- During hosted rendering, individual `StartRendering()` / `StopRendering()` pairs do NOT call `StartRenderingOnNativeWindow()` / `StopRenderingOnNativeWindow()` — they just toggle the `rendering` flag
-- `StopHostedRendering()` calls `StopRenderingOnNativeWindow()` once
-- This means all hosted windows render within a single begin/end rendering session on the native render target
-
-### Per-Window Rendering Offset (GuiGraphicsHost)
-
-`GuiGraphicsHost::Render()` (called from `ForceRefresh`) applies the rendering offset:
-1. `hostRecord.renderTarget->StartRendering()`
-2. `auto nativeOffset = hostRecord.nativeWindow->GetRenderingOffset()` — for hosted windows this returns the window position
-3. `auto localOffset = hostRecord.nativeWindow->Convert(nativeOffset)` — converts to logical pixels
-4. `windowComposition->Render(localOffset)` — renders the composition tree at the offset
-5. `hostRecord.renderTarget->StopRendering()`
-
-The rendering offset mechanism is the key: in non-hosted mode, `GetRenderingOffset()` returns `(0,0)` because each window has its own render target. In hosted mode, it returns the window's position in the shared native window coordinate space, so all window content is rendered at the correct position within the single render target.
-
-### GuiHostedGraphicsResourceManager
-
-`GuiHostedGraphicsResourceManager` wraps the native resource manager:
-- `GetRenderTarget(window)` always returns the native render target for the single native window, regardless of which hosted window asks
-- `RecreateRenderTarget(window)` and `ResizeRenderTarget(window)` are no-ops (managed by the global timer loop)
-- All other methods (element registration, renderer factories, layout provider) delegate to the native manager
-
-## Native Window Event Forwarding
-
-`GuiHostedController` as `INativeWindowListener` on the single real native window forwards events to hosted windows:
-- `HitTest(location)` — if main window is enabled and cursor is on it, performs hit test via main window's listeners
-- `Moving(bounds)` — adjusts bounds to main window's coordinate space and forwards to main window's listeners
-- `Moved()` — syncs main window bounds to native window client size
-- `DpiChanged(preparing)` — recreates render target and broadcasts to all hosted windows
-- `GotFocus()` — reactivates last focused window (or main window)
-- `LostFocus()` — stores last focused window and deactivates all
-- `BeforeClosing(cancel)` / `AfterClosing()` — forwards to main window's listeners
-- `Opened()` — forwards to main window's listeners
-
-## Dialog Service
-
-`GuiHostedController::DialogService()` returns `nullptr`, causing GacUI to use `FakeDialogServiceBase` — GacUI-implemented dialogs rendered inside the hosted environment. This is critical because OS-native dialogs would create separate windows outside the hosted environment.
-
-`FakeDialogServiceBase` provides view models (`IMessageBoxDialogViewModel`, `IColorDialogViewModel`, `IFontDialogViewModel`, `IOpenFileDialogViewModel`, `ISaveFileDialogViewModel`) and creates corresponding GacUI windows that appear as hosted sub-windows.
-
-## Remote Mode Integration
-
-Remote mode (`SetupRemoteNativeController`) always uses hosted mode:
-- `GuiRemoteController` implements `INativeController` through protocol communication
-- `GuiHostedController` wraps `GuiRemoteController` just as it wraps Windows native controllers
-- `GuiRemoteGraphicsResourceManager` wraps `GuiRemoteController`, then `GuiHostedGraphicsResourceManager` wraps that
-- The single native window in remote mode is the `GuiRemoteWindow`, which sends rendering commands through the protocol rather than to a real screen
