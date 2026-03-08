@@ -8,449 +8,282 @@ You are going to research about the remote protocol mode. Remote protocol delega
 
 ## Overview
 
-Remote protocol mode allows a GacUI application to delegate rendering and OS-level services (window management, input, screen) to the renderer side through a command-based protocol. The GacUI application logic runs on the core side, but all visual output and user input are communicated through `IGuiRemoteProtocol`. Remote mode always runs on top of hosted mode (`GuiHostedController` wraps `GuiRemoteController`).
+Remote protocol mode separates GacUI into two sides: the **core side** runs all application logic and framework code, while the **renderer side** (client) handles actual rendering and OS services. They communicate through `IGuiRemoteProtocol`. The core side is always wrapped in hosted mode (`GuiHostedController` wraps `GuiRemoteController`).
 
-The implementation lives in `Source/PlatformProviders/Remote/` with these key files:
-- `GuiRemoteProtocol_Shared.h` — defines `IGuiRemoteProtocol`, `IGuiRemoteProtocolEvents`, `IGuiRemoteProtocolMessages`, `IGuiRemoteProtocolConfig`, `IGuiRemoteEventProcessor`, combinator base classes
-- `GuiRemoteProtocol.h` — umbrella include for all protocol layers
-- `GuiRemoteController.h/.cpp` — the core `GuiRemoteController` implementing `INativeController` via protocol
-- `GuiRemoteControllerSetup.cpp` — `SetupRemoteNativeController()` entry point
-- `GuiRemoteWindow.h/.cpp` — `GuiRemoteWindow` implementing `INativeWindow` via protocol messages
-- `GuiRemoteEvents.h/.cpp` — `GuiRemoteMessages` (request/response tracking) and `GuiRemoteEvents` (event dispatching)
-- `GuiRemoteGraphics.h/.cpp` — `GuiRemoteGraphicsRenderTarget` and `GuiRemoteGraphicsResourceManager`
-- `GuiRemoteGraphics_ImageService.h/.cpp` — `GuiRemoteGraphicsImageService` and `GuiRemoteGraphicsImage`
-- `GuiRemoteProtocol_Filter.h/.cpp` — `GuiRemoteProtocolFilter` for dropping repeated/consecutive messages and events
-- `GuiRemoteProtocol_FilterVerifier.h/.cpp` — `GuiRemoteProtocolFilterVerifier` for verifying filter correctness
-- `GuiRemoteProtocol_DomDiff.h/.cpp` — `GuiRemoteProtocolDomDiffConverter` for converting rendering commands to DOM diff
-- `GuiRemoteProtocol_Channel_Shared.h` — `IGuiRemoteProtocolChannel<T>` and channel transformer base
-- `GuiRemoteProtocol_Channel_Json.h/.cpp` — `GuiRemoteProtocolFromJsonChannel` / `GuiRemoteJsonChannelFromProtocol` for JSON-based protocol
-- `GuiRemoteProtocol_Channel_Async.h/.cpp` — `GuiRemoteProtocolAsyncChannelSerializer<T>` for running protocol IO on a separate thread
-- `GuiRemoteProtocolSchemaShared.h` — JSON serialization helpers, `ArrayMap`
-- `Protocol/` — protocol definition text files and generated schema code
+Implementation lives in `Source/PlatformProviders/Remote/`.
 
-## Protocol Definition
+## Why Remote Protocol Mode Exists
 
-Protocol messages, events, and data types are defined in `Protocol/*.txt` files:
-- `Protocols.txt` — lists all protocol files to include
-- `Protocol_Controller.txt` — controller lifecycle messages: `ControllerGetFontConfig`, `ControllerGetScreenConfig`, `ControllerConnectionEstablished`, `ControllerConnectionStopped`; and data types `FontConfig`, `ScreenConfig`, `ControllerGlobalConfig`
-- `Protocol_MainWindow.txt` — window management messages: `WindowGetBounds`, `WindowNotifySet*` (Title, Enabled, TopMost, ShowInTaskBar, CustomFrameMode, MaximizedBox, MinimizedBox, Border, SizeBox, IconVisible, TitleBar, Bounds, ClientSize), `WindowNotifyActivate`, `WindowNotifyShow`, `WindowNotifyMinSize`, `WindowNotifySetCaret`; and events `WindowBoundsUpdated`, `WindowActivatedUpdated`
-- `Protocol_IO.txt` — IO messages: `IOUpdateGlobalShortcutKey`, `IORequireCapture`, `IOReleaseCapture`, `IOIsKeyPressing`, `IOIsKeyToggled`; and IO events: `IOButtonDown`, `IOButtonDoubleClick`, `IOButtonUp`, `IOHWheel`, `IOVWheel`, `IOMouseMoving`, `IOMouseEntered`, `IOMouseLeaved`, `IOKeyDown`, `IOKeyUp`, `IOChar`, `IOGlobalShortcutKey`
-- `Protocol_Renderer.txt` — renderer messages: `RendererCreated`, `RendererDestroyed`, `RendererBeginRendering`, `RendererEndRendering`, `RendererBeginBoundary`, `RendererEndBoundary`, `RendererRenderElement`; plus DOM messages `RendererRenderDom`, `RendererRenderDomDiff`
-- `Protocol_SyncDom.txt` — defines `RenderingDom`, `RenderingDom_Diff`, `RenderingDom_DiffsInOrder`
+In native modes (Windows Direct2D, GDI), GacUI couples directly to OS window management, rendering APIs, and input handling. Remote protocol decouples all of this: the core side becomes platform-independent and only speaks a protocol. This enables:
+- Running GacUI applications in a web browser, terminal, or any custom renderer
+- Unit testing without a real window system
+- Reconnection — the core side can survive renderer disconnection and restore full visual state on reconnection
 
-The generated code is in `Protocol/Generated/GuiRemoteProtocolSchema.h` which produces:
-- `GACUI_REMOTEPROTOCOL_MESSAGES(HANDLER)` macro — lists all messages with `HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG)` format. `REQTAG` is `REQ`/`NOREQ`, `RESTAG` is `RES`/`NORES`, `DROPTAG` is `NODROP`/`DROPREP` (drop repeat)
-- `GACUI_REMOTEPROTOCOL_EVENTS(HANDLER)` macro — lists all events with `HANDLER(NAME, REQUEST, REQTAG, DROPTAG)` format. `DROPTAG` is `NODROP`/`DROPREP` (drop repeat)/`DROPCON` (drop consecutive)
+## Protocol Design: Messages vs Events
 
-Messages are **requests from the core side to the renderer side** (optionally with responses). Events are **notifications from the renderer side to the core side**.
+The protocol has a strict directional split:
+- **Messages** flow core → renderer (defined via `IGuiRemoteProtocolMessages`). They are requests, some expecting responses.
+- **Events** flow renderer → core (defined via `IGuiRemoteProtocolEvents`). They notify the core of user input, connection changes, and window changes.
+- **Responses** also flow renderer → core, but are tied to specific request IDs.
 
-## Core Protocol Interfaces
+This is defined in `Protocol/*.txt` files (e.g. `Protocol_Controller.txt`, `Protocol_Renderer.txt`) and code-generated into `GuiRemoteProtocolSchema.h`. The generated macros `GACUI_REMOTEPROTOCOL_MESSAGES` and `GACUI_REMOTEPROTOCOL_EVENTS` carry drop annotations (`[@DropRepeat]`, `[@DropConsecutive]`) that the filter layer uses for traffic optimization.
 
-### IGuiRemoteProtocolMessages
+## Request/Response Synchronization Pattern
 
-Generated via `GACUI_REMOTEPROTOCOL_MESSAGES`, has pure virtual methods for each message:
-- `RequestNAME()` or `RequestNAME(id)` or `RequestNAME(arguments)` or `RequestNAME(id, arguments)` — depending on whether the message has a request payload and/or expects a response (id is needed for matching responses)
+`GuiRemoteMessages` wraps `IGuiRemoteProtocol` with auto-incrementing request IDs. The fundamental pattern is:
+1. Queue one or more requests via `RequestNAME(...)` 
+2. Call `Submit()` — this is blocking: it flushes all queued messages and waits for all responses before returning
+3. Retrieve responses by ID via `RetrieveNAME(id)`
 
-### IGuiRemoteProtocolEvents
+This means the core side operates synchronously from its own perspective, despite the underlying protocol potentially being async. Batching multiple requests before a single `Submit()` is the primary way to reduce round-trips.
 
-Generated via `GACUI_REMOTEPROTOCOL_EVENTS` and `GACUI_REMOTEPROTOCOL_MESSAGES`, has:
-- `OnNAME()` or `OnNAME(arguments)` for each event
-- `RespondNAME(id, arguments)` for each message that has a response — this is how the renderer side delivers responses back
+`GuiRemoteEvents` receives responses and events from the renderer side. Responses are stored for later retrieval by `GuiRemoteMessages`. Events are dispatched to the appropriate handler (`GuiRemoteController`, `GuiRemoteWindow`, etc.).
 
-### IGuiRemoteProtocolConfig
+## GuiRemoteController: Virtual Native Controller
 
-- `GetExecutablePath()` — returns the executable path, used by `INativeController::GetExecutablePath()`
-
-### IGuiRemoteProtocol
-
-Combines `IGuiRemoteProtocolConfig` and `IGuiRemoteProtocolMessages`, plus:
-- `Initialize(IGuiRemoteProtocolEvents* events)` — gives the protocol the event callback interface
-- `Submit(bool& disconnected)` — flushes all queued messages and waits for responses; sets `disconnected` on failure
-- `GetRemoteEventProcessor()` — returns `IGuiRemoteEventProcessor` (or `nullptr`), whose `ProcessRemoteEvents()` is called to pump incoming events
-
-### IGuiRemoteEventProcessor
-
-- `ProcessRemoteEvents()` — processes any pending incoming events from the renderer side; called from `GuiRemoteController::RunOneCycle()`
-
-## GuiRemoteMessages and GuiRemoteEvents
-
-### GuiRemoteMessages
-
-Wraps `IGuiRemoteProtocol` with an auto-incrementing `id` counter for request/response matching:
-- For messages with response: `RequestNAME(...)` allocates an `id`, calls `remoteProtocol->RequestNAME(id, ...)`, returns the `id`
-- For messages without response: `RequestNAME(...)` calls `remoteProtocol->RequestNAME(...)`
-- `Submit(bool& disconnected)` calls `remoteProtocol->Submit(disconnected)`
-- `RespondNAME(id, arguments)` stores the response in a `Dictionary<vint, RESPONSE>`
-- `RetrieveNAME(id)` removes and returns the response
-
-The call pattern is: queue one or more requests → `Submit()` → retrieve responses by id. `Submit()` is a blocking synchronous call that flushes all queued messages and waits for all responses.
-
-### GuiRemoteEvents
-
-Implements `IGuiRemoteProtocolEvents`:
-- Response methods delegate to `GuiRemoteMessages::RespondNAME(id, arguments)`
-- Event methods dispatch to the appropriate handlers:
-  - `OnControllerConnect(globalConfig)` → calls `remoteMessages.RequestControllerConnectionEstablished()`, then `remote->OnControllerConnect(globalConfig)`, then `Submit()`
-  - `OnControllerDisconnect()` → `remote->OnControllerDisconnect()`
-  - `OnControllerRequestExit()` → `remote->OnControllerRequestExit()`
-  - `OnControllerForceExit()` → `remote->OnControllerForceExit()`
-  - `OnControllerScreenUpdated(screenConfig)` → `remote->OnControllerScreenUpdated(screenConfig)`
-  - `OnWindowBoundsUpdated(sizingConfig)` → `remote->remoteWindow.OnWindowBoundsUpdated(sizingConfig)`
-  - `OnWindowActivatedUpdated(activated)` → `remote->remoteWindow.OnWindowActivatedUpdated(activated)`
-  - `OnIOGlobalShortcutKey(id)` → `remote->callbackService.InvokeGlobalShortcutKeyActivated(id)`
-  - `OnIOButtonDown/DoubleClick/Up(info)` → dispatches to `remoteWindow.listeners` based on `info.button` (Left/Middle/Right)
-  - `OnIOHWheel/VWheel/MouseMoving/MouseEntered/MouseLeaved(info)` → dispatches to `remoteWindow.listeners`
-  - `OnIOKeyDown/KeyUp/Char(info)` → dispatches to `remoteWindow.listeners`
-- `ClearResponses()` is available to clear all pending responses
-
-## GuiRemoteController Architecture
-
-`GuiRemoteController` is the core class. It inherits from:
-- `Object`
-- `INativeController` — to serve as the native controller for the GacUI framework
-- `INativeResourceService` (protected) — font and cursor services
-- `INativeInputService` (protected) — timer, key state, global shortcut keys
-- `INativeScreenService` / `INativeScreen` (protected) — virtual single screen
-- `INativeWindowService` (protected) — single-window creation and run loop
-
-Key members:
-- `IGuiRemoteProtocol* remoteProtocol` — the underlying protocol implementation
-- `GuiRemoteMessages remoteMessages` — request/response tracking wrapper
-- `GuiRemoteEvents remoteEvents` — event dispatcher (implements `IGuiRemoteProtocolEvents`)
-- `GuiRemoteWindow remoteWindow` — the single virtual native window
-- `GuiRemoteGraphicsResourceManager* resourceManager` — set after construction
-- `SharedCallbackService callbackService` — framework callback service (timer, window lifecycle, shortcut)
-- `SharedAsyncService asyncService` — async task execution service
-- `GuiRemoteGraphicsImageService imageService` — remote image service
-- `bool applicationRunning` — true during `Run()` message loop
-- `bool connectionForcedToStop` — set by `OnControllerForceExit()`
-- `bool connectionStopped` — set by `DestroyNativeWindow()`, ends the run loop
-- `ControllerGlobalConfig remoteGlobalConfig` — received from `OnControllerConnect`, contains `documentCaretFromEncoding`
-- `FontConfig remoteFontConfig` — fetched from `ControllerGetFontConfig` during connect
-- `ScreenConfig remoteScreenConfig` — fetched from `ControllerGetScreenConfig` during connect
-
-### Service Delegation
-
-`GuiRemoteController` implements `INativeController` with service dispatch:
-- `CallbackService()` → core side `SharedCallbackService`
-- `ResourceService()` → itself (implements `INativeResourceService`)
-- `AsyncService()` → core side `SharedAsyncService`
-- `ClipboardService()` → `nullptr` (use `FakeClipboardService`)
-- `ImageService()` → core side `GuiRemoteGraphicsImageService`
-- `InputService()` → itself (implements `INativeInputService`)
-- `DialogService()` → `nullptr` (use `FakeDialogServiceBase`)
-- `ScreenService()` → itself (implements `INativeScreenService`)
-- `WindowService()` → itself (implements `INativeWindowService`)
-
-Unlike hosted mode with a real native controller underneath, everything in remote mode is virtual. Services that return `nullptr` cause GacUI to fall back to built-in fake implementations (`FakeDialogServiceBase`, `FakeClipboardService`).
-
-### INativeResourceService Implementation
-
-- `GetSystemCursor(type)` — creates and caches `GuiRemoteCursor` objects (core side stubs, only `SystemCursorType` stored)
-- `GetDefaultFont()` / `SetDefaultFont()` — reads/writes `remoteFontConfig.defaultFont`
-- `EnumerateFonts(fonts)` — copies from `remoteFontConfig.supportedFonts`
-
-### INativeInputService Implementation
-
-- `StartTimer()` / `StopTimer()` / `IsTimerEnabled()` — toggles core side `timerEnabled` flag
-- `IsKeyPressing(code)` / `IsKeyToggled(code)` — synchronous request/submit/retrieve pattern via `remoteMessages.RequestIOIsKeyPressing` / `RequestIOIsKeyToggled` with immediate `Submit()`
-- Key name mapping: lazy-initialized `keyNames` / `keyCodes` dictionaries from `GUI_DEFINE_KEYBOARD_WINDOWS_NAME` macro
-- `RegisterGlobalShortcutKey(ctrl, shift, alt, key)` — adds to core side `hotKeySet` / `hotKeyIds`, sends `RequestIOUpdateGlobalShortcutKey`, submits
-- `UnregisterGlobalShortcutKey(id)` — removes from core side tracking, sends update, submits
-
-### INativeScreenService / INativeScreen Implementation
-
-- `GetScreenCount()` returns 1
-- `GetScreen()` returns itself
-- `GetBounds()` / `GetClientBounds()` return `remoteScreenConfig.bounds` / `.clientBounds`
-- `GetScalingX()` / `GetScalingY()` return `remoteScreenConfig.scalingX` / `.scalingY`
-
-### INativeWindowService Implementation
-
-- `GetMainWindowFrameConfig()` / `GetNonMainWindowFrameConfig()` — both return `NativeWindowFrameConfig::Default` (since hosted mode handles frame configs)
-- `CreateNativeWindow(windowMode)` — can only be called once (CHECK_ERROR). Sets `windowCreated`, assigns `windowMode` to `remoteWindow`, fires `InvokeNativeWindowCreated`, returns `&remoteWindow`
-- `DestroyNativeWindow(window)` — can only be called once (CHECK_ERROR). Fires `Closed`, `Destroying`, `InvokeNativeWindowDestroying`, `Destroyed` on listeners. Sets `connectionStopped = true`
-- `GetMainWindow()` — returns `&remoteWindow` if created and not destroyed
-- `Run(window)` — sets `applicationRunning = true`, calls `window->Show()`, loops on `RunOneCycle()`, executes remaining async tasks, sets `applicationRunning = false`
-- `RunOneCycle()` — if not `connectionStopped`: calls `processor->ProcessRemoteEvents()` if available, calls `remoteMessages.Submit()`, if `timerEnabled` and not disconnected calls `callbackService.InvokeGlobalTimer()`, executes async tasks. Returns `!connectionStopped`
+`GuiRemoteController` implements `INativeController` and all its sub-services (resource, input, screen, window) as virtual stubs that communicate via protocol. The key design decisions:
+- **Single window only**: `CreateNativeWindow` can only be called once (enforced by `CHECK_ERROR`). Hosted mode handles sub-windows.
+- **Services returning `nullptr`** (clipboard, dialog) cause GacUI to fall back to built-in fakes — this is intentional, not a limitation.
+- **Key state queries** (`IsKeyPressing`, `IsKeyToggled`) are synchronous request-submit-retrieve round-trips — expensive but rarely called.
+- **Global shortcut keys** are tracked core-side and batch-sent to the renderer on update.
 
 ## Connection Lifecycle
 
-### Entry Point: SetupRemoteNativeController (GuiRemoteControllerSetup.cpp)
+### Startup (SetupRemoteNativeController)
 
-```
-int SetupRemoteNativeController(IGuiRemoteProtocol* protocol)
-```
+The entry point creates a layered stack on the call stack:
+1. `GuiRemoteController` (implements `INativeController`)
+2. `GuiHostedController` (wraps it for hosted mode sub-window support)
+3. `GuiRemoteGraphicsResourceManager` (implements `GuiGraphicsResourceManager` + `IGuiGraphicsLayoutProvider`)
+4. `GuiHostedGraphicsResourceManager` (wraps for hosted mode rendering)
 
-1. Creates `GuiRemoteController remoteController(protocol)` on stack
-2. Creates `GuiHostedController hostedController(&remoteController)` wrapping it
-3. Creates `GuiRemoteGraphicsResourceManager remoteResourceManager(&remoteController, &hostedController)` — remote render target
-4. Creates `GuiHostedGraphicsResourceManager hostedResourceManager(&hostedController, &remoteResourceManager)` — hosted graphics wrapper
-5. Sets globals: `SetNativeController(&hostedController)`, `SetGuiGraphicsResourceManager(&hostedResourceManager)`, `SetHostedApplication(hostedController.GetHostedApplication())`
-6. Initialization sequence: `remoteController.Initialize()` → `remoteResourceManager.Initialize()` → `hostedController.Initialize()`
-7. Runs `GuiApplicationMain()`
-8. Finalization sequence: `hostedController.Finalize()` → `remoteResourceManager.Finalize()` → `remoteController.Finalize()`
-9. Clears globals and returns 0
+Initialize order: remote → resource manager → hosted. Finalize order: reverse. Then `GuiApplicationMain()` runs.
 
-### Initialize
+### Connection Establishing
 
-`GuiRemoteController::Initialize()`:
-- Calls `remoteProtocol->Initialize(&remoteEvents)` — gives the protocol the event handler
-- Calls `imageService.Initialize()`
+Triggered by the renderer side firing `OnControllerConnect(ControllerGlobalConfig)`. The core side:
+1. Acknowledges via `RequestControllerConnectionEstablished()`
+2. Fetches `FontConfig` and `ScreenConfig` in one batched submit
+3. Propagates to `remoteWindow`, `imageService`, `resourceManager` — each restores its state
 
-### Connection Establishing (OnControllerConnect)
+`GuiRemoteWindow::OnControllerConnect()` re-sends all current window styles if `applicationRunning` is true, enabling seamless reconnection.
 
-The renderer side fires `OnControllerConnect(ControllerGlobalConfig)` event. `GuiRemoteEvents::OnControllerConnect()`:
-1. Sends `RequestControllerConnectionEstablished()` notification to the renderer side
-2. Calls `remote->OnControllerConnect(globalConfig)`
+### Disconnection and Exit
 
-`GuiRemoteController::OnControllerConnect(globalConfig)`:
-1. Stores `remoteGlobalConfig = globalConfig` (contains `documentCaretFromEncoding`)
-2. Calls `UpdateGlobalShortcutKey()` to resend hotkey registrations
-3. Requests `ControllerGetFontConfig` and `ControllerGetScreenConfig` in the same batch
-4. Calls `Submit()` to flush and receive responses
-5. Stores `remoteFontConfig` and `remoteScreenConfig` from responses
-6. Calls `remoteWindow.OnControllerConnect()`, `imageService.OnControllerConnect()`, `resourceManager->OnControllerConnect()`
-7. Calls `callbackService.InvokeEnvironmentChanged()`
-
-`GuiRemoteWindow::OnControllerConnect()`:
-- Clears `controllerDisconnected` flag
-- Sets `sizingConfigInvalidated = true`
-- Sends `RequestWindowNotifySetBounds`, then `RequestGetBounds()` (synchronous submit + retrieve)
-- Fires `DpiChanged(true)` / `DpiChanged(false)` on listeners (workaround for `GuiWindow::UpdateCustomFramePadding`)
-- If `applicationRunning`: re-sends all window style properties (title, enabled, topMost, border options, etc.) and capture state
-
-### Disconnection (OnControllerDisconnect)
-
-The renderer side fires `OnControllerDisconnect()`. This calls:
-- `remoteWindow.OnControllerDisconnect()` — sets `controllerDisconnected = true`
-- `imageService.OnControllerDisconnect()`
-- `resourceManager->OnControllerDisconnect()`
-
-### Graceful Exit (OnControllerRequestExit)
-
-The renderer side fires `OnControllerRequestExit()`. This calls `remoteWindow.Hide(true)`, which:
-1. Fires `BeforeClosing(cancel)` on listeners — if any cancels, returns without closing
-2. Fires `AfterClosing()` on listeners
-3. Schedules `DestroyNativeWindow` via `AsyncService()->InvokeInMainThread()`
-
-### Forced Exit (OnControllerForceExit)
-
-The renderer side fires `OnControllerForceExit()`. Sets `connectionForcedToStop = true`, then calls `remoteWindow.Hide(true)`. The `connectionForcedToStop` flag bypasses the `BeforeClosing` listener check in `Hide()`.
-
-### Finalize
-
-`GuiRemoteController::Finalize()`:
-- Calls `imageService.Finalize()`
-- Sends `RequestControllerConnectionStopped()` message to the renderer side
-- Calls `Submit()` to flush
+- **Disconnect**: Renderer fires `OnControllerDisconnect()`. Each subsystem marks itself disconnected.
+- **Graceful exit**: Renderer fires `OnControllerRequestExit()` → `remoteWindow.Hide(true)` → `BeforeClosing`/`AfterClosing` listener chain → scheduled `DestroyNativeWindow`.
+- **Forced exit**: `connectionForcedToStop` bypasses the `BeforeClosing` cancellation check.
 
 ### Run Loop
 
-`GuiRemoteController::Run(window)`:
-1. Sets `applicationRunning = true`
-2. Calls `window->Show()` — triggers `ShowWithSizeState()` which sends `WindowNotifyShow` and fires `Opened()` and `SetActivated()` on the window
-3. Loops on `RunOneCycle()` until `connectionStopped`
-4. Executes remaining async tasks
-5. Sets `applicationRunning = false`
+`RunOneCycle()` drives the core side:
+1. Process incoming events via `IGuiRemoteEventProcessor::ProcessRemoteEvents()`
+2. `Submit()` flushes queued messages
+3. If timer enabled: `InvokeGlobalTimer()` — this triggers hosted controller rendering
+4. Execute async tasks
 
-`RunOneCycle()`:
-1. If `connectionStopped`, returns false
-2. If `remoteProtocol->GetRemoteEventProcessor()` exists, calls `processor->ProcessRemoteEvents()`
-3. Calls `remoteMessages.Submit(disconnected)` — flushes all queued messages
-4. If `timerEnabled` and not disconnected, calls `callbackService.InvokeGlobalTimer()` — this triggers hosted controller's global timer which drives rendering
-5. Calls `asyncService.ExecuteAsyncTasks()`
-6. Returns `!connectionStopped`
+The timer-driven rendering is crucial: `InvokeGlobalTimer()` is what causes `GuiHostedController` to decide whether to render, which calls into `GuiRemoteGraphicsRenderTarget`.
 
 ## GuiRemoteWindow
 
-`GuiRemoteWindow` implements `INativeWindow` for the single remote window. The `GuiHostedController` wrapping `GuiRemoteController` sees `GuiRemoteWindow` as a native window.
+Implements `INativeWindow` for one virtual window. Key design points:
+- `IsActivelyRefreshing()` returns `true` — forces hosted mode to render every cycle
+- Bounds and sizing use `remoteWindowSizingConfig` from the renderer side; the `sizingConfigInvalidated` flag triggers synchronous re-fetch when bounds are read
+- Style changes use `SET_REMOTE_WINDOW_STYLE` / `SET_REMOTE_WINDOW_STYLE_INVALIDATE` macros — they check for value change before sending, and the `_INVALIDATE` variant marks sizing as stale
+- `RedrawContent()` is a no-op because rendering is timer-driven, not on-demand
+- Reconnection re-sends all window state, making the renderer side experience a fresh window setup
 
-Key characteristics:
-- `IsActivelyRefreshing()` returns `true` — tells hosted mode to always render
-- `GetRenderingOffset()` returns `{0,0}` — rendering offset is handled by hosted mode
-- Coordinate conversion uses `scalingX`/`scalingY` received from the renderer side screen config
-- `GetBounds()` and `GetClientSize()` use `remoteWindowSizingConfig` (received from the renderer side), and if `sizingConfigInvalidated` is true, triggers synchronous `RequestGetBounds()`
-- `SetBounds()` / `SetClientSize()` update core side config and send `WindowNotifySetBounds` / `WindowNotifySetClientSize`, setting `sizingConfigInvalidated = true`
-- Style changes (title, border, enabled, etc.) use `SET_REMOTE_WINDOW_STYLE` / `SET_REMOTE_WINDOW_STYLE_INVALIDATE` macros that check for value change and send the corresponding `WindowNotifySet*` message. The `_INVALIDATE` variant also sets `sizingConfigInvalidated = true` for style changes that affect window bounds.
-- `SetParent()`, `EnableActivate()`, `DisableActivate()` → `CHECK_FAIL` — not supposed to be called, since hosted controller manages these
-- `Show()` / `ShowMaximized()` / `ShowMinimized()` / `ShowRestored()` / `ShowDeactivated()` → call `ShowWithSizeState()` which sends `WindowNotifyShow` with activate flag and size state, then fires `Opened()` and `SetActivated()` on the core side
-- `Hide(true)` — unless `connectionForcedToStop`, iterates `BeforeClosing(cancel)` / `AfterClosing()` on listeners, then schedules `DestroyNativeWindow` via async main thread invocation
-- `RequireCapture()` / `ReleaseCapture()` — toggle `statusCapturing`, send `IORequireCapture` / `IOReleaseCapture` with immediate `Submit()`
-- `SetCaretPoint(point)` — stores on the core side and sends `WindowNotifySetCaret`
-- `RedrawContent()` — no-op (rendering is driven by hosted controller's global timer)
+## Rendering Pipeline
 
-### Reconnection Support
+This is the most complex part of remote protocol. The rendering system bridges the gap between GacUI's composition-tree rendering model and the remote protocol's message-based communication.
 
-`GuiRemoteWindow::OnControllerConnect()` resends all current window state to the renderer side if `applicationRunning` is true. This enables reconnection scenarios where the renderer side reconnects and the core side restores its visual state.
+### Why Rendering Is Complex
 
-## GuiRemoteGraphicsResourceManager
+In native mode, rendering is immediate: traverse the composition tree, call graphics APIs. In remote mode, each element exists as an ID on both sides. The core side must:
+- Track which elements changed since the last frame
+- Batch element updates efficiently
+- Send rendering commands that the renderer can replay
+- Receive measurement feedback (font heights, min sizes, image metadata, inline object bounds) and feed it back into layout
 
-`GuiRemoteGraphicsResourceManager` inherits from `GuiGraphicsResourceManager` and `IGuiGraphicsLayoutProvider`. Key members:
-- `GuiRemoteController* remote`
-- `GuiRemoteGraphicsRenderTarget renderTarget` — the remote render target
-- `GuiHostedController* hostedController` — for refresh requests
+### Element Lifecycle
 
-Service methods:
-- `GetRenderTarget(window)` — returns `&renderTarget` (single render target)
-- `RecreateRenderTarget(window)` / `ResizeRenderTarget(window)` — no-ops (managed by hosted controller)
-- `GetLayoutProvider()` — returns itself
-- `CreateRawElement()` — creates a `GuiRemoteGraphicsElement`
+Every visual element has a core-side renderer implementing `IGuiRemoteProtocolElementRender`. The lifecycle:
+1. **Creation**: When a renderer's render target is set (`RenderTargetChangedInternal`), it allocates an ID via `AllocateNewElementId()` and registers with `GuiRemoteGraphicsRenderTarget`. The ID is added to `createdRenderers`.
+2. **Notification to renderer side**: `EnsureRequestedRenderersCreated()` (called at the start of each frame) batches pending creates and destroys into `RequestRendererCreated` / `RequestRendererDestroyed` messages.
+3. **Destruction**: `FinalizeInternal()` calls `UnregisterRenderer()`, which moves the ID to `destroyedRenderers`.
 
-The `GuiHostedGraphicsResourceManager` in the chain wraps this, providing the same single render target for all hosted windows.
+The renderer side (`GuiRemoteRendererSingle`) receives `RequestRendererCreated` and creates matching native elements (e.g., `GuiSolidLabelElement`, `GuiSolidBorderElement`) keyed by ID.
 
-## GuiRemoteGraphicsRenderTarget
+### Frame Rendering Flow
 
-Inherits from `GuiGraphicsRenderTarget`. Manages remote rendering state:
-- `canvasSize` — current canvas size from `remoteWindow.GetClientSize()`
-- `usedFrameIds` / `usedElementIds` / `usedCompositionIds` — auto-incrementing ID counters
-- `renderers` — map of element ID to `IGuiRemoteProtocolElementRender*`
-- `createdRenderers` / `destroyedRenderers` — pending create/destroy batches
-- `renderersAskingForCache` — renderers needing min size from the renderer side
-- `needFullElementUpdateOnNextFrame` — set on reconnect
-- `fontHeights` — cached font height measurements from the renderer side
-- `hitTestResults` / `cursors` — stacks for tracking rendering boundaries
+A single rendering frame follows this sequence:
 
-`StartRenderingOnNativeWindow()`:
-1. Gets canvas size from remote window
-2. Increments `usedFrameIds`, builds `ElementBeginRendering` with updated elements
-3. If `needFullElementUpdateOnNextFrame` (reconnect mode), collects all elements' updates
-4. Otherwise collects only changed elements
-5. Sends `RequestRendererBeginRendering`
+**`StartRenderingOnNativeWindow()`**:
+1. Capture current canvas size from `remoteWindow.GetClientSize()`
+2. Increment `renderingBatchId` (used to track which elements rendered this frame)
+3. `EnsureRequestedRenderersCreated()` — flush element create/destroy batches
+4. Build `ElementBeginRendering` with all updated element descriptions:
+   - **Normal mode**: iterate all renderers, collect only those where `IsUpdated()` is true
+   - **Reconnect mode** (`needFullElementUpdateOnNextFrame`): collect ALL renderers with `fullContent=true`
+5. Each renderer's `SendUpdateElementMessages()` serializes its current state into the update list
+6. For renderers needing min size from cache (`NeedUpdateMinSizeFromCache()`), add to `renderersAskingForCache`
+7. Send `RequestRendererBeginRendering` with the frame ID and all updates
 
-`StopRenderingOnNativeWindow()`:
-1. Sends `RequestRendererEndRendering`, submits, retrieves `ElementMeasurings` response
-2. Processes `fontHeights`, `minSizes`, `createdImages`, `inlineObjectBounds` from response
-3. If min sizes changed, calls `hostedController->RequestRefresh()`
-4. Returns `ResizeWhileRendering` if canvas size changed during rendering, otherwise `None`
+**During rendering** (composition tree traversal):
+- Each element's `Render(bounds)` sends `RequestRendererRenderElement` with the element ID, bounds, and clipped area
+- Clipper push/pop sends `RequestRendererBeginBoundary` / `RequestRendererEndBoundary` with hit test results and cursor types per composition
 
-Clipper push/pop methods (`AfterPushedClipper`, `AfterPoppedClipper`) send `RequestRendererBeginBoundary` / `RequestRendererEndBoundary` messages tracking hit test results and cursor types per composition boundary.
+**`StopRenderingOnNativeWindow()`**:
+1. Send `RequestRendererEndRendering`, `Submit()`, retrieve `ElementMeasurings` response
+2. Process four categories of feedback (see Measurement Feedback Loop below)
+3. If any min sizes changed, call `hostedController->RequestRefresh()` to trigger another frame
+4. Return `ResizeWhileRendering` if canvas size changed during rendering
 
-`OnControllerConnect()` — on reconnect, re-registers all existing renderers and paragraphs via `RequestRendererCreated`, sets `needFullElementUpdateOnNextFrame = true`, marks all paragraphs dirty.
+### Element Update Mechanism
+
+Each element renderer tracks its own dirty state:
+- `updated` flag: set by `OnElementStateChanged()` (called when element properties change)
+- `renderTargetChanged` flag: set when the render target is first assigned
+- `SendUpdateElementMessages(fullContent, updatedElements)`: serializes the element's current visual state. The `fullContent` parameter controls whether to include all properties or just changed ones.
+
+For example, `GuiSolidLabelElementRenderer::SendUpdateElementMessages()` includes font and text only when they actually changed (comparing `lastFont`/`lastText`), unless `fullContent` or `renderTargetChanged` is true. This diff-based update minimizes protocol traffic.
+
+### Measurement Feedback Loop
+
+The core side cannot measure text or images locally — it must ask the renderer side. This creates a feedback loop:
+
+1. **Font height**: `GuiSolidLabelElementRenderer` includes a `measuringRequest` field in its update message (either `FontHeight` or `TotalSize`). The renderer side measures and returns `fontHeights` in `ElementMeasurings`. These are cached in `renderTarget->fontHeights` keyed by `(fontFamily, fontSize)`.
+
+2. **Min sizes**: The renderer side returns `minSizes` per element ID. `StopRenderingOnNativeWindow()` calls `UpdateMinSize()` on each renderer.
+
+3. **Image metadata**: Newly created images return metadata (dimensions, format) via `createdImages`. `GuiRemoteGraphicsImage::UpdateFromImageMetadata()` stores this.
+
+4. **Inline object bounds**: For `DocumentParagraph` elements with inline objects, the renderer returns layout bounds per callback ID via `inlineObjectBounds`.
+
+**The retry mechanism**: If any min size changed, `hostedController->RequestRefresh()` schedules another rendering frame. The layout engine will use the new min sizes, potentially changing element positions, requiring another render. This converges quickly because min sizes stabilize.
+
+**Font height caching**: `TryFetchMinSizeFromCache()` in `GuiSolidLabelElementRenderer` checks whether the needed font height is already in `renderTarget->fontHeights`. If so, it uses the cached value and skips the measurement request. This avoids redundant round-trips for fonts already measured.
+
+### Rendering Boundary Tracking
+
+As the composition tree is traversed, clipper operations emit boundary messages:
+- `AfterPushedClipper()`: inspects the composition generating the clip for hit test results and cursor types. If either is set and differs from the current stack top, sends `RequestRendererBeginBoundary` with the composition's `remoteId`, bounds, and clipped area.
+- `AfterPoppedClipper()`: sends `RequestRendererEndBoundary` for the matching boundary.
+
+This allows the renderer side to know which composition each pixel belongs to for hit testing and cursor display, without needing the full composition tree.
+
+## GuiRemoteGraphicsParagraph (IGuiGraphicsParagraph)
+
+`GuiRemoteGraphicsParagraph` is the remote implementation of `IGuiGraphicsParagraph`, handling rich text layout for document elements. It is the most protocol-intensive part of the rendering system because text layout is inherently complex and cannot be done core-side.
+
+### Why Paragraphs Are Special
+
+Unlike ordinary elements (borders, backgrounds, labels) that simply send their visual state and let the renderer draw them, paragraphs need bidirectional communication:
+- The core side defines the text content, styling, and inline objects
+- The renderer side performs text layout (line breaking, glyph positioning)
+- The core side needs the layout results (sizes, caret positions, inline object positions) for hit testing, caret navigation, and selection
+
+### Paragraph Lifecycle
+
+Paragraphs are created by `GuiRemoteGraphicsResourceManager::CreateParagraph()`, which constructs a `GuiRemoteGraphicsParagraph`. The paragraph gets its own element ID (shared ID space with element renderers), registered via `RegisterParagraph()` instead of `RegisterRenderer()`. The creation is batched alongside element creates in `pendingParagraphCreations`.
+
+### Run Property System
+
+Paragraph styling uses a run-based system with three layers:
+1. **`DocumentTextRunPropertyMap textRuns`**: text-level properties (font, size, color, style) by `CaretRange`
+2. **`DocumentInlineObjectRunPropertyMap inlineObjectRuns`**: inline objects (images, controls embedded in text) by `CaretRange`
+3. **`DocumentRunPropertyMap stagedRuns` / `committedRuns`**: merged result used for diff computation
+
+`AddTextRun()` handles overlapping ranges by splitting and merging, supporting incremental property changes. `AddInlineObjectRun()` requires exact range matches (inline objects cannot be split). `MergeRuns()` combines both maps, with inline objects taking priority over text runs.
+
+### Synchronization with Renderer Side (EnsureRemoteParagraphSynced)
+
+This is the core synchronization method, called before any query:
+1. `EnsureRequestedRenderersCreated()` — ensures the paragraph element exists on the renderer side
+2. Merge text and inline object runs into `stagedRuns`
+3. `DiffRuns(committedRuns, stagedRuns, desc)` — compute diff between last committed and current state
+4. Send `RequestRendererUpdateElement_DocumentParagraph(desc)` with the diff
+5. `Submit()` synchronously — the response includes the new `documentSize`
+6. Store `cachedSize` from response, swap `stagedRuns` to `committedRuns`
+
+The first sync sends full text content; subsequent syncs send only run property diffs. This is efficient for scenarios like syntax highlighting where only styling changes.
+
+### Layout Queries (Delegated to Renderer Side)
+
+All layout-dependent operations require synchronous round-trips:
+- **`GetSize()`**: returns `cachedSize` from the last sync
+- **`GetCaret(comparingCaret, position, preferFrontSide)`**: sends `RequestDocumentParagraph_GetCaret` — the renderer performs text layout-aware caret navigation
+- **`GetCaretBounds(caret, frontSide)`**: uses `GetCaretBoundsInternal()` which lazily fetches ALL caret bounds (front and back arrays) in one request via `RequestDocumentParagraph_GetCaretBounds` and caches them in `cachedCaretBounds`. Subsequent calls use the cache.
+- **`GetCaretFromPoint(point)`**: iterates all caret positions locally using cached bounds from `GetCaretBoundsInternal()`, finding the nearest by Manhattan distance — no additional remote call if bounds are cached
+- **`GetInlineObjectFromPoint(point)`**: sends `RequestDocumentParagraph_GetInlineObjectFromPoint` for hit-test, then looks up `inlineObjectProperties` locally
+- **`GetNearestCaretFromTextPos(textPos, frontSide)`**: sends `RequestDocumentParagraph_GetNearestCaretFromTextPos`
+- **`IsValidCaret(caret)`**: sends `RequestDocumentParagraph_IsValidCaret`
+- **`IsValidTextPos(textPos)`**: purely local — just checks bounds against `text.Length()`
+
+### Caret Display
+
+- `EnableCaret()` sends `RequestDocumentParagraph_OpenCaret` with position, color, front/back side
+- `DisableCaret()` sends `RequestDocumentParagraph_CloseCaret`
+- `BlinkCaret()` returns false — blinking is handled renderer-side
+
+### Paragraph Rendering
+
+`GuiRemoteGraphicsParagraph::Render(bounds)`:
+1. `EnsureRemoteParagraphSynced()` — ensure current state sent to renderer
+2. For each inline object with cached bounds, call `callback->OnRenderInlineObject()` — if the inline object's size changed, update `inlineObjectRuns` and mark dirty
+3. Send `RequestRendererRenderElement` — same as ordinary elements
+
+### Dirty Tracking
+
+`MarkParagraphDirty(invalidateSize, invalidateCaretBoundsCache)` sets:
+- `needUpdate = true` always
+- `cachedSize = {0,0}` if `invalidateSize` is true (forcing re-measurement)
+- `needUpdateCaretBoundsCache = true` if `invalidateCaretBoundsCache` is true (forcing caret bounds refetch)
+
+Property setters (`SetFont`, `SetSize`, `SetStyle`, `SetColor`, `SetBackgroundColor`, `SetInlineObject`, `ResetInlineObject`) and layout properties (`SetWrapLine`, `SetMaxWidth`, `SetParagraphAlignment`) all call `MarkParagraphDirty`. Size-affecting changes always set both flags; color-only changes skip size invalidation.
+
+## DOM Diff Layer
+
+### Why DOM Diff Exists
+
+Without DOM diff, each frame sends per-element rendering commands (`RenderElement`, `BeginBoundary`, `EndBoundary`). For a typical GacUI application with hundreds of elements, most of which don't move between frames, this is wasteful. The DOM diff layer converts the per-frame command stream into a tree structure and diffs it against the previous frame, sending only changes.
+
+### How It Works
+
+`GuiRemoteProtocolDomDiffConverter` wraps `IGuiRemoteProtocol`:
+- During rendering, `RenderingDomBuilder` builds a `RenderingDom` tree from the intercepted boundary and element commands
+- On `RequestRendererEndRendering`:
+  - First frame: sends `RequestRendererRenderDom` with the full tree
+  - Subsequent frames: `DiffDom(lastDom, lastDomIndex, newDom, newDomIndex, diffs)` computes structural diffs, sends `RequestRendererRenderDomDiff`
+- `lastDom` is stored for next frame; `OnControllerConnect` clears it to force a full DOM send on reconnection
+
+DOM node IDs encode their type: element IDs use `(elementId << 2) + 0`, hit test compositions use `(compositionId << 2) + 2`, with parent variants at `+1` and `+3`.
 
 ## Protocol Combinator Layer
 
-### GuiRemoteEventCombinator
+The combinator pattern allows composing protocol transformations as a pipeline. `GuiRemoteProtocolCombinator<TEvents>` wraps an `IGuiRemoteProtocol*` and interposes a `TEvents` event combinator. This creates a chain where messages flow core → combinator → target protocol, and events flow target protocol → event combinator → core.
 
-Base class with `IGuiRemoteProtocolEvents* targetEvents`. Subclasses override event/response methods and optionally forward to `targetEvents`.
+Passing-through variants (`GuiRemoteProtocolCombinator_PassingThrough`) forward everything unchanged, allowing subclasses to selectively override just the messages they care about. The filter and DOM diff layers both use this pattern.
 
-### GuiRemoteProtocolCombinator<TEvents>
+## Protocol Filter Layer
 
-Template wrapping `IGuiRemoteProtocol* targetProtocol` with a `TEvents eventCombinator`. `Initialize()` chains: `eventCombinator.targetEvents = _events`, then `targetProtocol->Initialize(&eventCombinator)`. This creates a pipeline where events flow through the combinator before reaching the final handler.
+`GuiRemoteProtocolFilter` optimizes traffic by dropping redundant messages/events:
+- `[@DropRepeat]`: drop messages/events with identical arguments to the previous send
+- `[@DropConsecutive]`: drop events with identical arguments to the immediately preceding event
 
-### Passing-Through Variants
+The filter queues messages internally and applies drop logic in `ProcessRequests()` before `Submit()`.
 
-`GuiRemoteEventCombinator_PassingThrough` and `GuiRemoteProtocolCombinator_PassingThrough<TEvents>` — forward all messages and events unchanged. Subclasses selectively override specific methods.
+## Channel Layer
 
-## Protocol Filter Layer (GuiRemoteProtocol_Filter.h)
+For real remote deployment, `IGuiRemoteProtocolChannel<T>` provides a bidirectional channel abstraction. The typical stack:
+1. `GuiRemoteProtocolFromJsonChannel` adapts a JSON channel to `IGuiRemoteProtocol`
+2. `GuiRemoteProtocolAsyncChannelSerializer<Ptr<JsonObject>>` runs channel IO on a separate thread
 
-### GuiRemoteProtocolFilter
-
-Wraps `IGuiRemoteProtocol` to optimize protocol traffic by dropping redundant messages:
-- Messages annotated `[@DropRepeat]` in protocol definitions: if the same message is sent with the same arguments, the repeated one is dropped. Tracked via `lastDropRepeatRequest*` indices.
-- Events annotated `[@DropRepeat]` or `[@DropConsecutive]`: repeated or consecutive duplicate events are dropped before delivery. Tracked via `lastDropRepeatEvent*` / `lastDropConsecutiveEvent*` indices.
-
-Uses `FilteredRequest` / `FilteredResponse` / `FilteredEvent` structs that store messages in a variant-typed queue with drop tracking.
-
-`Submit()` calls `ProcessRequests()` first (filters, then forwards non-dropped requests), then delegates to `targetProtocol->Submit()`.
-
-### GuiRemoteProtocolFilterVerifier
-
-A separate combinator that verifies the filter's correctness. It tracks whether messages/events should have been dropped and validates.
-
-## Protocol DOM Diff Layer (GuiRemoteProtocol_DomDiff.h)
-
-### GuiRemoteProtocolDomDiffConverter
-
-Wraps `IGuiRemoteProtocol`. Intercepts rendering messages and converts them from per-frame rendering commands into a DOM diff format:
-- Overrides `RequestRendererBeginRendering`, `RequestRendererEndRendering`, `RequestRendererBeginBoundary`, `RequestRendererEndBoundary`, `RequestRendererRenderElement`
-- Uses `RenderingDomBuilder` to build a `RenderingDom` tree during rendering
-- On `RequestRendererEndRendering`:
-  - If first frame (no `lastDom`): sends `RequestRendererRenderDom` with the full DOM
-  - Otherwise: computes diff using `DomIndex` and sends `RequestRendererRenderDomDiff` with `RenderingDom_DiffsInOrder`
-- Stores `lastDom` and `lastDomIndex` for next frame comparison
-- On `OnControllerConnect`: clears `lastDom` and `lastDomIndex` to force full DOM send on reconnect
-
-## Channel Layer (IGuiRemoteProtocolChannel<T>)
-
-### IGuiRemoteProtocolChannel<T>
-
-Generic bidirectional communication channel interface:
-- `Initialize(IGuiRemoteProtocolChannelReceiver<T>* receiver)` — sets up the receiving end
-- `GetReceiver()` — returns the receiver
-- `Write(const T& package)` — sends a package
-- `GetExecutablePath()` — returns executable path
-- `Submit(bool& disconnected)` — flushes the channel
-- `GetRemoteEventProcessor()` — returns event processor
-
-### GuiRemoteProtocolChannelTransformerBase<TFrom, TTo>
-
-Bridges two channel types. Implements `IGuiRemoteProtocolChannel<TFrom>` by wrapping `IGuiRemoteProtocolChannel<TTo>`. Used by `GuiRemoteProtocolChannelSerializer` and `GuiRemoteProtocolChannelDeserializer` to transform between serialized and deserialized package formats.
-
-### JSON Channel (GuiRemoteProtocol_Channel_Json.h)
-
-`GuiRemoteProtocolFromJsonChannel` — adapts `IGuiRemoteProtocolChannel<Ptr<JsonObject>>` to `IGuiRemoteProtocol`. Converts protocol messages to JSON objects for writing and parses incoming JSON back to typed protocol events/responses. Uses handler maps (`onReceiveEventHandlers`, `onReceiveResponseHandlers`) for efficient dispatch.
-
-`GuiRemoteJsonChannelFromProtocol` — adapts `IGuiRemoteProtocol` to `IGuiRemoteProtocolChannel<Ptr<JsonObject>>` (the reverse direction). Intercepts protocol events and converts them to JSON for channel transport.
-
-`JsonToStringSerializer` — provides `Serialize`/`Deserialize` between `Ptr<JsonObject>` and `WString`. Used by `GuiRemoteJsonChannelStringSerializer` / `GuiRemoteJsonChannelStringDeserializer` type aliases.
-
-### Async Channel (GuiRemoteProtocol_Channel_Async.h)
-
-`GuiRemoteProtocolAsyncChannelSerializer<TPackage>` — runs protocol IO on a separate channel thread while GacUI runs on the UI thread. Inherits from `GuiRemoteProtocolAsyncChannelSerializerBase` (which provides cross-thread task queues).
-
-Threading model:
-- **UI thread**: runs `uiMainProc` which calls `SetupRemoteNativeController` — the core side application loop
-- **Channel thread**: runs a loop waiting for tasks from the UI thread, executing channel IO operations
-
-`Start(_channel, _uiMainProc, startingProc)`:
-1. Creates auto events (`eventAutoResponses`, `eventAutoChannelTaskQueued`) and manual events (`eventManualChannelThreadStopped`, `eventManualUIThreadStopped`)
-2. `startingProc` is called with two callables: one for the channel thread, one for the UI thread. The caller is responsible for launching both threads.
-
-`Write(package)` — called from UI thread, accumulates packages in `uiPendingPackages`
-
-`Submit(disconnected)` — called from UI thread:
-1. Checks connection availability; if disconnected, returns immediately
-2. Groups all pending packages into a `PendingRequestGroup` (tracks request IDs)
-3. Queues channel thread task: writes all packages to channel, calls `channel->Submit()`
-4. Blocks on `eventAutoResponses` waiting for all responses
-5. If disconnect detected (by `connectionCounter` mismatch), sets `disconnected`
-6. Collects and delivers responses to `receiver->OnReceive()`
-
-`ProcessRemoteEvents()` — called from UI thread:
-1. Queues `channel->GetRemoteEventProcessor()->ProcessRemoteEvents()` to channel thread
-2. Fetches and executes UI thread tasks
-3. Processes queued events from channel thread
-4. Special handling for `ControllerConnect` event: updates `connectionCounter` and `connectionAvailable`
-
-`OnReceive(package)` — called from any thread (typically the channel thread):
-- If response: stores in `queuedResponses` under lock; if all pending responses satisfied, signals `eventAutoResponses`
-- If event: stores in `queuedEvents` under lock
-
-The async channel uses `ChannelPackageSemanticUnpack()` (argument-dependent lookup) to classify incoming packages as events or responses.
-
-Shutdown sequence:
-1. `UIThreadProc` finishes → sets `stopping = true` → signals `eventAutoChannelTaskQueued`
-2. Channel thread processes remaining tasks → signals `eventManualChannelThreadStopped`
-3. UI thread processes remaining tasks → signals `eventManualUIThreadStopped`
-
-The typical protocol stack for async remote operation:
-`GuiRemoteProtocolDomDiffConverter` over `GuiRemoteProtocolFilter` over `GuiRemoteProtocolFromJsonChannel` over `GuiRemoteProtocolAsyncChannelSerializer<Ptr<JsonObject>>`
+The async serializer's key design: the UI thread batches messages and blocks on `Submit()` until the channel thread completes the round-trip. Events from the channel thread are queued and processed on the UI thread during `ProcessRemoteEvents()`. Connection/disconnection is tracked via a `connectionCounter` to handle race conditions.
 
 ## Image Service
 
-`GuiRemoteGraphicsImageService` implements `INativeImageService` remotely:
-- `CreateImageFromStream(stream)` — creates a `GuiRemoteGraphicsImage` with a binary copy, assigns an ID
-- `CreateImageFromFile(path)` — reads file into stream, calls `CreateImageFromStream`
-- Each `GuiRemoteGraphicsImage` lazily requests its metadata from the renderer side via `ImageCreated` message when first accessed (`EnsureMetadata()`)
-- `OnControllerConnect()` — re-registers all existing images on reconnect via `ImageCreated` messages
-- `OnControllerDisconnect()` — resets metadata state to `Uninitialized`
-
-## Screen Config Updates
-
-When the renderer side notifies `OnControllerScreenUpdated(ScreenConfig)`:
-- `GuiRemoteController` stores the new `remoteScreenConfig`
-- `GuiRemoteWindow::OnControllerScreenUpdated()` — if scaling changed, updates `scalingX`/`scalingY` and fires `DpiChanged(true)` / `DpiChanged(false)` on listeners
+`GuiRemoteGraphicsImageService` creates `GuiRemoteGraphicsImage` objects with core-side binary copies. Image metadata (dimensions, format) is lazily fetched from the renderer side via `ImageCreated` messages. On reconnection, all existing images are re-registered.
 
 # ASKS
 
@@ -471,6 +304,36 @@ In the protocol direction:
 - **Responses** are delivered **from the renderer side to the core side** via `RespondNAME(id, arguments)` methods on `IGuiRemoteProtocolEvents`, matching request IDs from messages that expect responses.
 
 The core side drives the application loop (`GuiRemoteController::Run()`), sends rendering commands and window management messages to the renderer side, and processes events and responses received from the renderer side. The renderer side is responsible for actual pixel output, OS window creation, and forwarding user input events back to the core side.
+
+## QUESTION
+
+I would like you to improve the insight, the first thing is to remove pure code translation to natural language. They are not necessary because they can be just read from the source code directly. By saying "insight" I would like to see more why/what/how/summarization than pure translation. And pay more attention to the rendering part, the rendering part is complex, how elements update get pushed to the client side, how measuremeng happens, how IGuiGraphicsParagraph is processed. They should take a significant part in the document
+
+### ANSWER
+
+The `# INSIGHT` has been rewritten with the following improvements:
+
+**Removed code translations**: Eliminated sections that were essentially restating what functions do line-by-line (e.g., the old `INativeResourceService Implementation`, `INativeInputService Implementation`, `INativeScreenService Implementation`, `INativeWindowService Implementation` subsections that just listed what each method returns). Also removed the exhaustive event dispatch listing from `GuiRemoteEvents` and the member-by-member listing of `GuiRemoteController`.
+
+**Added insight-level content**:
+- "Why Remote Protocol Mode Exists" — explains the motivation (platform independence, testability, reconnection support)
+- "Why Rendering Is Complex" — explains the fundamental challenge of deferred rendering with measurement feedback
+- "Why DOM Diff Exists" — explains the performance motivation
+- "Why Paragraphs Are Special" — explains why `GuiRemoteGraphicsParagraph` needs bidirectional communication unlike simple elements
+
+**Expanded rendering section** (now the largest part of the document):
+- **Element Lifecycle**: how elements are created (ID allocation on render target assignment), batched for notification (`EnsureRequestedRenderersCreated`), and destroyed
+- **Frame Rendering Flow**: the complete `StartRenderingOnNativeWindow` → composition traversal → `StopRenderingOnNativeWindow` sequence, explaining the two modes (normal incremental vs reconnect full update)
+- **Element Update Mechanism**: how dirty tracking works (`updated`/`renderTargetChanged` flags, `OnElementStateChanged`), and how `SendUpdateElementMessages` does diff-based serialization (e.g., `GuiSolidLabelElementRenderer` only sends font/text when they changed)
+- **Measurement Feedback Loop**: the four categories of feedback (font heights, min sizes, image metadata, inline object bounds) and how the retry mechanism (`RequestRefresh`) drives convergence
+- **Font Height Caching**: how `TryFetchMinSizeFromCache` uses the shared `fontHeights` cache to avoid redundant measurements
+
+**Expanded paragraph section** (now a major section):
+- **Run Property System**: the three-layer run map architecture (`textRuns`, `inlineObjectRuns`, merged `committedRuns`/`stagedRuns`) and how `AddTextRun` handles range splitting/merging
+- **Synchronization**: how `EnsureRemoteParagraphSynced` computes diffs and sends incremental updates (first sync sends full text, subsequent syncs send only run property changes)
+- **Layout Queries**: how each query delegates to the renderer side, with emphasis on the caret bounds caching strategy (one-shot fetch of all bounds, then local iteration in `GetCaretFromPoint`)
+- **Dirty Tracking**: how `MarkParagraphDirty` controls what gets invalidated (size vs caret bounds cache)
+- **Inline Object Interaction**: how `Render()` processes inline object bounds and updates sizes via callback
 
 # DRAFT
 
