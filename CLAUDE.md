@@ -15,6 +15,7 @@ Read the first word of the request, and read an additional instruction file when
 - "verify": REPO-ROOT/.github/prompts/5-verifying.prompt.md
 - "ask": REPO-ROOT/.github/prompts/ask.prompt.md
 - "code": REPO-ROOT/.github/prompts/code.prompt.md
+- "kb": REPO-ROOT/.github/prompts/kb.prompt.md
 - "refine": REPO-ROOT/.github/prompts/refine.prompt.md
 - "review": REPO-ROOT/.github/prompts/review.prompt.md
 
@@ -34,6 +35,7 @@ Read the first word of the request, and read an additional instruction file when
   - "summary"
   - "execute"
   - "review"
+  - "kb"
 - Read the second word if it exists, convert it to a title `# THE-WORD`.
 
 ## Step 3
