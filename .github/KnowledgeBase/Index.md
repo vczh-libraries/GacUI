@@ -664,6 +664,19 @@ It provides a comprehensive testing framework, XML-to-C++ compilation, and integ
 
 [Design Explanation](./KB_GacUI_Design_RemoteProtocolCoreArchitecture.md)
 
+#### Remote Protocol Renderer and Serialization
+
+- `GuiRemoteRendererSingle` is the renderer-side implementation that bridges `IGuiRemoteProtocol` to a real native window with actual graphics rendering, relying on an existing platform provider (e.g., Windows Direct2D).
+- It implements `IGuiRemoteProtocol` to receive protocol messages and translates them into native element operations, and implements `INativeWindowListener`/`INativeControllerListener` to forward OS events back as protocol events.
+- Rendering pipeline: receives `RequestRendererBeginRendering` with `OrdinaryElementDescVariant` updates, applies them to real graphics elements, renders the DOM tree in `GlobalTimer()`, and returns measurement feedback via `RespondRendererEndRendering`.
+- Event forwarding coalesces high-frequency events (mouse move, wheel, key auto-repeat) and sends discrete events immediately; hit testing is performed locally by traversing the rendering DOM tree.
+- Layered channel architecture for protocol serialization: `IGuiRemoteProtocol` ↔ `JsonObject` (via `GuiRemoteProtocolFromJsonChannel`/`GuiRemoteJsonChannelFromProtocol`) ↔ `WString` (via `JsonToStringSerializer`) ↔ user-implemented transport.
+- JSON envelope format with `semantic`, `id`, `name`, `arguments` fields; protocol types code-generated from `Protocol/*.txt` with `JsonHelper<T>` specializations.
+- `GuiRemoteProtocolAsyncChannelSerializer` provides thread separation (channel thread for IO, UI thread for application logic) with queued event delivery and connection-safe request matching.
+- Demo project pair (`RemotingTest_Core` and `RemotingTest_Rendering_Win32`) demonstrates full protocol stack assembly for both core and renderer sides with named-pipe/HTTP transport.
+
+[Design Explanation](./KB_GacUI_Design_RemoteProtocolRendererAndSerialization.md)
+
 ## Experiences and Learnings
 
 # Copy of Online Manual
