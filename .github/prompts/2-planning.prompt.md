@@ -80,7 +80,7 @@ I am going to propose some change to `Copilot_Planning.md`.
 
 ## Step 3.1. Fill the "# AFFECTED PROJECTS" section
 
-- Solutions and projects you need to work on could be found in `REPO-ROOT/.github/Project.md`.
+- Solutions and projects you need to work on could be found in `REPO-ROOT/Project.md`.
 - When creating `Copilot_Planning.md` from the first time, copy `# AFFECTED PROJECTS` section from `Copilot_Task.md`.
 - When updating `Copilot_Planning.md`, carefully review `# AFFECTED PROJECTS` and fix this section if necessary.
   - According to what you need to change, selectively fill this section using bullet-list, each item could be one of the following:

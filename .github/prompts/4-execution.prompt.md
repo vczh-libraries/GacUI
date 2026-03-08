@@ -73,7 +73,7 @@ I am going to propose some change to the source code.
 
 ### Code Generation
 
-- Check out `## Projects for Verification` in `REPO-ROOT/.github/Project.md`.
+- Check out `## Projects for Verification` in `REPO-ROOT/Project.md`.
 - Check out `# AFFECTED PROJECTS` in `Copilot_Execution.md`.
 - Find out if any code generation is necessary.
   - If there is no need to run any code generation, you can skip this step.

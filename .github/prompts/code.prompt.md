@@ -25,7 +25,7 @@
 
 #### Build the Solution
 
-- Check out `REPO-ROOT/.github/Project.md` to find out what solutions you need to build.
+- Check out `REPO-ROOT/Project.md` to find out what solutions you need to build.
 - Find out if there is any warning or error.
   - `External Tools Environment and Context` in `REPO-ROOT/.github/copilot-instructions.md` has the instruction about how to check compile result.
 
@@ -38,7 +38,7 @@
 
 ### Code Generation
 
-- Check out `## Projects for Verification` in `REPO-ROOT/.github/Project.md`.
+- Check out `## Projects for Verification` in `REPO-ROOT/Project.md`.
 - Find out if any code generation is necessary.
   - If there is no need to run any code generation, you can skip this step.
   - Otherwise, pay attention to:
@@ -68,7 +68,7 @@
 
 #### Execute Unit Test
 
-- Check out `REPO-ROOT/.github/Project.md` to find out what projects you need to execute.
+- Check out `REPO-ROOT/Project.md` to find out what projects you need to execute.
 - Run the unit test and see if they passed. If everything is good, you will only see test files and test cases that are executed.
   - Make sure added test cases are actually executed.
   - If any test case fails on a test assertion, the content of `TEST_ASSERT` or other macros will be printed to the output.

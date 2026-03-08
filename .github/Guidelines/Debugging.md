@@ -6,7 +6,7 @@ CDB accepts the exact same commands as WinDBG.
 
 ### Start a Debugger
 
-Read `REPO-ROOT/.github/Project.md` to understand the solution folder and the unit test project name you are working with.
+Read `REPO-ROOT/Project.md` to understand the solution folder and the unit test project name you are working with.
 Additional information could be found in THE FIRST LINE in `REPO-ROOT/.github/Scripts/Execute.log`.
 Execute the following PowerShell commands:
 

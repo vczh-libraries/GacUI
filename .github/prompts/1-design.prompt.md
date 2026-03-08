@@ -89,7 +89,7 @@ I am going to propose some change to `Copilot_Task.md`.
 
 ## Step 3.1. Fill the "# AFFECTED PROJECTS" section
 
-- Solutions and projects you need to work on could be found in `REPO-ROOT/.github/Project.md`.
+- Solutions and projects you need to work on could be found in `REPO-ROOT/Project.md`.
 - Identify all changes you need to make in a high level.
 - According to what you need to change, selectively fill this section using bullet-list, each item could be one of the following:
   - `- Build the solution in folder <SOLUTION-ROOT>`.

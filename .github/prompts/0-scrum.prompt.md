@@ -32,7 +32,7 @@
 ## Step 1. Identify the Problem
 
 - The problem I would like to solve is in the chat messages sent with this request.
-- Find `# Problem` or `# Update` or `# Learn` in the LATEST chat message. 
+- Find `# Problem` or `# Update` or `# Learn` in the LATEST chat message.
   - Ignore any of these titles in the chat history.
   - If there is nothing: it means you are accidentally stopped. Please continue your work.
 

@@ -2,7 +2,7 @@
 
 - `REPO-ROOT` refers to the root directory of the repository.
 - `SOLUTION-ROOT` refers to the root directory of a solution (`*.sln` or `*.slnx`).
-- Solutions and projects you need to work on could be found in `REPO-ROOT/.github/Project.md`.
+- Solutions and projects you need to work on could be found in `REPO-ROOT/Project.md`.
 - Following `Leveraging the Knowledge Base`, find knowledge and documents for this project in `REPO-ROOT/.github/KnowledgeBase/Index.md`.
 - Before writing to a source file, read it again and make sure you respect my parallel editing.
 - If any `*.prompt.md` file is referenced, take immediate action following the instructions in that file.
