@@ -974,7 +974,7 @@
           "ellipse": false,
           "multiline": false,
           "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "\\A",
+          "text": "\/A",
           "measuringRequest": "TotalSize"
         }
       ]

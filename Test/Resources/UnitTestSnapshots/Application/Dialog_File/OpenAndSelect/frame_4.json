@@ -295,7 +295,7 @@
           "ellipse": true,
           "multiline": false,
           "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "\\A\\a.txt",
+          "text": "\/A\/a.txt",
           "measuringRequest": null
         }
       ]
@@ -974,7 +974,7 @@
           "ellipse": false,
           "multiline": false,
           "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "\\A",
+          "text": "\/A",
           "measuringRequest": "TotalSize"
         }
       ]

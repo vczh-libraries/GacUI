@@ -171,7 +171,7 @@ namespace gacui_unittest_template
 
 		const wchar_t* GetCompatibleDelimiters() const override
 		{
-			return L"";
+			return L"\\";
 		}
 
 		WString ConcatPath(const WString& fullPath, const WString& relativePath) const override
