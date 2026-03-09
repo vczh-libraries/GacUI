@@ -149,7 +149,7 @@ namespace gacui_unittest_template
 		Ptr<FileItemMock> ResolvePath(const WString& fullPath) const
 		{
 			if (fullPath == L"") return root;
-			if (fullPath[0] != FilePath::Delimiter) return nullptr;
+			if (fullPath[0] != FilePath::GetPathDelimiter()) return nullptr;
 
 			collections::List<WString> components;
 			SplitComponents(fullPath, components);
@@ -162,6 +162,26 @@ namespace gacui_unittest_template
 				current = current->children.Values()[index];
 			}
 			return current;
+		}
+
+		wchar_t GetPathDelimiter() const override
+		{
+			return L'/';
+		}
+
+		const wchar_t* GetCompatibleDelimiters() const override
+		{
+			return L"";
+		}
+
+		WString ConcatPath(const WString& fullPath, const WString& relativePath) const override
+		{
+			auto delimiter = WString::FromChar(GetPathDelimiter());
+			if (IsRoot(fullPath))
+			{
+				return delimiter + relativePath;
+			}
+			return fullPath + delimiter + relativePath;
 		}
 
 		void Initialize(WString& fullPath) const override
@@ -188,7 +208,7 @@ namespace gacui_unittest_template
 			WString normalized;
 			for (auto&& component : components)
 			{
-				normalized += WString::FromChar(FilePath::Delimiter);
+				normalized += WString::FromChar(FilePath::GetPathDelimiter());
 				normalized += component;
 			}
 			fullPath = normalized;
@@ -223,7 +243,7 @@ namespace gacui_unittest_template
 				auto child = item->children.Values()[i];
 				if (!child->isFile)
 				{
-					auto childPath = folderPath.GetFullPath() + WString::FromChar(FilePath::Delimiter) + name;
+					auto childPath = folderPath.GetFullPath() + WString::FromChar(FilePath::GetPathDelimiter()) + name;
 					folders.Add(vl::filesystem::Folder(vl::filesystem::FilePath(childPath)));
 				}
 			}
@@ -242,7 +262,7 @@ namespace gacui_unittest_template
 				auto child = item->children.Values()[i];
 				if (child->isFile)
 				{
-					auto childPath = folderPath.GetFullPath() + WString::FromChar(FilePath::Delimiter) + name;
+					auto childPath = folderPath.GetFullPath() + WString::FromChar(FilePath::GetPathDelimiter()) + name;
 					files.Add(vl::filesystem::File(vl::filesystem::FilePath(childPath)));
 				}
 			}
@@ -259,7 +279,7 @@ namespace gacui_unittest_template
 
 			if (IsFile(baseFromPath))
 			{
-				auto index = INVLOC.FindLast(baseFromPath, WString::FromChar(FilePath::Delimiter), Locale::None);
+				auto index = INVLOC.FindLast(baseFromPath, WString::FromChar(FilePath::GetPathDelimiter()), Locale::None);
 				baseFromPath = index.key == -1 ? L"" : baseFromPath.Left(index.key);
 			}
 
@@ -288,7 +308,7 @@ namespace gacui_unittest_template
 			WString relative;
 			for (vint i = 0; i < resultComponents.Count(); i++)
 			{
-				if (i > 0) relative += WString::FromChar(FilePath::Delimiter);
+				if (i > 0) relative += WString::FromChar(FilePath::GetPathDelimiter());
 				relative += resultComponents[i];
 			}
 			return relative;

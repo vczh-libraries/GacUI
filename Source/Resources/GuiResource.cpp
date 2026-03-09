@@ -16,9 +16,9 @@ namespace vl
 			auto path = FilePath(filePath).GetFolder().GetFullPath();
 			if (path != L"")
 			{
-				if (path[path.Length() - 1] != FilePath::Delimiter)
+				if (path[path.Length() - 1] != FilePath::GetPathDelimiter())
 				{
-					path += WString::FromChar(FilePath::Delimiter);
+					path += WString::FromChar(FilePath::GetPathDelimiter());
 				}
 			}
 			return path;

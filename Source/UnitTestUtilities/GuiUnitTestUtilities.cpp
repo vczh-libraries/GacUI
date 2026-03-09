@@ -101,7 +101,7 @@ File GacUIUnitTest_PrepareSnapshotFile(const WString& appName, const WString& ex
 
 	File snapshotFile = snapshotFolder.GetFilePath() / (appName + extension);
 	{
-		auto pathPrefix = snapshotFolder.GetFilePath().GetFullPath() + WString::FromChar(FilePath::Delimiter);
+		auto pathPrefix = snapshotFolder.GetFilePath().GetFullPath() + WString::FromChar(FilePath::GetPathDelimiter());
 		auto snapshotPath = snapshotFile.GetFilePath().GetFullPath();
 		CHECK_ERROR(
 			snapshotPath.Length() > pathPrefix.Length() && snapshotPath.Left(pathPrefix.Length()) == pathPrefix,
