@@ -31,7 +31,7 @@ Console
 		void Console::Write(const wchar_t* string, vint length)
 		{
 			std::wstring s(string, string + length);
-			std::wcout << s << std::ends;
+			std::wcout << s << std::flush;
 		}
 
 		WString Console::Read()
