@@ -2488,17 +2488,8 @@ namespace vl
 			static void					GetPathComponents(WString path, collections::List<WString>& components);
 			static WString				ComponentsToPath(const collections::List<WString>& components);
 		public:
-#if defined VCZH_MSVC
-			/// <summary>The delimiter character used in a file path</summary>
-			/// <remarks>
-			/// In Windows, it is "\".
-			/// In Linux and macOS, it is "/".
-			/// But you can always use "/", it is also supported in Windows.
-			/// </remarks>
-			static constexpr wchar_t	Delimiter = L'\\';
-#elif defined VCZH_GCC
-			static constexpr wchar_t	Delimiter = L'/';
-#endif
+			/// <summary>Get the delimiter character used in a file path.</summary>
+			static wchar_t				GetPathDelimiter();
 
 			/// <summary>Create a root path.</summary>
 			/// <remarks><see cref="GetFullPath"/> returns different values for root path on different platforms. Do not rely on the value.</remarks>
@@ -2675,6 +2666,9 @@ namespace vl
 		{
 		public:
 			// FilePath operations
+			virtual wchar_t GetPathDelimiter() const = 0;
+			virtual const wchar_t* GetCompatibleDelimiters() const = 0;
+			virtual WString ConcatPath(const WString& fullPath, const WString& relativePath) const = 0;
 			virtual void Initialize(WString& fullPath) const = 0;
 			virtual bool IsFile(const WString& fullPath) const = 0;
 			virtual bool IsFolder(const WString& fullPath) const = 0;

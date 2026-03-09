@@ -41,6 +41,26 @@ WindowsFileSystemImpl
 		class WindowsFileSystemImpl : public feature_injection::FeatureImpl<IFileSystemImpl>
 		{
 		public:
+			wchar_t GetPathDelimiter() const override
+			{
+				return L'\\';
+			}
+
+			const wchar_t* GetCompatibleDelimiters() const override
+			{
+				return L"/";
+			}
+
+			WString ConcatPath(const WString& fullPath, const WString& relativePath) const override
+			{
+				if (IsRoot(fullPath))
+				{
+					return relativePath;
+				}
+
+				return fullPath + WString::FromChar(GetPathDelimiter()) + relativePath;
+			}
+
 			void Initialize(WString& fullPath) const override
 			{
 				{

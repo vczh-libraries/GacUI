@@ -41,6 +41,27 @@ LinuxFileSystemImpl
 		{
 		public:
 			// FilePath operations implementation
+			wchar_t GetPathDelimiter() const override
+			{
+				return L'/';
+			}
+
+			const wchar_t* GetCompatibleDelimiters() const override
+			{
+				return L"";
+			}
+
+			WString ConcatPath(const WString& fullPath, const WString& relativePath) const override
+			{
+				auto delimiter = WString::FromChar(GetPathDelimiter());
+				if (IsRoot(fullPath))
+				{
+					return delimiter + relativePath;
+				}
+
+				return fullPath + delimiter + relativePath;
+			}
+
 			void Initialize(WString& fullPath) const override
 			{
 				{
@@ -51,13 +72,13 @@ LinuxFileSystemImpl
 				}
 
 				if (fullPath.Length() == 0)
-					fullPath = WString::Unmanaged(L"/");
+					fullPath = WString::FromChar(GetPathDelimiter());
 
-				if (fullPath[0] != FilePath::Delimiter)
+				if (fullPath[0] != GetPathDelimiter())
 				{
 					char buffer[PATH_MAX] = { 0 };
 					getcwd(buffer, PATH_MAX);
-					fullPath = atow(AString(buffer)) + WString::FromChar(FilePath::Delimiter) + fullPath;
+					fullPath = atow(AString(buffer)) + WString::FromChar(GetPathDelimiter()) + fullPath;
 				}
 
 				{
@@ -111,7 +132,7 @@ LinuxFileSystemImpl
 
 			bool IsRoot(const WString& fullPath) const override
 			{
-				return fullPath == L"/";
+				return fullPath == WString::FromChar(GetPathDelimiter());
 			}
 
 			WString GetRelativePathFor(const WString& fromPath, const WString& toPath) const override

@@ -20,6 +20,18 @@ namespace vl
 		using namespace collections;
 		using namespace stream;
 
+		extern IFileSystemImpl* GetFileSystemImpl();
+
+		static wchar_t GetInjectedDelimiter()
+		{
+			return GetFileSystemImpl()->GetPathDelimiter();
+		}
+
+		static WString GetInjectedDelimiterString()
+		{
+			return WString::FromChar(GetInjectedDelimiter());
+		}
+
 		// ReadDirectoryChangesW
 
 /***********************************************************************
@@ -28,18 +40,25 @@ FilePath
 
 		void FilePath::NormalizeDelimiters(collections::Array<wchar_t>& buffer)
 		{
+			auto delimiter = GetInjectedDelimiter();
+			auto compatibleDelimiters = GetFileSystemImpl()->GetCompatibleDelimiters();
 			for (vint i = 0; i < buffer.Count(); i++)
 			{
-				if (buffer[i] == L'\\' || buffer[i] == L'/')
+				for (auto reading = compatibleDelimiters; *reading; reading++)
 				{
-					buffer[i] = Delimiter;
+					if (*reading == buffer[i])
+					{
+						buffer[i] = delimiter;
+						break;
+					}
 				}
 			}
 		}
 
 		void FilePath::TrimLastDelimiter(WString& fullPath)
 		{
-			if (fullPath != L"/" && fullPath.Length() > 0 && fullPath[fullPath.Length() - 1] == Delimiter)
+			auto delimiter = GetInjectedDelimiter();
+			if (!GetFileSystemImpl()->IsRoot(fullPath) && fullPath.Length() > 0 && fullPath[fullPath.Length() - 1] == delimiter)
 			{
 				fullPath = fullPath.Left(fullPath.Length() - 1);
 			}
@@ -67,21 +86,9 @@ FilePath
 		{
 		}
 
-		FilePath FilePath::operator/(const WString& relativePath)const
-		{
-			if (IsRoot())
-			{
-				return relativePath;
-			}
-			else
-			{
-				return fullPath + L"/" + relativePath;
-			}
-		}
-
 		WString FilePath::GetName()const
 		{
-			auto delimiter = WString::FromChar(Delimiter);
+			auto delimiter = GetInjectedDelimiterString();
 			auto index = INVLOC.FindLast(fullPath, delimiter, Locale::None);
 			if (index.key == -1) return fullPath;
 			return fullPath.Right(fullPath.Length() - index.key - 1);
@@ -89,7 +96,7 @@ FilePath
 
 		FilePath FilePath::GetFolder()const
 		{
-			auto delimiter = WString::FromChar(Delimiter);
+			auto delimiter = GetInjectedDelimiterString();
 			auto index = INVLOC.FindLast(fullPath, delimiter, Locale::None);
 			if (index.key == -1) return FilePath();
 			return fullPath.Left(index.key);
@@ -103,13 +110,15 @@ FilePath
 		void FilePath::GetPathComponents(WString path, collections::List<WString>& components)
 		{
 			WString pathRemaining = path;
-			auto delimiter = WString::FromChar(Delimiter);
+			auto delimiter = GetInjectedDelimiter();
+			auto delimiterString = WString::FromChar(delimiter);
+			auto doubleDelimiter = delimiterString + delimiterString;
 
 			components.Clear();
 
 			while (true)
 			{
-				auto index = INVLOC.FindFirst(pathRemaining, delimiter, Locale::None);
+				auto index = INVLOC.FindFirst(pathRemaining, delimiterString, Locale::None);
 				if (index.key == -1)
 					break;
 
@@ -117,19 +126,15 @@ FilePath
 					components.Add(pathRemaining.Left(index.key));
 				else
 				{
-#if defined VCZH_MSVC
-					if (pathRemaining.Length() >= 2 && pathRemaining[1] == Delimiter)
+					if (pathRemaining.Length() >= 2 && pathRemaining[1] == delimiter)
 					{
-						// Windows UNC Path starting with "\\"
-						// components[0] will be L"\\"
-						components.Add(L"\\");
+						components.Add(doubleDelimiter);
 						index.value++;
 					}
-#elif defined VCZH_GCC
-					// Unix absolute path starting with "/"
-					// components[0] will be L"/"
-					components.Add(delimiter);
-#endif
+					else if (GetFileSystemImpl()->IsRoot(delimiterString))
+					{
+						components.Add(delimiterString);
+					}
 				}
 
 				pathRemaining = pathRemaining.Right(pathRemaining.Length() - (index.key + index.value));
@@ -144,31 +149,32 @@ FilePath
 		WString FilePath::ComponentsToPath(const collections::List<WString>& components)
 		{
 			WString result;
-			auto delimiter = WString::FromChar(Delimiter);
+			auto delimiter = GetInjectedDelimiterString();
+			auto doubleDelimiter = delimiter + delimiter;
 
-			int i = 0;
-			
-#if defined VCZH_MSVC
-			// For Windows, if first component is "\\" then it is an UNC path
-			if(components.Count() > 0 && components[0] == L"\\")
-			{
-				result += delimiter;
-				i++;
-			}
-#elif defined VCZH_GCC
-			// For Unix-like OSes, if first component is "/" then take it as absolute path
-			if(components.Count() > 0 && components[0] == delimiter)
-			{
-				result += delimiter;
-				i++;
-			}
-#endif
+			vint i = 0;
 
-			for(; i < components.Count(); i++)
+			if (components.Count() > 0)
 			{
-				result += components[i];
-				if(i + 1 < components.Count())
+				if (components[0] == doubleDelimiter)
+				{
+					result += doubleDelimiter;
+					i++;
+				}
+				else if (components[0] == delimiter)
+				{
 					result += delimiter;
+					i++;
+				}
+			}
+
+			for (; i < components.Count(); i++)
+			{
+				if (result.Length() > 0 && result[result.Length() - 1] != GetInjectedDelimiter())
+				{
+					result += delimiter;
+				}
+				result += components[i];
 			}
 
 			return result;
@@ -475,9 +481,19 @@ namespace vl
 FilePath
 ***********************************************************************/
 
+		wchar_t FilePath::GetPathDelimiter()
+		{
+			return GetFileSystemImpl()->GetPathDelimiter();
+		}
+
 		void FilePath::Initialize()
 		{
 			GetFileSystemImpl()->Initialize(fullPath);
+		}
+
+		FilePath FilePath::operator/(const WString& relativePath) const
+		{
+			return GetFileSystemImpl()->ConcatPath(fullPath, relativePath);
 		}
 
 		bool FilePath::IsFile() const
