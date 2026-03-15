@@ -1,6 +1,19 @@
 # GacUI
 
-**GPU Accelerated C++ User Interface, with WYSIWYG developing tools, XML supports, built-in data binding and MVVM features.**
+GPU Accelerated C++ User Interface, with:
+- Cross-platform supports (Windows, Linux, macos, HTML5)
+  - Native Renderers
+  - Hosted Mode to render all windows in one native window (optional)
+  - Core/Renderer cross-process separation (optional)
+- Built-in powerful text processing libraries
+- Built-in data binding and MVVM features
+- XML UI description embedding Workflow script language
+  - Dynamic loading with C++ dynamic reflection opt-in
+    - Allow loading foreign UI with complex behavior in runtime
+  - Generate XML and Workflow to C++ source files for static linking (recommended)
+    - Allow C++ dyanmic reflection opt-out to significantly improve performance and reduce binary size
+- FFI Integration with other programming languages (under development)
+- Toolkit for developing with coding agents
 
 ## License
 
