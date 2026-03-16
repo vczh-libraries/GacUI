@@ -6,27 +6,15 @@
   - Upgrade GacUI XML Resource to 1.3, force on all resources instead of only depended or depending resource.
   - Require binary pattern "[GXR-1.3]" at the beginning of the binary resource.
   - Resource compiler and loader will check the version and only accept 1.3.
-- Create another release folder, containing a new h/cpp grouping configuration.
-  - Group files into how vcxitems described in GacUISrc.
-  - Create each lib project for each grouped source files.
-  - Create each exe project to reference just enough/designed subset of libs.
-  - Verify if source dependencies are satisfied.
 - Remote protocol player for Windows (and port to others)
   - GUI runs compiled XML resource in an separated process
   - Single GUI mode
   - Multiple GUI mode (with a simple window manager, and a test app for displaying instructions)
   - Implemented in both C++ and TypeScript
 - Strict check in different for-each loops.
-- A tool connect to LLM, updating GacUIXml and preview immediately.
-  - Make a previewer first, detecting file changing, released with a set of prompt to maintain the `new non-XML instance format`
 
 ## GacUI XML Resource (ez:Layout)
 
-- A new non-XML instance format
-  - Integrate ez:Layout
-  - New syntax to easily do control localization and UI animation
-    - Easy to define and apply template (e.g. menu cascading & toolstrip sharing, dialog button layout)
-  - Compile to XML
 - Compact version of table's colummns and rows property so that they could also be written in attributes.
 - `<ez:Layout/>`
   - Thought: AlignInSecondLevel, when it is true, some top/bottom/left/right might be able to sync by creating a Table and some Cells.
@@ -54,25 +42,42 @@
     - All direct child of rows of a rows, or columns of a column, are flattened
     - Use stack if possible
   - A `BuildLayout` method will be called after the layout tree is prepared. Changing the layout tree will not take effect without calling this method.
+
+## GacUI Eazy Resource
+
+- A new non-XML instance format
+  - Integrate ez:Layout
+  - New syntax to easily do control localization and UI animation
+    - Easy to define and apply template (e.g. menu cascading & toolstrip sharing, dialog button layout)
+  - Compile to XML
+- EazyForm
+  - A UI builder for connecting data structure to UI
+  - Either schemed JSON or reflectablr C++ data structure consumable
+  - Limited freedom of controlling UI
+  - Can be created in a repo like GacUILibs
+
+## GacUILibs
+
+- Make GacGen being able to consume additional types (requires VlppReflection to generate diff)
+  - What about inspector classes?
+    - Disallow control to have extra theme name therefore no default inspector for controls are needed
+- Platform independent libraries
+- Platform dependent elements
+  - Need to have implementations for all platforms
+  - What about GacJS?
+  - How can it be used in GacUIXml Resource?
+- Upgraded code editor (needs VlppParser2 auto recovery parser)
+- Put markdown editor and rendering here.
+
+## GacUI XML Resource
+
+- `<eval Eval="expression"/>` tags.
 - Consider `-ani` binding, create an animation controller object that change the binded property, with predefined interpolation and other stuff.
   - All types that can do interpolation are value types, consider following formats:
     - "NAME:initial value"
     - "NAME(initial value from expression)"
     - Need to be consistent with animation object
   - Consider multiple `-ani` batch control, state configuration and transition, story board, connection to animation coroutine, etc.
-
-## GacUI XML Resource
-
-- `<eval Eval="expression"/>` tags.
-- Facade (if `<ez:Layout/>` is implemented without the idea of facade, this would be canceled)
-  - A facade is a class with following methods:
-    - **AddChild**: Accept a child facade or a child object.
-    - **ApplyTo**: Accept a parent object, which is not a facade.
-    - **Initialize** (optional): Called on the instance object between construction and `<ref.Ctor>`.
-  - A facade could have properties but only accept assignment or `-eval` binding.
-  - A facade could have an optional **InstanceFacadeVerifier** executed on GacGen compile time.
-  - Built-in Layout and Form facade.
-  - If `<XFacade>` or `<x:XFacade>` is an accessible and default constructible object, then `<X>` or `<x:X>` triggers a facade.
 
 ## OS Provider Features
 
@@ -88,21 +93,13 @@
   - Column drag and drop.
     - ListView: only raises an event, developers need to update column headers and data by themselves.
     - DataGrid: swap column object, cells are changed due to binding.
-- ListView.
-  - Make a common template base class for `IItemProvider` implementation of bindable and non-bindable pair of the same virtual control:
-    - The template argument would be the base class which implements the differences.
-    - `list::TextItemProvider` vs `GuiBindableTextList::ItemSource`.
-    - `list::ListViewItemProvider` vs `GuiBindableListView::ItemSource`.
-      - Extends to `list::DataProvider`.
-    - `tree::TreeViewItemRootProvider` vs `GuiBindableTreeView::ItemSource`.
-  - `GuiBindableDataGrid`:
-    - `IDataGridView::GetColumnSpan`.
-    - Add customizable row visualizer.
-    - The default (or `nullptr`) row visualizer displays cell visualizer and editor.
-  - `GuiBindableTreeDataGrid`:
-    - Offer a default group header row visualizer when users only need one level of collapsable `GuiBindableDataGrid`.
-    - Replace the new `list::DataProvider`'s base class with `tree::NodeItemProvider` offering `GuiBindableTreeView::ItemSource` to make a useful data source.
-- Upgraded Code editor (need VlppParser2)
+- `GuiBindableDataGrid`:
+  - `IDataGridView::GetColumnSpan`.
+  - Add customizable row visualizer.
+  - The default (or `nullptr`) row visualizer displays cell visualizer and editor.
+- `GuiBindableTreeDataGrid`:
+  - Offer a default group header row visualizer when users only need one level of collapsable `GuiBindableDataGrid`.
+  - Replace the new `list::DataProvider`'s base class with `tree::NodeItemProvider` offering `GuiBindableTreeView::ItemSource` to make a useful data source.
 - Touch support.
 
 ## Drag and Drop
@@ -146,12 +143,10 @@
     - wGac repo: improve development process for release
   - macOS
     - iGac repo: improve development process for release
-  - Browser
-    - HTTP for test purpose (**Remote**)
+  - HTML5 Dom/CSS (**Remote**)
     - WebAssembly (Remote)
-  - CLI (optional, needs dedicated skin)
-    - Command-line/Powershell in Windows (Remote)
-    - Ncurses on Ubuntu (Remote)
+  - CLI (Hosted)
+    - Dedicated skin
 - Port GacUI to other languages:
   - Applications written in other language can:
     - Implement view model (SyncObj).
@@ -199,20 +194,3 @@
   - Codegen c++ from multiple workflow assembly.
 
 ## New C++/Doc Compiler based on VlppParser2
-
-## GacStudio
-
-- All sub processes need `_set_abort_behavior(0, _WRITE_ABORT_MSG);` to disable vcruntime crashing dialog.
-- Run the editing GUI using remote protocol.
-- Run the symbol server in a separate process.
-  - e.g. for rendering if all properties in a binding expression is observable, providing fast editing tool.
-- Dedicated solution-project(dependency,external dependency)-item file format.
-  - Solution builds GacUI.xml
-  - Project builds GacUI XML Resource index file.
-  - Each file contains only one item.
-- When create a UI object in a wizard, ask for:
-  - Localization item.
-    - Need to mark properties in reflection about if it needs localization.
-  - ViewModel item.
-  - ViewModel implementation item for testing.
-- Dedicated composition/control property sheet configuration for each class.
