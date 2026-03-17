@@ -1580,6 +1580,94 @@
                     },
                     "children": [
                       {
+                        "id": 122,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNWSE",
+                          "element": null,
+                          "bounds": {"x1": 120, "y1": 87, "x2": 128, "y2": 95},
+                          "validArea": {"x1": 120, "y1": 87, "x2": 128, "y2": 95}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 126,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNESW",
+                          "element": null,
+                          "bounds": {"x1": 352, "y1": 87, "x2": 360, "y2": 95},
+                          "validArea": {"x1": 352, "y1": 87, "x2": 360, "y2": 95}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 130,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNESW",
+                          "element": null,
+                          "bounds": {"x1": 120, "y1": 225, "x2": 128, "y2": 233},
+                          "validArea": {"x1": 120, "y1": 225, "x2": 128, "y2": 233}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 134,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNWSE",
+                          "element": null,
+                          "bounds": {"x1": 352, "y1": 225, "x2": 360, "y2": 233},
+                          "validArea": {"x1": 352, "y1": 225, "x2": 360, "y2": 233}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 138,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeWE",
+                          "element": null,
+                          "bounds": {"x1": 120, "y1": 95, "x2": 128, "y2": 225},
+                          "validArea": {"x1": 120, "y1": 95, "x2": 128, "y2": 225}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 142,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeWE",
+                          "element": null,
+                          "bounds": {"x1": 352, "y1": 95, "x2": 360, "y2": 225},
+                          "validArea": {"x1": 352, "y1": 95, "x2": 360, "y2": 225}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 146,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNS",
+                          "element": null,
+                          "bounds": {"x1": 128, "y1": 87, "x2": 352, "y2": 95},
+                          "validArea": {"x1": 128, "y1": 87, "x2": 352, "y2": 95}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 150,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNS",
+                          "element": null,
+                          "bounds": {"x1": 128, "y1": 225, "x2": 352, "y2": 233},
+                          "validArea": {"x1": 128, "y1": 225, "x2": 352, "y2": 233}
+                        },
+                        "children": null
+                      },
+                      {
                         "id": 480,
                         "content": {
                           "hitTestResult": null,

@@ -2148,6 +2148,94 @@
                     },
                     "children": [
                       {
+                        "id": 58,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNWSE",
+                          "element": null,
+                          "bounds": {"x1": 60, "y1": 140, "x2": 68, "y2": 148},
+                          "validArea": {"x1": 60, "y1": 140, "x2": 68, "y2": 148}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 62,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNESW",
+                          "element": null,
+                          "bounds": {"x1": 412, "y1": 140, "x2": 420, "y2": 148},
+                          "validArea": {"x1": 412, "y1": 140, "x2": 420, "y2": 148}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 66,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNESW",
+                          "element": null,
+                          "bounds": {"x1": 60, "y1": 492, "x2": 68, "y2": 500},
+                          "validArea": {"x1": 60, "y1": 492, "x2": 68, "y2": 500}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 70,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNWSE",
+                          "element": null,
+                          "bounds": {"x1": 412, "y1": 492, "x2": 420, "y2": 500},
+                          "validArea": {"x1": 412, "y1": 492, "x2": 420, "y2": 500}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 74,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeWE",
+                          "element": null,
+                          "bounds": {"x1": 60, "y1": 148, "x2": 68, "y2": 492},
+                          "validArea": {"x1": 60, "y1": 148, "x2": 68, "y2": 492}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 78,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeWE",
+                          "element": null,
+                          "bounds": {"x1": 412, "y1": 148, "x2": 420, "y2": 492},
+                          "validArea": {"x1": 412, "y1": 148, "x2": 420, "y2": 492}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 82,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNS",
+                          "element": null,
+                          "bounds": {"x1": 68, "y1": 140, "x2": 412, "y2": 148},
+                          "validArea": {"x1": 68, "y1": 140, "x2": 412, "y2": 148}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 86,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNS",
+                          "element": null,
+                          "bounds": {"x1": 68, "y1": 492, "x2": 412, "y2": 500},
+                          "validArea": {"x1": 68, "y1": 492, "x2": 412, "y2": 500}
+                        },
+                        "children": null
+                      },
+                      {
                         "id": 172,
                         "content": {
                           "hitTestResult": null,
@@ -2246,15 +2334,27 @@
                                     },
                                     "children": [
                                       {
-                                        "id": 652,
+                                        "id": 90,
                                         "content": {
                                           "hitTestResult": null,
-                                          "cursor": null,
-                                          "element": 163,
-                                          "bounds": {"x1": 77, "y1": 211, "x2": 134, "y2": 227},
-                                          "validArea": {"x1": 77, "y1": 211, "x2": 134, "y2": 227}
+                                          "cursor": "IBeam",
+                                          "element": null,
+                                          "bounds": {"x1": 75, "y1": 209, "x2": 228, "y2": 229},
+                                          "validArea": {"x1": 75, "y1": 209, "x2": 228, "y2": 229}
                                         },
-                                        "children": null
+                                        "children": [
+                                          {
+                                            "id": 652,
+                                            "content": {
+                                              "hitTestResult": null,
+                                              "cursor": null,
+                                              "element": 163,
+                                              "bounds": {"x1": 77, "y1": 211, "x2": 134, "y2": 227},
+                                              "validArea": {"x1": 77, "y1": 211, "x2": 134, "y2": 227}
+                                            },
+                                            "children": null
+                                          }
+                                        ]
                                       }
                                     ]
                                   }
@@ -2444,15 +2544,27 @@
                                     },
                                     "children": [
                                       {
-                                        "id": 656,
+                                        "id": 94,
                                         "content": {
                                           "hitTestResult": null,
-                                          "cursor": null,
-                                          "element": 164,
-                                          "bounds": {"x1": 254, "y1": 211, "x2": 268, "y2": 227},
-                                          "validArea": {"x1": 254, "y1": 211, "x2": 268, "y2": 227}
+                                          "cursor": "IBeam",
+                                          "element": null,
+                                          "bounds": {"x1": 252, "y1": 209, "x2": 405, "y2": 229},
+                                          "validArea": {"x1": 252, "y1": 209, "x2": 405, "y2": 229}
                                         },
-                                        "children": null
+                                        "children": [
+                                          {
+                                            "id": 656,
+                                            "content": {
+                                              "hitTestResult": null,
+                                              "cursor": null,
+                                              "element": 164,
+                                              "bounds": {"x1": 254, "y1": 211, "x2": 268, "y2": 227},
+                                              "validArea": {"x1": 254, "y1": 211, "x2": 268, "y2": 227}
+                                            },
+                                            "children": null
+                                          }
+                                        ]
                                       }
                                     ]
                                   }

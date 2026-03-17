@@ -40,15 +40,29 @@ GuiRemoteGraphicsRenderTarget
 	{
 		if (auto composition = dynamic_cast<GuiGraphicsComposition*>(generator))
 		{
-			if (auto cursor = composition->GetAssociatedCursor())
+			if (auto graphicsHost = composition->GetRelatedGraphicsHost())
 			{
-				if (auto graphicsHost = composition->GetRelatedGraphicsHost())
+				if (auto nativeWindow = graphicsHost->GetNativeWindow())
 				{
-					if (auto nativeWindow = graphicsHost->GetNativeWindow())
+					auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
+					if (auto cursor = composition->GetAssociatedCursor())
 					{
-						if (nativeWindow == GetCurrentController()->WindowService()->GetMainWindow())
+						return cursor->GetSystemCursorType();
+					}
+					if (nativeWindow != mainWindow)
+					{
+						// For non-main windows, hit test is not sent via remote protocol
+						// to avoid interfering with the main window's border behavior.
+						// Translate hit test to cursor here since native OS provider
+						// won't be able to do it without hit test information.
+						auto hitTestResult = composition->GetAssociatedHitTestResult();
+						if (hitTestResult != INativeWindowListener::NoDecision)
 						{
-							return cursor->GetSystemCursorType();
+							auto cursor = GetCursorFromHitTest(hitTestResult, GetCurrentController()->ResourceService());
+							if (cursor)
+							{
+								return cursor->GetSystemCursorType();
+							}
 						}
 					}
 				}
