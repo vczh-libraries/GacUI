@@ -1,7 +1,10 @@
 param(
-    [Parameter(Mandatory=$true)]
-    [string]$Command
+    [string]$Command = $null
 )
+
+if ([string]::IsNullOrEmpty($Command)) {
+    throw "\$Command parameter is required."
+}
 
 . $PSScriptRoot\copilotShared.ps1
 $cdbpath = GetCDBPath

@@ -1,11 +1,16 @@
 param(
-    [Parameter(Mandatory=$true)]
-    [string]$Mode,
-    [Parameter(Mandatory=$true)]
-    [string]$Executable,
+    [string]$Mode = $null,
+    [string]$Executable = $null,
     [string]$Configuration = $null,
     [string]$Platform = $null
 )
+
+if ([string]::IsNullOrEmpty($Mode)) {
+    throw "\$Mode parameter is required."
+}
+if ([string]::IsNullOrEmpty($Executable)) {
+    throw "\$Executable parameter is required."
+}
 
 if (($Mode -ne "CLI") -and ($Mode -ne "UnitTest")) {
     throw "Invalid mode: $Mode. Allowed values are CLI or UnitTest."

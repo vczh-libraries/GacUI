@@ -1,7 +1,10 @@
 param(
-    [Parameter(Mandatory=$true)]
-    [string]$Executable
+    [string]$Executable = $null
 )
+
+if ([string]::IsNullOrEmpty($Executable)) {
+    throw "\$Executable parameter is required."
+}
 
 . $PSScriptRoot\copilotShared.ps1
 
