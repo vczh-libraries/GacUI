@@ -220,6 +220,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="TestControls_Editor_Key_Singleline.cpp" />
+    <ClCompile Include="TestControls_Editor_Regression.cpp" />
     <ClCompile Include="TestControls_List_DataGrid_Binding.cpp" />
     <ClCompile Include="TestControls_List_DataGrid_CellEditor.cpp" />
     <ClCompile Include="TestControls_List_DataGrid_CellVisualizer.cpp" />
