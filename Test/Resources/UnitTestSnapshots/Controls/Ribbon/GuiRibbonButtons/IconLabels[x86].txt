@@ -99,6 +99,12 @@ namespace gacuisrc_unittest
         var tabPageOptions : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
 
         @cpp:Protected
+        var textBox1 : ::presentation::controls::GuiSinglelineTextBox* = null of (::presentation::controls::GuiSinglelineTextBox*);
+
+        @cpp:Protected
+        var textBox2 : ::presentation::controls::GuiSinglelineTextBox* = null of (::presentation::controls::GuiSinglelineTextBox*);
+
+        @cpp:Protected
         var group1 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
 
         @cpp:Protected
@@ -145,12 +151,6 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>27 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var textBox1 : ::presentation::controls::GuiSinglelineTextBox* = null of (::presentation::controls::GuiSinglelineTextBox*);
-
-        @cpp:Protected
-        var textBox2 : ::presentation::controls::GuiSinglelineTextBox* = null of (::presentation::controls::GuiSinglelineTextBox*);
 
         @cpp:Protected
         var textBox3 : ::presentation::controls::GuiSinglelineTextBox* = null of (::presentation::controls::GuiSinglelineTextBox*);

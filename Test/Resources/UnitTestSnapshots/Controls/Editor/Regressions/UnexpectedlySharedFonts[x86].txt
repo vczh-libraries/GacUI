@@ -62,7 +62,7 @@ namespace gacuisrc_unittest
                 (<precompile>0.BorderVisible = true);
             }
             {
-                (<precompile>0.CellPadding = 5 of (::system::Int64));
+                (<precompile>0.CellPadding = 5 of (::system::Int32));
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
