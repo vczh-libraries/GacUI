@@ -1,5 +1,5 @@
 ﻿{
-  "frameId": 13,
+  "frameId": 12,
   "frameName": "Typed",
   "windowSize": {
     "bounds": {
@@ -396,7 +396,7 @@
                   {
                     "textColor": "#FFFFFF",
                     "backgroundColor": "#00000000",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 17, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
                   }
                 ]
               }
@@ -820,8 +820,8 @@
                                   "hitTestResult": null,
                                   "cursor": null,
                                   "element": 27,
-                                  "bounds": {"x1": 21, "y1": 179, "x2": 184, "y2": 200},
-                                  "validArea": {"x1": 21, "y1": 179, "x2": 184, "y2": 200}
+                                  "bounds": {"x1": 21, "y1": 179, "x2": 136, "y2": 195},
+                                  "validArea": {"x1": 21, "y1": 179, "x2": 136, "y2": 195}
                                 },
                                 "children": null
                               }

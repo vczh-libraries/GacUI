@@ -255,15 +255,18 @@ If any style property is still undefined after inheritance, the value of Default
 				MergeStyle(sp, styles.Values()[indexDst]->styles);
 			}
 
-			if (indexDst == -1)
 			{
-				auto style = Ptr(new DocumentStyle);
-				style->styles = sp;
-				styles.Add(styleName, style);
-			}
-			else
-			{
-				styles.Values()[indexDst]->styles = sp;
+				auto ds = Ptr(new DocumentStyle);
+				ds->styles = sp;
+				if (indexDst != -1)
+				{
+					ds->parentStyleName = styles.Values()[indexDst]->parentStyleName;
+					styles.Set(styleName, ds);
+				}
+				else
+				{
+					styles.Add(styleName, ds);
+				}
 			}
 
 			for (auto style : styles.Values())
