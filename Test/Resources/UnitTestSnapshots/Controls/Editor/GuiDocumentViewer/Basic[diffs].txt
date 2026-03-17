@@ -80,9 +80,24 @@
 ========================================
 5
 ========================================
-{"id": 58, "diffType": "Modified", "content": null, "children": [136]}
-{"id": 132, "diffType": "Deleted", "content": null, "children": null}
-{"id": 136, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 34, "bounds": {"x1": 16, "y1": 44, "x2": 444, "y2": 60}, "validArea": {"x1": 16, "y1": 44, "x2": 444, "y2": 60}}, "children": null}
+{"id": 58, "diffType": "Modified", "content": null, "children": [133]}
+{"id": 132, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 33, "bounds": {"x1": 16, "y1": 44, "x2": 444, "y2": 62}, "validArea": {"x1": 16, "y1": 44, "x2": 444, "y2": 60}}, "children": null}
+{"id": 133, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": null, "bounds": {"x1": 16, "y1": 44, "x2": 444, "y2": 60}, "validArea": {"x1": 16, "y1": 44, "x2": 444, "y2": 60}}, "children": [132]}
 ========================================
 6
+========================================
+{"id": 58, "diffType": "Modified", "content": null, "children": [132]}
+{"id": 132, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 33, "bounds": {"x1": 16, "y1": 44, "x2": 444, "y2": 62}, "validArea": {"x1": 16, "y1": 44, "x2": 444, "y2": 62}}, "children": null}
+{"id": 133, "diffType": "Deleted", "content": null, "children": null}
+========================================
+7
+========================================
+========================================
+8
+========================================
+{"id": 58, "diffType": "Modified", "content": null, "children": [136]}
+{"id": 132, "diffType": "Deleted", "content": null, "children": null}
+{"id": 136, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 34, "bounds": {"x1": 16, "y1": 44, "x2": 444, "y2": 62}, "validArea": {"x1": 16, "y1": 44, "x2": 444, "y2": 62}}, "children": null}
+========================================
+9
 ========================================

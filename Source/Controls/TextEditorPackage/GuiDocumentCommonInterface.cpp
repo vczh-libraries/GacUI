@@ -458,7 +458,11 @@ GuiDocumentCommonInterface
 			{
 				auto document = documentElement->GetDocument();
 				MergeBaselineAndDefaultFont(document);
-				documentElement->SetDocument(document);
+				auto paragraphCount = document->paragraphs.Count();
+				if (paragraphCount > 0)
+				{
+					documentElement->NotifyParagraphUpdated(0, paragraphCount, paragraphCount, false);
+				}
 			}
 
 			void GuiDocumentCommonInterface::OnCaretNotify(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)

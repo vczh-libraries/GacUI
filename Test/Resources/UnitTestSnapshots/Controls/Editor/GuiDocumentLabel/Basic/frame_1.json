@@ -1,6 +1,6 @@
 ﻿{
-  "frameId": 6,
-  "frameName": "After text change",
+  "frameId": 7,
+  "frameName": "Font resized",
   "windowSize": {
     "bounds": {
       "x1": {"value": 272},
@@ -312,13 +312,13 @@
       ]
     ],
     [
-      23,
+      22,
       [
         "ElementDesc_DocumentParagraphFull",
         {
           "paragraph": {
-            "id": 23,
-            "text": "Changed text",
+            "id": 22,
+            "text": "Initial text",
             "wrapLine": true,
             "maxWidth": 450,
             "alignment": "Left",
@@ -331,7 +331,7 @@
                   {
                     "textColor": "#FFFFFF",
                     "backgroundColor": "#00000000",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
                   }
                 ]
               }
@@ -693,13 +693,13 @@
                         },
                         "children": [
                           {
-                            "id": 92,
+                            "id": 88,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 23,
-                              "bounds": {"x1": 15, "y1": 43, "x2": 465, "y2": 59},
-                              "validArea": {"x1": 15, "y1": 43, "x2": 465, "y2": 59}
+                              "element": 22,
+                              "bounds": {"x1": 15, "y1": 43, "x2": 465, "y2": 61},
+                              "validArea": {"x1": 15, "y1": 43, "x2": 465, "y2": 61}
                             },
                             "children": null
                           }

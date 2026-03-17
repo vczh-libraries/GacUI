@@ -1,6 +1,6 @@
 ﻿{
-  "frameId": 7,
-  "frameName": "Font resized",
+  "frameId": 9,
+  "frameName": "After text change",
   "windowSize": {
     "bounds": {
       "x1": {"value": 272},
@@ -457,13 +457,13 @@
       ]
     ],
     [
-      33,
+      34,
       [
         "ElementDesc_DocumentParagraphFull",
         {
           "paragraph": {
-            "id": 33,
-            "text": "Initial text",
+            "id": 34,
+            "text": "Changed text",
             "wrapLine": true,
             "maxWidth": 428,
             "alignment": "Left",
@@ -905,11 +905,11 @@
                             },
                             "children": [
                               {
-                                "id": 132,
+                                "id": 136,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 33,
+                                  "element": 34,
                                   "bounds": {"x1": 16, "y1": 44, "x2": 444, "y2": 62},
                                   "validArea": {"x1": 16, "y1": 44, "x2": 444, "y2": 62}
                                 },

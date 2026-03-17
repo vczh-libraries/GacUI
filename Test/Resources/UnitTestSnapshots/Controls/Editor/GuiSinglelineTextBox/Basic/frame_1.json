@@ -1,6 +1,6 @@
 ﻿{
-  "frameId": 8,
-  "frameName": "After text change",
+  "frameId": 10,
+  "frameName": "Font resized",
   "windowSize": {
     "bounds": {
       "x1": {"value": 272},
@@ -323,13 +323,13 @@
       ]
     ],
     [
-      24,
+      23,
       [
         "ElementDesc_DocumentParagraphFull",
         {
           "paragraph": {
-            "id": 24,
-            "text": "Changed text",
+            "id": 23,
+            "text": "Initial text",
             "wrapLine": false,
             "maxWidth": 86,
             "alignment": "Left",
@@ -342,7 +342,7 @@
                   {
                     "textColor": "#FFFFFF",
                     "backgroundColor": "#00000000",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
                   }
                 ]
               }
@@ -689,8 +689,8 @@
                       "hitTestResult": null,
                       "cursor": null,
                       "element": 21,
-                      "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 63},
-                      "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 63}
+                      "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 65},
+                      "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 65}
                     },
                     "children": [
                       {
@@ -699,8 +699,8 @@
                           "hitTestResult": null,
                           "cursor": null,
                           "element": 22,
-                          "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 63},
-                          "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 63}
+                          "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 65},
+                          "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 65}
                         },
                         "children": [
                           {
@@ -709,18 +709,18 @@
                               "hitTestResult": null,
                               "cursor": "IBeam",
                               "element": null,
-                              "bounds": {"x1": 14, "y1": 42, "x2": 466, "y2": 62},
-                              "validArea": {"x1": 14, "y1": 42, "x2": 466, "y2": 62}
+                              "bounds": {"x1": 14, "y1": 42, "x2": 466, "y2": 64},
+                              "validArea": {"x1": 14, "y1": 42, "x2": 466, "y2": 64}
                             },
                             "children": [
                               {
-                                "id": 96,
+                                "id": 92,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 24,
-                                  "bounds": {"x1": 16, "y1": 44, "x2": 102, "y2": 60},
-                                  "validArea": {"x1": 16, "y1": 44, "x2": 102, "y2": 60}
+                                  "element": 23,
+                                  "bounds": {"x1": 16, "y1": 44, "x2": 116, "y2": 62},
+                                  "validArea": {"x1": 16, "y1": 44, "x2": 116, "y2": 62}
                                 },
                                 "children": null
                               }
