@@ -17,6 +17,14 @@ void RunTextBoxSmokeTest(const wchar_t* resource, const WString& controlName)
 				auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 				TEST_ASSERT(textBox->GetText() == L"Initial text");
 				TEST_ASSERT(textBox->GetEnabled() == true);
+				auto font = textBox->GetDisplayFont();
+				font.size += 2;
+				textBox->SetFont(font);
+			});
+			protocol->OnNextIdleFrame(L"Font resized", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
 				textBox->SetText(L"Changed text");
 			});
 			protocol->OnNextIdleFrame(L"After text change", [=]()
