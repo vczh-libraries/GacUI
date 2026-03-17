@@ -50,12 +50,14 @@
 - Add another title `# ASKS`.
 - Add another title `# DRAFT`, with all sub-sections under it without content.
 - Find `Steps for Topic` section for the complete instructions for filling `# INSIGHT`.
+- DO NOT TOUCH the `# DRAFT` part, when researching for a certain topic no document drafting is expected.
 
 ### Answer a Question (only when "# Ask" appears in the latest chat message)
 
 - Copy precisely my question in `# Ask` from the LATEST chat message to a new sub-section `## QUESTION` under `# ASKS`.
 - The new `## QUESTION` and `### ANSWER` should be added before `# DRAFT` as it is the latest question.
 - Find `Steps for Ask` section for the complete instructions for filling `### ANSWER`.
+- DO NOT TOUCH the `# DRAFT` part, when researching for a certain topic no document drafting is expected.
 
 ### Draft the KB Document (only when "# Draft" appears in the latest chat message)
 

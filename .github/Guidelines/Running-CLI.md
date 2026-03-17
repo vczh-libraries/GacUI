@@ -21,6 +21,8 @@ cd SOLUTION-ROOT
 & REPO-ROOT\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable PROJECT-NAME
 ```
 
+`-Mode` and `-Executable` are required.
+
 `-Configuration` and `-Platform` arguments are available to specify the target configuration:
 - When both arguments are omitted, the last build configuration will be picked up.
 - Both arguments should be omitted or not omitted at the same time.
