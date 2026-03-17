@@ -2147,7 +2147,19 @@
                           "bounds": {"x1": 13, "y1": 200, "x2": 406, "y2": 204},
                           "validArea": {"x1": 13, "y1": 200, "x2": 406, "y2": 204}
                         },
-                        "children": null
+                        "children": [
+                          {
+                            "id": 58,
+                            "content": {
+                              "hitTestResult": null,
+                              "cursor": "SizeNS",
+                              "element": null,
+                              "bounds": {"x1": 13, "y1": 200, "x2": 406, "y2": 204},
+                              "validArea": {"x1": 13, "y1": 200, "x2": 406, "y2": 204}
+                            },
+                            "children": null
+                          }
+                        ]
                       },
                       {
                         "id": 132,
@@ -2158,7 +2170,19 @@
                           "bounds": {"x1": 406, "y1": 200, "x2": 410, "y2": 204},
                           "validArea": {"x1": 406, "y1": 200, "x2": 410, "y2": 204}
                         },
-                        "children": null
+                        "children": [
+                          {
+                            "id": 62,
+                            "content": {
+                              "hitTestResult": null,
+                              "cursor": "SizeNWSE",
+                              "element": null,
+                              "bounds": {"x1": 406, "y1": 200, "x2": 410, "y2": 204},
+                              "validArea": {"x1": 406, "y1": 200, "x2": 410, "y2": 204}
+                            },
+                            "children": null
+                          }
+                        ]
                       }
                     ]
                   }

@@ -1274,6 +1274,94 @@
                     },
                     "children": [
                       {
+                        "id": 58,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNWSE",
+                          "element": null,
+                          "bounds": {"x1": 50, "y1": 25, "x2": 58, "y2": 33},
+                          "validArea": {"x1": 50, "y1": 25, "x2": 58, "y2": 33}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 62,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNESW",
+                          "element": null,
+                          "bounds": {"x1": 242, "y1": 25, "x2": 250, "y2": 33},
+                          "validArea": {"x1": 242, "y1": 25, "x2": 250, "y2": 33}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 66,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNESW",
+                          "element": null,
+                          "bounds": {"x1": 50, "y1": 217, "x2": 58, "y2": 225},
+                          "validArea": {"x1": 50, "y1": 217, "x2": 58, "y2": 225}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 70,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNWSE",
+                          "element": null,
+                          "bounds": {"x1": 242, "y1": 217, "x2": 250, "y2": 225},
+                          "validArea": {"x1": 242, "y1": 217, "x2": 250, "y2": 225}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 74,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeWE",
+                          "element": null,
+                          "bounds": {"x1": 50, "y1": 33, "x2": 58, "y2": 217},
+                          "validArea": {"x1": 50, "y1": 33, "x2": 58, "y2": 217}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 78,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeWE",
+                          "element": null,
+                          "bounds": {"x1": 242, "y1": 33, "x2": 250, "y2": 217},
+                          "validArea": {"x1": 242, "y1": 33, "x2": 250, "y2": 217}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 82,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNS",
+                          "element": null,
+                          "bounds": {"x1": 58, "y1": 25, "x2": 242, "y2": 33},
+                          "validArea": {"x1": 58, "y1": 25, "x2": 242, "y2": 33}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 86,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": "SizeNS",
+                          "element": null,
+                          "bounds": {"x1": 58, "y1": 217, "x2": 242, "y2": 225},
+                          "validArea": {"x1": 58, "y1": 217, "x2": 242, "y2": 225}
+                        },
+                        "children": null
+                      },
+                      {
                         "id": 140,
                         "content": {
                           "hitTestResult": null,
