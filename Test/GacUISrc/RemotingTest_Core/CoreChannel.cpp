@@ -29,9 +29,10 @@ void CoreChannel::OnReadStringThreadUnsafe(Ptr<List<WString>> strs)
 		}
 #endif
 
+		static WString controllerConnectPrefix = WString::Unmanaged(LR"JSON({"semantic":"Event","name":"ControllerConnect")JSON");
 		for (auto str : *strs.Obj())
 		{
-			if (str == LR"JSON({"semantic":"Event","name":"ControllerConnect"})JSON")
+			if (str.Length() > controllerConnectPrefix.Length() && str.Left(controllerConnectPrefix.Length()) == controllerConnectPrefix)
 			{
 				connected = true;
 			}
