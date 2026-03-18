@@ -13,6 +13,17 @@ When any *.h or *.cpp file is changed, unit test is required to run.
 The unit test project is required to run when any source code or test cases are changed.
 Except for the `GuiRemoteRendererSingle` class which is not covered in the unit test.
 
+For any GacUI specific unit test that running with the GacUI unit test framework,
+when it calls `GacUIUnitTest_StartFast_WithResourceAsText` with path `Application/Windows/Order`,
+running it ends up creating log files in `REPO-ROOT\Test\Resources\UnitTestSnapshots\Application\Windows`:
+- Order.json: an entry of snapshots for this test case
+- Order[*].*: log files about remote protocol recordings and compiler output
+- Order\Frame_*.json: snapshot of the UI DOM tree for each frame.
+
+Each Frame_*.json is captured at each `OnNextIdleFrame` call, recording what the UI look like before running the code in this frame.
+This is the reason why the name of the frame should say what the previous frame was done,
+so that frame names in snapshot files make sense.
+
 ### Code Generation Projects
 
 Code generation projects are CLI projects.
