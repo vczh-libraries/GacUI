@@ -14,7 +14,7 @@ The unit test project is required to run when any source code or test cases are 
 Except for the `GuiRemoteRendererSingle` class which is not covered in the unit test.
 
 For any GacUI specific unit test that running with the GacUI unit test framework,
-when it calls `GacUIUnitTest_StartFast_WithResourceAsText` with path `Application/Windows/Order`,
+when it calls `GacUIUnitTest_StartFast_WithResourceAsText` with path, for example, `Application/Windows/Order`,
 running it ends up creating log files in `REPO-ROOT\Test\Resources\UnitTestSnapshots\Application\Windows`:
 - Order.json: an entry of snapshots for this test case
 - Order[*].*: log files about remote protocol recordings and compiler output
