@@ -44,7 +44,6 @@
     - To load such text into `GuiMultilineTextBox` uses `LoadTextAndClearUndoRedo`.
     - To load prepared large document into `GuiDocumentViewer` uses `LoadDocumentAndClearUndoRedo`.
     - Future editing still work with undo.
-- GacUI_Controls/ProgressAndAsync tutorial: doesn't scroll to the very top after downloading (attempts but the scroll bar left 2 ticks to the top).
 - When a window is moved between screens in different DPI, the caret position is not properly updated, causing IME composition window to show at an incorrect position.
 
 ## Remote Protocol
@@ -56,6 +55,7 @@
   - date time
   - file system
   - clipboard
+- In `RemotingTest_Core`, renderer reconnection is handled in `CoreChannel::OnReadStringThreadUnsafe`, which is not elegant at all. Find a better way.
 
 ## Unit Test
 
