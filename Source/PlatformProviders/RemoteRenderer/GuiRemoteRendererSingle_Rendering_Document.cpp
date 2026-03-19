@@ -98,13 +98,13 @@ namespace vl::presentation::remote_renderer
 		{
 			if (renderTarget != _renderTarget)
 			{
+				renderTarget = _renderTarget;
 				paragraph = nullptr;
-			}
-			renderTarget = _renderTarget;
-			paragraph = nullptr;
-			if (renderTarget)
-			{
-				TryRecreateParagraph();
+
+				if (renderTarget)
+				{
+					TryRecreateParagraph();
+				}
 			}
 		}
 

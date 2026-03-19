@@ -91,6 +91,9 @@ GuiRemoteWindow (events)
 			controllerDisconnected = false;
 		}
 
+		scalingX = remote->remoteScreenConfig.scalingX;
+		scalingY = remote->remoteScreenConfig.scalingY;
+
 		sizingConfigInvalidated = true;
 		remoteMessages.RequestWindowNotifySetBounds(remoteWindowSizingConfig.bounds);
 		RequestGetBounds();
