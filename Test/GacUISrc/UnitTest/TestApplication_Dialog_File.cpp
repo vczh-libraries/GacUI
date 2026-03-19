@@ -1262,4 +1262,91 @@ TEST_FILE
 			);
 		});
 	});
+
+	TEST_CATEGORY(L"File Dialog Scroll Reset On Navigation")
+	{
+		TEST_CASE(L"Scroll resets to first item after navigating into a folder")
+		{
+			Ptr<FileSystemMock> fsMock;
+
+			auto createScrollTestRoot = []()
+			{
+				auto root = Ptr(new FileItemMock);
+				auto folderA = AddFolder(root, L"A");
+				for (vint i = 1; i <= 100; i++)
+				{
+					auto name = itow(i);
+					while (name.Length() < 3) name = WString::Unmanaged(L"0") + name;
+					auto sub = AddFolder(folderA, name);
+					if (i == 100)
+					{
+						for (vint j = 1; j <= 100; j++)
+						{
+							auto fileName = itow(j);
+							while (fileName.Length() < 3) fileName = WString::Unmanaged(L"0") + fileName;
+							AddFile(sub, fileName);
+						}
+					}
+				}
+				return root;
+			};
+
+			GacUIUnitTest_SetGuiMainProxy([&fsMock, createScrollTestRoot](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindControlByText<GuiButton>(window, L"Open DefaultOptions");
+					auto location = protocol->LocationOf(button);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
+				{
+					DbClickFile(protocol, L"A");
+				});
+				protocol->OnNextIdleFrame(L"Entered: A", [=]()
+				{
+					auto dialogWindow = GetOpeningFileDialog();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(dialogWindow, L"filePickerControl", L"dataGrid");
+					TEST_ASSERT(dataGrid->GetItemProvider()->Count() == 100);
+					dataGrid->EnsureItemVisible(99);
+				});
+				protocol->OnNextIdleFrame(L"Scrolled to end", [=]()
+				{
+					auto dialogWindow = GetOpeningFileDialog();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(dialogWindow, L"filePickerControl", L"dataGrid");
+					// Verify item 0 is NOT visible (scrolled away)
+					TEST_ASSERT(dataGrid->GetArranger()->GetVisibleStyle(0) == nullptr);
+					DbClickFile(protocol, L"100");
+				});
+				protocol->OnNextIdleFrame(L"Entered: 100", [=]()
+				{
+					auto dialogWindow = GetOpeningFileDialog();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(dialogWindow, L"filePickerControl", L"dataGrid");
+					TEST_ASSERT(dataGrid->GetItemProvider()->Count() == 100);
+					// After navigating into a new folder, item 0 should be visible
+					TEST_ASSERT(dataGrid->GetArranger()->GetVisibleStyle(0) != nullptr);
+					PressCancel(protocol);
+				});
+				protocol->OnNextIdleFrame(L"Cancel", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Dialog_File/ScrollResetOnNavigation"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceFileDialogs,
+				{
+					.initialize = [&, createScrollTestRoot]() { fsMock = Ptr(new FileSystemMock(createScrollTestRoot())); },
+					.finalize = [&]() { fsMock = {}; }
+				}
+			);
+		});
+	});
 }

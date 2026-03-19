@@ -6719,6 +6719,17 @@ Class (::gaclib_controls::FilePickerControlConstructor)
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SelectedFolderChanged, __vwsn_event_handler_);
 		}
 		{
+			auto __vwsn_this_capture = this;
+			auto __vwsn_event_handler_ = vl::Func<void()>([__vwsn_this_capture]()
+			{
+				if (!::vl::__vwsn::This(__vwsn_this_capture->ViewModel.Obj())->GetIsLoadingFiles())
+				{
+					::vl::__vwsn::This(__vwsn_this_capture->dataGrid)->SetViewPosition(::vl::presentation::Point(0, 0));
+				}
+			});
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->IsLoadingFilesChanged, __vwsn_event_handler_);
+		}
+		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc23_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf43_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);

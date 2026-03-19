@@ -107,6 +107,14 @@
               self.LocateSelectedFolderInTreeView();
             }
           ]]></ev.SelectedFolderChanged-eval>
+          <ev.IsLoadingFilesChanged-eval><![CDATA[
+            {
+              if (not ViewModel.IsLoadingFiles)
+              {
+                dataGrid.SetViewPosition({x:0 y:0});
+              }
+            }
+          ]]></ev.IsLoadingFilesChanged-eval>
         </att.ViewModel-set>
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
