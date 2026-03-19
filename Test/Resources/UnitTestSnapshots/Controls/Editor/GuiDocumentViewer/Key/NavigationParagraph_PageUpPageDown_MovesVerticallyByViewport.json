@@ -207,7 +207,27 @@
     [205, "DocumentParagraph"],
     [206, "DocumentParagraph"],
     [207, "DocumentParagraph"],
-    [208, "DocumentParagraph"]
+    [208, "DocumentParagraph"],
+    [209, "DocumentParagraph"],
+    [210, "DocumentParagraph"],
+    [211, "DocumentParagraph"],
+    [212, "DocumentParagraph"],
+    [213, "DocumentParagraph"],
+    [214, "DocumentParagraph"],
+    [215, "DocumentParagraph"],
+    [216, "DocumentParagraph"],
+    [217, "DocumentParagraph"],
+    [218, "DocumentParagraph"],
+    [219, "DocumentParagraph"],
+    [220, "DocumentParagraph"],
+    [221, "DocumentParagraph"],
+    [222, "DocumentParagraph"],
+    [223, "DocumentParagraph"],
+    [224, "DocumentParagraph"],
+    [225, "DocumentParagraph"],
+    [226, "DocumentParagraph"],
+    [227, "DocumentParagraph"],
+    [228, "DocumentParagraph"]
   ],
   "imageCreations": [],
   "imageMetadatas": [],
@@ -296,6 +316,60 @@
     {
       "frameId": 17,
       "frameName": "Caret at (5,1) and [PAGE DOWN]",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 20,
+      "frameName": "Double [HOME]",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 25,
+      "frameName": "Double [END]",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

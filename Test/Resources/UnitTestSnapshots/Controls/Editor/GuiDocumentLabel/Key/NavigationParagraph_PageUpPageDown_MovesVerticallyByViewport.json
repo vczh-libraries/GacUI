@@ -323,6 +323,60 @@
       },
       "elements": null,
       "root": null
+    },
+    {
+      "frameId": 16,
+      "frameName": "Double [HOME]",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 18,
+      "frameName": "Double [END]",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
     }
   ]
 }

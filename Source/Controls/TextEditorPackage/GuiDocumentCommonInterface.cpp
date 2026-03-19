@@ -1,6 +1,7 @@
 #include "GuiDocumentCommonInterface.h"
 #include "../../Application/GraphicsHost/GuiGraphicsHost.h"
 #include "../../Resources/GuiDocumentEditor.h"
+#include "../../Application/Controls/GuiApplication.h"
 
 namespace vl
 {
@@ -93,9 +94,10 @@ GuiDocumentCommonInterface
 				{
 					documentElement->SetCaretVisible(true);
 				}
-				EnsureDocumentRectVisible(documentElement->GetCaretBounds(newEnd, frontSide));
 				UpdateCaretPoint();
 				SelectionChanged.Execute(documentControl->GetNotifyEventArguments());
+
+				EnsureDocumentRectVisible(documentElement->GetCaretBounds(newEnd, frontSide));
 			}
 
 			bool GuiDocumentCommonInterface::ProcessKey(VKEY code, bool shift, bool ctrl)

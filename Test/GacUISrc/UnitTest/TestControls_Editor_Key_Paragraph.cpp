@@ -740,6 +740,18 @@ void RunTextBoxKeyTestCases_MultiParagraph(const wchar_t* resource, const WStrin
 
 				protocol->OnNextIdleFrame(L"Caret at (5,1) and [PAGE DOWN]", [=]()
 				{
+					protocol->KeyPress(VKEY::KEY_HOME);
+					protocol->KeyPress(VKEY::KEY_HOME);
+				});
+
+				protocol->OnNextIdleFrame(L"Double [HOME]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_END);
+					protocol->KeyPress(VKEY::KEY_END);
+				});
+
+				protocol->OnNextIdleFrame(L"Double [END]", [=]()
+				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
