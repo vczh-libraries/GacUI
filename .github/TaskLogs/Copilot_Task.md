@@ -1,128 +1,113 @@
 # !!!TASK!!!
 
 # PROBLEM DESCRIPTION
-In ONLY Protocol_Renderer_BasicElements.txt and Protocol_Renderer_ImageFrame.txt,
-there are in total 9 `RendererUpdateElement_*` messages, delete them.
+I would like to add a new message in remote protocol to tell that all layout works has been done and no future rendering request will be sent unless new changes happens. This is only a hint, in most of the case nothing needs to be done upon receiving this message. But it works for GacJS unit tests as playwright waiting on a fixed time is not a good strategy, because changing to other computer might break test cases.
 
-Instead, add the following to `Protocol_Renderer.txt`
-- union OrdinaryElementDescVariant, which is similar to `UnitTest_ElementDescVariant` but without `ElementDesc_DocumentParagraphFull`.
-- `ElementBeginRendering` adds a new field `var updatedElements : OrdinaryElementDescVariant[];`.
+I would name it `RendererIdle`.
 
-After running `Metadata_UpdateProtocol` there will be many errors. Here is a helpful categorization:
+My proposal is that:
+- In `IGuiGraphicsRenderTarget` add a new `HostedRenderingIdle` method, `GuiGraphicsRenderTarget` should have an empty implementation for it.
+- `GuiRemoteGraphicsRenderTarget` can use it to send the message.
+- In `GuiHostedController::GlobalTimer` I believe the second `return;` in line 692 is a good place to trigger it. But you need to do it in this way:
+  - I hope this function not being kept calling. Only once is allowed between two actual rendering.
 
-In `GuiRemoteGraphics_BasicElements.cpp`, since 9 methods are missing, so the `SendUpdateElementMessages` function needs to be changed, now new element desc will be added to a list in the argument.
-There are two calls to `SendUpdateElementMessages`.
-The first one is in `GuiRemoteGraphicsRenderTarget::StartRenderingOnNativeWindow`, it is easy, the list is in `remoteprotocol::ElementBeginRendering arguments;`.
-The second one is in `GuiRemoteGraphicsRenderTarget::OnControllerConnect`. Notice the first bool argument is different.
-You need to have a flag in `GuiRemoteGraphicsRenderTarget`. So that in `StartRenderingOnNativeWindow`, when the flag is on, it runs the `foreach renderer` moved from `OnControllerConnect` instead of the one in it, and the flag is reset.
+After adding a new message to the remote protocol, some places will break because the handling is missing. You should keep all handling empty unless in `UnitTestRemoteProtocolFeatures`. `ProcessRemoteEvents` and `LogRenderingResult` combined detect if a frame is making no change / being blocked and when to execute the next frame. A frame will be executed only when the layout triggered by the last frame finished. Multiple rounds of rendering requests might happen during it. So it is a good place to make sure, if I have received exactly one `RendererIdle`? This check should apply before executing every frame from the second one. The first one is tricky, I would like you to make sure, instead of exactly one, I would like at most one `RendererIdle` is issued.
 
-There are also some handler functions for deleted messages.
-Keep all of them unchanged.
-But since those abstract methods are removed, you need to fix the class declaration accordingly.
-And in the handler function for `RendererBeginRendering`, call them. Prefer `Variant::Apply` over any other type of dispatching.
-Notice that document paragraph is not in this list. Document paragraph is handled in a separate way.
-Affected classes here would be `GuiRemoteRendererSingle`, `UnitTestRemoteProtocol_Rendering` and some others.
+You need to change UnitTest.vcxproj.user to ensure every test files will be executed.
+You don't need to change any existing test cases, as `UnitTestRemoteProtocolFeatures` is going to be called in every GacUI test cases. You are going to call CHECK_ERROR instead of TEST_ASSERT just like how ProcessRemoteEvents does.
 
 # UPDATES
 
 # INSIGHTS AND REASONING
 
-## Summary
-The renderer side currently pushes element property changes using 9 separate `RendererUpdateElement_*` messages (8 basic elements + 1 image frame). This change removes those protocol messages and instead batches “ordinary element” updates into `RendererBeginRendering` via a new `updatedElements` array of a variant type.
+## Context / Evidence
 
-The intent is to (1) reduce message count / dispatch overhead, and (2) guarantee that all property updates relevant to a frame are delivered before any `RendererRenderElement` calls for that frame.
+- Hosted rendering is driven by `vl::presentation::GuiHostedController::GlobalTimer()`.
+  - It returns early when nothing needs refreshing and the previous frame didn’t update any window (`if (!wmManager->needRefresh && !windowsUpdatedInLastFrame) { return; }` in `Source\PlatformProviders\Hosted\GuiHostedController.cpp`). This is the proposed trigger point.
+  - Actual rendering happens inside the `StartHostedRendering()` / `StopHostedRendering()` loop.
+- Remote protocol message definitions are code-generated from `Source\PlatformProviders\Remote\Protocol\Protocol_*.txt` into `...\Protocol\Generated\GuiRemoteProtocolSchema.h` (see `KB_GacUI_Design_RemoteProtocolCoreArchitecture.md`).
+- The unit test framework executes per-frame callbacks only after rendering has settled:
+  - `UnitTestRemoteProtocolFeatures::LogRenderingResult()` commits a frame only when a previously-seen rendering frame is followed by a cycle where no new rendering occurs.
+  - `UnitTestRemoteProtocol::ProcessRemoteEvents()` executes the next `OnNextIdleFrame` callback only when `LogRenderingResult()` returns `true` (see `Source\UnitTestUtilities\GuiUnitTestProtocol.h`).
 
-## Protocol design changes
+This means the unit test framework already has a well-defined “renderer is now idle” moment, and it is appropriate to validate `RendererIdle` there.
 
-### Files involved
-- `Source\PlatformProviders\Remote\Protocol\Protocol_Renderer_BasicElements.txt`: remove the 8 `message RendererUpdateElement_* { request: ElementDesc_*; }` declarations.
-- `Source\PlatformProviders\Remote\Protocol\Protocol_Renderer_ImageFrame.txt`: remove `message RendererUpdateElement_ImageFrame { request: ElementDesc_ImageFrame; }`.
-- `Source\PlatformProviders\Remote\Protocol\Protocol_Renderer.txt`: extend the core renderer protocol with:
-  - `union OrdinaryElementDescVariant`: same alternatives as `Protocol_UnitTest.txt`’s `UnitTest_ElementDescVariant` **except** it excludes `ElementDesc_DocumentParagraphFull`.
-    - This union therefore includes the “ordinary element desc” structs: `ElementDesc_SolidBorder`, `ElementDesc_SinkBorder`, `ElementDesc_SinkSplitter`, `ElementDesc_SolidBackground`, `ElementDesc_GradientBackground`, `ElementDesc_InnerShadow`, `ElementDesc_Polygon`, `ElementDesc_SolidLabel`, `ElementDesc_ImageFrame`.
-    - Identity is carried inside each `ElementDesc_*` (`var id : int;`) and must be used by the receiver to locate the target element when applying batched updates.
-  - Add `var updatedElements : OrdinaryElementDescVariant[];` to `struct ElementBeginRendering`.
-    - `updatedElements` is always present; an empty array means “no ordinary element updates this frame”.
+## Proposed Design
 
-### Explicit non-goals
-- Document paragraph updates are *not* moved into this list.
-  - `Protocol_Renderer_Document.txt` keeps `message RendererUpdateElement_DocumentParagraph { request: ElementDesc_DocumentParagraph; response: ...; }` and its associated paragraph query messages.
-  - This matches the requirement that document paragraphs continue to be handled separately.
+### 1) Add a new remote-protocol message: `RendererIdle`
 
-## Code-level impact (high-level)
-Running `Metadata_UpdateProtocol` regenerates the remote protocol schema (e.g. `Source\PlatformProviders\Remote\Protocol\Generated\...`) so the 9 request methods and related abstract interface members disappear. Code that previously called `RequestRendererUpdateElement_*` directly must be refactored to populate `ElementBeginRendering.updatedElements` instead.
+- Add a **core → renderer** message `RendererIdle` to the renderer protocol definition (expected location: `Source\PlatformProviders\Remote\Protocol\Protocol_Renderer.txt`).
+  - Message definition should be the minimal no-payload form: `message RendererIdle {}`.
+- **Drop annotation**: keep it **not dropped**.
+  - Explicitly: it must **NOT** be annotated with `[@DropRepeat]` or `[@DropConsecutive]`, so tests can observe duplicates if they happen.
+- Codegen prerequisite: after editing `Protocol_Renderer.txt`, regenerate protocol headers via the existing codegen flow (project `Metadata_UpdateProtocol`, per `Project.md`) **before** building anything that depends on the generated protocol code.
 
-### Core side: collecting element updates
+### 2) Add a render-target hook: `HostedRenderingIdle()`
 
-#### Where updates are currently sent
-In `Source\PlatformProviders\Remote\GuiRemoteGraphics.cpp`:
-- `GuiRemoteGraphicsRenderTarget::StartRenderingOnNativeWindow()` iterates `renderers` and calls `renderer->SendUpdateElementMessages(false);` (only updated ones), then sends `RendererBeginRendering`.
-- `GuiRemoteGraphicsRenderTarget::OnControllerConnect()` iterates *all* renderers and calls `renderer->SendUpdateElementMessages(true);` (full content push after connect).
+- Extend `vl::presentation::elements::IGuiGraphicsRenderTarget` with a new **pure-virtual** method:
+  - `HostedRenderingIdle()` (name per request; semantics: “hosted mode determined there will be no more rendering requests until the next change”).
+- Provide an empty default implementation in `vl::presentation::elements::GuiGraphicsRenderTarget` (so non-remote targets stay no-op by default).
 
-In `Source\PlatformProviders\Remote\GuiRemoteGraphics_BasicElements.h`, `IGuiRemoteProtocolElementRender::SendUpdateElementMessages(bool fullContent)` is currently a pure virtual used by all element renderers.
+Rationale:
+- The “idle” concept is a hosted-mode scheduling decision, but the effect (emitting `RendererIdle`) is protocol-specific, so the hook keeps the controller generic and makes remote/non-remote targets behave correctly with no behavioral change.
 
-#### New mechanism
-The renderers should no longer “send update messages”. Instead, they should *append* their current `ElementDesc_*` into a list that will become `ElementBeginRendering.updatedElements`.
+### 3) Trigger `HostedRenderingIdle()` from `GuiHostedController::GlobalTimer` (once per idle period)
 
-Design-wise, this implies:
-- Change the `SendUpdateElementMessages` contract so it can add to a provided collection (owned by the caller), rather than calling `remoteMessages.RequestRendererUpdateElement_*`.
-  - Concrete option: `SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)`.
-  - The required call-site convenience comes from the fact that in `StartRenderingOnNativeWindow` the list lives inside `remoteprotocol::ElementBeginRendering arguments;`.
+- At the early-return branch:
+  - `if (!wmManager->needRefresh && !windowsUpdatedInLastFrame) { /* trigger */ return; }`
+  - Keep the existing `renderTarget->IsInHostedRendering()` early-return taking precedence (do not emit idle while hosted rendering is in progress).
+  - Null-check `renderTarget` before calling `HostedRenderingIdle()` to avoid startup/initialization edge crashes.
+  - Call `renderTarget->HostedRenderingIdle()` right before returning.
+- Add a small piece of state to ensure **the hook is invoked at most once between two actual renderings**:
+  - Track a boolean like `idleNotifiedSinceLastRendering`.
+  - Reset it when a rendering cycle is about to happen (e.g., when taking the `NEED_REFRESH:` path / entering the rendering loop).
+  - Only call `HostedRenderingIdle()` when the early-return branch is hit *and* `idleNotifiedSinceLastRendering == false`, then set it to `true`.
 
-#### Two call sites + reconnect flag
-The two places that need to populate the list are exactly the two existing call sites:
-- `StartRenderingOnNativeWindow`: build `ElementBeginRendering arguments;`, fill `arguments.updatedElements` from the updated renderers, then send `RequestRendererBeginRendering(arguments)`.
-- `OnControllerConnect`: keep its current responsibility of resending full state after a reconnect, but move the “foreach renderer send full update” logic to run in the *next* `StartRenderingOnNativeWindow`.
-  - Add a boolean flag on `GuiRemoteGraphicsRenderTarget` to indicate “need full element sync on next begin-rendering”.
-  - `OnControllerConnect` sets the flag (ordinary elements only).
-  - `StartRenderingOnNativeWindow` checks the flag:
-    - when on: run the “foreach renderer” loop that previously lived in `OnControllerConnect` (the `fullContent == true` behavior), but populating `arguments.updatedElements` instead of sending messages.
-      - This is the *only* collection path taken for that frame (not in addition to the incremental path), to preserve “exactly one full sync after reconnect”.
-    - reset the flag.
-    - when off: run the existing “only updated renderers” behavior (the `fullContent == false` behavior).
-    - In both branches, preserve existing renderer lifecycle bookkeeping (e.g. `NeedUpdateMinSizeFromCache()` and `ResetUpdated()` calls) so size caches and incremental-update tracking remain correct.
+Rationale:
+- `GlobalTimer()` is called continuously in remote mode (and often in hosted mode generally), so the early return would otherwise spam `RendererIdle`.
+- The flag-based gating satisfies the “only once allowed between two actual rendering” constraint.
 
-This preserves the original semantics where reconnect triggers a full element refresh, while conforming to the new batching protocol.
+### 4) Remote render target emits the protocol hint
 
-### Remote side: applying batched updates
+- `vl::presentation::elements::GuiRemoteGraphicsRenderTarget` overrides `HostedRenderingIdle()`:
+  - Implementation: enqueue `RequestRendererIdle()` through existing `GuiRemoteMessages` batching (no synchronous waiting).
+  - No behavior on disconnected state beyond existing safe-guards (i.e., same as other renderer messages: they become no-ops / are naturally ignored when not connected).
 
-#### Keep per-element handler functions
-Classes like `GuiRemoteRendererSingle` currently contain per-element update handlers like:
-- `RequestRendererUpdateElement_SolidBorder(const ElementDesc_SolidBorder&)` (see `Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_Rendering_Elements.cpp`).
+### 5) Keep all other receiver-side handlers empty (except unit tests)
 
-Even after protocol regeneration removes the corresponding protocol message definitions, these functions remain useful as internal “apply desc” helpers, so they should be kept unchanged as requested.
+Adding a new message expands `GACUI_REMOTEPROTOCOL_MESSAGES(...)` usages across multiple implementers; to keep impact minimal:
+- For all protocol implementers other than the unit test protocol, add an **empty** handler for `RequestRendererIdle`.
+  - Example targets include the “real” renderer implementations and any JSON/channel adapters that explicitly switch over message enums.
+- The only non-empty behavior should be inside `UnitTestRemoteProtocolFeatures`.
 
-#### Fix class declarations after regeneration
-Because the 9 protocol messages are deleted, the regenerated abstract interface(s) that `GuiRemoteRendererSingle`, `UnitTestRemoteProtocol_Rendering`, etc. implement will no longer require those methods. The design change is to update class inheritance / `override` lists accordingly, while retaining the method bodies as regular member functions.
+### 6) Unit test framework: validate `RendererIdle` sequencing
 
-#### Apply `updatedElements` in `RendererBeginRendering`
-`GuiRemoteRendererSingle::RequestRendererBeginRendering(const ElementBeginRendering&)` is currently empty (see `Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_Rendering.cpp`). With the new protocol field, this handler becomes the single place that applies all ordinary element updates, and it must do so *before* any `RendererRenderElement` processing for the frame.
+Goal:
+- Starting from the **second executed idle frame callback**, ensure **exactly one** `RendererIdle` was received since the previous callback execution.
+- For the **first** callback execution, allow **at most one** `RendererIdle`.
 
-Dispatching should be done via `Variant::Apply` (per repo guidance in the request), mapping each alternative in `OrdinaryElementDescVariant` to the corresponding existing apply function:
-- e.g. `ElementDesc_SolidBorder` -> `RequestRendererUpdateElement_SolidBorder(desc)`
-- ...
-- `ElementDesc_ImageFrame` -> `RequestRendererUpdateElement_ImageFrame(desc)`
+Design:
+- In `UnitTestRemoteProtocolFeatures`, add a counter `rendererIdleCount` (use `vint`) and increment it in `Impl_RendererIdle()`.
+- In `UnitTestRemoteProtocol::ProcessRemoteEvents()`, after `LogRenderingResult()` returns `true` and before executing the callback (right before calling `func()`):
+  - First callback (`nextEventIndex == 0`): `CHECK_ERROR(rendererIdleCount <= 1, ...)`.
+  - Later callbacks (`nextEventIndex >= 1`): `CHECK_ERROR(rendererIdleCount == 1, ...)`.
+  - Then reset `rendererIdleCount = 0`.
+- Ensure `CHECK_ERROR` messages follow the existing `ERROR_MESSAGE_PREFIX` convention so failures are actionable.
 
-Document paragraph is intentionally excluded from this list; its update is still handled through the separate document-paragraph messages and code paths.
+Rationale:
+- This placement leverages the existing “frame is settled” boundary: `LogRenderingResult()` returning `true` is exactly when the framework is about to run the next `OnNextIdleFrame` callback.
+- Using `CHECK_ERROR` matches existing error signaling in `ProcessRemoteEvents()` and `LogRenderingResult()`.
 
-## Verification / generated code
-Because this is a protocol schema change:
-- Run `Metadata_UpdateProtocol` after editing `Source\PlatformProviders\Remote\Protocol\*.txt`.
-- Build-fix all implementers after regeneration:
-  - remove stale `override` declarations for the deleted `RendererUpdateElement_*` request handlers (while keeping their bodies as internal helper methods).
-  - ensure `RequestRendererBeginRendering` applies `updatedElements` via `Variant::Apply`.
-- Ensure all affected translation units compile with the regenerated protocol schema.
-- Verification checkpoints:
-  - Within a frame, all entries in `updatedElements` are applied before any `RendererRenderElement` processing.
-  - After reconnect, exactly one full-content ordinary element sync occurs on the next rendering frame (then returns to incremental updates).
-  - Paragraph update path remains separate and unchanged.
-- Always run unit tests for these changes (noting that `GuiRemoteRendererSingle` itself is not covered, but the build will validate its compilation).
+### 7) Update `UnitTest.vcxproj.user` to run all tests
+
+- `Test\GacUISrc\UnitTest\UnitTest.vcxproj.user` currently uses `/F:` in `LocalDebuggerCommandArguments` (e.g., `/F:TestApplication_Dialog_File.cpp`), which filters which tests run.
+- Update it so the default debugger arguments do **not** filter to a single file, ensuring “every test file will be executed” when running the UnitTest project.
+- Update `LocalDebuggerCommandArgumentsHistory` accordingly so the default profile remains “run everything”.
 
 # AFFECTED PROJECTS
-- Build the solution in folder REPO-ROOT\Test\GacUISrc, Debug|x64.
-- Run CLI project Metadata_UpdateProtocol, Debug|x64.
-- Build the solution in folder REPO-ROOT\Test\GacUISrc, Debug|x64.
-- Always Run UnitTest project UnitTest, Debug|x64.
+
+- Run CLI|UnitTest project Metadata_UpdateProtocol (trigger: `Source\PlatformProviders\Remote\Protocol\Protocol_*.txt` changes).
+- Build the solution in folder `REPO-ROOT\Test\GacUISrc` (Debug|x64).
+- Always Run UnitTest project `UnitTest` (Debug|x64).
 
 # !!!FINISHED!!!
-
