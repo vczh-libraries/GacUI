@@ -16,6 +16,14 @@ The action is triggered by `GuiDocumentCommonInterface::Move`. The `EnsureDocume
 
 # UPDATES
 
+## CONTINUE
+
+Your fix is good, I am impressed! but the third proposal could be improved a little bit, you are going to follow the instruction to make improvements.
+
+You have enforced a `EnsureParagraph` for every paragraphs above the target one, which actually fixed the issue but it brings a performance issue when the text box has too many paragraphs. I don't have a test case for this but I always try a 100k paragraph document to make sure it react fast.
+
+So I would like you to try if it is possible only to consider paragraphs that are actually rendered. The solution might be a little bit complex because it might need to talk to all caches. Please propose new solutions and continue.
+
 ## REPORT
 
 Apparently No.5 proposal is worse than the other 2 in performance. Compare No.4 and No.6.
@@ -36,14 +44,14 @@ The test creates 40 paragraphs, then tests PAGE UP / PAGE DOWN / double HOME / d
 
 # PROPOSALS
 
-- Iterative EnsureDocumentRectVisible in Move [DENIED]
-- EnsureCaretVisible callback after rendering [DENIED]
-- Ensure all paragraph heights before GetParagraphTop [DENIED]
-- Correct unrendered paragraph cached sizes using measured height [CONFIRMED]
-- Apply height correction factor without modifying cached state [DENIED BY USER]
-- Proactive height correction during Render pass [CONFIRMED]
+- No.1 Iterative EnsureDocumentRectVisible in Move [DENIED]
+- No.2 EnsureCaretVisible callback after rendering [DENIED]
+- No.3 Ensure all paragraph heights before GetParagraphTop [DENIED]
+- No.4 Correct unrendered paragraph cached sizes using measured height [CONFIRMED]
+- No.5 Apply height correction factor without modifying cached state [DENIED]
+- No.6 Proactive height correction during Render pass [CONFIRMED]
 
-## Iterative EnsureDocumentRectVisible in Move
+## No.1 Iterative EnsureDocumentRectVisible in Move
 
 **Root Cause Analysis:**
 
@@ -68,18 +76,18 @@ This means a simple loop in `Move` won't solve the problem — the intermediate 
 
 **Expected Outcome:** This proposal is likely to be DENIED because the intermediate paragraphs are not created until rendering, so re-calling `GetCaretBounds` in `Move` will return the same inaccurate bounds.
 
-### DENIED
+### CODE CHANGE
 
-**Change Made:**
 In `GuiDocumentCommonInterface::Move` (in `GuiDocumentCommonInterface.cpp`), replaced the single `EnsureDocumentRectVisible` call with a loop that calls `GetCaretBounds` and `EnsureDocumentRectVisible` up to 10 times, breaking when bounds stabilize.
 
-**Result:**
+### DENIED
+
 - All 186 test cases passed.
 - `git status` showed NO snapshot file changes — only the investigation document changed.
 - The iterative approach has zero effect because `GetCaretBounds` only calls `EnsureParagraph` for the target paragraph. The intermediate paragraphs between the viewport and target remain at estimated heights. Since no rendering occurs between iterations, subsequent calls to `GetCaretBounds` return the same bounds, and the loop exits after 2 iterations (first call + duplicate detection).
 - Change reverted.
 
-## EnsureCaretVisible callback after rendering
+## No.2 EnsureCaretVisible callback after rendering
 
 **Root Cause Analysis:**
 
@@ -98,14 +106,14 @@ After rendering creates all visible paragraphs (with accurate heights), the re-c
 
 **Expected Outcome:** This proposal should work because re-evaluation happens after paragraphs are rendered with correct heights.
 
-### DENIED
+### CODE CHANGE
 
-**Changes Made:**
 1. Added fields to `GuiDocumentCommonInterface.h`: `pendingEnsureCaretVisible`, `pendingEnsureCaretPos`, `pendingEnsureCaretFrontSide`, `pendingEnsureCaretLastBounds`.
 2. In `Move()`: set the pending flag and save last bounds after calling `EnsureDocumentRectVisible`.
 3. In `OnFinishRender()`: if flag is set, re-compute `GetCaretBounds`. If bounds changed, call `EnsureDocumentRectVisible` again. If bounds stable, clear flag.
 
-**Result:**
+### DENIED
+
 - All 186 test cases passed.
 - `git status` showed NO snapshot file changes.
 - The approach had zero visible effect. The likely reason is that during `OnFinishRender`, `GetCaretBounds` returns the same bounds as in `Move`, because:
@@ -115,7 +123,7 @@ After rendering creates all visible paragraphs (with accurate heights), the re-c
   - Even if heights did differ, the scroll position change during `OnFinishRender` may not propagate correctly because it happens inside the render cycle.
 - Change reverted.
 
-## Ensure all paragraph heights before GetParagraphTop
+## No.3 Ensure all paragraph heights before GetParagraphTop
 
 **Root Cause Analysis:**
 
@@ -155,7 +163,7 @@ The fix correctly solves the inaccurate scroll issue and all 186 test cases pass
 
 The user requested that the fix should only consider paragraphs that are actually rendered (i.e., in the visible viewport range), rather than blindly ensuring all preceding paragraphs.
 
-## Correct unrendered paragraph cached sizes using measured height
+## No.4 Correct unrendered paragraph cached sizes using measured height
 
 **Root Cause Analysis:**
 
@@ -251,7 +259,7 @@ All 186 test cases passed. 179 files changed: 3 source files + 176 snapshot file
 - 176 snapshot files changed due to element ID differences: Proposal 3 creates graphics paragraphs for all preceding paragraphs in `GetCaretBounds`, allocating element IDs. Proposal 4 skips those creations, so subsequent element IDs are shifted. This is expected and acceptable.
 - The fix corrects heights of never-rendered paragraphs (O(n) lightweight array scan, no graphics object creation) instead of calling `EnsureParagraph` for all preceding paragraphs. For a 100k-paragraph document, this avoids creating 100k graphics paragraphs on a single navigation event.
 
-## Apply height correction factor without modifying cached state
+## No.5 Apply height correction factor without modifying cached state
 
 **Root Cause Analysis:**
 
