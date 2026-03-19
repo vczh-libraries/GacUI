@@ -28,7 +28,7 @@ So I would like you to try if it is possible only to consider paragraphs that ar
 
 Apparently No.5 proposal is worse than the other 2 in performance. Compare No.4 and No.6.
 
-# TEST
+# TEST [CONFIRMED]
 
 The existing test case `NavigationParagraph_PageUpPageDown_MovesVerticallyByViewport` already covers this scenario. It is instantiated for:
 - `GuiDocumentViewer`
