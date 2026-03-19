@@ -32,6 +32,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererCreated(const Ptr<collections::List<remoteprotocol::RendererCreation>>& arguments)
 	{
+		supressRefresh = true;
 		if (arguments)
 		{
 			for (auto&& rc : *arguments.Obj())
@@ -97,6 +98,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererDestroyed(const Ptr<collections::List<vint>>& arguments)
 	{
+		supressRefresh = true;
 		if (arguments)
 		{
 			for (auto id : *arguments.Obj())
@@ -110,6 +112,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments)
 	{
+		supressRefresh = true;
 		if (arguments.updatedElements)
 		{
 			for (auto&& desc : *arguments.updatedElements.Obj())
@@ -134,16 +137,17 @@ namespace vl::presentation::remote_renderer
 		events->RespondRendererEndRendering(id, elementMeasurings);
 		elementMeasurings = {};
 		fontHeightMeasurings.Clear();
+		supressRefresh = false;
+		if (needRefresh)
+		{
+			needRefresh = false;
+			ForceRender();
+		}
 	}
 
 /***********************************************************************
 * Rendering (Dom)
 ***********************************************************************/
-
-	void GuiRemoteRendererSingle::CheckDom()
-	{
-		needRefresh = true;
-	}
 
 	void GuiRemoteRendererSingle::RequestRendererRenderDom(const Ptr<remoteprotocol::RenderingDom>& arguments)
 	{
@@ -152,7 +156,7 @@ namespace vl::presentation::remote_renderer
 		{
 			BuildDomIndex(renderingDom, renderingDomIndex);
 		}
-		CheckDom();
+		needRefresh = true;
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererRenderDomDiff(const remoteprotocol::RenderingDom_DiffsInOrder& arguments)
@@ -161,7 +165,7 @@ namespace vl::presentation::remote_renderer
 		CHECK_ERROR(renderingDom, ERROR_MESSAGE_PREFIX L"This function must be called after RequestRendererRenderDom.");
 
 		UpdateDomInplace(renderingDom, renderingDomIndex, arguments);
-		CheckDom();
+		needRefresh = true;
 #undef ERROR_MESSAGE_PREFIX
 	}
 
@@ -202,7 +206,7 @@ namespace vl::presentation::remote_renderer
 		}
 	}
 
-	void GuiRemoteRendererSingle::Render(Ptr<remoteprotocol::RenderingDom> dom, elements::IGuiGraphicsRenderTarget* rt)
+	void GuiRemoteRendererSingle::RenderDom(Ptr<remoteprotocol::RenderingDom> dom, elements::IGuiGraphicsRenderTarget* rt)
 	{
 		if (dom->content.element)
 		{
@@ -259,7 +263,7 @@ namespace vl::presentation::remote_renderer
 			{
 				if (child->content.validArea.Width() > 0 && child->content.validArea.Height()> 0)
 				{
-					Render(child, rt);
+					RenderDom(child, rt);
 				}
 			}
 		}
@@ -297,25 +301,12 @@ namespace vl::presentation::remote_renderer
 		cursor = cursorTypeNullable ? GetCurrentController()->ResourceService()->GetSystemCursor(cursorTypeNullable.Value()) : GetCurrentController()->ResourceService()->GetDefaultSystemCursor();
 	}
 
-	void GuiRemoteRendererSingle::GlobalTimer()
+	void GuiRemoteRendererSingle::ForceRender()
 	{
-		DateTime now = DateTime::UtcTime();
-		if (now.osMilliseconds - lastCaretTime >= CaretInterval)
-		{
-			lastCaretTime = now.osMilliseconds;
-			OnCaretNotify();
-		}
-		SendAccumulatedMessages();
-
-		if (!needRefresh) return;
-		needRefresh = false;
-		if (!window) return;
-		if (!renderingDom) return;
-
 		supressPaint = true;
 		auto rt = GetGuiGraphicsResourceManager()->GetRenderTarget(window);
 		rt->StartRendering();
-		Render(renderingDom, rt);
+		RenderDom(renderingDom, rt);
 		auto result = rt->StopRendering();
 		window->RedrawContent();
 		supressPaint = false;
@@ -334,6 +325,27 @@ namespace vl::presentation::remote_renderer
 			break;
 		default:;
 		}
+	}
+
+	void GuiRemoteRendererSingle::GlobalTimer()
+	{
+		DateTime now = DateTime::UtcTime();
+		if (now.osMilliseconds - lastCaretTime >= CaretInterval)
+		{
+			lastCaretTime = now.osMilliseconds;
+			OnCaretNotify();
+		}
+		SendAccumulatedMessages();
+
+		// Between any element destroying, element creating, start rendering
+		// and end rendering
+		// no refreshing is allowed to avoid flashing issue
+		if (supressRefresh) return;
+		if (!needRefresh) return;
+		needRefresh = false;
+		if (!window) return;
+		if (!renderingDom) return;
+		ForceRender();
 	}
 
 	void GuiRemoteRendererSingle::Paint()

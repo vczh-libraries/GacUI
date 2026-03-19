@@ -85,7 +85,6 @@ namespace vl::presentation::remote_renderer
 		void									StoreLabelMeasuring(vint id, remoteprotocol::ElementSolidLabelMeasuringRequest request, Ptr<elements::GuiSolidLabelElement> solidLabel, Size minSize);
 		remoteprotocol::ImageMetadata			CreateImageMetadata(vint id, INativeImage* image);
 		remoteprotocol::ImageMetadata			CreateImage(const remoteprotocol::ImageCreation& arguments);
-		void									CheckDom();
 
 	protected:
 		ElementMap								focusedParagraphElements;
@@ -96,14 +95,17 @@ namespace vl::presentation::remote_renderer
 	protected:
 		static const vuint64_t					CaretInterval = 500;
 		vuint64_t								lastCaretTime = 0;
-		bool									supressPaint = false;
+
+		bool									supressRefresh = false;		// true to supress repainting in INativeControllerListener::GlobalTimer event
+		bool									supressPaint = false;		// true to not handling INativeWindowListener::Paint event
 		bool									needRefresh = false;
 
 		void									UpdateRenderTarget(elements::IGuiGraphicsRenderTarget* rt);
-		void									Render(Ptr<remoteprotocol::RenderingDom> dom, elements::IGuiGraphicsRenderTarget* rt);
+		void									RenderDom(Ptr<remoteprotocol::RenderingDom> dom, elements::IGuiGraphicsRenderTarget* rt);
 		void									HitTestInternal(Ptr<remoteprotocol::RenderingDom> dom, Point location, Nullable<INativeWindowListener::HitTestResult>& hitTestResult, Nullable<INativeCursor::SystemCursorType>& cursorType);
 		void									HitTest(Ptr<remoteprotocol::RenderingDom> dom, Point location, INativeWindowListener::HitTestResult& hitTestResult, INativeCursor*& cursor);
 
+		void									ForceRender();
 		void									GlobalTimer() override;
 		void									Paint() override;
 		INativeWindowListener::HitTestResult	HitTest(NativePoint location) override;
