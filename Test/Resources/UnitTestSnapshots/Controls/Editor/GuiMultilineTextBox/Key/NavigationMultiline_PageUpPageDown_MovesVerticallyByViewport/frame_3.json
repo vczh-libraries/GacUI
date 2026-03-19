@@ -1,5 +1,5 @@
 ﻿{
-  "frameId": 18,
+  "frameId": 14,
   "frameName": "Caret at (5,1) and [PAGE DOWN]",
   "windowSize": {
     "bounds": {
@@ -681,13 +681,13 @@
       ]
     ],
     [
-      197,
+      196,
       [
         "ElementDesc_DocumentParagraphFull",
         {
           "paragraph": {
-            "id": 197,
-            "text": "L14",
+            "id": 196,
+            "text": "L13",
             "wrapLine": false,
             "maxWidth": 21,
             "alignment": "Left",
@@ -713,13 +713,13 @@
       ]
     ],
     [
-      198,
+      197,
       [
         "ElementDesc_DocumentParagraphFull",
         {
           "paragraph": {
-            "id": 198,
-            "text": "L15",
+            "id": 197,
+            "text": "L14",
             "wrapLine": false,
             "maxWidth": 21,
             "alignment": "Left",
@@ -943,7 +943,7 @@
         {
           "paragraph": {
             "id": 206,
-            "text": "L^13",
+            "text": "L^15",
             "wrapLine": false,
             "maxWidth": 21,
             "alignment": "Left",
@@ -1496,8 +1496,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 32,
-                                          "bounds": {"x1": 450, "y1": 99, "x2": 462, "y2": 184},
-                                          "validArea": {"x1": 450, "y1": 99, "x2": 462, "y2": 184}
+                                          "bounds": {"x1": 450, "y1": 95, "x2": 462, "y2": 172},
+                                          "validArea": {"x1": 450, "y1": 95, "x2": 462, "y2": 172}
                                         },
                                         "children": null
                                       }
@@ -1593,11 +1593,11 @@
                                     "children": null
                                   },
                                   {
-                                    "id": 824,
+                                    "id": 784,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 206,
+                                      "element": 196,
                                       "bounds": {"x1": 16, "y1": 145, "x2": 44, "y2": 161},
                                       "validArea": {"x1": 16, "y1": 145, "x2": 44, "y2": 161}
                                     },
@@ -1615,11 +1615,11 @@
                                     "children": null
                                   },
                                   {
-                                    "id": 792,
+                                    "id": 824,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 198,
+                                      "element": 206,
                                       "bounds": {"x1": 16, "y1": 177, "x2": 44, "y2": 193},
                                       "validArea": {"x1": 16, "y1": 177, "x2": 44, "y2": 193}
                                     },

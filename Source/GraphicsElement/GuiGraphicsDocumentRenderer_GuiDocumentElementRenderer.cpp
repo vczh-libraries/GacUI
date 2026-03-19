@@ -287,6 +287,12 @@ GuiDocumentElementRenderer
 					UpdateRenderRangeAndCleanUp(currentBegin, currentCount);
 				}
 
+				if (pgCache.heightCorrectionNeeded && previousRenderBegin >= 0 && previousRenderCount > 0)
+				{
+					auto measuredHeight = pgCache.GetParagraphSize(previousRenderBegin).y;
+					lastTotalHeightWithoutParagraphDistance += pgCache.CorrectUnrenderedParagraphHeights(pgCache.GetParagraphCount(), measuredHeight);
+				}
+
 				FixMinSize();
 
 				for (auto p : paragraphsToReset)

@@ -70,6 +70,7 @@ GuiDocumentParagraphCache
 			class GuiDocumentParagraphCache : public Object
 			{
 				friend class visitors::SetPropertiesVisitor;
+				friend class GuiDocumentElementRenderer;
 			protected:
 				GuiDocumentElementRenderer*				renderer = nullptr;
 				IGuiGraphicsParagraphCallback*			callback = nullptr;
@@ -80,6 +81,7 @@ GuiDocumentParagraphCache
 				pg::ParagraphCacheArray					paragraphCaches;
 				pg::ParagraphSizeArray					paragraphSizes;
 				vint									validCachedTops = 0;
+				bool									heightCorrectionNeeded = false;
 
 				pg::NameIdMap							nameCallbackIdMap;
 				pg::FreeIdList							freeCallbackIds;
@@ -106,6 +108,7 @@ GuiDocumentParagraphCache
 				vint									ResetStyleCache(TextPos begin, TextPos end);					// returns the diff of total height
 				vint									ResetStyleCache(vint index, vint count);						// returns the diff of total height
 				vint									EnsureParagraph(vint paragraphIndex, vint maxWidth);			// returns the diff of total height
+				vint									CorrectUnrenderedParagraphHeights(vint endIndex, vint measuredHeight);	// returns the diff of total height
 				vint									GetParagraphFromY(vint y, vint paragraphDistance);
 				void									ReleaseParagraphs(vint index, vint count);
 			};

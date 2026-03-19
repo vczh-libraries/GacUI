@@ -1,5 +1,5 @@
 ﻿{
-  "frameId": 10,
+  "frameId": 8,
   "frameName": "Typed 40 lines",
   "windowSize": {
     "bounds": {
@@ -1464,8 +1464,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 32,
-                                          "bounds": {"x1": 450, "y1": 93, "x2": 462, "y2": 179},
-                                          "validArea": {"x1": 450, "y1": 93, "x2": 462, "y2": 179}
+                                          "bounds": {"x1": 450, "y1": 90, "x2": 462, "y2": 167},
+                                          "validArea": {"x1": 450, "y1": 90, "x2": 462, "y2": 167}
                                         },
                                         "children": null
                                       }

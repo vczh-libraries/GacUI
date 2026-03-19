@@ -76,7 +76,7 @@
       "root": null
     },
     {
-      "frameId": 8,
+      "frameId": 7,
       "frameName": "Pasted",
       "windowSize": {
         "bounds": {
@@ -103,7 +103,7 @@
       "root": null
     },
     {
-      "frameId": 11,
+      "frameId": 10,
       "frameName": "Copied and Cleared",
       "windowSize": {
         "bounds": {
@@ -130,7 +130,7 @@
       "root": null
     },
     {
-      "frameId": 15,
+      "frameId": 13,
       "frameName": "Pasted Again",
       "windowSize": {
         "bounds": {

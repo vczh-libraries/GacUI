@@ -126,6 +126,7 @@ GuiDocumentParagraphCache
 					}
 
 					validCachedTops = document->paragraphs.Count();
+					heightCorrectionNeeded = true;
 					return document->paragraphs.Count() * defaultHeight;
 				}
 				else
@@ -133,6 +134,7 @@ GuiDocumentParagraphCache
 					paragraphCaches.Resize(0);
 					paragraphSizes.Resize(0);
 					validCachedTops = 0;
+					heightCorrectionNeeded = false;
 					return 0;
 				}
 			}
@@ -196,6 +198,7 @@ GuiDocumentParagraphCache
 						}
 					}
 					validCachedTops = index + newCount;
+					heightCorrectionNeeded = true;
 
 					vint oldUpdatedTotalHeight = 0;
 					for (vint i = 0; i < oldCount; i++)
@@ -309,6 +312,35 @@ GuiDocumentParagraphCache
 					validCachedTops = paragraphIndex + 1;
 				}
 				return newSize.y - oldSize.y;
+			}
+
+			vint GuiDocumentParagraphCache::CorrectUnrenderedParagraphHeights(vint endIndex, vint measuredHeight)
+			{
+				heightCorrectionNeeded = false;
+				vint totalDelta = 0;
+				vint firstChanged = -1;
+				for (vint i = 0; i < endIndex; i++)
+				{
+					if (!paragraphCaches[i])
+					{
+						auto& size = paragraphSizes[i];
+						vint delta = measuredHeight - size.cachedSize.y;
+						if (delta != 0)
+						{
+							totalDelta += delta;
+							size.cachedSize.y = measuredHeight;
+							if (firstChanged == -1)
+							{
+								firstChanged = i;
+							}
+						}
+					}
+				}
+				if (firstChanged != -1 && validCachedTops > firstChanged + 1)
+				{
+					validCachedTops = firstChanged + 1;
+				}
+				return totalDelta;
 			}
 
 			vint GuiDocumentParagraphCache::GetParagraphFromY(vint y, vint paragraphDistance)
