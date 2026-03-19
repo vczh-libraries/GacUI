@@ -51,7 +51,7 @@ I am starting a fresh new request.
 Ignore this section if there is no "# Update" in the LATEST chat message
 I am going to propose some change to `Copilot_Scrum.md`.
 
-- Copy precisely my problem description in `# Update` from the LATEST chat message to the `# DESIGN REQUEST` section, with a new sub-section `## UPDATE`.
+- Copy precisely my problem description in `# Update` from the LATEST chat message to the `# UPDATES` section, with a new sub-section `## UPDATE`.
 - The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# TASKS`).
 - When the number of tasks needs to be changed, due to inserting/removing/splitting/merging tasks:
   - Adjust task number of unaffected tasks accordingly, throughout the document.

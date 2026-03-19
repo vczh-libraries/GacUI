@@ -68,6 +68,7 @@ If you need to find any document for the current working task, they are in the `
 - `Copilot_Planning.md`
 - `Copilot_Execution.md`
 - `Copilot_KB.md`
+- `Copilot_Investigate.md`
 
 ### Important Rules for Writing Markdown Files
 

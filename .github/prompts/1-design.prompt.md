@@ -54,7 +54,7 @@ I am starting a fresh new request.
 Ignore this section if there is no "# Update" in the LATEST chat message
 I am going to propose some change to `Copilot_Task.md`.
 
-- Copy precisely my problem description in `# Update` from the LATEST chat message to the `# PROBLEM DESCRIPTION` section, with a new sub-section `## UPDATE`.
+- Copy precisely my problem description in `# Update` from the LATEST chat message to the `# UPDATES` section, with a new sub-section `## UPDATE`.
 - The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# INSIGHTS AND REASONING`).
   - **NOTICE**: When the update is triggered by the automatic review process (aka `review.prompt.md`), do not insert such `## UPDATE`.
 - Follow my update to change the design document.

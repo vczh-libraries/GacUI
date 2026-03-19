@@ -14,6 +14,7 @@ Read the first word of the request, and read an additional instruction file when
 - "execute": REPO-ROOT/.github/prompts/4-execution.prompt.md
 - "verify": REPO-ROOT/.github/prompts/5-verifying.prompt.md
 - "ask": REPO-ROOT/.github/prompts/ask.prompt.md
+- "investigate": REPO-ROOT/.github/prompts/investigate.prompt.md
 - "code": REPO-ROOT/.github/prompts/code.prompt.md
 - "kb": REPO-ROOT/.github/prompts/kb.prompt.md
 - "refine": REPO-ROOT/.github/prompts/refine.prompt.md
@@ -34,6 +35,7 @@ Read the first word of the request, and read an additional instruction file when
   - "plan"
   - "summary"
   - "execute"
+  - "investigate"
   - "review"
   - "kb"
 - Read the second word if it exists, convert it to a title `# THE-WORD`.
