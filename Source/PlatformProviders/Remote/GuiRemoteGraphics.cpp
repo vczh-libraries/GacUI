@@ -217,6 +217,11 @@ GuiRemoteGraphicsRenderTarget
 		}
 	}
 
+	void GuiRemoteGraphicsRenderTarget::HostedRenderingIdle()
+	{
+		remote->remoteMessages.RequestRendererIdle();
+	}
+
 	Size GuiRemoteGraphicsRenderTarget::GetCanvasSize()
 	{
 		return remote->remoteWindow.Convert(canvasSize);

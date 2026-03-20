@@ -91,3 +91,4 @@ message RendererBeginBoundary                       { request: ElementBoundary; 
 message RendererRenderElement                       { request: ElementRendering; }
 message RendererEndBoundary                         {}
 message RendererEndRendering                        { response: ElementMeasurings; }
+message RendererIdle                                {}

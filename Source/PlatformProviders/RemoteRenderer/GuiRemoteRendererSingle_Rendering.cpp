@@ -145,6 +145,11 @@ namespace vl::presentation::remote_renderer
 		}
 	}
 
+	void GuiRemoteRendererSingle::RequestRendererIdle()
+	{
+		// Hint only; intentionally ignored.
+	}
+
 /***********************************************************************
 * Rendering (Dom)
 ***********************************************************************/

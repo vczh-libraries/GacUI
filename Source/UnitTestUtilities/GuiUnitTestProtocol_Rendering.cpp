@@ -80,6 +80,11 @@ IGuiRemoteProtocolMessages (Rendering)
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererIdle()
+	{
+		rendererIdleCount++;
+	}
+
 /***********************************************************************
 IGuiRemoteProtocolMessages (Rendering - Element)
 ***********************************************************************/

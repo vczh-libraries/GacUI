@@ -767,6 +767,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(RendererRenderElement, ::vl::presentation::remoteprotocol::ElementRendering, void, REQ, NORES, NODROP)\
 	HANDLER(RendererEndBoundary, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(RendererEndRendering, void, ::vl::presentation::remoteprotocol::ElementMeasurings, NOREQ, RES, NODROP)\
+	HANDLER(RendererIdle, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(RendererRenderDom, ::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>, void, REQ, NORES, NODROP)\
 	HANDLER(RendererRenderDomDiff, ::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder, void, REQ, NORES, NODROP)\
 

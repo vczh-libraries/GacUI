@@ -40,6 +40,10 @@ namespace remote_protocol_tests
 			ElementMeasurings arguments;
 			GetEvents()->RespondRendererEndRendering(id, arguments);
 		}
+
+		void Impl_RendererIdle()
+		{
+		}
 	};
 	
 	class SingleScreenProtocol 

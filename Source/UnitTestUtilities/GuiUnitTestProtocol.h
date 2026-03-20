@@ -198,6 +198,17 @@ IGuiRemoteProtocol
 						auto&& lastFrame = (*loggedTrace.frames.Obj())[loggedTrace.frames->Count() - 1];
 						lastFrame.frameName = name;
 					}
+					if (nextEventIndex == 0)
+					{
+						CHECK_ERROR(rendererIdleCount <= 1, ERROR_MESSAGE_PREFIX L"Expected at most one RendererIdle before the first frame boundary.");
+					}
+					else
+					{
+						CHECK_ERROR(rendererIdleCount == 1, ERROR_MESSAGE_PREFIX L"Expected exactly one RendererIdle between two frame boundaries.");
+					}
+					rendererIdleCount = 0;
+					// Note: do not reset rendererIdleCount when LogRenderingResult() is false;
+					// it must accumulate across non-boundary ticks to detect duplicate/out-of-order RendererIdle.
 					frameExecuting = true;
 					func();
 					frameExecuting = false;

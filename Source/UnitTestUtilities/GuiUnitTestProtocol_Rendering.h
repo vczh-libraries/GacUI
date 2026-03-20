@@ -91,6 +91,7 @@ UnitTestRemoteProtocol
 		remoteprotocol::DomIndex						receivedDomIndex;
 		bool											receivedDomDiffMessage = false;
 		bool											receivedElementMessage = false;
+		vint											rendererIdleCount = 0;
 
 		ElementDescMap									lastElementDescs;
 		IdSet											removedElementIds;
@@ -128,6 +129,7 @@ IGuiRemoteProtocolMessages (Rendering)
 		Ptr<UnitTestLoggedFrame>			TryGetLastRenderingFrameAndReset();
 		void								Impl_RendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments);
 		void								Impl_RendererEndRendering(vint id);
+		void								Impl_RendererIdle();
 
 /***********************************************************************
 IGuiRemoteProtocolMessages (Rendering - Element)

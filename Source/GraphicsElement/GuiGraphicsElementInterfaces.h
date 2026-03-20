@@ -138,6 +138,11 @@ Basic Construction
 				/// </summary>
 				/// <returns>Returns values other "None" to indicate device failure.</returns>
 				virtual RenderTargetFailure				StopHostedRendering() = 0;
+				/// <summary>
+				/// Notify the render target that hosted rendering has gone idle, i.e. the hosted controller
+				/// determined that no more rendering requests will be issued until something changes.
+				/// </summary>
+				virtual void							HostedRenderingIdle() = 0;
 
 				/// <summary>
 				/// Notify the target to prepare for rendering.
@@ -197,6 +202,7 @@ Basic Construction
 				bool									IsInHostedRendering() override;
 				void									StartHostedRendering() override;
 				RenderTargetFailure						StopHostedRendering() override;
+				void									HostedRenderingIdle() override;
 				void									StartRendering() override;
 				RenderTargetFailure						StopRendering() override;
 

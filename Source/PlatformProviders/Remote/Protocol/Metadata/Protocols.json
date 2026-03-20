@@ -3028,6 +3028,12 @@
             }
         }
     }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererIdle",
+        "request": null,
+        "response": null
+    }, {
         "$ast": "StructDecl",
         "attributes": [],
         "name": "RenderingDomContent",

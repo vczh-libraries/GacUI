@@ -689,12 +689,18 @@ GuiHostedController::INativeControllerListener
 
 				if (!wmManager->needRefresh && !windowsUpdatedInLastFrame)
 				{
+					if (!idleNotifiedSinceLastRendering)
+					{
+						idleNotifiedSinceLastRendering = true;
+						renderTarget->HostedRenderingIdle();
+					}
 					return;
 				}
 
 			NEED_REFRESH:
 				wmManager->needRefresh = false;
 				windowsUpdatedInLastFrame = false;
+				idleNotifiedSinceLastRendering = false;
 
 				while (true)
 				{

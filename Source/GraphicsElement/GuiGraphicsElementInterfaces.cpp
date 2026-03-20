@@ -31,6 +31,10 @@ GuiGraphicsRenderTarget
 				return StopRenderingOnNativeWindow();
 			}
 
+			void GuiGraphicsRenderTarget::HostedRenderingIdle()
+			{
+			}
+
 			void GuiGraphicsRenderTarget::StartRendering()
 			{
 				CHECK_ERROR(!rendering, L"vl::presentation::elements::GuiGraphicsRenderTarget::StartRendering()#Wrong timing to call this function.");

@@ -43,6 +43,7 @@ GuiHostedController
 			SharedCallbackService										callbackService;
 			hosted_window_manager::WindowManager<GuiHostedWindow*>*		wmManager = nullptr;
 			bool														windowsUpdatedInLastFrame = false;
+			bool														idleNotifiedSinceLastRendering = true; // avoid emitting before the first rendering
 			INativeController*											nativeController = nullptr;
 			elements::GuiHostedGraphicsResourceManager*					hostedResourceManager = nullptr;
 			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;
