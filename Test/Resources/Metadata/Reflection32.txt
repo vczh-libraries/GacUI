@@ -5357,7 +5357,7 @@ class presentation::controls::GuiScrollView : presentation::controls::GuiControl
     property VerticalAlwaysVisible : system::Boolean { get:GetVerticalAlwaysVisible set:SetVerticalAlwaysVisible }
     property VerticalScroll : presentation::controls::GuiScroll* { get:GetVerticalScroll }
     property ViewBounds : presentation::Rect { get:GetViewBounds }
-    property ViewPosition : presentation::Point { get:GetViewPosition }
+    property ViewPosition : presentation::Point { get:GetViewPosition set:SetViewPosition }
     property ViewSize : presentation::Size { get:GetViewSize }
 
     function CalculateView() : system::Void;
@@ -5370,6 +5370,7 @@ class presentation::controls::GuiScrollView : presentation::controls::GuiControl
     function GetViewSize() : presentation::Size;
     function SetHorizontalAlwaysVisible(value : system::Boolean) : system::Void;
     function SetVerticalAlwaysVisible(value : system::Boolean) : system::Void;
+    function SetViewPosition(value : presentation::Point) : system::Void;
 
 }
 
