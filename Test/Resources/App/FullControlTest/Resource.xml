@@ -76,6 +76,24 @@
         var openedSubWindows: GuiWindow^[] = {};
       ]]></ref.Members>
       <Window ref.Name="self" Text="Complete Control Showcase" ClientSize="x:640 y:480">
+        <MessageDialog ref.Name="dialogLocalShortcut"
+                       Title-eval="self.Text"
+                       Text="You pressed Ctrl+Q!"
+          />
+        <MessageDialog ref.Name="dialogGlobalShortcut"
+                       Title-eval="self.Text"
+                       Text="You pressed Ctrl+Shift+Alt+Q!"
+          />
+        <ToolstripCommand ShortcutBuilder="Ctrl+Q">
+          <ev.Executed-eval><![CDATA[{
+            dialogLocalShortcut.ShowDialog();
+          }]]></ev.Executed-eval>
+        </ToolstripCommand>
+        <ToolstripCommand ShortcutBuilder="global:Ctrl+Shift+Alt+Q">
+          <ev.Executed-eval><![CDATA[{
+            dialogGlobalShortcut.ShowDialog();
+          }]]></ev.Executed-eval>
+        </ToolstripCommand>
         <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
         <Tab>
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
@@ -145,7 +163,14 @@
               </Tab>
             </TabPage>
             <TabPage Alt="W" Text="Window Manager">
-              <Stack ref.Style="windowManagerContent"/>
+              <Stack ref.Style="windowManagerContent">
+                <StackItem>
+                  <Label Text="Local shortcut key: Ctrl+Q"/>
+                </StackItem>
+                <StackItem>
+                  <Label Text="Global shortcut key: Ctrl+Shift+Alt+Q"/>
+                </StackItem>
+              </Stack>
             </TabPage>
             <TabPage Alt="X" Text="Exit">
               <Stack Direction="Vertical" AlignmentToParent="left:5 top:5 right:5 bottom:5" Padding="5" MinSizeLimitation="LimitToElementAndChildren">
