@@ -72,4 +72,5 @@ This project need to run if any of the following XML file is updated:
 After running `GacUI_Compiler`, you should always `git status` to find if there is any untracked `*.UI.errors.txt`.
 - Such file means there are compile errors in some xml files, read it to find the detail.
 - You don't need to delete the file, if `GacUI_Compiler` succeeds the next time, they will be gone.
-- When the compiler crashes, you must fix the issue immediately, even those errors are unrelated to the issue you are working on.
+- `GacUI_Compiler` may also fail by printing one line of error message or return non-zero exit code. If the `*.UI.errors.txt` file does not exist, you are recommended to debug the project to find out what happened.
+- Whenever `GacUI_Compiler` reports any error, you must fix the issue immediately, even those errors are unrelated to the issue you are working on.

@@ -26,6 +26,8 @@
 #### Build the Solution
 
 - Check out `REPO-ROOT/Project.md` to find out what solutions you need to build.
+  - Pay attention to the `Code Generation Projects` section.
+  - Projects you need to run may dynamically changing according to what you have done.
 - Find out if there is any warning or error.
   - `External Tools Environment and Context` in `REPO-ROOT/.github/copilot-instructions.md` has the instruction about how to check compile result.
 
@@ -89,6 +91,7 @@
   - You must stop the debugger after you finish debugging.
 - When you have made a few guesses but did not progress, you are recommended to debug the unit test directly.
   - Break-points are very useful to ensure the expected code path is executed, and you can inspect variable values.
+- Even when a failure is not related to your change, you should take care of it.
 
 #### Fix Failed Test Cases
 

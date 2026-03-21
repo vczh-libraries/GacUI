@@ -102,6 +102,7 @@
   - You must stop the debugger after you finish debugging.
 - When you have made a few guesses but did not progress, you are recommended to debug the unit test directly.
   - Break-points are very useful to ensure the expected code path is executed, and you can inspect variable values.
+- Even when a failure is not related to your change, you should take care of it.
 
 #### Fix Failed Test Cases
 
