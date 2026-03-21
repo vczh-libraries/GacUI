@@ -5,6 +5,21 @@
 You are working on the solution `REPO-ROOT\Test\GacUISrc\GacUISrc.sln`,
 therefore `SOLUTION-ROOT` is `REPO-ROOT\Test\GacUISrc`.
 
+## Files not Allowed to Modify
+
+Files in these folders (recursively) are not allowed to modify.
+You can only change them using what is described in the `Code Generation Projects` section.
+If you encounter any error that prevent these files from being generated,
+always fix the root cause.
+- `REPO-ROOT\Test\Resources\Metadata`
+- `REPO-ROOT\Test\GacUISrc\Generated_DarkSkin`
+- `REPO-ROOT\Test\GacUISrc\Generated_Dialogs`
+- `REPO-ROOT\Test\GacUISrc\Generated_FullControlTest`
+- `REPO-ROOT\Test\GacUISrc\Generated_RemoteProtocolTest`
+- `REPO-ROOT\Test\GacUISrc\Generated_UnitTestViewer`
+- `REPO-ROOT\Source\Utilities\FakeServices\Dialogs\Source`
+- `REPO-ROOT\Source\UnitTestUtilities\SnapshotViewer\Source`
+
 ## Projects for Verification
 
 You are required to follow the guideline to run any project in this solution,
