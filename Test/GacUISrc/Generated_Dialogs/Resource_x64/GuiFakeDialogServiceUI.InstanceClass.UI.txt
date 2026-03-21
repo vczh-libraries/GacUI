@@ -3258,6 +3258,16 @@ namespace gaclib_controls
                 attach(<precompile>24.SelectedFolderChanged, <event-handler>);
             }
             {
+                var <event-handler> = func () : (::system::Void)
+                {
+                    if ((!ViewModel.IsLoadingFiles))
+                    {
+                        dataGrid.SetViewPosition({x : 0; y : 0;});
+                    }
+                };
+                attach(<precompile>24.IsLoadingFilesChanged, <event-handler>);
+            }
+            {
                 var <created-subscription> = new (::system::Subscription^)
                 {
                     var <bind-cache>0 : ::presentation::controls::GuiApplication* = null of (::presentation::controls::GuiApplication*);

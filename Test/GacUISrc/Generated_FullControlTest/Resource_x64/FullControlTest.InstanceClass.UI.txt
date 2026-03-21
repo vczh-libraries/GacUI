@@ -2090,88 +2090,88 @@ namespace demo
         var self : ::demo::MainWindow* = null of (::demo::MainWindow*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
+        var <precompile>0 : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>1 : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+        var <precompile>2 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
+        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>4 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>5 : ::demo::TextListTabPage* = null of (::demo::TextListTabPage*);
+        var <precompile>5 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
 
         @cpp:Protected
-        var <precompile>6 : ::demo::ListViewTabPage* = null of (::demo::ListViewTabPage*);
+        var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>7 : ::demo::TreeViewTabPage* = null of (::demo::TreeViewTabPage*);
+        var <precompile>7 : ::demo::TextListTabPage* = null of (::demo::TextListTabPage*);
 
         @cpp:Protected
-        var <precompile>8 : ::demo::DataGridTabPage* = null of (::demo::DataGridTabPage*);
+        var <precompile>8 : ::demo::ListViewTabPage* = null of (::demo::ListViewTabPage*);
 
         @cpp:Protected
-        var <precompile>9 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+        var <precompile>9 : ::demo::TreeViewTabPage* = null of (::demo::TreeViewTabPage*);
 
         @cpp:Protected
-        var <precompile>10 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
+        var <precompile>10 : ::demo::DataGridTabPage* = null of (::demo::DataGridTabPage*);
 
         @cpp:Protected
-        var <precompile>11 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>11 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>12 : ::demo::RefreshTextListTabPage* = null of (::demo::RefreshTextListTabPage*);
+        var <precompile>12 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
 
         @cpp:Protected
-        var <precompile>13 : ::demo::RefreshBindableTextListTabPage* = null of (::demo::RefreshBindableTextListTabPage*);
+        var <precompile>13 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>14 : ::demo::RefreshListViewTabPage* = null of (::demo::RefreshListViewTabPage*);
+        var <precompile>14 : ::demo::RefreshTextListTabPage* = null of (::demo::RefreshTextListTabPage*);
 
         @cpp:Protected
-        var <precompile>15 : ::demo::RefreshBindableListViewTabPage* = null of (::demo::RefreshBindableListViewTabPage*);
+        var <precompile>15 : ::demo::RefreshBindableTextListTabPage* = null of (::demo::RefreshBindableTextListTabPage*);
 
         @cpp:Protected
-        var <precompile>16 : ::demo::RefreshTreeViewTabPage* = null of (::demo::RefreshTreeViewTabPage*);
+        var <precompile>16 : ::demo::RefreshListViewTabPage* = null of (::demo::RefreshListViewTabPage*);
 
         @cpp:Protected
-        var <precompile>17 : ::demo::RefreshBindableTreeViewTabPage* = null of (::demo::RefreshBindableTreeViewTabPage*);
+        var <precompile>17 : ::demo::RefreshBindableListViewTabPage* = null of (::demo::RefreshBindableListViewTabPage*);
 
         @cpp:Protected
-        var <precompile>18 : ::demo::RefreshBindableDataGridTabPage* = null of (::demo::RefreshBindableDataGridTabPage*);
+        var <precompile>18 : ::demo::RefreshTreeViewTabPage* = null of (::demo::RefreshTreeViewTabPage*);
 
         @cpp:Protected
-        var <precompile>19 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+        var <precompile>19 : ::demo::RefreshBindableTreeViewTabPage* = null of (::demo::RefreshBindableTreeViewTabPage*);
 
         @cpp:Protected
-        var <precompile>20 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
+        var <precompile>20 : ::demo::RefreshBindableDataGridTabPage* = null of (::demo::RefreshBindableDataGridTabPage*);
 
         @cpp:Protected
-        var <precompile>21 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>21 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>22 : ::demo::RepeatTabPage* = null of (::demo::RepeatTabPage*);
+        var <precompile>22 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
 
         @cpp:Protected
-        var <precompile>23 : ::demo::ResponsiveTabPage* = null of (::demo::ResponsiveTabPage*);
+        var <precompile>23 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>24 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+        var <precompile>24 : ::demo::RepeatTabPage* = null of (::demo::RepeatTabPage*);
 
         @cpp:Protected
-        var <precompile>25 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
+        var <precompile>25 : ::demo::ResponsiveTabPage* = null of (::demo::ResponsiveTabPage*);
 
         @cpp:Protected
-        var <precompile>26 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>26 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>27 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+        var <precompile>27 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
 
         @cpp:Protected
         var <precompile>28 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -2183,28 +2183,28 @@ namespace demo
         var <precompile>30 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>31 : ::demo::TextBoxTabPage* = null of (::demo::TextBoxTabPage*);
+        var <precompile>31 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>32 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+        var <precompile>32 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>33 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
+        var <precompile>33 : ::demo::TextBoxTabPage* = null of (::demo::TextBoxTabPage*);
 
         @cpp:Protected
-        var <precompile>34 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>34 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>35 : ::demo::ElementTabPage* = null of (::demo::ElementTabPage*);
+        var <precompile>35 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
 
         @cpp:Protected
-        var <precompile>36 : ::demo::AnimationTabPage* = null of (::demo::AnimationTabPage*);
+        var <precompile>36 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>37 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
+        var <precompile>37 : ::demo::ElementTabPage* = null of (::demo::ElementTabPage*);
 
         @cpp:Protected
-        var <precompile>38 : ::demo::LocalizedDialogsTabPage* = null of (::demo::LocalizedDialogsTabPage*);
+        var <precompile>38 : ::demo::AnimationTabPage* = null of (::demo::AnimationTabPage*);
 
         @cpp:Protected
         var checkFrame : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
@@ -2228,37 +2228,43 @@ namespace demo
         var checkTitle : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
+        var dialogLocalShortcut : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
+        var dialogGlobalShortcut : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
         var editorRibbon : ::demo::DocumentEditorRibbon* = null of (::demo::DocumentEditorRibbon*);
 
         @cpp:Protected
         var editorToolstrip : ::demo::DocumentEditorToolstrip* = null of (::demo::DocumentEditorToolstrip*);
 
         @cpp:Protected
-        var <precompile>39 : ::demo::DatePickerTabPage* = null of (::demo::DatePickerTabPage*);
+        var <precompile>39 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
 
         @cpp:Protected
-        var <precompile>40 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+        var <precompile>40 : ::demo::LocalizedDialogsTabPage* = null of (::demo::LocalizedDialogsTabPage*);
 
         @cpp:Protected
-        var <precompile>41 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
+        var <precompile>41 : ::demo::DatePickerTabPage* = null of (::demo::DatePickerTabPage*);
 
         @cpp:Protected
-        var <precompile>42 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>42 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>43 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>43 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
 
         @cpp:Protected
         var <precompile>44 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>45 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>45 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         var <precompile>46 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>47 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>47 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         var <precompile>48 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
@@ -2267,19 +2273,19 @@ namespace demo
         var <precompile>49 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>50 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>50 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>51 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+        var <precompile>51 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>52 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
+        var <precompile>52 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
         var <precompile>53 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>54 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>54 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
         var <precompile>55 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
@@ -2288,10 +2294,10 @@ namespace demo
         var <precompile>56 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>57 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>57 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>58 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>58 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
 
         @cpp:Protected
         var <precompile>59 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
@@ -2300,7 +2306,25 @@ namespace demo
         var <precompile>60 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>61 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>61 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>62 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>63 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>64 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>65 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>66 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>67 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <demo-MainWindow>Initialize(<this> : ::demo::MainWindow*) : (::system::Void)
@@ -2312,219 +2336,230 @@ namespace demo
             {
                 (self.ClientSize = {x : 640; y : 480;} of (::presentation::Size));
             }
-            (<precompile>61 = self.BoundsComposition);
+            (<precompile>67 = self.BoundsComposition);
             {
-                (<precompile>61.PreferredMinSize = {x : 640; y : 480;} of (::presentation::Size));
+                (<precompile>67.PreferredMinSize = {x : 640; y : 480;} of (::presentation::Size));
             }
             {
                 (self.Text = "Complete Control Showcase");
             }
+            (dialogLocalShortcut = new (::presentation::controls::GuiMessageDialog*)());
+            <this>.SetNamedObject("dialogLocalShortcut", dialogLocalShortcut);
             {
-                (<precompile>0 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
+                (dialogLocalShortcut.Text = "You pressed Ctrl+Q!");
             }
             {
-                (<precompile>2 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+                self.AddComponent(dialogLocalShortcut);
+            }
+            (dialogGlobalShortcut = new (::presentation::controls::GuiMessageDialog*)());
+            <this>.SetNamedObject("dialogGlobalShortcut", dialogGlobalShortcut);
+            {
+                (dialogGlobalShortcut.Text = "You pressed Ctrl+Shift+Alt+Q!");
             }
             {
-                (<precompile>2.Alt = "L");
+                self.AddComponent(dialogGlobalShortcut);
+            }
+            (<precompile>0 = new (::presentation::controls::GuiToolstripCommand*)());
+            {
+                (<precompile>0.ShortcutBuilder = "Ctrl+Q");
             }
             {
-                (<precompile>2.Text = "List");
+                self.AddComponent(<precompile>0);
+            }
+            (<precompile>1 = new (::presentation::controls::GuiToolstripCommand*)());
+            {
+                (<precompile>1.ShortcutBuilder = "global:Ctrl+Shift+Alt+Q");
             }
             {
-                (<precompile>3 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
-            }
-            (<precompile>5 = new (::demo::TextListTabPage*)());
-            {
-                (<precompile>5.Alt = "T");
+                self.AddComponent(<precompile>1);
             }
             {
-                var <collection> = <precompile>3.Pages;
-                <collection>.Add(<precompile>5);
-            }
-            (<precompile>6 = new (::demo::ListViewTabPage*)());
-            {
-                (<precompile>6.Alt = "L");
+                (<precompile>2 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
             }
             {
-                var <collection> = <precompile>3.Pages;
-                <collection>.Add(<precompile>6);
+                (<precompile>4 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
             }
-            (<precompile>7 = new (::demo::TreeViewTabPage*)());
+            {
+                (<precompile>4.Alt = "L");
+            }
+            {
+                (<precompile>4.Text = "List");
+            }
+            {
+                (<precompile>5 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
+            }
+            (<precompile>7 = new (::demo::TextListTabPage*)());
             {
                 (<precompile>7.Alt = "T");
             }
             {
-                var <collection> = <precompile>3.Pages;
+                var <collection> = <precompile>5.Pages;
                 <collection>.Add(<precompile>7);
             }
-            (<precompile>8 = new (::demo::DataGridTabPage*)());
+            (<precompile>8 = new (::demo::ListViewTabPage*)());
             {
-                (<precompile>8.Alt = "D");
+                (<precompile>8.Alt = "L");
             }
             {
-                var <collection> = <precompile>3.Pages;
+                var <collection> = <precompile>5.Pages;
                 <collection>.Add(<precompile>8);
             }
-            (<precompile>4 = <precompile>3.BoundsComposition);
+            (<precompile>9 = new (::demo::TreeViewTabPage*)());
             {
-                (<precompile>4.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>9.Alt = "T");
             }
             {
-                <precompile>2.AddChild(<precompile>3);
-            }
-            {
-                var <collection> = <precompile>0.Pages;
-                <collection>.Add(<precompile>2);
-            }
-            {
-                (<precompile>9 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
-            }
-            {
-                (<precompile>9.Alt = "L");
-            }
-            {
-                (<precompile>9.Text = "Refresh List");
-            }
-            {
-                (<precompile>10 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
-            }
-            (<precompile>12 = new (::demo::RefreshTextListTabPage*)());
-            {
-                (<precompile>12.Alt = "T");
-            }
-            {
-                var <collection> = <precompile>10.Pages;
-                <collection>.Add(<precompile>12);
-            }
-            (<precompile>13 = new (::demo::RefreshBindableTextListTabPage*)());
-            {
-                (<precompile>13.Alt = "BT");
-            }
-            {
-                var <collection> = <precompile>10.Pages;
-                <collection>.Add(<precompile>13);
-            }
-            (<precompile>14 = new (::demo::RefreshListViewTabPage*)());
-            {
-                (<precompile>14.Alt = "L");
-            }
-            {
-                var <collection> = <precompile>10.Pages;
-                <collection>.Add(<precompile>14);
-            }
-            (<precompile>15 = new (::demo::RefreshBindableListViewTabPage*)());
-            {
-                (<precompile>15.Alt = "BL");
-            }
-            {
-                var <collection> = <precompile>10.Pages;
-                <collection>.Add(<precompile>15);
-            }
-            (<precompile>16 = new (::demo::RefreshTreeViewTabPage*)());
-            {
-                (<precompile>16.Alt = "T");
-            }
-            {
-                var <collection> = <precompile>10.Pages;
-                <collection>.Add(<precompile>16);
-            }
-            (<precompile>17 = new (::demo::RefreshBindableTreeViewTabPage*)());
-            {
-                (<precompile>17.Alt = "BT");
-            }
-            {
-                var <collection> = <precompile>10.Pages;
-                <collection>.Add(<precompile>17);
-            }
-            (<precompile>18 = new (::demo::RefreshBindableDataGridTabPage*)());
-            {
-                (<precompile>18.Alt = "D");
-            }
-            {
-                var <collection> = <precompile>10.Pages;
-                <collection>.Add(<precompile>18);
-            }
-            (<precompile>11 = <precompile>10.BoundsComposition);
-            {
-                (<precompile>11.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
-            {
-                <precompile>9.AddChild(<precompile>10);
-            }
-            {
-                var <collection> = <precompile>0.Pages;
+                var <collection> = <precompile>5.Pages;
                 <collection>.Add(<precompile>9);
             }
+            (<precompile>10 = new (::demo::DataGridTabPage*)());
             {
-                (<precompile>19 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+                (<precompile>10.Alt = "D");
             }
             {
-                (<precompile>19.Alt = "L");
+                var <collection> = <precompile>5.Pages;
+                <collection>.Add(<precompile>10);
+            }
+            (<precompile>6 = <precompile>5.BoundsComposition);
+            {
+                (<precompile>6.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
-                (<precompile>19.Text = "Layout");
+                <precompile>4.AddChild(<precompile>5);
             }
             {
-                (<precompile>20 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
-            }
-            (<precompile>22 = new (::demo::RepeatTabPage*)());
-            {
-                (<precompile>22.Alt = "R");
+                var <collection> = <precompile>2.Pages;
+                <collection>.Add(<precompile>4);
             }
             {
-                var <collection> = <precompile>20.Pages;
-                <collection>.Add(<precompile>22);
-            }
-            (<precompile>23 = new (::demo::ResponsiveTabPage*)());
-            {
-                (<precompile>23.Alt = "R");
+                (<precompile>11 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
             }
             {
-                var <collection> = <precompile>20.Pages;
-                <collection>.Add(<precompile>23);
-            }
-            (<precompile>21 = <precompile>20.BoundsComposition);
-            {
-                (<precompile>21.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>11.Alt = "L");
             }
             {
-                <precompile>19.AddChild(<precompile>20);
+                (<precompile>11.Text = "Refresh List");
             }
             {
-                var <collection> = <precompile>0.Pages;
+                (<precompile>12 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
+            }
+            (<precompile>14 = new (::demo::RefreshTextListTabPage*)());
+            {
+                (<precompile>14.Alt = "T");
+            }
+            {
+                var <collection> = <precompile>12.Pages;
+                <collection>.Add(<precompile>14);
+            }
+            (<precompile>15 = new (::demo::RefreshBindableTextListTabPage*)());
+            {
+                (<precompile>15.Alt = "BT");
+            }
+            {
+                var <collection> = <precompile>12.Pages;
+                <collection>.Add(<precompile>15);
+            }
+            (<precompile>16 = new (::demo::RefreshListViewTabPage*)());
+            {
+                (<precompile>16.Alt = "L");
+            }
+            {
+                var <collection> = <precompile>12.Pages;
+                <collection>.Add(<precompile>16);
+            }
+            (<precompile>17 = new (::demo::RefreshBindableListViewTabPage*)());
+            {
+                (<precompile>17.Alt = "BL");
+            }
+            {
+                var <collection> = <precompile>12.Pages;
+                <collection>.Add(<precompile>17);
+            }
+            (<precompile>18 = new (::demo::RefreshTreeViewTabPage*)());
+            {
+                (<precompile>18.Alt = "T");
+            }
+            {
+                var <collection> = <precompile>12.Pages;
+                <collection>.Add(<precompile>18);
+            }
+            (<precompile>19 = new (::demo::RefreshBindableTreeViewTabPage*)());
+            {
+                (<precompile>19.Alt = "BT");
+            }
+            {
+                var <collection> = <precompile>12.Pages;
                 <collection>.Add(<precompile>19);
             }
+            (<precompile>20 = new (::demo::RefreshBindableDataGridTabPage*)());
             {
-                (<precompile>24 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+                (<precompile>20.Alt = "D");
             }
             {
-                (<precompile>24.Alt = "L");
+                var <collection> = <precompile>12.Pages;
+                <collection>.Add(<precompile>20);
+            }
+            (<precompile>13 = <precompile>12.BoundsComposition);
+            {
+                (<precompile>13.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
-                (<precompile>24.Text = "Control");
+                <precompile>11.AddChild(<precompile>12);
             }
             {
-                (<precompile>25 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
+                var <collection> = <precompile>2.Pages;
+                <collection>.Add(<precompile>11);
             }
             {
-                (<precompile>27 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+                (<precompile>21 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
             }
             {
-                (<precompile>27.Alt = "D");
-            }
-            (editorRibbon = new (::demo::DocumentEditorRibbon*)());
-            <this>.SetNamedObject("editorRibbon", editorRibbon);
-            (<precompile>28 = editorRibbon.BoundsComposition);
-            {
-                (<precompile>28.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>21.Alt = "L");
             }
             {
-                <precompile>27.AddChild(editorRibbon);
+                (<precompile>21.Text = "Layout");
             }
             {
-                var <collection> = <precompile>25.Pages;
-                <collection>.Add(<precompile>27);
+                (<precompile>22 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
+            }
+            (<precompile>24 = new (::demo::RepeatTabPage*)());
+            {
+                (<precompile>24.Alt = "R");
+            }
+            {
+                var <collection> = <precompile>22.Pages;
+                <collection>.Add(<precompile>24);
+            }
+            (<precompile>25 = new (::demo::ResponsiveTabPage*)());
+            {
+                (<precompile>25.Alt = "R");
+            }
+            {
+                var <collection> = <precompile>22.Pages;
+                <collection>.Add(<precompile>25);
+            }
+            (<precompile>23 = <precompile>22.BoundsComposition);
+            {
+                (<precompile>23.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            {
+                <precompile>21.AddChild(<precompile>22);
+            }
+            {
+                var <collection> = <precompile>2.Pages;
+                <collection>.Add(<precompile>21);
+            }
+            {
+                (<precompile>26 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+            }
+            {
+                (<precompile>26.Alt = "L");
+            }
+            {
+                (<precompile>26.Text = "Control");
+            }
+            {
+                (<precompile>27 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
             }
             {
                 (<precompile>29 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
@@ -2532,124 +2567,169 @@ namespace demo
             {
                 (<precompile>29.Alt = "D");
             }
-            (editorToolstrip = new (::demo::DocumentEditorToolstrip*)());
-            <this>.SetNamedObject("editorToolstrip", editorToolstrip);
-            (<precompile>30 = editorToolstrip.BoundsComposition);
+            (editorRibbon = new (::demo::DocumentEditorRibbon*)());
+            <this>.SetNamedObject("editorRibbon", editorRibbon);
+            (<precompile>30 = editorRibbon.BoundsComposition);
             {
                 (<precompile>30.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>29.AddChild(editorToolstrip);
+                <precompile>29.AddChild(editorRibbon);
             }
             {
-                var <collection> = <precompile>25.Pages;
+                var <collection> = <precompile>27.Pages;
                 <collection>.Add(<precompile>29);
             }
-            (<precompile>31 = new (::demo::TextBoxTabPage*)());
             {
-                (<precompile>31.Alt = "T");
+                (<precompile>31 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
             }
             {
-                var <collection> = <precompile>25.Pages;
+                (<precompile>31.Alt = "D");
+            }
+            (editorToolstrip = new (::demo::DocumentEditorToolstrip*)());
+            <this>.SetNamedObject("editorToolstrip", editorToolstrip);
+            (<precompile>32 = editorToolstrip.BoundsComposition);
+            {
+                (<precompile>32.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>31.AddChild(editorToolstrip);
+            }
+            {
+                var <collection> = <precompile>27.Pages;
                 <collection>.Add(<precompile>31);
             }
-            (<precompile>26 = <precompile>25.BoundsComposition);
+            (<precompile>33 = new (::demo::TextBoxTabPage*)());
             {
-                (<precompile>26.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>33.Alt = "T");
             }
             {
-                <precompile>24.AddChild(<precompile>25);
+                var <collection> = <precompile>27.Pages;
+                <collection>.Add(<precompile>33);
+            }
+            (<precompile>28 = <precompile>27.BoundsComposition);
+            {
+                (<precompile>28.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
-                var <collection> = <precompile>0.Pages;
-                <collection>.Add(<precompile>24);
+                <precompile>26.AddChild(<precompile>27);
             }
             {
-                (<precompile>32 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+                var <collection> = <precompile>2.Pages;
+                <collection>.Add(<precompile>26);
             }
             {
-                (<precompile>32.Alt = "M");
+                (<precompile>34 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
             }
             {
-                (<precompile>32.Text = "Misc");
+                (<precompile>34.Alt = "M");
             }
             {
-                (<precompile>33 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
-            }
-            (<precompile>35 = new (::demo::ElementTabPage*)());
-            {
-                (<precompile>35.Alt = "E");
+                (<precompile>34.Text = "Misc");
             }
             {
-                var <collection> = <precompile>33.Pages;
-                <collection>.Add(<precompile>35);
+                (<precompile>35 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
             }
-            (<precompile>36 = new (::demo::AnimationTabPage*)());
+            (<precompile>37 = new (::demo::ElementTabPage*)());
             {
-                (<precompile>36.Alt = "A");
-            }
-            {
-                var <collection> = <precompile>33.Pages;
-                <collection>.Add(<precompile>36);
-            }
-            (<precompile>37 = new (::demo::LocalizedStringsTabPage*)());
-            {
-                (<precompile>37.Alt = "L");
+                (<precompile>37.Alt = "E");
             }
             {
-                var <collection> = <precompile>33.Pages;
+                var <collection> = <precompile>35.Pages;
                 <collection>.Add(<precompile>37);
             }
-            (<precompile>38 = new (::demo::LocalizedDialogsTabPage*)());
+            (<precompile>38 = new (::demo::AnimationTabPage*)());
             {
-                (<precompile>38.Alt = "L");
+                (<precompile>38.Alt = "A");
             }
             {
-                var <collection> = <precompile>33.Pages;
+                var <collection> = <precompile>35.Pages;
                 <collection>.Add(<precompile>38);
             }
-            (<precompile>39 = new (::demo::DatePickerTabPage*)());
+            (<precompile>39 = new (::demo::LocalizedStringsTabPage*)());
             {
-                (<precompile>39.Alt = "D");
+                (<precompile>39.Alt = "L");
             }
             {
-                var <collection> = <precompile>33.Pages;
+                var <collection> = <precompile>35.Pages;
                 <collection>.Add(<precompile>39);
             }
-            (<precompile>34 = <precompile>33.BoundsComposition);
+            (<precompile>40 = new (::demo::LocalizedDialogsTabPage*)());
             {
-                (<precompile>34.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>40.Alt = "L");
             }
             {
-                <precompile>32.AddChild(<precompile>33);
+                var <collection> = <precompile>35.Pages;
+                <collection>.Add(<precompile>40);
+            }
+            (<precompile>41 = new (::demo::DatePickerTabPage*)());
+            {
+                (<precompile>41.Alt = "D");
             }
             {
-                var <collection> = <precompile>0.Pages;
-                <collection>.Add(<precompile>32);
+                var <collection> = <precompile>35.Pages;
+                <collection>.Add(<precompile>41);
+            }
+            (<precompile>36 = <precompile>35.BoundsComposition);
+            {
+                (<precompile>36.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
-                (<precompile>40 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+                <precompile>34.AddChild(<precompile>35);
             }
             {
-                (<precompile>40.Alt = "W");
+                var <collection> = <precompile>2.Pages;
+                <collection>.Add(<precompile>34);
             }
             {
-                (<precompile>40.Text = "Window Manager");
-            }
-            (<precompile>41 = new (::presentation::compositions::GuiStackComposition*)());
-            {
-                (<precompile>41.Padding = 5 of (::system::Int64));
+                (<precompile>42 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
             }
             {
-                (<precompile>41.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+                (<precompile>42.Alt = "W");
             }
             {
-                (<precompile>41.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>42.Text = "Window Manager");
+            }
+            (<precompile>43 = new (::presentation::compositions::GuiStackComposition*)());
+            {
+                (<precompile>43.Padding = 5 of (::system::Int64));
             }
             {
-                (<precompile>41.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>43.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
             }
-            (<precompile>42 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>43.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>43.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>44 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>45 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            {
+                (<precompile>45.Text = "Local shortcut key: Ctrl+Q");
+            }
+            {
+                <precompile>44.AddChild(<precompile>45.BoundsComposition);
+            }
+            {
+                <precompile>43.AddChild(<precompile>44);
+            }
+            (<precompile>46 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>47 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            {
+                (<precompile>47.Text = "Global shortcut key: Ctrl+Shift+Alt+Q");
+            }
+            {
+                <precompile>46.AddChild(<precompile>47.BoundsComposition);
+            }
+            {
+                <precompile>43.AddChild(<precompile>46);
+            }
+            (<precompile>48 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkFrame = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("checkFrame", checkFrame);
@@ -2658,12 +2738,12 @@ namespace demo
                 (checkFrame.Text = "Customized Frame");
             }
             {
-                <precompile>42.AddChild(checkFrame.BoundsComposition);
+                <precompile>48.AddChild(checkFrame.BoundsComposition);
             }
             {
-                <precompile>41.AddChild(<precompile>42);
+                <precompile>43.AddChild(<precompile>48);
             }
-            (<precompile>43 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>49 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkMax = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("checkMax", checkMax);
@@ -2672,12 +2752,12 @@ namespace demo
                 (checkMax.Text = "MaximizedBox");
             }
             {
-                <precompile>43.AddChild(checkMax.BoundsComposition);
+                <precompile>49.AddChild(checkMax.BoundsComposition);
             }
             {
-                <precompile>41.AddChild(<precompile>43);
+                <precompile>43.AddChild(<precompile>49);
             }
-            (<precompile>44 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>50 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkMin = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("checkMin", checkMin);
@@ -2686,12 +2766,12 @@ namespace demo
                 (checkMin.Text = "MinimizedBox");
             }
             {
-                <precompile>44.AddChild(checkMin.BoundsComposition);
+                <precompile>50.AddChild(checkMin.BoundsComposition);
             }
             {
-                <precompile>41.AddChild(<precompile>44);
+                <precompile>43.AddChild(<precompile>50);
             }
-            (<precompile>45 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>51 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkBorder = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("checkBorder", checkBorder);
@@ -2700,12 +2780,12 @@ namespace demo
                 (checkBorder.Text = "Border");
             }
             {
-                <precompile>45.AddChild(checkBorder.BoundsComposition);
+                <precompile>51.AddChild(checkBorder.BoundsComposition);
             }
             {
-                <precompile>41.AddChild(<precompile>45);
+                <precompile>43.AddChild(<precompile>51);
             }
-            (<precompile>46 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>52 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkSizeBox = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("checkSizeBox", checkSizeBox);
@@ -2714,12 +2794,12 @@ namespace demo
                 (checkSizeBox.Text = "SizeBox");
             }
             {
-                <precompile>46.AddChild(checkSizeBox.BoundsComposition);
+                <precompile>52.AddChild(checkSizeBox.BoundsComposition);
             }
             {
-                <precompile>41.AddChild(<precompile>46);
+                <precompile>43.AddChild(<precompile>52);
             }
-            (<precompile>47 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>53 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkIcon = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("checkIcon", checkIcon);
@@ -2728,12 +2808,12 @@ namespace demo
                 (checkIcon.Text = "IconVisible");
             }
             {
-                <precompile>47.AddChild(checkIcon.BoundsComposition);
+                <precompile>53.AddChild(checkIcon.BoundsComposition);
             }
             {
-                <precompile>41.AddChild(<precompile>47);
+                <precompile>43.AddChild(<precompile>53);
             }
-            (<precompile>48 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>54 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkTitle = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("checkTitle", checkTitle);
@@ -2742,118 +2822,138 @@ namespace demo
                 (checkTitle.Text = "TitleBar");
             }
             {
-                <precompile>48.AddChild(checkTitle.BoundsComposition);
+                <precompile>54.AddChild(checkTitle.BoundsComposition);
             }
             {
-                <precompile>41.AddChild(<precompile>48);
-            }
-            (<precompile>49 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>50 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            {
-                (<precompile>50.Text = "Open New Window");
-            }
-            {
-                <precompile>49.AddChild(<precompile>50.BoundsComposition);
-            }
-            {
-                <precompile>41.AddChild(<precompile>49);
-            }
-            {
-                <precompile>40.ContainerComposition.AddChild(<precompile>41);
-            }
-            {
-                var <collection> = <precompile>0.Pages;
-                <collection>.Add(<precompile>40);
-            }
-            {
-                (<precompile>51 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
-            }
-            {
-                (<precompile>51.Alt = "X");
-            }
-            {
-                (<precompile>51.Text = "Exit");
-            }
-            (<precompile>52 = new (::presentation::compositions::GuiStackComposition*)());
-            {
-                (<precompile>52.Padding = 5 of (::system::Int64));
-            }
-            {
-                (<precompile>52.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
-            }
-            {
-                (<precompile>52.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>52.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>53 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>54 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            {
-                (<precompile>54.Text = "self.Hide() (InvokeInMainThread)");
-            }
-            {
-                <precompile>53.AddChild(<precompile>54.BoundsComposition);
-            }
-            {
-                <precompile>52.AddChild(<precompile>53);
+                <precompile>43.AddChild(<precompile>54);
             }
             (<precompile>55 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (<precompile>56 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
             {
-                (<precompile>56.Text = "self.Hide()");
+                (<precompile>56.Text = "Open New Window");
             }
             {
                 <precompile>55.AddChild(<precompile>56.BoundsComposition);
             }
             {
-                <precompile>52.AddChild(<precompile>55);
-            }
-            (<precompile>57 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>58 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <precompile>43.AddChild(<precompile>55);
             }
             {
-                (<precompile>58.Text = "self.Close() (InvokeInMainThread)");
+                <precompile>42.ContainerComposition.AddChild(<precompile>43);
             }
             {
-                <precompile>57.AddChild(<precompile>58.BoundsComposition);
+                var <collection> = <precompile>2.Pages;
+                <collection>.Add(<precompile>42);
             }
             {
-                <precompile>52.AddChild(<precompile>57);
+                (<precompile>57 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+            }
+            {
+                (<precompile>57.Alt = "X");
+            }
+            {
+                (<precompile>57.Text = "Exit");
+            }
+            (<precompile>58 = new (::presentation::compositions::GuiStackComposition*)());
+            {
+                (<precompile>58.Padding = 5 of (::system::Int64));
+            }
+            {
+                (<precompile>58.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+            }
+            {
+                (<precompile>58.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>58.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (<precompile>59 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (<precompile>60 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
             {
-                (<precompile>60.Text = "self.Close()");
+                (<precompile>60.Text = "self.Hide() (InvokeInMainThread)");
             }
             {
                 <precompile>59.AddChild(<precompile>60.BoundsComposition);
             }
             {
-                <precompile>52.AddChild(<precompile>59);
+                <precompile>58.AddChild(<precompile>59);
+            }
+            (<precompile>61 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>62 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
             {
-                <precompile>51.ContainerComposition.AddChild(<precompile>52);
+                (<precompile>62.Text = "self.Hide()");
             }
             {
-                var <collection> = <precompile>0.Pages;
-                <collection>.Add(<precompile>51);
-            }
-            (<precompile>1 = <precompile>0.BoundsComposition);
-            {
-                (<precompile>1.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                <precompile>61.AddChild(<precompile>62.BoundsComposition);
             }
             {
-                self.AddChild(<precompile>0);
+                <precompile>58.AddChild(<precompile>61);
+            }
+            (<precompile>63 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>64 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            {
+                (<precompile>64.Text = "self.Close() (InvokeInMainThread)");
+            }
+            {
+                <precompile>63.AddChild(<precompile>64.BoundsComposition);
+            }
+            {
+                <precompile>58.AddChild(<precompile>63);
+            }
+            (<precompile>65 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>66 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            {
+                (<precompile>66.Text = "self.Close()");
+            }
+            {
+                <precompile>65.AddChild(<precompile>66.BoundsComposition);
+            }
+            {
+                <precompile>58.AddChild(<precompile>65);
+            }
+            {
+                <precompile>57.ContainerComposition.AddChild(<precompile>58);
+            }
+            {
+                var <collection> = <precompile>2.Pages;
+                <collection>.Add(<precompile>57);
+            }
+            (<precompile>3 = <precompile>2.BoundsComposition);
+            {
+                (<precompile>3.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            {
+                self.AddChild(<precompile>2);
+            }
+            {
+                (dialogLocalShortcut.Title = self.Text);
+            }
+            {
+                (dialogGlobalShortcut.Title = self.Text);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    dialogLocalShortcut.ShowDialog();
+                };
+                attach(<precompile>0.Executed, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    dialogGlobalShortcut.ShowDialog();
+                };
+                attach(<precompile>1.Executed, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -2918,13 +3018,13 @@ namespace demo
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>27.Text;
+                    var <old> = <precompile>29.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>27.Text = <new>);
+                    (<precompile>29.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -2991,13 +3091,13 @@ namespace demo
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>29.Text;
+                    var <old> = <precompile>31.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>29.Text = <new>);
+                    (<precompile>31.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -3555,7 +3655,7 @@ namespace demo
                     subWindow.MoveToScreenCenter();
                     subWindow.ShowWithOwner(self);
                 };
-                attach(<precompile>50.Clicked, <event-handler>);
+                attach(<precompile>56.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -3565,14 +3665,14 @@ namespace demo
                         self.Hide();
                     });
                 };
-                attach(<precompile>54.Clicked, <event-handler>);
+                attach(<precompile>60.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     self.Hide();
                 };
-                attach(<precompile>56.Clicked, <event-handler>);
+                attach(<precompile>62.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -3582,14 +3682,14 @@ namespace demo
                         self.Close();
                     });
                 };
-                attach(<precompile>58.Clicked, <event-handler>);
+                attach(<precompile>64.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     self.Close();
                 };
-                attach(<precompile>60.Clicked, <event-handler>);
+                attach(<precompile>66.Clicked, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -12974,10 +13074,10 @@ namespace demo
                 (dialogOpen.EnabledPreview = true);
             }
             {
-                (dialogOpen.Title = "Select an Image");
+                (dialogOpen.Filter = "Image Files (*.jpg;*.png;*.bmp)|*.jpg;*.png;*.bmp");
             }
             {
-                (dialogOpen.Filter = "Image Files (*.jpg;*.png;*.bmp)|*.jpg;*.png;*.bmp");
+                (dialogOpen.Title = "Select an Image");
             }
             {
                 self.AddComponent(dialogOpen);
@@ -12988,10 +13088,10 @@ namespace demo
                 (dialogOpenDoc.Options = (FileDialogFileMustExist | FileDialogDereferenceLinks) of (::presentation::INativeDialogService::FileDialogOptions));
             }
             {
-                (dialogOpenDoc.Title = "Load a GacUI Document");
+                (dialogOpenDoc.Filter = "Private Format (*.bin)|*.bin");
             }
             {
-                (dialogOpenDoc.Filter = "Private Format (*.bin)|*.bin");
+                (dialogOpenDoc.Title = "Load a GacUI Document");
             }
             {
                 self.AddComponent(dialogOpenDoc);
@@ -13002,10 +13102,10 @@ namespace demo
                 (dialogSaveDoc.Options = FileDialogPromptOverwriteFile of (::presentation::INativeDialogService::FileDialogOptions));
             }
             {
-                (dialogSaveDoc.Title = "Save a GacUI Document");
+                (dialogSaveDoc.Filter = "Private Format (*.bin)|*.bin|RTF Document (*.rtf)|*.rtf|HTML Document (*.html)|*.html");
             }
             {
-                (dialogSaveDoc.Filter = "Private Format (*.bin)|*.bin|RTF Document (*.rtf)|*.rtf|HTML Document (*.html)|*.html");
+                (dialogSaveDoc.Title = "Save a GacUI Document");
             }
             {
                 self.AddComponent(dialogSaveDoc);
@@ -13016,10 +13116,10 @@ namespace demo
                 (dialogSaveDocPrivate.Options = FileDialogPromptOverwriteFile of (::presentation::INativeDialogService::FileDialogOptions));
             }
             {
-                (dialogSaveDocPrivate.Title = "Save a GacUI Document");
+                (dialogSaveDocPrivate.Filter = "Private Format (*.bin)|*.bin");
             }
             {
-                (dialogSaveDocPrivate.Filter = "Private Format (*.bin)|*.bin");
+                (dialogSaveDocPrivate.Title = "Save a GacUI Document");
             }
             {
                 self.AddComponent(dialogSaveDocPrivate);
