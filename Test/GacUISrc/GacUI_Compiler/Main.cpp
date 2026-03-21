@@ -302,11 +302,32 @@ void CompilerMain()
 
 int wmain(vint argc, wchar_t* argv[])
 {
-	CompilerMain();
+	bool succeeded = true;
+	try
+	{
+		CompilerMain();
+	}
+	catch (const Error& e)
+	{
+		console::Console::Write(L"Error: ");
+		console::Console::WriteLine(e.Description());
+		succeeded = false;
+	}
+	catch (const Exception& ex)
+	{
+		console::Console::Write(L"Error: ");
+		console::Console::WriteLine(ex.Message());
+		succeeded = false;
+	}
+	catch (...)
+	{
+		console::Console::WriteLine(L"Unknown error.");
+		succeeded = false;
+	}
 #if VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
-	return 0;
+	return succeeded ? 0 : 1;
 }
 
 FilePath GetResourcePath()

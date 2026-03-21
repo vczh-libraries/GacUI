@@ -7,11 +7,16 @@ therefore `SOLUTION-ROOT` is `REPO-ROOT\Test\GacUISrc`.
 
 ## Projects for Verification
 
+You are required to follow the guideline to run any project in this solution,
+do not run the compiled binary directly.
+
 The `REPO-ROOT\Test\GacUISrc\UnitTest\UnitTest.vcxproj` is the unit test project.
 When any *.h or *.cpp file is changed, unit test is required to run.
 
 The unit test project is required to run when any source code or test cases are changed.
 Except for the `GuiRemoteRendererSingle` class which is not covered in the unit test.
+
+When any test case fails, you must fix the issue immediately, even those errors are unrelated to the issue you are working on.
 
 For any GacUI specific unit test that running with the GacUI unit test framework,
 when it calls `GacUIUnitTest_StartFast_WithResourceAsText` with path, for example, `Application/Windows/Order`,
@@ -44,6 +49,10 @@ To execute these projects, you should:
 - Run `Metadata_Generate` with Debug|x64.
 - Run `Metadata_Test` with Debug|x64.
 
+It generates binary metadata files containing type informations from reflection code.
+This step cannot be skipped after changing any reflection code,
+because GacUI_Compiler and some other test applications consume these binary metadata files.
+
 #### Metadata_UpdateProtocol
 
 This project need to run if `REPO-ROOT\Source\PlatformProviders\Remote\Protocol\*.txt` is updated.
@@ -63,3 +72,4 @@ This project need to run if any of the following XML file is updated:
 After running `GacUI_Compiler`, you should always `git status` to find if there is any untracked `*.UI.errors.txt`.
 - Such file means there are compile errors in some xml files, read it to find the detail.
 - You don't need to delete the file, if `GacUI_Compiler` succeeds the next time, they will be gone.
+- When the compiler crashes, you must fix the issue immediately, even those errors are unrelated to the issue you are working on.

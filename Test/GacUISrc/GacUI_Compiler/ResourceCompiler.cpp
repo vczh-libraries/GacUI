@@ -145,7 +145,7 @@ FilePath CompileResources(
 	if (errors.Count() > 0)
 	{
 		WriteErrors(errors, errorPath);
-		CHECK_FAIL(L"Error");
+		CHECK_FAIL(L"Compile error occurs, please check the log for details.");
 	}
 
 	if (outputCppFolder != L"")
@@ -162,7 +162,7 @@ FilePath CompileResources(
 		if (errors.Count() > 0)
 		{
 			WriteErrors(errors, errorPath);
-			CHECK_FAIL(L"Error");
+			CHECK_FAIL(L"Compile error occurs, please check the log for details.");
 		}
 		WriteEmbeddedResource(resource, input, output, compressResource, cppFolder / (name + L"Resource.cpp"));
 	}
