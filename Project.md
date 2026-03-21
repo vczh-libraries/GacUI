@@ -2,8 +2,8 @@
 
 ## Solution to Work On
 
-You are working on the solution `REPO-ROOT\Test\GacUISrc\GacUISrc.sln`,
-therefore `SOLUTION-ROOT` is `REPO-ROOT\Test\GacUISrc`.
+You are working on the solution `REPO-ROOT/Test/GacUISrc/GacUISrc.sln`,
+therefore `SOLUTION-ROOT` is `REPO-ROOT/Test/GacUISrc`.
 
 ## Files not Allowed to Modify
 
@@ -11,34 +11,35 @@ Files in these folders (recursively) are not allowed to modify.
 You can only change them using what is described in the `Code Generation Projects` section.
 If you encounter any error that prevent these files from being generated,
 always fix the root cause.
-- `REPO-ROOT\Test\Resources\Metadata`
-- `REPO-ROOT\Test\GacUISrc\Generated_DarkSkin`
-- `REPO-ROOT\Test\GacUISrc\Generated_Dialogs`
-- `REPO-ROOT\Test\GacUISrc\Generated_FullControlTest`
-- `REPO-ROOT\Test\GacUISrc\Generated_RemoteProtocolTest`
-- `REPO-ROOT\Test\GacUISrc\Generated_UnitTestViewer`
-- `REPO-ROOT\Source\Utilities\FakeServices\Dialogs\Source`
-- `REPO-ROOT\Source\UnitTestUtilities\SnapshotViewer\Source`
+- `REPO-ROOT/Test/Resources/Metadata`
+- `REPO-ROOT/Test/GacUISrc/Generated_DarkSkin`
+- `REPO-ROOT/Test/GacUISrc/Generated_Dialogs`
+- `REPO-ROOT/Test/GacUISrc/Generated_FullControlTest`
+- `REPO-ROOT/Test/GacUISrc/Generated_RemoteProtocolTest`
+- `REPO-ROOT/Test/GacUISrc/Generated_UnitTestViewer`
+- `REPO-ROOT/Source/Utilities/FakeServices/Dialogs/Source`
+- `REPO-ROOT/Source/UnitTestUtilities/SnapshotViewer/Source`
+
+Files in `REPO-ROOT/Import` and `REPO-ROOT/Release` (recursively) are also not allowed to modify.
+These files are prepared for foreign dependencies.
 
 ## Projects for Verification
 
 You are required to follow the guideline to run any project in this solution,
 do not run the compiled binary directly.
 
-The `REPO-ROOT\Test\GacUISrc\UnitTest\UnitTest.vcxproj` is the unit test project.
+The `REPO-ROOT/Test/GacUISrc/UnitTest/UnitTest.vcxproj` is the unit test project.
 When any *.h or *.cpp file is changed, unit test is required to run.
-
-The unit test project is required to run when any source code or test cases are changed.
 Except for the `GuiRemoteRendererSingle` class which is not covered in the unit test.
 
 When any test case fails, you must fix the issue immediately, even those errors are unrelated to the issue you are working on.
 
 For any GacUI specific unit test that running with the GacUI unit test framework,
 when it calls `GacUIUnitTest_StartFast_WithResourceAsText` with path, for example, `Application/Windows/Order`,
-running it ends up creating log files in `REPO-ROOT\Test\Resources\UnitTestSnapshots\Application\Windows`:
+running it ends up creating log files in `REPO-ROOT/Test/Resources/UnitTestSnapshots/Application/Windows`:
 - Order.json: an entry of snapshots for this test case
 - Order[*].*: log files about remote protocol recordings and compiler output
-- Order\Frame_*.json: snapshot of the UI DOM tree for each frame.
+- Order/Frame_*.json: snapshot of the UI DOM tree for each frame.
 
 Each Frame_*.json is captured at each `OnNextIdleFrame` call, recording what the UI look like before running the code in this frame.
 This is the reason why the name of the frame should say what the previous frame was done,
@@ -70,19 +71,19 @@ because GacUI_Compiler and some other test applications consume these binary met
 
 #### Metadata_UpdateProtocol
 
-This project need to run if `REPO-ROOT\Source\PlatformProviders\Remote\Protocol\*.txt` is updated.
+This project need to run if `REPO-ROOT/Source/PlatformProviders/Remote/Protocol/*.txt` is updated.
 
-It generates `REPO-ROOT\Source\PlatformProviders\Remote\Generated\*`.
+It generates `REPO-ROOT/Source/PlatformProviders/Remote/Generated/*`.
 
 #### GacUI_Compiler
 
 This project need to run if any of the following XML file is updated:
-- `REPO-ROOT\Source\Utilities\FakeServices\Dialog\*.xml` -> generates `REPO-ROOT\Source\Utilities\FakeServices\Dialog\Source\*`.
-- `REPO-ROOT\Source\UnitTestUtilities\SnapshotViewer\*.xml` -> generates `REPO-ROOT\Source\UnitTestUtilities\SnapshotViewer\Source\*`.
-- `REPO-ROOT\Test\Resources\App\DarkSkin\*.xml` -> generates `REPO-ROOT\Test\GacUISrc\Generated_DarkSkin\Source_(x86|x64)\*`.
-  - **IMPORTANT**: `REPO-ROOT\Source\Skins\DarkSkin` has another copy, this is used by the CI and is not involved in this solution, ignore it.
-- `REPO-ROOT\Test\Resources\App\FullControlTest\*.xml` -> generates `REPO-ROOT\Test\GacUISrc\Generated_FullControlTest\Source_(x86|x64)\*`.
-- `REPO-ROOT\Test\Resources\App\RemoteProtocolTest\*.xml` -> generates `REPO-ROOT\Test\GacUISrc\Generated_RemoteProtocolTest\Source_(x86|x64)\*`.
+- `REPO-ROOT/Source/Utilities/FakeServices/Dialog/*.xml` -> generates `REPO-ROOT/Source/Utilities/FakeServices/Dialog/Source/*`.
+- `REPO-ROOT/Source/UnitTestUtilities/SnapshotViewer/*.xml` -> generates `REPO-ROOT/Source/UnitTestUtilities/SnapshotViewer/Source/*`.
+- `REPO-ROOT/Test/Resources/App/DarkSkin/*.xml` -> generates `REPO-ROOT/Test/GacUISrc/Generated_DarkSkin/Source_(x86|x64)/*`.
+  - **IMPORTANT**: `REPO-ROOT/Source/Skins/DarkSkin` has another copy, this is used by the CI and is not involved in this solution, ignore it.
+- `REPO-ROOT/Test/Resources/App/FullControlTest/*.xml` -> generates `REPO-ROOT/Test/GacUISrc/Generated_FullControlTest/Source_(x86|x64)/*`.
+- `REPO-ROOT/Test/Resources/App/RemoteProtocolTest/*.xml` -> generates `REPO-ROOT/Test/GacUISrc/Generated_RemoteProtocolTest/Source_(x86|x64)/*`.
 
 After running `GacUI_Compiler`, you should always `git status` to find if there is any untracked `*.UI.errors.txt`.
 - Such file means there are compile errors in some xml files, read it to find the detail.
