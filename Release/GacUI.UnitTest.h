@@ -791,6 +791,7 @@ UnitTestRemoteProtocol
 		remoteprotocol::DomIndex						receivedDomIndex;
 		bool											receivedDomDiffMessage = false;
 		bool											receivedElementMessage = false;
+		vint											rendererIdleCount = 0;
 
 		ElementDescMap									lastElementDescs;
 		IdSet											removedElementIds;
@@ -828,6 +829,7 @@ IGuiRemoteProtocolMessages (Rendering)
 		Ptr<UnitTestLoggedFrame>			TryGetLastRenderingFrameAndReset();
 		void								Impl_RendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments);
 		void								Impl_RendererEndRendering(vint id);
+		void								Impl_RendererIdle();
 
 /***********************************************************************
 IGuiRemoteProtocolMessages (Rendering - Element)
@@ -1105,6 +1107,17 @@ IGuiRemoteProtocol
 						auto&& lastFrame = (*loggedTrace.frames.Obj())[loggedTrace.frames->Count() - 1];
 						lastFrame.frameName = name;
 					}
+					if (nextEventIndex == 0)
+					{
+						CHECK_ERROR(rendererIdleCount <= 1, ERROR_MESSAGE_PREFIX L"Expected at most one RendererIdle before the first frame boundary.");
+					}
+					else
+					{
+						CHECK_ERROR(rendererIdleCount == 1, ERROR_MESSAGE_PREFIX L"Expected exactly one RendererIdle between two frame boundaries.");
+					}
+					rendererIdleCount = 0;
+					// Note: do not reset rendererIdleCount when LogRenderingResult() is false;
+					// it must accumulate across non-boundary ticks to detect duplicate/out-of-order RendererIdle.
 					frameExecuting = true;
 					func();
 					frameExecuting = false;
@@ -1122,6 +1135,7 @@ IGuiRemoteProtocol
 }
 
 #endif
+
 
 /***********************************************************************
 .\GUIUNITTESTUTILITIES.H
