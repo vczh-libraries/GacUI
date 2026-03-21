@@ -116,15 +116,12 @@
 
 ## Graphics
 
-- 2D drawing API, optional at runtime.
-  - Default non-text element renderer using 2D drawing API.
-    - Activated only when 2D drawing API is available and renderer implementations are unavailable.
-  - Ensure OS providers without 2D drawing API still work.
 - Meta2DElement.
-  - Accept a list of draw commands at the same time, no layout feature offered, text measurement API offered.
-  - If 2D drawing API is not available, display a text using `SolidLabel`.
+  - Accept a list of draw commands at the same time, no layout feature offered, text layout implemented but no measurement feedback.
+  - Commands list could be assigned to a element, or draw to a texture.
 - Meta3DElement and Meta3D data structure.
   - Default Meta3DElement renderer using Meta2DElement with a surface sorting based algorithm.
+- `RemotingTest_Core\`: Add one more argument to run different test app, default to `FullControlTest`.
 - 2D Chart control based on Meta2DElement.
 - 3D Chart control based on Meta3DElement.
 - GIF player.
