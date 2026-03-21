@@ -19,6 +19,8 @@ always fix the root cause.
 - `REPO-ROOT/Test/GacUISrc/Generated_UnitTestViewer`
 - `REPO-ROOT/Source/Utilities/FakeServices/Dialogs/Source`
 - `REPO-ROOT/Source/UnitTestUtilities/SnapshotViewer/Source`
+- `REPO-ROOT/Source/Compiler/InstanceQuery/Generated`
+- `REPO-ROOT/Source/Compiler/RemoteProtocol/Generated`
 
 Files in `REPO-ROOT/Import` and `REPO-ROOT/Release` (recursively) are also not allowed to modify.
 These files are prepared for foreign dependencies.
@@ -44,6 +46,18 @@ running it ends up creating log files in `REPO-ROOT/Test/Resources/UnitTestSnaps
 Each Frame_*.json is captured at each `OnNextIdleFrame` call, recording what the UI look like before running the code in this frame.
 This is the reason why the name of the frame should say what the previous frame was done,
 so that frame names in snapshot files make sense.
+
+### Code Generation Tools
+
+#### REPO-ROOT/../Tools/Tools/GlrParserGen.exe
+
+This executable needs to run if any file in the following folders are changed:
+- `REPO-ROOT/Source/Compiler/InstanceQuery/Syntax`
+- `REPO-ROOT/Source/Compiler/RemoteProtocol/Syntax`
+
+There is a `Parser.xml` file in these folder.
+You need to offer the absolute path of `Parser.xml` to the tool as a command-line argument.
+Only run necessary `Parser.xml` in folders that are changed.
 
 ### Code Generation Projects
 
