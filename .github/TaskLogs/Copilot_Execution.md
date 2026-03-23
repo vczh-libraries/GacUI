@@ -9,7 +9,7 @@
 
 # EXECUTION PLAN
 
-## 1. Add tests for RemoveStyleName / SummarizeStyleName / RenameStyle
+## 1. Add tests for RemoveStyleName / SummarizeStyleName / RenameStyle [DONE]
 
 ### File to edit
 
