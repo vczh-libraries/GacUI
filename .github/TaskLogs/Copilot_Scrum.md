@@ -31,7 +31,7 @@ Using `SummarizeStyle` does not work with style name. Although task 2 is complet
 
 - [x] TASK No.1: Configure UnitTest to Only Run TestControls_Editor_Styles.cpp
 - [x] TASK No.2: Set Up Resource XML and Helper Functions
-- [ ] TASK No.3: Test EditStyleName (SingleParagraph)
+- [x] TASK No.3: Test EditStyleName (SingleParagraph)
 - [ ] TASK No.4: Test EditStyleName (MultiParagraph)
 - [ ] TASK No.5: Test RemoveStyleName (SingleParagraph)
 - [ ] TASK No.6: Test RemoveStyleName (MultiParagraph)
