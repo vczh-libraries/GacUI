@@ -105,7 +105,7 @@
     - Especially during the first connection, it is observed in GacJS that when it is the first renderer and failed during connection ballbacks, Core can't respond to other renderers again.
   - Support failure injection in unit test, making `UnitTestRemoteProtocol::Submit()` returns `true` to its `disconnected` parameter.
 
-## Depriorized
+## Deprioritized
 
 - FakeDialogService
   - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
