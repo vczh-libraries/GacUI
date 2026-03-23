@@ -50,6 +50,7 @@
 ### Code Generation
 
 - Check out `## Projects for Verification` in `REPO-ROOT/Project.md`.
+  - Pay attention to the `### Code Generation Projects` section, `code generation projects` below references this section.
 - Check out `# AFFECTED PROJECTS` in `Copilot_Execution.md`.
 - Find out if any code generation is necessary.
   - If there is no need to run any code generation, you can skip this step.
@@ -59,8 +60,6 @@
     - It is possible that a project needs to be executed multiple times in different configuration.
     - It is possible that building is required between two runs of code generation projects.
       - The building and future code generation project execution should be handled by the next sub agent.
-- If a unit test project is also a code generation project, execute it accordingly.
-- If a unit test project is not a code generation project, DO NOT execute it. Pure unit test projects will be executed in the future.
 
 ### Finishing Code Change
 
