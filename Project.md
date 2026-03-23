@@ -25,6 +25,14 @@ always fix the root cause.
 Files in `REPO-ROOT/Import` and `REPO-ROOT/Release` (recursively) are also not allowed to modify.
 These files are prepared for foreign dependencies.
 
+## Reflectable Types
+
+- You must be really careful when changing any interface, especially structs, classes, unions and a few functions.
+- Check if the class and the method is registered in reflection.
+- Reflection allow registering normal functions into a class, becoming its static functions. It is not easy to determine by the function definition itself.
+- You must read the knowledge base about reflection and try to find the pattern in any *.cpp file.
+- If the reflection registration is affected, you should always fix the reflection and run necessary code generation projects.
+
 ## Projects for Verification
 
 You are required to follow the guideline to run any project in this solution,
@@ -70,10 +78,6 @@ Here are a list of projects to run and files that should trigger them:
 
 These two projects need to run if any reflection code is touched:
 - `GuiReflection*.cpp` is updated.
-  - You must be really careful when changing any interface.
-  - Check if the class and the method is registered in reflection.
-  - You must read the knowledge base about reflection and try to find the pattern in any *.cpp file.
-  - If the reflection registration is affected, you should always fix the reflection and run these two projects.
 - `GacUI_Compiler` project is executed.
 
 To execute these projects, you should:
