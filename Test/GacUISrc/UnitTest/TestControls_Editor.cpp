@@ -188,6 +188,56 @@ TEST_FILE
 	TEST_CATEGORY(L"GuiSinglelineTextBox")
 	{
 		RunTextBoxSmokeTest<GuiSinglelineTextBox>(resource_SinglelineTextBox, WString::Unmanaged(L"GuiSinglelineTextBox"));
+
+		TEST_CASE(L"PasswordChar")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox");
+					textBox->SetFocused();
+					textBox->SelectAll();
+					protocol->TypeString(L"ABCD");
+				});
+				protocol->OnNextIdleFrame(L"Typed ABCD", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox");
+					TEST_ASSERT(textBox->GetText() == L"ABCD");
+					textBox->SetPasswordChar(L'*');
+				});
+				protocol->OnNextIdleFrame(L"Password char set", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox");
+					TEST_ASSERT(textBox->GetText() == L"ABCD");
+					protocol->KeyPress(VKEY::KEY_HOME);
+					protocol->TypeString(L"HIJK");
+				});
+				protocol->OnNextIdleFrame(L"Typed HIJK at start", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox");
+					TEST_ASSERT(textBox->GetText() == L"HIJKABCD");
+					textBox->SetPasswordChar(L'\0');
+				});
+				protocol->OnNextIdleFrame(L"Password char cleared", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<GuiSinglelineTextBox>(window, L"textBox");
+					TEST_ASSERT(textBox->GetText() == L"HIJKABCD");
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/GuiSinglelineTextBox/PasswordChar"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource_SinglelineTextBox
+			);
+		});
 	});
 
 	TEST_CATEGORY(L"GuiMultilineTextBox")
