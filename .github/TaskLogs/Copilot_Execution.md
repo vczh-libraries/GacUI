@@ -2,6 +2,39 @@
 
 # UPDATES
 
+## User Update Spotted
+
+- The RenameStyle undo/redo test cases in `Copilot_Execution.md` use 3 separate `OnNextIdleFrame` callbacks, but `RenameStyle` undo/redo only changes internal style name mappings without causing any visual rendering change. The test framework requires every frame to produce an observable UI update. The source code merges the frames accordingly:
+  - `Undo_RenameStyle`: Merged "RenameStyle" and "Undo" frames into a single "RenameStyle+Undo" frame.
+  - `Redo_RenameStyle`: Merged "Undo" and "Redo" frames into a single "Undo+Redo" frame.
+  - `Undo_RenameStyle_ParentReferences`: Merged "Rename Parent" and "Undo" frames into a single "Rename Parent+Undo" frame.
+  - `Redo_RenameStyle_ParentReferences`: Merged "Undo" and "Redo" frames into a single "Undo+Redo" frame.
+  - `MultipleRenames_UndoAll_ReturnsToA`: Merged "A->B->C", "Undo C->B", and "Undo B->A" frames into a single "A->B->C+UndoAll" frame.
+
+# FIXING ATTEMPTS
+
+## Fixing attempt No.1
+
+### Problem
+When undoing/redoing `EditStyleName` or `RemoveStyleName` operations, the `DocumentModel::EditRun` method replaces the current document fragment with a saved one. If the saved fragment contains a style name (e.g., "MyBold") that also exists in the current document, `EditRun` renames it to avoid conflicts (e.g., "MyBold" → "MyBold_2"). This caused `SummarizeStyleName` to return "MyBold_2" instead of "MyBold" after redo.
+
+### Fix
+Added a `CompareStyleProperties` function in `GuiDocumentEditor_CloneRun.cpp` that compares all fields of two `DocumentStyleProperties` objects. In `DocumentModel::EditRun`, before renaming a conflicting style, it now checks whether both `parentStyleName` and all style properties are identical. If they are, the rename is skipped since the styles are the same.
+
+### Why this works
+When undo/redo restores a document fragment, the saved fragment's style is typically identical to the one already in the document (same parent, same properties). Skipping the unnecessary rename preserves the original style name, which is what the user expects after undo/redo.
+
+## Fixing attempt No.2
+
+### Problem
+The `RenameStyle` undo/redo test cases used separate `OnNextIdleFrame` callbacks for verification and undo/redo operations. However, `RenameStyle` undo/redo only changes internal style name mappings without causing any visual rendering change. The test framework (`UnitTestRemoteProtocol`) requires that every `OnNextIdleFrame` callback produces an observable UI update (rendering change), otherwise it crashes after 100 idle frames with the error "The last frame didn't trigger UI updating."
+
+### Fix
+Merged frames that only perform `RenameStyle` undo/redo operations into adjacent frames that do produce visual changes (e.g., the Init frame which loads text, or the final frame which calls `window->Hide()`). All assertions are preserved, just performed within the same frame callback.
+
+### Why this works
+By combining operations that don't change rendering with those that do, every `OnNextIdleFrame` callback produces at least one observable UI change, satisfying the test framework's requirement.
+
 # AFFECTED PROJECTS
 
 - Build the solution in folder `REPO-ROOT\Test\GacUISrc` (Debug|x64).
@@ -871,8 +904,6 @@ Verification expectations:
 - UnitTest passes.
 - No unexpected `*.UI.errors.txt` artifacts are produced.
 
-# FIXING ATTEMPTS
-
-- N/A (execution document only).
-
 # !!!FINISHED!!!
+
+# !!!VERIFIED!!!

@@ -1581,7 +1581,7 @@ TEST_FILE
 						TEST_ASSERT(!textBox->CanRedo());
 					});
 
-					protocol->OnNextIdleFrame(L"RenameStyle", [=]()
+					protocol->OnNextIdleFrame(L"RenameStyle+Undo", [=]()
 					{
 						auto window = GetApplication()->GetMainWindow();
 						auto textBox = FindObjectByName<GuiDocumentViewer>(window, L"textBox");
@@ -1597,18 +1597,12 @@ TEST_FILE
 						TEST_ASSERT(textBox->Undo());
 						TEST_ASSERT(!textBox->CanUndo());
 						TEST_ASSERT(textBox->CanRedo());
-					});
 
-					protocol->OnNextIdleFrame(L"Undo", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<GuiDocumentViewer>(window, L"textBox");
-
-						auto summary = SummarizeName(textBox, 0, 10);
+						summary = SummarizeName(textBox, 0, 10);
 						TEST_ASSERT(summary);
 						TEST_ASSERT(summary.Value() == WString::Unmanaged(L"OldName"));
 
-						auto document = textBox->GetDocument();
+						document = textBox->GetDocument();
 						TEST_ASSERT(document->styles.Keys().Contains(WString::Unmanaged(L"OldName")));
 						TEST_ASSERT(!document->styles.Keys().Contains(WString::Unmanaged(L"NewName")));
 
@@ -1648,7 +1642,7 @@ TEST_FILE
 						TEST_ASSERT(textBox->CanRedo());
 					});
 
-					protocol->OnNextIdleFrame(L"Undo", [=]()
+					protocol->OnNextIdleFrame(L"Undo+Redo", [=]()
 					{
 						auto window = GetApplication()->GetMainWindow();
 						auto textBox = FindObjectByName<GuiDocumentViewer>(window, L"textBox");
@@ -1660,14 +1654,8 @@ TEST_FILE
 						TEST_ASSERT(textBox->Redo());
 						TEST_ASSERT(textBox->CanUndo());
 						TEST_ASSERT(!textBox->CanRedo());
-					});
 
-					protocol->OnNextIdleFrame(L"Redo", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<GuiDocumentViewer>(window, L"textBox");
-
-						auto summary = SummarizeName(textBox, 0, 10);
+						summary = SummarizeName(textBox, 0, 10);
 						TEST_ASSERT(summary);
 						TEST_ASSERT(summary.Value() == WString::Unmanaged(L"NewName"));
 
@@ -1712,7 +1700,7 @@ TEST_FILE
 						TEST_ASSERT(textBox->CanUndo());
 					});
 
-					protocol->OnNextIdleFrame(L"Rename Parent", [=]()
+					protocol->OnNextIdleFrame(L"Rename Parent+Undo", [=]()
 					{
 						auto window = GetApplication()->GetMainWindow();
 						auto textBox = FindObjectByName<GuiDocumentViewer>(window, L"textBox");
@@ -1726,14 +1714,8 @@ TEST_FILE
 						TEST_ASSERT(textBox->Undo());
 						TEST_ASSERT(textBox->CanRedo());
 						TEST_ASSERT(!textBox->CanUndo());
-					});
 
-					protocol->OnNextIdleFrame(L"Undo", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<GuiDocumentViewer>(window, L"textBox");
-
-						auto document = textBox->GetDocument();
+						document = textBox->GetDocument();
 						TEST_ASSERT(document->styles.Keys().Contains(WString::Unmanaged(L"Child")));
 						TEST_ASSERT(document->styles.Keys().Contains(WString::Unmanaged(L"Parent")));
 						TEST_ASSERT(!document->styles.Keys().Contains(WString::Unmanaged(L"NewParent")));
@@ -1787,7 +1769,7 @@ TEST_FILE
 						TEST_ASSERT(textBox->CanRedo());
 					});
 
-					protocol->OnNextIdleFrame(L"Undo", [=]()
+					protocol->OnNextIdleFrame(L"Undo+Redo", [=]()
 					{
 						auto window = GetApplication()->GetMainWindow();
 						auto textBox = FindObjectByName<GuiDocumentViewer>(window, L"textBox");
@@ -1801,14 +1783,8 @@ TEST_FILE
 						TEST_ASSERT(textBox->Redo());
 						TEST_ASSERT(textBox->CanUndo());
 						TEST_ASSERT(!textBox->CanRedo());
-					});
 
-					protocol->OnNextIdleFrame(L"Redo", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<GuiDocumentViewer>(window, L"textBox");
-
-						auto document = textBox->GetDocument();
+						document = textBox->GetDocument();
 						TEST_ASSERT(document->styles.Keys().Contains(WString::Unmanaged(L"Child")));
 						TEST_ASSERT(!document->styles.Keys().Contains(WString::Unmanaged(L"Parent")));
 						TEST_ASSERT(document->styles.Keys().Contains(WString::Unmanaged(L"NewParent")));
@@ -1851,7 +1827,7 @@ TEST_FILE
 						TEST_ASSERT(textBox->CanUndo());
 					});
 
-					protocol->OnNextIdleFrame(L"A->B->C", [=]()
+					protocol->OnNextIdleFrame(L"A->B->C+UndoAll", [=]()
 					{
 						auto window = GetApplication()->GetMainWindow();
 						auto textBox = FindObjectByName<GuiDocumentViewer>(window, L"textBox");
@@ -1864,34 +1840,22 @@ TEST_FILE
 						TEST_ASSERT(document->styles.Keys().Contains(WString::Unmanaged(L"C")));
 
 						TEST_ASSERT(textBox->Undo());
-					});
 
-					protocol->OnNextIdleFrame(L"Undo C->B", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<GuiDocumentViewer>(window, L"textBox");
-
-						auto summary = SummarizeName(textBox, 0, 10);
+						summary = SummarizeName(textBox, 0, 10);
 						TEST_ASSERT(summary);
 						TEST_ASSERT(summary.Value() == WString::Unmanaged(L"B"));
 
-						auto document = textBox->GetDocument();
+						document = textBox->GetDocument();
 						TEST_ASSERT(document->styles.Keys().Contains(WString::Unmanaged(L"B")));
 						TEST_ASSERT(!document->styles.Keys().Contains(WString::Unmanaged(L"C")));
 
 						TEST_ASSERT(textBox->Undo());
-					});
 
-					protocol->OnNextIdleFrame(L"Undo B->A", [=]()
-					{
-						auto window = GetApplication()->GetMainWindow();
-						auto textBox = FindObjectByName<GuiDocumentViewer>(window, L"textBox");
-
-						auto summary = SummarizeName(textBox, 0, 10);
+						summary = SummarizeName(textBox, 0, 10);
 						TEST_ASSERT(summary);
 						TEST_ASSERT(summary.Value() == WString::Unmanaged(L"A"));
 
-						auto document = textBox->GetDocument();
+						document = textBox->GetDocument();
 						TEST_ASSERT(document->styles.Keys().Contains(WString::Unmanaged(L"A")));
 						TEST_ASSERT(!document->styles.Keys().Contains(WString::Unmanaged(L"B")));
 
