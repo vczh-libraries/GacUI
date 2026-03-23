@@ -9,7 +9,7 @@
 
 # EXECUTION PLAN
 
-## STEP 1: Identify insertion point in existing tests
+## STEP 1: Identify insertion point in existing tests [DONE]
 
 Change file:
 - `REPO-ROOT\Test\GacUISrc\UnitTest\TestControls_Editor_Styles.cpp`
@@ -22,7 +22,7 @@ Locate the existing category nesting:
 Add a sibling category right after `SingleParagraph`:
 - `TEST_CATEGORY(L"MultiParagraph")`
 
-## STEP 2: Implement MultiParagraph unit tests for EditStyleName
+## STEP 2: Implement MultiParagraph unit tests for EditStyleName [DONE]
 
 ### 2.1 Add: Implement MultiParagraph category (two cases)
 
@@ -131,7 +131,7 @@ Insert the following block under `TEST_CATEGORY(L"EditStyleName")` as a sibling 
 
 **Known limitation (keep explicit):** there is a documented risk that `DocumentModel::SummarizeStyleName` middle-paragraph logic may use `end.column` rather than full-paragraph coverage; the cross-paragraph assertions above are unlikely to expose this because the middle paragraph is uniformly styled and `end.column` falls within the styled region. This is acceptable for the current scope (adding tests only), but future work should add a targeted case that can distinguish partial middle-paragraph coverage from full coverage.
 
-## STEP 3: Verification (test plan)
+## STEP 3: Verification (test plan) [DONE]
 
 1. Build `REPO-ROOT\Test\GacUISrc` with `Debug|x64` following `REPO-ROOT\.github\Guidelines\Building.md` (use the repo’s wrapper scripts, do not invoke msbuild directly).
 2. Run UnitTest project `UnitTest` with `Debug|x64` following `REPO-ROOT\.github\Guidelines\Running-UnitTest.md`.
