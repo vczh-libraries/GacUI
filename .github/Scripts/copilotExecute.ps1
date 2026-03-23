@@ -16,10 +16,10 @@ if (($Mode -ne "CLI") -and ($Mode -ne "UnitTest")) {
     throw "Invalid mode: $Mode. Allowed values are CLI or UnitTest."
 }
 
-if (($Configuration -ne $null) -ne ($Platform -ne $null)) {
+if (([string]::IsNullOrEmpty($Configuration)) -ne ([string]::IsNullOrEmpty($Platform))) {
     throw "Configuration and Platform parameters should be set or unset at the same time."
 }
-if ($Configuration -ne $null) {
+if (-not [string]::IsNullOrEmpty($Configuration)) {
     if (($Configuration -ne "Debug") -and ($Configuration -ne "Release")) {
         throw "Invalid configuration: $Configuration. Allowed values are Debug or Release."
     }
