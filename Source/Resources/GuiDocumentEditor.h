@@ -23,6 +23,7 @@ namespace vl
 			extern void									GetRunRange(DocumentParagraphRun* run, RunRangeMap& runRanges);
 			extern void									LocateStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, vint position, bool frontSide, collections::List<DocumentContainerRun*>& locatedRuns);
 			extern Ptr<DocumentHyperlinkRun::Package>	LocateHyperlink(DocumentParagraphRun* run, RunRangeMap& runRanges, vint row, vint start, vint end);
+			extern bool									CompareStyleProperties(Ptr<DocumentStyleProperties> a, Ptr<DocumentStyleProperties> b);
 			extern Ptr<DocumentStyleProperties>			CopyStyle(Ptr<DocumentStyleProperties> style);
 			extern Ptr<DocumentRun>						CopyRun(DocumentRun* run);
 			extern Ptr<DocumentRun>						CopyStyledText(collections::List<DocumentContainerRun*>& styleRuns, const WString& text);

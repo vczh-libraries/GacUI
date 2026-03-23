@@ -234,6 +234,22 @@ Clone the current run with its children
 
 		namespace document_editor
 		{
+			bool CompareStyleProperties(Ptr<DocumentStyleProperties> a, Ptr<DocumentStyleProperties> b)
+			{
+				if (!a && !b) return true;
+				if (!a || !b) return false;
+				return a->face == b->face
+					&& a->size == b->size
+					&& a->color == b->color
+					&& a->backgroundColor == b->backgroundColor
+					&& a->bold == b->bold
+					&& a->italic == b->italic
+					&& a->underline == b->underline
+					&& a->strikeline == b->strikeline
+					&& a->antialias == b->antialias
+					&& a->verticalAntialias == b->verticalAntialias;
+			}
+
 			Ptr<DocumentStyleProperties> CopyStyle(Ptr<DocumentStyleProperties> style)
 			{
 				if (!style) return nullptr;

@@ -250,6 +250,13 @@ DocumentModel::EditRun
 				WString name=newNames[i];
 				if((name.Length()==0 || name[0]!=L'#') && styles.Keys().Contains(name))
 				{
+					auto existingStyle = styles[name];
+					auto incomingStyle = model->styles[name];
+					if (existingStyle->parentStyleName == incomingStyle->parentStyleName
+						&& document_editor::CompareStyleProperties(existingStyle->styles, incomingStyle->styles))
+					{
+						continue;
+					}
 					vint index=2;
 					while(true)
 					{
