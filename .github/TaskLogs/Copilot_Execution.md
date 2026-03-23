@@ -9,7 +9,7 @@
 
 # EXECUTION PLAN
 
-## STEP 1: Add EditStyleName(SingleParagraph) unit tests
+## STEP 1: Add EditStyleName(SingleParagraph) unit tests [DONE]
 
 ### What to change
 
@@ -220,7 +220,7 @@ Insert the following code inside `TEST_CATEGORY(L"Styles") { ... });`:
 	});
 ```
 
-## STEP 2: Verify by building and running UnitTest
+## STEP 2: Verify by building and running UnitTest [DONE]
 
 Build the solution (Debug|x64):
 
@@ -240,7 +240,11 @@ cd REPO-ROOT\Test\GacUISrc
 
 # FIXING ATTEMPTS
 
-- N/A
+## Fixing attempt No.1
+
+- Why the original change did not work: the new UnregisteredStyle test triggers an ArrayBase::Get out-of-range in DocumentModel::CopyDocument because it collects an unregistered style name and indexes styles[styleName] without checking existence.
+- What I need to do: guard CopyDocument to skip style names that are not present in the model styles before dereferencing them.
+- Why this should solve the failure: it avoids invalid dictionary lookups while still letting unregistered style names fall back to the default style during rendering and summarization.
 
 # !!!FINISHED!!!
 

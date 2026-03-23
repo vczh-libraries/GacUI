@@ -94,6 +94,10 @@ DocumentModel::EditRangeOperations
 				WString styleName=styleNames[i];
 				if(!newDocument->styles.Keys().Contains(styleName))
 				{
+					if (!styles.Keys().Contains(styleName))
+					{
+						continue;
+					}
 					Ptr<DocumentStyle> style=styles[styleName];
 					if(deepCopy)
 					{
