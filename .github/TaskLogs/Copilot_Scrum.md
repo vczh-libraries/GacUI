@@ -23,7 +23,7 @@ After everything is finished, commit your Copilot_Scrum.md and push to the curre
 
 # TASKS
 
-- [ ] TASK No.1: Configure UnitTest to Only Run TestControls_Editor_Styles.cpp
+- [x] TASK No.1: Configure UnitTest to Only Run TestControls_Editor_Styles.cpp
 - [ ] TASK No.2: Set Up Resource XML and Helper Functions
 - [ ] TASK No.3: Test EditStyleName (SingleParagraph)
 - [ ] TASK No.4: Test EditStyleName (MultiParagraph)
