@@ -347,6 +347,7 @@ TEST_FILE
 				});
 			});
 		});
+
 		TEST_CATEGORY(L"RemoveStyleName")
 		{
 			TEST_CATEGORY(L"SingleParagraph")
@@ -1079,6 +1080,5 @@ TEST_FILE
 				);
 			});
 		});
-
 	});
 }
