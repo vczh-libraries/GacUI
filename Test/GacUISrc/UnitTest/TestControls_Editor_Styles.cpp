@@ -43,16 +43,6 @@ namespace
 	{
 		return textBox->SummarizeStyleName(TextPos(row, begin), TextPos(row, end));
 	}
-
-	Ptr<DocumentStyleProperties> SummarizeStyle(GuiDocumentCommonInterface* textBox, vint begin, vint end)
-	{
-		return textBox->SummarizeStyle(TextPos(0, begin), TextPos(0, end));
-	}
-
-	Ptr<DocumentStyleProperties> SummarizeStyle(GuiDocumentCommonInterface* textBox, vint row, vint begin, vint end)
-	{
-		return textBox->SummarizeStyle(TextPos(row, begin), TextPos(row, end));
-	}
 }
 
 TEST_FILE

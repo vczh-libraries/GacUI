@@ -21,6 +21,12 @@ After everything is finished, commit your Copilot_Scrum.md and push to the curre
 
 # UPDATES
 
+## UPDATE
+
+Using `SummarizeStyle` does not work with style name. Although task 2 is completed but I manually deleted `SummarizeStyle` helper functions from the code.
+
+`textBox->SummarizeStyle` only summarize styles that assigned by `EditStyle`, `SummarizeStyle` will not calculate styles that applied style names. Please reconsider the remaining tasks.
+
 # TASKS
 
 - [x] TASK No.1: Configure UnitTest to Only Run TestControls_Editor_Styles.cpp
@@ -56,20 +62,17 @@ Define the resource XML for a `GuiDocumentViewer` with `Editable` mode and helpe
 ### what to be done
 
 - In `TestControls_Editor_Styles.cpp`, define a resource XML constant `resource_DocumentViewer` that creates a `<Window>` containing a `<DocumentViewer ref.Name="textBox" EditMode="Editable">`.
-- Create a helper function to register named styles into a document model. This function should:
-  - Get the document via `textBox->GetDocument()`.
-  - Create `DocumentStyle` objects with a `parentStyleName` (e.g., `#Default`) and `DocumentStyleProperties` (e.g., bold, italic, color).
-  - Add them via `document->styles.Add(styleName, style)`.
-- Create a `SummarizeName` helper function that wraps `textBox->SummarizeStyleName(begin, end)` for convenience, similar to how `TestControls_Editor_RichText.cpp` has `Summarize` helpers.
-- Create a `SummarizeStyle` helper function too, because we need to verify that named style properties actually take effect on the text.
+- Create helper functions to create `DocumentStyleProperties` objects (`MakeStyleWithBold`, `MakeStyleWithItalic`, `MakeStyleWithColor`).
+- Create a `RegisterStyle` helper function that registers a named style into the document model with a parent style name and properties.
+- Create a `SummarizeName` helper function that wraps `textBox->SummarizeStyleName(begin, end)` for convenience.
 - Restructure the outer `TEST_CATEGORY` to `L"Styles"` and plan inner categories for grouping.
 
 ### rationale
 
-- Following the convention in `TestControls_Editor_RichText.cpp` (line 1-85) and `TestControls_Editor.cpp` (lines 174-186) for defining resource XML and helpers.
-- The `GuiDocumentViewer` is used with `EditMode="Editable"` because `SummarizeStyleName` and style edit operations require `Editable` mode (the `CanUndo`/`CanRedo` checks gate on `editMode == GuiDocumentEditMode::Editable`).
+- Following the convention in `TestControls_Editor_RichText.cpp` and `TestControls_Editor.cpp` for defining resource XML and helpers.
+- The `GuiDocumentViewer` is used with `EditMode="Editable"` because `SummarizeStyleName` and style edit operations require `Editable` mode.
 - Helpers reduce code duplication across the many test cases.
-- Registering styles programmatically via `document->styles.Add()` is the way to set up named styles, confirmed by `DocumentModel::styles` being a public `StyleMap` field (`Source/Resources/GuiDocument.h`, line 342).
+- `SummarizeStyle` helpers were intentionally excluded because `SummarizeStyle` only reports properties applied via `EditStyle` (direct property editing), NOT properties applied via named styles (`EditStyleName`). Verification of named style effects will be done through `SummarizeStyleName` and direct inspection of the document model's `styles` dictionary.
 
 ## TASK No.3: Test EditStyleName (SingleParagraph)
 
@@ -77,19 +80,18 @@ Write test cases for `EditStyleName` on a single paragraph of text, under `TEST_
 
 ### what to be done
 
-- **Test: Apply a registered style to a range** — Load text, register a style (e.g., `"MyBold"` with `bold=true`), call `EditStyleName(begin, end, "MyBold")`, then verify via `SummarizeStyleName` that the range returns `"MyBold"`, and via `SummarizeStyle` that the resolved properties (bold) are correct.
+- **Test: Apply a registered style to a range** — Load text, register a style (e.g., `"MyBold"` with `bold=true`), call `EditStyleName(begin, end, "MyBold")`, then verify via `SummarizeStyleName` that the range returns `"MyBold"`.
 - **Test: Apply a style to a partial range** — Load text `"0123456789"`, apply style to range `[2,5)`, verify that `SummarizeStyleName(0,2)` does NOT return the style name (returns null or different), `SummarizeStyleName(2,5)` returns the style name, and `SummarizeStyleName(5,10)` does NOT.
-- **Test: Apply an unregistered style name** — Apply a style name that does not exist in the document's styles dictionary. Verify that `SummarizeStyleName` still returns the style name, but the resolved properties fallback to default (the style name is stored in the run even if not registered).
+- **Test: Apply an unregistered style name** — Apply a style name that does not exist in the document's styles dictionary. Verify that `SummarizeStyleName` still returns the style name (the style name is stored in the run even if not registered, it just falls back to default visually).
 - **Test: Apply different styles to adjacent ranges** — Apply `"StyleA"` to `[0,5)` and `"StyleB"` to `[5,10)`. Verify each range has its own style and that `SummarizeStyleName(0,10)` returns null (mixed styles).
 - **Test: Overwrite existing style name** — Apply `"StyleA"` to `[0,10)` then `"StyleB"` to `[3,7)`. Verify the overlapping range has `"StyleB"`, and non-overlapping ranges still have `"StyleA"`.
-- **Test: Apply style with inheritance** — Register `"Parent"` style (bold=true) and `"Child"` style with `parentStyleName="Parent"` and (italic=true). Apply `"Child"` to a range and verify resolved properties include both bold and italic.
 
 ### rationale
 
 - `EditStyleName` is the primary function to apply named styles to text. Testing it on a single paragraph covers the most fundamental use case.
 - The `AddStyleName` visitor in `GuiDocumentEditor_AddContainer.cpp` wraps text in `DocumentStyleApplicationRun` containers, so overlapping and adjacent range tests are critical to verify the run tree structure.
 - Testing unregistered style names verifies the fallback behavior described in the problem statement: "When assigning a style name to a piece of text without the style registered, no error happens instead it fallback to default."
-- Style inheritance is a core feature per the problem statement, and `DocumentModel::MergeBaselineStyle` resolves parent chains.
+- Style inheritance is a property of the document model's style resolution, not of `EditStyleName` itself. Inheritance behavior is verified indirectly through `RenameStyle` parent reference tests (Task 8) and by inspecting the document model's `styles` dictionary.
 
 ## TASK No.4: Test EditStyleName (MultiParagraph)
 
@@ -163,7 +165,6 @@ Write test cases for `RenameStyle`, under `TEST_CATEGORY(L"RenameStyle")`.
 - **Test: Rename a registered style** — Register `"OldName"`, apply it to text, then `RenameStyle("OldName", "NewName")`. Verify:
   - `SummarizeStyleName` returns `"NewName"` for the affected range.
   - The document's styles dictionary no longer contains `"OldName"` and now contains `"NewName"`.
-  - The resolved style properties remain the same.
 - **Test: Rename updates parent references** — Register `"Parent"` and `"Child"` with `parentStyleName="Parent"`. Apply `"Child"` to text. Rename `"Parent"` to `"NewParent"`. Verify `"Child"` now has `parentStyleName="NewParent"` (confirmed by `DocumentModel::RenameStyle` implementation in `GuiDocument_Edit.cpp` lines 535-540).
 - **Test: Rename a style applied to multiple ranges** — Apply the same style name to discontiguous ranges, then rename. Verify all ranges now summarize as the new name.
 - **Test: Rename to an existing style name fails** — Register both `"StyleA"` and `"StyleB"`, try to rename `"StyleA"` to `"StyleB"`. The `DocumentModel::RenameStyle` returns `false` when the new name already exists. Verify nothing changes.
@@ -232,6 +233,6 @@ Remove the test file filter to restore running all tests.
 
 ## GacUI
 
-Nothing needs to be added or changed in the knowledge base for this work. The testing patterns are already well-established in the codebase (documented in `manual/unittest/gacui.md`, `gacui_frame.md`, and `gacui_controls.md`), and the style API documentation in `GuiDocument.h` and `GuiDocumentCommonInterface.h` is sufficient. The helper functions and resource XML patterns follow existing conventions from `TestControls_Editor_RichText.cpp` and `TestControls_Editor.cpp`.
+- Consider adding a note under the document editor API section clarifying the distinction between `SummarizeStyle` (returns only properties applied via `EditStyle`) and `SummarizeStyleName` (returns the named style applied via `EditStyleName`). This is a subtle but important difference: `SummarizeStyle` does NOT resolve properties from named styles.
 
 # !!!FINISHED!!!
