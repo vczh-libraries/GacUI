@@ -1,52 +1,39 @@
 # !!!TASK!!!
 
 # PROBLEM DESCRIPTION
-## TASK No.5: Test RemoveStyleName, SummarizeStyleName, and RenameStyle
+## TASK No.6: Test Undo/Redo for Style Operations
 
-Write test cases for `RemoveStyleName`, `SummarizeStyleName`, and `RenameStyle`, each under their own `TEST_CATEGORY` hierarchy. This task covers the following TEST_CATEGORYs:
-- `TEST_CATEGORY(L"RemoveStyleName")` / `TEST_CATEGORY(L"SingleParagraph")`
-- `TEST_CATEGORY(L"RemoveStyleName")` / `TEST_CATEGORY(L"MultiParagraph")`
-- `TEST_CATEGORY(L"SummarizeStyleName")`
-- `TEST_CATEGORY(L"RenameStyle")`
+Write test cases for undo/redo behavior of `EditStyleName`, `RemoveStyleName`, and `RenameStyle`, each under their own `TEST_CATEGORY` hierarchy. This task covers the following TEST_CATEGORYs:
+- `TEST_CATEGORY(L"UndoRedo")` / `TEST_CATEGORY(L"EditStyleName")`
+- `TEST_CATEGORY(L"UndoRedo")` / `TEST_CATEGORY(L"RemoveStyleName")`
+- `TEST_CATEGORY(L"UndoRedo")` / `TEST_CATEGORY(L"RenameStyle")`
 
 ### what to be done
 
-**Under `TEST_CATEGORY(L"RemoveStyleName")` / `TEST_CATEGORY(L"SingleParagraph")`:**
+**Under `TEST_CATEGORY(L"UndoRedo")` / `TEST_CATEGORY(L"EditStyleName")` and `TEST_CATEGORY(L"RemoveStyleName")`:**
 
-- **Test: Remove style from a fully styled range** — Apply a style to `[0,10)`, then `RemoveStyleName(0,10)`. Verify `SummarizeStyleName(0,10)` returns null.
-- **Test: Remove style from a partial range** — Apply a style to `[0,10)`, then `RemoveStyleName(3,7)`. Verify `SummarizeStyleName(0,3)` still returns the style name, `SummarizeStyleName(3,7)` returns null, `SummarizeStyleName(7,10)` still returns the style name.
-- **Test: Remove style when no style is applied** — Call `RemoveStyleName` on text without any style name applied; verify no crash and `SummarizeStyleName` still returns null.
-- **Test: Remove style with overlapping styles** — Apply `"StyleA"` to `[0,5)` and `"StyleB"` to `[5,10)`, then `RemoveStyleName(3,7)`. Verify style names are removed in the overlapping region.
+- **Test: Undo EditStyleName** — Apply a style name, verify `CanUndo()` is true, call `Undo()`, verify `SummarizeStyleName` returns null (original state).
+- **Test: Redo EditStyleName** — After undoing, verify `CanRedo()` is true, call `Redo()`, verify `SummarizeStyleName` returns the style name again.
+- **Test: Undo RemoveStyleName** — Apply a style name, then remove it, then undo the removal. Verify the style name is restored.
+- **Test: Redo RemoveStyleName** — After undoing a removal, redo it. Verify the style name is removed again.
+- **Test: Multiple edits then undo all** — Apply style, then remove style, then undo both in sequence. Verify we return to the original unstyled state.
+- **Test: Undo/Redo with CanUndo/CanRedo checks** — Verify `CanUndo()` and `CanRedo()` return correct values at each step of the undo/redo chain.
 
-**Under `TEST_CATEGORY(L"RemoveStyleName")` / `TEST_CATEGORY(L"MultiParagraph")`:**
+**Under `TEST_CATEGORY(L"UndoRedo")` / `TEST_CATEGORY(L"RenameStyle")`:**
 
-- **Test: Remove style across paragraphs** — Apply a style across multiple paragraphs, then `RemoveStyleName` across the same range. Verify all paragraphs no longer have the style, and verify `SummarizeStyleName(TextPos(...), TextPos(...))` is null over the removed multi-paragraph range.
-- **Test: Partial removal across paragraphs** — Apply a style across 3 paragraphs, then remove it from a range that spans the middle of paragraph 1 to the middle of paragraph 3. Verify the edges still retain the style while the middle is removed, and verify `SummarizeStyleName(TextPos(...), TextPos(...))` is null over the removed multi-paragraph range.
-
-**Under `TEST_CATEGORY(L"SummarizeStyleName")`:**
-
-- **Test: Returns null for mixed styles** — Apply `"StyleA"` to `[0,5)` and `"StyleB"` to `[5,10)`, verify `SummarizeStyleName(0,10)` returns null (Nullable without value).
-- **Test: Returns null for partially styled text in the range** — Apply `"MyStyle"` to `[0,5)` only, verify `SummarizeStyleName(0,10)` returns null because `[5,10)` has no style name.
-- **Test: Returns null for text with no style at all** — Load text with no style applied, verify `SummarizeStyleName(0,10)` returns null.
-- **Test: Reversed begin/end** — Verify that calling `SummarizeStyleName` with `begin > end` still works correctly (the implementation swaps them, confirmed in `GuiDocumentCommonInterface.cpp`).
-
-**Under `TEST_CATEGORY(L"RenameStyle")`:**
-
-- **Test: Rename a registered style** — Register `"OldName"`, apply it to text, then `RenameStyle("OldName", "NewName")`. Verify:
-  - `SummarizeStyleName` returns `"NewName"` for the affected range.
-  - The document's styles dictionary no longer contains `"OldName"` and now contains `"NewName"`.
-- **Test: Rename updates parent references** — Register `"Parent"` and `"Child"` with `parentStyleName="Parent"`. Apply `"Child"` to text. Rename `"Parent"` to `"NewParent"`. Verify `"Child"` now has `parentStyleName="NewParent"` (confirmed by `DocumentModel::RenameStyle` implementation in `GuiDocument_Edit.cpp` lines 535-540).
-- **Test: Rename a style applied to multiple ranges** — Apply the same style name to discontiguous ranges, then rename. Verify all ranges now summarize as the new name.
-- **Test: Rename to an existing style name fails** — Register both `"StyleA"` and `"StyleB"`, try to rename `"StyleA"` to `"StyleB"`. The `DocumentModel::RenameStyle` returns `false` when the new name already exists. Verify nothing changes.
-- **Test: Rename a non-existent style** — Try to rename a style name not in the styles dictionary. `DocumentModel::RenameStyle` returns `false` when the old name is not found. Verify nothing changes.
-- **Test: Rename across multiple paragraphs** — Apply a style to text spanning multiple paragraphs, rename, verify all paragraphs are updated.
+- **Test: Undo RenameStyle** — Register a style, apply it, rename it, then undo. Verify:
+  - The style name in text runs reverts to the old name.
+  - The styles dictionary reverts to the old name.
+- **Test: Redo RenameStyle** — After undoing, redo. Verify everything is renamed again.
+- **Test: Undo RenameStyle with parent references** — Register parent and child styles, rename parent, undo. Verify the child's `parentStyleName` reverts to the original parent name.
+- **Test: Multiple renames then undo all** — Rename `"A"` to `"B"`, then `"B"` to `"C"`, then undo both. Verify we return to `"A"`.
 
 ### rationale
 
-- These four TEST_CATEGORYs (`RemoveStyleName/SingleParagraph`, `RemoveStyleName/MultiParagraph`, `SummarizeStyleName`, `RenameStyle`) are grouped into a single task because they are all non-undo/redo functional tests for the remaining style operations. Each TEST_CATEGORY retains its own identity and scope.
-- `RemoveStyleName` uses `RemoveStyleNameVisitor` which unwraps `DocumentStyleApplicationRun` containers from the run tree (see `GuiDocumentEditor_RemoveContainer.cpp`). Testing partial removal is critical as it involves splitting run containers.
-- `SummarizeStyleName` is the primary query function for style name information. The implementation in `GuiDocumentEditor_SummerizeStyle.cpp` uses a visitor pattern with `assignedStyleName` and `currentStyleName` tracking to determine consistency. The begin/end swap behavior is confirmed in `GuiDocumentCommonInterface.cpp`.
-- `RenameStyle` has unique behavior: it modifies both the styles dictionary (`styles.Remove + styles.Add`) AND the text runs (`ReplaceStyleName` on all paragraphs), AND updates parent references of other styles. The `DocumentModel::RenameStyle` implementation (in `GuiDocument_Edit.cpp` line 523-544) shows explicit failure conditions.
+- `EditStyleName` and `RemoveStyleName` both use `EditStyleInternal` which takes a before/after snapshot of the document model and submits to `undoRedoProcessor->OnReplaceModel()`. This is the same mechanism used by `EditStyle` and is confirmed in `GuiDocumentCommonInterface.cpp`.
+- `RenameStyle` uses a separate undo/redo path: `undoRedoProcessor->OnRenameStyle(arguments)` with `RenameStyleStruct`, instead of the `ReplaceModelStruct` used by `EditStyleName`/`RemoveStyleName`. The `RenameStyleStep::Undo()` and `Redo()` in `GuiTextUndoRedo.cpp` (lines 136, 145) swap old/new names.
+- The undo/redo pattern from `TestControls_Editor_Key_Shared.cpp` shows checking `CanUndo/CanRedo` and calling `Undo/Redo` in loops — this same pattern should be used for style operations.
+- All undo/redo tests are grouped into one task while keeping separate TEST_CATEGORYs for each operation, since undo/redo is a cross-cutting concern and can be implemented together.
 
 # UPDATES
 
@@ -54,48 +41,55 @@ Write test cases for `RemoveStyleName`, `SummarizeStyleName`, and `RenameStyle`,
 
 ## Goal / scope
 
-This design covers **TASK No.5** only: add new unit tests to `REPO-ROOT\Test\GacUISrc\UnitTest\TestControls_Editor_Styles.cpp` for:
+This design covers **TASK No.6** only: add unit tests to `REPO-ROOT\Test\GacUISrc\UnitTest\TestControls_Editor_Styles.cpp` verifying undo/redo behavior for:
+- `vl::presentation::controls::GuiDocumentCommonInterface::EditStyleName`
 - `vl::presentation::controls::GuiDocumentCommonInterface::RemoveStyleName`
-- `vl::presentation::controls::GuiDocumentCommonInterface::SummarizeStyleName`
 - `vl::presentation::controls::GuiDocumentCommonInterface::RenameStyle`
 
 Out of scope:
-- Undo/redo verification (TASK No.6).
-- Restoring full UnitTest run (TASK No.7).
 - Any production-code change.
+- Restoring full UnitTest run (TASK No.7).
 
 ## Evidence / behavior constraints from source code
 
-### RemoveStyleName removes `DocumentStyleApplicationRun` containers
+### Undo/redo stacks are step-based and redo history is dropped on new edits
 
-- Model-side edit is `vl::presentation::DocumentModel::RemoveStyleName(TextPos, TextPos)` which calls `EditContainer(...)` and then `document_editor::RemoveStyleName(...)` (`Source\Resources\GuiDocument_Edit.cpp`, around `DocumentModel::RemoveStyleName`).
-- `document_editor::RemoveStyleName(...)` uses `RemoveStyleNameVisitor`, which overrides `Visit(DocumentStyleApplicationRun*)` to `RemoveContainer(run)`; i.e. it unwraps the container and splices its child runs into the parent (`Source\Resources\GuiDocumentEditor_RemoveContainer.cpp`).
+- `GuiGeneralUndoRedoProcessor::PushStep` truncates future steps (`RemoveRange(firstFutureStep, ...)`) when a new step is pushed after an undo, meaning redo history is discarded on any fresh edit.
+- During undo/redo execution, `performingUndoRedo=true` prevents `PushStep` from recording new steps; this is essential for `RenameStyleStep::Undo/Redo` which calls back into `GuiDocumentCommonInterface::RenameStyle`.
 
-Implication for tests:
-- The externally observable outcome should be: affected ranges no longer summarize to a style name, while unaffected ranges still do.
-- We don’t need to inspect the run tree directly; `SummarizeStyleName` provides a stable, user-facing query for correctness.
+(See `Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.cpp`.)
 
-### SummarizeStyleName semantics and normalization
+### EditStyleName / RemoveStyleName use model snapshot replacement steps
 
-- UI-facing `GuiDocumentCommonInterface::SummarizeStyleName` normalizes reversed ranges by swapping when `begin > end` (`Source\Controls\TextEditorPackage\GuiDocumentCommonInterface.cpp:1276-1285`).
-- Model-side `DocumentModel::SummarizeStyleName` returns empty on `begin == end` and on invalid ranges (`CheckEditRange` failure) (`Source\Resources\GuiDocument_Edit.cpp:638+`).
-- Paragraph-level aggregation uses `document_editor::SummarizeStyleName` backed by `SummarizeStyleNameVisitor` which tracks `currentStyleName` in `DocumentStyleApplicationRun` and compares content runs (`Source\Resources\GuiDocumentEditor_SummerizeStyle.cpp`).
+- Both `GuiDocumentCommonInterface::EditStyleName` and `RemoveStyleName` call `EditStyleInternal(begin, end, ...)`.
+- `EditStyleInternal` snapshots the document before and after the edit using `documentElement->GetDocument()->CopyDocument(begin, end, true)` and submits a `GuiDocumentUndoRedoProcessor::ReplaceModelStruct` via `undoRedoProcessor->OnReplaceModel(arguments)`.
 
-Implication for tests:
-- Assertions for "null" should be `TEST_ASSERT(!summary)` (Nullable without value), not string equality.
-- Include a single explicit reversed-begin/end test in the `SummarizeStyleName` category to lock in the UI behavior.
+Implications for tests:
+- Each call to `EditStyleName` / `RemoveStyleName` should produce exactly one undo step.
+- Undo should restore the original style-name runs for the edited range; redo should reapply the post-edit runs.
 
-### RenameStyle: dictionary + parent references + run replacement
+(See `Source\Controls\TextEditorPackage\GuiDocumentCommonInterface.cpp`, `EditStyleInternal` and the style-name methods.)
 
-- `DocumentModel::RenameStyle` returns `false` when `oldStyleName` doesn’t exist or when `newStyleName` already exists; on success it:
-  - Removes+adds the style key in `document->styles`.
-  - Updates `parentStyleName` in all styles that referenced the old name.
-  - Applies `ReplaceStyleName(...)` to all paragraphs to update `DocumentStyleApplicationRun` (and hyperlink style names) (`Source\Resources\GuiDocument_Edit.cpp:527-549`, `Source\Resources\GuiDocumentEditor_ReplaceStyleName.cpp`).
-- Note: `GuiDocumentCommonInterface::RenameStyle` is `void` and does not expose the boolean success value; tests must verify success/failure by observing document state and `SummarizeStyleName` output (`Source\Controls\TextEditorPackage\GuiDocumentCommonInterface.h/.cpp`).
+### ReplaceModelStep changes both document content and caret selection
 
-Implication for tests:
-- For success: verify both the *run-level* style name (via `SummarizeStyleName`) and the *model-level* style registry (`document->styles`).
-- For failure: verify "nothing changes" by checking both registry keys and existing summarized style name remain the same.
+- `GuiDocumentUndoRedoProcessor::ReplaceModelStep::Undo/Redo` uses `ci->EditRun(...)` with the saved model and then calls `ci->SetCaret(...)`.
+
+Implications for tests:
+- The primary assertions should be on externally observable model state (style summaries and style registry), not on caret position (caret changes are incidental for these style-only edits).
+
+(See `Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.cpp`.)
+
+### RenameStyle uses a dedicated rename step (not a model snapshot)
+
+- `GuiDocumentCommonInterface::RenameStyle` directly calls `documentElement->RenameStyle(oldStyleName, newStyleName)` and then submits a `RenameStyleStruct` to `undoRedoProcessor->OnRenameStyle(arguments)`.
+- `GuiDocumentUndoRedoProcessor::RenameStyleStep::Undo` calls `ci->RenameStyle(new, old)` and `Redo` calls `ci->RenameStyle(old, new)`.
+
+Implications for tests:
+- Undo/redo for rename must validate both:
+  - The style name stored in text runs (via `SummarizeStyleName`).
+  - The style registry / parent references (`textBox->GetDocument()->styles`).
+
+(See `Source\Controls\TextEditorPackage\GuiDocumentCommonInterface.cpp` and `Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.cpp`.)
 
 ## Proposed changes (test-only, high-level)
 
@@ -104,120 +98,69 @@ Implication for tests:
 Update existing file:
 - `REPO-ROOT\Test\GacUISrc\UnitTest\TestControls_Editor_Styles.cpp`
 
-Add these new categories under `TEST_CATEGORY(L"Styles")`, as siblings to `EditStyleName`:
-- `TEST_CATEGORY(L"RemoveStyleName")`
-  - `TEST_CATEGORY(L"SingleParagraph")`
-  - `TEST_CATEGORY(L"MultiParagraph")`
-- `TEST_CATEGORY(L"SummarizeStyleName")`
-- `TEST_CATEGORY(L"RenameStyle")`
+### Category structure
 
-### Harness / helpers
+Under the existing `TEST_CATEGORY(L"Styles")`, add:
+- `TEST_CATEGORY(L"UndoRedo")`
+  - `TEST_CATEGORY(L"EditStyleName")`
+  - `TEST_CATEGORY(L"RemoveStyleName")`
+  - `TEST_CATEGORY(L"RenameStyle")`
 
-Reuse the already-established harness in this file:
-- `resource_DocumentViewer` (DocumentViewer, `EditMode="Editable"`).
-- Two idle frames (`Init`, `Verify`) via `GacUIUnitTest_SetGuiMainProxy`.
-- Existing helper functions:
-  - `RegisterStyle(textBox, ...)` (adds to `textBox->GetDocument()->styles`).
-  - `SummarizeName(...)` wrappers (single-row only; cross-paragraph checks must call `textBox->SummarizeStyleName(TextPos(...), TextPos(...))` directly).
+These categories should follow the existing style-test harness pattern in this file (resource XML, `GacUIUnitTest_SetGuiMainProxy`, `Init` + `Verify` frames).
 
-Do not use `SummarizeStyle` (per Scrum update: it only summarizes direct property edits, not style names).
+### Test harness requirements (must-follow)
 
-### Test naming / log paths
+- **Stable test log paths**: every new `GacUIUnitTest_StartFast_WithResourceAsText(...)` must pass a stable log path string under:
+  - `Controls/Editor/Features/Styles/UndoRedo/EditStyleName/<CaseName>`
+  - `Controls/Editor/Features/Styles/UndoRedo/RemoveStyleName/<CaseName>`
+  - `Controls/Editor/Features/Styles/UndoRedo/RenameStyle/<CaseName>`
 
-Follow the current convention used in this file:
-- `Controls/Editor/Features/Styles/RemoveStyleName/SingleParagraph_*`
-- `Controls/Editor/Features/Styles/RemoveStyleName/MultiParagraph_*`
-- `Controls/Editor/Features/Styles/SummarizeStyleName/*`
-- `Controls/Editor/Features/Styles/RenameStyle/*`
+- **Frame choreography**: every `protocol->OnNextIdleFrame(...)` callback must trigger an observable UI update.
+  - Do not schedule verification-only frames that only query `CanUndo()` / `CanRedo()`.
+  - Anchor frames on UI-changing actions: `EditStyleName`, `RemoveStyleName`, `RenameStyle`, `Undo()`, `Redo()`, and the final `window->Hide()`.
+  - Keep frame titles consistent with the file’s existing convention (title describes what happened in the previous frame).
 
-Concrete `TEST_CASE` names (suffixes) to keep the file navigable:
-- `RemoveStyleName/SingleParagraph`: `FullRange`, `PartialRange`, `NoStyle`, `OverlappingStyles`
-- `RemoveStyleName/MultiParagraph`: `SameRange`, `EdgeRetention`
-- `SummarizeStyleName`: `MixedStyles`, `PartiallyStyled`, `NoStyle`, `ReversedRange`
-- `RenameStyle`: `Success`, `ParentReference`, `MultipleRanges`, `ExistingNameFails`, `NonExistentFails`, `MultiParagraph`
+- **Verified clean baseline**: after `LoadTextAndClearUndoRedo(...)`, the first assertions in every test must be:
+  - `textBox->CanUndo() == false`
+  - `textBox->CanRedo() == false`
 
-## Test case matrix (what to assert)
+  Any required style registration / setup must be done before the baseline is cleared (i.e. before `LoadTextAndClearUndoRedo(...)`) to avoid accidental undo steps.
 
-### RemoveStyleName / SingleParagraph
+### Test design (what to assert)
 
-Start from `LoadTextAndClearUndoRedo(L"0123456789")`.
+All undo/redo tests should:
+- Ensure the operation actually changes state before asserting undo/redo behavior (especially important for `RemoveStyleName` and `RenameStyle`).
+- Explicitly assert `CanUndo()` / `CanRedo()` transitions around each UI-changing action.
+- Verify both text runs and the style registry where applicable:
+  - Use presence checks like `textBox->GetDocument()->styles.Keys().Contains(L"Name")` (do not copy-assign the dictionary).
+  - For parent relationship checks, verify the style object field (e.g. `textBox->GetDocument()->styles[L"Child"]->parentStyleName`, or the confirmed equivalent) in addition to run summaries.
+- Confirm `SummarizeStyleName` return type before encoding “null” expectations.
+  - If it returns `Nullable<WString>`, assert absence via `!result` / `result == Nullable<WString>()` (avoid string comparisons).
 
-- Fully styled then removed:
-  - Apply `EditStyleName([0,10), StyleA)` then `RemoveStyleName([0,10))`.
-  - Verify `!SummarizeName(textBox, 0, 10)`.
+Concrete test cases (each one is a scenario test; no standalone “CanUndo/CanRedo-only” test):
 
-- Partial removal:
-  - Apply `StyleA` to `[0,10)` then remove `[3,7)`.
-  - Verify `[0,3)` summarizes `StyleA`, `[3,7)` summarizes null, `[7,10)` summarizes `StyleA`.
+- `UndoRedo/EditStyleName`:
+  - Basic undo/redo: apply a style name on `[0,10)`; verify summary present; `Undo()` restores absence; `Redo()` re-applies.
+  - **Redo truncation**: apply style name → `Undo()` → apply a different style name → assert `CanRedo() == false`.
+  - **End-of-history boundary**: drain undo and redo with loops and assert boundaries:
+    - When exhausted: `CanUndo() == false` and `Undo()` returns `false`.
+    - After redoing to the end: `CanRedo() == false` and `Redo()` returns `false`.
 
-- Remove when nothing is styled:
-  - Call `RemoveStyleName([0,10))` on clean text.
-  - Verify still null and no crash.
+- `UndoRedo/RemoveStyleName`:
+  - Apply style name then remove it; `Undo()` restores; `Redo()` removes again.
+  - Multi-step chain with **intermediate state** checks:
+    - apply → remove → `Undo()` (must restore to post-apply state) → `Undo()` (must restore original unstyled state).
 
-- Overlapping styles removal:
-  - Apply `StyleA` to `[0,5)`, `StyleB` to `[5,10)`; remove `[3,7)`.
-  - Verify `[0,3)` is `StyleA`, `[3,7)` is null, `[7,10)` is `StyleB`.
-
-### RemoveStyleName / MultiParagraph
-
-Start from 3 paragraphs (10 chars each):
-`L"0123456789\r\n\r\nabcdefghij\r\n\r\nKLMNOPQRST"`.
-
-- Remove same range that was styled across paragraphs:
-  - Apply `EditStyleName(TextPos(0,5), TextPos(2,5), MyStyle)`.
-  - Remove the same range.
-  - Verify per-paragraph segments are all unstyled.
-  - Also verify `!textBox->SummarizeStyleName(TextPos(0,5), TextPos(2,5))`.
-
-- Partial removal across paragraphs (edge retention):
-  - Apply `EditStyleName(TextPos(0,0), TextPos(2,10), MyStyle)`.
-  - Remove `TextPos(0,5)` to `TextPos(2,5)`.
-  - Verify paragraph 0 head `[0,5)` is styled, mid portions are unstyled, paragraph 2 tail `[5,10)` is styled.
-  - Also verify `!textBox->SummarizeStyleName(TextPos(0,5), TextPos(2,5))`.
-
-### SummarizeStyleName
-
-These tests are query-focused; they can reuse edit helpers but should primarily assert returned Nullable values.
-
-- Mixed styles returns null.
-- Partially styled (styled + unstyled) returns null.
-- Entirely unstyled returns null.
-- Reversed begin/end normalization: call `textBox->SummarizeStyleName(TextPos(0,5), TextPos(0,2))` and verify it matches the forward call.
-
-### RenameStyle
-
-All rename tests should validate both:
-- `SummarizeStyleName` outputs on affected text ranges.
-- `textBox->GetDocument()->styles` keys/values and child `parentStyleName` where relevant.
-
-- Success path:
-  - Register `OldName`, apply to text, rename to `NewName`.
-  - Verify summarized name becomes `NewName` and registry key moved.
-
-- Parent reference update:
-  - Register `Parent` and `Child(parent=Parent)`, rename `Parent->NewParent`.
-  - Verify `textBox->GetDocument()->styles[L"Child"]->parentStyleName == L"NewParent"`.
-
-- Multiple ranges:
-  - Apply the same style name to two discontiguous ranges; rename; verify both ranges updated.
-
-- Rename-to-existing fails (observable, not via return):
-  - Register both names; apply the old name; rename old->existing.
-  - Verify summary stays old and registry keys unchanged.
-
-- Rename non-existent fails:
-  - Rename missing style; verify no new key added and existing summaries unchanged.
-
-- Multi-paragraph rename:
-  - Apply style name across paragraphs; rename; verify each paragraph summarizes the new name.
+- `UndoRedo/RenameStyle`:
+  - Basic rename undo/redo: register `OldName`, apply, rename to `NewName`; undo/redo must validate both run summaries and registry key presence.
+  - Parent reference: `Parent` + `Child(parent=Parent)`; rename parent; `Undo()` must restore `styles[L"Child"]->parentStyleName` to `Parent`.
+  - Multiple renames with **intermediate state** checks: `A→B→C`, then `Undo()` (verify `B`), then `Undo()` (verify `A`) in both runs and registry.
 
 ## Risks / guardrails
 
-- `GuiDocumentCommonInterface::RenameStyle` is `void` and unconditionally enqueues an undo/redo rename step, including when the rename fails (old name missing or new name already exists); TASK No.5 should avoid invoking undo/redo and should verify success/failure via document state only.
-  - Note for future planning (TASK No.6): the undo stack can be polluted by failed renames even if no document state changes.
-- Use `TEST_ASSERT(!nullable)` / `TEST_ASSERT(nullable)` consistently; do not compare null summaries to empty strings.
-- Avoid empty-range summaries (`begin == end`) because the model explicitly returns empty in that case.
-- Caveat for cross-paragraph summarization expectations: there is a known quirk in the production multi-paragraph summarize path (middle-paragraph branch uses `end.column`); keep paragraphs uniform length when asserting cross-paragraph behavior (fixing production code is out of scope for TASK No.5).
+- Undo/redo is gated by `editMode == GuiDocumentEditMode::Editable` in `CanUndo/CanRedo`; ensure all tests run with `EditMode="Editable"` (already used by the existing style test resource).
+- `RenameStyle` always submits an undo step regardless of whether the underlying rename succeeds; for deterministic undo/redo tests, only perform renames that are guaranteed to succeed (old exists, new does not) and avoid testing failure cases under undo/redo here.
+- Avoid empty ranges (`begin == end`) since summary and snapshot behavior can differ (and some APIs intentionally return empty in that case).
 
 # AFFECTED PROJECTS
 

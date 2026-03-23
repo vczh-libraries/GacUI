@@ -38,7 +38,7 @@ I would like you to merge 5,6,7,8 into one single task and 9,10 into one single 
 - [x] TASK No.3: Test EditStyleName (SingleParagraph)
 - [x] TASK No.4: Test EditStyleName (MultiParagraph)
 - [x] TASK No.5: Test RemoveStyleName, SummarizeStyleName, and RenameStyle
-- [ ] TASK No.6: Test Undo/Redo for Style Operations
+- [x] TASK No.6: Test Undo/Redo for Style Operations
 - [ ] TASK No.7: Restore UnitTest to Run All Tests
 
 ## TASK No.1: Configure UnitTest to Only Run TestControls_Editor_Styles.cpp
