@@ -70,6 +70,10 @@ Here are a list of projects to run and files that should trigger them:
 
 These two projects need to run if any reflection code is touched:
 - `GuiReflection*.cpp` is updated.
+  - You must be really careful when changing any interface.
+  - Check if the class and the method is registered in reflection.
+  - You must read the knowledge base about reflection and try to find the pattern in any *.cpp file.
+  - If the reflection registration is affected, you should always fix the reflection and run these two projects.
 - `GacUI_Compiler` project is executed.
 
 To execute these projects, you should:
