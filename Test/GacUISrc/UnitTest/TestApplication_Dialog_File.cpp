@@ -359,8 +359,8 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <Window ref.Name="self" Text="Dialog File Filter Extensions" ClientSize="x:640 y:480">
-        <OpenFileDialog ref.Name="dialogOpen" Title="FileDialog" Filter="All Files (*.*)|*.*|Text Files (*.txt)|*.txt|Image Files (*.bmp;*.png;*.jpg)|*.bmp;*.png;*.jpg" Directory=""/>
-        <SaveFileDialog ref.Name="dialogSave" Title="FileDialog" Filter="All Files (*.*)|*.*|Text Files (*.txt)|*.txt|Image Files (*.bmp;*.png;*.jpg)|*.bmp;*.png;*.jpg" Directory=""/>
+        <OpenFileDialog ref.Name="dialogOpen" Title="FileDialog" Filter="All Files (*.*)|*.*|Text Files (*.txt)|*.txt|Image Files (*.bmp;*.png;*.jpg)|*.bmp;*.png;*.jpg|Wildcard ?xt (*.?xt)|*.?xt|Wildcard ?yt (*.?yt)|*.?yt|Wildcard *xt+*yt (*.*xt;*.*yt)|*.*xt;*.*yt|Wildcard *yt+*zt (*.*yt;*.*zt)|*.*yt;*.*zt" Directory=""/>
+        <SaveFileDialog ref.Name="dialogSave" Title="FileDialog" Filter="All Files (*.*)|*.*|Text Files (*.txt)|*.txt|Image Files (*.bmp;*.png;*.jpg)|*.bmp;*.png;*.jpg|Wildcard ?xt (*.?xt)|*.?xt|Wildcard ?yt (*.?yt)|*.?yt|Wildcard *xt+*yt (*.*xt;*.*yt)|*.*xt;*.*yt|Wildcard *yt+*zt (*.*yt;*.*zt)|*.*yt;*.*zt" Directory=""/>
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
             <_>composeType:MinSize</_>
@@ -1364,6 +1364,189 @@ TEST_FILE
 
 	TEST_CATEGORY(L"File Dialog Filter Extensions")
 	{
+		TEST_CASE(L"ParseFileDialogFilter")
+		{
+			using FilterDesc = FakeDialogServiceBase::FilterDesc;
+			collections::List<FilterDesc> descs;
+
+			// Empty filter string
+			FakeDialogServiceBase::ParseFileDialogFilter(WString::Empty, descs);
+			TEST_ASSERT(descs.Count() == 0);
+
+			// Single filter with simple extension
+			descs.Clear();
+			FakeDialogServiceBase::ParseFileDialogFilter(WString::Unmanaged(L"Text Files (*.txt)|*.txt"), descs);
+			TEST_ASSERT(descs.Count() == 1);
+			TEST_ASSERT(descs[0].name == L"Text Files (*.txt)");
+			TEST_ASSERT(descs[0].filter == L"*.txt");
+			TEST_ASSERT(descs[0].regexFilterCode == L"^(/.*.txt)$");
+			TEST_ASSERT(descs[0].defaultExtensionOverride.Value() == L"txt");
+
+			// All files wildcard: *.* has no default extension
+			descs.Clear();
+			FakeDialogServiceBase::ParseFileDialogFilter(WString::Unmanaged(L"All Files (*.*)|*.*"), descs);
+			TEST_ASSERT(descs.Count() == 1);
+			TEST_ASSERT(descs[0].name == L"All Files (*.*)");
+			TEST_ASSERT(descs[0].filter == L"*.*");
+			TEST_ASSERT(descs[0].regexFilterCode == L"^(/.*./.*)$");
+			TEST_ASSERT(!descs[0].defaultExtensionOverride);
+
+			// Star-only filter: * has no default extension
+			descs.Clear();
+			FakeDialogServiceBase::ParseFileDialogFilter(WString::Unmanaged(L"All Files|*"), descs);
+			TEST_ASSERT(descs.Count() == 1);
+			TEST_ASSERT(descs[0].name == L"All Files");
+			TEST_ASSERT(descs[0].filter == L"*");
+			TEST_ASSERT(!descs[0].defaultExtensionOverride);
+
+			// Multiple filters separated by |
+			descs.Clear();
+			FakeDialogServiceBase::ParseFileDialogFilter(WString::Unmanaged(L"All Files (*.*)|*.*|Text Files (*.txt)|*.txt"), descs);
+			TEST_ASSERT(descs.Count() == 2);
+			TEST_ASSERT(descs[0].name == L"All Files (*.*)");
+			TEST_ASSERT(descs[0].filter == L"*.*");
+			TEST_ASSERT(!descs[0].defaultExtensionOverride);
+			TEST_ASSERT(descs[1].name == L"Text Files (*.txt)");
+			TEST_ASSERT(descs[1].filter == L"*.txt");
+			TEST_ASSERT(descs[1].defaultExtensionOverride.Value() == L"txt");
+
+			// Multi-wildcard filter: first qualifying part wins
+			descs.Clear();
+			FakeDialogServiceBase::ParseFileDialogFilter(WString::Unmanaged(L"Image Files|*.bmp;*.png;*.jpg"), descs);
+			TEST_ASSERT(descs.Count() == 1);
+			TEST_ASSERT(descs[0].name == L"Image Files");
+			TEST_ASSERT(descs[0].filter == L"*.bmp;*.png;*.jpg");
+			TEST_ASSERT(descs[0].defaultExtensionOverride.Value() == L"bmp");
+
+			// Multi-wildcard where first part doesn't qualify but second does
+			descs.Clear();
+			FakeDialogServiceBase::ParseFileDialogFilter(WString::Unmanaged(L"Mixed|*.?xt;*.txt"), descs);
+			TEST_ASSERT(descs.Count() == 1);
+			TEST_ASSERT(descs[0].name == L"Mixed");
+			TEST_ASSERT(descs[0].filter == L"*.?xt;*.txt");
+			TEST_ASSERT(descs[0].defaultExtensionOverride.Value() == L"txt");
+
+			// *.?xt: question mark in extension, no default
+			descs.Clear();
+			FakeDialogServiceBase::ParseFileDialogFilter(WString::Unmanaged(L"Wildcard ?xt|*.?xt"), descs);
+			TEST_ASSERT(descs.Count() == 1);
+			TEST_ASSERT(descs[0].name == L"Wildcard ?xt");
+			TEST_ASSERT(descs[0].filter == L"*.?xt");
+			TEST_ASSERT(!descs[0].defaultExtensionOverride);
+
+			// *.?yt: question mark in extension, no default
+			descs.Clear();
+			FakeDialogServiceBase::ParseFileDialogFilter(WString::Unmanaged(L"Wildcard ?yt|*.?yt"), descs);
+			TEST_ASSERT(descs.Count() == 1);
+			TEST_ASSERT(descs[0].name == L"Wildcard ?yt");
+			TEST_ASSERT(descs[0].filter == L"*.?yt");
+			TEST_ASSERT(!descs[0].defaultExtensionOverride);
+
+			// *.*xt;*.*yt: star in extension parts, no default for either
+			descs.Clear();
+			FakeDialogServiceBase::ParseFileDialogFilter(WString::Unmanaged(L"Wildcard *xt+*yt|*.*xt;*.*yt"), descs);
+			TEST_ASSERT(descs.Count() == 1);
+			TEST_ASSERT(descs[0].name == L"Wildcard *xt+*yt");
+			TEST_ASSERT(descs[0].filter == L"*.*xt;*.*yt");
+			TEST_ASSERT(!descs[0].defaultExtensionOverride);
+
+			// *.*yt;*.*zt: star in extension parts, no default for either
+			descs.Clear();
+			FakeDialogServiceBase::ParseFileDialogFilter(WString::Unmanaged(L"Wildcard *yt+*zt|*.*yt;*.*zt"), descs);
+			TEST_ASSERT(descs.Count() == 1);
+			TEST_ASSERT(descs[0].name == L"Wildcard *yt+*zt");
+			TEST_ASSERT(descs[0].filter == L"*.*yt;*.*zt");
+			TEST_ASSERT(!descs[0].defaultExtensionOverride);
+
+			// Full filter string with all filters including new wildcards
+			descs.Clear();
+			FakeDialogServiceBase::ParseFileDialogFilter(WString::Unmanaged(
+				L"All Files (*.*)|*.*|Text Files (*.txt)|*.txt|Image Files (*.bmp;*.png;*.jpg)|*.bmp;*.png;*.jpg"
+				L"|Wildcard ?xt (*.?xt)|*.?xt|Wildcard ?yt (*.?yt)|*.?yt"
+				L"|Wildcard *xt+*yt (*.*xt;*.*yt)|*.*xt;*.*yt|Wildcard *yt+*zt (*.*yt;*.*zt)|*.*yt;*.*zt"
+			), descs);
+			TEST_ASSERT(descs.Count() == 7);
+			// 0: All Files *.*
+			TEST_ASSERT(descs[0].name == L"All Files (*.*)");
+			TEST_ASSERT(!descs[0].defaultExtensionOverride);
+			// 1: Text Files *.txt
+			TEST_ASSERT(descs[1].name == L"Text Files (*.txt)");
+			TEST_ASSERT(descs[1].defaultExtensionOverride.Value() == L"txt");
+			// 2: Image Files *.bmp;*.png;*.jpg -> first qualifying = bmp
+			TEST_ASSERT(descs[2].name == L"Image Files (*.bmp;*.png;*.jpg)");
+			TEST_ASSERT(descs[2].defaultExtensionOverride.Value() == L"bmp");
+			// 3: *.?xt -> no default
+			TEST_ASSERT(descs[3].name == L"Wildcard ?xt (*.?xt)");
+			TEST_ASSERT(!descs[3].defaultExtensionOverride);
+			// 4: *.?yt -> no default
+			TEST_ASSERT(descs[4].name == L"Wildcard ?yt (*.?yt)");
+			TEST_ASSERT(!descs[4].defaultExtensionOverride);
+			// 5: *.*xt;*.*yt -> no default
+			TEST_ASSERT(descs[5].name == L"Wildcard *xt+*yt (*.*xt;*.*yt)");
+			TEST_ASSERT(!descs[5].defaultExtensionOverride);
+			// 6: *.*yt;*.*zt -> no default
+			TEST_ASSERT(descs[6].name == L"Wildcard *yt+*zt (*.*yt;*.*zt)");
+			TEST_ASSERT(!descs[6].defaultExtensionOverride);
+
+			// Verify regex filter matching for some patterns
+			{
+				// *.txt matches "file.txt" but not "file.doc"
+				auto m1 = descs[1].regexFilter->MatchHead(WString::Unmanaged(L"file.txt"));
+				TEST_ASSERT(m1 && m1->Result().Length() == 8);
+				auto m2 = descs[1].regexFilter->MatchHead(WString::Unmanaged(L"file.doc"));
+				TEST_ASSERT(!m2 || m2->Result().Length() != 8);
+			}
+			{
+				// *.bmp;*.png;*.jpg matches "pic.bmp", "pic.png", "pic.jpg" but not "pic.doc"
+				auto m1 = descs[2].regexFilter->MatchHead(WString::Unmanaged(L"pic.bmp"));
+				TEST_ASSERT(m1 && m1->Result().Length() == 7);
+				auto m2 = descs[2].regexFilter->MatchHead(WString::Unmanaged(L"pic.png"));
+				TEST_ASSERT(m2 && m2->Result().Length() == 7);
+				auto m3 = descs[2].regexFilter->MatchHead(WString::Unmanaged(L"pic.jpg"));
+				TEST_ASSERT(m3 && m3->Result().Length() == 7);
+				auto m4 = descs[2].regexFilter->MatchHead(WString::Unmanaged(L"pic.doc"));
+				TEST_ASSERT(!m4 || m4->Result().Length() != 7);
+			}
+			{
+				// *.?xt matches "x.txt" (? matches t) but not "x.abcxt" (? is single char)
+				auto m1 = descs[3].regexFilter->MatchHead(WString::Unmanaged(L"x.txt"));
+				TEST_ASSERT(m1 && m1->Result().Length() == 5);
+				// *.?xt matches "x.txt" but not "x.abxt" (length mismatch for single ?)
+				// Actually *.?xt -> regex ^(/.*\./.xt)$ so "x.abxt" would need /.=a then xt but remaining is bxt
+				// Wait: "x.abxt" -> /.*="x", \.=".", /.="a", then "xt" but remaining is "bxt" -> no match
+				// But /.* can match more: /.*="x.a", \.="b", /.="x", "xt"="t" -> no, "t" != "xt"
+				// Correct: /.*="x.ab", but then \. needs a literal dot which "x" is not. This is tricky with backtracking.
+				// Let's just test known cases.
+			}
+			{
+				// *.?yt does NOT match "x.txt" (? matches t, then yt but remaining is xt)
+				auto m1 = descs[4].regexFilter->MatchHead(WString::Unmanaged(L"x.txt"));
+				TEST_ASSERT(!m1 || m1->Result().Length() != 5);
+			}
+			{
+				// *.*xt;*.*yt matches "x.txt" (via *.*xt since txt ends with xt)
+				auto m1 = descs[5].regexFilter->MatchHead(WString::Unmanaged(L"x.txt"));
+				TEST_ASSERT(m1 && m1->Result().Length() == 5);
+				// *.*xt;*.*yt matches "x.tyt" (via *.*yt)
+				auto m2 = descs[5].regexFilter->MatchHead(WString::Unmanaged(L"x.tyt"));
+				TEST_ASSERT(m2 && m2->Result().Length() == 5);
+				// *.*xt;*.*yt does not match "x.tzt"
+				auto m3 = descs[5].regexFilter->MatchHead(WString::Unmanaged(L"x.tzt"));
+				TEST_ASSERT(!m3 || m3->Result().Length() != 5);
+			}
+			{
+				// *.*yt;*.*zt does NOT match "x.txt"
+				auto m1 = descs[6].regexFilter->MatchHead(WString::Unmanaged(L"x.txt"));
+				TEST_ASSERT(!m1 || m1->Result().Length() != 5);
+				// *.*yt;*.*zt matches "x.tyt"
+				auto m2 = descs[6].regexFilter->MatchHead(WString::Unmanaged(L"x.tyt"));
+				TEST_ASSERT(m2 && m2->Result().Length() == 5);
+				// *.*yt;*.*zt matches "x.tzt"
+				auto m3 = descs[6].regexFilter->MatchHead(WString::Unmanaged(L"x.tzt"));
+				TEST_ASSERT(m3 && m3->Result().Length() == 5);
+			}
+		});
+
 		TEST_CASE(L"*.* uses dialog default extension")
 		{
 			Ptr<FileSystemMock> fsMock;
@@ -1460,7 +1643,7 @@ TEST_FILE
 			);
 		});
 
-		TEST_CASE(L"Multi-wildcard filter does not invent open extension")
+		TEST_CASE(L"Multi-wildcard filter invents open extension from first qualifying wildcard")
 		{
 			Ptr<FileSystemMock> fsMock;
 			GacUIUnitTest_SetGuiMainProxy([&fsMock](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
@@ -1484,21 +1667,12 @@ TEST_FILE
 					TypeFile(protocol, L"pic");
 					PressOpen(protocol);
 				});
-				protocol->OnNextIdleFrame(L"Missing file prompt", [=]()
-				{
-					PressMessageOK(protocol);
-				});
-				protocol->OnNextIdleFrame(L"Dismissed", [=]()
-				{
-					TypeFile(protocol, L"pic.png");
-					PressOpen(protocol);
-				});
 				protocol->OnNextIdleFrame(L"Confirmed", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dialog = FindObjectByName<GuiOpenFileDialog>(window, L"dialogOpen");
 					TEST_ASSERT(dialog->GetFileNames().Count() == 1);
-					TEST_ASSERT(dialog->GetFileNames()[0] == FilePath(L"/pic.png").GetFullPath());
+					TEST_ASSERT(dialog->GetFileNames()[0] == FilePath(L"/pic.bmp").GetFullPath());
 					window->Hide();
 				});
 			});
@@ -1510,7 +1684,7 @@ TEST_FILE
 			);
 		});
 
-		TEST_CASE(L"Multi-wildcard filter does not override save default extension")
+		TEST_CASE(L"Multi-wildcard filter uses first qualifying extension for save")
 		{
 			Ptr<FileSystemMock> fsMock;
 			GacUIUnitTest_SetGuiMainProxy([&fsMock](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
@@ -1538,12 +1712,188 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dialog = FindObjectByName<GuiSaveFileDialog>(window, L"dialogSave");
-					TEST_ASSERT(dialog->GetFileName() == FilePath(L"/newfile.txt").GetFullPath());
+					TEST_ASSERT(dialog->GetFileName() == FilePath(L"/newfile.bmp").GetFullPath());
 					window->Hide();
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Dialog_File/FilterExtensions_MultiWildcard_Save"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceFileDialogs_FilterExtensions,
+				CreateInstallerWithImages(fsMock)
+			);
+		});
+
+		TEST_CASE(L"Wildcard filter uses matching dialog default extension for open")
+		{
+			Ptr<FileSystemMock> fsMock;
+			GacUIUnitTest_SetGuiMainProxy([&fsMock](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindControlByText<GuiButton>(window, L"Open Filter Extensions MustExist");
+					auto location = protocol->LocationOf(button);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
+				{
+					// *.?xt filter (index 3): no defaultExtensionOverride, but "txt" matches the filter
+					ChooseFilter(protocol, 3);
+				});
+				protocol->OnNextIdleFrame(L"Filter: Wildcard ?xt", [=]()
+				{
+					TypeFile(protocol, L"root2");
+					PressOpen(protocol);
+				});
+				protocol->OnNextIdleFrame(L"Confirmed", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dialog = FindObjectByName<GuiOpenFileDialog>(window, L"dialogOpen");
+					TEST_ASSERT(dialog->GetFileNames().Count() == 1);
+					TEST_ASSERT(dialog->GetFileNames()[0] == FilePath(L"/root2.txt").GetFullPath());
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Dialog_File/FilterExtensions_WildcardMatchDefault_Open"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceFileDialogs_FilterExtensions,
+				CreateInstaller(fsMock)
+			);
+		});
+
+		TEST_CASE(L"Wildcard filter ignores non-matching dialog default extension for open")
+		{
+			Ptr<FileSystemMock> fsMock;
+			GacUIUnitTest_SetGuiMainProxy([&fsMock](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindControlByText<GuiButton>(window, L"Open Filter Extensions MustExist");
+					auto location = protocol->LocationOf(button);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
+				{
+					// *.?yt filter (index 4): no defaultExtensionOverride, "txt" does NOT match the filter
+					ChooseFilter(protocol, 4);
+				});
+				protocol->OnNextIdleFrame(L"Filter: Wildcard ?yt", [=]()
+				{
+					TypeFile(protocol, L"root2");
+					PressOpen(protocol);
+				});
+				protocol->OnNextIdleFrame(L"Missing file prompt", [=]()
+				{
+					// "root2" without extension, filter doesn't match default "txt", so no extension added
+					// File "root2" does not exist -> file must exist error
+					PressMessageOK(protocol);
+				});
+				protocol->OnNextIdleFrame(L"Dismissed", [=]()
+				{
+					PressCancel(protocol);
+				});
+				protocol->OnNextIdleFrame(L"Cancel", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dialog = FindObjectByName<GuiOpenFileDialog>(window, L"dialogOpen");
+					TEST_ASSERT(dialog->GetFileNames().Count() == 0);
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Dialog_File/FilterExtensions_WildcardNoMatchDefault_Open"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceFileDialogs_FilterExtensions,
+				CreateInstaller(fsMock)
+			);
+		});
+
+		TEST_CASE(L"Wildcard filter uses matching dialog default extension for save")
+		{
+			Ptr<FileSystemMock> fsMock;
+			GacUIUnitTest_SetGuiMainProxy([&fsMock](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindControlByText<GuiButton>(window, L"Save Filter Extensions PromptCreateFile");
+					auto location = protocol->LocationOf(button);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
+				{
+					// *.*xt;*.*yt filter (index 5): no defaultExtensionOverride, "txt" matches *.*xt
+					ChooseFilter(protocol, 5);
+				});
+				protocol->OnNextIdleFrame(L"Filter: Wildcard *xt+*yt", [=]()
+				{
+					TypeFile(protocol, L"newfile");
+					PressSave(protocol);
+				});
+				protocol->OnNextIdleFrame(L"Confirmed", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dialog = FindObjectByName<GuiSaveFileDialog>(window, L"dialogSave");
+					TEST_ASSERT(dialog->GetFileName() == FilePath(L"/newfile.txt").GetFullPath());
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Dialog_File/FilterExtensions_WildcardMatchDefault_Save"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceFileDialogs_FilterExtensions,
+				CreateInstallerWithImages(fsMock)
+			);
+		});
+
+		TEST_CASE(L"Wildcard filter ignores non-matching dialog default extension for save")
+		{
+			Ptr<FileSystemMock> fsMock;
+			GacUIUnitTest_SetGuiMainProxy([&fsMock](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindControlByText<GuiButton>(window, L"Save Filter Extensions PromptCreateFile");
+					auto location = protocol->LocationOf(button);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
+				});
+				protocol->OnNextIdleFrame(L"Show Dialog", [=]()
+				{
+					// *.*yt;*.*zt filter (index 6): no defaultExtensionOverride, "txt" does NOT match
+					ChooseFilter(protocol, 6);
+				});
+				protocol->OnNextIdleFrame(L"Filter: Wildcard *yt+*zt", [=]()
+				{
+					TypeFile(protocol, L"newfile");
+					PressSave(protocol);
+				});
+				protocol->OnNextIdleFrame(L"Confirmed", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dialog = FindObjectByName<GuiSaveFileDialog>(window, L"dialogSave");
+					// No extension added because "txt" doesn't match *.*yt;*.*zt
+					TEST_ASSERT(dialog->GetFileName() == FilePath(L"/newfile").GetFullPath());
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Dialog_File/FilterExtensions_WildcardNoMatchDefault_Save"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceFileDialogs_FilterExtensions,
 				CreateInstallerWithImages(fsMock)

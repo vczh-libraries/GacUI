@@ -527,7 +527,20 @@ View Model (IFileDialogViewModel)
 
 				if (!extensionFromFilter && defaultExtension != WString::Empty)
 				{
-					extension = defaultExtension;
+					// Only use the dialog default extension if it matches the current filter
+					if (selectedFilter && selectedFilter->regexFilter)
+					{
+						auto testName = WString::Unmanaged(L"x.") + defaultExtension;
+						auto match = selectedFilter->regexFilter->MatchHead(testName);
+						if (match && match->Result().Length() == testName.Length())
+						{
+							extension = defaultExtension;
+						}
+					}
+					else
+					{
+						extension = defaultExtension;
+					}
 				}
 
 				auto normalized = [&](filesystem::FilePath path)
@@ -766,30 +779,9 @@ View Model (IFileDialogViewModel)
 FakeDialogServiceBase
 ***********************************************************************/
 
-		bool FakeDialogServiceBase::ShowFileDialog(
-			INativeWindow* window,
-			collections::List<WString>& selectionFileNames,
-			vint& selectionFilterIndex,
-			FileDialogTypes dialogType,
-			const WString& title,
-			const WString& initialFileName,
-			const WString& initialDirectory,
-			const WString& defaultExtension,
-			const WString& filter,
-			FileDialogOptions options
-		)
+		void FakeDialogServiceBase::ParseFileDialogFilter(const WString& filter, collections::List<FilterDesc>& descs)
 		{
-			auto vm = Ptr(new FileDialogViewModel);
-			vm->dialogService = this;
-			vm->title = title;
-			vm->enabledMultipleSelection = (options & INativeDialogService::FileDialogAllowMultipleSelection) != 0;
-			vm->fileMustExist = (options & INativeDialogService::FileDialogFileMustExist) != 0;
-			vm->folderMustExist = (options & INativeDialogService::FileDialogDirectoryMustExist) != 0;
-			vm->promptCreateFile = (options & INativeDialogService::FileDialogPromptCreateFile) != 0;
-			vm->promptOverriteFile = (options & INativeDialogService::FileDialogPromptOverwriteFile) != 0;
-			vm->defaultExtension = defaultExtension;
-
-			auto GetFilterDefaultExtension = [](const WString& wildcard) -> Nullable<WString>
+			auto GetSingleWildcardDefaultExtension = [](const WString& wildcard) -> Nullable<WString>
 			{
 				// Accept only "*.<ext>" where <ext> is non-empty and contains no '*', '?', or ';'.
 				if (wildcard.Length() < 3) return {};
@@ -807,6 +799,33 @@ FakeDialogServiceBase
 				}
 				return Nullable<WString>(ext);
 			};
+
+			auto GetFilterDefaultExtension = [&](const WString& wildcardExpr) -> Nullable<WString>
+			{
+				// Split by ';' and return the first qualifying extension
+				vint start = 0;
+				while (start <= wildcardExpr.Length())
+				{
+					vint semicolonPos = -1;
+					for (vint i = start; i < wildcardExpr.Length(); i++)
+					{
+						if (wildcardExpr[i] == L';')
+						{
+							semicolonPos = i;
+							break;
+						}
+					}
+					auto part = (semicolonPos == -1)
+						? wildcardExpr.Right(wildcardExpr.Length() - start)
+						: wildcardExpr.Sub(start, semicolonPos - start);
+					auto ext = GetSingleWildcardDefaultExtension(part);
+					if (ext) return ext;
+					if (semicolonPos == -1) break;
+					start = semicolonPos + 1;
+				}
+				return {};
+			};
+
 			Regex regexWildcard(L"[*?;]");
 			vint filterStart = 0;
 			while (true)
@@ -834,17 +853,15 @@ FakeDialogServiceBase
 					}
 				}
 
-				auto filterItem = Ptr(new FileDialogFilter);
-				filterItem->name = filter.Sub(filterStart, first - filterStart);
-				filterItem->filter = filter.Sub(first + 1, (second == -1 ? count : second) - first - 1);
-
-				filterItem->defaultExtension = GetFilterDefaultExtension(filterItem->filter);
-
-				auto regexFilter = stream::GenerateToStream([&](stream::TextWriter& writer)
+				FilterDesc desc;
+				desc.name = filter.Sub(filterStart, first - filterStart);
+				desc.filter = filter.Sub(first + 1, (second == -1 ? count : second) - first - 1);
+				desc.defaultExtensionOverride = GetFilterDefaultExtension(desc.filter);
+				desc.regexFilterCode = stream::GenerateToStream([&](stream::TextWriter& writer)
 				{
 					writer.WriteString(L"^(");
 					List<Ptr<RegexMatch>> matches;
-					regexWildcard.Cut(filterItem->filter, false, matches);
+					regexWildcard.Cut(desc.filter, false, matches);
 					for (auto match : matches)
 					{
 						if (match->Success())
@@ -870,12 +887,47 @@ FakeDialogServiceBase
 					}
 					writer.WriteString(L")$");
 				});
-				filterItem->regexFilter = Ptr(new Regex(regexFilter));
-
-				vm->filters.Add(filterItem);
+				desc.regexFilter = Ptr(new Regex(desc.regexFilterCode));
+				descs.Add(std::move(desc));
 
 				if (second == -1) break;
 				filterStart = second + 1;
+			}
+		}
+
+		bool FakeDialogServiceBase::ShowFileDialog(
+			INativeWindow* window,
+			collections::List<WString>& selectionFileNames,
+			vint& selectionFilterIndex,
+			FileDialogTypes dialogType,
+			const WString& title,
+			const WString& initialFileName,
+			const WString& initialDirectory,
+			const WString& defaultExtension,
+			const WString& filter,
+			FileDialogOptions options
+		)
+		{
+			auto vm = Ptr(new FileDialogViewModel);
+			vm->dialogService = this;
+			vm->title = title;
+			vm->enabledMultipleSelection = (options & INativeDialogService::FileDialogAllowMultipleSelection) != 0;
+			vm->fileMustExist = (options & INativeDialogService::FileDialogFileMustExist) != 0;
+			vm->folderMustExist = (options & INativeDialogService::FileDialogDirectoryMustExist) != 0;
+			vm->promptCreateFile = (options & INativeDialogService::FileDialogPromptCreateFile) != 0;
+			vm->promptOverriteFile = (options & INativeDialogService::FileDialogPromptOverwriteFile) != 0;
+			vm->defaultExtension = defaultExtension;
+
+			List<FilterDesc> filterDescs;
+			ParseFileDialogFilter(filter, filterDescs);
+			for (auto&& desc : filterDescs)
+			{
+				auto filterItem = Ptr(new FileDialogFilter);
+				filterItem->name = desc.name;
+				filterItem->filter = desc.filter;
+				filterItem->defaultExtension = desc.defaultExtensionOverride;
+				filterItem->regexFilter = desc.regexFilter;
+				vm->filters.Add(filterItem);
 			}
 
 			if (vm->filters.Count() > 0)

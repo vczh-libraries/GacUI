@@ -540,6 +540,17 @@ FakeDialogServiceBase
 			void							ShowModalDialogAndDelete(Ptr<IDescriptable> viewModel, controls::GuiWindow* owner, controls::GuiWindow* dialog);
 
 		public:
+			struct FilterDesc
+			{
+				WString						name;
+				WString						filter;
+				WString						regexFilterCode;
+				Ptr<regex::Regex>			regexFilter;
+				Nullable<WString>			defaultExtensionOverride;
+			};
+
+			static void				ParseFileDialogFilter(const WString& filter, collections::List<FilterDesc>& descs);
+
 			FakeDialogServiceBase();
 			~FakeDialogServiceBase();
 
