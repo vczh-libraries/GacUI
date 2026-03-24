@@ -358,7 +358,7 @@ TEST_FILE
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
-      <Window ref.Name="self" Text="Dialog File Filter Extensions" ClientSize="x:640 y:200">
+      <Window ref.Name="self" Text="Dialog File Filter Extensions" ClientSize="x:640 y:480">
         <OpenFileDialog ref.Name="dialogOpen" Title="FileDialog" Filter="All Files (*.*)|*.*|Text Files (*.txt)|*.txt|Image Files (*.bmp;*.png;*.jpg)|*.bmp;*.png;*.jpg" Directory=""/>
         <SaveFileDialog ref.Name="dialogSave" Title="FileDialog" Filter="All Files (*.*)|*.*|Text Files (*.txt)|*.txt|Image Files (*.bmp;*.png;*.jpg)|*.bmp;*.png;*.jpg" Directory=""/>
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
