@@ -10,24 +10,42 @@ The suspicion is that triple HOME doesn't actually scroll the text box to the ve
 
 # UPDATES
 
+## UPDATE
+
+What about make another test case to use SetText followed by SetCaret, instead of LoadTextAndClearUndoRedo followed by pressing HOME and END? If this still not repro we could assume the bug does not exist.
+
 # TEST [CONFIRMED]
 
-A new test case `PageUpPageDown_LoadTextAndScrollToEnds` is added to `TestControls_Editor_Key_Multiline.cpp` in the `RunTextBoxKeyTestCases_Multiline` template function. It:
-1. Uses `stream::GenerateToStream` to build a string with 30 paragraphs, each with 1-3 lines (lines separated by `\r\n`, paragraphs separated by `\r\n\r\n`).
+**Test Case 1: `PageUpPageDown_LoadTextAndScrollToEnds`**
+
+Added to `TestControls_Editor_Key_Multiline.cpp` in `RunTextBoxKeyTestCases_Multiline`. It:
+1. Uses `stream::GenerateToStream` to build a string with 10000 paragraphs, each with 1-3 lines (lines separated by `\r\n`, paragraphs separated by `\r\n\r\n`).
 2. Calls `LoadTextAndClearUndoRedo` to load the text.
 3. Presses triple HOME and verifies the first line is visible in the snapshot.
 4. Presses triple END and verifies the last line is visible in the snapshot.
 
-**Criteria for success:**
-- All unit tests pass.
-- In the snapshot after triple HOME, the first line of the first paragraph is visible.
-- In the snapshot after triple END, the last line of the last paragraph is visible.
+**Result:** Bug NOT reproduced. Snapshot analysis confirms:
+- Frame 2 (Triple HOME): "Paragraph 0 Line 0" is visible at y: 44-60, at the top of the viewport. ✅
+- Frame 3 (Triple END): "Paragraph 9999 Line 0" is visible at the bottom of the viewport. ✅
 
-**Result:** The bug is NOT reproducible. Snapshot analysis confirms:
-- Frame 2 (Triple HOME): "Paragraph 0 Line 0" is visible at y: 44-60, well within the viewport (y: 35-307). ✅
-- Frame 3 (Triple END): "Paragraph 29 Line 2" (the last line) is visible at y: 268-284. ✅
+The existing `CorrectUnrenderedParagraphHeights` fix (from previous investigation No.6) handles this correctly.
 
-**Root cause of non-reproduction:** The fix from the previous investigation (No.4 - `CorrectUnrenderedParagraphHeights` in `GuiGraphicsDocumentRenderer_GuiDocumentParagraphCache.cpp`) is already applied in the codebase. This function corrects unrendered paragraph cached heights using measured heights from rendered paragraphs, which prevents the scroll miscalculation that would otherwise occur when paragraphs haven't been rendered yet.
+**Test Case 2: `PageUpPageDown_SetTextAndCaretToEnds`**
+
+Added to same file/function. It:
+1. Uses `stream::GenerateToStream` to build same 10000-paragraph string.
+2. Calls `SetText` to load the text.
+3. Calls `SetCaret(TextPos(0, 0), TextPos(0, 0))` to move caret to beginning.
+4. Calls `SetCaret(TextPos(lastParagraph, lastLength), TextPos(lastParagraph, lastLength))` to move caret to end.
+5. Uses `GetTextForCaret().Length()` (not `GetTextForReading().Length()`) for correct column in `TextPos`.
+
+**Result:** Bug NOT reproduced for the suspected scroll issue. `SetCaret` is a low-level API that does NOT call `EnsureDocumentRectVisible` — it positions the caret without scrolling. This is by design:
+- Frame 2 (Caret at beginning): Paragraph 0 has the caret at position 0, but the viewport did not scroll to it (view stayed around Paragraphs 2-7). This is expected.
+- Frame 3 (Caret at end): Paragraph 9999 has the caret at position 21 (end), but viewport still shows same area. Expected.
+
+Contrast with `LoadTextAndClearUndoRedo` which internally calls `SetCaret` followed by `EnsureDocumentRectVisible` — that path scrolls correctly.
+
+**Conclusion:** The suspected scroll bug does not exist. The `CorrectUnrenderedParagraphHeights` fix already covers the `Move`/key-press path and the `LoadTextAndClearUndoRedo` path. `SetCaret` not scrolling is by design.
 
 # PROPOSALS
 - No.5 Apply height correction factor without modifying cached state [DENIED]

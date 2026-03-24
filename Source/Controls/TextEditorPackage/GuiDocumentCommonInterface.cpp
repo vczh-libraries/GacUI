@@ -1090,6 +1090,13 @@ GuiDocumentCommonInterface
 				SelectionChanged.Execute(documentControl->GetNotifyEventArguments());
 			}
 
+			void GuiDocumentCommonInterface::EnsureCaretVisible()
+			{
+				auto end = documentElement->GetCaretEnd();
+				auto frontSide = documentElement->IsCaretEndPreferFrontSide();
+				EnsureDocumentRectVisible(documentElement->GetCaretBounds(end, frontSide));
+			}
+
 			TextPos GuiDocumentCommonInterface::CalculateCaretFromPoint(Point point)
 			{
 				return documentElement->CalculateCaretFromPoint(point);

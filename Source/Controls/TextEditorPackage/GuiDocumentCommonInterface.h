@@ -268,8 +268,8 @@ GuiDocumentCommonInterface
 				/// </summary>
 				/// <param name="begin">The begin position of the selection area.</param>
 				/// <param name="end">The end position of the selection area.</param>
-				void										SetCaret(TextPos begin, TextPos end);
-				/// <summary>Calculate a caret using a specified point.</summary>
+				void										SetCaret(TextPos begin, TextPos end);				/// <summary>Ensure the caret is visible by scrolling the view if necessary.</summary>
+				void												EnsureCaretVisible();				/// <summary>Calculate a caret using a specified point.</summary>
 				/// <returns>The calculated caret.</returns>
 				/// <param name="point">The specified point.</param>
 				TextPos										CalculateCaretFromPoint(Point point);

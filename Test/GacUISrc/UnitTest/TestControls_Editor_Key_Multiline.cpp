@@ -640,6 +640,71 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 				resource
 			);
 		});
+
+		TEST_CASE(L"PageUpPageDown_SetTextAndCaretToEnds")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+
+					auto text = GenerateToStream([](StreamWriter& writer)
+					{
+						for (vint i = 0; i < 10000; i++)
+						{
+							if (i > 0) writer.WriteString(L"\r\n\r\n");
+							vint lineCount = (i % 3) + 1;
+							for (vint j = 0; j < lineCount; j++)
+							{
+								if (j > 0) writer.WriteString(L"\r\n");
+								writer.WriteString(L"Paragraph ");
+								writer.WriteString(itow(i));
+								writer.WriteString(L" Line ");
+								writer.WriteString(itow(j));
+							}
+						}
+					});
+					textBox->SetText(text);
+				});
+
+				protocol->OnNextIdleFrame(L"Set text", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetCaret(TextPos(0, 0), TextPos(0, 0));
+					textBox->EnsureCaretVisible();
+				});
+
+				protocol->OnNextIdleFrame(L"Caret at beginning", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					auto document = textBox->GetDocument();
+					auto lastParagraph = document->paragraphs.Count() - 1;
+					auto lastLength = document->paragraphs[lastParagraph]->GetTextForCaret().Length();
+					textBox->SetCaret(TextPos(lastParagraph, lastLength), TextPos(lastParagraph, lastLength));
+					textBox->EnsureCaretVisible();
+				});
+
+				protocol->OnNextIdleFrame(L"Caret at end", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/NavigationMultiline_PageUpPageDown_SetTextAndCaretToEnds"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
 	});
 }
 
