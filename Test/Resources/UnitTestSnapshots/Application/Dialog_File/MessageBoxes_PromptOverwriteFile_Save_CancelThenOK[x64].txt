@@ -27,12 +27,6 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var dialogOpen : ::presentation::controls::GuiOpenFileDialog* = null of (::presentation::controls::GuiOpenFileDialog*);
-
-        @cpp:Protected
-        var dialogSave : ::presentation::controls::GuiSaveFileDialog* = null of (::presentation::controls::GuiSaveFileDialog*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
@@ -46,6 +40,12 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>4 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var dialogOpen : ::presentation::controls::GuiOpenFileDialog* = null of (::presentation::controls::GuiOpenFileDialog*);
+
+        @cpp:Protected
+        var dialogSave : ::presentation::controls::GuiSaveFileDialog* = null of (::presentation::controls::GuiSaveFileDialog*);
 
         @cpp:Protected
         var <precompile>5 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
