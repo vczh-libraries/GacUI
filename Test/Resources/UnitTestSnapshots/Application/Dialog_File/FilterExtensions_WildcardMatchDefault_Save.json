@@ -1,0 +1,300 @@
+﻿{
+  "createdElements": [
+    [1, "SolidBackground"],
+    [2, "SolidBorder"],
+    [3, "SolidBackground"],
+    [4, "SolidBorder"],
+    [5, "FocusRectangle"],
+    [6, "SolidLabel"],
+    [7, "Polygon"],
+    [8, "SolidBackground"],
+    [9, "SolidBorder"],
+    [10, "FocusRectangle"],
+    [11, "SolidLabel"],
+    [12, "Polygon"],
+    [13, "Polygon"],
+    [14, "SolidBackground"],
+    [15, "SolidBorder"],
+    [16, "FocusRectangle"],
+    [17, "SolidLabel"],
+    [18, "Polygon"],
+    [19, "ImageFrame"],
+    [20, "SolidLabel"],
+    [21, "SolidBackground"],
+    [22, "SolidBorder"],
+    [23, "FocusRectangle"],
+    [24, "SolidLabel"],
+    [25, "SolidBackground"],
+    [26, "SolidBorder"],
+    [27, "FocusRectangle"],
+    [28, "SolidLabel"],
+    [29, "SolidBackground"],
+    [30, "SolidBorder"],
+    [31, "FocusRectangle"],
+    [32, "SolidLabel"],
+    [33, "SolidBackground"],
+    [34, "SolidBorder"],
+    [35, "SolidBackground"],
+    [36, "SolidBorder"],
+    [37, "FocusRectangle"],
+    [38, "SolidLabel"],
+    [39, "Polygon"],
+    [40, "SolidBackground"],
+    [41, "SolidBorder"],
+    [42, "FocusRectangle"],
+    [43, "SolidLabel"],
+    [44, "Polygon"],
+    [45, "Polygon"],
+    [46, "SolidBackground"],
+    [47, "SolidBorder"],
+    [48, "FocusRectangle"],
+    [49, "SolidLabel"],
+    [50, "Polygon"],
+    [51, "ImageFrame"],
+    [52, "SolidLabel"],
+    [55, "SolidBackground"],
+    [56, "SolidBorder"],
+    [57, "SolidBackground"],
+    [58, "SolidBorder"],
+    [59, "SolidBackground"],
+    [60, "SolidBorder"],
+    [61, "Polygon"],
+    [62, "Polygon"],
+    [63, "SolidBackground"],
+    [64, "SolidBackground"],
+    [65, "SolidBorder"],
+    [66, "Polygon"],
+    [67, "Polygon"],
+    [68, "SolidBackground"],
+    [69, "SolidLabel"],
+    [70, "SolidBackground"],
+    [71, "SolidBorder"],
+    [72, "SolidBackground"],
+    [73, "SolidBorder"],
+    [74, "Polygon"],
+    [75, "Polygon"],
+    [76, "SolidBackground"],
+    [77, "SolidBackground"],
+    [78, "SolidBorder"],
+    [79, "Polygon"],
+    [80, "Polygon"],
+    [81, "SolidBackground"],
+    [87, "SolidBackground"],
+    [88, "SolidBorder"],
+    [89, "SolidBackground"],
+    [90, "SolidBorder"],
+    [91, "Polygon"],
+    [92, "Polygon"],
+    [93, "SolidBackground"],
+    [94, "SolidBackground"],
+    [95, "SolidBorder"],
+    [96, "Polygon"],
+    [97, "Polygon"],
+    [98, "SolidBackground"],
+    [102, "SolidLabel"],
+    [103, "SolidBackground"],
+    [104, "SolidBorder"],
+    [105, "SolidBackground"],
+    [106, "SolidBorder"],
+    [107, "SolidLabel"],
+    [108, "SolidBackground"],
+    [109, "Polygon"],
+    [110, "SolidBackground"],
+    [111, "SolidBorder"],
+    [112, "FocusRectangle"],
+    [113, "SolidLabel"],
+    [114, "SolidBackground"],
+    [115, "SolidBorder"],
+    [116, "FocusRectangle"],
+    [117, "SolidLabel"],
+    [118, "SolidBackground"],
+    [119, "Polygon"],
+    [120, "Polygon"],
+    [121, "ImageFrame"],
+    [122, "SolidLabel"],
+    [123, "SolidBackground"],
+    [124, "ImageFrame"],
+    [125, "SolidLabel"],
+    [126, "DocumentParagraph"],
+    [127, "SolidBackground"],
+    [128, "SolidLabel"],
+    [129, "SolidBackground"],
+    [130, "Polygon"],
+    [131, "Polygon"],
+    [132, "ImageFrame"],
+    [133, "SolidLabel"],
+    [134, "SolidBackground"],
+    [135, "ImageFrame"],
+    [136, "SolidLabel"],
+    [137, "SolidBackground"],
+    [138, "Polygon"],
+    [139, "Polygon"],
+    [140, "ImageFrame"],
+    [141, "SolidLabel"],
+    [142, "SolidBackground"],
+    [143, "ImageFrame"],
+    [144, "SolidLabel"],
+    [145, "SolidBackground"],
+    [146, "ImageFrame"],
+    [147, "SolidLabel"],
+    [148, "SolidBackground"],
+    [149, "ImageFrame"],
+    [150, "SolidLabel"],
+    [151, "SolidBackground"],
+    [152, "ImageFrame"],
+    [153, "SolidLabel"],
+    [154, "SolidBackground"],
+    [155, "ImageFrame"],
+    [156, "SolidLabel"],
+    [157, "SolidBackground"],
+    [158, "ImageFrame"],
+    [159, "SolidLabel"],
+    [160, "SolidBackground"],
+    [161, "ImageFrame"],
+    [162, "SolidLabel"],
+    [163, "SolidBackground"],
+    [164, "ImageFrame"],
+    [165, "SolidLabel"],
+    [166, "SolidBackground"],
+    [167, "ImageFrame"],
+    [168, "SolidLabel"],
+    [169, "SolidBackground"],
+    [170, "ImageFrame"],
+    [171, "SolidLabel"],
+    [172, "DocumentParagraph"]
+  ],
+  "imageCreations": [
+    {"id": 2, "imageData": "iVBORw0KGgoAAAANSUhEUgAAAPAAAADwCAYAAAA+VemSAAAABmJLR0QA\/wD\/AP+gvaeTAAAKOElEQVR4nO3dS6xdVR3H8W+xXAqtYGLSUh426qAy0SgwMBAwwUec9QGmE2cMFCLBECYkonEKmqBOHGkrwkUSCpIYHwm0PKIJFRNiELUmSlSoRkUhaWmvrYN9bnLBq5x799rrv\/57fz\/Jf7rvf6+1fnefs89+gCRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkhRrQ3QDgTYDVwOXAztntQ24ANgCnB3XWvNOAS8BjwB3AK\/FtqOp2AbcCjwBvA6csXrXEnDXWiZBWquPAI\/SHTmiF\/xY6+fAxjnnQ5rLdcDTxC\/uqdTzwFlzzYz0f2wHDhC\/oKdYT+GRWD3sA14hfiFPue7FI7HWaBPwTeIXr9XVfgyx5rQF+DHxi9Z6Y92PH6f1FrYBzxK\/WK3VyyOx\/qfzMbwZyiOx\/ssm4DDxi9OarzwS6w08YZWvPBILgBuIX4yWIdY6XIS\/82YvP05P2CLxC9DqXx6JJ+g64heeVa48Ek\/Mk8QvOqtseSSeiGuJX2zWMOWReAIeJX6hWYa4KVkeqbMV+BN+1Bq7ReDTdE\/50Ih8nmH\/+5+gu394N7CDaT4PK\/oI7JF4xJ5guAVzH91vy1MXHVxDPFKbGeYBdEvAZyruR+uiQ2uIR+oTDLNAPltzJxKIDqwhHqk7KL8w7qu6BzlEh9UQj9R+yi6I4\/iddzXRQTXEI\/Uzyi6GA3XbTyM6pIZ4pH5P2YWwu2r3eUQH1BCP1N8ouwjeVbf9NKLDOW957XQypX9CmuJFGvOIDqYhHqnSk6\/VRYfSEI+UAa4jOpCGeKQMcB3RYTTEI2WA64gOoiEeKQNcR+lx\/vYA2zTECRngOkqP81kYYmGAaxlinA2xDHAlQ42zIZ44A1zHkONsiCfMANcx9Dgb4okywHXUGGdDPEEGuI5a42yIJ8YA11FznA3xhBjgOmqPsyGeCANcR8Q4G+IJMMB1RI2zIR45A1xH5Dgb4hEzwHVEj7MhHqnohTUVLYyzIR6hFhbWFLQyzoZ4ZFpZWGP3L+qGprV6gIQh9hm7WvZSdAPBPgUcIlmIDbCWTT3AAFcBz5EoxAZYy\/4c3UAjLgOORDcxLwOsZWkWbQUfAO6KbmIeG6IbmEPpE08Z9jnCe4Gj0U00ZAl4J93JvWZ5BNay3wG\/jG6iIRuBL0c38VYMsFY6GN1AY\/ZEN\/BWMnyc9CN0PdvoPkZviW6kEUs0\/jI8j8Ba6Rhwd3QTDWn+56QMRyOPwHVtAX4LXBjdSCOaXi8egfVmrwE34WWnKRhgreYg8KXoJjQO3swQYwPdXTrRNxlEl3pyQuKcCzxIfIgMcGJOSKwNwJ3AaeLDZIATckLasJvuhofoQBngZJyQdmwGvsC0bv5vWtO\/cc2UHsQM+9y6rcDNwC7g\/cG9DK3p9dJ0czMGuG3voQvyB4GLge3AJYzncsym10vTzc0YYK3FpNaLF3JIiRlgKTEDLCVmgKXEDLCUmAGWEjPAUmIGWErMAEuJGWApMQMsJWaApcQMsJSYAZYSM8BSYgZYSswAS4kZYCkxAywlZoClxAywlJgBlhIzwFJiBlhKzABLiRlgKTEDLCVmgKXEDLCUmAEexgKwD1gEjgKniH9Rde06Ndv3xdlYLPQaUaWV7Y3re4EXB+g7e704G5uhZVsvo5dlQs4C7hmg37HVPQz7yS\/LepmMLBNieNcW4qFkWS+TkWFC9g7Q59hrqI\/TGdZLMRuiG5hD6UEsvc8LwAvAuwtvd+z+AOwEXi+83dbXS1Gehe5vD4Z3PXYAu6KbyM4A97c7uoHE9kQ3kJ0B7u\/K6AYSc+x6avrz\/Uzr32mOA5sKb3MqTgDnFt5m6+ulKI\/A\/TV\/prJhp6MbyM4A9\/dydAOJHYtuIDsD3N8z0Q0k5tj1ZID7OxjdQGIPRTeQXdNf0GdaPynhhRzr44UcBXgE7u8kcHt0EwndRvnwqkFZrm31Zob5y5sZJiTLhHg74fzh9XbCCck2Id7Qv3p5Q\/8Amv6CPlN6EGvs8wLddb67gCvoLtzfWOHvtmSJ7kTVEeBhujPOJyv83YzrZd2abm5mUhOi3ia1XjwLLSVmgKXEDLCUmAGWEjPAUmIGWErMAEuJGWApMQMsJWaApcQMsJSYAZYSM8BSYgZYSswAS4kZYCkxAywlZoClxAywlJgBHsYCsA9YBI4Cp4h\/KmTtOjXb98XZWCz0GlGlle0xoT5WdvXysbITlWVCfLD7fOWD3Scmy4QY3rWFeChZ1stkZJiQvQP0OfYa6uN0hvVSTNMPrZ4pPYi+XrQNvl60AM9C97cHw7seO+hePaMeDHB\/u6MbSGxPdAPZGeD+roxuIDHHrqemP9\/PtP6d5jiwqfA2p+IEcG7hbba+XoryCNxf82cqG3Y6uoHsDHB\/L0c3kNix6AayM8D9PRPdQGKOXU8GuL+D0Q0k9lB0A9k1\/QV9pvWTEl7IsT5eyFGAR+D+TgK3RzeR0G2UD68alOXaVm9mmL+8mWFCskyItxPOH15vJ5yQbBPiDf2rlzf0D6DpL+gzpQexxj4v0F3nuwu4gu7C\/Y0V\/m5LluhOVB0BHqY743yywt\/NuF7WrenmZiY1IeptUuvFs9BSYgZYSswAS4kZYCkxAywlZoClxAywlJgBlhIzwFJiGQJc+vI735I3XqXntvnbHTME+LXC29teeHtqx0WFt\/dq4e0VN8UAX154e2pH6edMG+ACXiq8Pd+kMF6lX9XiE0cL2E\/Z+ztPABdX3QPVcCnd3JZcK9+qugfrkOEI\/OvC2zsH+ErhbSreV+nmtqTSa2+SPs4wT4i4qeZOaFC3MMwa+WjNnRir8+hO55eenCXg5or7oWHcAvyb8utjiPc2TdZhhvkPewZ4ALik3q6okEuBBxluXTxeb1fG71aGm6jl\/7bfAa6ne0C7F3u0Z4Fubm4Avkv5E1Zvrs\/V2a1+mn7ezwpbgT8CZ0c3oklYovtU1vzL1zKchQb4C\/DD6CY0GT8gQXghT4DBn35Uz93RDcwrU4APA09FN6HROwQ8Gd3EvDIFGODO6AY0ameAL0Y3sRbZAvw4cH90Exqte4EnoptYiyxnoVfaDvwKuCC6EY3KP4DLSHLyalm2IzB0dyfdGN2ERudGkoUX4G3RDazT88A2yt\/\/qWn6Ot3NEKroHOAxhr0axxp\/\/YTEV95l\/A680tvpTvt\/KLgP5fQccA3wz+hG1ivjd+CVXgU+CfwiuhGl8yzwMRKHd0y2AD8i\/uOYlaMeA85HTTkH+Abxi8Nqu75G4u+8U3A93W960QvFaqv+DuxBKVwIHABOE79wrPj6Ht3PjkrmWoZ9mofVdh2iO8us5K4Bvk\/3mpboRWUNWyeBR4CrmYDsvwOv1VZgH93D3T9M+ceQKsbrwE+Bh4BF4K+x7dQztQCvdB5wFd2rVnYC76ML+DvofpbyTGVbTtK9ZucVumuWXwB+AxwBngaOx7UmSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkTdd\/AB8A1goYRB78AAAAAElFTkSuQmCC", "imageDataOmitted": false},
+    {"id": 3, "imageData": "iVBORw0KGgoAAAANSUhEUgAAAPAAAADwCAYAAAA+VemSAAAABmJLR0QA\/wD\/AP+gvaeTAAAHuUlEQVR4nO3dzY9V5R3A8a+jAooUu2EUROOKdivapNGixlrTdAOoETesXLQQCU13Ltp\/wJoYQ6IrK76AtjEKSW2MZgA1uhBMXFjsqjUmVIiCoZSZYep08UhicC5zL\/d5Ob97v5\/kt33OOXPOd+77vSBJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkmK7rPUODGA5cAewHlj37UwCK4EVwBXtdq0vc8C\/gA+B14BXgdmmeyQVNgnsBA4BM8D8CM1nwP35\/lRSd9wF7AfO0T600vM4MJHlryY1dg\/wHu2jqj3PYcQKbDWwh\/YhGbE0oC3AKdoH1IUxYoWxDHiG9tF0bYxYnbcSOED7WLo6RqzOmgSO0D6Sro8Rq3N+gPEOMnvo\/htUNCaWAQdpH0W08ZZYnfA07WOIOkasph6ifQTRx4jVxGp8ndeIFdZe2l\/4ozQ+saVq7qH9BT+K4y2xqniX9hf7qI4Rq6g7aX+Rj\/oYsYrZT\/sLfBzGiJXdJOPxYfyujBErq99S9oKdBnYDm4CbgCvrHFbfJkhRGbFCOkS5C\/Ul0mvLXWfECmk5Zb6Abg74dcXjyMGIFc59lLkwf1PzIDIyYoXyGPkvyJeqHkF+Rqwwcl+oZ4nxmHcxRqwQPiDvRbi77u4XZcTqvH+S9wLcVHXvyzNiddqX5L34bqy7+1VMAH+ibsR+ikl9yf0SUtfepJGLEWtoJX6dcD7zepF+QXFQE8CzwNbWOzKGZoEzwEngBHAU+BQ4TPp5nzPtdq2t3Lcao67FY2Ln4jNDejfhTtL7+seKAQ\/OiLs754B9wIaeZ2\/EGPClMeLuzzvA3b1O4Kgw4EvX4oktZ\/DZD6xd+BTGZ8DD8ZY4xpwCHuxxDkMz4OEZcZzZBSxd+DTGZMB5eHc6zkyRfnFzJBhwPt4Sx5kjwKqFT2MsBpyXEceZI6Rf4AzNgPMz4jjzNsEfExtwGT4mjjO7Fj6FMRhwOUYcZx5e+BR2nwGX5d3pGHMSuK7HOew0Ay7PW+IY83yP89dpBlyHt8Tdn29IvxEWigHX4y1x9+dgr5PXVQZc1wTwJO0vVKf3\/Kzn2esgA27jfuAz2l+szvdn30XO21D8Sp3RsgTYDGwEbiX98JvfgdXeHLAGON56R\/rhLbAiuIL0D24z6dniacreCu+oc1jDM2BFtAbYS7mAp+odynAMWJFtI93lzX0dTwNXVTyOS2bAim47ZW6F7829o\/7chvR9u4BXCqy7PveCBiwt7Hek74fOaV3m9QxY6uFz4C+Z1zRgqaLXMq+X\/dNJBiz1djjzeisyr+c7saSLWELex8EzwLKM6xmwtIhOX8\/ehZYCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCKxHwbOb1lmReT+pX7mtvJvN6RQL+T+b1rs+8ntSv1ZnXO515vRABr8+8ntSv2zKvFyLgY5nX25R5PalfGzOv9+\/M6xXxHDCfcaaBNVWPQIK1pGsv57X8bO6dLHEL\/Gnm9ZYCf8y8prSYJ0jXXk652yjiF+T9r3V+ttU8CI21HZS5hn9e8yAu1dWkp8tzH\/wcsL3icWg87QD+R\/7rdxq4quJxDOUgZf6DzQMvAzfUOxSNibXAnyl33U7VO5Th7aTcH+L8f7PngQeAm\/HNHhrcEtK18yDwIvmfsLpwHi1xEJeVWBRYBXwOXFlofSmSOdK9xi9yL1zqvdDHgb8VWluK5q8UiBfKfpjBl36k5PFSC5cM+CDwbsH1pQgOAO+UWrz0xwl\/X3h9qcvmgT+U3EDpgKeAPYW3IXXVC8Chkhso9Sz0d10P\/B1YWWFbUlecBH5MoSevzqvxjRzHgEcqbEfqkkcoHC\/A5aU38K1PgEnyf75S6qKnSB+GKK7GXejzlgJvAHdX3KZU21vAr8j\/1VILqhkwwArS0+q3VN6uVMPHwAbg61obrP2tlKeBXwIfVd6uVNoR4F4qxgttvlb2OOm\/1JsNti2VMEV6aHi89oZrPYl1oVnSR7d+CPyk0T5IOTwFbAX+23pHWnmA9JpZyY9yOU7u+QrYjAC4DtgNfEP7E+M4i80rpJdFdYE7KfttHo4zzBwgPX+jRWwA9pEeK7c+ac54zyzwOnAHHVT7deBBrQK2kL7c\/afk\/5pPaSEzwPvAq8Be4ETb3emt6wF\/19XA7aSfWlkH\/IgU+LXANfi9WBrMLOlngE6R3rN8FPgH8CHwHnC23a5JkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkvr1f+aP6dCi8HO2AAAAAElFTkSuQmCC", "imageDataOmitted": false}
+  ],
+  "imageMetadatas": [
+    {
+      "id": 2,
+      "format": "Png",
+      "frames": [
+        {
+          "size": {"x": 240, "y": 240}
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "format": "Png",
+      "frames": [
+        {
+          "size": {"x": 240, "y": 240}
+        }
+      ]
+    }
+  ],
+  "frames": [
+    {
+      "frameId": 5,
+      "frameName": "Ready",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 11,
+      "frameName": "Show Dialog",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 15,
+      "frameName": "Filter: Wildcard *xt+*yt",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 18,
+      "frameName": "Confirmed",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    }
+  ]
+}

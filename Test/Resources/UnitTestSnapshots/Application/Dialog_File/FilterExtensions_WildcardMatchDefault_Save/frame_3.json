@@ -1,5 +1,5 @@
 ﻿{
-  "frameId": 26,
+  "frameId": 18,
   "frameName": "Confirmed",
   "windowSize": {
     "bounds": {
@@ -295,7 +295,7 @@
           "ellipse": true,
           "multiline": false,
           "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "\/pic.png",
+          "text": "\/newfile.txt",
           "measuringRequest": null
         }
       ]
@@ -1286,7 +1286,7 @@
           "ellipse": true,
           "multiline": false,
           "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "Image Files (*.bmp;*.png;*.jpg)",
+          "text": "Wildcard *xt+*yt (*.*xt;*.*yt)",
           "measuringRequest": null
         }
       ]
@@ -1355,7 +1355,7 @@
           "ellipse": false,
           "multiline": false,
           "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "Open",
+          "text": "Save",
           "measuringRequest": "TotalSize"
         }
       ]

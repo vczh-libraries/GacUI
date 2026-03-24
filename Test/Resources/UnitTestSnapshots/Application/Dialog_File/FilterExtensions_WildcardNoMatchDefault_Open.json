@@ -1,0 +1,376 @@
+﻿{
+  "createdElements": [
+    [1, "SolidBackground"],
+    [2, "SolidBorder"],
+    [3, "SolidBackground"],
+    [4, "SolidBorder"],
+    [5, "FocusRectangle"],
+    [6, "SolidLabel"],
+    [7, "Polygon"],
+    [8, "SolidBackground"],
+    [9, "SolidBorder"],
+    [10, "FocusRectangle"],
+    [11, "SolidLabel"],
+    [12, "Polygon"],
+    [13, "Polygon"],
+    [14, "SolidBackground"],
+    [15, "SolidBorder"],
+    [16, "FocusRectangle"],
+    [17, "SolidLabel"],
+    [18, "Polygon"],
+    [19, "ImageFrame"],
+    [20, "SolidLabel"],
+    [21, "SolidBackground"],
+    [22, "SolidBorder"],
+    [23, "FocusRectangle"],
+    [24, "SolidLabel"],
+    [25, "SolidBackground"],
+    [26, "SolidBorder"],
+    [27, "FocusRectangle"],
+    [28, "SolidLabel"],
+    [29, "SolidBackground"],
+    [30, "SolidBorder"],
+    [31, "FocusRectangle"],
+    [32, "SolidLabel"],
+    [33, "SolidBackground"],
+    [34, "SolidBorder"],
+    [35, "SolidBackground"],
+    [36, "SolidBorder"],
+    [37, "FocusRectangle"],
+    [38, "SolidLabel"],
+    [39, "Polygon"],
+    [40, "SolidBackground"],
+    [41, "SolidBorder"],
+    [42, "FocusRectangle"],
+    [43, "SolidLabel"],
+    [44, "Polygon"],
+    [45, "Polygon"],
+    [46, "SolidBackground"],
+    [47, "SolidBorder"],
+    [48, "FocusRectangle"],
+    [49, "SolidLabel"],
+    [50, "Polygon"],
+    [51, "ImageFrame"],
+    [52, "SolidLabel"],
+    [55, "SolidBackground"],
+    [56, "SolidBorder"],
+    [57, "SolidBackground"],
+    [58, "SolidBorder"],
+    [59, "SolidBackground"],
+    [60, "SolidBorder"],
+    [61, "Polygon"],
+    [62, "Polygon"],
+    [63, "SolidBackground"],
+    [64, "SolidBackground"],
+    [65, "SolidBorder"],
+    [66, "Polygon"],
+    [67, "Polygon"],
+    [68, "SolidBackground"],
+    [69, "SolidLabel"],
+    [70, "SolidBackground"],
+    [71, "SolidBorder"],
+    [72, "SolidBackground"],
+    [73, "SolidBorder"],
+    [74, "Polygon"],
+    [75, "Polygon"],
+    [76, "SolidBackground"],
+    [77, "SolidBackground"],
+    [78, "SolidBorder"],
+    [79, "Polygon"],
+    [80, "Polygon"],
+    [81, "SolidBackground"],
+    [87, "SolidBackground"],
+    [88, "SolidBorder"],
+    [89, "SolidBackground"],
+    [90, "SolidBorder"],
+    [91, "Polygon"],
+    [92, "Polygon"],
+    [93, "SolidBackground"],
+    [94, "SolidBackground"],
+    [95, "SolidBorder"],
+    [96, "Polygon"],
+    [97, "Polygon"],
+    [98, "SolidBackground"],
+    [102, "SolidLabel"],
+    [103, "SolidBackground"],
+    [104, "SolidBorder"],
+    [105, "SolidBackground"],
+    [106, "SolidBorder"],
+    [107, "SolidLabel"],
+    [108, "SolidBackground"],
+    [109, "Polygon"],
+    [110, "SolidBackground"],
+    [111, "SolidBorder"],
+    [112, "FocusRectangle"],
+    [113, "SolidLabel"],
+    [114, "SolidBackground"],
+    [115, "SolidBorder"],
+    [116, "FocusRectangle"],
+    [117, "SolidLabel"],
+    [118, "SolidBackground"],
+    [119, "Polygon"],
+    [120, "Polygon"],
+    [121, "ImageFrame"],
+    [122, "SolidLabel"],
+    [123, "SolidBackground"],
+    [124, "ImageFrame"],
+    [125, "SolidLabel"],
+    [126, "DocumentParagraph"],
+    [127, "SolidBackground"],
+    [128, "SolidLabel"],
+    [129, "SolidBackground"],
+    [130, "Polygon"],
+    [131, "Polygon"],
+    [132, "ImageFrame"],
+    [133, "SolidLabel"],
+    [134, "SolidBackground"],
+    [135, "ImageFrame"],
+    [136, "SolidLabel"],
+    [137, "SolidBackground"],
+    [138, "Polygon"],
+    [139, "Polygon"],
+    [140, "ImageFrame"],
+    [141, "SolidLabel"],
+    [142, "SolidBackground"],
+    [143, "ImageFrame"],
+    [144, "SolidLabel"],
+    [145, "SolidBackground"],
+    [146, "ImageFrame"],
+    [147, "SolidLabel"],
+    [148, "SolidBackground"],
+    [149, "ImageFrame"],
+    [150, "SolidLabel"],
+    [151, "SolidBackground"],
+    [152, "ImageFrame"],
+    [153, "SolidLabel"],
+    [154, "SolidBackground"],
+    [155, "ImageFrame"],
+    [156, "SolidLabel"],
+    [157, "DocumentParagraph"],
+    [158, "SolidBackground"],
+    [159, "SolidBorder"],
+    [160, "SolidBackground"],
+    [161, "SolidBorder"],
+    [162, "FocusRectangle"],
+    [163, "SolidLabel"],
+    [164, "Polygon"],
+    [165, "SolidBackground"],
+    [166, "SolidBorder"],
+    [167, "FocusRectangle"],
+    [168, "SolidLabel"],
+    [169, "Polygon"],
+    [170, "Polygon"],
+    [171, "SolidBackground"],
+    [172, "SolidBorder"],
+    [173, "FocusRectangle"],
+    [174, "SolidLabel"],
+    [175, "Polygon"],
+    [176, "ImageFrame"],
+    [177, "SolidLabel"],
+    [178, "SolidBackground"],
+    [179, "ImageFrame"],
+    [180, "SolidLabel"],
+    [181, "SolidBackground"],
+    [182, "SolidBorder"],
+    [183, "FocusRectangle"],
+    [184, "SolidLabel"]
+  ],
+  "imageCreations": [
+    {"id": 1, "imageData": "iVBORw0KGgoAAAANSUhEUgAAAPAAAADwCAYAAAA+VemSAAAABmJLR0QA\/wD\/AP+gvaeTAAAUj0lEQVR4nO2debCfVXnHP\/fmJiGFNIGEgCCSsFlR9q1CFKSZWqaCbEJqLasgiwvgQsdaRBbFpRVsHaGtVBAkQduOVSxlBocqoGyyhi0hCYERWbIQSALcJLd\/nN9vco2Xu\/2e5znved\/vZ+aZe+fm5tzzPOd53t95z3nOc0AIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEKIvHTl7oAYNlOA6S3ZHnhL62dTgKmtr+OBSa3fHwds2vp+FfBG6\/sVwOvA0o3kOWBxP1nmpYiwQwFcPaYBu7dkt9bXnYGJwf1YCcwHHm7JQy15IbgfYhAUwHkZA\/wJcBAwsyUzsvZoaJ4D7gNuB+4A7mbDp7sIRgEczy7AYcBfAO9hwzS3VF4FfgH8D3AzsCBvd4SwZQzwPuCfSc7dV3OZD3wLOBjoNrCfEOF0k6bDVwC\/JX9Q5ZIXgWuBWSiYRQG8DbgQWEL+4KmaPA18EXjraI0rhAc9wFHATcA68gdK1WUt8FPgSNLrhRBZ2Aw4HXiC\/EFRqiwCzgcmj9D2QoyabYGvAsvJHwB1keXAZaTkFCFc2JLkZKvJ7\/B1ldeBq1AgC0OmkBamVpLfwZsiq0gr+FsNPTxCDMx44HPAy+R36KbKCuAzpLxuIYbN4TQj6aIUmQ98aNAREwJ4O3Ar+R1WMrD8L+lghxC\/Rw9pO2MN+Z1UMrisIa1JaFotANgTuJf8jikZmTwI7D\/AeIqGMBa4hJQZlNsZJaOTXuBLpBmUaBAzSOdZczugxEbuQu\/GjeFU4BXyO53EVlYCJ9EwmnSgfwLwHeDE3B3pgDXAU6SaVYtaX59nQ12rl0h7p5CqZKxqfb8pGxZ9JrOhhtYUUrLEDFKtrRnADiRblcrVwNnAa7k7EkFTAngG8B\/AXrk7MgKWAXcCvyHVpHqQFLzrnf\/uGGBHYA9STa69gQOBzZ3\/riX3AceQjjCKwnk\/6ZMp9xRvKHkR+AHwUWBXqvVw7SL16TTgBsqx5ywPY4g4zqTaq8wPkVZRD6Css7FjgD8FLiLNDnLb8c2kl3TkUxRGN\/B18jvQQPIocAGpGmVd2JWUXPEY+e07kFxGtWY0YhAmAD8iv9P0l1XA90jvknVnJnAN1Tt2ORfYxFFvYcBE4P\/I7yxtWQScw4bbEprEZOA80kp57nFoy89JlVREBdkc+DX5naSPVOz8OMp6r\/WiB5hNddJV70QlfCrHNOB+8jvHQ6Rjb3rfGphZwD3kH6ffkCqsiAqwJTCPvA4xj1RlUYE7NF3A0eRf8HqYlNAiMjKJvFOzZaRjiDraNnJ6SFs8L5Jv\/B4AtvBWVAzMRPK9864jXZWiwe+cqcCVpAyzHGN5J1rYCmcCcBt5BnwezdgOimYm+abVt6ItpjC6ybPP2z57Ot5fxcYynnRGu5f48Z2D1jBC+Abxg7uIdIeviGF\/UiG76HH+coRyTeZM4gf139A7Ug4mkrLXosf7tADdGsn7iT2YsBo4IUQzMRinEFtssBf4sxDNGsT2xG43LAH2C9FMDIe9gIXEjf9S0hlyYcAEUuZM1ODdhraHqshU4JfE+cHdaGXahKuJGzSdWKk244HriPOHa2PUqi+nEjdYF6FthBLoIq0WR\/mF1kFGyY7E3Ai4nnTsTZTF2cRkb72CStaOmB7gV8QE7yeCdBL2nE5Ka\/X2k7tJFwGIYXIx\/oOyjrJLzIrEScQE8YUx6pTPfvjv964HPhalkHDnTPyn073APlEKlUoPMVtGn41SSIRxDv5+8yCaSg\/K3+E\/CBeFaSOiuQx\/\/zk\/TJvC2AX\/lLkb0FZRnekCvo+vD60GdopSqCRuxdfwt6HKGU1gE\/wztm4O06YQjsLX4AtRemSTmEq6F8nTpz4Qpk3FGQc8iZ+h16DVwyayJ77F5Reg4g4A\/C2+T8qT41QRFeNv8PWtxmfwTQVexs\/A341TRVSUa\/Dzr+U0\/NXM8wKyBaSqDqLZbIbvK9qlcapUi61Jl355GLWXdP2lEJCy+97Ax9deJd0M0jgux++peGGcGqIQLsHP374RqEcl2Ba\/pI15aL9X\/CGb4Fd3ejVpRtkYvoaPIdeh8q\/izXk3fieXGvMuPJG0eudhxG8H6iHK5Cp8fG8pDSk\/fC4+BlwGTAnUQ5TJFqRg8\/DBTwbqkYUxwFP4GO\/sQD1E2Xh9iCwiHYmtLV45z\/OoueGEKWPxW9D6YKAe4fwMH6MdGamEqAXH4uOLP4lUIpLt8CmVcy864ytGThdwP\/b+uJbk67XjS\/g88Q6LVELUiiPw8ckvRCoRQTfpviFrQ90dqYSoHV3Afdj75SJqNis8GJ8n3XGRSoha8mF8fPPASCW8+TY+TzmtPItO6QEWY++flwfq4MoY4DnsDXROpBKi1pyHvX8+S3p1LJ5DsTfOamDzSCVErZmMz9HW93p3POIJcZRDm3NJ+dSlMw6YDcwhFSDobcmC1s9mk\/dkVdX7Z8UK4D8d2j3aoc1wFmD\/ZKvDAsExDG9lfknrd9U\/Xw7G3k+fCNXAgV2wN8qjoRrY0w1cwcj1voKYGVPV++dFFzAfe3\/dMVIJaz6FvUEuCNXAntEER1uuwTdIuumsCNwVjn2LwONWzLNCNTDmZuwN8o5QDWw5hs719wriToO3LSVPp9+Fvb8Wmxs9FvuVvQdDNbBlHOmGCAs73IDtHng38D2jvi2m7ILn87D12VcoNF9hX+yfZhdGKmDMbGxtYRXElsHbluMN+pULj2n0XqEaGOFxX+sBoRrYMhd7e3Q6nbaaNm8sczvoU24Owt4eHw\/VwIgbsTXCi6SsrlKxmj5bBbFX8Pa1dC2VMdiX3LkhVAMjnsXWCNfHdt8cz7uPRzqd9pg295c1I+hLFbGeLS2J7X7nbI29U5waqoE9njfljSSIvYO3j7R4WTJnYG+TLUM16JA\/x94AJW8fgd8Uur8MNZ32nDb3l5Kn0AC7YW+TQz066pUUsJtxe8spPy3tnoC\/cQLw7ww8rt2tfzshoB8RunryCKlMsSXWMQGUE8B3AuuN24zmv4L+zgmk9YL+0+lu4Gpighd8DgZE0gfcZdymSwB7YV2m5Eux3XfBMpFjONJ+J4545+0viyk7kaON9X6w9QPBlZXYKl9yel5\/LFIpRyLXEPPOW8exOh5bu1hPyd2Ygr1T7ByqgS+dHGaoupR+mKE\/78DePpNDNRgl+2Cr9CrKTuDYmKiV4GjxPikVTQ\/2e\/d7WnfSw+AzjNtbSLoSsi6sB04mOXxdmAOcQvkLjf1ZCzxt3OZ04\/ZcAnh74\/YWG7dXBdaTHL4OQTwH+Aj1esi2sd7Ptv5wcwngrYzbW2TcXlWoQxDXOXjB\/sNja+P2XAJ4qnF7i43bqxIlB3HdgxfsPzzM76\/2CGDrTj5v3F7VKDGImxC8AL8zbq+RAbzUuL0qUlIQNyV4wd73rGenLjyO7dL7vrHdz0p01tRI5QbqtaU3FAdga78iKqo+g63S5it3FaeqQdy04IVUEtbShtbbUi68gK3SRZ2jNKJqQdzE4AX7c+3W79QuLMdW6SLSzxyoShA3NXgh3b9lacsirgOyrjwxIbb7lSJ3EDc5eAH+CFt7FlGpZC22SjfZgSBf7nTdcptHwxhsbbrWuoNNH6BS6MvwN8ch\/2gkmkLbUYUpdJG3ChjRyCm0FrFsyB28CuKGLmJpG6lzqhK8TQ\/iRm4jKZGjM6oWvE0O4soncngsUljP84vIHzWiXT3yxNwdGYDZwPdpVhBb+575O7BHAL9k3J75CY6KUuXgbdO0ILb2PevYcAlg6xMcTQjgEoK3TZOCuPIn60oIYPMqBhWjpOBt05Qgtva9IgLYepow3bi9KlFi8LZpQhBbL6AWMYW2rqAx3bi9qlBy8LapexBPN27PfBvJI4AXG7c33bi9KlCH4G1T5yDewbi9RcbtubA3tntnq6nXgQYVdi+DHuA1bG20R6gGo2QL7J3j7aEa+KKrVcrgndjbZ1KoBh2wAlvFj43tvhu63KwcZmNrl6KKM96LrfIXxXbfhRzXi45B14uOlkuwtYvL9aJe7ywPG7e3t3F7OTiauLzu\/qVfo0vWbg8cGfS3PLH2uYeM23PlXGyfXssof4FkLjGfgG+2mBS5eDa3AztVgW7sXwM\/EapBh8zC3il2DdXAnojp81ArwVFBbH0pWDS7Y2+TQyIV6JQtsTfAaaEa2GN91+zGMtwCdBHvxGtGZprKcRb2NinuVJ31ueAbYrtvjnWpodEEbxvvIC6idMwg\/BBbeywO7b0Rc7A1wlLKTujwmkKPNoHCczpd8hS6B\/uyUNd7ddZzYehO4\/a2APYzbjOSexzavBY4mbTSPFLWt\/7vtaY9SnjoGsW7sa\/DdodxeyHsg\/2TveT9YOvEAKui6x7T6eMN+pWLS7H32z1DNTCiB3gFW0NY7y9HYpnIYX1jgmUQL6bsRI5HsfXZlyn41e9n2D\/NSt5Oskil9Do0YPVOXHIq5R7Y++uPQzUw5pPYG+TCSAUc6OQwg\/eJn06DuPTDDB7T5zNDNTBmZ+wN8lioBvZ0M7ogvoKYbLSq98+LLmAB9v5afFnk+dgb5aBQDXw4BljC0LouIc+0tOr9s+Z96MNmQL6FvWGiEvO9GUdanZ5Devr3tmRB62ezW7+Ti6r3z5LrsPfTb4Zq4MTB2BtmNeneGiEsmIxPplwdZop0A7\/F3jjnRiohas2nsffPZyh7TeD38JhGPwOMjVRC1JKxpDuLrP3zHyKV8GYm9gbqI72DCdEJH8HHN\/ePVMKbbnyeciXn3Ir8dAH3Y++XT7XarhVfxOdJ95eRSohacSQ+Pvn5SCWieCuwFntj3UcNn3bCnS7gAez9sRfYJlCPUG7C54l3dKQSohYcj48vFp37PBQfxMdoj6EVaTF8xgFP4uOLhwfqEc4YfPJN+4BPBeohyuaz+PjgQgo+OjhcPE4o9ZFKzxZXOEyEMw37krFtOTtQj2xsRgo2DwNeGaiHKJPv4uN7LwGbBuqRla\/gY8R1pKQRIQbiYFItMA\/fK7nc04jZBr86yY9RdkkX4cME\/BauVgFbxalSDf4RH2P2ARcH6iHKwGvW1wd8LVCPyrAl9kXv2tJLKg8qBKRjfR5JRH0kH54Wp0q1+Cp+T8WngD+OU0VUlEnAIvz87JI4VarHFPyW9PtIpVJFs7keP\/9ajgpL8Bn8DNwHnBqniqgYZ+DrW0oeIqW1PYGfkddQ9pUsYnQcALyGn18pfbcfR+D7pFyMsrSaxDTsb8fcWA4L06YQbsHX4L9A+8NNYALpYj1PX\/ppmDYFsTO+d+j2AXPR2eE604XvolUfKWljxyiFSuN8fI3fR7o+Q9STr+PvP58O06ZAekgVNrwH4XNRCokwzsXfbx5AC1dDsg8pk8pzINaTthhEPfg4\/sHbC+wVpVDpXIj\/gKwDTopRRzhyKn4njPrLBVEK1YEe\/FcS25\/E2owvlzNID2JvP7mdBlTasGYH0u3m3oPTB\/x9kE7CjogFzz5Squ\/0GJXqx4nEDFIf6biZtpiqTzcxq81t+XCMWvXlX4kbrB+REgFENRkP\/IA4f\/hOjFr1ZhPSFSpRg\/ZLlHZZRaYRsy7Sll+jzD0ztgNeIG7wniElw4tqsA++Z3o3ludJN4kIQ2bhvz\/cX9ago4hV4GP4niraWN4ADolQrImcTtxAtuUaVNkjB5Pwz2seSE6JUK7JXEb8oC5G5WojOQC\/GzwGk0aVhs1FFzCH+MHtJVW71MKGH5sAX8avAN1gch3aRgxjE+DnxA9yH6kSw3v8VWwch+BbmWUwuQU9mMPZjNhthf6yHvgXUmlc0RnTSNedROQzDyS306ArUarGJGL3iDeW5aSUPj29R85YUh66Z1XSoeQBVFUyO1OBh8nnBH3A48CH0DvUcOgGjsPvmpPhysMoYacybA7cRV6HaDuFAvnNmUVMwYah5D4UvJVjMnAH+Z2j7SB\/RToW2XTGAn8N3E\/+cekjpcpOctVYjJrNgFvJ7yRteRo4j2a+Z21OKtq\/hPzj0JZb0IJV5RlP2tPL7Sz95TXgRtIUsu7T632Aq0jVG3Pbvb\/cSNp+FAXQhe91kp3Ik6SEkHe5aR\/P7qRLvnJkTw1HLqb+D85achqxByBGKvNIjn8QZZVs6SGlll5KSmzJbcc3kzeAk51sIII4lNijiKOVZaTC82eQPp27PYwxSrqB3YAzgR+S9r9z22soeZ4GnCpqyrTibaRqGyVdcraClGl2P\/AQaYtqPilP2JMeYBdSwO5OKqV6IGWt3N4FHAs8m7sj3jQlgCEtYPwT8NHcHemA14GFpNNRi1ryPLC0n7xMCvK1pNvjASaSArOHFIhT+slWwIyNpOTMsiuBc0i2EjXkBOKqXUriZAUqQNcYtifdVpjb6SQ28it04Vjj6CHdAFHlVWrJ4NJLquld0gq+MGYP4G7yO6NkZPIAsO8A4ykaSA\/paNur5HdMyeCymnSEU5+64g\/YCbiZ\/E4qGVhuIl25I8SgzAIeIb\/DSpI8AXxg0BETYiPGkW5jz1kxoumyjLSnq0u1xajZgrRarb3jOHmVVD64iccwhRNTSU5VtWNydZJVwBXA1sMcEyFGzNakUzhLye\/wdZGXSKeythrBOAjREZuSrnp5nPwBUKosJG3fqUqGyMYY4AjgJ+S5UaA06QV+DByO9nJFxdgW+ALpkyV3oFRNFgCfB7YZtXWFCOSdpNXrJgfzs6RFqZk06+iqqBHdwHuBy8l390+kPA58kxS0VaoqIoQJOwBnkd6ZV5I\/4DqVl4H\/JpXbmWFoJzEMNK3JyxhS6ZqZpLI1M4HtsvZoaJ4hFUe\/k3Qx2CPAuqw9ajAK4OoxlVSLajc21KXaifispGWkhad2Pa5HgAdJ+9+iIiiAy2ESaYo6vSVvIQV7\/\/pW41u\/103KH96s9X9fJW3frCdNeV8nBeJLra8vAr8j3SSxqCUr3TUSQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQhTP\/wOxjs3ehqb+pgAAAABJRU5ErkJggg==", "imageDataOmitted": false},
+    {"id": 2, "imageData": "iVBORw0KGgoAAAANSUhEUgAAAPAAAADwCAYAAAA+VemSAAAABmJLR0QA\/wD\/AP+gvaeTAAAKOElEQVR4nO3dS6xdVR3H8W+xXAqtYGLSUh426qAy0SgwMBAwwUec9QGmE2cMFCLBECYkonEKmqBOHGkrwkUSCpIYHwm0PKIJFRNiELUmSlSoRkUhaWmvrYN9bnLBq5x799rrv\/57fz\/Jf7rvf6+1fnefs89+gCRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkhRrQ3QDgTYDVwOXAztntQ24ANgCnB3XWvNOAS8BjwB3AK\/FtqOp2AbcCjwBvA6csXrXEnDXWiZBWquPAI\/SHTmiF\/xY6+fAxjnnQ5rLdcDTxC\/uqdTzwFlzzYz0f2wHDhC\/oKdYT+GRWD3sA14hfiFPue7FI7HWaBPwTeIXr9XVfgyx5rQF+DHxi9Z6Y92PH6f1FrYBzxK\/WK3VyyOx\/qfzMbwZyiOx\/ssm4DDxi9OarzwS6w08YZWvPBILgBuIX4yWIdY6XIS\/82YvP05P2CLxC9DqXx6JJ+g64heeVa48Ek\/Mk8QvOqtseSSeiGuJX2zWMOWReAIeJX6hWYa4KVkeqbMV+BN+1Bq7ReDTdE\/50Ih8nmH\/+5+gu394N7CDaT4PK\/oI7JF4xJ5guAVzH91vy1MXHVxDPFKbGeYBdEvAZyruR+uiQ2uIR+oTDLNAPltzJxKIDqwhHqk7KL8w7qu6BzlEh9UQj9R+yi6I4\/iddzXRQTXEI\/Uzyi6GA3XbTyM6pIZ4pH5P2YWwu2r3eUQH1BCP1N8ouwjeVbf9NKLDOW957XQypX9CmuJFGvOIDqYhHqnSk6\/VRYfSEI+UAa4jOpCGeKQMcB3RYTTEI2WA64gOoiEeKQNcR+lx\/vYA2zTECRngOkqP81kYYmGAaxlinA2xDHAlQ42zIZ44A1zHkONsiCfMANcx9Dgb4okywHXUGGdDPEEGuI5a42yIJ8YA11FznA3xhBjgOmqPsyGeCANcR8Q4G+IJMMB1RI2zIR45A1xH5Dgb4hEzwHVEj7MhHqnohTUVLYyzIR6hFhbWFLQyzoZ4ZFpZWGP3L+qGprV6gIQh9hm7WvZSdAPBPgUcIlmIDbCWTT3AAFcBz5EoxAZYy\/4c3UAjLgOORDcxLwOsZWkWbQUfAO6KbmIeG6IbmEPpE08Z9jnCe4Gj0U00ZAl4J93JvWZ5BNay3wG\/jG6iIRuBL0c38VYMsFY6GN1AY\/ZEN\/BWMnyc9CN0PdvoPkZviW6kEUs0\/jI8j8Ba6Rhwd3QTDWn+56QMRyOPwHVtAX4LXBjdSCOaXi8egfVmrwE34WWnKRhgreYg8KXoJjQO3swQYwPdXTrRNxlEl3pyQuKcCzxIfIgMcGJOSKwNwJ3AaeLDZIATckLasJvuhofoQBngZJyQdmwGvsC0bv5vWtO\/cc2UHsQM+9y6rcDNwC7g\/cG9DK3p9dJ0czMGuG3voQvyB4GLge3AJYzncsym10vTzc0YYK3FpNaLF3JIiRlgKTEDLCVmgKXEDLCUmAGWEjPAUmIGWErMAEuJGWApMQMsJWaApcQMsJSYAZYSM8BSYgZYSswAS4kZYCkxAywlZoClxAywlJgBlhIzwFJiBlhKzABLiRlgKTEDLCVmgKXEDLCUmAEexgKwD1gEjgKniH9Rde06Ndv3xdlYLPQaUaWV7Y3re4EXB+g7e704G5uhZVsvo5dlQs4C7hmg37HVPQz7yS\/LepmMLBNieNcW4qFkWS+TkWFC9g7Q59hrqI\/TGdZLMRuiG5hD6UEsvc8LwAvAuwtvd+z+AOwEXi+83dbXS1Gehe5vD4Z3PXYAu6KbyM4A97c7uoHE9kQ3kJ0B7u\/K6AYSc+x6avrz\/Uzr32mOA5sKb3MqTgDnFt5m6+ulKI\/A\/TV\/prJhp6MbyM4A9\/dydAOJHYtuIDsD3N8z0Q0k5tj1ZID7OxjdQGIPRTeQXdNf0GdaPynhhRzr44UcBXgE7u8kcHt0EwndRvnwqkFZrm31Zob5y5sZJiTLhHg74fzh9XbCCck2Id7Qv3p5Q\/8Amv6CPlN6EGvs8wLddb67gCvoLtzfWOHvtmSJ7kTVEeBhujPOJyv83YzrZd2abm5mUhOi3ia1XjwLLSVmgKXEDLCUmAGWEjPAUmIGWErMAEuJGWApMQMsJWaApcQMsJSYAZYSM8BSYgZYSswAS4kZYCkxAywlZoClxAywlJgBHsYCsA9YBI4Cp4h\/KmTtOjXb98XZWCz0GlGlle0xoT5WdvXysbITlWVCfLD7fOWD3Scmy4QY3rWFeChZ1stkZJiQvQP0OfYa6uN0hvVSTNMPrZ4pPYi+XrQNvl60AM9C97cHw7seO+hePaMeDHB\/u6MbSGxPdAPZGeD+roxuIDHHrqemP9\/PtP6d5jiwqfA2p+IEcG7hbba+XoryCNxf82cqG3Y6uoHsDHB\/L0c3kNix6AayM8D9PRPdQGKOXU8GuL+D0Q0k9lB0A9k1\/QV9pvWTEl7IsT5eyFGAR+D+TgK3RzeR0G2UD68alOXaVm9mmL+8mWFCskyItxPOH15vJ5yQbBPiDf2rlzf0D6DpL+gzpQexxj4v0F3nuwu4gu7C\/Y0V\/m5LluhOVB0BHqY743yywt\/NuF7WrenmZiY1IeptUuvFs9BSYgZYSswAS4kZYCkxAywlZoClxAywlJgBlhIzwFJiGQJc+vI735I3XqXntvnbHTME+LXC29teeHtqx0WFt\/dq4e0VN8UAX154e2pH6edMG+ACXiq8Pd+kMF6lX9XiE0cL2E\/Z+ztPABdX3QPVcCnd3JZcK9+qugfrkOEI\/OvC2zsH+ErhbSreV+nmtqTSa2+SPs4wT4i4qeZOaFC3MMwa+WjNnRir8+hO55eenCXg5or7oWHcAvyb8utjiPc2TdZhhvkPewZ4ALik3q6okEuBBxluXTxeb1fG71aGm6jl\/7bfAa6ne0C7F3u0Z4Fubm4Avkv5E1Zvrs\/V2a1+mn7ezwpbgT8CZ0c3oklYovtU1vzL1zKchQb4C\/DD6CY0GT8gQXghT4DBn35Uz93RDcwrU4APA09FN6HROwQ8Gd3EvDIFGODO6AY0ameAL0Y3sRbZAvw4cH90Exqte4EnoptYiyxnoVfaDvwKuCC6EY3KP4DLSHLyalm2IzB0dyfdGN2ERudGkoUX4G3RDazT88A2yt\/\/qWn6Ot3NEKroHOAxhr0axxp\/\/YTEV95l\/A680tvpTvt\/KLgP5fQccA3wz+hG1ivjd+CVXgU+CfwiuhGl8yzwMRKHd0y2AD8i\/uOYlaMeA85HTTkH+Abxi8Nqu75G4u+8U3A93W960QvFaqv+DuxBKVwIHABOE79wrPj6Ht3PjkrmWoZ9mofVdh2iO8us5K4Bvk\/3mpboRWUNWyeBR4CrmYDsvwOv1VZgH93D3T9M+ceQKsbrwE+Bh4BF4K+x7dQztQCvdB5wFd2rVnYC76ML+DvofpbyTGVbTtK9ZucVumuWXwB+AxwBngaOx7UmSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkTdd\/AB8A1goYRB78AAAAAElFTkSuQmCC", "imageDataOmitted": false},
+    {"id": 3, "imageData": "iVBORw0KGgoAAAANSUhEUgAAAPAAAADwCAYAAAA+VemSAAAABmJLR0QA\/wD\/AP+gvaeTAAAHuUlEQVR4nO3dzY9V5R3A8a+jAooUu2EUROOKdivapNGixlrTdAOoETesXLQQCU13Ltp\/wJoYQ6IrK76AtjEKSW2MZgA1uhBMXFjsqjUmVIiCoZSZYep08UhicC5zL\/d5Ob97v5\/kt33OOXPOd+77vSBJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkmK7rPUODGA5cAewHlj37UwCK4EVwBXtdq0vc8C\/gA+B14BXgdmmeyQVNgnsBA4BM8D8CM1nwP35\/lRSd9wF7AfO0T600vM4MJHlryY1dg\/wHu2jqj3PYcQKbDWwh\/YhGbE0oC3AKdoH1IUxYoWxDHiG9tF0bYxYnbcSOED7WLo6RqzOmgSO0D6Sro8Rq3N+gPEOMnvo\/htUNCaWAQdpH0W08ZZYnfA07WOIOkasph6ifQTRx4jVxGp8ndeIFdZe2l\/4ozQ+saVq7qH9BT+K4y2xqniX9hf7qI4Rq6g7aX+Rj\/oYsYrZT\/sLfBzGiJXdJOPxYfyujBErq99S9oKdBnYDm4CbgCvrHFbfJkhRGbFCOkS5C\/Ul0mvLXWfECmk5Zb6Abg74dcXjyMGIFc59lLkwf1PzIDIyYoXyGPkvyJeqHkF+Rqwwcl+oZ4nxmHcxRqwQPiDvRbi77u4XZcTqvH+S9wLcVHXvyzNiddqX5L34bqy7+1VMAH+ibsR+ikl9yf0SUtfepJGLEWtoJX6dcD7zepF+QXFQE8CzwNbWOzKGZoEzwEngBHAU+BQ4TPp5nzPtdq2t3Lcao67FY2Ln4jNDejfhTtL7+seKAQ\/OiLs754B9wIaeZ2\/EGPClMeLuzzvA3b1O4Kgw4EvX4oktZ\/DZD6xd+BTGZ8DD8ZY4xpwCHuxxDkMz4OEZcZzZBSxd+DTGZMB5eHc6zkyRfnFzJBhwPt4Sx5kjwKqFT2MsBpyXEceZI6Rf4AzNgPMz4jjzNsEfExtwGT4mjjO7Fj6FMRhwOUYcZx5e+BR2nwGX5d3pGHMSuK7HOew0Ay7PW+IY83yP89dpBlyHt8Tdn29IvxEWigHX4y1x9+dgr5PXVQZc1wTwJO0vVKf3\/Kzn2esgA27jfuAz2l+szvdn30XO21D8Sp3RsgTYDGwEbiX98JvfgdXeHLAGON56R\/rhLbAiuIL0D24z6dniacreCu+oc1jDM2BFtAbYS7mAp+odynAMWJFtI93lzX0dTwNXVTyOS2bAim47ZW6F7829o\/7chvR9u4BXCqy7PveCBiwt7Hek74fOaV3m9QxY6uFz4C+Z1zRgqaLXMq+X\/dNJBiz1djjzeisyr+c7saSLWELex8EzwLKM6xmwtIhOX8\/ehZYCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCM2ApMAOWAjNgKTADlgIzYCkwA5YCKxHwbOb1lmReT+pX7mtvJvN6RQL+T+b1rs+8ntSv1ZnXO515vRABr8+8ntSv2zKvFyLgY5nX25R5PalfGzOv9+\/M6xXxHDCfcaaBNVWPQIK1pGsv57X8bO6dLHEL\/Gnm9ZYCf8y8prSYJ0jXXk652yjiF+T9r3V+ttU8CI21HZS5hn9e8yAu1dWkp8tzH\/wcsL3icWg87QD+R\/7rdxq4quJxDOUgZf6DzQMvAzfUOxSNibXAnyl33U7VO5Th7aTcH+L8f7PngQeAm\/HNHhrcEtK18yDwIvmfsLpwHi1xEJeVWBRYBXwOXFlofSmSOdK9xi9yL1zqvdDHgb8VWluK5q8UiBfKfpjBl36k5PFSC5cM+CDwbsH1pQgOAO+UWrz0xwl\/X3h9qcvmgT+U3EDpgKeAPYW3IXXVC8Chkhso9Sz0d10P\/B1YWWFbUlecBH5MoSevzqvxjRzHgEcqbEfqkkcoHC\/A5aU38K1PgEnyf75S6qKnSB+GKK7GXejzlgJvAHdX3KZU21vAr8j\/1VILqhkwwArS0+q3VN6uVMPHwAbg61obrP2tlKeBXwIfVd6uVNoR4F4qxgttvlb2OOm\/1JsNti2VMEV6aHi89oZrPYl1oVnSR7d+CPyk0T5IOTwFbAX+23pHWnmA9JpZyY9yOU7u+QrYjAC4DtgNfEP7E+M4i80rpJdFdYE7KfttHo4zzBwgPX+jRWwA9pEeK7c+ac54zyzwOnAHHVT7deBBrQK2kL7c\/afk\/5pPaSEzwPvAq8Be4ETb3emt6wF\/19XA7aSfWlkH\/IgU+LXANfi9WBrMLOlngE6R3rN8FPgH8CHwHnC23a5JkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkvr1f+aP6dCi8HO2AAAAAElFTkSuQmCC", "imageDataOmitted": false}
+  ],
+  "imageMetadatas": [
+    {
+      "id": 1,
+      "format": "Png",
+      "frames": [
+        {
+          "size": {"x": 240, "y": 240}
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "format": "Png",
+      "frames": [
+        {
+          "size": {"x": 240, "y": 240}
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "format": "Png",
+      "frames": [
+        {
+          "size": {"x": 240, "y": 240}
+        }
+      ]
+    }
+  ],
+  "frames": [
+    {
+      "frameId": 5,
+      "frameName": "Ready",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 11,
+      "frameName": "Show Dialog",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 15,
+      "frameName": "Filter: Wildcard ?yt",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 21,
+      "frameName": "Missing file prompt",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 23,
+      "frameName": "Dismissed",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 25,
+      "frameName": "Cancel",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    }
+  ]
+}
