@@ -4760,6 +4760,7 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     function EditStyle(begin : presentation::TextPos, end : presentation::TextPos, style : presentation::DocumentStyleProperties^) : system::Void;
     function EditStyleName(begin : presentation::TextPos, end : presentation::TextPos, styleName : system::String) : system::Void;
     function EditText(begin : presentation::TextPos, end : presentation::TextPos, frontSide : system::Boolean, text : system::ReadonlyList<system::String>^, skipFormatting : system::Boolean) : system::Void;
+    function EnsureCaretVisible() : system::Void;
     function GetActiveHyperlinkReference() : system::String;
     function GetCaretBegin() : presentation::TextPos;
     function GetCaretBounds(caret : presentation::TextPos, frontSide : system::Boolean) : presentation::Rect;
