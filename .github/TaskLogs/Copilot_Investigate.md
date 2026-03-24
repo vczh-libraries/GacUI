@@ -2,52 +2,34 @@
 
 # PROBLEM DESCRIPTION
 
-When the caret is moved in a multi-line or multi-paragraph text box, it doesn't really scroll far enough to make the target line visible.
+There are two very similar test cases that can be found using `TEST_CASE(L"PageUpPageDown_`. A new test case is added in `TestControls_Editor_Key_Multiline.cpp`. Unlike the existing test cases which type text, this new test case calls `LoadTextAndClearUndoRedo` with ~30 paragraphs (each having 1-3 lines). Lines are separated by single CRLF and paragraphs by double CRLF. The string is built using `stream::GenerateToStream`.
 
-To confirm the bug, check the unit test `GuiMultilineTextBox\Key\NavigationParagraph_PageUpPageDown_MovesVerticallyByViewport`. The last two frames render the UI after double HOME or double END is pressed. When double HOME is pressed, the caret goes to the beginning of the first line, and the first line should actually appear. When double END is pressed, the caret goes to the end of the last line, and the last line should actually appear.
+After loading the text, triple HOME and triple END are pressed to jump to the beginning and ending of the text box. The generated snapshot is read to ensure the first/last line is visible after pressing keys.
 
-The caret calculation is correct, but the target line doesn't really appear. In the test case, it happens for double END.
-
-The issue is that when an `IGuiGraphicsParagraph` is not rendered, it is not created, so no one knows its actual height. But when all paragraphs are rendered at least once, the calculation will be accurate and the issue does not present. Actually pressing multiple times of END to eventually scroll to the last line, then all paragraphs are created, pressing double HOME or double END jumps to the target line directly without issue.
-
-The action is triggered by `GuiDocumentCommonInterface::Move`. The `EnsureDocumentRectVisible` is supposed to work, but since some paragraphs may not have been created, when you actually scroll there some paragraphs will be created and therefore the target bounds become inaccurate, causing the target line to be out of the control. So `EnsureDocumentRectVisible` is good, the issue is about how `Move` calls `EnsureDocumentRectVisible`.
-
-`NavigationParagraph_PageUpPageDown_MovesVerticallyByViewport` is available for some other controls too. If the fix changes anything, some files will be updated by `git status` and we can check them to see if the issue is resolved. If nothing shows up by `git status`, it means the fix has zero effect.
+The suspicion is that triple HOME doesn't actually scroll the text box to the very beginning when text is loaded via `LoadTextAndClearUndoRedo` (paragraphs haven't been rendered yet, so their heights are unknown, causing scroll miscalculation).
 
 # UPDATES
 
-## CONTINUE
-
-Your fix is good, I am impressed! but the third proposal could be improved a little bit, you are going to follow the instruction to make improvements.
-
-You have enforced a `EnsureParagraph` for every paragraphs above the target one, which actually fixed the issue but it brings a performance issue when the text box has too many paragraphs. I don't have a test case for this but I always try a 100k paragraph document to make sure it react fast.
-
-So I would like you to try if it is possible only to consider paragraphs that are actually rendered. The solution might be a little bit complex because it might need to talk to all caches. Please propose new solutions and continue.
-
-## REPORT
-
-Apparently No.5 proposal is worse than the other 2 in performance. Compare No.4 and No.6.
-
 # TEST [CONFIRMED]
 
-The existing test case `NavigationParagraph_PageUpPageDown_MovesVerticallyByViewport` already covers this scenario. It is instantiated for:
-- `GuiDocumentViewer`
-- `GuiDocumentLabel`
-- `GuiDocumentTextBox`
-
-The test creates 40 paragraphs, then tests PAGE UP / PAGE DOWN / double HOME / double END. The last two frames (frame_4 = "Double [HOME]", frame_5 = "Double [END]") should show the first / last paragraph visible respectively.
+A new test case `PageUpPageDown_LoadTextAndScrollToEnds` is added to `TestControls_Editor_Key_Multiline.cpp` in the `RunTextBoxKeyTestCases_Multiline` template function. It:
+1. Uses `stream::GenerateToStream` to build a string with 30 paragraphs, each with 1-3 lines (lines separated by `\r\n`, paragraphs separated by `\r\n\r\n`).
+2. Calls `LoadTextAndClearUndoRedo` to load the text.
+3. Presses triple HOME and verifies the first line is visible in the snapshot.
+4. Presses triple END and verifies the last line is visible in the snapshot.
 
 **Criteria for success:**
 - All unit tests pass.
-- The snapshot files for these test cases change (verified via `git status`).
-- In the updated snapshots, after double HOME, paragraph `P0` should be visible; after double END, paragraph `P39` should be visible.
+- In the snapshot after triple HOME, the first line of the first paragraph is visible.
+- In the snapshot after triple END, the last line of the last paragraph is visible.
+
+**Result:** The bug is NOT reproducible. Snapshot analysis confirms:
+- Frame 2 (Triple HOME): "Paragraph 0 Line 0" is visible at y: 44-60, well within the viewport (y: 35-307). ✅
+- Frame 3 (Triple END): "Paragraph 29 Line 2" (the last line) is visible at y: 268-284. ✅
+
+**Root cause of non-reproduction:** The fix from the previous investigation (No.4 - `CorrectUnrenderedParagraphHeights` in `GuiGraphicsDocumentRenderer_GuiDocumentParagraphCache.cpp`) is already applied in the codebase. This function corrects unrendered paragraph cached heights using measured heights from rendered paragraphs, which prevents the scroll miscalculation that would otherwise occur when paragraphs haven't been rendered yet.
 
 # PROPOSALS
-
-- No.1 Iterative EnsureDocumentRectVisible in Move [DENIED]
-- No.2 EnsureCaretVisible callback after rendering [DENIED]
-- No.3 Ensure all paragraph heights before GetParagraphTop [DENIED]
-- No.4 Correct unrendered paragraph cached sizes using measured height [CONFIRMED]
 - No.5 Apply height correction factor without modifying cached state [DENIED]
 - No.6 Proactive height correction during Render pass [CONFIRMED]
 

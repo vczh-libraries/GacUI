@@ -580,6 +580,66 @@ void RunTextBoxKeyTestCases_Multiline(const wchar_t* resource, const WString& co
 				resource
 			);
 		});
+
+		TEST_CASE(L"PageUpPageDown_LoadTextAndScrollToEnds")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->SetFocused();
+
+					auto text = GenerateToStream([](StreamWriter& writer)
+					{
+						for (vint i = 0; i < 10000; i++)
+						{
+							if (i > 0) writer.WriteString(L"\r\n\r\n");
+							vint lineCount = (i % 3) + 1;
+							for (vint j = 0; j < lineCount; j++)
+							{
+								if (j > 0) writer.WriteString(L"\r\n");
+								writer.WriteString(L"Paragraph ");
+								writer.WriteString(itow(i));
+								writer.WriteString(L" Line ");
+								writer.WriteString(itow(j));
+							}
+						}
+					});
+					textBox->LoadTextAndClearUndoRedo(text);
+				});
+
+				protocol->OnNextIdleFrame(L"Loaded text", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_HOME);
+					protocol->KeyPress(VKEY::KEY_HOME);
+					protocol->KeyPress(VKEY::KEY_HOME);
+				});
+
+				protocol->OnNextIdleFrame(L"Triple [HOME]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_END);
+					protocol->KeyPress(VKEY::KEY_END);
+					protocol->KeyPress(VKEY::KEY_END);
+				});
+
+				protocol->OnNextIdleFrame(L"Triple [END]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/")
+				+ controlName
+				+ WString::Unmanaged(L"/Key/NavigationMultiline_PageUpPageDown_LoadTextAndScrollToEnds"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
 	});
 }
 
