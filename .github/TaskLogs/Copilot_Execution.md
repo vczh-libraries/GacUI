@@ -10,7 +10,7 @@
 
 # EXECUTION PLAN
 
-## STEP 1: Fix default-extension derivation for file dialog filters
+## STEP 1: Fix default-extension derivation for file dialog filters [DONE]
 
 ### Edit file
 
@@ -65,7 +65,7 @@ Then when creating `filterItem`:
 Also remove `regexFilterExt` since it becomes unused.
 Do NOT remove `regexWildcard`, it is still used for wildcard-to-regex conversion.
 
-## STEP 2: Confirm multi-wildcard matching behavior (";" in wildcard)
+## STEP 2: Confirm multi-wildcard matching behavior (";" in wildcard) [DONE]
 
 Verification-only (no code change expected if the current wildcard-to-regex conversion already treats `;` as alternation):
 
@@ -78,7 +78,7 @@ If any subtle bug is found during testing (e.g. missing grouping), the safe conc
 - Convert each wildcard pattern into a regex fragment.
 - Join fragments with `|` and wrap in `^( ... )$`.
 
-## STEP 3: Add new unit tests for "*.*" and multi-wildcard filters
+## STEP 3: Add new unit tests for "*.*" and multi-wildcard filters [DONE]
 
 ### Edit file
 
@@ -183,7 +183,14 @@ In each button’s click script, set default extension before calling `ShowDialo
 
 # FIXING ATTEMPTS
 
-- N/A (document-only change)
+## Fixing attempt No.1
+
+- Why the original change did not work:
+  - The "*.* uses dialog default extension" test chose filter index 0 in the first dialog frame, which is already the default, so no UI change occurred and the test framework raised a "no UI update" error.
+- What I need to do:
+  - Insert a frame that changes the filter selection (switch to Text Files first, then back to All Files) before typing and confirming the file name.
+- Why this should solve the build break:
+  - Each `OnNextIdleFrame` will now trigger a visible UI change, satisfying the framework requirement and allowing the test to proceed.
 
 # !!!FINISHED!!!
 

@@ -789,7 +789,24 @@ FakeDialogServiceBase
 			vm->promptOverriteFile = (options & INativeDialogService::FileDialogPromptOverwriteFile) != 0;
 			vm->defaultExtension = defaultExtension;
 
-			Regex regexFilterExt(L"/*.[^*?]+");
+			auto GetFilterDefaultExtension = [](const WString& wildcard) -> Nullable<WString>
+			{
+				// Accept only "*.<ext>" where <ext> is non-empty and contains no '*', '?', or ';'.
+				if (wildcard.Length() < 3) return {};
+				if (wildcard[0] != L'*' || wildcard[1] != L'.') return {};
+				auto ext = wildcard.Right(wildcard.Length() - 2);
+				for (vint i = 0; i < ext.Length(); i++)
+				{
+					switch (ext[i])
+					{
+					case L'*':
+					case L'?':
+					case L';':
+						return {};
+					}
+				}
+				return Nullable<WString>(ext);
+			};
 			Regex regexWildcard(L"[*?;]");
 			vint filterStart = 0;
 			while (true)
@@ -821,13 +838,7 @@ FakeDialogServiceBase
 				filterItem->name = filter.Sub(filterStart, first - filterStart);
 				filterItem->filter = filter.Sub(first + 1, (second == -1 ? count : second) - first - 1);
 
-				if (auto match = regexFilterExt.MatchHead(filterItem->filter))
-				{
-					if (match->Result().Length() == filterItem->filter.Length())
-					{
-						filterItem->defaultExtension = filterItem->filter.Right(filterItem->filter.Length() - 2);
-					}
-				}
+				filterItem->defaultExtension = GetFilterDefaultExtension(filterItem->filter);
 
 				auto regexFilter = stream::GenerateToStream([&](stream::TextWriter& writer)
 				{
