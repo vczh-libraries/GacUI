@@ -1,170 +1,199 @@
 # !!!TASK!!!
 
 # PROBLEM DESCRIPTION
-## TASK No.6: Test Undo/Redo for Style Operations
+vl::presentation::FakeDialogServiceBase::ShowFileDialog currently in filter we can only say:
+All Files (*.*)|*.*|Text Files (*.txt)|*.txt
+And in the file dialog you can see a combo box for filtering file type with two item:
+- `All Files (*.*)`, matching file name against wildcard `*.*.
+- Another one for text files.
+We can clearly see that, if we count from zero, even ones are label and odd ones are wildcards.
+And when one select text file, and type file name ABC, because ABC does not match the filter, it becomes ABC.txt and search again. This is already implemented. The rule is that, if the wildcard begins from "*" and "." and a series of text without "*" or "?", it generates a file extension to override the default file extension that passed to the `ShowFileDialog` function.
 
-Write test cases for undo/redo behavior of `EditStyleName`, `RemoveStyleName`, and `RenameStyle`, each under their own `TEST_CATEGORY` hierarchy. This task covers the following TEST_CATEGORYs:
-- `TEST_CATEGORY(L"UndoRedo")` / `TEST_CATEGORY(L"EditStyleName")`
-- `TEST_CATEGORY(L"UndoRedo")` / `TEST_CATEGORY(L"RemoveStyleName")`
-- `TEST_CATEGORY(L"UndoRedo")` / `TEST_CATEGORY(L"RenameStyle")`
+Here come to work item 1: this part is not properly implemented, no validation is performed on the wildcard, causing *.* to generate a default extension ".*" and it is clearly wrong. You need to create a test case to repro and fix it, the correct behavior is that, when *.* is selected, the default file extension takes place, and when one type an unmatching file name ABC, it does not become ABC.*. You can check out existing test cases to understand how this feature is tested before.
 
-### what to be done
+Another task is that, I would like to support ";" in wildcard. for example, `*.bmp;*.png;*.jpg` now becomes a filter that accept any of the following wildcard:
+- *.bmp
+- *.png
+- *.jpg
+And clearly such filter does not generate a default extension name to override the one passed to ShowFileDialog. You will need more test cases for this new feature.
 
-**Under `TEST_CATEGORY(L"UndoRedo")` / `TEST_CATEGORY(L"EditStyleName")` and `TEST_CATEGORY(L"RemoveStyleName")`:**
+Here come to work item 2: implement the ";" behavior. Not only test against default extension name, but also the filter actually accept 3 kinds of files.
 
-- **Test: Undo EditStyleName** — Apply a style name, verify `CanUndo()` is true, call `Undo()`, verify `SummarizeStyleName` returns null (original state).
-- **Test: Redo EditStyleName** — After undoing, verify `CanRedo()` is true, call `Redo()`, verify `SummarizeStyleName` returns the style name again.
-- **Test: Undo RemoveStyleName** — Apply a style name, then remove it, then undo the removal. Verify the style name is restored.
-- **Test: Redo RemoveStyleName** — After undoing a removal, redo it. Verify the style name is removed again.
-- **Test: Multiple edits then undo all** — Apply style, then remove style, then undo both in sequence. Verify we return to the original unstyled state.
-- **Test: Undo/Redo with CanUndo/CanRedo checks** — Verify `CanUndo()` and `CanRedo()` return correct values at each step of the undo/redo chain.
+Pay attention to the `normalized` lambda in `TryConfirm`, and other code in this function. The assumption before is that a filter maps to one extension name, and now this assumption does not exist.
 
-**Under `TEST_CATEGORY(L"UndoRedo")` / `TEST_CATEGORY(L"RenameStyle")`:**
+Here come to work item 3: you need to scan existing test cases against file dialog, if anything is about filtering and appending default extension name, you need to consider about, is it necessary to perform a similar test with multiple-extension filter, add them if justified to be necessary.
 
-- **Test: Undo RenameStyle** — Register a style, apply it, rename it, then undo. Verify:
-  - The style name in text runs reverts to the old name.
-  - The styles dictionary reverts to the old name.
-- **Test: Redo RenameStyle** — After undoing, redo. Verify everything is renamed again.
-- **Test: Undo RenameStyle with parent references** — Register parent and child styles, rename parent, undo. Verify the child's `parentStyleName` reverts to the original parent name.
-- **Test: Multiple renames then undo all** — Rename `"A"` to `"B"`, then `"B"` to `"C"`, then undo both. Verify we return to `"A"`.
+You are going to add a new test category for the above work items in
+Test\GacUISrc\UnitTest\TestApplication_Dialog_File.cpp
+Here are also where every other test cases about the file dialog stay.
 
-### rationale
-
-- `EditStyleName` and `RemoveStyleName` both use `EditStyleInternal` which takes a before/after snapshot of the document model and submits to `undoRedoProcessor->OnReplaceModel()`. This is the same mechanism used by `EditStyle` and is confirmed in `GuiDocumentCommonInterface.cpp`.
-- `RenameStyle` uses a separate undo/redo path: `undoRedoProcessor->OnRenameStyle(arguments)` with `RenameStyleStruct`, instead of the `ReplaceModelStruct` used by `EditStyleName`/`RemoveStyleName`. The `RenameStyleStep::Undo()` and `Redo()` in `GuiTextUndoRedo.cpp` (lines 136, 145) swap old/new names.
-- The undo/redo pattern from `TestControls_Editor_Key_Shared.cpp` shows checking `CanUndo/CanRedo` and calling `Undo/Redo` in loops — this same pattern should be used for style operations.
-- All undo/redo tests are grouped into one task while keeping separate TEST_CATEGORYs for each operation, since undo/redo is a cross-cutting concern and can be implemented together.
+To speed up testing, you can make UnitTest project only run TestApplication_Dialog_File.cpp
 
 # UPDATES
 
 # INSIGHTS AND REASONING
 
-## Goal / scope
+## Where the behavior lives (evidence)
 
-This design covers **TASK No.6** only: add unit tests to `REPO-ROOT\Test\GacUISrc\UnitTest\TestControls_Editor_Styles.cpp` verifying undo/redo behavior for:
-- `vl::presentation::controls::GuiDocumentCommonInterface::EditStyleName`
-- `vl::presentation::controls::GuiDocumentCommonInterface::RemoveStyleName`
-- `vl::presentation::controls::GuiDocumentCommonInterface::RenameStyle`
+### Filter parsing and wildcard->regex conversion
 
-Out of scope:
-- Any production-code change.
-- Restoring full UnitTest run (TASK No.7).
+- Filter parsing is implemented in `Source\Utilities\FakeServices\GuiFakeDialogServiceBase_FileDialog.cpp` inside `vl::presentation::FakeDialogServiceBase::ShowFileDialog`.
+- The filter string is split into `(label|wildcard)` pairs by scanning for `'|'`.
+- For each wildcard, a `FileDialogFilter` is created with:
+  - `filterItem->filter`: raw wildcard string (e.g. `*.txt`).
+  - `filterItem->defaultExtension`: derived from wildcard when it matches `*.<something>`.
+  - `filterItem->regexFilter`: a `vl::regex::Regex` built from the wildcard to filter file names.
 
-## Evidence / behavior constraints from source code
+Notable implementation details:
 
-### Undo/redo stacks are step-based and redo history is dropped on new edits
+- Default-extension extraction currently uses:
+  - `Regex regexFilterExt(L"/*.[^*?]+");`
+  - and if the entire wildcard matches, it sets `defaultExtension = filter.Right(filter.Length() - 2)`.
+- Wildcard-to-regex currently treats `';'` as an alternation marker when building the regex:
+  - `Regex regexWildcard(L"[*?;]");`
+  - on `';'` it writes `"|"` into the regex.
 
-- `GuiGeneralUndoRedoProcessor::PushStep` truncates future steps (`RemoveRange(firstFutureStep, ...)`) when a new step is pushed after an undo, meaning redo history is discarded on any fresh edit.
-- During undo/redo execution, `performingUndoRedo=true` prevents `PushStep` from recording new steps; this is essential for `RenameStyleStep::Undo/Redo` which calls back into `GuiDocumentCommonInterface::RenameStyle`.
+### Extension appending during confirmation (TryConfirm)
 
-(See `Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.cpp`.)
+- Extension appending is implemented in `FileDialogViewModel::TryConfirm` (same `.cpp`).
+- Logic summary:
+  - `extensionFromFilter = selectedFilter->GetDefaultExtension()` (nullable).
+  - If no extension from filter, fall back to `defaultExtension` passed to `ShowFileDialog`.
+  - `normalized(path)` appends `"." + extension` when appropriate.
 
-### EditStyleName / RemoveStyleName use model snapshot replacement steps
+The key risk area for this task is that `TryConfirm` assumes `selectedFilter->GetDefaultExtension()` (when present) is a single meaningful extension that should override the dialog default; this assumption becomes invalid for `*.*` and for multi-wildcard filters like `*.bmp;*.png;*.jpg`.
 
-- Both `GuiDocumentCommonInterface::EditStyleName` and `RemoveStyleName` call `EditStyleInternal(begin, end, ...)`.
-- `EditStyleInternal` snapshots the document before and after the edit using `documentElement->GetDocument()->CopyDocument(begin, end, true)` and submits a `GuiDocumentUndoRedoProcessor::ReplaceModelStruct` via `undoRedoProcessor->OnReplaceModel(arguments)`.
+## Root cause hypotheses
 
-Implications for tests:
-- Each call to `EditStyleName` / `RemoveStyleName` should produce exactly one undo step.
-- Undo should restore the original style-name runs for the edited range; redo should reapply the post-edit runs.
+### Work item 1 (*.* produces " .*")
 
-(See `Source\Controls\TextEditorPackage\GuiDocumentCommonInterface.cpp`, `EditStyleInternal` and the style-name methods.)
+The problem statement describes an observed wrong behavior (`*.*` yields a filter-default extension `"*"`, producing appended `".*"`). Before treating this as a confirmed existing bug, verify the current behavior in this repo: with `vl::regex::Regex` and pattern `L"/*.[^*?]+"`, `*.*` likely **does not** match the “single extension” extractor today (the trailing `*` should make `MatchHead` fail). Even if it is not reproducible, switching away from regex-based extraction is still justified for clarity, correctness, and to support the new `';'` contract.
 
-### ReplaceModelStep changes both document content and caret selection
+Design decision: replace “derive default extension” with explicit string validation instead of relying on regex matching.
 
-- `GuiDocumentUndoRedoProcessor::ReplaceModelStep::Undo/Redo` uses `ci->EditRun(...)` with the saved model and then calls `ci->SetCaret(...)`.
+### Work item 2 (support ';' as multi-wildcard)
 
-Implications for tests:
-- The primary assertions should be on externally observable model state (style summaries and style registry), not on caret position (caret changes are incidental for these style-only edits).
+The current wildcard-to-regex conversion already maps `';'` to `"|"`, which matches the intended “OR across patterns” semantics for listing/filtering.
 
-(See `Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.cpp`.)
+However, default-extension extraction and `TryConfirm` extension-appending logic must treat multi-wildcard filters as **not providing** a filter-specific extension override.
 
-### RenameStyle uses a dedicated rename step (not a model snapshot)
+## Proposed changes (high-level)
 
-- `GuiDocumentCommonInterface::RenameStyle` directly calls `documentElement->RenameStyle(oldStyleName, newStyleName)` and then submits a `RenameStyleStruct` to `undoRedoProcessor->OnRenameStyle(arguments)`.
-- `GuiDocumentUndoRedoProcessor::RenameStyleStep::Undo` calls `ci->RenameStyle(new, old)` and `Redo` calls `ci->RenameStyle(old, new)`.
+### 1) Make default-extension extraction validate the wildcard
 
-Implications for tests:
-- Undo/redo for rename must validate both:
-  - The style name stored in text runs (via `SummarizeStyleName`).
-  - The style registry / parent references (`textBox->GetDocument()->styles`).
+In `FakeDialogServiceBase::ShowFileDialog`, replace the `regexFilterExt`-based logic with a small helper (local lambda is fine) that:
 
-(See `Source\Controls\TextEditorPackage\GuiDocumentCommonInterface.cpp` and `Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.cpp`.)
+- Takes `filterItem->filter` (raw wildcard string).
+- Returns `Nullable<WString>` default extension **only when** the wildcard is exactly a single `*.<ext>` pattern where:
+  - It starts with `"*."`.
+  - The suffix after `"*."` is non-empty.
+  - The suffix contains **no** `'*'`, `'?'`, or `';'`.
 
-## Proposed changes (test-only, high-level)
+Defensive-only note: explicitly rejecting the special case suffix `"*"` (i.e. wildcard `"*.*"`) is redundant if the “no `*`/`?`/`;` in suffix” rule is enforced, but keeping it as an explicit guard is acceptable.
 
-### Where to add tests
+Rationale:
 
-Update existing file:
-- `REPO-ROOT\Test\GacUISrc\UnitTest\TestControls_Editor_Styles.cpp`
+- This implements the rule described in the problem statement (“series of text without `*` or `?`”), and extends it to reject `';'` because it indicates multiple patterns.
+- It guarantees `*.*` will not produce a filter default extension, so `TryConfirm` will fall back to the dialog’s `defaultExtension` instead of ever appending `".*"`.
 
-### Category structure
+### 2) Define ';' semantics precisely for matching and for extension override
 
-Under the existing `TEST_CATEGORY(L"Styles")`, add:
-- `TEST_CATEGORY(L"UndoRedo")`
-  - `TEST_CATEGORY(L"EditStyleName")`
-  - `TEST_CATEGORY(L"RemoveStyleName")`
-  - `TEST_CATEGORY(L"RenameStyle")`
+Matching contract:
 
-These categories should follow the existing style-test harness pattern in this file (resource XML, `GacUIUnitTest_SetGuiMainProxy`, `Init` + `Verify` frames).
+- `"*.bmp;*.png;*.jpg"` means OR across the listed wildcards.
+- Implementation can keep the current wildcard-to-regex conversion (since it already maps `';'` to `"|"`), but the intended conceptual model is:
+  - Split by `';'` into patterns, convert each pattern, then join with `"|"`.
 
-### Test harness requirements (must-follow)
+Extension-override contract:
 
-- **Stable test log paths**: every new `GacUIUnitTest_StartFast_WithResourceAsText(...)` must pass a stable log path string under:
-  - `Controls/Editor/Features/Styles/UndoRedo/EditStyleName/<CaseName>`
-  - `Controls/Editor/Features/Styles/UndoRedo/RemoveStyleName/<CaseName>`
-  - `Controls/Editor/Features/Styles/UndoRedo/RenameStyle/<CaseName>`
+- Any wildcard containing `';'` yields **no** filter-derived default extension override.
+  - Therefore `selectedFilter->GetDefaultExtension()` must be null for multi-wildcard filters.
+  - `TryConfirm` then uses the dialog-level `DefaultExtension` (if configured) exactly as it does today.
 
-- **Frame choreography**: every `protocol->OnNextIdleFrame(...)` callback must trigger an observable UI update.
-  - Do not schedule verification-only frames that only query `CanUndo()` / `CanRedo()`.
-  - Anchor frames on UI-changing actions: `EditStyleName`, `RemoveStyleName`, `RenameStyle`, `Undo()`, `Redo()`, and the final `window->Hide()`.
-  - Keep frame titles consistent with the file’s existing convention (title describes what happened in the previous frame).
+### 3) Adjust TryConfirm’s assumptions (no longer “one filter => one extension”)
 
-- **Verified clean baseline**: after `LoadTextAndClearUndoRedo(...)`, the first assertions in every test must be:
-  - `textBox->CanUndo() == false`
-  - `textBox->CanRedo() == false`
+Keep the current `normalized` behavior but ensure:
 
-  Any required style registration / setup must be done before the baseline is cleared (i.e. before `LoadTextAndClearUndoRedo(...)`) to avoid accidental undo steps.
+- `extensionFromFilter` is only true when the selected filter has a validated single-extension default.
+- For multi-wildcard filters, `extensionFromFilter` stays false, so `normalized` does not try to enforce a specific filter suffix.
 
-### Test design (what to assert)
+No new behavior is proposed beyond making the default-extension extractor explicit and ensuring multi-wildcard filters don’t pretend to have a single extension.
 
-All undo/redo tests should:
-- Ensure the operation actually changes state before asserting undo/redo behavior (especially important for `RemoveStyleName` and `RenameStyle`).
-- Explicitly assert `CanUndo()` / `CanRedo()` transitions around each UI-changing action.
-- Verify both text runs and the style registry where applicable:
-  - Use presence checks like `textBox->GetDocument()->styles.Keys().Contains(L"Name")` (do not copy-assign the dictionary).
-  - For parent relationship checks, verify the style object field (e.g. `textBox->GetDocument()->styles[L"Child"]->parentStyleName`, or the confirmed equivalent) in addition to run summaries.
-- Confirm `SummarizeStyleName` return type before encoding “null” expectations.
-  - If it returns `Nullable<WString>`, assert absence via `!result` / `result == Nullable<WString>()` (avoid string comparisons).
+## Test design (new category in TestApplication_Dialog_File.cpp)
 
-Concrete test cases (each one is a scenario test; no standalone “CanUndo/CanRedo-only” test):
+All file-dialog tests live in `Test\GacUISrc\UnitTest\TestApplication_Dialog_File.cpp`.
 
-- `UndoRedo/EditStyleName`:
-  - Basic undo/redo: apply a style name on `[0,10)`; verify summary present; `Undo()` restores absence; `Redo()` re-applies.
-  - **Redo truncation**: apply style name → `Undo()` → apply a different style name → assert `CanRedo() == false`.
-  - **End-of-history boundary**: drain undo and redo with loops and assert boundaries:
-    - When exhausted: `CanUndo() == false` and `Undo()` returns `false`.
-    - After redoing to the end: `CanRedo() == false` and `Redo()` returns `false`.
+Critical fixture constraints (to avoid breaking existing tests):
 
-- `UndoRedo/RemoveStyleName`:
-  - Apply style name then remove it; `Undo()` restores; `Redo()` removes again.
-  - Multi-step chain with **intermediate state** checks:
-    - apply → remove → `Undo()` (must restore to post-apply state) → `Undo()` (must restore original unstyled state).
+- Do **not** modify any existing shared XML resource’s “All Files” filter. It currently uses `All Files (*.*)|*` (wildcard `*`, not `*.*`), and changing it to `*.*` would change listing behavior (e.g. hiding extensionless files like `README`) and break existing listing assertions.
+- Create a **new, dedicated XML resource** for this new test category, and put `DefaultExtension="txt"` only there.
+- Keep mock filesystem changes isolated: do not add `pic.bmp/pic.png/pic.jpg` to a shared `CreateFileItemRoot()` that other tests depend on. Use a new helper (e.g. `CreateFileItemRootWithImages()`), or a parameterized variant, so existing row-sequence assertions remain stable.
 
-- `UndoRedo/RenameStyle`:
-  - Basic rename undo/redo: register `OldName`, apply, rename to `NewName`; undo/redo must validate both run summaries and registry key presence.
-  - Parent reference: `Parent` + `Child(parent=Parent)`; rename parent; `Undo()` must restore `styles[L"Child"]->parentStyleName` to `Parent`.
-  - Multiple renames with **intermediate state** checks: `A→B→C`, then `Undo()` (verify `B`), then `Undo()` (verify `A`) in both runs and registry.
+### New category: filter extension / multi-wildcard
 
-## Risks / guardrails
+Add a new `TEST_CATEGORY` (sibling to existing categories) focused on these work items.
 
-- Undo/redo is gated by `editMode == GuiDocumentEditMode::Editable` in `CanUndo/CanRedo`; ensure all tests run with `EditMode="Editable"` (already used by the existing style test resource).
-- `RenameStyle` always submits an undo step regardless of whether the underlying rename succeeds; for deterministic undo/redo tests, only perform renames that are guaranteed to succeed (old exists, new does not) and avoid testing failure cases under undo/redo here.
-- Avoid empty ranges (`begin == end`) since summary and snapshot behavior can differ (and some APIs intentionally return empty in that case).
+#### Test A (work item 1): "*.*" must not yield a filter-derived default extension
+
+- Use the **new dedicated resource XML** so that:
+  - Filter includes `All Files (*.*)|*.*` (not `|*`).
+  - Dialog `DefaultExtension` is set to `"txt"`.
+- Scenario:
+  1. Open dialog (FileMustExist).
+  2. Select `All Files (*.*)` filter.
+  3. Type `root2`.
+  4. Confirm (Open).
+- Expected:
+  - Confirmation succeeds and selected file is `/root2.txt`.
+
+Add a branch case in the same category:
+
+- Type `root2.xyz` (already has a dot).
+- Expected: confirmation must not append anything; with `FileMustExist`, it should fail cleanly if the file is absent.
+
+#### Test B (work item 2): listing under multi-wildcard filter accepts all listed extensions
+
+- Using the isolated mock filesystem helper with images.
+- Add a filter entry:
+  - `Image Files (*.bmp;*.png;*.jpg)|*.bmp;*.png;*.jpg`.
+- Scenario:
+  1. Open dialog.
+  2. Choose the image filter.
+  3. Assert the full, stable visible sequence using existing grid helpers (e.g. collect texts via `GuiBindableDataGrid::GetItemProvider()->GetTextValue(i)`), not partial membership checks.
+
+#### Test C (work item 2): typed selection under multi-wildcard does not invent an extension (open dialog)
+
+- Still using the image filter and `FileMustExist`.
+- Scenario:
+  1. Choose image filter.
+  2. Type `pic` (no extension) and confirm -> expect error (file not exist).
+  3. Dismiss the GUI-rendered message box via the fake-dialog OK path (click the `OK` button).
+  4. Type `pic.png` and confirm -> expect success selecting `/pic.png`.
+- Expected:
+  - The first attempt must fail, proving the filter does not force a single default extension.
+
+#### Test D (work item 2): typed selection under multi-wildcard does not invent an extension (save dialog)
+
+- Add at least one save-dialog scenario with `DefaultExtension="txt"`.
+- Under `*.bmp;*.png;*.jpg`, typing a name without extension must not “invent” a single image extension; it should use the dialog-level default extension if any defaulting occurs.
+
+### Work item 3: extend existing “typed selection” patterns to multi-wildcard where justified
+
+Existing tests already validate single-extension behaviors (listing + filter-derived extension appending).
+
+Justified analogous coverage for multi-wildcard:
+
+- The open/save “does not invent an extension” tests guard against regressions where the implementation accidentally picks the first extension and appends it.
+
+## Verification strategy (high-level)
+
+- Restrict UnitTest to only run `TestApplication_Dialog_File.cpp` during iteration (via existing `/F:<file>` mechanism used elsewhere in this repo’s workflow).
+- Ensure UI protocol frames follow established rules (no nested `OnNextIdleFrame`, re-find controls each frame, and each frame causes an observable UI change).
+- Run UnitTest after implementing the fix and new tests.
 
 # AFFECTED PROJECTS
 
 - Build the solution in folder `REPO-ROOT\Test\GacUISrc` (Debug|x64).
-- Always Run UnitTest project `UnitTest` (Debug|x64).
+- Run UnitTest project `UnitTest` (Debug|x64), during iteration with command arguments `/F:TestApplication_Dialog_File.cpp`.
 
 # !!!FINISHED!!!
