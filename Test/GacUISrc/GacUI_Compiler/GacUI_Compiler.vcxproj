@@ -207,6 +207,7 @@
     <Xml Include="..\..\Resources\App\FullControlTest\DocumentEditorRibbon.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\DocumentEditorToolstrip.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\ElementTabPage.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\EmbeddedControlsSubTabPage.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\Images\ImageLoader.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\Images\LargeImages.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\Images\MiscImages.xml" />
@@ -220,11 +221,13 @@
     <Xml Include="..\..\Resources\App\FullControlTest\RepeatTabPage.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\Resource.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\ResponsiveTabPage.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\SideDocuments.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\TextBoxTabPage.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\TextListTabPage.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\ToolbarImages\Images.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\TreeViewTabPage.xml" />
     <Xml Include="..\..\Resources\App\RemoteProtocolTest\Resource.xml" />
+    <Xml Include="..\..\Resources\App\RemoteProtocolTest\SideDocuments.xml" />
     <Xml Include="..\..\Resources\App\RemoteProtocolTest\ToolbarImages\Images.xml" />
     <Xml Include="..\..\Resources\App\UI1_StyleTemplate.xml" />
   </ItemGroup>

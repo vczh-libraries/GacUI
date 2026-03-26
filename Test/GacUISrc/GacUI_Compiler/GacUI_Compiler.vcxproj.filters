@@ -198,5 +198,14 @@
     <Xml Include="..\..\Resources\App\RemoteProtocolTest\ToolbarImages\Images.xml">
       <Filter>Resource Files\RemoteProtocolTest\ToolbarImages</Filter>
     </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\EmbeddedControlsSubTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\SideDocuments.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\RemoteProtocolTest\SideDocuments.xml">
+      <Filter>Resource Files\RemoteProtocolTest</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
