@@ -86,6 +86,3 @@ namespace demo
 #endif
 
 #endif
-// UNUSED_USER_CONTENT:
-//	/* USER_CONTENT_BEGIN(custom members of ::demo::MainWindow) */
-//	/* USER_CONTENT_END() */

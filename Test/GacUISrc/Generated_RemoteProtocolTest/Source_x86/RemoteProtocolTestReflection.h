@@ -42,6 +42,8 @@ namespace vl
 			DECL_TYPE_INFO(::rptest::DataGridTab)
 			DECL_TYPE_INFO(::rptest::DataGridTabConstructor)
 			DECL_TYPE_INFO(::rptest::DataItem)
+			DECL_TYPE_INFO(::rptest::DocumentTab)
+			DECL_TYPE_INFO(::rptest::DocumentTabConstructor)
 			DECL_TYPE_INFO(::rptest::RpMainWindow)
 			DECL_TYPE_INFO(::rptest::RpMainWindowConstructor)
 #endif

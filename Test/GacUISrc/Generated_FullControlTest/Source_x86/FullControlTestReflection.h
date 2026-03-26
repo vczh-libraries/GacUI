@@ -68,6 +68,8 @@ namespace vl
 			DECL_TYPE_INFO(::demo::DocumentEditorToolstripConstructor)
 			DECL_TYPE_INFO(::demo::ElementTabPage)
 			DECL_TYPE_INFO(::demo::ElementTabPageConstructor)
+			DECL_TYPE_INFO(::demo::EmbeddedControlsSubTabPage)
+			DECL_TYPE_INFO(::demo::EmbeddedControlsSubTabPageConstructor)
 			DECL_TYPE_INFO(::demo::EnglishNumbersController)
 			DECL_TYPE_INFO(::demo::EnglishNumbersControllerConstructor)
 			DECL_TYPE_INFO(::demo::EnglishNumbersControllerTabPage)

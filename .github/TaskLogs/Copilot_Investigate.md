@@ -2,31 +2,58 @@
 
 # PROBLEM DESCRIPTION
 
-There are two very similar test cases that can be found using `TEST_CASE(L"PageUpPageDown_`. A new test case is added in `TestControls_Editor_Key_Multiline.cpp`. Unlike the existing test cases which type text, this new test case calls `LoadTextAndClearUndoRedo` with ~30 paragraphs (each having 1-3 lines). Lines are separated by single CRLF and paragraphs by double CRLF. The string is built using `stream::GenerateToStream`.
+Add a new "Document" tab page to RemoteProtocolTest following the naming convention of the two existing tab pages (ClickMeTab, DataGridTab). The tab page contains a DocumentViewer in Selectable mode with a 5-pixel margin, displaying:
 
-After loading the text, triple HOME and triple END are pressed to jump to the beginning and ending of the text box. The generated snapshot is read to ensure the first/last line is visible after pressing keys.
+1. A title "RemotingTest_Core.exe" in big bold blue style using the style feature.
+2. A short description of RemotingTest_Core.exe.
+3. A table copied from MonoRepo.md `### Command-Line Arguments`, implemented via `<Table>` inside `<DocumentItem>` with DocumentLabel cells. Table width ~300px, invisible border, 5px cell padding, each cell has a Bounds with SolidBorder (black) and DocumentLabel with margin 1.
+4. An interactive line: "Run [combo-box]? Start [button: RIGHT NOW]!" with ComboBox (FullControlTest/RemoteProtocolTest) and a button that shows a MessageDialog.
 
-The suspicion is that triple HOME doesn't actually scroll the text box to the very beginning when text is loaded via `LoadTextAndClearUndoRedo` (paragraphs haven't been rendered yet, so their heights are unknown, causing scroll miscalculation).
+A separate SideDocuments.xml was created for the main document and each embedded cell document.
 
 # UPDATES
 
-## UPDATE
+# TEST
 
-What about make another test case to use SetText followed by SetCaret, instead of LoadTextAndClearUndoRedo followed by pressing HOME and END? If this still not repro we could assume the bug does not exist.
+N/A — This work involves UI rendering verification via Playwright screenshots, not unit tests.
 
-# TEST [CONFIRMED]
+# PROPOSALS
 
-**Test Case 1: `PageUpPageDown_LoadTextAndScrollToEnds`**
+- No.1 Add DocumentTab with DocumentViewer, embedded Table, ComboBox, and Button [CONFIRMED]
 
-Added to `TestControls_Editor_Key_Multiline.cpp` in `RunTextBoxKeyTestCases_Multiline`. It:
-1. Uses `stream::GenerateToStream` to build a string with 10000 paragraphs, each with 1-3 lines (lines separated by `\r\n`, paragraphs separated by `\r\n\r\n`).
-2. Calls `LoadTextAndClearUndoRedo` to load the text.
-3. Presses triple HOME and verifies the first line is visible in the snapshot.
-4. Presses triple END and verifies the last line is visible in the snapshot.
+## No.1 Add DocumentTab with DocumentViewer, embedded Table, ComboBox, and Button
 
-**Result:** Bug NOT reproduced. Snapshot analysis confirms:
-- Frame 2 (Triple HOME): "Paragraph 0 Line 0" is visible at y: 44-60, at the top of the viewport. ✅
-- Frame 3 (Triple END): "Paragraph 9999 Line 0" is visible at the bottom of the viewport. ✅
+### CODE CHANGE
+
+1. Created `<GacUI>/Test/Resources/App/RemoteProtocolTest/SideDocuments.xml`:
+   - Contains `MainDocument` (Doc with Title style: size 24, bold, blue #0000FF; Body style: size 14; Content with title, description, table object, and combo/button objects)
+   - Contains 15 cell documents (CellHArg, CellHDesc, CellHReq, Cell0Arg..Cell3Req) for the 5×3 command-line arguments table
+
+2. Updated `<GacUI>/Test/Resources/App/RemoteProtocolTest/Resource.xml`:
+   - Added `<Folder name="SideDocuments" content="Link">SideDocuments.xml</Folder>`
+   - Added `DocumentTabResource` instance with `ref.Class="rptest::DocumentTab"`:
+     - TabPage with Text="Document"
+     - MessageDialog for the button click
+     - DocumentViewer in Selectable mode with 5px margin on all sides
+     - DocumentItem "CommandTable": Table with 5 rows × 3 columns, ~300px width, invisible border, 5px cell padding, each cell wrapped in Bounds with SolidBorder #000000 and DocumentLabel with 1px margin
+     - DocumentItem "ComboBox": ComboBox with FullControlTest/RemoteProtocolTest items
+     - DocumentItem "StartButton": Button "RIGHT NOW" that shows the MessageDialog
+   - Added `<rptest:DocumentTab Alt="C"/>` to the Tab pages
+
+3. Updated `Generated_RemoteProtocolTest.vcxitems` and `.vcxitems.filters`:
+   - Added DocumentTab.h and DocumentTab.cpp entries for both x64 and x86 platforms
+
+### CONFIRMED
+
+Verified via Playwright:
+- The "Document" tab appears and is clickable
+- Title "RemotingTest_Core.exe" renders in big bold blue
+- Description paragraph renders correctly
+- Table with 5 rows (header + 4 data rows) renders with black borders and proper cell content
+- Em-dash character renders correctly after fixing from `&#x2014;` to literal `—`
+- ComboBox defaults to "FullControlTest" and shows dropdown
+- "RIGHT NOW" button is visible
+- Keyboard navigation (Home/End/ArrowDown) works for scrolling through the document content
 
 The existing `CorrectUnrenderedParagraphHeights` fix (from previous investigation No.6) handles this correctly.
 

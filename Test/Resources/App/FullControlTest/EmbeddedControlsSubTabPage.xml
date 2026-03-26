@@ -1,0 +1,179 @@
+<Folder>
+  <Instance name="EmbeddedControlsSubTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::EmbeddedControlsSubTabPage">
+      <TabPage ref.Name="self" Text="Embedded Controls">
+        <MessageDialog ref.Name="dialogStart"
+                       Title="RemotingTest_Core.exe"
+                       Text="Pretend to be starting!"
+          />
+        <DocumentViewer ref.Name="docViewer" EditMode="Selectable" Document-uri="res://SideDocuments/MainDocument" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+
+          <DocumentItem Name="CommandTable">
+            <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="x:400">
+              <att.Rows>
+                <_>composeType:MinSize</_>
+                <_>composeType:MinSize</_>
+                <_>composeType:MinSize</_>
+                <_>composeType:MinSize</_>
+                <_>composeType:MinSize</_>
+              </att.Rows>
+              <att.Columns>
+                <_>composeType:MinSize</_>
+                <_>composeType:Percentage percentage:0.5</_>
+                <_>composeType:Percentage percentage:0.5</_>
+              </att.Columns>
+
+              <Cell Site="row:0 column:0">
+                <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <SolidBorder Color="#000000"/>
+                  <DocumentLabel EditMode="ViewOnly" Document-uri="res://SideDocuments/CellHArg" Behavior="wrapLine:false">
+                    <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                  </DocumentLabel>
+                </Bounds>
+              </Cell>
+              <Cell Site="row:0 column:1">
+                <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <SolidBorder Color="#000000"/>
+                  <DocumentLabel EditMode="ViewOnly" Document-uri="res://SideDocuments/CellHDesc">
+                    <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                  </DocumentLabel>
+                </Bounds>
+              </Cell>
+              <Cell Site="row:0 column:2">
+                <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <SolidBorder Color="#000000"/>
+                  <DocumentLabel EditMode="ViewOnly" Document-uri="res://SideDocuments/CellHReq">
+                    <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                  </DocumentLabel>
+                </Bounds>
+              </Cell>
+
+              <Cell Site="row:1 column:0">
+                <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <SolidBorder Color="#000000"/>
+                  <DocumentLabel EditMode="ViewOnly" Document-uri="res://SideDocuments/Cell0Arg" Behavior="wrapLine:false">
+                    <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                  </DocumentLabel>
+                </Bounds>
+              </Cell>
+              <Cell Site="row:1 column:1">
+                <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <SolidBorder Color="#000000"/>
+                  <DocumentLabel EditMode="ViewOnly" Document-uri="res://SideDocuments/Cell0Desc">
+                    <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                  </DocumentLabel>
+                </Bounds>
+              </Cell>
+              <Cell Site="row:1 column:2">
+                <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <SolidBorder Color="#000000"/>
+                  <DocumentLabel EditMode="ViewOnly" Document-uri="res://SideDocuments/Cell0Req">
+                    <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                  </DocumentLabel>
+                </Bounds>
+              </Cell>
+
+              <Cell Site="row:2 column:0">
+                <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <SolidBorder Color="#000000"/>
+                  <DocumentLabel EditMode="ViewOnly" Document-uri="res://SideDocuments/Cell1Arg" Behavior="wrapLine:false">
+                    <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                  </DocumentLabel>
+                </Bounds>
+              </Cell>
+              <Cell Site="row:2 column:1">
+                <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <SolidBorder Color="#000000"/>
+                  <DocumentLabel EditMode="ViewOnly" Document-uri="res://SideDocuments/Cell1Desc">
+                    <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                  </DocumentLabel>
+                </Bounds>
+              </Cell>
+              <Cell Site="row:2 column:2">
+                <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <SolidBorder Color="#000000"/>
+                  <DocumentLabel EditMode="ViewOnly" Document-uri="res://SideDocuments/Cell1Req">
+                    <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                  </DocumentLabel>
+                </Bounds>
+              </Cell>
+
+              <Cell Site="row:3 column:0">
+                <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <SolidBorder Color="#000000"/>
+                  <DocumentLabel EditMode="ViewOnly" Document-uri="res://SideDocuments/Cell2Arg" Behavior="wrapLine:false">
+                    <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                  </DocumentLabel>
+                </Bounds>
+              </Cell>
+              <Cell Site="row:3 column:1">
+                <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <SolidBorder Color="#000000"/>
+                  <DocumentLabel EditMode="ViewOnly" Document-uri="res://SideDocuments/Cell2Desc">
+                    <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                  </DocumentLabel>
+                </Bounds>
+              </Cell>
+              <Cell Site="row:3 column:2">
+                <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <SolidBorder Color="#000000"/>
+                  <DocumentLabel EditMode="ViewOnly" Document-uri="res://SideDocuments/Cell2Req">
+                    <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                  </DocumentLabel>
+                </Bounds>
+              </Cell>
+
+              <Cell Site="row:4 column:0">
+                <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <SolidBorder Color="#000000"/>
+                  <DocumentLabel EditMode="ViewOnly" Document-uri="res://SideDocuments/Cell3Arg" Behavior="wrapLine:false">
+                    <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                  </DocumentLabel>
+                </Bounds>
+              </Cell>
+              <Cell Site="row:4 column:1">
+                <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <SolidBorder Color="#000000"/>
+                  <DocumentLabel EditMode="ViewOnly" Document-uri="res://SideDocuments/Cell3Desc">
+                    <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                  </DocumentLabel>
+                </Bounds>
+              </Cell>
+              <Cell Site="row:4 column:2">
+                <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <SolidBorder Color="#000000"/>
+                  <DocumentLabel EditMode="ViewOnly" Document-uri="res://SideDocuments/Cell3Req">
+                    <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                  </DocumentLabel>
+                </Bounds>
+              </Cell>
+            </Table>
+          </DocumentItem>
+
+          <DocumentItem Name="ComboBox">
+            <ComboBox ref.Name="comboRun" SelectedIndex="0">
+              <att.BoundsComposition-set PreferredMinSize="x:160"/>
+              <att.ListControl>
+                <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                  <att.Items>
+                    <TextItem Text="FullControlTest"/>
+                    <TextItem Text="RemoteProtocolTest"/>
+                  </att.Items>
+                </TextList>
+              </att.ListControl>
+            </ComboBox>
+          </DocumentItem>
+
+          <DocumentItem Name="StartButton">
+            <Button Text="RIGHT NOW">
+              <ev.Clicked-eval><![CDATA[{
+                dialogStart.ShowDialog();
+              }]]></ev.Clicked-eval>
+            </Button>
+          </DocumentItem>
+        </DocumentViewer>
+      </TabPage>
+    </Instance>
+  </Instance>
+</Folder>

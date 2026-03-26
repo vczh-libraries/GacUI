@@ -1,0 +1,95 @@
+<Folder>
+  <Doc name="MainDocument">
+    <Doc>
+      <Content>
+        <p>
+          <div style="Title">
+            <nop>RemotingTest_Core.exe</nop>
+          </div>
+        </p>
+        <p>
+          <div style="Body">
+            <nop>RemotingTest_Core.exe is a test application for the GacUI remote protocol. It hosts a GacUI application and serves its UI over HTTP, enabling browser-based rendering and interaction through the GacJS website.</nop>
+          </div>
+        </p>
+        <p>
+          <div style="Body">
+            <object name="CommandTable"/>
+          </div>
+        </p>
+        <p>
+          <div style="Body">
+            <nop>Run </nop>
+            <object name="ComboBox"/>
+            <nop>? Start </nop>
+            <object name="StartButton"/>
+            <nop>!</nop>
+          </div>
+        </p>
+      </Content>
+      <Styles>
+        <Style name="Content">
+          <face>Segoe UI</face>
+        </Style>
+        <Style name="Title" parent="Content">
+          <size>24</size>
+          <b>true</b>
+          <color>#0000FF</color>
+        </Style>
+        <Style name="Body" parent="Content">
+          <size>14</size>
+        </Style>
+      </Styles>
+    </Doc>
+  </Doc>
+
+  <Doc name="CellHArg">
+    <Doc><Content><p><b>Argument</b></p></Content></Doc>
+  </Doc>
+  <Doc name="CellHDesc">
+    <Doc><Content><p><b>Description</b></p></Content></Doc>
+  </Doc>
+  <Doc name="CellHReq">
+    <Doc><Content><p><b>Required</b></p></Content></Doc>
+  </Doc>
+
+  <Doc name="Cell0Arg">
+    <Doc><Content><p><nop>/Http</nop></p></Content></Doc>
+  </Doc>
+  <Doc name="Cell0Desc">
+    <Doc><Content><p><nop>Use HTTP transport (port 8888)</nop></p></Content></Doc>
+  </Doc>
+  <Doc name="Cell0Req">
+    <Doc><Content><p><b>Yes</b><nop> — /Http is required for GacJS testing</nop></p></Content></Doc>
+  </Doc>
+
+  <Doc name="Cell1Arg">
+    <Doc><Content><p><nop>/Pipe</nop></p></Content></Doc>
+  </Doc>
+  <Doc name="Cell1Desc">
+    <Doc><Content><p><nop>Use named-pipe transport</nop></p></Content></Doc>
+  </Doc>
+  <Doc name="Cell1Req">
+    <Doc><Content><p><nop>Not used by GacJS</nop></p></Content></Doc>
+  </Doc>
+
+  <Doc name="Cell2Arg">
+    <Doc><Content><p><nop>/FCT</nop></p></Content></Doc>
+  </Doc>
+  <Doc name="Cell2Desc">
+    <Doc><Content><p><nop>Run FullControlTest (index 0)</nop></p></Content></Doc>
+  </Doc>
+  <Doc name="Cell2Req">
+    <Doc><Content><p><nop>Optional (default if neither is specified)</nop></p></Content></Doc>
+  </Doc>
+
+  <Doc name="Cell3Arg">
+    <Doc><Content><p><nop>/RPT</nop></p></Content></Doc>
+  </Doc>
+  <Doc name="Cell3Desc">
+    <Doc><Content><p><nop>Run RemoteProtocolTest (index 1)</nop></p></Content></Doc>
+  </Doc>
+  <Doc name="Cell3Req">
+    <Doc><Content><p><nop>Optional</nop></p></Content></Doc>
+  </Doc>
+</Folder>

@@ -147,6 +147,7 @@
                     </demo:DocumentEditorToolstrip>
                   </TabPage>
                   <demo:TextBoxTabPage Alt="T"/>
+                  <demo:EmbeddedControlsSubTabPage Alt="E"/>
                 </att.Pages>
               </Tab>
             </TabPage>
@@ -232,6 +233,8 @@
   <Folder name="DocumentEditorBase" content="Link">DocumentEditorBase.xml</Folder>
   <Folder name="DocumentEditorRibbon" content="Link">DocumentEditorRibbon.xml</Folder>
   <Folder name="DocumentEditorToolstrip" content="Link">DocumentEditorToolstrip.xml</Folder>
+  <Folder name="SideDocuments" content="Link">SideDocuments.xml</Folder>
+  <Folder name="EmbeddedControlsSubTabPage" content="Link">EmbeddedControlsSubTabPage.xml</Folder>
 
   <Instance name="ElementTabPageResource" content="File">ElementTabPage.xml</Instance>
   <Folder name="AnimationTabPage" content="Link">AnimationTabPage.xml</Folder>

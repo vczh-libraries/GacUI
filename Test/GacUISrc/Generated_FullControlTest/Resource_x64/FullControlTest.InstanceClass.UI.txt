@@ -1,4 +1,4 @@
-﻿================================(1/115)================================
+﻿================================(1/117)================================
 module <constructor>demo::DataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -686,7 +686,7 @@ namespace demo
     }
 }
 
-================================(2/115)================================
+================================(2/117)================================
 module <instance>demo::DataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -751,7 +751,7 @@ namespace demo
     }
 }
 
-================================(3/115)================================
+================================(3/117)================================
 module <constructor>demo::ElementTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1475,7 +1475,7 @@ namespace demo
     }
 }
 
-================================(4/115)================================
+================================(4/117)================================
 module <instance>demo::ElementTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1517,7 +1517,7 @@ namespace demo
     }
 }
 
-================================(5/115)================================
+================================(5/117)================================
 module <constructor>demo::ListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2003,7 +2003,7 @@ namespace demo
     }
 }
 
-================================(6/115)================================
+================================(6/117)================================
 module <instance>demo::ListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2061,7 +2061,7 @@ namespace demo
     }
 }
 
-================================(7/115)================================
+================================(7/117)================================
 module <constructor>demo::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2192,19 +2192,19 @@ namespace demo
         var <precompile>33 : ::demo::TextBoxTabPage* = null of (::demo::TextBoxTabPage*);
 
         @cpp:Protected
-        var <precompile>34 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+        var <precompile>34 : ::demo::EmbeddedControlsSubTabPage* = null of (::demo::EmbeddedControlsSubTabPage*);
 
         @cpp:Protected
-        var <precompile>35 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
+        var <precompile>35 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>36 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>36 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
 
         @cpp:Protected
-        var <precompile>37 : ::demo::ElementTabPage* = null of (::demo::ElementTabPage*);
+        var <precompile>37 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>38 : ::demo::AnimationTabPage* = null of (::demo::AnimationTabPage*);
+        var <precompile>38 : ::demo::ElementTabPage* = null of (::demo::ElementTabPage*);
 
         @cpp:Protected
         var checkFrame : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
@@ -2240,34 +2240,34 @@ namespace demo
         var editorToolstrip : ::demo::DocumentEditorToolstrip* = null of (::demo::DocumentEditorToolstrip*);
 
         @cpp:Protected
-        var <precompile>39 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
+        var <precompile>39 : ::demo::AnimationTabPage* = null of (::demo::AnimationTabPage*);
 
         @cpp:Protected
-        var <precompile>40 : ::demo::LocalizedDialogsTabPage* = null of (::demo::LocalizedDialogsTabPage*);
+        var <precompile>40 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
 
         @cpp:Protected
-        var <precompile>41 : ::demo::DatePickerTabPage* = null of (::demo::DatePickerTabPage*);
+        var <precompile>41 : ::demo::LocalizedDialogsTabPage* = null of (::demo::LocalizedDialogsTabPage*);
 
         @cpp:Protected
-        var <precompile>42 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+        var <precompile>42 : ::demo::DatePickerTabPage* = null of (::demo::DatePickerTabPage*);
 
         @cpp:Protected
-        var <precompile>43 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
+        var <precompile>43 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>44 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>44 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
 
         @cpp:Protected
-        var <precompile>45 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>45 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>46 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>46 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>47 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>47 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>48 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>48 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         var <precompile>49 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
@@ -2291,40 +2291,43 @@ namespace demo
         var <precompile>55 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>56 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>56 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>57 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+        var <precompile>57 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>58 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
+        var <precompile>58 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>59 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>59 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
 
         @cpp:Protected
-        var <precompile>60 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>60 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>61 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>61 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>62 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>62 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>63 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>63 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>64 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>64 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>65 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>65 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>66 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>66 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>67 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>67 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>68 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <demo-MainWindow>Initialize(<this> : ::demo::MainWindow*) : (::system::Void)
@@ -2336,9 +2339,9 @@ namespace demo
             {
                 (self.ClientSize = {x : 640; y : 480;} of (::presentation::Size));
             }
-            (<precompile>67 = self.BoundsComposition);
+            (<precompile>68 = self.BoundsComposition);
             {
-                (<precompile>67.PreferredMinSize = {x : 640; y : 480;} of (::presentation::Size));
+                (<precompile>68.PreferredMinSize = {x : 640; y : 480;} of (::presentation::Size));
             }
             {
                 (self.Text = "Complete Control Showcase");
@@ -2607,6 +2610,14 @@ namespace demo
                 var <collection> = <precompile>27.Pages;
                 <collection>.Add(<precompile>33);
             }
+            (<precompile>34 = new (::demo::EmbeddedControlsSubTabPage*)());
+            {
+                (<precompile>34.Alt = "E");
+            }
+            {
+                var <collection> = <precompile>27.Pages;
+                <collection>.Add(<precompile>34);
+            }
             (<precompile>28 = <precompile>27.BoundsComposition);
             {
                 (<precompile>28.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
@@ -2619,117 +2630,117 @@ namespace demo
                 <collection>.Add(<precompile>26);
             }
             {
-                (<precompile>34 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+                (<precompile>35 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
             }
             {
-                (<precompile>34.Alt = "M");
+                (<precompile>35.Alt = "M");
             }
             {
-                (<precompile>34.Text = "Misc");
+                (<precompile>35.Text = "Misc");
             }
             {
-                (<precompile>35 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
+                (<precompile>36 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
             }
-            (<precompile>37 = new (::demo::ElementTabPage*)());
+            (<precompile>38 = new (::demo::ElementTabPage*)());
             {
-                (<precompile>37.Alt = "E");
-            }
-            {
-                var <collection> = <precompile>35.Pages;
-                <collection>.Add(<precompile>37);
-            }
-            (<precompile>38 = new (::demo::AnimationTabPage*)());
-            {
-                (<precompile>38.Alt = "A");
+                (<precompile>38.Alt = "E");
             }
             {
-                var <collection> = <precompile>35.Pages;
+                var <collection> = <precompile>36.Pages;
                 <collection>.Add(<precompile>38);
             }
-            (<precompile>39 = new (::demo::LocalizedStringsTabPage*)());
+            (<precompile>39 = new (::demo::AnimationTabPage*)());
             {
-                (<precompile>39.Alt = "L");
+                (<precompile>39.Alt = "A");
             }
             {
-                var <collection> = <precompile>35.Pages;
+                var <collection> = <precompile>36.Pages;
                 <collection>.Add(<precompile>39);
             }
-            (<precompile>40 = new (::demo::LocalizedDialogsTabPage*)());
+            (<precompile>40 = new (::demo::LocalizedStringsTabPage*)());
             {
                 (<precompile>40.Alt = "L");
             }
             {
-                var <collection> = <precompile>35.Pages;
+                var <collection> = <precompile>36.Pages;
                 <collection>.Add(<precompile>40);
             }
-            (<precompile>41 = new (::demo::DatePickerTabPage*)());
+            (<precompile>41 = new (::demo::LocalizedDialogsTabPage*)());
             {
-                (<precompile>41.Alt = "D");
+                (<precompile>41.Alt = "L");
             }
             {
-                var <collection> = <precompile>35.Pages;
+                var <collection> = <precompile>36.Pages;
                 <collection>.Add(<precompile>41);
             }
-            (<precompile>36 = <precompile>35.BoundsComposition);
+            (<precompile>42 = new (::demo::DatePickerTabPage*)());
             {
-                (<precompile>36.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>42.Alt = "D");
             }
             {
-                <precompile>34.AddChild(<precompile>35);
+                var <collection> = <precompile>36.Pages;
+                <collection>.Add(<precompile>42);
+            }
+            (<precompile>37 = <precompile>36.BoundsComposition);
+            {
+                (<precompile>37.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            {
+                <precompile>35.AddChild(<precompile>36);
             }
             {
                 var <collection> = <precompile>2.Pages;
-                <collection>.Add(<precompile>34);
+                <collection>.Add(<precompile>35);
             }
             {
-                (<precompile>42 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+                (<precompile>43 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
             }
             {
-                (<precompile>42.Alt = "W");
+                (<precompile>43.Alt = "W");
             }
             {
-                (<precompile>42.Text = "Window Manager");
+                (<precompile>43.Text = "Window Manager");
             }
-            (<precompile>43 = new (::presentation::compositions::GuiStackComposition*)());
+            (<precompile>44 = new (::presentation::compositions::GuiStackComposition*)());
             {
-                (<precompile>43.Padding = 5 of (::system::Int64));
-            }
-            {
-                (<precompile>43.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+                (<precompile>44.Padding = 5 of (::system::Int64));
             }
             {
-                (<precompile>43.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>44.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
-                (<precompile>43.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>44 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>45 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                (<precompile>44.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
-                (<precompile>45.Text = "Local shortcut key: Ctrl+Q");
+                (<precompile>44.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>45 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>46 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
             }
             {
-                <precompile>44.AddChild(<precompile>45.BoundsComposition);
+                (<precompile>46.Text = "Local shortcut key: Ctrl+Q");
             }
             {
-                <precompile>43.AddChild(<precompile>44);
-            }
-            (<precompile>46 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>47 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <precompile>45.AddChild(<precompile>46.BoundsComposition);
             }
             {
-                (<precompile>47.Text = "Global shortcut key: Ctrl+Shift+Alt+Q");
+                <precompile>44.AddChild(<precompile>45);
+            }
+            (<precompile>47 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>48 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
             }
             {
-                <precompile>46.AddChild(<precompile>47.BoundsComposition);
+                (<precompile>48.Text = "Global shortcut key: Ctrl+Shift+Alt+Q");
             }
             {
-                <precompile>43.AddChild(<precompile>46);
+                <precompile>47.AddChild(<precompile>48.BoundsComposition);
             }
-            (<precompile>48 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                <precompile>44.AddChild(<precompile>47);
+            }
+            (<precompile>49 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkFrame = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("checkFrame", checkFrame);
@@ -2738,12 +2749,12 @@ namespace demo
                 (checkFrame.Text = "Customized Frame");
             }
             {
-                <precompile>48.AddChild(checkFrame.BoundsComposition);
+                <precompile>49.AddChild(checkFrame.BoundsComposition);
             }
             {
-                <precompile>43.AddChild(<precompile>48);
+                <precompile>44.AddChild(<precompile>49);
             }
-            (<precompile>49 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>50 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkMax = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("checkMax", checkMax);
@@ -2752,12 +2763,12 @@ namespace demo
                 (checkMax.Text = "MaximizedBox");
             }
             {
-                <precompile>49.AddChild(checkMax.BoundsComposition);
+                <precompile>50.AddChild(checkMax.BoundsComposition);
             }
             {
-                <precompile>43.AddChild(<precompile>49);
+                <precompile>44.AddChild(<precompile>50);
             }
-            (<precompile>50 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>51 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkMin = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("checkMin", checkMin);
@@ -2766,12 +2777,12 @@ namespace demo
                 (checkMin.Text = "MinimizedBox");
             }
             {
-                <precompile>50.AddChild(checkMin.BoundsComposition);
+                <precompile>51.AddChild(checkMin.BoundsComposition);
             }
             {
-                <precompile>43.AddChild(<precompile>50);
+                <precompile>44.AddChild(<precompile>51);
             }
-            (<precompile>51 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>52 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkBorder = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("checkBorder", checkBorder);
@@ -2780,12 +2791,12 @@ namespace demo
                 (checkBorder.Text = "Border");
             }
             {
-                <precompile>51.AddChild(checkBorder.BoundsComposition);
+                <precompile>52.AddChild(checkBorder.BoundsComposition);
             }
             {
-                <precompile>43.AddChild(<precompile>51);
+                <precompile>44.AddChild(<precompile>52);
             }
-            (<precompile>52 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>53 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkSizeBox = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("checkSizeBox", checkSizeBox);
@@ -2794,12 +2805,12 @@ namespace demo
                 (checkSizeBox.Text = "SizeBox");
             }
             {
-                <precompile>52.AddChild(checkSizeBox.BoundsComposition);
+                <precompile>53.AddChild(checkSizeBox.BoundsComposition);
             }
             {
-                <precompile>43.AddChild(<precompile>52);
+                <precompile>44.AddChild(<precompile>53);
             }
-            (<precompile>53 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>54 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkIcon = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("checkIcon", checkIcon);
@@ -2808,12 +2819,12 @@ namespace demo
                 (checkIcon.Text = "IconVisible");
             }
             {
-                <precompile>53.AddChild(checkIcon.BoundsComposition);
+                <precompile>54.AddChild(checkIcon.BoundsComposition);
             }
             {
-                <precompile>43.AddChild(<precompile>53);
+                <precompile>44.AddChild(<precompile>54);
             }
-            (<precompile>54 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>55 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkTitle = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("checkTitle", checkTitle);
@@ -2822,111 +2833,111 @@ namespace demo
                 (checkTitle.Text = "TitleBar");
             }
             {
-                <precompile>54.AddChild(checkTitle.BoundsComposition);
+                <precompile>55.AddChild(checkTitle.BoundsComposition);
             }
             {
-                <precompile>43.AddChild(<precompile>54);
+                <precompile>44.AddChild(<precompile>55);
             }
-            (<precompile>55 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>56 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
-                (<precompile>56 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            {
-                (<precompile>56.Text = "Open New Window");
+                (<precompile>57 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
             {
-                <precompile>55.AddChild(<precompile>56.BoundsComposition);
+                (<precompile>57.Text = "Open New Window");
             }
             {
-                <precompile>43.AddChild(<precompile>55);
+                <precompile>56.AddChild(<precompile>57.BoundsComposition);
             }
             {
-                <precompile>42.ContainerComposition.AddChild(<precompile>43);
+                <precompile>44.AddChild(<precompile>56);
             }
             {
-                var <collection> = <precompile>2.Pages;
-                <collection>.Add(<precompile>42);
-            }
-            {
-                (<precompile>57 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
-            }
-            {
-                (<precompile>57.Alt = "X");
-            }
-            {
-                (<precompile>57.Text = "Exit");
-            }
-            (<precompile>58 = new (::presentation::compositions::GuiStackComposition*)());
-            {
-                (<precompile>58.Padding = 5 of (::system::Int64));
-            }
-            {
-                (<precompile>58.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
-            }
-            {
-                (<precompile>58.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>58.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>59 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>60 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            {
-                (<precompile>60.Text = "self.Hide() (InvokeInMainThread)");
-            }
-            {
-                <precompile>59.AddChild(<precompile>60.BoundsComposition);
-            }
-            {
-                <precompile>58.AddChild(<precompile>59);
-            }
-            (<precompile>61 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>62 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            {
-                (<precompile>62.Text = "self.Hide()");
-            }
-            {
-                <precompile>61.AddChild(<precompile>62.BoundsComposition);
-            }
-            {
-                <precompile>58.AddChild(<precompile>61);
-            }
-            (<precompile>63 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>64 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            {
-                (<precompile>64.Text = "self.Close() (InvokeInMainThread)");
-            }
-            {
-                <precompile>63.AddChild(<precompile>64.BoundsComposition);
-            }
-            {
-                <precompile>58.AddChild(<precompile>63);
-            }
-            (<precompile>65 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>66 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            {
-                (<precompile>66.Text = "self.Close()");
-            }
-            {
-                <precompile>65.AddChild(<precompile>66.BoundsComposition);
-            }
-            {
-                <precompile>58.AddChild(<precompile>65);
-            }
-            {
-                <precompile>57.ContainerComposition.AddChild(<precompile>58);
+                <precompile>43.ContainerComposition.AddChild(<precompile>44);
             }
             {
                 var <collection> = <precompile>2.Pages;
-                <collection>.Add(<precompile>57);
+                <collection>.Add(<precompile>43);
+            }
+            {
+                (<precompile>58 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+            }
+            {
+                (<precompile>58.Alt = "X");
+            }
+            {
+                (<precompile>58.Text = "Exit");
+            }
+            (<precompile>59 = new (::presentation::compositions::GuiStackComposition*)());
+            {
+                (<precompile>59.Padding = 5 of (::system::Int64));
+            }
+            {
+                (<precompile>59.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+            }
+            {
+                (<precompile>59.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>59.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>60 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>61 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            {
+                (<precompile>61.Text = "self.Hide() (InvokeInMainThread)");
+            }
+            {
+                <precompile>60.AddChild(<precompile>61.BoundsComposition);
+            }
+            {
+                <precompile>59.AddChild(<precompile>60);
+            }
+            (<precompile>62 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>63 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            {
+                (<precompile>63.Text = "self.Hide()");
+            }
+            {
+                <precompile>62.AddChild(<precompile>63.BoundsComposition);
+            }
+            {
+                <precompile>59.AddChild(<precompile>62);
+            }
+            (<precompile>64 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>65 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            {
+                (<precompile>65.Text = "self.Close() (InvokeInMainThread)");
+            }
+            {
+                <precompile>64.AddChild(<precompile>65.BoundsComposition);
+            }
+            {
+                <precompile>59.AddChild(<precompile>64);
+            }
+            (<precompile>66 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>67 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            {
+                (<precompile>67.Text = "self.Close()");
+            }
+            {
+                <precompile>66.AddChild(<precompile>67.BoundsComposition);
+            }
+            {
+                <precompile>59.AddChild(<precompile>66);
+            }
+            {
+                <precompile>58.ContainerComposition.AddChild(<precompile>59);
+            }
+            {
+                var <collection> = <precompile>2.Pages;
+                <collection>.Add(<precompile>58);
             }
             (<precompile>3 = <precompile>2.BoundsComposition);
             {
@@ -3655,7 +3666,7 @@ namespace demo
                     subWindow.MoveToScreenCenter();
                     subWindow.ShowWithOwner(self);
                 };
-                attach(<precompile>56.Clicked, <event-handler>);
+                attach(<precompile>57.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -3665,14 +3676,14 @@ namespace demo
                         self.Hide();
                     });
                 };
-                attach(<precompile>60.Clicked, <event-handler>);
+                attach(<precompile>61.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     self.Hide();
                 };
-                attach(<precompile>62.Clicked, <event-handler>);
+                attach(<precompile>63.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -3682,14 +3693,14 @@ namespace demo
                         self.Close();
                     });
                 };
-                attach(<precompile>64.Clicked, <event-handler>);
+                attach(<precompile>65.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     self.Close();
                 };
-                attach(<precompile>66.Clicked, <event-handler>);
+                attach(<precompile>67.Clicked, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -4137,7 +4148,7 @@ namespace demo
     }
 }
 
-================================(8/115)================================
+================================(8/117)================================
 module <instance>demo::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4182,7 +4193,7 @@ namespace demo
     }
 }
 
-================================(9/115)================================
+================================(9/117)================================
 module <constructor>demo::RepeatTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4840,7 +4851,7 @@ namespace demo
     }
 }
 
-================================(10/115)================================
+================================(10/117)================================
 module <instance>demo::RepeatTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4882,7 +4893,7 @@ namespace demo
     }
 }
 
-================================(11/115)================================
+================================(11/117)================================
 module <constructor>demo::SubWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6103,7 +6114,7 @@ namespace demo
     }
 }
 
-================================(12/115)================================
+================================(12/117)================================
 module <instance>demo::SubWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6147,7 +6158,7 @@ namespace demo
     }
 }
 
-================================(13/115)================================
+================================(13/117)================================
 module <constructor>demo::TextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6824,7 +6835,7 @@ namespace demo
     }
 }
 
-================================(14/115)================================
+================================(14/117)================================
 module <instance>demo::TextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6870,7 +6881,7 @@ namespace demo
     }
 }
 
-================================(15/115)================================
+================================(15/117)================================
 module <constructor>demo::TreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7387,7 +7398,7 @@ namespace demo
     }
 }
 
-================================(16/115)================================
+================================(16/117)================================
 module <instance>demo::TreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7437,7 +7448,7 @@ namespace demo
     }
 }
 
-================================(17/115)================================
+================================(17/117)================================
 module <constructor>demo::AnimationTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8182,7 +8193,7 @@ namespace demo
     }
 }
 
-================================(18/115)================================
+================================(18/117)================================
 module <instance>demo::AnimationTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8616,7 +8627,7 @@ namespace demo
     }
 }
 
-================================(19/115)================================
+================================(19/117)================================
 module <animation>demo::ColorAnimation;
 
 namespace demo
@@ -8824,7 +8835,7 @@ namespace demo
     }
 }
 
-================================(20/115)================================
+================================(20/117)================================
 module <constructor>demo::DateEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9030,7 +9041,7 @@ namespace demo
     }
 }
 
-================================(21/115)================================
+================================(21/117)================================
 module <instance>demo::DateEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9071,7 +9082,7 @@ namespace demo
     }
 }
 
-================================(22/115)================================
+================================(22/117)================================
 module <constructor>demo::DateFilter;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9414,7 +9425,7 @@ namespace demo
     }
 }
 
-================================(23/115)================================
+================================(23/117)================================
 module <instance>demo::DateFilter;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9516,7 +9527,7 @@ namespace demo
     }
 }
 
-================================(24/115)================================
+================================(24/117)================================
 module <constructor>demo::TextEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9722,7 +9733,7 @@ namespace demo
     }
 }
 
-================================(25/115)================================
+================================(25/117)================================
 module <instance>demo::TextEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9763,7 +9774,7 @@ namespace demo
     }
 }
 
-================================(26/115)================================
+================================(26/117)================================
 module <constructor>demo::CategoryDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10111,7 +10122,7 @@ namespace demo
     }
 }
 
-================================(27/115)================================
+================================(27/117)================================
 module <instance>demo::CategoryDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10174,7 +10185,7 @@ namespace demo
     }
 }
 
-================================(28/115)================================
+================================(28/117)================================
 module <constructor>demo::CategoryEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10419,7 +10430,7 @@ namespace demo
     }
 }
 
-================================(29/115)================================
+================================(29/117)================================
 module <instance>demo::CategoryEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10462,7 +10473,7 @@ namespace demo
     }
 }
 
-================================(30/115)================================
+================================(30/117)================================
 module <constructor>demo::CategoryItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10599,7 +10610,7 @@ namespace demo
     }
 }
 
-================================(31/115)================================
+================================(31/117)================================
 module <instance>demo::CategoryItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10651,7 +10662,7 @@ namespace demo
     }
 }
 
-================================(32/115)================================
+================================(32/117)================================
 module <constructor>demo::CategoryVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10851,7 +10862,7 @@ namespace demo
     }
 }
 
-================================(33/115)================================
+================================(33/117)================================
 module <instance>demo::CategoryVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10892,7 +10903,7 @@ namespace demo
     }
 }
 
-================================(34/115)================================
+================================(34/117)================================
 module <constructor>demo::GenderDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11031,7 +11042,7 @@ namespace demo
     }
 }
 
-================================(35/115)================================
+================================(35/117)================================
 module <instance>demo::GenderDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11094,7 +11105,7 @@ namespace demo
     }
 }
 
-================================(36/115)================================
+================================(36/117)================================
 module <constructor>demo::GenderEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11339,7 +11350,7 @@ namespace demo
     }
 }
 
-================================(37/115)================================
+================================(37/117)================================
 module <instance>demo::GenderEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11382,7 +11393,7 @@ namespace demo
     }
 }
 
-================================(38/115)================================
+================================(38/117)================================
 module <constructor>demo::GenderItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11446,7 +11457,7 @@ namespace demo
     }
 }
 
-================================(39/115)================================
+================================(39/117)================================
 module <instance>demo::GenderItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11498,7 +11509,7 @@ namespace demo
     }
 }
 
-================================(40/115)================================
+================================(40/117)================================
 module <constructor>demo::GenderVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11625,7 +11636,7 @@ namespace demo
     }
 }
 
-================================(41/115)================================
+================================(41/117)================================
 module <instance>demo::GenderVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11666,7 +11677,7 @@ namespace demo
     }
 }
 
-================================(42/115)================================
+================================(42/117)================================
 module <constructor>demo::DatePickerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12536,7 +12547,7 @@ namespace demo
     }
 }
 
-================================(43/115)================================
+================================(43/117)================================
 module <instance>demo::DatePickerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12578,7 +12589,7 @@ namespace demo
     }
 }
 
-================================(44/115)================================
+================================(44/117)================================
 module <constructor>demo::HyperlinkWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12825,7 +12836,7 @@ namespace demo
     }
 }
 
-================================(45/115)================================
+================================(45/117)================================
 module <instance>demo::HyperlinkWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12888,7 +12899,7 @@ namespace demo
     }
 }
 
-================================(46/115)================================
+================================(46/117)================================
 module <constructor>demo::DocumentEditorBase;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16091,7 +16102,7 @@ namespace demo
     }
 }
 
-================================(47/115)================================
+================================(47/117)================================
 module <instance>demo::DocumentEditorBase;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16349,7 +16360,7 @@ namespace demo
     }
 }
 
-================================(48/115)================================
+================================(48/117)================================
 module <constructor>demo::DocumentEditorRibbon;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18393,7 +18404,7 @@ namespace demo
     }
 }
 
-================================(49/115)================================
+================================(49/117)================================
 module <instance>demo::DocumentEditorRibbon;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18610,7 +18621,7 @@ namespace demo
     }
 }
 
-================================(50/115)================================
+================================(50/117)================================
 module <constructor>demo::StyleItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18976,7 +18987,7 @@ namespace demo
     }
 }
 
-================================(51/115)================================
+================================(51/117)================================
 module <instance>demo::StyleItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19078,7 +19089,7 @@ namespace demo
     }
 }
 
-================================(52/115)================================
+================================(52/117)================================
 module <constructor>demo::DocumentEditorToolstrip;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20242,7 +20253,7 @@ namespace demo
     }
 }
 
-================================(53/115)================================
+================================(53/117)================================
 module <instance>demo::DocumentEditorToolstrip;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20283,7 +20294,1084 @@ namespace demo
     }
 }
 
-================================(54/115)================================
+================================(54/117)================================
+module <constructor>demo::EmbeddedControlsSubTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class EmbeddedControlsSubTabPageConstructor
+    {
+        @cpp:Protected
+        var self : ::demo::EmbeddedControlsSubTabPage* = null of (::demo::EmbeddedControlsSubTabPage*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::controls::GuiDocumentItem^ = null of (::presentation::controls::GuiDocumentItem^);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>7 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>8 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>9 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var <precompile>10 : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
+
+        @cpp:Protected
+        var <precompile>11 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>12 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>13 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>14 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var <precompile>15 : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
+
+        @cpp:Protected
+        var <precompile>16 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>17 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>18 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>19 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var <precompile>20 : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
+
+        @cpp:Protected
+        var <precompile>21 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>22 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>23 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>24 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var <precompile>25 : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
+
+        @cpp:Protected
+        var <precompile>26 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>27 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>28 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>29 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var <precompile>30 : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
+
+        @cpp:Protected
+        var <precompile>31 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>32 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>33 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>34 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var <precompile>35 : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
+
+        @cpp:Protected
+        var <precompile>36 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>37 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>38 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var dialogStart : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
+        var docViewer : ::presentation::controls::GuiDocumentViewer* = null of (::presentation::controls::GuiDocumentViewer*);
+
+        @cpp:Protected
+        var comboRun : ::presentation::controls::GuiComboBoxListControl* = null of (::presentation::controls::GuiComboBoxListControl*);
+
+        @cpp:Protected
+        var <precompile>39 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var <precompile>40 : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
+
+        @cpp:Protected
+        var <precompile>41 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>42 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>43 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>44 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var <precompile>45 : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
+
+        @cpp:Protected
+        var <precompile>46 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>47 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>48 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>49 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var <precompile>50 : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
+
+        @cpp:Protected
+        var <precompile>51 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>52 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>53 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>54 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var <precompile>55 : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
+
+        @cpp:Protected
+        var <precompile>56 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>57 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>58 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>59 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var <precompile>60 : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
+
+        @cpp:Protected
+        var <precompile>61 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>62 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>63 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>64 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var <precompile>65 : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
+
+        @cpp:Protected
+        var <precompile>66 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>67 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>68 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>69 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var <precompile>70 : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
+
+        @cpp:Protected
+        var <precompile>71 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>72 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>73 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>74 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var <precompile>75 : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
+
+        @cpp:Protected
+        var <precompile>76 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>77 : ::presentation::controls::GuiDocumentItem^ = null of (::presentation::controls::GuiDocumentItem^);
+
+        @cpp:Protected
+        var <precompile>78 : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
+
+        @cpp:Protected
+        var <precompile>79 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
+
+        @cpp:Protected
+        var <precompile>80 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
+
+        @cpp:Protected
+        var <precompile>81 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>82 : ::presentation::controls::GuiDocumentItem^ = null of (::presentation::controls::GuiDocumentItem^);
+
+        @cpp:Protected
+        var <precompile>83 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>84 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        func <demo-EmbeddedControlsSubTabPage>Initialize(<this> : ::demo::EmbeddedControlsSubTabPage*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.Text = "Embedded Controls");
+            }
+            (dialogStart = new (::presentation::controls::GuiMessageDialog*)());
+            <this>.SetNamedObject("dialogStart", dialogStart);
+            {
+                (dialogStart.Title = "RemotingTest_Core.exe");
+            }
+            {
+                (dialogStart.Text = "Pretend to be starting!");
+            }
+            {
+                self.AddComponent(dialogStart);
+            }
+            {
+                (docViewer = new (::presentation::controls::GuiDocumentViewer*)(::presentation::theme::ThemeName::DocumentViewer));
+                <this>.SetNamedObject("docViewer", docViewer);
+            }
+            {
+                (docViewer.HorizontalAlwaysVisible = false);
+            }
+            {
+                (docViewer.VerticalAlwaysVisible = false);
+            }
+            {
+                (docViewer.EditMode = Selectable of (::presentation::controls::GuiDocumentEditMode));
+            }
+            (<precompile>84 = docViewer.BoundsComposition);
+            {
+                (<precompile>84.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            (<precompile>0 = new (::presentation::controls::GuiDocumentItem^)("CommandTable"));
+            (<precompile>1 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>1.CellPadding = 5 of (::system::Int64));
+            }
+            {
+                (<precompile>1.BorderVisible = false);
+            }
+            {
+                (<precompile>1.PreferredMinSize = {x : 400;} of (::presentation::Size));
+            }
+            {
+                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>1.SetRowsAndColumns(5, 3);
+                <precompile>1.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetRowOption(3, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetRowOption(4, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetColumnOption(1, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetColumnOption(2, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>2 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>2.SetSite(0, 0, 1, 1);
+            }
+            (<precompile>3 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>3.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>4 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>4.Color = (cast (::presentation::Color) "#000000"));
+            }
+            {
+                (<precompile>3.OwnedElement = <precompile>4);
+            }
+            {
+                (<precompile>5 = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel, {wrapLine : false;} of (::presentation::controls::GuiDocumentConfig)));
+            }
+            {
+                (<precompile>5.EditMode = ViewOnly of (::presentation::controls::GuiDocumentEditMode));
+            }
+            (<precompile>6 = <precompile>5.BoundsComposition);
+            {
+                (<precompile>6.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                <precompile>3.AddChild(<precompile>5.BoundsComposition);
+            }
+            {
+                <precompile>2.AddChild(<precompile>3);
+            }
+            {
+                <precompile>1.AddChild(<precompile>2);
+            }
+            (<precompile>7 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>7.SetSite(0, 1, 1, 1);
+            }
+            (<precompile>8 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>8.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>9 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>9.Color = (cast (::presentation::Color) "#000000"));
+            }
+            {
+                (<precompile>8.OwnedElement = <precompile>9);
+            }
+            {
+                (<precompile>10 = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel));
+            }
+            {
+                (<precompile>10.EditMode = ViewOnly of (::presentation::controls::GuiDocumentEditMode));
+            }
+            (<precompile>11 = <precompile>10.BoundsComposition);
+            {
+                (<precompile>11.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                <precompile>8.AddChild(<precompile>10.BoundsComposition);
+            }
+            {
+                <precompile>7.AddChild(<precompile>8);
+            }
+            {
+                <precompile>1.AddChild(<precompile>7);
+            }
+            (<precompile>12 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>12.SetSite(0, 2, 1, 1);
+            }
+            (<precompile>13 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>13.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>13.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>14 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>14.Color = (cast (::presentation::Color) "#000000"));
+            }
+            {
+                (<precompile>13.OwnedElement = <precompile>14);
+            }
+            {
+                (<precompile>15 = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel));
+            }
+            {
+                (<precompile>15.EditMode = ViewOnly of (::presentation::controls::GuiDocumentEditMode));
+            }
+            (<precompile>16 = <precompile>15.BoundsComposition);
+            {
+                (<precompile>16.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                <precompile>13.AddChild(<precompile>15.BoundsComposition);
+            }
+            {
+                <precompile>12.AddChild(<precompile>13);
+            }
+            {
+                <precompile>1.AddChild(<precompile>12);
+            }
+            (<precompile>17 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>17.SetSite(1, 0, 1, 1);
+            }
+            (<precompile>18 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>18.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>18.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>19 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>19.Color = (cast (::presentation::Color) "#000000"));
+            }
+            {
+                (<precompile>18.OwnedElement = <precompile>19);
+            }
+            {
+                (<precompile>20 = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel, {wrapLine : false;} of (::presentation::controls::GuiDocumentConfig)));
+            }
+            {
+                (<precompile>20.EditMode = ViewOnly of (::presentation::controls::GuiDocumentEditMode));
+            }
+            (<precompile>21 = <precompile>20.BoundsComposition);
+            {
+                (<precompile>21.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                <precompile>18.AddChild(<precompile>20.BoundsComposition);
+            }
+            {
+                <precompile>17.AddChild(<precompile>18);
+            }
+            {
+                <precompile>1.AddChild(<precompile>17);
+            }
+            (<precompile>22 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>22.SetSite(1, 1, 1, 1);
+            }
+            (<precompile>23 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>23.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>23.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>24 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>24.Color = (cast (::presentation::Color) "#000000"));
+            }
+            {
+                (<precompile>23.OwnedElement = <precompile>24);
+            }
+            {
+                (<precompile>25 = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel));
+            }
+            {
+                (<precompile>25.EditMode = ViewOnly of (::presentation::controls::GuiDocumentEditMode));
+            }
+            (<precompile>26 = <precompile>25.BoundsComposition);
+            {
+                (<precompile>26.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                <precompile>23.AddChild(<precompile>25.BoundsComposition);
+            }
+            {
+                <precompile>22.AddChild(<precompile>23);
+            }
+            {
+                <precompile>1.AddChild(<precompile>22);
+            }
+            (<precompile>27 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>27.SetSite(1, 2, 1, 1);
+            }
+            (<precompile>28 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>28.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>28.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>29 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>29.Color = (cast (::presentation::Color) "#000000"));
+            }
+            {
+                (<precompile>28.OwnedElement = <precompile>29);
+            }
+            {
+                (<precompile>30 = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel));
+            }
+            {
+                (<precompile>30.EditMode = ViewOnly of (::presentation::controls::GuiDocumentEditMode));
+            }
+            (<precompile>31 = <precompile>30.BoundsComposition);
+            {
+                (<precompile>31.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                <precompile>28.AddChild(<precompile>30.BoundsComposition);
+            }
+            {
+                <precompile>27.AddChild(<precompile>28);
+            }
+            {
+                <precompile>1.AddChild(<precompile>27);
+            }
+            (<precompile>32 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>32.SetSite(2, 0, 1, 1);
+            }
+            (<precompile>33 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>33.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>33.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>34 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>34.Color = (cast (::presentation::Color) "#000000"));
+            }
+            {
+                (<precompile>33.OwnedElement = <precompile>34);
+            }
+            {
+                (<precompile>35 = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel, {wrapLine : false;} of (::presentation::controls::GuiDocumentConfig)));
+            }
+            {
+                (<precompile>35.EditMode = ViewOnly of (::presentation::controls::GuiDocumentEditMode));
+            }
+            (<precompile>36 = <precompile>35.BoundsComposition);
+            {
+                (<precompile>36.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                <precompile>33.AddChild(<precompile>35.BoundsComposition);
+            }
+            {
+                <precompile>32.AddChild(<precompile>33);
+            }
+            {
+                <precompile>1.AddChild(<precompile>32);
+            }
+            (<precompile>37 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>37.SetSite(2, 1, 1, 1);
+            }
+            (<precompile>38 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>38.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>38.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>39 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>39.Color = (cast (::presentation::Color) "#000000"));
+            }
+            {
+                (<precompile>38.OwnedElement = <precompile>39);
+            }
+            {
+                (<precompile>40 = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel));
+            }
+            {
+                (<precompile>40.EditMode = ViewOnly of (::presentation::controls::GuiDocumentEditMode));
+            }
+            (<precompile>41 = <precompile>40.BoundsComposition);
+            {
+                (<precompile>41.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                <precompile>38.AddChild(<precompile>40.BoundsComposition);
+            }
+            {
+                <precompile>37.AddChild(<precompile>38);
+            }
+            {
+                <precompile>1.AddChild(<precompile>37);
+            }
+            (<precompile>42 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>42.SetSite(2, 2, 1, 1);
+            }
+            (<precompile>43 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>43.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>43.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>44 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>44.Color = (cast (::presentation::Color) "#000000"));
+            }
+            {
+                (<precompile>43.OwnedElement = <precompile>44);
+            }
+            {
+                (<precompile>45 = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel));
+            }
+            {
+                (<precompile>45.EditMode = ViewOnly of (::presentation::controls::GuiDocumentEditMode));
+            }
+            (<precompile>46 = <precompile>45.BoundsComposition);
+            {
+                (<precompile>46.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                <precompile>43.AddChild(<precompile>45.BoundsComposition);
+            }
+            {
+                <precompile>42.AddChild(<precompile>43);
+            }
+            {
+                <precompile>1.AddChild(<precompile>42);
+            }
+            (<precompile>47 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>47.SetSite(3, 0, 1, 1);
+            }
+            (<precompile>48 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>48.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>48.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>49 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>49.Color = (cast (::presentation::Color) "#000000"));
+            }
+            {
+                (<precompile>48.OwnedElement = <precompile>49);
+            }
+            {
+                (<precompile>50 = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel, {wrapLine : false;} of (::presentation::controls::GuiDocumentConfig)));
+            }
+            {
+                (<precompile>50.EditMode = ViewOnly of (::presentation::controls::GuiDocumentEditMode));
+            }
+            (<precompile>51 = <precompile>50.BoundsComposition);
+            {
+                (<precompile>51.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                <precompile>48.AddChild(<precompile>50.BoundsComposition);
+            }
+            {
+                <precompile>47.AddChild(<precompile>48);
+            }
+            {
+                <precompile>1.AddChild(<precompile>47);
+            }
+            (<precompile>52 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>52.SetSite(3, 1, 1, 1);
+            }
+            (<precompile>53 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>53.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>53.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>54 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>54.Color = (cast (::presentation::Color) "#000000"));
+            }
+            {
+                (<precompile>53.OwnedElement = <precompile>54);
+            }
+            {
+                (<precompile>55 = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel));
+            }
+            {
+                (<precompile>55.EditMode = ViewOnly of (::presentation::controls::GuiDocumentEditMode));
+            }
+            (<precompile>56 = <precompile>55.BoundsComposition);
+            {
+                (<precompile>56.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                <precompile>53.AddChild(<precompile>55.BoundsComposition);
+            }
+            {
+                <precompile>52.AddChild(<precompile>53);
+            }
+            {
+                <precompile>1.AddChild(<precompile>52);
+            }
+            (<precompile>57 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>57.SetSite(3, 2, 1, 1);
+            }
+            (<precompile>58 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>58.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>58.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>59 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>59.Color = (cast (::presentation::Color) "#000000"));
+            }
+            {
+                (<precompile>58.OwnedElement = <precompile>59);
+            }
+            {
+                (<precompile>60 = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel));
+            }
+            {
+                (<precompile>60.EditMode = ViewOnly of (::presentation::controls::GuiDocumentEditMode));
+            }
+            (<precompile>61 = <precompile>60.BoundsComposition);
+            {
+                (<precompile>61.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                <precompile>58.AddChild(<precompile>60.BoundsComposition);
+            }
+            {
+                <precompile>57.AddChild(<precompile>58);
+            }
+            {
+                <precompile>1.AddChild(<precompile>57);
+            }
+            (<precompile>62 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>62.SetSite(4, 0, 1, 1);
+            }
+            (<precompile>63 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>63.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>63.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>64 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>64.Color = (cast (::presentation::Color) "#000000"));
+            }
+            {
+                (<precompile>63.OwnedElement = <precompile>64);
+            }
+            {
+                (<precompile>65 = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel, {wrapLine : false;} of (::presentation::controls::GuiDocumentConfig)));
+            }
+            {
+                (<precompile>65.EditMode = ViewOnly of (::presentation::controls::GuiDocumentEditMode));
+            }
+            (<precompile>66 = <precompile>65.BoundsComposition);
+            {
+                (<precompile>66.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                <precompile>63.AddChild(<precompile>65.BoundsComposition);
+            }
+            {
+                <precompile>62.AddChild(<precompile>63);
+            }
+            {
+                <precompile>1.AddChild(<precompile>62);
+            }
+            (<precompile>67 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>67.SetSite(4, 1, 1, 1);
+            }
+            (<precompile>68 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>68.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>68.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>69 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>69.Color = (cast (::presentation::Color) "#000000"));
+            }
+            {
+                (<precompile>68.OwnedElement = <precompile>69);
+            }
+            {
+                (<precompile>70 = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel));
+            }
+            {
+                (<precompile>70.EditMode = ViewOnly of (::presentation::controls::GuiDocumentEditMode));
+            }
+            (<precompile>71 = <precompile>70.BoundsComposition);
+            {
+                (<precompile>71.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                <precompile>68.AddChild(<precompile>70.BoundsComposition);
+            }
+            {
+                <precompile>67.AddChild(<precompile>68);
+            }
+            {
+                <precompile>1.AddChild(<precompile>67);
+            }
+            (<precompile>72 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>72.SetSite(4, 2, 1, 1);
+            }
+            (<precompile>73 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>73.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>73.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>74 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>74.Color = (cast (::presentation::Color) "#000000"));
+            }
+            {
+                (<precompile>73.OwnedElement = <precompile>74);
+            }
+            {
+                (<precompile>75 = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel));
+            }
+            {
+                (<precompile>75.EditMode = ViewOnly of (::presentation::controls::GuiDocumentEditMode));
+            }
+            (<precompile>76 = <precompile>75.BoundsComposition);
+            {
+                (<precompile>76.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                <precompile>73.AddChild(<precompile>75.BoundsComposition);
+            }
+            {
+                <precompile>72.AddChild(<precompile>73);
+            }
+            {
+                <precompile>1.AddChild(<precompile>72);
+            }
+            {
+                <precompile>0.Container.AddChild(<precompile>1);
+            }
+            {
+                docViewer.AddDocumentItem(<precompile>0);
+            }
+            (<precompile>77 = new (::presentation::controls::GuiDocumentItem^)("ComboBox"));
+            {
+                (<precompile>78 = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
+            }
+            (<precompile>79 = new (::presentation::controls::list::TextItem^)());
+            {
+                (<precompile>79.Text = "FullControlTest");
+            }
+            {
+                var <collection> = <precompile>78.Items;
+                <collection>.Add(<precompile>79);
+            }
+            (<precompile>80 = new (::presentation::controls::list::TextItem^)());
+            {
+                (<precompile>80.Text = "RemoteProtocolTest");
+            }
+            {
+                var <collection> = <precompile>78.Items;
+                <collection>.Add(<precompile>80);
+            }
+            {
+                (<precompile>78.HorizontalAlwaysVisible = false);
+            }
+            {
+                (<precompile>78.VerticalAlwaysVisible = false);
+            }
+            {
+                (comboRun = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>78));
+                <this>.SetNamedObject("comboRun", comboRun);
+            }
+            {
+                (comboRun.SelectedIndex = 0 of (::system::Int64));
+            }
+            (<precompile>81 = comboRun.BoundsComposition);
+            {
+                (<precompile>81.PreferredMinSize = {x : 160;} of (::presentation::Size));
+            }
+            {
+                <precompile>77.Container.AddChild(comboRun.BoundsComposition);
+            }
+            {
+                docViewer.AddDocumentItem(<precompile>77);
+            }
+            (<precompile>82 = new (::presentation::controls::GuiDocumentItem^)("StartButton"));
+            {
+                (<precompile>83 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            {
+                (<precompile>83.Text = "RIGHT NOW");
+            }
+            {
+                <precompile>82.Container.AddChild(<precompile>83.BoundsComposition);
+            }
+            {
+                docViewer.AddDocumentItem(<precompile>82);
+            }
+            {
+                self.AddChild(docViewer);
+            }
+            {
+                (<precompile>5.Document = (cast (::presentation::DocumentModel^) <this>.ResolveResource("res", "SideDocuments/CellHArg", true)));
+            }
+            {
+                (<precompile>10.Document = (cast (::presentation::DocumentModel^) <this>.ResolveResource("res", "SideDocuments/CellHDesc", true)));
+            }
+            {
+                (<precompile>15.Document = (cast (::presentation::DocumentModel^) <this>.ResolveResource("res", "SideDocuments/CellHReq", true)));
+            }
+            {
+                (<precompile>20.Document = (cast (::presentation::DocumentModel^) <this>.ResolveResource("res", "SideDocuments/Cell0Arg", true)));
+            }
+            {
+                (<precompile>25.Document = (cast (::presentation::DocumentModel^) <this>.ResolveResource("res", "SideDocuments/Cell0Desc", true)));
+            }
+            {
+                (<precompile>30.Document = (cast (::presentation::DocumentModel^) <this>.ResolveResource("res", "SideDocuments/Cell0Req", true)));
+            }
+            {
+                (<precompile>35.Document = (cast (::presentation::DocumentModel^) <this>.ResolveResource("res", "SideDocuments/Cell1Arg", true)));
+            }
+            {
+                (<precompile>40.Document = (cast (::presentation::DocumentModel^) <this>.ResolveResource("res", "SideDocuments/Cell1Desc", true)));
+            }
+            {
+                (<precompile>45.Document = (cast (::presentation::DocumentModel^) <this>.ResolveResource("res", "SideDocuments/Cell1Req", true)));
+            }
+            {
+                (<precompile>50.Document = (cast (::presentation::DocumentModel^) <this>.ResolveResource("res", "SideDocuments/Cell2Arg", true)));
+            }
+            {
+                (<precompile>55.Document = (cast (::presentation::DocumentModel^) <this>.ResolveResource("res", "SideDocuments/Cell2Desc", true)));
+            }
+            {
+                (<precompile>60.Document = (cast (::presentation::DocumentModel^) <this>.ResolveResource("res", "SideDocuments/Cell2Req", true)));
+            }
+            {
+                (<precompile>65.Document = (cast (::presentation::DocumentModel^) <this>.ResolveResource("res", "SideDocuments/Cell3Arg", true)));
+            }
+            {
+                (<precompile>70.Document = (cast (::presentation::DocumentModel^) <this>.ResolveResource("res", "SideDocuments/Cell3Desc", true)));
+            }
+            {
+                (<precompile>75.Document = (cast (::presentation::DocumentModel^) <this>.ResolveResource("res", "SideDocuments/Cell3Req", true)));
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    dialogStart.ShowDialog();
+                };
+                attach(<precompile>83.Clicked, <event-handler>);
+            }
+            {
+                (docViewer.Document = (cast (::presentation::DocumentModel^) <this>.ResolveResource("res", "SideDocuments/MainDocument", true)));
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(55/117)================================
+module <instance>demo::EmbeddedControlsSubTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    @cpp:Friend(typeof(EmbeddedControlsSubTabPageConstructor))
+    class EmbeddedControlsSubTabPage : ::presentation::controls::GuiTabPage, EmbeddedControlsSubTabPageConstructor
+    {
+        new* ()
+            :::presentation::controls::GuiTabPage(::presentation::theme::ThemeName::CustomControl)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("demo::EmbeddedControlsSubTabPage");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<demo-EmbeddedControlsSubTabPage>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(56/117)================================
 module <constructor>demo::LocaleSelector;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20463,7 +21551,7 @@ namespace demo
     }
 }
 
-================================(55/115)================================
+================================(57/117)================================
 module <instance>demo::LocaleSelector;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20525,7 +21613,7 @@ namespace demo
     }
 }
 
-================================(56/115)================================
+================================(58/117)================================
 module <constructor>demo::LocalizedColorDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20659,7 +21747,7 @@ namespace demo
     }
 }
 
-================================(57/115)================================
+================================(59/117)================================
 module <instance>demo::LocalizedColorDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20701,7 +21789,7 @@ namespace demo
     }
 }
 
-================================(58/115)================================
+================================(60/117)================================
 module <constructor>demo::LocalizedDialogsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20961,7 +22049,7 @@ namespace demo
     }
 }
 
-================================(59/115)================================
+================================(61/117)================================
 module <instance>demo::LocalizedDialogsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21003,7 +22091,7 @@ namespace demo
     }
 }
 
-================================(60/115)================================
+================================(62/117)================================
 module <constructor>demo::LocalizedFileDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21780,7 +22868,7 @@ namespace demo
     }
 }
 
-================================(61/115)================================
+================================(63/117)================================
 module <instance>demo::LocalizedFileDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21870,7 +22958,7 @@ namespace demo
     }
 }
 
-================================(62/115)================================
+================================(64/117)================================
 module <constructor>demo::LocalizedFontDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22040,7 +23128,7 @@ namespace demo
     }
 }
 
-================================(63/115)================================
+================================(65/117)================================
 module <instance>demo::LocalizedFontDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22082,7 +23170,7 @@ namespace demo
     }
 }
 
-================================(64/115)================================
+================================(66/117)================================
 module <constructor>demo::LocalizedMessageDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22547,7 +23635,7 @@ namespace demo
     }
 }
 
-================================(65/115)================================
+================================(67/117)================================
 module <instance>demo::LocalizedMessageDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22613,7 +23701,7 @@ namespace demo
     }
 }
 
-================================(66/115)================================
+================================(68/117)================================
 module <constructor>demo::LocalizedStringsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24020,7 +25108,7 @@ namespace demo
     }
 }
 
-================================(67/115)================================
+================================(69/117)================================
 module <instance>demo::LocalizedStringsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24089,7 +25177,7 @@ namespace demo
     }
 }
 
-================================(68/115)================================
+================================(70/117)================================
 module <constructor>demo::TestWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24207,7 +25295,7 @@ namespace demo
     }
 }
 
-================================(69/115)================================
+================================(71/117)================================
 module <instance>demo::TestWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24249,7 +25337,7 @@ namespace demo
     }
 }
 
-================================(70/115)================================
+================================(72/117)================================
 module <constructor>demo::RefreshBindableDataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24915,7 +26003,7 @@ namespace demo
     }
 }
 
-================================(71/115)================================
+================================(73/117)================================
 module <instance>demo::RefreshBindableDataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24972,7 +26060,7 @@ namespace demo
     }
 }
 
-================================(72/115)================================
+================================(74/117)================================
 module <constructor>demo::RefreshBindableListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25524,7 +26612,7 @@ namespace demo
     }
 }
 
-================================(73/115)================================
+================================(75/117)================================
 module <instance>demo::RefreshBindableListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25581,7 +26669,7 @@ namespace demo
     }
 }
 
-================================(74/115)================================
+================================(76/117)================================
 module <constructor>demo::RefreshBindableTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25873,7 +26961,7 @@ namespace demo
     }
 }
 
-================================(75/115)================================
+================================(77/117)================================
 module <instance>demo::RefreshBindableTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25917,7 +27005,7 @@ namespace demo
     }
 }
 
-================================(76/115)================================
+================================(78/117)================================
 module <constructor>demo::RefreshBindableTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26180,7 +27268,7 @@ namespace demo
     }
 }
 
-================================(77/115)================================
+================================(79/117)================================
 module <instance>demo::RefreshBindableTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26239,7 +27327,7 @@ namespace demo
     }
 }
 
-================================(78/115)================================
+================================(80/117)================================
 module <constructor>demo::RefreshListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26822,7 +27910,7 @@ namespace demo
     }
 }
 
-================================(79/115)================================
+================================(81/117)================================
 module <instance>demo::RefreshListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26864,7 +27952,7 @@ namespace demo
     }
 }
 
-================================(80/115)================================
+================================(82/117)================================
 module <constructor>demo::RefreshTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27129,7 +28217,7 @@ namespace demo
     }
 }
 
-================================(81/115)================================
+================================(83/117)================================
 module <instance>demo::RefreshTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27171,7 +28259,7 @@ namespace demo
     }
 }
 
-================================(82/115)================================
+================================(84/117)================================
 module <constructor>demo::RefreshTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27402,7 +28490,7 @@ namespace demo
     }
 }
 
-================================(83/115)================================
+================================(85/117)================================
 module <instance>demo::RefreshTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27444,7 +28532,7 @@ namespace demo
     }
 }
 
-================================(84/115)================================
+================================(86/117)================================
 module <constructor>demo::EnglishNumbersController;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27796,7 +28884,7 @@ namespace demo
     }
 }
 
-================================(85/115)================================
+================================(87/117)================================
 module <instance>demo::EnglishNumbersController;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28020,7 +29108,7 @@ namespace demo
     }
 }
 
-================================(86/115)================================
+================================(88/117)================================
 module <constructor>demo::EnglishNumbersControllerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28118,7 +29206,7 @@ namespace demo
     }
 }
 
-================================(87/115)================================
+================================(89/117)================================
 module <instance>demo::EnglishNumbersControllerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28199,7 +29287,7 @@ namespace demo
     }
 }
 
-================================(88/115)================================
+================================(90/117)================================
 module <constructor>demo::RepeatItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28317,7 +29405,7 @@ namespace demo
     }
 }
 
-================================(89/115)================================
+================================(91/117)================================
 module <instance>demo::RepeatItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28369,7 +29457,7 @@ namespace demo
     }
 }
 
-================================(90/115)================================
+================================(92/117)================================
 module <constructor>demo::SharedSizeItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28503,7 +29591,7 @@ namespace demo
     }
 }
 
-================================(91/115)================================
+================================(93/117)================================
 module <instance>demo::SharedSizeItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28555,7 +29643,7 @@ namespace demo
     }
 }
 
-================================(92/115)================================
+================================(94/117)================================
 module <constructor>demo::SharedSizeTextItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28826,7 +29914,7 @@ namespace demo
     }
 }
 
-================================(93/115)================================
+================================(95/117)================================
 module <instance>demo::SharedSizeTextItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28878,7 +29966,7 @@ namespace demo
     }
 }
 
-================================(94/115)================================
+================================(96/117)================================
 module <constructor>demo::ResponsiveGroupControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -29505,7 +30593,7 @@ namespace demo
     }
 }
 
-================================(95/115)================================
+================================(97/117)================================
 module <instance>demo::ResponsiveGroupControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -29547,7 +30635,7 @@ namespace demo
     }
 }
 
-================================(96/115)================================
+================================(98/117)================================
 module <constructor>demo::ResponsiveStackControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30174,7 +31262,7 @@ namespace demo
     }
 }
 
-================================(97/115)================================
+================================(99/117)================================
 module <instance>demo::ResponsiveStackControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30216,7 +31304,7 @@ namespace demo
     }
 }
 
-================================(98/115)================================
+================================(100/117)================================
 module <constructor>demo::ResponsiveTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30409,7 +31497,7 @@ namespace demo
     }
 }
 
-================================(99/115)================================
+================================(101/117)================================
 module <instance>demo::ResponsiveTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30451,7 +31539,7 @@ namespace demo
     }
 }
 
-================================(100/115)================================
+================================(102/117)================================
 module <constructor>demo::ResponsiveViewControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31364,7 +32452,7 @@ namespace demo
     }
 }
 
-================================(101/115)================================
+================================(103/117)================================
 module <instance>demo::ResponsiveViewControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31406,7 +32494,7 @@ namespace demo
     }
 }
 
-================================(102/115)================================
+================================(104/117)================================
 module <constructor>demo::DocumentBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31793,7 +32881,7 @@ namespace demo
     }
 }
 
-================================(103/115)================================
+================================(105/117)================================
 module <instance>demo::DocumentBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31856,7 +32944,7 @@ namespace demo
     }
 }
 
-================================(104/115)================================
+================================(106/117)================================
 module <constructor>demo::TextBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -32134,7 +33222,7 @@ namespace demo
     }
 }
 
-================================(105/115)================================
+================================(107/117)================================
 module <instance>demo::TextBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -32197,7 +33285,7 @@ namespace demo
     }
 }
 
-================================(106/115)================================
+================================(108/117)================================
 module <constructor>demo::TextBoxTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -32508,7 +33596,7 @@ namespace demo
     }
 }
 
-================================(107/115)================================
+================================(109/117)================================
 module <instance>demo::TextBoxTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -32566,7 +33654,7 @@ namespace demo
     }
 }
 
-================================(108/115)================================
+================================(110/117)================================
 module <localized-strings-injection>demo::DialogStringsInjection;
 
 namespace demo
@@ -32788,7 +33876,7 @@ namespace demo
     }
 }
 
-================================(109/115)================================
+================================(111/117)================================
 module imageloader;
 using presentation::*;
 using presentation::controls::*;
@@ -33088,7 +34176,7 @@ func LoadListView(root : GuiInstanceRootObject*, callback : (func (ListViewItem^
     }
 }
 
-================================(110/115)================================
+================================(112/117)================================
 module viewmodel;
 using system::*;
 using presentation::*;
@@ -33342,7 +34430,7 @@ namespace demo
     }
 }
 
-================================(111/115)================================
+================================(113/117)================================
 module Animation;
 using system::*;
 using presentation::*;
@@ -33486,7 +34574,7 @@ namespace demo
     }
 }
 
-================================(112/115)================================
+================================(114/117)================================
 module ribbonscript;
 using presentation::*;
 
@@ -33525,7 +34613,7 @@ namespace demo
     }
 }
 
-================================(113/115)================================
+================================(115/117)================================
 module <localized-strings>demo::StringResource;
 
 namespace demo
@@ -33752,7 +34840,7 @@ namespace demo
     }
 }
 
-================================(114/115)================================
+================================(116/117)================================
 module refresh_viewmodel;
 using system::*;
 using presentation::*;
@@ -33937,7 +35025,7 @@ namespace demo
     }
 }
 
-================================(115/115)================================
+================================(117/117)================================
 module fontHelper;
 using presentation::*;
 

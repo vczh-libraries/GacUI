@@ -42,7 +42,13 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\DataGridTab.h">
       <Filter>x64</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\DocumentTab.h">
+      <Filter>x64</Filter>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\DataGridTab.h">
+      <Filter>x86</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\DocumentTab.h">
       <Filter>x86</Filter>
     </ClInclude>
   </ItemGroup>
@@ -80,7 +86,13 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\DataGridTab.cpp">
       <Filter>x64</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\DocumentTab.cpp">
+      <Filter>x64</Filter>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\DataGridTab.cpp">
+      <Filter>x86</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\DocumentTab.cpp">
       <Filter>x86</Filter>
     </ClCompile>
   </ItemGroup>
