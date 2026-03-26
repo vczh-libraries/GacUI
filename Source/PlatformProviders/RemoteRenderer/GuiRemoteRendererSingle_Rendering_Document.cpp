@@ -356,6 +356,8 @@ namespace vl::presentation::remote_renderer
 						[&](const remoteprotocol::DocumentInlineObjectRunProperty& inlineProp)
 						{
 							CHECK_ERROR(elements::AddInlineObjectRun(inlineObjectRuns, range, inlineProp), ERROR_MESSAGE_PREFIX L"arguments.runsDiff updated an inline object run incorrectly.");
+							inlineObjectProps.Set(inlineProp.callbackId, inlineProp);
+							inlineObjectRanges.Set(inlineProp.callbackId, range);
 						}
 					));
 				}
