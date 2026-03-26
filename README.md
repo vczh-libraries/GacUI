@@ -92,6 +92,7 @@ You must offer the same command line argument to `Core` and then `Rendering_Win3
 - `Core` starts a GacUI process but delegates all rendering work to a remote process.
 - `Rendering_Win32` starts a renderer-only process handles `Core`'s requests.
 - One of `/Pipe` or `/Http` should be offered to both projects so that they can connect to each other.
+- Offer `/FCT` (default) or `/RPT` to host different test application.
 
 ![Run GacUI Remotely](GacUIRemote.gif)
 

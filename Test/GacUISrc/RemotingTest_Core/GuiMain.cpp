@@ -11,18 +11,27 @@ using namespace vl::presentation::templates;
 using namespace vl::presentation::controls;
 
 CoreChannel* coreChannel = nullptr;
+vint mainWindowConstructorIndex = 0;
 
 void GuiMain()
 {
 	theme::RegisterTheme(Ptr(new darkskin::Theme));
 	{
-		//rptest::RpMainWindow window;
-		demo::MainWindow window;
-		window.ForceCalculateSizeImmediately();
-		window.MoveToScreenCenter();
+		Ptr<GuiWindow> window;
+		switch (mainWindowConstructorIndex)
+		{
+		case 1:
+			window = Ptr(new rptest::RpMainWindow);
+			break;
+		default:
+		case 0:
+			window = Ptr(new demo::MainWindow);
+		}
+		window->ForceCalculateSizeImmediately();
+		window->MoveToScreenCenter();
 		try
 		{
-			GetApplication()->Run(&window);
+			GetApplication()->Run(window.Obj());
 		}
 		catch (const Exception& e)
 		{
@@ -72,16 +81,18 @@ void StartServer(TServer& server)
 	serverCoreChannel.WaitForDisconnected();
 }
 
-int StartNamedPipeServer()
+int StartNamedPipeServer(vint index)
 {
+	mainWindowConstructorIndex = index;
 	NamedPipeServer namedPipeServer;
 	Console::WriteLine(L"> Named pipe created, waiting on: " + WString::Unmanaged(NamedPipeId));
 	StartServer(namedPipeServer);
 	return 0;
 }
 
-int StartHttpServer()
+int StartHttpServer(vint index)
 {
+	mainWindowConstructorIndex = index;
 	HttpServer httpServer;
 	Console::WriteLine(L"> HTTP server created, waiting on: " + WString::Unmanaged(HttpServerUrl));
 	StartServer(httpServer);

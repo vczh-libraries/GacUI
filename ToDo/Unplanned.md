@@ -121,7 +121,6 @@
   - Commands list could be assigned to a element, or draw to a texture.
 - Meta3DElement and Meta3D data structure.
   - Default Meta3DElement renderer using Meta2DElement with a surface sorting based algorithm.
-- `RemotingTest_Core\`: Add one more argument to run different test app, default to `FullControlTest`.
 - 2D Chart control based on Meta2DElement.
 - 3D Chart control based on Meta3DElement.
 - GIF player.
