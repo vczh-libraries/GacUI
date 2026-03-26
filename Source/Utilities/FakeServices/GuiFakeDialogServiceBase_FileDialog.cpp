@@ -551,20 +551,18 @@ View Model (IFileDialogViewModel)
 					vint lExt = sExt.Length();
 					auto full = path.GetFullPath();
 
-					if (extensionFromFilter)
+					auto selectedFileName = path.GetName();
+					if (selectedFilter && selectedFilter->regexFilter)
 					{
-						if (full.Length() >= lExt && full.Right(lExt) == sExt)
+						auto match = selectedFilter->regexFilter->MatchHead(selectedFileName);
+						if (match && match->Result().Length() == selectedFileName.Length())
 						{
 							return path;
 						}
 					}
-					else
+					if (INVLOC.FindFirst(selectedFileName, WString::Unmanaged(L"."), Locale::None).key != -1)
 					{
-						auto selectedFileName = path.GetName();
-						if (INVLOC.FindFirst(selectedFileName, WString::Unmanaged(L"."), Locale::None).key != -1)
-						{
-							return path;
-						}
+						return path;
 					}
 					return filesystem::FilePath(full + sExt);
 				};

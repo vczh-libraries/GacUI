@@ -92,7 +92,13 @@ GuiRemoteGraphicsParagraph
 		{
 			auto response = messages.RetrieveRendererUpdateElement_DocumentParagraph(requestId);
 			cachedSize = response.documentSize;
-			cachedInlineObjectBounds.Clear();
+			if (desc.removedInlineObjects)
+			{
+				for (auto callbackId : *desc.removedInlineObjects.Obj())
+				{
+					cachedInlineObjectBounds.Remove(callbackId);
+				}
+			}
 		}
 		committedRuns = std::move(stagedRuns);
 		needUpdate = false;

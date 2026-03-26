@@ -134,15 +134,15 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererEndRendering(vint id)
 	{
-		events->RespondRendererEndRendering(id, elementMeasurings);
-		elementMeasurings = {};
-		fontHeightMeasurings.Clear();
 		supressRefresh = false;
 		if (needRefresh)
 		{
 			needRefresh = false;
 			ForceRender();
 		}
+		events->RespondRendererEndRendering(id, elementMeasurings);
+		elementMeasurings = {};
+		fontHeightMeasurings.Clear();
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererIdle()
