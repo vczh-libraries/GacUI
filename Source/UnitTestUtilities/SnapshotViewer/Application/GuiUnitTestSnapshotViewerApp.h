@@ -10,7 +10,7 @@ namespace gaclib_controls
 		vl::presentation::compositions::GuiBoundsComposition*		rootComposition = nullptr;
 		vl::presentation::compositions::GuiBoundsComposition*		selectedComposition = nullptr;
 		vl::presentation::compositions::GuiBoundsComposition*		highlightComposition = nullptr;
-		vl::vint													loadingFrameVersion = 0;
+		vl::Ptr<vl::presentation::description::Versioning>			loadingFrameVersion;
 
 		void		Highlight(vl::presentation::compositions::GuiBoundsComposition*& target, vl::presentation::remoteprotocol::RenderingDom& renderingDom, vl::presentation::Color color);
 		void		textListFrames_SelectionChanged(vl::presentation::compositions::GuiGraphicsComposition* sender, vl::presentation::compositions::GuiEventArgs& arguments);

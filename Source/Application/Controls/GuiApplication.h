@@ -176,6 +176,38 @@ Helper Functions
 			extern GuiApplication*								GetApplication();
 		}
 	}
+
+/***********************************************************************
+Workflow to C++ Codegen Helpers
+***********************************************************************/
+
+	namespace __vwsn
+	{
+		template<typename T>
+		void EventAttachOnce(T& e, typename EventHelper<T>::Handler handler, Ptr<reflection::description::Versioning> versioning = {})
+		{
+			struct LoadingContext
+			{
+				vint version;
+				Ptr<reflection::description::IEventHandler> handler;
+			};
+			auto context = Ptr(new LoadingContext);
+			context->version = versioning ? versioning->AllocateVersion() : -1;
+			context->handler = EventAttach(e, [=, &e]<typename ...TArgs>(TArgs&& ...args)
+			{
+				if (!versioning || context->version == versioning->GetVersion())
+				{
+					handler(std::forward<TArgs&&>(args)...);
+					auto app = presentation::controls::GetApplication();
+					app->InvokeInMainThread(app->GetMainWindow(), [=, &e]()
+					{
+						EventDetach(e, context->handler);
+						context->handler = {};
+					});
+				}
+			});
+		}
+	}
 }
 
 extern void GuiApplicationMain();

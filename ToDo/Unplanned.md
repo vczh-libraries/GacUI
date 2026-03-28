@@ -12,6 +12,7 @@
   - Multiple GUI mode (with a simple window manager, and a test app for displaying instructions)
   - Implemented in both C++ and TypeScript
 - Strict check in different for-each loops.
+- `__vwsn::EventAttachOnce` (GuiApplication.h) is it possible to make it a workflow syntax `attachonce`?
 
 ## GacUI XML Resource (ez:Layout)
 

@@ -530,26 +530,7 @@ UnitTestSnapshotViewerAppWindow
 			{
 				labelLoading->SetVisible(true);
 				scRendering->SetVisible(false);
-
-				struct LoadingContext
-				{
-					vint version;
-					Ptr<EventHandler> handler;
-				};
-				auto context = Ptr(new LoadingContext);
-				context->version = ++loadingFrameVersion;
-				context->handler = frame->DomChanged.Add([=, this]()
-				{
-					if (context->version == loadingFrameVersion)
-					{
-						loadDom();
-						GetApplication()->InvokeInMainThread(GetApplication()->GetMainWindow(), [=]()
-						{
-							frame->DomChanged.Remove(context->handler);
-							context->handler = {};
-						});
-					}
-				});
+				__vwsn::EventAttachOnce(frame->DomChanged, loadDom, loadingFrameVersion);
 			}
 		}
 	}
@@ -666,6 +647,7 @@ UnitTestSnapshotViewerAppWindow
 
 	UnitTestSnapshotViewerAppWindow::UnitTestSnapshotViewerAppWindow(Ptr<UnitTestSnapshotViewerViewModel> viewModel)
 		: UnitTestSnapshotViewerWindow(viewModel)
+		, loadingFrameVersion(Ptr(new reflection::description::Versioning))
 	{
 		textListFrames->SelectionChanged.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::textListFrames_SelectionChanged);
 		treeViewDom->SelectionChanged.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::treeViewDom_SelectionChanged);
