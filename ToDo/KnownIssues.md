@@ -59,6 +59,8 @@
 
 ## Unit Test
 
+- `DocumentParagraphState::caretLayoutKeys` looks suspecious, find out what it is doing.
+  - `Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.h`
 - Tests that assuming DarkSkin:
   - `(H|V)(Tracker|Scroll)/Mouse`
   - `ToolstripSplitButton`
