@@ -6316,6 +6316,16 @@ primitive system::UInt64;
 @Serializable
 primitive system::UInt8;
 
+@FullName:vl::reflection::description::Versioning
+class system::Versioning : system::ReferenceType {
+    property Version : system::Int64 { get:GetVersion }
+
+    function AllocateVersion() : system::Int64;
+    function GetVersion() : system::Int64;
+
+    constructor () : system::Versioning^;
+}
+
 @FullName:vl::reflection::description::VoidValue
 @ValueType
 primitive system::Void;

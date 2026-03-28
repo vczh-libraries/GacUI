@@ -10889,6 +10889,38 @@ Helper Functions
 			extern GuiApplication*								GetApplication();
 		}
 	}
+
+/***********************************************************************
+Workflow to C++ Codegen Helpers
+***********************************************************************/
+
+	namespace __vwsn
+	{
+		template<typename T>
+		void EventAttachOnce(T& e, typename EventHelper<T>::Handler handler, Ptr<reflection::description::Versioning> versioning = {})
+		{
+			struct LoadingContext
+			{
+				vint version;
+				Ptr<reflection::description::IEventHandler> handler;
+			};
+			auto context = Ptr(new LoadingContext);
+			context->version = versioning ? versioning->AllocateVersion() : -1;
+			context->handler = EventAttach(e, [=, &e]<typename ...TArgs>(TArgs&& ...args)
+			{
+				if (!versioning || context->version == versioning->GetVersion())
+				{
+					handler(std::forward<TArgs&&>(args)...);
+					auto app = presentation::controls::GetApplication();
+					app->InvokeInMainThread(app->GetMainWindow(), [=, &e]()
+					{
+						EventDetach(e, context->handler);
+						context->handler = {};
+					});
+				}
+			});
+		}
+	}
 }
 
 extern void GuiApplicationMain();
@@ -19964,8 +19996,8 @@ GuiDocumentCommonInterface
 				/// </summary>
 				/// <param name="begin">The begin position of the selection area.</param>
 				/// <param name="end">The end position of the selection area.</param>
-				void										SetCaret(TextPos begin, TextPos end);
-				/// <summary>Calculate a caret using a specified point.</summary>
+				void										SetCaret(TextPos begin, TextPos end);				/// <summary>Ensure the caret is visible by scrolling the view if necessary.</summary>
+				void												EnsureCaretVisible();				/// <summary>Calculate a caret using a specified point.</summary>
 				/// <returns>The calculated caret.</returns>
 				/// <param name="point">The specified point.</param>
 				TextPos										CalculateCaretFromPoint(Point point);
@@ -24270,6 +24302,7 @@ namespace vl
 			extern void									GetRunRange(DocumentParagraphRun* run, RunRangeMap& runRanges);
 			extern void									LocateStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, vint position, bool frontSide, collections::List<DocumentContainerRun*>& locatedRuns);
 			extern Ptr<DocumentHyperlinkRun::Package>	LocateHyperlink(DocumentParagraphRun* run, RunRangeMap& runRanges, vint row, vint start, vint end);
+			extern bool									CompareStyleProperties(Ptr<DocumentStyleProperties> a, Ptr<DocumentStyleProperties> b);
 			extern Ptr<DocumentStyleProperties>			CopyStyle(Ptr<DocumentStyleProperties> style);
 			extern Ptr<DocumentRun>						CopyRun(DocumentRun* run);
 			extern Ptr<DocumentRun>						CopyStyledText(collections::List<DocumentContainerRun*>& styleRuns, const WString& text);
@@ -25039,6 +25072,17 @@ FakeDialogServiceBase
 			void							ShowModalDialogAndDelete(Ptr<IDescriptable> viewModel, controls::GuiWindow* owner, controls::GuiWindow* dialog);
 
 		public:
+			struct FilterDesc
+			{
+				WString						name;
+				WString						filter;
+				WString						regexFilterCode;
+				Ptr<regex::Regex>			regexFilter;
+				Nullable<WString>			defaultExtensionOverride;
+			};
+
+			static void				ParseFileDialogFilter(const WString& filter, collections::List<FilterDesc>& descs);
+
 			FakeDialogServiceBase();
 			~FakeDialogServiceBase();
 

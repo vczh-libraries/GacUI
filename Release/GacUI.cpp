@@ -19141,6 +19141,13 @@ GuiDocumentCommonInterface
 				SelectionChanged.Execute(documentControl->GetNotifyEventArguments());
 			}
 
+			void GuiDocumentCommonInterface::EnsureCaretVisible()
+			{
+				auto end = documentElement->GetCaretEnd();
+				auto frontSide = documentElement->IsCaretEndPreferFrontSide();
+				EnsureDocumentRectVisible(documentElement->GetCaretBounds(end, frontSide));
+			}
+
 			TextPos GuiDocumentCommonInterface::CalculateCaretFromPoint(Point point)
 			{
 				return documentElement->CalculateCaretFromPoint(point);
@@ -37082,7 +37089,13 @@ GuiRemoteGraphicsParagraph
 		{
 			auto response = messages.RetrieveRendererUpdateElement_DocumentParagraph(requestId);
 			cachedSize = response.documentSize;
-			cachedInlineObjectBounds.Clear();
+			if (desc.removedInlineObjects)
+			{
+				for (auto callbackId : *desc.removedInlineObjects.Obj())
+				{
+					cachedInlineObjectBounds.Remove(callbackId);
+				}
+			}
 		}
 		committedRuns = std::move(stagedRuns);
 		needUpdate = false;
@@ -43969,15 +43982,15 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererEndRendering(vint id)
 	{
-		events->RespondRendererEndRendering(id, elementMeasurings);
-		elementMeasurings = {};
-		fontHeightMeasurings.Clear();
 		supressRefresh = false;
 		if (needRefresh)
 		{
 			needRefresh = false;
 			ForceRender();
 		}
+		events->RespondRendererEndRendering(id, elementMeasurings);
+		elementMeasurings = {};
+		fontHeightMeasurings.Clear();
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererIdle()
@@ -44568,6 +44581,8 @@ namespace vl::presentation::remote_renderer
 						[&](const remoteprotocol::DocumentInlineObjectRunProperty& inlineProp)
 						{
 							CHECK_ERROR(elements::AddInlineObjectRun(inlineObjectRuns, range, inlineProp), ERROR_MESSAGE_PREFIX L"arguments.runsDiff updated an inline object run incorrectly.");
+							inlineObjectProps.Set(inlineProp.callbackId, inlineProp);
+							inlineObjectRanges.Set(inlineProp.callbackId, range);
 						}
 					));
 				}
@@ -47052,6 +47067,22 @@ Clone the current run with its children
 
 		namespace document_editor
 		{
+			bool CompareStyleProperties(Ptr<DocumentStyleProperties> a, Ptr<DocumentStyleProperties> b)
+			{
+				if (!a && !b) return true;
+				if (!a || !b) return false;
+				return a->face == b->face
+					&& a->size == b->size
+					&& a->color == b->color
+					&& a->backgroundColor == b->backgroundColor
+					&& a->bold == b->bold
+					&& a->italic == b->italic
+					&& a->underline == b->underline
+					&& a->strikeline == b->strikeline
+					&& a->antialias == b->antialias
+					&& a->verticalAntialias == b->verticalAntialias;
+			}
+
 			Ptr<DocumentStyleProperties> CopyStyle(Ptr<DocumentStyleProperties> style)
 			{
 				if (!style) return nullptr;
@@ -48552,6 +48583,10 @@ DocumentModel::EditRangeOperations
 				WString styleName=styleNames[i];
 				if(!newDocument->styles.Keys().Contains(styleName))
 				{
+					if (!styles.Keys().Contains(styleName))
+					{
+						continue;
+					}
 					Ptr<DocumentStyle> style=styles[styleName];
 					if(deepCopy)
 					{
@@ -48704,6 +48739,13 @@ DocumentModel::EditRun
 				WString name=newNames[i];
 				if((name.Length()==0 || name[0]!=L'#') && styles.Keys().Contains(name))
 				{
+					auto existingStyle = styles[name];
+					auto incomingStyle = model->styles[name];
+					if (existingStyle->parentStyleName == incomingStyle->parentStyleName
+						&& document_editor::CompareStyleProperties(existingStyle->styles, incomingStyle->styles))
+					{
+						continue;
+					}
 					vint index=2;
 					while(true)
 					{
@@ -53663,7 +53705,20 @@ View Model (IFileDialogViewModel)
 
 				if (!extensionFromFilter && defaultExtension != WString::Empty)
 				{
-					extension = defaultExtension;
+					// Only use the dialog default extension if it matches the current filter
+					if (selectedFilter && selectedFilter->regexFilter)
+					{
+						auto testName = WString::Unmanaged(L"x.") + defaultExtension;
+						auto match = selectedFilter->regexFilter->MatchHead(testName);
+						if (match && match->Result().Length() == testName.Length())
+						{
+							extension = defaultExtension;
+						}
+					}
+					else
+					{
+						extension = defaultExtension;
+					}
 				}
 
 				auto normalized = [&](filesystem::FilePath path)
@@ -53674,20 +53729,18 @@ View Model (IFileDialogViewModel)
 					vint lExt = sExt.Length();
 					auto full = path.GetFullPath();
 
-					if (extensionFromFilter)
+					auto selectedFileName = path.GetName();
+					if (selectedFilter && selectedFilter->regexFilter)
 					{
-						if (full.Length() >= lExt && full.Right(lExt) == sExt)
+						auto match = selectedFilter->regexFilter->MatchHead(selectedFileName);
+						if (match && match->Result().Length() == selectedFileName.Length())
 						{
 							return path;
 						}
 					}
-					else
+					if (INVLOC.FindFirst(selectedFileName, WString::Unmanaged(L"."), Locale::None).key != -1)
 					{
-						auto selectedFileName = path.GetName();
-						if (INVLOC.FindFirst(selectedFileName, WString::Unmanaged(L"."), Locale::None).key != -1)
-						{
-							return path;
-						}
+						return path;
 					}
 					return filesystem::FilePath(full + sExt);
 				};
@@ -53902,30 +53955,53 @@ View Model (IFileDialogViewModel)
 FakeDialogServiceBase
 ***********************************************************************/
 
-		bool FakeDialogServiceBase::ShowFileDialog(
-			INativeWindow* window,
-			collections::List<WString>& selectionFileNames,
-			vint& selectionFilterIndex,
-			FileDialogTypes dialogType,
-			const WString& title,
-			const WString& initialFileName,
-			const WString& initialDirectory,
-			const WString& defaultExtension,
-			const WString& filter,
-			FileDialogOptions options
-		)
+		void FakeDialogServiceBase::ParseFileDialogFilter(const WString& filter, collections::List<FilterDesc>& descs)
 		{
-			auto vm = Ptr(new FileDialogViewModel);
-			vm->dialogService = this;
-			vm->title = title;
-			vm->enabledMultipleSelection = (options & INativeDialogService::FileDialogAllowMultipleSelection) != 0;
-			vm->fileMustExist = (options & INativeDialogService::FileDialogFileMustExist) != 0;
-			vm->folderMustExist = (options & INativeDialogService::FileDialogDirectoryMustExist) != 0;
-			vm->promptCreateFile = (options & INativeDialogService::FileDialogPromptCreateFile) != 0;
-			vm->promptOverriteFile = (options & INativeDialogService::FileDialogPromptOverwriteFile) != 0;
-			vm->defaultExtension = defaultExtension;
+			auto GetSingleWildcardDefaultExtension = [](const WString& wildcard) -> Nullable<WString>
+			{
+				// Accept only "*.<ext>" where <ext> is non-empty and contains no '*', '?', or ';'.
+				if (wildcard.Length() < 3) return {};
+				if (wildcard[0] != L'*' || wildcard[1] != L'.') return {};
+				auto ext = wildcard.Right(wildcard.Length() - 2);
+				for (vint i = 0; i < ext.Length(); i++)
+				{
+					switch (ext[i])
+					{
+					case L'*':
+					case L'?':
+					case L';':
+						return {};
+					}
+				}
+				return Nullable<WString>(ext);
+			};
 
-			Regex regexFilterExt(L"/*.[^*?]+");
+			auto GetFilterDefaultExtension = [&](const WString& wildcardExpr) -> Nullable<WString>
+			{
+				// Split by ';' and return the first qualifying extension
+				vint start = 0;
+				while (start <= wildcardExpr.Length())
+				{
+					vint semicolonPos = -1;
+					for (vint i = start; i < wildcardExpr.Length(); i++)
+					{
+						if (wildcardExpr[i] == L';')
+						{
+							semicolonPos = i;
+							break;
+						}
+					}
+					auto part = (semicolonPos == -1)
+						? wildcardExpr.Right(wildcardExpr.Length() - start)
+						: wildcardExpr.Sub(start, semicolonPos - start);
+					auto ext = GetSingleWildcardDefaultExtension(part);
+					if (ext) return ext;
+					if (semicolonPos == -1) break;
+					start = semicolonPos + 1;
+				}
+				return {};
+			};
+
 			Regex regexWildcard(L"[*?;]");
 			vint filterStart = 0;
 			while (true)
@@ -53953,23 +54029,15 @@ FakeDialogServiceBase
 					}
 				}
 
-				auto filterItem = Ptr(new FileDialogFilter);
-				filterItem->name = filter.Sub(filterStart, first - filterStart);
-				filterItem->filter = filter.Sub(first + 1, (second == -1 ? count : second) - first - 1);
-
-				if (auto match = regexFilterExt.MatchHead(filterItem->filter))
-				{
-					if (match->Result().Length() == filterItem->filter.Length())
-					{
-						filterItem->defaultExtension = filterItem->filter.Right(filterItem->filter.Length() - 2);
-					}
-				}
-
-				auto regexFilter = stream::GenerateToStream([&](stream::TextWriter& writer)
+				FilterDesc desc;
+				desc.name = filter.Sub(filterStart, first - filterStart);
+				desc.filter = filter.Sub(first + 1, (second == -1 ? count : second) - first - 1);
+				desc.defaultExtensionOverride = GetFilterDefaultExtension(desc.filter);
+				desc.regexFilterCode = stream::GenerateToStream([&](stream::TextWriter& writer)
 				{
 					writer.WriteString(L"^(");
 					List<Ptr<RegexMatch>> matches;
-					regexWildcard.Cut(filterItem->filter, false, matches);
+					regexWildcard.Cut(desc.filter, false, matches);
 					for (auto match : matches)
 					{
 						if (match->Success())
@@ -53995,12 +54063,47 @@ FakeDialogServiceBase
 					}
 					writer.WriteString(L")$");
 				});
-				filterItem->regexFilter = Ptr(new Regex(regexFilter));
-
-				vm->filters.Add(filterItem);
+				desc.regexFilter = Ptr(new Regex(desc.regexFilterCode));
+				descs.Add(std::move(desc));
 
 				if (second == -1) break;
 				filterStart = second + 1;
+			}
+		}
+
+		bool FakeDialogServiceBase::ShowFileDialog(
+			INativeWindow* window,
+			collections::List<WString>& selectionFileNames,
+			vint& selectionFilterIndex,
+			FileDialogTypes dialogType,
+			const WString& title,
+			const WString& initialFileName,
+			const WString& initialDirectory,
+			const WString& defaultExtension,
+			const WString& filter,
+			FileDialogOptions options
+		)
+		{
+			auto vm = Ptr(new FileDialogViewModel);
+			vm->dialogService = this;
+			vm->title = title;
+			vm->enabledMultipleSelection = (options & INativeDialogService::FileDialogAllowMultipleSelection) != 0;
+			vm->fileMustExist = (options & INativeDialogService::FileDialogFileMustExist) != 0;
+			vm->folderMustExist = (options & INativeDialogService::FileDialogDirectoryMustExist) != 0;
+			vm->promptCreateFile = (options & INativeDialogService::FileDialogPromptCreateFile) != 0;
+			vm->promptOverriteFile = (options & INativeDialogService::FileDialogPromptOverwriteFile) != 0;
+			vm->defaultExtension = defaultExtension;
+
+			List<FilterDesc> filterDescs;
+			ParseFileDialogFilter(filter, filterDescs);
+			for (auto&& desc : filterDescs)
+			{
+				auto filterItem = Ptr(new FileDialogFilter);
+				filterItem->name = desc.name;
+				filterItem->filter = desc.filter;
+				filterItem->defaultExtension = desc.defaultExtensionOverride;
+				filterItem->regexFilter = desc.regexFilter;
+				vm->filters.Add(filterItem);
 			}
 
 			if (vm->filters.Count() > 0)
@@ -54051,6 +54154,7 @@ FakeDialogServiceBase
 		}
 	}
 }
+
 
 /***********************************************************************
 .\UTILITIES\FAKESERVICES\GUIFAKEDIALOGSERVICEBASE_FONTDIALOG.CPP

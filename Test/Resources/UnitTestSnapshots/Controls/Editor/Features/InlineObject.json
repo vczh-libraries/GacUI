@@ -102,7 +102,7 @@
       "root": null
     },
     {
-      "frameId": 15,
+      "frameId": 13,
       "frameName": "Select 2nd char @par1",
       "windowSize": {
         "bounds": {
@@ -129,7 +129,7 @@
       "root": null
     },
     {
-      "frameId": 19,
+      "frameId": 15,
       "frameName": "Select 2nd char @par2",
       "windowSize": {
         "bounds": {
@@ -156,7 +156,7 @@
       "root": null
     },
     {
-      "frameId": 22,
+      "frameId": 18,
       "frameName": "[ENTER] at beginning",
       "windowSize": {
         "bounds": {
@@ -183,7 +183,7 @@
       "root": null
     },
     {
-      "frameId": 26,
+      "frameId": 20,
       "frameName": "Select All",
       "windowSize": {
         "bounds": {

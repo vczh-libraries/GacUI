@@ -2976,6 +2976,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(Modified)
 
 				CLASS_MEMBER_METHOD(SetCaret, {L"begin" _ L"end" _ L"frontSide"})
+				CLASS_MEMBER_METHOD(EnsureCaretVisible, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CalculateCaretFromPoint, {L"point"})
 				CLASS_MEMBER_METHOD(GetCaretBounds, {L"caret" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(NotifyParagraphUpdated, {L"index" _ L"oldCount" _ L"newCount" _ L"updatedText" _ L"skipFormatting"})
