@@ -76,6 +76,8 @@ The**CaretBegin**and**CaretEnd**properties represent the range of the selection.
 
 **SetCaret**changes**CaretBegin**and**CaretEnd**at the same time. To cancel the selection and move the caret, just set these two properties to the same value.
 
+**EnsureCaretVisible**scrolls the text box to the**CaretEnd**.
+
 **CalculateCaretFromPoint**returns the nearest caret at a position. The coordinate origin is the left-top corner of the document.
 
 **GetCaretBounds**returns the position of a caret. It is a rectangle with**zero**width, the**y1**and**y2**components represent the position of the vertical caret line.

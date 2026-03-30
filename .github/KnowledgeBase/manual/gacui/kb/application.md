@@ -6,9 +6,8 @@ A GacUI application requires a user defined function**void GuiMain(void)**. In o
   - SetupHostedWindowsDirect2DRenderer
   - SetupWindowsGDIRenderer
   - SetupHostedWindowsGDIRendererThey initialize necessary objects and call**GuiMain**with different rendering techniques.
-- For macOS,**SetupOSXCoreGraphicsRenderer**must be called in**main**.
-- For Linux Wayland,**SetupWGacRenderer**must be called in**main**.
-- For Linux XWindow,**SetupGGacRenderer**must be called in**main**.
+- For macOS,**SetupOSXCoreGraphicsRenderer**or**SetupOSXHostedCoreGraphicsRenderer**must be called in**main**.
+- For Linux with Wayland,**vl::presentation::elements::wgac::SetupWGacRenderer or SetupWGacHostedRenderer**must be called in**main**.
 
 When**GuiMain**is called, the**GuiApplication**object is ready, which can be accessed by the**GetApplication**function. A typical**GuiMain**function looks like:
 ```
