@@ -74,7 +74,15 @@ extern int SetupRawWindowsDirect2DRenderer();
 // Gtk
 extern int SetupGtkRenderer();
 
+// Wayland
+namespace vl::presentation::elements::wgac
+{
+	extern int SetupWGacRenderer();
+	extern int SetupWGacHostedRenderer();
+}
+
 // macOS
 extern int SetupOSXCoreGraphicsRenderer();
+extern int SetupOSXHostedCoreGraphicsRenderer();
 
 #endif
