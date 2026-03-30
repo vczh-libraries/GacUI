@@ -48,6 +48,7 @@ Using this library requires you to use C++ source files directly in
 
 - The [Release folder](https://github.com/vczh-libraries/GacUI/tree/master/Release) for Vlpp, Workflow or GacUI.
 - The [GacGen.exe](https://github.com/vczh-libraries/GacUI/tree/master/Tools/GacGen) if you prefer to use XML to build your UI.
+- The [GacBuild.ps1](https://github.com/vczh-libraries/Release/blob/master/Tools/GacBuild.ps1) if you are build your application with multiple GacUI XML Resource with dependencies.
 
 All other files are for library development only.
 
@@ -58,14 +59,14 @@ This GUI library provides the following features:
 - Develop your GUI using pure C++, [Workflow](https://github.com/vczh-libraries/Workflow) script, XML or even JavaScript (under construction).
 - Cross-platform abilities.
   - for **Windows**: [Release repo](https://github.com/vczh-libraries/Release)
-  - for **Linux**: [XGac repo](https://github.com/vczh-libraries/gGac) (beta release)
-  - for **macOS**: [iGac repo](https://github.com/vczh-libraries/iGac) (beta release)
+  - for **Linux**: [wGac repo](https://github.com/vczh-libraries/wGac)
+  - for **macOS**: [iGac repo](https://github.com/vczh-libraries/iGac)
   - for running in **Browser** using WASM: (2.0)
 - Rich control library. Container controls supports MVC and virtual list mode.
 - Control template system. You can write your own.
 - GPU acceleration.
 - XML resource supports.
-  - You can use the provided [GacGen.exe](https://github.com/vczh-libraries/GacUI/tree/master/Tools/GacGen) to generate multiple XML files with binary resources (images) into a compressed binary format.
+  - You can use the provided [GacGen.exe](https://github.com/vczh-libraries/GacUI/tree/master/Tools/GacGen) or [GacBuild.ps1](https://github.com/vczh-libraries/Release/blob/master/Tools/GacBuild.ps1) to generate from multiple XML files to binary resources (images) into a compressed binary format.
   - This program will also generate C++ code behind for you. You can fill event handlers (but we suggest you use MVVM and Data Binding instead) in generated C++ files.
   - If you update your UI, GacGen.exe will merge your modification in C++ code and modification in XML together to generate new C++ code behind. Your update will still exist.
     - **NOTE**: You will see a very obvious mark `USERIMPL(/* ... */)` in the generated code. Here is where you want to add your code. All your modification outside of these places will be discarded on the next GacGen.exe run.
