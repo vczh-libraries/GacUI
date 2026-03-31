@@ -24352,6 +24352,22 @@ GenerateAssembly
 							assembly->typeImpl->enums.Add(tdEnum);
 						}
 					}
+
+					// Sort custom types by type name for deterministic serialization order
+					auto sortByTypeName = [](auto& list)
+					{
+						if (list.Count() > 1)
+						{
+							collections::Sort(&list[0], list.Count(), [](const auto& a, const auto& b)
+							{
+								return a->GetTypeName() <=> b->GetTypeName();
+							});
+						}
+					};
+					sortByTypeName(assembly->typeImpl->classes);
+					sortByTypeName(assembly->typeImpl->interfaces);
+					sortByTypeName(assembly->typeImpl->structs);
+					sortByTypeName(assembly->typeImpl->enums);
 				}
 
 				for (auto module : manager->GetModules())

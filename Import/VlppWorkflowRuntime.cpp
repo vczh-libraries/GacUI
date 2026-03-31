@@ -680,6 +680,36 @@ namespace vl
 			using WfWriter = Writer<Ptr<WfWriterContext>>;
 
 /***********************************************************************
+Serialization (Sort Keys for Deterministic Binary Serialization)
+***********************************************************************/
+
+			static WString GetMethodSortKey(IMethodInfo* mi)
+			{
+				auto td = mi->GetOwnerTypeDescriptor();
+				auto group = mi->GetOwnerMethodGroup();
+				WString name = (group == td->GetConstructorGroup()) ? WString(L"#ctor") : mi->GetName();
+				WString key = td->GetTypeName() + L"::" + name + L"(";
+				vint paramCount = mi->GetParameterCount();
+				for (vint i = 0; i < paramCount; i++)
+				{
+					if (i > 0) key += L",";
+					key += mi->GetParameter(i)->GetType()->GetTypeFriendlyName();
+				}
+				key += L")";
+				return key;
+			}
+
+			static WString GetPropertySortKey(IPropertyInfo* pi)
+			{
+				return pi->GetOwnerTypeDescriptor()->GetTypeName() + L"::" + pi->GetName();
+			}
+
+			static WString GetEventSortKey(IEventInfo* ei)
+			{
+				return ei->GetOwnerTypeDescriptor()->GetTypeName() + L"::" + ei->GetName();
+			}
+
+/***********************************************************************
 Serialization (CollectMetadata)
 ***********************************************************************/
 
@@ -2206,21 +2236,79 @@ Serialization (Assembly)
 						CollectMetadata(value.typeImpl.Obj(), prepare);
 					}
 					CollectMetadata(value.instructions, prepare);
-					for (vint i = prepare.tds.Count() - 1; i >= 0; i--)
+
+					// Copy collected metadata to Lists and sort deterministically by name
+					// instead of using pointer-sorted SortedLists which vary between runs
+					List<ITypeDescriptor*> sortedTds;
+					for (auto td : prepare.tds)
 					{
-						if (writer.context->tdIndex.Keys().Contains(prepare.tds[i]))
+						if (!writer.context->tdIndex.Keys().Contains(td))
 						{
-							prepare.tds.RemoveAt(i);
+							sortedTds.Add(td);
 						}
 					}
-					writer.context->Initialize(prepare);
+					if (sortedTds.Count() > 0)
+					{
+						Sort(&sortedTds[0], sortedTds.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
+						{
+							return a->GetTypeName() <=> b->GetTypeName();
+						});
+					}
 
-					vint tdCount = prepare.tds.Count();
-					vint miCount = prepare.mis.Count();
-					vint piCount = prepare.pis.Count();
-					vint eiCount = prepare.eis.Count();
+					List<IMethodInfo*> sortedMis;
+					CopyFrom(sortedMis, prepare.mis);
+					if (sortedMis.Count() > 0)
+					{
+						Sort(&sortedMis[0], sortedMis.Count(), [](IMethodInfo* a, IMethodInfo* b)
+						{
+							return GetMethodSortKey(a) <=> GetMethodSortKey(b);
+						});
+					}
+
+					List<IPropertyInfo*> sortedPis;
+					CopyFrom(sortedPis, prepare.pis);
+					if (sortedPis.Count() > 0)
+					{
+						Sort(&sortedPis[0], sortedPis.Count(), [](IPropertyInfo* a, IPropertyInfo* b)
+						{
+							return GetPropertySortKey(a) <=> GetPropertySortKey(b);
+						});
+					}
+
+					List<IEventInfo*> sortedEis;
+					CopyFrom(sortedEis, prepare.eis);
+					if (sortedEis.Count() > 0)
+					{
+						Sort(&sortedEis[0], sortedEis.Count(), [](IEventInfo* a, IEventInfo* b)
+						{
+							return GetEventSortKey(a) <=> GetEventSortKey(b);
+						});
+					}
+
+					// Build writer context indices from deterministically-sorted lists
+					for (auto [td, index] : indexed(sortedTds))
+					{
+						writer.context->tdIndex.Add(td, index);
+					}
+					for (auto [mi, index] : indexed(sortedMis))
+					{
+						writer.context->miIndex.Add(mi, index);
+					}
+					for (auto [pi, index] : indexed(sortedPis))
+					{
+						writer.context->piIndex.Add(pi, index);
+					}
+					for (auto [ei, index] : indexed(sortedEis))
+					{
+						writer.context->eiIndex.Add(ei, index);
+					}
+
+					vint tdCount = sortedTds.Count();
+					vint miCount = sortedMis.Count();
+					vint piCount = sortedPis.Count();
+					vint eiCount = sortedEis.Count();
 					writer << tdCount << miCount << piCount << eiCount;
-					for (auto td : prepare.tds)
+					for (auto td : sortedTds)
 					{
 						writer << td;
 					}
@@ -2231,15 +2319,15 @@ Serialization (Assembly)
 						GetGlobalTypeManager()->AddTypeLoader(value.typeImpl);
 					}
 
-					for (auto mi : prepare.mis)
+					for (auto mi : sortedMis)
 					{
 						writer << mi;
 					}
-					for (auto pi : prepare.pis)
+					for (auto pi : sortedPis)
 					{
 						writer << pi;
 					}
-					for (auto ei : prepare.eis)
+					for (auto ei : sortedEis)
 					{
 						writer << ei;
 					}
