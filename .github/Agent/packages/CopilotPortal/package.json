@@ -12,7 +12,7 @@
     "testExecute": "node test/runTests.mjs"
   },
   "dependencies": {
-    "@github/copilot-sdk": "^0.1.29"
+    "@github/copilot-sdk": "^0.2.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0",
