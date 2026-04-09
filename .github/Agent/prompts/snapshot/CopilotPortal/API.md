@@ -47,6 +47,7 @@ Prints the following URL for shortcut:
 `async installJobsEntry(entry: Entry): Promise<void>;`
 - Verify if all `entry.model[name]` is a valid model with `helperGetModels`.
 - Verify if all `entry.drivingSessionRetries[index].modelId` is a valid model with `helperGetModels`.
+- If a model is not valid, in the error messages a list of all model names, ids and premium multipliers should be listed as well.
 - Use the entry. It could be `entry` from `jobsData.ts` or whatever.
 - This function can only be called when no session is running, otherwise throws.
 

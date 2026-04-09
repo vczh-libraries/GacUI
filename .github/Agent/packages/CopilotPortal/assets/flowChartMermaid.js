@@ -187,7 +187,7 @@ async function renderFlowChartMermaid(chart, container, onInspect) {
 
     // Track currently selected TaskNode/CondNode
     let currentSelectedGroup = null;
-    let currentSelectedOriginalStrokeWidth = null;
+    let currentSelectedOriginalStyle = null;
     let currentSelectedWorkId = null;
 
     // Map workId -> DOM group for status updates
@@ -196,7 +196,8 @@ async function renderFlowChartMermaid(chart, container, onInspect) {
 
     // Add click handlers for TaskNode/CondNode elements
     for (const nodeId of taskNodeIds) {
-        const nodeEl = container.querySelector(`[id^="flowchart-${nodeId}-"]`);
+        // Mermaid 10: id="flowchart-N0-123"; Mermaid 11: id="mermaid-chart-flowchart-N0-0"
+        const nodeEl = container.querySelector(`[id*="flowchart-${nodeId}-"]`);
         if (!nodeEl) continue;
         const group = nodeEl.closest("g.node") || nodeEl;
         group.style.cursor = "pointer";
@@ -214,25 +215,26 @@ async function renderFlowChartMermaid(chart, container, onInspect) {
 
             if (currentSelectedGroup === group) {
                 // Unselect
-                if (shapeEl && currentSelectedOriginalStrokeWidth !== null) {
-                    shapeEl.style.strokeWidth = currentSelectedOriginalStrokeWidth;
+                if (shapeEl && currentSelectedOriginalStyle !== null) {
+                    shapeEl.setAttribute("style", currentSelectedOriginalStyle);
                 }
                 currentSelectedGroup = null;
-                currentSelectedOriginalStrokeWidth = null;
+                currentSelectedOriginalStyle = null;
                 currentSelectedWorkId = null;
                 if (onInspect) onInspect(null);
             } else {
                 // Unselect previous
                 if (currentSelectedGroup) {
                     const prevShape = currentSelectedGroup.querySelector("rect, polygon, circle, ellipse, path");
-                    if (prevShape && currentSelectedOriginalStrokeWidth !== null) {
-                        prevShape.style.strokeWidth = currentSelectedOriginalStrokeWidth;
+                    if (prevShape && currentSelectedOriginalStyle !== null) {
+                        prevShape.setAttribute("style", currentSelectedOriginalStyle);
                     }
                 }
-                // Select new
-                currentSelectedOriginalStrokeWidth = shapeEl ? (shapeEl.style.strokeWidth || shapeEl.getAttribute("style")?.match(/stroke-width:\s*([^;]+)/)?.[1] || getComputedStyle(shapeEl).strokeWidth) : null;
+                // Select new — save full style string so !important flags are preserved on restore
+                currentSelectedOriginalStyle = shapeEl ? (shapeEl.getAttribute("style") ?? "") : null;
                 if (shapeEl) {
-                    shapeEl.style.strokeWidth = "5px";
+                    // Use setProperty with "important" to override Mermaid 11's !important inline styles
+                    shapeEl.style.setProperty("stroke-width", "5px", "important");
                 }
                 currentSelectedGroup = group;
                 currentSelectedWorkId = wid;

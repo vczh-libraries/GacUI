@@ -6,6 +6,25 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const serverScript = path.resolve(__dirname, "..", "dist", "index.js");
 const windowsHidePatch = path.resolve(__dirname, "windowsHide.cjs");
 
+// Stop any previously running server so the new one starts with clean state.
+// Without this, a leftover server with an installed entry would cause false failures.
+try {
+    await fetch("http://localhost:8888/api/stop");
+} catch {
+    // No server running, that's fine
+}
+// Wait until the old server is gone (port free)
+for (let i = 0; i < 20; i++) {
+    try {
+        await fetch("http://localhost:8888/api/test");
+        // Still responding — wait a bit more
+        await new Promise((r) => setTimeout(r, 200));
+    } catch {
+        // Connection refused: old server is gone
+        break;
+    }
+}
+
 // Spawn server as detached process in test mode so it runs independently of this script.
 // On Windows, the Copilot SDK internally spawns node.exe to run its bundled CLI server.
 // Without windowsHide, each spawn creates a visible console window that steals keyboard focus.

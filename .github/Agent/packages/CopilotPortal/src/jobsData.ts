@@ -50,7 +50,7 @@ const entryInput: Entry = {
     models: {
         driving: "gpt-5-mini",
         planning: "gpt-5.2",
-        coding: "gpt-5.2-codex",
+        coding: "gpt-5.4",
         reviewers1: "gpt-5.3-codex",
         reviewers2: "claude-opus-4.6",
         reviewers3: "claude-sonnet-4.6"
@@ -58,7 +58,7 @@ const entryInput: Entry = {
     drivingSessionRetries: [
         { modelId: "gpt-5-mini", retries: 5 },
         { modelId: "gpt-4.1", retries: 5 },
-        { modelId: "gpt-5.1-codex-mini", retries: 3 },
+        { modelId: "gpt-5.4-mini", retries: 3 },
         { modelId: "claude-haiku-4.5", retries: 3 },
     ],
     promptVariables: {

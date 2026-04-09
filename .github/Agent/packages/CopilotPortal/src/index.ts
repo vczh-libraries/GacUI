@@ -99,15 +99,16 @@ async function installJobsEntry(entryValue: Entry): Promise<void> {
     }
     const models = await helperGetModels();
     const validModelIds = new Set(models.map(m => m.id));
+    const modelListText = models.map(m => `  ${m.name} (id: ${m.id}, multiplier: ${m.multiplier})`).join("\n");
     for (const [category, modelId] of Object.entries(entryValue.models)) {
         if (!validModelIds.has(modelId)) {
-            throw new Error(`entry.models["${category}"] refers to model "${modelId}" which is not a valid model.`);
+            throw new Error(`entry.models["${category}"] refers to model "${modelId}" which is not a valid model.\nAvailable models:\n${modelListText}`);
         }
     }
     for (let i = 0; i < entryValue.drivingSessionRetries.length; i++) {
         const modelId = entryValue.drivingSessionRetries[i].modelId;
         if (!validModelIds.has(modelId)) {
-            throw new Error(`entry.drivingSessionRetries[${i}].modelId refers to model "${modelId}" which is not a valid model.`);
+            throw new Error(`entry.drivingSessionRetries[${i}].modelId refers to model "${modelId}" which is not a valid model.\nAvailable models:\n${modelListText}`);
         }
     }
     installedEntry = entryValue;
