@@ -92,6 +92,36 @@ END_CLASS_MEMBER(MyClass)
 #undef _
 ```
 
+## Attribute Registration
+
+### Attaching Attributes to Types, Members, and Parameters
+- Use `ATTRIBUTE_TYPE(TYPE, ...)` to attach an attribute to the type descriptor itself
+- Use `ATTRIBUTE_MEMBER(TYPE, ...)` after any member registration to attach an attribute to that member
+- Use `ATTRIBUTE_PARAMETER(PARAMETER_NAME, TYPE, ...)` after a method or constructor registration to attach an attribute to a named parameter
+- The attribute type must be a reflected struct
+- Each argument must be a serializable primitive value
+- Multiple attributes can be attached to the same target
+- See [Attribute Registration](./KB_VlppReflection_AttributeRegistration.md) for full details
+
+### Class with Attributes Example
+```cpp
+#define _ ,
+
+BEGIN_CLASS_MEMBER(MyClass)
+    ATTRIBUTE_TYPE(MyAttribute, L"type", 1)
+
+    CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(vint), {L"seed"})
+    ATTRIBUTE_MEMBER(MyAttribute, L"ctor", 2)
+    ATTRIBUTE_PARAMETER(L"seed", MyAttribute, L"param", 3)
+
+    CLASS_MEMBER_METHOD(DoWork, {L"x" _ L"y"})
+    ATTRIBUTE_MEMBER(MyAttribute, L"method", 4)
+    ATTRIBUTE_PARAMETER(L"x", MyAttribute, L"param-x", 5)
+END_CLASS_MEMBER(MyClass)
+
+#undef _
+```
+
 ## Interface Requirements
 
 ### Proxy Requirements

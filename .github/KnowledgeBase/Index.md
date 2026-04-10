@@ -457,6 +457,7 @@ Registration patterns for structure types with field access capabilities.
 
 - Use `BEGIN_STRUCT_MEMBER` and `END_STRUCT_MEMBER` for struct registration
 - Use `STRUCT_MEMBER` to register each accessible field
+- Use `ATTRIBUTE_TYPE`, `ATTRIBUTE_MEMBER` to attach attributes to the struct or its fields
 
 [API Explanation](./KB_VlppReflection_StructRegistration.md)
 
@@ -481,6 +482,7 @@ Comprehensive registration system for classes and interfaces with methods, prope
 - Use `CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST`, `CLASS_MEMBER_PROPERTY_EVENT_FAST` for properties with change events
 - Use `NO_PARAMETER` for parameterless functions
 - Use `{ L"arg1" _ L"arg2" ... }` for parameter name lists
+- Use `ATTRIBUTE_TYPE`, `ATTRIBUTE_MEMBER`, `ATTRIBUTE_PARAMETER` to attach attributes to types, members, and parameters
 
 [API Explanation](./KB_VlppReflection_ClassInterfaceRegistration.md)
 
@@ -499,6 +501,22 @@ Proxy generation for interfaces to enable inheritance in Workflow scripts.
 - Use `INVOKEGET_INTERFACE_PROXY` for return value methods with parameters
 
 [API Explanation](./KB_VlppReflection_InterfaceProxy.md)
+
+#### Attribute Registration
+
+Attach metadata attributes to types, members, and method parameters during reflection registration.
+
+Attributes are instances of reflectable structs whose constructor arguments are serializable primitive values.
+They are stored centrally in the owning type descriptor and can be queried at runtime via the `IAttributeBag` / `IAttributeInfo` interfaces.
+Attributes survive metaonly metadata serialization and deserialization, and appear in the logged text output.
+
+- Use `ATTRIBUTE_TYPE(TYPE, ...)` to attach an attribute to the enclosing type descriptor
+- Use `ATTRIBUTE_MEMBER(TYPE, ...)` to attach an attribute to the most recently registered member (field, property, event, method, or constructor)
+- Use `ATTRIBUTE_PARAMETER(PARAMETER_NAME, TYPE, ...)` to attach an attribute to a named parameter of the most recently registered method or constructor
+- Use `IAttributeBag::GetAttributeCount` and `IAttributeBag::GetAttribute` to query attributes at runtime
+- Use `IAttributeInfo::GetAttributeType`, `IAttributeInfo::GetAttributeValueCount`, `IAttributeInfo::GetAttributeValue` to inspect attribute content
+
+[API Explanation](./KB_VlppReflection_AttributeRegistration.md)
 
 ### Design Explanation
 

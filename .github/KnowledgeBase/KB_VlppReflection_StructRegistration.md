@@ -23,6 +23,21 @@ END_STRUCT_MEMBER(MyStruct)
 - Each field registered becomes accessible through the reflection system
 - Supports both reading and writing field values dynamically
 
+### Attribute Registration on Structs
+- Use `ATTRIBUTE_TYPE(TYPE, ...)` to attach an attribute to the struct type itself
+- Use `ATTRIBUTE_MEMBER(TYPE, ...)` after a `STRUCT_MEMBER` to attach an attribute to that field
+- Multiple attributes can be attached to the same field
+- See [Attribute Registration](./KB_VlppReflection_AttributeRegistration.md) for full details
+
+```cpp
+BEGIN_STRUCT_MEMBER(MyStruct)
+    STRUCT_MEMBER(FirstField)
+    ATTRIBUTE_MEMBER(MyAttribute, L"first", 1)
+    STRUCT_MEMBER(SecondField)
+    ATTRIBUTE_MEMBER(EmptyAttribute)
+END_STRUCT_MEMBER(MyStruct)
+```
+
 ## Registration Requirements
 
 ### Struct Definition
