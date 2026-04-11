@@ -152,3 +152,8 @@ END_CLASS_MEMBER(MyClass)
 - `ATTRIBUTE_PARAMETER` raises `CHECK_ERROR` if the named parameter does not exist or is ambiguous.
 - A `static_assert` fires at compile time if `TYPE{ ARG1, ... }` is not a valid expression.
 - `CHECK_ERROR` is raised if the attribute type is not a reflected struct or if an argument is not serializable.
+
+## Workflow Script Attributes
+
+Workflow script has its own attribute syntax (`@category:name`) that builds on the C++ reflection attribute infrastructure documented above.
+For naming conventions, predefined attributes, assembly population, and binary serialization details, see [KB_Workflow_Design_AttributeSystem.md](./KB_Workflow_Design_AttributeSystem.md).
