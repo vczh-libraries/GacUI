@@ -1446,6 +1446,77 @@ Serialization (TypeImpl)
 
 				//----------------------------------------------------
 
+				static void IOAttributeBag(WfReader& reader, TypeDescriptorImplBase* td, IMemberInfo* memberInfo)
+				{
+					vint attCount = 0;
+					reader << attCount;
+					for (vint i = 0; i < attCount; i++)
+					{
+						WString attTypeName;
+						reader << attTypeName;
+						auto attTd = GetTypeDescriptor(attTypeName);
+						auto attInfo = Ptr(new AttributeInfoImpl(attTd));
+
+						vint valueCount = 0;
+						reader << valueCount;
+						for (vint j = 0; j < valueCount; j++)
+						{
+							WString valueTypeName;
+							WString serializedData;
+							reader << valueTypeName << serializedData;
+							auto valueTd = GetTypeDescriptor(valueTypeName);
+							Value value;
+							if (auto serializableType = valueTd->GetSerializableType())
+							{
+								serializableType->Deserialize(serializedData, value);
+								value = Value::From(value.GetBoxedValue(), valueTd);
+							}
+							else
+							{
+								auto rawTd = GetTypeDescriptor(serializedData);
+								value = BoxValue<ITypeDescriptor*>(rawTd);
+							}
+							attInfo->AddValue(valueTd, value);
+						}
+
+						td->RegisterAttribute(memberInfo, attInfo);
+					}
+				}
+
+				static void IOAttributeBag(WfWriter& writer, IAttributeBag* bag)
+				{
+					vint attCount = bag->GetAttributeCount();
+					writer << attCount;
+					for (vint i = 0; i < attCount; i++)
+					{
+						auto attInfo = bag->GetAttribute(i);
+						WString attTypeName = attInfo->GetAttributeType()->GetTypeName();
+						writer << attTypeName;
+
+						vint valueCount = attInfo->GetAttributeValueCount();
+						writer << valueCount;
+						for (vint j = 0; j < valueCount; j++)
+						{
+							auto valueTd = attInfo->GetAttributeValueType(j);
+							auto value = attInfo->GetAttributeValue(j);
+							WString valueTypeName = valueTd->GetTypeName();
+							WString serializedData;
+							if (auto serializableType = valueTd->GetSerializableType())
+							{
+								serializableType->Serialize(value, serializedData);
+							}
+							else
+							{
+								auto rawTd = UnboxValue<ITypeDescriptor*>(value);
+								if (rawTd) serializedData = rawTd->GetTypeName();
+							}
+							writer << valueTypeName << serializedData;
+						}
+					}
+				}
+
+				//----------------------------------------------------
+
 				static void IOMethodBase(WfReader& reader, WfMethodBase* info)
 				{
 					Ptr<ITypeInfo> type;
@@ -1676,6 +1747,43 @@ Serialization (TypeImpl)
 							td->AddMember(info);
 						}
 					}
+
+					// attributes
+					{
+						// type-level attributes
+						IOAttributeBag(reader, td, nullptr);
+
+						// constructor attributes
+						if (auto group = td->GetConstructorGroup())
+						{
+							for (vint i = 0; i < group->GetMethodCount(); i++)
+							{
+								IOAttributeBag(reader, td, group->GetMethod(i));
+							}
+						}
+
+						// method attributes
+						for (vint i = 0; i < td->GetMethodGroupCount(); i++)
+						{
+							auto group = td->GetMethodGroup(i);
+							for (vint j = 0; j < group->GetMethodCount(); j++)
+							{
+								IOAttributeBag(reader, td, group->GetMethod(j));
+							}
+						}
+
+						// event attributes
+						for (vint i = 0; i < td->GetEventCount(); i++)
+						{
+							IOAttributeBag(reader, td, td->GetEvent(i));
+						}
+
+						// property attributes
+						for (vint i = 0; i < td->GetPropertyCount(); i++)
+						{
+							IOAttributeBag(reader, td, td->GetProperty(i));
+						}
+					}
 				}
 					
 				static void IOCustomType(WfWriter& writer, WfCustomType* td, bool isClass)
@@ -1790,6 +1898,43 @@ Serialization (TypeImpl)
 							IOType(writer, propInfo->GetReturn());
 						}
 					}
+
+					// attributes
+					{
+						// type-level attributes
+						IOAttributeBag(writer, td);
+
+						// constructor attributes
+						if (auto group = td->GetConstructorGroup())
+						{
+							for (vint i = 0; i < group->GetMethodCount(); i++)
+							{
+								IOAttributeBag(writer, group->GetMethod(i));
+							}
+						}
+
+						// method attributes
+						for (vint i = 0; i < td->GetMethodGroupCount(); i++)
+						{
+							auto group = td->GetMethodGroup(i);
+							for (vint j = 0; j < group->GetMethodCount(); j++)
+							{
+								IOAttributeBag(writer, group->GetMethod(j));
+							}
+						}
+
+						// event attributes
+						for (vint i = 0; i < td->GetEventCount(); i++)
+						{
+							IOAttributeBag(writer, td->GetEvent(i));
+						}
+
+						// property attributes
+						for (vint i = 0; i < td->GetPropertyCount(); i++)
+						{
+							IOAttributeBag(writer, td->GetProperty(i));
+						}
+					}
 				}
 
 				//----------------------------------------------------
@@ -1837,6 +1982,18 @@ Serialization (TypeImpl)
 						field->SetReturn(typeInfo);
 						td->AddMember(field);
 					}
+
+					// attributes
+					{
+						// type-level attributes
+						IOAttributeBag(reader, td, nullptr);
+
+						// field attributes
+						for (vint i = 0; i < td->GetPropertyCount(); i++)
+						{
+							IOAttributeBag(reader, td, td->GetProperty(i));
+						}
+					}
 				}
 
 				static void IOStruct(WfWriter& writer, WfStruct* td)
@@ -1853,6 +2010,18 @@ Serialization (TypeImpl)
 
 						ITypeInfo* typeInfo = prop->GetReturn();
 						IOType(writer, typeInfo);
+					}
+
+					// attributes
+					{
+						// type-level attributes
+						IOAttributeBag(writer, td);
+
+						// field attributes
+						for (vint i = 0; i < td->GetPropertyCount(); i++)
+						{
+							IOAttributeBag(writer, td->GetProperty(i));
+						}
 					}
 				}
 

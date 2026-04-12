@@ -488,6 +488,22 @@ DescriptableObject
 		///                         CLASS_MEMBER_METHOD(SetX, {L"value"})
 		///                         CLASS_MEMBER_PROPERTY_EVENT(X, GetX, SetX, XChanged)
 		///
+		///                         // 22) Attach an attribute to the type itself. The attribute type must be a reflected struct.
+		///                         //     Each argument must be a serializable primitive value. Zero arguments are allowed.
+		///                         ATTRIBUTE_TYPE(MyAttribute, L"name", 100)
+		///                         ATTRIBUTE_TYPE(EmptyAttribute)
+		///
+		///                         // 23) Attach an attribute to the most recently registered member (field, property, event, method, or constructor).
+		///                         //     Must appear after the member registration macro it decorates.
+		///                         CLASS_MEMBER_FIELD(fieldValue)
+		///                         ATTRIBUTE_MEMBER(MyAttribute, L"field", 1)
+		///                         ATTRIBUTE_MEMBER(EmptyAttribute)
+		///
+		///                         // 24) Attach an attribute to a named parameter of the most recently registered method or constructor.
+		///                         //     The parameter name must match exactly one parameter.
+		///                         CLASS_MEMBER_METHOD(MyFunction2, {L"parameter1" _ L"parameter2"})
+		///                         ATTRIBUTE_PARAMETER(L"parameter1", MyAttribute, L"param", 2)
+		///
 		///                     END_CLASS_MEMBER(MyClass)
 		///                 ]]></code></program>
 		///                 </p>
@@ -2051,7 +2067,23 @@ ITypeDescriptor (type)
 ITypeDescriptor (basic)
 ***********************************************************************/
 
-			class IMemberInfo : public virtual IDescriptable, public Description<IMemberInfo>
+			class IAttributeInfo : public virtual IDescriptable, public Description<IAttributeInfo>
+			{
+			public:
+				virtual ITypeDescriptor*		GetAttributeType() = 0;
+				virtual vint					GetAttributeValueCount() = 0;
+				virtual ITypeDescriptor*		GetAttributeValueType(vint index) = 0;
+				virtual Value					GetAttributeValue(vint index) = 0;
+			};
+
+			class IAttributeBag : public virtual IDescriptable, public Description<IAttributeBag>
+			{
+			public:
+				virtual vint					GetAttributeCount() = 0;
+				virtual IAttributeInfo*			GetAttribute(vint index) = 0;
+			};
+
+			class IMemberInfo : public virtual IAttributeBag, public Description<IMemberInfo>
 			{
 			public:
 				virtual ITypeDescriptor*		GetOwnerTypeDescriptor()=0;
@@ -2249,7 +2281,7 @@ ITypeDescriptor
 			}
 
 			/// <summary>Metadata class for reflectable types.</summary>
-			class ITypeDescriptor : public virtual IDescriptable, public Description<ITypeDescriptor>
+			class ITypeDescriptor : public virtual IAttributeBag, public Description<ITypeDescriptor>
 			{
 			public:
 				class ICpp : public virtual IDescriptable, public Description<ICpp>
@@ -4143,15 +4175,98 @@ TypeInfoImp
 				void									AddGenericArgument(Ptr<ITypeInfo> value);
 			};
 
+			class AttributeInfoImpl : public Object, public IAttributeInfo
+			{
+				using TypeValuePair = collections::Pair<ITypeDescriptor*, Value>;
+			protected:
+				ITypeDescriptor*						attributeType = nullptr;
+				collections::List<TypeValuePair>		values;
+			public:
+				AttributeInfoImpl(ITypeDescriptor* _attributeType);
+
+				ITypeDescriptor*						GetAttributeType()override;
+				vint									GetAttributeValueCount()override;
+				ITypeDescriptor*						GetAttributeValueType(vint index)override;
+				Value									GetAttributeValue(vint index)override;
+				void									AddValue(ITypeDescriptor* valueType, const Value& value);
+			};
+
 #endif
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
 /***********************************************************************
+MemberInfoBase
+***********************************************************************/
+
+			template<typename TMemberInfo>
+			class MemberInfoBase;
+
+			class AttributeBagSource : public Object
+			{
+				template<typename TMemberInfo>
+				friend class MemberInfoBase;
+			protected:
+				collections::Group<IMemberInfo*, Ptr<IAttributeInfo>>		attributes;
+				IMemberInfo*												lastRegisteredMember = nullptr;
+
+				virtual vint GetAttributeCountInternal(IMemberInfo* memberInfo)
+				{
+					if (!attributes.Contains(memberInfo))
+					{
+						return 0;
+					}
+					return attributes.Get(memberInfo).Count();
+				}
+
+				virtual IAttributeInfo* GetAttributeInternal(IMemberInfo* memberInfo, vint index)
+				{
+					if (!attributes.Contains(memberInfo))
+					{
+						return nullptr;
+					}
+					auto&& infos = attributes.Get(memberInfo);
+					return 0 <= index && index < infos.Count() ? infos[index].Obj() : nullptr;
+				}
+			public:
+				void									RegisterAttribute(IMemberInfo* memberInfo, Ptr<IAttributeInfo> info);
+				IMemberInfo*							GetLastRegisteredMember()const;
+				void									SetLastRegisteredMember(IMemberInfo* member);
+			};
+
+			template<typename TMemberInfo>
+			class MemberInfoBase : public Object, public TMemberInfo
+			{
+			protected:
+
+				AttributeBagSource* GetAttributeBagSource()
+				{
+#define ERROR_MESSAGE_PREFIX L"vl::reflection::description::MemberInfoBase<TMemberInfo>::GetAttributeBagSource()#"
+					auto owner = this->GetOwnerTypeDescriptor();
+					CHECK_ERROR(owner, ERROR_MESSAGE_PREFIX L"GetOwnerTypeDescriptor() should not return nullptr.");
+					auto source = dynamic_cast<AttributeBagSource*>(owner);
+					CHECK_ERROR(source, ERROR_MESSAGE_PREFIX L"GetOwnerTypeDescriptor() should be an AttributeBagSource instance.");
+					return source;
+#undef ERROR_MESSAGE_PREFIX
+				}
+
+			public:
+				vint GetAttributeCount()
+				{
+					return GetAttributeBagSource()->GetAttributeCountInternal(this);
+				}
+
+				IAttributeInfo* GetAttribute(vint index)
+				{
+					return GetAttributeBagSource()->GetAttributeInternal(this, index);
+				}
+			};
+
+/***********************************************************************
 SerializableTypeDescriptor
 ***********************************************************************/
 
-			class TypeDescriptorImplBase : public Object, public ITypeDescriptor, private ITypeDescriptor::ICpp
+			class TypeDescriptorImplBase : public AttributeBagSource, public ITypeDescriptor, private ITypeDescriptor::ICpp
 			{
 			private:
 				TypeDescriptorFlags							typeDescriptorFlags;
@@ -4163,11 +4278,14 @@ SerializableTypeDescriptor
 
 			protected:
 				const TypeInfoContent*						GetTypeInfoContentInternal();
+				virtual void								LoadForAttributeAccess();
 
 			public:
 				TypeDescriptorImplBase(TypeDescriptorFlags _typeDescriptorFlags, const TypeInfoContent* _typeInfoContent);
 				~TypeDescriptorImplBase();
 
+				vint										GetAttributeCount()override;
+				IAttributeInfo*								GetAttribute(vint index)override;
 				ITypeDescriptor::ICpp*						GetCpp()override;
 				TypeDescriptorFlags							GetTypeDescriptorFlags()override;
 				const WString&								GetTypeName()override;
@@ -4183,6 +4301,7 @@ SerializableTypeDescriptor
 
 				virtual void								LoadInternal();;
 				void										Load();
+				void										LoadForAttributeAccess()override;
 			public:
 				ValueTypeDescriptorBase(TypeDescriptorFlags _typeDescriptorFlags, const TypeInfoContent* _typeInfoContent);
 				~ValueTypeDescriptorBase();
@@ -4224,7 +4343,7 @@ SerializableTypeDescriptor
 ParameterInfoImpl
 ***********************************************************************/
 
-			class ParameterInfoImpl : public Object, public IParameterInfo
+			class ParameterInfoImpl : public MemberInfoBase<IParameterInfo>
 			{
 			protected:
 				IMethodInfo*							ownerMethod;
@@ -4244,7 +4363,7 @@ ParameterInfoImpl
 MethodInfoImpl
 ***********************************************************************/
 
-			class MethodInfoImpl : public Object, public IMethodInfo
+			class MethodInfoImpl : public MemberInfoBase<IMethodInfo>
 			{
 				friend class PropertyInfoImpl;
 			protected:
@@ -4289,6 +4408,9 @@ MethodGroupInfoImpl
 				MethodGroupInfoImpl(ITypeDescriptor* _ownerTypeDescriptor, const WString& _name);
 				~MethodGroupInfoImpl();
 
+				vint									GetAttributeCount()override;
+				IAttributeInfo*							GetAttribute(vint index)override;
+
 				ITypeDescriptor*						GetOwnerTypeDescriptor()override;
 				const WString&							GetName()override;
 				vint									GetMethodCount()override;
@@ -4300,7 +4422,7 @@ MethodGroupInfoImpl
 EventInfoImpl
 ***********************************************************************/
 
-			class EventInfoImpl : public Object, public IEventInfo
+			class EventInfoImpl : public MemberInfoBase<IEventInfo>
 			{
 				friend class PropertyInfoImpl;
 
@@ -4332,7 +4454,7 @@ EventInfoImpl
 TypeDescriptorImpl
 ***********************************************************************/
 
-			class PropertyInfoImpl : public Object, public IPropertyInfo
+			class PropertyInfoImpl : public MemberInfoBase<IPropertyInfo>
 			{
 			protected:
 				ITypeDescriptor*						ownerTypeDescriptor;
@@ -4378,7 +4500,7 @@ TypeDescriptorImpl
 FieldInfoImpl
 ***********************************************************************/
 
-			class FieldInfoImpl : public Object, public IPropertyInfo
+			class FieldInfoImpl : public MemberInfoBase<IPropertyInfo>
 			{
 			protected:
 				ITypeDescriptor*						ownerTypeDescriptor;
@@ -4428,6 +4550,7 @@ TypeDescriptorImpl
 
 				virtual void				LoadInternal()=0;
 				void						Load();
+				void						LoadForAttributeAccess()override;
 			public:
 				TypeDescriptorImpl(TypeDescriptorFlags _typeDescriptorFlags, const TypeInfoContent* _typeInfoContent);
 				~TypeDescriptorImpl();
@@ -4715,6 +4838,13 @@ StructTypeDescriptor
 				collections::Dictionary<WString, Ptr<IPropertyInfo>>		fields;
 
 			public:
+				IPropertyInfo* AddField(Ptr<IPropertyInfo> value)
+				{
+					fields.Add(value->GetName(), value);
+					this->SetLastRegisteredMember(value.Obj());
+					return value.Obj();
+				}
+
 				StructTypeDescriptor()
 				{
 					this->valueType = Ptr(new StructValueType<T>());
@@ -7324,6 +7454,81 @@ namespace vl
 			template<typename T>
 			using FUNCTIONNAME_AddPointer = T*;
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
+			namespace detail
+			{
+				namespace attribute_macro
+				{
+					template<typename TArg>
+					struct BoxingProxy
+					{
+						AttributeInfoImpl* info;
+						TArg&& value;
+
+						template<typename FieldType>
+						operator FieldType()
+						{
+							FieldType field(std::forward<TArg>(value));
+							if constexpr (std::is_pointer_v<std::remove_cvref_t<FieldType>>)
+							{
+								using PointedType = std::remove_pointer_t<std::remove_cvref_t<FieldType>>;
+								auto valueType = description::GetTypeDescriptor<PointedType>();
+								auto boxed = BoxValue<std::remove_cvref_t<FieldType>>(field);
+								info->AddValue(valueType, boxed);
+							}
+							else
+							{
+								auto boxed = BoxValue<std::remove_cvref_t<FieldType>>(field);
+								auto valueType = boxed.GetTypeDescriptor();
+								info->AddValue(valueType, boxed);
+							}
+							return field;
+						}
+					};
+
+					template<typename TAttribute, typename... TArgs>
+					Ptr<IAttributeInfo> MakeAttributeInfo(TArgs&&... args)
+					{
+						static_assert(requires { TAttribute{ std::forward<TArgs>(args)... }; }, "ATTRIBUTE_* requires TYPE{ARG1, ...} to compile.");
+
+						auto attributeType = description::GetTypeDescriptor<TAttribute>();
+						CHECK_ERROR(attributeType != nullptr, L"ATTRIBUTE_*#Failed to resolve the reflected attribute type.");
+						CHECK_ERROR(attributeType->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct, L"ATTRIBUTE_*#Attribute type must be a reflected struct.");
+
+						auto info = Ptr(new AttributeInfoImpl(attributeType));
+						if constexpr (sizeof...(TArgs) > 0)
+						{
+							// Actual field types will be applied by calling BoxingProxy<TArgs>::operator FieldType() in the constructor
+							// During the conversion, the expected attribute argument type can be retrieved to construct IAttributeInfo
+							TAttribute{ BoxingProxy<TArgs>{info.Obj(), std::forward<TArgs>(args)}... };
+						}
+						return info;
+					}
+
+					inline IParameterInfo* FindParameter(IMethodInfo* method, const WString& parameterName, const wchar_t* macroName)
+					{
+						vint matchedCount = 0;
+						IParameterInfo* matchedParameter = nullptr;
+						for (vint i = 0; i < method->GetParameterCount(); i++)
+						{
+							auto parameter = method->GetParameter(i);
+							if (parameter->GetName() == parameterName)
+							{
+								matchedCount++;
+								matchedParameter = parameter;
+							}
+						}
+
+						CHECK_ERROR(matchedCount != 0, (WString::Unmanaged(macroName) + L"#The named parameter does not exist on the last registered method.").Buffer());
+						CHECK_ERROR(matchedCount == 1, (WString::Unmanaged(macroName) + L"#The named parameter is ambiguous on the last registered method.").Buffer());
+						return matchedParameter;
+					}
+				}
+			}
+
+#endif
+
 /***********************************************************************
 Type
 ***********************************************************************/
@@ -7486,7 +7691,7 @@ Struct
 			};
 
 #define STRUCT_MEMBER(FIELDNAME)\
-	fields.Add(L ## #FIELDNAME, Ptr(new StructFieldInfo<decltype(((StructType*)0)->FIELDNAME)>(this, &StructType::FIELDNAME, L ## #FIELDNAME)));
+	AddField(Ptr(new StructFieldInfo<decltype(((StructType*)0)->FIELDNAME)>(this, &StructType::FIELDNAME, L ## #FIELDNAME)));
 
 /***********************************************************************
 Class
@@ -7527,6 +7732,28 @@ Class
 					}\
 				};\
 			};
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
+#define ATTRIBUTE_TYPE(TYPE, ...)\
+			RegisterAttribute(nullptr, detail::attribute_macro::MakeAttributeInfo<TYPE>(__VA_ARGS__));
+
+#define ATTRIBUTE_MEMBER(TYPE, ...)\
+			{\
+				auto attributeTargetMember = GetLastRegisteredMember();\
+				CHECK_ERROR(attributeTargetMember != nullptr, L"ATTRIBUTE_MEMBER#This macro must appear after a reflected member.");\
+				RegisterAttribute(attributeTargetMember, detail::attribute_macro::MakeAttributeInfo<TYPE>(__VA_ARGS__));\
+			}
+
+#define ATTRIBUTE_PARAMETER(PARAMETER_NAME, TYPE, ...)\
+			{\
+				auto attributeTargetMethod = dynamic_cast<IMethodInfo*>(GetLastRegisteredMember());\
+				CHECK_ERROR(attributeTargetMethod != nullptr, L"ATTRIBUTE_PARAMETER#This macro must appear after a reflected method or constructor.");\
+				auto attributeTargetParameter = detail::attribute_macro::FindParameter(attributeTargetMethod, WString::Unmanaged(PARAMETER_NAME), L"ATTRIBUTE_PARAMETER");\
+				RegisterAttribute(attributeTargetParameter, detail::attribute_macro::MakeAttributeInfo<TYPE>(__VA_ARGS__));\
+			}
+
+#endif
 
 /***********************************************************************
 Interface
@@ -7854,6 +8081,8 @@ Predefined Types
 			F(ISerializableType)			\
 			F(ITypeInfo)					\
 			F(ITypeInfo::Decorator)			\
+			F(IAttributeInfo)				\
+			F(IAttributeBag)				\
 			F(IMemberInfo)					\
 			F(IEventHandler)				\
 			F(IEventInfo)					\

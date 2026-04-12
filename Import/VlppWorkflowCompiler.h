@@ -5059,7 +5059,14 @@ Scope Manager
 				typedef collections::List<Ptr<WfModule>>													ModuleList;
 				typedef collections::List<WString>															ModuleCodeList;
 				typedef collections::Pair<WString, WString>													AttributeKey;
-				typedef collections::Dictionary<AttributeKey, Ptr<ITypeInfo>>								AttributeTypeMap;
+
+				struct ResolvedWorkflowAttribute
+				{
+					bool							exists = false;
+					bool							hasArgument = false;
+					Ptr<ITypeInfo>					argumentType;
+					ITypeDescriptor*				attributeType = nullptr;
+				};
 
 				typedef collections::Dictionary<ITypeDescriptor*, Ptr<WfLexicalScopeName>>					TypeNameMap;
 
@@ -5098,8 +5105,11 @@ Scope Manager
 
 				workflow::Parser&							workflowParser;
 				Ptr<EventHandler>							workflowParserHandler;
-				AttributeTypeMap							attributes;
 
+			protected:
+				collections::Dictionary<AttributeKey, ResolvedWorkflowAttribute>	resolvedAttributes;
+
+			public:
 				Ptr<WfLexicalScopeName>						globalName;							// root scope
 				TypeNameMap									typeNames;							// ITypeDescriptor* to scope name map
 
@@ -5132,6 +5142,8 @@ Scope Manager
 				/// <param name="_cpuArchitecture">The target CPU architecture.</param>
 				WfLexicalScopeManager(workflow::Parser& _workflowParser, WfCpuArchitecture _cpuArchitecture);
 				~WfLexicalScopeManager();
+				ResolvedWorkflowAttribute					ResolveWorkflowAttribute(const WString& category, const WString& name);
+				WString										GetWorkflowAttributeTypeName(const WString& category, const WString& name);
 				
 				/// <summary>Add a Workflow module. Syntax errors can be found at <see cref="errors"/>.</summary>
 				/// <param name="moduleCode">The source code of a workflow module.</param>
@@ -5314,6 +5326,12 @@ Semantic Analyzing
 			extern Ptr<reflection::description::ITypeInfo>	GetLeftValueExpressionType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression);
 			extern Ptr<reflection::description::ITypeInfo>	GetEnumerableExpressionItemType(WfLexicalScopeManager* manager, WfExpression* expression, Ptr<reflection::description::ITypeInfo> expectedType);
 			extern Ptr<reflection::description::ITypeInfo>	GetEnumerableExpressionItemType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType);
+
+/***********************************************************************
+RPC Analyzing
+***********************************************************************/
+
+			extern void										ValidateModuleRPC(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 
 /***********************************************************************
 Expanding Virtual Nodes
@@ -5540,6 +5558,18 @@ Error Messages
 				static glr::ParsingError					AutoPropertyShouldBeInitialized(WfAutoPropertyDeclaration* node);
 				static glr::ParsingError					AutoPropertyCannotBeInitializedInInterface(WfAutoPropertyDeclaration* node, WfClassDeclaration* classDecl);
 
+				// H: RPC attribute checking
+				static glr::ParsingError					RpcInterfaceCanOnlyApplyToInterface(WfAttribute* node, const WString& fullName);
+				static glr::ParsingError					RpcInterfaceBaseNotSerializable(WfType* node, const WString& interfaceFullName, const WString& baseFullName);
+				static glr::ParsingError					RpcInterfaceMemberNotSerializable(WfDeclaration* node, const WString& interfaceFullName, const WString& memberName);
+				static glr::ParsingError					RpcInterfaceMemberNotSerializable(WfFunctionArgument* node, const WString& interfaceFullName, const WString& memberName);
+				static glr::ParsingError					RpcCtorCanOnlyApplyToRpcInterface(WfAttribute* node);
+				static glr::ParsingError					RpcAttributeCanOnlyApplyToPropertyMethodOrParameter(WfAttribute* node, const WString& attributeName);
+				static glr::ParsingError					RpcAttributeCanOnlyBeUsedInsideRpcInterface(WfAttribute* node, const WString& attributeName);
+				static glr::ParsingError					RpcAttributeRequiresStrongTypedCollection(WfAttribute* node, const WString& attributeName, const WString& memberName);
+				static glr::ParsingError					RpcAttributeCanOnlyApplyToProperty(WfAttribute* node, const WString& attributeName);
+				static glr::ParsingError					RpcAttributeCannotCoexistWithOther(WfAttribute* node, const WString& attributeName, const WString& otherAttributeName, const WString& memberName);
+
 				// CPP: C++ code generation error
 				static glr::ParsingError					CppUnableToDecideClassOrder(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
 				static glr::ParsingError					CppUnableToSeparateCustomFile(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
@@ -5549,6 +5579,7 @@ Error Messages
 }
 
 #endif
+
 
 /***********************************************************************
 .\EMITTER\WFEMITTER.H
@@ -5948,6 +5979,7 @@ WfCppConfig::Write
 			};
 
 			extern void					GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, reflection::description::ITypeInfo* expectedType, bool useReturnValue = true);
+			extern void					WriteWStringLiteralUnmanaged(stream::StreamWriter& writer, const WString& value);
 			extern void					GenerateStatement(WfCppConfig* config, Ptr<FunctionRecord> functionRecord, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix, const WString& prefixDelta, reflection::description::ITypeInfo* returnType);
 			extern void					GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfDeclaration> memberDecl, const WString& prefix, bool forClassExpr);
 			extern bool					GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, WfClassDeclaration* classDef, const WString& classBaseName, const WString& className, const WString& classFullName, Ptr<WfDeclaration> memberDecl, const WString& prefix);
@@ -5999,3 +6031,4 @@ GenerateCppFiles
 }
 
 #endif
+

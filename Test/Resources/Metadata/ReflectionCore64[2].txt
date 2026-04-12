@@ -6403,6 +6403,27 @@ class system::XmlText : system::XmlNode {
     constructor () : system::XmlText^;
 }
 
+@FullName:vl::reflection::description::IAttributeBag
+interface system::reflection::AttributeBag : system::Interface {
+    property AttributeCount : system::Int64 { get:GetAttributeCount }
+
+    function GetAttribute(index : system::Int64) : system::reflection::AttributeInfo*;
+    function GetAttributeCount() : system::Int64;
+
+}
+
+@FullName:vl::reflection::description::IAttributeInfo
+interface system::reflection::AttributeInfo : system::Interface {
+    property AttributeType : system::reflection::TypeDescriptor* { get:GetAttributeType }
+    property AttributeValueCount : system::Int64 { get:GetAttributeValueCount }
+
+    function GetAttributeType() : system::reflection::TypeDescriptor*;
+    function GetAttributeValue(index : system::Int64) : system::Object;
+    function GetAttributeValueCount() : system::Int64;
+    function GetAttributeValueType(index : system::Int64) : system::reflection::TypeDescriptor*;
+
+}
+
 @FullName:vl::reflection::description::IBoxedValue
 interface system::reflection::BoxedValue : system::Interface {
     function Copy() : system::reflection::BoxedValue^;
@@ -6441,7 +6462,7 @@ interface system::reflection::EventInfo : system::reflection::MemberInfo {
 }
 
 @FullName:vl::reflection::description::IMemberInfo
-interface system::reflection::MemberInfo : system::Interface {
+interface system::reflection::MemberInfo : system::reflection::AttributeBag {
     property Name : system::String { get:GetName }
     property OwnerTypeDescriptor : system::reflection::TypeDescriptor* { get:GetOwnerTypeDescriptor }
 
@@ -6513,7 +6534,7 @@ interface system::reflection::SerializableType : system::Interface {
 }
 
 @FullName:vl::reflection::description::ITypeDescriptor
-interface system::reflection::TypeDescriptor : system::Interface {
+interface system::reflection::TypeDescriptor : system::reflection::AttributeBag {
     property BaseTypeDescriptorCount : system::Int64 { get:GetBaseTypeDescriptorCount }
     property ConstructorGroup : system::reflection::MethodGroupInfo* { get:GetConstructorGroup }
     property EnumType : system::reflection::EnumType* { get:GetEnumType }
@@ -6616,5 +6637,62 @@ enum system::reflection::ValueType::CompareResult {
     Greater = 1,
     NotComparable = 3,
     Smaller = 0,
+}
+
+@FullName:vl::__vwsn::att_cpp_File
+@ValueType
+struct system::workflow_attributes::att_cpp_File {
+    property argument : system::String;
+}
+
+@FullName:vl::__vwsn::att_cpp_Friend
+@ValueType
+struct system::workflow_attributes::att_cpp_Friend {
+    property argument : system::reflection::TypeDescriptor*;
+}
+
+@FullName:vl::__vwsn::att_cpp_Private
+@ValueType
+struct system::workflow_attributes::att_cpp_Private {
+}
+
+@FullName:vl::__vwsn::att_cpp_Protected
+@ValueType
+struct system::workflow_attributes::att_cpp_Protected {
+}
+
+@FullName:vl::__vwsn::att_cpp_UserImpl
+@ValueType
+struct system::workflow_attributes::att_cpp_UserImpl {
+}
+
+@FullName:vl::__vwsn::att_rpc_Byref
+@ValueType
+struct system::workflow_attributes::att_rpc_Byref {
+}
+
+@FullName:vl::__vwsn::att_rpc_Byval
+@ValueType
+struct system::workflow_attributes::att_rpc_Byval {
+}
+
+@FullName:vl::__vwsn::att_rpc_Cached
+@ValueType
+struct system::workflow_attributes::att_rpc_Cached {
+}
+
+@FullName:vl::__vwsn::att_rpc_Ctor
+@ValueType
+struct system::workflow_attributes::att_rpc_Ctor {
+}
+
+@FullName:vl::__vwsn::att_rpc_Dynamic
+@ValueType
+struct system::workflow_attributes::att_rpc_Dynamic {
+}
+
+@FullName:vl::__vwsn::att_rpc_Interface
+@ValueType
+struct system::workflow_attributes::att_rpc_Interface {
 }
 

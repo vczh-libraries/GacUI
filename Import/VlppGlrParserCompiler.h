@@ -616,6 +616,7 @@ Output
 				WString			traverseCpp;
 				WString			jsonH;
 				WString			jsonCpp;
+				WString			jsonDts;
 			};
 
 			struct CppSyntaxGenOutput
@@ -695,6 +696,7 @@ namespace vl
 			extern void			WriteTraverseVisitorCppFile		(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
 			extern void			WriteJsonVisitorHeaderFile		(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
 			extern void			WriteJsonVisitorCppFile			(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
+			extern void			WriteJsonVisitorDtsFile			(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
 
 			extern void			WriteAstAssemblerHeaderFile		(AstSymbolManager& manager, Ptr<CppParserGenOutput> output, stream::StreamWriter& writer);
 			extern void			WriteAstAssemblerCppFile		(AstSymbolManager& manager, Ptr<CppParserGenOutput> output, stream::StreamWriter& writer);

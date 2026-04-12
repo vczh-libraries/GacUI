@@ -1033,6 +1033,17 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::AsyncCoroutine, system::AsyncCoroutine)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::StateMachine, system::StateMachine)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Versioning, system::Versioning)
+			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_cpp_File, system::workflow_attributes::att_cpp_File)
+			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_cpp_UserImpl, system::workflow_attributes::att_cpp_UserImpl)
+			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_cpp_Private, system::workflow_attributes::att_cpp_Private)
+			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_cpp_Protected, system::workflow_attributes::att_cpp_Protected)
+			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_cpp_Friend, system::workflow_attributes::att_cpp_Friend)
+			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_rpc_Interface, system::workflow_attributes::att_rpc_Interface)
+			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_rpc_Ctor, system::workflow_attributes::att_rpc_Ctor)
+			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_rpc_Byval, system::workflow_attributes::att_rpc_Byval)
+			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_rpc_Byref, system::workflow_attributes::att_rpc_Byref)
+			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_rpc_Cached, system::workflow_attributes::att_rpc_Cached)
+			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_rpc_Dynamic, system::workflow_attributes::att_rpc_Dynamic)
 
 #endif
 
@@ -1043,6 +1054,41 @@ WfLoadLibraryTypes
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 #define _ ,
+
+			BEGIN_STRUCT_MEMBER(vl::__vwsn::att_cpp_File)
+				STRUCT_MEMBER(argument)
+			END_STRUCT_MEMBER(vl::__vwsn::att_cpp_File)
+
+			BEGIN_STRUCT_MEMBER(vl::__vwsn::att_cpp_UserImpl)
+			END_STRUCT_MEMBER(vl::__vwsn::att_cpp_UserImpl)
+
+			BEGIN_STRUCT_MEMBER(vl::__vwsn::att_cpp_Private)
+			END_STRUCT_MEMBER(vl::__vwsn::att_cpp_Private)
+
+			BEGIN_STRUCT_MEMBER(vl::__vwsn::att_cpp_Protected)
+			END_STRUCT_MEMBER(vl::__vwsn::att_cpp_Protected)
+
+			BEGIN_STRUCT_MEMBER(vl::__vwsn::att_cpp_Friend)
+				STRUCT_MEMBER(argument)
+			END_STRUCT_MEMBER(vl::__vwsn::att_cpp_Friend)
+
+			BEGIN_STRUCT_MEMBER(vl::__vwsn::att_rpc_Interface)
+			END_STRUCT_MEMBER(vl::__vwsn::att_rpc_Interface)
+
+			BEGIN_STRUCT_MEMBER(vl::__vwsn::att_rpc_Ctor)
+			END_STRUCT_MEMBER(vl::__vwsn::att_rpc_Ctor)
+
+			BEGIN_STRUCT_MEMBER(vl::__vwsn::att_rpc_Byval)
+			END_STRUCT_MEMBER(vl::__vwsn::att_rpc_Byval)
+
+			BEGIN_STRUCT_MEMBER(vl::__vwsn::att_rpc_Byref)
+			END_STRUCT_MEMBER(vl::__vwsn::att_rpc_Byref)
+
+			BEGIN_STRUCT_MEMBER(vl::__vwsn::att_rpc_Cached)
+			END_STRUCT_MEMBER(vl::__vwsn::att_rpc_Cached)
+
+			BEGIN_STRUCT_MEMBER(vl::__vwsn::att_rpc_Dynamic)
+			END_STRUCT_MEMBER(vl::__vwsn::att_rpc_Dynamic)
 
 			BEGIN_CLASS_MEMBER(Sys)
 				CLASS_MEMBER_STATIC_METHOD(Int32ToInt, { L"value" })
