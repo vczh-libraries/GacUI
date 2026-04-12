@@ -51,6 +51,7 @@ I am going to propose some change to the source code.
   - One build-fix process includes one attempt with the following instructions.
   - The main agent should call different sub agent for each build-fix process.
   - Do not build and retrieve build results in the main agent.
+- DO NOT delete the build log file.
 
 ### Use a sub agent to run all following instructions (`Build the Solution`, `Fix Compile Errors`, `Code Generation`, `Finishing Code Change`)
 
@@ -99,3 +100,9 @@ I am going to propose some change to the source code.
     - Indentation is correct and consistent with the surrounding code.
     - Coding style especially line breaks follows the same conventions as the surrounding code.
 - Ensure any empty line does not contain spaces or tabs.
+
+## Step 5. NO NEED to run unit test.
+
+- It will be covered by another separate phase.
+- You are good here.
+- DO NOT delete the build log file. The log file should remain untouched after finishing these instructions.

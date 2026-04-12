@@ -35,6 +35,7 @@
 - Check out `# AFFECTED PROJECTS` in `Copilot_Execution.md` to find out what solutions you need to build.
 - Find out if there is any warning or error.
   - `External Tools Environment and Context` in `REPO-ROOT/.github/copilot-instructions.md` has the instruction about how to check compile result.
+- DO NOT delete the build log file.
 
 #### Fix Compile Errors
 
@@ -74,6 +75,7 @@
   - One test-fix process includes one attempt following `Execute Unit Test` and `Fix Failed Test Cases`.
   - The main agent should call different sub agent for each test-fix process.
   - Do not test and retrieve test results in the main agent.
+- DO NOT delete the test log file.
 
 ### Use a sub agent to run the following instructions (`Execute Unit Test`, `Identify the Cause of Failure`, `Fix Failed Test Cases`)
 
@@ -118,3 +120,4 @@
 ## Step 4. Check it Again
 
 - Go back to `Step 2. Make Sure the Code Compiles`, follow all instructions and all steps again.
+- DO NOT delete the build/test log files. The log files should remain untouched after finishing these instructions.

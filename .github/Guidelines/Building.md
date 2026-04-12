@@ -39,4 +39,4 @@ cd SOLUTION-ROOT
   - "Build succeeded."
   - "0 Warning(s)"
   - "0 Error(s)"
-- DO NOT delete the log file by yourself unless explicitly required.
+- DO NOT delete the log file by yourself.

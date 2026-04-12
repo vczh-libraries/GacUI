@@ -63,4 +63,4 @@ Ignore `LocalDebuggerCommandArgumentsHistory` in `*.vcxproj.user`.
 - When all test cases pass, the last several lines of `Execute.log` should be in the following pattern; otherwise it crashed at the last shown test case:
   - "Passed test files: X/X"
   - "Passed test cases: Y/Y"
-- DO NOT delete the log file by yourself unless explicitly required.
+- DO NOT delete the log file by yourself.
