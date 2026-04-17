@@ -60,6 +60,10 @@ Ignore `LocalDebuggerCommandArgumentsHistory` in `*.vcxproj.user`.
   - Testing takes a long time. DO NOT hurry.
   - When the script finishes, the result is saved to `REPO-ROOT/.github/Scripts/Execute.log`.
   - A temporary file `Execute.log.unfinished` is created during testing. It will be automatically deleted as soon as the testing finishes. If you see this file, it means the testing is not finished yet.
+    - Read `Execute.log.unfinished` every 5 minutes.
+    - If the log is not updated, it is possible that the unit test raised a fatal error and blocked by the system message dialog. You need to:
+      - Kill the unit test process.
+      - You are required to run the unit test with debugger attached. The fatal error will report to the debugger and you can see what happened.
 - When all test cases pass, the last several lines of `Execute.log` should be in the following pattern; otherwise it crashed at the last shown test case:
   - "Passed test files: X/X"
   - "Passed test cases: Y/Y"
