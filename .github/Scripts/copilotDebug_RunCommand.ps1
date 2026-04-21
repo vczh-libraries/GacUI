@@ -8,6 +8,7 @@ if ([string]::IsNullOrEmpty($Command)) {
 
 . $PSScriptRoot\copilotShared.ps1
 $cdbpath = GetCDBPath
-$commandLine = "echo .remote_exit | `"$($cdbpath)`" -remote npipe:server=.,pipe=VlppUnitTest -clines 0 -c `"$Command`""
+$debuggerNamedPipe = GetDebuggerNamedPipe
+$commandLine = "echo .remote_exit | `"$($cdbpath)`" -remote npipe:server=.,pipe=$debuggerNamedPipe -clines 0 -c `"$Command`""
 echo $commandLine
 cmd.exe /S /C $commandLine

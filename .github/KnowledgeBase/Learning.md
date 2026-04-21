@@ -19,6 +19,7 @@
 - Dereference `Ptr<T>` via `.Obj()` (not `*ptr`) [1]
 - `vl::regex` separator regex: `L"[\\/\\\\]+"` [1]
 - Use 2-space indentation in embedded XML/JSON literals [1]
+- `collections::List` has deleted copy constructor; use `std::move()` for structs with `List` members [1]
 
 # Refinements
 
@@ -97,3 +98,7 @@ When writing XML or JSON inside a C++ string literal (e.g. `LR"GacUISrc(... )Gac
 In `vl::regex::Regex`, both `/` and `\\` are escaping characters, and incorrect escaping inside `[]` can throw errors like `Illegal character set definition.`
 
 To split paths by either `/` or `\\`, a verified pattern is `L"[\\/\\\\]+"`, and using `Regex::Split(..., keepEmptyMatch=false, ...)` conveniently drops empty components (so `//` behaves like `/`).
+
+## `collections::List` has deleted copy constructor; use `std::move()` for structs with `List` members
+
+When a C++ struct contains `vl::collections::List` fields, the struct's implicit copy constructor is deleted. Appending such structs to a `vl::collections::List` by copy will fail at compile time with `error C2280`. Use `std::move()` when adding these structs to destination lists (e.g. `list.Add(std::move(model))`). Note: there is no repo-provided `Move()` utility; always use `std::move()` from `<utility>`.

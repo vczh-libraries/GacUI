@@ -25,6 +25,7 @@ Write-Host "Selected $executableName`: $($latestFile.Path) (Modified: $($latestF
 $debugArgs = GetDebugArgs $solutionFolder $latestFile $Executable
 
 $cdbpath = GetCDBPath
-$commandLine = "`"$($cdbpath)`" -server npipe:pipe=VlppUnitTest -cf `"$PSScriptRoot\copilotDebug_Init.txt`" -o `"$($latestFile.Path)`" $debugArgs"
+$debuggerNamedPipe = GetDebuggerNamedPipe
+$commandLine = "`"$($cdbpath)`" -server npipe:pipe=$debuggerNamedPipe -cf `"$PSScriptRoot\copilotDebug_Init.txt`" -o `"$($latestFile.Path)`" $debugArgs"
 echo $commandLine
 cmd.exe /S /C $commandLine

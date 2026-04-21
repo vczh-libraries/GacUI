@@ -8,6 +8,11 @@ function GetCDBPath {
     return $env:CDBPATH
 }
 
+function GetDebuggerNamedPipe {
+    $debuggerRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
+    return ($debuggerRoot -replace "[^A-Za-z0-9]", "").ToUpperInvariant()
+}
+
 function GetSolutionDir {
     $currentDir = Get-Location
     $solutionFolder = $null
