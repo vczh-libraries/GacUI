@@ -1,4 +1,9 @@
-## Debugging a Project
+# Debugging a Project
+
+- Go to `Windows Specific` section if you are on Windows.
+- Go to `Linux Specific` section if you are on Linux or macOS.
+
+## Windows Specific
 
 Debugging would be useful when you lack necessary information.
 In this section I offer you a set of PowerShell scripts that work with CDB (Microsoft's Console Debugger).
@@ -14,6 +19,8 @@ Execute the following PowerShell commands:
 cd SOLUTION-ROOT
 start powershell {& REPO-ROOT\.github\Scripts\copilotDebug_Start.ps1 -Executable PROJECT-NAME}
 ```
+
+If the debugger is already started, this script will fail because the pipe name is occupied. That probably means the last time you forgot to stop the debugger. You can kill `cdb` and the process being debugged, before starting a new debugger.
 
 The `start powershell {}` is necessary; otherwise the script will block the execution forever causing you to wait infinitely.
 The script will finish immediately, leaving a debugger running in the background. You can send commands to the debugger.
@@ -31,6 +38,14 @@ This script is also required to run before compiling only when Visual Studio Cod
 ```
 
 If there is any error message, it means the debugger is not alive, it is good.
+
+#### Warning
+
+You should never combine `copilotDebug_Stop.ps1` with others in one single powershell call.
+It could block you forever if some system thing went wrong.
+You should run this script separately, and do not just wait for its input.
+The script is supposed to be done very fast, you should keep reading the terminal output parallelly.
+And when it seems to never finish, kill the terminal and cdb directly.
 
 ### Sending Commands to Debugger
 
@@ -69,3 +84,34 @@ You can also use `dv -rX` to expand "X" levels of fields, the default option is 
 - Only use **dv** without any parameters.
 - DO NOT use **dt**.
 - DO NOT use **q**, **qd**, **qq**, **qqd** etc to stop the debugger, always use `copilotDebug_Stop.ps1`.
+
+## Linux Specific
+
+Like building and running, debugging must be performed from the same folder that contains `vmake`:
+- If the repo has only one project, it is in `REPO-ROOT/Test/Linux`.
+- If the repo has multiple projects, it is in `REPO-ROOT/Test/Linux/PROJECT-NAME`.
+  - `PROJECT-NAME` naming is following `PROJECT-NAME.vcxproj`.
+You are required to `cd` to such folder before launching `lldb`, otherwise relative paths to the binary and source files will be wrong.
+
+`lldb` is going to block the terminal and wait for interaction, you should always start `lldb` in a PTY-backed tool session, for example:
+
+```bash
+lldb -- ./Bin/UnitTest /C
+```
+
+Keep the session id returned by the tool. Send debugger commands as newline-terminated stdin, one round at a time, and wait for output between rounds.
+
+End the session with:
+
+```text
+quit
+```
+
+If the debugged process is still running or stuck, send Ctrl-C (`\u0003`), then send:
+
+```text
+process kill
+quit
+```
+
+For non-interactive one-shot debugging, wrap `lldb` with `timeout` so it cannot block forever.

@@ -1,33 +1,38 @@
 # Building a Solution
 
+- Go to `Windows Specific` section if you are on Windows.
+- Go to `Linux Specific` section if you are on Linux or macOS.
+
+## Windows Specific
+
 - Only run `copilotBuild.ps1` to build a solution.
 - DO NOT use msbuild by yourself.
 - The script builds all projects in a solution.
 
-## Executing copilotBuild.ps1
+### Executing copilotBuild.ps1
 
-Before building, ensure the debugger has stopped.
-If there is any error message, it means the debugger is not alive, it is good.
-
-```
-& REPO-ROOT\.github\Scripts\copilotDebug_Stop.ps1
-```
-
-And then run this script to build the solution:
+Run this script to build the solution:
 
 ```
 cd SOLUTION-ROOT
 & REPO-ROOT\.github\Scripts\copilotBuild.ps1
 ```
 
-## Ensure Target Configuration
+It is possible that, before running `copilotBuild.ps1`, the binary to compile is still running or still being debugged. This could cause the linking to fail. You need to check the error message, and in case when it happens:
+- Kill `cdb` process first, if there is any.
+  - The cdb path is stored in `$env:CDBPATH`.
+  - Avoid running `copilotDebug_Stop.ps1` directly.
+- Kill the binary process that is blocked.
+- Rebuild, and this issue should gone.
+
+### Ensure Target Configuration
 
 `-Configuration` and `-Platform` arguments are available to specify the target configuration:
 - `-Configuration` could be `Debug` (default) or `Release`.
 - `-Platform` could be `x64` (default) or `Win32`
 - Pick the default option (omit both arguments) when there is no specific requirements.
 
-## The Correct Way to Read Compiler Result
+### The Correct Way to Read Compiler Result
 
 - The only source of trust is the raw output of the compiler.
 - Wait for the script to finish before reading the log file.
@@ -40,3 +45,18 @@ cd SOLUTION-ROOT
   - "0 Warning(s)"
   - "0 Error(s)"
 - DO NOT delete the log file by yourself.
+
+## Linux Specific
+
+Building only happens on a folder that has a `vmake` file.
+- If the repo has only one project, it is in `REPO-ROOT/Test/Linux`.
+- If the repo has multiple projects, it is in `REPO-ROOT/Test/Linux/PROJECT-NAME`.
+  - `PROJECT-NAME` naming is following `PROJECT-NAME.vcxproj`.
+You are required to `cd` to such folder before running `build.sh`, otherwise it will fail.
+
+Call `REPO-ROOT/.github/Ubuntu/build.sh` for incremental build.
+Call `REPO-ROOT/.github/Ubuntu/build.sh -f` for full rebuild.
+`build.sh` will read the local `vmake` configuration file and generate a `makefile` in the same folder before building.
+`build.sh` will also run other script files in that folder, run `chmod +x` if any script file is blocked.
+
+Only the "debug x64" configuration is supported on Linux. If you are instructed to build and run other configuration, ignore it.

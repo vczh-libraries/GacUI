@@ -1,7 +1,7 @@
 # Verifying
 
-- Check out `Accessing Task Documents` and `Accessing Script Files` in `REPO-ROOT/.github/copilot-instructions.md` for context about mentioned `*.md` and `*.ps1` files.
-- All `*.md` and `*.ps1` files should exist; you should not create any new files unless explicitly instructed.
+- Check out `Accessing Task Documents` and `Accessing Script Files` in `REPO-ROOT/.github/copilot-instructions.md` for context about mentioned `*.md`, `*.ps1` and `*.sh` files.
+- All `*.md`, `*.ps1` and `*.sh` files should exist; you should not create any new files unless explicitly instructed.
   - The `Copilot_Execution.md` file should already exist.
   - If you cannot find the file, you are looking at a wrong folder.
 - Following `Leveraging the Knowledge Base` in `REPO-ROOT/.github/copilot-instructions.md`, find knowledge and documents for this project in `REPO-ROOT/.github/KnowledgeBase/Index.md`.
@@ -35,7 +35,7 @@
 - Check out `# AFFECTED PROJECTS` in `Copilot_Execution.md` to find out what solutions you need to build.
 - Find out if there is any warning or error.
   - `External Tools Environment and Context` in `REPO-ROOT/.github/copilot-instructions.md` has the instruction about how to check compile result.
-- DO NOT delete the build log file.
+- DO NOT delete the `Build.log` if it is generated.
 
 #### Fix Compile Errors
 
@@ -75,7 +75,7 @@
   - One test-fix process includes one attempt following `Execute Unit Test` and `Fix Failed Test Cases`.
   - The main agent should call different sub agent for each test-fix process.
   - Do not test and retrieve test results in the main agent.
-- DO NOT delete the test log file.
+- DO NOT delete the `Execute.log` if it is generated.
 
 ### Use a sub agent to run the following instructions (`Execute Unit Test`, `Identify the Cause of Failure`, `Fix Failed Test Cases`)
 
@@ -120,4 +120,5 @@
 ## Step 4. Check it Again
 
 - Go back to `Step 2. Make Sure the Code Compiles`, follow all instructions and all steps again.
-- DO NOT delete the build/test log files. The log files should remain untouched after finishing these instructions.
+- DO NOT delete the `Build.log` or `Execute.log` if they are generated.
+  - They should remain untouched after finishing these instructions.

@@ -1,7 +1,7 @@
 # Execution
 
-- Check out `Accessing Task Documents` and `Accessing Script Files` in `REPO-ROOT/.github/copilot-instructions.md` for context about mentioned `*.md` and `*.ps1` files.
-- All `*.md` and `*.ps1` files should exist; you should not create any new files unless explicitly instructed.
+- Check out `Accessing Task Documents` and `Accessing Script Files` in `REPO-ROOT/.github/copilot-instructions.md` for context about mentioned `*.md`, `*.ps1` and `*.sh` files.
+- All `*.md`, `*.ps1` and `*.sh` files should exist; you should not create any new files unless explicitly instructed.
   - The `Copilot_Execution.md` file should already exist.
   - If you cannot find the file, you are looking at a wrong folder.
 - Following `Leveraging the Knowledge Base` in `REPO-ROOT/.github/copilot-instructions.md`, find knowledge and documents for this project in `REPO-ROOT/.github/KnowledgeBase/Index.md`.
@@ -51,7 +51,7 @@ I am going to propose some change to the source code.
   - One build-fix process includes one attempt with the following instructions.
   - The main agent should call different sub agent for each build-fix process.
   - Do not build and retrieve build results in the main agent.
-- DO NOT delete the build log file.
+- DO NOT delete the `Build.log` if it is generated.
 
 ### Use a sub agent to run all following instructions (`Build the Solution`, `Fix Compile Errors`, `Code Generation`, `Finishing Code Change`)
 
@@ -105,4 +105,5 @@ I am going to propose some change to the source code.
 
 - It will be covered by another separate phase.
 - You are good here.
-- DO NOT delete the build log file. The log file should remain untouched after finishing these instructions.
+- DO NOT delete the `Build.log` if it is generated.
+  - It should remain untouched after finishing these instructions.

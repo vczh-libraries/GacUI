@@ -6,33 +6,30 @@
 - Following `Leveraging the Knowledge Base`, find knowledge and documents for this project in `REPO-ROOT/.github/KnowledgeBase/Index.md`.
 - Before writing to a source file, read it again and make sure you respect my parallel editing.
 - If any `*.prompt.md` file is referenced, take immediate action following the instructions in that file.
+- **DO NOT ASK ANY QUESTION** if you are not explicitly instructed to make questions. Run the user's task to the end.
+  - The only exception will be there are serious conflict information in user's task. This is rare, try your best effort to resolve the ambiguity by yourself, and only ask when you are totally stuck.
 
-## External Tools Environment and Context
+## (Windows Specific) External Tools Environment and Context
 
-- If you are on Windows OS:
-  - Always prefer the offered script files instead of direct CLI commands.
-  - DO NOT call `msbuild` or other executable files directly.
-  - DO NOT create or delete any file unless explicitly directed.
-  - MUST run any PowerShell script in this format: `& absolute-path.ps1 parameters...`.
-  - Multiple powershell commands are concatenated with `;` to be executed in one line.
+- Always prefer the offered script files instead of direct CLI commands.
+- DO NOT call `msbuild` or other executable files directly.
+- DO NOT create or delete any file unless explicitly directed.
+- MUST run any PowerShell script in this format: `& absolute-path.ps1 parameters...`.
+- Multiple powershell commands are concatenated with `;` to be executed in one line.
 
-- If you are on Linux, offered powershell script files won't work and here are replacements:
-  - You still need to maintain `*.sln`, `*.slnx`, `*.vcxitems`, `*.vcxproj`, `*.vcxproj.filters`.
-  - DO NOT call `cmake` (as cmake is not in use), `make`, `clang++`, `g++`.
-  - DO NOT call `gdb` or `lldb` unless you can interact with it, otherwise a running debugger will cause subsequent building to fail.
-  - All `makefile` files are generated out of these solution and project files.
-  - All `vmake` files are in `REPO-ROOT/Test/Linux` or its sub folders.
-    - If `vmake` is directly in that folder, that is the only project you can and need to work on.
-    - Otherwise, any important `*.vcxproj` will have a corresponding folder containing the `vmake` for that project.
-  - DO NOT modify `makefile` as they will be re-generated and your modification will be lost. Modify `vmake` instead. In `vmake` you can:
-    - Add a `*.vcxitems` or `*.vcxproj` project to add every file they use
-    - Remove C++ source files added from projects that only work for Windows
-    - Add new C++ source files for Linux replacement, etc.
-  - All following commands should run in the folder containing the `vmake` file:
-    - `vmake --make` to generate `makefile` according to the latest content in solution and project files.
-    - `vbuild --build` to incrementally build the project.
-    - `vbuild --full-build` to fully rebuild the project.
-    - An executable file `./Bin/UnitTest` is generated after a successful `vbuild`.
+## (Linux Specific) External Tools Environment and Context
+
+- DO NOT run any powershell script file as they are for Windows only.
+- The bash script `REPO-ROOT/.github/Ubuntu/build.sh` is the only script you should call for building any project. `build.sh` will also run other script files in that folder, run `chmod +x` if any script file is blocked.
+- `build.sh` is usable in `REPO-ROOT/Test/Linux` or `REPO-ROOT/Test/Linux/PROJECT-NAME`. It reads the local `vmake` configuration file, generates a `makefile`, and builds it.
+  - Call `build.sh -f` for full rebuild.
+  - Call `build.sh` for incremental build.
+  - `vmake`, `vmake.txt` and `makefile` all live in the same `Test/Linux` (or `Test/Linux/PROJECT-NAME`) folder:
+    - `vmake` is the configuration file derived from MSBuild project files. When the source file list changes, the MSBuild project files are expected to be modified, and `build.sh` will regenerate the rest.
+    - `vmake.txt` and `makefile` are generated files, you are not allowed to modify them.
+  - Unlike offered powershell scripts, `build.sh` does not produce `Build.log` or equivalent log file, running unit test does not produce `Execute.log` or equivalent log file.
+- Always use `lldb` and other interactable tools in PTY-backed tool session.
+- DO NOT call `cmake`, `make`, `clang++`, `g++`, `gdb` directly. `build.sh` and `lldb` are for building and debugging.
 
 ## Coding Guidelines and Tools
 
@@ -78,7 +75,7 @@ If you need to find any document for the current working task, they are in the `
   - If it is defined in the standard C++ library or third-party library, use the full name.
   - If it is defined in the source code, use the full name if there is ambiguity, and then mention the file containing its definition.
 
-## Accessing Script Files
+## (Windows Specific) Accessing Script Files
 
 If you need to find any script or log files, they are in the `REPO-ROOT/.github/Scripts` folder:
 - `copilotPrepare.ps1`
@@ -90,6 +87,11 @@ If you need to find any script or log files, they are in the `REPO-ROOT/.github/
 - `copilotDebug_RunCommand.ps1`
 - `Build.log`
 - `Execute.log`
+
+## (Linux Specific) Accessing Script Files
+
+If you need to find any script files, they are in the `REPO-ROOT/.github/Ubuntu` folder:
+- `build.sh`
 
 ## Writing C++ Code
 
@@ -104,12 +106,21 @@ If you need to find any script or log files, they are in the `REPO-ROOT/.github/
 - The project only uses a very minimal subset of the standard library. I have substitutions for most of the STL constructions. Always use mine if possible:
   - Always use `vint` instead of `int`.
   - Always use `L'x'`, `L"x"`, `wchar_t`, `const wchar_t` and `vl::WString`, instead of `std::string` or `std::wstring`.
+  - Always use `FilePath` for file path operations.
   - Use my own collection types vl::collections::* instead of std::*
   - Regular expression utilities are offered by `vl::regex::Regex`, here are important syntax differences with other regular expression implementation:
     - "." means the dot character, "/." or "\." (or "\\." in C++ string literal) means any character.
     - Both "/" and "\" escape characters, you are recommended to use "/" in C++ string literals.
     - Therefore you need "//" for the "/" character and "/\\" or "/\\\\" for the "\" character in C++ string literals.
+    - Constructing a `Regex` object is expensive. If a regular expression is used multiple times or multiple places, make a variable to reuse it, but it should not be a global variable.
   - Check out `REPO-ROOT/.github/KnowledgeBase/Index.md` for more information of how to choose correct C++ data types.
+- Rules for expression inavailability of values:
+  - If any number is expected to be valid only when non-negative, you could use `-1` to represent invalid value.
+  - If an object is expected to be valid only when non-null, you could use `nullptr` on `T*` or `Ptr<T>` to represent invalid value.
+  - Use `Nullable<T>` to represent any invalid value if possible.
+    - DO NOT use `Nullable<T*>`, `Nullable<Ptr<T>>` or `Nullable<Nullable<T>>`, this is too confusing.
+  - Only when there is no other choice, use an extra `bool` variable.
+    - This could happen when "null" semantic is valid.
 - Rules for C++ header files:
   - Guard them with macros instead of `#pragma once`.
   - In a class/struct/union declaration, member names must be aligned in the same column at least in the same public, protected or private section.
@@ -119,6 +130,32 @@ If you need to find any script or log files, they are in the `REPO-ROOT/.github/
 - Rules for cpp files:
   - Use `using namespace` statement if necessary to prevent from repeating namespace everywhere.
   - `vl::stream::` is an exception, always use `stream::` with `using namespace vl;`, DO NOT use `using namespace vl::stream;`.
+
+### Advanced C++ Coding Rules
+
+- DO NOT make helper functions that only used once, especially it is only called in one destructor.
+- When generating Workflow script, avoid building text, you should always build the AST. The AST type for a complete Workflow script module is `WfModule`.
+
+You are always recommended to debug the compiled binary if you find it difficult to figure out what is going on, or after several failed attemps of "read and guess".
+
+### Advanced C++ Coding Rules for Reflectable Types
+
+- DO NOT make global variables with types that carry constructors or destructors, even when they are implicit.
+  - This could mess up the order of initialization, finalization or memory leak detector.
+  - One exception will be `WString` which is initialized using `WString::Unmanaged`, such constructor and destructor does not do memory management.
+  - Another exception will be `Pair`, `Nullable` or `Tuple` with valid types here.
+  - If pointers are needed, you could only use `T*` and do initialization or finalization explicitly. All such objects should be destroyed in `main`, `wmain`, `WinMain` or `GuiMain`, before memory leak detector runs.
+- Prefer latest C++ features (up to C++ 20).
+- Prefer template variadic arguments, over hard-coded-counting solutions.
+- Any interface or class `X` should inherit from `vl::reflection::Description<X>`.
+  - If such class (not including interface) should be inheritable in Workflow script, use `AggregatableDescription` instead of `Description`.
+- No `const` is allowed for methods or reference types.
+- Prefer `IValue*` interfaces for container types on interfaces.
+- Container types and some other types supports range-based for loop. Always prefer range-based for loop over other loops.
+  - You can used `indexed(container)` to convert a container of type `T` to `Pair<T, vint>`, to read the corrent index.
+  - Avoid using expression, which creates temporary objects, in `for(... : HERE)` or `for(... : indexed(HERE))`. The current C++ destroys the temporary object too early therefore this becomes UB.
+- Prefer Inverse of Control (IoC) and other design patterns, over trivial virtual functions, over switch-case on types, over if-else on types.
+- Prefer static dispatching over dynamic dispatching when possible and reasonable.
 
 ## Leveraging the Knowledge Base
 
