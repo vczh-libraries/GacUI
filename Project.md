@@ -112,3 +112,20 @@ After running `GacUI_Compiler`, you should always `git status` to find if there 
 - You don't need to delete the file, if `GacUI_Compiler` succeeds the next time, they will be gone.
 - `GacUI_Compiler` may also fail by printing one line of error message or return non-zero exit code. If the `*.UI.errors.txt` file does not exist, you are recommended to debug the project to find out what happened.
 - Whenever `GacUI_Compiler` reports any error, you must fix the issue immediately, even those errors are unrelated to the issue you are working on.
+
+## Linux Specific
+
+`REPO-ROOT/Test/Linux` stores linux configurations for:
+- `Metadata_Generate`: `Metadata_Generate.vcxproj`.
+- `Metadata_Test`: `Metadata_Test.vcxproj`.
+- `CppTest`: `CppTest.vcxproj`.
+- `CppTest_Metaonly`: `CppTest_Metaonly.vcxproj`.
+- `CppTest_Reflection`: `CppTest_Reflection.vcxproj`.
+- `GacUI_Compiler`: `GacUI_Compiler.vcxproj`.
+- `UnitTest`: `UnitTest.vcxproj`.
+
+`Metadata_UpdateProtocol` is not included. If it is needed, create it and remove this line.
+
+You need to build, test and debug in that specific folder, otherwise the unit test will not function properly.
+On Linux, only configuration "debug x64" is available, no need to build or run projects with other configurations.
+Unlike Windows, building have to be done in each folder separately.
