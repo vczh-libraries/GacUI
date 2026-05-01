@@ -1,0 +1,20 @@
+COVERAGE?=NO
+USE_GCC?=NO
+
+# add "--stdlib=libc++" after bug #808086 is fixed
+
+ifeq ($(USE_GCC), YES)
+CPP_LINK=g++ -std=c++20 -g -pthread $(CPP_LINK_OPTIONS) -o $@ $^
+else ifeq ($(COVERAGE),NO)
+CPP_LINK=clang++ -std=c++20 -pthread -g $(CPP_COMPILE_OPTIONS) -o $@ $^
+else
+CPP_LINK=clang++ -std=c++20 -pthread -g --coverage $(CPP_LINK_OPTIONS) -o $@ $^
+endif
+
+ifeq ($(USE_GCC), YES)
+CPP_COMPILE=g++ -std=c++20 -g $(CPP_COMPILE_OPTIONS) -o $@ -c $<
+else ifeq ($(COVERAGE),NO)
+CPP_COMPILE=clang++ -std=c++20 -g $(CPP_COMPILE_OPTIONS) -o $@ -c $<
+else
+CPP_COMPILE=clang++ -std=c++20 -g -fprofile-arcs -ftest-coverage $(CPP_COMPILE_OPTIONS) -o $@ -c $<
+endif

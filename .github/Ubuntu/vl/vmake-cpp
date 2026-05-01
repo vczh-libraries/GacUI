@@ -1,0 +1,75 @@
+<#
+if ! [ "$CPP_VCXPROJ" == "" ]; then
+    CPP_FILES=($(vutil_CppFromVcxproj $CPP_VCXPROJ))
+fi
+
+for CPP_VCXPROJ_ITEM in "${CPP_VCXPROJS[@]}"; do
+	CPP_FILES_FROM_VCXPROJ=($(vutil_CppFromVcxproj $CPP_VCXPROJ_ITEM))
+    CPP_FILES=(${CPP_FILES[@]} ${CPP_FILES_FROM_VCXPROJ[@]})
+done
+
+# Remove duplicated items (preserve the first occurrence, like LINQ Distinct)
+declare -A __vutil_seen_cpp_files
+__vutil_distinct_cpp_files=()
+for __vutil_cpp_file in "${CPP_FILES[@]}"; do
+    if [ "${__vutil_seen_cpp_files["${__vutil_cpp_file}"]+x}" == "" ]; then
+        __vutil_seen_cpp_files["${__vutil_cpp_file}"]=1
+        __vutil_distinct_cpp_files+=("${__vutil_cpp_file}")
+    fi
+done
+CPP_FILES=("${__vutil_distinct_cpp_files[@]}")
+unset __vutil_seen_cpp_files __vutil_distinct_cpp_files __vutil_cpp_file
+
+for CPP_REMOVE in "${CPP_REMOVES[@]}"; do
+    CPP_FILES=(${CPP_FILES[@]/$CPP_REMOVE})
+done
+
+for CPP_ADD in "${CPP_ADDS[@]}"; do
+    CPP_FILES=(${CPP_FILES[@]} $CPP_ADD)
+done
+
+CPP_FILE_LIST=("${CPP_FILES[@]}")
+printf -v CPP_FILES "%s\n" "${CPP_FILE_LIST[@]}"
+CPP_FILES=${CPP_FILES%?}
+
+O_FILES=`echo "${CPP_FILES}" | sed -r -e 's%([^/]*/)*([^/]+).cpp%./Obj/\2.o%g'`
+O_FILES=`echo ${O_FILES}`
+
+printf "%s\n" "${CPP_FILE_LIST[@]}" > vmake.txt
+#>
+.PHONY: all clean pre-build
+.DEFAULT_GOAL := all
+
+<#if ! [ "$CPP_COMPILE_OPTIONS" == "" ]; then#>
+CPP_COMPILE_OPTIONS=<#= $CPP_COMPILE_OPTIONS #>
+<#fi#>
+<#if ! [ "$CPP_LINK_OPTIONS" == "" ]; then#>
+CPP_LINK_OPTIONS = <#= $CPP_LINK_OPTIONS #>
+<#fi#>
+include $(VCPROOT)/vl/makefile-cpp
+
+pre-build:
+	if ! [ -d ./Bin ]; then mkdir ./Bin; fi
+	if ! [ -d ./Obj ]; then mkdir ./Obj; fi
+	if ! [ -d ./Coverage ]; then mkdir ./Coverage; fi
+<#for FOLDER in "${FOLDERS[@]}"; do#>
+	if ! [ -d <#= $FOLDER #> ]; then mkdir <#= $FOLDER #>; fi
+<#done#>
+
+clean:
+	if [ -d ./Bin ]; then rm -r ./Bin; fi
+	if [ -d ./Obj ]; then rm -r ./Obj; fi
+	if [ -d ./Coverage ]; then rm -r ./Coverage; fi
+<#for FOLDER in "${FOLDERS[@]}"; do#>
+	if [ -d ./<#= $FOLDER #> ]; then rm -r <#= $FOLDER #>; fi
+<#done#>
+
+all:pre-build <#= ${TARGETS[@]} #>
+
+<#= $CPP_TARGET #>:<#= ${O_FILES} #>
+	$(CPP_LINK)
+<#echo "${CPP_FILES}" | while read -r CPP_FILE; do#>
+
+./Obj/<#= `vutil_CppDependencies "${CPP_COMPILE_OPTIONS}" ${CPP_FILE}` #>
+	$(CPP_COMPILE)
+<#done#>

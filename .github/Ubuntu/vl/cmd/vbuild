@@ -1,0 +1,158 @@
+#!/bin/bash
+
+function Help {
+    echo "Usage:"
+    echo "--clean"
+    echo "    Clean generated files."
+    echo "-b, --build"
+    echo "    Incrementally build the current folder."
+    echo "-f, --full-build, -f"
+    echo "    Rebuild the current folder."
+    echo "-c, --build-coverage"
+    echo "    Rebuild the current folder with coverage."
+    echo "-fc, --full-build-coverage"
+    echo "    Rebuild the current folder with coverage."
+    echo "--build-gcc"
+    echo "    Incrementally build the current folder using G++."
+    echo "--full-build-gcc"
+    echo "    Rebuild the current folder using G++."
+    echo "-g, --generate"
+    echo "    Generate coverage data."
+    echo "-r, --read"
+    echo "    Read coverage data."
+}
+
+function Check {
+    if ! [ -a vmake ]; then
+        echo "Cannot find ./vmake ."
+        exit 1
+    fi
+}
+
+function Clean {
+    Check
+    make clean
+}
+
+function Build {
+    Check
+    make
+}
+
+function FullBuild {
+    Check
+    make clean
+    make
+}
+
+function BuildCoverage {
+    Check
+    make COVERAGE=YES
+}
+
+function FullBuildCoverage {
+    Check
+    make clean
+    make COVERAGE=YES
+}
+
+function BuildGCC {
+    Check
+    make USE_GCC=YES
+}
+
+function FullBuildGCC {
+    Check
+    make clean
+    make USE_GCC=YES
+}
+
+function Generate {
+    Check
+    lcov --directory ./Obj/ --base-directory . --gcov-tool ${VCPROOT}/vl/llvm-gcov.sh --capture -o ./Coverage/cov.info
+    genhtml ./Coverage/cov.info -o ./Coverage/HTML/
+}
+
+function Read {
+    Check
+    firefox `pwd`/Coverage/HTML/index.html
+    #sensible-browser ./Coverage/HTML/index.html 
+}
+
+case $1 in
+    --help)
+    Help
+    ;;
+
+    --clean)
+    Clean
+    ;;
+
+    -b|--build)
+    Build
+    ;;
+
+    -f|--full-build)
+    FullBuild
+    ;;
+
+    -c|--build-coverage)
+    BuildCoverage
+    ;;
+
+    -fc|--full-build-coverage)
+    FullBuildCoverage
+    ;;
+
+    --build-gcc)
+    BuildGCC
+    ;;
+
+    --full-build-gcc)
+    FullBuildGCC
+    ;;
+
+    -g|--generate)
+    Generate
+    ;;
+
+    -r|--read)
+    Read
+    ;;
+
+    *)
+    echo "Use --help for more information."
+    ;;
+esac
+
+# original makefile-cpp with gcc code coverage
+
+#COVERAGE?=NO
+#
+#ifeq ($(COVERAGE),NO)
+#CPP_LINK=clang++ -std=c++20 -pthread -g $(CPP_COMPILE_OPTIONS) -o $@ $^
+#else
+#CPP_LINK=g++ -std=c++20 -g -fprofile-arcs -pthread $(CPP_LINK_OPTIONS) -o $@ $^
+#endif
+#
+#ifeq ($(COVERAGE),NO)
+#CPP_COMPILE=clang++ -std=c++20 -g $(CPP_COMPILE_OPTIONS) -o $@ -c $<
+#else
+#CPP_COMPILE=g++ -std=c++20 -g -fprofile-arcs -ftest-coverage $(CPP_COMPILE_OPTIONS) -o $@ -c $<
+#endif
+
+#function Generate {
+#    Check
+#    PATTERN='^(.+)?\.o:\s*((.+)?.cpp).*$'
+#    CPP_FILES=`cat makefile \
+#        | grep -E ${PATTERN} \
+#        | sed -r -e 's%'${PATTERN}'%../\2%g'
+#        `
+#    rm -rf ./Coverage/*
+#    gcov -o ./Obj/ ${CPP_FILES} > /dev/null
+#    mv -f *.gcov ./Coverage/
+#    pushd ./Coverage > /dev/null
+#    lcov --directory ../Obj/ --capture --output-file lcov.info
+#    genhtml -o HTML lcov.info > /dev/null
+#    popd > /dev/null
+#}

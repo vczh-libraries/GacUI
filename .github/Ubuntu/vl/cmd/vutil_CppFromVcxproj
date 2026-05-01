@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# read the input *.vcxproj
+if [ "$1" == "" ]; then
+    exit 0
+fi
+CONTENT=`cat $1`
+
+# extract all cpp files
+PATTERN='<ClCompile\s+Include="(\$\(MSBuildThisFileDirectory\))?([^"]+.cpp)"\s*/?\s*>'
+COMPILES=`echo "${CONTENT}" | grep -E ${PATTERN}`
+CPPS=`echo "${COMPILES}" | sed -r -e 's%\s*'${PATTERN}'\s*%\2%g'`
+
+# refine file names
+CPPS=`echo "${CPPS}" | sed -e 's%[\]%/%g'`
+CPPS=`echo "${CPPS}" | sed -e 's%^%'${PWD}/$(dirname $1)/'%g'`
+echo "${CPPS}" | while read -r CPP; do
+    realpath --relative-to="${PWD}" ${CPP}
+done
