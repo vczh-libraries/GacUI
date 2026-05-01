@@ -14,3 +14,10 @@
 ## Renaming and Removing Source Files
 
 - All affected `*.vcxitems`, `*.vcxproj`, `*.vcxitems.filters` and `*.vcxproj.filters` must be updated.
+
+## Working on Linux
+
+`makefile` for each project is generated from MSBuild project files during building.
+When the file list needs to be modified, update MSBuild project files directly.
+After building, `vmake` file generates both `vmake.txt` and `makefile`.
+If you doubt if the file is built or not, check out `vmake.txt`, which simply lists all used `cpp` files in `makefile`.
