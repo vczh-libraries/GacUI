@@ -3,16 +3,17 @@
 # Orders
 
 - `vl::collections::ObservableList<T>` element access and replacement [2]
+- Extract helpers to remove duplicated conversion blocks [2]
 - `TreeViewItemBindableRootProvider::UpdateBindingProperties` is root-scoped [1]
 - Validate `tree::NodeItemProvider::RequestNode` indices [1]
 - `tree::NodeItemProvider::CalculateNodeVisibilityIndex` returns `-1` for invisible nodes [1]
 - Use `CHECK_ERROR` + `ERROR_MESSAGE_PREFIX` for invalid `NodeItemProvider` inputs [1]
+- Use full namespace `ERROR_MESSAGE_PREFIX` in remote renderer `CHECK_ERROR` messages [1]
 - Prefer `TreeViewItemRootProvider::GetTreeViewData` over `GetData().Cast<TreeViewItem>()` [1]
 - Keep header changes comment-free [1]
 - Place helpers in the primary-responsibility namespace [1]
 - `DiffRuns` must not drop old ranges (use `CHECK_ERROR`) [1]
 - Compare `IGuiGraphicsParagraph::TextStyle` flags against `(TextStyle)0` [1]
-- Extract helpers to remove duplicated conversion blocks [1]
 - `GuiDocumentCommonInterface::ProcessKey` ignores Enter in `GuiDocumentParagraphMode::Singleline` [1]
 - `GuiDocumentCommonInterface::ProcessKey` Enter/Ctrl+Enter depends on `GuiDocumentParagraphMode` [1]
 - `FakeClipboardWriter` initializes a fresh `FakeClipboardReader` for `WriteClipboard()` [1]
@@ -26,6 +27,16 @@
 - In document protocol handlers, element id is in arguments/arguments.id [1]
 - Keep trivial helpers header-only when appropriate [1]
 - Add include guards to shared headers (macros, not `#pragma once`) [1]
+- Remote document paragraphs cache full run state across render-target recreation [1]
+- DocumentParagraph handlers use explicit no-timeout main-thread invocation [1]
+- Iterate document run maps with `Keys()`/`Values()` loops [1]
+- Remote renderer partial DOM diffs preserve element nodes [1]
+- `GuiRemoteRendererSingle::RequestRendererEndRendering` refreshes every completed frame [1]
+- Document paragraph layouts are keyed by valid caret positions [1]
+- `text.Length()` is a caret but not a drawable layout entry [1]
+- `Impl_DocumentParagraph_GetNearestCaretFromTextPos` honors `frontSide` [1]
+- Null-check graphics resource manager before paragraph creation [1]
+- Encapsulate remote inline-object run properties behind query helpers [1]
 
 # Refinements
 
@@ -53,6 +64,10 @@ For `vl::presentation::controls::tree::NodeItemProvider`, treat out-of-range ind
 
 Differentiate invalid inputs from normal sentinel-return cases: invisibility / “not visible” uses `-1` in `CalculateNodeVisibilityIndex`, while misuse (e.g. foreign node pointers, invalid item indices in data retrieval APIs) should trigger `CHECK_ERROR`.
 
+## Use full namespace `ERROR_MESSAGE_PREFIX` in remote renderer `CHECK_ERROR` messages
+
+For `vl::presentation::remote_renderer::GuiRemoteRendererSingle` and related remote-renderer helpers, `CHECK_ERROR` messages should use the complete namespace + type + method signature + trailing `#` form (for example `vl::presentation::remote_renderer::GuiRemoteRendererSingle::Method#...`). Avoid abbreviated prefixes; full prefixes keep diagnostics searchable and consistent with tests that validate error text.
+
 ## Prefer `TreeViewItemRootProvider::GetTreeViewData` over `GetData().Cast<TreeViewItem>()`
 
 When working with nodes whose data is known to be `TreeViewItem`, use `TreeViewItemRootProvider::GetTreeViewData(node)` to obtain `Ptr<TreeViewItem>` instead of calling `node->GetData().Cast<TreeViewItem>()`. This is the intended API, keeps code cleaner, and avoids repeating casts.
@@ -76,6 +91,8 @@ When checking `IGuiGraphicsParagraph::TextStyle` bitflags, use a zero-value cast
 ## Extract helpers to remove duplicated conversion blocks
 
 When the same conversion logic is repeated in multiple branches (e.g. converting override structs to full protocol properties inside `MergeRuns`), extract a small helper function and replace duplicated blocks with calls. This improves maintainability and reduces bug surface during later semantic changes.
+
+Use the same judgment for repeated dictionary update patterns such as `Contains()`/`Set()` vs `Add()` blocks for inline-object bounds, properties, or ranges. Extract a tiny helper when the repeated code carries behavior; keep it inline only when the helper would hide more than it clarifies.
 
 ## `GuiDocumentCommonInterface::ProcessKey` ignores Enter in `GuiDocumentParagraphMode::Singleline`
 
@@ -137,3 +154,43 @@ For very small helpers that are simple wrappers (e.g. an IO helper that just loo
 ## Add include guards to shared headers (macros, not `#pragma once`)
 
 When a test helper is moved into a shared header, ensure the header has macro-based include guards to prevent redefinition errors during compilation. Follow the repo convention of `#ifndef/#define/#endif` guards rather than `#pragma once`.
+
+## Remote document paragraphs cache full run state across render-target recreation
+
+Remote document paragraph protocol updates are incremental. A wrapper element such as `GuiRemoteDocumentParagraphElement` must cache the full text, text-run properties, inline-object runs, merged runs, caret state, and callback-related inline-object state needed to rebuild its `IGuiGraphicsParagraph` when `SetRenderTarget` destroys/recreates the paragraph. Applying `runsDiff` directly to the live paragraph without caching loses styling after DPI/device/render-target changes.
+
+## DocumentParagraph handlers use explicit no-timeout main-thread invocation
+
+In `Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Rendering_Document.cpp`, document paragraph request handlers should call `InvokeInMainThreadAndWait(window, proc, -1)` when synchronously querying or mutating UI state. Keep the explicit `-1` timeout argument rather than relying on an overload, matching the existing handler style.
+
+## Iterate document run maps with `Keys()`/`Values()` loops
+
+For document paragraph run maps in remote-renderer code, follow the existing `Keys()`/`Values()` indexed-loop pattern instead of switching to structured bindings. These map types expose stable key/value views in the local style, and matching that style avoids accidental API assumptions.
+
+## Remote renderer partial DOM diffs preserve element nodes
+
+`GuiRemoteRendererSingle::RequestRendererRenderDomDiff(...)` can receive partial-frame DOM streams. When pre-filtering diffs, ignore `Deleted` diffs for element nodes and virtual parents (`domId % 4 == 0/1`), convert `Created` to `Modified` when such a node already exists client-side, and keep hit-test nodes (`domId % 4 == 2/3`) deletable. This lets DOM diffs manage structure while `RequestRendererDestroyed` and `availableElements` decide actual renderability, preventing stale "zombie" rendering without dropping omitted-but-still-valid elements.
+
+## `GuiRemoteRendererSingle::RequestRendererEndRendering` refreshes every completed frame
+
+At the end of a completed rendering cycle, `GuiRemoteRendererSingle::RequestRendererEndRendering(vint id)` should set `needRefresh = true` unconditionally so the client repaints even when the DOM diff is empty or only measurement/element updates arrived.
+
+## Document paragraph layouts are keyed by valid caret positions
+
+For document paragraph layout/caret logic, separate text positions from renderable layout entries. Inline objects can span multiple text positions but collapse to one drawable item, so arrays indexed by layout-entry position must not be accessed with `DocumentParagraphLineInfo::{startPos,endPos}` text positions. Store character layouts keyed by valid caret positions and keep any sorted key list synchronized with the layout dictionary.
+
+## `text.Length()` is a caret but not a drawable layout entry
+
+In document paragraph geometry and navigation, `text.Length()` remains a valid caret position for editing/navigation but should not have a drawable layout entry because there is no glyph after it. Geometry APIs need an explicit end-of-text path, typically using the end of the last drawable item.
+
+## `Impl_DocumentParagraph_GetNearestCaretFromTextPos` honors `frontSide`
+
+`Impl_DocumentParagraph_GetNearestCaretFromTextPos` should prefer the nearest caret on the requested side: `frontSide == true` prefers a caret `<= textPos`, while `frontSide == false` prefers a caret `> textPos`. If the preferred side is unavailable, fall back to the other side and handle empty paragraphs explicitly.
+
+## Null-check graphics resource manager before paragraph creation
+
+Before creating a paragraph through `GetGuiGraphicsResourceManager()->GetLayoutProvider()->CreateParagraph()`, check that the resource manager and layout provider are available. Remote paragraph wrapper code can be called during setup/teardown or unusual render-target transitions, so null checks produce clearer behavior than crashes.
+
+## Encapsulate remote inline-object run properties behind query helpers
+
+Remote paragraph query handlers should not directly inspect wrapper internals such as inline-object property dictionaries. Add a small public helper like `TryGetInlineObjectRunProperty(callbackId, outProp)` on the wrapper to preserve encapsulation and keep query behavior stable when cached state changes.

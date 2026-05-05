@@ -3,10 +3,10 @@
 # Orders
 
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
+- Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
 - Capture dependent lambdas explicitly [2]
 - Don't assume observable changes are batched [2]
 - Prefer simple calls before interface casts [2]
-- Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [2]
 - Validate expectations against implementation and existing tests [2]
 - Prefer well-defined tests over ambiguous edge cases [1]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
@@ -56,6 +56,8 @@ When a struct is a pure lexicographic key (e.g. `{begin, end}`), prefer `auto op
 If you are searching for “overlap” rather than exact ordering, provide a custom orderer that defines “before / after / overlap” semantics for your ranges.
 
 If multiple entries can satisfy “overlap”, binary search can return any matching entry. Scan backward (and/or forward) from the returned index to locate the first overlapping entry you intend to process.
+
+For nearest-neighbor lookup on a sorted key buffer, implement helpers for largest key `<= item` and smallest key `> item`, and use those helpers for line/range iteration instead of mixing text positions with raw array indices.
 
 ## Prefer two-pointer merge for sorted range maps
 

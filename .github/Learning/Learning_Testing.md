@@ -3,11 +3,12 @@
 # Orders
 
 - Keep test log paths stable during refactors [13]
-- Remote protocol frames: actions must change UI; organize frames carefully [8]
+- Remote protocol frames: actions must change UI; organize frames carefully [9]
 - Don’t schedule redundant idle frames [7]
 - Preserve existing idle-frame titles when requested [6]
 - Seed key-behavior tests via `protocol->TypeString` [6]
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
+- Caret navigation tests: type markers to expose caret [3]
 - Avoid duplicate tests across related categories [3]
 - Account for eager child preparation in item-provider tests [2]
 - Isolate callbacks per test case (fresh log + callback) [2]
@@ -16,10 +17,10 @@
 - `DetachCallback()` should fire `OnAttached(provider=nullptr)` [2]
 - Update `UnitTest.vcxproj.user` `/F:` filters for new files [2]
 - `TEST_CATEGORY` / `TEST_CASE` blocks must end with `});` [2]
-- Caret navigation tests: type markers to expose caret [2]
 - RichText style tests: `EditStyle` + `SummarizeStyle`, set only edited fields [2]
 - GuiDocumentLabel paragraphs: use `\\r\\n\\r\\n` between paragraphs in `LoadTextAndClearUndoRedo` [2]
 - Use `AssertItems`/`AssertCallbacks` for visible item lists [2]
+- Unit-test renderer `CaretLineLast` should treat CRLF as newline [2]
 - Skip callback plumbing when not asserting callbacks [1]
 - Print actual vs expected on assertion failure [1]
 - Disambiguate protocol types by namespace [1]
@@ -43,7 +44,6 @@
 - Multiline editor assertions: validate `GetDocument()` model, not `GetText()` [1]
 - Hyperlink tests: `ViewOnly` interaction + merged event log + model checks [1]
 - Avoid searching for CRLF in deterministic tests [1]
-- Unit-test renderer `CaretLineLast` should treat CRLF as newline [1]
 - Match existing test-file namespace style (avoid extra `using namespace`) [1]
 - Focus the control before simulating keyboard input [1]
 - Editor smoke tests: deterministic caret placement (`Ctrl+Home`) [1]
@@ -54,6 +54,7 @@
 - Prepare nodes (via `GetChildCount`) before asserting nested callbacks [1]
 - Empty item sources and empty `childrenProperty` only trigger `OnAttached` [1]
 - Prefer single cohesive smoke tests when setup-heavy [1]
+- Inline-object caret tests: cover every valid caret position one frame at a time [1]
 
 # Refinements
 
@@ -219,6 +220,8 @@ Prefer keeping frames minimal and meaningful:
 
 Name frames so the title summarizes what the previous frame did. Create a new frame whenever you perform a visible update to the control so logs line up with actions, and avoid standalone “Verify …” frames that don’t change UI (they can crash the test framework).
 
+Internal-only document operations, such as `RenameStyle` undo/redo cases that only change style-name mappings, may not trigger rendering. Merge those operations with adjacent observable actions (initial text/style setup or the final `window->Hide()` frame) and keep all assertions in the merged frame.
+
 ## Don’t nest `protocol->OnNextIdleFrame(...)`
 
 `protocol->OnNextIdleFrame(...)` registrations must be flat; don’t call `OnNextIdleFrame` from inside another frame callback. Schedule all frames at the same scope, matching existing dialog/editor tests.
@@ -333,3 +336,7 @@ Keep paragraphs short to avoid line wrapping, so tests validate navigation rules
 ## Unit-test renderer `CaretLineLast` should treat CRLF as newline
 
 In unit-test rendering stubs, line-end caret movement (e.g. END via `CaretLineLast`) must treat CRLF as a single newline terminator. If line-end trimming is needed, strip both `L'\r'` and `L'\n'` so END never lands between `\r` and `\n` (which would make typed markers insert inside the CRLF sequence).
+
+## Inline-object caret tests: cover every valid caret position one frame at a time
+
+For inline-object caret behavior, use compact multi-line documents such as `[Image]x[Image]` and `y[Image]z`, then drive Home/End/Left/Right across all valid caret positions including no-op edges. Use one meaningful movement per frame, assert the caret begin/end after each movement, and combine with marker typing when that makes caret placement observable.
