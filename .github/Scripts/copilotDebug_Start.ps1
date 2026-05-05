@@ -8,7 +8,7 @@ if ([string]::IsNullOrEmpty($Executable)) {
 
 . $PSScriptRoot\copilotShared.ps1
 
-# Ensure the executable name has .exe extension
+# Ensure the executable name does not have the .exe extension
 if ($Executable.EndsWith(".exe")) {
     throw "\$Executable parameter should not include the .exe extension: $Executable"
 }

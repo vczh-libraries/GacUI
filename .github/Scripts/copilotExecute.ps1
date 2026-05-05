@@ -37,7 +37,7 @@ if ($Mode -eq "UnitTest") {
   Remove-Item -Path $logFile, $logFileUnfinished -Force -ErrorAction SilentlyContinue
 }
 
-# Ensure the executable name has .exe extension
+# Ensure the executable name does not have the .exe extension
 if ($Executable.EndsWith(".exe")) {
     throw "\$Executable parameter should not include the .exe extension: $Executable"
 }

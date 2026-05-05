@@ -2,10 +2,10 @@
 
 - A solution file (`*.sln` or `*.slnx`) contains multiple project files.
 - Typical C++ project files are XML files in `*.vcxproj` or `*.vcxitems` naming.
-- The XML file `*.vcxitems.filters` or `*.vcxproj.filters` organizes source files in solution explorer folders (virtual folders) that could be different from physical file system, which creates a human friendly view.
+- The XML file `*.vcxitems.filters` or `*.vcxproj.filters` organizes source files in solution explorer folders (virtual folders) that can be different from the physical file system, creating a human-friendly view.
 - The XML file `*.vcxproj.user` contains some temporary local configuration for a project. This file is not tracked by git, but it contains arguments for running the project.
 - When adding a source file to a specific solution explorer folder:
-  - It must be also added to one or multiple project files.
+  - It must also be added to one or multiple project files.
   - Find the `*.vcxitems.filters` or `*.vcxproj.filters` file with the same name.
   - Each file must be attached to a solution explorer folder, described in this XPath: `/Project/ItemGroup/ClCompile@Include="PhysicalFile"/Filter`.
   - Inside the `Filter` tag there is the solution explorer folder.
@@ -17,13 +17,13 @@
 
 ## Working on Linux
 
-`makefile` for each project is generated from MSBuild project files during building.
+`makefile` for each project is generated from MSBuild project files during the build.
 When the file list needs to be modified, update MSBuild project files directly.
 After building, `vmake` file generates both `vmake.txt` and `makefile`.
-If you doubt if the file is built or not, check out `vmake.txt`, which simply lists all used `cpp` files in `makefile`.
+If you doubt whether the file is built or not, check out `vmake.txt`, which simply lists all used `cpp` files in `makefile`.
 
-Linux specific C++ source files also need to add to MSBuild project files, and they are excluded from the build.
-In `vmake`, Windows specific C++ sourve files need to be excluced.
+Linux specific C++ source files also need to be added to MSBuild project files, and they are excluded from the build.
+In `vmake`, Windows specific C++ source files need to be excluded.
 When the `Main.cpp` from MSBuild projects or similar files does not work on Linux, you are recommended to create one for Linux.
 
 In `vmake`, these variables are available for configuration, most of them are optional:
@@ -31,5 +31,5 @@ In `vmake`, these variables are available for configuration, most of them are op
 - `CPP_REMOVES`: Files to exclude, from the file list generated from `CPP_VCXPROJS`.
 - `CPP_ADDS`: Files to add.
 - `CPP_COMPILE_OPTIONS`: Extra compiler options for `clang++` or `g++`.
-- `FOLDERS`: Folders that containing generated files, these folders will be completely removed during full build.
+- `FOLDERS`: Folders that contain generated files. These folders will be completely removed during a full build.
 - `CPP_TARGET`: The compiled binary.

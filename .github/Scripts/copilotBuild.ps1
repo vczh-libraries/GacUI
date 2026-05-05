@@ -28,7 +28,7 @@ if ($vsdevcmd -eq $null) {
     throw "$MESSAGE_1\r\n$MESSAGE_2"
 }
 
-# Execute msbuild with output to both console and log file
+# Execute MSBuild with output to both console and log file
 $msbuild_arguments = "MSBUILD `"$solutionFile`" /m:8 $rebuildControl /p:Configuration=`"$Configuration`";Platform=`"$Platform`""
 $cmd_arguments = "`"`"$vsdevcmd`" & $msbuild_arguments"
 

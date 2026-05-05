@@ -6,7 +6,7 @@
 ## Windows Specific
 
 - Only run `copilotBuild.ps1` to build a solution.
-- DO NOT use msbuild by yourself.
+- DO NOT use MSBuild by yourself.
 - The script builds all projects in a solution.
 
 ### Executing copilotBuild.ps1
@@ -19,28 +19,28 @@ cd SOLUTION-ROOT
 ```
 
 It is possible that, before running `copilotBuild.ps1`, the binary to compile is still running or still being debugged. This could cause the linking to fail. You need to check the error message, and in case when it happens:
-- Kill `cdb` process first, if there is any.
+- Kill `cdb` process first, if any.
   - The cdb path is stored in `$env:CDBPATH`.
   - Avoid running `copilotDebug_Stop.ps1` directly.
 - Kill the binary process that is blocked.
-- Rebuild, and this issue should gone.
+- Rebuild, and this issue should be gone.
 
 ### Ensure Target Configuration
 
 `-Configuration` and `-Platform` arguments are available to specify the target configuration:
-- `-Configuration` could be `Debug` (default) or `Release`.
-- `-Platform` could be `x64` (default) or `Win32`
-- Pick the default option (omit both arguments) when there is no specific requirements.
+- `-Configuration` can be `Debug` (default) or `Release`.
+- `-Platform` can be `x64` (default) or `Win32`
+- Pick the default option (omit both arguments) when there is no specific requirement.
 
 ### The Correct Way to Read Compiler Result
 
-- The only source of trust is the raw output of the compiler.
+- The only source of truth is the raw output of the compiler.
 - Wait for the script to finish before reading the log file.
   - DO NOT need to read the output from the script.
   - Building takes a long time. DO NOT hurry.
   - When the script finishes, the result is saved to `REPO-ROOT/.github/Scripts/Build.log`.
   - A temporary file `Build.log.unfinished` is created during building. It will be automatically deleted as soon as the building finishes. If you see this file, it means the building is not finished yet.
-- When build succeeds, the last several lines of `Build.log` indicates the number of warnings and errors in the following pattern:
+- When build succeeds, the last several lines of `Build.log` indicate the number of warnings and errors in the following pattern:
   - "Build succeeded."
   - "0 Warning(s)"
   - "0 Error(s)"
@@ -48,15 +48,15 @@ It is possible that, before running `copilotBuild.ps1`, the binary to compile is
 
 ## Linux Specific
 
-Building only happens on a folder that has a `vmake` file.
+Building only happens in a folder that has a `vmake` file.
 - If the repo has only one project, it is in `REPO-ROOT/Test/Linux`.
 - If the repo has multiple projects, it is in `REPO-ROOT/Test/Linux/PROJECT-NAME`.
-  - `PROJECT-NAME` naming is following `PROJECT-NAME.vcxproj`.
+  - The `PROJECT-NAME` name follows `PROJECT-NAME.vcxproj`.
 You are required to `cd` to such folder before running `build.sh`, otherwise it will fail.
 
 Call `REPO-ROOT/.github/Ubuntu/build.sh` for incremental build.
 Call `REPO-ROOT/.github/Ubuntu/build.sh -f` for full rebuild.
 `build.sh` will read the local `vmake` configuration file and generate a `makefile` in the same folder before building.
-`build.sh` will also run other script files in that folder, run `chmod +x` if any script file is blocked.
+`build.sh` will also run other script files in that folder; you may need to run `chmod +x` if any script file is blocked.
 
 Only the "debug x64" configuration is supported on Linux. If you are instructed to build and run other configuration, ignore it.

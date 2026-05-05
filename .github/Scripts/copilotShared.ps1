@@ -45,9 +45,10 @@ function GetExecutableMap($solutionFolder, $executableName) {
 function GetSpecifiedExecutable($solutionFolder, $executableName, $configuration, $platform) {
     # Define configuration to path mappings
     $configToPathMap = GetExecutableMap $solutionFolder $executableName
+    $config = "$configuration|$platform"
 
     # Find existing files and get their modification times with configuration info
-    $path = $configToPathMap["$configuration|$platform"];
+    $path = $configToPathMap[$config];
     
     if (Test-Path $path) {
         $fileInfo = Get-Item $path
@@ -57,7 +58,7 @@ function GetSpecifiedExecutable($solutionFolder, $executableName, $configuration
             LastWriteTime = $fileInfo.LastWriteTime
         }
     } else {
-        throw "No $executableName for $configuration|$platform does not exist, please make sure the build was successful."
+        throw "$executableName for $configuration|$platform does not exist, please make sure the build was successful."
     }
 }
 
@@ -110,7 +111,7 @@ function GetDebugArgs($solutionFolder, $latestFile, $executable) {
             Write-Host "Warning: Could not read debug arguments from $userProjectFile"
         }
     } else {
-    	Write-Host "Failed to find $userProjectFile"
+        Write-Host "Failed to find $userProjectFile"
     }
     return ""
 }
