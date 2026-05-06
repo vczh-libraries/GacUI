@@ -4,8 +4,10 @@
 
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
+- Crash early instead of adding error-tolerance fallbacks [3]
 - Capture dependent lambdas explicitly [2]
 - Don't assume observable changes are batched [2]
+- Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages [2]
 - Prefer simple calls before interface casts [2]
 - Validate expectations against implementation and existing tests [2]
 - Prefer well-defined tests over ambiguous edge cases [1]
@@ -20,6 +22,7 @@
 - `vl::regex` separator regex: `L"[\\/\\\\]+"` [1]
 - Use 2-space indentation in embedded XML/JSON literals [1]
 - `collections::List` has deleted copy constructor; use `std::move()` for structs with `List` members [1]
+- Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [1]
 
 # Refinements
 
@@ -30,6 +33,14 @@ When a C++ lambda uses another local lambda (or any local variable), capture it 
 ## Don't assume observable changes are batched
 
 When verifying callbacks from an observable collection, do not assume multiple operations collapse into a single notification. For example, for `vl::collections::ObservableList<T>`, `Clear()` followed by multiple `Add()` calls triggers one callback pair per operation; test expectations should match the actual per-operation granularity.
+
+## Crash early instead of adding error-tolerance fallbacks
+
+When an invariant says a value must exist or a conversion must succeed, prefer using it directly or using a strong cast so a violation crashes or throws immediately. Do not add speculative null checks, weak casts, or silent fallbacks that hide protocol or ownership bugs. Fix the real cause instead of making the code tolerant of states that should be impossible.
+
+## Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages
+
+For source-code `CHECK_ERROR` / `CHECK_FAIL` calls with real diagnostic messages, follow the repo pattern: define `ERROR_MESSAGE_PREFIX` at the beginning of the function with the full class/function context, use it in the message, and undefine it at the end. Simple unsupported stubs such as `CHECK_FAIL(L"Not Supported!")` can stay as-is.
 
 ## Prefer simple calls before interface casts
 
@@ -104,3 +115,7 @@ To split paths by either `/` or `\\`, a verified pattern is `L"[\\/\\\\]+"`, and
 ## `collections::List` has deleted copy constructor; use `std::move()` for structs with `List` members
 
 When a C++ struct contains `vl::collections::List` fields, the struct's implicit copy constructor is deleted. Appending such structs to a `vl::collections::List` by copy will fail at compile time with `error C2280`. Use `std::move()` when adding these structs to destination lists (e.g. `list.Add(std::move(model))`). Note: there is no repo-provided `Move()` utility; always use `std::move()` from `<utility>`.
+
+## Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants
+
+When a failure is part of the public or script-visible semantics and tests are expected to catch it as a recoverable error, throw `vl::Exception`. Reserve `CHECK_ERROR` / `vl::Error` for internal invariant violations and states that indicate implementation corruption.
