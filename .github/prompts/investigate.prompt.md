@@ -11,14 +11,14 @@
 ## Goal and Constraints
 
 - Your goal is to finish an investigation document in `Copilot_Investigate.md` to address a problem.
-- You are recommended to modify unit test, build, run, debug to understand the problem, or verify your root cause analysis during tracing a bug.
+- You are recommended to modify unit tests, build, run, and debug to understand the problem, or verify your root cause analysis while tracing a bug.
 
 ## Copilot_Investigate.md Structure
 
 - `# !!!INVESTIGATE!!!`: This file always begins with this title.
 - `# PROBLEM DESCRIPTION`: An exact copy of the problem description I gave you.
 - `# UPDATES`
-  - `# (CONTINUE|REPORT)`: There could be multiple occurrences. Each one has an exact copy of the update description I gave you.
+  - `## (UPDATE|REPORT)`: There could be multiple occurrences. Each one has an exact copy of the update description I gave you.
 - `# TEST`: Test cases to confirm or define the problem.
 - `# PROPOSALS`: A list of proposed solutions, followed by details about each proposal.
   - `- No.X TITLE OF PROPOSAL`, with `[CONFIRMED]` or `[DENIED]` after the proposal is tested and proven to be correct or incorrect. X is an increasing number starting from 1.
@@ -38,6 +38,8 @@
 Ignore this section if there is no "# Repro" in the LATEST chat message
 I am starting a fresh new request.
 
+- Before replacing `Copilot_Investigate.md`, read its current content.
+  - If it contains anything beyond the `# !!!INVESTIGATE!!!` title, run `copilotRemember.ps1` without arguments to archive the old investigation first.
 - You should override `Copilot_Investigate.md` with only one title `# !!!INVESTIGATE!!!`.
   - At the moment, `Copilot_Investigate.md` may contain the last investigation. Even if it may look like the document is already finished for the current investigation, always clean it up.
 - After overriding, copy precisely my problem description in `# Repro` from the LATEST chat message under `# PROBLEM DESCRIPTION`.
@@ -62,8 +64,8 @@ Ignore this section if there is no "# Report" in the LATEST chat message
 I am going to propose a change to `Copilot_Investigate.md`.
 
 - When there is any content under `# Report` in the LATEST chat message:
-  - Copy precisely my problem description in `# Report` from the LATEST chat message to the `# UPDATES` section, with a new sub-section `## UPDATE`.
-  - The new `## UPDATE` should be appended to the end of the existing `# UPDATES` section (aka before `# TEST`).
+  - Copy precisely my problem description in `# Report` from the LATEST chat message to the `# UPDATES` section, with a new sub-section `## REPORT`.
+  - The new `## REPORT` should be appended to the end of the existing `# UPDATES` section (aka before `# TEST`).
   - If I do not agree with any proposal marked with `[CONFIRMED]`:
     - Mark these proposals with `[DENIED]`, change related `### CONFIRMED` in those proposals to `### DENIED BY USER`, and write a comprehensive explanation in each proposal about why.
 - Add a `# REPORT` at the end of the document:
@@ -73,7 +75,7 @@ I am going to propose a change to `Copilot_Investigate.md`.
 
 ## Step 2. Construct Test Cases
 
-Only when I suggest that the problem is impossible to repro with test cases, write `N/A` under `# TEST` and skip `Step 2.`.
+Only when I suggest that the problem is impossible to reproduce with test cases, write `N/A` under `# TEST` and skip `Step 2.`.
 
 - You are going to construct proper test cases to address the problem.
 - If I suggest a way to confirm the issue:
@@ -97,7 +99,7 @@ Only when I suggest that the problem is impossible to repro with test cases, wri
 
 ## Step 3. Confirm the Problem
 
-If `N/A` is written under `# TEST`, it means the problem is not possible to repro with test cases, skip this step.
+If `N/A` is written under `# TEST`, it means the problem is not possible to reproduce with test cases, skip this step.
 If the title is `# TEST [CONFIRMED]`, it means the problem is already proven confirmable by the test cases, skip this step.
 
 - Run the test cases and confirm that the problem is reproduced.

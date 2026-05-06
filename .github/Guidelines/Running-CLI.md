@@ -37,7 +37,7 @@ You are required to `cd` to such folder before running the compiled CLI binary, 
 
 After a successful build, `Bin/UnitTest` will be generated as the executable.
 If you can't find it, first check if the build succeeded, and then read `makefile` to find the correct binary file name.
-`Bin/UnitTest` is the default name in any `vmake` if it is not changed, so many CLI application still named `UnitTest`.
+`Bin/UnitTest` is the default name in any `vmake` if it is not changed, so many CLI applications are still named `UnitTest`.
 
 **IMPORTANT**: Always run it asynchronously, read terminal output and its return code.
 Compiled binary might have a bug causing it to trap in a dead loop. DO NOT just wait for it to complete.

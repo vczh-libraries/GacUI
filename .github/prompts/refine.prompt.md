@@ -24,27 +24,31 @@
 
 ## Step 1. Find the Earliest Backup Folder
 
-- Find and execute `copilotPrepare.ps1 -Earliest` to get the absolute path to the earliest backup folder in `Learning`.
-- If the script fails, it means there is no material to learn from, stop. Otherwise continue to process this folder.
+- Firstly you need to do a simple clean up:
+  - Folder names are time stamps, you need to read a few of earilest documents.
+  - Sometimes the same document will be backed up multiple times with new content increasing as instructed in the original request.
+  - You should identify them, and leave the latest one while deleting earlier ones. The kept document should contain the most content.
+  - Stop cleaning up at the first group of documents. Or when the second earilest document has a different task than the earliest one, you will have nothing to delete and just stops the cleaning up.
+  - You can use `copilotRemember.ps1 -Earliest COUNT` to help you identify the earliest COUNT backup folders.
+- Secondly, pick the earliest backup folder after cleaning up and continue.
 
 ## Step 2. Read All Documents
 
 - Read all files in the earliest backup folder. These may include:
-  - `Copilot_Task.md`
-  - `Copilot_Planning.md`
-  - `Copilot_Execution.md`
-  - `Copilot_Execution_Finding.md`
+  - `Copilot_Investigate.md`
 
 ## Step 3. Extract Findings
 
-- Focus on the following sections across all documents:
-  - All `## UPDATE` sections in each document.
-  - `# Comparing to User Edit` from `Copilot_Execution_Finding.md`.
-- From these sections, identify learnings about:
-  - Best practices and coding preferences.
-  - Mistakes made and corrections applied.
-  - Patterns the user prefers or dislikes.
-  - Any insight into the user's philosophy about code quality, style, or approach.
+- Extract useful information that reflect my preferences:
+  - `# PROBLEM DESCRIPTION` section, you need to careful read the original request in this section and tell what it wanted to achieve:
+    - If it is a feature request, ignore it.
+    - If it is a refactoring request, pay attention to the reason for refactoring and the expected improvement. This usually reflect my preferences.
+  - `## UPDATE` sections under `# UPDATES`, usually contains my corrections to previous proposals in the document.
+- Try to extract knowledges from the above content, focus on:
+  - Coding guidelines, best practices and preferences for using any specific language or library.
+  - Software design principles, best practices for engineering.
+  - Knowledges that can be generalized across projects.
+  - Knowledges that is useful for maintaining this project.
 
 ## Step 4. Write Learnings
 

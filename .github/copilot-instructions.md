@@ -60,12 +60,8 @@ otherwise it won't work properly.
 ## Accessing Task Documents
 
 If you need to find any document for the current working task, they are in the `REPO-ROOT/.github/TaskLogs` folder:
-- `Copilot_Scrum.md`
-- `Copilot_Task.md`
-- `Copilot_Planning.md`
-- `Copilot_Execution.md`
-- `Copilot_KB.md`
 - `Copilot_Investigate.md`
+- `Copilot_KB.md`
 
 ### Important Rules for Writing Markdown Files
 
@@ -77,14 +73,13 @@ If you need to find any document for the current working task, they are in the `
 
 ## (Windows Specific) Accessing Script Files
 
-If you need to find any script or log files, they are in the `REPO-ROOT/.github/Scripts` folder:
-- `copilotPrepare.ps1`
-- `copilotPrepareReview.ps1`
+If you need to find any script or support files, they are in the `REPO-ROOT/.github/Scripts` folder:
 - `copilotBuild.ps1`
 - `copilotExecute.ps1`
 - `copilotDebug_Start.ps1`
 - `copilotDebug_Stop.ps1`
 - `copilotDebug_RunCommand.ps1`
+- `copilotRemember.ps1`
 - `Build.log`
 - `Execute.log`
 
