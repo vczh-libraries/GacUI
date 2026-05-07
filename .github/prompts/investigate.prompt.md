@@ -12,6 +12,8 @@
 
 - Your goal is to finish an investigation document in `Copilot_Investigate.md` to address a problem.
 - You are recommended to modify unit tests, build, run, and debug to understand the problem, or verify your root cause analysis while tracing a bug.
+- **SUPER IMPORTANT** Your should always follow the coding convention when coding: `REPO-ROOT/.github/Guidelines/Coding.md`.
+- DO NOT ASK ANY QUESTION, you are going to complete the work to the end, I am not wathcing you in realtime. Unless you are explicitly instructed to ask questions.
 
 ## Copilot_Investigate.md Structure
 
@@ -133,7 +135,8 @@ Propose any solution you can think of and write them down in the document, you m
   - Check out the list under `# PROPOSALS`, pick the first proposal that is without `[CONFIRMED]` or `[DENIED]`.
   - If every proposal is marked `[DENIED]`, you need to work out new proposals, jump to `Step 4`.
   - If every proposal is marked, but some are `[CONFIRMED]`, you are good and stop here.
-    - If there is only one `[CONFIRMED]` proposal, reapply the change according to its `### CODE CHANGE` section, run the test cases to confirm all test cases pass and extra conditions are satisfied.
+    - If there is only one `[CONFIRMED]` proposal, you should keep the change in the source code, according to its `### CODE CHANGE` section. And then do `Step 6`.
+    - If there is multiple `[CONFIRMED]` proposals, you are going to make your decision about which is the best one, and keep that change in the source code, according to its `### CODE CHANGE` section. And then do `Step 6`. You will also need to write in the selected proposal about why it is better than the others, and also tell me directly.
 - Understand and implement the proposal.
 - Run the test cases to confirm the proposal.
   - Ensure all test cases passed.
@@ -154,3 +157,9 @@ Propose any solution you can think of and write them down in the document, you m
     - revert all other changes, so that you can continue for the next one. This is why it is important to record your changes.
     - git push to the current branch, but if it fails because it needs a pull/merge, or because of a network issue, skip pushing.
   - Jump back to `Step 5` to try the next proposal.
+
+## Step 6. Verify and Code Review
+
+- Unit test is always required to ensure the proposal actually works.
+- Review all code you have changed, make sure they are clean and follow the coding convention in `REPO-ROOT/.github/Guidelines/Coding.md`.
+  - If code review changes the code, you need to run the test cases again to confirm the changes.
