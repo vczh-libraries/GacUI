@@ -2,9 +2,10 @@
 
 # Orders
 
+- Crash early instead of adding error-tolerance fallbacks [5]
+- Process staged tasks one by one with verification [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
-- Crash early instead of adding error-tolerance fallbacks [3]
 - Capture dependent lambdas explicitly [2]
 - Don't assume observable changes are batched [2]
 - Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages [2]
@@ -37,6 +38,10 @@ When verifying callbacks from an observable collection, do not assume multiple o
 ## Crash early instead of adding error-tolerance fallbacks
 
 When an invariant says a value must exist or a conversion must succeed, prefer using it directly or using a strong cast so a violation crashes or throws immediately. Do not add speculative null checks, weak casts, or silent fallbacks that hide protocol or ownership bugs. Fix the real cause instead of making the code tolerant of states that should be impossible.
+
+## Process staged tasks one by one with verification
+
+When a request is split into explicit tasks, complete and verify each task before starting the next one. This keeps commits easy to understand and review, limits side effects to the current task, and avoids having to diagnose many unrelated issues at the same time.
 
 ## Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages
 

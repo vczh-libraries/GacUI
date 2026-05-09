@@ -102,3 +102,5 @@ When `VlppParser2` is available to the current project, complex parsers always r
   - Prefer `var v : T = e;` over `var v = e over T;` if `T` cannot avoid.
   - When implicit type conversion works at the place, avoid `cast`, `as` and `infer` expression.
   - Prefer `cast *` over `cast T` when the context accepts `T`.
+- Nested `try-catch` and `try-finally` can be merged into one single `try-catch-finally` statement.
+- Prefer strong typed collections in Workflow, but when writing C++ reflectable interfaces, use `Ptr<IValue*>`.
