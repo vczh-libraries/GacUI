@@ -1077,20 +1077,6 @@ WfLoadLibraryTypes
 
 #define _ ,
 
-			template<typename TClass, typename T>
-			class CustomMethodInfoImplWithReturn {};
-
-			template<typename TClass, typename R, typename ...TArgs>
-			class CustomMethodInfoImplWithReturn<TClass, R(TArgs...)> : public CustomMethodInfoImpl<TClass, R(TArgs...)>
-			{
-			public:
-				CustomMethodInfoImplWithReturn(const wchar_t* parameterNames[], R(__thiscall TClass::* _method)(TArgs...), const wchar_t* _invokeTemplate, const wchar_t* _closureTemplate, Ptr<ITypeInfo> _returnInfo)
-					: CustomMethodInfoImpl<TClass, R(TArgs...)>(parameterNames, _method, _invokeTemplate, _closureTemplate)
-				{
-					this->returnInfo = _returnInfo;
-				}
-			};
-
 			BEGIN_STRUCT_MEMBER(vl::__vwsn::att_cpp_File)
 				STRUCT_MEMBER(argument)
 			END_STRUCT_MEMBER(vl::__vwsn::att_cpp_File)
