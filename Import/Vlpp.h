@@ -5729,9 +5729,19 @@ namespace vl
 		template<typename... TArgs2>
 		void operator()(TArgs2&& ...args)const
 		{
-			for(vint i = 0; i < handlers.Count(); i++)
+			auto count = handlers.Count();
+			if (count == 0) return;
+
+			if (count == 1)
 			{
-				handlers[i]->function(std::forward<TArgs2&&>(args)...);
+				handlers[0]->function(std::forward<TArgs2>(args)...);
+			}
+			else
+			{
+				for (vint i = 0; i < count; i++)
+				{
+					handlers[i]->function(args...);
+				}
 			}
 		}
 	};

@@ -53,7 +53,7 @@ WfRuntimeCallStackInfo
 			{
 				if (!cache)
 				{
-					if (!context)
+					if (context)
 					{
 						Dictionary<WString, Value> map;
 						for (auto [name, index] : indexed(names))
@@ -2650,6 +2650,15 @@ WfRuntimeLambda
 WfRuntimeInterfaceInstance
 ***********************************************************************/
 
+			WfRuntimeInterfaceInstance::~WfRuntimeInterfaceInstance()
+			{
+				if (destructorFunctionIndex != -1)
+				{
+					auto arguments = IValueList::Create();
+					WfRuntimeLambda::Invoke(Ptr(globalContext), capturedVariables, destructorFunctionIndex, arguments);
+				}
+			}
+
 			Value WfRuntimeInterfaceInstance::Invoke(IMethodInfo* methodInfo, Ptr<IValueReadonlyList> arguments)
 			{
 				vint index = functions.Keys().IndexOf(methodInfo);
@@ -4035,9 +4044,16 @@ WfRuntimeThreadContext
 						{
 							CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
 							CONTEXT_ACTION(PopValue(key), L"failed to pop a value from the stack.");
-							auto name = UnboxValue<IMethodInfo*>(key);
-							auto func = UnboxValue<vint>(value);
-							proxy->functions.Add(name, func);
+							if (key.IsNull())
+							{
+								proxy->destructorFunctionIndex = UnboxValue<vint>(value);
+							}
+							else
+							{
+								auto name = UnboxValue<IMethodInfo*>(key);
+								auto func = UnboxValue<vint>(value);
+								proxy->functions.Add(name, func);
+							}
 						}
 
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");

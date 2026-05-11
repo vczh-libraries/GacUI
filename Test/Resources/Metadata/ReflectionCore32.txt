@@ -5918,6 +5918,168 @@ interface system::Future : system::Async, system::Promise {
 
 }
 
+@FullName:vl::rpc_controller::IRpcController
+interface system::IRpcController : system::IRpcOperations {
+    function Finalize() : system::Void;
+    function GetEventSuppressedFlag(ref : system::RpcObjectReference, eventId : system::Int32) : system::Boolean;
+    function GetItemChangedSuppressedFlag(ref : system::RpcObjectReference) : system::Boolean;
+    function SetEventSuppressedFlag(ref : system::RpcObjectReference, eventId : system::Int32, suppressed : system::Boolean) : system::Void;
+    function SetItemChangedSuppressedFlag(ref : system::RpcObjectReference, suppressed : system::Boolean) : system::Void;
+
+}
+
+@FullName:vl::rpc_controller::IRpcDispatcher
+interface system::IRpcDispatcher : system::Interface {
+    function BroadcastFromClient_ListEventOps(selfClientId : system::Int32) : system::IRpcListEventOps*;
+    function BroadcastFromClient_ObjectEventOps(selfClientId : system::Int32) : system::IRpcObjectEventOps*;
+    function Finalize() : system::Void;
+    function IsRegisteredService(ref : system::RpcObjectReference) : system::Boolean;
+    function RegisterService(typeId : system::Int32, ref : system::RpcObjectReference) : system::Void;
+    function RequestService(typeId : system::Int32) : system::RpcObjectReference;
+    function SendToClient_ListOps(targetClientId : system::Int32) : system::IRpcListOps*;
+    function SendToClient_ObjectOps(targetClientId : system::Int32) : system::IRpcObjectOps*;
+
+}
+
+@FullName:vl::rpc_controller::IRpcLifecycle
+interface system::IRpcLifecycle : system::Interface {
+    property ClientId : system::Int32 { get:GetClientId }
+    property Controller : system::IRpcController* { get:GetController }
+    property Dispatcher : system::IRpcDispatcher* { get:GetDispatcher }
+    property Serializer : system::IRpcSerializer* { get:GetSerializer }
+
+    function Finalize() : system::Void;
+    function GetClientId() : system::Int32;
+    function GetController() : system::IRpcController*;
+    function GetDispatcher() : system::IRpcDispatcher*;
+    function GetSerializer() : system::IRpcSerializer*;
+    @InvokeTemplate:::vl::rpc_controller::JsonDeserializePredefinedTypes($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::JsonDeserializePredefinedTypes)
+    static function JsonDeserializePredefinedTypes(value : system::Object, rpcjson_Deserialize : system::Function<system::Object, system::JsonNode^>^) : system::Object;
+    @InvokeTemplate:::vl::rpc_controller::JsonSerializePredefinedTypes($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::JsonSerializePredefinedTypes)
+    static function JsonSerializePredefinedTypes(value : system::Object, rpcjson_Serialize : system::Function<system::JsonNode^, system::Object>^) : system::JsonNode^;
+    function LocalObjectHold(ref : system::RpcObjectReference, remoteClientId : system::Int32) : system::Void;
+    function LocalObjectUnhold(ref : system::RpcObjectReference, remoteClientId : system::Int32) : system::Void;
+    function PtrToRef(obj : system::Interface^) : system::RpcObjectReference;
+    @InvokeTemplate:::vl::rpc_controller::ReadEventException($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::ReadEventException)
+    static function ReadEventException(exceptions : system::Dictionary^) : system::Void;
+    @InvokeTemplate:::vl::rpc_controller::ReadMethodException($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::ReadMethodException)
+    static function ReadMethodException(value : system::Object) : system::Void;
+    function RefToPtr(ref : system::RpcObjectReference) : system::Interface^;
+    function RegisterService(fullName : system::String, service : system::Interface^) : system::Void;
+    function RequestService(fullName : system::String) : system::Interface^;
+    @InvokeTemplate:::vl::rpc_controller::RpcBoxByref($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcBoxByref)
+    static function RpcBoxByref(trivial : system::Interface^, lc : system::IRpcLifecycle*) : system::RpcObjectReference;
+    @InvokeTemplate:::vl::rpc_controller::RpcBoxByval($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcBoxByval)
+    static function RpcBoxByval(trivial : system::Object, lc : system::IRpcLifecycle*) : system::Object;
+    @InvokeTemplate:::vl::rpc_controller::RpcCopyByval($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcCopyByval)
+    static function RpcCopyByval(trivial : system::Object, lc : system::IRpcLifecycle*) : system::Object;
+    @InvokeTemplate:::vl::rpc_controller::RpcUnboxByref($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcUnboxByref)
+    static function RpcUnboxByref(serializable : system::RpcObjectReference, lc : system::IRpcLifecycle*) : system::Interface^;
+    @InvokeTemplate:::vl::rpc_controller::RpcUnboxByval($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcUnboxByval)
+    static function RpcUnboxByval(serializable : system::Object, lc : system::IRpcLifecycle*) : system::Interface^;
+
+}
+
+@FullName:vl::rpc_controller::IRpcListEventOps
+interface system::IRpcListEventOps : system::Interface {
+    function OnItemChanged(ref : system::RpcObjectReference, index : system::Int32, oldCount : system::Int32, newCount : system::Int32) : system::Object;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListEventOps>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListEventOps>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::IRpcListEventOps^;
+}
+
+@FullName:vl::rpc_controller::IRpcListOps
+interface system::IRpcListOps : system::Interface {
+    function DictClear(ref : system::RpcObjectReference) : system::Void;
+    function DictContainsKey(ref : system::RpcObjectReference, key : system::Object) : system::Boolean;
+    function DictGet(ref : system::RpcObjectReference, key : system::Object) : system::Object;
+    function DictGetCount(ref : system::RpcObjectReference) : system::Int32;
+    function DictGetKeys(ref : system::RpcObjectReference) : system::RpcObjectReference;
+    function DictGetValues(ref : system::RpcObjectReference) : system::RpcObjectReference;
+    function DictRemove(ref : system::RpcObjectReference, key : system::Object) : system::Boolean;
+    function DictSet(ref : system::RpcObjectReference, key : system::Object, value : system::Object) : system::Void;
+    function EnumCreate(ref : system::RpcObjectReference) : system::RpcObjectReference;
+    function EnumGetCurrent(enumerator : system::RpcObjectReference) : system::Object;
+    function EnumNext(enumerator : system::RpcObjectReference) : system::Boolean;
+    function ListAdd(ref : system::RpcObjectReference, value : system::Object) : system::Int32;
+    function ListClear(ref : system::RpcObjectReference) : system::Void;
+    function ListContains(ref : system::RpcObjectReference, value : system::Object) : system::Boolean;
+    function ListGet(ref : system::RpcObjectReference, index : system::Int32) : system::Object;
+    function ListGetCount(ref : system::RpcObjectReference) : system::Int32;
+    function ListIndexOf(ref : system::RpcObjectReference, value : system::Object) : system::Int32;
+    function ListInsert(ref : system::RpcObjectReference, index : system::Int32, value : system::Object) : system::Int32;
+    function ListRemoveAt(ref : system::RpcObjectReference, index : system::Int32) : system::Boolean;
+    function ListSet(ref : system::RpcObjectReference, index : system::Int32, value : system::Object) : system::Void;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListOps>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListOps>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::IRpcListOps^;
+}
+
+@FullName:vl::rpc_controller::IRpcObjectEventOps
+interface system::IRpcObjectEventOps : system::Interface {
+    function InvokeEvent(ref : system::RpcObjectReference, eventId : system::Int32, arguments : system::Array^) : system::Object;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectEventOps>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectEventOps>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::IRpcObjectEventOps^;
+}
+
+@FullName:vl::rpc_controller::IRpcObjectOps
+interface system::IRpcObjectOps : system::Interface {
+    function EndInvokeMethod(slot : system::Int32) : system::Void;
+    function InvokeMethod(ref : system::RpcObjectReference, methodId : system::Int32, arguments : system::Array^) : system::Object;
+    function ObjectHold(ref : system::RpcObjectReference, remoteClientId : system::Int32, hold : system::Boolean) : system::Void;
+    function RegisterService(typeId : system::Int32, service : system::Interface^) : system::Void;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectOps>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectOps>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::IRpcObjectOps^;
+}
+
+@FullName:vl::rpc_controller::IRpcOperations
+interface system::IRpcOperations : system::Interface {
+    property ListEventOps : system::IRpcListEventOps* { get:GetListEventOps }
+    property ListOps : system::IRpcListOps* { get:GetListOps }
+    property ObjectEventOps : system::IRpcObjectEventOps* { get:GetObjectEventOps }
+    property ObjectOps : system::IRpcObjectOps* { get:GetObjectOps }
+
+    function GetListEventOps() : system::IRpcListEventOps*;
+    function GetListOps() : system::IRpcListOps*;
+    function GetObjectEventOps() : system::IRpcObjectEventOps*;
+    function GetObjectOps() : system::IRpcObjectOps*;
+
+}
+
+@FullName:vl::rpc_controller::IRpcSerializer
+interface system::IRpcSerializer : system::Interface {
+    function Deserialize(value : system::Object) : system::Object;
+    function Serialize(value : system::Object) : system::Object;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcSerializer>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcSerializer>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::IRpcSerializer^;
+}
+
+@FullName:vl::rpc_controller::IRpcWrapperBase
+interface system::IRpcWrapperBase : system::Interface {
+    function DisconnectFromLifecycle() : system::Void;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcWrapperBase>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcWrapperBase>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::IRpcWrapperBase^;
+}
+
 @FullName:vl::vint16_t
 @ValueType
 @Serializable
@@ -6210,6 +6372,56 @@ interface system::ReadonlyList : system::Enumerable {
 
 @FullName:vl::reflection::DescriptableObject
 class system::ReferenceType {
+}
+
+@FullName:vl::rpc_controller::RpcByrefArray
+class system::RpcByrefArray : system::Array, system::IRpcWrapperBase {
+}
+
+@FullName:vl::rpc_controller::RpcByrefDictionary
+class system::RpcByrefDictionary : system::Dictionary, system::IRpcWrapperBase {
+}
+
+@FullName:vl::rpc_controller::RpcByrefEnumerable
+class system::RpcByrefEnumerable : system::Enumerable, system::IRpcWrapperBase {
+}
+
+@FullName:vl::rpc_controller::RpcByrefEnumerator
+class system::RpcByrefEnumerator : system::Enumerator, system::IRpcWrapperBase {
+}
+
+@FullName:vl::rpc_controller::RpcByrefList
+class system::RpcByrefList : system::RpcByrefReadonlyList, system::List {
+}
+
+@FullName:vl::rpc_controller::RpcByrefObservableList
+class system::RpcByrefObservableList : system::ObservableList, system::IRpcWrapperBase {
+}
+
+@FullName:vl::rpc_controller::RpcByrefReadonlyList
+class system::RpcByrefReadonlyList : system::ReadonlyList, system::IRpcWrapperBase {
+}
+
+@FullName:vl::rpc_controller::RpcByvalReturnValue
+class system::RpcByvalReturnValue : system::ReferenceType {
+    property slot : system::Int32;
+    property value : system::Object;
+
+    constructor () : system::RpcByvalReturnValue^;
+}
+
+@FullName:vl::rpc_controller::RpcException
+@ValueType
+struct system::RpcException {
+    property message : system::String;
+}
+
+@FullName:vl::rpc_controller::RpcObjectReference
+@ValueType
+struct system::RpcObjectReference {
+    property clientId : system::Int32;
+    property objectId : system::Int32;
+    property typeId : system::Int32;
 }
 
 @FullName:float
@@ -6689,6 +6901,18 @@ struct system::workflow_attributes::att_rpc_Ctor {
 @FullName:vl::__vwsn::att_rpc_Dynamic
 @ValueType
 struct system::workflow_attributes::att_rpc_Dynamic {
+}
+
+@FullName:vl::__vwsn::att_rpc_IdNumber
+@ValueType
+struct system::workflow_attributes::att_rpc_IdNumber {
+    property argument : system::Int32;
+}
+
+@FullName:vl::__vwsn::att_rpc_IdString
+@ValueType
+struct system::workflow_attributes::att_rpc_IdString {
+    property argument : system::String;
 }
 
 @FullName:vl::__vwsn::att_rpc_Interface

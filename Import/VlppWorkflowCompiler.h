@@ -5037,6 +5037,20 @@ Scope Manager
 				collections::Dictionary<WString, vint>		stateIds;
 			};
 
+			struct WfRpcMetadata
+			{
+				vl::Ptr<vl::workflow::WfModule>													metadataModule;
+				vl::WString																		dts;
+				vl::collections::Dictionary<vl::WString, vl::workflow::WfClassDeclaration*>		typeNames;
+				vl::collections::Dictionary<vl::WString, vl::workflow::WfFunctionDeclaration*>	methodNames;
+				vl::collections::Dictionary<vl::WString, vl::workflow::WfEventDeclaration*>		eventNames;
+
+				vl::collections::List<vl::WString>												typeFullNames;
+				vl::collections::List<vl::WString>												methodFullNames;
+				vl::collections::List<vl::WString>												eventFullNames;
+				vl::collections::SortedList<vl::WString>											orderedIds;
+			};
+
 			/// <summary>
 			/// CPU architecture
 			/// </summary>
@@ -5112,6 +5126,7 @@ Scope Manager
 			public:
 				Ptr<WfLexicalScopeName>						globalName;							// root scope
 				TypeNameMap									typeNames;							// ITypeDescriptor* to scope name map
+				Ptr<WfRpcMetadata>							rpcMetadata;						// rpc metadata module and generated lookup tables
 
 				vint										usedTempVars = 0;
 				ParsingErrorList							errors;								// compile errors
@@ -5172,7 +5187,8 @@ Scope Manager
 				/// <summary>Perform semantic analyzing for added modules.</summary>
 				/// <param name="keepTypeDescriptorNames">The same to the argument in <see cref="Clear"/>.</param>
 				/// <param name="callback">The callback to receive progress information (optional).</param>
-				void										Rebuild(bool keepTypeDescriptorNames, IWfCompilerCallback* callback = nullptr);
+				/// <param name="validateRpc">Set to false to skip RPC metadata validation and generation.</param>
+				void										Rebuild(bool keepTypeDescriptorNames, IWfCompilerCallback* callback = nullptr, bool validateRpc = true);
 
 				bool										ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::SortedList<ITypeDescriptor*>& searchedTypes, collections::List<ResolveExpressionResult>& results);
 				bool										ResolveName(WfLexicalScope* scope, const WString& name, collections::List<ResolveExpressionResult>& results);
@@ -5331,7 +5347,78 @@ Semantic Analyzing
 RPC Analyzing
 ***********************************************************************/
 
+			namespace rpc_generating
+			{
+				struct RpcParamModel
+				{
+					WString														name;
+					Ptr<WfType>													type;
+					reflection::description::ITypeInfo*							typeInfo = nullptr;
+					bool														byref = false;
+				};
+
+				enum class RpcMethodKind
+				{
+					Normal,
+					PropertyGetter,
+					PropertySetter,
+				};
+
+				struct RpcPropertyModel
+				{
+					WString														name;
+					Ptr<WfType>													type;
+					reflection::description::ITypeInfo*							typeInfo = nullptr;
+					bool														byref = false;
+					bool														cached = false;
+					WString														getterName;
+					WString														setterName;
+					WString														valueChangedEvent;
+				};
+
+				struct RpcMethodModel
+				{
+					WString														fullName;
+					WString														name;
+					Ptr<WfType>													returnType;
+					reflection::description::ITypeInfo*							returnTypeInfo = nullptr;
+					bool														returnByref = false;
+					RpcMethodKind												kind = RpcMethodKind::Normal;
+					vint														methodId = -1;
+					collections::List<RpcParamModel>							params;
+				};
+
+				struct RpcEventModel
+				{
+					WString														fullName;
+					WString														name;
+					vint														eventId = -1;
+					collections::List<RpcParamModel>							params;
+				};
+
+				struct RpcInterfaceModel
+				{
+					WString														fullName;
+					WString														interfaceName;
+					vint														typeId = -1;
+					bool														ctor = false;
+					WfClassDeclaration*											interfaceDecl = nullptr;
+					collections::List<WString>									baseFullNames;
+					collections::List<RpcPropertyModel>							properties;
+					collections::List<RpcMethodModel>							methods;
+					collections::List<RpcEventModel>							events;
+				};
+
+				extern WString													MangleRpcFullName(const WString& fullName);
+				extern reflection::description::ITypeDescriptor*				FindRpcTypeDescriptor(WfLexicalScopeManager* manager, const WString& fullName);
+			}
+
+			extern void										PopulateAttributesOnTypeDescriptors(WfLexicalScopeManager* manager);
 			extern void										ValidateModuleRPC(WfLexicalScopeManager* manager, Ptr<WfModule> module);
+			extern Ptr<WfModule>							CopyAndClearRpcMetadata(Ptr<WfModule> module);
+			extern WString									GenerateDtsFromRpcMetadata(WfLexicalScopeManager* manager);
+			extern Ptr<WfModule>							GenerateModuleRpc(WfLexicalScopeManager* manager, WString assemblyName);
+			extern Ptr<WfModule>							GenerateModuleRpcJson(WfLexicalScopeManager* manager, WString assemblyName);
 
 /***********************************************************************
 Expanding Virtual Nodes
@@ -5555,6 +5642,7 @@ Error Messages
 				static glr::ParsingError					WrongBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
 				static glr::ParsingError					DuplicatedBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
 				static glr::ParsingError					TooManyDestructor(WfDestructorDeclaration* node, WfClassDeclaration* classDecl);
+				static glr::ParsingError					TooManyDestructor(WfDestructorDeclaration* node, WfNewInterfaceExpression* newInterfaceExpr);
 				static glr::ParsingError					AutoPropertyShouldBeInitialized(WfAutoPropertyDeclaration* node);
 				static glr::ParsingError					AutoPropertyCannotBeInitializedInInterface(WfAutoPropertyDeclaration* node, WfClassDeclaration* classDecl);
 
@@ -5569,11 +5657,64 @@ Error Messages
 				static glr::ParsingError					RpcAttributeRequiresStrongTypedCollection(WfAttribute* node, const WString& attributeName, const WString& memberName);
 				static glr::ParsingError					RpcAttributeCanOnlyApplyToProperty(WfAttribute* node, const WString& attributeName);
 				static glr::ParsingError					RpcAttributeCannotCoexistWithOther(WfAttribute* node, const WString& attributeName, const WString& otherAttributeName, const WString& memberName);
+				static glr::ParsingError					RpcGeneratedNameConflict(WfDeclaration* node, const WString& category, const WString& generatedName);
+				static glr::ParsingError					RpcReservedTypeInReturnValue(WfDeclaration* node, const WString& interfaceFullName, const WString& memberName, const WString& typeName);
+				static glr::ParsingError					RpcReservedTypeInFunctionArgument(WfFunctionArgument* node, const WString& interfaceFullName, const WString& memberName, const WString& typeName);
+				static glr::ParsingError					RpcReservedTypeInEventArgument(WfType* node, const WString& interfaceFullName, const WString& memberName, const WString& typeName);
+				static glr::ParsingError					RpcWrapperGenerationRequiresPropertyMode(WfPropertyDeclaration* node, const WString& memberName);
+				static glr::ParsingError					RpcWrapperGenerationRequiresCollectionReturnTransfer(WfFunctionDeclaration* node, const WString& memberName);
+				static glr::ParsingError					RpcWrapperGenerationRequiresCollectionParameterTransfer(WfFunctionArgument* node, const WString& memberName);
+				static glr::ParsingError					RpcMangledNameConflict(WfDeclaration* node, const WString& mangledName, const WString& previousFullName, const WString& currentFullName);
 
 				// CPP: C++ code generation error
 				static glr::ParsingError					CppUnableToDecideClassOrder(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
 				static glr::ParsingError					CppUnableToSeparateCustomFile(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds);
 			};
+		}
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\ANALYZER\WFANALYZER_GENERATERPC.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Workflow::Analyzer::RPC Generator Helpers
+
+Interfaces:
+**********************************************************************/
+
+#ifndef VCZH_WORKFLOW_ANALYZER_WFANALYZER_GENERATERPC
+#define VCZH_WORKFLOW_ANALYZER_WFANALYZER_GENERATERPC
+
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace analyzer
+		{
+			namespace rpc_generating
+			{
+				extern Ptr<WfStatement>											CreateIf(Ptr<WfExpression> condition, Ptr<WfStatement> trueBranch, Ptr<WfStatement> falseBranch = nullptr);
+				extern Ptr<WfFunctionDeclaration>								CreateFunctionDeclaration(const WString& name, Ptr<WfType> returnType, WfFunctionKind kind, WfFunctionAnonymity anonymity = WfFunctionAnonymity::Named);
+
+				template<typename ...TArgs>
+				Ptr<WfCallExpression> CreateCall(Ptr<WfExpression> function, TArgs... arguments)
+				{
+					auto expression = Ptr(new WfCallExpression);
+					expression->function = function;
+					if constexpr (sizeof...(arguments) > 0)
+					{
+						(expression->arguments.Add(arguments), ...);
+					}
+					return expression;
+				}
+			}
 		}
 	}
 }
@@ -5632,6 +5773,7 @@ Code Generation
 				WfFunctionDeclaration*				functionDeclaration = 0;
 				WfFunctionExpression*				functionExpression = 0;
 				WfOrderedLambdaExpression*			orderedLambdaExpression = 0;
+				WfDestructorDeclaration*			destructorDeclaration = 0;
 			};
 
 			enum class WfCodegenScopeType
