@@ -3908,7 +3908,7 @@ Interface Implementation Proxy (Implement)
 #pragma warning(push)
 #pragma warning(disable:4250)
 			template<typename TInterface, typename ...TBaseInterfaces>
-			class ValueInterfaceImpl : public virtual ValueInterfaceRoot, public virtual TInterface, public ValueInterfaceProxy<TBaseInterfaces>...
+			class ValueInterfaceImpl : public virtual ValueInterfaceRoot, public virtual TInterface, public virtual ValueInterfaceProxy<TBaseInterfaces>...
 			{
 			public:
 				~ValueInterfaceImpl()
