@@ -40,10 +40,10 @@ all:pre-build ./Bin/UnitTest
 ./Obj/VlppRegex.o: ../../../Import/VlppRegex.cpp ../../../Import/VlppRegex.h ../../../Import/Vlpp.h ../../../Import/VlppOS.h
 	$(CPP_COMPILE)
 
-./Obj/VlppWorkflowLibrary.o: ../../../Import/VlppWorkflowLibrary.cpp ../../../Import/VlppWorkflowLibrary.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h
+./Obj/VlppWorkflowLibrary.o: ../../../Import/VlppWorkflowLibrary.cpp ../../../Import/VlppWorkflowLibrary.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h ../../../Import/VlppGlrParser.h
 	$(CPP_COMPILE)
 
-./Obj/VlppWorkflowCompiler.o: ../../../Import/VlppWorkflowCompiler.cpp ../../../Import/VlppWorkflowCompiler.h ../../../Import/VlppWorkflowLibrary.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h ../../../Import/VlppWorkflowRuntime.h ../../../Import/VlppGlrParser.h
+./Obj/VlppWorkflowCompiler.o: ../../../Import/VlppWorkflowCompiler.cpp ../../../Import/VlppWorkflowCompiler.h ../../../Import/VlppWorkflowLibrary.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h ../../../Import/VlppGlrParser.h ../../../Import/VlppWorkflowRuntime.h
 	$(CPP_COMPILE)
 
 ./Obj/VlppWorkflowRuntime.o: ../../../Import/VlppWorkflowRuntime.cpp ../../../Import/VlppWorkflowRuntime.h ../../../Import/VlppGlrParser.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h

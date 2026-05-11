@@ -1,0 +1,15 @@
+../../Import/Vlpp.cpp
+../../Import/Vlpp.Linux.cpp
+../../Import/VlppGlrParser.cpp
+../../Import/VlppOS.cpp
+../../Import/VlppOS.Linux.cpp
+../../Import/VlppReflection.cpp
+../../Import/VlppRegex.cpp
+../../Import/VlppWorkflowCompiler.cpp
+../../Import/VlppWorkflowLibrary.cpp
+../../Import/VlppWorkflowRuntime.cpp
+../../Release/GacUI.cpp
+../../Release/GacUICompiler.cpp
+../../Release/GacUIReflection.cpp
+GacGen/GacGen.cpp
+GacGen/Main.cpp

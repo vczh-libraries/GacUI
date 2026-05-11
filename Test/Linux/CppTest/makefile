@@ -40,7 +40,7 @@ all:pre-build ./Bin/UnitTest
 ./Obj/VlppRegex.o: ../../../Import/VlppRegex.cpp ../../../Import/VlppRegex.h ../../../Import/Vlpp.h ../../../Import/VlppOS.h
 	$(CPP_COMPILE)
 
-./Obj/VlppWorkflowLibrary.o: ../../../Import/VlppWorkflowLibrary.cpp ../../../Import/VlppWorkflowLibrary.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h
+./Obj/VlppWorkflowLibrary.o: ../../../Import/VlppWorkflowLibrary.cpp ../../../Import/VlppWorkflowLibrary.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h ../../../Import/VlppGlrParser.h
 	$(CPP_COMPILE)
 
 ./Obj/GuiGraphicsDocumentElement.o: ../../../Source/GraphicsElement/GuiGraphicsDocumentElement.cpp ../../../Source/GraphicsElement/GuiGraphicsDocumentElement.h ../../../Source/GraphicsElement/GuiGraphicsElement.h ../../../Source/GraphicsElement/GuiGraphicsResourceManager.h ../../../Source/GraphicsElement/GuiGraphicsElementInterfaces.h ../../../Source/GraphicsElement/../GuiTypes.h ../../../Import/VlppGlrParser.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h ../../../Import/VlppWorkflowLibrary.h ../../../Source/GraphicsElement/GuiGraphicsDocumentInterfaces.h ../../../Source/GraphicsElement/../Resources/GuiDocument.h ../../../Source/GraphicsElement/../Resources/GuiResource.h ../../../Source/GraphicsElement/../Resources/../NativeWindow/GuiNativeWindow.h ../../../Source/GraphicsElement/../Resources/../NativeWindow/../GuiTypes.h ../../../Source/GraphicsElement/../Resources/GuiPluginManager.h ../../../Source/GraphicsElement/../Resources/../GuiTypes.h ../../../Source/GraphicsElement/../NativeWindow/GuiNativeWindow.h
