@@ -7501,7 +7501,7 @@ namespace vl
 						{
 							// Actual field types will be applied by calling BoxingProxy<TArgs>::operator FieldType() in the constructor
 							// During the conversion, the expected attribute argument type can be retrieved to construct IAttributeInfo
-							TAttribute{ BoxingProxy<TArgs>{info.Obj(), std::forward<TArgs>(args)}... };
+							(void)TAttribute{ BoxingProxy<TArgs>{info.Obj(), std::forward<TArgs>(args)}... };
 						}
 						return info;
 					}
