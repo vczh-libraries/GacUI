@@ -2,8 +2,8 @@
 
 # Orders
 
+- Process staged tasks one by one with verification [7]
 - Crash early instead of adding error-tolerance fallbacks [5]
-- Process staged tasks one by one with verification [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
 - Capture dependent lambdas explicitly [2]
@@ -11,6 +11,7 @@
 - Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages [2]
 - Prefer simple calls before interface casts [2]
 - Validate expectations against implementation and existing tests [2]
+- Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [2]
 - Prefer well-defined tests over ambiguous edge cases [1]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
@@ -23,7 +24,6 @@
 - `vl::regex` separator regex: `L"[\\/\\\\]+"` [1]
 - Use 2-space indentation in embedded XML/JSON literals [1]
 - `collections::List` has deleted copy constructor; use `std::move()` for structs with `List` members [1]
-- Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [1]
 
 # Refinements
 
@@ -41,7 +41,7 @@ When an invariant says a value must exist or a conversion must succeed, prefer u
 
 ## Process staged tasks one by one with verification
 
-When a request is split into explicit tasks, complete and verify each task before starting the next one. This keeps commits easy to understand and review, limits side effects to the current task, and avoids having to diagnose many unrelated issues at the same time.
+When a request is split into explicit tasks, complete and verify each task before starting the next one. This keeps commits easy to understand and review, limits side effects to the current task, and avoids having to diagnose many unrelated issues at the same time. If a task has its own finishing instructions, finish that task properly before moving on.
 
 ## Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages
 
@@ -123,4 +123,4 @@ When a C++ struct contains `vl::collections::List` fields, the struct's implicit
 
 ## Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants
 
-When a failure is part of the public or script-visible semantics and tests are expected to catch it as a recoverable error, throw `vl::Exception`. Reserve `CHECK_ERROR` / `vl::Error` for internal invariant violations and states that indicate implementation corruption.
+When a failure is part of the public or script-visible semantics and tests are expected to catch it as a recoverable error, throw `vl::Exception`. Reserve `CHECK_ERROR` / `CHECK_FAIL` / `vl::Error` for internal invariant violations and states that indicate implementation corruption. For example, duplicate RPC registration can remain a catchable semantic exception when samples intentionally verify it, while impossible local type ids should fail as invariants.
