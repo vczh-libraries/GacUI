@@ -1,308 +1,459 @@
 ﻿@FullName:darkskin::BottomScrollButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::BottomScrollButtonTemplateConstructor)
 class darkskin::BottomScrollButtonTemplate : presentation::templates::GuiButtonTemplate, darkskin::BottomScrollButtonTemplateConstructor {
     constructor () : darkskin::BottomScrollButtonTemplate*;
 }
 
 @FullName:darkskin::BottomScrollButtonTemplateConstructor
 class darkskin::BottomScrollButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::BottomScrollButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_BottomScrollButtonTemplate_Initialize(__vwsn_this_ : darkskin::BottomScrollButtonTemplate*) : system::Void;
 
     constructor () : darkskin::BottomScrollButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::ButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ButtonTemplateConstructor)
 class darkskin::ButtonTemplate : presentation::templates::GuiButtonTemplate, darkskin::ButtonTemplateConstructor {
     constructor () : darkskin::ButtonTemplate*;
 }
 
 @FullName:darkskin::ButtonTemplateConstructor
 class darkskin::ButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::elements::GuiFocusRectangleElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::ButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ButtonTemplate_Initialize(__vwsn_this_ : darkskin::ButtonTemplate*) : system::Void;
 
     constructor () : darkskin::ButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::CheckBoxTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::CheckBoxTemplateConstructor)
 class darkskin::CheckBoxTemplate : presentation::templates::GuiSelectableButtonTemplate, darkskin::CheckBoxTemplateConstructor {
     constructor () : darkskin::CheckBoxTemplate*;
 }
 
 @FullName:darkskin::CheckBoxTemplateConstructor
 class darkskin::CheckBoxTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_10 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::elements::GuiFocusRectangleElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_12 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_13 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_9 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::CheckBoxTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_CheckBoxTemplate_Initialize(__vwsn_this_ : darkskin::CheckBoxTemplate*) : system::Void;
 
     constructor () : darkskin::CheckBoxTemplateConstructor^;
 }
 
 @FullName:darkskin::ComboBoxTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ComboBoxTemplateConstructor)
 class darkskin::ComboBoxTemplate : presentation::templates::GuiDateComboBoxTemplate, darkskin::ComboBoxTemplateConstructor {
     constructor () : darkskin::ComboBoxTemplate*;
 }
 
 @FullName:darkskin::ComboBoxTemplateConstructor
 class darkskin::ComboBoxTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::ComboBoxTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ComboBoxTemplate_Initialize(__vwsn_this_ : darkskin::ComboBoxTemplate*) : system::Void;
 
     constructor () : darkskin::ComboBoxTemplateConstructor^;
 }
 
 @FullName:darkskin::CustomControlTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::CustomControlTemplateConstructor)
 class darkskin::CustomControlTemplate : presentation::templates::GuiControlTemplate, darkskin::CustomControlTemplateConstructor {
     constructor () : darkskin::CustomControlTemplate*;
 }
 
 @FullName:darkskin::CustomControlTemplateConstructor
 class darkskin::CustomControlTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : darkskin::CustomControlTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_CustomControlTemplate_Initialize(__vwsn_this_ : darkskin::CustomControlTemplate*) : system::Void;
 
     constructor () : darkskin::CustomControlTemplateConstructor^;
 }
 
 @FullName:darkskin::CustomFrameWindowTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::CustomFrameWindowTemplateConstructor)
 class darkskin::CustomFrameWindowTemplate : presentation::templates::GuiWindowTemplate, darkskin::CustomFrameWindowTemplateConstructor {
     constructor () : darkskin::CustomFrameWindowTemplate*;
 }
 
 @FullName:darkskin::CustomFrameWindowTemplateConstructor
 class darkskin::CustomFrameWindowTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_10 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_12 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_13 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_14 : presentation::compositions::GuiGraphicsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_15 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_16 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_17 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_18 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_19 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_20 : presentation::compositions::GuiGraphicsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_21 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_22 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_23 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_24 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_25 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_26 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_27 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_28 : presentation::compositions::GuiGraphicsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_29 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_30 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_31 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_32 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_33 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_34 : presentation::elements::GuiImageFrameElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_35 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_36 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_37 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_38 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_9 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property contentTable : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property frameTable : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::CustomFrameWindowTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_CustomFrameWindowTemplate_Initialize(__vwsn_this_ : darkskin::CustomFrameWindowTemplate*) : system::Void;
 
     constructor () : darkskin::CustomFrameWindowTemplateConstructor^;
 }
 
 @FullName:darkskin::DateButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::DateButtonTemplateConstructor)
 class darkskin::DateButtonTemplate : presentation::templates::GuiSelectableButtonTemplate, darkskin::DateButtonTemplateConstructor {
     constructor () : darkskin::DateButtonTemplate*;
 }
 
 @FullName:darkskin::DateButtonTemplateConstructor
 class darkskin::DateButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiFocusRectangleElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::DateButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_DateButtonTemplate_Initialize(__vwsn_this_ : darkskin::DateButtonTemplate*) : system::Void;
 
     constructor () : darkskin::DateButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::DatePickerTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::DatePickerTemplateConstructor)
 class darkskin::DatePickerTemplate : presentation::templates::GuiDatePickerTemplate, darkskin::DatePickerTemplateConstructor {
     constructor () : darkskin::DatePickerTemplate*;
 }
 
 @FullName:darkskin::DatePickerTemplateConstructor
 class darkskin::DatePickerTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property look : presentation::templates::GuiCommonDatePickerLook*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::DatePickerTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_DatePickerTemplate_Initialize(__vwsn_this_ : darkskin::DatePickerTemplate*) : system::Void;
 
     constructor () : darkskin::DatePickerTemplateConstructor^;
 }
 
 @FullName:darkskin::DocumentLabelTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::DocumentLabelTemplateConstructor)
 class darkskin::DocumentLabelTemplate : presentation::templates::GuiDocumentLabelTemplate, darkskin::DocumentLabelTemplateConstructor {
     constructor () : darkskin::DocumentLabelTemplate*;
 }
 
 @FullName:darkskin::DocumentLabelTemplateConstructor
 class darkskin::DocumentLabelTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::DocumentLabelTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_DocumentLabelTemplate_Initialize(__vwsn_this_ : darkskin::DocumentLabelTemplate*) : system::Void;
 
     constructor () : darkskin::DocumentLabelTemplateConstructor^;
 }
 
 @FullName:darkskin::DocumentTextBoxTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::DocumentTextBoxTemplateConstructor)
 class darkskin::DocumentTextBoxTemplate : presentation::templates::GuiDocumentLabelTemplate, darkskin::DocumentTextBoxTemplateConstructor {
     constructor () : darkskin::DocumentTextBoxTemplate*;
 }
 
 @FullName:darkskin::DocumentTextBoxTemplateConstructor
 class darkskin::DocumentTextBoxTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::DocumentTextBoxTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_DocumentTextBoxTemplate_Initialize(__vwsn_this_ : darkskin::DocumentTextBoxTemplate*) : system::Void;
 
     constructor () : darkskin::DocumentTextBoxTemplateConstructor^;
 }
 
 @FullName:darkskin::DocumentViewerTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::DocumentViewerTemplateConstructor)
 class darkskin::DocumentViewerTemplate : presentation::templates::GuiDocumentViewerTemplate, darkskin::DocumentViewerTemplateConstructor {
     constructor () : darkskin::DocumentViewerTemplate*;
 }
 
 @FullName:darkskin::DocumentViewerTemplateConstructor
 class darkskin::DocumentViewerTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property look : presentation::templates::GuiCommonScrollViewLook*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::DocumentViewerTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_DocumentViewerTemplate_Initialize(__vwsn_this_ : darkskin::DocumentViewerTemplate*) : system::Void;
 
     constructor () : darkskin::DocumentViewerTemplateConstructor^;
 }
 
 @FullName:darkskin::ExpandingDecoratorTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ExpandingDecoratorTemplateConstructor)
 class darkskin::ExpandingDecoratorTemplate : presentation::templates::GuiSelectableButtonTemplate, darkskin::ExpandingDecoratorTemplateConstructor {
     constructor () : darkskin::ExpandingDecoratorTemplate*;
 }
 
 @FullName:darkskin::ExpandingDecoratorTemplateConstructor
 class darkskin::ExpandingDecoratorTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::ExpandingDecoratorTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ExpandingDecoratorTemplate_Initialize(__vwsn_this_ : darkskin::ExpandingDecoratorTemplate*) : system::Void;
 
     constructor () : darkskin::ExpandingDecoratorTemplateConstructor^;
 }
 
 @FullName:darkskin::GroupBoxTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::GroupBoxTemplateConstructor)
 class darkskin::GroupBoxTemplate : presentation::templates::GuiControlTemplate, darkskin::GroupBoxTemplateConstructor {
     constructor () : darkskin::GroupBoxTemplate*;
 }
 
 @FullName:darkskin::GroupBoxTemplateConstructor
 class darkskin::GroupBoxTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::GroupBoxTemplate*;
+    @system::workflow_attributes::att_cpp_Protected()
     property titleBounds : presentation::compositions::GuiBoundsComposition*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_GroupBoxTemplate_Initialize(__vwsn_this_ : darkskin::GroupBoxTemplate*) : system::Void;
 
     constructor () : darkskin::GroupBoxTemplateConstructor^;
 }
 
 @FullName:darkskin::HScrollHandleTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::HScrollHandleTemplateConstructor)
 class darkskin::HScrollHandleTemplate : presentation::templates::GuiButtonTemplate, darkskin::HScrollHandleTemplateConstructor {
     constructor () : darkskin::HScrollHandleTemplate*;
 }
 
 @FullName:darkskin::HScrollHandleTemplateConstructor
 class darkskin::HScrollHandleTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::HScrollHandleTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_HScrollHandleTemplate_Initialize(__vwsn_this_ : darkskin::HScrollHandleTemplate*) : system::Void;
 
     constructor () : darkskin::HScrollHandleTemplateConstructor^;
 }
 
 @FullName:darkskin::HScrollTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::HScrollTemplateConstructor)
 class darkskin::HScrollTemplate : presentation::templates::GuiScrollTemplate, darkskin::HScrollTemplateConstructor {
     function __vwsn_instance_ctor_() : system::Void;
 
@@ -311,28 +462,45 @@ class darkskin::HScrollTemplate : presentation::templates::GuiScrollTemplate, da
 
 @FullName:darkskin::HScrollTemplateConstructor
 class darkskin::HScrollTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiSideAlignedComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiSideAlignedComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property behavior : presentation::templates::GuiCommonScrollBehavior*;
+    @system::workflow_attributes::att_cpp_Protected()
     property buttonDecrease : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property buttonIncrease : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property handle : presentation::compositions::GuiPartialViewComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property handleContainer : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::HScrollTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_HScrollTemplate_Initialize(__vwsn_this_ : darkskin::HScrollTemplate*) : system::Void;
 
     constructor () : darkskin::HScrollTemplateConstructor^;
 }
 
 @FullName:darkskin::HTrackerTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::HTrackerTemplateConstructor)
 class darkskin::HTrackerTemplate : presentation::templates::GuiScrollTemplate, darkskin::HTrackerTemplateConstructor {
     function __vwsn_instance_ctor_() : system::Void;
 
@@ -341,713 +509,1052 @@ class darkskin::HTrackerTemplate : presentation::templates::GuiScrollTemplate, d
 
 @FullName:darkskin::HTrackerTemplateConstructor
 class darkskin::HTrackerTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property behavior : presentation::templates::GuiCommonScrollBehavior*;
+    @system::workflow_attributes::att_cpp_Protected()
     property handle : presentation::compositions::GuiPartialViewComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::HTrackerTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_HTrackerTemplate_Initialize(__vwsn_this_ : darkskin::HTrackerTemplate*) : system::Void;
 
     constructor () : darkskin::HTrackerTemplateConstructor^;
 }
 
 @FullName:darkskin::ItemBackgroundTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ItemBackgroundTemplateConstructor)
 class darkskin::ItemBackgroundTemplate : presentation::templates::GuiSelectableButtonTemplate, darkskin::ItemBackgroundTemplateConstructor {
     constructor () : darkskin::ItemBackgroundTemplate*;
 }
 
 @FullName:darkskin::ItemBackgroundTemplateConstructor
 class darkskin::ItemBackgroundTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::ItemBackgroundTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ItemBackgroundTemplate_Initialize(__vwsn_this_ : darkskin::ItemBackgroundTemplate*) : system::Void;
 
     constructor () : darkskin::ItemBackgroundTemplateConstructor^;
 }
 
 @FullName:darkskin::LabelTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::LabelTemplateConstructor)
 class darkskin::LabelTemplate : presentation::templates::GuiLabelTemplate, darkskin::LabelTemplateConstructor {
     constructor () : darkskin::LabelTemplate*;
 }
 
 @FullName:darkskin::LabelTemplateConstructor
 class darkskin::LabelTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::LabelTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_LabelTemplate_Initialize(__vwsn_this_ : darkskin::LabelTemplate*) : system::Void;
 
     constructor () : darkskin::LabelTemplateConstructor^;
 }
 
 @FullName:darkskin::LeftScrollButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::LeftScrollButtonTemplateConstructor)
 class darkskin::LeftScrollButtonTemplate : presentation::templates::GuiButtonTemplate, darkskin::LeftScrollButtonTemplateConstructor {
     constructor () : darkskin::LeftScrollButtonTemplate*;
 }
 
 @FullName:darkskin::LeftScrollButtonTemplateConstructor
 class darkskin::LeftScrollButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::LeftScrollButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_LeftScrollButtonTemplate_Initialize(__vwsn_this_ : darkskin::LeftScrollButtonTemplate*) : system::Void;
 
     constructor () : darkskin::LeftScrollButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::ListViewColumnHeaderTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ListViewColumnHeaderTemplateConstructor)
 class darkskin::ListViewColumnHeaderTemplate : presentation::templates::GuiListViewColumnHeaderTemplate, darkskin::ListViewColumnHeaderTemplateConstructor {
     constructor () : darkskin::ListViewColumnHeaderTemplate*;
 }
 
 @FullName:darkskin::ListViewColumnHeaderTemplateConstructor
 class darkskin::ListViewColumnHeaderTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_10 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_12 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_13 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_14 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_9 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property buttonArrow : presentation::controls::GuiSelectableButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::ListViewColumnHeaderTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ListViewColumnHeaderTemplate_Initialize(__vwsn_this_ : darkskin::ListViewColumnHeaderTemplate*) : system::Void;
 
     constructor () : darkskin::ListViewColumnHeaderTemplateConstructor^;
 }
 
 @FullName:darkskin::ListViewTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ListViewTemplateConstructor)
 class darkskin::ListViewTemplate : presentation::templates::GuiListViewTemplate, darkskin::ListViewTemplateConstructor {
     constructor () : darkskin::ListViewTemplate*;
 }
 
 @FullName:darkskin::ListViewTemplateConstructor
 class darkskin::ListViewTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property look : presentation::templates::GuiCommonScrollViewLook*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::ListViewTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ListViewTemplate_Initialize(__vwsn_this_ : darkskin::ListViewTemplate*) : system::Void;
 
     constructor () : darkskin::ListViewTemplateConstructor^;
 }
 
 @FullName:darkskin::MenuBarButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::MenuBarButtonTemplateConstructor)
 class darkskin::MenuBarButtonTemplate : presentation::templates::GuiToolstripButtonTemplate, darkskin::MenuBarButtonTemplateConstructor {
     constructor () : darkskin::MenuBarButtonTemplate*;
 }
 
 @FullName:darkskin::MenuBarButtonTemplateConstructor
 class darkskin::MenuBarButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::MenuBarButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_MenuBarButtonTemplate_Initialize(__vwsn_this_ : darkskin::MenuBarButtonTemplate*) : system::Void;
 
     constructor () : darkskin::MenuBarButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::MenuItemButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::MenuItemButtonTemplateConstructor)
 class darkskin::MenuItemButtonTemplate : presentation::templates::GuiToolstripButtonTemplate, darkskin::MenuItemButtonTemplateConstructor {
     constructor () : darkskin::MenuItemButtonTemplate*;
 }
 
 @FullName:darkskin::MenuItemButtonTemplateConstructor
 class darkskin::MenuItemButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_10 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiImageFrameElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiSharedSizeItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::compositions::GuiSharedSizeItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_9 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::MenuItemButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_MenuItemButtonTemplate_Initialize(__vwsn_this_ : darkskin::MenuItemButtonTemplate*) : system::Void;
 
     constructor () : darkskin::MenuItemButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::MenuSplitterTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::MenuSplitterTemplateConstructor)
 class darkskin::MenuSplitterTemplate : presentation::templates::GuiControlTemplate, darkskin::MenuSplitterTemplateConstructor {
     constructor () : darkskin::MenuSplitterTemplate*;
 }
 
 @FullName:darkskin::MenuSplitterTemplateConstructor
 class darkskin::MenuSplitterTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : darkskin::MenuSplitterTemplate*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBackgroundElement^;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_MenuSplitterTemplate_Initialize(__vwsn_this_ : darkskin::MenuSplitterTemplate*) : system::Void;
 
     constructor () : darkskin::MenuSplitterTemplateConstructor^;
 }
 
 @FullName:darkskin::ProgressBarTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ProgressBarTemplateConstructor)
 class darkskin::ProgressBarTemplate : presentation::templates::GuiScrollTemplate, darkskin::ProgressBarTemplateConstructor {
     constructor () : darkskin::ProgressBarTemplate*;
 }
 
 @FullName:darkskin::ProgressBarTemplateConstructor
 class darkskin::ProgressBarTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiPartialViewComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::ProgressBarTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ProgressBarTemplate_Initialize(__vwsn_this_ : darkskin::ProgressBarTemplate*) : system::Void;
 
     constructor () : darkskin::ProgressBarTemplateConstructor^;
 }
 
 @FullName:darkskin::RadioButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RadioButtonTemplateConstructor)
 class darkskin::RadioButtonTemplate : presentation::templates::GuiSelectableButtonTemplate, darkskin::RadioButtonTemplateConstructor {
     constructor () : darkskin::RadioButtonTemplate*;
 }
 
 @FullName:darkskin::RadioButtonTemplateConstructor
 class darkskin::RadioButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_10 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::elements::GuiFocusRectangleElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_12 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_13 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_9 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RadioButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RadioButtonTemplate_Initialize(__vwsn_this_ : darkskin::RadioButtonTemplate*) : system::Void;
 
     constructor () : darkskin::RadioButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonButtonsTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonButtonsTemplateConstructor)
 class darkskin::RibbonButtonsTemplate : presentation::templates::GuiRibbonButtonsTemplate, darkskin::RibbonButtonsTemplateConstructor {
     constructor () : darkskin::RibbonButtonsTemplate*;
 }
 
 @FullName:darkskin::RibbonButtonsTemplateConstructor
 class darkskin::RibbonButtonsTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : darkskin::RibbonButtonsTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonButtonsTemplate_Initialize(__vwsn_this_ : darkskin::RibbonButtonsTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonButtonsTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonGalleryDropdownButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonGalleryDropdownButtonTemplateConstructor)
 class darkskin::RibbonGalleryDropdownButtonTemplate : presentation::templates::GuiButtonTemplate, darkskin::RibbonGalleryDropdownButtonTemplateConstructor {
     constructor () : darkskin::RibbonGalleryDropdownButtonTemplate*;
 }
 
 @FullName:darkskin::RibbonGalleryDropdownButtonTemplateConstructor
 class darkskin::RibbonGalleryDropdownButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RibbonGalleryDropdownButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonGalleryDropdownButtonTemplate_Initialize(__vwsn_this_ : darkskin::RibbonGalleryDropdownButtonTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonGalleryDropdownButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonGalleryItemListTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonGalleryItemListTemplateConstructor)
 class darkskin::RibbonGalleryItemListTemplate : presentation::templates::GuiTextListTemplate, darkskin::RibbonGalleryItemListTemplateConstructor {
     constructor () : darkskin::RibbonGalleryItemListTemplate*;
 }
 
 @FullName:darkskin::RibbonGalleryItemListTemplateConstructor
 class darkskin::RibbonGalleryItemListTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RibbonGalleryItemListTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonGalleryItemListTemplate_Initialize(__vwsn_this_ : darkskin::RibbonGalleryItemListTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonGalleryItemListTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonGalleryTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonGalleryTemplateConstructor)
 class darkskin::RibbonGalleryTemplate : presentation::templates::GuiRibbonGalleryListTemplate, darkskin::RibbonGalleryTemplateConstructor {
     constructor () : darkskin::RibbonGalleryTemplate*;
 }
 
 @FullName:darkskin::RibbonGalleryTemplateConstructor
 class darkskin::RibbonGalleryTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_10 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_12 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_9 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RibbonGalleryTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonGalleryTemplate_Initialize(__vwsn_this_ : darkskin::RibbonGalleryTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonGalleryTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonGroupExpandButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonGroupExpandButtonTemplateConstructor)
 class darkskin::RibbonGroupExpandButtonTemplate : presentation::templates::GuiButtonTemplate, darkskin::RibbonGroupExpandButtonTemplateConstructor {
     constructor () : darkskin::RibbonGroupExpandButtonTemplate*;
 }
 
 @FullName:darkskin::RibbonGroupExpandButtonTemplateConstructor
 class darkskin::RibbonGroupExpandButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RibbonGroupExpandButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonGroupExpandButtonTemplate_Initialize(__vwsn_this_ : darkskin::RibbonGroupExpandButtonTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonGroupExpandButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonGroupMenuTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonGroupMenuTemplateConstructor)
 class darkskin::RibbonGroupMenuTemplate : presentation::templates::GuiRibbonGroupMenuTemplate, darkskin::RibbonGroupMenuTemplateConstructor {
     constructor () : darkskin::RibbonGroupMenuTemplate*;
 }
 
 @FullName:darkskin::RibbonGroupMenuTemplateConstructor
 class darkskin::RibbonGroupMenuTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RibbonGroupMenuTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonGroupMenuTemplate_Initialize(__vwsn_this_ : darkskin::RibbonGroupMenuTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonGroupMenuTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonGroupTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonGroupTemplateConstructor)
 class darkskin::RibbonGroupTemplate : presentation::templates::GuiRibbonGroupTemplate, darkskin::RibbonGroupTemplateConstructor {
     constructor () : darkskin::RibbonGroupTemplate*;
 }
 
 @FullName:darkskin::RibbonGroupTemplateConstructor
 class darkskin::RibbonGroupTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RibbonGroupTemplate*;
+    @system::workflow_attributes::att_cpp_Protected()
     property table : presentation::compositions::GuiTableComposition*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonGroupTemplate_Initialize(__vwsn_this_ : darkskin::RibbonGroupTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonGroupTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonIconLabelTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonIconLabelTemplateConstructor)
 class darkskin::RibbonIconLabelTemplate : presentation::templates::GuiRibbonIconLabelTemplate, darkskin::RibbonIconLabelTemplateConstructor {
     constructor () : darkskin::RibbonIconLabelTemplate*;
 }
 
 @FullName:darkskin::RibbonIconLabelTemplateConstructor
 class darkskin::RibbonIconLabelTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiImageFrameElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RibbonIconLabelTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonIconLabelTemplate_Initialize(__vwsn_this_ : darkskin::RibbonIconLabelTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonIconLabelTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonLargeButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonLargeButtonTemplateConstructor)
 class darkskin::RibbonLargeButtonTemplate : presentation::templates::GuiToolstripButtonTemplate, darkskin::RibbonLargeButtonTemplateConstructor {
     constructor () : darkskin::RibbonLargeButtonTemplate*;
 }
 
 @FullName:darkskin::RibbonLargeButtonTemplateConstructor
 class darkskin::RibbonLargeButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::elements::GuiImageFrameElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RibbonLargeButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonLargeButtonTemplate_Initialize(__vwsn_this_ : darkskin::RibbonLargeButtonTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonLargeButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonLargeDropdownButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonLargeDropdownButtonTemplateConstructor)
 class darkskin::RibbonLargeDropdownButtonTemplate : presentation::templates::GuiToolstripButtonTemplate, darkskin::RibbonLargeDropdownButtonTemplateConstructor {
     constructor () : darkskin::RibbonLargeDropdownButtonTemplate*;
 }
 
 @FullName:darkskin::RibbonLargeDropdownButtonTemplateConstructor
 class darkskin::RibbonLargeDropdownButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_10 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_12 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::elements::GuiImageFrameElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_9 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RibbonLargeDropdownButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonLargeDropdownButtonTemplate_Initialize(__vwsn_this_ : darkskin::RibbonLargeDropdownButtonTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonLargeDropdownButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonLargeSplitButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonLargeSplitButtonTemplateConstructor)
 class darkskin::RibbonLargeSplitButtonTemplate : presentation::templates::GuiToolstripButtonTemplate, darkskin::RibbonLargeSplitButtonTemplateConstructor {
     constructor () : darkskin::RibbonLargeSplitButtonTemplate*;
 }
 
 @FullName:darkskin::RibbonLargeSplitButtonTemplateConstructor
 class darkskin::RibbonLargeSplitButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::elements::GuiImageFrameElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_9 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property buttonArrow : presentation::controls::GuiSelectableButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RibbonLargeSplitButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonLargeSplitButtonTemplate_Initialize(__vwsn_this_ : darkskin::RibbonLargeSplitButtonTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonLargeSplitButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonSmallButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonSmallButtonTemplateConstructor)
 class darkskin::RibbonSmallButtonTemplate : presentation::templates::GuiToolstripButtonTemplate, darkskin::RibbonSmallButtonTemplateConstructor {
     constructor () : darkskin::RibbonSmallButtonTemplate*;
 }
 
 @FullName:darkskin::RibbonSmallButtonTemplateConstructor
 class darkskin::RibbonSmallButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::elements::GuiImageFrameElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RibbonSmallButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonSmallButtonTemplate_Initialize(__vwsn_this_ : darkskin::RibbonSmallButtonTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonSmallButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonSmallDropdownButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonSmallDropdownButtonTemplateConstructor)
 class darkskin::RibbonSmallDropdownButtonTemplate : presentation::templates::GuiToolstripButtonTemplate, darkskin::RibbonSmallDropdownButtonTemplateConstructor {
     constructor () : darkskin::RibbonSmallDropdownButtonTemplate*;
 }
 
 @FullName:darkskin::RibbonSmallDropdownButtonTemplateConstructor
 class darkskin::RibbonSmallDropdownButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_10 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::elements::GuiImageFrameElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_9 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RibbonSmallDropdownButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonSmallDropdownButtonTemplate_Initialize(__vwsn_this_ : darkskin::RibbonSmallDropdownButtonTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonSmallDropdownButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonSmallIconLabelTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonSmallIconLabelTemplateConstructor)
 class darkskin::RibbonSmallIconLabelTemplate : presentation::templates::GuiRibbonIconLabelTemplate, darkskin::RibbonSmallIconLabelTemplateConstructor {
     constructor () : darkskin::RibbonSmallIconLabelTemplate*;
 }
 
 @FullName:darkskin::RibbonSmallIconLabelTemplateConstructor
 class darkskin::RibbonSmallIconLabelTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiImageFrameElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiSharedSizeItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RibbonSmallIconLabelTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonSmallIconLabelTemplate_Initialize(__vwsn_this_ : darkskin::RibbonSmallIconLabelTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonSmallIconLabelTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonSmallSplitButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonSmallSplitButtonTemplateConstructor)
 class darkskin::RibbonSmallSplitButtonTemplate : presentation::templates::GuiToolstripButtonTemplate, darkskin::RibbonSmallSplitButtonTemplateConstructor {
     constructor () : darkskin::RibbonSmallSplitButtonTemplate*;
 }
 
 @FullName:darkskin::RibbonSmallSplitButtonTemplateConstructor
 class darkskin::RibbonSmallSplitButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_10 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::elements::GuiImageFrameElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_9 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property buttonArrow : presentation::controls::GuiSelectableButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RibbonSmallSplitButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonSmallSplitButtonTemplate_Initialize(__vwsn_this_ : darkskin::RibbonSmallSplitButtonTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonSmallSplitButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonSplitArrowTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonSplitArrowTemplateConstructor)
 class darkskin::RibbonSplitArrowTemplate : presentation::templates::GuiSelectableButtonTemplate, darkskin::RibbonSplitArrowTemplateConstructor {
     constructor () : darkskin::RibbonSplitArrowTemplate*;
 }
 
 @FullName:darkskin::RibbonSplitArrowTemplateConstructor
 class darkskin::RibbonSplitArrowTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RibbonSplitArrowTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonSplitArrowTemplate_Initialize(__vwsn_this_ : darkskin::RibbonSplitArrowTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonSplitArrowTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonToolstripHeaderTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonToolstripHeaderTemplateConstructor)
 class darkskin::RibbonToolstripHeaderTemplate : presentation::templates::GuiControlTemplate, darkskin::RibbonToolstripHeaderTemplateConstructor {
     constructor () : darkskin::RibbonToolstripHeaderTemplate*;
 }
 
 @FullName:darkskin::RibbonToolstripHeaderTemplateConstructor
 class darkskin::RibbonToolstripHeaderTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RibbonToolstripHeaderTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonToolstripHeaderTemplate_Initialize(__vwsn_this_ : darkskin::RibbonToolstripHeaderTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonToolstripHeaderTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonToolstripMenuTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonToolstripMenuTemplateConstructor)
 class darkskin::RibbonToolstripMenuTemplate : presentation::templates::GuiRibbonToolstripMenuTemplate, darkskin::RibbonToolstripMenuTemplateConstructor {
     constructor () : darkskin::RibbonToolstripMenuTemplate*;
 }
 
 @FullName:darkskin::RibbonToolstripMenuTemplateConstructor
 class darkskin::RibbonToolstripMenuTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : darkskin::RibbonToolstripMenuTemplate*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_10 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_12 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_9 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property content : presentation::compositions::GuiCellComposition*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonToolstripMenuTemplate_Initialize(__vwsn_this_ : darkskin::RibbonToolstripMenuTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonToolstripMenuTemplateConstructor^;
 }
 
 @FullName:darkskin::RibbonToolstripsTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RibbonToolstripsTemplateConstructor)
 class darkskin::RibbonToolstripsTemplate : presentation::templates::GuiRibbonToolstripsTemplate, darkskin::RibbonToolstripsTemplateConstructor {
     constructor () : darkskin::RibbonToolstripsTemplate*;
 }
 
 @FullName:darkskin::RibbonToolstripsTemplateConstructor
 class darkskin::RibbonToolstripsTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : darkskin::RibbonToolstripsTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RibbonToolstripsTemplate_Initialize(__vwsn_this_ : darkskin::RibbonToolstripsTemplate*) : system::Void;
 
     constructor () : darkskin::RibbonToolstripsTemplateConstructor^;
 }
 
 @FullName:darkskin::RightScrollButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::RightScrollButtonTemplateConstructor)
 class darkskin::RightScrollButtonTemplate : presentation::templates::GuiButtonTemplate, darkskin::RightScrollButtonTemplateConstructor {
     constructor () : darkskin::RightScrollButtonTemplate*;
 }
 
 @FullName:darkskin::RightScrollButtonTemplateConstructor
 class darkskin::RightScrollButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::RightScrollButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_RightScrollButtonTemplate_Initialize(__vwsn_this_ : darkskin::RightScrollButtonTemplate*) : system::Void;
 
     constructor () : darkskin::RightScrollButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::ScrollViewTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ScrollViewTemplateConstructor)
 class darkskin::ScrollViewTemplate : presentation::templates::GuiScrollViewTemplate, darkskin::ScrollViewTemplateConstructor {
     constructor () : darkskin::ScrollViewTemplate*;
 }
 
 @FullName:darkskin::ScrollViewTemplateConstructor
 class darkskin::ScrollViewTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property look : presentation::templates::GuiCommonScrollViewLook*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::ScrollViewTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ScrollViewTemplate_Initialize(__vwsn_this_ : darkskin::ScrollViewTemplate*) : system::Void;
 
     constructor () : darkskin::ScrollViewTemplateConstructor^;
 }
 
 @FullName:darkskin::ShortcutKeyTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ShortcutKeyTemplateConstructor)
 class darkskin::ShortcutKeyTemplate : presentation::templates::GuiLabelTemplate, darkskin::ShortcutKeyTemplateConstructor {
     constructor () : darkskin::ShortcutKeyTemplate*;
 }
 
 @FullName:darkskin::ShortcutKeyTemplateConstructor
 class darkskin::ShortcutKeyTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::ShortcutKeyTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ShortcutKeyTemplate_Initialize(__vwsn_this_ : darkskin::ShortcutKeyTemplate*) : system::Void;
 
     constructor () : darkskin::ShortcutKeyTemplateConstructor^;
 }
 
 @FullName:darkskin::SystemFrameWindowTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::SystemFrameWindowTemplateConstructor)
 class darkskin::SystemFrameWindowTemplate : presentation::templates::GuiWindowTemplate, darkskin::SystemFrameWindowTemplateConstructor {
     constructor () : darkskin::SystemFrameWindowTemplate*;
 }
 
 @FullName:darkskin::SystemFrameWindowTemplateConstructor
 class darkskin::SystemFrameWindowTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : darkskin::SystemFrameWindowTemplate*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_SystemFrameWindowTemplate_Initialize(__vwsn_this_ : darkskin::SystemFrameWindowTemplate*) : system::Void;
 
     constructor () : darkskin::SystemFrameWindowTemplateConstructor^;
 }
 
 @FullName:darkskin::TabHeaderButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::TabHeaderButtonTemplateConstructor)
 class darkskin::TabHeaderButtonTemplate : presentation::templates::GuiSelectableButtonTemplate, darkskin::TabHeaderButtonTemplateConstructor {
     event HighlightedChanged : system::Function<system::Void>^ observing {
         Highlighted,
@@ -1058,7 +1565,9 @@ class darkskin::TabHeaderButtonTemplate : presentation::templates::GuiSelectable
 
     property Highlighted : system::Boolean { get:GetHighlighted set:SetHighlighted event:HighlightedChanged }
     property TabFocused : system::Boolean { get:GetTabFocused set:SetTabFocused event:TabFocusedChanged }
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Highlighted : system::Boolean;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_TabFocused : system::Boolean;
 
     function GetHighlighted() : system::Boolean;
@@ -1071,19 +1580,27 @@ class darkskin::TabHeaderButtonTemplate : presentation::templates::GuiSelectable
 
 @FullName:darkskin::TabHeaderButtonTemplateConstructor
 class darkskin::TabHeaderButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiFocusRectangleElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::TabHeaderButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_TabHeaderButtonTemplate_Initialize(__vwsn_this_ : darkskin::TabHeaderButtonTemplate*) : system::Void;
 
     constructor () : darkskin::TabHeaderButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::TabHeaderTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::TabHeaderTemplateConstructor)
 class darkskin::TabHeaderTemplate : presentation::templates::GuiControlTemplate, darkskin::TabHeaderTemplateConstructor {
     event CommandsChanged : system::Function<system::Void>^ observing {
         Commands,
@@ -1091,7 +1608,9 @@ class darkskin::TabHeaderTemplate : presentation::templates::GuiControlTemplate,
 
     property Commands : presentation::controls::ITabCommandExecutor* { get:GetCommands set:SetCommands event:CommandsChanged }
     property CurrentTabPage : presentation::controls::GuiTabPage* { get:GetCurrentTabPage }
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_parameter_CurrentTabPage : presentation::controls::GuiTabPage*;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Commands : presentation::controls::ITabCommandExecutor*;
 
     function GetCommands() : presentation::controls::ITabCommandExecutor*;
@@ -1103,23 +1622,30 @@ class darkskin::TabHeaderTemplate : presentation::templates::GuiControlTemplate,
 
 @FullName:darkskin::TabHeaderTemplateConstructor
 class darkskin::TabHeaderTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property CurrentTabPage : presentation::controls::GuiTabPage*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::controls::GuiSelectableButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::TabHeaderTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_TabHeaderTemplate_Initialize(__vwsn_this_ : darkskin::TabHeaderTemplate*) : system::Void;
 
     constructor () : darkskin::TabHeaderTemplateConstructor^;
 }
 
 @FullName:darkskin::TabTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::TabTemplateConstructor)
 class darkskin::TabTemplate : presentation::templates::GuiRibbonTabTemplate, darkskin::TabTemplateConstructor {
     event HighlightedChanged : system::Function<system::Void>^ observing {
         Highlighted,
     }
 
     property Highlighted : system::Boolean { get:GetHighlighted set:SetHighlighted event:HighlightedChanged }
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Highlighted : system::Boolean;
 
     function GetHighlighted() : system::Boolean;
@@ -1131,297 +1657,418 @@ class darkskin::TabTemplate : presentation::templates::GuiRibbonTabTemplate, dar
 
 @FullName:darkskin::TabTemplateConstructor
 class darkskin::TabTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property afterHeadersContainer : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property beforeHeadersContainer : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property header : presentation::compositions::GuiRepeatFlowComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::TabTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_TabTemplate_Initialize(__vwsn_this_ : darkskin::TabTemplate*) : system::Void;
 
     constructor () : darkskin::TabTemplateConstructor^;
 }
 
 @FullName:darkskin::TextListTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::TextListTemplateConstructor)
 class darkskin::TextListTemplate : presentation::templates::GuiTextListTemplate, darkskin::TextListTemplateConstructor {
     constructor () : darkskin::TextListTemplate*;
 }
 
 @FullName:darkskin::TextListTemplateConstructor
 class darkskin::TextListTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property look : presentation::templates::GuiCommonScrollViewLook*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::TextListTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_TextListTemplate_Initialize(__vwsn_this_ : darkskin::TextListTemplate*) : system::Void;
 
     constructor () : darkskin::TextListTemplateConstructor^;
 }
 
 @FullName:darkskin::Theme
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ThemeConstructor)
 class darkskin::Theme : presentation::theme::ThemeTemplates, darkskin::ThemeConstructor {
     constructor () : darkskin::Theme*;
 }
 
 @FullName:darkskin::ThemeConstructor
 class darkskin::ThemeConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : darkskin::Theme*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_Theme_Initialize(__vwsn_this_ : darkskin::Theme*) : system::Void;
 
     constructor () : darkskin::ThemeConstructor^;
 }
 
 @FullName:darkskin::ToolstripButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ToolstripButtonTemplateConstructor)
 class darkskin::ToolstripButtonTemplate : presentation::templates::GuiToolstripButtonTemplate, darkskin::ToolstripButtonTemplateConstructor {
     constructor () : darkskin::ToolstripButtonTemplate*;
 }
 
 @FullName:darkskin::ToolstripButtonTemplateConstructor
 class darkskin::ToolstripButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::elements::GuiImageFrameElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::ToolstripButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ToolstripButtonTemplate_Initialize(__vwsn_this_ : darkskin::ToolstripButtonTemplate*) : system::Void;
 
     constructor () : darkskin::ToolstripButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::ToolstripDropdownButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ToolstripDropdownButtonTemplateConstructor)
 class darkskin::ToolstripDropdownButtonTemplate : presentation::templates::GuiToolstripButtonTemplate, darkskin::ToolstripDropdownButtonTemplateConstructor {
     constructor () : darkskin::ToolstripDropdownButtonTemplate*;
 }
 
 @FullName:darkskin::ToolstripDropdownButtonTemplateConstructor
 class darkskin::ToolstripDropdownButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::elements::GuiImageFrameElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::ToolstripDropdownButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ToolstripDropdownButtonTemplate_Initialize(__vwsn_this_ : darkskin::ToolstripDropdownButtonTemplate*) : system::Void;
 
     constructor () : darkskin::ToolstripDropdownButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::ToolstripInMenuTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ToolstripInMenuTemplateConstructor)
 class darkskin::ToolstripInMenuTemplate : presentation::templates::GuiControlTemplate, darkskin::ToolstripInMenuTemplateConstructor {
     constructor () : darkskin::ToolstripInMenuTemplate*;
 }
 
 @FullName:darkskin::ToolstripInMenuTemplateConstructor
 class darkskin::ToolstripInMenuTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : darkskin::ToolstripInMenuTemplate*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ToolstripInMenuTemplate_Initialize(__vwsn_this_ : darkskin::ToolstripInMenuTemplate*) : system::Void;
 
     constructor () : darkskin::ToolstripInMenuTemplateConstructor^;
 }
 
 @FullName:darkskin::ToolstripMenuTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ToolstripMenuTemplateConstructor)
 class darkskin::ToolstripMenuTemplate : presentation::templates::GuiMenuTemplate, darkskin::ToolstripMenuTemplateConstructor {
     constructor () : darkskin::ToolstripMenuTemplate*;
 }
 
 @FullName:darkskin::ToolstripMenuTemplateConstructor
 class darkskin::ToolstripMenuTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : darkskin::ToolstripMenuTemplate*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ToolstripMenuTemplate_Initialize(__vwsn_this_ : darkskin::ToolstripMenuTemplate*) : system::Void;
 
     constructor () : darkskin::ToolstripMenuTemplateConstructor^;
 }
 
 @FullName:darkskin::ToolstripSplitArrowTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ToolstripSplitArrowTemplateConstructor)
 class darkskin::ToolstripSplitArrowTemplate : presentation::templates::GuiSelectableButtonTemplate, darkskin::ToolstripSplitArrowTemplateConstructor {
     constructor () : darkskin::ToolstripSplitArrowTemplate*;
 }
 
 @FullName:darkskin::ToolstripSplitArrowTemplateConstructor
 class darkskin::ToolstripSplitArrowTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::ToolstripSplitArrowTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ToolstripSplitArrowTemplate_Initialize(__vwsn_this_ : darkskin::ToolstripSplitArrowTemplate*) : system::Void;
 
     constructor () : darkskin::ToolstripSplitArrowTemplateConstructor^;
 }
 
 @FullName:darkskin::ToolstripSplitButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ToolstripSplitButtonTemplateConstructor)
 class darkskin::ToolstripSplitButtonTemplate : presentation::templates::GuiToolstripButtonTemplate, darkskin::ToolstripSplitButtonTemplateConstructor {
     constructor () : darkskin::ToolstripSplitButtonTemplate*;
 }
 
 @FullName:darkskin::ToolstripSplitButtonTemplateConstructor
 class darkskin::ToolstripSplitButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::elements::GuiImageFrameElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property buttonArrow : presentation::controls::GuiSelectableButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::ToolstripSplitButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ToolstripSplitButtonTemplate_Initialize(__vwsn_this_ : darkskin::ToolstripSplitButtonTemplate*) : system::Void;
 
     constructor () : darkskin::ToolstripSplitButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::ToolstripSplitterInMenuTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ToolstripSplitterInMenuTemplateConstructor)
 class darkskin::ToolstripSplitterInMenuTemplate : presentation::templates::GuiControlTemplate, darkskin::ToolstripSplitterInMenuTemplateConstructor {
     constructor () : darkskin::ToolstripSplitterInMenuTemplate*;
 }
 
 @FullName:darkskin::ToolstripSplitterInMenuTemplateConstructor
 class darkskin::ToolstripSplitterInMenuTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : darkskin::ToolstripSplitterInMenuTemplate*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBackgroundElement^;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ToolstripSplitterInMenuTemplate_Initialize(__vwsn_this_ : darkskin::ToolstripSplitterInMenuTemplate*) : system::Void;
 
     constructor () : darkskin::ToolstripSplitterInMenuTemplateConstructor^;
 }
 
 @FullName:darkskin::ToolstripSplitterTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ToolstripSplitterTemplateConstructor)
 class darkskin::ToolstripSplitterTemplate : presentation::templates::GuiControlTemplate, darkskin::ToolstripSplitterTemplateConstructor {
     constructor () : darkskin::ToolstripSplitterTemplate*;
 }
 
 @FullName:darkskin::ToolstripSplitterTemplateConstructor
 class darkskin::ToolstripSplitterTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : darkskin::ToolstripSplitterTemplate*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::Gui3DSplitterElement^;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ToolstripSplitterTemplate_Initialize(__vwsn_this_ : darkskin::ToolstripSplitterTemplate*) : system::Void;
 
     constructor () : darkskin::ToolstripSplitterTemplateConstructor^;
 }
 
 @FullName:darkskin::ToolstripTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ToolstripTemplateConstructor)
 class darkskin::ToolstripTemplate : presentation::templates::GuiControlTemplate, darkskin::ToolstripTemplateConstructor {
     constructor () : darkskin::ToolstripTemplate*;
 }
 
 @FullName:darkskin::ToolstripTemplateConstructor
 class darkskin::ToolstripTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : darkskin::ToolstripTemplate*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_ToolstripTemplate_Initialize(__vwsn_this_ : darkskin::ToolstripTemplate*) : system::Void;
 
     constructor () : darkskin::ToolstripTemplateConstructor^;
 }
 
 @FullName:darkskin::TooltipTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::TooltipTemplateConstructor)
 class darkskin::TooltipTemplate : presentation::templates::GuiWindowTemplate, darkskin::TooltipTemplateConstructor {
     constructor () : darkskin::TooltipTemplate*;
 }
 
 @FullName:darkskin::TooltipTemplateConstructor
 class darkskin::TooltipTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : darkskin::TooltipTemplate*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_TooltipTemplate_Initialize(__vwsn_this_ : darkskin::TooltipTemplate*) : system::Void;
 
     constructor () : darkskin::TooltipTemplateConstructor^;
 }
 
 @FullName:darkskin::TopScrollButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::TopScrollButtonTemplateConstructor)
 class darkskin::TopScrollButtonTemplate : presentation::templates::GuiButtonTemplate, darkskin::TopScrollButtonTemplateConstructor {
     constructor () : darkskin::TopScrollButtonTemplate*;
 }
 
 @FullName:darkskin::TopScrollButtonTemplateConstructor
 class darkskin::TopScrollButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiPolygonElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::TopScrollButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_TopScrollButtonTemplate_Initialize(__vwsn_this_ : darkskin::TopScrollButtonTemplate*) : system::Void;
 
     constructor () : darkskin::TopScrollButtonTemplateConstructor^;
 }
 
 @FullName:darkskin::TreeViewTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::TreeViewTemplateConstructor)
 class darkskin::TreeViewTemplate : presentation::templates::GuiTreeViewTemplate, darkskin::TreeViewTemplateConstructor {
     constructor () : darkskin::TreeViewTemplate*;
 }
 
 @FullName:darkskin::TreeViewTemplateConstructor
 class darkskin::TreeViewTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property look : presentation::templates::GuiCommonScrollViewLook*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::TreeViewTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_TreeViewTemplate_Initialize(__vwsn_this_ : darkskin::TreeViewTemplate*) : system::Void;
 
     constructor () : darkskin::TreeViewTemplateConstructor^;
 }
 
 @FullName:darkskin::VScrollHandleTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::VScrollHandleTemplateConstructor)
 class darkskin::VScrollHandleTemplate : presentation::templates::GuiButtonTemplate, darkskin::VScrollHandleTemplateConstructor {
     constructor () : darkskin::VScrollHandleTemplate*;
 }
 
 @FullName:darkskin::VScrollHandleTemplateConstructor
 class darkskin::VScrollHandleTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::VScrollHandleTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_VScrollHandleTemplate_Initialize(__vwsn_this_ : darkskin::VScrollHandleTemplate*) : system::Void;
 
     constructor () : darkskin::VScrollHandleTemplateConstructor^;
 }
 
 @FullName:darkskin::VScrollTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::VScrollTemplateConstructor)
 class darkskin::VScrollTemplate : presentation::templates::GuiScrollTemplate, darkskin::VScrollTemplateConstructor {
     function __vwsn_instance_ctor_() : system::Void;
 
@@ -1430,28 +2077,45 @@ class darkskin::VScrollTemplate : presentation::templates::GuiScrollTemplate, da
 
 @FullName:darkskin::VScrollTemplateConstructor
 class darkskin::VScrollTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiSideAlignedComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiSideAlignedComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property behavior : presentation::templates::GuiCommonScrollBehavior*;
+    @system::workflow_attributes::att_cpp_Protected()
     property buttonDecrease : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property buttonIncrease : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property handle : presentation::compositions::GuiPartialViewComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property handleContainer : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::VScrollTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_VScrollTemplate_Initialize(__vwsn_this_ : darkskin::VScrollTemplate*) : system::Void;
 
     constructor () : darkskin::VScrollTemplateConstructor^;
 }
 
 @FullName:darkskin::VTrackerTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::VTrackerTemplateConstructor)
 class darkskin::VTrackerTemplate : presentation::templates::GuiScrollTemplate, darkskin::VTrackerTemplateConstructor {
     function __vwsn_instance_ctor_() : system::Void;
 
@@ -1460,24 +2124,37 @@ class darkskin::VTrackerTemplate : presentation::templates::GuiScrollTemplate, d
 
 @FullName:darkskin::VTrackerTemplateConstructor
 class darkskin::VTrackerTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::elements::GuiSolidBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property behavior : presentation::templates::GuiCommonScrollBehavior*;
+    @system::workflow_attributes::att_cpp_Protected()
     property handle : presentation::compositions::GuiPartialViewComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : darkskin::VTrackerTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_darkskin_VTrackerTemplate_Initialize(__vwsn_this_ : darkskin::VTrackerTemplate*) : system::Void;
 
     constructor () : darkskin::VTrackerTemplateConstructor^;
 }
 
 @FullName:gaclib_controls::ColorComponentControl
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:gaclib_controls::ColorComponentControlConstructor)
 class gaclib_controls::ColorComponentControl : presentation::controls::GuiCustomControl, gaclib_controls::ColorComponentControlConstructor {
     event TextBoxAltChanged : system::Function<system::Void>^ observing {
         TextBoxAlt,
@@ -1488,7 +2165,9 @@ class gaclib_controls::ColorComponentControl : presentation::controls::GuiCustom
 
     property TextBoxAlt : system::String { get:GetTextBoxAlt set:SetTextBoxAlt event:TextBoxAltChanged }
     property Value : system::Int64 { get:GetValue set:SetValue event:ValueChanged }
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_TextBoxAlt : system::String;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Value : system::Int64;
 
     function GetTextBoxAlt() : system::String;
@@ -1501,21 +2180,31 @@ class gaclib_controls::ColorComponentControl : presentation::controls::GuiCustom
 
 @FullName:gaclib_controls::ColorComponentControlConstructor
 class gaclib_controls::ColorComponentControlConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : gaclib_controls::ColorComponentControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property textBox : presentation::controls::GuiSinglelineTextBox*;
+    @system::workflow_attributes::att_cpp_Protected()
     property tracker : presentation::controls::GuiScroll*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_gaclib_controls_ColorComponentControl_Initialize(__vwsn_this_ : gaclib_controls::ColorComponentControl*) : system::Void;
 
     constructor () : gaclib_controls::ColorComponentControlConstructor^;
 }
 
 @FullName:gaclib_controls::ColorDialogControl
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:gaclib_controls::ColorDialogControlConstructor)
 class gaclib_controls::ColorDialogControl : presentation::controls::GuiCustomControl, gaclib_controls::ColorDialogControlConstructor {
     event StringsChanged : system::Function<system::Void>^ observing {
         Strings,
@@ -1527,8 +2216,11 @@ class gaclib_controls::ColorDialogControl : presentation::controls::GuiCustomCon
     property Strings : gaclib_controls::IDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
     property Value : presentation::Color { get:GetValue set:SetValue event:ValueChanged }
     property ViewModel : presentation::IColorDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_parameter_ViewModel : presentation::IColorDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Strings : gaclib_controls::IDialogStringsStrings^;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Value : presentation::Color;
 
     function GetStrings() : gaclib_controls::IDialogStringsStrings^;
@@ -1543,35 +2235,59 @@ class gaclib_controls::ColorDialogControl : presentation::controls::GuiCustomCon
 
 @FullName:gaclib_controls::ColorDialogControlConstructor
 class gaclib_controls::ColorDialogControlConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property ViewModel : presentation::IColorDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_10 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_12 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_13 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_14 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_15 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_16 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_9 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property colorBlue : gaclib_controls::ColorComponentControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property colorGreen : gaclib_controls::ColorComponentControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property colorRed : gaclib_controls::ColorComponentControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : gaclib_controls::ColorDialogControl*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_gaclib_controls_ColorDialogControl_Initialize(__vwsn_this_ : gaclib_controls::ColorDialogControl*) : system::Void;
 
     constructor () : gaclib_controls::ColorDialogControlConstructor^;
 }
 
 @FullName:gaclib_controls::ColorDialogWindow
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:gaclib_controls::ColorDialogWindowConstructor)
 class gaclib_controls::ColorDialogWindow : presentation::controls::GuiWindow, gaclib_controls::ColorDialogWindowConstructor {
     event StringsChanged : system::Function<system::Void>^ observing {
         Strings,
@@ -1579,7 +2295,9 @@ class gaclib_controls::ColorDialogWindow : presentation::controls::GuiWindow, ga
 
     property Strings : gaclib_controls::IDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
     property ViewModel : presentation::IColorDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_parameter_ViewModel : presentation::IColorDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Strings : gaclib_controls::IDialogStringsStrings^;
 
     function GetStrings() : gaclib_controls::IDialogStringsStrings^;
@@ -1591,19 +2309,32 @@ class gaclib_controls::ColorDialogWindow : presentation::controls::GuiWindow, ga
 
 @FullName:gaclib_controls::ColorDialogWindowConstructor
 class gaclib_controls::ColorDialogWindowConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property ViewModel : presentation::IColorDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property colorControl : gaclib_controls::ColorDialogControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : gaclib_controls::ColorDialogWindow*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_gaclib_controls_ColorDialogWindow_Initialize(__vwsn_this_ : gaclib_controls::ColorDialogWindow*) : system::Void;
 
     constructor () : gaclib_controls::ColorDialogWindowConstructor^;
@@ -1619,6 +2350,7 @@ class gaclib_controls::DialogStrings : system::ReferenceType {
 }
 
 @FullName:gaclib_controls::FileDialogWindow
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:gaclib_controls::FileDialogWindowConstructor)
 class gaclib_controls::FileDialogWindow : presentation::controls::GuiWindow, gaclib_controls::FileDialogWindowConstructor {
     event StringsChanged : system::Function<system::Void>^ observing {
         Strings,
@@ -1626,7 +2358,9 @@ class gaclib_controls::FileDialogWindow : presentation::controls::GuiWindow, gac
 
     property Strings : gaclib_controls::IDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
     property ViewModel : presentation::IFileDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_parameter_ViewModel : presentation::IFileDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Strings : gaclib_controls::IDialogStringsStrings^;
 
     function GetStrings() : gaclib_controls::IDialogStringsStrings^;
@@ -1641,25 +2375,39 @@ class gaclib_controls::FileDialogWindow : presentation::controls::GuiWindow, gac
 
 @FullName:gaclib_controls::FileDialogWindowConstructor
 class gaclib_controls::FileDialogWindowConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property ViewModel : presentation::IFileDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property buttonOK : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property filePickerControl : gaclib_controls::FilePickerControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : gaclib_controls::FileDialogWindow*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_gaclib_controls_FileDialogWindow_Initialize(__vwsn_this_ : gaclib_controls::FileDialogWindow*) : system::Void;
 
     constructor () : gaclib_controls::FileDialogWindowConstructor^;
 }
 
 @FullName:gaclib_controls::FilePickerControl
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:gaclib_controls::FilePickerControlConstructor)
 class gaclib_controls::FilePickerControl : presentation::controls::GuiCustomControl, gaclib_controls::FilePickerControlConstructor {
     event RequestClose : system::Function<system::Void>^;
     event StringsChanged : system::Function<system::Void>^ observing {
@@ -1669,7 +2417,9 @@ class gaclib_controls::FilePickerControl : presentation::controls::GuiCustomCont
     property Selection : system::Enumerable<system::String>^ { get:GetSelection }
     property Strings : gaclib_controls::IDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
     property ViewModel : presentation::IFileDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_parameter_ViewModel : presentation::IFileDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Strings : gaclib_controls::IDialogStringsStrings^;
     property imageFile : presentation::GuiImageData^;
     property imageFolder : presentation::GuiImageData^;
@@ -1688,44 +2438,77 @@ class gaclib_controls::FilePickerControl : presentation::controls::GuiCustomCont
 
 @FullName:gaclib_controls::FilePickerControlConstructor
 class gaclib_controls::FilePickerControlConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property ViewModel : presentation::IFileDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_10 : presentation::controls::list::DataColumn^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_12 : presentation::compositions::GuiGraphicsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_13 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_14 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_15 : presentation::compositions::GuiColumnSplitterComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_16 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_17 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_18 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_19 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_20 : presentation::compositions::GuiGraphicsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_21 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_22 : presentation::controls::GuiBindableTextList*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_23 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_24 : presentation::IFileDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiColumnSplitterComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_9 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property comboBox : presentation::controls::GuiComboBoxListControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property dataGrid : presentation::controls::GuiBindableDataGrid*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : gaclib_controls::FilePickerControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property textBox : presentation::controls::GuiSinglelineTextBox*;
+    @system::workflow_attributes::att_cpp_Protected()
     property treeView : presentation::controls::GuiBindableTreeView*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_gaclib_controls_FilePickerControl_Initialize(__vwsn_this_ : gaclib_controls::FilePickerControl*) : system::Void;
 
     constructor () : gaclib_controls::FilePickerControlConstructor^;
 }
 
 @FullName:gaclib_controls::FontNameControl
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:gaclib_controls::FontNameControlConstructor)
 class gaclib_controls::FontNameControl : presentation::controls::GuiCustomControl, gaclib_controls::FontNameControlConstructor {
     event LegalChanged : system::Function<system::Void>^ observing {
         Legal,
@@ -1741,9 +2524,13 @@ class gaclib_controls::FontNameControl : presentation::controls::GuiCustomContro
     property Strings : gaclib_controls::IDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
     property Value : system::String { get:GetValue set:SetValue event:ValueChanged }
     property ViewModel : presentation::ICommonFontDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_parameter_ViewModel : presentation::ICommonFontDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Legal : system::Boolean;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Strings : gaclib_controls::IDialogStringsStrings^;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Value : system::String;
 
     function GetLegal() : system::Boolean;
@@ -1761,24 +2548,37 @@ class gaclib_controls::FontNameControl : presentation::controls::GuiCustomContro
 
 @FullName:gaclib_controls::FontNameControlConstructor
 class gaclib_controls::FontNameControlConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property ViewModel : presentation::ICommonFontDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::controls::GuiControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : gaclib_controls::FontNameControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property textBox : presentation::controls::GuiSinglelineTextBox*;
+    @system::workflow_attributes::att_cpp_Protected()
     property textList : presentation::controls::GuiBindableTextList*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_gaclib_controls_FontNameControl_Initialize(__vwsn_this_ : gaclib_controls::FontNameControl*) : system::Void;
 
     constructor () : gaclib_controls::FontNameControlConstructor^;
 }
 
 @FullName:gaclib_controls::FontSizeControl
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:gaclib_controls::FontSizeControlConstructor)
 class gaclib_controls::FontSizeControl : presentation::controls::GuiCustomControl, gaclib_controls::FontSizeControlConstructor {
     event LegalChanged : system::Function<system::Void>^ observing {
         Legal,
@@ -1794,9 +2594,13 @@ class gaclib_controls::FontSizeControl : presentation::controls::GuiCustomContro
     property SizeList : system::List^ { get:GetSizeList }
     property Strings : gaclib_controls::IDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
     property Value : system::Int64 { get:GetValue set:SetValue event:ValueChanged }
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Legal : system::Boolean;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_SizeList : system::List^;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Strings : gaclib_controls::IDialogStringsStrings^;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Value : system::Int64;
 
     function GetLegal() : system::Boolean;
@@ -1805,6 +2609,7 @@ class gaclib_controls::FontSizeControl : presentation::controls::GuiCustomContro
     function GetValue() : system::Int64;
     function InitValue(value : system::Int64) : system::Void;
     function SetLegal(__vwsn_value_ : system::Boolean) : system::Void;
+    @system::workflow_attributes::att_cpp_Protected()
     function SetSizeList(__vwsn_value_ : system::List^) : system::Void;
     function SetStrings(__vwsn_value_ : gaclib_controls::IDialogStringsStrings^) : system::Void;
     function SetValue(__vwsn_value_ : system::Int64) : system::Void;
@@ -1815,23 +2620,35 @@ class gaclib_controls::FontSizeControl : presentation::controls::GuiCustomContro
 
 @FullName:gaclib_controls::FontSizeControlConstructor
 class gaclib_controls::FontSizeControlConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::controls::GuiControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : gaclib_controls::FontSizeControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property textBox : presentation::controls::GuiSinglelineTextBox*;
+    @system::workflow_attributes::att_cpp_Protected()
     property textList : presentation::controls::GuiBindableTextList*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_gaclib_controls_FontSizeControl_Initialize(__vwsn_this_ : gaclib_controls::FontSizeControl*) : system::Void;
 
     constructor () : gaclib_controls::FontSizeControlConstructor^;
 }
 
 @FullName:gaclib_controls::FullFontDialogWindow
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:gaclib_controls::FullFontDialogWindowConstructor)
 class gaclib_controls::FullFontDialogWindow : presentation::controls::GuiWindow, gaclib_controls::FullFontDialogWindowConstructor {
     event StringsChanged : system::Function<system::Void>^ observing {
         Strings,
@@ -1839,7 +2656,9 @@ class gaclib_controls::FullFontDialogWindow : presentation::controls::GuiWindow,
 
     property Strings : gaclib_controls::IDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
     property ViewModel : presentation::IFullFontDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_parameter_ViewModel : presentation::IFullFontDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Strings : gaclib_controls::IDialogStringsStrings^;
 
     function GetStrings() : gaclib_controls::IDialogStringsStrings^;
@@ -1852,54 +2671,102 @@ class gaclib_controls::FullFontDialogWindow : presentation::controls::GuiWindow,
 
 @FullName:gaclib_controls::FullFontDialogWindowConstructor
 class gaclib_controls::FullFontDialogWindowConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property ViewModel : presentation::IFullFontDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_10 : presentation::compositions::GuiStackItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::compositions::GuiStackItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_12 : presentation::compositions::GuiStackItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_13 : presentation::compositions::GuiStackItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_14 : presentation::compositions::GuiStackItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_15 : presentation::compositions::GuiStackItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_16 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_17 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_18 : presentation::controls::GuiControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_19 : presentation::elements::Gui3DBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_20 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_21 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_22 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_23 : presentation::controls::GuiControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_24 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_25 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_26 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_27 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_28 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_29 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_30 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_31 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_32 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_33 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_34 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::controls::GuiControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_9 : presentation::compositions::GuiStackComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property checkBold : presentation::controls::GuiSelectableButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property checkHAA : presentation::controls::GuiSelectableButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property checkItalic : presentation::controls::GuiSelectableButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property checkStrikeline : presentation::controls::GuiSelectableButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property checkUnderline : presentation::controls::GuiSelectableButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property checkVAA : presentation::controls::GuiSelectableButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property colorBackground : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property colorBounds : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property nameControl : gaclib_controls::FontNameControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : gaclib_controls::FullFontDialogWindow*;
+    @system::workflow_attributes::att_cpp_Protected()
     property sizeControl : gaclib_controls::FontSizeControl*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_gaclib_controls_FullFontDialogWindow_Initialize(__vwsn_this_ : gaclib_controls::FullFontDialogWindow*) : system::Void;
 
     constructor () : gaclib_controls::FullFontDialogWindowConstructor^;
@@ -2027,6 +2894,7 @@ interface gaclib_controls::IUnitTestSnapshotViewerViewModel : system::Interface 
 }
 
 @FullName:gaclib_controls::MessageBoxButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:gaclib_controls::MessageBoxButtonTemplateConstructor)
 class gaclib_controls::MessageBoxButtonTemplate : presentation::templates::GuiControlTemplate, gaclib_controls::MessageBoxButtonTemplateConstructor {
     event ButtonControlChanged : system::Function<system::Void>^ observing {
         ButtonControl,
@@ -2038,8 +2906,11 @@ class gaclib_controls::MessageBoxButtonTemplate : presentation::templates::GuiCo
     property Action : presentation::IMessageBoxDialogAction^ { get:GetAction }
     property ButtonControl : presentation::controls::GuiButton* { get:GetButtonControl event:ButtonControlChanged }
     property Strings : gaclib_controls::IDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_parameter_Action : presentation::IMessageBoxDialogAction^;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_ButtonControl : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Strings : gaclib_controls::IDialogStringsStrings^;
 
     function GetAction() : presentation::IMessageBoxDialogAction^;
@@ -2047,6 +2918,7 @@ class gaclib_controls::MessageBoxButtonTemplate : presentation::templates::GuiCo
     function GetButtonControl() : presentation::controls::GuiButton*;
     function GetButtonText(button : presentation::INativeDialogService::MessageBoxButtonsOutput, strings : gaclib_controls::IDialogStringsStrings^) : system::String;
     function GetStrings() : gaclib_controls::IDialogStringsStrings^;
+    @system::workflow_attributes::att_cpp_Protected()
     function SetButtonControl(__vwsn_value_ : presentation::controls::GuiButton*) : system::Void;
     function SetStrings(__vwsn_value_ : gaclib_controls::IDialogStringsStrings^) : system::Void;
     function __vwsn_instance_ctor_() : system::Void;
@@ -2056,19 +2928,26 @@ class gaclib_controls::MessageBoxButtonTemplate : presentation::templates::GuiCo
 
 @FullName:gaclib_controls::MessageBoxButtonTemplateConstructor
 class gaclib_controls::MessageBoxButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property Action : presentation::IMessageBoxDialogAction^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property buttonControl : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : gaclib_controls::MessageBoxButtonTemplate*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize(__vwsn_this_ : gaclib_controls::MessageBoxButtonTemplate*) : system::Void;
 
     constructor () : gaclib_controls::MessageBoxButtonTemplateConstructor^;
 }
 
 @FullName:gaclib_controls::MessageBoxWindow
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:gaclib_controls::MessageBoxWindowConstructor)
 class gaclib_controls::MessageBoxWindow : presentation::controls::GuiWindow, gaclib_controls::MessageBoxWindowConstructor {
     property ViewModel : presentation::IMessageBoxDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_parameter_ViewModel : presentation::IMessageBoxDialogViewModel^;
 
     function GetIcon(icon : presentation::INativeDialogService::MessageBoxIcons) : presentation::INativeImage^;
@@ -2080,31 +2959,51 @@ class gaclib_controls::MessageBoxWindow : presentation::controls::GuiWindow, gac
 
 @FullName:gaclib_controls::MessageBoxWindowConstructor
 class gaclib_controls::MessageBoxWindowConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property ViewModel : presentation::IMessageBoxDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_10 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_12 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_13 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_14 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::elements::GuiImageFrameElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_9 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property buttonStack : presentation::compositions::GuiRepeatStackComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : gaclib_controls::MessageBoxWindow*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_gaclib_controls_MessageBoxWindow_Initialize(__vwsn_this_ : gaclib_controls::MessageBoxWindow*) : system::Void;
 
     constructor () : gaclib_controls::MessageBoxWindowConstructor^;
 }
 
 @FullName:gaclib_controls::SimpleFontDialogWindow
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:gaclib_controls::SimpleFontDialogWindowConstructor)
 class gaclib_controls::SimpleFontDialogWindow : presentation::controls::GuiWindow, gaclib_controls::SimpleFontDialogWindowConstructor {
     event StringsChanged : system::Function<system::Void>^ observing {
         Strings,
@@ -2112,7 +3011,9 @@ class gaclib_controls::SimpleFontDialogWindow : presentation::controls::GuiWindo
 
     property Strings : gaclib_controls::IDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
     property ViewModel : presentation::ISimpleFontDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_parameter_ViewModel : presentation::ISimpleFontDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Strings : gaclib_controls::IDialogStringsStrings^;
 
     function GetStrings() : gaclib_controls::IDialogStringsStrings^;
@@ -2125,31 +3026,56 @@ class gaclib_controls::SimpleFontDialogWindow : presentation::controls::GuiWindo
 
 @FullName:gaclib_controls::SimpleFontDialogWindowConstructor
 class gaclib_controls::SimpleFontDialogWindowConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property ViewModel : presentation::ISimpleFontDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_10 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_12 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_13 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_14 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_15 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_16 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_17 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_18 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_19 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::controls::GuiControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_9 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property nameControl : gaclib_controls::FontNameControl*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : gaclib_controls::SimpleFontDialogWindow*;
+    @system::workflow_attributes::att_cpp_Protected()
     property sizeControl : gaclib_controls::FontSizeControl*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize(__vwsn_this_ : gaclib_controls::SimpleFontDialogWindow*) : system::Void;
 
     constructor () : gaclib_controls::SimpleFontDialogWindowConstructor^;
@@ -2172,6 +3098,7 @@ class gaclib_controls::UnitTestSnapshotViewerStrings : system::ReferenceType {
 }
 
 @FullName:gaclib_controls::UnitTestSnapshotViewerWindow
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 class gaclib_controls::UnitTestSnapshotViewerWindow : presentation::controls::GuiWindow, gaclib_controls::UnitTestSnapshotViewerWindowConstructor {
     event StringsChanged : system::Function<system::Void>^ observing {
         Strings,
@@ -2179,11 +3106,16 @@ class gaclib_controls::UnitTestSnapshotViewerWindow : presentation::controls::Gu
 
     property Strings : gaclib_controls::IUnitTestSnapshotViewerStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
     property ViewModel : gaclib_controls::IUnitTestSnapshotViewerViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_parameter_ViewModel : gaclib_controls::IUnitTestSnapshotViewerViewModel^;
+    @system::workflow_attributes::att_cpp_Private()
     property __vwsn_prop_Strings : gaclib_controls::IUnitTestSnapshotViewerStringsStrings^;
+    @system::workflow_attributes::att_cpp_Private()
     property imageFile : presentation::GuiImageData^;
+    @system::workflow_attributes::att_cpp_Private()
     property imageFolder : presentation::GuiImageData^;
 
+    @system::workflow_attributes::att_cpp_Private()
     function GetImageFromType(nodeType : gaclib_controls::UnitTestSnapshotFileNodeType) : presentation::GuiImageData^;
     function GetStrings() : gaclib_controls::IUnitTestSnapshotViewerStringsStrings^;
     function GetViewModel() : gaclib_controls::IUnitTestSnapshotViewerViewModel^;
@@ -2194,47 +3126,88 @@ class gaclib_controls::UnitTestSnapshotViewerWindow : presentation::controls::Gu
 
 @FullName:gaclib_controls::UnitTestSnapshotViewerWindowConstructor
 class gaclib_controls::UnitTestSnapshotViewerWindowConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
     property ViewModel : gaclib_controls::IUnitTestSnapshotViewerViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiColumnSplitterComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_10 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::controls::GuiTab*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_12 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_13 : presentation::controls::GuiTabPage*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_14 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_15 : presentation::compositions::GuiColumnSplitterComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_16 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_17 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_18 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_19 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::compositions::GuiColumnSplitterComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_20 : presentation::compositions::GuiRowSplitterComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_21 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_22 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_23 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_24 : presentation::controls::GuiTab*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_25 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_26 : presentation::controls::GuiTabPage*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_27 : presentation::controls::GuiMultilineTextBox*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_28 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_29 : presentation::controls::GuiTabPage*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_30 : presentation::controls::GuiMultilineTextBox*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_31 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_32 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_6 : presentation::controls::GuiTab*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::controls::GuiTabPage*;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_9 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
     property labelLoading : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
     property scRendering : presentation::controls::GuiScrollContainer*;
+    @system::workflow_attributes::att_cpp_Protected()
     property self : gaclib_controls::UnitTestSnapshotViewerWindow*;
+    @system::workflow_attributes::att_cpp_Protected()
     property textListFrames : presentation::controls::GuiBindableTextList*;
+    @system::workflow_attributes::att_cpp_Protected()
     property treeViewDom : presentation::controls::GuiBindableTreeView*;
+    @system::workflow_attributes::att_cpp_Protected()
     property treeViewFileNodes : presentation::controls::GuiBindableTreeView*;
 
+    @system::workflow_attributes::att_cpp_Protected()
     function __vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize(__vwsn_this_ : gaclib_controls::UnitTestSnapshotViewerWindow*) : system::Void;
 
     constructor () : gaclib_controls::UnitTestSnapshotViewerWindowConstructor^;
