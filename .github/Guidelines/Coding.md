@@ -63,8 +63,8 @@ Regular expression utilities are offered by `vl::regex::Regex`, here are importa
 
 When `VlppParser2` is available to the current project, complex parsers always require to use `VlppParser2`. There are already existing parsers, especially XML and JSON.
 - Each parser has a generated `Parser` class, you are always required to use the last piece of namespace with it, e.g. `xml::Parser` and `json::Parser`. `glr::xml::Parser` and `glr::json::Parser` is also equally good.
-- Some parsers like XML has its own parse function `XmlParseDocument` and `XmlParseElement`, it has extra preprocessing, they are always required to use instead of using `xml::Parser` directly.
-- Some parser like JSON does not have its own parse function, therefore `json::Parser` can be used directly.
+- Some parsers like XML/JSON has its own parse function `XmlParseDocument`, `XmlParseElement`, `JsonParse`, it has extra preprocessing, they are always required to use instead of using `xml::Parser` directly.
+  - Only if such functions cannot be found for a certain parser, the `Parser` class can be used directly.
 - Creating a `Parser` class is super expensive, you must do your best to share it across the project:
   - Any `Parser` class is re-entrant, you can run it parallelly in multiple threads.
   - Any unit test project should already have a way to share involved parsers. You are recommended to follow the pattern if you need to use a new parser.
