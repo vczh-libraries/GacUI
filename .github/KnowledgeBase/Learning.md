@@ -2,8 +2,8 @@
 
 # Orders
 
-- Process staged tasks one by one with verification [7]
-- Crash early instead of adding error-tolerance fallbacks [5]
+- Process staged tasks one by one with verification [12]
+- Crash early instead of adding error-tolerance fallbacks [6]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
 - Capture dependent lambdas explicitly [2]
@@ -12,9 +12,15 @@
 - Prefer simple calls before interface casts [2]
 - Validate expectations against implementation and existing tests [2]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [2]
+- Do not assume async callback owners are heap allocated [1]
+- Extract abstractions only for real shared behavior [1]
+- Make `Stop()` drain asynchronous work before returning [1]
+- Port fixes from imports to source repositories [1]
 - Prefer well-defined tests over ambiguous edge cases [1]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
+- Treat Debug memory leak dumps as required failures [1]
+- Use named sentinel constants instead of raw values [1]
 - Use `Variant<T...>::Index()` to check active alternative [1]
 - Avoid references into containers when mutating them [1]
 - Prefer designated initializers for aggregate-like structs [1]
@@ -37,11 +43,15 @@ When verifying callbacks from an observable collection, do not assume multiple o
 
 ## Crash early instead of adding error-tolerance fallbacks
 
+For public API arguments that callers can validate with query methods, fail with `CHECK_ERROR` when the argument is invalid instead of accepting impossible protocol states.
+
 When an invariant says a value must exist or a conversion must succeed, prefer using it directly or using a strong cast so a violation crashes or throws immediately. Do not add speculative null checks, weak casts, or silent fallbacks that hide protocol or ownership bugs. Fix the real cause instead of making the code tolerant of states that should be impossible.
 
 ## Process staged tasks one by one with verification
 
 When a request is split into explicit tasks, complete and verify each task before starting the next one. This keeps commits easy to understand and review, limits side effects to the current task, and avoids having to diagnose many unrelated issues at the same time. If a task has its own finishing instructions, finish that task properly before moving on.
+
+When a task boundary says to commit and push, do that before starting the next task so each task remains independently reviewable.
 
 ## Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages
 
@@ -54,6 +64,22 @@ Do not add explicit interface casting (e.g. `dynamic_cast<IFoo*>(...)`) just bec
 ## Prefer well-defined tests over ambiguous edge cases
 
 When a scenario’s expected behavior is unclear or undocumented (e.g. calling an operation while an object is in an “invisible”/non-effective state), avoid turning it into a test requirement. Prefer fewer tests that validate the public contract and real-world usage; if an edge case is important, first clarify the intended semantics from implementation and/or documentation.
+
+## Do not assume async callback owners are heap allocated
+
+Asynchronous callbacks and handle-close paths must not rely on the owning object being allocated with `new` or outliving callbacks by convention. Track active operations explicitly and make shutdown drain or detach every callback path that can reference the object.
+
+## Extract abstractions only for real shared behavior
+
+When refactoring client/server or similar paired implementations, extract common state and helper behavior only when it genuinely simplifies both sides. Preserve intentional differences in small derived redirects or callbacks instead of forcing an abstraction just to increase reuse.
+
+## Make `Stop()` drain asynchronous work before returning
+
+If an API exposes `Stop()`, callers should be able to rely on it as the shutdown boundary: after it returns, no pending action, wait callback, overlapped I/O, or async completion should still touch the object. Do not paper over a broken `Stop()` with sleeps in tests; fix the stop path.
+
+## Port fixes from imports to source repositories
+
+Do not treat files copied into `Import` or generated release files as the source of truth. When a fix affects imported `Vlpp` files, make the upstream change in `Vlpp`, regenerate its release output, and then copy the generated files downstream. When a `.github` instruction or script fix is needed, port it through `Tools/Copilot`.
 
 ## Validate expectations against implementation and existing tests
 
@@ -78,6 +104,14 @@ For nearest-neighbor lookup on a sorted key buffer, implement helpers for larges
 ## Prefer two-pointer merge for sorted range maps
 
 When combining or diffing two maps that are already sorted by range keys, iterate both in one pass using a two-pointer “merge sort merge phase” approach. This avoids nested scans and keeps merge/diff logic linear in the number of runs.
+
+## Treat Debug memory leak dumps as required failures
+
+On Windows Debug unit-test runs with memory leak checking enabled, a test can pass all assertions and still fail engineering acceptance if the final execution log contains a CRT leak dump. Read the end of the log after tests pass and fix leaks instead of ignoring the appended report.
+
+## Use named sentinel constants instead of raw values
+
+When a protocol needs a sentinel value such as an administrator or system client id, use a named constant and validate it explicitly. Do not scatter raw values like `-1` through call sites; it makes sender/receiver semantics hard to audit and easy to misuse.
 
 ## Use `Variant<T...>::Index()` to check active alternative
 
