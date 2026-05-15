@@ -48,7 +48,7 @@ $executableName = $Executable + ".exe"
 $solutionFolder = GetSolutionDir
 
 # Find the file with the latest modification time
-if ($Configuration -eq $null) {
+if ([string]::IsNullOrEmpty($Configuration)) {
   $latestFile = GetLatestModifiedExecutable $solutionFolder $executableName
 } else {
   $latestFile = GetSpecifiedExecutable $solutionFolder $executableName $Configuration $Platform
