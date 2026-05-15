@@ -34,7 +34,8 @@ if ($Mode -eq "UnitTest") {
   # Remove log files
   $logFile = "$PSScriptRoot\Execute.log"
   $logFileUnfinished = "$logFile.unfinished"
-  Remove-Item -Path $logFile, $logFileUnfinished -Force -ErrorAction SilentlyContinue
+  $logFileMemoryLeaks = "$logFile.memoryleaks"
+  Remove-Item -Path $logFile, $logFileUnfinished, $logFileMemoryLeaks -Force -ErrorAction SilentlyContinue
 }
 
 # Ensure the executable name does not have the .exe extension
@@ -59,9 +60,13 @@ $debugArgs = GetDebugArgs $solutionFolder $latestFile $Executable
 
 # Execute the selected executable with debug arguments and save output to log file
 if ($Mode -eq "UnitTest") {
-  $commandLine = "`"$($latestFile.Path)`" /C $debugArgs"
+  $commandLine = "`"$($latestFile.Path)`" /C /DebugOutput:`"$logFileMemoryLeaks`" $debugArgs"
   & { $commandLine; & cmd.exe /S /C $commandLine 2>&1 } | Tee-Object -FilePath $logFileUnfinished
+  if ((Test-Path $logFileMemoryLeaks) -and ((Get-Item $logFileMemoryLeaks).Length -gt 0)) {
+    Get-Content -Path $logFileMemoryLeaks | Add-Content -Path $logFileUnfinished
+  }
   Rename-Item -Path $logFileUnfinished -NewName $logFile -Force
+  Remove-Item -Path $logFileUnfinished, $logFileMemoryLeaks -Force -ErrorAction SilentlyContinue
 } else {
   $commandLine = "`"$($latestFile.Path)`" $debugArgs"
   & { $commandLine; & cmd.exe /S /C $commandLine 2>&1 }

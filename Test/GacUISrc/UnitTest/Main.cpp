@@ -194,9 +194,7 @@ int UnitTestMain(int argc, T* argv[])
 int wmain(int argc, wchar_t* argv[])
 {
 	int result = UnitTestMain(argc, argv);
-#if defined VCZH_CHECK_MEMORY_LEAKS
-	_CrtDumpMemoryLeaks();
-#endif
+	UnitTest::DumpMemoryLeak(argc, argv);
 	return result;
 }
 #elif defined VCZH_GCC

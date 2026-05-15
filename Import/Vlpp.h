@@ -15,6 +15,7 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_BASIC
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #ifdef VCZH_CHECK_MEMORY_LEAKS
 #define _CRTDBG_MAP_ALLOC
@@ -9676,6 +9677,12 @@ namespace vl
 			/// <param name="argc">Accept the first argument of the main function.</param>
 			/// <param name="argv">Accept the second argument of the main function.</param>
 			static int				RunAndDisposeTests(int argc, char* argv[]);
+
+			/// <summary>Dump memory leaks if memory leak detection is enabled.</summary>
+			static void				DumpMemoryLeak(int argc, wchar_t* argv[]);
+
+			/// <summary>Dump memory leaks if memory leak detection is enabled.</summary>
+			static void				DumpMemoryLeak(int argc, char* argv[]);
 
 			static void				RegisterTestFile(UnitTestLink* link);
 			static void				RunCategoryOrCase(const WString& description, bool isCategory, Func<void()>&& callback);

@@ -64,6 +64,9 @@ Ignore `LocalDebuggerCommandArgumentsHistory` in `*.vcxproj.user`.
 - When all test cases pass, the last several lines of `Execute.log` should be in the following pattern; otherwise it has crashed at the last shown test case:
   - "Passed test files: X/X"
   - "Passed test cases: Y/Y"
+- On Windows Debug builds, memory leak detection runs after test cases finish. If memory leaks are found, the leak dump is appended at the end of `Execute.log` after the test summary.
+  - Passing test cases are necessary but not sufficient for success: memory leaks reported after the summary must always be fixed.
+  - Treat memory leak fixes as required work, especially after all test cases pass and the remaining failure signal is only the appended leak dump.
 - DO NOT delete the log file by yourself.
 
 ## Linux Specific
