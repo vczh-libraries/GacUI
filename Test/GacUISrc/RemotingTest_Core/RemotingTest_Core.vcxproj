@@ -157,13 +157,8 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CoreChannel.cpp" />
     <ClCompile Include="GuiMain.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Shared\HttpClient.cpp" />
-    <ClCompile Include="Shared\HttpServer.cpp" />
-    <ClCompile Include="Shared\NamedPipeShared.cpp" />
-    <ClCompile Include="Shared\ProtocolCallback.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lib_GacUI\Lib_GacUI.vcxproj">
@@ -172,13 +167,6 @@
     <ProjectReference Include="..\Lib_GacUI_App\Lib_GacUI_App.vcxproj">
       <Project>{04d56a3c-3a31-4cbd-b1f1-955fa5848057}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="CoreChannel.h" />
-    <ClInclude Include="Shared\HttpClient.h" />
-    <ClInclude Include="Shared\HttpServer.h" />
-    <ClInclude Include="Shared\NamedPipeShared.h" />
-    <ClInclude Include="Shared\ProtocolCallback.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

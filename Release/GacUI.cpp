@@ -38672,94 +38672,289 @@ namespace vl::presentation::remoteprotocol
 namespace vl::presentation::remoteprotocol::channeling
 {
 	using namespace vl::collections;
+	using namespace vl::presentation::controls;
 
 /***********************************************************************
-GuiRemoteProtocolAsyncChannelSerializerBase
+GuiRemoteProtocolAsyncJsonChannelSerializer
 ***********************************************************************/
 
-	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueTask(SpinLock& lock, collections::List<TTaskProc>& tasks, TTaskProc task, EventObject* signalAfterQueue)
+	bool GuiRemoteProtocolAsyncJsonChannelSerializer::AreCurrentPendingRequestGroupSatisfied(bool disconnected)
 	{
-		SPIN_LOCK(lock)
+		if (!pendingRequest) return false;
+		if (disconnected) return true;
+		for (vint requestId : pendingRequest->requestIds)
 		{
-			tasks.Add(task);
+			if (!queuedResponses.Keys().Contains(requestId))
+			{
+				return false;
+			}
 		}
-
-		if (signalAfterQueue)
-		{
-			signalAfterQueue->Signal();
-		}
+		return true;
 	}
 
-	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueTaskAndWait(SpinLock& lock, collections::List<TTaskProc>& tasks, TTaskProc task, EventObject* signalAfterQueue)
+	void GuiRemoteProtocolAsyncJsonChannelSerializer::ScheduleProcessRemoteEvents()
 	{
-		auto taskEvent = Ptr(new vl::EventObject);
-		taskEvent->CreateAutoUnsignal(false);
-		auto taskWithEvent = [=]()
+		bool shouldQueue = false;
+		SPIN_LOCK(lockEvents)
 		{
-			task();
-			taskEvent->Signal();
-		};
-
-		QueueTask(lock, tasks, taskWithEvent, signalAfterQueue);
-		taskEvent->Wait();
-	}
-
-	void GuiRemoteProtocolAsyncChannelSerializerBase::FetchTasks(SpinLock& lock, collections::List<TTaskProc>& tasks, collections::List<TTaskProc>& results)
-	{
-		SPIN_LOCK(lock)
-		{
-			results = std::move(tasks);
+			if (!uiTaskQueued)
+			{
+				uiTaskQueued = true;
+				shouldQueue = true;
+			}
 		}
-	}
 
-	void GuiRemoteProtocolAsyncChannelSerializerBase::FetchAndExecuteTasks(SpinLock& lock, collections::List<TTaskProc>& tasks)
-	{
-		List<TTaskProc> results;
-		FetchTasks(lock, tasks, results);
-		for (auto&& task : results)
+		if (shouldQueue)
 		{
-			task();
+			if (auto app = GetApplication())
+			{
+				app->InvokeInMainThread(app->GetMainWindow(), [this]()
+				{
+					ProcessChannelEvents();
+				});
+			}
 		}
 	}
 
-	void GuiRemoteProtocolAsyncChannelSerializerBase::FetchAndExecuteChannelTasks()
+	void GuiRemoteProtocolAsyncJsonChannelSerializer::ProcessChannelEvents()
 	{
-		FetchAndExecuteTasks(channelThreadLock, channelThreadTasks);
+		List<ReceivedPackage> events;
+		SPIN_LOCK(lockEvents)
+		{
+			events = std::move(queuedEvents);
+			uiTaskQueued = false;
+		}
+
+		for (auto&& eventPackage : events)
+		{
+			ChannelPackageInfo info;
+			Ptr<glr::json::JsonNode> jsonArguments;
+			JsonChannelUnpack(eventPackage.package, info, jsonArguments);
+
+			if (info.name == L"ControllerConnect")
+			{
+				SPIN_LOCK(lockConnection)
+				{
+					connectionCounter++;
+					connectionAvailable = true;
+				}
+			}
+			reader->OnRead(eventPackage.senderClientId, eventPackage.package);
+		}
 	}
 
-	void GuiRemoteProtocolAsyncChannelSerializerBase::FetchAndExecuteUITasks()
+	void GuiRemoteProtocolAsyncJsonChannelSerializer::ProcessRemoteEvents()
 	{
-		FetchAndExecuteTasks(uiThreadLock, uiThreadTasks);
+		if (remoteEventProcessor)
+		{
+			remoteEventProcessor->ProcessRemoteEvents();
+		}
+		ProcessChannelEvents();
 	}
 
-	GuiRemoteProtocolAsyncChannelSerializerBase::GuiRemoteProtocolAsyncChannelSerializerBase()
+	void GuiRemoteProtocolAsyncJsonChannelSerializer::OnRead(vint senderClientId, const JsonPackage& package)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::OnRead(vint, const JsonPackage&)#"
+		ChannelPackageInfo info;
+		Ptr<glr::json::JsonNode> jsonArguments;
+		JsonChannelUnpack(package, info, jsonArguments);
+
+		switch (info.semantic)
+		{
+		case ChannelPackageSemantic::Event:
+			{
+				ReceivedPackage receivedPackage;
+				receivedPackage.senderClientId = senderClientId;
+				receivedPackage.package = package;
+				SPIN_LOCK(lockEvents)
+				{
+					queuedEvents.Add(receivedPackage);
+				}
+				ScheduleProcessRemoteEvents();
+			}
+			break;
+		case ChannelPackageSemantic::Response:
+			{
+				ReceivedPackage receivedPackage;
+				receivedPackage.senderClientId = senderClientId;
+				receivedPackage.package = package;
+				SPIN_LOCK(lockResponses)
+				{
+					queuedResponses.Add(info.id, receivedPackage);
+					if (AreCurrentPendingRequestGroupSatisfied(false))
+					{
+						eventAutoResponses.Signal();
+					}
+				}
+			}
+			break;
+		default:
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Only responses and events are expected.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	GuiRemoteProtocolAsyncJsonChannelSerializer::GuiRemoteProtocolAsyncJsonChannelSerializer(IJsonChannel* _channel, IGuiRemoteEventProcessor* _remoteEventProcessor)
+		: channel(_channel)
+		, remoteEventProcessor(_remoteEventProcessor)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::GuiRemoteProtocolAsyncJsonChannelSerializer(IJsonChannel*, IGuiRemoteEventProcessor*)#"
+		CHECK_ERROR(channel, ERROR_MESSAGE_PREFIX L"A valid channel is required.");
+		CHECK_ERROR(eventAutoResponses.CreateAutoUnsignal(false), ERROR_MESSAGE_PREFIX L"Failed to initialize eventAutoResponses.");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	GuiRemoteProtocolAsyncJsonChannelSerializer::~GuiRemoteProtocolAsyncJsonChannelSerializer()
 	{
 	}
 
-	GuiRemoteProtocolAsyncChannelSerializerBase::~GuiRemoteProtocolAsyncChannelSerializerBase()
+	const WString& GuiRemoteProtocolAsyncJsonChannelSerializer::GetChannelName()
 	{
+		return channel->GetChannelName();
 	}
 
-	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueToChannelThread(TTaskProc task, EventObject* signalAfterQueue)
+	IJsonChannelReader* GuiRemoteProtocolAsyncJsonChannelSerializer::GetReader()
 	{
-		QueueTask(channelThreadLock, channelThreadTasks, task, signalAfterQueue);
+		return reader;
 	}
 
-	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueToChannelThreadAndWait(TTaskProc task, EventObject* signalAfterQueue)
+	void GuiRemoteProtocolAsyncJsonChannelSerializer::Initialize(IJsonChannelReader* _reader)
 	{
-		QueueTaskAndWait(channelThreadLock, channelThreadTasks, task, signalAfterQueue);
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::Initialize(IJsonChannelReader*)#"
+		CHECK_ERROR(_reader, ERROR_MESSAGE_PREFIX L"A valid reader is required.");
+		CHECK_ERROR(!reader, ERROR_MESSAGE_PREFIX L"The async channel cannot be initialized more than once.");
+		reader = _reader;
+		channel->Initialize(this);
+#undef ERROR_MESSAGE_PREFIX
 	}
 
-	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueToUIThread(TTaskProc task, EventObject* signalAfterQueue)
+	void GuiRemoteProtocolAsyncJsonChannelSerializer::SendToClient(vint senderClientId, vint receiverClientId, const JsonPackage& package)
 	{
-		QueueTask(uiThreadLock, uiThreadTasks, task, signalAfterQueue);
+		QueuedPackage queuedPackage;
+		queuedPackage.senderClientId = senderClientId;
+		queuedPackage.receiverClientId = receiverClientId;
+		queuedPackage.package = package;
+
+		SPIN_LOCK(lockPendingPackages)
+		{
+			pendingPackages.Add(queuedPackage);
+		}
 	}
 
-	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueToUIThreadAndWait(TTaskProc task, EventObject* signalAfterQueue)
+	void GuiRemoteProtocolAsyncJsonChannelSerializer::BroadcastFromClient(vint senderClientId, const JsonPackage& package)
 	{
-		QueueTaskAndWait(uiThreadLock, uiThreadTasks, task, signalAfterQueue);
+		QueuedPackage queuedPackage;
+		queuedPackage.senderClientId = senderClientId;
+		queuedPackage.package = package;
+
+		SPIN_LOCK(lockPendingPackages)
+		{
+			pendingPackages.Add(queuedPackage);
+		}
+	}
+
+	void GuiRemoteProtocolAsyncJsonChannelSerializer::BatchWrite(bool& disconnected)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::BatchWrite(bool&)#"
+		disconnected = false;
+
+		List<QueuedPackage> packages;
+		SPIN_LOCK(lockPendingPackages)
+		{
+			packages = std::move(pendingPackages);
+		}
+
+		if (packages.Count() == 0)
+		{
+			return;
+		}
+
+		vint currentConnectionCounter = -1;
+		SPIN_LOCK(lockConnection)
+		{
+			currentConnectionCounter = connectionCounter;
+			if (!connectionAvailable)
+			{
+				disconnected = true;
+				return;
+			}
+		}
+
+		auto requestGroup = Ptr(new PendingRequestGroup);
+		requestGroup->connectionCounter = currentConnectionCounter;
+		for (auto&& queuedPackage : packages)
+		{
+			ChannelPackageInfo info;
+			Ptr<glr::json::JsonNode> jsonArguments;
+			JsonChannelUnpack(queuedPackage.package, info, jsonArguments);
+
+			if (info.semantic == ChannelPackageSemantic::Request)
+			{
+				requestGroup->requestIds.Add(info.id);
+			}
+		}
+
+		SPIN_LOCK(lockResponses)
+		{
+			CHECK_ERROR(!pendingRequest, ERROR_MESSAGE_PREFIX L"Only one pending request group is expected.");
+			pendingRequest = requestGroup;
+		}
+
+		for (auto&& queuedPackage : packages)
+		{
+			if (queuedPackage.receiverClientId)
+			{
+				channel->SendToClient(queuedPackage.senderClientId, queuedPackage.receiverClientId.Value(), queuedPackage.package);
+			}
+			else
+			{
+				channel->BroadcastFromClient(queuedPackage.senderClientId, queuedPackage.package);
+			}
+		}
+		channel->BatchWrite(disconnected);
+
+		if (disconnected || requestGroup->requestIds.Count() == 0)
+		{
+			eventAutoResponses.Signal();
+		}
+
+		eventAutoResponses.Wait();
+		SPIN_LOCK(lockConnection)
+		{
+			if (requestGroup->connectionCounter != connectionCounter || !connectionAvailable)
+			{
+				disconnected = true;
+			}
+		}
+
+		List<ReceivedPackage> responses;
+		SPIN_LOCK(lockResponses)
+		{
+			if (!disconnected)
+			{
+				for (vint id : requestGroup->requestIds)
+				{
+					responses.Add(queuedResponses[id]);
+					queuedResponses.Remove(id);
+				}
+			}
+			pendingRequest = nullptr;
+			queuedResponses.Clear();
+		}
+
+		for (auto&& response : responses)
+		{
+			reader->OnRead(response.senderClientId, response.package);
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	IGuiRemoteEventProcessor* GuiRemoteProtocolAsyncJsonChannelSerializer::GetRemoteEventProcessor()
+	{
+		return this;
 	}
 }
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_CHANNEL_JSON.CPP
@@ -38767,6 +38962,8 @@ GuiRemoteProtocolAsyncChannelSerializerBase
 
 namespace vl::presentation::remoteprotocol::channeling
 {
+	using namespace vl::collections;
+
 /***********************************************************************
 ChannelPackageSemantic
 ***********************************************************************/
@@ -38833,7 +39030,11 @@ ChannelPackageSemantic
 
 	void JsonChannelUnpack(Ptr<glr::json::JsonObject> package, ChannelPackageInfo& info, Ptr<glr::json::JsonNode>& arguments)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::JsonChannelPack(Ptr<JsonObject>, ProtocolSemantic&, vint&, WString&, Ptr<JsonNode>&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::JsonChannelUnpack(Ptr<JsonObject>, ChannelPackageInfo&, Ptr<JsonNode>&)#"
+		CHECK_ERROR(package, ERROR_MESSAGE_PREFIX L"The package should be a JsonObject.");
+
+		info = {};
+		arguments = {};
 
 		for (auto&& field : package->fields)
 		{
@@ -38878,27 +39079,118 @@ ChannelPackageSemantic
 				arguments = field->value;
 			}
 		}
+
+		CHECK_ERROR(info.semantic != ChannelPackageSemantic::Unknown, ERROR_MESSAGE_PREFIX L"The semantic field is missing or invalid.");
+		CHECK_ERROR(info.name.Length() > 0, ERROR_MESSAGE_PREFIX L"The name field is missing.");
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void ChannelPackageSemanticUnpack(Ptr<glr::json::JsonObject> package, ChannelPackageInfo& info)
+	void JsonChannelUnpack(Ptr<glr::json::JsonNode> package, ChannelPackageInfo& info, Ptr<glr::json::JsonNode>& arguments)
 	{
-		Ptr<glr::json::JsonNode> arguments;
-		JsonChannelUnpack(package, info, arguments);
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::JsonChannelUnpack(Ptr<JsonNode>, ChannelPackageInfo&, Ptr<JsonNode>&)#"
+		auto object = package.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(object, ERROR_MESSAGE_PREFIX L"The package should be a JsonObject.");
+		JsonChannelUnpack(object, info, arguments);
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 /***********************************************************************
-GuiRemoteProtocolFromJsonChannel
+JsonNodeListSerializer
+***********************************************************************/
+
+	void JsonNodeListSerializer::Serialize(Ptr<glr::json::Parser> parser, const SourceType& source, DestType& dest)
+	{
+		auto array = Ptr(new glr::json::JsonArray);
+		for (auto&& package : source)
+		{
+			array->items.Add(package);
+		}
+
+		glr::json::JsonFormatting formatting;
+		formatting.spaceAfterColon = false;
+		formatting.spaceAfterComma = false;
+		formatting.crlf = false;
+		formatting.compact = true;
+		dest = glr::json::JsonToString(array, formatting);
+	}
+
+	void JsonNodeListSerializer::Deserialize(Ptr<glr::json::Parser> parser, const DestType& source, SourceType& dest)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::JsonNodeListSerializer::Deserialize(Ptr<Parser>, const WString&, SourceType&)#"
+		auto value = glr::json::JsonParse(source, *parser.Obj());
+		auto array = value.Cast<glr::json::JsonArray>();
+		CHECK_ERROR(array, ERROR_MESSAGE_PREFIX L"The serialized channel package should be a JsonArray.");
+
+		dest.Clear();
+		for (auto&& package : array->items)
+		{
+			dest.Add(package);
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+/***********************************************************************
+GuiRemoteProtocolChannelClient
+***********************************************************************/
+
+	GuiRemoteProtocolChannelClient::GuiRemoteProtocolChannelClient(Ptr<inter_process::INetworkProtocolClient> client, Ptr<glr::json::Parser> parser)
+		: Base(client, parser)
+	{
+		channelNames.Add(WString::Unmanaged(GacUIRemoteProtocolChannelName), nullptr);
+	}
+
+	const IJsonChannelClient::ChannelNameList& GuiRemoteProtocolChannelClient::OnGetChannelNames()
+	{
+		return channelNames.Keys();
+	}
+
+	IJsonChannel* GuiRemoteProtocolChannelClient::GetProtocolChannel()
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolChannelClient::GetProtocolChannel()#"
+		auto&& channels = GetChannels();
+		auto index = channels.Keys().IndexOf(WString::Unmanaged(GacUIRemoteProtocolChannelName));
+		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"The protocol channel is missing.");
+		return channels.Values()[index];
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+/***********************************************************************
+GuiRemoteProtocolLocalChannelClient
+***********************************************************************/
+
+	GuiRemoteProtocolLocalChannelClient::GuiRemoteProtocolLocalChannelClient(Ptr<glr::json::Parser> parser)
+		: Base(parser)
+	{
+		channelNames.Add(WString::Unmanaged(GacUIRemoteProtocolChannelName), nullptr);
+	}
+
+	const IJsonChannelClient::ChannelNameList& GuiRemoteProtocolLocalChannelClient::OnGetChannelNames()
+	{
+		return channelNames.Keys();
+	}
+
+	IJsonChannel* GuiRemoteProtocolLocalChannelClient::GetProtocolChannel()
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolLocalChannelClient::GetProtocolChannel()#"
+		auto&& channels = GetChannels();
+		auto index = channels.Keys().IndexOf(WString::Unmanaged(GacUIRemoteProtocolChannelName));
+		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"The protocol channel is missing.");
+		return channels.Values()[index];
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+/***********************************************************************
+GuiRemoteProtocolCoreChannel
 ***********************************************************************/
 
 #define EVENT_NOREQ(NAME, REQUEST)\
-	void GuiRemoteProtocolFromJsonChannel::OnReceive_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments)\
+	void GuiRemoteProtocolCoreChannel::OnRead_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments)\
 	{\
 		events->On ## NAME();\
 	}\
 
 #define EVENT_REQ(NAME, REQUEST)\
-	void GuiRemoteProtocolFromJsonChannel::OnReceive_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments)\
+	void GuiRemoteProtocolCoreChannel::OnRead_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments)\
 	{\
 		REQUEST arguments;\
 		ConvertJsonToCustomType(jsonArguments, arguments);\
@@ -38914,7 +39206,7 @@ GuiRemoteProtocolFromJsonChannel
 #define MESSAGE_NORES(NAME, RESPONSE)
 
 #define MESSAGE_RES(NAME, RESPONSE)\
-	void GuiRemoteProtocolFromJsonChannel::OnReceive_Response_ ## NAME (vint id, Ptr<glr::json::JsonNode> jsonArguments)\
+	void GuiRemoteProtocolCoreChannel::OnRead_Response_ ## NAME (vint id, Ptr<glr::json::JsonNode> jsonArguments)\
 	{\
 		RESPONSE arguments;\
 		ConvertJsonToCustomType(jsonArguments, arguments);\
@@ -38922,90 +39214,95 @@ GuiRemoteProtocolFromJsonChannel
 	}\
 
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
-		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+	GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
 #undef MESSAGE_HANDLER
 #undef MESSAGE_RES
 #undef MESSAGE_NORES
 
-	void GuiRemoteProtocolFromJsonChannel::OnReceive(const Ptr<glr::json::JsonObject>& package)
+	void GuiRemoteProtocolCoreChannel::Write(Ptr<glr::json::JsonObject> package)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolFromJsonChannel::OnReceive(const Ptr<JsonNode>&)#"
+		channel->BroadcastFromClient(client->GetClientId(), package);
+	}
+
+	void GuiRemoteProtocolCoreChannel::OnRead(vint senderClientId, const JsonPackage& package)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolCoreChannel::OnRead(vint, const JsonPackage&)#"
+		CHECK_ERROR(events, ERROR_MESSAGE_PREFIX L"The protocol event receiver is not initialized.");
 
 		ChannelPackageInfo info;
 		Ptr<glr::json::JsonNode> jsonArguments;
 		JsonChannelUnpack(package, info, jsonArguments);
-		BeforeOnReceive(info);
+		BeforeOnRead(info);
 
 		if (info.semantic == ChannelPackageSemantic::Event)
 		{
-			vint index = onReceiveEventHandlers.Keys().IndexOf(info.name);
+			vint index = onReadEventHandlers.Keys().IndexOf(info.name);
 			if (index == -1)
 			{
-				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unrecognized event name");
+				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unrecognized event name.");
 			}
 			else
 			{
-				(this->*onReceiveEventHandlers.Values()[index])(jsonArguments);
+				(this->*onReadEventHandlers.Values()[index])(jsonArguments);
 			}
 		}
 		else if (info.semantic == ChannelPackageSemantic::Response)
 		{
-			vint index = onReceiveResponseHandlers.Keys().IndexOf(info.name);
+			vint index = onReadResponseHandlers.Keys().IndexOf(info.name);
 			if (index == -1)
 			{
-				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unrecognized response name");
+				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unrecognized response name.");
 			}
 			else
 			{
-				(this->*onReceiveResponseHandlers.Values()[index])(info.id, jsonArguments);
+				(this->*onReadResponseHandlers.Values()[index])(info.id, jsonArguments);
 			}
 		}
 		else
 		{
-			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unrecognized category name");
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Only events and responses are expected.");
 		}
-
 #undef ERROR_MESSAGE_PREFIX
 	}
 
 #define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)\
-	void GuiRemoteProtocolFromJsonChannel::Request ## NAME()\
+	void GuiRemoteProtocolCoreChannel::Request ## NAME()\
 	{\
 		Ptr<glr::json::JsonObject> package;\
 		ChannelPackageInfo info{ChannelPackageSemantic::Message, -1, WString::Unmanaged(L ## #NAME)};\
 		JsonChannelPack(info, {}, package);\
 		BeforeWrite(info);\
-		channel->Write(package);\
+		Write(package);\
 	}\
 
 #define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)\
-	void GuiRemoteProtocolFromJsonChannel::Request ## NAME(vint id)\
+	void GuiRemoteProtocolCoreChannel::Request ## NAME(vint id)\
 	{\
 		Ptr<glr::json::JsonObject> package;\
 		ChannelPackageInfo info{ChannelPackageSemantic::Request, id, WString::Unmanaged(L ## #NAME)};\
 		JsonChannelPack(info, {}, package);\
 		BeforeWrite(info);\
-		channel->Write(package);\
+		Write(package);\
 	}\
 
 #define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
-	void GuiRemoteProtocolFromJsonChannel::Request ## NAME(const REQUEST& arguments)\
+	void GuiRemoteProtocolCoreChannel::Request ## NAME(const REQUEST& arguments)\
 	{\
 		Ptr<glr::json::JsonObject> package;\
 		ChannelPackageInfo info{ChannelPackageSemantic::Message, -1, WString::Unmanaged(L ## #NAME)};\
 		JsonChannelPack(info, ConvertCustomTypeToJson(arguments), package);\
 		BeforeWrite(info);\
-		channel->Write(package);\
+		Write(package);\
 	}\
 
 #define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
-	void GuiRemoteProtocolFromJsonChannel::Request ## NAME(vint id, const REQUEST& arguments)\
+	void GuiRemoteProtocolCoreChannel::Request ## NAME(vint id, const REQUEST& arguments)\
 	{\
 		Ptr<glr::json::JsonObject> package;\
 		ChannelPackageInfo info{ChannelPackageSemantic::Request, id, WString::Unmanaged(L ## #NAME)};\
 		JsonChannelPack(info, ConvertCustomTypeToJson(arguments), package);\
 		BeforeWrite(info);\
-		channel->Write(package);\
+		Write(package);\
 	}\
 
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
@@ -39016,11 +39313,14 @@ GuiRemoteProtocolFromJsonChannel
 #undef MESSAGE_NOREQ_RES
 #undef MESSAGE_NOREQ_NORES
 
-	GuiRemoteProtocolFromJsonChannel::GuiRemoteProtocolFromJsonChannel(IJsonChannel* _channel)
-		: channel(_channel)
+	GuiRemoteProtocolCoreChannel::GuiRemoteProtocolCoreChannel(IJsonChannelClient* _client, IJsonChannel* _channel, const WString& _executablePath, IGuiRemoteEventProcessor* _eventProcessor)
+		: client(_client)
+		, channel(_channel)
+		, eventProcessor(_eventProcessor)
+		, executablePath(_executablePath)
 	{
-#define EVENT_NOREQ(NAME, REQUEST)					onReceiveEventHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteProtocolFromJsonChannel::OnReceive_Event_ ## NAME);
-#define EVENT_REQ(NAME, REQUEST)					onReceiveEventHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteProtocolFromJsonChannel::OnReceive_Event_ ## NAME);
+#define EVENT_NOREQ(NAME, REQUEST)					onReadEventHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteProtocolCoreChannel::OnRead_Event_ ## NAME);
+#define EVENT_REQ(NAME, REQUEST)					onReadEventHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteProtocolCoreChannel::OnRead_Event_ ## NAME);
 #define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
 		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
 #undef EVENT_HANDLER
@@ -39028,61 +39328,62 @@ GuiRemoteProtocolFromJsonChannel
 #undef EVENT_NOREQ
 
 #define MESSAGE_NORES(NAME, RESPONSE)
-#define MESSAGE_RES(NAME, RESPONSE)										onReceiveResponseHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteProtocolFromJsonChannel::OnReceive_Response_ ## NAME);
+#define MESSAGE_RES(NAME, RESPONSE)										onReadResponseHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteProtocolCoreChannel::OnRead_Response_ ## NAME);
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
 		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
 #undef MESSAGE_HANDLER
 #undef MESSAGE_RES
 #undef MESSAGE_NORES
-	}
 
-	GuiRemoteProtocolFromJsonChannel::~GuiRemoteProtocolFromJsonChannel()
-	{
-	}
-
-	void GuiRemoteProtocolFromJsonChannel::Initialize(IGuiRemoteProtocolEvents* _events)
-	{
-		events = _events;
 		channel->Initialize(this);
 	}
 
-	WString GuiRemoteProtocolFromJsonChannel::GetExecutablePath()
+	GuiRemoteProtocolCoreChannel::~GuiRemoteProtocolCoreChannel()
 	{
-		return channel->GetExecutablePath();
-	}
-	
-	void GuiRemoteProtocolFromJsonChannel::Submit(bool& disconnected)
-	{
-		channel->Submit(disconnected);
 	}
 
-	IGuiRemoteEventProcessor* GuiRemoteProtocolFromJsonChannel::GetRemoteEventProcessor()
+	void GuiRemoteProtocolCoreChannel::Initialize(IGuiRemoteProtocolEvents* _events)
 	{
-		return channel->GetRemoteEventProcessor();
+		events = _events;
+	}
+
+	WString GuiRemoteProtocolCoreChannel::GetExecutablePath()
+	{
+		return executablePath;
+	}
+	
+	void GuiRemoteProtocolCoreChannel::Submit(bool& disconnected)
+	{
+		channel->BatchWrite(disconnected);
+	}
+
+	IGuiRemoteEventProcessor* GuiRemoteProtocolCoreChannel::GetRemoteEventProcessor()
+	{
+		return eventProcessor;
 	}
 
 /***********************************************************************
-GuiRemoteJsonChannelFromProtocol
+GuiRemoteProtocolRendererChannel
 ***********************************************************************/
 
 #define EVENT_NOREQ(NAME, REQUEST)\
-	void GuiRemoteJsonChannelFromProtocol::On ## NAME()\
+	void GuiRemoteProtocolRendererChannel::On ## NAME()\
 	{\
 		Ptr<glr::json::JsonObject> package;\
 		ChannelPackageInfo info{ChannelPackageSemantic::Event, -1, WString::Unmanaged(L ## #NAME)};\
 		JsonChannelPack(info, {}, package);\
-		BeforeOnReceive(info);\
-		receiver->OnReceive(package);\
+		BeforeWrite(info);\
+		Write(package);\
 	}\
 
 #define EVENT_REQ(NAME, REQUEST)\
-	void GuiRemoteJsonChannelFromProtocol::On ## NAME(const REQUEST& arguments)\
+	void GuiRemoteProtocolRendererChannel::On ## NAME(const REQUEST& arguments)\
 	{\
 		Ptr<glr::json::JsonObject> package;\
 		ChannelPackageInfo info{ChannelPackageSemantic::Event, -1, WString::Unmanaged(L ## #NAME)};\
 		JsonChannelPack(info, ConvertCustomTypeToJson(arguments), package);\
-		BeforeOnReceive(info);\
-		receiver->OnReceive(package);\
+		BeforeWrite(info);\
+		Write(package);\
 	}\
 
 #define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)						EVENT_ ## REQTAG(NAME, REQUEST)
@@ -39093,35 +39394,35 @@ GuiRemoteJsonChannelFromProtocol
 
 #define MESSAGE_NORES(NAME, RESPONSE)
 #define MESSAGE_RES(NAME, RESPONSE)\
-	void GuiRemoteJsonChannelFromProtocol::Respond ## NAME(vint id, const RESPONSE& arguments)\
+	void GuiRemoteProtocolRendererChannel::Respond ## NAME(vint id, const RESPONSE& arguments)\
 	{\
 		Ptr<glr::json::JsonObject> package;\
 		ChannelPackageInfo info{ChannelPackageSemantic::Response, id, WString::Unmanaged(L ## #NAME)};\
 		JsonChannelPack(info, ConvertCustomTypeToJson(arguments), package);\
-		BeforeOnReceive(info);\
-		receiver->OnReceive(package);\
+		BeforeWrite(info);\
+		Write(package);\
 	}\
 
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
-		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+	GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
 #undef MESSAGE_HANDLER
 #undef MESSAGE_RES
 #undef MESSAGE_NORES
 
 #define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)\
-	void GuiRemoteJsonChannelFromProtocol::Write_ ## NAME(vint id, Ptr<glr::json::JsonNode> jsonArguments)\
+	void GuiRemoteProtocolRendererChannel::Write_ ## NAME(vint id, Ptr<glr::json::JsonNode> jsonArguments)\
 	{\
 		protocol->Request ## NAME();\
 	}\
 
 #define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)\
-	void GuiRemoteJsonChannelFromProtocol::Write_ ## NAME(vint id, Ptr<glr::json::JsonNode> jsonArguments)\
+	void GuiRemoteProtocolRendererChannel::Write_ ## NAME(vint id, Ptr<glr::json::JsonNode> jsonArguments)\
 	{\
 		protocol->Request ## NAME(id);\
 	}\
 
 #define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
-	void GuiRemoteJsonChannelFromProtocol::Write_ ## NAME(vint id, Ptr<glr::json::JsonNode> jsonArguments)\
+	void GuiRemoteProtocolRendererChannel::Write_ ## NAME(vint id, Ptr<glr::json::JsonNode> jsonArguments)\
 	{\
 		REQUEST arguments;\
 		ConvertJsonToCustomType(jsonArguments, arguments);\
@@ -39129,7 +39430,7 @@ GuiRemoteJsonChannelFromProtocol
 	}\
 
 #define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
-	void GuiRemoteJsonChannelFromProtocol::Write_ ## NAME(vint id, Ptr<glr::json::JsonNode> jsonArguments)\
+	void GuiRemoteProtocolRendererChannel::Write_ ## NAME(vint id, Ptr<glr::json::JsonNode> jsonArguments)\
 	{\
 		REQUEST arguments;\
 		ConvertJsonToCustomType(jsonArguments, arguments);\
@@ -39137,20 +39438,68 @@ GuiRemoteJsonChannelFromProtocol
 	}\
 
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
-		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+	GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
 #undef MESSAGE_HANDLER
 #undef MESSAGE_REQ_RES
 #undef MESSAGE_REQ_NORES
 #undef MESSAGE_NOREQ_RES
 #undef MESSAGE_NOREQ_NORES
 
-	GuiRemoteJsonChannelFromProtocol::GuiRemoteJsonChannelFromProtocol(IGuiRemoteProtocol* _protocol)
-		: protocol(_protocol)
+	void GuiRemoteProtocolRendererChannel::Write(Ptr<glr::json::JsonObject> package)
 	{
-#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					writeHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteJsonChannelFromProtocol::Write_ ## NAME);;
-#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)						writeHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteJsonChannelFromProtocol::Write_ ## NAME);;
-#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)						writeHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteJsonChannelFromProtocol::Write_ ## NAME);;
-#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)						writeHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteJsonChannelFromProtocol::Write_ ## NAME);;
+		channel->BroadcastFromClient(client->GetClientId(), package);
+
+		if (!receiving)
+		{
+			bool disconnected = false;
+			Flush(disconnected);
+		}
+	}
+
+	void GuiRemoteProtocolRendererChannel::Flush(bool& disconnected)
+	{
+		channel->BatchWrite(disconnected);
+	}
+
+	void GuiRemoteProtocolRendererChannel::OnRead(vint senderClientId, const JsonPackage& package)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolRendererChannel::OnRead(vint, const JsonPackage&)#"
+		ChannelPackageInfo info;
+		Ptr<glr::json::JsonNode> jsonArguments;
+		JsonChannelUnpack(package, info, jsonArguments);
+		BeforeOnRead(info);
+
+		if (info.semantic != ChannelPackageSemantic::Message && info.semantic != ChannelPackageSemantic::Request)
+		{
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Only messages and requests are expected.");
+		}
+
+		vint index = writeHandlers.Keys().IndexOf(info.name);
+		if (index == -1)
+		{
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unrecognized request name.");
+		}
+		else
+		{
+			receiving = true;
+			(this->*writeHandlers.Values()[index])(info.id, jsonArguments);
+			receiving = false;
+
+			bool disconnected = false;
+			Flush(disconnected);
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	GuiRemoteProtocolRendererChannel::GuiRemoteProtocolRendererChannel(IJsonChannelClient* _client, IJsonChannel* _channel, IGuiRemoteProtocol* _protocol)
+		: client(_client)
+		, channel(_channel)
+		, protocol(_protocol)
+	{
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					writeHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteProtocolRendererChannel::Write_ ## NAME);
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)						writeHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteProtocolRendererChannel::Write_ ## NAME);
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)						writeHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteProtocolRendererChannel::Write_ ## NAME);
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)						writeHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteProtocolRendererChannel::Write_ ## NAME);
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
 		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
 #undef MESSAGE_HANDLER
@@ -39158,83 +39507,16 @@ GuiRemoteJsonChannelFromProtocol
 #undef MESSAGE_REQ_NORES
 #undef MESSAGE_NOREQ_RES
 #undef MESSAGE_NOREQ_NORES
-	}
 
-	GuiRemoteJsonChannelFromProtocol::~GuiRemoteJsonChannelFromProtocol()
-	{
-	}
-
-	void GuiRemoteJsonChannelFromProtocol::Initialize(IJsonChannelReceiver* _receiver)
-	{
-		receiver = _receiver;
+		channel->Initialize(this);
 		protocol->Initialize(this);
 	}
 
-	IJsonChannelReceiver* GuiRemoteJsonChannelFromProtocol::GetReceiver()
+	GuiRemoteProtocolRendererChannel::~GuiRemoteProtocolRendererChannel()
 	{
-		return receiver;
-	}
-
-	void GuiRemoteJsonChannelFromProtocol::Write(const Ptr<glr::json::JsonObject>& package)
-	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteJsonChannelFromProtocol::Write(const Ptr<JsonNode>&)#"
-
-		ChannelPackageInfo info;
-		Ptr<glr::json::JsonNode> jsonArguments;
-		JsonChannelUnpack(package, info, jsonArguments);
-		BeforeWrite(info);
-
-		vint index = writeHandlers.Keys().IndexOf(info.name);
-		if (index == -1)
-		{
-			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unrecognized request name");
-		}
-		else
-		{
-			(this->*writeHandlers.Values()[index])(info.id, jsonArguments);
-		}
-
-#undef ERROR_MESSAGE_PREFIX
-	}
-
-	WString GuiRemoteJsonChannelFromProtocol::GetExecutablePath()
-	{
-		return protocol->GetExecutablePath();
-	}
-
-	void GuiRemoteJsonChannelFromProtocol::Submit(bool& disconnected)
-	{
-		protocol->Submit(disconnected);
-	}
-
-	IGuiRemoteEventProcessor* GuiRemoteJsonChannelFromProtocol::GetRemoteEventProcessor()
-	{
-		return protocol->GetRemoteEventProcessor();
-	}
-
-/***********************************************************************
-JsonToStringSerializer
-***********************************************************************/
-
-	void JsonToStringSerializer::Serialize(Ptr<glr::json::Parser> parser, const SourceType& source, DestType& dest)
-	{
-		glr::json::JsonFormatting formatting;
-		formatting.spaceAfterColon = false;
-		formatting.spaceAfterComma = false;
-		formatting.crlf = false;
-		formatting.compact = true;
-		dest = glr::json::JsonToString(source, formatting);
-	}
-
-	void JsonToStringSerializer::Deserialize(Ptr<glr::json::Parser> parser, const DestType& source, SourceType& dest)
-	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteJsonChannelFromProtocol::Write(const Ptr<JsonNode>&)#"
-		auto value = glr::json::JsonParse(source, *parser.Obj());
-		dest = value.Cast<glr::json::JsonObject>();
-		CHECK_ERROR(dest, ERROR_MESSAGE_PREFIX L"JSON parssing between the channel should be JsonObject.");
-#undef ERROR_MESSAGE_PREFIX
 	}
 }
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_DOMDIFF.CPP

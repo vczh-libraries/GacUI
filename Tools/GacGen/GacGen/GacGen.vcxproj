@@ -167,6 +167,7 @@
     <ClInclude Include="..\..\..\Import\Vlpp.h" />
     <ClInclude Include="..\..\..\Import\VlppGlrParser.h" />
     <ClInclude Include="..\..\..\Import\VlppOS.h" />
+    <ClInclude Include="..\..\..\Import\VlppOS.Windows.h" />
     <ClInclude Include="..\..\..\Import\VlppReflection.h" />
     <ClInclude Include="..\..\..\Import\VlppRegex.h" />
     <ClInclude Include="..\..\..\Import\VlppWorkflowCompiler.h" />

@@ -13,48 +13,13 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Shared">
-      <UniqueIdentifier>{e256e45f-9b16-4012-a4c1-0f45390e9c8f}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\RemotingTest_Core\Shared\NamedPipeShared.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="RendererChannel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\RemotingTest_Core\Shared\HttpClient.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\RemotingTest_Core\Shared\HttpServer.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
     <ClCompile Include="GuiMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\RemotingTest_Core\Shared\ProtocolCallback.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\RemotingTest_Core\Shared\NamedPipeShared.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\RemotingTest_Core\Shared\ProtocalCallback.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="RendererChannel.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\RemotingTest_Core\Shared\HttpClient.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\RemotingTest_Core\Shared\HttpServer.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

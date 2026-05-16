@@ -22710,7 +22710,7 @@ Passing through
 #endif
 
 /***********************************************************************
-.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_CHANNEL_SHARED.H
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_CHANNEL_JSON.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -22718,198 +22718,26 @@ Developer: Zihan Chen(vczh)
 GacUI::Remote Window
 
 Interfaces:
-  IGuiRemoteProtocolChannel<T>
+  vl::inter_process::IChannel<Ptr<JsonNode>>
 
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL
-#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL_JSON
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL_JSON
 
 
 namespace vl::presentation::remoteprotocol::channeling
 {
+	constexpr const wchar_t* GacUIRemoteProtocolChannelName = L"GacUIRemoteProtocol";
+
+	using JsonPackage = Ptr<glr::json::JsonNode>;
+	using IJsonChannelReader = inter_process::IChannelReader<JsonPackage>;
+	using IJsonChannel = inter_process::IChannel<JsonPackage>;
+	using IJsonChannelClient = inter_process::IChannelClient<JsonPackage>;
+	using IJsonChannelServer = inter_process::IChannelServer<JsonPackage>;
 
 /***********************************************************************
-IGuiRemoteProtocolChannel<T>
-***********************************************************************/
-
-	template<typename TPackage>
-	class IGuiRemoteProtocolChannelReceiver : public virtual Interface
-	{
-	public:
-		virtual void											OnReceive(const TPackage& package) = 0;
-	};
-
-	template<typename TPackage>
-	class IGuiRemoteProtocolChannel : public virtual Interface
-	{
-	public:
-		virtual void											Initialize(IGuiRemoteProtocolChannelReceiver<TPackage>* receiver) = 0;
-		virtual IGuiRemoteProtocolChannelReceiver<TPackage>*	GetReceiver() = 0;
-		virtual void											Write(const TPackage& package) = 0;
-		virtual WString											GetExecutablePath() = 0;
-		virtual void											Submit(bool& disconnected) = 0;
-		virtual IGuiRemoteEventProcessor*						GetRemoteEventProcessor() = 0;
-	};
-
-/***********************************************************************
-Serialization
-***********************************************************************/
-
-	template<typename TFrom, typename TTo>
-	class GuiRemoteProtocolChannelTransformerBase
-		: public Object
-		, public virtual IGuiRemoteProtocolChannel<TFrom>
-		, protected virtual IGuiRemoteProtocolChannelReceiver<TTo>
-	{
-	protected:
-		IGuiRemoteProtocolChannel<TTo>*							channel = nullptr;
-		IGuiRemoteProtocolChannelReceiver<TFrom>*				receiver = nullptr;
-
-	public:
-		GuiRemoteProtocolChannelTransformerBase(IGuiRemoteProtocolChannel<TTo>* _channel)
-			: channel(_channel)
-		{
-		}
-
-		void Initialize(IGuiRemoteProtocolChannelReceiver<TFrom>* _receiver) override
-		{
-			receiver = _receiver;
-			channel->Initialize(this);
-		}
-
-		IGuiRemoteProtocolChannelReceiver<TFrom>* GetReceiver() override
-		{
-			return receiver;
-		}
-
-		WString GetExecutablePath() override
-		{
-			return channel->GetExecutablePath();
-		}
-
-		void Submit(bool& disconnected) override
-		{
-			channel->Submit(disconnected);
-		}
-
-		IGuiRemoteEventProcessor* GetRemoteEventProcessor() override
-		{
-			return channel->GetRemoteEventProcessor();
-		}
-	};
-
-	template<typename TSerialization>
-	class GuiRemoteProtocolChannelSerializer
-		: public GuiRemoteProtocolChannelTransformerBase<typename TSerialization::SourceType, typename TSerialization::DestType>
-	{
-	protected:
-		typename TSerialization::ContextType					context;
-
-		void OnReceive(const typename TSerialization::DestType& package) override
-		{
-			typename TSerialization::SourceType deserialized;
-			TSerialization::Deserialize(context, package, deserialized);
-			this->receiver->OnReceive(deserialized);
-		}
-
-	public:
-		GuiRemoteProtocolChannelSerializer(IGuiRemoteProtocolChannel<typename TSerialization::DestType>* _channel, const typename TSerialization::ContextType& _context = {})
-			: GuiRemoteProtocolChannelTransformerBase<typename TSerialization::SourceType, typename TSerialization::DestType>(_channel)
-			, context(_context)
-		{
-		}
-
-		void Write(const typename TSerialization::SourceType& package) override
-		{
-			typename TSerialization::DestType serialized;
-			TSerialization::Serialize(context, package, serialized);
-			this->channel->Write(serialized);
-		}
-	};
-
-	template<typename TSerialization>
-	class GuiRemoteProtocolChannelDeserializer
-		: public GuiRemoteProtocolChannelTransformerBase<typename TSerialization::DestType, typename TSerialization::SourceType>
-	{
-	protected:
-		typename TSerialization::ContextType					context;
-
-		void OnReceive(const typename TSerialization::SourceType& package) override
-		{
-			typename TSerialization::DestType serialized;
-			TSerialization::Serialize(context, package, serialized);
-			this->receiver->OnReceive(serialized);
-		}
-
-	public:
-		GuiRemoteProtocolChannelDeserializer(IGuiRemoteProtocolChannel<typename TSerialization::SourceType>* _channel, const typename TSerialization::ContextType& _context = {})
-			: GuiRemoteProtocolChannelTransformerBase<typename TSerialization::DestType, typename TSerialization::SourceType>(_channel)
-			, context(_context)
-		{
-		}
-
-		void Write(const typename TSerialization::DestType& package) override
-		{
-			typename TSerialization::SourceType deserialized;
-			TSerialization::Deserialize(context, package, deserialized);
-			this->channel->Write(deserialized);
-		}
-	};
-
-/***********************************************************************
-String Transformation
-***********************************************************************/
-
-	template<typename TFrom, typename TTo>
-	struct UtfStringSerializer
-	{
-		using SourceType = ObjectString<TFrom>;
-		using DestType = ObjectString<TTo>;
-		using ContextType = std::nullptr_t;
-
-		static void Serialize(const ContextType&, const SourceType& source, DestType& dest)
-		{
-			ConvertUtfString(source, dest);
-		}
-
-		static void Deserialize(const ContextType&, const DestType& source, SourceType& dest)
-		{
-			ConvertUtfString(source, dest);
-		}
-	};
-
-	template<typename TFrom, typename TTo>
-	using GuiRemoteUtfStringChannelSerializer = GuiRemoteProtocolChannelSerializer<UtfStringSerializer<TFrom, TTo>>;
-
-	template<typename TFrom, typename TTo>
-	using GuiRemoteUtfStringChannelDeserializer = GuiRemoteProtocolChannelDeserializer<UtfStringSerializer<TFrom, TTo>>;
-}
-
-#endif
-
-/***********************************************************************
-.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_CHANNEL_ASYNC.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Remote Window
-
-Interfaces:
-  IGuiRemoteProtocolChannel<T>
-
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL_ASYNC
-#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL_ASYNC
-
-
-namespace vl::presentation::remoteprotocol::channeling
-{
-
-/***********************************************************************
-Metadata
+ChannelPackageSemantic
 ***********************************************************************/
 
 	enum class ChannelPackageSemantic
@@ -22928,544 +22756,84 @@ Metadata
 		WString						name;
 	};
 
-	enum class ChannelAsyncState
+	extern void						JsonChannelPack(const ChannelPackageInfo& info, Ptr<glr::json::JsonNode> arguments, Ptr<glr::json::JsonObject>& package);
+	extern void						JsonChannelUnpack(Ptr<glr::json::JsonObject> package, ChannelPackageInfo& info, Ptr<glr::json::JsonNode>& arguments);
+	extern void						JsonChannelUnpack(Ptr<glr::json::JsonNode> package, ChannelPackageInfo& info, Ptr<glr::json::JsonNode>& arguments);
+
+/***********************************************************************
+JsonNodeListSerializer
+***********************************************************************/
+
+	struct JsonNodeListSerializer
 	{
-		Ready,
-		Running,
-		Stopped,
+		using SourceType = collections::List<JsonPackage>;
+		using DestType = WString;
+		using ContextType = Ptr<glr::json::Parser>;
+
+		static void					Serialize(Ptr<glr::json::Parser> parser, const SourceType& source, DestType& dest);
+		static void					Deserialize(Ptr<glr::json::Parser> parser, const DestType& source, SourceType& dest);
+	};
+
+	using GuiRemoteProtocolChannelServer = inter_process::NetworkProtocolChannelServer<JsonPackage, JsonNodeListSerializer>;
+
+	class GuiRemoteProtocolChannelClient
+		: public inter_process::NetworkProtocolChannelClient<JsonPackage, JsonNodeListSerializer>
+	{
+		using Base = inter_process::NetworkProtocolChannelClient<JsonPackage, JsonNodeListSerializer>;
+	protected:
+		IJsonChannelClient::ChannelMap
+									channelNames;
+
+	public:
+		GuiRemoteProtocolChannelClient(Ptr<inter_process::INetworkProtocolClient> client, Ptr<glr::json::Parser> parser);
+
+		const IJsonChannelClient::ChannelNameList&
+									OnGetChannelNames() override;
+		IJsonChannel*				GetProtocolChannel();
+	};
+
+	class GuiRemoteProtocolLocalChannelClient
+		: public inter_process::NetworkProtocolLocalChannelClient<JsonPackage, JsonNodeListSerializer>
+	{
+		using Base = inter_process::NetworkProtocolLocalChannelClient<JsonPackage, JsonNodeListSerializer>;
+	protected:
+		IJsonChannelClient::ChannelMap
+									channelNames;
+
+	public:
+		GuiRemoteProtocolLocalChannelClient(Ptr<glr::json::Parser> parser);
+
+		const IJsonChannelClient::ChannelNameList&
+									OnGetChannelNames() override;
+		IJsonChannel*				GetProtocolChannel();
 	};
 
 /***********************************************************************
-Async
-  A certain package type could run in async mode
-  if the following function is defined
-  and accessible via argument-dependent lookup
-
-void ChannelPackageSemanticUnpack(
-  const T& package,
-  ChannelPackageInfo& info
-  );
-***********************************************************************/
-
-	class GuiRemoteProtocolAsyncChannelSerializerBase : public Object
-	{
-	public:
-		using TTaskProc = Func<void()>;
-
-	private:
-		collections::List<TTaskProc>								channelThreadTasks;
-		SpinLock													channelThreadLock;
-		collections::List<TTaskProc>								uiThreadTasks;
-		SpinLock													uiThreadLock;
-
-	protected:
-		void			QueueTask(SpinLock& lock, collections::List<TTaskProc>& tasks, TTaskProc task, EventObject* signalAfterQueue);
-		void			QueueTaskAndWait(SpinLock& lock, collections::List<TTaskProc>& tasks, TTaskProc task, EventObject* signalAfterQueue);
-		void			FetchTasks(SpinLock& lock, collections::List<TTaskProc>& tasks, collections::List<TTaskProc>& results);
-		void			FetchAndExecuteTasks(SpinLock& lock, collections::List<TTaskProc>& tasks);
-
-		void			FetchAndExecuteChannelTasks();
-		void			FetchAndExecuteUITasks();
-
-		void			QueueToChannelThread(TTaskProc task, EventObject* signalAfterQueue);
-		void			QueueToChannelThreadAndWait(TTaskProc task, EventObject* signalAfterQueue);
-		void			QueueToUIThread(TTaskProc task, EventObject* signalAfterQueue);
-		void			QueueToUIThreadAndWait(TTaskProc task, EventObject* signalAfterQueue);
-
-	public:
-		GuiRemoteProtocolAsyncChannelSerializerBase();
-		~GuiRemoteProtocolAsyncChannelSerializerBase();
-	};
-
-#ifdef _DEBUG
-#define ENSURE_THREAD_ID(ID) CHECK_ERROR(ID == Thread::GetCurrentThreadId(), L"Expected to be called in thread: " ## #ID)
-#else
-#define ENSURE_THREAD_ID(ID) ((void)0)
-#endif
-
-	template<typename TPackage>
-	class GuiRemoteProtocolAsyncChannelSerializer
-		: public GuiRemoteProtocolAsyncChannelSerializerBase
-		, public virtual IGuiRemoteProtocolChannel<TPackage>
-		, protected virtual IGuiRemoteProtocolChannelReceiver<TPackage>
-		, protected virtual IGuiRemoteEventProcessor
-	{
-		static_assert(
-			std::is_same_v<void, decltype(ChannelPackageSemanticUnpack(
-				std::declval<const TPackage&>(),
-				std::declval<ChannelPackageInfo&>()
-				))>,
-			"ChannelPackageSemanticUnpack must be defined for this TPackage"
-			);
-
-	public:
-		using TChannelThreadProc = Func<void()>;
-		using TUIThreadProc = Func<void()>;
-		using TStartingProc = Func<void(TChannelThreadProc, TUIThreadProc)>;
-		using TStoppingProc = Func<void()>;
-		using TUIMainProc = Func<void(GuiRemoteProtocolAsyncChannelSerializer<TPackage>*)>;
-
-	protected:
-		struct PendingRequestGroup
-		{
-			vint													connectionCounter = -1;
-			collections::List<vint>									requestIds;
-		};
-
-		vint														threadIdUI = -1;
-		vint														threadIdChannel = -1;
-
-		IGuiRemoteProtocolChannel<TPackage>*						channel = nullptr;
-		IGuiRemoteProtocolChannelReceiver<TPackage>*				receiver = nullptr;
-		TUIMainProc													uiMainProc;
-		collections::List<TPackage>									uiPendingPackages;
-
-		SpinLock													lockEvents;
-		collections::List<TPackage>									queuedEvents;
-
-		SpinLock													lockResponses;
-		EventObject													eventAutoResponses;
-		collections::Dictionary<vint, TPackage>						queuedResponses;
-		Ptr<PendingRequestGroup>									pendingRequest;
-
-		SpinLock													lockConnection;
-		vint														connectionCounter = 0;
-		bool														connectionAvailable = false;
-
-		volatile bool												started = false;
-		volatile bool												stopping = false;
-		volatile bool												stopped = false;
-		Nullable<WString>											executablePath;
-
-		EventObject													eventAutoChannelTaskQueued;
-		EventObject													eventManualChannelThreadStopped;
-		EventObject													eventManualUIThreadStopped;
-
-		void UIThreadProc()
-		{
-			threadIdUI = Thread::GetCurrentThreadId();
-			uiMainProc(this);
-			uiMainProc = {};
-
-			// Signal and wait for ChannelThreadProc to finish
-			stopping = true;
-			eventAutoChannelTaskQueued.Signal();
-			eventManualChannelThreadStopped.Wait();
-
-			// All remaining queued callbacks should be executed
-			FetchAndExecuteUITasks();
-			eventManualUIThreadStopped.Signal();
-		}
-
-		void ChannelThreadProc()
-		{
-			// TODO:
-			//   The current version always start a channel thread
-			//   So that it does not matter whether the underlying IO is sync or async
-			//   But async IO does not need a channel thread
-			//   Refactor and optimize the channel thread to be optional in the future
-
-			// All members of "_channel" argument to Start is called in this thread
-			// So that the implementation does not need to care about thread safety
-
-			// The thread stopped after receiving a signal from UIThreadProc
-			threadIdChannel = Thread::GetCurrentThreadId();
-			while (!stopping)
-			{
-				eventAutoChannelTaskQueued.Wait();
-				FetchAndExecuteChannelTasks();
-			}
-
-			// All remaining queued callbacks should be executed
-			FetchAndExecuteChannelTasks();
-			eventManualChannelThreadStopped.Signal();
-		}
-
-	protected:
-
-		bool AreCurrentPendingRequestGroupSatisfied(bool disconnected)
-		{
-			if (!pendingRequest) return false;
-			if (disconnected) return true;
-			for (vint requestId : pendingRequest->requestIds)
-			{
-				if (!queuedResponses.Keys().Contains(requestId))
-				{
-					return false;
-				}
-			}
-			return true;
-		}
-
-		void OnReceive(const TPackage& package) override
-		{
-			// Called from any thread, very likely the channel thread
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncChannelSerializer<TPackage>::OnReceive(...)#"
-			// If it is a response, unblock Submit()
-			// If it is an event, send to ProcessRemoteEvents()
-
-			ChannelPackageInfo info;
-			ChannelPackageSemanticUnpack(package, info);
-
-			switch (info.semantic)
-			{
-			case ChannelPackageSemantic::Event:
-				{
-					SPIN_LOCK(lockEvents)
-					{
-						queuedEvents.Add(package);
-					}
-				}
-				break;
-			case ChannelPackageSemantic::Response:
-				{
-					SPIN_LOCK(lockResponses)
-					{
-						queuedResponses.Add(info.id, package);
-						if (AreCurrentPendingRequestGroupSatisfied(false))
-						{
-							eventAutoResponses.Signal();
-						}
-					}
-				}
-				break;
-			default:
-				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Only responses and events are expected.");
-			}
-
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-	public:
-
-		void Write(const TPackage& package) override
-		{
-			// Called from UI thread
-			ENSURE_THREAD_ID(threadIdUI);
-			uiPendingPackages.Add(package);
-		}
-
-		void Submit(bool& disconnected) override
-		{
-			// Called from UI thread
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncChannelSerializer<TPackage>::Submit(...)#"
-
-			ENSURE_THREAD_ID(threadIdUI);
-			SPIN_LOCK(lockConnection)
-			{
-				if (!connectionAvailable)
-				{
-					disconnected = true;
-					uiPendingPackages.Clear();
-					return;
-				}
-			}
-
-			// Group all pending requests into a group
-			auto requestGroup = Ptr(new PendingRequestGroup);
-			requestGroup->connectionCounter = connectionCounter;
-			for (auto&& package : uiPendingPackages)
-			{
-				ChannelPackageInfo info;
-				ChannelPackageSemanticUnpack(package, info);
-
-				if (info.semantic == ChannelPackageSemantic::Request)
-				{
-					requestGroup->requestIds.Add(info.id);
-				}
-			}
-			SPIN_LOCK(lockResponses)
-			{
-				CHECK_ERROR(!pendingRequest, ERROR_MESSAGE_PREFIX L"Internal error.");
-				pendingRequest = requestGroup;
-			}
-
-			QueueToChannelThread([this, requestGroup, packages = std::move(uiPendingPackages)]()
-			{
-				ENSURE_THREAD_ID(threadIdChannel);
-				for (auto&& package : packages)
-				{
-					channel->Write(package);
-				}
-			 bool disconnected = false;
-				channel->Submit(disconnected);
-			 if (disconnected)
-			 {
-					SPIN_LOCK(lockConnection)
-					{
-						if (requestGroup->connectionCounter == connectionCounter)
-						{
-							connectionAvailable = false;
-						}
-					}
-				}
-
-				if (disconnected || requestGroup->requestIds.Count() == 0)
-				{
-					eventAutoResponses.Signal();
-				}
-			}, &eventAutoChannelTaskQueued);
-
-			// Block until the all responses of the top request group are received
-			// Re-entrance recursively is possible
-			eventAutoResponses.Wait();
-			SPIN_LOCK(lockConnection)
-			{
-				if (requestGroup->connectionCounter != connectionCounter || !connectionAvailable)
-				{
-					disconnected = true;
-				}
-			}
-
-			collections::List<TPackage> responses;
-			SPIN_LOCK(lockResponses)
-			{
-				if (!disconnected)
-				{
-					for (vint id : requestGroup->requestIds)
-					{
-						responses.Add(queuedResponses[id]);
-						queuedResponses.Remove(id);
-					}
-				}
-				pendingRequest = nullptr;
-				queuedResponses.Clear();
-			}
-
-			for (auto&& response : responses)
-			{
-				receiver->OnReceive(response);
-			}
-
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-	protected:
-
-		void ProcessRemoteEvents() override
-		{
-			// Called from UI thread
-			ENSURE_THREAD_ID(threadIdUI);
-			if (channel->GetRemoteEventProcessor())
-			{
-				QueueToChannelThread([this]()
-				{
-					ENSURE_THREAD_ID(threadIdChannel);
-					channel->GetRemoteEventProcessor()->ProcessRemoteEvents();
-				}, &eventAutoChannelTaskQueued);
-			}
-
-			FetchAndExecuteUITasks();
-
-			// Process of queued events from channel
-			collections::List<TPackage> events;
-			SPIN_LOCK(lockEvents)
-			{
-				events = std::move(queuedEvents);
-			}
-
-			for (auto&& event : events)
-			{
-				{
-					ChannelPackageInfo info;
-					ChannelPackageSemanticUnpack(event, info);
-
-					if (info.name == L"ControllerConnect")
-					{
-						SPIN_LOCK(lockConnection)
-						{
-							connectionCounter++;
-							connectionAvailable = true;
-						}
-					}
-				}
-				receiver->OnReceive(event);
-			}
-		}
-
-	public:
-
-		IGuiRemoteEventProcessor* GetRemoteEventProcessor() override
-		{
-			return this;
-		}
-
-	public:
-
-		/// <summary>
-		/// Start the async channel.
-		/// </summary>
-		/// <param name="_channel">
-		/// A channel object that runs in the <see cref="TChannelThreadProc"/> argument offered to startingProc.
-		/// </param>
-		/// <param name="_uiMainProc">
-		/// A callback that runs in the <see cref="TUIThreadProc"/> argument offered to startingProc, which is supposed to call <see cref="SetupRemoteNativeController"/>.
-		/// An example of argument to <see cref="SetupRemoteNativeController"/> would be
-		///   <see cref="GuiRemoteProtocolDomDiffConverter"/> over
-		///   <see cref="repeatfiltering::GuiRemoteProtocolFilter"/> over
-		///   <see cref="GuiRemoteProtocolFromJsonChannel"/> over
-		///   <see cref="GuiRemoteProtocolAsyncChannelSerializer`1/> (which is an argument to uiProc)
-		/// </param>
-		/// <param name="startingProc">
-		/// A callback executed in the current thread, that responsible to start two threads for arguments <see cref="TChannelThreadProc"/> and <see cref="TUIThreadProc"/>.
-		/// </param>
-		void Start(
-			IGuiRemoteProtocolChannel<TPackage>* _channel,
-			TUIMainProc _uiMainProc,
-			TStartingProc startingProc
-		)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncChannelSerializer<TPackage>::Start(...)#"
-			CHECK_ERROR(!started, ERROR_MESSAGE_PREFIX L"This function can only be called once.");
-
-			channel = _channel;
-			uiMainProc = _uiMainProc;
-
-			TChannelThreadProc thread_channel = [this]()
-			{
-				ChannelThreadProc();
-			};
-
-			TUIThreadProc thread_ui = [this]()
-			{
-				UIThreadProc();
-			};
-
-			eventAutoResponses.CreateAutoUnsignal(false);
-			eventAutoChannelTaskQueued.CreateAutoUnsignal(false);
-			eventManualChannelThreadStopped.CreateManualUnsignal(false);
-			eventManualUIThreadStopped.CreateManualUnsignal(false);
-			startingProc(thread_channel, thread_ui);
-			started = true;
-
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-		ChannelAsyncState GetAsyncStateUnsafe()
-		{
-			if (started)
-			{
-				if (stopped)
-				{
-					return ChannelAsyncState::Stopped;
-				}
-				else
-				{
-					return ChannelAsyncState::Running;
-				}
-			}
-			else
-			{
-				return ChannelAsyncState::Ready;
-			}
-		}
-
-		void WaitForStopped()
-		{
-			eventManualUIThreadStopped.Wait();
-		}
-
-	public:
-
-		GuiRemoteProtocolAsyncChannelSerializer() = default;
-		~GuiRemoteProtocolAsyncChannelSerializer() = default;
-
-		void ExecuteInChannelThread(TTaskProc task)
-		{
-			QueueToChannelThread(task, &eventAutoChannelTaskQueued);
-		}
-
-		void Initialize(IGuiRemoteProtocolChannelReceiver<TPackage>* _receiver) override
-		{
-			// Called from UI thread
-			ENSURE_THREAD_ID(threadIdUI);
-			receiver = _receiver;
-			QueueToChannelThreadAndWait([this]()
-			{
-				ENSURE_THREAD_ID(threadIdChannel);
-				channel->Initialize(this);
-			}, &eventAutoChannelTaskQueued);
-		}
-
-		IGuiRemoteProtocolChannelReceiver<TPackage>* GetReceiver() override
-		{
-			// Called from UI thread
-			ENSURE_THREAD_ID(threadIdUI);
-			return receiver;
-		}
-
-		WString GetExecutablePath() override
-		{
-			// Called from UI thread
-			ENSURE_THREAD_ID(threadIdUI);
-			if (!executablePath)
-			{
-				QueueToChannelThreadAndWait([this]()
-				{
-					ENSURE_THREAD_ID(threadIdChannel);
-					executablePath = channel->GetExecutablePath();
-				}, &eventAutoChannelTaskQueued);
-			}
-			return executablePath.Value();
-		}
-	};
-}
-
-#undef ENSURE_THREAD_ID
-
-#endif
-
-/***********************************************************************
-.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_CHANNEL_JSON.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Remote Window
-
-Interfaces:
-  IGuiRemoteProtocolChannel<T>
-
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL_JSON
-#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL_JSON
-
-
-namespace vl::presentation::remoteprotocol::channeling
-{
-	using IJsonChannelReceiver = IGuiRemoteProtocolChannelReceiver<Ptr<glr::json::JsonObject>>;
-	using IJsonChannel = IGuiRemoteProtocolChannel<Ptr<glr::json::JsonObject>>;
-
-/***********************************************************************
-ChannelPackageSemantic
-***********************************************************************/
-
-	extern void				ChannelPackageSemanticUnpack(Ptr<glr::json::JsonObject> package, ChannelPackageInfo& info);
-
-/***********************************************************************
-GuiRemoteProtocolFromJsonChannel
+GuiRemoteProtocolCoreChannel
 ***********************************************************************/
 	
-	class GuiRemoteProtocolFromJsonChannel
+	class GuiRemoteProtocolCoreChannel
 		: public Object
 		, public virtual IGuiRemoteProtocol
-		, protected IJsonChannelReceiver
+		, protected IJsonChannelReader
 	{
 	protected:
-		IJsonChannel*					channel = nullptr;
-		IGuiRemoteProtocolEvents*		events = nullptr;
+		IJsonChannelClient*			client = nullptr;
+		IJsonChannel*				channel = nullptr;
+		IGuiRemoteProtocolEvents*	events = nullptr;
+		IGuiRemoteEventProcessor*	eventProcessor = nullptr;
+		WString						executablePath;
 
-		using OnReceiveEventHandler = void (GuiRemoteProtocolFromJsonChannel::*)(Ptr<glr::json::JsonNode>);
-		using OnReceiveEventHandlerMap = collections::Dictionary<WString, OnReceiveEventHandler>;
-		OnReceiveEventHandlerMap		onReceiveEventHandlers;
+		using OnReadEventHandler = void (GuiRemoteProtocolCoreChannel::*)(Ptr<glr::json::JsonNode>);
+		using OnReadEventHandlerMap = collections::Dictionary<WString, OnReadEventHandler>;
+		OnReadEventHandlerMap		onReadEventHandlers;
 
-		using OnReceiveResponseHandler = void (GuiRemoteProtocolFromJsonChannel::*)(vint, Ptr<glr::json::JsonNode>);
-		using OnReceiveResponseHandlerMap = collections::Dictionary<WString, OnReceiveResponseHandler>;
-		OnReceiveResponseHandlerMap		onReceiveResponseHandlers;
+		using OnReadResponseHandler = void (GuiRemoteProtocolCoreChannel::*)(vint, Ptr<glr::json::JsonNode>);
+		using OnReadResponseHandlerMap = collections::Dictionary<WString, OnReadResponseHandler>;
+		OnReadResponseHandlerMap		onReadResponseHandlers;
 
-#define EVENT_NOREQ(NAME, REQUEST)					void OnReceive_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments);
-#define EVENT_REQ(NAME, REQUEST)					void OnReceive_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments);
+#define EVENT_NOREQ(NAME, REQUEST)					void OnRead_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments);
+#define EVENT_REQ(NAME, REQUEST)					void OnRead_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments);
 #define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
 		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
 #undef EVENT_HANDLER
@@ -23473,14 +22841,15 @@ GuiRemoteProtocolFromJsonChannel
 #undef EVENT_NOREQ
 
 #define MESSAGE_NORES(NAME, RESPONSE)
-#define MESSAGE_RES(NAME, RESPONSE)										void OnReceive_Response_ ## NAME (vint id, Ptr<glr::json::JsonNode> jsonArguments);
+#define MESSAGE_RES(NAME, RESPONSE)										void OnRead_Response_ ## NAME (vint id, Ptr<glr::json::JsonNode> jsonArguments);
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
 		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
 #undef MESSAGE_HANDLER
 #undef MESSAGE_RES
 #undef MESSAGE_NORES
 
-		void						OnReceive(const Ptr<glr::json::JsonObject>& package) override;
+		void						Write(Ptr<glr::json::JsonObject> package);
+		void						OnRead(vint senderClientId, const JsonPackage& package) override;
 
 	public:
 
@@ -23496,11 +22865,11 @@ GuiRemoteProtocolFromJsonChannel
 #undef MESSAGE_NOREQ_RES
 #undef MESSAGE_NOREQ_NORES
 
-		GuiRemoteProtocolFromJsonChannel(IJsonChannel* _channel);
-		~GuiRemoteProtocolFromJsonChannel();
+		GuiRemoteProtocolCoreChannel(IJsonChannelClient* _client, IJsonChannel* _channel, const WString& _executablePath, IGuiRemoteEventProcessor* _eventProcessor = nullptr);
+		~GuiRemoteProtocolCoreChannel();
 
 		vl::Event<void(const ChannelPackageInfo&)>		BeforeWrite;
-		vl::Event<void(const ChannelPackageInfo&)>		BeforeOnReceive;
+		vl::Event<void(const ChannelPackageInfo&)>		BeforeOnRead;
 
 		void											Initialize(IGuiRemoteProtocolEvents* _events) override;
 		WString											GetExecutablePath() override;
@@ -23509,17 +22878,19 @@ GuiRemoteProtocolFromJsonChannel
 	};
 
 /***********************************************************************
-GuiRemoteJsonChannelFromProtocol
+GuiRemoteProtocolRendererChannel
 ***********************************************************************/
 
-	class GuiRemoteJsonChannelFromProtocol
+	class GuiRemoteProtocolRendererChannel
 		: public Object
-		, public virtual IJsonChannel
+		, protected virtual IJsonChannelReader
 		, protected virtual IGuiRemoteProtocolEvents
 	{
 	protected:
-		IJsonChannelReceiver*							receiver = nullptr;
+		IJsonChannelClient*								client = nullptr;
+		IJsonChannel*									channel = nullptr;
 		IGuiRemoteProtocol*								protocol = nullptr;
+		bool											receiving = false;
 
 #define EVENT_NOREQ(NAME, REQUEST)						void On ## NAME() override;
 #define EVENT_REQ(NAME, REQUEST)						void On ## NAME(const REQUEST& arguments) override;
@@ -23539,9 +22910,9 @@ GuiRemoteJsonChannelFromProtocol
 
 	protected:
 
-		using WriteHandler = void (GuiRemoteJsonChannelFromProtocol::*)(vint, Ptr<glr::json::JsonNode>);
+		using WriteHandler = void (GuiRemoteProtocolRendererChannel::*)(vint, Ptr<glr::json::JsonNode>);
 		using WriteHandlerMap = collections::Dictionary<WString, WriteHandler>;
-		WriteHandlerMap			writeHandlers;
+		WriteHandlerMap									writeHandlers;
 
 #define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					void Write_ ## NAME (vint id, Ptr<glr::json::JsonNode> jsonArguments);
 #define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)						void Write_ ## NAME (vint id, Ptr<glr::json::JsonNode> jsonArguments);
@@ -23555,41 +22926,117 @@ GuiRemoteJsonChannelFromProtocol
 #undef MESSAGE_NOREQ_RES
 #undef MESSAGE_NOREQ_NORES
 
+		void											Write(Ptr<glr::json::JsonObject> package);
+		void											Flush(bool& disconnected);
+		void											OnRead(vint senderClientId, const JsonPackage& package) override;
+
 	public:
 
-		GuiRemoteJsonChannelFromProtocol(IGuiRemoteProtocol* _protocol);
-		~GuiRemoteJsonChannelFromProtocol();
+		GuiRemoteProtocolRendererChannel(IJsonChannelClient* _client, IJsonChannel* _channel, IGuiRemoteProtocol* _protocol);
+		~GuiRemoteProtocolRendererChannel();
 
 		vl::Event<void(const ChannelPackageInfo&)>		BeforeWrite;
-		vl::Event<void(const ChannelPackageInfo&)>		BeforeOnReceive;
-
-		void											Initialize(IJsonChannelReceiver* _receiver) override;
-		IJsonChannelReceiver*							GetReceiver() override;
-		void											Write(const Ptr<glr::json::JsonObject>& package) override;
-		WString											GetExecutablePath() override;
-		void											Submit(bool& disconnected) override;
-		IGuiRemoteEventProcessor*						GetRemoteEventProcessor() override;
+		vl::Event<void(const ChannelPackageInfo&)>		BeforeOnRead;
 	};
-
-/***********************************************************************
-JsonToStringSerializer
-***********************************************************************/
-
-	struct JsonToStringSerializer
-	{
-		using SourceType = Ptr<glr::json::JsonObject>;
-		using DestType = WString;
-		using ContextType = Ptr<glr::json::Parser>;
-
-		static void										Serialize(Ptr<glr::json::Parser> parser, const SourceType& source, DestType& dest);
-		static void										Deserialize(Ptr<glr::json::Parser> parser, const DestType& source, SourceType& dest);
-	};
-
-	using GuiRemoteJsonChannelStringSerializer = GuiRemoteProtocolChannelSerializer<JsonToStringSerializer>;
-	using GuiRemoteJsonChannelStringDeserializer = GuiRemoteProtocolChannelDeserializer<JsonToStringSerializer>;
 }
 
 #endif
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_CHANNEL_ASYNC.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Remote Window
+
+Interfaces:
+  GuiRemoteProtocolAsyncJsonChannelSerializer
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL_ASYNC
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL_ASYNC
+
+
+namespace vl::presentation::remoteprotocol::channeling
+{
+
+/***********************************************************************
+GuiRemoteProtocolAsyncJsonChannelSerializer
+***********************************************************************/
+
+	class GuiRemoteProtocolAsyncJsonChannelSerializer
+		: public Object
+		, public virtual IJsonChannel
+		, protected virtual IJsonChannelReader
+		, protected virtual IGuiRemoteEventProcessor
+	{
+	protected:
+		struct QueuedPackage
+		{
+			vint											senderClientId = -1;
+			Nullable<vint>									receiverClientId;
+			JsonPackage										package;
+		};
+
+		struct ReceivedPackage
+		{
+			vint											senderClientId = -1;
+			JsonPackage										package;
+		};
+
+		struct PendingRequestGroup
+		{
+			vint											connectionCounter = -1;
+			collections::List<vint>							requestIds;
+		};
+
+		IJsonChannel*										channel = nullptr;
+		IJsonChannelReader*								reader = nullptr;
+		IGuiRemoteEventProcessor*							remoteEventProcessor = nullptr;
+
+		SpinLock											lockPendingPackages;
+		collections::List<QueuedPackage>					pendingPackages;
+
+		SpinLock											lockEvents;
+		collections::List<ReceivedPackage>					queuedEvents;
+		bool												uiTaskQueued = false;
+
+		SpinLock											lockResponses;
+		EventObject											eventAutoResponses;
+		collections::Dictionary<vint, ReceivedPackage>		queuedResponses;
+		Ptr<PendingRequestGroup>							pendingRequest;
+
+		SpinLock											lockConnection;
+		vint												connectionCounter = 0;
+		bool												connectionAvailable = false;
+
+		bool												AreCurrentPendingRequestGroupSatisfied(bool disconnected);
+		void												ScheduleProcessRemoteEvents();
+		void												ProcessChannelEvents();
+		void												ProcessRemoteEvents() override;
+
+		void												OnRead(vint senderClientId, const JsonPackage& package) override;
+
+	public:
+		GuiRemoteProtocolAsyncJsonChannelSerializer(IJsonChannel* _channel, IGuiRemoteEventProcessor* _remoteEventProcessor = nullptr);
+		~GuiRemoteProtocolAsyncJsonChannelSerializer();
+
+		const WString&										GetChannelName() override;
+		IJsonChannelReader*								GetReader() override;
+		void												Initialize(IJsonChannelReader* _reader) override;
+		void												SendToClient(vint senderClientId, vint receiverClientId, const JsonPackage& package) override;
+		void												BroadcastFromClient(vint senderClientId, const JsonPackage& package) override;
+		void												BatchWrite(bool& disconnected) override;
+
+		IGuiRemoteEventProcessor*							GetRemoteEventProcessor();
+	};
+}
+
+#endif
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_FILTERVERIFIER.H
@@ -24234,12 +23681,8 @@ Interfaces:
 #define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL
 
 
-namespace vl::presentation::remoteprotocol::channeling
-{
-	using GuiRemoteProtocolAsyncJsonChannelSerializer = GuiRemoteProtocolAsyncChannelSerializer<Ptr<glr::json::JsonObject>>;
-}
-
 #endif
+
 
 /***********************************************************************
 .\RESOURCES\GUIDOCUMENTCLIPBOARD.H

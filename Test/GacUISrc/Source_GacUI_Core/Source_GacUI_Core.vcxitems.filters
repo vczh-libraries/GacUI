@@ -375,9 +375,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_DomDiff.h">
       <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolCombinators</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channel_Shared.h">
-      <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolChannels</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channel_Json.h">
       <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolChannels</Filter>
     </ClInclude>

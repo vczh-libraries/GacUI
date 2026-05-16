@@ -51,6 +51,9 @@
     <ClInclude Include="..\..\..\Import\VlppOS.h">
       <Filter>Import</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Import\VlppOS.Windows.h">
+      <Filter>Import</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\Import\VlppGlrParser.h">
       <Filter>Import</Filter>
     </ClInclude>

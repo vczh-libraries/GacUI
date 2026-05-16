@@ -1,14 +1,21 @@
 #include "../../../Source/GacUI.h"
-#include "RendererChannel.h"
-#include "../RemotingTest_Core/Shared/NamedPipeShared.h"
-#include "../RemotingTest_Core/Shared/HttpClient.h"
+#include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
+#include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
+#include "../../../Import/VlppOS.Windows.h"
 
+using namespace vl;
 using namespace vl::presentation;
 using namespace vl::presentation::remoteprotocol;
 using namespace vl::presentation::remoteprotocol::channeling;
 using namespace vl::presentation::remote_renderer;
 
-RendererChannel* rendererChannel = nullptr;
+namespace
+{
+	constexpr const wchar_t* GacUIRemoteProtocolNamedPipeName = L"GacUIRemoteProtocolNamedPipe";
+	constexpr const wchar_t* GacUIRemoteProtocolHttpBaseUrl = L"/GacUIRemoteProtocolHttp";
+	constexpr vint GacUIRemoteProtocolHttpPort = 8888;
+}
+
 GuiRemoteRendererSingle* renderer = nullptr;
 
 void GuiMain()
@@ -23,46 +30,33 @@ void GuiMain()
 		auto y = client.Top() + (client.Height() - size.y) / 2;
 		mainWindow->SetBounds({ {x,y},size });
 	}
-	rendererChannel->RegisterMainWindow(mainWindow);
 	renderer->RegisterMainWindow(mainWindow);
 	GetCurrentController()->WindowService()->Run(mainWindow);
 	renderer->UnregisterMainWindow();
-	rendererChannel->UnregisterMainWindow();
 }
 
-template<typename TClient>
-int StartClient(TClient& client)
+int StartClient(Ptr<inter_process::INetworkProtocolClient> networkClient)
 {
 	auto jsonParser = Ptr(new glr::json::Parser);
+	GuiRemoteProtocolChannelClient channelClient(networkClient, jsonParser);
+	channelClient.WaitForServer();
+
 	GuiRemoteRendererSingle remoteRenderer;
-	GuiRemoteJsonChannelFromProtocol channelReceiver(&remoteRenderer);
-	GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, jsonParser);
-	RendererChannel clientRendererChannel(&remoteRenderer, &client, &channelJsonDeserializer);
+	GuiRemoteProtocolRendererChannel rendererChannel(&channelClient, channelClient.GetProtocolChannel(), &remoteRenderer);
 
-	channelReceiver.BeforeWrite.Add([&](const ChannelPackageInfo& info) { clientRendererChannel.BeforeWrite(info); });
-	channelReceiver.BeforeOnReceive.Add([&](const ChannelPackageInfo& info) { clientRendererChannel.BeforeOnReceive(info); });
-
-	rendererChannel = &clientRendererChannel;
 	renderer = &remoteRenderer;
 	int result = SetupRawWindowsDirect2DRenderer();
-	client.Stop();
-	clientRendererChannel.WaitForDisconnected();
 	renderer = nullptr;
-	rendererChannel = nullptr;
 
 	return result;
 }
 
 int StartNamedPipeClient()
 {
-	NamedPipeClient namedPipeClient;
-	namedPipeClient.WaitForServer();
-	return StartClient(namedPipeClient);
+	return StartClient(Ptr(new inter_process::NamedPipeClient(WString::Unmanaged(GacUIRemoteProtocolNamedPipeName))));
 }
 
 int StartHttpClient()
 {
-	HttpClient httpClient;
-	httpClient.WaitForServer();
-	return StartClient(httpClient);
+	return StartClient(Ptr(new inter_process::HttpClient(WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl), GacUIRemoteProtocolHttpPort)));
 }

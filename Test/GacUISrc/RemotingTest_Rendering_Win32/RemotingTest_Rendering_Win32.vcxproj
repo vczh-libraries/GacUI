@@ -155,25 +155,13 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\RemotingTest_Core\Shared\HttpClient.cpp" />
-    <ClCompile Include="..\RemotingTest_Core\Shared\HttpServer.cpp" />
-    <ClCompile Include="..\RemotingTest_Core\Shared\NamedPipeShared.cpp" />
-    <ClCompile Include="..\RemotingTest_Core\Shared\ProtocolCallback.cpp" />
     <ClCompile Include="GuiMain.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="RendererChannel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lib_GacUI\Lib_GacUI.vcxproj">
       <Project>{31b9787f-5739-4812-84cf-4c542bbdf7fb}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\RemotingTest_Core\Shared\HttpClient.h" />
-    <ClInclude Include="..\RemotingTest_Core\Shared\HttpServer.h" />
-    <ClInclude Include="..\RemotingTest_Core\Shared\NamedPipeShared.h" />
-    <ClInclude Include="..\RemotingTest_Core\Shared\ProtocalCallback.h" />
-    <ClInclude Include="RendererChannel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
