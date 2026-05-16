@@ -17,6 +17,7 @@ Interfaces:
 namespace vl::presentation::remoteprotocol::channeling
 {
 	constexpr const wchar_t* GacUIRemoteProtocolChannelName = L"GacUIRemoteProtocol";
+	constexpr vint GacUIRemoteProtocolCoreClientId = 1;
 
 	using JsonPackage = Ptr<glr::json::JsonNode>;
 	using IJsonChannelReader = inter_process::IChannelReader<JsonPackage>;
@@ -111,6 +112,8 @@ GuiRemoteProtocolCoreChannel
 		IGuiRemoteProtocolEvents*	events = nullptr;
 		IGuiRemoteEventProcessor*	eventProcessor = nullptr;
 		WString						executablePath;
+		SpinLock					lockRendererClientId;
+		vint						rendererClientId = -1;
 
 		using OnReadEventHandler = void (GuiRemoteProtocolCoreChannel::*)(Ptr<glr::json::JsonNode>);
 		using OnReadEventHandlerMap = collections::Dictionary<WString, OnReadEventHandler>;
@@ -137,6 +140,8 @@ GuiRemoteProtocolCoreChannel
 #undef MESSAGE_NORES
 
 		void						Write(Ptr<glr::json::JsonObject> package);
+		void						SetRendererClientId(vint clientId);
+		vint						GetRendererClientId();
 		void						OnRead(vint senderClientId, const JsonPackage& package) override;
 
 	public:

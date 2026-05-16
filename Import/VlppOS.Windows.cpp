@@ -3453,9 +3453,12 @@ INetworkProtocolConnection* HttpServer::WaitForClient()
 	{
 		SPIN_LOCK(lockQueuedConnections)
 		{
-			auto connection = queuedConnections[0];
-			queuedConnections.RemoveAt(0);
-			return connection;
+			if (queuedConnections.Count() > 0)
+			{
+				auto connection = queuedConnections[0];
+				queuedConnections.RemoveAt(0);
+				return connection;
+			}
 		}
 	}
 	CHECK_FAIL(L"HttpServer has stopped.");
@@ -3483,6 +3486,7 @@ void HttpServer::Stop()
 	{
 		queuedConnections.Clear();
 	}
+	semaphoreQueuedConnections.Release();
 	for (auto connection : stoppingConnections)
 	{
 		SPIN_LOCK(connection->pendingRequestLock)

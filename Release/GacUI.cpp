@@ -39221,7 +39221,33 @@ GuiRemoteProtocolCoreChannel
 
 	void GuiRemoteProtocolCoreChannel::Write(Ptr<glr::json::JsonObject> package)
 	{
-		channel->BroadcastFromClient(client->GetClientId(), package);
+		auto receiverClientId = GetRendererClientId();
+		if (receiverClientId == -1)
+		{
+			channel->BroadcastFromClient(client->GetClientId(), package);
+		}
+		else
+		{
+			channel->SendToClient(client->GetClientId(), receiverClientId, package);
+		}
+	}
+
+	void GuiRemoteProtocolCoreChannel::SetRendererClientId(vint clientId)
+	{
+		SPIN_LOCK(lockRendererClientId)
+		{
+			rendererClientId = clientId;
+		}
+	}
+
+	vint GuiRemoteProtocolCoreChannel::GetRendererClientId()
+	{
+		vint clientId = -1;
+		SPIN_LOCK(lockRendererClientId)
+		{
+			clientId = rendererClientId;
+		}
+		return clientId;
 	}
 
 	void GuiRemoteProtocolCoreChannel::OnRead(vint senderClientId, const JsonPackage& package)
@@ -39236,6 +39262,15 @@ GuiRemoteProtocolCoreChannel
 
 		if (info.semantic == ChannelPackageSemantic::Event)
 		{
+			if (info.name == L"ControllerConnect")
+			{
+				SetRendererClientId(senderClientId);
+			}
+			else if (info.name == L"ControllerDisconnect" && GetRendererClientId() == senderClientId)
+			{
+				SetRendererClientId(-1);
+			}
+
 			vint index = onReadEventHandlers.Keys().IndexOf(info.name);
 			if (index == -1)
 			{
@@ -39447,7 +39482,7 @@ GuiRemoteProtocolRendererChannel
 
 	void GuiRemoteProtocolRendererChannel::Write(Ptr<glr::json::JsonObject> package)
 	{
-		channel->BroadcastFromClient(client->GetClientId(), package);
+		channel->SendToClient(client->GetClientId(), GacUIRemoteProtocolCoreClientId, package);
 
 		if (!receiving)
 		{
