@@ -105,6 +105,10 @@ After fixing `GacJS`, you need to commit and push all local changes in these rep
 
 # UPDATES
 
+## UPDATE
+
+Bug 1: `RemotingTest_Core /Http /RPT` should deliver the exception raised by the `Fatel Error` button through `IChannelServer::BroadcastError`, so GacJS can receive the `!Error` package and display the alert/error UI. Before the fix the core exited and the browser only observed the transport closing. The same fatal package delivery path is shared by `RemotingTest_Rendering_Win32`, so the core-side channel and transport shutdown behavior must preserve the fatal package before closing.
+
 # TEST
 
 - Build and run the affected VlppOS unit test coverage around the new `vl::inter_process` channels, especially `TestInterProcess.cpp`.
@@ -114,6 +118,26 @@ After fixing `GacJS`, you need to commit and push all local changes in these rep
 - Build GacJS, run `RemotingTest_Core /RPT /Http`, open `http://localhost:8896` with Playwright, and verify the browser client connects to the updated HTTP protocol without errors.
 
 # PROPOSALS
+
+- No.1 Deliver fatal channel errors before closing transports [CONFIRMED]
+
+## No.1 Deliver fatal channel errors before closing transports
+
+### CODE CHANGE
+
+- In VlppOS, `NetworkProtocolChannelServer::BroadcastError` now leaves a short shutdown grace after sending `!Error`, so HTTP and named-pipe clients can consume the fatal package before the transport is stopped.
+- In VlppOS HTTP transport, a server package produced while processing a client `/Response` POST can be returned in that POST response body. The Windows HTTP client and GacJS HTTP client both read non-empty POST response bodies as normal server packages, covering request/reply races where no long-poll receive is available yet.
+- In VlppOS named-pipe transport, writes are serialized and overlapped writes wait for completion before handles are canceled or closed, preventing the fatal package from being lost during immediate shutdown.
+- Regenerated VlppOS release files and copied the updated generated files into GacUI `Import`.
+
+### CONFIRMED
+
+- Rebuilt VlppOS and GacUI successfully.
+- Rebuilt GacJS successfully.
+- Reproduced Bug 1 through `RemotingTest_Core /RPT /Http` and GacJS at `http://localhost:8896/index.html`; after clicking `Fatel Error`, the page logged `Error: This is a fatel error!` from `HttpClientImpl.handleNetworkPackageText` and displayed the error mask, confirming the browser received the `!Error` package instead of only a fetch failure.
+- Ran VlppOS UnitTest: passed 12/12 files and 115/115 cases.
+- Ran GacUI UnitTest: passed 84/84 files and 1686/1686 cases.
+- Ran GacJS `yarn build`: passed. Ran GacJS `yarn test`: package unit tests passed, but existing website E2E tests failed in font/image dialog flows unrelated to this HTTP fatal-error path.
 
 ## Implemented So Far
 

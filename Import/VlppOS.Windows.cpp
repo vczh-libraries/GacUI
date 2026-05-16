@@ -2526,11 +2526,125 @@ void HttpClient::SendString(const WString& str)
 						}
 						CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryHeaders failed to retrieve status code.");
 
-						self->CloseRequest(httpRequest);
 						if (statusCode != 200)
 						{
+							self->CloseRequest(httpRequest);
 							self->RaiseErrorUnsafe(WString::Unmanaged(L"/Response returned status code: ") + itow(statusCode) + L", another renderer may have connected to the core.");
+							return;
 						}
+
+						Ptr<HttpResponseReading> reading;
+						SPIN_LOCK(self->httpResponseReadingsLock)
+						{
+							auto index = self->httpResponseReadings.Keys().IndexOf(httpRequest);
+							if (index != -1)
+							{
+								reading = self->httpResponseReadings.Values()[index];
+							}
+						}
+						if (!reading) return;
+
+						reading->bodyBufferWriting = 0;
+						httpResult = WinHttpQueryDataAvailable(
+							httpRequest,
+							NULL);
+						lastError = GetLastError();
+						if (lastError == ERROR_INVALID_HANDLE)
+						{
+							CHECK_ERROR(self->state == State::Stopping, L"WinHttpQueryDataAvailable failed with ERROR_INVALID_HANDLE but client is not stopping.");
+							return;
+						}
+						CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryDataAvailable failed.");
+					});
+				}
+				break;
+			case WINHTTP_CALLBACK_STATUS_DATA_AVAILABLE:
+				{
+					DWORD dataAvailable = *(PDWORD)lpvStatusInformation;
+					self->QueueCallback([=]()
+					{
+						if (self->state == State::Stopping) return;
+
+						Ptr<HttpResponseReading> reading;
+						SPIN_LOCK(self->httpResponseReadingsLock)
+						{
+							auto index = self->httpResponseReadings.Keys().IndexOf(httpRequest);
+							if (index != -1)
+							{
+								reading = self->httpResponseReadings.Values()[index];
+							}
+						}
+						if (!reading) return;
+
+						if (dataAvailable == 0)
+						{
+							if (reading->bodyBufferWriting > 0 && self->callback)
+							{
+								reading->bodyBuffer[reading->bodyBufferWriting] = 0;
+								U8String bodyUtf8 = U8String::Unmanaged(&reading->bodyBuffer[0]);
+								self->callback->OnReadString(u8tow(bodyUtf8));
+							}
+							self->CloseRequest(httpRequest);
+							return;
+						}
+
+						reading->bodyBufferWritingAvailable = dataAvailable;
+						DWORD bufferSize = reading->bodyBufferWriting + dataAvailable + 1;
+						if (reading->bodyBuffer.Count() < (vint)bufferSize)
+						{
+							reading->bodyBuffer.Resize((bufferSize + HttpRespondBodyStep - 1) / HttpRespondBodyStep * HttpRespondBodyStep);
+						}
+
+						DWORD lastError = 0;
+						BOOL httpResult = WinHttpReadData(
+							httpRequest,
+							&reading->bodyBuffer[reading->bodyBufferWriting],
+							dataAvailable,
+							NULL);
+						lastError = GetLastError();
+						if (lastError == ERROR_INVALID_HANDLE)
+						{
+							CHECK_ERROR(self->state == State::Stopping, L"WinHttpReadData failed with ERROR_INVALID_HANDLE but client is not stopping.");
+							return;
+						}
+						CHECK_ERROR(httpResult == TRUE, L"WinHttpReadData failed.");
+					});
+				}
+				break;
+			case WINHTTP_CALLBACK_STATUS_READ_COMPLETE:
+				{
+					self->QueueCallback([=]()
+					{
+						if (self->state == State::Stopping) return;
+
+						Ptr<HttpResponseReading> reading;
+						SPIN_LOCK(self->httpResponseReadingsLock)
+						{
+							auto index = self->httpResponseReadings.Keys().IndexOf(httpRequest);
+							if (index != -1)
+							{
+								reading = self->httpResponseReadings.Values()[index];
+							}
+						}
+						if (!reading) return;
+
+						CHECK_ERROR(
+							reading->bodyBufferWritingAvailable == dwStatusInformationLength,
+							L"WinHttpReadData failed to read all available data."
+							);
+						reading->bodyBufferWriting += reading->bodyBufferWritingAvailable;
+
+						DWORD lastError = 0;
+						BOOL httpResult = WinHttpQueryDataAvailable(
+							httpRequest,
+							NULL);
+						lastError = GetLastError();
+						if (lastError == ERROR_INVALID_HANDLE)
+						{
+							CHECK_ERROR(self->state == State::Stopping, L"WinHttpQueryDataAvailable failed with ERROR_INVALID_HANDLE but client is not stopping.");
+							return;
+						}
+						CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryDataAvailable failed.");
 					});
 				}
 				break;
@@ -2576,6 +2690,10 @@ void HttpClient::SendString(const WString& str)
 	SPIN_LOCK(httpRequestBodiesLock)
 	{
 		httpRequestBodies.Add(httpRequest, bodyUtf8);
+	}
+	SPIN_LOCK(httpResponseReadingsLock)
+	{
+		httpResponseReadings.Add(httpRequest, Ptr(new HttpResponseReading));
 	}
 
 	{
@@ -2686,6 +2804,14 @@ void HttpClient::CloseRequest(HINTERNET httpRequest)
 
 void HttpClient::OnRequestHandleClosing(HINTERNET httpRequest)
 {
+	SPIN_LOCK(httpRequestBodiesLock)
+	{
+		httpRequestBodies.Remove(httpRequest);
+	}
+	SPIN_LOCK(httpResponseReadingsLock)
+	{
+		httpResponseReadings.Remove(httpRequest);
+	}
 	SPIN_LOCK(httpActiveRequestsLock)
 	{
 		vint index = httpActiveRequests.IndexOf(httpRequest);
@@ -2828,7 +2954,7 @@ void HttpServerConnection::OnNewHttpRequestForPendingRequest(HTTP_REQUEST_ID htt
 	}
 }
 
-void HttpServerConnection::SubmitResponse(PHTTP_REQUEST pRequest)
+WString HttpServerConnection::SubmitResponse(PHTTP_REQUEST pRequest)
 {
 	ULONG bodyLength = 0;
 	ULONG bodyReceived = 0;
@@ -2861,18 +2987,57 @@ void HttpServerConnection::SubmitResponse(PHTTP_REQUEST pRequest)
 		CHECK_ERROR(result == NO_ERROR, L"HttpReceiveRequestEntityBody.");
 	}
 
-	SPIN_LOCK(lockQueuedStrings)
+	SPIN_LOCK(pendingRequestLock)
 	{
-		U8String bodyUtf8 = U8String::Unmanaged(&bodyBuffer[0]);
-		if (callback)
+		submittingResponse = true;
+	}
+
+	try
+	{
+		SPIN_LOCK(lockQueuedStrings)
 		{
-			callback->OnReadString(u8tow(bodyUtf8));
-		}
-		else
-		{
-			queuedStrings.Add(u8tow(bodyUtf8));
+			U8String bodyUtf8 = U8String::Unmanaged(&bodyBuffer[0]);
+			if (callback)
+			{
+				callback->OnReadString(u8tow(bodyUtf8));
+			}
+			else
+			{
+				queuedStrings.Add(u8tow(bodyUtf8));
+			}
 		}
 	}
+	catch (...)
+	{
+		SPIN_LOCK(pendingRequestLock)
+		{
+			submittingResponse = false;
+			responsesToSubmit.Clear();
+		}
+		throw;
+	}
+
+	WString responseToClient;
+	SPIN_LOCK(pendingRequestLock)
+	{
+		submittingResponse = false;
+		if (responsesToSubmit.Count() > 0)
+		{
+			responseToClient = responsesToSubmit[0];
+			responsesToSubmit.RemoveAt(0);
+			while (responsesToSubmit.Count() > 0)
+			{
+				pendingRequestsToSend.Add(responsesToSubmit[0]);
+				responsesToSubmit.RemoveAt(0);
+			}
+		}
+		else if (pendingRequestsToSend.Count() > 0)
+		{
+			responseToClient = pendingRequestsToSend[0];
+			pendingRequestsToSend.RemoveAt(0);
+		}
+	}
+	return responseToClient;
 }
 
 void HttpServerConnection::InstallCallback(INetworkProtocolCallback* _callback)
@@ -2899,7 +3064,11 @@ void HttpServerConnection::SendString(const WString& str)
 {
 	SPIN_LOCK(pendingRequestLock)
 	{
-		if (httpPendingRequestId != HTTP_NULL_ID)
+		if (submittingResponse)
+		{
+			responsesToSubmit.Add(str);
+		}
+		else if (httpPendingRequestId != HTTP_NULL_ID)
 		{
 			ULONG result = HttpServer::SendResponse(server->httpRequestQueue, httpPendingRequestId, str);
 			if (result == NO_ERROR)
@@ -3048,8 +3217,8 @@ void HttpServer::OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
 		auto guid = WString::Unmanaged(pRequest->CookedUrl.pAbsPath + urlResponsePrefix.Length());
 		if (auto connection = FindExistingConnection(guid))
 		{
-			connection->SubmitResponse(pRequest);
-			auto result = SendResponse(httpRequestQueue, pRequest->RequestId, WString::Empty);
+			auto responseToClient = connection->SubmitResponse(pRequest);
+			auto result = SendResponse(httpRequestQueue, pRequest->RequestId, responseToClient);
 			CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for responding /Response.");
 		}
 	}
@@ -3704,20 +3873,51 @@ void NamedPipeConnection::EndSendStream(vint32_t bytes)
 		vint bytesToSend = length >= (i + 1) * MaxMessageSize ? MaxMessageSize : length % MaxMessageSize;
 		auto buffer = (LPCVOID)((char*)streamWriteFile.GetInternalBuffer() + offset);
 
-		WaitForSingleObject(hEventWriteFile, INFINITE);
 		ResetEvent(hEventWriteFile);
 		ZeroMemory(&overlappedWriteFile, sizeof(overlappedWriteFile));
 		overlappedWriteFile.hEvent = hEventWriteFile;
-		WriteFile(hPipe, buffer, (DWORD)bytesToSend, NULL, &overlappedWriteFile);
+		DWORD written = 0;
+		BOOL result = WriteFile(hPipe, buffer, (DWORD)bytesToSend, NULL, &overlappedWriteFile);
+		if (result == FALSE)
+		{
+			auto error = GetLastError();
+			if (error == ERROR_BROKEN_PIPE || error == ERROR_INVALID_HANDLE)
+			{
+				OnDisconnected();
+				return;
+			}
+			CHECK_ERROR(error == ERROR_IO_PENDING, L"WriteFile failed on unexpected GetLastError.");
+			WaitForSingleObject(hEventWriteFile, INFINITE);
+			result = GetOverlappedResult(hPipe, &overlappedWriteFile, &written, FALSE);
+			if (result == FALSE)
+			{
+				error = GetLastError();
+				if (error == ERROR_BROKEN_PIPE || error == ERROR_INVALID_HANDLE || error == ERROR_OPERATION_ABORTED)
+				{
+					OnDisconnected();
+					return;
+				}
+				CHECK_FAIL(L"GetOverlappedResult(WriteFile) failed on unexpected GetLastError.");
+			}
+		}
+		else
+		{
+			written = (DWORD)bytesToSend;
+		}
+		CHECK_ERROR(written == (DWORD)bytesToSend, L"WriteFile failed to write all data.");
 	}
 }
 
 void NamedPipeConnection::SendString(const WString& str)
 {
-	vint32_t bytes = 0;
-	BeginSendStream();
-	bytes += WriteStringToStream(str);
-	EndSendStream(bytes);
+	if (stopped) return;
+	SPIN_LOCK(lockWrite)
+	{
+		vint32_t bytes = 0;
+		BeginSendStream();
+		bytes += WriteStringToStream(str);
+		EndSendStream(bytes);
+	}
 }
 
 /***********************************************************************
@@ -3774,11 +3974,14 @@ void NamedPipeConnection::Stop()
 		UnregisterWaitEx(waitHandle, INVALID_HANDLE_VALUE);
 	}
 
-	if (hPipe != INVALID_HANDLE_VALUE)
+	SPIN_LOCK(lockWrite)
 	{
-		CancelIoEx(hPipe, NULL);
-		CloseHandle(hPipe);
-		hPipe = INVALID_HANDLE_VALUE;
+		if (hPipe != INVALID_HANDLE_VALUE)
+		{
+			CancelIoEx(hPipe, NULL);
+			CloseHandle(hPipe);
+			hPipe = INVALID_HANDLE_VALUE;
+		}
 	}
 }
 

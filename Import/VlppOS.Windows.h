@@ -145,8 +145,19 @@ HttpClient (Writing)
 ***********************************************************************/
 
 protected:
+	class HttpResponseReading : public Object
+	{
+	public:
+		collections::Array<char8_t>					bodyBuffer;
+		DWORD										bodyBufferWriting = 0;
+		DWORD										bodyBufferWritingAvailable = 0;
+	};
+
 	SpinLock										httpRequestBodiesLock;
 	collections::Dictionary<HINTERNET, U8String>	httpRequestBodies;
+	SpinLock										httpResponseReadingsLock;
+	collections::Dictionary<HINTERNET, Ptr<HttpResponseReading>>
+													httpResponseReadings;
 	SpinLock										httpActiveRequestsLock;
 	collections::List<HINTERNET>					httpActiveRequests;
 
@@ -207,12 +218,14 @@ protected:
 	SpinLock										pendingRequestLock;
 	HTTP_REQUEST_ID									httpPendingRequestId = HTTP_NULL_ID;
 	collections::List<WString>						pendingRequestsToSend;
+	bool											submittingResponse = false;
+	collections::List<WString>						responsesToSubmit;
 
 	// All following functions must be called inside SPIN_LOCK(pendingRequestLock)
 	void											OnCancelCurrentHttpRequestForPendingRequest();
 	void											OnNewHttpRequestForPendingRequest(HTTP_REQUEST_ID httpRequestId);
 
-	void											SubmitResponse(PHTTP_REQUEST pRequest);
+	WString											SubmitResponse(PHTTP_REQUEST pRequest);
 
 public:
 	void											InstallCallback(INetworkProtocolCallback* _callback) override;
@@ -356,6 +369,7 @@ public:
 // Writing
 // -----------------------------------------------------------------------
 private:
+	SpinLock										lockWrite;
 	stream::MemoryStream							streamWriteFile;
 	OVERLAPPED										overlappedWriteFile;
 	HANDLE											hEventWriteFile = INVALID_HANDLE_VALUE;
