@@ -52,6 +52,10 @@ Many code in `GacUI` have to be deleted and replaced by new constructions in `Vl
   - The new design should be:
     - Start the server, register the core channel first, wait for the renderer channel, assert that it has the `GacUIRemoteProtocol` channel (in `GuiMain.cpp`).
     - Start GacUI with remote protocol in the same thread, but register the reader to the core channel and send everything to the UI thread using `GetApplication()->InvokeInMainThread`, in the UI thread, JSON will be converted back to `IGuiRemoteProtocol` method calls.
+    - Checkout out how `RemotingTest_Rendering_Win32` do the threading thing.
+  - Previous async channel is universal, the new design you could make it `IChannel(Server|Client)<Ptr<JsonNode>>`.
+  - The connection will be `core side IGuiRemoteProtocol` -> `JSON Serialization channel` -> `async channel` -> `network protocol` -> `JSON Serialization channel` -> `renderer side IGuiRemoteProtocol`.
+    - Unit test with async channel does not go through network protocol, messages are passed directly between threads.
 - Some unit test utility constructions, and anything that will be impacted.
 - The new Http implementations need you to specify a URL fraction name and a port, use `GacUIRemoteProtocolHttp` and `8888`, and `GacUIRemoteProtocolNamedPipe`.
 
