@@ -2700,24 +2700,29 @@ NetworkProtocolChannelServer
 
 		void OnConnectionDisconnected(Connection* connection)
 		{
+			Ptr<Connection> disconnectedConnection;
 			vint disconnectedClientId = -1;
 			{
 				SPIN_LOCK(lockConnections)
 				{
 					if (connection->clientId == -1)
 					{
-						RemovePendingConnection(connection);
+						disconnectedConnection = RemovePendingConnection(connection);
 					}
 					else if (connections.Keys().Contains(connection->clientId))
 					{
 						disconnectedClientId = connection->clientId;
+						disconnectedConnection = connections[connection->clientId];
 						connections.Remove(connection->clientId);
 						clientChannels.Remove(connection->clientId);
 					}
 				}
 			}
 
-			connection->eventConnected.Signal();
+			if (disconnectedConnection)
+			{
+				disconnectedConnection->eventConnected.Signal();
+			}
 			if (disconnectedClientId != -1)
 			{
 				OnClientDisconnected(disconnectedClientId);

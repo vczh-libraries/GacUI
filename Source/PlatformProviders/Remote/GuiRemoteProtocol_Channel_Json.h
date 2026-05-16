@@ -180,10 +180,19 @@ GuiRemoteProtocolRendererChannel
 		, protected virtual IGuiRemoteProtocolEvents
 	{
 	protected:
+		struct ReceivedPackage
+		{
+			vint										senderClientId = -1;
+			JsonPackage									package;
+		};
+
 		IJsonChannelClient*								client = nullptr;
 		IJsonChannel*									channel = nullptr;
 		IGuiRemoteProtocol*								protocol = nullptr;
 		bool											receiving = false;
+		SpinLock										lockReceivedPackages;
+		collections::List<ReceivedPackage>				receivedPackages;
+		bool											receivedPackageTaskQueued = false;
 
 #define EVENT_NOREQ(NAME, REQUEST)						void On ## NAME() override;
 #define EVENT_REQ(NAME, REQUEST)						void On ## NAME(const REQUEST& arguments) override;
@@ -221,6 +230,8 @@ GuiRemoteProtocolRendererChannel
 
 		void											Write(Ptr<glr::json::JsonObject> package);
 		void											Flush(bool& disconnected);
+		void											ProcessReceivedPackages();
+		void											ProcessReceivedPackage(vint senderClientId, const JsonPackage& package);
 		void											OnRead(vint senderClientId, const JsonPackage& package) override;
 
 	public:

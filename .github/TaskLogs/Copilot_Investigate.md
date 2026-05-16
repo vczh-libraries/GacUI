@@ -109,6 +109,8 @@ After fixing `GacJS`, you need to commit and push all local changes in these rep
 
 Bug 1: `RemotingTest_Core /Http /RPT` should deliver the exception raised by the `Fatel Error` button through `IChannelServer::BroadcastError`, so GacJS can receive the `!Error` package and display the alert/error UI. Before the fix the core exited and the browser only observed the transport closing. The same fatal package delivery path is shared by `RemotingTest_Rendering_Win32`, so the core-side channel and transport shutdown behavior must preserve the fatal package before closing.
 
+Bug 2: `RemotingTest_Rendering_Win32` must not mutate the renderer DOM, Direct2D paragraphs, or native window state from the network reader thread. The renderer channel now queues core-to-renderer protocol packages to the GacUI main thread before dispatching them to `GuiRemoteRendererSingle`. While building the stress harness, a separate `VlppOS` disconnect lifetime bug was found: `NetworkProtocolChannelServer::OnConnectionDisconnected` removed the last owning `Ptr<Connection>` and then signaled through the raw pointer. That has been fixed in `VlppOS`, regenerated into `VlppOS\Release`, and imported into `GacUI`.
+
 # TEST
 
 - Build and run the affected VlppOS unit test coverage around the new `vl::inter_process` channels, especially `TestInterProcess.cpp`.
@@ -120,6 +122,7 @@ Bug 1: `RemotingTest_Core /Http /RPT` should deliver the exception raised by the
 # PROPOSALS
 
 - No.1 Deliver fatal channel errors before closing transports [CONFIRMED]
+- No.2 Dispatch renderer protocol packages on the UI thread [CONFIRMED]
 
 ## No.1 Deliver fatal channel errors before closing transports
 
@@ -138,6 +141,22 @@ Bug 1: `RemotingTest_Core /Http /RPT` should deliver the exception raised by the
 - Ran VlppOS UnitTest: passed 12/12 files and 115/115 cases.
 - Ran GacUI UnitTest: passed 84/84 files and 1686/1686 cases.
 - Ran GacJS `yarn build`: passed. Ran GacJS `yarn test`: package unit tests passed, but existing website E2E tests failed in font/image dialog flows unrelated to this HTTP fatal-error path.
+
+## No.2 Dispatch renderer protocol packages on the UI thread
+
+### CODE CHANGE
+
+- In GacUI, `GuiRemoteProtocolRendererChannel::OnRead` now queues incoming core messages/requests and invokes their processing on the GacUI main thread when a running application is available. This prevents `GuiRemoteRendererSingle` rendering/document/window state from being touched by transport callback threads.
+- In VlppOS, `NetworkProtocolChannelServer::OnConnectionDisconnected` keeps an owning `Ptr<Connection>` while signaling disconnect, avoiding a use-after-free when a renderer disconnects or the stress harness closes it.
+- Regenerated `VlppOS\Release` and copied the updated generated `VlppOS.h` into `GacUI\Import`.
+
+### CONFIRMED
+
+- Rebuilt GacUI successfully.
+- Ran the UIA stress harness against `RemotingTest_Core /FCT /Pipe` and `RemotingTest_Rendering_Win32 /Pipe`: 5 consecutive runs of 1000 typed characters passed, with both processes alive and the renderer responsive after each run.
+- Ran the same UIA stress harness against `/FCT /Http` and `/Http`: 5 consecutive runs of 1000 typed characters passed, with both processes alive and the renderer responsive after each run.
+- Rebuilt VlppOS and ran VlppOS UnitTest: passed 12/12 files and 115/115 cases.
+- Ran GacUI UnitTest: passed 84/84 files and 1686/1686 cases.
 
 ## Implemented So Far
 
