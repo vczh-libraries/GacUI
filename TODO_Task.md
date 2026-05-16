@@ -95,5 +95,6 @@ Remove all code in `GacUI` that is no longer needed.
 
 ## Finishing
 
-After `GacUI` repo passing the verification, you need to commit and push `VlppOS` and `GacUI` immediately.
+After `GacUI` repo passing `UnitTest`, you need to commit and push `VlppOS` and `GacUI` immediately.
+After `GacUI` repo passing the rest of the verification, you need to commit and push `VlppOS` and `GacUI` immediately.
 After fixing `GacJS`, you need to commit and push all local changes in these repos immediately.
