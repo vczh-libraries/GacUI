@@ -101,13 +101,15 @@ protected:
 	WString											urlResponse;
 
 	atomic_vint										pendingCallbacks = 0;
+	atomic_vint										createdRequestIds = 0;
 	EventObject										eventPendingCallbacks;
 	void											BeginPendingCallback();
 	void											EndPendingCallback();
 	void											QueueCallback(const Func<void()>& proc);
-	void											AttachRequest(HINTERNET httpRequest);
-	void											CloseRequest(HINTERNET httpRequest);
-	void											OnRequestHandleClosing(HINTERNET httpRequest);
+	vint											FindActiveRequestUnsafe(HINTERNET httpRequest, vint requestId);
+	void											AttachRequest(HINTERNET httpRequest, vint requestId = 0);
+	void											CloseRequest(HINTERNET httpRequest, vint requestId = 0);
+	void											OnRequestHandleClosing(HINTERNET httpRequest, vint requestId = 0);
 
 /***********************************************************************
 HttpClient (Reading)
@@ -153,13 +155,25 @@ protected:
 		DWORD										bodyBufferWritingAvailable = 0;
 	};
 
-	SpinLock										httpRequestBodiesLock;
-	collections::Dictionary<HINTERNET, U8String>	httpRequestBodies;
-	SpinLock										httpResponseReadingsLock;
-	collections::Dictionary<HINTERNET, Ptr<HttpResponseReading>>
-													httpResponseReadings;
+	class HttpRequestContext : public Object
+	{
+	public:
+		HttpClient*									client = nullptr;
+		HINTERNET									httpRequest = NULL;
+		vint										requestId = 0;
+		U8String									requestBody;
+		Ptr<HttpResponseReading>					responseReading;
+	};
+
+	class HttpActiveRequest
+	{
+	public:
+		HINTERNET									httpRequest = NULL;
+		vint										requestId = -1;
+	};
+
 	SpinLock										httpActiveRequestsLock;
-	collections::List<HINTERNET>					httpActiveRequests;
+	collections::List<HttpActiveRequest>			httpActiveRequests;
 
 
 public:

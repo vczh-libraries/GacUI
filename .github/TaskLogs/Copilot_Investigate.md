@@ -111,6 +111,16 @@ Bug 1: `RemotingTest_Core /Http /RPT` should deliver the exception raised by the
 
 Bug 2: `RemotingTest_Rendering_Win32` must not mutate the renderer DOM, Direct2D paragraphs, or native window state from the network reader thread. The renderer channel now queues core-to-renderer protocol packages to the GacUI main thread before dispatching them to `GuiRemoteRendererSingle`. While building the stress harness, a separate `VlppOS` disconnect lifetime bug was found: `NetworkProtocolChannelServer::OnConnectionDisconnected` removed the last owning `Ptr<Connection>` and then signaled through the raw pointer. That has been fixed in `VlppOS`, regenerated into `VlppOS\Release`, and imported into `GacUI`.
 
+## UPDATE
+
+I think the bug 2 is not fixed at all.
+
+You insight might be right, but `GuiRemoteProtocol_Channel_Json.(h|cpp)` should be pure data processing, it should not involve anything in the GacUI. So it is the renderer's GuiMain needs to inject the code to call `InvokeInMainThread`. By the way, all GacUI constructions are no thread safe, the GuiRemoteRendererSingle should only be touched in UI thread. You should only use InvokeInMainThread, and when GetApplication is not ready yet, there is no way to process the commands, but you should always process all commands, so during startup a caching would be needed.
+
+To make the code clean, such code should be moved to new file GuiRemoteProtocol_Channel_AsyncRenderer.(h|cpp) in the same folder with GuiRemoteProtocol_Channel_Async.(h|cpp). Now GuiRemoteProtocol_Channel_Async is for core and GuiRemoteProtocol_Channel_AsyncRenderer is for rendering, they all deal with async to UI thread communications.
+
+I would like you to execute the "typing 1000 characters on 5 runs for pipe and http" but this time you must hook the debugger, because the natural of Win32 API will eat many exceptions and silently exits if you don't hook a debugger. By hooking a debugger, you will be able to know all characters get really pushed to the core and replace with rendering commands. That is the sign of success.
+
 # TEST
 
 - Build and run the affected VlppOS unit test coverage around the new `vl::inter_process` channels, especially `TestInterProcess.cpp`.
@@ -122,7 +132,8 @@ Bug 2: `RemotingTest_Rendering_Win32` must not mutate the renderer DOM, Direct2D
 # PROPOSALS
 
 - No.1 Deliver fatal channel errors before closing transports [CONFIRMED]
-- No.2 Dispatch renderer protocol packages on the UI thread [CONFIRMED]
+- No.2 Dispatch renderer protocol packages on the UI thread [DENIED]
+- No.3 Add renderer async channel wrapper with GuiMain-injected UI dispatch [CONFIRMED]
 
 ## No.1 Deliver fatal channel errors before closing transports
 
@@ -150,13 +161,39 @@ Bug 2: `RemotingTest_Rendering_Win32` must not mutate the renderer DOM, Direct2D
 - In VlppOS, `NetworkProtocolChannelServer::OnConnectionDisconnected` keeps an owning `Ptr<Connection>` while signaling disconnect, avoiding a use-after-free when a renderer disconnects or the stress harness closes it.
 - Regenerated `VlppOS\Release` and copied the updated generated `VlppOS.h` into `GacUI\Import`.
 
+### DENIED BY USER
+
+- The design put GacUI UI-thread scheduling inside `GuiRemoteProtocol_Channel_Json.(h|cpp)`, which should stay as pure JSON/protocol data processing.
+- Renderer-side async dispatch belongs in a dedicated `GuiRemoteProtocol_Channel_AsyncRenderer.(h|cpp)` layer, with `RemotingTest_Rendering_Win32` injecting the `InvokeInMainThread` call from `GuiMain`.
+
+## No.3 Add renderer async channel wrapper with GuiMain-injected UI dispatch
+
+### CODE CHANGE
+
+- Restored `GuiRemoteProtocol_Channel_Json.(h|cpp)` to pure package unpacking and protocol dispatching.
+- Added `GuiRemoteProtocol_Channel_AsyncRenderer.(h|cpp)`, a renderer-side JSON channel wrapper that caches incoming packages until the renderer `GuiMain` injects an `InvokeInMainThread` invoker, then drains all queued packages on the UI thread.
+- Updated `RemotingTest_Rendering_Win32` to wrap the network protocol channel with the renderer async channel and inject `GetApplication()->InvokeInMainThread` from `GuiMain` after the native main window is registered.
+- Fixed remote document paragraph reconnect/update state so a paragraph whose committed run list is empty is still treated as already-created after the first renderer update. Without this, reconnect/update flows could send `text` again for an existing remote paragraph id.
+- Fixed the Windows `VlppOS` HTTP client request lifetime used by GacUI `/Http`: each WinHTTP request now owns its request body and response read state through a per-request context, and active request slots are marked inactive instead of compacted while WinHTTP callbacks may still be running. Regenerated `VlppOS\Release` and copied the updated Windows release files into `GacUI\Import`.
+
 ### CONFIRMED
 
-- Rebuilt GacUI successfully.
-- Ran the UIA stress harness against `RemotingTest_Core /FCT /Pipe` and `RemotingTest_Rendering_Win32 /Pipe`: 5 consecutive runs of 1000 typed characters passed, with both processes alive and the renderer responsive after each run.
-- Ran the same UIA stress harness against `/FCT /Http` and `/Http`: 5 consecutive runs of 1000 typed characters passed, with both processes alive and the renderer responsive after each run.
-- Rebuilt VlppOS and ran VlppOS UnitTest: passed 12/12 files and 115/115 cases.
-- Ran GacUI UnitTest: passed 84/84 files and 1686/1686 cases.
+- Rebuilt `VlppOS`: passed.
+- Rebuilt `GacUI`: passed.
+- Ran `VlppOS` UnitTest: passed 12/12 files and 115/115 cases.
+- Ran `GacUI` UnitTest: passed 84/84 files and 1686/1686 cases.
+- Ran debugger-hooked `RemotingTest_Core /FCT /Http` + `RemotingTest_Rendering_Win32 /Http` typing stress for 5 consecutive runs. Every run typed 1000 characters plus 20 Enter keys into the document editor, with both core and renderer debugged. Results:
+  - Http run 1: core chars 1024, document updates 1044, DOM diffs 30, debugger stops 0.
+  - Http run 2: core chars 1056, document updates 1072, DOM diffs 40, debugger stops 0.
+  - Http run 3: core chars 1044, document updates 1060, DOM diffs 38, debugger stops 0.
+  - Http run 4: core chars 1042, document updates 1056, DOM diffs 40, debugger stops 0.
+  - Http run 5: core chars 1032, document updates 1050, DOM diffs 42, debugger stops 0.
+- Ran debugger-hooked `RemotingTest_Core /FCT /Pipe` + `RemotingTest_Rendering_Win32 /Pipe` typing stress for 5 consecutive runs. Results:
+  - Pipe run 1: core chars 1058, document updates 1074, DOM diffs 40, debugger stops 0.
+  - Pipe run 2: core chars 1070, document updates 1086, DOM diffs 40, debugger stops 0.
+  - Pipe run 3: core chars 1120, document updates 1136, DOM diffs 38, debugger stops 0.
+  - Pipe run 4: core chars 1154, document updates 1170, DOM diffs 40, debugger stops 0.
+  - Pipe run 5: core chars 1066, document updates 1082, DOM diffs 44, debugger stops 0.
 
 ## Implemented So Far
 

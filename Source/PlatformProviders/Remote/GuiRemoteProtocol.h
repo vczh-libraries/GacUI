@@ -17,5 +17,6 @@ Interfaces:
 #include "GuiRemoteProtocol_DomDiff.h"
 #include "GuiRemoteProtocol_Channel_Json.h"
 #include "GuiRemoteProtocol_Channel_Async.h"
+#include "GuiRemoteProtocol_Channel_AsyncRenderer.h"
 
 #endif

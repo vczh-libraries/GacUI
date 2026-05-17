@@ -127,6 +127,7 @@ GuiRemoteGraphicsParagraph
 		DocumentRunPropertyMap											stagedRuns;
 		DocumentRunPropertyMap											committedRuns;
 		collections::Dictionary<CaretRange, InlineObjectProperties>		inlineObjectProperties;
+		bool															remoteParagraphCreated = false;
 		bool															wrapLine = false;
 		vint															maxWidth = -1;
 		Alignment														paragraphAlignment = Alignment::Left;
@@ -154,6 +155,7 @@ GuiRemoteGraphicsParagraph
 
 	public:
 		bool											EnsureRemoteParagraphSynced();
+		void											ResetRemoteParagraphSyncState();
 		void											MarkParagraphDirty(bool invalidateSize, bool invalidateCaretBoundsCache);
 		void											SetInlineObjectBounds(vint callbackId, const Rect& bounds);
 

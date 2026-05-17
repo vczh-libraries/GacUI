@@ -231,6 +231,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channel_Async.cpp">
       <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolChannels</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channel_AsyncRenderer.cpp">
+      <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolChannels</Filter>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle.cpp">
       <Filter>PlatformProviders\RemoteRenderer\Single</Filter>
     </ClCompile>
@@ -385,6 +388,9 @@
       <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolCombinators</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channel_Async.h">
+      <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolChannels</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channel_AsyncRenderer.h">
       <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolChannels</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle.h">

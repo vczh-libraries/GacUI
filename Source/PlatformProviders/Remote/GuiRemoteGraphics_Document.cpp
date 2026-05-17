@@ -57,7 +57,7 @@ GuiRemoteGraphicsParagraph
 		MergeRuns(textRuns, inlineObjectRuns, stagedRuns);
 
 		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		if (committedRuns.Count() == 0)
+		if (!remoteParagraphCreated)
 		{
 			desc.text = text;
 		}
@@ -101,6 +101,7 @@ GuiRemoteGraphicsParagraph
 			}
 		}
 		committedRuns = std::move(stagedRuns);
+		remoteParagraphCreated = true;
 		needUpdate = false;
 
 		if (needUpdateCaretBoundsCache)
@@ -109,6 +110,16 @@ GuiRemoteGraphicsParagraph
 			cachedCaretBounds = {};
 		}
 		return true;
+	}
+
+	void GuiRemoteGraphicsParagraph::ResetRemoteParagraphSyncState()
+	{
+		committedRuns.Clear();
+		cachedInlineObjectBounds.Clear();
+		cachedCaretBounds = {};
+		remoteParagraphCreated = false;
+		needUpdate = true;
+		needUpdateCaretBoundsCache = true;
 	}
 
 	bool GuiRemoteGraphicsParagraph::TryBuildCaretRange(vint start, vint length, CaretRange& range)

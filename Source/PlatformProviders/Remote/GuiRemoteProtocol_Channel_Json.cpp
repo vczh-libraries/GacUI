@@ -1,10 +1,8 @@
 #include "GuiRemoteProtocol_Channel_Json.h"
-#include "../../Application/Controls/GuiApplication.h"
 
 namespace vl::presentation::remoteprotocol::channeling
 {
 	using namespace vl::collections;
-	using namespace vl::presentation::controls;
 
 /***********************************************************************
 ChannelPackageSemantic
@@ -538,29 +536,7 @@ GuiRemoteProtocolRendererChannel
 		channel->BatchWrite(disconnected);
 	}
 
-	void GuiRemoteProtocolRendererChannel::ProcessReceivedPackages()
-	{
-		while (true)
-		{
-			List<ReceivedPackage> packages;
-			SPIN_LOCK(lockReceivedPackages)
-			{
-				packages = std::move(receivedPackages);
-				if (packages.Count() == 0)
-				{
-					receivedPackageTaskQueued = false;
-					return;
-				}
-			}
-
-			for (auto&& receivedPackage : packages)
-			{
-				ProcessReceivedPackage(receivedPackage.senderClientId, receivedPackage.package);
-			}
-		}
-	}
-
-	void GuiRemoteProtocolRendererChannel::ProcessReceivedPackage(vint senderClientId, const JsonPackage& package)
+	void GuiRemoteProtocolRendererChannel::OnRead(vint senderClientId, const JsonPackage& package)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolRendererChannel::OnRead(vint, const JsonPackage&)#"
 		ChannelPackageInfo info;
@@ -588,37 +564,6 @@ GuiRemoteProtocolRendererChannel
 			Flush(disconnected);
 		}
 #undef ERROR_MESSAGE_PREFIX
-	}
-
-	void GuiRemoteProtocolRendererChannel::OnRead(vint senderClientId, const JsonPackage& package)
-	{
-		if (auto app = GetApplication())
-		{
-			if (!app->IsInMainThread(app->GetMainWindow()))
-			{
-				bool shouldQueue = false;
-				SPIN_LOCK(lockReceivedPackages)
-				{
-					receivedPackages.Add({ senderClientId,package });
-					if (!receivedPackageTaskQueued)
-					{
-						receivedPackageTaskQueued = true;
-						shouldQueue = true;
-					}
-				}
-
-				if (shouldQueue)
-				{
-					app->InvokeInMainThread(app->GetMainWindow(), [this]()
-					{
-						ProcessReceivedPackages();
-					});
-				}
-				return;
-			}
-		}
-
-		ProcessReceivedPackage(senderClientId, package);
 	}
 
 	GuiRemoteProtocolRendererChannel::GuiRemoteProtocolRendererChannel(IJsonChannelClient* _client, IJsonChannel* _channel, IGuiRemoteProtocol* _protocol)

@@ -5,6 +5,7 @@
 
 using namespace vl;
 using namespace vl::presentation;
+using namespace vl::presentation::controls;
 using namespace vl::presentation::remoteprotocol;
 using namespace vl::presentation::remoteprotocol::channeling;
 using namespace vl::presentation::remote_renderer;
@@ -17,6 +18,16 @@ namespace
 }
 
 GuiRemoteRendererSingle* renderer = nullptr;
+GuiRemoteProtocolAsyncJsonChannelRenderer* asyncChannel = nullptr;
+
+class GuiMainAsyncRendererInvoker : public Object, public virtual IGuiRemoteProtocolAsyncRendererInvoker
+{
+public:
+	void InvokeInMainThread(const Func<void()>& proc) override
+	{
+		GetApplication()->InvokeInMainThread(nullptr, proc);
+	}
+};
 
 void GuiMain()
 {
@@ -30,8 +41,11 @@ void GuiMain()
 		auto y = client.Top() + (client.Height() - size.y) / 2;
 		mainWindow->SetBounds({ {x,y},size });
 	}
+	GuiMainAsyncRendererInvoker invoker;
 	renderer->RegisterMainWindow(mainWindow);
+	asyncChannel->SetInvokeInMainThread(&invoker);
 	GetCurrentController()->WindowService()->Run(mainWindow);
+	asyncChannel->SetInvokeInMainThread(nullptr);
 	renderer->UnregisterMainWindow();
 }
 
@@ -41,12 +55,15 @@ int StartClient(Ptr<inter_process::INetworkProtocolClient> networkClient)
 	GuiRemoteProtocolChannelClient channelClient(networkClient, jsonParser);
 	channelClient.WaitForServer();
 
+	GuiRemoteProtocolAsyncJsonChannelRenderer asyncRendererChannel(channelClient.GetProtocolChannel());
 	GuiRemoteRendererSingle remoteRenderer;
-	GuiRemoteProtocolRendererChannel rendererChannel(&channelClient, channelClient.GetProtocolChannel(), &remoteRenderer);
+	GuiRemoteProtocolRendererChannel rendererChannel(&channelClient, &asyncRendererChannel, &remoteRenderer);
 
+	asyncChannel = &asyncRendererChannel;
 	renderer = &remoteRenderer;
 	int result = SetupRawWindowsDirect2DRenderer();
 	renderer = nullptr;
+	asyncChannel = nullptr;
 
 	return result;
 }

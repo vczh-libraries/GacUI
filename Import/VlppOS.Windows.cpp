@@ -2479,16 +2479,15 @@ void HttpClient::SendString(const WString& str)
 		(WINHTTP_STATUS_CALLBACK)[](HINTERNET httpRequest, DWORD_PTR dwContext, DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength) -> void
 		{
 			if (!dwContext) return;
-			auto self = reinterpret_cast<HttpClient*>(dwContext);
+			auto contextPtr = reinterpret_cast<Ptr<HttpClient::HttpRequestContext>*>(dwContext);
+			auto context = *contextPtr;
+			auto self = context->client;
+			auto requestId = context->requestId;
 			switch (dwInternetStatus)
 			{
 			case WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE:
 				{
-					SPIN_LOCK(self->httpRequestBodiesLock)
-					{
-						self->httpRequestBodies.Remove(httpRequest);
-					}
-					self->QueueCallback([=]()
+					self->QueueCallback([=, context = std::move(context)]()
 					{
 						if (self->state == State::Stopping) return;
 						DWORD lastError = 0;
@@ -2505,7 +2504,7 @@ void HttpClient::SendString(const WString& str)
 				break;
 			case WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE:
 				{
-					self->QueueCallback([=]()
+					self->QueueCallback([=, context = std::move(context)]()
 					{
 						if (self->state == State::Stopping) return;
 						DWORD lastError = 0;
@@ -2528,21 +2527,12 @@ void HttpClient::SendString(const WString& str)
 
 						if (statusCode != 200)
 						{
-							self->CloseRequest(httpRequest);
+							self->CloseRequest(httpRequest, requestId);
 							self->RaiseErrorUnsafe(WString::Unmanaged(L"/Response returned status code: ") + itow(statusCode) + L", another renderer may have connected to the core.");
 							return;
 						}
 
-						Ptr<HttpResponseReading> reading;
-						SPIN_LOCK(self->httpResponseReadingsLock)
-						{
-							auto index = self->httpResponseReadings.Keys().IndexOf(httpRequest);
-							if (index != -1)
-							{
-								reading = self->httpResponseReadings.Values()[index];
-							}
-						}
-						if (!reading) return;
+						auto reading = context->responseReading;
 
 						reading->bodyBufferWriting = 0;
 						httpResult = WinHttpQueryDataAvailable(
@@ -2561,20 +2551,11 @@ void HttpClient::SendString(const WString& str)
 			case WINHTTP_CALLBACK_STATUS_DATA_AVAILABLE:
 				{
 					DWORD dataAvailable = *(PDWORD)lpvStatusInformation;
-					self->QueueCallback([=]()
+					self->QueueCallback([=, context = std::move(context)]()
 					{
 						if (self->state == State::Stopping) return;
 
-						Ptr<HttpResponseReading> reading;
-						SPIN_LOCK(self->httpResponseReadingsLock)
-						{
-							auto index = self->httpResponseReadings.Keys().IndexOf(httpRequest);
-							if (index != -1)
-							{
-								reading = self->httpResponseReadings.Values()[index];
-							}
-						}
-						if (!reading) return;
+						auto reading = context->responseReading;
 
 						if (dataAvailable == 0)
 						{
@@ -2584,7 +2565,7 @@ void HttpClient::SendString(const WString& str)
 								U8String bodyUtf8 = U8String::Unmanaged(&reading->bodyBuffer[0]);
 								self->callback->OnReadString(u8tow(bodyUtf8));
 							}
-							self->CloseRequest(httpRequest);
+							self->CloseRequest(httpRequest, requestId);
 							return;
 						}
 
@@ -2613,20 +2594,11 @@ void HttpClient::SendString(const WString& str)
 				break;
 			case WINHTTP_CALLBACK_STATUS_READ_COMPLETE:
 				{
-					self->QueueCallback([=]()
+					self->QueueCallback([=, context = std::move(context)]()
 					{
 						if (self->state == State::Stopping) return;
 
-						Ptr<HttpResponseReading> reading;
-						SPIN_LOCK(self->httpResponseReadingsLock)
-						{
-							auto index = self->httpResponseReadings.Keys().IndexOf(httpRequest);
-							if (index != -1)
-							{
-								reading = self->httpResponseReadings.Values()[index];
-							}
-						}
-						if (!reading) return;
+						auto reading = context->responseReading;
 
 						CHECK_ERROR(
 							reading->bodyBufferWritingAvailable == dwStatusInformationLength,
@@ -2650,20 +2622,17 @@ void HttpClient::SendString(const WString& str)
 				break;
 			case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
 				{
-					SPIN_LOCK(self->httpRequestBodiesLock)
-					{
-						self->httpRequestBodies.Remove(httpRequest);
-					}
-					self->QueueCallback([=]()
+					self->QueueCallback([=, context = std::move(context)]()
 					{
 						if (self->state == State::Stopping) return;
-						self->CloseRequest(httpRequest);
+						self->CloseRequest(httpRequest, requestId);
 						self->RaiseErrorUnsafe(WString::Unmanaged(L"/Response canceled, another renderer may have connected to the core."));
 					});
 				}
 				break;
 			case WINHTTP_CALLBACK_STATUS_HANDLE_CLOSING:
-				self->OnRequestHandleClosing(httpRequest);
+				self->OnRequestHandleClosing(httpRequest, requestId);
+				delete contextPtr;
 				break;
 			}
 		},
@@ -2686,45 +2655,37 @@ void HttpClient::SendString(const WString& str)
 	}
 	CHECK_ERROR(httpResult == TRUE, L"WinHttpAddRequestHeaders failed.");
 
-	U8String bodyUtf8 = wtou8(str);
-	SPIN_LOCK(httpRequestBodiesLock)
-	{
-		httpRequestBodies.Add(httpRequest, bodyUtf8);
-	}
-	SPIN_LOCK(httpResponseReadingsLock)
-	{
-		httpResponseReadings.Add(httpRequest, Ptr(new HttpResponseReading));
-	}
+	auto contextPtr = new Ptr<HttpRequestContext>(new HttpRequestContext);
+	auto context = *contextPtr;
+	context->client = this;
+	context->httpRequest = httpRequest;
+	context->requestId = ++createdRequestIds;
+	context->requestBody = wtou8(str);
+	context->responseReading = Ptr(new HttpResponseReading);
 
 	{
-		AttachRequest(httpRequest);
+		AttachRequest(httpRequest, context->requestId);
 		httpResult = WinHttpSendRequest(
 			httpRequest,
 			WINHTTP_NO_ADDITIONAL_HEADERS,
 			0,
-			(LPVOID)bodyUtf8.Buffer(),
-			(DWORD)bodyUtf8.Length(),
-			(DWORD)bodyUtf8.Length(),
-			reinterpret_cast<DWORD_PTR>(this));
+			(LPVOID)context->requestBody.Buffer(),
+			(DWORD)context->requestBody.Length(),
+			(DWORD)context->requestBody.Length(),
+			reinterpret_cast<DWORD_PTR>(contextPtr));
 		lastError = GetLastError();
 		if (lastError == ERROR_INVALID_HANDLE)
 		{
-			SPIN_LOCK(httpRequestBodiesLock)
-			{
-				httpRequestBodies.Remove(httpRequest);
-			}
-			OnRequestHandleClosing(httpRequest);
+			OnRequestHandleClosing(httpRequest, context->requestId);
+			delete contextPtr;
 			CHECK_ERROR(state == State::Stopping, L"WinHttpSendRequest failed with ERROR_INVALID_HANDLE.");
 			WinHttpCloseHandle(httpRequest);
 			return;
 		}
 		if (httpResult == FALSE)
 		{
-			SPIN_LOCK(httpRequestBodiesLock)
-			{
-				httpRequestBodies.Remove(httpRequest);
-			}
-			OnRequestHandleClosing(httpRequest);
+			OnRequestHandleClosing(httpRequest, context->requestId);
+			delete contextPtr;
 			WinHttpCloseHandle(httpRequest);
 			CHECK_FAIL(L"WinHttpSendRequest failed.");
 		}
@@ -2775,24 +2736,53 @@ void HttpClient::QueueCallback(const Func<void()>& proc)
 	}
 }
 
-void HttpClient::AttachRequest(HINTERNET httpRequest)
+vint HttpClient::FindActiveRequestUnsafe(HINTERNET httpRequest, vint requestId)
+{
+	for (vint index = 0; index < httpActiveRequests.Count(); index++)
+	{
+		auto&& activeRequest = httpActiveRequests[index];
+		if (activeRequest.requestId != -1 && activeRequest.httpRequest == httpRequest && activeRequest.requestId == requestId)
+		{
+			return index;
+		}
+	}
+	return -1;
+}
+
+void HttpClient::AttachRequest(HINTERNET httpRequest, vint requestId)
 {
 	BeginPendingCallback();
 	SPIN_LOCK(httpActiveRequestsLock)
 	{
-		httpActiveRequests.Add(httpRequest);
+		for (vint index = 0; index < httpActiveRequests.Count(); index++)
+		{
+			auto&& activeRequest = httpActiveRequests[index];
+			if (activeRequest.requestId == -1)
+			{
+				activeRequest.httpRequest = httpRequest;
+				activeRequest.requestId = requestId;
+				return;
+			}
+		}
+
+		HttpActiveRequest activeRequest;
+		activeRequest.httpRequest = httpRequest;
+		activeRequest.requestId = requestId;
+		httpActiveRequests.Add(activeRequest);
 	}
 }
 
-void HttpClient::CloseRequest(HINTERNET httpRequest)
+void HttpClient::CloseRequest(HINTERNET httpRequest, vint requestId)
 {
 	bool closeRequest = false;
 	SPIN_LOCK(httpActiveRequestsLock)
 	{
-		vint index = httpActiveRequests.IndexOf(httpRequest);
+		vint index = FindActiveRequestUnsafe(httpRequest, requestId);
 		if (index != -1)
 		{
-			httpActiveRequests.RemoveAt(index);
+			auto&& activeRequest = httpActiveRequests[index];
+			activeRequest.httpRequest = NULL;
+			activeRequest.requestId = -1;
 			closeRequest = true;
 		}
 	}
@@ -2802,22 +2792,16 @@ void HttpClient::CloseRequest(HINTERNET httpRequest)
 	}
 }
 
-void HttpClient::OnRequestHandleClosing(HINTERNET httpRequest)
+void HttpClient::OnRequestHandleClosing(HINTERNET httpRequest, vint requestId)
 {
-	SPIN_LOCK(httpRequestBodiesLock)
-	{
-		httpRequestBodies.Remove(httpRequest);
-	}
-	SPIN_LOCK(httpResponseReadingsLock)
-	{
-		httpResponseReadings.Remove(httpRequest);
-	}
 	SPIN_LOCK(httpActiveRequestsLock)
 	{
-		vint index = httpActiveRequests.IndexOf(httpRequest);
+		vint index = FindActiveRequestUnsafe(httpRequest, requestId);
 		if (index != -1)
 		{
-			httpActiveRequests.RemoveAt(index);
+			auto&& activeRequest = httpActiveRequests[index];
+			activeRequest.httpRequest = NULL;
+			activeRequest.requestId = -1;
 		}
 	}
 	EndPendingCallback();
@@ -2873,9 +2857,12 @@ void HttpClient::Stop()
 		List<HINTERNET> stoppingRequests;
 		SPIN_LOCK(httpActiveRequestsLock)
 		{
-			for (auto httpRequest : httpActiveRequests)
+			for (auto activeRequest : httpActiveRequests)
 			{
-				stoppingRequests.Add(httpRequest);
+				if (activeRequest.requestId != -1)
+				{
+					stoppingRequests.Add(activeRequest.httpRequest);
+				}
 			}
 			httpActiveRequests.Clear();
 		}
