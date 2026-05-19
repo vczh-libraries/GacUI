@@ -145,13 +145,7 @@ JsonNodeListSerializer
 		{
 			array->items.Add(package);
 		}
-
-		glr::json::JsonFormatting formatting;
-		formatting.spaceAfterColon = false;
-		formatting.spaceAfterComma = false;
-		formatting.crlf = false;
-		formatting.compact = true;
-		dest = glr::json::JsonToString(array, formatting);
+		dest = glr::json::JsonToString(array);
 	}
 
 	void JsonNodeListSerializer::Deserialize(Ptr<glr::json::Parser> parser, const DestType& source, SourceType& dest)

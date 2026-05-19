@@ -34,11 +34,9 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 		while (true)
 		{
 			List<ReceivedPackage> messages;
-			IJsonChannelReader* currentReader = nullptr;
 			SPIN_LOCK(lockMessages)
 			{
 				messages = std::move(queuedMessages);
-				currentReader = reader;
 				if (messages.Count() == 0)
 				{
 					uiTaskQueued = false;
@@ -48,10 +46,7 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 
 			for (auto&& message : messages)
 			{
-				if (currentReader)
-				{
-					currentReader->OnRead(message.senderClientId, message.package);
-				}
+				reader->OnRead(message.senderClientId, message.package);
 			}
 		}
 	}
@@ -90,10 +85,7 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 
 	void GuiRemoteProtocolAsyncJsonChannelRenderer::Initialize(IJsonChannelReader* _reader)
 	{
-		SPIN_LOCK(lockMessages)
-		{
-			reader = _reader;
-		}
+		reader = _reader;
 		channel->Initialize(_reader ? this : nullptr);
 	}
 

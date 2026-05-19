@@ -59,8 +59,8 @@ JsonNodeListSerializer
 		using DestType = WString;
 		using ContextType = Ptr<glr::json::Parser>;
 
-		static void					Serialize(Ptr<glr::json::Parser> parser, const SourceType& source, DestType& dest);
-		static void					Deserialize(Ptr<glr::json::Parser> parser, const DestType& source, SourceType& dest);
+		static void									Serialize(Ptr<glr::json::Parser> parser, const SourceType& source, DestType& dest);
+		static void									Deserialize(Ptr<glr::json::Parser> parser, const DestType& source, SourceType& dest);
 	};
 
 	using GuiRemoteProtocolChannelServer = inter_process::NetworkProtocolChannelServer<JsonPackage, JsonNodeListSerializer>;
@@ -70,15 +70,13 @@ JsonNodeListSerializer
 	{
 		using Base = inter_process::NetworkProtocolChannelClient<JsonPackage, JsonNodeListSerializer>;
 	protected:
-		IJsonChannelClient::ChannelMap
-									channelNames;
+		IJsonChannelClient::ChannelMap				channelNames;
 
 	public:
 		GuiRemoteProtocolChannelClient(Ptr<inter_process::INetworkProtocolClient> client, Ptr<glr::json::Parser> parser);
 
-		const IJsonChannelClient::ChannelNameList&
-									OnGetChannelNames() override;
-		IJsonChannel*				GetProtocolChannel();
+		const IJsonChannelClient::ChannelNameList&	OnGetChannelNames() override;
+		IJsonChannel*								GetProtocolChannel();
 	};
 
 	class GuiRemoteProtocolLocalChannelClient
@@ -86,15 +84,14 @@ JsonNodeListSerializer
 	{
 		using Base = inter_process::NetworkProtocolLocalChannelClient<JsonPackage, JsonNodeListSerializer>;
 	protected:
-		IJsonChannelClient::ChannelMap
-									channelNames;
+		IJsonChannelClient::ChannelMap				channelNames;
 
 	public:
 		GuiRemoteProtocolLocalChannelClient(Ptr<glr::json::Parser> parser);
 
 		const IJsonChannelClient::ChannelNameList&
-									OnGetChannelNames() override;
-		IJsonChannel*				GetProtocolChannel();
+													OnGetChannelNames() override;
+		IJsonChannel*								GetProtocolChannel();
 	};
 
 /***********************************************************************
@@ -107,21 +104,21 @@ GuiRemoteProtocolCoreChannel
 		, protected IJsonChannelReader
 	{
 	protected:
-		IJsonChannelClient*			client = nullptr;
-		IJsonChannel*				channel = nullptr;
-		IGuiRemoteProtocolEvents*	events = nullptr;
-		IGuiRemoteEventProcessor*	eventProcessor = nullptr;
-		WString						executablePath;
-		SpinLock					lockRendererClientId;
-		vint						rendererClientId = -1;
+		IJsonChannelClient*							client = nullptr;
+		IJsonChannel*								channel = nullptr;
+		IGuiRemoteProtocolEvents*					events = nullptr;
+		IGuiRemoteEventProcessor*					eventProcessor = nullptr;
+		WString										executablePath;
+		SpinLock									lockRendererClientId;
+		vint										rendererClientId = -1;
 
 		using OnReadEventHandler = void (GuiRemoteProtocolCoreChannel::*)(Ptr<glr::json::JsonNode>);
 		using OnReadEventHandlerMap = collections::Dictionary<WString, OnReadEventHandler>;
-		OnReadEventHandlerMap		onReadEventHandlers;
+		OnReadEventHandlerMap						onReadEventHandlers;
 
 		using OnReadResponseHandler = void (GuiRemoteProtocolCoreChannel::*)(vint, Ptr<glr::json::JsonNode>);
 		using OnReadResponseHandlerMap = collections::Dictionary<WString, OnReadResponseHandler>;
-		OnReadResponseHandlerMap		onReadResponseHandlers;
+		OnReadResponseHandlerMap					onReadResponseHandlers;
 
 #define EVENT_NOREQ(NAME, REQUEST)					void OnRead_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments);
 #define EVENT_REQ(NAME, REQUEST)					void OnRead_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments);
