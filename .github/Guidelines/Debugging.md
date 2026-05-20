@@ -29,15 +29,9 @@ After you are ready, send the `g` command to start running.
 
 ### Stop a Debugger
 
-You must call this script to stop the debugger.
-Do not stop the debugger using any command.
-This script is also required to run before compiling only when Visual Studio Code tasks are not available to you.
-
-```
-& REPO-ROOT\.github\Scripts\copilotDebug_Stop.ps1
-```
-
-If there is any error message, it means the debugger is not alive, which is fine.
+- Kill `cdb` process first, if any.
+  - The cdb path is stored in `$env:CDBPATH`.
+- Kill the binary process that is blocked.
 
 #### Warning
 

@@ -138,6 +138,12 @@ Propose any solution you can think of and write them down in the document, you m
     - If there is only one `[CONFIRMED]` proposal, you should keep the change in the source code, according to its `### CODE CHANGE` section. And then do `Step 6`.
     - If there is multiple `[CONFIRMED]` proposals, you are going to make your decision about which is the best one, and keep that change in the source code, according to its `### CODE CHANGE` section. And then do `Step 6`. You will also need to write in the selected proposal about why it is better than the others, and also tell me directly.
 - Understand and implement the proposal.
+  - **IMPORTANT** The order of confirming a proposal should be in this order:
+    - Write down the details of a proposal to the document and save the file.
+    - Summarize `### CODE CHANGE`.
+    - Execute it and see if it works.
+  - I would like you to make sure that, before the test cases are running, the proposal has already been documented in the file.
+  - Test failures not necessary mean the proposal is invalid, it might be because of the implementation. But if you need to change the implementation, you should update the proposal in the same order. Unless it is a fundementally different idea, then abandon the current proposal and propose more.
 - Run the test cases to confirm the proposal.
   - Ensure all test cases passed.
     - If related test cases failed, it means the proposal is denied.

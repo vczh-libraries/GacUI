@@ -19,10 +19,7 @@ cd SOLUTION-ROOT
 ```
 
 It is possible that, before running `copilotBuild.ps1`, the binary to compile is still running or still being debugged. This could cause the linking to fail. You need to check the error message, and in case when it happens:
-- Kill `cdb` process first, if any.
-  - The cdb path is stored in `$env:CDBPATH`.
-  - Avoid running `copilotDebug_Stop.ps1` directly.
-- Kill the binary process that is blocked.
+- Follow `### Stop a Debugger` in `REPO-ROOT/.github/Guidelines/Debugging.md` to stop debugging.
 - Rebuild, and this issue should be gone.
 
 ### Ensure Target Configuration

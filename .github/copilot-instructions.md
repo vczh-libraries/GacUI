@@ -78,7 +78,6 @@ If you need to find any script or support files, they are in the `REPO-ROOT/.git
 - `copilotBuild.ps1`
 - `copilotExecute.ps1`
 - `copilotDebug_Start.ps1`
-- `copilotDebug_Stop.ps1`
 - `copilotDebug_RunCommand.ps1`
 - `copilotRemember.ps1`
 - `Build.log`
