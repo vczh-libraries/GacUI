@@ -19,45 +19,171 @@ namespace
 	constexpr const wchar_t* GacUIRemoteProtocolHttpBaseUrl = L"/GacUIRemoteProtocolHttp";
 	constexpr vint GacUIRemoteProtocolHttpPort = 8888;
 
-	vint WaitForRenderer(GuiRemoteProtocolChannelServer& channelServer)
+	class RemotingChannelServerBase : public GuiRemoteProtocolChannelServer
 	{
-		auto rendererClientId = channelServer.WaitForClient();
-		CHECK_ERROR(
-			channelServer.GetClientChannels().Contains(rendererClientId, WString::Unmanaged(GacUIRemoteProtocolChannelName)),
-			L"WaitForRenderer(GuiRemoteProtocolChannelServer&)#The renderer client does not have the GacUI remote protocol channel."
-			);
-		return rendererClientId;
-	}
+		using Base = GuiRemoteProtocolChannelServer;
 
-	void AcceptRenderers(GuiRemoteProtocolChannelServer* channelServer)
-	{
-		while (!channelServer->IsStopped())
+	protected:
+		// covers eventRendererConnected, connectingCoreClient and rendererClientId
+		SpinLock						lockConnection;
+		EventObject*					eventRendererConnected = nullptr;
+		bool							connectingCoreClient = false;
+		bool							acceptMultipleRenderers = false;
+		vint							rendererClientId = -1;
+
+	public:
+		using Base::OnClientConnected;
+
+		RemotingChannelServerBase(Ptr<glr::json::Parser> parser, bool _acceptMultipleRenderers)
+			: Base(parser)
+			, acceptMultipleRenderers(_acceptMultipleRenderers)
 		{
-			try
+		}
+
+		void SetRendererConnectedEvent(EventObject* eventObject)
+		{
+			SPIN_LOCK(lockConnection)
 			{
-				auto rendererClientId = WaitForRenderer(*channelServer);
-				Console::WriteLine(L"> Renderer connected: " + itow(rendererClientId));
-			}
-			catch (const Exception& e)
-			{
-				if (!channelServer->IsStopped())
-				{
-					channelServer->BroadcastError(e.Message());
-					Console::WriteLine(L"Error: " + e.Message());
-				}
-				break;
-			}
-			catch (const Error& e)
-			{
-				auto message = WString::Unmanaged(e.Description());
-				if (!channelServer->IsStopped())
-				{
-					channelServer->BroadcastError(message);
-					Console::WriteLine(L"Error: " + message);
-				}
-				break;
+				eventRendererConnected = eventObject;
 			}
 		}
+
+		void BeginConnectCoreClient()
+		{
+			SPIN_LOCK(lockConnection)
+			{
+				connectingCoreClient = true;
+			}
+		}
+
+		void EndConnectCoreClient()
+		{
+			SPIN_LOCK(lockConnection)
+			{
+				connectingCoreClient = false;
+			}
+		}
+
+		vint GetRendererClientId()
+		{
+			vint clientId = -1;
+			SPIN_LOCK(lockConnection)
+			{
+				clientId = rendererClientId;
+			}
+			return clientId;
+		}
+
+		inter_process::WaitForClientResult OnClientConnected(vint clientId, const IJsonChannelClient::ChannelNameList& availableChannels) override
+		{
+			CHECK_ERROR(
+				availableChannels.Contains(WString::Unmanaged(GacUIRemoteProtocolChannelName)),
+				L"RemotingChannelServerBase::OnClientConnected(vint, const ChannelNameList&)#The client does not have the GacUI remote protocol channel."
+				);
+
+			EventObject* eventToSignal = nullptr;
+			bool rejected = false;
+			SPIN_LOCK(lockConnection)
+			{
+				if (!connectingCoreClient)
+				{
+					if (!acceptMultipleRenderers && rendererClientId != -1)
+					{
+						rejected = true;
+					}
+					else
+					{
+						rendererClientId = clientId;
+						eventToSignal = eventRendererConnected;
+					}
+				}
+			}
+
+			if (rejected)
+			{
+				return inter_process::WaitForClientResult::Reject;
+			}
+			if (eventToSignal)
+			{
+				eventToSignal->Signal();
+			}
+			return inter_process::WaitForClientResult::Accept;
+		}
+	};
+
+	class NamedPipeRemotingChannelServer : public RemotingChannelServerBase, public inter_process::NamedPipeServer
+	{
+	public:
+		NamedPipeRemotingChannelServer(Ptr<glr::json::Parser> parser, const WString& pipeName)
+			: RemotingChannelServerBase(parser, false)
+			, inter_process::NamedPipeServer(pipeName)
+		{
+		}
+
+		inter_process::WaitForClientResult OnClientConnected(inter_process::INetworkProtocolConnection* connection) override
+		{
+			return RemotingChannelServerBase::OnClientConnected(connection);
+		}
+
+		void Start() override
+		{
+			RemotingChannelServerBase::Start();
+			inter_process::NamedPipeServer::Start();
+		}
+
+		void Stop() override
+		{
+			RemotingChannelServerBase::Stop();
+			inter_process::NamedPipeServer::Stop();
+		}
+
+		bool IsStopped() override
+		{
+			return RemotingChannelServerBase::IsStopped() || inter_process::NamedPipeServer::IsStopped();
+		}
+	};
+
+	class HttpRemotingChannelServer : public RemotingChannelServerBase, public inter_process::HttpServer
+	{
+	public:
+		HttpRemotingChannelServer(Ptr<glr::json::Parser> parser, const WString& baseUrl, vint port)
+			: RemotingChannelServerBase(parser, true)
+			, inter_process::HttpServer(baseUrl, port)
+		{
+		}
+
+		inter_process::WaitForClientResult OnClientConnected(inter_process::INetworkProtocolConnection* connection) override
+		{
+			return RemotingChannelServerBase::OnClientConnected(connection);
+		}
+
+		void Start() override
+		{
+			RemotingChannelServerBase::Start();
+			inter_process::HttpServer::Start();
+		}
+
+		void Stop() override
+		{
+			inter_process::HttpServer::Stop();
+			RemotingChannelServerBase::Stop();
+		}
+
+		bool IsStopped() override
+		{
+			return RemotingChannelServerBase::IsStopped() || inter_process::HttpServer::IsStopped();
+		}
+	};
+
+	vint WaitForRenderer(RemotingChannelServerBase& channelServer, EventObject& eventRendererConnected)
+	{
+		eventRendererConnected.Wait();
+		auto rendererClientId = channelServer.GetRendererClientId();
+		CHECK_ERROR(
+			channelServer.GetClientChannels().Contains(rendererClientId, WString::Unmanaged(GacUIRemoteProtocolChannelName)),
+			L"WaitForRenderer(RemotingChannelServerBase&, EventObject&)#The renderer client does not have the GacUI remote protocol channel."
+			);
+		return rendererClientId;
 	}
 }
 
@@ -104,27 +230,22 @@ void GuiMain()
 	}
 }
 
-void StartServer(Ptr<inter_process::INetworkProtocolServer> networkServer, bool acceptMultipleRenderers)
+void StartServer(RemotingChannelServerBase& channelServer, Ptr<glr::json::Parser> jsonParser)
 {
-	auto jsonParser = Ptr(new glr::json::Parser);
-	GuiRemoteProtocolChannelServer channelServer(networkServer, jsonParser);
+	EventObject eventRendererConnected;
+	CHECK_ERROR(eventRendererConnected.CreateManualUnsignal(false), L"StartServer(RemotingChannelServerBase&, Ptr<Parser>)#Failed to create eventRendererConnected.");
+	channelServer.SetRendererConnectedEvent(&eventRendererConnected);
+	channelServer.Start();
 
 	auto coreClient = Ptr(new GuiRemoteProtocolLocalChannelClient(jsonParser));
+	channelServer.BeginConnectCoreClient();
 	auto coreClientId = channelServer.ConnectLocalClient(coreClient);
-	CHECK_ERROR(coreClientId > 0, L"StartServer(Ptr<INetworkProtocolServer>)#Failed to register the core channel client.");
+	channelServer.EndConnectCoreClient();
+	CHECK_ERROR(coreClientId == GacUIRemoteProtocolCoreClientId, L"StartServer(RemotingChannelServerBase&, Ptr<Parser>)#Failed to register the core channel client.");
 
 	Console::WriteLine(L"> Waiting for a renderer ...");
-	auto rendererClientId = WaitForRenderer(channelServer);
+	auto rendererClientId = WaitForRenderer(channelServer, eventRendererConnected);
 	Console::WriteLine(L"> Renderer connected: " + itow(rendererClientId));
-
-	Thread* acceptingThread = nullptr;
-	if (acceptMultipleRenderers)
-	{
-		acceptingThread = Thread::CreateAndStart(Func<void()>([&channelServer]()
-		{
-			AcceptRenderers(&channelServer);
-		}), false);
-	}
 
 	GuiRemoteProtocolAsyncJsonChannelSerializer asyncChannelSender(coreClient->GetProtocolChannel());
 	GuiRemoteProtocolCoreChannel channelSender(
@@ -140,19 +261,17 @@ void StartServer(Ptr<inter_process::INetworkProtocolServer> networkServer, bool 
 	SetupRemoteNativeController(&diffConverterProtocol);
 	protocolServer = nullptr;
 
+	channelServer.SetRendererConnectedEvent(nullptr);
 	channelServer.Stop();
-	if (acceptingThread)
-	{
-		acceptingThread->Wait();
-		delete acceptingThread;
-	}
 }
 
 int StartNamedPipeServer(vint index)
 {
 	mainWindowConstructorIndex = index;
 	Console::WriteLine(L"> Named pipe created, waiting on: " + WString::Unmanaged(GacUIRemoteProtocolNamedPipeName));
-	StartServer(Ptr(new inter_process::NamedPipeServer(WString::Unmanaged(GacUIRemoteProtocolNamedPipeName))), false);
+	auto jsonParser = Ptr(new glr::json::Parser);
+	NamedPipeRemotingChannelServer channelServer(jsonParser, WString::Unmanaged(GacUIRemoteProtocolNamedPipeName));
+	StartServer(channelServer, jsonParser);
 	return 0;
 }
 
@@ -160,6 +279,8 @@ int StartHttpServer(vint index)
 {
 	mainWindowConstructorIndex = index;
 	Console::WriteLine(L"> HTTP server created, waiting on: http://localhost:" + itow(GacUIRemoteProtocolHttpPort) + WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl));
-	StartServer(Ptr(new inter_process::HttpServer(WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl), GacUIRemoteProtocolHttpPort)), true);
+	auto jsonParser = Ptr(new glr::json::Parser);
+	HttpRemotingChannelServer channelServer(jsonParser, WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl), GacUIRemoteProtocolHttpPort);
+	StartServer(channelServer, jsonParser);
 	return 0;
 }

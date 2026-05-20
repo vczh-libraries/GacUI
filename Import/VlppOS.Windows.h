@@ -262,11 +262,9 @@ protected:
 	WString											urlRequestPrefix;
 	WString											urlResponsePrefix;
 
+	// covers connections
 	SpinLock										lockConnections;
 	ConnectionMap									connections;
-	Semaphore										semaphoreQueuedConnections;
-	SpinLock										lockQueuedConnections;
-	collections::List<HttpServerConnection*>		queuedConnections;
 
 	HANDLE											httpRequestQueue = INVALID_HANDLE_VALUE;
 	HTTP_SERVER_SESSION_ID							httpSessionId = HTTP_NULL_ID;
@@ -324,7 +322,8 @@ public:
 	HttpServer(const WString _baseUrl, vint port);
 	~HttpServer();
 	
-	INetworkProtocolConnection*						WaitForClient() override;
+	WaitForClientResult								OnClientConnected(INetworkProtocolConnection* connection) override;
+	void											Start() override;
 	void											Stop() override;
 	bool											IsStopped() override;
 };
@@ -423,18 +422,42 @@ class NamedPipeServer : public Object, public virtual INetworkProtocolServer
 {
 	friend class NamedPipeConnection;
 protected:
+	class PendingConnection : public Object
+	{
+	public:
+		NamedPipeServer*								server = nullptr;
+		Ptr<NamedPipeConnection>						connection;
+		HANDLE											hWaitHandleConnect = INVALID_HANDLE_VALUE;
+		OVERLAPPED										overlappedConnect;
+		HANDLE											hEventConnect = INVALID_HANDLE_VALUE;
+
+		PendingConnection(NamedPipeServer* _server, Ptr<NamedPipeConnection> _connection);
+		~PendingConnection();
+
+		void											Stop();
+	};
+
 	static HANDLE									ServerCreatePipe(const WString& pipeName);
 
 	WString											pipeName;
-	bool											stopped = false;
+
+	// covers started, stopped, connections and pendingConnections
 	SpinLock										lockConnections;
+	bool											started = false;
+	bool											stopped = false;
 	collections::List<Ptr< NamedPipeConnection>>	connections;
+	collections::List<Ptr<PendingConnection>>		pendingConnections;
+
+	void											BeginListening();
+	void											CompletePendingConnection(Ptr<PendingConnection> pendingConnection, bool connected);
+	void											CompletePendingConnection(PendingConnection* pendingConnection, bool connected);
 
 public:
 	NamedPipeServer(const WString& _pipeName);
 	~NamedPipeServer();
 
-	INetworkProtocolConnection*						WaitForClient() override;
+	WaitForClientResult								OnClientConnected(INetworkProtocolConnection* connection) override;
+	void											Start() override;
 	void											Stop() override;
 	bool											IsStopped() override;
 };
