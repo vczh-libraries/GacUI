@@ -36231,7 +36231,7 @@ GuiRemoteGraphicsRenderTarget
 
 		for (auto paragraph : paragraphs.Values())
 		{
-			paragraph->MarkParagraphDirty(false, true);
+			paragraph->ResetRemoteParagraphSyncState();
 			paragraph->EnsureRemoteParagraphSynced();
 		}
 	}
@@ -37054,7 +37054,7 @@ GuiRemoteGraphicsParagraph
 		MergeRuns(textRuns, inlineObjectRuns, stagedRuns);
 
 		remoteprotocol::ElementDesc_DocumentParagraph desc;
-		if (committedRuns.Count() == 0)
+		if (!remoteParagraphCreated)
 		{
 			desc.text = text;
 		}
@@ -37098,6 +37098,7 @@ GuiRemoteGraphicsParagraph
 			}
 		}
 		committedRuns = std::move(stagedRuns);
+		remoteParagraphCreated = true;
 		needUpdate = false;
 
 		if (needUpdateCaretBoundsCache)
@@ -37106,6 +37107,16 @@ GuiRemoteGraphicsParagraph
 			cachedCaretBounds = {};
 		}
 		return true;
+	}
+
+	void GuiRemoteGraphicsParagraph::ResetRemoteParagraphSyncState()
+	{
+		committedRuns.Clear();
+		cachedInlineObjectBounds.Clear();
+		cachedCaretBounds = {};
+		remoteParagraphCreated = false;
+		needUpdate = true;
+		needUpdateCaretBoundsCache = true;
 	}
 
 	bool GuiRemoteGraphicsParagraph::TryBuildCaretRange(vint start, vint length, CaretRange& range)
@@ -38957,6 +38968,125 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 
 
 /***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_CHANNEL_ASYNCRENDERER.CPP
+***********************************************************************/
+
+namespace vl::presentation::remoteprotocol::channeling
+{
+	using namespace vl::collections;
+
+/***********************************************************************
+GuiRemoteProtocolAsyncJsonChannelRenderer
+***********************************************************************/
+
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::ScheduleProcessRemoteMessages()
+	{
+		IGuiRemoteProtocolAsyncRendererInvoker* invoker = nullptr;
+		SPIN_LOCK(lockMessages)
+		{
+			if (invokeInMainThread && !uiTaskQueued && queuedMessages.Count() > 0)
+			{
+				uiTaskQueued = true;
+				invoker = invokeInMainThread;
+			}
+		}
+
+		if (invoker)
+		{
+			invoker->InvokeInMainThread([this]()
+			{
+				ProcessRemoteMessages();
+			});
+		}
+	}
+
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::ProcessRemoteMessages()
+	{
+		while (true)
+		{
+			List<ReceivedPackage> messages;
+			SPIN_LOCK(lockMessages)
+			{
+				messages = std::move(queuedMessages);
+				if (messages.Count() == 0)
+				{
+					uiTaskQueued = false;
+					return;
+				}
+			}
+
+			for (auto&& message : messages)
+			{
+				reader->OnRead(message.senderClientId, message.package);
+			}
+		}
+	}
+
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::OnRead(vint senderClientId, const JsonPackage& package)
+	{
+		ReceivedPackage receivedPackage;
+		receivedPackage.senderClientId = senderClientId;
+		receivedPackage.package = package;
+		SPIN_LOCK(lockMessages)
+		{
+			queuedMessages.Add(std::move(receivedPackage));
+		}
+		ScheduleProcessRemoteMessages();
+	}
+
+	GuiRemoteProtocolAsyncJsonChannelRenderer::GuiRemoteProtocolAsyncJsonChannelRenderer(IJsonChannel* _channel)
+		: channel(_channel)
+	{
+	}
+
+	GuiRemoteProtocolAsyncJsonChannelRenderer::~GuiRemoteProtocolAsyncJsonChannelRenderer()
+	{
+		Initialize(nullptr);
+	}
+
+	const WString& GuiRemoteProtocolAsyncJsonChannelRenderer::GetChannelName()
+	{
+		return channel->GetChannelName();
+	}
+
+	IJsonChannelReader* GuiRemoteProtocolAsyncJsonChannelRenderer::GetReader()
+	{
+		return reader;
+	}
+
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::Initialize(IJsonChannelReader* _reader)
+	{
+		reader = _reader;
+		channel->Initialize(_reader ? this : nullptr);
+	}
+
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::SendToClient(vint senderClientId, vint receiverClientId, const JsonPackage& package)
+	{
+		channel->SendToClient(senderClientId, receiverClientId, package);
+	}
+
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::BroadcastFromClient(vint senderClientId, const JsonPackage& package)
+	{
+		channel->BroadcastFromClient(senderClientId, package);
+	}
+
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::BatchWrite(bool& disconnected)
+	{
+		channel->BatchWrite(disconnected);
+	}
+
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::SetInvokeInMainThread(IGuiRemoteProtocolAsyncRendererInvoker* _invokeInMainThread)
+	{
+		SPIN_LOCK(lockMessages)
+		{
+			invokeInMainThread = _invokeInMainThread;
+		}
+		ScheduleProcessRemoteMessages();
+	}
+}
+
+
+/***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_CHANNEL_JSON.CPP
 ***********************************************************************/
 
@@ -39105,13 +39235,7 @@ JsonNodeListSerializer
 		{
 			array->items.Add(package);
 		}
-
-		glr::json::JsonFormatting formatting;
-		formatting.spaceAfterColon = false;
-		formatting.spaceAfterComma = false;
-		formatting.crlf = false;
-		formatting.compact = true;
-		dest = glr::json::JsonToString(array, formatting);
+		dest = glr::json::JsonToString(array);
 	}
 
 	void JsonNodeListSerializer::Deserialize(Ptr<glr::json::Parser> parser, const DestType& source, SourceType& dest)

@@ -21936,6 +21936,7 @@ GuiRemoteGraphicsParagraph
 		DocumentRunPropertyMap											stagedRuns;
 		DocumentRunPropertyMap											committedRuns;
 		collections::Dictionary<CaretRange, InlineObjectProperties>		inlineObjectProperties;
+		bool															remoteParagraphCreated = false;
 		bool															wrapLine = false;
 		vint															maxWidth = -1;
 		Alignment														paragraphAlignment = Alignment::Left;
@@ -21963,6 +21964,7 @@ GuiRemoteGraphicsParagraph
 
 	public:
 		bool											EnsureRemoteParagraphSynced();
+		void											ResetRemoteParagraphSyncState();
 		void											MarkParagraphDirty(bool invalidateSize, bool invalidateCaretBoundsCache);
 		void											SetInlineObjectBounds(vint callbackId, const Rect& bounds);
 
@@ -22771,8 +22773,8 @@ JsonNodeListSerializer
 		using DestType = WString;
 		using ContextType = Ptr<glr::json::Parser>;
 
-		static void					Serialize(Ptr<glr::json::Parser> parser, const SourceType& source, DestType& dest);
-		static void					Deserialize(Ptr<glr::json::Parser> parser, const DestType& source, SourceType& dest);
+		static void									Serialize(Ptr<glr::json::Parser> parser, const SourceType& source, DestType& dest);
+		static void									Deserialize(Ptr<glr::json::Parser> parser, const DestType& source, SourceType& dest);
 	};
 
 	using GuiRemoteProtocolChannelServer = inter_process::NetworkProtocolChannelServer<JsonPackage, JsonNodeListSerializer>;
@@ -22782,15 +22784,13 @@ JsonNodeListSerializer
 	{
 		using Base = inter_process::NetworkProtocolChannelClient<JsonPackage, JsonNodeListSerializer>;
 	protected:
-		IJsonChannelClient::ChannelMap
-									channelNames;
+		IJsonChannelClient::ChannelMap				channelNames;
 
 	public:
 		GuiRemoteProtocolChannelClient(Ptr<inter_process::INetworkProtocolClient> client, Ptr<glr::json::Parser> parser);
 
-		const IJsonChannelClient::ChannelNameList&
-									OnGetChannelNames() override;
-		IJsonChannel*				GetProtocolChannel();
+		const IJsonChannelClient::ChannelNameList&	OnGetChannelNames() override;
+		IJsonChannel*								GetProtocolChannel();
 	};
 
 	class GuiRemoteProtocolLocalChannelClient
@@ -22798,15 +22798,14 @@ JsonNodeListSerializer
 	{
 		using Base = inter_process::NetworkProtocolLocalChannelClient<JsonPackage, JsonNodeListSerializer>;
 	protected:
-		IJsonChannelClient::ChannelMap
-									channelNames;
+		IJsonChannelClient::ChannelMap				channelNames;
 
 	public:
 		GuiRemoteProtocolLocalChannelClient(Ptr<glr::json::Parser> parser);
 
 		const IJsonChannelClient::ChannelNameList&
-									OnGetChannelNames() override;
-		IJsonChannel*				GetProtocolChannel();
+													OnGetChannelNames() override;
+		IJsonChannel*								GetProtocolChannel();
 	};
 
 /***********************************************************************
@@ -22819,21 +22818,21 @@ GuiRemoteProtocolCoreChannel
 		, protected IJsonChannelReader
 	{
 	protected:
-		IJsonChannelClient*			client = nullptr;
-		IJsonChannel*				channel = nullptr;
-		IGuiRemoteProtocolEvents*	events = nullptr;
-		IGuiRemoteEventProcessor*	eventProcessor = nullptr;
-		WString						executablePath;
-		SpinLock					lockRendererClientId;
-		vint						rendererClientId = -1;
+		IJsonChannelClient*							client = nullptr;
+		IJsonChannel*								channel = nullptr;
+		IGuiRemoteProtocolEvents*					events = nullptr;
+		IGuiRemoteEventProcessor*					eventProcessor = nullptr;
+		WString										executablePath;
+		SpinLock									lockRendererClientId;
+		vint										rendererClientId = -1;
 
 		using OnReadEventHandler = void (GuiRemoteProtocolCoreChannel::*)(Ptr<glr::json::JsonNode>);
 		using OnReadEventHandlerMap = collections::Dictionary<WString, OnReadEventHandler>;
-		OnReadEventHandlerMap		onReadEventHandlers;
+		OnReadEventHandlerMap						onReadEventHandlers;
 
 		using OnReadResponseHandler = void (GuiRemoteProtocolCoreChannel::*)(vint, Ptr<glr::json::JsonNode>);
 		using OnReadResponseHandlerMap = collections::Dictionary<WString, OnReadResponseHandler>;
-		OnReadResponseHandlerMap		onReadResponseHandlers;
+		OnReadResponseHandlerMap					onReadResponseHandlers;
 
 #define EVENT_NOREQ(NAME, REQUEST)					void OnRead_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments);
 #define EVENT_REQ(NAME, REQUEST)					void OnRead_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments);
@@ -23037,6 +23036,84 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 		void												BatchWrite(bool& disconnected) override;
 
 		IGuiRemoteEventProcessor*							GetRemoteEventProcessor();
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_CHANNEL_ASYNCRENDERER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Remote Window
+
+Interfaces:
+  GuiRemoteProtocolAsyncJsonChannelRenderer
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL_ASYNCRENDERER
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL_ASYNCRENDERER
+
+
+namespace vl::presentation::remoteprotocol::channeling
+{
+
+/***********************************************************************
+IGuiRemoteProtocolAsyncRendererInvoker
+***********************************************************************/
+
+	class IGuiRemoteProtocolAsyncRendererInvoker : public virtual Interface
+	{
+	public:
+		virtual void										InvokeInMainThread(const Func<void()>& proc) = 0;
+	};
+
+/***********************************************************************
+GuiRemoteProtocolAsyncJsonChannelRenderer
+***********************************************************************/
+
+	class GuiRemoteProtocolAsyncJsonChannelRenderer
+		: public Object
+		, public virtual IJsonChannel
+		, protected virtual IJsonChannelReader
+	{
+	protected:
+		struct ReceivedPackage
+		{
+			vint											senderClientId = -1;
+			JsonPackage										package;
+		};
+
+		IJsonChannel*										channel = nullptr;
+		IJsonChannelReader*								reader = nullptr;
+
+		// Covers invokeInMainThread, queuedMessages and uiTaskQueued.
+		SpinLock											lockMessages;
+		IGuiRemoteProtocolAsyncRendererInvoker*			invokeInMainThread = nullptr;
+		collections::List<ReceivedPackage>					queuedMessages;
+		bool												uiTaskQueued = false;
+
+		void												ScheduleProcessRemoteMessages();
+		void												ProcessRemoteMessages();
+
+		void												OnRead(vint senderClientId, const JsonPackage& package) override;
+
+	public:
+		GuiRemoteProtocolAsyncJsonChannelRenderer(IJsonChannel* _channel);
+		~GuiRemoteProtocolAsyncJsonChannelRenderer();
+
+		const WString&										GetChannelName() override;
+		IJsonChannelReader*								GetReader() override;
+		void												Initialize(IJsonChannelReader* _reader) override;
+		void												SendToClient(vint senderClientId, vint receiverClientId, const JsonPackage& package) override;
+		void												BroadcastFromClient(vint senderClientId, const JsonPackage& package) override;
+		void												BatchWrite(bool& disconnected) override;
+
+		void												SetInvokeInMainThread(IGuiRemoteProtocolAsyncRendererInvoker* _invokeInMainThread);
 	};
 }
 

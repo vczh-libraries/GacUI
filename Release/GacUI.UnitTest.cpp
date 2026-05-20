@@ -1762,28 +1762,6 @@ public:
 	}
 };
 
-class UnitTestNullNetworkProtocolServer : public Object, public virtual inter_process::INetworkProtocolServer
-{
-	bool						stopped = false;
-
-public:
-	inter_process::INetworkProtocolConnection* WaitForClient() override
-	{
-		CHECK_FAIL(L"UnitTestNullNetworkProtocolServer::WaitForClient()#This server only supports local clients.");
-		return nullptr;
-	}
-
-	void Stop() override
-	{
-		stopped = true;
-	}
-
-	bool IsStopped() override
-	{
-		return stopped;
-	}
-};
-
 UnitTestMainFunc guiMainProxy;
 UnitTestContextImpl* guiMainUnitTestContext = nullptr;
 
@@ -2094,9 +2072,10 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 	IGuiRemoteProtocol* coreProtocol = unitTestProtocol.GetProtocol();
 	if (globalConfig.useChannel == UnitTestRemoteChannel::Sync)
 	{
-		channelServer = Ptr(new channeling::GuiRemoteProtocolChannelServer(Ptr(new UnitTestNullNetworkProtocolServer), jsonParser));
+		channelServer = Ptr(new channeling::GuiRemoteProtocolChannelServer(jsonParser));
 		coreClient = Ptr(new channeling::GuiRemoteProtocolLocalChannelClient(jsonParser));
 		rendererClient = Ptr(new channeling::GuiRemoteProtocolLocalChannelClient(jsonParser));
+		channelServer->Start();
 		TEST_ASSERT(channelServer->ConnectLocalClient(coreClient) > 0);
 		TEST_ASSERT(channelServer->ConnectLocalClient(rendererClient) > 0);
 
@@ -2160,9 +2139,10 @@ void GacUIUnitTest_StartAsync(const WString& appName, Nullable<UnitTestScreenCon
 	UnitTestRemoteProtocol unitTestProtocol(appName, config.Value());
 	auto jsonParser = Ptr(new glr::json::Parser);
 
-	auto channelServer = Ptr(new channeling::GuiRemoteProtocolChannelServer(Ptr(new UnitTestNullNetworkProtocolServer), jsonParser));
+	auto channelServer = Ptr(new channeling::GuiRemoteProtocolChannelServer(jsonParser));
 	auto coreClient = Ptr(new channeling::GuiRemoteProtocolLocalChannelClient(jsonParser));
 	auto rendererClient = Ptr(new channeling::GuiRemoteProtocolLocalChannelClient(jsonParser));
+	channelServer->Start();
 	TEST_ASSERT(channelServer->ConnectLocalClient(coreClient) > 0);
 	TEST_ASSERT(channelServer->ConnectLocalClient(rendererClient) > 0);
 

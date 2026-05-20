@@ -1373,6 +1373,10 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
+#ifdef VCZH_MSVC
+#include <io.h>
+#endif
+
 #ifdef VCZH_GCC
 #define _wcsnicmp wcsncasecmp
 #endif
@@ -1657,6 +1661,10 @@ UnitTest
 		{
 #ifdef VCZH_MSVC
 			_set_abort_behavior(0, _WRITE_ABORT_MSG);
+#ifdef VCZH_CHECK_MEMORY_LEAKS
+			auto debugFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+			_CrtSetDbgFlag(debugFlag | _CRTDBG_ALLOC_MEM_DF);
+#endif
 #endif
 			bool unrecognized = false;
 			bool _D = false;
@@ -1848,11 +1856,20 @@ UnitTest
 				FILE* file = nullptr;
 				if (_wfopen_s(&file, fileName, L"w") == 0 && file)
 				{
-					auto oldMode = _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
-					auto oldFile = _CrtSetReportFile(_CRT_WARN, file);
+					auto reportFile = (_HFILE)_get_osfhandle(_fileno(file));
+					auto oldWarnMode = _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+					auto oldErrorMode = _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
+					auto oldAssertMode = _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
+					auto oldWarnFile = _CrtSetReportFile(_CRT_WARN, reportFile);
+					auto oldErrorFile = _CrtSetReportFile(_CRT_ERROR, reportFile);
+					auto oldAssertFile = _CrtSetReportFile(_CRT_ASSERT, reportFile);
 					_CrtDumpMemoryLeaks();
-					_CrtSetReportFile(_CRT_WARN, oldFile);
-					_CrtSetReportMode(_CRT_WARN, oldMode);
+					_CrtSetReportFile(_CRT_ASSERT, oldAssertFile);
+					_CrtSetReportFile(_CRT_ERROR, oldErrorFile);
+					_CrtSetReportFile(_CRT_WARN, oldWarnFile);
+					_CrtSetReportMode(_CRT_ASSERT, oldAssertMode);
+					_CrtSetReportMode(_CRT_ERROR, oldErrorMode);
+					_CrtSetReportMode(_CRT_WARN, oldWarnMode);
 					fclose(file);
 					return;
 				}
@@ -1871,11 +1888,20 @@ UnitTest
 				FILE* file = nullptr;
 				if (fopen_s(&file, fileName, "w") == 0 && file)
 				{
-					auto oldMode = _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
-					auto oldFile = _CrtSetReportFile(_CRT_WARN, file);
+					auto reportFile = (_HFILE)_get_osfhandle(_fileno(file));
+					auto oldWarnMode = _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+					auto oldErrorMode = _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
+					auto oldAssertMode = _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
+					auto oldWarnFile = _CrtSetReportFile(_CRT_WARN, reportFile);
+					auto oldErrorFile = _CrtSetReportFile(_CRT_ERROR, reportFile);
+					auto oldAssertFile = _CrtSetReportFile(_CRT_ASSERT, reportFile);
 					_CrtDumpMemoryLeaks();
-					_CrtSetReportFile(_CRT_WARN, oldFile);
-					_CrtSetReportMode(_CRT_WARN, oldMode);
+					_CrtSetReportFile(_CRT_ASSERT, oldAssertFile);
+					_CrtSetReportFile(_CRT_ERROR, oldErrorFile);
+					_CrtSetReportFile(_CRT_WARN, oldWarnFile);
+					_CrtSetReportMode(_CRT_ASSERT, oldAssertMode);
+					_CrtSetReportMode(_CRT_ERROR, oldErrorMode);
+					_CrtSetReportMode(_CRT_WARN, oldWarnMode);
 					fclose(file);
 					return;
 				}

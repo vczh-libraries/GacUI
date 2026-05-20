@@ -101,6 +101,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Shared.h"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channel_Json.h"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channel_Async.h"
+#include "..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channel_AsyncRenderer.h"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_FilterVerifier.h"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Filter.h"
 #include "..\..\Source\PlatformProviders\Remote\Protocol\FrameOperations\GuiRemoteProtocolSchema_FrameOperations.h"
