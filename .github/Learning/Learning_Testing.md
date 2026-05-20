@@ -47,6 +47,7 @@
 - Match existing test-file namespace style (avoid extra `using namespace`) [1]
 - Focus the control before simulating keyboard input [1]
 - Editor smoke tests: deterministic caret placement (`Ctrl+Home`) [1]
+- Verify `GacUICompiler` determinism with repeated no-change runs [1]
 - Prefer IOChar-only typing helpers first [1]
 - Prefer base-type lookups for reusable control tests [1]
 - Avoid over-abstraction in test scaffolds [1]
@@ -289,6 +290,10 @@ When reusing shared “editor smoke test” helpers across multiple `GuiDocument
 - If the click still doesn’t reliably place the caret at the beginning (notably for `<DocumentTextBox/>`), follow the click with `Ctrl+Home` (`KeyPress(VKEY::KEY_HOME, /*ctrl*/true, ...)`) before typing.
 
 Prefer making the interaction deterministic over changing XML layout just to make a click land reliably (keep singleline layout where appropriate).
+
+## Verify `GacUICompiler` determinism with repeated no-change runs
+
+When fixing nondeterministic `GacUICompiler` output, verify by running the compiler once and committing or accepting the generated output as the baseline, then running it several more times without source changes. After each repeat, check `git status` and inspect diffs if anything changes. Success means repeated compiler runs leave both generated text/C++ files and binary resources unchanged; unit tests can still pass while binary resource nondeterminism remains, so the no-change loop is the essential verification.
 
 ## Multiline editor assertions: validate `GetDocument()` model, not `GetText()`
 

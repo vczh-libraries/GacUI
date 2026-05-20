@@ -25,6 +25,7 @@
 - Avoid references into containers when mutating them [1]
 - Prefer designated initializers for aggregate-like structs [1]
 - Construct `Nullable<WString>` explicitly in function calls [1]
+- Sort serialization metadata by deterministic keys, not pointer addresses [1]
 - `collections::Dictionary` copy assignment is deleted (use move/swap) [1]
 - Dereference `Ptr<T>` via `.Obj()` (not `*ptr`) [1]
 - `vl::regex` separator regex: `L"[\\/\\\\]+"` [1]
@@ -128,6 +129,10 @@ For small structs used as value objects (especially those with default member in
 ## Construct `Nullable<WString>` explicitly in function calls
 
 When passing string literals to a function parameter typed as `Nullable<WString>`, wrap them in `WString(...)` (or otherwise construct a `WString`) to make the conversion explicit. Direct assignment to a `Nullable<WString>` field may compile via an assignment operator, but function-call argument conversion can require explicit construction.
+
+## Sort serialization metadata by deterministic keys, not pointer addresses
+
+When serializing metadata into stable binary output, do not let pointer-address ordering decide indices or item order. Collect items for membership checks if needed, then sort the serialized lists by deterministic keys such as type names or owner-qualified member signatures before assigning indices and writing the stream. This applies to type descriptors, methods, properties, events, and generated custom-type lists whose order would otherwise depend on allocation order or ASLR.
 
 ## `collections::Dictionary` copy assignment is deleted (use move/swap)
 
