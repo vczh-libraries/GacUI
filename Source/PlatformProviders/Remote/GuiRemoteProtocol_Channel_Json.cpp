@@ -258,30 +258,35 @@ GuiRemoteProtocolCoreChannel
 		auto receiverClientId = GetRendererClientId();
 		if (receiverClientId == -1)
 		{
-			channel->BroadcastFromClient(client->GetClientId(), package);
+			SPIN_LOCK(lockPackagesBeforeRenderer)
+			{
+				packagesBeforeRenderer.Add(package);
+			}
 		}
 		else
 		{
+			List<JsonPackage> packages;
+			SPIN_LOCK(lockPackagesBeforeRenderer)
+			{
+				packages = std::move(packagesBeforeRenderer);
+			}
+
+			for (auto&& pendingPackage : packages)
+			{
+				channel->SendToClient(client->GetClientId(), receiverClientId, pendingPackage);
+			}
 			channel->SendToClient(client->GetClientId(), receiverClientId, package);
 		}
 	}
 
 	void GuiRemoteProtocolCoreChannel::SetRendererClientId(vint clientId)
 	{
-		SPIN_LOCK(lockRendererClientId)
-		{
-			rendererClientId = clientId;
-		}
+		rendererClientId.store(clientId);
 	}
 
 	vint GuiRemoteProtocolCoreChannel::GetRendererClientId()
 	{
-		vint clientId = -1;
-		SPIN_LOCK(lockRendererClientId)
-		{
-			clientId = rendererClientId;
-		}
-		return clientId;
+		return rendererClientId.load();
 	}
 
 	void GuiRemoteProtocolCoreChannel::OnRead(vint senderClientId, const JsonPackage& package)
@@ -423,6 +428,23 @@ GuiRemoteProtocolCoreChannel
 	
 	void GuiRemoteProtocolCoreChannel::Submit(bool& disconnected)
 	{
+		auto receiverClientId = GetRendererClientId();
+		List<JsonPackage> packages;
+		SPIN_LOCK(lockPackagesBeforeRenderer)
+		{
+			packages = std::move(packagesBeforeRenderer);
+		}
+
+		if (receiverClientId == -1)
+		{
+			disconnected = false;
+			return;
+		}
+
+		for (auto&& package : packages)
+		{
+			channel->SendToClient(client->GetClientId(), receiverClientId, package);
+		}
 		channel->BatchWrite(disconnected);
 	}
 

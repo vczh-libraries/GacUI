@@ -4,7 +4,7 @@ Developer: Zihan Chen(vczh)
 GacUI::Remote Window
 
 Interfaces:
-  GuiRemoteProtocolAsyncJsonChannelSerializer
+  GuiRemoteProtocolJsonChannelRenderer_Async
 
 ***********************************************************************/
 
@@ -17,10 +17,10 @@ namespace vl::presentation::remoteprotocol::channeling
 {
 
 /***********************************************************************
-GuiRemoteProtocolAsyncJsonChannelSerializer
+GuiRemoteProtocolJsonChannelRenderer_Async
 ***********************************************************************/
 
-	class GuiRemoteProtocolAsyncJsonChannelSerializer
+	class GuiRemoteProtocolJsonChannelRenderer_Async
 		: public Object
 		, public virtual IJsonChannel
 		, protected virtual IJsonChannelReader
@@ -74,8 +74,8 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 		void												OnRead(vint senderClientId, const JsonPackage& package) override;
 
 	public:
-		GuiRemoteProtocolAsyncJsonChannelSerializer(IJsonChannel* _channel, IGuiRemoteEventProcessor* _remoteEventProcessor = nullptr);
-		~GuiRemoteProtocolAsyncJsonChannelSerializer();
+		GuiRemoteProtocolJsonChannelRenderer_Async(IJsonChannel* _channel, IGuiRemoteEventProcessor* _remoteEventProcessor = nullptr);
+		~GuiRemoteProtocolJsonChannelRenderer_Async();
 
 		const WString&										GetChannelName() override;
 		IJsonChannelReader*								GetReader() override;

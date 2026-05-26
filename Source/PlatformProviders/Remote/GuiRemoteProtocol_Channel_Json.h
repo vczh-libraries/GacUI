@@ -109,8 +109,9 @@ GuiRemoteProtocolCoreChannel
 		IGuiRemoteProtocolEvents*					events = nullptr;
 		IGuiRemoteEventProcessor*					eventProcessor = nullptr;
 		WString										executablePath;
-		SpinLock									lockRendererClientId;
-		vint										rendererClientId = -1;
+		atomic_vint									rendererClientId = -1;
+		SpinLock									lockPackagesBeforeRenderer;
+		collections::List<JsonPackage>				packagesBeforeRenderer;
 
 		using OnReadEventHandler = void (GuiRemoteProtocolCoreChannel::*)(Ptr<glr::json::JsonNode>);
 		using OnReadEventHandlerMap = collections::Dictionary<WString, OnReadEventHandler>;

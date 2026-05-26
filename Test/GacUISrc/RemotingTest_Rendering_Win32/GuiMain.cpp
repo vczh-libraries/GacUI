@@ -80,12 +80,11 @@ int StartClient(Ptr<inter_process::INetworkProtocolClient> networkClient)
 {
 	auto jsonParser = Ptr(new glr::json::Parser);
 	RemotingTestChannelClient channelClient(networkClient, jsonParser);
-	channelClient.WaitForServer();
-
 	GuiRemoteProtocolAsyncJsonChannelRenderer asyncRendererChannel(channelClient.GetProtocolChannel());
 	GuiRemoteRendererSingle remoteRenderer;
 	GuiRemoteProtocolRendererChannel rendererChannel(&channelClient, &asyncRendererChannel, &remoteRenderer);
 	channelClient.SetRenderer(&remoteRenderer);
+	channelClient.WaitForServer();
 
 	asyncChannel = &asyncRendererChannel;
 	renderer = &remoteRenderer;

@@ -28,15 +28,13 @@ namespace
 		SpinLock						lockConnection;
 		EventObject*					eventRendererConnected = nullptr;
 		bool							connectingCoreClient = false;
-		bool							acceptMultipleRenderers = false;
 		vint							rendererClientId = -1;
 
 	public:
 		using Base::OnClientConnected;
 
-		RemotingChannelServerBase(Ptr<glr::json::Parser> parser, bool _acceptMultipleRenderers)
+		RemotingChannelServerBase(Ptr<glr::json::Parser> parser)
 			: Base(parser)
-			, acceptMultipleRenderers(_acceptMultipleRenderers)
 		{
 		}
 
@@ -82,26 +80,23 @@ namespace
 				);
 
 			EventObject* eventToSignal = nullptr;
-			bool rejected = false;
+			vint oldRendererClientId = -1;
 			SPIN_LOCK(lockConnection)
 			{
 				if (!connectingCoreClient)
 				{
-					if (!acceptMultipleRenderers && rendererClientId != -1)
+					if (rendererClientId != -1 && rendererClientId != clientId)
 					{
-						rejected = true;
+						oldRendererClientId = rendererClientId;
 					}
-					else
-					{
-						rendererClientId = clientId;
-						eventToSignal = eventRendererConnected;
-					}
+					rendererClientId = clientId;
+					eventToSignal = eventRendererConnected;
 				}
 			}
 
-			if (rejected)
+			if (oldRendererClientId != -1)
 			{
-				return inter_process::WaitForClientResult::Reject;
+				DisconnectClient(oldRendererClientId);
 			}
 			if (eventToSignal)
 			{
@@ -115,7 +110,7 @@ namespace
 	{
 	public:
 		NamedPipeRemotingChannelServer(Ptr<glr::json::Parser> parser, const WString& pipeName)
-			: RemotingChannelServerBase(parser, false)
+			: RemotingChannelServerBase(parser)
 			, inter_process::NamedPipeServer(pipeName)
 		{
 		}
@@ -147,7 +142,7 @@ namespace
 	{
 	public:
 		HttpRemotingChannelServer(Ptr<glr::json::Parser> parser, const WString& baseUrl, vint port)
-			: RemotingChannelServerBase(parser, true)
+			: RemotingChannelServerBase(parser)
 			, inter_process::HttpServer(baseUrl, port)
 		{
 		}
@@ -247,7 +242,7 @@ void StartServer(RemotingChannelServerBase& channelServer, Ptr<glr::json::Parser
 	auto rendererClientId = WaitForRenderer(channelServer, eventRendererConnected);
 	Console::WriteLine(L"> Renderer connected: " + itow(rendererClientId));
 
-	GuiRemoteProtocolAsyncJsonChannelSerializer asyncChannelSender(coreClient->GetProtocolChannel());
+	GuiRemoteProtocolJsonChannelRenderer_Async asyncChannelSender(coreClient->GetProtocolChannel());
 	GuiRemoteProtocolCoreChannel channelSender(
 		coreClient.Obj(),
 		&asyncChannelSender,

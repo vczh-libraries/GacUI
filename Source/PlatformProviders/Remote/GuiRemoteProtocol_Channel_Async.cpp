@@ -7,10 +7,10 @@ namespace vl::presentation::remoteprotocol::channeling
 	using namespace vl::presentation::controls;
 
 /***********************************************************************
-GuiRemoteProtocolAsyncJsonChannelSerializer
+GuiRemoteProtocolJsonChannelRenderer_Async
 ***********************************************************************/
 
-	bool GuiRemoteProtocolAsyncJsonChannelSerializer::AreCurrentPendingRequestGroupSatisfied(bool disconnected)
+	bool GuiRemoteProtocolJsonChannelRenderer_Async::AreCurrentPendingRequestGroupSatisfied(bool disconnected)
 	{
 		if (!pendingRequest) return false;
 		if (disconnected) return true;
@@ -24,7 +24,7 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 		return true;
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelSerializer::ScheduleProcessRemoteEvents()
+	void GuiRemoteProtocolJsonChannelRenderer_Async::ScheduleProcessRemoteEvents()
 	{
 		bool shouldQueue = false;
 		SPIN_LOCK(lockEvents)
@@ -48,7 +48,7 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 		}
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelSerializer::ProcessChannelEvents()
+	void GuiRemoteProtocolJsonChannelRenderer_Async::ProcessChannelEvents()
 	{
 		List<ReceivedPackage> events;
 		SPIN_LOCK(lockEvents)
@@ -75,7 +75,7 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 		}
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelSerializer::ProcessRemoteEvents()
+	void GuiRemoteProtocolJsonChannelRenderer_Async::ProcessRemoteEvents()
 	{
 		if (remoteEventProcessor)
 		{
@@ -84,9 +84,9 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 		ProcessChannelEvents();
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelSerializer::OnRead(vint senderClientId, const JsonPackage& package)
+	void GuiRemoteProtocolJsonChannelRenderer_Async::OnRead(vint senderClientId, const JsonPackage& package)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::OnRead(vint, const JsonPackage&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolJsonChannelRenderer_Async::OnRead(vint, const JsonPackage&)#"
 		ChannelPackageInfo info;
 		Ptr<glr::json::JsonNode> jsonArguments;
 		JsonChannelUnpack(package, info, jsonArguments);
@@ -126,33 +126,33 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	GuiRemoteProtocolAsyncJsonChannelSerializer::GuiRemoteProtocolAsyncJsonChannelSerializer(IJsonChannel* _channel, IGuiRemoteEventProcessor* _remoteEventProcessor)
+	GuiRemoteProtocolJsonChannelRenderer_Async::GuiRemoteProtocolJsonChannelRenderer_Async(IJsonChannel* _channel, IGuiRemoteEventProcessor* _remoteEventProcessor)
 		: channel(_channel)
 		, remoteEventProcessor(_remoteEventProcessor)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::GuiRemoteProtocolAsyncJsonChannelSerializer(IJsonChannel*, IGuiRemoteEventProcessor*)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolJsonChannelRenderer_Async::GuiRemoteProtocolJsonChannelRenderer_Async(IJsonChannel*, IGuiRemoteEventProcessor*)#"
 		CHECK_ERROR(channel, ERROR_MESSAGE_PREFIX L"A valid channel is required.");
 		CHECK_ERROR(eventAutoResponses.CreateAutoUnsignal(false), ERROR_MESSAGE_PREFIX L"Failed to initialize eventAutoResponses.");
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	GuiRemoteProtocolAsyncJsonChannelSerializer::~GuiRemoteProtocolAsyncJsonChannelSerializer()
+	GuiRemoteProtocolJsonChannelRenderer_Async::~GuiRemoteProtocolJsonChannelRenderer_Async()
 	{
 	}
 
-	const WString& GuiRemoteProtocolAsyncJsonChannelSerializer::GetChannelName()
+	const WString& GuiRemoteProtocolJsonChannelRenderer_Async::GetChannelName()
 	{
 		return channel->GetChannelName();
 	}
 
-	IJsonChannelReader* GuiRemoteProtocolAsyncJsonChannelSerializer::GetReader()
+	IJsonChannelReader* GuiRemoteProtocolJsonChannelRenderer_Async::GetReader()
 	{
 		return reader;
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelSerializer::Initialize(IJsonChannelReader* _reader)
+	void GuiRemoteProtocolJsonChannelRenderer_Async::Initialize(IJsonChannelReader* _reader)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::Initialize(IJsonChannelReader*)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolJsonChannelRenderer_Async::Initialize(IJsonChannelReader*)#"
 		CHECK_ERROR(_reader, ERROR_MESSAGE_PREFIX L"A valid reader is required.");
 		CHECK_ERROR(!reader, ERROR_MESSAGE_PREFIX L"The async channel cannot be initialized more than once.");
 		reader = _reader;
@@ -160,7 +160,7 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelSerializer::SendToClient(vint senderClientId, vint receiverClientId, const JsonPackage& package)
+	void GuiRemoteProtocolJsonChannelRenderer_Async::SendToClient(vint senderClientId, vint receiverClientId, const JsonPackage& package)
 	{
 		QueuedPackage queuedPackage;
 		queuedPackage.senderClientId = senderClientId;
@@ -173,7 +173,7 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 		}
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelSerializer::BroadcastFromClient(vint senderClientId, const JsonPackage& package)
+	void GuiRemoteProtocolJsonChannelRenderer_Async::BroadcastFromClient(vint senderClientId, const JsonPackage& package)
 	{
 		QueuedPackage queuedPackage;
 		queuedPackage.senderClientId = senderClientId;
@@ -185,9 +185,9 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 		}
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelSerializer::BatchWrite(bool& disconnected)
+	void GuiRemoteProtocolJsonChannelRenderer_Async::BatchWrite(bool& disconnected)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::BatchWrite(bool&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolJsonChannelRenderer_Async::BatchWrite(bool&)#"
 		disconnected = false;
 
 		List<QueuedPackage> packages;
@@ -281,7 +281,7 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	IGuiRemoteEventProcessor* GuiRemoteProtocolAsyncJsonChannelSerializer::GetRemoteEventProcessor()
+	IGuiRemoteEventProcessor* GuiRemoteProtocolJsonChannelRenderer_Async::GetRemoteEventProcessor()
 	{
 		return this;
 	}
