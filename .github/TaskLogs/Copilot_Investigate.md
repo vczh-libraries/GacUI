@@ -62,3 +62,24 @@ Rename the async channel serializer to its renderer-facing name, then fix the ch
   - `TestRemote_EmptyWindow.cpp`: 38/38.
 - Full unit pass succeeds through `copilotExecute.ps1 -Mode UnitTest -Executable UnitTest -Configuration Debug -Platform x64`: 84/84 test files and 1686/1686 test cases.
 - Memory leak output files from the focused and full unit runs are empty.
+
+## Task 6
+
+This task happens in `GacUI` and `GacJS` repo.
+
+- Followed `Tools\DebugGacUIWithBrowser.md`.
+- Built GacJS from `GacJS\Gaclib` with `yarn build`.
+- Started the sibling GacUI server as `RemotingTest_Core.exe /RPT /Http`.
+- Opened `http://localhost:8896/index.html` in the browser client and verified title `Remote Protocol Test`.
+- Verified the browser-rendered RPT UI received and sent protocol messages:
+  - Clicking `Click Me!` changed the remote UI text to `You have clicked!`.
+  - Switching to `DataGrid` and clicking `Add 3 Rows` populated rows (`Nec Odio`, `Adipiscing Elit Integer`, etc.).
+  - Browser console warning/error log was empty during the manual `/RPT` run.
+  - Clicking `Exit`, then confirming `OK`, produced `IGacUIRenderer exited due to receiving RequestControllerConnectionStopped.` and `RemotingTest_Core.exe` exited.
+- Ran focused GacJS protocol tests from `GacJS\Gaclib\website\entry`:
+  - `npx vitest run Testing_Protocol_SimpleTyping.js Testing_Protocol_RendererSwitching.js`
+  - Passed 2/2 test files and 11/11 tests.
+- Extra full `GacJS\Gaclib` `yarn test` was attempted. It failed outside the `/RPT` manual path in existing `/FCT` browser E2E dialog scenarios:
+  - `Testing_Protocol_Font.js` did not recognize the localized font dialog text (`选择字体` instead of the expected `Choose Font`), then formatting assertions stayed at `12px/#FFFFFF`.
+  - `Testing_Protocol_ImageInText.js` failed to insert the expected image through the file dialog, causing later text/image assertions to cascade.
+  - Lower-level packages and the focused remoting connection tests passed.
