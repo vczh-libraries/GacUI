@@ -4,6 +4,10 @@
 
 - `vl::collections::ObservableList<T>` element access and replacement [2]
 - Extract helpers to remove duplicated conversion blocks [2]
+- Keep remote JSON channel code pure data processing [1]
+- Renderer channel dispatch belongs in async renderer layer [1]
+- Cache renderer packages until main-thread invoker exists [1]
+- Deliver fatal remote-channel errors before transport shutdown [1]
 - `TreeViewItemBindableRootProvider::UpdateBindingProperties` is root-scoped [1]
 - Validate `tree::NodeItemProvider::RequestNode` indices [1]
 - `tree::NodeItemProvider::CalculateNodeVisibilityIndex` returns `-1` for invisible nodes [1]
@@ -93,6 +97,22 @@ When checking `IGuiGraphicsParagraph::TextStyle` bitflags, use a zero-value cast
 When the same conversion logic is repeated in multiple branches (e.g. converting override structs to full protocol properties inside `MergeRuns`), extract a small helper function and replace duplicated blocks with calls. This improves maintainability and reduces bug surface during later semantic changes.
 
 Use the same judgment for repeated dictionary update patterns such as `Contains()`/`Set()` vs `Add()` blocks for inline-object bounds, properties, or ranges. Extract a tiny helper when the repeated code carries behavior; keep it inline only when the helper would hide more than it clarifies.
+
+## Keep remote JSON channel code pure data processing
+
+`GuiRemoteProtocol_Channel_Json.(h|cpp)` should stay focused on JSON/protocol package conversion and dispatch. Do not put GacUI application scheduling, renderer-thread decisions, or `GetApplication()` usage in this layer; keep those responsibilities in the async/channel integration layer or in `GuiMain`.
+
+## Renderer channel dispatch belongs in async renderer layer
+
+Renderer-side remote protocol packages must reach `GuiRemoteRendererSingle` on the GacUI UI thread. Put this in `GuiRemoteProtocol_Channel_AsyncRenderer.(h|cpp)` with an invoker injected from renderer `GuiMain`, rather than making JSON conversion code know about GacUI threading.
+
+## Cache renderer packages until main-thread invoker exists
+
+During renderer startup, network/channel packages can arrive before `GetApplication()` and the main-window registration are ready. The renderer async channel should cache all incoming packages until `SetInvokeInMainThread` installs the invoker, then drain them through `InvokeInMainThread` so startup commands are not lost.
+
+## Deliver fatal remote-channel errors before transport shutdown
+
+When `RemotingTest_Core` broadcasts a fatal error, deliver the `!Error` package through `IChannelServer::BroadcastError` and give HTTP/named-pipe transports enough shutdown ordering to let clients consume it. Browser and renderer clients should observe the fatal package rather than only seeing the transport close.
 
 ## `GuiDocumentCommonInterface::ProcessKey` ignores Enter in `GuiDocumentParagraphMode::Singleline`
 

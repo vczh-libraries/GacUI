@@ -21,6 +21,8 @@
 - GuiDocumentLabel paragraphs: use `\\r\\n\\r\\n` between paragraphs in `LoadTextAndClearUndoRedo` [2]
 - Use `AssertItems`/`AssertCallbacks` for visible item lists [2]
 - Unit-test renderer `CaretLineLast` should treat CRLF as newline [2]
+- Debug remote core/renderer stress runs instead of plain launching [1]
+- Verify GacJS HTTP fatal errors through browser UI [1]
 - Skip callback plumbing when not asserting callbacks [1]
 - Print actual vs expected on assertion failure [1]
 - Disambiguate protocol types by namespace [1]
@@ -341,6 +343,14 @@ Keep paragraphs short to avoid line wrapping, so tests validate navigation rules
 ## Unit-test renderer `CaretLineLast` should treat CRLF as newline
 
 In unit-test rendering stubs, line-end caret movement (e.g. END via `CaretLineLast`) must treat CRLF as a single newline terminator. If line-end trimming is needed, strip both `L'\r'` and `L'\n'` so END never lands between `\r` and `\n` (which would make typed markers insert inside the CRLF sequence).
+
+## Debug remote core/renderer stress runs instead of plain launching
+
+For `RemotingTest_Core` and `RemotingTest_Rendering_Win32` pipe/HTTP remoting checks, attach or launch under the debugger when stressing input paths. Win32 callback paths can otherwise swallow exceptions and exit silently. A useful stress target is five consecutive pipe runs and five consecutive HTTP runs typing about 1000 characters into the remote document editor, confirming core input events and renderer DOM updates continue without debugger stops.
+
+## Verify GacJS HTTP fatal errors through browser UI
+
+For the HTTP browser remoting path, verify fatal core errors by running `RemotingTest_Core /RPT /Http`, opening GacJS in the browser, triggering the fatal-error UI path, and checking that the browser receives the `!Error` package and displays the error mask/alert. Seeing only a fetch failure or closed transport is not sufficient.
 
 ## Inline-object caret tests: cover every valid caret position one frame at a time
 
