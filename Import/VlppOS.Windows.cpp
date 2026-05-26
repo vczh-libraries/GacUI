@@ -296,349 +296,6 @@ WindowsFileSystemImpl
 
 
 /***********************************************************************
-.\HTTPUTILITY.WINDOWS.CPP
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-
-#ifndef VCZH_MSVC
-static_assert(false, "Do not build this file for non-Windows applications.");
-#endif
-
-#pragma comment(lib, "WinHttp.lib")
-
-namespace vl
-{
-	using namespace collections;
-
-/***********************************************************************
-HttpRequest
-***********************************************************************/
-
-	bool HttpRequest::SetHost(const WString& inputQuery)
-	{
-		if (method == L"")
-		{
-			method = L"GET";
-		}
-
-		server = L"";
-		query = L"";
-		port = 0;
-		secure = false;
-
-		{
-			if (server == L"")
-			{
-				if (inputQuery.Length() > 7)
-				{
-					WString protocol = inputQuery.Sub(0, 8);
-					if (_wcsicmp(protocol.Buffer(), L"https://") == 0)
-					{
-						const wchar_t* reading = inputQuery.Buffer() + 8;
-						const wchar_t* index1 = wcschr(reading, L':');
-						const wchar_t* index2 = wcschr(reading, L'/');
-						if (index2)
-						{
-							query = index2;
-							server = WString::CopyFrom(reading, (index1 ? index1 : index2) - reading);
-							port = INTERNET_DEFAULT_HTTPS_PORT;
-							secure = true;
-							if (index1)
-							{
-								auto portString = WString::CopyFrom(index1 + 1, index2 - index1 - 1);
-								port = _wtoi(portString.Buffer());
-							}
-							return true;
-						}
-					}
-				}
-			}
-			if (server == L"")
-			{
-				if (inputQuery.Length() > 6)
-				{
-					WString protocol = inputQuery.Sub(0, 7);
-					if (_wcsicmp(protocol.Buffer(), L"http://") == 0)
-					{
-						const wchar_t* reading = inputQuery.Buffer() + 7;
-						const wchar_t* index1 = wcschr(reading, L':');
-						const wchar_t* index2 = wcschr(reading, L'/');
-						if (index2)
-						{
-							query = index2;
-							server = WString::CopyFrom(reading, (index1 ? index1 : index2) - reading);
-							port = INTERNET_DEFAULT_HTTP_PORT;
-							if (index1)
-							{
-								auto portString = WString::CopyFrom(index1 + 1, index2 - index1 - 1);
-								port = _wtoi(portString.Buffer());
-							}
-							return true;
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	void HttpRequest::SetBodyUtf8(const WString& bodyString)
-	{
-		vint utf8Size = WideCharToMultiByte(CP_UTF8, 0, bodyString.Buffer(), (int)bodyString.Length(), NULL, 0, NULL, NULL);
-		char* utf8 = new char[utf8Size + 1];
-		ZeroMemory(utf8, utf8Size + 1);
-		WideCharToMultiByte(CP_UTF8, 0, bodyString.Buffer(), (int)bodyString.Length(), utf8, (int)utf8Size, NULL, NULL);
-
-		body.Resize(utf8Size);
-		memcpy(&body[0], utf8, utf8Size);
-		delete[] utf8;
-	}
-
-/***********************************************************************
-HttpResponse
-***********************************************************************/
-
-	WString HttpResponse::GetBodyUtf8()
-	{
-		WString response;
-		char* utf8 = &body[0];
-		vint totalSize = body.Count();
-		vint utf16Size = MultiByteToWideChar(CP_UTF8, 0, utf8, (int)totalSize, NULL, 0);
-		wchar_t* utf16 = new wchar_t[utf16Size + 1];
-		ZeroMemory(utf16, (utf16Size + 1) * sizeof(wchar_t));
-		MultiByteToWideChar(CP_UTF8, 0, utf8, (int)totalSize, utf16, (int)utf16Size);
-		response = utf16;
-		delete[] utf16;
-		return response;
-	}
-
-/***********************************************************************
-Utilities
-***********************************************************************/
-
-	struct BufferPair
-	{
-		char*		buffer;
-		vint		length;
-
-		BufferPair()
-			:buffer(0)
-			, length(0)
-		{
-		}
-
-		BufferPair(char* _buffer, vint _length)
-			:buffer(_buffer)
-			, length(_length)
-		{
-		}
-	};
-
-	bool HttpQuery(const HttpRequest& request, HttpResponse& response)
-	{
-		// initialize
-		response.statusCode = -1;
-		HINTERNET internet = NULL;
-		HINTERNET connectedInternet = NULL;
-		HINTERNET requestInternet = NULL;
-		BOOL httpResult = FALSE;
-		DWORD error = 0;
-		List<LPCWSTR> acceptTypes;
-		List<BufferPair> availableBuffers;
-
-		// access http
-		internet = WinHttpOpen(L"vczh", WINHTTP_ACCESS_TYPE_NO_PROXY, NULL, NULL, 0);
-		error = GetLastError();
-		if (!internet) goto CLEANUP;
-
-		// connect
-		connectedInternet = WinHttpConnect(internet, request.server.Buffer(), (int)request.port, 0);
-		error = GetLastError();
-		if (!connectedInternet) goto CLEANUP;
-
-		// open request
-		// TODO: (enumerable) Linq:Select
-		for (vint i = 0; i < request.acceptTypes.Count(); i++)
-		{
-			acceptTypes.Add(request.acceptTypes.Get(i).Buffer());
-		}
-		acceptTypes.Add(nullptr);
-		requestInternet = WinHttpOpenRequest(connectedInternet, request.method.Buffer(), request.query.Buffer(), NULL, WINHTTP_NO_REFERER, &acceptTypes[0], (request.secure ? WINHTTP_FLAG_SECURE : 0));
-		error = GetLastError();
-		if (!requestInternet) goto CLEANUP;
-
-		// authentication, cookie and request
-		if (request.username != L"" && request.password != L"")
-		{
-			WinHttpSetCredentials(requestInternet, WINHTTP_AUTH_TARGET_SERVER, WINHTTP_AUTH_SCHEME_BASIC, request.username.Buffer(), request.password.Buffer(), NULL);
-		}
-		if (request.contentType != L"")
-		{
-			httpResult = WinHttpAddRequestHeaders(requestInternet, (L"Content-type:" + request.contentType).Buffer(), -1, WINHTTP_ADDREQ_FLAG_REPLACE | WINHTTP_ADDREQ_FLAG_ADD);
-		}
-		if (request.cookie != L"")
-		{
-			WinHttpAddRequestHeaders(requestInternet, (L"Cookie:" + request.cookie).Buffer(), -1, WINHTTP_ADDREQ_FLAG_REPLACE | WINHTTP_ADDREQ_FLAG_ADD);
-		}
-
-		// extra headers
-		for (int i = 0; i < request.extraHeaders.Count(); i++)
-		{
-			WString key = request.extraHeaders.Keys()[i];
-			WString value = request.extraHeaders.Values().Get(i);
-			WinHttpAddRequestHeaders(requestInternet, (key + L":" + value).Buffer(), -1, WINHTTP_ADDREQ_FLAG_REPLACE | WINHTTP_ADDREQ_FLAG_ADD);
-		}
-
-		if (request.body.Count() > 0)
-		{
-			httpResult = WinHttpSendRequest(requestInternet, WINHTTP_NO_ADDITIONAL_HEADERS, 0, (LPVOID)&request.body.Get(0), (int)request.body.Count(), (int)request.body.Count(), NULL);
-		}
-		else
-		{
-			httpResult = WinHttpSendRequest(requestInternet, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, NULL);
-		}
-		error = GetLastError();
-		if (httpResult == FALSE) goto CLEANUP;
-
-		// receive response
-		httpResult = WinHttpReceiveResponse(requestInternet, NULL);
-		error = GetLastError();
-		if (httpResult != TRUE) goto CLEANUP;
-
-		// read response status code
-		{
-			DWORD headerLength = sizeof(DWORD);
-			DWORD statusCode = 0;
-			httpResult = WinHttpQueryHeaders(requestInternet, WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER, WINHTTP_HEADER_NAME_BY_INDEX, &statusCode, &headerLength, WINHTTP_NO_HEADER_INDEX);
-			error = GetLastError();
-			if (httpResult == FALSE) goto CLEANUP;
-			response.statusCode = statusCode;
-		}
-		// read respons cookie
-		{
-			DWORD headerLength = sizeof(DWORD);
-			httpResult = WinHttpQueryHeaders(requestInternet, WINHTTP_QUERY_RAW_HEADERS_CRLF, WINHTTP_HEADER_NAME_BY_INDEX, NULL, &headerLength, WINHTTP_NO_HEADER_INDEX);
-			error = GetLastError();
-			if (error == ERROR_INSUFFICIENT_BUFFER)
-			{
-				wchar_t* rawHeader = new wchar_t[headerLength / sizeof(wchar_t)];
-				ZeroMemory(rawHeader, headerLength);
-				httpResult = WinHttpQueryHeaders(requestInternet, WINHTTP_QUERY_RAW_HEADERS_CRLF, WINHTTP_HEADER_NAME_BY_INDEX, rawHeader, &headerLength, WINHTTP_NO_HEADER_INDEX);
-
-				const wchar_t* cookieStart = wcsstr(rawHeader, L"Cookie:");
-				if (cookieStart)
-				{
-					const wchar_t* cookieEnd = wcsstr(cookieStart, L";");
-					if (cookieEnd)
-					{
-						response.cookie = WString::CopyFrom(cookieStart + 7, cookieEnd - cookieStart - 7);
-					}
-				}
-				delete[] rawHeader;
-			}
-		}
-
-		// read response body
-		while (true)
-		{
-			DWORD bytesAvailable = 0;
-			BOOL queryDataAvailableResult = WinHttpQueryDataAvailable(requestInternet, &bytesAvailable);
-			error = GetLastError();
-			if (queryDataAvailableResult == TRUE && bytesAvailable != 0)
-			{
-				char* utf8 = new char[bytesAvailable];
-				DWORD bytesRead = 0;
-				BOOL readDataResult = WinHttpReadData(requestInternet, utf8, bytesAvailable, &bytesRead);
-				error = GetLastError();
-				if (readDataResult == TRUE)
-				{
-					availableBuffers.Add(BufferPair(utf8, bytesRead));
-				}
-				else
-				{
-					delete[] utf8;
-				}
-			}
-			else
-			{
-				break;
-			}
-		}
-
-		{
-			// concatincate response body
-			vint totalSize = 0;
-			for (auto p : availableBuffers)
-			{
-				totalSize += p.length;
-			}
-			response.body.Resize(totalSize);
-			if (totalSize > 0)
-			{
-				char* utf8 = new char[totalSize];
-				{
-					char* temp = utf8;
-					for (auto p : availableBuffers)
-					{
-						memcpy(temp, p.buffer, p.length);
-						temp += p.length;
-					}
-				}
-				memcpy(&response.body[0], utf8, totalSize);
-				delete[] utf8;
-			}
-			for (auto p : availableBuffers)
-			{
-				delete[] p.buffer;
-			}
-		}
-	CLEANUP:
-		if (requestInternet) WinHttpCloseHandle(requestInternet);
-		if (connectedInternet) WinHttpCloseHandle(connectedInternet);
-		if (internet) WinHttpCloseHandle(internet);
-		return response.statusCode != -1;
-	}
-
-	WString UrlEncodeQuery(const WString& query)
-	{
-		vint utf8Size = WideCharToMultiByte(CP_UTF8, 0, query.Buffer(), (int)query.Length(), NULL, 0, NULL, NULL);
-		char* utf8 = new char[utf8Size + 1];
-		ZeroMemory(utf8, utf8Size + 1);
-		WideCharToMultiByte(CP_UTF8, 0, query.Buffer(), (int)query.Length(), utf8, (int)utf8Size, NULL, NULL);
-
-		wchar_t* encoded = new wchar_t[utf8Size * 3 + 1];
-		ZeroMemory(encoded, (utf8Size * 3 + 1) * sizeof(wchar_t));
-		wchar_t* writing = encoded;
-		for (vint i = 0; i < utf8Size; i++)
-		{
-			unsigned char x = (unsigned char)utf8[i];
-			if (L'a' <= x && x <= 'z' || L'A' <= x && x <= L'Z' || L'0' <= x && x <= L'9')
-			{
-				writing[0] = x;
-				writing += 1;
-			}
-			else
-			{
-				writing[0] = L'%';
-				writing[1] = L"0123456789ABCDEF"[x / 16];
-				writing[2] = L"0123456789ABCDEF"[x % 16];
-				writing += 3;
-			}
-		}
-
-		WString result = encoded;
-		delete[] encoded;
-		delete[] utf8;
-		return result;
-	}
-}
-
-
-/***********************************************************************
 .\LOCALE.WINDOWS.CPP
 ***********************************************************************/
 /***********************************************************************
@@ -2003,8 +1660,6 @@ TestEncoding
 namespace vl::inter_process
 {
 
-using namespace vl::collections;
-
 /***********************************************************************
 HttpClient (Reading)
 ***********************************************************************/
@@ -2017,260 +1672,19 @@ void HttpClient::RaiseErrorUnsafe(WString errorMessage)
 	}
 }
 
+bool HttpClient::IsStopping()
+{
+	bool result = false;
+	SPIN_LOCK(lockState)
+	{
+		result = state == State::Stopping;
+	}
+	return result;
+}
+
 void HttpClient::BeginReadingLoopUnsafe()
 {
-	if (state == State::Stopping) return;
-	CHECK_ERROR(state == State::Running, L"BeginReadingLoopUnsafe can only be called when client is running.");
-	DWORD lastError = 0;
-	BOOL httpResult = FALSE;
-
-	LPCWSTR acceptTypes[] = { L"application/json; charset=utf8", NULL };
-	HINTERNET httpRequest = WinHttpOpenRequest(
-		httpConnection,
-		L"POST",
-		urlRequest.Buffer(),
-		NULL,
-		WINHTTP_NO_REFERER,
-		acceptTypes,
-		WINHTTP_FLAG_REFRESH);
-	lastError = GetLastError();
-	if (lastError == ERROR_INVALID_HANDLE)
-	{
-		CHECK_ERROR(state == State::Stopping, L"WinHttpOpenRequest failed with ERROR_INVALID_HANDLE but client is not stopping.");
-		return;
-	}
-	CHECK_ERROR(httpRequest != NULL, L"WinHttpOpenRequest failed.");
-	{
-		auto self = this;
-		WINHTTP_STATUS_CALLBACK previousCallback = WinHttpSetStatusCallback(
-			httpRequest,
-			(WINHTTP_STATUS_CALLBACK)[](HINTERNET httpRequest, DWORD_PTR dwContext, DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength) -> void
-			{
-				if (!dwContext) return;
-				auto self = reinterpret_cast<HttpClient*>(dwContext);
-				switch (dwInternetStatus)
-				{
-				case WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE:
-					{
-						self->QueueCallback([=]()
-						{
-							if (self->state == State::Stopping) return;
-							DWORD lastError = 0;
-							BOOL httpResult = WinHttpReceiveResponse(httpRequest, NULL);
-							lastError = GetLastError();
-							if (lastError == ERROR_INVALID_HANDLE)
-							{
-								CHECK_ERROR(self->state == State::Stopping, L"WinHttpReceiveResponse failed with ERROR_INVALID_HANDLE but client is not stopping.");
-								WinHttpCloseHandle(httpRequest);
-								return;
-							}
-							CHECK_ERROR(httpResult == TRUE, L"WinHttpReceiveResponse failed.");
-						});
-					}
-					break;
-				case WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE:
-					{
-						self->QueueCallback([=]()
-						{
-							if (self->state == State::Stopping) return;
-							DWORD lastError = 0;
-							DWORD statusCode = 0;
-							DWORD dwordLength = sizeof(DWORD);
-							BOOL httpResult = FALSE;
-							{
-								httpResult = WinHttpQueryHeaders(
-									httpRequest,
-									WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER,
-									WINHTTP_HEADER_NAME_BY_INDEX,
-									&statusCode,
-									&dwordLength,
-									WINHTTP_NO_HEADER_INDEX);
-								lastError = GetLastError();
-								if (lastError == ERROR_INVALID_HANDLE)
-								{
-									CHECK_ERROR(self->state == State::Stopping, L"WinHttpQueryHeaders failed with ERROR_INVALID_HANDLE but client is not stopping.");
-									return;
-								}
-								CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryHeaders failed to retrieve status code.");
-								if (statusCode != 200)
-								{
-									self->CloseRequest(httpRequest);
-									self->RaiseErrorUnsafe(WString::Unmanaged(L"/Request returned status code: ") + itow(statusCode) + L", another renderer may have connected to the core.");
-									return;
-								}
-							}
-							{
-								DWORD headerLength = 0;
-								httpResult = WinHttpQueryHeaders(
-									httpRequest,
-									WINHTTP_QUERY_CONTENT_TYPE,
-									WINHTTP_HEADER_NAME_BY_INDEX,
-									NULL,
-									&headerLength,
-									WINHTTP_NO_HEADER_INDEX);
-								lastError = GetLastError();
-								if (lastError == ERROR_INVALID_HANDLE)
-								{
-									CHECK_ERROR(self->state == State::Stopping, L"WinHttpQueryHeaders failed with ERROR_INVALID_HANDLE but client is not stopping.");
-									return;
-								}
-								CHECK_ERROR(httpResult == FALSE && lastError == ERROR_INSUFFICIENT_BUFFER, L"WinHttpQueryHeaders failed to retrieve content type.");
-
-								Array<wchar_t> headerBuffer(headerLength / 2 + 1);
-								ZeroMemory(&headerBuffer[0], headerBuffer.Count() * sizeof(wchar_t));
-
-								httpResult = WinHttpQueryHeaders(
-									httpRequest,
-									WINHTTP_QUERY_CONTENT_TYPE,
-									WINHTTP_HEADER_NAME_BY_INDEX,
-									&headerBuffer[0],
-									&headerLength,
-									WINHTTP_NO_HEADER_INDEX);
-								lastError = GetLastError();
-								if (lastError == ERROR_INVALID_HANDLE)
-								{
-									CHECK_ERROR(self->state == State::Stopping, L"WinHttpQueryHeaders failed with ERROR_INVALID_HANDLE but client is not stopping.");
-									return;
-								}
-								CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryHeaders failed to retrieve content-type.");
-
-								const wchar_t* header = &headerBuffer[0];
-								CHECK_ERROR(wcscmp(header, L"application/json; charset=utf8") == 0, L"/Request did not return content type: application/json; charset=utf8.");
-							}
-							{
-								self->httpRespondBodyBufferWriting = 0;
-								httpResult = WinHttpQueryDataAvailable(
-									httpRequest,
-									NULL);
-								lastError = GetLastError();
-								if (lastError == ERROR_INVALID_HANDLE)
-								{
-									CHECK_ERROR(self->state == State::Stopping, L"WinHttpQueryDataAvailable failed with ERROR_INVALID_HANDLE but client is not stopping.");
-									return;
-								}
-								CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryDataAvailable failed.");
-							}
-						});
-					}
-					break;
-				case WINHTTP_CALLBACK_STATUS_DATA_AVAILABLE:
-					{
-						DWORD dataAvailable = *(PDWORD)lpvStatusInformation;
-						self->QueueCallback([=]()
-						{
-							if (self->state == State::Stopping) return;
-							if (dataAvailable == 0)
-							{
-								if (self->callback)
-								{
-									self->httpRespondBodyBuffer[self->httpRespondBodyBufferWriting] = 0;
-									U8String bodyUtf8 = U8String::Unmanaged(&self->httpRespondBodyBuffer[0]);
-									self->callback->OnReadString(u8tow(bodyUtf8));
-								}
-								self->CloseRequest(httpRequest);
-								self->BeginReadingLoopUnsafe();
-								return;
-							}
-
-							self->httpRespondBodyBufferWritingAvailable = dataAvailable;
-							DWORD bufferSize = self->httpRespondBodyBufferWriting + dataAvailable + 1;
-							if (self->httpRespondBodyBuffer.Count() < (vint)bufferSize)
-							{
-								self->httpRespondBodyBuffer.Resize((bufferSize + HttpRespondBodyStep - 1) / HttpRespondBodyStep * HttpRespondBodyStep);
-							}
-
-							DWORD lastError = 0;
-							BOOL httpResult = WinHttpReadData(
-								httpRequest,
-								&self->httpRespondBodyBuffer[self->httpRespondBodyBufferWriting],
-								dataAvailable,
-								NULL);
-							lastError = GetLastError();
-							if (lastError == ERROR_INVALID_HANDLE)
-							{
-								CHECK_ERROR(self->state == State::Stopping, L"WinHttpReadData failed with ERROR_INVALID_HANDLE but client is not stopping.");
-								return;
-							}
-							CHECK_ERROR(httpResult == TRUE, L"WinHttpReadData failed.");
-						});
-					}
-					break;
-				case WINHTTP_CALLBACK_STATUS_READ_COMPLETE:
-					{
-						self->QueueCallback([=]()
-						{
-							if (self->state == State::Stopping) return;
-							CHECK_ERROR(
-								self->httpRespondBodyBufferWritingAvailable == dwStatusInformationLength,
-								L"WinHttpReadData failed to read all available data."
-								);
-							self->httpRespondBodyBufferWriting += self->httpRespondBodyBufferWritingAvailable;
-
-							DWORD lastError = 0;
-							BOOL httpResult = WinHttpQueryDataAvailable(
-								httpRequest,
-								NULL);
-							lastError = GetLastError();
-							if (lastError == ERROR_INVALID_HANDLE)
-							{
-								CHECK_ERROR(self->state == State::Stopping, L"WinHttpQueryDataAvailable failed with ERROR_INVALID_HANDLE but client is not stopping.");
-								return;
-							}
-							CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryDataAvailable failed.");
-						});
-					}
-					break;
-				case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
-					{
-						self->QueueCallback([=]()
-						{
-							if (self->state == State::Stopping) return;
-							self->CloseRequest(httpRequest);
-							self->RaiseErrorUnsafe(WString::Unmanaged(L"/Request canceled, another renderer may have connected to the core."));
-						});
-					}
-					break;
-				case WINHTTP_CALLBACK_STATUS_HANDLE_CLOSING:
-					self->OnRequestHandleClosing(httpRequest);
-					break;
-				}
-			},
-			WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS,
-			NULL);
-		lastError = GetLastError();
-		if (previousCallback == WINHTTP_INVALID_STATUS_CALLBACK && lastError == ERROR_INVALID_HANDLE)
-		{
-			CHECK_ERROR(state == State::Stopping, L"WinHttpSetStatusCallback failed with ERROR_INVALID_HANDLE but client is not stopping.");
-			WinHttpCloseHandle(httpRequest);
-			return;
-		}
-		CHECK_ERROR(previousCallback != WINHTTP_INVALID_STATUS_CALLBACK, L"WinHttpSetStatusCallback failed.");
-	}
-	{
-		AttachRequest(httpRequest);
-		httpResult = WinHttpSendRequest(
-			httpRequest,
-			WINHTTP_NO_ADDITIONAL_HEADERS,
-			0,
-			WINHTTP_NO_REQUEST_DATA,
-			0,
-			0,
-			reinterpret_cast<DWORD_PTR>(this));
-		lastError = GetLastError();
-		if (httpResult == FALSE && lastError == ERROR_INVALID_HANDLE)
-		{
-			OnRequestHandleClosing(httpRequest);
-			CHECK_ERROR(state == State::Stopping, L"WinHttpSendRequest failed with ERROR_INVALID_HANDLE but client is not stopping.");
-			WinHttpCloseHandle(httpRequest);
-			return;
-		}
-		if (httpResult == FALSE)
-		{
-			OnRequestHandleClosing(httpRequest);
-			WinHttpCloseHandle(httpRequest);
-			CHECK_FAIL(L"WinHttpSendRequest failed.");
-		}
-	}
+	SendHttpRequest(HttpRequestType::Request, L"POST", urlRequest, WString::Empty);
 }
 
 /***********************************************************************
@@ -2282,149 +1696,72 @@ INetworkProtocolConnection* HttpClient::GetConnection()
 	return this;
 }
 
+void HttpClient::CompleteConnectRequest(const WString& response, const WString& error)
+{
+	SPIN_LOCK(lockConnectResult)
+	{
+		connectResponse = response;
+		connectError = error;
+		connectCompleted = true;
+	}
+	eventWaitForServer.Signal();
+}
+
 void HttpClient::WaitForServer()
 {
-	if (state == State::Stopping) return;
-	CHECK_ERROR(state == State::Ready, L"WaitForServer can only be called once.");
-	DWORD lastError = 0;
-	state = State::WaitForServerConnection;
-	LPCWSTR acceptTypes[] = { L"application/json; charset=utf8", NULL };
-	BOOL httpResult = FALSE;
-
-	HINTERNET httpRequest = WinHttpOpenRequest(
-		httpConnection,
-		L"GET",
-		urlConnect.Buffer(),
-		NULL,
-		WINHTTP_NO_REFERER,
-		acceptTypes,
-		WINHTTP_FLAG_REFRESH);
-	lastError = GetLastError();
-	CHECK_ERROR(httpRequest != NULL, L"WinHttpOpenRequest failed.");
 	{
-		WINHTTP_STATUS_CALLBACK previousCallback = WinHttpSetStatusCallback(
-			httpRequest,
-			(WINHTTP_STATUS_CALLBACK)[](HINTERNET httpRequest, DWORD_PTR dwContext, DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength) -> void
-			{
-				if (!dwContext) return;
-				auto self = reinterpret_cast<HttpClient*>(dwContext);
-				switch (dwInternetStatus)
-				{
-				case WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE:
-				case WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE:
-				case WINHTTP_CALLBACK_STATUS_READ_COMPLETE:
-				case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
-					{
-						self->dwInternetStatus_WaitForServer = dwInternetStatus;
-						self->dwStatusInformationLength_WaitForServer = dwStatusInformationLength;
-						SetEvent(self->hEventWaitForServer);
-					}
-					break;
-				}
-			},
-			WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS,
-			NULL);
-		lastError = GetLastError();
-		CHECK_ERROR(previousCallback != WINHTTP_INVALID_STATUS_CALLBACK, L"WinHttpSetStatusCallback failed.");
-	}
-	{
-		ResetEvent(hEventWaitForServer);
-		httpResult = WinHttpSendRequest(
-			httpRequest,
-			WINHTTP_NO_ADDITIONAL_HEADERS,
-			0,
-			WINHTTP_NO_REQUEST_DATA,
-			0,
-			0,
-			reinterpret_cast<DWORD_PTR>(this));
-		lastError = GetLastError();
-		CHECK_ERROR(httpResult == TRUE, L"WinHttpSendRequest failed.");
-		WaitForSingleObject(hEventWaitForServer, INFINITE);
-		CHECK_ERROR(dwInternetStatus_WaitForServer == WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE, L"WinHttpSendRequest failed to complete.");
-	}
-	{
-		ResetEvent(hEventWaitForServer);
-		httpResult = WinHttpReceiveResponse(httpRequest, NULL);
-		lastError = GetLastError();
-		CHECK_ERROR(httpResult == TRUE, L"WinHttpReceiveResponse failed.");
-		WaitForSingleObject(hEventWaitForServer, INFINITE);
-		CHECK_ERROR(dwInternetStatus_WaitForServer == WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE, L"WinHttpSendRequest failed to complete.");
+		SPIN_LOCK(lockState)
+		{
+			if (state == State::Stopping) return;
+			CHECK_ERROR(state == State::Ready, L"WaitForServer can only be called once.");
+			state = State::WaitForServerConnection;
+		}
 	}
 
-	DWORD statusCode = 0;
-	DWORD dataLength = 0;
-	DWORD dwordLength = sizeof(DWORD);
 	{
-		httpResult = WinHttpQueryHeaders(
-			httpRequest,
-			WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER,
-			WINHTTP_HEADER_NAME_BY_INDEX,
-			&statusCode,
-			&dwordLength,
-			WINHTTP_NO_HEADER_INDEX);
-		lastError = GetLastError();
-		CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryHeaders failed to retrieve status code.");
-		CHECK_ERROR(statusCode == 200, L"/Connect did not return status code: 200.");
+		SPIN_LOCK(lockConnectResult)
+		{
+			connectCompleted = false;
+			connectResponse = WString::Empty;
+			connectError = WString::Empty;
+		}
 	}
+
+	eventWaitForServer.Unsignal();
+	if (!SendHttpRequest(HttpRequestType::Connect, L"GET", urlConnect, WString::Empty))
 	{
-		DWORD headerLength = 0;
-		httpResult = WinHttpQueryHeaders(
-			httpRequest,
-			WINHTTP_QUERY_CONTENT_TYPE,
-			WINHTTP_HEADER_NAME_BY_INDEX,
-			NULL,
-			&headerLength,
-			WINHTTP_NO_HEADER_INDEX);
-		lastError = GetLastError();
-		CHECK_ERROR(httpResult == FALSE && lastError == ERROR_INSUFFICIENT_BUFFER, L"WinHttpQueryHeaders failed to retrieve content type.");
-
-		Array<wchar_t> headerBuffer(headerLength + 1);
-		ZeroMemory(&headerBuffer[0], headerBuffer.Count() * sizeof(wchar_t));
-
-		httpResult = WinHttpQueryHeaders(
-			httpRequest,
-			WINHTTP_QUERY_CONTENT_TYPE,
-			WINHTTP_HEADER_NAME_BY_INDEX,
-			&headerBuffer[0],
-			&headerLength,
-			WINHTTP_NO_HEADER_INDEX);
-		lastError = GetLastError();
-		CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryHeaders failed to retrieve content-type.");
-
-		const wchar_t* header = &headerBuffer[0];
-		CHECK_ERROR(wcscmp(header, L"application/json; charset=utf8") == 0, L"/Content did not return content type: application/json; charset=utf8.");
+		return;
 	}
+
+	eventWaitForServer.Wait();
+	if (IsStopping()) return;
+
+	WString body;
+	WString error;
+	bool completed = false;
 	{
-		httpResult = WinHttpQueryDataAvailable(
-			httpRequest,
-			&dataLength);
-		lastError = GetLastError();
-		CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryDataAvailable failed.");
+		SPIN_LOCK(lockConnectResult)
+		{
+			body = connectResponse;
+			error = connectError;
+			completed = connectCompleted;
+		}
 	}
+
+	CHECK_ERROR(completed, L"/Connect did not complete.");
+	CHECK_ERROR(error == WString::Empty, L"/Connect failed.");
+
+	vint separatorIndex = body.IndexOf(L';');
+	CHECK_ERROR(separatorIndex != -1, L"/Connect response body is not in the correct format: requestUrl;responseUrl.");
+	urlRequest = baseUrl + body.Left(separatorIndex);
+	urlResponse = baseUrl + body.Right(body.Length() - separatorIndex - 1);
 	{
-		Array<char8_t> bodyBuffer(dataLength + 1);
-		ZeroMemory(&bodyBuffer[0], bodyBuffer.Count() * sizeof(char8_t));
-
-		ResetEvent(hEventWaitForServer);
-		httpResult = WinHttpReadData(
-			httpRequest,
-			&bodyBuffer[0],
-			dataLength,
-			NULL);
-		lastError = GetLastError();
-		CHECK_ERROR(httpResult == TRUE, L"WinHttpReadData failed.");
-		WaitForSingleObject(hEventWaitForServer, INFINITE);
-		CHECK_ERROR(dwInternetStatus_WaitForServer == WINHTTP_CALLBACK_STATUS_READ_COMPLETE, L"WinHttpReadData failed to complete.");
-		CHECK_ERROR(dwStatusInformationLength_WaitForServer == dataLength, L"WinHttpReadData failed to read full data.");
-
-		U8String bodyUtf8 = U8String::Unmanaged(&bodyBuffer[0]);
-		vint separatorIndex = bodyUtf8.IndexOf(L';');
-		CHECK_ERROR(separatorIndex != -1, L"/Connect response body is not in the correct format: requestUrl;responseUrl.");
-		urlRequest = baseUrl + u8tow(bodyUtf8.Left(separatorIndex));
-		urlResponse = baseUrl + u8tow(bodyUtf8.Right(bodyUtf8.Length() - separatorIndex - 1));
+		SPIN_LOCK(lockState)
+		{
+			if (state == State::Stopping) return;
+			state = State::Running;
+		}
 	}
-	WinHttpCloseHandle(httpRequest);
-	state = State::Running;
 
 	if (callback)
 	{
@@ -2434,411 +1771,201 @@ void HttpClient::WaitForServer()
 
 ClientStatus HttpClient::GetStatus()
 {
-	switch (state)
+	ClientStatus result = ClientStatus::Disconnected;
+	SPIN_LOCK(lockState)
 	{
-	case State::Ready:
-		return ClientStatus::Ready;
-	case State::WaitForServerConnection:
-		return ClientStatus::WaitingForServer;
-	case State::Running:
-		return ClientStatus::Connected;
-	default:
-		return ClientStatus::Disconnected;
+		switch (state)
+		{
+		case State::Ready:
+			result = ClientStatus::Ready;
+			break;
+		case State::WaitForServerConnection:
+			result = ClientStatus::WaitingForServer;
+			break;
+		case State::Running:
+			result = ClientStatus::Connected;
+			break;
+		default:
+			result = ClientStatus::Disconnected;
+			break;
+		}
 	}
+	return result;
 }
 
 /***********************************************************************
 HttpClient (Writing)
 ***********************************************************************/
 
-void HttpClient::SendString(const WString& str)
+bool HttpClient::SendHttpRequest(HttpRequestType requestType, const wchar_t* method, const WString& url, const WString& body)
 {
-	if (state == State::Stopping) return;
-	CHECK_ERROR(state == State::Running, L"SendString can only be called when client is running.");
-	DWORD lastError = 0;
-	BOOL httpResult = FALSE;
-
-	HINTERNET httpRequest = WinHttpOpenRequest(
-		httpConnection,
-		L"POST",
-		urlResponse.Buffer(),
-		NULL,
-		WINHTTP_NO_REFERER,
-		NULL,
-		WINHTTP_FLAG_REFRESH);
-	lastError = GetLastError();
-	if (lastError == ERROR_INVALID_HANDLE)
+	Ptr<HttpClientApi> api;
 	{
-		CHECK_ERROR(state == State::Stopping, L"WinHttpOpenRequest failed with ERROR_INVALID_HANDLE.");
-		return;
-	}
-	CHECK_ERROR(httpRequest != NULL, L"WinHttpOpenRequest failed.");
-
-	WINHTTP_STATUS_CALLBACK previousCallback = WinHttpSetStatusCallback(
-		httpRequest,
-		(WINHTTP_STATUS_CALLBACK)[](HINTERNET httpRequest, DWORD_PTR dwContext, DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength) -> void
+		SPIN_LOCK(lockState)
 		{
-			if (!dwContext) return;
-			auto contextPtr = reinterpret_cast<Ptr<HttpClient::HttpRequestContext>*>(dwContext);
-			auto context = *contextPtr;
-			auto self = context->client;
-			auto requestId = context->requestId;
-			switch (dwInternetStatus)
+			if (state == State::Stopping) return false;
+			switch (requestType)
 			{
-			case WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE:
-				{
-					self->QueueCallback([=, context = std::move(context)]()
-					{
-						if (self->state == State::Stopping) return;
-						DWORD lastError = 0;
-						BOOL httpResult = WinHttpReceiveResponse(httpRequest, NULL);
-						lastError = GetLastError();
-						if (lastError == ERROR_INVALID_HANDLE)
-						{
-							CHECK_ERROR(self->state == State::Stopping, L"WinHttpReceiveResponse failed with ERROR_INVALID_HANDLE but client is not stopping.");
-							return;
-						}
-						CHECK_ERROR(httpResult == TRUE, L"WinHttpReceiveResponse failed.");
-					});
-				}
+			case HttpRequestType::Connect:
+				CHECK_ERROR(state == State::WaitForServerConnection, L"/Connect can only be called when client is waiting for the server.");
 				break;
-			case WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE:
-				{
-					self->QueueCallback([=, context = std::move(context)]()
-					{
-						if (self->state == State::Stopping) return;
-						DWORD lastError = 0;
-						DWORD statusCode = 0;
-						DWORD dwordLength = sizeof(DWORD);
-						BOOL httpResult = WinHttpQueryHeaders(
-							httpRequest,
-							WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER,
-							WINHTTP_HEADER_NAME_BY_INDEX,
-							&statusCode,
-							&dwordLength,
-							WINHTTP_NO_HEADER_INDEX);
-						lastError = GetLastError();
-						if (lastError == ERROR_INVALID_HANDLE)
-						{
-							CHECK_ERROR(self->state == State::Stopping, L"WinHttpQueryHeaders failed with ERROR_INVALID_HANDLE but client is not stopping.");
-							return;
-						}
-						CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryHeaders failed to retrieve status code.");
-
-						if (statusCode != 200)
-						{
-							self->CloseRequest(httpRequest, requestId);
-							self->RaiseErrorUnsafe(WString::Unmanaged(L"/Response returned status code: ") + itow(statusCode) + L", another renderer may have connected to the core.");
-							return;
-						}
-
-						auto reading = context->responseReading;
-
-						reading->bodyBufferWriting = 0;
-						httpResult = WinHttpQueryDataAvailable(
-							httpRequest,
-							NULL);
-						lastError = GetLastError();
-						if (lastError == ERROR_INVALID_HANDLE)
-						{
-							CHECK_ERROR(self->state == State::Stopping, L"WinHttpQueryDataAvailable failed with ERROR_INVALID_HANDLE but client is not stopping.");
-							return;
-						}
-						CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryDataAvailable failed.");
-					});
-				}
+			case HttpRequestType::Request:
+				CHECK_ERROR(state == State::Running, L"/Request can only be called when client is running.");
 				break;
-			case WINHTTP_CALLBACK_STATUS_DATA_AVAILABLE:
-				{
-					DWORD dataAvailable = *(PDWORD)lpvStatusInformation;
-					self->QueueCallback([=, context = std::move(context)]()
-					{
-						if (self->state == State::Stopping) return;
-
-						auto reading = context->responseReading;
-
-						if (dataAvailable == 0)
-						{
-							if (reading->bodyBufferWriting > 0 && self->callback)
-							{
-								reading->bodyBuffer[reading->bodyBufferWriting] = 0;
-								U8String bodyUtf8 = U8String::Unmanaged(&reading->bodyBuffer[0]);
-								self->callback->OnReadString(u8tow(bodyUtf8));
-							}
-							self->CloseRequest(httpRequest, requestId);
-							return;
-						}
-
-						reading->bodyBufferWritingAvailable = dataAvailable;
-						DWORD bufferSize = reading->bodyBufferWriting + dataAvailable + 1;
-						if (reading->bodyBuffer.Count() < (vint)bufferSize)
-						{
-							reading->bodyBuffer.Resize((bufferSize + HttpRespondBodyStep - 1) / HttpRespondBodyStep * HttpRespondBodyStep);
-						}
-
-						DWORD lastError = 0;
-						BOOL httpResult = WinHttpReadData(
-							httpRequest,
-							&reading->bodyBuffer[reading->bodyBufferWriting],
-							dataAvailable,
-							NULL);
-						lastError = GetLastError();
-						if (lastError == ERROR_INVALID_HANDLE)
-						{
-							CHECK_ERROR(self->state == State::Stopping, L"WinHttpReadData failed with ERROR_INVALID_HANDLE but client is not stopping.");
-							return;
-						}
-						CHECK_ERROR(httpResult == TRUE, L"WinHttpReadData failed.");
-					});
-				}
-				break;
-			case WINHTTP_CALLBACK_STATUS_READ_COMPLETE:
-				{
-					self->QueueCallback([=, context = std::move(context)]()
-					{
-						if (self->state == State::Stopping) return;
-
-						auto reading = context->responseReading;
-
-						CHECK_ERROR(
-							reading->bodyBufferWritingAvailable == dwStatusInformationLength,
-							L"WinHttpReadData failed to read all available data."
-							);
-						reading->bodyBufferWriting += reading->bodyBufferWritingAvailable;
-
-						DWORD lastError = 0;
-						BOOL httpResult = WinHttpQueryDataAvailable(
-							httpRequest,
-							NULL);
-						lastError = GetLastError();
-						if (lastError == ERROR_INVALID_HANDLE)
-						{
-							CHECK_ERROR(self->state == State::Stopping, L"WinHttpQueryDataAvailable failed with ERROR_INVALID_HANDLE but client is not stopping.");
-							return;
-						}
-						CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryDataAvailable failed.");
-					});
-				}
-				break;
-			case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
-				{
-					self->QueueCallback([=, context = std::move(context)]()
-					{
-						if (self->state == State::Stopping) return;
-						self->CloseRequest(httpRequest, requestId);
-						self->RaiseErrorUnsafe(WString::Unmanaged(L"/Response canceled, another renderer may have connected to the core."));
-					});
-				}
-				break;
-			case WINHTTP_CALLBACK_STATUS_HANDLE_CLOSING:
-				self->OnRequestHandleClosing(httpRequest, requestId);
-				delete contextPtr;
+			case HttpRequestType::Response:
+				CHECK_ERROR(state == State::Running, L"/Response can only be called when client is running.");
 				break;
 			}
-		},
-		WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS,
-		NULL);
-	lastError = GetLastError();
-	CHECK_ERROR(previousCallback != WINHTTP_INVALID_STATUS_CALLBACK, L"WinHttpSetStatusCallback failed.");
+			api = httpClientApi;
+		}
+	}
 
-	httpResult = WinHttpAddRequestHeaders(
-		httpRequest,
-		L"Content-Type: application/json; charset=utf8",
-		-1,
-		WINHTTP_ADDREQ_FLAG_ADD);
-	lastError = GetLastError();
-	if (lastError == ERROR_INVALID_HANDLE)
+	if (!api) return false;
+
+	HttpRequest request;
+	request.method = method;
+	request.query = url;
+	request.acceptTypes.Add(JsonContentType);
+	if (requestType == HttpRequestType::Response)
 	{
-		CHECK_ERROR(state == State::Stopping, L"WinHttpAddRequestHeaders failed with ERROR_INVALID_HANDLE.");
-		WinHttpCloseHandle(httpRequest);
+		request.contentType = JsonContentType;
+		request.keepAliveOnStop = true;
+	}
+	else if (requestType == HttpRequestType::Request)
+	{
+		request.receiveTimeout = 0;
+	}
+	if (body.Length() > 0)
+	{
+		request.contentType = JsonContentType;
+		request.SetBodyUtf8(body);
+	}
+
+	api->HttpQuery(request, [this, requestType](Variant<HttpResponse, HttpError> result)
+	{
+		OnHttpRequestCompleted(requestType, std::move(result));
+	});
+	return true;
+}
+
+void HttpClient::OnHttpRequestCompleted(HttpRequestType requestType, Variant<HttpResponse, HttpError> result)
+{
+	if (auto error = result.TryGet<HttpError>())
+	{
+		switch (requestType)
+		{
+		case HttpRequestType::Connect:
+			CompleteConnectRequest(WString::Empty, error->message);
+			break;
+		case HttpRequestType::Request:
+			if (!IsStopping())
+			{
+				RaiseErrorUnsafe(L"/Request failed: " + error->message);
+			}
+			break;
+		case HttpRequestType::Response:
+			if (!IsStopping())
+			{
+				RaiseErrorUnsafe(L"/Response failed: " + error->message);
+			}
+			break;
+		}
 		return;
 	}
-	CHECK_ERROR(httpResult == TRUE, L"WinHttpAddRequestHeaders failed.");
 
-	auto contextPtr = new Ptr<HttpRequestContext>(new HttpRequestContext);
-	auto context = *contextPtr;
-	context->client = this;
-	context->httpRequest = httpRequest;
-	context->requestId = ++createdRequestIds;
-	context->requestBody = wtou8(str);
-	context->responseReading = Ptr(new HttpResponseReading);
-
+	auto&& response = result.Get<HttpResponse>();
+	if (response.statusCode != 200)
 	{
-		AttachRequest(httpRequest, context->requestId);
-		httpResult = WinHttpSendRequest(
-			httpRequest,
-			WINHTTP_NO_ADDITIONAL_HEADERS,
-			0,
-			(LPVOID)context->requestBody.Buffer(),
-			(DWORD)context->requestBody.Length(),
-			(DWORD)context->requestBody.Length(),
-			reinterpret_cast<DWORD_PTR>(contextPtr));
-		lastError = GetLastError();
-		if (lastError == ERROR_INVALID_HANDLE)
+		switch (requestType)
 		{
-			OnRequestHandleClosing(httpRequest, context->requestId);
-			delete contextPtr;
-			CHECK_ERROR(state == State::Stopping, L"WinHttpSendRequest failed with ERROR_INVALID_HANDLE.");
-			WinHttpCloseHandle(httpRequest);
-			return;
+		case HttpRequestType::Connect:
+			CompleteConnectRequest(WString::Empty, WString::Unmanaged(L"/Connect returned status code: ") + itow(response.statusCode) + L".");
+			break;
+		case HttpRequestType::Request:
+			if (!IsStopping())
+			{
+				RaiseErrorUnsafe(WString::Unmanaged(L"/Request returned status code: ") + itow(response.statusCode) + L", another renderer may have connected to the core.");
+			}
+			break;
+		case HttpRequestType::Response:
+			if (!IsStopping())
+			{
+				RaiseErrorUnsafe(WString::Unmanaged(L"/Response returned status code: ") + itow(response.statusCode) + L", another renderer may have connected to the core.");
+			}
+			break;
 		}
-		if (httpResult == FALSE)
-		{
-			OnRequestHandleClosing(httpRequest, context->requestId);
-			delete contextPtr;
-			WinHttpCloseHandle(httpRequest);
-			CHECK_FAIL(L"WinHttpSendRequest failed.");
-		}
+		return;
 	}
+
+	if (response.contentType != JsonContentType)
+	{
+		switch (requestType)
+		{
+		case HttpRequestType::Connect:
+			CompleteConnectRequest(WString::Empty, L"HTTP response did not return content type: application/json; charset=utf8.");
+			break;
+		case HttpRequestType::Request:
+			if (!IsStopping())
+			{
+				CHECK_FAIL(L"HTTP response did not return content type: application/json; charset=utf8.");
+			}
+			break;
+		case HttpRequestType::Response:
+			if (!IsStopping())
+			{
+				CHECK_FAIL(L"HTTP response did not return content type: application/json; charset=utf8.");
+			}
+			break;
+		}
+		return;
+	}
+
+	auto body = response.GetBodyUtf8();
+	switch (requestType)
+	{
+	case HttpRequestType::Connect:
+		CompleteConnectRequest(body, WString::Empty);
+		break;
+	case HttpRequestType::Request:
+		if (!IsStopping())
+		{
+			BeginReadingLoopUnsafe();
+			if (body.Length() > 0 && callback)
+			{
+				callback->OnReadString(body);
+			}
+		}
+		break;
+	case HttpRequestType::Response:
+		if (!IsStopping() && body.Length() > 0 && callback)
+		{
+			callback->OnReadString(body);
+		}
+		break;
+	}
+}
+
+void HttpClient::SendString(const WString& str)
+{
+	SendHttpRequest(HttpRequestType::Response, L"POST", urlResponse, str);
 }
 
 /***********************************************************************
 HttpClient
 ***********************************************************************/
 
-void HttpClient::BeginPendingCallback()
-{
-	if (pendingCallbacks++ == 0)
-	{
-		eventPendingCallbacks.Unsignal();
-	}
-}
-
-void HttpClient::EndPendingCallback()
-{
-	if (--pendingCallbacks == 0)
-	{
-		eventPendingCallbacks.Signal();
-	}
-}
-
-void HttpClient::QueueCallback(const Func<void()>& proc)
-{
-	BeginPendingCallback();
-	auto queued = ThreadPoolLite::Queue([=]()
-	{
-		try
-		{
-			proc();
-		}
-		catch (...)
-		{
-			EndPendingCallback();
-			throw;
-		}
-
-		EndPendingCallback();
-	});
-	if (!queued)
-	{
-		EndPendingCallback();
-		CHECK_FAIL(L"HttpClient failed to queue asynchronous callback.");
-	}
-}
-
-vint HttpClient::FindActiveRequestUnsafe(HINTERNET httpRequest, vint requestId)
-{
-	for (vint index = 0; index < httpActiveRequests.Count(); index++)
-	{
-		auto&& activeRequest = httpActiveRequests[index];
-		if (activeRequest.requestId != -1 && activeRequest.httpRequest == httpRequest && activeRequest.requestId == requestId)
-		{
-			return index;
-		}
-	}
-	return -1;
-}
-
-void HttpClient::AttachRequest(HINTERNET httpRequest, vint requestId)
-{
-	BeginPendingCallback();
-	SPIN_LOCK(httpActiveRequestsLock)
-	{
-		for (vint index = 0; index < httpActiveRequests.Count(); index++)
-		{
-			auto&& activeRequest = httpActiveRequests[index];
-			if (activeRequest.requestId == -1)
-			{
-				activeRequest.httpRequest = httpRequest;
-				activeRequest.requestId = requestId;
-				return;
-			}
-		}
-
-		HttpActiveRequest activeRequest;
-		activeRequest.httpRequest = httpRequest;
-		activeRequest.requestId = requestId;
-		httpActiveRequests.Add(activeRequest);
-	}
-}
-
-void HttpClient::CloseRequest(HINTERNET httpRequest, vint requestId)
-{
-	bool closeRequest = false;
-	SPIN_LOCK(httpActiveRequestsLock)
-	{
-		vint index = FindActiveRequestUnsafe(httpRequest, requestId);
-		if (index != -1)
-		{
-			auto&& activeRequest = httpActiveRequests[index];
-			activeRequest.httpRequest = NULL;
-			activeRequest.requestId = -1;
-			closeRequest = true;
-		}
-	}
-	if (closeRequest)
-	{
-		WinHttpCloseHandle(httpRequest);
-	}
-}
-
-void HttpClient::OnRequestHandleClosing(HINTERNET httpRequest, vint requestId)
-{
-	SPIN_LOCK(httpActiveRequestsLock)
-	{
-		vint index = FindActiveRequestUnsafe(httpRequest, requestId);
-		if (index != -1)
-		{
-			auto&& activeRequest = httpActiveRequests[index];
-			activeRequest.httpRequest = NULL;
-			activeRequest.requestId = -1;
-		}
-	}
-	EndPendingCallback();
-}
-
 HttpClient::HttpClient(const WString _baseUrl, vint port)
 	: baseUrl(_baseUrl)
 {
-	DWORD lastError = 0;
-	hEventWaitForServer = CreateEvent(NULL, FALSE, TRUE, NULL);
-	CHECK_ERROR(hEventWaitForServer != NULL, L"HttpClient initialization failed on CreateEvent(hEventWaitForServer).");
-	CHECK_ERROR(eventPendingCallbacks.CreateManualUnsignal(true), L"HttpClient initialization failed on eventPendingCallbacks.CreateManualUnsignal.");
+	CHECK_ERROR(eventWaitForServer.CreateAutoUnsignal(false), L"HttpClient initialization failed on eventWaitForServer.CreateAutoUnsignal.");
 
-	httpSession = WinHttpOpen(
-		L"vl::inter_process::HttpClient",
-		WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
-		WINHTTP_NO_PROXY_NAME,
-		WINHTTP_NO_PROXY_BYPASS,
-		WINHTTP_FLAG_ASYNC);
-	lastError = GetLastError();
-	CHECK_ERROR(httpSession != NULL, L"WinHttpOpen failed.");
-
-	httpConnection = WinHttpConnect(
-		httpSession,
-		L"localhost",
-		(INTERNET_PORT)port,
-		0);
-	lastError = GetLastError();
-	CHECK_ERROR(httpConnection != NULL, L"WinHttpConnect failed.");
-
+	httpClientApi = Ptr(new HttpClientApi(L"localhost", port));
 	urlConnect = baseUrl + HttpServerUrl_Connect;
 }
 
 HttpClient::~HttpClient()
 {
 	Stop();
-	CloseHandle(hEventWaitForServer);
 }
 
 void HttpClient::InstallCallback(INetworkProtocolCallback* _callback)
@@ -2850,45 +1977,824 @@ void HttpClient::InstallCallback(INetworkProtocolCallback* _callback)
 
 void HttpClient::Stop()
 {
-	if (httpSession != NULL)
+	Ptr<HttpClientApi> stoppingApi;
+	bool notifyDisconnected = false;
 	{
-		state = State::Stopping;
-
-		List<HINTERNET> stoppingRequests;
-		SPIN_LOCK(httpActiveRequestsLock)
+		SPIN_LOCK(lockState)
 		{
-			for (auto activeRequest : httpActiveRequests)
+			if (httpClientApi)
 			{
-				if (activeRequest.requestId != -1)
-				{
-					stoppingRequests.Add(activeRequest.httpRequest);
-				}
+				state = State::Stopping;
+				stoppingApi = httpClientApi;
+				httpClientApi = nullptr;
+				notifyDisconnected = true;
 			}
-			httpActiveRequests.Clear();
-		}
-		for (auto httpRequest : stoppingRequests)
-		{
-			WinHttpCloseHandle(httpRequest);
-		}
-
-		WinHttpCloseHandle(httpConnection);
-		WinHttpSetStatusCallback(
-			httpSession,
-			NULL,
-			WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS,
-			NULL);
-		WinHttpCloseHandle(httpSession);
-
-		eventPendingCallbacks.Wait();
-
-		httpConnection = NULL;
-		httpSession = NULL;
-
-		if (callback)
-		{
-			callback->OnDisconnected();
+			else
+			{
+				state = State::Stopping;
+			}
 		}
 	}
+
+	eventWaitForServer.Signal();
+	if (stoppingApi)
+	{
+		stoppingApi->Stop();
+	}
+
+	if (notifyDisconnected && callback)
+	{
+		callback->OnDisconnected();
+	}
+}
+
+}
+
+
+/***********************************************************************
+.\INTERPROCESS\WINDOWS\HTTPCLIENTAPI.WINDOWS.CPP
+***********************************************************************/
+
+#ifndef VCZH_MSVC
+static_assert(false, "Do not build this file for non-Windows applications.");
+#endif
+
+#pragma comment(lib, "WinHttp.lib")
+
+namespace vl::inter_process
+{
+
+using namespace vl::collections;
+
+/***********************************************************************
+HttpRequest
+***********************************************************************/
+
+void HttpRequest::SetBodyUtf8(const WString& bodyString)
+{
+	vint utf8Size = WideCharToMultiByte(CP_UTF8, 0, bodyString.Buffer(), (int)bodyString.Length(), NULL, 0, NULL, NULL);
+	body.Resize(utf8Size);
+	if (utf8Size > 0)
+	{
+		WideCharToMultiByte(CP_UTF8, 0, bodyString.Buffer(), (int)bodyString.Length(), &body[0], (int)utf8Size, NULL, NULL);
+	}
+}
+
+/***********************************************************************
+HttpResponse
+***********************************************************************/
+
+WString HttpResponse::GetBodyUtf8() const
+{
+	if (body.Count() == 0)
+	{
+		return WString::Empty;
+	}
+
+	vint utf16Size = MultiByteToWideChar(CP_UTF8, 0, &body[0], (int)body.Count(), NULL, 0);
+	Array<wchar_t> utf16(utf16Size + 1);
+	ZeroMemory(&utf16[0], utf16.Count() * sizeof(wchar_t));
+	if (utf16Size > 0)
+	{
+		MultiByteToWideChar(CP_UTF8, 0, &body[0], (int)body.Count(), &utf16[0], (int)utf16Size);
+	}
+	return &utf16[0];
+}
+
+/***********************************************************************
+HttpClientApi
+***********************************************************************/
+
+HttpError HttpClientApi::MakeError(const WString& operation, DWORD errorCode)
+{
+	HttpError error;
+	error.operation = operation;
+	error.errorCode = errorCode;
+	error.message = operation + L" failed with Windows error " + itow((vint)errorCode) + L".";
+	return error;
+}
+
+vint HttpClientApi::HexValue(wchar_t c)
+{
+	if (L'0' <= c && c <= L'9') return c - L'0';
+	if (L'a' <= c && c <= L'f') return c - L'a' + 10;
+	if (L'A' <= c && c <= L'F') return c - L'A' + 10;
+	return -1;
+}
+
+bool HttpClientApi::IsStopping()
+{
+	bool result = false;
+	SPIN_LOCK(lockActiveRequests)
+	{
+		result = stopping;
+	}
+	return result;
+}
+
+void HttpClientApi::BeginPendingCallback()
+{
+	if (pendingCallbacks++ == 0)
+	{
+		eventPendingCallbacks.Unsignal();
+	}
+}
+
+void HttpClientApi::EndPendingCallback()
+{
+	if (--pendingCallbacks == 0)
+	{
+		eventPendingCallbacks.Signal();
+	}
+}
+
+void HttpClientApi::AttachRequestUnsafe(Ptr<HttpRequestContext> context)
+{
+	activeRequests.Add(context);
+}
+
+void HttpClientApi::RemoveRequestUnsafe(Ptr<HttpRequestContext> context)
+{
+	for (vint index = 0; index < activeRequests.Count(); index++)
+	{
+		if (activeRequests[index] == context)
+		{
+			activeRequests.RemoveAt(index);
+			return;
+		}
+	}
+}
+
+void HttpClientApi::CloseRequest(Ptr<HttpRequestContext> context)
+{
+	HINTERNET httpRequest = NULL;
+	SPIN_LOCK(context->lockContext)
+	{
+		if (!context->closing)
+		{
+			context->closing = true;
+			httpRequest = context->httpRequest;
+		}
+	}
+	if (httpRequest)
+	{
+		WinHttpCloseHandle(httpRequest);
+	}
+}
+
+void HttpClientApi::OnRequestHandleClosing(Ptr<HttpRequestContext> context)
+{
+	SPIN_LOCK(lockActiveRequests)
+	{
+		RemoveRequestUnsafe(context);
+	}
+	EndPendingCallback();
+}
+
+void HttpClientApi::CompleteRequest(Ptr<HttpRequestContext> context, HttpResponse&& response)
+{
+	Func<void(Variant<HttpResponse, HttpError>)> callback;
+	bool stoppingNow = IsStopping();
+	bool invokeCallback = false;
+	SPIN_LOCK(context->lockContext)
+	{
+		if (!context->completed)
+		{
+			context->completed = true;
+			callback = context->callback;
+			invokeCallback = !stoppingNow;
+		}
+	}
+
+	if (invokeCallback && callback)
+	{
+		CloseRequest(context);
+		callback(Variant<HttpResponse, HttpError>(std::move(response)));
+	}
+	else
+	{
+		CloseRequest(context);
+	}
+}
+
+void HttpClientApi::CompleteRequest(Ptr<HttpRequestContext> context, HttpError&& error)
+{
+	Func<void(Variant<HttpResponse, HttpError>)> callback;
+	bool stoppingNow = IsStopping();
+	bool invokeCallback = false;
+	SPIN_LOCK(context->lockContext)
+	{
+		if (!context->completed)
+		{
+			context->completed = true;
+			callback = context->callback;
+			invokeCallback = !stoppingNow;
+		}
+	}
+
+	if (invokeCallback && callback)
+	{
+		CloseRequest(context);
+		callback(Variant<HttpResponse, HttpError>(std::move(error)));
+	}
+	else
+	{
+		CloseRequest(context);
+	}
+}
+
+void HttpClientApi::CompleteRequestWithLastError(Ptr<HttpRequestContext> context, const WString& operation, DWORD errorCode)
+{
+	if (errorCode == ERROR_INVALID_HANDLE && IsStopping() && !context->keepAliveOnStop)
+	{
+		return;
+	}
+	CompleteRequest(context, MakeError(operation, errorCode));
+}
+
+void CALLBACK HttpClientApi::HttpStatusCallback(HINTERNET httpRequest, DWORD_PTR contextValue, DWORD status, LPVOID statusInformation, DWORD statusInformationLength)
+{
+	if (!contextValue) return;
+	auto contextPtr = reinterpret_cast<Ptr<HttpClientApi::HttpRequestContext>*>(contextValue);
+	auto context = *contextPtr;
+	auto self = context->api;
+
+	switch (status)
+	{
+	case WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE:
+		{
+			if (self->IsStopping() && !context->keepAliveOnStop) return;
+
+			BOOL httpResult = WinHttpReceiveResponse(httpRequest, NULL);
+			DWORD lastError = GetLastError();
+			if (httpResult == FALSE)
+			{
+				self->CompleteRequestWithLastError(context, L"WinHttpReceiveResponse", lastError);
+			}
+		}
+		break;
+	case WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE:
+		{
+			if (self->IsStopping() && !context->keepAliveOnStop) return;
+
+			DWORD statusCode = 0;
+			DWORD dwordLength = sizeof(DWORD);
+			BOOL httpResult = WinHttpQueryHeaders(
+				httpRequest,
+				WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER,
+				WINHTTP_HEADER_NAME_BY_INDEX,
+				&statusCode,
+				&dwordLength,
+				WINHTTP_NO_HEADER_INDEX);
+			DWORD lastError = GetLastError();
+			if (httpResult == FALSE)
+			{
+				self->CompleteRequestWithLastError(context, L"WinHttpQueryHeaders(status)", lastError);
+				return;
+			}
+			context->response.statusCode = statusCode;
+
+			DWORD headerLength = 0;
+			httpResult = WinHttpQueryHeaders(
+				httpRequest,
+				WINHTTP_QUERY_CONTENT_TYPE,
+				WINHTTP_HEADER_NAME_BY_INDEX,
+				NULL,
+				&headerLength,
+				WINHTTP_NO_HEADER_INDEX);
+			lastError = GetLastError();
+			if (httpResult == FALSE && lastError == ERROR_INSUFFICIENT_BUFFER)
+			{
+				Array<wchar_t> headerBuffer(headerLength / sizeof(wchar_t) + 1);
+				ZeroMemory(&headerBuffer[0], headerBuffer.Count() * sizeof(wchar_t));
+				httpResult = WinHttpQueryHeaders(
+					httpRequest,
+					WINHTTP_QUERY_CONTENT_TYPE,
+					WINHTTP_HEADER_NAME_BY_INDEX,
+					&headerBuffer[0],
+					&headerLength,
+					WINHTTP_NO_HEADER_INDEX);
+				lastError = GetLastError();
+				if (httpResult == FALSE)
+				{
+					self->CompleteRequestWithLastError(context, L"WinHttpQueryHeaders(content-type)", lastError);
+					return;
+				}
+				context->response.contentType = &headerBuffer[0];
+			}
+			else if (httpResult == FALSE && lastError != ERROR_WINHTTP_HEADER_NOT_FOUND)
+			{
+				self->CompleteRequestWithLastError(context, L"WinHttpQueryHeaders(content-type)", lastError);
+				return;
+			}
+
+			headerLength = 0;
+			httpResult = WinHttpQueryHeaders(
+				httpRequest,
+				WINHTTP_QUERY_SET_COOKIE,
+				WINHTTP_HEADER_NAME_BY_INDEX,
+				NULL,
+				&headerLength,
+				WINHTTP_NO_HEADER_INDEX);
+			lastError = GetLastError();
+			if (httpResult == FALSE && lastError == ERROR_INSUFFICIENT_BUFFER)
+			{
+				Array<wchar_t> headerBuffer(headerLength / sizeof(wchar_t) + 1);
+				ZeroMemory(&headerBuffer[0], headerBuffer.Count() * sizeof(wchar_t));
+				httpResult = WinHttpQueryHeaders(
+					httpRequest,
+					WINHTTP_QUERY_SET_COOKIE,
+					WINHTTP_HEADER_NAME_BY_INDEX,
+					&headerBuffer[0],
+					&headerLength,
+					WINHTTP_NO_HEADER_INDEX);
+				lastError = GetLastError();
+				if (httpResult == FALSE)
+				{
+					self->CompleteRequestWithLastError(context, L"WinHttpQueryHeaders(cookie)", lastError);
+					return;
+				}
+				context->response.cookie = &headerBuffer[0];
+			}
+			else if (httpResult == FALSE && lastError != ERROR_WINHTTP_HEADER_NOT_FOUND)
+			{
+				self->CompleteRequestWithLastError(context, L"WinHttpQueryHeaders(cookie)", lastError);
+				return;
+			}
+
+			context->bodyBufferWriting = 0;
+			httpResult = WinHttpQueryDataAvailable(httpRequest, NULL);
+			lastError = GetLastError();
+			if (httpResult == FALSE)
+			{
+				self->CompleteRequestWithLastError(context, L"WinHttpQueryDataAvailable", lastError);
+			}
+		}
+		break;
+	case WINHTTP_CALLBACK_STATUS_DATA_AVAILABLE:
+		{
+			if (self->IsStopping() && !context->keepAliveOnStop) return;
+			CHECK_ERROR(statusInformationLength == sizeof(DWORD), L"WinHttpQueryDataAvailable returned an unexpected payload.");
+			DWORD dataAvailable = *(PDWORD)statusInformation;
+
+			if (dataAvailable == 0)
+			{
+				context->response.body.Resize(context->bodyBufferWriting);
+				self->CompleteRequest(context, std::move(context->response));
+				return;
+			}
+
+			context->bodyBufferWritingAvailable = dataAvailable;
+			DWORD bufferSize = context->bodyBufferWriting + dataAvailable + 1;
+			if (context->response.body.Count() < (vint)bufferSize)
+			{
+				context->response.body.Resize((bufferSize + HttpRespondBodyStep - 1) / HttpRespondBodyStep * HttpRespondBodyStep);
+			}
+
+			BOOL httpResult = WinHttpReadData(
+				httpRequest,
+				&context->response.body[context->bodyBufferWriting],
+				dataAvailable,
+				NULL);
+			DWORD lastError = GetLastError();
+			if (httpResult == FALSE)
+			{
+				self->CompleteRequestWithLastError(context, L"WinHttpReadData", lastError);
+			}
+		}
+		break;
+	case WINHTTP_CALLBACK_STATUS_READ_COMPLETE:
+		{
+			if (self->IsStopping() && !context->keepAliveOnStop) return;
+			if (context->bodyBufferWritingAvailable != statusInformationLength)
+			{
+				self->CompleteRequest(context, MakeError(L"WinHttpReadData", ERROR_INVALID_DATA));
+				return;
+			}
+			context->bodyBufferWriting += context->bodyBufferWritingAvailable;
+
+			BOOL httpResult = WinHttpQueryDataAvailable(httpRequest, NULL);
+			DWORD lastError = GetLastError();
+			if (httpResult == FALSE)
+			{
+				self->CompleteRequestWithLastError(context, L"WinHttpQueryDataAvailable", lastError);
+			}
+		}
+		break;
+	case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
+		{
+			if (self->IsStopping() && !context->keepAliveOnStop) return;
+
+			auto asyncResult = reinterpret_cast<WINHTTP_ASYNC_RESULT*>(statusInformation);
+			DWORD errorCode = asyncResult ? asyncResult->dwError : ERROR_WINHTTP_INTERNAL_ERROR;
+			HttpError error = MakeError(L"WinHTTP async request", errorCode);
+			if (asyncResult)
+			{
+				error.message += L" Operation code: " + itow((vint)asyncResult->dwResult) + L".";
+			}
+			self->CompleteRequest(context, std::move(error));
+		}
+		break;
+	case WINHTTP_CALLBACK_STATUS_HANDLE_CLOSING:
+		self->OnRequestHandleClosing(context);
+		delete contextPtr;
+		break;
+	}
+}
+
+HttpClientApi::HttpClientApi(const WString& _server, vint _port)
+	: server(_server)
+	, port(_port)
+{
+	CHECK_ERROR(eventPendingCallbacks.CreateManualUnsignal(true), L"HttpClientApi initialization failed on eventPendingCallbacks.CreateManualUnsignal.");
+
+	httpSession = WinHttpOpen(
+		L"vl::inter_process::HttpClientApi",
+		WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
+		WINHTTP_NO_PROXY_NAME,
+		WINHTTP_NO_PROXY_BYPASS,
+		WINHTTP_FLAG_ASYNC);
+	CHECK_ERROR(httpSession != NULL, L"WinHttpOpen failed.");
+
+	httpConnection = WinHttpConnect(
+		httpSession,
+		server.Buffer(),
+		(INTERNET_PORT)port,
+		0);
+	CHECK_ERROR(httpConnection != NULL, L"WinHttpConnect failed.");
+}
+
+HttpClientApi::~HttpClientApi()
+{
+	Stop();
+}
+
+void HttpClientApi::HttpQuery(const HttpRequest& request, Func<void(Variant<HttpResponse, HttpError>)> callback)
+{
+	bool rejected = false;
+	{
+		SPIN_LOCK(lockActiveRequests)
+		{
+			if (stopping)
+			{
+				rejected = true;
+			}
+			else
+			{
+				BeginPendingCallback();
+			}
+		}
+	}
+	if (rejected)
+	{
+		if (callback)
+		{
+			callback(Variant<HttpResponse, HttpError>(MakeError(L"HttpClientApi::HttpQuery", ERROR_OPERATION_ABORTED)));
+		}
+		return;
+	}
+
+	BOOL httpResult = FALSE;
+	DWORD lastError = 0;
+	List<LPCWSTR> acceptTypes;
+	for (vint i = 0; i < request.acceptTypes.Count(); i++)
+	{
+		acceptTypes.Add(request.acceptTypes.Get(i).Buffer());
+	}
+	acceptTypes.Add(nullptr);
+
+	auto method = request.method == WString::Empty ? WString::Unmanaged(L"GET") : request.method;
+	auto httpRequest = WinHttpOpenRequest(
+		httpConnection,
+		method.Buffer(),
+		request.query.Buffer(),
+		NULL,
+		WINHTTP_NO_REFERER,
+		&acceptTypes[0],
+		(request.secure ? WINHTTP_FLAG_SECURE : 0) | WINHTTP_FLAG_REFRESH);
+	lastError = GetLastError();
+	if (httpRequest == NULL)
+	{
+		EndPendingCallback();
+		if (callback)
+		{
+			callback(Variant<HttpResponse, HttpError>(MakeError(L"WinHttpOpenRequest", lastError)));
+		}
+		return;
+	}
+
+	httpResult = WinHttpSetTimeouts(
+		httpRequest,
+		(int)request.resolveTimeout,
+		(int)request.connectTimeout,
+		(int)request.sendTimeout,
+		(int)request.receiveTimeout);
+	lastError = GetLastError();
+	if (httpResult == FALSE)
+	{
+		EndPendingCallback();
+		WinHttpCloseHandle(httpRequest);
+		if (callback)
+		{
+			callback(Variant<HttpResponse, HttpError>(MakeError(L"WinHttpSetTimeouts", lastError)));
+		}
+		return;
+	}
+
+	auto contextPtr = new Ptr<HttpRequestContext>(new HttpRequestContext);
+	auto context = *contextPtr;
+	context->api = this;
+	context->httpRequest = httpRequest;
+	context->callback = callback;
+	context->keepAliveOnStop = request.keepAliveOnStop;
+
+	if (request.body.Count() > 0)
+	{
+		context->requestBody.Resize(request.body.Count());
+		memcpy(&context->requestBody[0], &request.body.Get(0), request.body.Count());
+	}
+
+	auto failBeforeCallbackInstalled = [&](const WString& operation, DWORD errorCode)
+	{
+		WinHttpCloseHandle(httpRequest);
+		delete contextPtr;
+		EndPendingCallback();
+		if (callback)
+		{
+			callback(Variant<HttpResponse, HttpError>(MakeError(operation, errorCode)));
+		}
+	};
+
+	DWORD_PTR contextValue = reinterpret_cast<DWORD_PTR>(contextPtr);
+	httpResult = WinHttpSetOption(
+		httpRequest,
+		WINHTTP_OPTION_CONTEXT_VALUE,
+		&contextValue,
+		sizeof(contextValue));
+	lastError = GetLastError();
+	if (httpResult == FALSE)
+	{
+		failBeforeCallbackInstalled(L"WinHttpSetOption(WINHTTP_OPTION_CONTEXT_VALUE)", lastError);
+		return;
+	}
+
+	if (request.username != WString::Empty && request.password != WString::Empty)
+	{
+		httpResult = WinHttpSetCredentials(
+			httpRequest,
+			WINHTTP_AUTH_TARGET_SERVER,
+			WINHTTP_AUTH_SCHEME_BASIC,
+			request.username.Buffer(),
+			request.password.Buffer(),
+			NULL);
+		lastError = GetLastError();
+		if (httpResult == FALSE)
+		{
+			failBeforeCallbackInstalled(L"WinHttpSetCredentials", lastError);
+			return;
+		}
+	}
+	if (request.contentType != WString::Empty)
+	{
+		httpResult = WinHttpAddRequestHeaders(
+			httpRequest,
+			(L"Content-Type: " + request.contentType).Buffer(),
+			-1,
+			WINHTTP_ADDREQ_FLAG_REPLACE | WINHTTP_ADDREQ_FLAG_ADD);
+		lastError = GetLastError();
+		if (httpResult == FALSE)
+		{
+			failBeforeCallbackInstalled(L"WinHttpAddRequestHeaders(content-type)", lastError);
+			return;
+		}
+	}
+	if (request.cookie != WString::Empty)
+	{
+		httpResult = WinHttpAddRequestHeaders(
+			httpRequest,
+			(L"Cookie: " + request.cookie).Buffer(),
+			-1,
+			WINHTTP_ADDREQ_FLAG_REPLACE | WINHTTP_ADDREQ_FLAG_ADD);
+		lastError = GetLastError();
+		if (httpResult == FALSE)
+		{
+			failBeforeCallbackInstalled(L"WinHttpAddRequestHeaders(cookie)", lastError);
+			return;
+		}
+	}
+
+	for (vint i = 0; i < request.extraHeaders.Count(); i++)
+	{
+		WString key = request.extraHeaders.Keys()[i];
+		WString value = request.extraHeaders.Values().Get(i);
+		httpResult = WinHttpAddRequestHeaders(
+			httpRequest,
+			(key + L": " + value).Buffer(),
+			-1,
+			WINHTTP_ADDREQ_FLAG_REPLACE | WINHTTP_ADDREQ_FLAG_ADD);
+		lastError = GetLastError();
+		if (httpResult == FALSE)
+		{
+			failBeforeCallbackInstalled(L"WinHttpAddRequestHeaders(extra)", lastError);
+			return;
+		}
+	}
+
+	bool failedBeforeSend = false;
+	WString failedOperation;
+	DWORD failedError = 0;
+	SPIN_LOCK(lockActiveRequests)
+	{
+		if (stopping)
+		{
+			failedBeforeSend = true;
+			failedOperation = L"HttpClientApi::HttpQuery";
+			failedError = ERROR_OPERATION_ABORTED;
+		}
+		else
+		{
+			auto previousCallback = WinHttpSetStatusCallback(
+				httpRequest,
+				HttpStatusCallback,
+				WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS,
+				NULL);
+			lastError = GetLastError();
+			if (previousCallback == WINHTTP_INVALID_STATUS_CALLBACK)
+			{
+				failedBeforeSend = true;
+				failedOperation = L"WinHttpSetStatusCallback";
+				failedError = lastError;
+			}
+			else
+			{
+				AttachRequestUnsafe(context);
+			}
+		}
+	}
+	if (failedBeforeSend)
+	{
+		failBeforeCallbackInstalled(failedOperation, failedError);
+		return;
+	}
+
+	DWORD requestBodyLength = (DWORD)context->requestBody.Count();
+	LPVOID requestBodyBuffer = requestBodyLength == 0 ? WINHTTP_NO_REQUEST_DATA : (LPVOID)&context->requestBody[0];
+	httpResult = WinHttpSendRequest(
+		httpRequest,
+		WINHTTP_NO_ADDITIONAL_HEADERS,
+		0,
+		requestBodyBuffer,
+		requestBodyLength,
+		requestBodyLength,
+		contextValue);
+	lastError = GetLastError();
+	if (httpResult == FALSE)
+	{
+		CompleteRequestWithLastError(context, L"WinHttpSendRequest", lastError);
+	}
+}
+
+void HttpClientApi::Stop()
+{
+	if (httpSession == NULL) return;
+
+	List<HINTERNET> stoppingRequests;
+	SPIN_LOCK(lockActiveRequests)
+	{
+		stopping = true;
+		for (auto&& context : activeRequests)
+		{
+			HINTERNET httpRequest = NULL;
+			SPIN_LOCK(context->lockContext)
+			{
+				if (!context->keepAliveOnStop && !context->closing)
+				{
+					context->closing = true;
+					httpRequest = context->httpRequest;
+				}
+			}
+			if (httpRequest)
+			{
+				stoppingRequests.Add(httpRequest);
+			}
+		}
+	}
+	for (auto httpRequest : stoppingRequests)
+	{
+		WinHttpCloseHandle(httpRequest);
+	}
+
+	eventPendingCallbacks.Wait();
+
+	WinHttpCloseHandle(httpConnection);
+	WinHttpSetStatusCallback(
+		httpSession,
+		NULL,
+		WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS,
+		NULL);
+	WinHttpCloseHandle(httpSession);
+
+	SPIN_LOCK(lockActiveRequests)
+	{
+		activeRequests.Clear();
+	}
+
+	httpConnection = NULL;
+	httpSession = NULL;
+}
+
+WString HttpClientApi::HttpEncodeQuery(const WString& query)
+{
+	vint utf8Size = WideCharToMultiByte(CP_UTF8, 0, query.Buffer(), (int)query.Length(), NULL, 0, NULL, NULL);
+	Array<char> utf8(utf8Size);
+	if (utf8Size > 0)
+	{
+		WideCharToMultiByte(CP_UTF8, 0, query.Buffer(), (int)query.Length(), &utf8[0], (int)utf8Size, NULL, NULL);
+	}
+
+	Array<wchar_t> encoded(utf8Size * 3 + 1);
+	ZeroMemory(&encoded[0], encoded.Count() * sizeof(wchar_t));
+	wchar_t* writing = &encoded[0];
+	for (vint i = 0; i < utf8Size; i++)
+	{
+		unsigned char x = (unsigned char)utf8[i];
+		if ((L'a' <= x && x <= L'z') || (L'A' <= x && x <= L'Z') || (L'0' <= x && x <= L'9'))
+		{
+			writing[0] = x;
+			writing += 1;
+		}
+		else
+		{
+			writing[0] = L'%';
+			writing[1] = L"0123456789ABCDEF"[x / 16];
+			writing[2] = L"0123456789ABCDEF"[x % 16];
+			writing += 3;
+		}
+	}
+
+	return &encoded[0];
+}
+
+WString HttpClientApi::HttpDecodeQuery(const WString& query)
+{
+	List<char> utf8;
+	for (vint i = 0; i < query.Length(); i++)
+	{
+		wchar_t c = query[i];
+		if (c == L'%' && i + 2 < query.Length())
+		{
+			vint high = HexValue(query[i + 1]);
+			vint low = HexValue(query[i + 2]);
+			if (high != -1 && low != -1)
+			{
+				utf8.Add((char)(high * 16 + low));
+				i += 2;
+				continue;
+			}
+		}
+
+		if (c == L'+')
+		{
+			utf8.Add(' ');
+		}
+		else if (c <= 0x7F)
+		{
+			utf8.Add((char)c);
+		}
+		else
+		{
+			wchar_t single[] = { c, 0 };
+			vint utf8Size = WideCharToMultiByte(CP_UTF8, 0, single, 1, NULL, 0, NULL, NULL);
+			if (utf8Size > 0)
+			{
+				Array<char> singleUtf8(utf8Size);
+				WideCharToMultiByte(CP_UTF8, 0, single, 1, &singleUtf8[0], (int)utf8Size, NULL, NULL);
+				for (vint j = 0; j < utf8Size; j++)
+				{
+					utf8.Add(singleUtf8[j]);
+				}
+			}
+		}
+	}
+
+	if (utf8.Count() == 0)
+	{
+		return WString::Empty;
+	}
+
+	vint utf16Size = MultiByteToWideChar(CP_UTF8, 0, &utf8[0], (int)utf8.Count(), NULL, 0);
+	Array<wchar_t> utf16(utf16Size + 1);
+	ZeroMemory(&utf16[0], utf16.Count() * sizeof(wchar_t));
+	if (utf16Size > 0)
+	{
+		MultiByteToWideChar(CP_UTF8, 0, &utf8[0], (int)utf8.Count(), &utf16[0], (int)utf16Size);
+	}
+	return &utf16[0];
+}
+
+WString UrlEncodeQuery(const WString& query)
+{
+	return HttpClientApi::HttpEncodeQuery(query);
 }
 
 }
@@ -2917,7 +2823,7 @@ void HttpServerConnection::OnCancelCurrentHttpRequestForPendingRequest()
 			return;
 		}
 		ULONG result = HttpCancelHttpRequest(
-			server->httpRequestQueue,
+			server->GetHttpRequestQueue(),
 			httpPendingRequestId,
 			NULL);
 		CHECK_ERROR(
@@ -2935,7 +2841,7 @@ void HttpServerConnection::OnNewHttpRequestForPendingRequest(HTTP_REQUEST_ID htt
 	{
 		auto pendingRequest = pendingRequestsToSend[0];
 		pendingRequestsToSend.RemoveAt(0);
-		ULONG result = HttpServer::SendResponse(server->httpRequestQueue, httpPendingRequestId, pendingRequest);
+		ULONG result = HttpServerApi::SendResponse(server->GetHttpRequestQueue(), httpPendingRequestId, 200, L"OK", pendingRequest, L"application/json; charset=utf8");
 		CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for responding /Request.");
 		httpPendingRequestId = HTTP_NULL_ID;
 	}
@@ -2957,22 +2863,35 @@ WString HttpServerConnection::SubmitResponse(PHTTP_REQUEST pRequest)
 		CHECK_ERROR(headerContentLength.pRawValue != NULL, L"/Response missing Content-Type header.");
 		bodyLength = (ULONG)atoi(headerContentLength.pRawValue);
 	}
-	CHECK_ERROR(pRequest->Flags & HTTP_REQUEST_FLAG_MORE_ENTITY_BODY_EXISTS, L"/Response must contain body data.");
+	CHECK_ERROR(bodyLength > 0, L"/Response must contain body data.");
 
 	Array<char8_t> bodyBuffer(bodyLength + 1);
 	ZeroMemory(&bodyBuffer[0], bodyBuffer.Count() * sizeof(char8_t));
+	ULONG bodyWritten = 0;
+	for (USHORT i = 0; i < pRequest->EntityChunkCount; i++)
+	{
+		auto& chunk = pRequest->pEntityChunks[i];
+		CHECK_ERROR(chunk.DataChunkType == HttpDataChunkFromMemory, L"/Response contains an unsupported body chunk.");
+		auto chunkLength = chunk.FromMemory.BufferLength;
+		CHECK_ERROR(bodyWritten + chunkLength <= bodyLength, L"/Response body is longer than Content-Length.");
+		memcpy(&bodyBuffer[bodyWritten], chunk.FromMemory.pBuffer, chunkLength);
+		bodyWritten += chunkLength;
+	}
+	if (pRequest->Flags & HTTP_REQUEST_FLAG_MORE_ENTITY_BODY_EXISTS)
 	{
 		ULONG result = NO_ERROR;
 		result = HttpReceiveRequestEntityBody(
-			server->httpRequestQueue,
+			server->GetHttpRequestQueue(),
 			pRequest->RequestId,
 			HTTP_RECEIVE_REQUEST_ENTITY_BODY_FLAG_FILL_BUFFER,
-			&bodyBuffer[0],
-			bodyLength,
+			&bodyBuffer[bodyWritten],
+			bodyLength - bodyWritten,
 			&bodyReceived,
 			NULL);
-		CHECK_ERROR(result == NO_ERROR, L"HttpReceiveRequestEntityBody.");
+		CHECK_ERROR(result == NO_ERROR || result == ERROR_HANDLE_EOF, L"HttpReceiveRequestEntityBody.");
+		bodyWritten += bodyReceived;
 	}
+	CHECK_ERROR(bodyWritten == bodyLength, L"/Response body is shorter than Content-Length.");
 
 	SPIN_LOCK(pendingRequestLock)
 	{
@@ -3029,17 +2948,19 @@ WString HttpServerConnection::SubmitResponse(PHTTP_REQUEST pRequest)
 
 void HttpServerConnection::InstallCallback(INetworkProtocolCallback* _callback)
 {
+	CHECK_ERROR(_callback, L"HttpServerConnection::InstallCallback needs a valid INetworkProtocolCallback.");
+	_callback->OnInstalled(this);
+
+	List<WString> strings;
 	SPIN_LOCK(lockQueuedStrings)
 	{
 		callback = _callback;
-		callback->OnInstalled(this);
-		for (const auto& str : queuedStrings)
-		{
-			callback->OnReadString(str);
-		}
-		queuedStrings.Clear();
+		strings = std::move(queuedStrings);
 	}
-
+	for (const auto& str : strings)
+	{
+		_callback->OnReadString(str);
+	}
 }
 
 void HttpServerConnection::BeginReadingLoopUnsafe()
@@ -3057,7 +2978,7 @@ void HttpServerConnection::SendString(const WString& str)
 		}
 		else if (httpPendingRequestId != HTTP_NULL_ID)
 		{
-			ULONG result = HttpServer::SendResponse(server->httpRequestQueue, httpPendingRequestId, str);
+			ULONG result = HttpServerApi::SendResponse(server->GetHttpRequestQueue(), httpPendingRequestId, 200, L"OK", str, L"application/json; charset=utf8");
 			if (result == NO_ERROR)
 			{
 				httpPendingRequestId = HTTP_NULL_ID;
@@ -3117,38 +3038,11 @@ WString HttpServerConnection::GenerateNewGuid()
 }
 
 /***********************************************************************
-HttpServer (ListenToHttpRequest)
+HttpServer (HttpServerApi)
 ***********************************************************************/
 
-void HttpServer::OnHttpConnectionBrokenUnsafe()
+void HttpServer::OnHttpRequestReceived(PHTTP_REQUEST pRequest)
 {
-	if (state == State::Running)
-	{
-		SPIN_LOCK(lockConnections)
-		{
-			state = State::Stopping;
-			for (auto connection : connections.Values())
-			{
-				connection->server = nullptr;
-			}
-
-			for (auto connection : connections.Values())
-			{
-				connection->Stop();
-			}
-			connections.Clear();
-		}
-	}
-}
-
-void HttpServer::OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
-{
-	if (state == State::Stopping)
-	{
-		Send404Response(httpRequestQueue, pRequest->RequestId, "Server is stopping");
-		return;
-	}
-
 	bool isValidRequest = wcsncmp(pRequest->CookedUrl.pAbsPath, urlRequestPrefix.Buffer(), urlRequestPrefix.Length()) == 0;
 	bool isValidResponse = wcsncmp(pRequest->CookedUrl.pAbsPath, urlResponsePrefix.Buffer(), urlResponsePrefix.Length()) == 0;
 
@@ -3159,7 +3053,7 @@ void HttpServer::OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
 			vint index = connections.Keys().IndexOf(guid);
 			if (index == -1)
 			{
-				Send404Response(httpRequestQueue, pRequest->RequestId, "Unknown connection guid");
+				HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, 404, L"Unknown connection guid");
 			}
 			else
 			{
@@ -3187,13 +3081,14 @@ void HttpServer::OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
 				connections.Remove(newGuid);
 			}
 			connection->server = nullptr;
-			Send404Response(httpRequestQueue, pRequest->RequestId, "Connection rejected");
+			HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, 404, L"Connection rejected");
 		}
 		else
 		{
 			auto completeUrlRequest = WString::Unmanaged(HttpServerUrl_Request) + L"/" + newGuid;
 			auto completeUrlResponse = WString::Unmanaged(HttpServerUrl_Response) + L"/" + newGuid;
-			SendResponse(httpRequestQueue, pRequest->RequestId, completeUrlRequest + L";" + completeUrlResponse);
+			auto result = HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, 200, L"OK", completeUrlRequest + L";" + completeUrlResponse, L"application/json; charset=utf8");
+			CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for responding /Connect.");
 		}
 	}
 	else if (pRequest->Verb == HttpVerbPOST && isValidRequest)
@@ -3213,22 +3108,136 @@ void HttpServer::OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
 		if (auto connection = FindExistingConnection(guid))
 		{
 			auto responseToClient = connection->SubmitResponse(pRequest);
-			auto result = SendResponse(httpRequestQueue, pRequest->RequestId, responseToClient);
-			CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for responding /Response.");
+			auto result = HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, 200, L"OK", responseToClient, L"application/json; charset=utf8");
+			CHECK_ERROR(
+				result == NO_ERROR || result == ERROR_CONNECTION_INVALID || result == ERROR_OPERATION_ABORTED,
+				L"HttpSendHttpResponse failed for responding /Response."
+				);
 		}
 	}
-	else if (pRequest->Verb == HttpVerbOPTIONS && (isValidRequest || isValidResponse))
+	else
+	{
+		HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, 404, L"Unknown URL");
+	}
+}
+
+void HttpServer::OnHttpServerStopping()
+{
+	List<Ptr<HttpServerConnection>> stoppingConnections;
+	SPIN_LOCK(lockConnections)
+	{
+		for (auto connection : connections.Values())
+		{
+			stoppingConnections.Add(connection);
+		}
+		connections.Clear();
+	}
+	for (auto connection : stoppingConnections)
+	{
+		SPIN_LOCK(connection->pendingRequestLock)
+		{
+			connection->OnCancelCurrentHttpRequestForPendingRequest();
+		}
+		connection->server = nullptr;
+	}
+	for (auto connection : stoppingConnections)
+	{
+		if (connection->callback)
+		{
+			connection->callback->OnDisconnected();
+		}
+	}
+}
+
+/***********************************************************************
+HttpServer
+***********************************************************************/
+
+HttpServer::HttpServer(const WString _baseUrl, vint port)
+	: HttpServerApi(WString::Unmanaged(L"http://localhost:") + itow(port) + _baseUrl + L"/", true)
+	, baseUrl(_baseUrl)
+{
+	urlConnect = baseUrl + HttpServerUrl_Connect;
+	urlRequestPrefix = baseUrl + HttpServerUrl_Request + L"/";
+	urlResponsePrefix = baseUrl + HttpServerUrl_Response + L"/";
+}
+
+HttpServer::~HttpServer()
+{
+	Stop();
+}
+
+WaitForClientResult HttpServer::OnClientConnected(INetworkProtocolConnection* connection)
+{
+	return WaitForClientResult::Accept;
+}
+
+void HttpServer::Start()
+{
+	HttpServerApi::Start();
+}
+
+void HttpServer::Stop()
+{
+	HttpServerApi::Stop();
+}
+
+bool HttpServer::IsStopped()
+{
+	return HttpServerApi::IsStopped();
+}
+
+}
+
+
+/***********************************************************************
+.\INTERPROCESS\WINDOWS\HTTPSERVERAPI.WINDOWS.CPP
+***********************************************************************/
+
+#ifndef VCZH_MSVC
+static_assert(false, "Do not build this file for non-Windows applications.");
+#endif
+
+#pragma comment(lib, "Httpapi.lib")
+
+namespace vl::inter_process
+{
+
+using namespace vl::collections;
+
+/***********************************************************************
+HttpServerApi (ListenToHttpRequest)
+***********************************************************************/
+
+void HttpServerApi::OnHttpConnectionBrokenUnsafe()
+{
+	if (state == State::Running)
+	{
+		state = State::Stopping;
+		OnHttpServerStopping();
+	}
+}
+
+void HttpServerApi::OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
+{
+	if (state == State::Stopping)
+	{
+		SendResponse(httpRequestQueue, pRequest->RequestId, 404, L"Server is stopping");
+		return;
+	}
+
+	if (respondToOptions && pRequest->Verb == HttpVerbOPTIONS)
 	{
 		SendOptionsResponse(httpRequestQueue, pRequest->RequestId);
 	}
 	else
 	{
-		Send404Response(httpRequestQueue, pRequest->RequestId, "Unknown URL");
+		OnHttpRequestReceived(pRequest);
 	}
 	ListenToHttpRequest();
 }
 
-ULONG HttpServer::ListenToHttpRequest_Init(OVERLAPPED* overlapped)
+ULONG HttpServerApi::ListenToHttpRequest_Init(OVERLAPPED* overlapped)
 {
 	ZeroMemory(&bufferRequest[0], bufferRequest.Count());
 
@@ -3244,7 +3253,7 @@ ULONG HttpServer::ListenToHttpRequest_Init(OVERLAPPED* overlapped)
 	return result;
 }
 
-ULONG HttpServer::ListenToHttpRequest_InitMoreData(ULONG* bytesReturned)
+ULONG HttpServerApi::ListenToHttpRequest_InitMoreData(ULONG* bytesReturned)
 {
 	HTTP_REQUEST_ID httpRequestIdReading = ((PHTTP_REQUEST)&bufferRequest[0])->RequestId;
 	ZeroMemory(&bufferRequest[0], bufferRequest.Count());
@@ -3261,7 +3270,7 @@ ULONG HttpServer::ListenToHttpRequest_InitMoreData(ULONG* bytesReturned)
 	return result;
 }
 
-ULONG HttpServer::ListenToHttpRequest_OverlappedMoreData(vint expectedBufferSize)
+ULONG HttpServerApi::ListenToHttpRequest_OverlappedMoreData(vint expectedBufferSize)
 {
 	HTTP_REQUEST_ID httpRequestIdReading = ((PHTTP_REQUEST)&bufferRequest[0])->RequestId;
 	bufferRequest.Resize(expectedBufferSize);
@@ -3280,7 +3289,7 @@ ULONG HttpServer::ListenToHttpRequest_OverlappedMoreData(vint expectedBufferSize
 	return result;
 }
 
-void HttpServer::ListenToHttpRequest()
+void HttpServerApi::ListenToHttpRequest()
 {
 	if (state == State::Stopping) return;
 
@@ -3330,13 +3339,29 @@ void HttpServer::ListenToHttpRequest()
 
 	CHECK_ERROR(result == ERROR_IO_PENDING, L"HttpReceiveHttpRequest(#3) failed on unexpected result.");
 
-	RegisterWaitForSingleObject(
+	BOOL waitResult = RegisterWaitForSingleObject(
 		&hWaitHandleRequest,
 		hEventRequest,
 		[](PVOID lpParameter, BOOLEAN TimerOrWaitFired)
 		{
-			auto self = (HttpServer*)lpParameter;
-			auto waitHandle = (HANDLE)InterlockedExchangePointer((PVOID volatile*)&self->hWaitHandleRequest, INVALID_HANDLE_VALUE);
+			auto self = (HttpServerApi*)lpParameter;
+			struct PendingCallbackScope
+			{
+				HttpServerApi* server;
+
+				PendingCallbackScope(HttpServerApi* _server)
+					: server(_server)
+				{
+					server->BeginPendingCallback();
+				}
+
+				~PendingCallbackScope()
+				{
+					server->EndPendingCallback();
+				}
+			} pendingCallbackScope(self);
+
+			auto waitHandle = std::atomic_ref<HANDLE>(self->hWaitHandleRequest).exchange(INVALID_HANDLE_VALUE);
 			if (waitHandle != INVALID_HANDLE_VALUE)
 			{
 				UnregisterWait(waitHandle);
@@ -3375,47 +3400,47 @@ void HttpServer::ListenToHttpRequest()
 		this,
 		INFINITE,
 		WT_EXECUTEONLYONCE);
+	CHECK_ERROR(waitResult, L"RegisterWaitForSingleObject failed for HttpReceiveHttpRequest.");
+	if (state == State::Stopping)
+	{
+		auto waitHandle = std::atomic_ref<HANDLE>(hWaitHandleRequest).exchange(INVALID_HANDLE_VALUE);
+		if (waitHandle != INVALID_HANDLE_VALUE)
+		{
+			UnregisterWaitEx(waitHandle, INVALID_HANDLE_VALUE);
+		}
+	}
+}
+
+void HttpServerApi::BeginPendingCallback()
+{
+	if (pendingCallbacks++ == 0)
+	{
+		eventPendingCallbacks.Unsignal();
+	}
+}
+
+void HttpServerApi::EndPendingCallback()
+{
+	if (--pendingCallbacks == 0)
+	{
+		eventPendingCallbacks.Signal();
+	}
+}
+
+void HttpServerApi::OnHttpServerStopping()
+{
+}
+
+HANDLE HttpServerApi::GetHttpRequestQueue() const
+{
+	return httpRequestQueue;
 }
 
 /***********************************************************************
-HttpServer (Writing)
+HttpServerApi (Writing)
 ***********************************************************************/
 
-void HttpServer::Send404Response(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, PCSTR reason)
-{
-	ULONG bytesSent = 0;
-	HTTP_RESPONSE httpResponse;
-	ZeroMemory(&httpResponse, sizeof(httpResponse));
-
-	httpResponse.StatusCode = 404;
-	httpResponse.pReason = reason;
-
-	static const char headerACAOName[] = "Access-Control-Allow-Origin";
-	static HTTP_UNKNOWN_HEADER unknownHeaders[] = { {
-		sizeof(headerACAOName) - 1,
-		1,
-		headerACAOName,
-		"*"
-	} };
-	httpResponse.Headers.UnknownHeaderCount = sizeof(unknownHeaders) / sizeof(HTTP_UNKNOWN_HEADER);
-	httpResponse.Headers.pUnknownHeaders = unknownHeaders;
-
-	ULONG result = NO_ERROR;
-	result = HttpSendHttpResponse(
-		httpRequestQueue,
-		requestId,
-		0,
-		&httpResponse,
-		NULL,
-		&bytesSent,
-		NULL,
-		0,
-		NULL,
-		NULL);
-	CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed (404).");
-}
-
-void HttpServer::SendOptionsResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId)
+void HttpServerApi::SendOptionsResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId)
 {
 	ULONG bytesSent = 0;
 	HTTP_RESPONSE httpResponse;
@@ -3425,7 +3450,7 @@ void HttpServer::SendOptionsResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID re
 
 	static const char headerACAOName[] = "Access-Control-Allow-Origin";
 	static const char headerACAMName[] = "Access-Control-Allow-Methods";
-	static const char headerACAMValue[] = "POST, OPTIONS";
+	static const char headerACAMValue[] = "GET, POST, OPTIONS";
 	static const char headerACAHName[] = "Access-Control-Allow-Headers";
 	static const char headerACAHValue[] = "Content-Type";
 	static HTTP_UNKNOWN_HEADER unknownHeaders[] = { {
@@ -3462,7 +3487,7 @@ void HttpServer::SendOptionsResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID re
 	CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed (OPTIONS).");
 }
 
-ULONG HttpServer::SendResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, const WString& str)
+ULONG HttpServerApi::SendResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, vint statusCode, const WString& reason, const WString& body, const WString& contentType)
 {
 	ULONG bytesSent = 0;
 	HTTP_RESPONSE httpResponse;
@@ -3470,22 +3495,34 @@ ULONG HttpServer::SendResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestI
 	ZeroMemory(&httpResponse, sizeof(httpResponse));
 	ZeroMemory(&httpResponseBody, sizeof(httpResponseBody));
 
-	httpResponse.StatusCode = 200;
-	httpResponse.pReason = "OK";
+	httpResponse.StatusCode = (USHORT)statusCode;
 
-	U8String body = wtou8(str);
-	if (body.Length() > 0)
+	U8String reasonUtf8;
+	if (reason != WString::Empty)
 	{
+		reasonUtf8 = wtou8(reason);
+		httpResponse.pReason = (PCSTR)reasonUtf8.Buffer();
+		httpResponse.ReasonLength = (USHORT)reasonUtf8.Length();
+	}
+
+	U8String bodyUtf8;
+	if (body != WString::Empty)
+	{
+		bodyUtf8 = wtou8(body);
 		httpResponse.EntityChunkCount = 1;
 		httpResponse.pEntityChunks = &httpResponseBody;
 		httpResponseBody.DataChunkType = HttpDataChunkFromMemory;
-		httpResponseBody.FromMemory.pBuffer = (PVOID)body.Buffer();
-		httpResponseBody.FromMemory.BufferLength = (ULONG)body.Length();
+		httpResponseBody.FromMemory.pBuffer = (PVOID)bodyUtf8.Buffer();
+		httpResponseBody.FromMemory.BufferLength = (ULONG)bodyUtf8.Length();
 	}
 
-	static const char headerContentType[] = "application/json; charset=utf8";
-	httpResponse.Headers.KnownHeaders[HttpHeaderContentType].pRawValue = headerContentType;
-	httpResponse.Headers.KnownHeaders[HttpHeaderContentType].RawValueLength = sizeof(headerContentType) - 1;
+	U8String contentTypeUtf8;
+	if (contentType != WString::Empty)
+	{
+		contentTypeUtf8 = wtou8(contentType);
+		httpResponse.Headers.KnownHeaders[HttpHeaderContentType].pRawValue = (PCSTR)contentTypeUtf8.Buffer();
+		httpResponse.Headers.KnownHeaders[HttpHeaderContentType].RawValueLength = (USHORT)contentTypeUtf8.Length();
+	}
 
 	static const char headerACAOName[] = "Access-Control-Allow-Origin";
 	static HTTP_UNKNOWN_HEADER unknownHeaders[] = { {
@@ -3493,7 +3530,7 @@ ULONG HttpServer::SendResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestI
 		1,
 		headerACAOName,
 		"*"
-	}};
+	} };
 	httpResponse.Headers.UnknownHeaderCount = sizeof(unknownHeaders) / sizeof(HTTP_UNKNOWN_HEADER);
 	httpResponse.Headers.pUnknownHeaders = unknownHeaders;
 
@@ -3513,141 +3550,90 @@ ULONG HttpServer::SendResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestI
 }
 
 /***********************************************************************
-HttpServer
+HttpServerApi
 ***********************************************************************/
 
-HttpServer::HttpServer(const WString _baseUrl, vint port)
-	: bufferRequest(HttpBodyInitSize)
-	, baseUrl(_baseUrl)
+HttpServerApi::HttpServerApi(const WString& _urlPrefix, bool _respondToOptions)
+	: bufferRequest(HttpRequestBufferInitSize)
+	, urlPrefix(_urlPrefix)
+	, respondToOptions(_respondToOptions)
 {
-	urlConnect = baseUrl + HttpServerUrl_Connect;
-	urlRequestPrefix = baseUrl + HttpServerUrl_Request + L"/";
-	urlResponsePrefix = baseUrl + HttpServerUrl_Response + L"/";
-
 	hEventRequest = CreateEvent(NULL, TRUE, TRUE, NULL);
-	CHECK_ERROR(hEventRequest != NULL, L"HttpServer initialization failed on CreateEvent(hEventRequest).");
+	CHECK_ERROR(hEventRequest != NULL, L"HttpServerApi initialization failed on CreateEvent(hEventRequest).");
+	CHECK_ERROR(eventPendingCallbacks.CreateManualUnsignal(true), L"HttpServerApi initialization failed on eventPendingCallbacks.CreateManualUnsignal.");
 
-	{
-		ULONG result = NO_ERROR;
+	ULONG result = NO_ERROR;
 
-		result = HttpInitialize(
-			HTTPAPI_VERSION_2,
-			HTTP_INITIALIZE_SERVER,
-			NULL);
-		CHECK_ERROR(result == NO_ERROR, L"HttpInitialize failed.");
+	result = HttpInitialize(
+		HTTPAPI_VERSION_2,
+		HTTP_INITIALIZE_SERVER,
+		NULL);
+	CHECK_ERROR(result == NO_ERROR, L"HttpInitialize failed.");
 
-		result = HttpCreateRequestQueue(
-			HTTPAPI_VERSION_2,
-			NULL,
-			NULL,
-			0,
-			&httpRequestQueue);
-		CHECK_ERROR(result == NO_ERROR, L"HttpCreateRequestQueue failed.");
+	result = HttpCreateRequestQueue(
+		HTTPAPI_VERSION_2,
+		NULL,
+		NULL,
+		0,
+		&httpRequestQueue);
+	CHECK_ERROR(result == NO_ERROR, L"HttpCreateRequestQueue failed.");
 
-		result = HttpCreateServerSession(
-			HTTPAPI_VERSION_2,
-			&httpSessionId,
-			0);
-		CHECK_ERROR(result == NO_ERROR, L"HttpCreateServerSession failed.");
+	result = HttpCreateServerSession(
+		HTTPAPI_VERSION_2,
+		&httpSessionId,
+		0);
+	CHECK_ERROR(result == NO_ERROR, L"HttpCreateServerSession failed.");
 
-		result = HttpCreateUrlGroup(
-			httpSessionId,
-			&httpUrlGroupId,
-			0);
-		CHECK_ERROR(result == NO_ERROR, L"HttpCreateUrlGroup failed.");
-	}
-	{
-		ULONG result = NO_ERROR;
+	result = HttpCreateUrlGroup(
+		httpSessionId,
+		&httpUrlGroupId,
+		0);
+	CHECK_ERROR(result == NO_ERROR, L"HttpCreateUrlGroup failed.");
 
-		result = HttpAddUrlToUrlGroup(
-			httpUrlGroupId,
-			(WString::Unmanaged(L"http://localhost:") + itow(port) + baseUrl + WString::Unmanaged(HttpServerUrl_Connect)).Buffer(),
-			0,
-			0);
-		CHECK_ERROR(result == NO_ERROR, L"HttpAddUrlToUrlGroup failed (urlConnect).");
+	result = HttpAddUrlToUrlGroup(
+		httpUrlGroupId,
+		urlPrefix.Buffer(),
+		0,
+		0);
+	CHECK_ERROR(result == NO_ERROR, L"HttpAddUrlToUrlGroup failed.");
 
-		result = HttpAddUrlToUrlGroup(
-			httpUrlGroupId,
-			(WString::Unmanaged(L"http://localhost:") + itow(port) + baseUrl + WString::Unmanaged(HttpServerUrl_Request)).Buffer(),
-			0,
-			0);
-		CHECK_ERROR(result == NO_ERROR, L"HttpAddUrlToUrlGroup failed (urlRequest).");
+	HTTP_BINDING_INFO bindingInfo;
+	ZeroMemory(&bindingInfo, sizeof(bindingInfo));
+	bindingInfo.Flags.Present = 1;
+	bindingInfo.RequestQueueHandle = httpRequestQueue;
 
-		result = HttpAddUrlToUrlGroup(
-			httpUrlGroupId,
-			(WString::Unmanaged(L"http://localhost:") + itow(port) + baseUrl + WString::Unmanaged(HttpServerUrl_Response)).Buffer(),
-			0,
-			0);
-		CHECK_ERROR(result == NO_ERROR, L"HttpAddUrlToUrlGroup failed (urlResponse).");
-	}
-	{
-		ULONG result = NO_ERROR;
-
-		HTTP_BINDING_INFO bindingInfo;
-		ZeroMemory(&bindingInfo, sizeof(bindingInfo));
-		bindingInfo.Flags.Present = 1;
-		bindingInfo.RequestQueueHandle = httpRequestQueue;
-
-		result = HttpSetUrlGroupProperty(
-			httpUrlGroupId,
-			HttpServerBindingProperty,
-			&bindingInfo,
-			sizeof(bindingInfo));
-		CHECK_ERROR(result == NO_ERROR, L"HttpSetUrlGroupProperty failed (HttpServerBindingProperty).");
-	}
+	result = HttpSetUrlGroupProperty(
+		httpUrlGroupId,
+		HttpServerBindingProperty,
+		&bindingInfo,
+		sizeof(bindingInfo));
+	CHECK_ERROR(result == NO_ERROR, L"HttpSetUrlGroupProperty failed (HttpServerBindingProperty).");
 }
 
-HttpServer::~HttpServer()
+HttpServerApi::~HttpServerApi()
 {
 	Stop();
 	CloseHandle(hEventRequest);
 }
 
-WaitForClientResult HttpServer::OnClientConnected(INetworkProtocolConnection* connection)
+void HttpServerApi::Start()
 {
-	return WaitForClientResult::Accept;
-}
-
-void HttpServer::Start()
-{
-	CHECK_ERROR(state == State::Ready, L"HttpServer can only be started once.");
+	CHECK_ERROR(state == State::Ready, L"HttpServerApi can only be started once.");
 	state = State::Running;
 	ListenToHttpRequest();
 }
 
-void HttpServer::Stop()
+void HttpServerApi::Stop()
 {
 	state = State::Stopping;
-	auto waitHandle = (HANDLE)InterlockedExchangePointer((PVOID volatile*)&hWaitHandleRequest, INVALID_HANDLE_VALUE);
+	auto waitHandle = std::atomic_ref<HANDLE>(hWaitHandleRequest).exchange(INVALID_HANDLE_VALUE);
 	if (waitHandle != INVALID_HANDLE_VALUE)
 	{
 		UnregisterWaitEx(waitHandle, INVALID_HANDLE_VALUE);
 	}
+	eventPendingCallbacks.Wait();
 
-	List<Ptr<HttpServerConnection>> stoppingConnections;
-	SPIN_LOCK(lockConnections)
-	{
-		for (auto connection : connections.Values())
-		{
-			stoppingConnections.Add(connection);
-		}
-		connections.Clear();
-	}
-	for (auto connection : stoppingConnections)
-	{
-		SPIN_LOCK(connection->pendingRequestLock)
-		{
-			connection->OnCancelCurrentHttpRequestForPendingRequest();
-		}
-		connection->server = nullptr;
-	}
-	for (auto connection : stoppingConnections)
-	{
-		if (connection->callback)
-		{
-			connection->callback->OnDisconnected();
-		}
-	}
+	OnHttpServerStopping();
 
 	if (httpRequestQueue != INVALID_HANDLE_VALUE)
 	{
@@ -3655,6 +3641,8 @@ void HttpServer::Stop()
 		HttpCloseServerSession(httpSessionId);
 		HttpCloseRequestQueue(httpRequestQueue);
 		httpRequestQueue = INVALID_HANDLE_VALUE;
+		httpUrlGroupId = HTTP_NULL_ID;
+		httpSessionId = HTTP_NULL_ID;
 
 		HttpTerminate(
 			HTTP_INITIALIZE_SERVER,
@@ -3662,7 +3650,7 @@ void HttpServer::Stop()
 	}
 }
 
-bool HttpServer::IsStopped()
+bool HttpServerApi::IsStopped()
 {
 	return state == State::Stopping;
 }
@@ -3679,6 +3667,35 @@ namespace vl::inter_process
 
 using namespace vl::console;
 using namespace vl::collections;
+
+class NamedPipeConnection::ReadWaitContext
+{
+public:
+	NamedPipeConnection*							connection = nullptr;
+	HANDLE											hWaitHandle = INVALID_HANDLE_VALUE;
+	EventObject										eventRegistrationFinished;
+	atomic_vint										callbackStarted = 0;
+
+	ReadWaitContext()
+	{
+		CHECK_ERROR(eventRegistrationFinished.CreateManualUnsignal(false), L"ReadFile failed on eventRegistrationFinished.CreateManualUnsignal.");
+	}
+};
+
+class NamedPipeServer::PendingConnection::ConnectWaitContext
+{
+public:
+	Ptr<PendingConnection>							pendingConnection;
+	HANDLE											hWaitHandle = INVALID_HANDLE_VALUE;
+	EventObject										eventRegistrationFinished;
+	atomic_vint										callbackStarted = 0;
+
+	ConnectWaitContext(Ptr<PendingConnection> _pendingConnection)
+		: pendingConnection(_pendingConnection)
+	{
+		CHECK_ERROR(eventRegistrationFinished.CreateManualUnsignal(false), L"ConnectNamedPipe failed on eventRegistrationFinished.CreateManualUnsignal.");
+	}
+};
 
 /***********************************************************************
 NamedPipeConnection (Reading)
@@ -3764,22 +3781,51 @@ RESTART_LOOP:
 		DWORD error = GetLastError();
 		if (error == ERROR_BROKEN_PIPE || error == ERROR_INVALID_HANDLE)
 		{
-			OnDisconnected();
+			if (!stopped)
+			{
+				OnDisconnected();
+			}
 			return;
 		}
 		CHECK_ERROR(error == ERROR_MORE_DATA || error == ERROR_IO_PENDING, L"ReadFile failed on unexpected GetLastError.");
 
-		RegisterWaitForSingleObject(
-			&hWaitHandleReadFile,
+		auto context = new ReadWaitContext;
+		context->connection = this;
+		BeginPendingCallback();
+
+		ReadWaitContext* expectedContext = nullptr;
+		if (stopped || !readWaitContext.compare_exchange_strong(expectedContext, context))
+		{
+			EndPendingCallback();
+			delete context;
+			return;
+		}
+
+		BOOL waitResult = RegisterWaitForSingleObject(
+			&context->hWaitHandle,
 			hEventReadFile,
 			[](PVOID lpParameter, BOOLEAN TimerOrWaitFired)
 			{
-				auto self = (NamedPipeConnection*)lpParameter;
-				auto waitHandle = (HANDLE)InterlockedExchangePointer((PVOID volatile*)&self->hWaitHandleReadFile, INVALID_HANDLE_VALUE);
-				if (waitHandle != INVALID_HANDLE_VALUE)
+				auto context = (ReadWaitContext*)lpParameter;
+				context->callbackStarted = 1;
+
+				auto self = context->connection;
+				ReadWaitContext* expectedContext = context;
+				bool ownsContext = self->readWaitContext.compare_exchange_strong(expectedContext, nullptr);
+
+				auto finalize = [=]()
 				{
-					UnregisterWait(waitHandle);
-				}
+					if (ownsContext)
+					{
+						context->eventRegistrationFinished.Wait();
+						UnregisterWait(context->hWaitHandle);
+					}
+					self->EndPendingCallback();
+					if (ownsContext)
+					{
+						delete context;
+					}
+				};
 
 				DWORD read = 0;
 				BOOL result = GetOverlappedResult(self->hPipe, &self->overlappedReadFile, &read, FALSE);
@@ -3791,9 +3837,13 @@ RESTART_LOOP:
 				else
 				{
 					DWORD error = GetLastError();
-					if (error == ERROR_BROKEN_PIPE || error == ERROR_INVALID_HANDLE)
+					if (error == ERROR_OPERATION_ABORTED || error == ERROR_INVALID_HANDLE || error == ERROR_BROKEN_PIPE || error == ERROR_NO_DATA)
 					{
-						self->OnDisconnected();
+						if (!self->stopped)
+						{
+							self->OnDisconnected();
+						}
+						finalize();
 						return;
 					}
 					CHECK_ERROR(error == ERROR_MORE_DATA, L"GetOverlappedResult(ReadFile) failed on unexpected GetLastError.");
@@ -3803,10 +3853,23 @@ RESTART_LOOP:
 				{
 					self->BeginReadingLoopUnsafe();
 				}
+				finalize();
 			},
-			this,
+			context,
 			INFINITE,
 			WT_EXECUTEONLYONCE);
+
+		context->eventRegistrationFinished.Signal();
+		if (!waitResult)
+		{
+			expectedContext = context;
+			if (readWaitContext.compare_exchange_strong(expectedContext, nullptr))
+			{
+				EndPendingCallback();
+				delete context;
+				CHECK_FAIL(L"RegisterWaitForSingleObject failed for ReadFile.");
+			}
+		}
 	}
 }
 
@@ -3907,11 +3970,16 @@ void NamedPipeConnection::OnDisconnected()
 	{
 		callback->OnDisconnected();
 	}
-	if (server)
+	auto owningServer = server;
+	if (owningServer && pendingCallbacks == 0)
 	{
-		SPIN_LOCK(server->lockConnections)
+		SPIN_LOCK(owningServer->lockConnections)
 		{
-			server->connections.Remove(this);
+			if (server == owningServer)
+			{
+				owningServer->connections.Remove(this);
+				server = nullptr;
+			}
 		}
 	}
 }
@@ -3926,6 +3994,8 @@ NamedPipeConnection::NamedPipeConnection(HANDLE _hPipe)
 
 	hEventWriteFile = CreateEvent(NULL, TRUE, TRUE, NULL);
 	CHECK_ERROR(hEventWriteFile != NULL, L"NamedPipeConnection initialization failed on CreateEvent(hEventWriteFile).");
+
+	CHECK_ERROR(eventPendingCallbacks.CreateManualUnsignal(true), L"NamedPipeConnection initialization failed on eventPendingCallbacks.CreateManualUnsignal.");
 }
 
 NamedPipeConnection::~NamedPipeConnection()
@@ -3945,11 +4015,21 @@ void NamedPipeConnection::InstallCallback(INetworkProtocolCallback* _callback)
 void NamedPipeConnection::Stop()
 {
 	stopped = 1;
-	auto waitHandle = (HANDLE)InterlockedExchangePointer((PVOID volatile*)&hWaitHandleReadFile, INVALID_HANDLE_VALUE);
-	if (waitHandle != INVALID_HANDLE_VALUE)
+	ReadWaitContext* context = readWaitContext.exchange(nullptr);
+	if (context)
 	{
-		UnregisterWaitEx(waitHandle, INVALID_HANDLE_VALUE);
+		context->eventRegistrationFinished.Wait();
+		if (context->hWaitHandle != INVALID_HANDLE_VALUE)
+		{
+			UnregisterWaitEx(context->hWaitHandle, INVALID_HANDLE_VALUE);
+		}
+		if (context->callbackStarted == 0)
+		{
+			EndPendingCallback();
+		}
+		delete context;
 	}
+	eventPendingCallbacks.Wait();
 
 	SPIN_LOCK(lockWrite)
 	{
@@ -3962,8 +4042,24 @@ void NamedPipeConnection::Stop()
 	}
 }
 
+void NamedPipeConnection::BeginPendingCallback()
+{
+	if (pendingCallbacks++ == 0)
+	{
+		eventPendingCallbacks.Unsignal();
+	}
+}
+
+void NamedPipeConnection::EndPendingCallback()
+{
+	if (--pendingCallbacks == 0)
+	{
+		eventPendingCallbacks.Signal();
+	}
+}
+
 /***********************************************************************
-NamedPipeServer
+NamedPipeServer::PendingConnection
 ***********************************************************************/
 
 NamedPipeServer::PendingConnection::PendingConnection(NamedPipeServer* _server, Ptr<NamedPipeConnection> _connection)
@@ -3974,6 +4070,7 @@ NamedPipeServer::PendingConnection::PendingConnection(NamedPipeServer* _server, 
 	hEventConnect = CreateEvent(NULL, TRUE, FALSE, NULL);
 	CHECK_ERROR(hEventConnect != NULL, L"ConnectNamedPipe failed on CreateEvent.");
 	overlappedConnect.hEvent = hEventConnect;
+	CHECK_ERROR(eventPendingCallbacks.CreateManualUnsignal(true), L"ConnectNamedPipe failed on eventPendingCallbacks.CreateManualUnsignal.");
 }
 
 NamedPipeServer::PendingConnection::~PendingConnection()
@@ -3985,17 +4082,47 @@ NamedPipeServer::PendingConnection::~PendingConnection()
 void NamedPipeServer::PendingConnection::Stop()
 {
 	server = nullptr;
-	auto waitHandle = (HANDLE)InterlockedExchangePointer((PVOID volatile*)&hWaitHandleConnect, INVALID_HANDLE_VALUE);
-	if (waitHandle != INVALID_HANDLE_VALUE)
+	ConnectWaitContext* context = connectWaitContext.exchange(nullptr);
+	if (context)
 	{
-		UnregisterWaitEx(waitHandle, INVALID_HANDLE_VALUE);
+		context->eventRegistrationFinished.Wait();
+		if (context->hWaitHandle != INVALID_HANDLE_VALUE)
+		{
+			UnregisterWaitEx(context->hWaitHandle, INVALID_HANDLE_VALUE);
+		}
+		if (context->callbackStarted == 0)
+		{
+			EndPendingCallback();
+		}
+		delete context;
 	}
+	eventPendingCallbacks.Wait();
 	if (connection)
 	{
 		connection->Stop();
 		connection = nullptr;
 	}
 }
+
+void NamedPipeServer::PendingConnection::BeginPendingCallback()
+{
+	if (pendingCallbacks++ == 0)
+	{
+		eventPendingCallbacks.Unsignal();
+	}
+}
+
+void NamedPipeServer::PendingConnection::EndPendingCallback()
+{
+	if (--pendingCallbacks == 0)
+	{
+		eventPendingCallbacks.Signal();
+	}
+}
+
+/***********************************************************************
+NamedPipeServer
+***********************************************************************/
 
 HANDLE NamedPipeServer::ServerCreatePipe(const WString& pipeName)
 {
@@ -4053,17 +4180,35 @@ void NamedPipeServer::BeginListening()
 				return;
 			}
 			pendingConnections.Add(pendingConnection);
+			auto context = new PendingConnection::ConnectWaitContext(pendingConnection);
+			pendingConnection->BeginPendingCallback();
+			PendingConnection::ConnectWaitContext* expectedContext = nullptr;
+			CHECK_ERROR(pendingConnection->connectWaitContext.compare_exchange_strong(expectedContext, context), L"ConnectNamedPipe found an existing wait context.");
 			BOOL waitResult = RegisterWaitForSingleObject(
-				&pendingConnection->hWaitHandleConnect,
+				&context->hWaitHandle,
 				pendingConnection->hEventConnect,
 				[](PVOID lpParameter, BOOLEAN TimerOrWaitFired)
 				{
-					auto pendingConnection = (PendingConnection*)lpParameter;
-					auto waitHandle = (HANDLE)InterlockedExchangePointer((PVOID volatile*)&pendingConnection->hWaitHandleConnect, INVALID_HANDLE_VALUE);
-					if (waitHandle != INVALID_HANDLE_VALUE)
+					auto context = (PendingConnection::ConnectWaitContext*)lpParameter;
+					context->callbackStarted = 1;
+
+					auto pendingConnection = context->pendingConnection;
+					PendingConnection::ConnectWaitContext* expectedContext = context;
+					bool ownsContext = pendingConnection->connectWaitContext.compare_exchange_strong(expectedContext, nullptr);
+
+					auto finalize = [=]()
 					{
-						UnregisterWait(waitHandle);
-					}
+						if (ownsContext)
+						{
+							context->eventRegistrationFinished.Wait();
+							UnregisterWait(context->hWaitHandle);
+						}
+						pendingConnection->EndPendingCallback();
+						if (ownsContext)
+						{
+							delete context;
+						}
+					};
 
 					DWORD transferred = 0;
 					BOOL result = GetOverlappedResult(pendingConnection->connection->hPipe, &pendingConnection->overlappedConnect, &transferred, FALSE);
@@ -4071,7 +4216,7 @@ void NamedPipeServer::BeginListening()
 					{
 						if (pendingConnection->server)
 						{
-							pendingConnection->server->CompletePendingConnection(pendingConnection, true);
+							pendingConnection->server->CompletePendingConnection(pendingConnection.Obj(), true);
 						}
 					}
 					else
@@ -4081,17 +4226,30 @@ void NamedPipeServer::BeginListening()
 						{
 							if (pendingConnection->server)
 							{
-								pendingConnection->server->CompletePendingConnection(pendingConnection, false);
+								pendingConnection->server->CompletePendingConnection(pendingConnection.Obj(), false);
 							}
+							finalize();
 							return;
 						}
 						CHECK_FAIL(L"GetOverlappedResult(ConnectNamedPipe) failed on unexpected GetLastError.");
 					}
+					finalize();
 				},
-				pendingConnection.Obj(),
+				context,
 				INFINITE,
 				WT_EXECUTEONLYONCE);
-			CHECK_ERROR(waitResult, L"RegisterWaitForSingleObject failed for ConnectNamedPipe.");
+
+			context->eventRegistrationFinished.Signal();
+			if (!waitResult)
+			{
+				expectedContext = context;
+				if (pendingConnection->connectWaitContext.compare_exchange_strong(expectedContext, nullptr))
+				{
+					pendingConnection->EndPendingCallback();
+					delete context;
+					CHECK_FAIL(L"RegisterWaitForSingleObject failed for ConnectNamedPipe.");
+				}
+			}
 		}
 		break;
 	default:

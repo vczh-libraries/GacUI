@@ -2090,6 +2090,10 @@ TEST_FILE
 			AssertCallbacks(callbackLog1, expected2);
 			AssertCallbacks(callbackLog2, expected2);
 			AssertCallbacks(callbackLog3, expected2);
+
+			nodeItemProvider->DetachCallback(&callback1);
+			nodeItemProvider->DetachCallback(&callback2);
+			nodeItemProvider->DetachCallback(&callback3);
 		});
 
 		TEST_CASE(L"DetachCallbackStopsEvents")

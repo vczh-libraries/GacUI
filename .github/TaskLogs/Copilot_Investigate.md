@@ -1,58 +1,54 @@
 # !!!INVESTIGATE!!!
-
 # PROBLEM DESCRIPTION
 
-- you have to follow `REPO-ROOT/.github/Guidelines/Coding.md` when coding.
-- you have to run unit test to make sure your change works.
-- commit and push after finishing the work.
+## Task 4
 
-You are in the mono repo but you are going to debug and fix `GacUI` and `GacJS` (probably).
-
-Release VlppOS to GacUI. `IChannelServer::WaitForClient` is removed, so `RemotingTest_Core` will have to change.
-You can use a manual reset `vl::EventObject` to simulate the original blocking, but such event should be use in `StartServer` function, no extra construction is needed. There is a new `IChannelServer::Start` function, only after calling it client connections will be listened.
-
-Run `RemotingTest_Core /RPT` with both `/Http` and `/Pipe`, make sure `RemotingTest_Renderer_Win32` works.
-Verify them by debug both processes, breakpoint `RenderDom` in the renderer, and if the core and renderer runs normally, you will be able to see multiple frames of DOMs get passed to the renderer.
-Kill both processes.
-
-Follow `Tools\DebugGacUIWithBrowser.md` to start `RemotingTest_Core /Http /RPT` with `GacJS`, rebuild `GacJS` first.
-Switch the the third tab and type something, observes that typed characters appear inside the text box.
-Kill both processes.
-
-It is highly possible that `RemotingTest_Renderer_Win32` and `GacJS` don't need to change, if they do, you need to pay attention as it might expose some problems in the async `IChannelServer::OnClientConnected`.
+This task happens in `GacUI` repo.
+Release `VlppOS`, import into `GacUI`.
+Make sure `RemotingTest_Core` and `RemotingTest_Win32_Renderer` works with `/Http /FCT`.
+To verify that, you should launch both processes with the debugger, so that you are able to know the renderer actually communicate commands correctly with core.
+You may need to write a piece of temporary powershell script to close the process in a gentle way:
+  - You can use whatever way you like, including calling Windows API, to close the renderer gently.
+  - Currently `RemotingTest_Win32_Core` and `RemotingTest_Win32_Renderer` crashes during exiting, figure out why and fix that.
+    - I don't remember which one crashes, or maybe both, figure out by yourself.
+  - After the renderer exits, ensure that core will be notified and exits. If the code has no problem core should already been working that way.
+  - Delete that script before commiting.
+- Ensure `RemotingTest_*` call `IChannelServer::Stop`, and this function should already been returning after all pending callbacks end, so that you might be able to remove unnecessary blocking code in main/WinMain/GuiMain.
 
 # UPDATES
 
-# TEST [CONFIRMED]
+- `VlppOS` was released after the Windows HTTP client long-poll request was changed to use an infinite receive timeout. The generated non-`IncludeOnly` release files were copied into `GacUI\Import`.
+- Debugging `/Http /FCT` found two shutdown issues after import:
+  - Pausing under the debugger could make the renderer's HTTP `/Request` long-poll hit WinHTTP timeout `12002`; the `VlppOS` HTTP client API now exposes per-request timeouts and `HttpClient` disables the receive timeout for long-poll requests.
+  - Renderer shutdown could finish before the final `RequestControllerConnectionStopped` packet arrived; the remoting test renderer now exits on transport disconnect and explicitly stops the network connection before stack-owned channel wrappers are destroyed.
+- `GuiRemoteProtocolAsyncJsonChannelRenderer` no longer calls `Initialize(nullptr)` in its destructor. `IChannel::Initialize` is install-only, so calling it with `nullptr` caused the runtime dialog/assertion seen during renderer shutdown.
+- The full GacUI unit test run exposed two unrelated test-lifetime leaks. `GacUIUnitTest_StartAsync` now waits for and deletes its helper thread, and the `NodeItemProvider` multiple-callback test detaches stack callbacks before leaving scope.
 
-- Regenerate `VlppOS\Release` from current `VlppOS\Source`, copy the non-`IncludeOnly` release files into `GacUI\Import`, and build GacUI to confirm stale `IChannelServer::WaitForClient` usage is exposed.
-- Build and run the VlppOS unit test project, with the inter-process channel tests confirming `IChannelServer::Start` and client connection callbacks still work.
-- Build and run the GacUI unit test project, because C++ source changes in GacUI require unit test verification.
-- Run `RemotingTest_Core /RPT /Pipe` with `RemotingTest_Rendering_Win32 /Pipe` under debugger, set a breakpoint at `GuiRemoteRendererSingle::RenderDom`, and confirm multiple DOM frames are delivered before killing both processes.
-- Run `RemotingTest_Core /RPT /Http` with `RemotingTest_Rendering_Win32 /Http` under debugger, set the same breakpoint, and confirm multiple DOM frames are delivered before killing both processes.
-- Rebuild GacJS, start `RemotingTest_Core /Http /RPT` with GacJS, open the browser page, switch to the third tab, type text, and confirm the typed characters appear in the textbox before killing the processes.
-- Success criteria: all builds and unit tests pass, both renderer transports reach `RenderDom` repeatedly without debugger-reported exceptions, and the GacJS browser path accepts typed text in the Remote Protocol Test UI.
+# TEST
+
+- Ran `VlppOS` unit tests: 12/12 files and 115/115 cases passed, with no memory leak dump.
+- Regenerated `VlppOS\Release` and copied `VlppOS.h`, `VlppOS.cpp`, `VlppOS.Windows.h`, `VlppOS.Windows.cpp`, and `VlppOS.Linux.cpp` into `GacUI\Import`.
+- Built `GacUI\Test\GacUISrc\GacUISrc.sln`: build succeeded with 0 warnings and 0 errors.
+- Direct `/Http /FCT` run: started `RemotingTest_Core.exe /Http /FCT` and `RemotingTest_Rendering_Win32.exe /Http`, posted one normal `SC_CLOSE` message to the renderer window, and observed renderer exit code 0 and core exit code 0.
+- Debugger `/Http /FCT` run: launched both processes under CDB, set `GuiRemoteRendererSingle::RenderDom` as a renderer-side breakpoint with automatic `gc`, observed repeated `RENDERDOM_HIT` entries, posted one normal close message to the renderer, and observed no remaining `cdb`, core, or renderer processes.
+- Ran `GacUI` unit tests after the fixes: 84/84 files and 1686/1686 cases passed. `Execute.log` ended at the pass counts and contained no `Detected memory leaks!` dump.
+- Regenerated `GacUI\Release` after GacUI source changes.
 
 # PROPOSALS
 
-- No.1 Update GacUI to the started channel server lifecycle [CONFIRMED]
+- No.1 Update remoting lifecycle for explicit channel-server stop
 
-## No.1 Update GacUI to the started channel server lifecycle
+## No.1 Update remoting lifecycle for explicit channel-server stop
+
+Import the regenerated `VlppOS` release first, then build and debug `RemotingTest_Core` and `RemotingTest_Win32_Renderer` to locate stale channel lifecycle or shutdown assumptions. Fix the narrowest GacUI-side lifecycle code so the tests explicitly stop channel servers and no longer keep redundant blocking code after `IChannelServer::Stop`.
 
 ### CODE CHANGE
 
-- Regenerate and import the latest `VlppOS` release files so GacUI consumes the new `IChannelServer::Start` API and no longer sees `IChannelServer::WaitForClient`.
-- Update local-channel unit test setup to call `Start()` before registering local clients.
-- Update `RemotingTest_Core` to start the combined channel/network server, signal a local manual-reset `vl::EventObject` from `OnClientConnected`, and wait for the renderer client through that event instead of calling the removed `WaitForClient`.
-
-### CONFIRMED
-
-- `VlppOS\Release` was regenerated with `Tools\Tools\Codepack.backup.exe`, and the generated non-`IncludeOnly` release files were copied into `GacUI\Import`.
-- `VlppOS` built successfully with `.github\Scripts\copilotBuild.ps1` from `VlppOS\Test\UnitTest`.
-- `GacUI` built successfully with `.github\Scripts\copilotBuild.ps1` from `GacUI\Test\GacUISrc`.
-- `VlppOS` unit tests passed with `.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable UnitTest`: 12 / 12 files and 115 / 115 cases passed, including the named pipe and HTTP channel tests.
-- `GacUI` unit tests passed with `.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable UnitTest`: 84 / 84 files and 1686 / 1686 cases passed, including the remote unit test framework tests.
-- `RemotingTest_Core /Pipe /RPT` and `RemotingTest_Rendering_Win32 /Pipe` were run under CDB at the same time. A breakpoint at `vl::presentation::remote_renderer::GuiRemoteRendererSingle::RenderDom` in the renderer was hit 200 times before both processes were killed, with no debugger stop lines left in the logs.
-- `RemotingTest_Core /Http /RPT` and `RemotingTest_Rendering_Win32 /Http` were run under CDB at the same time. The same renderer `RenderDom` breakpoint was hit 200 times before both processes were killed, with no debugger stop lines left in the logs.
-- `GacJS\Gaclib` was rebuilt successfully with `yarn build`. `RemotingTest_Core /Http /RPT` was then run under CDB with GacJS opened in the browser at `http://localhost:8896/index.html`; the Remote Protocol Test UI rendered and the third visible `/RPT` tab opened. That tab is a document viewer in the current UI, so the focused browser typing requirement was verified with the existing GacJS `Testing_Protocol_SimpleTyping.js` test instead, which passed 1 / 1 file and 5 / 5 tests by typing text into the remoted textbox and confirming it appeared.
-- No source changes were needed in `RemotingTest_Rendering_Win32` or `GacJS`.
+- `VlppOS\Source\InterProcess\Windows\HttpClientApi.Windows.(h|cpp)`: added timeout fields to `HttpRequest` and applies them with `WinHttpSetTimeouts`.
+- `VlppOS\Source\InterProcess\Windows\HttpClient.Windows.cpp`: sets `/Request` receive timeout to `0` so long-poll requests survive debugger pauses and idle periods.
+- `GacUI\Import`: imported the regenerated `VlppOS` release files.
+- `GacUI\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channel_AsyncRenderer.cpp`: destructor now clears queued async state instead of trying to uninstall the channel reader with `Initialize(nullptr)`.
+- `GacUI\Test\GacUISrc\RemotingTest_Rendering_Win32\GuiMain.cpp`: added a small channel-client subclass that exits the renderer on transport disconnect, clears the renderer pointer before stop, and explicitly stops the network connection after the renderer loop returns.
+- `GacUI\Source\UnitTestUtilities\GuiUnitTestUtilities.cpp`: async unit-test helper thread is now created as non-self-deleting, waited, and deleted explicitly.
+- `GacUI\Test\GacUISrc\UnitTest\TestItemProviders_NodeItemProvider.cpp`: the multiple-callback test detaches all stack callbacks before scope exit.
+- `GacUI\Release`: regenerated generated release files for the source changes.

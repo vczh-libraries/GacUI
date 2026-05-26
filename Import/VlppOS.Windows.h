@@ -60,6 +60,164 @@ namespace vl::inter_process
 #endif
 
 /***********************************************************************
+.\HTTPCLIENTAPI.WINDOWS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Interfaces:
+	HttpClientApi
+
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_WINDOWS_HTTPCLIENTAPI
+#define VCZH_INTERPROCESS_WINDOWS_HTTPCLIENTAPI
+
+
+namespace vl::inter_process
+{
+
+/// <summary>An http request.</summary>
+class HttpRequest
+{
+	typedef collections::Array<char>					BodyBuffer;
+	typedef collections::List<WString>					StringList;
+	typedef collections::Dictionary<WString, WString>	HeaderMap;
+public:
+	/// <summary>Query of the request, like "/index.html".</summary>
+	WString												query;
+	/// <summary>Set to true if the request uses SSL, or https.</summary>
+	bool												secure = false;
+	/// <summary>User name to authorize. Set to empty if authorization is not needed.</summary>
+	WString												username;
+	/// <summary>Password to authorize. Set to empty if authorization is not needed.</summary>
+	WString												password;
+	/// <summary>HTTP method, like "GET", "POST", "PUT", "DELETE", etc.</summary>
+	WString												method;
+	/// <summary>Cookie. Set to empty if cookie is not needed.</summary>
+	WString												cookie;
+	/// <summary>Request body. This is a byte array.</summary>
+	BodyBuffer											body;
+	/// <summary>Content type, like "text/xml".</summary>
+	WString												contentType;
+	/// <summary>Accept type list, elements like "text/xml".</summary>
+	StringList											acceptTypes;
+	/// <summary>A dictionary to contain extra headers.</summary>
+	HeaderMap											extraHeaders;
+	/// <summary>Set to true to let this request finish when <see cref="HttpClientApi.Stop"/> is called.</summary>
+	bool												keepAliveOnStop = false;
+	/// <summary>Timeout for resolving the host name. 0 or -1 means infinite.</summary>
+	vint												resolveTimeout = 0;
+	/// <summary>Timeout for connecting to the server. 0 or -1 means infinite.</summary>
+	vint												connectTimeout = 60000;
+	/// <summary>Timeout for sending the request. 0 or -1 means infinite.</summary>
+	vint												sendTimeout = 30000;
+	/// <summary>Timeout for receiving the response. 0 or -1 means infinite.</summary>
+	vint												receiveTimeout = 30000;
+
+	HttpRequest() = default;
+	void												SetBodyUtf8(const WString& bodyString);
+};
+
+/// <summary>A type representing an http response.</summary>
+class HttpResponse
+{
+	typedef collections::Array<char>					BodyBuffer;
+public:
+	/// <summary>Status code, like 200.</summary>
+	vint												statusCode = 0;
+	/// <summary>Response body. This is a byte array.</summary>
+	BodyBuffer											body;
+	/// <summary>Returned cookie from the server.</summary>
+	WString												cookie;
+	/// <summary>Returned content type from the server.</summary>
+	WString												contentType;
+
+	HttpResponse() = default;
+	WString												GetBodyUtf8() const;
+};
+
+/// <summary>A transport error reported by the underlying Windows HTTP API.</summary>
+class HttpError
+{
+public:
+	DWORD												errorCode = 0;
+	WString												operation;
+	WString												message;
+};
+
+/// <summary>A Windows-only async HTTP client for a single host and port.</summary>
+class HttpClientApi : public Object
+{
+	static constexpr vint32_t							HttpRespondBodyStep = 65536;
+
+	class HttpRequestContext : public Object
+	{
+	public:
+		HttpClientApi*									api = nullptr;
+		HINTERNET										httpRequest = NULL;
+		Func<void(Variant<HttpResponse, HttpError>)>	callback;
+		collections::Array<char>						requestBody;
+		HttpResponse									response;
+		DWORD											bodyBufferWriting = 0;
+		DWORD											bodyBufferWritingAvailable = 0;
+		bool											keepAliveOnStop = false;
+		bool											completed = false;
+		bool											closing = false;
+		SpinLock										lockContext;
+	};
+
+	WString												server;
+	vint												port = 0;
+	HINTERNET											httpSession = NULL;
+	HINTERNET											httpConnection = NULL;
+
+	SpinLock											lockActiveRequests;
+	collections::List<Ptr<HttpRequestContext>>			activeRequests;
+	bool												stopping = false;
+	atomic_vint											pendingCallbacks = 0;
+	EventObject											eventPendingCallbacks;
+
+	static void CALLBACK								HttpStatusCallback(HINTERNET httpRequest, DWORD_PTR context, DWORD status, LPVOID statusInformation, DWORD statusInformationLength);
+	static HttpError									MakeError(const WString& operation, DWORD errorCode);
+	static vint											HexValue(wchar_t c);
+
+	bool												IsStopping();
+	void												BeginPendingCallback();
+	void												EndPendingCallback();
+	void												AttachRequestUnsafe(Ptr<HttpRequestContext> context);
+	void												RemoveRequestUnsafe(Ptr<HttpRequestContext> context);
+	void												CloseRequest(Ptr<HttpRequestContext> context);
+	void												OnRequestHandleClosing(Ptr<HttpRequestContext> context);
+	void												CompleteRequest(Ptr<HttpRequestContext> context, HttpResponse&& response);
+	void												CompleteRequest(Ptr<HttpRequestContext> context, HttpError&& error);
+	void												CompleteRequestWithLastError(Ptr<HttpRequestContext> context, const WString& operation, DWORD errorCode);
+
+public:
+	HttpClientApi(const WString& _server, vint _port);
+	~HttpClientApi();
+
+	HttpClientApi(const HttpClientApi&) = delete;
+	HttpClientApi(HttpClientApi&&) = delete;
+	HttpClientApi& operator=(const HttpClientApi&) = delete;
+	HttpClientApi& operator=(HttpClientApi&&) = delete;
+
+	void												HttpQuery(const HttpRequest& request, Func<void(Variant<HttpResponse, HttpError>)> callback);
+	void												Stop();
+
+	static WString										HttpEncodeQuery(const WString& query);
+	static WString										HttpDecodeQuery(const WString& query);
+};
+
+extern WString											UrlEncodeQuery(const WString& query);
+
+}
+
+#endif
+
+
+/***********************************************************************
 .\HTTPCLIENT.WINDOWS.H
 ***********************************************************************/
 /***********************************************************************
@@ -93,35 +251,21 @@ protected:
 	State											state = State::Ready;
 	INetworkProtocolCallback*						callback = nullptr;
 	WString											baseUrl;
-
-	HINTERNET										httpSession = NULL;
-	HINTERNET										httpConnection = NULL;
+	Ptr<HttpClientApi>								httpClientApi;
 	WString											urlConnect;
 	WString											urlRequest;
 	WString											urlResponse;
-
-	atomic_vint										pendingCallbacks = 0;
-	atomic_vint										createdRequestIds = 0;
-	EventObject										eventPendingCallbacks;
-	void											BeginPendingCallback();
-	void											EndPendingCallback();
-	void											QueueCallback(const Func<void()>& proc);
-	vint											FindActiveRequestUnsafe(HINTERNET httpRequest, vint requestId);
-	void											AttachRequest(HINTERNET httpRequest, vint requestId = 0);
-	void											CloseRequest(HINTERNET httpRequest, vint requestId = 0);
-	void											OnRequestHandleClosing(HINTERNET httpRequest, vint requestId = 0);
+	SpinLock										lockState;
 
 /***********************************************************************
 HttpClient (Reading)
 ***********************************************************************/
 
 protected:
-	static constexpr vint32_t						HttpRespondBodyStep = 65536;
-	collections::Array<char8_t>						httpRespondBodyBuffer;
-	DWORD											httpRespondBodyBufferWriting = 0;
-	DWORD											httpRespondBodyBufferWritingAvailable = 0;
+	static constexpr const wchar_t*					JsonContentType = L"application/json; charset=utf8";
 
 	void											RaiseErrorUnsafe(WString errorMessage);
+	bool											IsStopping();
 public:
 
 	void											BeginReadingLoopUnsafe() override;
@@ -132,9 +276,12 @@ HttpClient (WaitForServer)
 
 protected:
 
-	HANDLE											hEventWaitForServer = INVALID_HANDLE_VALUE;
-	DWORD											dwInternetStatus_WaitForServer = 0;
-	DWORD											dwStatusInformationLength_WaitForServer = 0;
+	EventObject										eventWaitForServer;
+	SpinLock										lockConnectResult;
+	bool											connectCompleted = false;
+	WString											connectResponse;
+	WString											connectError;
+	void											CompleteConnectRequest(const WString& response, const WString& error);
 
 public:
 	
@@ -147,34 +294,15 @@ HttpClient (Writing)
 ***********************************************************************/
 
 protected:
-	class HttpResponseReading : public Object
+	enum class HttpRequestType
 	{
-	public:
-		collections::Array<char8_t>					bodyBuffer;
-		DWORD										bodyBufferWriting = 0;
-		DWORD										bodyBufferWritingAvailable = 0;
+		Connect,
+		Request,
+		Response,
 	};
 
-	class HttpRequestContext : public Object
-	{
-	public:
-		HttpClient*									client = nullptr;
-		HINTERNET									httpRequest = NULL;
-		vint										requestId = 0;
-		U8String									requestBody;
-		Ptr<HttpResponseReading>					responseReading;
-	};
-
-	class HttpActiveRequest
-	{
-	public:
-		HINTERNET									httpRequest = NULL;
-		vint										requestId = -1;
-	};
-
-	SpinLock										httpActiveRequestsLock;
-	collections::List<HttpActiveRequest>			httpActiveRequests;
-
+	bool											SendHttpRequest(HttpRequestType requestType, const wchar_t* method, const WString& url, const WString& body);
+	void											OnHttpRequestCompleted(HttpRequestType requestType, Variant<HttpResponse, HttpError> result);
 
 public:
 
@@ -190,6 +318,90 @@ public:
 
 	void											InstallCallback(INetworkProtocolCallback* _callback) override;
 	void											Stop() override;
+};
+
+}
+
+#endif
+
+
+/***********************************************************************
+.\HTTPSERVERAPI.WINDOWS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Interfaces:
+	HttpServerApi
+
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_WINDOWS_HTTPSERVERAPI
+#define VCZH_INTERPROCESS_WINDOWS_HTTPSERVERAPI
+
+
+namespace vl::inter_process
+{
+
+/// <summary>A Windows-only async HTTP server for a single URL prefix.</summary>
+class HttpServerApi : public Object
+{
+	static constexpr vint32_t						HttpRequestBufferInitSize = 1024;
+
+protected:
+	enum class State
+	{
+		Ready,
+		Running,
+		Stopping,
+	};
+
+	WString											urlPrefix;
+	bool											respondToOptions = false;
+
+	HANDLE											httpRequestQueue = INVALID_HANDLE_VALUE;
+	HTTP_SERVER_SESSION_ID							httpSessionId = HTTP_NULL_ID;
+	HTTP_URL_GROUP_ID								httpUrlGroupId = HTTP_NULL_ID;
+
+	State											state = State::Ready;
+
+	collections::Array<BYTE>						bufferRequest;
+	HANDLE											hWaitHandleRequest = INVALID_HANDLE_VALUE;
+	OVERLAPPED										overlappedRequest;
+	HANDLE											hEventRequest = INVALID_HANDLE_VALUE;
+	EventObject										eventPendingCallbacks;
+	atomic_vint										pendingCallbacks = 0;
+
+	void											OnHttpConnectionBrokenUnsafe();
+	void											OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest);
+	ULONG											ListenToHttpRequest_Init(OVERLAPPED* overlapped);
+	ULONG											ListenToHttpRequest_InitMoreData(ULONG* bytesReturned);
+	ULONG											ListenToHttpRequest_OverlappedMoreData(vint expectedBufferSize);
+	void											ListenToHttpRequest();
+	void											BeginPendingCallback();
+	void											EndPendingCallback();
+
+	virtual void									OnHttpRequestReceived(PHTTP_REQUEST pRequest) = 0;
+	virtual void									OnHttpServerStopping();
+
+	static void										SendOptionsResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId);
+
+public:
+	HttpServerApi(const WString& _urlPrefix, bool _respondToOptions);
+	~HttpServerApi();
+
+	HttpServerApi(const HttpServerApi&) = delete;
+	HttpServerApi(HttpServerApi&&) = delete;
+	HttpServerApi& operator=(const HttpServerApi&) = delete;
+	HttpServerApi& operator=(HttpServerApi&&) = delete;
+
+	void											Start();
+	void											Stop();
+	bool											IsStopped();
+	HANDLE											GetHttpRequestQueue() const;
+
+	static ULONG									SendResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, vint statusCode, const WString& reason = WString::Empty, const WString& body = WString::Empty, const WString& contentType = WString::Empty);
 };
 
 }
@@ -250,10 +462,8 @@ public:
 	static WString									GenerateNewGuid();
 };
 
-class HttpServer : public Object, public virtual INetworkProtocolServer
+class HttpServer : public HttpServerApi, public virtual INetworkProtocolServer
 {
-	static constexpr vint32_t						HttpBodyInitSize = 1024;
-
 	friend class HttpServerConnection;
 	using ConnectionMap = collections::Dictionary<WString, Ptr<HttpServerConnection>>;
 protected:
@@ -266,37 +476,6 @@ protected:
 	SpinLock										lockConnections;
 	ConnectionMap									connections;
 
-	HANDLE											httpRequestQueue = INVALID_HANDLE_VALUE;
-	HTTP_SERVER_SESSION_ID							httpSessionId = HTTP_NULL_ID;
-	HTTP_URL_GROUP_ID								httpUrlGroupId = HTTP_NULL_ID;
-
-/***********************************************************************
-HttpServer (ListenToHttpRequest)
-***********************************************************************/
-
-protected:
-
-	enum class State
-	{
-		Ready,
-		Running,
-		Stopping,
-	};
-
-	State											state = State::Ready;
-
-	collections::Array<BYTE>						bufferRequest;
-	HANDLE											hWaitHandleRequest = INVALID_HANDLE_VALUE;
-	OVERLAPPED										overlappedRequest;
-	HANDLE											hEventRequest = INVALID_HANDLE_VALUE;
-
-	void											OnHttpConnectionBrokenUnsafe();
-	void											OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest);
-	ULONG											ListenToHttpRequest_Init(OVERLAPPED* overlapped);
-	ULONG											ListenToHttpRequest_InitMoreData(ULONG* bytesReturned);
-	ULONG											ListenToHttpRequest_OverlappedMoreData(vint expectedBufferSize);
-	void											ListenToHttpRequest();
-
 /***********************************************************************
 HttpServer (BeginReadingLoopUnsafe)
 ***********************************************************************/
@@ -305,14 +484,13 @@ protected:
 
 
 /***********************************************************************
-HttpServer (Writing)
+HttpServer (HttpServerApi)
 ***********************************************************************/
 
 protected:
 
-	static void										Send404Response(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, PCSTR reason);
-	static void										SendOptionsResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId);
-	static ULONG									SendResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, const WString& str);
+	void											OnHttpRequestReceived(PHTTP_REQUEST pRequest) override;
+	void											OnHttpServerStopping() override;
 
 /***********************************************************************
 HttpServer
@@ -363,17 +541,23 @@ class NamedPipeConnection : public Object, public virtual INetworkProtocolConnec
 // -----------------------------------------------------------------------
 
 private:
+	class ReadWaitContext;
+
 	bool											firstRead = true;
 	atomic_vint										stopped = 0;
 	collections::Array<BYTE>						bufferReadFile;
 	stream::MemoryStream							streamReadFile;
-	HANDLE											hWaitHandleReadFile = INVALID_HANDLE_VALUE;
+	std::atomic<ReadWaitContext*>					readWaitContext = nullptr;
 	OVERLAPPED										overlappedReadFile;
 	HANDLE											hEventReadFile = INVALID_HANDLE_VALUE;
+	atomic_vint										pendingCallbacks = 0;
+	EventObject										eventPendingCallbacks;
 
 	void											BeginReadingUnsafe();
 	void											SubmitReadBufferUnsafe(vint bytes);
 	void											EndReadingUnsafe();
+	void											BeginPendingCallback();
+	void											EndPendingCallback();
 
 public:
 	void											BeginReadingLoopUnsafe() override;
@@ -425,16 +609,22 @@ protected:
 	class PendingConnection : public Object
 	{
 	public:
-		NamedPipeServer*								server = nullptr;
-		Ptr<NamedPipeConnection>						connection;
-		HANDLE											hWaitHandleConnect = INVALID_HANDLE_VALUE;
-		OVERLAPPED										overlappedConnect;
-		HANDLE											hEventConnect = INVALID_HANDLE_VALUE;
+		class ConnectWaitContext;
+
+		NamedPipeServer*							server = nullptr;
+		Ptr<NamedPipeConnection>					connection;
+		std::atomic<ConnectWaitContext*>			connectWaitContext = nullptr;
+		OVERLAPPED									overlappedConnect;
+		HANDLE										hEventConnect = INVALID_HANDLE_VALUE;
+		atomic_vint									pendingCallbacks = 0;
+		EventObject									eventPendingCallbacks;
 
 		PendingConnection(NamedPipeServer* _server, Ptr<NamedPipeConnection> _connection);
 		~PendingConnection();
 
-		void											Stop();
+		void										Stop();
+		void										BeginPendingCallback();
+		void										EndPendingCallback();
 	};
 
 	static HANDLE									ServerCreatePipe(const WString& pipeName);

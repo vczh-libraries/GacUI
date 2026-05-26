@@ -5,137 +5,6 @@ DEVELOPER: Zihan Chen(vczh)
 #include "Vlpp.h"
 
 /***********************************************************************
-.\HTTPUTILITY.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_HTTPUTILITY
-#define VCZH_HTTPUTILITY
-
-
-#ifdef VCZH_MSVC
-
-namespace vl
-{
-
-/***********************************************************************
-HTTP Utility
-***********************************************************************/
-
-	/// <summary>An http requiest.</summary>
-	class HttpRequest
-	{
-		typedef collections::Array<char>					BodyBuffer;
-		typedef collections::List<WString>					StringList;
-		typedef collections::Dictionary<WString, WString>	HeaderMap;
-	public:
-		/// <summary>Name of the server, like "gaclib.net".</summary>
-		WString				server;
-		/// <summary>Port of the server, like 80.</summary>
-		vint				port = 0;
-		/// <summary>Query of the request, like "/index.html".</summary>
-		WString				query;
-		/// <summary>Set to true if the request uses SSL, or https.</summary>
-		bool				secure = false;
-		/// <summary>User name to authorize. Set to empty if authorization is not needed.</summary>
-		WString				username;
-		/// <summary>Password to authorize. Set to empty if authorization is not needed.</summary>
-		WString				password;
-		/// <summary>HTTP method, like "GET", "POST", "PUT", "DELETE", etc.</summary>
-		WString				method;
-		/// <summary>Cookie. Set to empty if cookie is not needed.</summary>
-		WString				cookie;
-		/// <summary>Request body. This is a byte array.</summary>
-		BodyBuffer			body;
-		/// <summary>Content type, like "text/xml".</summary>
-		WString				contentType;
-		/// <summary>Accept type list, elements like "text/xml".</summary>
-		StringList			acceptTypes;
-		/// <summary>A dictionary to contain extra headers.</summary>
-		HeaderMap			extraHeaders;
-
-		/// <summary>Create an empty request.</summary>
-		HttpRequest() = default;
-
-		/// <summary>Set <see cref="server"/>, <see cref="port"/>, <see cref="query"/> and <see cref="secure"/> fields for you using an URL.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="inputQuery">The URL.</param>
-		bool				SetHost(const WString& inputQuery);
-
-		/// <summary>Fill the text body in UTF-8.</summary>
-		/// <param name="bodyString">The text to fill.</param>
-		void				SetBodyUtf8(const WString& bodyString);
-	};
-	
-	/// <summary>A type representing an http response.</summary>
-	class HttpResponse
-	{
-		typedef collections::Array<char>		BodyBuffer;
-	public:
-		/// <summary>Status code, like 200.</summary>
-		vint				statusCode = 0;
-		/// <summary>Response body. This is a byte array.</summary>
-		BodyBuffer			body;
-		/// <summary>Returned cookie from the server.</summary>
-		WString				cookie;
-
-		HttpResponse() = default;
-
-		/// <summary>Get the text body, encoding is assumed to be UTF-8.</summary>
-		/// <returns>The response body as text.</returns>
-		WString				GetBodyUtf8();
-	};
-
-	/// <summary>Send an http request and receive a response.</summary>
-	/// <returns>Returns true if this operation succeeded, even when the server returns 404.</returns>
-	/// <param name="request">The request to send.</param>
-	/// <param name="response">Returns the response.</param>
-	/// <remarks>
-	/// <p>
-	/// This function will block the calling thread until the respons is returned.
-	/// </p>
-	/// <p>
-	/// This function is only available in Windows.
-	/// </p>
-	/// </remarks>
-	/// <example><![CDATA[
-	/// int main()
-	/// {
-	///     HttpRequest request;
-	///     HttpResponse response;
-	///     request.SetHost(L"http://www.msftncsi.com/ncsi.txt");
-	///     HttpQuery(request, response);
-	///     Console::WriteLine(L"Status:" + itow(response.statusCode));
-	///     Console::WriteLine(L"Body:" + response.GetBodyUtf8());
-	/// }
-	/// ]]></example>
-	extern bool				HttpQuery(const HttpRequest& request, HttpResponse& response);
-
-	/// <summary>Encode a text as part of the url. This function can be used to create arguments in an URL.</summary>
-	/// <returns>The encoded text.</returns>
-	/// <param name="query">The text to encode.</param>
-	/// <remarks>
-	/// <p>
-	/// When a character is not a digit or a letter,
-	/// it is first encoded to UTF-8,
-	/// then each byte is written as "%" with two hex digits.
-	/// </p>
-	/// <p>
-	/// This function is only available in Windows.
-	/// </p>
-	///</remarks>
-	extern WString			UrlEncodeQuery(const WString& query);
-}
-
-#endif
-
-#endif
-
-
-/***********************************************************************
 .\LOCALE.H
 ***********************************************************************/
 /***********************************************************************
@@ -2100,17 +1969,14 @@ NetworkProtocolChannel
 	};
 
 /***********************************************************************
-NetworkProtocolChannelClient
+NetworkProtocolChannelClientBase
 ***********************************************************************/
 
 	template<typename TPackage, typename TSerialization>
 	class NetworkProtocolChannelServer;
 
 	template<typename TPackage, typename TSerialization>
-	class NetworkProtocolLocalChannelClient;
-
-	template<typename TPackage, typename TSerialization>
-	class NetworkProtocolChannelClient : public Object, public virtual IChannelClient<TPackage>
+	class NetworkProtocolChannelClientBase : public Object, public virtual IChannelClient<TPackage>
 	{
 	protected:
 		using BaseChannel = NetworkProtocolChannel<TPackage, TSerialization>;
@@ -2124,7 +1990,7 @@ NetworkProtocolChannelClient
 			using Base = NetworkProtocolChannel<TPackage, TSerialization>;
 
 		private:
-			NetworkProtocolChannelClient*					client = nullptr;
+			NetworkProtocolChannelClientBase*				client = nullptr;
 
 			void ValidatePackage(vint senderClientId, Nullable<vint> receiverClientId) override
 			{
@@ -2143,54 +2009,15 @@ NetworkProtocolChannelClient
 			}
 
 		public:
-			Channel(NetworkProtocolChannelClient* _client, const WString& _channelName)
+			Channel(NetworkProtocolChannelClientBase* _client, const WString& _channelName)
 				: Base(_channelName)
 				, client(_client)
 			{
 			}
 		};
 
-		class Callback : public Object, public virtual INetworkProtocolCallback
-		{
-		private:
-			NetworkProtocolChannelClient*					client = nullptr;
-
-		public:
-			Callback(NetworkProtocolChannelClient* _client)
-				: client(_client)
-			{
-			}
-
-			void OnReadString(const WString& str) override
-			{
-				client->OnReadString(str);
-			}
-
-			void OnReadError(const WString& error) override
-			{
-				client->OnError(error);
-				client->NotifyDisconnected();
-			}
-
-			void OnConnected() override
-			{
-			}
-
-			void OnDisconnected() override
-			{
-				client->NotifyDisconnected();
-			}
-
-			void OnInstalled(INetworkProtocolConnection*) override
-			{
-			}
-		};
-
-	private:
-		typename TSerialization::ContextType						context;
-
 	protected:
-		EventObject													eventWaitForServer;
+		typename TSerialization::ContextType						context;
 
 		// covers status, connectedNotified and clientId
 		SpinLock													lockStatus;
@@ -2201,16 +2028,14 @@ NetworkProtocolChannelClient
 	private:
 		ChannelMap													channels;
 		collections::Dictionary<WString, Ptr<Channel>>				ownedChannels;
-		Ptr<Callback>												callback;
-		Ptr<INetworkProtocolClient>									npClient;
 
+	protected:
 		Channel* FindChannel(const WString& channelName)
 		{
 			vint index = ownedChannels.Keys().IndexOf(channelName);
 			return index == -1 ? nullptr : ownedChannels.Values()[index].Obj();
 		}
 
-	protected:
 		void SetStatus(ClientStatus newStatus)
 		{
 			SPIN_LOCK(lockStatus)
@@ -2219,59 +2044,43 @@ NetworkProtocolChannelClient
 			}
 		}
 
-		virtual bool SendBatch(Nullable<vint> receiverClientId, const WString& channelName, const PackageList& batch)
+		void SetConnected(vint assignedClientId)
 		{
-			if (GetStatus() != ClientStatus::Connected)
+			SPIN_LOCK(lockStatus)
 			{
-				return true;
+				clientId = assignedClientId;
+				status = ClientStatus::Connected;
 			}
-
-			CHECK_ERROR(npClient, L"NetworkProtocolChannelClient::SendBatch needs an established network connection.");
-			WString messageBody;
-			TSerialization::Serialize(context, batch, messageBody);
-			npClient->GetConnection()->SendString(NetworkPackage::ToString(NetworkPackage::Create(std::move(receiverClientId), channelName, messageBody)));
-			return false;
 		}
 
-	private:
-		void OnReadString(const WString& str)
+		bool TrySetConnected(vint assignedClientId)
 		{
-			NetworkPackage package;
-			NetworkPackage::Parse(str, package);
-			if (package.channelName == ErrorChannel)
+			bool connected = false;
+			SPIN_LOCK(lockStatus)
 			{
-				OnError(package.messageBody);
-				NotifyDisconnected();
-				return;
-			}
-			else if (package.channelName == WString::Empty)
-			{
-				CHECK_ERROR(package.clientId, L"NetworkProtocolChannelClient received an invalid connection response.");
-				CHECK_ERROR(package.clientId.Value() > 0, L"NetworkProtocolChannelClient received an invalid client id.");
+				if (status == ClientStatus::Ready || status == ClientStatus::WaitingForServer)
 				{
-					SPIN_LOCK(lockStatus)
-					{
-						clientId = package.clientId.Value();
-						status = ClientStatus::Connected;
-					}
+					clientId = assignedClientId;
+					status = ClientStatus::Connected;
+					connected = true;
 				}
-				eventWaitForServer.Signal();
-				return;
 			}
+			return connected;
+		}
 
-			auto channel = FindChannel(package.channelName);
+		virtual bool SendBatch(Nullable<vint> receiverClientId, const WString& channelName, const PackageList& batch) = 0;
+
+		void ReceiveBatch(const WString& channelName, vint senderClientId, const WString& messageBody)
+		{
+			auto channel = FindChannel(channelName);
 			if (channel)
 			{
-				CHECK_ERROR(package.clientId, L"NetworkProtocolChannelClient received a channel message without senderClientId.");
-				auto senderClientId = package.clientId.Value();
-				CHECK_ERROR(senderClientId > 0, L"NetworkProtocolChannelClient received an invalid senderClientId.");
 				PackageList batch;
-				TSerialization::Deserialize(context, package.messageBody, batch);
+				TSerialization::Deserialize(context, messageBody, batch);
 				channel->ReadBatch(senderClientId, batch);
 			}
 		}
 
-	protected:
 		virtual void NotifyDisconnected()
 		{
 			bool shouldNotify = false;
@@ -2283,7 +2092,6 @@ NetworkProtocolChannelClient
 					shouldNotify = true;
 				}
 			}
-			eventWaitForServer.Signal();
 			if (shouldNotify)
 			{
 				OnDisconnected();
@@ -2326,31 +2134,9 @@ NetworkProtocolChannelClient
 		}
 
 	protected:
-		NetworkProtocolChannelClient(const typename TSerialization::ContextType& _context = {})
+		NetworkProtocolChannelClientBase(const typename TSerialization::ContextType& _context = {})
 			: context(_context)
 		{
-			CHECK_ERROR(eventWaitForServer.CreateManualUnsignal(false), L"NetworkProtocolChannelClient initialization failed on eventWaitForServer.");
-		}
-
-	public:
-		NetworkProtocolChannelClient(
-			Ptr<INetworkProtocolClient> _npClient,
-			const typename TSerialization::ContextType& _context = {}
-		)
-			: NetworkProtocolChannelClient(_context)
-		{
-			CHECK_ERROR(_npClient, L"NetworkProtocolChannelClient needs a valid INetworkProtocolClient.");
-			callback = Ptr(new Callback(this));
-			npClient = _npClient;
-			npClient->GetConnection()->InstallCallback(callback.Obj());
-		}
-
-		~NetworkProtocolChannelClient()
-		{
-			if (npClient)
-			{
-				npClient->GetConnection()->Stop();
-			}
 		}
 
 	private:
@@ -2369,6 +2155,7 @@ NetworkProtocolChannelClient
 			return channel.Obj();
 		}
 
+	protected:
 		void EnsureChannels(const ChannelNameList& channelNames)
 		{
 			for (auto&& channelName : channelNames)
@@ -2399,37 +2186,6 @@ NetworkProtocolChannelClient
 			return result;
 		}
 
-		void WaitForServer() override
-		{
-			auto currentStatus = GetStatus();
-			if (currentStatus == ClientStatus::Connected || currentStatus == ClientStatus::Disconnected)
-			{
-				NotifyConnected();
-				return;
-			}
-			if (currentStatus == ClientStatus::WaitingForServer)
-			{
-				eventWaitForServer.Wait();
-				NotifyConnected();
-				return;
-			}
-
-			SetStatus(ClientStatus::WaitingForServer);
-			npClient->WaitForServer();
-			if (npClient->GetStatus() != ClientStatus::Connected)
-			{
-				NotifyDisconnected();
-				return;
-			}
-
-			auto&& channelNames = OnGetChannelNames();
-			EnsureChannels(channelNames);
-			npClient->GetConnection()->SendString(NetworkPackage::ToString(NetworkPackage::Create({}, WString::Empty, BaseChannel::JoinChannelNames(channelNames))));
-			npClient->GetConnection()->BeginReadingLoopUnsafe();
-			eventWaitForServer.Wait();
-			NotifyConnected();
-		}
-
 		ClientStatus GetStatus() override
 		{
 			ClientStatus result = ClientStatus::Disconnected;
@@ -2438,6 +2194,203 @@ NetworkProtocolChannelClient
 				result = status;
 			}
 			return result;
+		}
+	};
+
+/***********************************************************************
+NetworkProtocolChannelClient
+***********************************************************************/
+
+	template<typename TPackage, typename TSerialization>
+	class NetworkProtocolLocalChannelClient;
+
+	template<typename TPackage, typename TSerialization>
+	class NetworkProtocolChannelClient : public NetworkProtocolChannelClientBase<TPackage, TSerialization>
+	{
+	protected:
+		using Base = NetworkProtocolChannelClientBase<TPackage, TSerialization>;
+		using BaseChannel = typename Base::BaseChannel;
+		using PackageList = typename TSerialization::SourceType;
+
+		class Callback : public Object, public virtual INetworkProtocolCallback
+		{
+		private:
+			NetworkProtocolChannelClient*					client = nullptr;
+
+		public:
+			Callback(NetworkProtocolChannelClient* _client)
+				: client(_client)
+			{
+			}
+
+			void OnReadString(const WString& str) override
+			{
+				client->OnReadString(str);
+			}
+
+			void OnReadError(const WString& error) override
+			{
+				client->OnError(error);
+				client->NotifyDisconnected();
+			}
+
+			void OnConnected() override
+			{
+			}
+
+			void OnDisconnected() override
+			{
+				client->NotifyDisconnected();
+			}
+
+			void OnInstalled(INetworkProtocolConnection*) override
+			{
+			}
+		};
+
+	private:
+		EventObject													eventWaitForServer;
+		Ptr<Callback>												callback;
+		Ptr<INetworkProtocolClient>									npClient;
+		SpinLock													lockQueuedPackagesBeforeConnected;
+		collections::List<NetworkPackage>							queuedPackagesBeforeConnected;
+
+	protected:
+		bool SendBatch(Nullable<vint> receiverClientId, const WString& channelName, const PackageList& batch) override
+		{
+			if (this->GetStatus() != ClientStatus::Connected)
+			{
+				return true;
+			}
+
+			CHECK_ERROR(npClient, L"NetworkProtocolChannelClient::SendBatch needs an established network connection.");
+			WString messageBody;
+			TSerialization::Serialize(this->context, batch, messageBody);
+			npClient->GetConnection()->SendString(NetworkPackage::ToString(NetworkPackage::Create(std::move(receiverClientId), channelName, messageBody)));
+			return false;
+		}
+
+	private:
+		void OnReadChannelPackage(const NetworkPackage& package)
+		{
+			if (this->FindChannel(package.channelName))
+			{
+				CHECK_ERROR(package.clientId, L"NetworkProtocolChannelClient received a channel message without senderClientId.");
+				auto senderClientId = package.clientId.Value();
+				CHECK_ERROR(senderClientId > 0, L"NetworkProtocolChannelClient received an invalid senderClientId.");
+				this->ReceiveBatch(package.channelName, senderClientId, package.messageBody);
+			}
+		}
+
+		void OnReadString(const WString& str)
+		{
+			NetworkPackage package;
+			NetworkPackage::Parse(str, package);
+			if (package.channelName == ErrorChannel)
+			{
+				this->OnError(package.messageBody);
+				NotifyDisconnected();
+				return;
+			}
+			else if (package.channelName == WString::Empty)
+			{
+				CHECK_ERROR(package.clientId, L"NetworkProtocolChannelClient received an invalid connection response.");
+				CHECK_ERROR(package.clientId.Value() > 0, L"NetworkProtocolChannelClient received an invalid client id.");
+				this->SetConnected(package.clientId.Value());
+				this->NotifyConnected();
+				eventWaitForServer.Signal();
+				collections::List<NetworkPackage> packages;
+				SPIN_LOCK(lockQueuedPackagesBeforeConnected)
+				{
+					packages = std::move(queuedPackagesBeforeConnected);
+				}
+				for (auto&& queuedPackage : packages)
+				{
+					OnReadChannelPackage(queuedPackage);
+				}
+				return;
+			}
+
+			if (this->GetStatus() != ClientStatus::Connected)
+			{
+				SPIN_LOCK(lockQueuedPackagesBeforeConnected)
+				{
+					if (this->GetStatus() != ClientStatus::Connected)
+					{
+						queuedPackagesBeforeConnected.Add(std::move(package));
+						return;
+					}
+				}
+			}
+			OnReadChannelPackage(package);
+		}
+
+	protected:
+		void NotifyDisconnected() override
+		{
+			eventWaitForServer.Signal();
+			Base::NotifyDisconnected();
+		}
+
+	protected:
+		NetworkProtocolChannelClient(const typename TSerialization::ContextType& _context = {})
+			: Base(_context)
+		{
+			CHECK_ERROR(eventWaitForServer.CreateManualUnsignal(false), L"NetworkProtocolChannelClient initialization failed on eventWaitForServer.");
+		}
+
+	public:
+		NetworkProtocolChannelClient(
+			Ptr<INetworkProtocolClient> _npClient,
+			const typename TSerialization::ContextType& _context = {}
+		)
+			: Base(_context)
+		{
+			CHECK_ERROR(eventWaitForServer.CreateManualUnsignal(false), L"NetworkProtocolChannelClient initialization failed on eventWaitForServer.");
+			CHECK_ERROR(_npClient, L"NetworkProtocolChannelClient needs a valid INetworkProtocolClient.");
+			callback = Ptr(new Callback(this));
+			npClient = _npClient;
+			npClient->GetConnection()->InstallCallback(callback.Obj());
+		}
+
+		~NetworkProtocolChannelClient()
+		{
+			if (npClient)
+			{
+				npClient->GetConnection()->Stop();
+			}
+		}
+
+		void WaitForServer() override
+		{
+			auto currentStatus = this->GetStatus();
+			if (currentStatus == ClientStatus::Connected || currentStatus == ClientStatus::Disconnected)
+			{
+				this->NotifyConnected();
+				return;
+			}
+			if (currentStatus == ClientStatus::WaitingForServer)
+			{
+				eventWaitForServer.Wait();
+				this->NotifyConnected();
+				return;
+			}
+			CHECK_ERROR(currentStatus == ClientStatus::Ready, L"NetworkProtocolChannelClient::WaitForServer found an unexpected client status.");
+
+			this->SetStatus(ClientStatus::WaitingForServer);
+			npClient->WaitForServer();
+			if (npClient->GetStatus() != ClientStatus::Connected)
+			{
+				NotifyDisconnected();
+				return;
+			}
+
+			auto&& channelNames = this->OnGetChannelNames();
+			this->EnsureChannels(channelNames);
+			npClient->GetConnection()->SendString(NetworkPackage::ToString(NetworkPackage::Create({}, WString::Empty, BaseChannel::JoinChannelNames(channelNames))));
+			npClient->GetConnection()->BeginReadingLoopUnsafe();
+			eventWaitForServer.Wait();
+			this->NotifyConnected();
 		}
 
 		void BroadcastError(const WString& errorMessage) override
@@ -2453,12 +2406,12 @@ NetworkProtocolLocalChannelClient
 ***********************************************************************/
 
 	template<typename TPackage, typename TSerialization>
-	class NetworkProtocolLocalChannelClient : public NetworkProtocolChannelClient<TPackage, TSerialization>
+	class NetworkProtocolLocalChannelClient : public NetworkProtocolChannelClientBase<TPackage, TSerialization>
 	{
 		friend class NetworkProtocolChannelServer<TPackage, TSerialization>;
 
 	private:
-		using Base = NetworkProtocolChannelClient<TPackage, TSerialization>;
+		using Base = NetworkProtocolChannelClientBase<TPackage, TSerialization>;
 		using PackageList = typename TSerialization::SourceType;
 
 		NetworkProtocolChannelServer<TPackage, TSerialization>*		localServer = nullptr;
@@ -2468,17 +2421,7 @@ NetworkProtocolLocalChannelClient
 			CHECK_ERROR(server, L"NetworkProtocolLocalChannelClient::ConnectLocalServer needs a valid server.");
 			localServer = server;
 
-			bool connected = false;
-			SPIN_LOCK(this->lockStatus)
-			{
-				if (this->status == ClientStatus::Ready || this->status == ClientStatus::WaitingForServer)
-				{
-					this->clientId = assignedClientId;
-					this->status = ClientStatus::Connected;
-					connected = true;
-				}
-			}
-
+			bool connected = this->TrySetConnected(assignedClientId);
 			if (!connected)
 			{
 				localServer = nullptr;
@@ -2488,7 +2431,6 @@ NetworkProtocolLocalChannelClient
 
 		void NotifyLocalConnected()
 		{
-			this->eventWaitForServer.Signal();
 			this->NotifyConnected();
 		}
 
@@ -2504,7 +2446,7 @@ NetworkProtocolLocalChannelClient
 			{
 				return localServer->SendFromLocalClient(receiverClientId, this->GetClientId(), channelName, batch);
 			}
-			return Base::SendBatch(receiverClientId, channelName, batch);
+			return true;
 		}
 
 		void NotifyDisconnected() override
@@ -2521,22 +2463,6 @@ NetworkProtocolLocalChannelClient
 
 		void WaitForServer() override
 		{
-			auto currentStatus = this->GetStatus();
-			if (currentStatus == ClientStatus::Connected || currentStatus == ClientStatus::Disconnected)
-			{
-				this->NotifyConnected();
-				return;
-			}
-			if (currentStatus == ClientStatus::WaitingForServer)
-			{
-				this->eventWaitForServer.Wait();
-				this->NotifyConnected();
-				return;
-			}
-
-			this->SetStatus(ClientStatus::WaitingForServer);
-			this->eventWaitForServer.Wait();
-			this->NotifyConnected();
 		}
 
 		void BroadcastError(const WString& errorMessage) override
@@ -2546,7 +2472,8 @@ NetworkProtocolLocalChannelClient
 				localServer->BroadcastError(errorMessage);
 				return;
 			}
-			Base::BroadcastError(errorMessage);
+			this->OnError(errorMessage);
+			this->NotifyDisconnected();
 		}
 	};
 

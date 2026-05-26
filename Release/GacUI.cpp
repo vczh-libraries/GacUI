@@ -39041,7 +39041,12 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 
 	GuiRemoteProtocolAsyncJsonChannelRenderer::~GuiRemoteProtocolAsyncJsonChannelRenderer()
 	{
-		Initialize(nullptr);
+		SPIN_LOCK(lockMessages)
+		{
+			invokeInMainThread = nullptr;
+			queuedMessages.Clear();
+			uiTaskQueued = false;
+		}
 	}
 
 	const WString& GuiRemoteProtocolAsyncJsonChannelRenderer::GetChannelName()
