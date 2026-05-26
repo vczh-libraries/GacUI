@@ -3,16 +3,16 @@
   "frameName": "Ready",
   "windowSize": {
     "bounds": {
-      "x1": {"value": -160},
-      "y1": {"value": -120},
-      "x2": {"value": 160},
-      "y2": {"value": 120}
+      "x1": {"value": 352},
+      "y1": {"value": 264},
+      "x2": {"value": 672},
+      "y2": {"value": 504}
     },
     "clientBounds": {
-      "x1": {"value": -160},
-      "y1": {"value": -120},
-      "x2": {"value": 160},
-      "y2": {"value": 120}
+      "x1": {"value": 352},
+      "y1": {"value": 264},
+      "x2": {"value": 672},
+      "y2": {"value": 504}
     },
     "sizeState": "Restored",
     "customFramePadding": {

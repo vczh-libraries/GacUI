@@ -51,6 +51,7 @@ GuiRemoteController
 		SharedAsyncService								asyncService;
 		GuiRemoteGraphicsImageService					imageService;
 		bool											applicationRunning = false;
+		bool											controllerConnected = false;
 		bool											connectionForcedToStop = false;
 		bool											connectionStopped = false;
 
@@ -91,6 +92,7 @@ GuiRemoteController
 		bool							IsKeyPressing(VKEY code) override;
 		bool							IsKeyToggled(VKEY code) override;
 		void							EnsureKeyInitialized();
+		void							EnsureControllerConnected();
 		WString							GetKeyName(VKEY code) override;
 		VKEY							GetKey(const WString& name) override;
 		void							UpdateGlobalShortcutKey();

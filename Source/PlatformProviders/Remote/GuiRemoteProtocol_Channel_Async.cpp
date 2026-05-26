@@ -26,6 +26,12 @@ GuiRemoteProtocolJsonChannelRenderer_Async
 
 	void GuiRemoteProtocolJsonChannelRenderer_Async::ScheduleProcessRemoteEvents()
 	{
+		auto app = GetApplication();
+		if (!app)
+		{
+			return;
+		}
+
 		bool shouldQueue = false;
 		SPIN_LOCK(lockEvents)
 		{
@@ -38,13 +44,10 @@ GuiRemoteProtocolJsonChannelRenderer_Async
 
 		if (shouldQueue)
 		{
-			if (auto app = GetApplication())
+			app->InvokeInMainThread(app->GetMainWindow(), [this]()
 			{
-				app->InvokeInMainThread(app->GetMainWindow(), [this]()
-				{
-					ProcessChannelEvents();
-				});
-			}
+				ProcessChannelEvents();
+			});
 		}
 	}
 
@@ -57,21 +60,45 @@ GuiRemoteProtocolJsonChannelRenderer_Async
 			uiTaskQueued = false;
 		}
 
+		auto processEvent = [this](const ReceivedPackage& eventPackage)
+		{
+			reader->OnRead(eventPackage.senderClientId, eventPackage.package);
+		};
+
 		for (auto&& eventPackage : events)
 		{
 			ChannelPackageInfo info;
 			Ptr<glr::json::JsonNode> jsonArguments;
 			JsonChannelUnpack(eventPackage.package, info, jsonArguments);
 
-			if (info.name == L"ControllerConnect")
+			vint currentConnectionClientId = -1;
+			SPIN_LOCK(lockConnection)
 			{
-				SPIN_LOCK(lockConnection)
-				{
-					connectionCounter++;
-					connectionAvailable = true;
-				}
+				currentConnectionClientId = connectionClientId;
 			}
-			reader->OnRead(eventPackage.senderClientId, eventPackage.package);
+
+			if (info.name == L"ControllerConnect" && eventPackage.senderClientId == currentConnectionClientId)
+			{
+				processEvent(eventPackage);
+			}
+		}
+
+		for (auto&& eventPackage : events)
+		{
+			ChannelPackageInfo info;
+			Ptr<glr::json::JsonNode> jsonArguments;
+			JsonChannelUnpack(eventPackage.package, info, jsonArguments);
+
+			vint currentConnectionClientId = -1;
+			SPIN_LOCK(lockConnection)
+			{
+				currentConnectionClientId = connectionClientId;
+			}
+
+			if (info.name != L"ControllerConnect" && eventPackage.senderClientId == currentConnectionClientId)
+			{
+				processEvent(eventPackage);
+			}
 		}
 	}
 
@@ -95,6 +122,24 @@ GuiRemoteProtocolJsonChannelRenderer_Async
 		{
 		case ChannelPackageSemantic::Event:
 			{
+				if (info.name == L"ControllerConnect")
+				{
+					SPIN_LOCK(lockConnection)
+					{
+						connectionCounter++;
+						connectionClientId = senderClientId;
+						connectionAvailable = true;
+					}
+
+					SPIN_LOCK(lockResponses)
+					{
+						if (pendingRequest)
+						{
+							eventAutoResponses.Signal();
+						}
+					}
+				}
+
 				ReceivedPackage receivedPackage;
 				receivedPackage.senderClientId = senderClientId;
 				receivedPackage.package = package;

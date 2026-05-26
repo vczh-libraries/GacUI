@@ -39,6 +39,7 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 		struct ReceivedPackage
 		{
 			vint											senderClientId = -1;
+			vint											messageVersion = -1;
 			JsonPackage										package;
 		};
 
@@ -49,6 +50,8 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 		SpinLock											lockMessages;
 		IGuiRemoteProtocolAsyncRendererInvoker*			invokeInMainThread = nullptr;
 		collections::List<ReceivedPackage>					queuedMessages;
+		vint												messageVersion = 0;
+		bool												channelInitialized = false;
 		bool												uiTaskQueued = false;
 
 		void												ScheduleProcessRemoteMessages();

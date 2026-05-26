@@ -64,6 +64,7 @@ GuiRemoteWindow
 		void							Opened();
 		void							SetActivated(bool activated);
 		void							ShowWithSizeState(bool activate, INativeWindow::WindowSizeState sizeState);
+		void							SubmitStateAfterControllerConnect();
 
 		// =============================================================
 		// Events

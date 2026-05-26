@@ -33,9 +33,20 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 	{
 		while (true)
 		{
+			IJsonChannelReader* currentReader = nullptr;
+			vint currentMessageVersion = -1;
 			List<ReceivedPackage> messages;
 			SPIN_LOCK(lockMessages)
 			{
+				currentReader = reader;
+				currentMessageVersion = messageVersion;
+				if (!currentReader)
+				{
+					queuedMessages.Clear();
+					uiTaskQueued = false;
+					return;
+				}
+
 				messages = std::move(queuedMessages);
 				if (messages.Count() == 0)
 				{
@@ -46,7 +57,16 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 
 			for (auto&& message : messages)
 			{
-				reader->OnRead(message.senderClientId, message.package);
+				bool shouldProcess = false;
+				SPIN_LOCK(lockMessages)
+				{
+					shouldProcess = reader == currentReader && message.messageVersion == currentMessageVersion;
+				}
+
+				if (shouldProcess)
+				{
+					currentReader->OnRead(message.senderClientId, message.package);
+				}
 			}
 		}
 	}
@@ -58,6 +78,11 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 		receivedPackage.package = package;
 		SPIN_LOCK(lockMessages)
 		{
+			if (!reader)
+			{
+				return;
+			}
+			receivedPackage.messageVersion = messageVersion;
 			queuedMessages.Add(std::move(receivedPackage));
 		}
 		ScheduleProcessRemoteMessages();
@@ -90,8 +115,26 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 
 	void GuiRemoteProtocolAsyncJsonChannelRenderer::Initialize(IJsonChannelReader* _reader)
 	{
-		reader = _reader;
-		channel->Initialize(_reader ? this : nullptr);
+		bool initializeChannel = false;
+		SPIN_LOCK(lockMessages)
+		{
+			reader = _reader;
+			if (reader && !channelInitialized)
+			{
+				channelInitialized = true;
+				initializeChannel = true;
+			}
+			if (!reader)
+			{
+				messageVersion++;
+				queuedMessages.Clear();
+				uiTaskQueued = false;
+			}
+		}
+		if (initializeChannel)
+		{
+			channel->Initialize(this);
+		}
 	}
 
 	void GuiRemoteProtocolAsyncJsonChannelRenderer::SendToClient(vint senderClientId, vint receiverClientId, const JsonPackage& package)

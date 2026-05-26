@@ -178,6 +178,16 @@ GuiRemoteController::INativeInputService
 		return true;
 	}
 
+	void GuiRemoteController::EnsureControllerConnected()
+	{
+		if (!controllerConnected && !connectionStopped)
+		{
+			bool disconnected = false;
+			remoteMessages.Submit(disconnected);
+			RunOneCycle();
+		}
+	}
+
 /***********************************************************************
 GuiRemoteController::INativeScreenService
 ***********************************************************************/
@@ -204,11 +214,13 @@ GuiHostedController::INativeScreen
 
 	NativeRect GuiRemoteController::GetBounds()
 	{
+		EnsureControllerConnected();
 		return remoteScreenConfig.bounds;
 	}
 
 	NativeRect GuiRemoteController::GetClientBounds()
 	{
+		EnsureControllerConnected();
 		return remoteScreenConfig.clientBounds;
 	}
 
@@ -224,11 +236,13 @@ GuiHostedController::INativeScreen
 
 	double GuiRemoteController::GetScalingX()
 	{
+		EnsureControllerConnected();
 		return remoteScreenConfig.scalingX;
 	}
 
 	double GuiRemoteController::GetScalingY()
 	{
+		EnsureControllerConnected();
 		return remoteScreenConfig.scalingY;
 	}
 
@@ -281,6 +295,10 @@ GuiRemoteController::INativeWindowService
 	{
 		CHECK_ERROR(window == &remoteWindow, L"vl::presentation::GuiRemoteController::Run(INativeWindow*)#GuiHostedController should call this function with the native window.");
 		applicationRunning = true;
+		if (controllerConnected)
+		{
+			remoteWindow.SubmitStateAfterControllerConnect();
+		}
 		window->Show();
 		while (RunOneCycle());
 		asyncService.ExecuteAsyncTasks();
@@ -312,6 +330,7 @@ GuiRemoteController (events)
 
 	void GuiRemoteController::OnControllerConnect(const remoteprotocol::ControllerGlobalConfig& _globalConfig)
 	{
+		controllerConnected = true;
 		remoteGlobalConfig = _globalConfig;
 		UpdateGlobalShortcutKey();
 		vint idGetFontConfig = remoteMessages.RequestControllerGetFontConfig();
@@ -329,6 +348,7 @@ GuiRemoteController (events)
 
 	void GuiRemoteController::OnControllerDisconnect()
 	{
+		controllerConnected = false;
 		remoteWindow.OnControllerDisconnect();
 		imageService.OnControllerDisconnect();
 		resourceManager->OnControllerDisconnect();

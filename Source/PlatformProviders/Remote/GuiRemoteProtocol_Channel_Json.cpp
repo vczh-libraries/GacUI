@@ -297,7 +297,6 @@ GuiRemoteProtocolCoreChannel
 		ChannelPackageInfo info;
 		Ptr<glr::json::JsonNode> jsonArguments;
 		JsonChannelUnpack(package, info, jsonArguments);
-		BeforeOnRead(info);
 
 		if (info.semantic == ChannelPackageSemantic::Event)
 		{
@@ -309,7 +308,12 @@ GuiRemoteProtocolCoreChannel
 			{
 				SetRendererClientId(-1);
 			}
+			else if (GetRendererClientId() != senderClientId)
+			{
+				return;
+			}
 
+			BeforeOnRead(info);
 			vint index = onReadEventHandlers.Keys().IndexOf(info.name);
 			if (index == -1)
 			{
@@ -322,6 +326,12 @@ GuiRemoteProtocolCoreChannel
 		}
 		else if (info.semantic == ChannelPackageSemantic::Response)
 		{
+			if (GetRendererClientId() != senderClientId)
+			{
+				return;
+			}
+
+			BeforeOnRead(info);
 			vint index = onReadResponseHandlers.Keys().IndexOf(info.name);
 			if (index == -1)
 			{
@@ -451,6 +461,14 @@ GuiRemoteProtocolCoreChannel
 	IGuiRemoteEventProcessor* GuiRemoteProtocolCoreChannel::GetRemoteEventProcessor()
 	{
 		return eventProcessor;
+	}
+
+	void GuiRemoteProtocolCoreChannel::DetachRenderer(vint clientId)
+	{
+		if (GetRendererClientId() == clientId)
+		{
+			SetRendererClientId(-1);
+		}
 	}
 
 /***********************************************************************

@@ -64,6 +64,7 @@ GuiRemoteProtocolJsonChannelRenderer_Async
 
 		SpinLock											lockConnection;
 		vint												connectionCounter = 0;
+		vint												connectionClientId = -1;
 		bool												connectionAvailable = false;
 
 		bool												AreCurrentPendingRequestGroupSatisfied(bool disconnected);

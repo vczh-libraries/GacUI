@@ -1023,7 +1023,6 @@ ITEM(APOSTROPHE,			L"'")\
 }
 
 #endif
-
 /***********************************************************************
 .\CONTROLS\LISTCONTROLPACKAGE\DATASOURCE_IITEMPROVIDER.H
 ***********************************************************************/
@@ -22823,8 +22822,9 @@ GuiRemoteProtocolCoreChannel
 		IGuiRemoteProtocolEvents*					events = nullptr;
 		IGuiRemoteEventProcessor*					eventProcessor = nullptr;
 		WString										executablePath;
-		SpinLock									lockRendererClientId;
-		vint										rendererClientId = -1;
+		atomic_vint									rendererClientId = -1;
+		SpinLock									lockPackagesBeforeRenderer;
+		collections::List<JsonPackage>				packagesBeforeRenderer;
 
 		using OnReadEventHandler = void (GuiRemoteProtocolCoreChannel::*)(Ptr<glr::json::JsonNode>);
 		using OnReadEventHandlerMap = collections::Dictionary<WString, OnReadEventHandler>;
@@ -22879,6 +22879,7 @@ GuiRemoteProtocolCoreChannel
 		WString											GetExecutablePath() override;
 		void											Submit(bool& disconnected) override;
 		IGuiRemoteEventProcessor*						GetRemoteEventProcessor() override;
+		void											DetachRenderer(vint clientId);
 	};
 
 /***********************************************************************
@@ -22956,7 +22957,7 @@ Developer: Zihan Chen(vczh)
 GacUI::Remote Window
 
 Interfaces:
-  GuiRemoteProtocolAsyncJsonChannelSerializer
+  GuiRemoteProtocolJsonChannelRenderer_Async
 
 ***********************************************************************/
 
@@ -22968,10 +22969,10 @@ namespace vl::presentation::remoteprotocol::channeling
 {
 
 /***********************************************************************
-GuiRemoteProtocolAsyncJsonChannelSerializer
+GuiRemoteProtocolJsonChannelRenderer_Async
 ***********************************************************************/
 
-	class GuiRemoteProtocolAsyncJsonChannelSerializer
+	class GuiRemoteProtocolJsonChannelRenderer_Async
 		: public Object
 		, public virtual IJsonChannel
 		, protected virtual IJsonChannelReader
@@ -23015,6 +23016,7 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 
 		SpinLock											lockConnection;
 		vint												connectionCounter = 0;
+		vint												connectionClientId = -1;
 		bool												connectionAvailable = false;
 
 		bool												AreCurrentPendingRequestGroupSatisfied(bool disconnected);
@@ -23025,8 +23027,8 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 		void												OnRead(vint senderClientId, const JsonPackage& package) override;
 
 	public:
-		GuiRemoteProtocolAsyncJsonChannelSerializer(IJsonChannel* _channel, IGuiRemoteEventProcessor* _remoteEventProcessor = nullptr);
-		~GuiRemoteProtocolAsyncJsonChannelSerializer();
+		GuiRemoteProtocolJsonChannelRenderer_Async(IJsonChannel* _channel, IGuiRemoteEventProcessor* _remoteEventProcessor = nullptr);
+		~GuiRemoteProtocolJsonChannelRenderer_Async();
 
 		const WString&										GetChannelName() override;
 		IJsonChannelReader*								GetReader() override;
@@ -23085,6 +23087,7 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 		struct ReceivedPackage
 		{
 			vint											senderClientId = -1;
+			vint											messageVersion = -1;
 			JsonPackage										package;
 		};
 
@@ -23095,6 +23098,8 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 		SpinLock											lockMessages;
 		IGuiRemoteProtocolAsyncRendererInvoker*			invokeInMainThread = nullptr;
 		collections::List<ReceivedPackage>					queuedMessages;
+		vint												messageVersion = 0;
+		bool												channelInitialized = false;
 		bool												uiTaskQueued = false;
 
 		void												ScheduleProcessRemoteMessages();
@@ -28571,6 +28576,7 @@ GuiRemoteWindow
 		void							Opened();
 		void							SetActivated(bool activated);
 		void							ShowWithSizeState(bool activate, INativeWindow::WindowSizeState sizeState);
+		void							SubmitStateAfterControllerConnect();
 
 		// =============================================================
 		// Events
@@ -28665,6 +28671,7 @@ GuiRemoteWindow
 
 #endif
 
+
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\GUIREMOTECONTROLLER.H
 ***********************************************************************/
@@ -28717,6 +28724,7 @@ GuiRemoteController
 		SharedAsyncService								asyncService;
 		GuiRemoteGraphicsImageService					imageService;
 		bool											applicationRunning = false;
+		bool											controllerConnected = false;
 		bool											connectionForcedToStop = false;
 		bool											connectionStopped = false;
 
@@ -28757,6 +28765,7 @@ GuiRemoteController
 		bool							IsKeyPressing(VKEY code) override;
 		bool							IsKeyToggled(VKEY code) override;
 		void							EnsureKeyInitialized();
+		void							EnsureControllerConnected();
 		WString							GetKeyName(VKEY code) override;
 		VKEY							GetKey(const WString& name) override;
 		void							UpdateGlobalShortcutKey();

@@ -35295,6 +35295,16 @@ GuiRemoteController::INativeInputService
 		return true;
 	}
 
+	void GuiRemoteController::EnsureControllerConnected()
+	{
+		if (!controllerConnected && !connectionStopped)
+		{
+			bool disconnected = false;
+			remoteMessages.Submit(disconnected);
+			RunOneCycle();
+		}
+	}
+
 /***********************************************************************
 GuiRemoteController::INativeScreenService
 ***********************************************************************/
@@ -35321,11 +35331,13 @@ GuiHostedController::INativeScreen
 
 	NativeRect GuiRemoteController::GetBounds()
 	{
+		EnsureControllerConnected();
 		return remoteScreenConfig.bounds;
 	}
 
 	NativeRect GuiRemoteController::GetClientBounds()
 	{
+		EnsureControllerConnected();
 		return remoteScreenConfig.clientBounds;
 	}
 
@@ -35341,11 +35353,13 @@ GuiHostedController::INativeScreen
 
 	double GuiRemoteController::GetScalingX()
 	{
+		EnsureControllerConnected();
 		return remoteScreenConfig.scalingX;
 	}
 
 	double GuiRemoteController::GetScalingY()
 	{
+		EnsureControllerConnected();
 		return remoteScreenConfig.scalingY;
 	}
 
@@ -35398,6 +35412,10 @@ GuiRemoteController::INativeWindowService
 	{
 		CHECK_ERROR(window == &remoteWindow, L"vl::presentation::GuiRemoteController::Run(INativeWindow*)#GuiHostedController should call this function with the native window.");
 		applicationRunning = true;
+		if (controllerConnected)
+		{
+			remoteWindow.SubmitStateAfterControllerConnect();
+		}
 		window->Show();
 		while (RunOneCycle());
 		asyncService.ExecuteAsyncTasks();
@@ -35429,6 +35447,7 @@ GuiRemoteController (events)
 
 	void GuiRemoteController::OnControllerConnect(const remoteprotocol::ControllerGlobalConfig& _globalConfig)
 	{
+		controllerConnected = true;
 		remoteGlobalConfig = _globalConfig;
 		UpdateGlobalShortcutKey();
 		vint idGetFontConfig = remoteMessages.RequestControllerGetFontConfig();
@@ -35446,6 +35465,7 @@ GuiRemoteController (events)
 
 	void GuiRemoteController::OnControllerDisconnect()
 	{
+		controllerConnected = false;
 		remoteWindow.OnControllerDisconnect();
 		imageService.OnControllerDisconnect();
 		resourceManager->OnControllerDisconnect();
@@ -35568,6 +35588,7 @@ GuiRemoteController (INativeController)
 	}
 }
 
+
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\GUIREMOTECONTROLLERSETUP.CPP
 ***********************************************************************/
@@ -35607,6 +35628,7 @@ int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol)
 	SetNativeController(nullptr);
 	return 0;
 }
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\GUIREMOTEEVENTS.CPP
@@ -38686,10 +38708,10 @@ namespace vl::presentation::remoteprotocol::channeling
 	using namespace vl::presentation::controls;
 
 /***********************************************************************
-GuiRemoteProtocolAsyncJsonChannelSerializer
+GuiRemoteProtocolJsonChannelRenderer_Async
 ***********************************************************************/
 
-	bool GuiRemoteProtocolAsyncJsonChannelSerializer::AreCurrentPendingRequestGroupSatisfied(bool disconnected)
+	bool GuiRemoteProtocolJsonChannelRenderer_Async::AreCurrentPendingRequestGroupSatisfied(bool disconnected)
 	{
 		if (!pendingRequest) return false;
 		if (disconnected) return true;
@@ -38703,8 +38725,14 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 		return true;
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelSerializer::ScheduleProcessRemoteEvents()
+	void GuiRemoteProtocolJsonChannelRenderer_Async::ScheduleProcessRemoteEvents()
 	{
+		auto app = GetApplication();
+		if (!app)
+		{
+			return;
+		}
+
 		bool shouldQueue = false;
 		SPIN_LOCK(lockEvents)
 		{
@@ -38717,17 +38745,14 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 
 		if (shouldQueue)
 		{
-			if (auto app = GetApplication())
+			app->InvokeInMainThread(app->GetMainWindow(), [this]()
 			{
-				app->InvokeInMainThread(app->GetMainWindow(), [this]()
-				{
-					ProcessChannelEvents();
-				});
-			}
+				ProcessChannelEvents();
+			});
 		}
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelSerializer::ProcessChannelEvents()
+	void GuiRemoteProtocolJsonChannelRenderer_Async::ProcessChannelEvents()
 	{
 		List<ReceivedPackage> events;
 		SPIN_LOCK(lockEvents)
@@ -38736,25 +38761,49 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 			uiTaskQueued = false;
 		}
 
+		auto processEvent = [this](const ReceivedPackage& eventPackage)
+		{
+			reader->OnRead(eventPackage.senderClientId, eventPackage.package);
+		};
+
 		for (auto&& eventPackage : events)
 		{
 			ChannelPackageInfo info;
 			Ptr<glr::json::JsonNode> jsonArguments;
 			JsonChannelUnpack(eventPackage.package, info, jsonArguments);
 
-			if (info.name == L"ControllerConnect")
+			vint currentConnectionClientId = -1;
+			SPIN_LOCK(lockConnection)
 			{
-				SPIN_LOCK(lockConnection)
-				{
-					connectionCounter++;
-					connectionAvailable = true;
-				}
+				currentConnectionClientId = connectionClientId;
 			}
-			reader->OnRead(eventPackage.senderClientId, eventPackage.package);
+
+			if (info.name == L"ControllerConnect" && eventPackage.senderClientId == currentConnectionClientId)
+			{
+				processEvent(eventPackage);
+			}
+		}
+
+		for (auto&& eventPackage : events)
+		{
+			ChannelPackageInfo info;
+			Ptr<glr::json::JsonNode> jsonArguments;
+			JsonChannelUnpack(eventPackage.package, info, jsonArguments);
+
+			vint currentConnectionClientId = -1;
+			SPIN_LOCK(lockConnection)
+			{
+				currentConnectionClientId = connectionClientId;
+			}
+
+			if (info.name != L"ControllerConnect" && eventPackage.senderClientId == currentConnectionClientId)
+			{
+				processEvent(eventPackage);
+			}
 		}
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelSerializer::ProcessRemoteEvents()
+	void GuiRemoteProtocolJsonChannelRenderer_Async::ProcessRemoteEvents()
 	{
 		if (remoteEventProcessor)
 		{
@@ -38763,9 +38812,9 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 		ProcessChannelEvents();
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelSerializer::OnRead(vint senderClientId, const JsonPackage& package)
+	void GuiRemoteProtocolJsonChannelRenderer_Async::OnRead(vint senderClientId, const JsonPackage& package)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::OnRead(vint, const JsonPackage&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolJsonChannelRenderer_Async::OnRead(vint, const JsonPackage&)#"
 		ChannelPackageInfo info;
 		Ptr<glr::json::JsonNode> jsonArguments;
 		JsonChannelUnpack(package, info, jsonArguments);
@@ -38774,6 +38823,24 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 		{
 		case ChannelPackageSemantic::Event:
 			{
+				if (info.name == L"ControllerConnect")
+				{
+					SPIN_LOCK(lockConnection)
+					{
+						connectionCounter++;
+						connectionClientId = senderClientId;
+						connectionAvailable = true;
+					}
+
+					SPIN_LOCK(lockResponses)
+					{
+						if (pendingRequest)
+						{
+							eventAutoResponses.Signal();
+						}
+					}
+				}
+
 				ReceivedPackage receivedPackage;
 				receivedPackage.senderClientId = senderClientId;
 				receivedPackage.package = package;
@@ -38805,33 +38872,33 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	GuiRemoteProtocolAsyncJsonChannelSerializer::GuiRemoteProtocolAsyncJsonChannelSerializer(IJsonChannel* _channel, IGuiRemoteEventProcessor* _remoteEventProcessor)
+	GuiRemoteProtocolJsonChannelRenderer_Async::GuiRemoteProtocolJsonChannelRenderer_Async(IJsonChannel* _channel, IGuiRemoteEventProcessor* _remoteEventProcessor)
 		: channel(_channel)
 		, remoteEventProcessor(_remoteEventProcessor)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::GuiRemoteProtocolAsyncJsonChannelSerializer(IJsonChannel*, IGuiRemoteEventProcessor*)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolJsonChannelRenderer_Async::GuiRemoteProtocolJsonChannelRenderer_Async(IJsonChannel*, IGuiRemoteEventProcessor*)#"
 		CHECK_ERROR(channel, ERROR_MESSAGE_PREFIX L"A valid channel is required.");
 		CHECK_ERROR(eventAutoResponses.CreateAutoUnsignal(false), ERROR_MESSAGE_PREFIX L"Failed to initialize eventAutoResponses.");
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	GuiRemoteProtocolAsyncJsonChannelSerializer::~GuiRemoteProtocolAsyncJsonChannelSerializer()
+	GuiRemoteProtocolJsonChannelRenderer_Async::~GuiRemoteProtocolJsonChannelRenderer_Async()
 	{
 	}
 
-	const WString& GuiRemoteProtocolAsyncJsonChannelSerializer::GetChannelName()
+	const WString& GuiRemoteProtocolJsonChannelRenderer_Async::GetChannelName()
 	{
 		return channel->GetChannelName();
 	}
 
-	IJsonChannelReader* GuiRemoteProtocolAsyncJsonChannelSerializer::GetReader()
+	IJsonChannelReader* GuiRemoteProtocolJsonChannelRenderer_Async::GetReader()
 	{
 		return reader;
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelSerializer::Initialize(IJsonChannelReader* _reader)
+	void GuiRemoteProtocolJsonChannelRenderer_Async::Initialize(IJsonChannelReader* _reader)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::Initialize(IJsonChannelReader*)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolJsonChannelRenderer_Async::Initialize(IJsonChannelReader*)#"
 		CHECK_ERROR(_reader, ERROR_MESSAGE_PREFIX L"A valid reader is required.");
 		CHECK_ERROR(!reader, ERROR_MESSAGE_PREFIX L"The async channel cannot be initialized more than once.");
 		reader = _reader;
@@ -38839,7 +38906,7 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelSerializer::SendToClient(vint senderClientId, vint receiverClientId, const JsonPackage& package)
+	void GuiRemoteProtocolJsonChannelRenderer_Async::SendToClient(vint senderClientId, vint receiverClientId, const JsonPackage& package)
 	{
 		QueuedPackage queuedPackage;
 		queuedPackage.senderClientId = senderClientId;
@@ -38852,7 +38919,7 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 		}
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelSerializer::BroadcastFromClient(vint senderClientId, const JsonPackage& package)
+	void GuiRemoteProtocolJsonChannelRenderer_Async::BroadcastFromClient(vint senderClientId, const JsonPackage& package)
 	{
 		QueuedPackage queuedPackage;
 		queuedPackage.senderClientId = senderClientId;
@@ -38864,9 +38931,9 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 		}
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelSerializer::BatchWrite(bool& disconnected)
+	void GuiRemoteProtocolJsonChannelRenderer_Async::BatchWrite(bool& disconnected)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::BatchWrite(bool&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolJsonChannelRenderer_Async::BatchWrite(bool&)#"
 		disconnected = false;
 
 		List<QueuedPackage> packages;
@@ -38960,7 +39027,7 @@ GuiRemoteProtocolAsyncJsonChannelSerializer
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	IGuiRemoteEventProcessor* GuiRemoteProtocolAsyncJsonChannelSerializer::GetRemoteEventProcessor()
+	IGuiRemoteEventProcessor* GuiRemoteProtocolJsonChannelRenderer_Async::GetRemoteEventProcessor()
 	{
 		return this;
 	}
@@ -39004,9 +39071,20 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 	{
 		while (true)
 		{
+			IJsonChannelReader* currentReader = nullptr;
+			vint currentMessageVersion = -1;
 			List<ReceivedPackage> messages;
 			SPIN_LOCK(lockMessages)
 			{
+				currentReader = reader;
+				currentMessageVersion = messageVersion;
+				if (!currentReader)
+				{
+					queuedMessages.Clear();
+					uiTaskQueued = false;
+					return;
+				}
+
 				messages = std::move(queuedMessages);
 				if (messages.Count() == 0)
 				{
@@ -39017,7 +39095,16 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 
 			for (auto&& message : messages)
 			{
-				reader->OnRead(message.senderClientId, message.package);
+				bool shouldProcess = false;
+				SPIN_LOCK(lockMessages)
+				{
+					shouldProcess = reader == currentReader && message.messageVersion == currentMessageVersion;
+				}
+
+				if (shouldProcess)
+				{
+					currentReader->OnRead(message.senderClientId, message.package);
+				}
 			}
 		}
 	}
@@ -39029,6 +39116,11 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 		receivedPackage.package = package;
 		SPIN_LOCK(lockMessages)
 		{
+			if (!reader)
+			{
+				return;
+			}
+			receivedPackage.messageVersion = messageVersion;
 			queuedMessages.Add(std::move(receivedPackage));
 		}
 		ScheduleProcessRemoteMessages();
@@ -39061,8 +39153,26 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 
 	void GuiRemoteProtocolAsyncJsonChannelRenderer::Initialize(IJsonChannelReader* _reader)
 	{
-		reader = _reader;
-		channel->Initialize(_reader ? this : nullptr);
+		bool initializeChannel = false;
+		SPIN_LOCK(lockMessages)
+		{
+			reader = _reader;
+			if (reader && !channelInitialized)
+			{
+				channelInitialized = true;
+				initializeChannel = true;
+			}
+			if (!reader)
+			{
+				messageVersion++;
+				queuedMessages.Clear();
+				uiTaskQueued = false;
+			}
+		}
+		if (initializeChannel)
+		{
+			channel->Initialize(this);
+		}
 	}
 
 	void GuiRemoteProtocolAsyncJsonChannelRenderer::SendToClient(vint senderClientId, vint receiverClientId, const JsonPackage& package)
@@ -39353,30 +39463,35 @@ GuiRemoteProtocolCoreChannel
 		auto receiverClientId = GetRendererClientId();
 		if (receiverClientId == -1)
 		{
-			channel->BroadcastFromClient(client->GetClientId(), package);
+			SPIN_LOCK(lockPackagesBeforeRenderer)
+			{
+				packagesBeforeRenderer.Add(package);
+			}
 		}
 		else
 		{
+			List<JsonPackage> packages;
+			SPIN_LOCK(lockPackagesBeforeRenderer)
+			{
+				packages = std::move(packagesBeforeRenderer);
+			}
+
+			for (auto&& pendingPackage : packages)
+			{
+				channel->SendToClient(client->GetClientId(), receiverClientId, pendingPackage);
+			}
 			channel->SendToClient(client->GetClientId(), receiverClientId, package);
 		}
 	}
 
 	void GuiRemoteProtocolCoreChannel::SetRendererClientId(vint clientId)
 	{
-		SPIN_LOCK(lockRendererClientId)
-		{
-			rendererClientId = clientId;
-		}
+		rendererClientId.store(clientId);
 	}
 
 	vint GuiRemoteProtocolCoreChannel::GetRendererClientId()
 	{
-		vint clientId = -1;
-		SPIN_LOCK(lockRendererClientId)
-		{
-			clientId = rendererClientId;
-		}
-		return clientId;
+		return rendererClientId.load();
 	}
 
 	void GuiRemoteProtocolCoreChannel::OnRead(vint senderClientId, const JsonPackage& package)
@@ -39387,7 +39502,6 @@ GuiRemoteProtocolCoreChannel
 		ChannelPackageInfo info;
 		Ptr<glr::json::JsonNode> jsonArguments;
 		JsonChannelUnpack(package, info, jsonArguments);
-		BeforeOnRead(info);
 
 		if (info.semantic == ChannelPackageSemantic::Event)
 		{
@@ -39399,7 +39513,12 @@ GuiRemoteProtocolCoreChannel
 			{
 				SetRendererClientId(-1);
 			}
+			else if (GetRendererClientId() != senderClientId)
+			{
+				return;
+			}
 
+			BeforeOnRead(info);
 			vint index = onReadEventHandlers.Keys().IndexOf(info.name);
 			if (index == -1)
 			{
@@ -39412,6 +39531,12 @@ GuiRemoteProtocolCoreChannel
 		}
 		else if (info.semantic == ChannelPackageSemantic::Response)
 		{
+			if (GetRendererClientId() != senderClientId)
+			{
+				return;
+			}
+
+			BeforeOnRead(info);
 			vint index = onReadResponseHandlers.Keys().IndexOf(info.name);
 			if (index == -1)
 			{
@@ -39518,12 +39643,37 @@ GuiRemoteProtocolCoreChannel
 	
 	void GuiRemoteProtocolCoreChannel::Submit(bool& disconnected)
 	{
+		auto receiverClientId = GetRendererClientId();
+		List<JsonPackage> packages;
+		SPIN_LOCK(lockPackagesBeforeRenderer)
+		{
+			packages = std::move(packagesBeforeRenderer);
+		}
+
+		if (receiverClientId == -1)
+		{
+			disconnected = false;
+			return;
+		}
+
+		for (auto&& package : packages)
+		{
+			channel->SendToClient(client->GetClientId(), receiverClientId, package);
+		}
 		channel->BatchWrite(disconnected);
 	}
 
 	IGuiRemoteEventProcessor* GuiRemoteProtocolCoreChannel::GetRemoteEventProcessor()
 	{
 		return eventProcessor;
+	}
+
+	void GuiRemoteProtocolCoreChannel::DetachRenderer(vint clientId)
+	{
+		if (GetRendererClientId() == clientId)
+		{
+			SetRendererClientId(-1);
+		}
 	}
 
 /***********************************************************************
@@ -40345,6 +40495,7 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::RequestGetBounds()
 	{
+		remote->EnsureControllerConnected();
 		vint idGetBounds = remoteMessages.RequestWindowGetBounds();
 		bool disconnected = false;
 		remoteMessages.Submit(disconnected);
@@ -40382,6 +40533,7 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::ShowWithSizeState(bool activate, INativeWindow::WindowSizeState sizeState)
 	{
+		remote->EnsureControllerConnected();
 		if (!statusVisible || remoteWindowSizingConfig.sizeState != sizeState)
 		{
 			remoteprotocol::WindowShowing windowShowing;
@@ -40400,6 +40552,36 @@ GuiRemoteWindow
 		{
 			SetActivate();
 		}
+	}
+
+	void GuiRemoteWindow::SubmitStateAfterControllerConnect()
+	{
+		if (suggestedMinClientSize != NativeSize{ {0},{0} })
+		{
+			remoteMessages.RequestWindowNotifyMinSize(suggestedMinClientSize);
+		}
+		remoteMessages.RequestWindowNotifySetTitle(styleTitle);
+		remoteMessages.RequestWindowNotifySetEnabled(styleEnabled);
+		remoteMessages.RequestWindowNotifySetTopMost(styleTopMost);
+		remoteMessages.RequestWindowNotifySetShowInTaskBar(styleShowInTaskBar);
+		remoteMessages.RequestWindowNotifySetCustomFrameMode(styleCustomFrameMode);
+		remoteMessages.RequestWindowNotifySetMaximizedBox(styleMaximizedBox);
+		remoteMessages.RequestWindowNotifySetMinimizedBox(styleMinimizedBox);
+		remoteMessages.RequestWindowNotifySetBorder(styleBorder);
+		remoteMessages.RequestWindowNotifySetSizeBox(styleSizeBox);
+		remoteMessages.RequestWindowNotifySetIconVisible(styleIconVisible);
+		remoteMessages.RequestWindowNotifySetTitleBar(styleTitleBar);
+		if (statusCapturing)
+		{
+			remoteMessages.RequestIORequireCapture();
+		}
+		else
+		{
+			remoteMessages.RequestIOReleaseCapture();
+		}
+		bool disconnected = false;
+		remoteMessages.Submit(disconnected);
+		// there is no result from these requests, assuming succeeded
 	}
 
 /***********************************************************************
@@ -40428,32 +40610,7 @@ GuiRemoteWindow (events)
 
 		if (remote->applicationRunning)
 		{
-			if (suggestedMinClientSize != NativeSize{ {0},{0} })
-			{
-				remoteMessages.RequestWindowNotifyMinSize(suggestedMinClientSize);
-			}
-			remoteMessages.RequestWindowNotifySetTitle(styleTitle);
-			remoteMessages.RequestWindowNotifySetEnabled(styleEnabled);
-			remoteMessages.RequestWindowNotifySetTopMost(styleTopMost);
-			remoteMessages.RequestWindowNotifySetShowInTaskBar(styleShowInTaskBar);
-			remoteMessages.RequestWindowNotifySetCustomFrameMode(styleCustomFrameMode);
-			remoteMessages.RequestWindowNotifySetMaximizedBox(styleMaximizedBox);
-			remoteMessages.RequestWindowNotifySetMinimizedBox(styleMinimizedBox);
-			remoteMessages.RequestWindowNotifySetBorder(styleBorder);
-			remoteMessages.RequestWindowNotifySetSizeBox(styleSizeBox);
-			remoteMessages.RequestWindowNotifySetIconVisible(styleIconVisible);
-			remoteMessages.RequestWindowNotifySetTitleBar(styleTitleBar);
-			if (statusCapturing)
-			{
-				remoteMessages.RequestIORequireCapture();
-			}
-			else
-			{
-				remoteMessages.RequestIOReleaseCapture();
-			}
-			bool disconnected = false;
-			remoteMessages.Submit(disconnected);
-			// there is no result from this request, assuming succeeded
+			SubmitStateAfterControllerConnect();
 		}
 	}
 
@@ -40981,6 +41138,7 @@ GuiRemoteWindow (INativeWindow)
 #undef SET_REMOTE_WINDOW_STYLE_INVALIDATE
 #undef SET_REMOTE_WINDOW_STYLE
 }
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\PROTOCOL\FRAMEOPERATIONS\GUIREMOTEPROTOCOLSCHEMA_BUILDFRAME.CPP

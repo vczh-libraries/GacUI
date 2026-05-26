@@ -25,6 +25,7 @@ class RemotingTestChannelClient : public GuiRemoteProtocolChannelClient
 	using Base = GuiRemoteProtocolChannelClient;
 private:
 	GuiRemoteRendererSingle* renderer = nullptr;
+	GuiRemoteProtocolAsyncJsonChannelRenderer* asyncRendererChannel = nullptr;
 
 public:
 	RemotingTestChannelClient(Ptr<inter_process::INetworkProtocolClient> client, Ptr<glr::json::Parser> parser)
@@ -37,9 +38,18 @@ public:
 		renderer = _renderer;
 	}
 
+	void SetAsyncRendererChannel(GuiRemoteProtocolAsyncJsonChannelRenderer* _asyncRendererChannel)
+	{
+		asyncRendererChannel = _asyncRendererChannel;
+	}
+
 	void OnDisconnected() override
 	{
 		Base::OnDisconnected();
+		if (asyncRendererChannel)
+		{
+			asyncRendererChannel->Initialize(nullptr);
+		}
 		if (renderer)
 		{
 			renderer->ForceExitByFatelError();
@@ -84,6 +94,7 @@ int StartClient(Ptr<inter_process::INetworkProtocolClient> networkClient)
 	GuiRemoteRendererSingle remoteRenderer;
 	GuiRemoteProtocolRendererChannel rendererChannel(&channelClient, &asyncRendererChannel, &remoteRenderer);
 	channelClient.SetRenderer(&remoteRenderer);
+	channelClient.SetAsyncRendererChannel(&asyncRendererChannel);
 	channelClient.WaitForServer();
 
 	asyncChannel = &asyncRendererChannel;
@@ -91,6 +102,7 @@ int StartClient(Ptr<inter_process::INetworkProtocolClient> networkClient)
 	int result = SetupRawWindowsDirect2DRenderer();
 	renderer = nullptr;
 	asyncChannel = nullptr;
+	channelClient.SetAsyncRendererChannel(nullptr);
 	channelClient.SetRenderer(nullptr);
 	networkClient->GetConnection()->Stop();
 

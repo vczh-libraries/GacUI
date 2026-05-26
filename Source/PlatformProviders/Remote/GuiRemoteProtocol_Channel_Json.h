@@ -166,6 +166,7 @@ GuiRemoteProtocolCoreChannel
 		WString											GetExecutablePath() override;
 		void											Submit(bool& disconnected) override;
 		IGuiRemoteEventProcessor*						GetRemoteEventProcessor() override;
+		void											DetachRenderer(vint clientId);
 	};
 
 /***********************************************************************

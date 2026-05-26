@@ -24,9 +24,11 @@ namespace
 		using Base = GuiRemoteProtocolChannelServer;
 
 	protected:
-		// covers eventRendererConnected, connectingCoreClient and rendererClientId
+		// covers eventRendererConnected, connectingCoreClient, rendererClientId, coreJsonChannel and coreProtocolChannel
 		SpinLock						lockConnection;
 		EventObject*					eventRendererConnected = nullptr;
+		IJsonChannel*					coreJsonChannel = nullptr;
+		GuiRemoteProtocolCoreChannel*	coreProtocolChannel = nullptr;
 		bool							connectingCoreClient = false;
 		vint							rendererClientId = -1;
 
@@ -43,6 +45,22 @@ namespace
 			SPIN_LOCK(lockConnection)
 			{
 				eventRendererConnected = eventObject;
+			}
+		}
+
+		void SetCoreJsonChannel(IJsonChannel* channel)
+		{
+			SPIN_LOCK(lockConnection)
+			{
+				coreJsonChannel = channel;
+			}
+		}
+
+		void SetCoreProtocolChannel(GuiRemoteProtocolCoreChannel* channel)
+		{
+			SPIN_LOCK(lockConnection)
+			{
+				coreProtocolChannel = channel;
 			}
 		}
 
@@ -80,6 +98,8 @@ namespace
 				);
 
 			EventObject* eventToSignal = nullptr;
+			IJsonChannel* jsonChannelToOldRenderer = nullptr;
+			GuiRemoteProtocolCoreChannel* channelToOldRenderer = nullptr;
 			vint oldRendererClientId = -1;
 			SPIN_LOCK(lockConnection)
 			{
@@ -88,6 +108,8 @@ namespace
 					if (rendererClientId != -1 && rendererClientId != clientId)
 					{
 						oldRendererClientId = rendererClientId;
+						jsonChannelToOldRenderer = coreJsonChannel;
+						channelToOldRenderer = coreProtocolChannel;
 					}
 					rendererClientId = clientId;
 					eventToSignal = eventRendererConnected;
@@ -96,7 +118,34 @@ namespace
 
 			if (oldRendererClientId != -1)
 			{
-				DisconnectClient(oldRendererClientId);
+				bool rendererNotifiedToStop = false;
+				if (channelToOldRenderer)
+				{
+					channelToOldRenderer->DetachRenderer(oldRendererClientId);
+				}
+				if (jsonChannelToOldRenderer)
+				{
+					try
+					{
+						Ptr<glr::json::JsonObject> package;
+						ChannelPackageInfo info{ ChannelPackageSemantic::Message, -1, WString::Unmanaged(L"ControllerConnectionStopped") };
+						JsonChannelPack(info, {}, package);
+						jsonChannelToOldRenderer->SendToClient(GacUIRemoteProtocolCoreClientId, oldRendererClientId, package);
+						bool disconnected = false;
+						jsonChannelToOldRenderer->BatchWrite(disconnected);
+						rendererNotifiedToStop = !disconnected;
+					}
+					catch (const Error&)
+					{
+					}
+					catch (const Exception&)
+					{
+					}
+				}
+				if (!rendererNotifiedToStop)
+				{
+					DisconnectClient(oldRendererClientId);
+				}
 			}
 			if (eventToSignal)
 			{
@@ -237,6 +286,7 @@ void StartServer(RemotingChannelServerBase& channelServer, Ptr<glr::json::Parser
 	auto coreClientId = channelServer.ConnectLocalClient(coreClient);
 	channelServer.EndConnectCoreClient();
 	CHECK_ERROR(coreClientId == GacUIRemoteProtocolCoreClientId, L"StartServer(RemotingChannelServerBase&, Ptr<Parser>)#Failed to register the core channel client.");
+	channelServer.SetCoreJsonChannel(coreClient->GetProtocolChannel());
 
 	Console::WriteLine(L"> Waiting for a renderer ...");
 	auto rendererClientId = WaitForRenderer(channelServer, eventRendererConnected);
@@ -252,9 +302,12 @@ void StartServer(RemotingChannelServerBase& channelServer, Ptr<glr::json::Parser
 	GuiRemoteProtocolFilter filteredProtocol(&channelSender);
 	GuiRemoteProtocolDomDiffConverter diffConverterProtocol(&filteredProtocol);
 
+	channelServer.SetCoreProtocolChannel(&channelSender);
 	protocolServer = &channelServer;
 	SetupRemoteNativeController(&diffConverterProtocol);
 	protocolServer = nullptr;
+	channelServer.SetCoreProtocolChannel(nullptr);
+	channelServer.SetCoreJsonChannel(nullptr);
 
 	channelServer.SetRendererConnectedEvent(nullptr);
 	channelServer.Stop();

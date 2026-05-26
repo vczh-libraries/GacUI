@@ -23,6 +23,7 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::RequestGetBounds()
 	{
+		remote->EnsureControllerConnected();
 		vint idGetBounds = remoteMessages.RequestWindowGetBounds();
 		bool disconnected = false;
 		remoteMessages.Submit(disconnected);
@@ -60,6 +61,7 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::ShowWithSizeState(bool activate, INativeWindow::WindowSizeState sizeState)
 	{
+		remote->EnsureControllerConnected();
 		if (!statusVisible || remoteWindowSizingConfig.sizeState != sizeState)
 		{
 			remoteprotocol::WindowShowing windowShowing;
@@ -78,6 +80,36 @@ GuiRemoteWindow
 		{
 			SetActivate();
 		}
+	}
+
+	void GuiRemoteWindow::SubmitStateAfterControllerConnect()
+	{
+		if (suggestedMinClientSize != NativeSize{ {0},{0} })
+		{
+			remoteMessages.RequestWindowNotifyMinSize(suggestedMinClientSize);
+		}
+		remoteMessages.RequestWindowNotifySetTitle(styleTitle);
+		remoteMessages.RequestWindowNotifySetEnabled(styleEnabled);
+		remoteMessages.RequestWindowNotifySetTopMost(styleTopMost);
+		remoteMessages.RequestWindowNotifySetShowInTaskBar(styleShowInTaskBar);
+		remoteMessages.RequestWindowNotifySetCustomFrameMode(styleCustomFrameMode);
+		remoteMessages.RequestWindowNotifySetMaximizedBox(styleMaximizedBox);
+		remoteMessages.RequestWindowNotifySetMinimizedBox(styleMinimizedBox);
+		remoteMessages.RequestWindowNotifySetBorder(styleBorder);
+		remoteMessages.RequestWindowNotifySetSizeBox(styleSizeBox);
+		remoteMessages.RequestWindowNotifySetIconVisible(styleIconVisible);
+		remoteMessages.RequestWindowNotifySetTitleBar(styleTitleBar);
+		if (statusCapturing)
+		{
+			remoteMessages.RequestIORequireCapture();
+		}
+		else
+		{
+			remoteMessages.RequestIOReleaseCapture();
+		}
+		bool disconnected = false;
+		remoteMessages.Submit(disconnected);
+		// there is no result from these requests, assuming succeeded
 	}
 
 /***********************************************************************
@@ -106,32 +138,7 @@ GuiRemoteWindow (events)
 
 		if (remote->applicationRunning)
 		{
-			if (suggestedMinClientSize != NativeSize{ {0},{0} })
-			{
-				remoteMessages.RequestWindowNotifyMinSize(suggestedMinClientSize);
-			}
-			remoteMessages.RequestWindowNotifySetTitle(styleTitle);
-			remoteMessages.RequestWindowNotifySetEnabled(styleEnabled);
-			remoteMessages.RequestWindowNotifySetTopMost(styleTopMost);
-			remoteMessages.RequestWindowNotifySetShowInTaskBar(styleShowInTaskBar);
-			remoteMessages.RequestWindowNotifySetCustomFrameMode(styleCustomFrameMode);
-			remoteMessages.RequestWindowNotifySetMaximizedBox(styleMaximizedBox);
-			remoteMessages.RequestWindowNotifySetMinimizedBox(styleMinimizedBox);
-			remoteMessages.RequestWindowNotifySetBorder(styleBorder);
-			remoteMessages.RequestWindowNotifySetSizeBox(styleSizeBox);
-			remoteMessages.RequestWindowNotifySetIconVisible(styleIconVisible);
-			remoteMessages.RequestWindowNotifySetTitleBar(styleTitleBar);
-			if (statusCapturing)
-			{
-				remoteMessages.RequestIORequireCapture();
-			}
-			else
-			{
-				remoteMessages.RequestIOReleaseCapture();
-			}
-			bool disconnected = false;
-			remoteMessages.Submit(disconnected);
-			// there is no result from this request, assuming succeeded
+			SubmitStateAfterControllerConnect();
 		}
 	}
 
