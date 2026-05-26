@@ -169,3 +169,14 @@ Propose any solution you can think of and write them down in the document, you m
 - Unit test is always required to ensure the proposal actually works.
 - Review all code you have changed, make sure they are clean and follow the coding convention in `REPO-ROOT/.github/Guidelines/Coding.md`.
   - If code review changes the code, you need to run the test cases again to confirm the changes.
+
+## Additional Instructions
+
+- `git commit` and `git push` all local changes to the current branch, unless there are explicit instructions to override this.
+- When the request is separated by multiple tasks like `## Task N`, it is important to do task one by one strictly, by me designing tasks in this way, we can achieve:
+  - Easy-to-understand commits for file changing that is easy to review.
+  - Limit side effects so that you don't have to deal with massive of issues at the same time.
+  - `git commit` and `git push` should happen after every single task, unless there are explicit instructions to override this.
+  - When different tasks happens in different repos, you are going to change the `Copilot_Investigate.md` in that repo.
+    - If multiple repos are involved, for all involved repos that has the `Copilot_Investigate.md` file, decide which repo is the main repo for the task and update that file in the main repo.
+    - If the repo does not have such document, you are allowed not to create one, skip writing such file.

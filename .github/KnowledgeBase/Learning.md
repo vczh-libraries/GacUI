@@ -2,7 +2,7 @@
 
 # Orders
 
-- Process staged tasks one by one with verification [12]
+- Process staged tasks one by one with verification [13]
 - Crash early instead of adding error-tolerance fallbacks [6]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
@@ -12,10 +12,10 @@
 - Prefer simple calls before interface casts [2]
 - Validate expectations against implementation and existing tests [2]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [2]
+- Port fixes from imports to source repositories [2]
 - Do not assume async callback owners are heap allocated [1]
 - Extract abstractions only for real shared behavior [1]
 - Make `Stop()` drain asynchronous work before returning [1]
-- Port fixes from imports to source repositories [2]
 - Prefer well-defined tests over ambiguous edge cases [1]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
@@ -26,6 +26,7 @@
 - Prefer designated initializers for aggregate-like structs [1]
 - Construct `Nullable<WString>` explicitly in function calls [1]
 - Sort serialization metadata by deterministic keys, not pointer addresses [1]
+- Start async callbacks after most-derived construction [1]
 - `collections::Dictionary` copy assignment is deleted (use move/swap) [1]
 - Dereference `Ptr<T>` via `.Obj()` (not `*ptr`) [1]
 - `vl::regex` separator regex: `L"[\\/\\\\]+"` [1]
@@ -135,6 +136,10 @@ When passing string literals to a function parameter typed as `Nullable<WString>
 ## Sort serialization metadata by deterministic keys, not pointer addresses
 
 When serializing metadata into stable binary output, do not let pointer-address ordering decide indices or item order. Collect items for membership checks if needed, then sort the serialized lists by deterministic keys such as type names or owner-qualified member signatures before assigning indices and writing the stream. This applies to type descriptors, methods, properties, events, and generated custom-type lists whose order would otherwise depend on allocation order or ASLR.
+
+## Start async callbacks after most-derived construction
+
+Objects that dispatch asynchronous callbacks should not begin listening or queue callbacks from base constructors. Initialize state in constructors, then expose an explicit `Start()` boundary that callers invoke after the most-derived object is fully constructed, so callbacks can safely dispatch to final overrides.
 
 ## `collections::Dictionary` copy assignment is deleted (use move/swap)
 
