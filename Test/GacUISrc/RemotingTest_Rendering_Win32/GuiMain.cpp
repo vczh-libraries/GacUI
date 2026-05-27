@@ -42,6 +42,18 @@ public:
 	{
 		asyncRendererChannel = _asyncRendererChannel;
 	}
+	
+	void OnError(const WString& errorMessage) override
+	{
+		GetCurrentController()->DialogService()->ShowMessageBox(
+			GetCurrentController()->WindowService()->GetMainWindow(),
+			errorMessage,
+			L"ERROR from GacUI Core",
+			INativeDialogService::DisplayOK,
+			INativeDialogService::DefaultFirst,
+			INativeDialogService::IconError
+			);
+	}
 
 	void OnDisconnected() override
 	{
