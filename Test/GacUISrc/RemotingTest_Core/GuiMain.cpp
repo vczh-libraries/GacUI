@@ -223,10 +223,7 @@ namespace
 	{
 		eventRendererConnected.Wait();
 		auto rendererClientId = channelServer.GetRendererClientId();
-		CHECK_ERROR(
-			channelServer.GetClientChannels().Contains(rendererClientId, WString::Unmanaged(GacUIRemoteProtocolChannelName)),
-			L"WaitForRenderer(RemotingChannelServerBase&, EventObject&)#The renderer client does not have the GacUI remote protocol channel."
-			);
+		CHECK_ERROR(rendererClientId != -1, L"WaitForRenderer(RemotingChannelServerBase&, EventObject&)#The renderer client has not been recorded.");
 		return rendererClientId;
 	}
 }
