@@ -684,7 +684,6 @@ Reflection
 
 #endif
 
-
 /***********************************************************************
 .\ASTPRINT.H
 ***********************************************************************/
@@ -1804,11 +1803,22 @@ namespace vl
 			/// <returns>The serialized string.</returns>
 			/// <param name="node">The JSON node to serialize.</param>
 			extern WString					JsonToString(Ptr<JsonNode> node, JsonFormatting formatting = {});
+
+			struct JsonNodeListSerializer
+			{
+				using SourceType = collections::List<Ptr<JsonNode>>;
+				using DestType = WString;
+				using ContextType = Ptr<Parser>;
+
+				static void					Serialize(Ptr<Parser> parser, const SourceType& source, DestType& dest);
+				static void					Deserialize(Ptr<Parser> parser, const DestType& source, SourceType& dest);
+			};
 		}
 	}
 }
 
 #endif
+
 
 /***********************************************************************
 .\TRACEMANAGER\TRACEMANAGER.H
@@ -3420,6 +3430,16 @@ namespace vl
 			extern collections::LazyList<Ptr<XmlElement>>		XmlGetElements(XmlElement* element);
 			extern collections::LazyList<Ptr<XmlElement>>		XmlGetElements(XmlElement* element, const WString& name);
 			extern WString										XmlGetValue(XmlElement* element);
+
+			struct XmlElementListSerializer
+			{
+				using SourceType = collections::List<Ptr<XmlElement>>;
+				using DestType = WString;
+				using ContextType = Ptr<Parser>;
+
+				static void										Serialize(Ptr<Parser> parser, const SourceType& source, DestType& dest);
+				static void										Deserialize(Ptr<Parser> parser, const DestType& source, SourceType& dest);
+			};
 
 			class XmlElementWriter : public Object
 			{

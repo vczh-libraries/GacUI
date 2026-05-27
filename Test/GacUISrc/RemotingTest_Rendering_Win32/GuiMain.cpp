@@ -43,7 +43,7 @@ public:
 		asyncRendererChannel = _asyncRendererChannel;
 	}
 	
-	void OnError(const WString& errorMessage) override
+	void OnReadError(const WString& errorMessage) override
 	{
 		GetCurrentController()->DialogService()->ShowMessageBox(
 			GetCurrentController()->WindowService()->GetMainWindow(),

@@ -1253,11 +1253,19 @@ IChannelClient
 
 		/// <summary>
 		/// Called when a fetal error occurs.
-		/// When any fetal error occurs at client side or server side, all clients is supposed to receive such error if possible, and the server will shut down.
+		/// When any fetal error is broadcasted from server side, all clients is supposed to receive such error if possible, and the server will shut down.
 		/// This function will be implemented by the user, the default implementation will be empty.
 		/// </summary>
 		/// <param name="errorMessage">The error message.</param>
-		virtual void						OnError(const WString& errorMessage) = 0;
+		virtual void						OnReadError(const WString& errorMessage) = 0;
+
+		/// <summary>
+		/// Called when a local error occurs.
+		/// This function will be implemented by the user, the default implementation will be empty.
+		/// </summary>
+		/// <param name="errorMessage">The error message.</param>
+		/// <param name="fatal">Indicates whether the error is not recoverable. The client will automatically stop after a fatal error.</param>
+		virtual void						OnLocalError(const WString& errorMessage, bool fatal) = 0;
 
 		/// <summary>
 		/// Called when available connection names are required.
@@ -1624,10 +1632,17 @@ INetworkProtocolServer
 		virtual void							OnReadString(const WString& str) = 0;
 
 		/// <summary>
-		/// Called when a localerror message is raised.
+		/// Called when an error message is received from the other side of the connection.
 		/// </summary>
 		/// <param name="error">The error message.</param>
 		virtual void							OnReadError(const WString& error) = 0;
+
+		/// <summary>
+		/// Called when a local transport error occurs.
+		/// </summary>
+		/// <param name="error">The error message.</param>
+		/// <param name="fatal">Indicates whether the connection should be disconnected after this callback.</param>
+		virtual void							OnLocalError(const WString& error, bool fatal) = 0;
 
 		/// <summary>
 		/// Called when the connection becomes available.
@@ -1973,9 +1988,6 @@ NetworkProtocolChannelClientBase
 ***********************************************************************/
 
 	template<typename TPackage, typename TSerialization>
-	class NetworkProtocolChannelServer;
-
-	template<typename TPackage, typename TSerialization>
 	class NetworkProtocolChannelClientBase : public Object, public virtual IChannelClient<TPackage>
 	{
 	protected:
@@ -2128,7 +2140,12 @@ NetworkProtocolChannelClientBase
 			// default implementation does nothing
 		}
 
-		void OnError(const WString& errorMessage) override
+		void OnReadError(const WString& errorMessage) override
+		{
+			// default implementation does nothing
+		}
+
+		void OnLocalError(const WString& errorMessage, bool fatal) override
 		{
 			// default implementation does nothing
 		}
@@ -2202,9 +2219,6 @@ NetworkProtocolChannelClient
 ***********************************************************************/
 
 	template<typename TPackage, typename TSerialization>
-	class NetworkProtocolLocalChannelClient;
-
-	template<typename TPackage, typename TSerialization>
 	class NetworkProtocolChannelClient : public NetworkProtocolChannelClientBase<TPackage, TSerialization>
 	{
 	protected:
@@ -2230,8 +2244,17 @@ NetworkProtocolChannelClient
 
 			void OnReadError(const WString& error) override
 			{
-				client->OnError(error);
+				client->OnReadError(error);
 				client->NotifyDisconnected();
+			}
+
+			void OnLocalError(const WString& error, bool fatal) override
+			{
+				client->OnLocalError(error, fatal);
+				if (fatal)
+				{
+					client->NotifyDisconnected();
+				}
 			}
 
 			void OnConnected() override
@@ -2288,7 +2311,7 @@ NetworkProtocolChannelClient
 			NetworkPackage::Parse(str, package);
 			if (package.channelName == ErrorChannel)
 			{
-				this->OnError(package.messageBody);
+				this->OnReadError(package.messageBody);
 				NotifyDisconnected();
 				return;
 			}
@@ -2406,6 +2429,9 @@ NetworkProtocolLocalChannelClient
 ***********************************************************************/
 
 	template<typename TPackage, typename TSerialization>
+	class NetworkProtocolChannelServer;
+
+	template<typename TPackage, typename TSerialization>
 	class NetworkProtocolLocalChannelClient : public NetworkProtocolChannelClientBase<TPackage, TSerialization>
 	{
 		friend class NetworkProtocolChannelServer<TPackage, TSerialization>;
@@ -2472,7 +2498,7 @@ NetworkProtocolLocalChannelClient
 				localServer->BroadcastError(errorMessage);
 				return;
 			}
-			this->OnError(errorMessage);
+			this->OnLocalError(errorMessage, true);
 			this->NotifyDisconnected();
 		}
 	};
@@ -2518,6 +2544,11 @@ NetworkProtocolChannelServer
 			void OnReadError(const WString& error) override
 			{
 				server->BroadcastError(error);
+			}
+
+			void OnLocalError(const WString& error, bool fatal) override
+			{
+				// Server-side transport errors are finalized by OnDisconnected.
 			}
 
 			void OnConnected() override
@@ -2984,7 +3015,7 @@ NetworkProtocolChannelServer
 			}
 			for (auto&& localClient : targetLocalClients)
 			{
-				localClient->OnError(errorMessage);
+				localClient->OnReadError(errorMessage);
 			}
 			// Give transport clients a chance to consume the fatal package before closing.
 			Thread::Sleep(200);

@@ -1664,11 +1664,15 @@ namespace vl::inter_process
 HttpClient (Reading)
 ***********************************************************************/
 
-void HttpClient::RaiseErrorUnsafe(WString errorMessage)
+void HttpClient::RaiseLocalError(WString errorMessage, bool fatal)
 {
 	if (callback)
 	{
-		callback->OnReadError(errorMessage);
+		callback->OnLocalError(errorMessage, fatal);
+	}
+	if (fatal)
+	{
+		Stop();
 	}
 }
 
@@ -1797,7 +1801,7 @@ ClientStatus HttpClient::GetStatus()
 HttpClient (Writing)
 ***********************************************************************/
 
-bool HttpClient::SendHttpRequest(HttpRequestType requestType, const wchar_t* method, const WString& url, const WString& body)
+bool HttpClient::SendHttpRequest(HttpRequestType requestType, const wchar_t* method, const WString& url, const WString& body, vint attempt)
 {
 	Ptr<HttpClientApi> api;
 	{
@@ -1841,33 +1845,59 @@ bool HttpClient::SendHttpRequest(HttpRequestType requestType, const wchar_t* met
 		request.SetBodyUtf8(body);
 	}
 
-	api->HttpQuery(request, [this, requestType](Variant<HttpResponse, HttpError> result)
+	api->HttpQuery(request, [this, requestType, body, attempt](Variant<HttpResponse, HttpError> result)
 	{
-		OnHttpRequestCompleted(requestType, std::move(result));
+		OnHttpRequestCompleted(requestType, body, attempt, std::move(result));
 	});
 	return true;
 }
 
-void HttpClient::OnHttpRequestCompleted(HttpRequestType requestType, Variant<HttpResponse, HttpError> result)
+void HttpClient::OnHttpRequestFailed(HttpRequestType requestType, const WString& body, vint attempt, const WString& errorMessage)
+{
+	if (IsStopping()) return;
+
+	switch (requestType)
+	{
+	case HttpRequestType::Connect:
+		{
+			bool fatal = attempt >= HttpRequestMaxAttempts;
+			RaiseLocalError(errorMessage, fatal);
+			if (!fatal && !IsStopping())
+			{
+				SendHttpRequest(HttpRequestType::Connect, L"GET", urlConnect, WString::Empty, attempt + 1);
+			}
+		}
+		break;
+	case HttpRequestType::Request:
+		SendHttpRequest(HttpRequestType::Request, L"POST", urlRequest, WString::Empty, attempt + 1);
+		break;
+	case HttpRequestType::Response:
+		{
+			bool fatal = attempt >= HttpRequestMaxAttempts;
+			RaiseLocalError(errorMessage, fatal);
+			if (!fatal && !IsStopping())
+			{
+				SendHttpRequest(HttpRequestType::Response, L"POST", urlResponse, body, attempt + 1);
+			}
+		}
+		break;
+	}
+}
+
+void HttpClient::OnHttpRequestCompleted(HttpRequestType requestType, WString body, vint attempt, Variant<HttpResponse, HttpError> result)
 {
 	if (auto error = result.TryGet<HttpError>())
 	{
 		switch (requestType)
 		{
 		case HttpRequestType::Connect:
-			CompleteConnectRequest(WString::Empty, error->message);
+			OnHttpRequestFailed(requestType, body, attempt, L"/Connect failed: " + error->message);
 			break;
 		case HttpRequestType::Request:
-			if (!IsStopping())
-			{
-				RaiseErrorUnsafe(L"/Request failed: " + error->message);
-			}
+			OnHttpRequestFailed(requestType, body, attempt, L"/Request failed: " + error->message);
 			break;
 		case HttpRequestType::Response:
-			if (!IsStopping())
-			{
-				RaiseErrorUnsafe(L"/Response failed: " + error->message);
-			}
+			OnHttpRequestFailed(requestType, body, attempt, L"/Response failed: " + error->message);
 			break;
 		}
 		return;
@@ -1879,19 +1909,13 @@ void HttpClient::OnHttpRequestCompleted(HttpRequestType requestType, Variant<Htt
 		switch (requestType)
 		{
 		case HttpRequestType::Connect:
-			CompleteConnectRequest(WString::Empty, WString::Unmanaged(L"/Connect returned status code: ") + itow(response.statusCode) + L".");
+			OnHttpRequestFailed(requestType, body, attempt, WString::Unmanaged(L"/Connect returned status code: ") + itow(response.statusCode) + L".");
 			break;
 		case HttpRequestType::Request:
-			if (!IsStopping())
-			{
-				RaiseErrorUnsafe(WString::Unmanaged(L"/Request returned status code: ") + itow(response.statusCode) + L", another renderer may have connected to the core.");
-			}
+			OnHttpRequestFailed(requestType, body, attempt, WString::Unmanaged(L"/Request returned status code: ") + itow(response.statusCode) + L", another renderer may have connected to the core.");
 			break;
 		case HttpRequestType::Response:
-			if (!IsStopping())
-			{
-				RaiseErrorUnsafe(WString::Unmanaged(L"/Response returned status code: ") + itow(response.statusCode) + L", another renderer may have connected to the core.");
-			}
+			OnHttpRequestFailed(requestType, body, attempt, WString::Unmanaged(L"/Response returned status code: ") + itow(response.statusCode) + L", another renderer may have connected to the core.");
 			break;
 		}
 		return;
@@ -1902,44 +1926,38 @@ void HttpClient::OnHttpRequestCompleted(HttpRequestType requestType, Variant<Htt
 		switch (requestType)
 		{
 		case HttpRequestType::Connect:
-			CompleteConnectRequest(WString::Empty, L"HTTP response did not return content type: application/json; charset=utf8.");
+			OnHttpRequestFailed(requestType, body, attempt, L"/Connect response did not return content type: application/json; charset=utf8.");
 			break;
 		case HttpRequestType::Request:
-			if (!IsStopping())
-			{
-				CHECK_FAIL(L"HTTP response did not return content type: application/json; charset=utf8.");
-			}
+			OnHttpRequestFailed(requestType, body, attempt, L"/Request response did not return content type: application/json; charset=utf8.");
 			break;
 		case HttpRequestType::Response:
-			if (!IsStopping())
-			{
-				CHECK_FAIL(L"HTTP response did not return content type: application/json; charset=utf8.");
-			}
+			OnHttpRequestFailed(requestType, body, attempt, L"/Response response did not return content type: application/json; charset=utf8.");
 			break;
 		}
 		return;
 	}
 
-	auto body = response.GetBodyUtf8();
+	auto responseBody = response.GetBodyUtf8();
 	switch (requestType)
 	{
 	case HttpRequestType::Connect:
-		CompleteConnectRequest(body, WString::Empty);
+		CompleteConnectRequest(responseBody, WString::Empty);
 		break;
 	case HttpRequestType::Request:
 		if (!IsStopping())
 		{
 			BeginReadingLoopUnsafe();
-			if (body.Length() > 0 && callback)
+			if (responseBody.Length() > 0 && callback)
 			{
-				callback->OnReadString(body);
+				callback->OnReadString(responseBody);
 			}
 		}
 		break;
 	case HttpRequestType::Response:
-		if (!IsStopping() && body.Length() > 0 && callback)
+		if (!IsStopping() && responseBody.Length() > 0 && callback)
 		{
-			callback->OnReadString(body);
+			callback->OnReadString(responseBody);
 		}
 		break;
 	}
@@ -2703,7 +2721,7 @@ void HttpClientApi::Stop()
 	httpSession = NULL;
 }
 
-WString HttpClientApi::HttpEncodeQuery(const WString& query)
+WString HttpClientApi::UrlEncodeQuery(const WString& query)
 {
 	vint utf8Size = WideCharToMultiByte(CP_UTF8, 0, query.Buffer(), (int)query.Length(), NULL, 0, NULL, NULL);
 	Array<char> utf8(utf8Size);
@@ -2735,7 +2753,7 @@ WString HttpClientApi::HttpEncodeQuery(const WString& query)
 	return &encoded[0];
 }
 
-WString HttpClientApi::HttpDecodeQuery(const WString& query)
+WString HttpClientApi::UrlDecodeQuery(const WString& query)
 {
 	List<char> utf8;
 	for (vint i = 0; i < query.Length(); i++)
@@ -2792,11 +2810,6 @@ WString HttpClientApi::HttpDecodeQuery(const WString& query)
 	return &utf16[0];
 }
 
-WString UrlEncodeQuery(const WString& query)
-{
-	return HttpClientApi::HttpEncodeQuery(query);
-}
-
 }
 
 
@@ -2841,7 +2854,7 @@ void HttpServerConnection::OnNewHttpRequestForPendingRequest(HTTP_REQUEST_ID htt
 	{
 		auto pendingRequest = pendingRequestsToSend[0];
 		pendingRequestsToSend.RemoveAt(0);
-		ULONG result = HttpServerApi::SendResponse(server->GetHttpRequestQueue(), httpPendingRequestId, 200, L"OK", pendingRequest, L"application/json; charset=utf8");
+		ULONG result = HttpServerApi::SendResponse(server->GetHttpRequestQueue(), httpPendingRequestId, { 200, L"OK", pendingRequest, L"application/json; charset=utf8" });
 		CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for responding /Request.");
 		httpPendingRequestId = HTTP_NULL_ID;
 	}
@@ -2978,7 +2991,7 @@ void HttpServerConnection::SendString(const WString& str)
 		}
 		else if (httpPendingRequestId != HTTP_NULL_ID)
 		{
-			ULONG result = HttpServerApi::SendResponse(server->GetHttpRequestQueue(), httpPendingRequestId, 200, L"OK", str, L"application/json; charset=utf8");
+			ULONG result = HttpServerApi::SendResponse(server->GetHttpRequestQueue(), httpPendingRequestId, { 200, L"OK", str, L"application/json; charset=utf8" });
 			if (result == NO_ERROR)
 			{
 				httpPendingRequestId = HTTP_NULL_ID;
@@ -3053,7 +3066,7 @@ void HttpServer::OnHttpRequestReceived(PHTTP_REQUEST pRequest)
 			vint index = connections.Keys().IndexOf(guid);
 			if (index == -1)
 			{
-				HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, 404, L"Unknown connection guid");
+				HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 404, L"Unknown connection guid" });
 			}
 			else
 			{
@@ -3081,13 +3094,13 @@ void HttpServer::OnHttpRequestReceived(PHTTP_REQUEST pRequest)
 				connections.Remove(newGuid);
 			}
 			connection->server = nullptr;
-			HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, 404, L"Connection rejected");
+			HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 404, L"Connection rejected" });
 		}
 		else
 		{
 			auto completeUrlRequest = WString::Unmanaged(HttpServerUrl_Request) + L"/" + newGuid;
 			auto completeUrlResponse = WString::Unmanaged(HttpServerUrl_Response) + L"/" + newGuid;
-			auto result = HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, 200, L"OK", completeUrlRequest + L";" + completeUrlResponse, L"application/json; charset=utf8");
+			auto result = HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 200, L"OK", completeUrlRequest + L";" + completeUrlResponse, L"application/json; charset=utf8" });
 			CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for responding /Connect.");
 		}
 	}
@@ -3108,7 +3121,7 @@ void HttpServer::OnHttpRequestReceived(PHTTP_REQUEST pRequest)
 		if (auto connection = FindExistingConnection(guid))
 		{
 			auto responseToClient = connection->SubmitResponse(pRequest);
-			auto result = HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, 200, L"OK", responseToClient, L"application/json; charset=utf8");
+			auto result = HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 200, L"OK", responseToClient, L"application/json; charset=utf8" });
 			CHECK_ERROR(
 				result == NO_ERROR || result == ERROR_CONNECTION_INVALID || result == ERROR_OPERATION_ABORTED,
 				L"HttpSendHttpResponse failed for responding /Response."
@@ -3117,7 +3130,7 @@ void HttpServer::OnHttpRequestReceived(PHTTP_REQUEST pRequest)
 	}
 	else
 	{
-		HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, 404, L"Unknown URL");
+		HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 404, L"Unknown URL" });
 	}
 }
 
@@ -3222,7 +3235,7 @@ void HttpServerApi::OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
 {
 	if (state == State::Stopping)
 	{
-		SendResponse(httpRequestQueue, pRequest->RequestId, 404, L"Server is stopping");
+		SendResponse(httpRequestQueue, pRequest->RequestId, { 404, L"Server is stopping" });
 		return;
 	}
 
@@ -3487,7 +3500,7 @@ void HttpServerApi::SendOptionsResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID
 	CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed (OPTIONS).");
 }
 
-ULONG HttpServerApi::SendResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, vint statusCode, const WString& reason, const WString& body, const WString& contentType)
+ULONG HttpServerApi::SendResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, const HttpServerResponse& response)
 {
 	ULONG bytesSent = 0;
 	HTTP_RESPONSE httpResponse;
@@ -3495,20 +3508,20 @@ ULONG HttpServerApi::SendResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID reque
 	ZeroMemory(&httpResponse, sizeof(httpResponse));
 	ZeroMemory(&httpResponseBody, sizeof(httpResponseBody));
 
-	httpResponse.StatusCode = (USHORT)statusCode;
+	httpResponse.StatusCode = (USHORT)response.statusCode;
 
 	U8String reasonUtf8;
-	if (reason != WString::Empty)
+	if (response.reason != WString::Empty)
 	{
-		reasonUtf8 = wtou8(reason);
+		reasonUtf8 = wtou8(response.reason);
 		httpResponse.pReason = (PCSTR)reasonUtf8.Buffer();
 		httpResponse.ReasonLength = (USHORT)reasonUtf8.Length();
 	}
 
 	U8String bodyUtf8;
-	if (body != WString::Empty)
+	if (response.body != WString::Empty)
 	{
-		bodyUtf8 = wtou8(body);
+		bodyUtf8 = wtou8(response.body);
 		httpResponse.EntityChunkCount = 1;
 		httpResponse.pEntityChunks = &httpResponseBody;
 		httpResponseBody.DataChunkType = HttpDataChunkFromMemory;
@@ -3517,9 +3530,9 @@ ULONG HttpServerApi::SendResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID reque
 	}
 
 	U8String contentTypeUtf8;
-	if (contentType != WString::Empty)
+	if (response.contentType != WString::Empty)
 	{
-		contentTypeUtf8 = wtou8(contentType);
+		contentTypeUtf8 = wtou8(response.contentType);
 		httpResponse.Headers.KnownHeaders[HttpHeaderContentType].pRawValue = (PCSTR)contentTypeUtf8.Buffer();
 		httpResponse.Headers.KnownHeaders[HttpHeaderContentType].RawValueLength = (USHORT)contentTypeUtf8.Length();
 	}
@@ -3783,6 +3796,7 @@ RESTART_LOOP:
 		{
 			if (!stopped)
 			{
+				OnLocalError(L"ReadFile failed because the named pipe was closed.");
 				OnDisconnected();
 			}
 			return;
@@ -3841,6 +3855,7 @@ RESTART_LOOP:
 					{
 						if (!self->stopped)
 						{
+							self->OnLocalError(L"GetOverlappedResult(ReadFile) failed because the named pipe was closed.");
 							self->OnDisconnected();
 						}
 						finalize();
@@ -3923,6 +3938,10 @@ void NamedPipeConnection::EndSendStream(vint32_t bytes)
 			auto error = GetLastError();
 			if (error == ERROR_BROKEN_PIPE || error == ERROR_INVALID_HANDLE)
 			{
+				if (!stopped)
+				{
+					OnLocalError(L"WriteFile failed because the named pipe was closed.");
+				}
 				OnDisconnected();
 				return;
 			}
@@ -3934,6 +3953,10 @@ void NamedPipeConnection::EndSendStream(vint32_t bytes)
 				error = GetLastError();
 				if (error == ERROR_BROKEN_PIPE || error == ERROR_INVALID_HANDLE || error == ERROR_OPERATION_ABORTED)
 				{
+					if (!stopped)
+					{
+						OnLocalError(L"GetOverlappedResult(WriteFile) failed because the named pipe was closed.");
+					}
 					OnDisconnected();
 					return;
 				}
@@ -3963,6 +3986,14 @@ void NamedPipeConnection::SendString(const WString& str)
 /***********************************************************************
 NamedPipeConnection
 ***********************************************************************/
+
+void NamedPipeConnection::OnLocalError(const WString& errorMessage)
+{
+	if (callback)
+	{
+		callback->OnLocalError(errorMessage, true);
+	}
+}
 
 void NamedPipeConnection::OnDisconnected()
 {

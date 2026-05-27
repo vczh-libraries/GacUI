@@ -206,11 +206,9 @@ public:
 	void												HttpQuery(const HttpRequest& request, Func<void(Variant<HttpResponse, HttpError>)> callback);
 	void												Stop();
 
-	static WString										HttpEncodeQuery(const WString& query);
-	static WString										HttpDecodeQuery(const WString& query);
+	static WString										UrlEncodeQuery(const WString& query);
+	static WString										UrlDecodeQuery(const WString& query);
 };
-
-extern WString											UrlEncodeQuery(const WString& query);
 
 }
 
@@ -239,6 +237,7 @@ namespace vl::inter_process
 class HttpClient : public Object, public virtual INetworkProtocolConnection, public virtual INetworkProtocolClient
 {
 protected:
+	static constexpr vint							HttpRequestMaxAttempts = 3;
 
 	enum class State
 	{
@@ -264,7 +263,7 @@ HttpClient (Reading)
 protected:
 	static constexpr const wchar_t*					JsonContentType = L"application/json; charset=utf8";
 
-	void											RaiseErrorUnsafe(WString errorMessage);
+	void											RaiseLocalError(WString errorMessage, bool fatal);
 	bool											IsStopping();
 public:
 
@@ -301,8 +300,9 @@ protected:
 		Response,
 	};
 
-	bool											SendHttpRequest(HttpRequestType requestType, const wchar_t* method, const WString& url, const WString& body);
-	void											OnHttpRequestCompleted(HttpRequestType requestType, Variant<HttpResponse, HttpError> result);
+	bool											SendHttpRequest(HttpRequestType requestType, const wchar_t* method, const WString& url, const WString& body, vint attempt = 1);
+	void											OnHttpRequestCompleted(HttpRequestType requestType, WString body, vint attempt, Variant<HttpResponse, HttpError> result);
+	void											OnHttpRequestFailed(HttpRequestType requestType, const WString& body, vint attempt, const WString& errorMessage);
 
 public:
 
@@ -343,6 +343,15 @@ Interfaces:
 
 namespace vl::inter_process
 {
+
+/// <summary>A response to be sent by <see cref="HttpServerApi"/>.</summary>
+struct HttpServerResponse
+{
+	vint											statusCode = 200;
+	WString											reason;
+	WString											body;
+	WString											contentType;
+};
 
 /// <summary>A Windows-only async HTTP server for a single URL prefix.</summary>
 class HttpServerApi : public Object
@@ -401,7 +410,7 @@ public:
 	bool											IsStopped();
 	HANDLE											GetHttpRequestQueue() const;
 
-	static ULONG									SendResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, vint statusCode, const WString& reason = WString::Empty, const WString& body = WString::Empty, const WString& contentType = WString::Empty);
+	static ULONG									SendResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, const HttpServerResponse& response);
 };
 
 }
@@ -591,6 +600,7 @@ protected:
 	INetworkProtocolCallback*						callback = nullptr;
 	HANDLE											hPipe = INVALID_HANDLE_VALUE;
 
+	void											OnLocalError(const WString& errorMessage);
 	void											OnDisconnected();
 
 	NamedPipeConnection(HANDLE _hPipe);

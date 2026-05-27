@@ -135,35 +135,6 @@ ChannelPackageSemantic
 	}
 
 /***********************************************************************
-JsonNodeListSerializer
-***********************************************************************/
-
-	void JsonNodeListSerializer::Serialize(Ptr<glr::json::Parser> parser, const SourceType& source, DestType& dest)
-	{
-		auto array = Ptr(new glr::json::JsonArray);
-		for (auto&& package : source)
-		{
-			array->items.Add(package);
-		}
-		dest = glr::json::JsonToString(array);
-	}
-
-	void JsonNodeListSerializer::Deserialize(Ptr<glr::json::Parser> parser, const DestType& source, SourceType& dest)
-	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::JsonNodeListSerializer::Deserialize(Ptr<Parser>, const WString&, SourceType&)#"
-		auto value = glr::json::JsonParse(source, *parser.Obj());
-		auto array = value.Cast<glr::json::JsonArray>();
-		CHECK_ERROR(array, ERROR_MESSAGE_PREFIX L"The serialized channel package should be a JsonArray.");
-
-		dest.Clear();
-		for (auto&& package : array->items)
-		{
-			dest.Add(package);
-		}
-#undef ERROR_MESSAGE_PREFIX
-	}
-
-/***********************************************************************
 GuiRemoteProtocolChannelClient
 ***********************************************************************/
 

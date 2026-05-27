@@ -1,85 +1,96 @@
 # !!!INVESTIGATE!!!
+
 # PROBLEM DESCRIPTION
 
-## Task 5
+## Task 1
 
-This task happens in `GacUI` repo.
+This task happens in `VlppOS` repo.
 
-`GuiRemoteProtocolAsyncJsonChannelSerializer` in `GuiRemoteProtocol_Channel_Async.h`
-- Rename to `xxxJsonChannelRenderer` and `xxx_Async.(h|cpp)`.
+`IChannelClient::OnError` is renamed to `IChannelClient::OnReadError`. This is a callback that only listen to `IChannelServer::BroadcastError`.
+`IChannelClient::OnLocalError` is added. Other errors go here.
+- For example, currently `HttpClient` calls `RaiseErrorUnsafe` when there is any connection error happens, it should call `OnLocalError` instead.
+- When `/Connect` or `/Respond` fails, retry for 3 times. Each failure calls `OnLocalError`, non fatal except for the last retry
+- When `/Request` fails, just retry, because it would timeout when the http server does not send any request, no `OnLocalError` is needed.
+- When the client already stopped or disconnected, no retry is issued, and in this case, no `OnLocalError` is needed.
+- For named pipe, any error causing the pipe to close would issue `OnLocalError` with fatal.
+- Only after calling `OnLocalError` with fatal, disconnect the client.
+`HttpServerApi::SendResponse` should group the last 4 arguments into a struct `HttpServerResponse`.
 
-`RemotingTest_Core\GuiMain.cpp`:
-- `StartServer` implements `acceptMultipleRenderers` in a wrong way.
-  - Now the new named pipe architecture should accept multiple renderers.
-  - An renderer can always be accepted and disconnect the previous one.
-  - The current implementation does not disconnect the previous one, causing it still able to sends IO events but not rendering.
+## Task 2
 
-`GuiRemoteProtocol_Channel_Json.h`
-- `GuiRemoteProtocolCoreChannel::Write` when `rendererClientId` is -1, it should stores, and when `Submit` is called without knowing the information, it is discarded.
-- `lockRendererClientId` is unnecessary, `atomic_vint` is enough.
+This task happens in `VlppParser2` repo.
+Release `VlppOS` to `VlppParser2`.
 
-`GuiRemoteProtocolAsyncJsonChannelRenderer`
-- `SetInvokeInMainThread` should restore missed commands, or just initialize it before `WaitForServer` as an empty window would show before connection, choose one that is easier to do with clean code.
-- This class could just be a `IJsonChannelReader` as almost all other members are just redirection:
-  - Figure out if it actually reasonable to do that first. I don't want you to force twisting the code.
+Move `JsonNodeListSerializer` from `GuiRemoteProtocol_Channel_Json.h` in `GacUI` to `GlrJson.h` in `VlppParser2`, put it in namespace `vl::glr::json`.
+Add a similar `XmlElementListSerializer` in `GlrXml.h`.
+- When serializing, group all elements in an `<Array>` element, build an element (not document) and `XmlPrint`.
+- When deserializing, just use all elements in the root element, no need to care about the name or attributes of the root element. Use `XmlParseElement`.
+
+## Task (Final Validation)
+
+This task happens in `GacUI` and `GacJS` repo.
+Release `VlppOS` and `VlppParser2 to `GacUI`.
+
+### GacUI
+
+Make sure `RemotingTest_Core` and `RemotingTest_Win32_Renderer` works with `/Http /FCT`.
+- Since `IChannelClient::OnError` is renamed, the renderer will build break, just rename the function too, but no need to handle `OnLocalError`.
+- Delete `JsonNodeListSerializer` as it is moved to `VlppParser2`.
+
+To verify that, you should launch both processes with the debugger, so that you are able to know the renderer actually communicate commands correctly with core.
+You may need to write a piece of temporary powershell script to close the process in a gentle way:
+  - You can use whatever way you like, including calling Windows API, to close the renderer gently.
+  - After the renderer exits, ensure that core will be notified and exits. If the code has no problem core should already been working that way.
+  - Delete that script before commiting.
+
+Release `GacUI`.
+
+### GacJS
+
+Follows `Tools\DebugGacUIWithBrowser.md` to run `RemotingTest_Core` with `/Http /RPT` and make sure `GacJS` could launch and operate the UI.
+Make sure test cases work. Half of tests fail in `Gaclib\website\entry`, figure out why and fix all of them.
+- Hint: it works on an en-US machine which is faster.
+- You are now running on an zh-CN machine which is slower.
+- Some cases fail because of localization, make sure it works on both zh-CN and en-US.
+- Machine performance might not be a factor, make your own judgement.
 
 # UPDATES
 
-# TEST
+# TEST [CONFIRMED]
 
-- Build `GacUI\Test\GacUISrc\GacUISrc.sln`.
-- Run `GacUI` unit tests and check `Execute.log` for no memory leak dump.
-- Exercise the remoting test path affected by accepting/replacing renderers.
+Validate the downstream remoting handoff:
 
-# PROPOSALS
+- Copy updated `VlppOS` and `VlppParser2` release outputs into `GacUI\Import` without `IncludeOnly`.
+- Build `Test\GacUISrc\GacUISrc.sln` through `copilotBuild.ps1`.
+- Run `RemotingTest_Core.exe /Http /FCT` and `RemotingTest_Rendering_Win32.exe /Http` under CDB. The renderer executable accepts `/Http` or `/Pipe`; the `/FCT` selection belongs to core.
+- Observe protocol traffic with breakpoints or logs on the core/renderer channel path, close the renderer gently, and confirm the core notices the renderer disconnect and exits.
+- Regenerate `GacUI\Release` with CodePack.
 
-- No.1 Refactor async JSON channel naming and renderer handoff
+Confirmed with:
 
-## No.1 Refactor async JSON channel naming and renderer handoff
+- `& C:\Code\VczhLibraries\GacUI\.github\Scripts\copilotBuild.ps1` from `Test\GacUISrc`: build succeeded with 0 errors and 1 warning.
+- CDB-launched `RemotingTest_Core.exe /Http /FCT` and `RemotingTest_Rendering_Win32.exe /Http` with breakpoints on core/renderer read/write paths.
+- Observed protocol traffic: `CoreOnReadHits=37`, `CoreWriteHits=133`, `RendererOnReadHits=128`, `RendererWriteHits=37`.
+- Posted `WM_CLOSE` only to the visible renderer window (`Complete Control Showcase`); renderer exited and core exited afterward.
+- Temporary CDB command files and close-helper code were created under `%TEMP%` and deleted after validation.
+- `Tools\Tools\CodePack.backup.exe Release\CodegenConfig.xml` regenerated `GacUI\Release`.
 
-Rename the async channel serializer to its renderer-facing name, then fix the channel ownership/lifecycle details without forcing an unnecessary interface twist. Update the core channel to keep/discard writes according to renderer id availability, and update the remoting core server to disconnect stale renderers when a replacement connects.
+# PROPOSALS [CONFIRMED]
+
+- No.1 Import updated dependencies and adapt remoting channel serialization
+
+## No.1 Import updated dependencies and adapt remoting channel serialization
+
+Refresh GacUI imports from the updated `VlppOS` and `VlppParser2` releases. Remove the local `JsonNodeListSerializer` from `GuiRemoteProtocol_Channel_Json.*` and use the new `vl::glr::json::JsonNodeListSerializer` as the serializer type for the JSON remoting channels. Rename the renderer's `OnError` override to `OnReadError` so it matches the new `IChannelClient` API; no renderer behavior is needed for `OnLocalError` in this task.
 
 ### CODE CHANGE
 
-- Renamed the async JSON serializer surface to the renderer naming and regenerated `Release`.
-- Kept `GuiRemoteProtocolAsyncJsonChannelRenderer` as a wrapper instead of forcing it into only `IJsonChannelReader`: it still owns queued-message scheduling, connection wait state, and main-thread dispatch, so reducing it further would make the code less direct.
-- Fixed async renderer initialization ordering by allowing messages to queue before the application object exists, then processing them once the main-thread invoker is available.
-- Added generation-stamping to the async renderer wrapper so queued callbacks from a detached reader cannot run against a new reader after disconnect/reconnect.
-- Changed `GuiRemoteProtocolCoreChannel` to use atomic renderer id ownership, ignore stale renderer messages, discard submit batches without a renderer, and expose `DetachRenderer` for server-side replacement.
-- Updated `RemotingTest_Core` server replacement logic so a new renderer always becomes current, the old renderer is detached, and the old renderer receives a raw `ControllerConnectionStopped` package; if notification fails, the server falls back to disconnecting the old client.
-- Updated the Win32 renderer test client to detach the async renderer channel before fatal-exit handling during server disconnect.
-- Split remote controller/window connection replay so `Run()` only submits state after a pre-run controller connection, avoiding duplicate startup/DPI callbacks while still preventing an empty pre-connection window.
-- Regenerated `Release/GacUI.*` and updated affected remoting snapshots.
+- Refreshed `Import\VlppOS.*` and `Import\VlppGlrParser*` from upstream release outputs.
+- Removed GacUI's local `JsonNodeListSerializer` implementation from `GuiRemoteProtocol_Channel_Json.*`.
+- Switched JSON channel typedefs to `vl::glr::json::JsonNodeListSerializer`.
+- Renamed the renderer callback override from `OnError` to `OnReadError`.
+- Regenerated `Release\GacUI.h` and `Release\GacUI.cpp`.
 
-### TEST RESULT
+### CONFIRMED
 
-- `GacUI\Test\GacUISrc\GacUISrc.sln` builds successfully with 0 warnings and 0 errors.
-- Named pipe `/Pipe /FCT` two-renderer smoke passes: first renderer exits after replacement, second renderer exits cleanly after close, and core exits cleanly.
-- HTTP `/Http /FCT` core/renderer smoke passes: renderer exits `0`, core exits `0`.
-- Focused remote tests pass:
-  - `TestRemote_Startup.cpp`: 5/5.
-  - `TestRemote_UnitTestFramework_Async.cpp`: 3/3.
-  - `TestRemote_EmptyWindow.cpp`: 38/38.
-- Full unit pass succeeds through `copilotExecute.ps1 -Mode UnitTest -Executable UnitTest -Configuration Debug -Platform x64`: 84/84 test files and 1686/1686 test cases.
-- Memory leak output files from the focused and full unit runs are empty.
-
-## Task 6
-
-This task happens in `GacUI` and `GacJS` repo.
-
-- Followed `Tools\DebugGacUIWithBrowser.md`.
-- Built GacJS from `GacJS\Gaclib` with `yarn build`.
-- Started the sibling GacUI server as `RemotingTest_Core.exe /RPT /Http`.
-- Opened `http://localhost:8896/index.html` in the browser client and verified title `Remote Protocol Test`.
-- Verified the browser-rendered RPT UI received and sent protocol messages:
-  - Clicking `Click Me!` changed the remote UI text to `You have clicked!`.
-  - Switching to `DataGrid` and clicking `Add 3 Rows` populated rows (`Nec Odio`, `Adipiscing Elit Integer`, etc.).
-  - Browser console warning/error log was empty during the manual `/RPT` run.
-  - Clicking `Exit`, then confirming `OK`, produced `IGacUIRenderer exited due to receiving RequestControllerConnectionStopped.` and `RemotingTest_Core.exe` exited.
-- Ran focused GacJS protocol tests from `GacJS\Gaclib\website\entry`:
-  - `npx vitest run Testing_Protocol_SimpleTyping.js Testing_Protocol_RendererSwitching.js`
-  - Passed 2/2 test files and 11/11 tests.
-- Extra full `GacJS\Gaclib` `yarn test` was attempted. It failed outside the `/RPT` manual path in existing `/FCT` browser E2E dialog scenarios:
-  - `Testing_Protocol_Font.js` did not recognize the localized font dialog text (`选择字体` instead of the expected `Choose Font`), then formatting assertions stayed at `12px/#FFFFFF`.
-  - `Testing_Protocol_ImageInText.js` failed to insert the expected image through the file dialog, causing later text/image assertions to cascade.
-  - Lower-level packages and the focused remoting connection tests passed.
+GacUI builds with the imported dependency releases, the `/Http /FCT` remoting pair exchanges commands under the debugger, and a gentle renderer window close causes both renderer and core processes to exit.

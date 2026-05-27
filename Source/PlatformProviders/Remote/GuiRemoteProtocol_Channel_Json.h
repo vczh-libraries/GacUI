@@ -49,26 +49,12 @@ ChannelPackageSemantic
 	extern void						JsonChannelUnpack(Ptr<glr::json::JsonObject> package, ChannelPackageInfo& info, Ptr<glr::json::JsonNode>& arguments);
 	extern void						JsonChannelUnpack(Ptr<glr::json::JsonNode> package, ChannelPackageInfo& info, Ptr<glr::json::JsonNode>& arguments);
 
-/***********************************************************************
-JsonNodeListSerializer
-***********************************************************************/
-
-	struct JsonNodeListSerializer
-	{
-		using SourceType = collections::List<JsonPackage>;
-		using DestType = WString;
-		using ContextType = Ptr<glr::json::Parser>;
-
-		static void									Serialize(Ptr<glr::json::Parser> parser, const SourceType& source, DestType& dest);
-		static void									Deserialize(Ptr<glr::json::Parser> parser, const DestType& source, SourceType& dest);
-	};
-
-	using GuiRemoteProtocolChannelServer = inter_process::NetworkProtocolChannelServer<JsonPackage, JsonNodeListSerializer>;
+	using GuiRemoteProtocolChannelServer = inter_process::NetworkProtocolChannelServer<JsonPackage, glr::json::JsonNodeListSerializer>;
 
 	class GuiRemoteProtocolChannelClient
-		: public inter_process::NetworkProtocolChannelClient<JsonPackage, JsonNodeListSerializer>
+		: public inter_process::NetworkProtocolChannelClient<JsonPackage, glr::json::JsonNodeListSerializer>
 	{
-		using Base = inter_process::NetworkProtocolChannelClient<JsonPackage, JsonNodeListSerializer>;
+		using Base = inter_process::NetworkProtocolChannelClient<JsonPackage, glr::json::JsonNodeListSerializer>;
 	protected:
 		IJsonChannelClient::ChannelMap				channelNames;
 
@@ -80,9 +66,9 @@ JsonNodeListSerializer
 	};
 
 	class GuiRemoteProtocolLocalChannelClient
-		: public inter_process::NetworkProtocolLocalChannelClient<JsonPackage, JsonNodeListSerializer>
+		: public inter_process::NetworkProtocolLocalChannelClient<JsonPackage, glr::json::JsonNodeListSerializer>
 	{
-		using Base = inter_process::NetworkProtocolLocalChannelClient<JsonPackage, JsonNodeListSerializer>;
+		using Base = inter_process::NetworkProtocolLocalChannelClient<JsonPackage, glr::json::JsonNodeListSerializer>;
 	protected:
 		IJsonChannelClient::ChannelMap				channelNames;
 
