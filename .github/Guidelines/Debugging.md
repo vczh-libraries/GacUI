@@ -33,14 +33,6 @@ After you are ready, send the `g` command to start running.
   - The cdb path is stored in `$env:CDBPATH`.
 - Kill the binary process that is blocked.
 
-#### Warning
-
-You should never combine `copilotDebug_Stop.ps1` with others in one single PowerShell call.
-It could block you forever if some system issue occurs.
-You should run this script separately, and do not just wait for its input.
-The script is supposed to be done very fast, so you should keep reading the terminal output in parallel.
-When it seems to never finish, kill the terminal and cdb directly.
-
 ### Sending Commands to Debugger
 
 ```
@@ -77,7 +69,7 @@ You can also use `dv -rX` to expand "X" levels of fields. The default option is 
 
 - Only use **dv** without any parameters.
 - DO NOT use **dt**.
-- DO NOT use **q**, **qd**, **qq**, **qqd** etc. to stop the debugger; always use `copilotDebug_Stop.ps1`.
+- DO NOT use **q**, **qd**, **qq**, **qqd** etc. to stop the debugger.
 
 ## Linux Specific
 
