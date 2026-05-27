@@ -24,8 +24,9 @@ class RemotingTestChannelClient : public GuiRemoteProtocolChannelClient
 {
 	using Base = GuiRemoteProtocolChannelClient;
 private:
-	GuiRemoteRendererSingle* renderer = nullptr;
-	GuiRemoteProtocolAsyncJsonChannelRenderer* asyncRendererChannel = nullptr;
+	bool										triggeredFatalError = false;
+	GuiRemoteRendererSingle*					renderer = nullptr;
+	GuiRemoteProtocolAsyncJsonChannelRenderer*	asyncRendererChannel = nullptr;
 
 public:
 	RemotingTestChannelClient(Ptr<inter_process::INetworkProtocolClient> client, Ptr<glr::json::Parser> parser)
@@ -45,14 +46,33 @@ public:
 	
 	void OnReadError(const WString& errorMessage) override
 	{
-		GetCurrentController()->DialogService()->ShowMessageBox(
-			GetCurrentController()->WindowService()->GetMainWindow(),
-			errorMessage,
-			L"ERROR from GacUI Core",
-			INativeDialogService::DisplayOK,
-			INativeDialogService::DefaultFirst,
-			INativeDialogService::IconError
-			);
+		triggeredFatalError = true;
+		auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
+		GetCurrentController()->AsyncService()->InvokeInMainThread(
+			mainWindow,
+			[=]()
+			{
+				GetCurrentController()->DialogService()->ShowMessageBox(
+					mainWindow,
+					errorMessage,
+					L"ERROR from GacUI Core",
+					INativeDialogService::DisplayOK,
+					INativeDialogService::DefaultFirst,
+					INativeDialogService::IconError
+				);
+				if (renderer)
+				{
+					renderer->ForceExitByFatelError();
+				}
+			});
+	}
+
+	void OnLocalError(const WString& errorMessage, bool fatal) override
+	{
+		if (fatal)
+		{
+			OnReadError(errorMessage);
+		}
 	}
 
 	void OnDisconnected() override
@@ -62,7 +82,7 @@ public:
 		{
 			asyncRendererChannel->Initialize(nullptr);
 		}
-		if (renderer)
+		if (renderer && !triggeredFatalError)
 		{
 			renderer->ForceExitByFatelError();
 		}
