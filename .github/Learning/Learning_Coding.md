@@ -4,10 +4,14 @@
 
 - `vl::collections::ObservableList<T>` element access and replacement [2]
 - Extract helpers to remove duplicated conversion blocks [2]
-- Keep remote JSON channel code pure data processing [1]
-- Renderer channel dispatch belongs in async renderer layer [1]
-- Cache renderer packages until main-thread invoker exists [1]
-- Deliver fatal remote-channel errors before transport shutdown [1]
+- Keep remote JSON channel code pure data processing [2]
+- Renderer channel dispatch belongs in async renderer layer [2]
+- Cache renderer packages until main-thread invoker exists [2]
+- Deliver fatal remote-channel errors before transport shutdown [2]
+- Remote core accepts replacement renderers by detaching stale renderer [1]
+- Stop remoting transports before stack channel wrappers destruct [1]
+- Do not call `IChannel::Initialize(nullptr)` to uninstall readers [1]
+- Use `EventObject` for renderer-connection waits after channel server start [1]
 - `TreeViewItemBindableRootProvider::UpdateBindingProperties` is root-scoped [1]
 - Validate `tree::NodeItemProvider::RequestNode` indices [1]
 - `tree::NodeItemProvider::CalculateNodeVisibilityIndex` returns `-1` for invisible nodes [1]
@@ -102,17 +106,43 @@ Use the same judgment for repeated dictionary update patterns such as `Contains(
 
 `GuiRemoteProtocol_Channel_Json.(h|cpp)` should stay focused on JSON/protocol package conversion and dispatch. Do not put GacUI application scheduling, renderer-thread decisions, or `GetApplication()` usage in this layer; keep those responsibilities in the async/channel integration layer or in `GuiMain`.
 
+When renaming or reorganizing async JSON channel files, keep the names aligned with ownership: JSON files convert packages, while async renderer files own renderer-side scheduling and thread handoff.
+
 ## Renderer channel dispatch belongs in async renderer layer
 
 Renderer-side remote protocol packages must reach `GuiRemoteRendererSingle` on the GacUI UI thread. Put this in `GuiRemoteProtocol_Channel_AsyncRenderer.(h|cpp)` with an invoker injected from renderer `GuiMain`, rather than making JSON conversion code know about GacUI threading.
+
+Keep the async renderer wrapper when it owns queued scheduling, connection waits, and main-thread dispatch. Do not collapse that behavior into `IJsonChannelReader` just because the wrapper looks thin before startup/shutdown edge cases are considered.
 
 ## Cache renderer packages until main-thread invoker exists
 
 During renderer startup, network/channel packages can arrive before `GetApplication()` and the main-window registration are ready. The renderer async channel should cache all incoming packages until `SetInvokeInMainThread` installs the invoker, then drain them through `InvokeInMainThread` so startup commands are not lost.
 
+Protect delayed renderer callbacks with a generation stamp (or equivalent detach signal) so callbacks captured by an old reader cannot run against a newly installed reader. Queue packages before the application object exists and drain them only after the invoker is installed.
+
 ## Deliver fatal remote-channel errors before transport shutdown
 
 When `RemotingTest_Core` broadcasts a fatal error, deliver the `!Error` package through `IChannelServer::BroadcastError` and give HTTP/named-pipe transports enough shutdown ordering to let clients consume it. Browser and renderer clients should observe the fatal package rather than only seeing the transport close.
+
+When replacing a renderer, detach the old renderer from the core channel before disconnecting it. Send a raw `ControllerConnectionStopped` package to the old renderer when possible, and use transport disconnect only as the fallback.
+
+## Remote core accepts replacement renderers by detaching stale renderer
+
+`RemotingTest_Core::StartServer` should accept a new renderer even when a previous renderer is still connected: make the new renderer current, detach/mark the old renderer stale, and ignore stale renderer messages. If there is no current renderer, submit batches should be discarded rather than buffered indefinitely; an atomic renderer id is enough for this ownership boundary.
+
+Keep remote controller/window connection replay ordered so `Run()` submits only after the pre-run controller connection has been replayed, avoiding duplicate startup or DPI callbacks.
+
+## Stop remoting transports before stack channel wrappers destruct
+
+Renderer-side remoting clients should explicitly stop or detach their network connection before stack-owned channel wrappers are destroyed, especially on fatal-exit paths. Do not depend on a wrapper destructor to unwind pending callbacks that still know about the transport.
+
+## Do not call `IChannel::Initialize(nullptr)` to uninstall readers
+
+Treat `IChannel::Initialize(...)` as an install-only boundary. To shut down or detach a remote channel, clear/detach the async wrapper state and stop the transport instead of calling `Initialize(nullptr)` as an implicit uninstaller.
+
+## Use `EventObject` for renderer-connection waits after channel server start
+
+After `IChannelServer::WaitForClient` is removed, `RemotingTest_Core::StartServer` can wait for the first renderer with a local manual-reset `EventObject` signaled from `OnClientConnected` after `IChannelServer::Start()` succeeds.
 
 ## `GuiDocumentCommonInterface::ProcessKey` ignores Enter in `GuiDocumentParagraphMode::Singleline`
 
