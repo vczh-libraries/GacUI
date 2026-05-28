@@ -15,6 +15,8 @@ Utilities Registration
 
 		void GuiInitializeUtilities()
 		{
+			GetNativeServiceSubstitution()->Substitute(INativeAutomationService::UnavailableService(), true);
+
 			if (!fakeClipboardService)
 			{
 				fakeClipboardService = new FakeClipboardService;

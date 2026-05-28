@@ -7,6 +7,60 @@ namespace vl
 		const NativeWindowFrameConfig NativeWindowFrameConfig::Default = {};
 
 /***********************************************************************
+INativeAutomationService
+***********************************************************************/
+
+		class UnavailableAutomationService : public Object, public INativeAutomationService
+		{
+		public:
+			bool Available() override
+			{
+				return false;
+			}
+
+			void Stop() override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			bool CanDumpControlTree() override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			WString DumpControlTree(bool) override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			bool CanDumpDomTree() override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			WString DumpDomTree() override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			bool CanRunIOCommands() override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			WString RunIOCommand(const WString&) override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+		};
+
+		INativeAutomationService* INativeAutomationService::UnavailableService()
+		{
+			static UnavailableAutomationService service;
+			return &service;
+		}
+
+/***********************************************************************
 INativeWindowListener
 ***********************************************************************/
 

@@ -455,6 +455,12 @@ GuiRemoteController (INativeController)
 		return nullptr;
 	}
 
+	INativeAutomationService* GuiRemoteController::AutomationService()
+	{
+		// Use INativeAutomationService::UnavailableService
+		return nullptr;
+	}
+
 	WString GuiRemoteController::GetExecutablePath()
 	{
 		return remoteProtocol->GetExecutablePath();

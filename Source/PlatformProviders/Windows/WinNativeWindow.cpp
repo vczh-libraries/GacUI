@@ -2015,6 +2015,12 @@ WindowsController
 					return &dialogService;
 				}
 
+				INativeAutomationService* AutomationService()
+				{
+					// Use INativeAutomationService::UnavailableService
+					return nullptr;
+				}
+
 				WString GetExecutablePath()
 				{
 					Array<wchar_t> buffer(65536);

@@ -59,6 +59,11 @@ public:
 		CHECK_FAIL(L"Not implemented!");
 	}
 
+	INativeAutomationService* AutomationService() override
+	{
+		CHECK_FAIL(L"Not implemented!");
+	}
+
 	WString GetExecutablePath() override
 	{
 		CHECK_FAIL(L"Not implemented!");

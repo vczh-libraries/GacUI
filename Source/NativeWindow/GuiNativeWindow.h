@@ -25,6 +25,7 @@ Interfaces:
   INativeInputService					: Input Service
   INativeCallbackService				: Callback Service
   INativeDialogService					: Dialog Service
+  INativeAutomationService				: Automation Service
 
 ***********************************************************************/
 
@@ -1695,6 +1696,72 @@ INativeDialogService
 		}
 
 /***********************************************************************
+INativeAutomationService
+***********************************************************************/
+
+		/// <summary>
+		/// Automation service. To access this service, use [M:vl.presentation.INativeController.AutomationService].
+		/// </summary>
+		class INativeAutomationService : public virtual Interface
+		{
+		public:
+			static INativeAutomationService*		UnavailableService();
+
+			/// <summary>
+			/// Test if the service is available.
+			/// When it returns false, all other memthods should raise an exception.
+			/// Any real implementation should return true, in this case, unsupported features could just no-op.
+			/// </summary>
+			/// <returns>Returns false when the automation service is completely unavailable. This is different from availability of each features.</returns>
+			virtual bool							Available() = 0;
+
+			/// <summary>
+			/// Turn off all features.
+			/// </summary>
+			virtual void							Stop() = 0;
+
+			/// <summary>
+			/// Test if <see cref="DumpControlTree"/> is available.
+			/// This feature only works on GacUI applications, or when remote protocol is in use, the core side.
+			/// </summary>
+			/// <returns>Returns true if this function is available. Otherwise it should returns an empty string.</returns>
+			virtual bool							CanDumpControlTree() = 0;
+
+			/// <summary>
+			/// Dump the control tree.
+			/// </summary>
+			/// <param name="withCompositionsAndElements">Set to true to include compositions and elements.</param>
+			/// <returns>The dump.</returns>
+			virtual WString							DumpControlTree(bool withCompositionsAndElements) = 0;
+
+			/// <summary>
+			/// Test if <see cref="DumpDomTree"/> is available.
+			/// This feature only works on the remote protocol renderer side.
+			/// </summary>
+			/// <returns>Returns true if this function is available. Otherwise it should returns an empty string.</returns>
+			virtual bool							CanDumpDomTree() = 0;
+
+			/// <summary>
+			/// Dump the DOM tree.
+			/// </summary>
+			/// <returns>The dump.</returns>
+			virtual WString							DumpDomTree() = 0;
+
+			/// <summary>
+			/// Test if <see cref="RunIOCommands"/> is available.
+			/// This feature only works on GacUI applications, or when remote protocol is in use, the renderer side.
+			/// </summary>
+			/// <returns>Returns true if this function is available. Otherwise it should returns an empty string.</returns>
+			virtual bool							CanRunIOCommands() = 0;
+
+			/// <summary>
+			/// Run an IO command.
+			/// </summary>
+			/// <returns>The result of the IO commands, or an error message starting with "!".</returns>
+			virtual WString							RunIOCommand(const WString& ioCommand) = 0;
+		};
+
+/***********************************************************************
 Native Window Controller
 ***********************************************************************/
 
@@ -1750,6 +1817,11 @@ Native Window Controller
 			/// <returns>The user dialog service</returns>
 			virtual INativeDialogService*			DialogService()=0;
 			/// <summary>
+			/// Get the automation service.
+			/// </summary>
+			/// <returns>The user automation service</returns>
+			virtual INativeAutomationService*		AutomationService()=0;
+			/// <summary>
 			/// Get the file path of the current executable.
 			/// </summary>
 			/// <returns>The file path of the current executable.</returns>
@@ -1792,10 +1864,13 @@ Native Window Controller
 		};
 
 		/// <summary>
-		/// Get the global native system service controller.
+		/// Get the global system service controller.
+		/// This is not the controller passed into <see cref="SetNativeController"/>.
+		/// It is a controller with some services substitutable with <see cref="GetNativeServiceSubstitution"/>.
+		/// Default implementation of substitutable services is specified in <see cref="vl::presentation::GuiInitializeUtilities"/>.
 		/// </summary>
-		/// <returns>The global native system service controller.</returns>
-		extern								INativeController* GetCurrentController();
+		/// <returns>The global system service controller.</returns>
+		extern INativeController*			GetCurrentController();
 		/// <summary>
 		/// Set the global native system service controller.
 		/// </summary>
@@ -1805,6 +1880,7 @@ Native Window Controller
 #define GUI_SUBSTITUTABLE_SERVICES(F)	\
 		F(Clipboard)					\
 		F(Dialog)						\
+		F(Automation)					\
 
 #define GUI_UNSUBSTITUTABLE_SERVICES(F)	\
 		F(Callback)						\

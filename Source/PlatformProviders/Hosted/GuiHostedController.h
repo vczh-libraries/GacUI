@@ -234,6 +234,7 @@ GuiHostedController
 			INativeImageService*			ImageService() override;
 			INativeInputService*			InputService() override;
 			INativeDialogService*			DialogService() override;
+			INativeAutomationService*		AutomationService() override;
 			WString							GetExecutablePath() override;
 			
 			INativeScreenService*			ScreenService() override;

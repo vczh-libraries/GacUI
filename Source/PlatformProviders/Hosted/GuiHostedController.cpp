@@ -1211,6 +1211,12 @@ GuiHostedController::INativeController
 			return nullptr;
 		}
 
+		INativeAutomationService* GuiHostedController::AutomationService()
+		{
+			// Use INativeAutomationService::UnavailableService
+			return nullptr;
+		}
+
 		WString GuiHostedController::GetExecutablePath()
 		{
 			return nativeController->GetExecutablePath();
