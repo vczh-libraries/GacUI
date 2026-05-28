@@ -279,6 +279,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics_Document_Helpers.cpp">
       <Filter>PlatformProviders\Remote</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAutomationService.cpp">
+      <Filter>Utilities\SharedServices</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.h">
@@ -401,6 +404,9 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics_Document.h">
       <Filter>PlatformProviders\Remote</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAutomationService.h">
+      <Filter>Utilities\SharedServices</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

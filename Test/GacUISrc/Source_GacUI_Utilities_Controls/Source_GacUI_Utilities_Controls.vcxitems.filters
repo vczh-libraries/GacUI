@@ -30,7 +30,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\GuiFakeDialogService.cpp">
       <Filter>Utilities\FakeServices\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAutomationService.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAutomationService_Controls.cpp">
       <Filter>Utilities\SharedServices</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,7 +44,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\GuiFakeDialogService.h">
       <Filter>Utilities\FakeServices\Dialogs</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAutomationService.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAutomationService_Controls.h">
       <Filter>Utilities\SharedServices</Filter>
     </ClInclude>
   </ItemGroup>

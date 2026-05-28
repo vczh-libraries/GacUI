@@ -100,6 +100,7 @@ WindowsForm
 
 			class WindowsForm : public Object, public INativeWindow, public IWindowsForm
 			{
+				friend class WindowsAutomationServiceBase;
 			protected:
 				
 				LONG_PTR InternalGetExStyle()
@@ -1754,6 +1755,7 @@ WindowsController
 
 			class WindowsController : public Object, public virtual INativeController, public virtual INativeWindowService
 			{
+				friend class WindowsAutomationServiceBase;
 			protected:
 				WinClass							windowClass;
 				WinClass							godClass;
@@ -2157,6 +2159,41 @@ Windows Platform Native Controller
 						pSetPolicy(dwFlags & ~EXCEPTION_SWALLOWING);
 					} 
 				} 
+			}
+
+/***********************************************************************
+WindowsAutomationServiceBase
+***********************************************************************/
+
+			WString WindowsAutomationServiceBase::RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand)
+			{
+				auto controller = dynamic_cast<WindowsController*>(GetWindowsNativeController());
+				if (!controller)
+				{
+					return L"!GetWindowsNativeController not ready.";
+				}
+
+				WindowsForm* windowsForm = controller->mainWindow;
+				if (windowId)
+				{
+					WindowsForm* typedId = reinterpret_cast<WindowsForm*>(static_cast<intptr_t>(wtou(windowId.Value())));
+					if (!controller->windows.Values().Contains(typedId))
+					{
+						return L"!Invalid window id: " + windowId.Value();
+					}
+					windowsForm = typedId;
+				}
+				else if (!windowsForm)
+				{
+					return L"!Invalid main window.";
+				}
+
+				return RunIOCommandOnNativeWindow(controller, windowsForm->listeners, ioCommand);
+			}
+
+			bool WindowsAutomationServiceBase::CanRunIOCommands()
+			{
+				return true;
 			}
 		}
 	}

@@ -15,16 +15,6 @@ namespace vl
 {
 	namespace presentation
 	{
-		namespace controls
-		{
-			class GuiWindow;
-		}
-
-		/*
-		* Schema:
-		*/
-		extern Ptr<glr::json::JsonNode>			DumpWindowClientArea(controls::GuiWindow* window, bool withCompositionsAndElements, Nullable<WString> windowId, Point offsetLogical, double scaleX, double scaleY);
-
 		/*
 		* Predefined Commands:
 		*/

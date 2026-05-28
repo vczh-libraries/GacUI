@@ -49,6 +49,16 @@ Windows Platform Native Controller
 			extern void										GetAllCreatedWindows(collections::List<IWindowsForm*>& windows, bool rootWindowOnly);
 			extern void										StopWindowsNativeController();
 			extern void										EnableCrossKernelCrashing();
+
+			class WindowsAutomationServiceBase : public AutomationServiceBase
+			{
+			protected:
+				WString										RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) override;
+
+			public:
+
+				bool										CanRunIOCommands() override;
+			};
 		}
 	}
 }

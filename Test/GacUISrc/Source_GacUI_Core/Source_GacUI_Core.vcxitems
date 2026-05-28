@@ -54,6 +54,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResource.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAsyncService.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAutomationService.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedCallbackService.h" />
   </ItemGroup>
   <ItemGroup>
@@ -128,6 +129,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceTypeResolvers.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAsyncService.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAutomationService.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedCallbackService.cpp" />
   </ItemGroup>
   <ItemGroup>
