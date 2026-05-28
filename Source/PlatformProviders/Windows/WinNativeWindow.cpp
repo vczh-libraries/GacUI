@@ -2221,51 +2221,64 @@ HttpAutomationService
 					auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
 					auto asyncService = GetCurrentController()->AsyncService();
 					auto automationService = GetCurrentController()->AutomationService();
-					if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pAbsPath == urlControls)
+
+					try
 					{
-						asyncService->InvokeInMainThread(mainWindow, [=]()
+						if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pAbsPath == urlControls)
 						{
 							if (automationService->CanDumpControlTree())
 							{
-								SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 200, automationService->DumpControlTree(false) });
+								asyncService->InvokeInMainThread(mainWindow, [=]()
+								{
+									SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, automationService->DumpControlTree(false));
+								});
+								return;
 							}
-						});
-						return;
-					}
-					else if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pAbsPath == urlControlsVerbose)
-					{
-						asyncService->InvokeInMainThread(mainWindow, [=]()
+						}
+						else if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pAbsPath == urlControlsVerbose)
 						{
 							if (automationService->CanDumpControlTree())
 							{
-								SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 200, automationService->DumpControlTree(true) });
+								asyncService->InvokeInMainThread(mainWindow, [=]()
+								{
+									SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, automationService->DumpControlTree(true));
+								});
+								return;
 							}
-						});
-						return;
-					}
-					else if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pAbsPath == urlDom)
-					{
-						asyncService->InvokeInMainThread(mainWindow, [=]()
+						}
+						else if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pAbsPath == urlDom)
 						{
 							if (automationService->CanDumpControlTree())
 							{
-								SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 200, automationService->DumpDomTree() });
+								asyncService->InvokeInMainThread(mainWindow, [=]()
+								{
+									SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, automationService->DumpDomTree());
+								});
+								return;
 							}
-						});
-						return;
-					}
-					else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pAbsPath == urlIO)
-					{
-						auto body = GetUtf8Body(pRequest);
-						asyncService->InvokeInMainThread(mainWindow, [=]()
+						}
+						else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pAbsPath == urlIO)
 						{
 							if (automationService->CanDumpControlTree())
 							{
-								SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 200, automationService->RunIOCommand(body) });
+								WString body = GetUtf8Body(pRequest);
+								asyncService->InvokeInMainThread(mainWindow, [=]()
+								{
+									SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, automationService->RunIOCommand(body));
+								});
+								return;
 							}
-						});
-						return;
+						}
 					}
+					catch (const Error& error)
+					{
+						SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 404, WString::Unmanaged(error.Description()) });
+					}
+					catch (const Exception& ex)
+					{
+						SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 404, ex.Message() });
+					}
+					SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 404, L"URL not supported." });
 				}
 
 			public:
