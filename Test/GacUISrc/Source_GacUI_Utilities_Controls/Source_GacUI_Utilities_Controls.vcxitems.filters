@@ -13,6 +13,9 @@
     <Filter Include="Utilities\FakeServices\Dialogs\Source">
       <UniqueIdentifier>{f73cd321-195c-41db-a7a3-d6e6f051854a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utilities\SharedServices">
+      <UniqueIdentifier>{a712d1d5-6e4d-4389-8570-cc33a0711062}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\GuiUtilitiesRegistration.cpp">
@@ -27,6 +30,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\GuiFakeDialogService.cpp">
       <Filter>Utilities\FakeServices\Dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAutomationService.cpp">
+      <Filter>Utilities\SharedServices</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUI.h">
@@ -37,6 +43,9 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\GuiFakeDialogService.h">
       <Filter>Utilities\FakeServices\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAutomationService.h">
+      <Filter>Utilities\SharedServices</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

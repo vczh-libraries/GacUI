@@ -20,7 +20,6 @@ INativeAutomationService
 
 			void Stop() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			bool CanDumpControlTree() override

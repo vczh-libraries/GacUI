@@ -600,6 +600,11 @@ GuiControlHost
 			{
 				if (auto window = host->GetNativeWindow())
 				{
+					auto controller = GetCurrentController();
+					if (window == controller->WindowService()->GetMainWindow())
+					{
+						controller->AutomationService()->Stop();
+					}
 					window->Hide(false);
 				}
 			}
