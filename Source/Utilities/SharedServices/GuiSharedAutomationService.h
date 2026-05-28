@@ -37,7 +37,7 @@ namespace vl
 
 			virtual WString						DumpControlTreeInternal(bool withCompositionsAndElements) { return WString::Empty; }
 			virtual WString						DumpDomTreeInternal() { return WString::Empty; }
-			virtual WString						RunIOCommandInternal(const WString& ioCommand) { return WString::Empty; }
+			virtual WString						RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) { return WString::Empty; }
 		public:
 			AutomationServiceBase() = default;
 			~AutomationServiceBase() = default;
@@ -77,9 +77,9 @@ namespace vl
 				return false;
 			}
 
-			WString RunIOCommand(const WString& ioCommand) override
+			WString RunIOCommand(Nullable<WString> windowId, const WString& ioCommand) override
 			{
-				return !stopped && CanRunIOCommands() ? RunIOCommandInternal(ioCommand) : WString::Empty;
+				return !stopped && CanRunIOCommands() ? RunIOCommandInternal(windowId, ioCommand) : WString::Empty;
 			}
 		};
 	}

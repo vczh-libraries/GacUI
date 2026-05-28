@@ -1,7 +1,7 @@
 #include "WinDirect2DApplication.h"
+#include "..\ServicesImpl\WindowsImageService.h"
 #include "..\..\Hosted\GuiHostedController.h"
 #include "Renderers\GuiGraphicsWindowsDirect2D.h"
-#include <ShellScalingApi.h>
 
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "dxguid.lib")

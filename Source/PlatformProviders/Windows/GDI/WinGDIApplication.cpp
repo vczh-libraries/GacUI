@@ -1,7 +1,7 @@
 #include "WinGDIApplication.h"
+#include "..\ServicesImpl\WindowsImageService.h"
 #include "..\..\Hosted\GuiHostedController.h"
 #include "Renderers\GuiGraphicsWindowsGDI.h"
-#include <ShellScalingApi.h>
 
 namespace vl
 {

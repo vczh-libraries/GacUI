@@ -1757,8 +1757,10 @@ INativeAutomationService
 			/// <summary>
 			/// Run an IO command.
 			/// </summary>
+			/// <param name="windowId">The id of the window for the IO command. It should match the content from <see cref="DumpControlTree"/>. Specify null for hosted mode application or remote protocol renderer.</param>
+			/// <param name="ioCommand">The IO command.</param>
 			/// <returns>The result of the IO commands, or an error message starting with "!".</returns>
-			virtual WString							RunIOCommand(const WString& ioCommand) = 0;
+			virtual WString							RunIOCommand(Nullable<WString> windowId, const WString& ioCommand) = 0;
 		};
 
 /***********************************************************************

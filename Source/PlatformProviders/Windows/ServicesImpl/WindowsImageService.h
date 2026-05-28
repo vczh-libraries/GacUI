@@ -10,7 +10,6 @@ Interfaces:
 #define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSIMAGESERIVCE
 
 #include "..\..\..\NativeWindow\GuiNativeWindow.h"
-#include "..\WinNativeDpiAwareness.h"
 #include <wincodec.h>
 
 namespace vl

@@ -47,7 +47,7 @@ INativeAutomationService
 				CHECK_FAIL(L"Not Implemented!");
 			}
 
-			WString RunIOCommand(const WString&) override
+			WString RunIOCommand(Nullable<WString> windowId, const WString&) override
 			{
 				CHECK_FAIL(L"Not Implemented!");
 			}
