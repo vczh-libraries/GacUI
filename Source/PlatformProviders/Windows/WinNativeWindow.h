@@ -10,8 +10,8 @@ Interfaces:
 #define VCZH_PRESENTATION_WINDOWS_WINNATIVEWINDOW
 
 #include "..\..\NativeWindow\GuiNativeWindow.h"
-#include "WinNativeDpiAwareness.h"
 #include "..\..\Utilities\SharedServices\GuiSharedAutomationService.h"
+#include "WinNativeDpiAwareness.h"
 
 namespace vl
 {
@@ -57,8 +57,12 @@ Windows Platform Native Controller
 
 			public:
 
+				void										Stop() override;
 				bool										CanRunIOCommands() override;
 			};
+
+			extern void										StartWindowsHttpAutomationService();
+			extern void										StopWindowsHttpAutomationService();
 		}
 	}
 }

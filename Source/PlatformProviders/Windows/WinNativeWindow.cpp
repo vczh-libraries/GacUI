@@ -9,6 +9,7 @@
 #include "ServicesImpl\WindowsInputService.h"
 #include "ServicesImpl\WindowsDialogService.h"
 #include <CommCtrl.h>
+#include <VlppOS.Windows.h>
 
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "Shlwapi.lib")
@@ -2191,9 +2192,27 @@ WindowsAutomationServiceBase
 				return RunIOCommandOnNativeWindow(controller, windowsForm->listeners, ioCommand);
 			}
 
+			void WindowsAutomationServiceBase::Stop()
+			{
+				AutomationServiceBase::Stop();
+				StopWindowsHttpAutomationService();
+			}
+
 			bool WindowsAutomationServiceBase::CanRunIOCommands()
 			{
 				return true;
+			}
+
+/***********************************************************************
+StartWindowsHttpAutomationService
+***********************************************************************/
+
+			void StartWindowsHttpAutomationService()
+			{
+			}
+
+			void StopWindowsHttpAutomationService()
+			{
 			}
 		}
 	}

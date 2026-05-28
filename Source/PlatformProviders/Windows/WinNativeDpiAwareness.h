@@ -9,8 +9,8 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_WINDOWS_WINNATIVEDPIAWARENESS
 #define VCZH_PRESENTATION_WINDOWS_WINNATIVEDPIAWARENESS
 
+#define _WINSOCKAPI_
 #include <Windows.h>
-#include <ShellScalingApi.h>
 
 namespace vl
 {

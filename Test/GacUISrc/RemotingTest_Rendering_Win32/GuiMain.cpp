@@ -1,7 +1,7 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
-#include "../../../Import/VlppOS.Windows.h"
+#include <VlppOS.Windows.h>
 
 using namespace vl;
 using namespace vl::presentation;

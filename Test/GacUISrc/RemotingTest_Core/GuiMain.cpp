@@ -2,7 +2,7 @@
 #include "RpMainWindow.h"
 #include "MainWindow.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
-#include "../../../Import/VlppOS.Windows.h"
+#include <VlppOS.Windows.h>
 
 using namespace vl;
 using namespace vl::console;
