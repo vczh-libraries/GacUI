@@ -2261,10 +2261,10 @@ HttpAutomationService
 						{
 							if (automationService->CanDumpControlTree())
 							{
-								WString body = GetUtf8Body(pRequest);
+								WString body = GetUtf8Body(pRequest).Value();
 								asyncService->InvokeInMainThread(mainWindow, [=]()
 								{
-									SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, automationService->RunIOCommand(body));
+									SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, automationService->RunIOCommand({}, body));
 								});
 								return;
 							}

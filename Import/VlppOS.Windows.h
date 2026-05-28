@@ -410,7 +410,9 @@ public:
 	bool											IsStopped();
 	HANDLE											GetHttpRequestQueue() const;
 
+	Nullable<WString>								GetUtf8Body(PHTTP_REQUEST pRequest);
 	static ULONG									SendResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, const HttpServerResponse& response);
+	static void										SendResponseUtf8(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, WString body);
 };
 
 }
