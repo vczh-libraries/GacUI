@@ -28,7 +28,60 @@ namespace vl
 		/*
 		* Predefined Commands:
 		*/
-		extern WString							RunIOCommand(INativeController* nativeController, collections::List<Ptr<INativeWindowListener>>& listeners, WString command);
+		extern WString							RunIOCommandOnNativeWindow(INativeController* nativeController, collections::List<INativeWindowListener*>& listeners, WString command);
+
+		class AutomationServiceBase : public Object, public INativeAutomationService
+		{
+		protected:
+			bool								stopped = false;
+
+			virtual WString						DumpControlTreeInternal(bool withCompositionsAndElements) { return WString::Empty; }
+			virtual WString						DumpDomTreeInternal() { return WString::Empty; }
+			virtual WString						RunIOCommandInternal(const WString& ioCommand) { return WString::Empty; }
+		public:
+			AutomationServiceBase() = default;
+			~AutomationServiceBase() = default;
+
+			bool Available() override
+			{
+				return true;
+			}
+
+			void Stop() override
+			{
+				stopped = true;
+			}
+
+			bool CanDumpControlTree() override
+			{
+				return false;
+			}
+
+			WString DumpControlTree(bool withCompositionsAndElements) override
+			{
+				return !stopped && CanDumpControlTree() ? DumpControlTreeInternal(withCompositionsAndElements) : WString::Empty;
+			}
+
+			bool CanDumpDomTree() override
+			{
+				return false;
+			}
+
+			WString DumpDomTree() override
+			{
+				return !stopped && CanDumpDomTree() ? DumpDomTreeInternal() : WString::Empty;
+			}
+
+			bool CanRunIOCommands() override
+			{
+				return false;
+			}
+
+			WString RunIOCommand(const WString& ioCommand) override
+			{
+				return !stopped && CanRunIOCommands() ? RunIOCommandInternal(ioCommand) : WString::Empty;
+			}
+		};
 	}
 }
 

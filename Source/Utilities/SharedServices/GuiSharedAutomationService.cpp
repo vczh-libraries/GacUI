@@ -9,7 +9,7 @@ namespace vl
 			CHECK_FAIL(L"Not Implemented!");
 		}
 
-		WString RunIOCommand(INativeController* nativeController, collections::List<Ptr<INativeWindowListener>>& listeners, WString command)
+		WString RunIOCommandOnNativeWindow(INativeController* nativeController, collections::List<INativeWindowListener*>& listeners, WString command)
 		{
 			CHECK_FAIL(L"Not Implemented!");
 		}
