@@ -61,7 +61,7 @@ Windows Platform Native Controller
 				bool										CanRunIOCommands() override;
 			};
 
-			extern void										StartWindowsHttpAutomationService();
+			extern void										StartWindowsHttpAutomationService(const WString& applicationName, vint port);
 			extern void										StopWindowsHttpAutomationService();
 		}
 	}

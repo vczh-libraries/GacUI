@@ -2204,15 +2204,105 @@ WindowsAutomationServiceBase
 			}
 
 /***********************************************************************
-StartWindowsHttpAutomationService
+HttpAutomationService
 ***********************************************************************/
 
-			void StartWindowsHttpAutomationService()
+			class HttpAutomationService : public inter_process::HttpServerApi
 			{
+			protected:
+				WString			urlPrefix;
+				WString			urlControls;
+				WString			urlControlsVerbose;
+				WString			urlDom;
+				WString			urlIO;
+
+				void OnHttpRequestReceived(PHTTP_REQUEST pRequest)
+				{
+					auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
+					auto asyncService = GetCurrentController()->AsyncService();
+					auto automationService = GetCurrentController()->AutomationService();
+					if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pAbsPath == urlControls)
+					{
+						asyncService->InvokeInMainThread(mainWindow, [=]()
+						{
+							if (automationService->CanDumpControlTree())
+							{
+								SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 200, automationService->DumpControlTree(false) });
+							}
+						});
+						return;
+					}
+					else if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pAbsPath == urlControlsVerbose)
+					{
+						asyncService->InvokeInMainThread(mainWindow, [=]()
+						{
+							if (automationService->CanDumpControlTree())
+							{
+								SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 200, automationService->DumpControlTree(true) });
+							}
+						});
+						return;
+					}
+					else if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pAbsPath == urlDom)
+					{
+						asyncService->InvokeInMainThread(mainWindow, [=]()
+						{
+							if (automationService->CanDumpControlTree())
+							{
+								SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 200, automationService->DumpDomTree() });
+							}
+						});
+						return;
+					}
+					else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pAbsPath == urlIO)
+					{
+						auto body = GetUtf8Body(pRequest);
+						asyncService->InvokeInMainThread(mainWindow, [=]()
+						{
+							if (automationService->CanDumpControlTree())
+							{
+								SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 200, automationService->RunIOCommand(body) });
+							}
+						});
+						return;
+					}
+				}
+
+			public:
+				HttpAutomationService(const WString& applicationName, vint port)
+					: urlPrefix(WString::Unmanaged(L"http://localhost:") + itow(port) + WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/"))
+					, urlControls(urlPrefix + WString::Unmanaged(L"Controls"))
+					, urlControlsVerbose(urlPrefix + WString::Unmanaged(L"ControlsVerbose"))
+					, urlDom(urlPrefix + WString::Unmanaged(L"Dom"))
+					, urlIO(urlPrefix + WString::Unmanaged(L"IO"))
+					, HttpServerApi(urlPrefix, false)
+				{
+				}
+			};
+
+			HttpAutomationService* httpAutomationService = nullptr;
+
+			void StartWindowsHttpAutomationService(const WString& applicationName, vint port)
+			{
+				if (!GetCurrentController()->AutomationService()->Available())
+				{
+					return;
+				}
+				if (!httpAutomationService)
+				{
+					httpAutomationService = new HttpAutomationService(applicationName, port);
+					httpAutomationService->Start();
+				}
 			}
 
 			void StopWindowsHttpAutomationService()
 			{
+				if (httpAutomationService)
+				{
+					httpAutomationService->Stop();
+					delete httpAutomationService;
+					httpAutomationService = nullptr;
+				}
 			}
 		}
 	}
