@@ -10,11 +10,14 @@ Interfaces:
 #define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDAUTOMATIONSERVICE
 
 #include "../../NativeWindow/GuiNativeWindow.h"
+#include "../../PlatformProviders/Remote/Protocol/Generated/GuiRemoteProtocolSchema.h"
 
 namespace vl
 {
 	namespace presentation
 	{
+		extern WString							DumpRemoteProtocolRenderingDom(const WString& title, const remoteprotocol::WindowSizingConfig& windowSizingConfig, Ptr<remoteprotocol::RenderingDom> renderingDom);
+
 		/*
 		* Predefined Commands:
 		*/

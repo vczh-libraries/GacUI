@@ -26,23 +26,7 @@ protected:
 
 	WString DumpDomTreeInternal() override
 	{
-		auto domRoot = Ptr(new glr::json::JsonObject);
-		ConvertCustomTypeToJsonField(domRoot, L"Title", GetApplication()->GetMainWindow()->GetText());
-		ConvertCustomTypeToJsonField(domRoot, L"Window", windowSizingConfig);
-		if (renderingDom)
-		{
-			ConvertCustomTypeToJsonField(domRoot, L"Dom", renderingDom);
-		}
-		return stream::GenerateToStream([=](stream::TextWriter& writer)
-		{
-			glr::json::JsonFormatting formatting;
-			formatting.spaceAfterColon = true;
-			formatting.spaceAfterComma = true;
-			formatting.crlf = true;
-			formatting.compact = true;
-			formatting.indentation = L"  ";
-			return glr::json::JsonPrint(domRoot, writer, formatting);
-		});
+		return DumpRemoteProtocolRenderingDom(GetCurrentController()->WindowService()->GetMainWindow()->GetTitle(), windowSizingConfig, renderingDom);
 	}
 
 public:

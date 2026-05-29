@@ -129,17 +129,8 @@ RemoteProtocolTest means `Generated_RemoteProtocolTest.vcxitems`.
 
 When running these projects, you are recommended to always attach a debugger on them.
 Because some runtime exceptions are silently consumed by Windows causing the application not to crash, covering issues if no debugger is attached.
-Each project responds to `http://localhost:8888/Automation/<PROJECT-NAME>/...` using `StartWindowsHttpAutomationService`:
-- GET `.../Controls` and `.../ControlsVerbose`, for GacUI applications, exposing all visible windows and popups.
-  - Read `GuiSharedAutomationService_Controls.h` for the schema.
-- GET `.../Dom`, for remote protocol renderer, exposing the DOM tree.
-  - Implemented in `RemotingTest_Rendering_Win32`. 
-- POST `.../IO` or `IO/<WINDOW-ID>`
-  - IRead `GuiSharedAutomationService.h` for the schema.
-  - `<WINDOW-ID>` is the window id returning from `.../Controls` or `.../ControlsVerbose`.
-  - The window ID can be comitted for the main window.
-  - The window ID must be omitted for GacUI applications with hosted mode or remote protocol core side.
-    - In this case all sub windows or popups behaves like controls in the main window.
+Each project responds to `http://localhost:8888/Automation/<PROJECT-NAME>/...` using `StartWindowsHttpAutomationService`.
+- Checkout `REPO-ROOT/.github/Guidelines/Running-GacUI.md` for details.
 
 ## Linux Specific
 
