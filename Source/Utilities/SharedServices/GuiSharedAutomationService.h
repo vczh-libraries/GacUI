@@ -16,10 +16,23 @@ namespace vl
 {
 	namespace presentation
 	{
-		extern WString							DumpRemoteProtocolRenderingDom(const WString& title, const remoteprotocol::WindowSizingConfig& windowSizingConfig, Ptr<remoteprotocol::RenderingDom> renderingDom);
+		/*
+		* Schema:
+		*/
+		extern WString							DumpRemoteProtocolRenderingDom(
+													const WString& title,
+													const remoteprotocol::WindowSizingConfig& windowSizingConfig,
+													Ptr<remoteprotocol::RenderingDom> renderingDom,
+													collections::Dictionary<vint, collections::Pair<remoteprotocol::RendererType, Nullable<remoteprotocol::UnitTest_ElementDescVariant>>>& elementData
+													);
 
 		/*
 		* Predefined Commands:
+		* !Type:<TEXT>
+		*   Type <TEXT> to the focused control.
+		* !Exit
+		*   Try to quit the application, it could be blocked by the application itself.
+		* (to be edited ...)
 		*/
 		extern WString							RunIOCommandOnNativeWindow(INativeController* nativeController, collections::List<INativeWindowListener*>& listeners, WString command);
 

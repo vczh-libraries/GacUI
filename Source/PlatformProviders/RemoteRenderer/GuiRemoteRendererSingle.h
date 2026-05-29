@@ -66,6 +66,7 @@ namespace vl::presentation::remote_renderer
 			Nullable<Size>											minSize;
 		};
 
+		using ElementDataMap = collections::Dictionary<vint, collections::Pair<remoteprotocol::RendererType, Nullable<remoteprotocol::UnitTest_ElementDescVariant>>>;
 		using ElementMap = collections::Dictionary<vint, Ptr<elements::IGuiGraphicsElement>>;
 		using ImageMap = collections::Dictionary<vint, Ptr<INativeImage>>;
 		using SolidLabelMeasuringMap = collections::Dictionary<vint, SolidLabelMeasuring>;
@@ -77,6 +78,7 @@ namespace vl::presentation::remote_renderer
 
 		ElementMap								availableElements;
 		ImageMap								availableImages;
+		ElementDataMap							renderingElements;
 		Ptr<remoteprotocol::RenderingDom>		renderingDom;
 		remoteprotocol::DomIndex				renderingDomIndex;
 

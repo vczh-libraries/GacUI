@@ -10,11 +10,36 @@ namespace vl
 DumpRemoteProtocolRenderingDom
 ***********************************************************************/
 
-		WString DumpRemoteProtocolRenderingDom(const WString& title, const remoteprotocol::WindowSizingConfig& windowSizingConfig, Ptr<remoteprotocol::RenderingDom> renderingDom)
+		WString DumpRemoteProtocolRenderingDom(
+			const WString& title,
+			const remoteprotocol::WindowSizingConfig& windowSizingConfig,
+			Ptr<remoteprotocol::RenderingDom> renderingDom,
+			collections::Dictionary<vint, collections::Pair<remoteprotocol::RendererType, Nullable<remoteprotocol::UnitTest_ElementDescVariant>>>& elementData
+		)
 		{
 			auto domRoot = Ptr(new glr::json::JsonObject);
 			ConvertCustomTypeToJsonField(domRoot, L"Title", title);
 			ConvertCustomTypeToJsonField(domRoot, L"Window", windowSizingConfig);
+
+			{
+				auto field = Ptr(new glr::json::JsonObjectField);
+				field->name.value = WString::Unmanaged(L"Elements");
+
+				auto jsonArray = Ptr(new glr::json::JsonArray);
+				field->value = jsonArray;
+				domRoot->fields.Add(field);
+
+				for (auto [id, data] : elementData)
+				{
+					auto jsonElement = Ptr(new glr::json::JsonObject);
+					jsonArray->items.Add(jsonElement);
+
+					ConvertCustomTypeToJsonField<vint>(jsonElement, L"Id", id);
+					ConvertCustomTypeToJsonField(jsonElement, L"Type", data.key);
+					ConvertCustomTypeToJsonField(jsonElement, L"Data", data.value.Value());
+				}
+			}
+
 			if (renderingDom)
 			{
 				ConvertCustomTypeToJsonField(domRoot, L"Dom", renderingDom);
@@ -37,6 +62,11 @@ RunIOCommandOnNativeWindow
 
 		WString RunIOCommandOnNativeWindow(INativeController* nativeController, collections::List<INativeWindowListener*>& listeners, WString command)
 		{
+			if (command == L"!Exit")
+			{
+				nativeController->WindowService()->GetMainWindow()->Hide(true);
+				return WString::Empty;
+			}
 			CHECK_FAIL(L"Not Implemented!");
 		}
 	}

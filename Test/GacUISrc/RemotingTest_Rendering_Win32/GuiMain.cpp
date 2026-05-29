@@ -26,7 +26,7 @@ protected:
 
 	WString DumpDomTreeInternal() override
 	{
-		return DumpRemoteProtocolRenderingDom(GetCurrentController()->WindowService()->GetMainWindow()->GetTitle(), windowSizingConfig, renderingDom);
+		return DumpRemoteProtocolRenderingDom(GetCurrentController()->WindowService()->GetMainWindow()->GetTitle(), windowSizingConfig, renderingDom, renderingElements);
 	}
 
 public:
