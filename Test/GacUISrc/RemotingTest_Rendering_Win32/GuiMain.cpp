@@ -134,7 +134,7 @@ void GuiMain()
 	renderer->RegisterMainWindow(mainWindow);
 	asyncChannel->SetInvokeInMainThread(&invoker);
 
-	GetNativeServiceSubstitution()->Substitute(renderer, true);
+	GetNativeServiceSubstitution()->Substitute(renderer, false);
 	windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/RemotingTest_Rendering_Win32"), 8888);
 	GetCurrentController()->WindowService()->Run(mainWindow);
 	GetCurrentController()->AutomationService()->Stop();

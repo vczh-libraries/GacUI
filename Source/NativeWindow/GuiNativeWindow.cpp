@@ -276,6 +276,10 @@ Native Window Provider
 						!requested,
 						L"The service cannot be substituted because it has been used."
 						);
+					if (service && !optional && _optional)
+					{
+						return;
+					}
 					service = _service;
 					optional = _optional;
 				}

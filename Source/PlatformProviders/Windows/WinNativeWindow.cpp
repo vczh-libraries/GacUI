@@ -2238,7 +2238,6 @@ HttpAutomationService
 			class HttpAutomationService : public inter_process::HttpServerApi
 			{
 			protected:
-				WString			urlPrefix;
 				WString			urlControls;
 				WString			urlControlsVerbose;
 				WString			urlDom;
@@ -2311,12 +2310,11 @@ HttpAutomationService
 
 			public:
 				HttpAutomationService(const WString& applicationName, vint port)
-					: urlPrefix(WString::Unmanaged(L"http://localhost:") + itow(port) + WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/"))
-					, urlControls(urlPrefix + WString::Unmanaged(L"Controls"))
-					, urlControlsVerbose(urlPrefix + WString::Unmanaged(L"ControlsVerbose"))
-					, urlDom(urlPrefix + WString::Unmanaged(L"Dom"))
-					, urlIO(urlPrefix + WString::Unmanaged(L"IO"))
-					, HttpServerApi(urlPrefix, false)
+					: HttpServerApi(WString::Unmanaged(L"http://localhost:") + itow(port) + WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/"), false)
+					, urlControls			(WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/Controls"))
+					, urlControlsVerbose	(WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/ControlsVerbose"))
+					, urlDom				(WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/Dom"))
+					, urlIO					(WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/IO"))
 				{
 				}
 			};

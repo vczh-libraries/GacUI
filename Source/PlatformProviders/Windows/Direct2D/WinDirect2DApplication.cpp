@@ -653,7 +653,7 @@ int SetupWindowsDirect2DRendererInternal(bool hosted, bool raw)
 	{
 		automationService = Ptr(new WindowsAutomationService);
 	}
-	GetNativeServiceSubstitution()->Substitute(automationService.Obj(), true);
+	GetNativeServiceSubstitution()->Substitute(automationService.Obj(), false);
 
 	{
 		// install listener
