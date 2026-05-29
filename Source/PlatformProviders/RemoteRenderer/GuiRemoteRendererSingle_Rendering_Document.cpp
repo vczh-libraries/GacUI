@@ -437,6 +437,24 @@ namespace vl::presentation::remote_renderer
 		UpdateElement_DocumentParagraphResponse response;
 		wrapper->ApplyUpdateAndFillResponse(arguments, response);
 		events->RespondRendererUpdateElement_DocumentParagraph(id, response);
+
+		{
+			vint index = renderingElements.Keys().IndexOf(arguments.id);
+			if (index != -1)
+			{
+				auto& renderingElement = const_cast<RenderingElement&>(renderingElements.Values()[index]);
+				remoteprotocol::ElementDesc_DocumentParagraphFull copiedDesc{ arguments };
+				if (renderingElement.value)
+				{
+					if (auto dp = renderingElement.value.Value().TryGet<remoteprotocol::ElementDesc_DocumentParagraphFull>())
+					{
+						if (!copiedDesc.paragraph.text) copiedDesc.paragraph.text = dp->paragraph.text;
+						copiedDesc.caret = dp->caret;
+					}
+				}
+				renderingElement.value = copiedDesc;
+			}
+		}
 	}
 
 	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetCaret(vint id, const remoteprotocol::GetCaretRequest& arguments)
@@ -507,6 +525,23 @@ namespace vl::presentation::remote_renderer
 		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments.id);
 		wrapper->OpenCaretAndStore(arguments);
 		focusedParagraphElements.Set(arguments.id, wrapper);
+
+		{
+			vint index = renderingElements.Keys().IndexOf(arguments.id);
+			if (index != -1)
+			{
+				auto& renderingElement = const_cast<RenderingElement&>(renderingElements.Values()[index]);
+				if (renderingElement.value)
+				{
+					renderingElement.value.Value().TryApply(
+						[&](remoteprotocol::ElementDesc_DocumentParagraphFull& desc)
+						{
+							desc.caret = arguments;
+						}
+					);
+				}
+			}
+		}
 	}
 
 	void GuiRemoteRendererSingle::RequestDocumentParagraph_CloseCaret(const vint& arguments)
@@ -514,6 +549,23 @@ namespace vl::presentation::remote_renderer
 		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments);
 		wrapper->CloseCaretAndStore();
 		focusedParagraphElements.Remove(arguments);
+
+		{
+			vint index = renderingElements.Keys().IndexOf(arguments);
+			if (index != -1)
+			{
+				auto& renderingElement = const_cast<RenderingElement&>(renderingElements.Values()[index]);
+				if (renderingElement.value)
+				{
+					renderingElement.value.Value().TryApply(
+						[](remoteprotocol::ElementDesc_DocumentParagraphFull& desc)
+						{
+							desc.caret.Reset();
+						}
+					);
+				}
+			}
+		}
 	}
 
 #undef PREPARE_DOCUMENT_WRAPPER

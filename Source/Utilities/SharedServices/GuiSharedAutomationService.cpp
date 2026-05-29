@@ -36,7 +36,7 @@ DumpRemoteProtocolRenderingDom
 
 					ConvertCustomTypeToJsonField<vint>(jsonElement, L"Id", id);
 					ConvertCustomTypeToJsonField(jsonElement, L"Type", data.key);
-					ConvertCustomTypeToJsonField(jsonElement, L"Data", data.value.Value());
+					ConvertCustomTypeToJsonField(jsonElement, L"Data", data.value);
 				}
 			}
 
