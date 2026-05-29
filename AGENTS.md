@@ -12,7 +12,6 @@ Read the first word of the request, and read an additional instruction file if i
 - "investigate": REPO-ROOT/.github/prompts/investigate.prompt.md
 - "refine": REPO-ROOT/.github/prompts/refine.prompt.md
 - "kb": REPO-ROOT/.github/prompts/kb.prompt.md
-- "kb-sync": REPO-ROOT/.github/prompts/kb-sync.prompt.md
 
 ### Exceptions
 
@@ -46,7 +45,7 @@ you need to carefully consider possible words with similar pronunciation.
 
 ## Examples
 
-When the request is `kb-sync`, follow `kb-sync.prompt.md` and "the LATEST chat message" becomes empty.
+When the request is `refine`, follow `refine.prompt.md` and "the LATEST chat message" becomes empty.
 
 When the request is `kb execute`, follow `kb.prompt.md` and "the LATEST chat message" becomes
 ```

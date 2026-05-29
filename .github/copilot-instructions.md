@@ -43,7 +43,7 @@ otherwise it won't work properly.
 - Running a Project:
   - Unit Test: `REPO-ROOT/.github/Guidelines/Running-UnitTest.md`
   - CLI Application: `REPO-ROOT/.github/Guidelines/Running-CLI.md`
-  - GacUI Application: `REPO-ROOT/.github/Guidelines/Running-GacUI.md` (to edit ...)
+  - GacUI Application: `REPO-ROOT/.github/Guidelines/Running-GacUI.md`
 - Debugging a Project: `REPO-ROOT/.github/Guidelines/Debugging.md`
 - Using Unit Test Framework: `REPO-ROOT/.github/KnowledgeBase/manual/unittest/vlpp.md`
 - Using Unit Test Framework for GacUI Application:
