@@ -126,9 +126,6 @@ Automation HTTP service for GUI applications are available for Windows:
 
 FullControlTest means `Generated_FullControlTest.vcxitems`.
 RemoteProtocolTest means `Generated_RemoteProtocolTest.vcxitems`.
-
-When running these projects, you are recommended to always attach a debugger on them.
-Because some runtime exceptions are silently consumed by Windows causing the application not to crash, covering issues if no debugger is attached.
 Each project responds to `http://localhost:8888/Automation/<PROJECT-NAME>/...` using `StartWindowsHttpAutomationService`.
 - Checkout `REPO-ROOT/.github/Guidelines/Running-GacUI.md` for details.
 
