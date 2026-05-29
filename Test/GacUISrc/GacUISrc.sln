@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.2.11415.280 d18.0
+VisualStudioVersion = 18.2.11415.280
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest", "UnitTest\UnitTest.vcxproj", "{456FDC57-9687-4607-86A6-D43B7E72E740}"
 EndProject
@@ -343,6 +343,7 @@ Global
 		Generated_FullControlTest\Generated_FullControlTest.vcxitems*{1f147133-fc29-4ac4-818f-a5c48a7c4173}*SharedItemsImports = 4
 		Generated_DarkSkin\Generated_DarkSkin.vcxitems*{27391973-5f0e-41f1-8b01-5164b5f94dbf}*SharedItemsImports = 9
 		Source_GacUI_Compiler\Source_GacUI_Compiler.vcxitems*{31214cfd-f243-439c-baf7-25a7e718264b}*SharedItemsImports = 4
+		Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems*{31214cfd-f243-439c-baf7-25a7e718264b}*SharedItemsImports = 4
 		Source_GacUI\Source_GacUI.vcxitems*{31b9787f-5739-4812-84cf-4c542bbdf7fb}*SharedItemsImports = 4
 		Source_GacUI_CoreApplication\Source_GacUI_CoreApplication.vcxitems*{31b9787f-5739-4812-84cf-4c542bbdf7fb}*SharedItemsImports = 4
 		Source_GacUI_Core\Source_GacUI_Core.vcxitems*{31b9787f-5739-4812-84cf-4c542bbdf7fb}*SharedItemsImports = 4
@@ -392,6 +393,7 @@ Global
 		Source_Import_Reflection\Source_Import_Reflection.vcxitems*{bf177697-a8b5-4580-87e7-de77c0a29c9f}*SharedItemsImports = 4
 		Source_GacUI\Source_GacUI.vcxitems*{cf702b13-73b3-47f2-8afc-89d1c25b007e}*SharedItemsImports = 9
 		Source_GacUI_Utilities_Reflection\Source_GacUI_Utilities_Reflection.vcxitems*{d56c7df2-c673-4cbe-99ec-26f3d91790af}*SharedItemsImports = 9
+		Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems*{e016b58a-a7a7-4ef5-a64e-b6f86af159be}*SharedItemsImports = 4
 		Source_GacUI_CoreApplication\Source_GacUI_CoreApplication.vcxitems*{e2f1d033-808d-4d82-8fbc-ebce0f1cc11c}*SharedItemsImports = 9
 		Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems*{f8037bfa-7d7d-4811-bc87-df033ea38ab7}*SharedItemsImports = 4
 		Source_GacUI_Utilities_Reflection\Source_GacUI_Utilities_Reflection.vcxitems*{f8037bfa-7d7d-4811-bc87-df033ea38ab7}*SharedItemsImports = 4

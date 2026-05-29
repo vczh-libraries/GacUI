@@ -5,17 +5,6 @@
 using namespace vl;
 using namespace vl::presentation;
 
-namespace vl::presentation
-{
-	void GuiInitializeUtilities()
-	{
-	}
-
-	void GuiFinalizeUtilities()
-	{
-	}
-}
-
 extern int StartNamedPipeClient();
 extern int StartHttpClient();
 
