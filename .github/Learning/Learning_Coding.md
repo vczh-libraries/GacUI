@@ -4,6 +4,7 @@
 
 - `vl::collections::ObservableList<T>` element access and replacement [2]
 - Extract helpers to remove duplicated conversion blocks [2]
+- Place helpers in the primary-responsibility namespace [2]
 - Keep remote JSON channel code pure data processing [2]
 - Renderer channel dispatch belongs in async renderer layer [2]
 - Cache renderer packages until main-thread invoker exists [2]
@@ -19,7 +20,6 @@
 - Use full namespace `ERROR_MESSAGE_PREFIX` in remote renderer `CHECK_ERROR` messages [1]
 - Prefer `TreeViewItemRootProvider::GetTreeViewData` over `GetData().Cast<TreeViewItem>()` [1]
 - Keep header changes comment-free [1]
-- Place helpers in the primary-responsibility namespace [1]
 - `DiffRuns` must not drop old ranges (use `CHECK_ERROR`) [1]
 - Compare `IGuiGraphicsParagraph::TextStyle` flags against `(TextStyle)0` [1]
 - `GuiDocumentCommonInterface::ProcessKey` ignores Enter in `GuiDocumentParagraphMode::Singleline` [1]
@@ -45,6 +45,8 @@
 - `Impl_DocumentParagraph_GetNearestCaretFromTextPos` honors `frontSide` [1]
 - Null-check graphics resource manager before paragraph creation [1]
 - Encapsulate remote inline-object run properties behind query helpers [1]
+- Use Parser2 JSON node list serialization in remote channels [1]
+- Unbox `HttpServerApi::GetUtf8Body` before automation handling [1]
 
 # Refinements
 
@@ -87,6 +89,8 @@ Avoid adding explanatory comments in header-file code changes unless they are re
 ## Place helpers in the primary-responsibility namespace
 
 When implementing helpers that bridge subsystems, place them in the namespace of their primary responsibility / usage site, and use explicit namespace prefixes for types from other subsystems to keep boundaries clear.
+
+If a helper is generally reusable by parser/remoting consumers, keep it in the owning library rather than duplicating it in GacUI. For example, JSON node-list serialization for GLR JSON nodes belongs in `vl::glr::json`, and GacUI remoting channels should consume that serializer by qualified name.
 
 ## `DiffRuns` must not drop old ranges (use `CHECK_ERROR`)
 
@@ -244,3 +248,11 @@ Before creating a paragraph through `GetGuiGraphicsResourceManager()->GetLayoutP
 ## Encapsulate remote inline-object run properties behind query helpers
 
 Remote paragraph query handlers should not directly inspect wrapper internals such as inline-object property dictionaries. Add a small public helper like `TryGetInlineObjectRunProperty(callbackId, outProp)` on the wrapper to preserve encapsulation and keep query behavior stable when cached state changes.
+
+## Use Parser2 JSON node list serialization in remote channels
+
+`GuiRemoteProtocol_Channel_Json` should use `vl::glr::json::JsonNodeListSerializer` from Parser2 for remoting package lists instead of owning a GacUI-local duplicate serializer. This keeps JSON node list behavior aligned between parser infrastructure and remote channel transport.
+
+## Unbox `HttpServerApi::GetUtf8Body` before automation handling
+
+`HttpServerApi::GetUtf8Body(PHTTP_REQUEST)` returns `Nullable<WString>`. GacUI HTTP automation handlers should call `.Value()` after the helper succeeds and pass the resulting `WString` into the command handler, keeping nullable handling at the HTTP boundary.

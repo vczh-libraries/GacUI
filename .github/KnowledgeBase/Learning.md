@@ -5,9 +5,10 @@
 - Process staged tasks one by one with verification [15]
 - Crash early instead of adding error-tolerance fallbacks [6]
 - Make `Stop()` drain asynchronous work before returning [5]
+- Port fixes from imports to source repositories [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
-- Port fixes from imports to source repositories [3]
+- Verify generated artifacts with downstream consumer checks [3]
 - Capture dependent lambdas explicitly [2]
 - Don't assume observable changes are batched [2]
 - Do not assume async callback owners are heap allocated [2]
@@ -31,7 +32,6 @@
 - Dereference `Ptr<T>` via `.Obj()` (not `*ptr`) [1]
 - `vl::regex` separator regex: `L"[\\/\\\\]+"` [1]
 - Use 2-space indentation in embedded XML/JSON literals [1]
-- Verify generated artifacts with downstream consumer checks [1]
 - `collections::List` has deleted copy constructor; use `std::move()` for structs with `List` members [1]
 
 # Refinements
@@ -95,6 +95,8 @@ Do not treat files copied into `Import` or generated release files as the source
 When a downstream repo such as `GacUI` exposes a bug in imported `VlppOS` inter-process code, fix and verify it in `VlppOS`, regenerate `VlppOS\Release`, and then import the generated release files downstream.
 
 When validating GacUI remoting reveals a transport issue, keep the same source-of-truth rule: fix `VlppOS`, regenerate its release, copy the generated output into `GacUI\Import`, then validate the downstream scenario again.
+
+For dependency release syncs, copy generated files from the upstream `Release` folder into the downstream `Import` folder and exclude `IncludeOnly` unless the task explicitly requires it. Do not hand-edit the downstream import copy.
 
 ## Validate expectations against implementation and existing tests
 

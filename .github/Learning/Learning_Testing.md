@@ -8,9 +8,9 @@
 - Preserve existing idle-frame titles when requested [6]
 - Seed key-behavior tests via `protocol->TypeString` [6]
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
+- Debug remote core/renderer stress runs instead of plain launching [4]
 - Caret navigation tests: type markers to expose caret [3]
 - Avoid duplicate tests across related categories [3]
-- Debug remote core/renderer stress runs instead of plain launching [3]
 - Account for eager child preparation in item-provider tests [2]
 - Isolate callbacks per test case (fresh log + callback) [2]
 - Prefer comments that name the exercised interface [2]
@@ -61,6 +61,7 @@
 - Empty item sources and empty `childrenProperty` only trigger `OnAttached` [1]
 - Prefer single cohesive smoke tests when setup-heavy [1]
 - Inline-object caret tests: cover every valid caret position one frame at a time [1]
+- Validate imported dependency APIs with GacUI build and unit test [1]
 
 # Refinements
 
@@ -353,6 +354,8 @@ For `RemotingTest_Core` and `RemotingTest_Rendering_Win32` pipe/HTTP remoting ch
 
 For `/Http /FCT` or renderer-communication validation, launch both core and renderer under the debugger and use a renderer-side breakpoint such as `GuiRemoteRendererSingle::RenderDom` to confirm commands are actually flowing. When testing renderer shutdown, close the renderer gently and verify the core observes the disconnect and exits.
 
+For the HTTP FullControlTest remoting pair, pass `/Http /FCT` to `RemotingTest_Core` and only `/Http` to `RemotingTest_Rendering_Win32`; `/FCT` is core-side scenario selection. Closing the visible renderer window gently should make the renderer exit first and then the core exit after observing the disconnect.
+
 ## Verify GacJS HTTP fatal errors through browser UI
 
 For the HTTP browser remoting path, verify fatal core errors by running `RemotingTest_Core /RPT /Http`, opening GacJS in the browser, triggering the fatal-error UI path, and checking that the browser receives the `!Error` package and displays the error mask/alert. Seeing only a fetch failure or closed transport is not sufficient.
@@ -372,3 +375,7 @@ Debug unit tests that pass assertions can still leak if helper threads or stack-
 ## Inline-object caret tests: cover every valid caret position one frame at a time
 
 For inline-object caret behavior, use compact multi-line documents such as `[Image]x[Image]` and `y[Image]z`, then drive Home/End/Left/Right across all valid caret positions including no-op edges. Use one meaningful movement per frame, assert the caret begin/end after each movement, and combine with marker typing when that makes caret placement observable.
+
+## Validate imported dependency APIs with GacUI build and unit test
+
+After importing regenerated `VlppOS` or `VlppParser2` release files, build `Test\GacUISrc\GacUISrc.sln` and run the GacUI `UnitTest` executable. Existing GacUI call sites, such as the Windows HTTP automation service, provide downstream compile coverage for imported API signatures, and the unit-test log still needs a memory-leak check.
