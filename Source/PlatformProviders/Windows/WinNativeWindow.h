@@ -10,7 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_WINDOWS_WINNATIVEWINDOW
 
 #include "..\..\NativeWindow\GuiNativeWindow.h"
-#include "..\..\Utilities\SharedServices\GuiSharedAutomationService.h"
+#include "..\..\Utilities\SharedServices\GuiSharedAutomationService_Controls.h"
 #include "WinNativeDpiAwareness.h"
 
 namespace vl
@@ -50,9 +50,12 @@ Windows Platform Native Controller
 			extern void										StopWindowsNativeController();
 			extern void										EnableCrossKernelCrashing();
 
-			class WindowsAutomationServiceBase : public AutomationServiceBase
+			template<typename TBase>
+			class WindowsAutomationService_ : public TBase
 			{
 			protected:
+				WString										GetNativeWindowId(INativeWindow* window) override;
+				INativeWindow*								GetNativeWindow(Nullable<WString> windowId) override;
 				WString										RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) override;
 
 			public:
@@ -61,25 +64,12 @@ Windows Platform Native Controller
 				bool										CanRunIOCommands() override;
 			};
 
-			class WindowsAutomationService : public WindowsAutomationServiceBase
-			{
-			protected:
-				WString										DumpControlTreeInternal(bool withCompositionsAndElements) override;
+			extern template class WindowsAutomationService_<AutomationServiceBase>;
+			extern template class WindowsAutomationService_<AutomationService>;
+			extern template class WindowsAutomationService_<AutomationServiceHosted>;
 
-			public:
-
-				bool										CanDumpControlTree() override;
-			};
-
-			class WindowsAutomationServiceHosted : public WindowsAutomationServiceBase
-			{
-			protected:
-				WString										DumpControlTreeInternal(bool withCompositionsAndElements) override;
-
-			public:
-
-				bool										CanDumpControlTree() override;
-			};
+			using WindowsAutomationService = WindowsAutomationService_<AutomationService>;
+			using WindowsAutomationServiceHosted = WindowsAutomationService_<AutomationServiceHosted>;
 
 			extern void										StartWindowsHttpAutomationService(const WString& applicationName, vint port);
 			extern void										StopWindowsHttpAutomationService();

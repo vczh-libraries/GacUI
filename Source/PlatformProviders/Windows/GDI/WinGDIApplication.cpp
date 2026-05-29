@@ -226,7 +226,7 @@ int SetupWindowsGDIRendererInternal(bool hosted, bool raw)
 		SetNativeController(nativeController);
 	}
 
-	Ptr<WindowsAutomationServiceBase> automationService;
+	Ptr<INativeAutomationService> automationService;
 	if (hosted)
 	{
 		automationService = Ptr(new WindowsAutomationServiceHosted);

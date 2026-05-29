@@ -101,7 +101,8 @@ WindowsForm
 
 			class WindowsForm : public Object, public INativeWindow, public IWindowsForm
 			{
-				friend class WindowsAutomationServiceBase;
+				template<typename TBase>
+				friend class WindowsAutomationService_;
 			protected:
 				
 				LONG_PTR InternalGetExStyle()
@@ -1756,7 +1757,8 @@ WindowsController
 
 			class WindowsController : public Object, public virtual INativeController, public virtual INativeWindowService
 			{
-				friend class WindowsAutomationServiceBase;
+				template<typename TBase>
+				friend class WindowsAutomationService_;
 			protected:
 				WinClass							windowClass;
 				WinClass							godClass;
@@ -2163,73 +2165,67 @@ Windows Platform Native Controller
 			}
 
 /***********************************************************************
-WindowsAutomationServiceBase
+WindowsAutomationService_
 ***********************************************************************/
 
-			WString WindowsAutomationServiceBase::RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand)
+			template<typename TBase>
+			WString WindowsAutomationService_<TBase>::GetNativeWindowId(INativeWindow* window)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::windows::WindowsAutomationService_<TBase>::GetNativeWindowId(INativeWindow*)#"
+				auto controller = dynamic_cast<WindowsController*>(GetWindowsNativeController());
+				CHECK_ERROR(controller->windows.Values().Contains(dynamic_cast<WindowsForm*>(window)), ERROR_MESSAGE_PREFIX L"The specified INativeWindow instance should be native.");
+				return utow(static_cast<vuint>(reinterpret_cast<intptr_t>(window)));
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			template<typename TBase>
+			INativeWindow* WindowsAutomationService_<TBase>::GetNativeWindow(Nullable<WString> windowId)
 			{
 				auto controller = dynamic_cast<WindowsController*>(GetWindowsNativeController());
-				if (!controller)
-				{
-					return L"!GetWindowsNativeController not ready.";
-				}
-
-				WindowsForm* windowsForm = controller->mainWindow;
 				if (windowId)
 				{
-					WindowsForm* typedId = reinterpret_cast<WindowsForm*>(static_cast<intptr_t>(wtou(windowId.Value())));
-					if (!controller->windows.Values().Contains(typedId))
+					WindowsForm* windowsForm = reinterpret_cast<WindowsForm*>(static_cast<intptr_t>(wtou(windowId.Value())));
+					if (!controller->windows.Values().Contains(windowsForm))
 					{
-						return L"!Invalid window id: " + windowId.Value();
+						return nullptr;
 					}
-					windowsForm = typedId;
+					return windowsForm;
 				}
-				else if (!windowsForm)
+				else
 				{
-					return L"!Invalid main window.";
+					return controller->mainWindow;
+				}
+			}
+
+			template<typename TBase>
+			WString WindowsAutomationService_<TBase>::RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand)
+			{
+				auto controller = dynamic_cast<WindowsController*>(GetWindowsNativeController());
+				WindowsForm* windowsForm = dynamic_cast<WindowsForm*>(GetNativeWindow(windowId));
+				if (!windowsForm)
+				{
+					return L"!Invalid window.";
 				}
 
 				return RunIOCommandOnNativeWindow(controller, windowsForm->listeners, ioCommand);
 			}
 
-			void WindowsAutomationServiceBase::Stop()
+			template<typename TBase>
+			void WindowsAutomationService_<TBase>::Stop()
 			{
-				AutomationServiceBase::Stop();
+				TBase::Stop();
 				StopWindowsHttpAutomationService();
 			}
 
-			bool WindowsAutomationServiceBase::CanRunIOCommands()
+			template<typename TBase>
+			bool WindowsAutomationService_<TBase>::CanRunIOCommands()
 			{
 				return true;
 			}
 
-/***********************************************************************
-WindowsAutomationService
-***********************************************************************/
-
-			WString WindowsAutomationService::DumpControlTreeInternal(bool withCompositionsAndElements)
-			{
-				CHECK_FAIL(L"Not Implemented!");
-			}
-
-			bool WindowsAutomationService::CanDumpControlTree()
-			{
-				return true;
-			}
-
-/***********************************************************************
-WindowsAutomationServiceHosted
-***********************************************************************/
-
-			WString WindowsAutomationServiceHosted::DumpControlTreeInternal(bool withCompositionsAndElements)
-			{
-				CHECK_FAIL(L"Not Implemented!");
-			}
-
-			bool WindowsAutomationServiceHosted::CanDumpControlTree()
-			{
-				return true;
-			}
+			template class WindowsAutomationService_<AutomationServiceBase>;
+			template class WindowsAutomationService_<AutomationService>;
+			template class WindowsAutomationService_<AutomationServiceHosted>;
 
 /***********************************************************************
 HttpAutomationService
@@ -2291,7 +2287,7 @@ HttpAutomationService
 						{
 							if (wcsncmp(pRequest->CookedUrl.pAbsPath, urlIO.Buffer(), (size_t)urlIO.Length()) == 0)
 							{
-								WString windowId;
+								Nullable<WString> windowId;
 								auto pId = pRequest->CookedUrl.pAbsPath + urlIO.Length();
 								if (*pId == L'/')
 								{
@@ -2303,7 +2299,7 @@ HttpAutomationService
 									return;
 								}
 
-								if (automationService->CanDumpControlTree())
+								if (automationService->CanRunIOCommands())
 								{
 									WString body = GetUtf8Body(pRequest).Value();
 									asyncService->InvokeInMainThread(mainWindow, [=]()

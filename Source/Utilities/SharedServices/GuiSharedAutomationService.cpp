@@ -6,6 +6,10 @@ namespace vl
 	{
 		using namespace remoteprotocol;
 
+/***********************************************************************
+DumpRemoteProtocolRenderingDom
+***********************************************************************/
+
 		WString DumpRemoteProtocolRenderingDom(const WString& title, const remoteprotocol::WindowSizingConfig& windowSizingConfig, Ptr<remoteprotocol::RenderingDom> renderingDom)
 		{
 			auto domRoot = Ptr(new glr::json::JsonObject);
@@ -26,6 +30,10 @@ namespace vl
 				return glr::json::JsonPrint(domRoot, writer, formatting);
 			});
 		}
+
+/***********************************************************************
+RunIOCommandOnNativeWindow
+***********************************************************************/
 
 		WString RunIOCommandOnNativeWindow(INativeController* nativeController, collections::List<INativeWindowListener*>& listeners, WString command)
 		{

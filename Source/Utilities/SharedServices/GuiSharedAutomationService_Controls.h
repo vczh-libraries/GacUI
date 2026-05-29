@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDAUTOMATIONSERVICE_CONTROLS
 
 #include "../../Application/Controls/GuiApplication.h"
+#include "GuiSharedAutomationService.h"
 
 namespace vl
 {
@@ -19,6 +20,26 @@ namespace vl
 		{
 			class GuiWindow;
 		}
+
+		class AutomationService : public AutomationServiceBase
+		{
+		protected:
+			WString								DumpControlTreeInternal(bool withCompositionsAndElements) override;
+
+		public:
+
+			bool								CanDumpControlTree() override;
+		};
+
+		class AutomationServiceHosted : public AutomationServiceBase
+		{
+		protected:
+			WString								DumpControlTreeInternal(bool withCompositionsAndElements) override;
+
+		public:
+
+			bool								CanDumpControlTree() override;
+		};
 
 		/*
 		* Schema:
