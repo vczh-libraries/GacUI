@@ -17,6 +17,7 @@ Interfaces:
 namespace vl::presentation
 {
 	class GuiRemoteController;
+	class RemoteProtocolAutomationService;
 
 /***********************************************************************
 GuiRemoteWindow
@@ -26,6 +27,7 @@ GuiRemoteWindow
 	{
 		friend class GuiRemoteEvents;
 		friend class GuiRemoteController;
+		friend class RemoteProtocolAutomationService;
 	protected:
 		GuiRemoteController*								remote;
 		GuiRemoteMessages&									remoteMessages;

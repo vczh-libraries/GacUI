@@ -10,7 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_WINDOWS_WINNATIVEWINDOW
 
 #include "..\..\NativeWindow\GuiNativeWindow.h"
-#include "..\..\Utilities\SharedServices\GuiSharedAutomationService.h"
+#include "..\..\Utilities\SharedServices\GuiSharedAutomationService_Controls.h"
 #include "WinNativeDpiAwareness.h"
 
 namespace vl
@@ -53,50 +53,51 @@ Windows Platform Native Controller
 			extern void										StopWindowsNativeController();
 			extern void										EnableCrossKernelCrashing();
 
-			struct WindowsAutomationServiceHelper
+			template<typename TBase>
+			class WindowsAutomationServiceBase : public TBase
 			{
-				static WString								GetNativeWindowId(INativeWindow* window);
-				static INativeWindow*						GetNativeWindow(Nullable<WString> windowId);
-				static WString								RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand);
+				WString										RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) override;
+
+			public:
+				void										Stop() override;
+				bool										CanRunIOCommands() override;
+			};
+
+			class WindowsAutomationService : public WindowsAutomationServiceBase<AutomationService>
+			{
+			protected:
+				Nullable<WString>							GetNativeWindowId(INativeWindow* window) override;
+				INativeWindow*								GetNativeWindow(Nullable<WString> windowId) override;
+
+			public:
+				WindowsAutomationService();
+				~WindowsAutomationService();
+			};
+
+			class WindowsAutomationServiceHosted : public WindowsAutomationServiceBase<AutomationServiceHosted>
+			{
+			protected:
+				Nullable<WString>							GetNativeWindowId(INativeWindow* window) override;
+				INativeWindow*								GetNativeWindow(Nullable<WString> windowId) override;
+
+			public:
+				WindowsAutomationServiceHosted();
+				~WindowsAutomationServiceHosted();
+			};
+
+			class WindowsAutomationServiceRenderer : public WindowsAutomationServiceBase<AutomationServiceBase>
+			{
+			protected:
+				Nullable<WString>							GetNativeWindowId(INativeWindow* window) override;
+				INativeWindow*								GetNativeWindow(Nullable<WString> windowId) override;
+
+			public:
+				WindowsAutomationServiceRenderer();
+				~WindowsAutomationServiceRenderer();
 			};
 
 			extern void										StartWindowsHttpAutomationService(const WString& applicationName, vint port);
 			extern void										StopWindowsHttpAutomationService();
-
-			template<typename TBase>
-			struct WindowsAutomationService_ : public TBase
-			{
-				WString GetNativeWindowId(INativeWindow* window) override
-				{
-					return WindowsAutomationServiceHelper::GetNativeWindowId(window);
-				}
-
-				INativeWindow* GetNativeWindow(Nullable<WString> windowId) override
-				{
-					return WindowsAutomationServiceHelper::GetNativeWindow(windowId);
-				}
-
-				WString RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) override
-				{
-					return WindowsAutomationServiceHelper::RunIOCommandInternal(windowId, ioCommand);
-				}
-
-			public:
-
-				void Stop() override
-				{
-					TBase::Stop();
-					StopWindowsHttpAutomationService();
-				}
-
-				bool CanRunIOCommands() override
-				{
-					return true;
-				}
-			};
-
-			using WindowsAutomationService = WindowsAutomationService_<AutomationService>;
-			using WindowsAutomationServiceHosted = WindowsAutomationService_<AutomationServiceHosted>;
 		}
 	}
 }

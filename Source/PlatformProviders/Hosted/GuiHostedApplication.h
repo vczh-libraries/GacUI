@@ -27,6 +27,7 @@ IGuiHostedApplication
 	public:
 
 		virtual INativeWindow*				GetNativeWindowHost() = 0;
+		virtual INativeController*			GetNativeController() = 0;
 	};
 
 	extern IGuiHostedApplication*			GetHostedApplication();

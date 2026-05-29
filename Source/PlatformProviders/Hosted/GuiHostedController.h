@@ -214,6 +214,7 @@ GuiHostedController
 			// =============================================================
 
 			INativeWindow*					GetNativeWindowHost() override;
+			INativeController*				GetNativeController() override;
 		public:
 			GuiHostedController(INativeController* _nativeController);
 			~GuiHostedController();

@@ -3,6 +3,7 @@
 #include "MainWindow.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 #include <VlppOS.Windows.h>
+#include "../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
 
 using namespace vl;
 using namespace vl::console;
@@ -249,7 +250,12 @@ void GuiMain()
 		window->MoveToScreenCenter();
 		try
 		{
+			RemoteProtocolAutomationService automationService;
+			GetNativeServiceSubstitution()->Substitute(&automationService, false);
+			windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/RemotingTest_Core"), 8888);
 			GetApplication()->Run(window.Obj());
+			windows::StopWindowsHttpAutomationService();
+			GetNativeServiceSubstitution()->Unsubstitute(&automationService);
 		}
 		catch (const Exception& e)
 		{

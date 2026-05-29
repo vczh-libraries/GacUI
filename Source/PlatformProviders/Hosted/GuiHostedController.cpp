@@ -1119,6 +1119,11 @@ GuiHostedController::IGuiHostedApplication
 			return nativeWindow;
 		}
 
+		INativeController* GuiHostedController::GetNativeController()
+		{
+			return nativeController;
+		}
+
 /***********************************************************************
 GuiHostedController
 ***********************************************************************/

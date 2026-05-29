@@ -101,7 +101,8 @@ WindowsForm
 
 			class WindowsForm : public Object, public INativeWindow, public IWindowsForm
 			{
-				friend struct WindowsAutomationServiceHelper;
+				template<typename TBase>
+				friend class WindowsAutomationServiceBase;
 			protected:
 				
 				LONG_PTR InternalGetExStyle()
@@ -1756,7 +1757,7 @@ WindowsController
 
 			class WindowsController : public Object, public virtual INativeController, public virtual INativeWindowService
 			{
-				friend struct WindowsAutomationServiceHelper;
+				friend class WindowsAutomationService;
 			protected:
 				WinClass							windowClass;
 				WinClass							godClass;
@@ -2163,19 +2164,48 @@ Windows Platform Native Controller
 			}
 
 /***********************************************************************
-WindowsAutomationServiceHelper
+WindowsAutomationServiceBase
 ***********************************************************************/
 
-			WString WindowsAutomationServiceHelper::GetNativeWindowId(INativeWindow* window)
+			template<typename TBase>
+			WString WindowsAutomationServiceBase<TBase>::RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand)
 			{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::windows::WindowsAutomationServiceHelper::GetNativeWindowId(INativeWindow*)#"
+				WindowsForm* windowsForm = dynamic_cast<WindowsForm*>(this->GetNativeWindow(windowId));
+				if (!windowsForm)
+				{
+					return L"!Invalid window.";
+				}
+
+				return RunIOCommandOnNativeWindow(GetWindowsNativeController(), windowsForm->listeners, ioCommand);
+			}
+
+			template<typename TBase>
+			void WindowsAutomationServiceBase<TBase>::Stop()
+			{
+				TBase::Stop();
+				StopWindowsHttpAutomationService();
+			}
+
+			template<typename TBase>
+			bool WindowsAutomationServiceBase<TBase>::CanRunIOCommands()
+			{
+				return true;
+			}
+
+/***********************************************************************
+WindowsAutomationService
+***********************************************************************/
+
+			Nullable<WString> WindowsAutomationService::GetNativeWindowId(INativeWindow* window)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::windows::WindowsAutomationService::GetNativeWindowId(INativeWindow*)#"
 				auto controller = dynamic_cast<WindowsController*>(GetWindowsNativeController());
 				CHECK_ERROR(controller->windows.Values().Contains(dynamic_cast<WindowsForm*>(window)), ERROR_MESSAGE_PREFIX L"The specified INativeWindow instance should be native.");
 				return utow(static_cast<vuint>(reinterpret_cast<intptr_t>(window)));
 #undef ERROR_MESSAGE_PREFIX
 			}
 
-			INativeWindow* WindowsAutomationServiceHelper::GetNativeWindow(Nullable<WString> windowId)
+			INativeWindow* WindowsAutomationService::GetNativeWindow(Nullable<WString> windowId)
 			{
 				auto controller = dynamic_cast<WindowsController*>(GetWindowsNativeController());
 				if (windowId)
@@ -2193,16 +2223,56 @@ WindowsAutomationServiceHelper
 				}
 			}
 
-			WString WindowsAutomationServiceHelper::RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand)
+			WindowsAutomationService::WindowsAutomationService()
 			{
-				auto controller = dynamic_cast<WindowsController*>(GetWindowsNativeController());
-				WindowsForm* windowsForm = dynamic_cast<WindowsForm*>(GetNativeWindow(windowId));
-				if (!windowsForm)
-				{
-					return L"!Invalid window.";
-				}
+			}
 
-				return RunIOCommandOnNativeWindow(controller, windowsForm->listeners, ioCommand);
+			WindowsAutomationService::~WindowsAutomationService()
+			{
+			}
+
+/***********************************************************************
+WindowsAutomationServiceHosted
+***********************************************************************/
+
+			Nullable<WString> WindowsAutomationServiceHosted::GetNativeWindowId(INativeWindow* window)
+			{
+				return {};
+			}
+
+			INativeWindow* WindowsAutomationServiceHosted::GetNativeWindow(Nullable<WString> windowId)
+			{
+				return GetWindowsNativeController()->WindowService()->GetMainWindow();
+			}
+
+			WindowsAutomationServiceHosted::WindowsAutomationServiceHosted()
+			{
+			}
+
+			WindowsAutomationServiceHosted::~WindowsAutomationServiceHosted()
+			{
+			}
+
+/***********************************************************************
+WindowsAutomationServiceRenderer
+***********************************************************************/
+
+			Nullable<WString> WindowsAutomationServiceRenderer::GetNativeWindowId(INativeWindow* window)
+			{
+				return {};
+			}
+
+			INativeWindow* WindowsAutomationServiceRenderer::GetNativeWindow(Nullable<WString> windowId)
+			{
+				return GetWindowsNativeController()->WindowService()->GetMainWindow();
+			}
+
+			WindowsAutomationServiceRenderer::WindowsAutomationServiceRenderer()
+			{
+			}
+
+			WindowsAutomationServiceRenderer::~WindowsAutomationServiceRenderer()
+			{
 			}
 
 /***********************************************************************

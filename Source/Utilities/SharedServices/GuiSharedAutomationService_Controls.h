@@ -41,6 +41,17 @@ namespace vl
 			bool								CanDumpControlTree() override;
 		};
 
+		class RemoteProtocolAutomationService : public AutomationServiceHosted
+		{
+		protected:
+			Nullable<WString>					GetNativeWindowId(INativeWindow* window) override;
+			INativeWindow*						GetNativeWindow(Nullable<WString> windowId) override;
+			WString								RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) override;
+
+		public:
+			bool								CanRunIOCommands() override;
+		};
+
 		/*
 		* Schema:
 		*/

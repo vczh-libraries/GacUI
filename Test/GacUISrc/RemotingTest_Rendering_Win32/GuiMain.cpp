@@ -20,7 +20,7 @@ namespace
 
 class WindowsRemoteRendererSingle
 	: public GuiRemoteRendererSingle
-	, public windows::WindowsAutomationService_<AutomationServiceBase>
+	, public windows::WindowsAutomationServiceRenderer
 {
 protected:
 

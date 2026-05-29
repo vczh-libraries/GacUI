@@ -1,4 +1,6 @@
 #include "GuiSharedAutomationService_Controls.h"
+#include "../../PlatformProviders/Hosted/GuiHostedApplication.h"
+#include "../../PlatformProviders/Remote/GuiRemoteController.h"
 
 namespace vl
 {
@@ -29,6 +31,36 @@ AutomationServiceHosted
 		}
 
 		bool AutomationServiceHosted::CanDumpControlTree()
+		{
+			return true;
+		}
+
+/***********************************************************************
+RemoteProtocolAutomationService
+***********************************************************************/
+
+		Nullable<WString> RemoteProtocolAutomationService::GetNativeWindowId(INativeWindow* window)
+		{
+			return {};
+		}
+
+		INativeWindow* RemoteProtocolAutomationService::GetNativeWindow(Nullable<WString> windowId)
+		{
+			return GetHostedApplication()->GetNativeWindowHost();
+		}
+
+		WString RemoteProtocolAutomationService::RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand)
+		{
+			auto window = dynamic_cast<GuiRemoteWindow*>(this->GetNativeWindow(windowId));
+			if (!window)
+			{
+				return L"!Invalid window.";
+			}
+
+			return RunIOCommandOnNativeWindow(GetHostedApplication()->GetNativeController(), window->listeners, ioCommand);
+		}
+
+		bool RemoteProtocolAutomationService::CanRunIOCommands()
 		{
 			return true;
 		}

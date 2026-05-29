@@ -1,5 +1,4 @@
 #include "..\..\Hosted\GuiHostedController.h"
-#include "..\..\..\Utilities\SharedServices\GuiSharedAutomationService_Controls.h"
 #include "WinDirect2DApplication.h"
 #include "Renderers\GuiGraphicsWindowsDirect2D.h"
 #include "..\ServicesImpl\WindowsImageService.h"

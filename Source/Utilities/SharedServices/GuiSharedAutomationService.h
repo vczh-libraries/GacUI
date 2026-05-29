@@ -28,7 +28,7 @@ namespace vl
 		protected:
 			bool								stopped = false;
 
-			virtual WString						GetNativeWindowId(INativeWindow* window) = 0;
+			virtual Nullable<WString>			GetNativeWindowId(INativeWindow* window) = 0;
 			virtual INativeWindow*				GetNativeWindow(Nullable<WString> windowId) = 0;
 
 			virtual WString						DumpControlTreeInternal(bool withCompositionsAndElements) { return WString::Empty; }
