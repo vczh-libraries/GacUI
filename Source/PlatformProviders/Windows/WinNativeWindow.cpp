@@ -2251,49 +2251,67 @@ HttpAutomationService
 
 					try
 					{
-						if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pAbsPath == urlControls)
+						if (pRequest->Verb == HttpVerbGET)
 						{
-							if (automationService->CanDumpControlTree())
+							if (pRequest->CookedUrl.pAbsPath == urlControls)
 							{
-								asyncService->InvokeInMainThread(mainWindow, [=]()
+								if (automationService->CanDumpControlTree())
 								{
-									SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, automationService->DumpControlTree(false));
-								});
-								return;
+									asyncService->InvokeInMainThread(mainWindow, [=]()
+									{
+										SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, automationService->DumpControlTree(false));
+									});
+									return;
+								}
 							}
-						}
-						else if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pAbsPath == urlControlsVerbose)
-						{
-							if (automationService->CanDumpControlTree())
+							else if (pRequest->CookedUrl.pAbsPath == urlControlsVerbose)
 							{
-								asyncService->InvokeInMainThread(mainWindow, [=]()
+								if (automationService->CanDumpControlTree())
 								{
-									SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, automationService->DumpControlTree(true));
-								});
-								return;
+									asyncService->InvokeInMainThread(mainWindow, [=]()
+									{
+										SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, automationService->DumpControlTree(true));
+									});
+									return;
+								}
 							}
-						}
-						else if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pAbsPath == urlDom)
-						{
-							if (automationService->CanDumpControlTree())
+							else if (pRequest->CookedUrl.pAbsPath == urlDom)
 							{
-								asyncService->InvokeInMainThread(mainWindow, [=]()
+								if (automationService->CanDumpControlTree())
 								{
-									SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, automationService->DumpDomTree());
-								});
-								return;
+									asyncService->InvokeInMainThread(mainWindow, [=]()
+									{
+										SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, automationService->DumpDomTree());
+									});
+									return;
+								}
 							}
 						}
 						else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pAbsPath == urlIO)
 						{
-							if (automationService->CanDumpControlTree())
+							if (wcsncmp(pRequest->CookedUrl.pAbsPath, urlIO.Buffer(), (size_t)urlIO.Length()) == 0)
 							{
-								WString body = GetUtf8Body(pRequest).Value();
-								asyncService->InvokeInMainThread(mainWindow, [=]()
+								WString windowId;
+								auto pId = pRequest->CookedUrl.pAbsPath + urlIO.Length();
+								if (*pId == L'/')
 								{
-									SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, automationService->RunIOCommand({}, body));
-								});
-								return;
+									windowId = ++pId;
+								}
+								else if (*pId)
+								{
+									SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 404, L"URL not supported." });
+									return;
+								}
+
+								if (automationService->CanDumpControlTree())
+								{
+									WString body = GetUtf8Body(pRequest).Value();
+									asyncService->InvokeInMainThread(mainWindow, [=]()
+									{
+										SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, automationService->RunIOCommand(windowId, body));
+									});
+									return;
+								}
 							}
 						}
 					}
