@@ -1,7 +1,8 @@
-#include "WinGDIApplication.h"
-#include "..\ServicesImpl\WindowsImageService.h"
 #include "..\..\Hosted\GuiHostedController.h"
+#include "..\..\..\Utilities\SharedServices\GuiSharedAutomationService_Controls.h"
+#include "WinGDIApplication.h"
 #include "Renderers\GuiGraphicsWindowsGDI.h"
+#include "..\ServicesImpl\WindowsImageService.h"
 
 namespace vl
 {

@@ -101,8 +101,7 @@ WindowsForm
 
 			class WindowsForm : public Object, public INativeWindow, public IWindowsForm
 			{
-				template<typename TBase>
-				friend class WindowsAutomationService_;
+				friend struct WindowsAutomationServiceHelper;
 			protected:
 				
 				LONG_PTR InternalGetExStyle()
@@ -1757,8 +1756,7 @@ WindowsController
 
 			class WindowsController : public Object, public virtual INativeController, public virtual INativeWindowService
 			{
-				template<typename TBase>
-				friend class WindowsAutomationService_;
+				friend struct WindowsAutomationServiceHelper;
 			protected:
 				WinClass							windowClass;
 				WinClass							godClass;
@@ -2165,21 +2163,19 @@ Windows Platform Native Controller
 			}
 
 /***********************************************************************
-WindowsAutomationService_
+WindowsAutomationServiceHelper
 ***********************************************************************/
 
-			template<typename TBase>
-			WString WindowsAutomationService_<TBase>::GetNativeWindowId(INativeWindow* window)
+			WString WindowsAutomationServiceHelper::GetNativeWindowId(INativeWindow* window)
 			{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::windows::WindowsAutomationService_<TBase>::GetNativeWindowId(INativeWindow*)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::windows::WindowsAutomationServiceHelper::GetNativeWindowId(INativeWindow*)#"
 				auto controller = dynamic_cast<WindowsController*>(GetWindowsNativeController());
 				CHECK_ERROR(controller->windows.Values().Contains(dynamic_cast<WindowsForm*>(window)), ERROR_MESSAGE_PREFIX L"The specified INativeWindow instance should be native.");
 				return utow(static_cast<vuint>(reinterpret_cast<intptr_t>(window)));
 #undef ERROR_MESSAGE_PREFIX
 			}
 
-			template<typename TBase>
-			INativeWindow* WindowsAutomationService_<TBase>::GetNativeWindow(Nullable<WString> windowId)
+			INativeWindow* WindowsAutomationServiceHelper::GetNativeWindow(Nullable<WString> windowId)
 			{
 				auto controller = dynamic_cast<WindowsController*>(GetWindowsNativeController());
 				if (windowId)
@@ -2197,8 +2193,7 @@ WindowsAutomationService_
 				}
 			}
 
-			template<typename TBase>
-			WString WindowsAutomationService_<TBase>::RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand)
+			WString WindowsAutomationServiceHelper::RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand)
 			{
 				auto controller = dynamic_cast<WindowsController*>(GetWindowsNativeController());
 				WindowsForm* windowsForm = dynamic_cast<WindowsForm*>(GetNativeWindow(windowId));
@@ -2209,23 +2204,6 @@ WindowsAutomationService_
 
 				return RunIOCommandOnNativeWindow(controller, windowsForm->listeners, ioCommand);
 			}
-
-			template<typename TBase>
-			void WindowsAutomationService_<TBase>::Stop()
-			{
-				TBase::Stop();
-				StopWindowsHttpAutomationService();
-			}
-
-			template<typename TBase>
-			bool WindowsAutomationService_<TBase>::CanRunIOCommands()
-			{
-				return true;
-			}
-
-			template class WindowsAutomationService_<AutomationServiceBase>;
-			template class WindowsAutomationService_<AutomationService>;
-			template class WindowsAutomationService_<AutomationServiceHosted>;
 
 /***********************************************************************
 HttpAutomationService
