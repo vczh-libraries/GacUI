@@ -4,7 +4,7 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
 #include "../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h"
-#include <Windows.h>
+#include "../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
 
 using namespace vl;
 using namespace vl::collections;
@@ -57,6 +57,8 @@ void GuiMain()
 		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
 		window->ForceCalculateSizeImmediately();
 		window->MoveToScreenCenter();
+
+		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/GacUI_Host"), 8888);
 		GetApplication()->Run(window);
 		delete window;
 	}

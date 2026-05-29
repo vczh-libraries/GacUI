@@ -93,6 +93,8 @@ void OpenMainWindow()
 		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::TestWindow"));
 		window->ForceCalculateSizeImmediately();
 		window->MoveToScreenCenter();
+
+		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/Playground"), 8888);
 		GetApplication()->Run(window);
 		delete window;
 	}

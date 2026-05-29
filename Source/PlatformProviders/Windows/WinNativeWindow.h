@@ -61,6 +61,26 @@ Windows Platform Native Controller
 				bool										CanRunIOCommands() override;
 			};
 
+			class WindowsAutomationService : public WindowsAutomationServiceBase
+			{
+			protected:
+				WString										DumpControlTreeInternal(bool withCompositionsAndElements) override;
+
+			public:
+
+				bool										CanDumpControlTree() override;
+			};
+
+			class WindowsAutomationServiceHosted : public WindowsAutomationServiceBase
+			{
+			protected:
+				WString										DumpControlTreeInternal(bool withCompositionsAndElements) override;
+
+			public:
+
+				bool										CanDumpControlTree() override;
+			};
+
 			extern void										StartWindowsHttpAutomationService(const WString& applicationName, vint port);
 			extern void										StopWindowsHttpAutomationService();
 		}

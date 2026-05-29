@@ -24,6 +24,8 @@ void GuiMain()
 		demo::MainWindow window;
 		window.ForceCalculateSizeImmediately();
 		window.MoveToScreenCenter();
+
+		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/CppTest_Reflection"), 8888);
 		GetApplication()->Run(&window);
 	}
 }

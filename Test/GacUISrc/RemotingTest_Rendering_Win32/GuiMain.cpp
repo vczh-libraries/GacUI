@@ -2,6 +2,7 @@
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
 #include <VlppOS.Windows.h>
+#include "../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
 
 using namespace vl;
 using namespace vl::presentation;
@@ -17,7 +18,42 @@ namespace
 	constexpr vint GacUIRemoteProtocolHttpPort = 8888;
 }
 
-GuiRemoteRendererSingle* renderer = nullptr;
+class WindowsRemoteRendererSingle
+	: public GuiRemoteRendererSingle
+	, public windows::WindowsAutomationServiceBase
+{
+protected:
+
+	WString DumpDomTreeInternal() override
+	{
+		auto domRoot = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(domRoot, L"Title", GetApplication()->GetMainWindow()->GetText());
+		ConvertCustomTypeToJsonField(domRoot, L"Window", windowSizingConfig);
+		if (renderingDom)
+		{
+			ConvertCustomTypeToJsonField(domRoot, L"Dom", renderingDom);
+		}
+		return stream::GenerateToStream([=](stream::TextWriter& writer)
+		{
+			glr::json::JsonFormatting formatting;
+			formatting.spaceAfterColon = true;
+			formatting.spaceAfterComma = true;
+			formatting.crlf = true;
+			formatting.compact = true;
+			formatting.indentation = L"  ";
+			return glr::json::JsonPrint(domRoot, writer, formatting);
+		});
+	}
+
+public:
+
+	bool CanDumpDomTree() override
+	{
+		return true;
+	}
+};
+
+WindowsRemoteRendererSingle* renderer = nullptr;
 GuiRemoteProtocolAsyncJsonChannelRenderer* asyncChannel = nullptr;
 
 class RemotingTestChannelClient : public GuiRemoteProtocolChannelClient
@@ -25,7 +61,7 @@ class RemotingTestChannelClient : public GuiRemoteProtocolChannelClient
 	using Base = GuiRemoteProtocolChannelClient;
 private:
 	bool										triggeredFatalError = false;
-	GuiRemoteRendererSingle*					renderer = nullptr;
+	WindowsRemoteRendererSingle*				renderer = nullptr;
 	GuiRemoteProtocolAsyncJsonChannelRenderer*	asyncRendererChannel = nullptr;
 
 public:
@@ -34,7 +70,7 @@ public:
 	{
 	}
 
-	void SetRenderer(GuiRemoteRendererSingle* _renderer)
+	void SetRenderer(WindowsRemoteRendererSingle* _renderer)
 	{
 		renderer = _renderer;
 	}
@@ -113,7 +149,13 @@ void GuiMain()
 	GuiMainAsyncRendererInvoker invoker;
 	renderer->RegisterMainWindow(mainWindow);
 	asyncChannel->SetInvokeInMainThread(&invoker);
+
+	GetNativeServiceSubstitution()->Substitute(renderer, true);
+	windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/RemotingTest_Rendering_Win32"), 8888);
 	GetCurrentController()->WindowService()->Run(mainWindow);
+	GetCurrentController()->AutomationService()->Stop();
+	GetNativeServiceSubstitution()->Unsubstitute(renderer);
+
 	asyncChannel->SetInvokeInMainThread(nullptr);
 	renderer->UnregisterMainWindow();
 }
@@ -123,7 +165,7 @@ int StartClient(Ptr<inter_process::INetworkProtocolClient> networkClient)
 	auto jsonParser = Ptr(new glr::json::Parser);
 	RemotingTestChannelClient channelClient(networkClient, jsonParser);
 	GuiRemoteProtocolAsyncJsonChannelRenderer asyncRendererChannel(channelClient.GetProtocolChannel());
-	GuiRemoteRendererSingle remoteRenderer;
+	WindowsRemoteRendererSingle remoteRenderer;
 	GuiRemoteProtocolRendererChannel rendererChannel(&channelClient, &asyncRendererChannel, &remoteRenderer);
 	channelClient.SetRenderer(&remoteRenderer);
 	channelClient.SetAsyncRendererChannel(&asyncRendererChannel);

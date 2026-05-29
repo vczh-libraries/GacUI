@@ -113,6 +113,34 @@ After running `GacUI_Compiler`, you should always `git status` to find if there 
 - `GacUI_Compiler` may also fail by printing one line of error message or return non-zero exit code. If the `*.UI.errors.txt` file does not exist, you are recommended to debug the project to find out what happened.
 - Whenever `GacUI_Compiler` reports any error, you must fix the issue immediately, even those errors are unrelated to the issue you are working on.
 
+## Windows Specific
+
+Automation HTTP service for GUI applications are available for Windows:
+- `CppTest`                       : Run FullControlTest in hosted mode, built without reflection (`VCZH_DEBUG_NO_REFLECTION`).
+- `CppTest_Metaonly`              : Run FullControlTest, built with metaonly reflection (`VCZH_DEBUG_METAONLY_REFLECTION`).
+- `CppTest_Reflection`            : Run FullControlTest, built with full reflection.
+- `GacUI_Host`                    : Run FullControlTest, by loading Workflow binary assembly instead of generated C++ code.
+- `Playground`                    : Run `REPO-ROOT/Test/GacUISrc/Playground/Resources/Resource.xml`, main window specified in `OpenMainWindow` function.
+- `RemotingTest_Core`             : Run FullControlTest or RemoteProtocolTest with remote protocol hosted by HTTP or NamedPipe.
+- `RemotingTest_Rendering_Win32`  : Renderer of `RemotingTest_Core`.
+
+FullControlTest means `Generated_FullControlTest.vcxitems`.
+RemoteProtocolTest means `Generated_RemoteProtocolTest.vcxitems`.
+
+When running these projects, you are recommended to always attach a debugger on them.
+Because some runtime exceptions are silently consumed by Windows causing the application not to crash, covering issues if no debugger is attached.
+Each project responds to `http://localhost:8888/Automation/<PROJECT-NAME>/...` using `StartWindowsHttpAutomationService`:
+- GET `.../Controls` and `.../ControlsVerbose`, for GacUI applications, exposing all visible windows and popups.
+  - Read `GuiSharedAutomationService_Controls.h` for the schema.
+- GET `.../Dom`, for remote protocol renderer, exposing the DOM tree.
+  - Implemented in `RemotingTest_Rendering_Win32`. 
+- POST `.../IO` or `IO/<WINDOW-ID>`
+  - IRead `GuiSharedAutomationService.h` for the schema.
+  - `<WINDOW-ID>` is the window id returning from `.../Controls` or `.../ControlsVerbose`.
+  - The window ID can be comitted for the main window.
+  - The window ID must be omitted for GacUI applications with hosted mode or remote protocol core side.
+    - In this case all sub windows or popups behaves like controls in the main window.
+
 ## Linux Specific
 
 `REPO-ROOT/Test/Linux` stores linux configurations for:

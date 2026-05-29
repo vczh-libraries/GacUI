@@ -2204,6 +2204,34 @@ WindowsAutomationServiceBase
 			}
 
 /***********************************************************************
+WindowsAutomationService
+***********************************************************************/
+
+			WString WindowsAutomationService::DumpControlTreeInternal(bool withCompositionsAndElements)
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			bool WindowsAutomationService::CanDumpControlTree()
+			{
+				return true;
+			}
+
+/***********************************************************************
+WindowsAutomationServiceHosted
+***********************************************************************/
+
+			WString WindowsAutomationServiceHosted::DumpControlTreeInternal(bool withCompositionsAndElements)
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			bool WindowsAutomationServiceHosted::CanDumpControlTree()
+			{
+				return true;
+			}
+
+/***********************************************************************
 HttpAutomationService
 ***********************************************************************/
 
