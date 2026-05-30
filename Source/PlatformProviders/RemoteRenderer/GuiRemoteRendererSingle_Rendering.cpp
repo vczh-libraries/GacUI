@@ -93,9 +93,12 @@ namespace vl::presentation::remote_renderer
 					}
 				}
 
-				RenderingElement renderingElement;
-				renderingElement.key = rc.type;
-				renderingElements.Set(rc.id, renderingElement);
+				if (enabledAutomation)
+				{
+					RenderingElement renderingElement;
+					renderingElement.key = rc.type;
+					renderingElements.Set(rc.id, renderingElement);
+				}
 			}
 		}
 	}
@@ -110,7 +113,11 @@ namespace vl::presentation::remote_renderer
 				focusedParagraphElements.Remove(id);
 				availableElements.Remove(id);
 				solidLabelMeasurings.Remove(id);
-				renderingElements.Remove(id);
+
+				if (enabledAutomation)
+				{
+					renderingElements.Remove(id);
+				}
 			}
 		}
 	}
@@ -134,36 +141,39 @@ namespace vl::presentation::remote_renderer
 					[&](const remoteprotocol::ElementDesc_ImageFrame& d) { RequestRendererUpdateElement_ImageFrame(d); }
 				));
 
-				desc.Apply(Overloading(
-					[&](const remoteprotocol::ElementDesc_SolidLabel& d)
-					{
-						vint index = renderingElements.Keys().IndexOf(d.id);
-						if (index != -1)
+				if (enabledAutomation)
+				{
+					desc.Apply(Overloading(
+						[&](const remoteprotocol::ElementDesc_SolidLabel& d)
 						{
-							auto& renderingElement = const_cast<RenderingElement&>(renderingElements.Values()[index]);
-							auto copiedDesc = d;
-							if (renderingElement.value)
+							vint index = renderingElements.Keys().IndexOf(d.id);
+							if (index != -1)
 							{
-								if (auto solidLabel = renderingElement.value.Value().TryGet<remoteprotocol::ElementDesc_SolidLabel>())
+								auto& renderingElement = const_cast<RenderingElement&>(renderingElements.Values()[index]);
+								auto copiedDesc = d;
+								if (renderingElement.value)
 								{
-									if (!copiedDesc.font) copiedDesc.font = solidLabel->font;
-									if (!copiedDesc.text) copiedDesc.text = solidLabel->text;
-									if (!copiedDesc.measuringRequest) copiedDesc.measuringRequest = solidLabel->measuringRequest;
+									if (auto solidLabel = renderingElement.value.Value().TryGet<remoteprotocol::ElementDesc_SolidLabel>())
+									{
+										if (!copiedDesc.font) copiedDesc.font = solidLabel->font;
+										if (!copiedDesc.text) copiedDesc.text = solidLabel->text;
+										if (!copiedDesc.measuringRequest) copiedDesc.measuringRequest = solidLabel->measuringRequest;
+									}
 								}
+								renderingElement.value = copiedDesc;
 							}
-							renderingElement.value = copiedDesc;
-						}
-					},
-					[&](const auto& d)
-					{
-						vint index = renderingElements.Keys().IndexOf(d.id);
-						if (index != -1)
+						},
+						[&](const auto& d)
 						{
-							auto& renderingElement = const_cast<RenderingElement&>(renderingElements.Values()[index]);
-							renderingElement.value = d;
+							vint index = renderingElements.Keys().IndexOf(d.id);
+							if (index != -1)
+							{
+								auto& renderingElement = const_cast<RenderingElement&>(renderingElements.Values()[index]);
+								renderingElement.value = d;
+							}
 						}
-					}
-				));
+					));
+				}
 			}
 		}
 	}

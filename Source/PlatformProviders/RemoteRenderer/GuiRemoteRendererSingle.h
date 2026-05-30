@@ -79,9 +79,11 @@ namespace vl::presentation::remote_renderer
 
 		ElementMap								availableElements;
 		ImageMap								availableImages;
-		RenderingElementMap						renderingElements;
 		Ptr<remoteprotocol::RenderingDom>		renderingDom;
 		remoteprotocol::DomIndex				renderingDomIndex;
+
+		bool									enabledAutomation = false;
+		RenderingElementMap						renderingElements;
 
 		Alignment								GetAlignment(remoteprotocol::ElementHorizontalAlignment alignment);
 		Alignment								GetAlignment(remoteprotocol::ElementVerticalAlignment alignment);
@@ -152,7 +154,7 @@ namespace vl::presentation::remote_renderer
 		void									RequestRendererUpdateElement_ImageFrame(const remoteprotocol::ElementDesc_ImageFrame& arguments);
 
 	public:
-		GuiRemoteRendererSingle();
+		GuiRemoteRendererSingle(bool _enabledAutomation);
 		~GuiRemoteRendererSingle();
 
 		void									RegisterMainWindow(INativeWindow* _window);

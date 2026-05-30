@@ -10,16 +10,16 @@ namespace vl
 DumpRemoteProtocolRenderingDom
 ***********************************************************************/
 
-		WString DumpRemoteProtocolRenderingDom(
+		Ptr<glr::json::JsonNode> DumpRemoteProtocolRenderingDom(
 			const WString& title,
 			const remoteprotocol::WindowSizingConfig& windowSizingConfig,
 			Ptr<remoteprotocol::RenderingDom> renderingDom,
 			collections::Dictionary<vint, collections::Pair<remoteprotocol::RendererType, Nullable<remoteprotocol::UnitTest_ElementDescVariant>>>& elementData
 		)
 		{
-			auto domRoot = Ptr(new glr::json::JsonObject);
-			ConvertCustomTypeToJsonField(domRoot, L"Title", title);
-			ConvertCustomTypeToJsonField(domRoot, L"Window", windowSizingConfig);
+			auto dumpRoot = Ptr(new glr::json::JsonObject);
+			ConvertCustomTypeToJsonField(dumpRoot, L"Title", title);
+			ConvertCustomTypeToJsonField(dumpRoot, L"Window", windowSizingConfig);
 
 			{
 				auto field = Ptr(new glr::json::JsonObjectField);
@@ -27,7 +27,7 @@ DumpRemoteProtocolRenderingDom
 
 				auto jsonArray = Ptr(new glr::json::JsonArray);
 				field->value = jsonArray;
-				domRoot->fields.Add(field);
+				dumpRoot->fields.Add(field);
 
 				for (auto [id, data] : elementData)
 				{
@@ -42,8 +42,13 @@ DumpRemoteProtocolRenderingDom
 
 			if (renderingDom)
 			{
-				ConvertCustomTypeToJsonField(domRoot, L"Dom", renderingDom);
+				ConvertCustomTypeToJsonField(dumpRoot, L"Dom", renderingDom);
 			}
+			return dumpRoot;
+		}
+
+		WString DumpJsonToString(Ptr<glr::json::JsonNode> json)
+		{
 			return stream::GenerateToStream([=](stream::TextWriter& writer)
 			{
 				glr::json::JsonFormatting formatting;
@@ -52,7 +57,7 @@ DumpRemoteProtocolRenderingDom
 				formatting.crlf = true;
 				formatting.compact = true;
 				formatting.indentation = L"  ";
-				return glr::json::JsonPrint(domRoot, writer, formatting);
+				return glr::json::JsonPrint(json, writer, formatting);
 			});
 		}
 

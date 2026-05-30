@@ -438,6 +438,7 @@ namespace vl::presentation::remote_renderer
 		wrapper->ApplyUpdateAndFillResponse(arguments, response);
 		events->RespondRendererUpdateElement_DocumentParagraph(id, response);
 
+		if (enabledAutomation)
 		{
 			vint index = renderingElements.Keys().IndexOf(arguments.id);
 			if (index != -1)
@@ -526,6 +527,7 @@ namespace vl::presentation::remote_renderer
 		wrapper->OpenCaretAndStore(arguments);
 		focusedParagraphElements.Set(arguments.id, wrapper);
 
+		if (enabledAutomation)
 		{
 			vint index = renderingElements.Keys().IndexOf(arguments.id);
 			if (index != -1)
@@ -550,6 +552,7 @@ namespace vl::presentation::remote_renderer
 		wrapper->CloseCaretAndStore();
 		focusedParagraphElements.Remove(arguments);
 
+		if (enabledAutomation)
 		{
 			vint index = renderingElements.Keys().IndexOf(arguments);
 			if (index != -1)

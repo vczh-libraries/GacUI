@@ -26,10 +26,20 @@ protected:
 
 	WString DumpDomTreeInternal() override
 	{
-		return DumpRemoteProtocolRenderingDom(GetCurrentController()->WindowService()->GetMainWindow()->GetTitle(), windowSizingConfig, renderingDom, renderingElements);
+		auto dumpRoot = DumpRemoteProtocolRenderingDom(
+			GetCurrentController()->WindowService()->GetMainWindow()->GetTitle(),
+			windowSizingConfig,
+			renderingDom,
+			renderingElements);
+		return DumpJsonToString(dumpRoot);
 	}
 
 public:
+	WindowsRemoteRendererSingle()
+		: GuiRemoteRendererSingle(true)
+	{
+		// true should be passed so that automation data will be collected
+	}
 
 	bool CanDumpDomTree() override
 	{

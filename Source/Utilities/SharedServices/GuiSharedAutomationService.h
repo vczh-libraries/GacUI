@@ -18,13 +18,25 @@ namespace vl
 	{
 		/*
 		* Schema:
+		* {
+		*   Title: string;
+		*   Window: remoteprotocol::WindowSizingConfig;
+		*   Dom: remoteprotocol::RenderingDom;
+		*   Elements: [{
+		*     Id: number;
+		*     Type: remoteprotocol::RenderingType;
+		*     Data: remoteprotocol::UnitTest_ElementDescVariant;
+		*   }];
+		* }
 		*/
-		extern WString							DumpRemoteProtocolRenderingDom(
+		extern Ptr<glr::json::JsonNode>			DumpRemoteProtocolRenderingDom(
 													const WString& title,
 													const remoteprotocol::WindowSizingConfig& windowSizingConfig,
 													Ptr<remoteprotocol::RenderingDom> renderingDom,
 													collections::Dictionary<vint, collections::Pair<remoteprotocol::RendererType, Nullable<remoteprotocol::UnitTest_ElementDescVariant>>>& elementData
 													);
+
+		extern WString							DumpJsonToString(Ptr<glr::json::JsonNode> json);
 
 		/*
 		* Predefined Commands:

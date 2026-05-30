@@ -151,7 +151,8 @@ namespace vl::presentation::remote_renderer
 		events->OnWindowActivatedUpdated(false);
 	}
 
-	GuiRemoteRendererSingle::GuiRemoteRendererSingle()
+	GuiRemoteRendererSingle::GuiRemoteRendererSingle(bool _enabledAutomation)
+		: enabledAutomation(_enabledAutomation)
 	{
 	}
 
