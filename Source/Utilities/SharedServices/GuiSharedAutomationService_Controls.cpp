@@ -6,6 +6,8 @@ namespace vl
 {
 	namespace presentation
 	{
+		using namespace controls;
+		using namespace remoteprotocol;
 
 /***********************************************************************
 AutomationService
@@ -13,7 +15,47 @@ AutomationService
 
 		WString AutomationService::DumpControlTreeInternal()
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			auto app = GetApplication();
+			auto mainWindow = app->GetMainWindow();
+
+			auto dumpRoot = Ptr(new glr::json::JsonObject);
+			ConvertCustomTypeToJsonField(dumpRoot, L"WindowManagement", WString::Unmanaged(L"MultiWindow"));
+			{
+				auto field = Ptr(new glr::json::JsonObjectField);
+				dumpRoot->fields.Add(field);
+				field->name.value = L"MainWindow";
+				field->value = DumpWindowClientArea(mainWindow, GetNativeWindowId(mainWindow->GetNativeWindow()));
+			}
+			{
+				auto field = Ptr(new glr::json::JsonObjectField);
+				dumpRoot->fields.Add(field);
+				field->name.value = L"SubWindows";
+
+				auto subWindows = Ptr(new glr::json::JsonArray);
+				field->value = subWindows;
+
+				for (auto subWindow : app->windows)
+				{
+					if (subWindow->GetVisible() && !dynamic_cast<GuiPopup*>(subWindow))
+					{
+						subWindows->items.Add(DumpWindowClientArea(subWindow, GetNativeWindowId(subWindow->GetNativeWindow())));
+					}
+				}
+			}
+			{
+				auto field = Ptr(new glr::json::JsonObjectField);
+				dumpRoot->fields.Add(field);
+				field->name.value = L"Popups";
+
+				auto popups = Ptr(new glr::json::JsonArray);
+				field->value = popups;
+
+				for (auto popup : app->openingPopups)
+				{
+					popups->items.Add(DumpWindowClientArea(popup, GetNativeWindowId(popup->GetNativeWindow())));
+				}
+			}
+			return DumpJsonToString(dumpRoot);
 		}
 
 		AutomationService::AutomationService()
@@ -94,7 +136,7 @@ RemoteProtocolAutomationService
 DumpWindowClientArea
 ***********************************************************************/
 
-		Ptr<glr::json::JsonNode> DumpWindowClientArea(controls::GuiWindow* window, Nullable<WString> windowId, Point offsetLogical, double scaleX, double scaleY)
+		Ptr<glr::json::JsonNode> DumpWindowClientArea(controls::GuiWindow* window, Nullable<WString> windowId)
 		{
 			CHECK_FAIL(L"Not Implemented!");
 		}
