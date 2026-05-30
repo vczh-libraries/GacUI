@@ -20,6 +20,7 @@ namespace vl
 {
 	namespace presentation
 	{
+		class AutomationServiceHosted;
 
 /***********************************************************************
 GuiHostedController
@@ -39,6 +40,7 @@ GuiHostedController
 		{
 			friend class GuiHostedWindow;
 			friend class elements::GuiHostedGraphicsResourceManager;
+			friend class AutomationServiceHosted;
 		protected:
 			SharedCallbackService										callbackService;
 			hosted_window_manager::WindowManager<GuiHostedWindow*>*		wmManager = nullptr;

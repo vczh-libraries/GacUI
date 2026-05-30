@@ -2235,16 +2235,6 @@ WindowsAutomationService
 WindowsAutomationServiceHosted
 ***********************************************************************/
 
-			Nullable<WString> WindowsAutomationServiceHosted::GetNativeWindowId(INativeWindow* window)
-			{
-				return {};
-			}
-
-			INativeWindow* WindowsAutomationServiceHosted::GetNativeWindow(Nullable<WString> windowId)
-			{
-				return GetWindowsNativeController()->WindowService()->GetMainWindow();
-			}
-
 			WindowsAutomationServiceHosted::WindowsAutomationServiceHosted()
 			{
 			}
@@ -2256,16 +2246,6 @@ WindowsAutomationServiceHosted
 /***********************************************************************
 WindowsAutomationServiceRenderer
 ***********************************************************************/
-
-			Nullable<WString> WindowsAutomationServiceRenderer::GetNativeWindowId(INativeWindow* window)
-			{
-				return {};
-			}
-
-			INativeWindow* WindowsAutomationServiceRenderer::GetNativeWindow(Nullable<WString> windowId)
-			{
-				return GetWindowsNativeController()->WindowService()->GetMainWindow();
-			}
 
 			WindowsAutomationServiceRenderer::WindowsAutomationServiceRenderer(remote_renderer::GuiRemoteRendererSingle* _renderer)
 				: WindowsAutomationServiceBase<AutomationServiceRenderer>(_renderer)

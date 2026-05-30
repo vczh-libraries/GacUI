@@ -82,10 +82,6 @@ Windows Platform Native Controller
 
 			class WindowsAutomationServiceHosted : public WindowsAutomationServiceBase<AutomationServiceHosted>
 			{
-			protected:
-				Nullable<WString>							GetNativeWindowId(INativeWindow* window) override;
-				INativeWindow*								GetNativeWindow(Nullable<WString> windowId) override;
-
 			public:
 				WindowsAutomationServiceHosted();
 				~WindowsAutomationServiceHosted();
@@ -93,10 +89,6 @@ Windows Platform Native Controller
 
 			class WindowsAutomationServiceRenderer : public WindowsAutomationServiceBase<AutomationServiceRenderer>
 			{
-			protected:
-				Nullable<WString>							GetNativeWindowId(INativeWindow* window) override;
-				INativeWindow*								GetNativeWindow(Nullable<WString> windowId) override;
-
 			public:
 				WindowsAutomationServiceRenderer(remote_renderer::GuiRemoteRendererSingle* _renderer);
 				~WindowsAutomationServiceRenderer();

@@ -109,8 +109,17 @@ namespace vl
 		{
 		private:
 			remote_renderer::GuiRemoteRendererSingle*	renderer = nullptr;
-
+			
 		protected:
+			Nullable<WString> GetNativeWindowId(INativeWindow* window) override
+			{
+				return {};
+			}
+
+			INativeWindow* GetNativeWindow(Nullable<WString> windowId) override
+			{
+				return GetCurrentController()->WindowService()->GetMainWindow();
+			}
 
 			WString DumpDomTreeInternal() override
 			{

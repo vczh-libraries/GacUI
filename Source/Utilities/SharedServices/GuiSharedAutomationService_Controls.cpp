@@ -1,11 +1,12 @@
 #include "GuiSharedAutomationService_Controls.h"
-#include "../../PlatformProviders/Hosted/GuiHostedApplication.h"
+#include "../../PlatformProviders/Hosted/GuiHostedController.h"
 #include "../../PlatformProviders/Remote/GuiRemoteController.h"
 
 namespace vl
 {
 	namespace presentation
 	{
+		using namespace collections;
 		using namespace controls;
 		using namespace remoteprotocol;
 
@@ -75,9 +76,33 @@ AutomationService
 AutomationServiceHosted
 ***********************************************************************/
 
+		Nullable<WString> AutomationServiceHosted::GetNativeWindowId(INativeWindow* window)
+		{
+			return {};
+		}
+
+		INativeWindow* AutomationServiceHosted::GetNativeWindow(Nullable<WString> windowId)
+		{
+			return GetHostedApplication()->GetNativeWindowHost();
+		}
+
 		WString AutomationServiceHosted::DumpControlTreeInternal()
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			auto app = GetApplication();
+			auto mainWindow = app->GetMainWindow();
+
+			auto dumpRoot = Ptr(new glr::json::JsonObject);
+			ConvertCustomTypeToJsonField(dumpRoot, L"WindowManagement", WString::Unmanaged(L"MultiWindow"));
+			{
+				auto field = Ptr(new glr::json::JsonObjectField);
+				dumpRoot->fields.Add(field);
+				field->name.value = L"MainWindow";
+				field->value = DumpWindowClientArea(mainWindow, {});
+
+				auto hostedController = dynamic_cast<GuiHostedController*>(GetHostedApplication());
+				auto windowsInOrder = From(hostedController->wmManager->topMostedWindowsInOrder).Concat(hostedController->wmManager->ordinaryWindowsInOrder).Reverse();
+			}
+			return DumpJsonToString(dumpRoot);
 		}
 
 		AutomationServiceHosted::AutomationServiceHosted()
@@ -96,16 +121,6 @@ AutomationServiceHosted
 /***********************************************************************
 RemoteProtocolAutomationService
 ***********************************************************************/
-
-		Nullable<WString> RemoteProtocolAutomationService::GetNativeWindowId(INativeWindow* window)
-		{
-			return {};
-		}
-
-		INativeWindow* RemoteProtocolAutomationService::GetNativeWindow(Nullable<WString> windowId)
-		{
-			return GetHostedApplication()->GetNativeWindowHost();
-		}
 
 		WString RemoteProtocolAutomationService::RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand)
 		{

@@ -37,7 +37,9 @@ namespace vl
 		{
 		protected:
 			WString								windowManagement = WString::Unmanaged(L"Hosted");
-
+			
+			Nullable<WString>					GetNativeWindowId(INativeWindow* window) override;
+			INativeWindow*						GetNativeWindow(Nullable<WString> windowId) override;
 			WString								DumpControlTreeInternal() override;
 
 		public:
@@ -50,8 +52,6 @@ namespace vl
 		class RemoteProtocolAutomationService : public AutomationServiceHosted
 		{
 		protected:
-			Nullable<WString>					GetNativeWindowId(INativeWindow* window) override;
-			INativeWindow*						GetNativeWindow(Nullable<WString> windowId) override;
 			WString								RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) override;
 
 		public:
@@ -76,7 +76,7 @@ namespace vl
 		*   // popups are usually dropdowns, tooltips or menus
 		*   // no ordering
 		*   // available for "MultiWindow"
-		*   // otherwise sub windows become child controls of the main window
+		*   // otherwise popups become child controls of the main window
 		*   Popups?: WindowDump[];
 		* }
 		* 
