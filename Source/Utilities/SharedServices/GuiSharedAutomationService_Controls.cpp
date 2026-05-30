@@ -25,7 +25,7 @@ AutomationService
 				auto field = Ptr(new glr::json::JsonObjectField);
 				dumpRoot->fields.Add(field);
 				field->name.value = L"MainWindow";
-				field->value = DumpWindowClientArea(mainWindow, GetNativeWindowId(mainWindow->GetNativeWindow()));
+				field->value = DumpWindowClientArea(mainWindow, GetNativeWindowId(mainWindow->GetNativeWindow()), { 0,0 });
 			}
 			{
 				auto field = Ptr(new glr::json::JsonObjectField);
@@ -39,7 +39,7 @@ AutomationService
 				{
 					if (subWindow->GetVisible() && !dynamic_cast<GuiPopup*>(subWindow))
 					{
-						subWindows->items.Add(DumpWindowClientArea(subWindow, GetNativeWindowId(subWindow->GetNativeWindow())));
+						subWindows->items.Add(DumpWindowClientArea(subWindow, GetNativeWindowId(subWindow->GetNativeWindow()), { 0,0 }));
 					}
 				}
 			}
@@ -53,7 +53,7 @@ AutomationService
 
 				for (auto popup : app->openingPopups)
 				{
-					popups->items.Add(DumpWindowClientArea(popup, GetNativeWindowId(popup->GetNativeWindow())));
+					popups->items.Add(DumpWindowClientArea(popup, GetNativeWindowId(popup->GetNativeWindow()), { 0,0 }));
 				}
 			}
 			return DumpJsonToString(dumpRoot);
@@ -97,7 +97,7 @@ AutomationServiceHosted
 				auto field = Ptr(new glr::json::JsonObjectField);
 				dumpRoot->fields.Add(field);
 				field->name.value = L"MainWindow";
-				field->value = DumpWindowClientArea(mainWindow, {});
+				field->value = DumpWindowClientArea(mainWindow, {}, { 0,0 });
 				{
 					auto subWindowsField = Ptr(new glr::json::JsonObjectField);
 					field->value.Cast<glr::json::JsonObject>()->fields.Add(subWindowsField);
@@ -110,7 +110,8 @@ AutomationServiceHosted
 					for (auto wmWindow : From(hostedController->wmManager->topMostedWindowsInOrder).Concat(hostedController->wmManager->ordinaryWindowsInOrder).Reverse())
 					{
 						auto subWindow = app->windowMap[wmWindow->id];
-						subWindows->items.Add(DumpWindowClientArea(subWindow, {}));
+						auto offset = mainWindow->GetNativeWindow()->Convert(wmWindow->bounds.LeftTop());
+						subWindows->items.Add(DumpWindowClientArea(subWindow, {}, offset));
 					}
 				}
 			}
@@ -163,9 +164,20 @@ RemoteProtocolAutomationService
 DumpWindowClientArea
 ***********************************************************************/
 
-		Ptr<glr::json::JsonNode> DumpWindowClientArea(controls::GuiWindow* window, Nullable<WString> windowId)
+		Ptr<glr::json::JsonNode> DumpWindowClientArea(controls::GuiWindow* window, Nullable<WString> windowId, Point offset)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			auto windowDump = Ptr(new glr::json::JsonObject);
+			ConvertCustomTypeToJsonField(windowDump, L"title", window->GetText());
+			if (windowId)
+			{
+				ConvertCustomTypeToJsonField(windowDump, L"windowId", windowId.Value());
+			}
+
+			{
+				Size size = window->GetBoundsComposition()->GetCachedBounds().GetSize();
+				ConvertCustomTypeToJsonField(windowDump, L"bounds", Rect(offset, size));
+			}
+			return windowDump;
 		}
 	}
 }

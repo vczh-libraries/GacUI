@@ -60,10 +60,13 @@ namespace vl
 		*   Click means Down/Up
 		*   DbClick means Down/Up/Down/DbClick/Up
 		* 
-		*  During calling the event handlers
-		*    ctrl/shift/alt should be set accordingly
-		*    the state argument is for remembering whatever is needed
-		*    RunIOCommandOnNativeWindow assume it is the only source of IO interactions
+		* All coordinates are GuiCoordinate
+		*   INativeWindow::Convert should be used to convert them to NativeCoordinate before calling the event handlers
+		* 
+		* During calling the event handlers
+		*   ctrl/shift/alt should be set accordingly
+		*   the state argument is for remembering whatever is needed
+		*   RunIOCommandOnNativeWindow assume it is the only source of IO interactions
 		*/
 		extern WString							RunIOCommandOnNativeWindow(
 													IoCommandState* state,

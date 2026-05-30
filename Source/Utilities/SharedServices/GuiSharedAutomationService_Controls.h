@@ -92,16 +92,15 @@ namespace vl
 		*   //   the main window is responsible for window management, dispatching IO commands to the correct target
 		*   windowId?: string;
 		* 
-		*   // offset + size defines the valid coordinate space for IO commands
+		*   // bounds defines the valid coordinate space for IO commands
 		*   // IO commands use the client area of a native window as the coordinate space
 		*   // such native window is a OS native window
 		*   // for a window that owns a OS native window, the valid coordinate space is the client area
 		*   // for a window that doesn't own a OS native window, the valid coordinate space is the partial rectangle of the main window client area
 		*   // native coordinate = logical coordinate * scale
 		* 
-		*   // offset always (0,0) for main window or when "MultiWindow"
-		*   offset: { x: number, y: number };
-		*   size: { x: number, y: number };
+		*   // (x1,y1) always (0,0) for main window or when "MultiWindow"
+		*   bounds: { x1: number, y1: number, x2: number, y2: number };
 		* 
 		*   // available for main window in "Hosted" and "HostedRemoteProtocol"
 		*   // ordered from bottom to top
@@ -110,7 +109,7 @@ namespace vl
 		*   title: string;
 		* }
 		*/
-		extern Ptr<glr::json::JsonNode>			DumpWindowClientArea(controls::GuiWindow* window, Nullable<WString> windowId);
+		extern Ptr<glr::json::JsonNode>			DumpWindowClientArea(controls::GuiWindow* window, Nullable<WString> windowId, Point offset);
 	}
 }
 
