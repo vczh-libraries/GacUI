@@ -11,13 +11,14 @@ Interfaces:
 
 #include "../../NativeWindow/GuiNativeWindow.h"
 #include "../../PlatformProviders/Remote/Protocol/Generated/GuiRemoteProtocolSchema.h"
+#include "../../PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
 
 namespace vl
 {
 	namespace presentation
 	{
 		/*
-		* Schema:
+		* Schema of /Dom:
 		* {
 		*   Title: string;
 		*   Window: remoteprotocol::WindowSizingConfig;
@@ -56,7 +57,7 @@ namespace vl
 			virtual Nullable<WString>			GetNativeWindowId(INativeWindow* window) = 0;
 			virtual INativeWindow*				GetNativeWindow(Nullable<WString> windowId) = 0;
 
-			virtual WString						DumpControlTreeInternal(bool withCompositionsAndElements) { return WString::Empty; }
+			virtual WString						DumpControlTreeInternal() { return WString::Empty; }
 			virtual WString						DumpDomTreeInternal() { return WString::Empty; }
 			virtual WString						RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) { return WString::Empty; }
 		public:
@@ -78,9 +79,9 @@ namespace vl
 				return false;
 			}
 
-			WString DumpControlTree(bool withCompositionsAndElements) override
+			WString DumpControlTree() override
 			{
-				return !stopped && CanDumpControlTree() ? DumpControlTreeInternal(withCompositionsAndElements) : WString::Empty;
+				return !stopped && CanDumpControlTree() ? DumpControlTreeInternal() : WString::Empty;
 			}
 
 			bool CanDumpDomTree() override
@@ -101,6 +102,35 @@ namespace vl
 			WString RunIOCommand(Nullable<WString> windowId, const WString& ioCommand) override
 			{
 				return !stopped && CanRunIOCommands() ? RunIOCommandInternal(windowId, ioCommand) : WString::Empty;
+			}
+		};
+
+		class AutomationServiceRenderer : public AutomationServiceBase
+		{
+		private:
+			remote_renderer::GuiRemoteRendererSingle*	renderer = nullptr;
+
+		protected:
+
+			WString DumpDomTreeInternal() override
+			{
+				auto dumpRoot = DumpRemoteProtocolRenderingDom(
+					GetCurrentController()->WindowService()->GetMainWindow()->GetTitle(),
+					renderer->windowSizingConfig,
+					renderer->renderingDom,
+					renderer->renderingElements);
+				return DumpJsonToString(dumpRoot);
+			}
+
+		public:
+			AutomationServiceRenderer(remote_renderer::GuiRemoteRendererSingle* _renderer)
+				:renderer(_renderer)
+			{
+			}
+
+			bool CanDumpDomTree() override
+			{
+				return true;
 			}
 		};
 	}

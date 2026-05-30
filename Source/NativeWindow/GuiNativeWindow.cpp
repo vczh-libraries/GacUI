@@ -27,7 +27,7 @@ INativeAutomationService
 				CHECK_FAIL(L"Not Implemented!");
 			}
 
-			WString DumpControlTree(bool) override
+			WString DumpControlTree() override
 			{
 				CHECK_FAIL(L"Not Implemented!");
 			}

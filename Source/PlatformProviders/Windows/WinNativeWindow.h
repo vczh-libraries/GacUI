@@ -59,6 +59,12 @@ Windows Platform Native Controller
 				WString										RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) override;
 
 			public:
+				template<typename ...TArgs>
+				WindowsAutomationServiceBase(TArgs&& ...args)
+					:TBase(std::forward<TArgs>(args)...)
+				{
+				}
+
 				void										Stop() override;
 				bool										CanRunIOCommands() override;
 			};
@@ -85,14 +91,14 @@ Windows Platform Native Controller
 				~WindowsAutomationServiceHosted();
 			};
 
-			class WindowsAutomationServiceRenderer : public WindowsAutomationServiceBase<AutomationServiceBase>
+			class WindowsAutomationServiceRenderer : public WindowsAutomationServiceBase<AutomationServiceRenderer>
 			{
 			protected:
 				Nullable<WString>							GetNativeWindowId(INativeWindow* window) override;
 				INativeWindow*								GetNativeWindow(Nullable<WString> windowId) override;
 
 			public:
-				WindowsAutomationServiceRenderer();
+				WindowsAutomationServiceRenderer(remote_renderer::GuiRemoteRendererSingle* _renderer);
 				~WindowsAutomationServiceRenderer();
 			};
 

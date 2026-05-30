@@ -11,7 +11,7 @@ namespace vl
 AutomationService
 ***********************************************************************/
 
-		WString AutomationService::DumpControlTreeInternal(bool withCompositionsAndElements)
+		WString AutomationService::DumpControlTreeInternal()
 		{
 			CHECK_FAIL(L"Not Implemented!");
 		}
@@ -25,7 +25,7 @@ AutomationService
 AutomationServiceHosted
 ***********************************************************************/
 
-		WString AutomationServiceHosted::DumpControlTreeInternal(bool withCompositionsAndElements)
+		WString AutomationServiceHosted::DumpControlTreeInternal()
 		{
 			CHECK_FAIL(L"Not Implemented!");
 		}
@@ -69,7 +69,7 @@ RemoteProtocolAutomationService
 DumpWindowClientArea
 ***********************************************************************/
 
-		Ptr<glr::json::JsonNode> DumpWindowClientArea(controls::GuiWindow* window, bool withCompositionsAndElements, Nullable<WString> windowId, Point offsetLogical, double scaleX, double scaleY)
+		Ptr<glr::json::JsonNode> DumpWindowClientArea(controls::GuiWindow* window, Nullable<WString> windowId, Point offsetLogical, double scaleX, double scaleY)
 		{
 			CHECK_FAIL(L"Not Implemented!");
 		}

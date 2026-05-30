@@ -14,6 +14,11 @@ Interfaces:
 #include "../Remote/GuiRemoteProtocol_Shared.h"
 #include "../Remote/Protocol/FrameOperations/GuiRemoteProtocolSchema_FrameOperations.h"
 
+namespace vl::presentation
+{
+	class AutomationServiceRenderer;
+}
+
 namespace vl::presentation::remote_renderer
 {
 	class GuiRemoteRendererSingle
@@ -23,7 +28,7 @@ namespace vl::presentation::remote_renderer
 		, protected virtual INativeControllerListener
 	{
 		friend class GuiRemoteDocumentParagraphElement;
-
+		friend class AutomationServiceRenderer;
 	protected:
 		INativeWindow*							window = nullptr;
 		INativeScreen*							screen = nullptr;

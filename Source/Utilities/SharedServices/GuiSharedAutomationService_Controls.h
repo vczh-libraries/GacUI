@@ -24,7 +24,7 @@ namespace vl
 		class AutomationService : public AutomationServiceBase
 		{
 		protected:
-			WString								DumpControlTreeInternal(bool withCompositionsAndElements) override;
+			WString								DumpControlTreeInternal() override;
 
 		public:
 
@@ -34,7 +34,7 @@ namespace vl
 		class AutomationServiceHosted : public AutomationServiceBase
 		{
 		protected:
-			WString								DumpControlTreeInternal(bool withCompositionsAndElements) override;
+			WString								DumpControlTreeInternal() override;
 
 		public:
 
@@ -53,9 +53,11 @@ namespace vl
 		};
 
 		/*
-		* Schema:
+		* Schema of /Controls
+		* 
+		* 
 		*/
-		extern Ptr<glr::json::JsonNode>			DumpWindowClientArea(controls::GuiWindow* window, bool withCompositionsAndElements, Nullable<WString> windowId, Point offsetLogical, double scaleX, double scaleY);
+		extern Ptr<glr::json::JsonNode>			DumpWindowClientArea(controls::GuiWindow* window, Nullable<WString> windowId, Point offsetLogical, double scaleX, double scaleY);
 	}
 }
 

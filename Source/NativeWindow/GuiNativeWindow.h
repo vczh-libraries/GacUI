@@ -1730,9 +1730,8 @@ INativeAutomationService
 			/// <summary>
 			/// Dump the control tree.
 			/// </summary>
-			/// <param name="withCompositionsAndElements">Set to true to include compositions and elements.</param>
 			/// <returns>The dump.</returns>
-			virtual WString							DumpControlTree(bool withCompositionsAndElements) = 0;
+			virtual WString							DumpControlTree() = 0;
 
 			/// <summary>
 			/// Test if <see cref="DumpDomTree"/> is available.

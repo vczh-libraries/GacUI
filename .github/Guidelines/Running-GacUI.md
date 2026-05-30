@@ -10,13 +10,13 @@ Because some runtime exceptions are silently consumed by Windows causing the app
 
 When `StartWindowsHttpAutomationService` is used during startup up a GacUI application:
 - It listens to `http://localhost:<port>/Automation/<applicationName>/...`.
-- GET `.../Controls` and `.../ControlsVerbose`, for GacUI applications, exposing all visible windows and popups.
+- GET `.../Controls`, for GacUI applications, exposing all visible windows and popups.
   - Read comment for `DumpWindowClientArea` for the schema.
 - GET `.../Dom`, for remote protocol renderer, exposing the DOM tree.
   - Read comment for DumpRemoteProtocolRenderingDom` for the schema.
 - POST `.../IO` or `IO/<WINDOW-ID>`
   - IRead comment for `RunIOCommandOnNativeWindow` for the schema.
-  - `<WINDOW-ID>` is the window id returning from `.../Controls` or `.../ControlsVerbose`.
+  - `<WINDOW-ID>` is the window id returning from `.../Controls`.
   - The window ID can be comitted for the main window.
   - The window ID must be omitted for GacUI applications with hosted mode or remote protocol core side.
     - In this case all sub windows or popups behaves like controls in the main window.

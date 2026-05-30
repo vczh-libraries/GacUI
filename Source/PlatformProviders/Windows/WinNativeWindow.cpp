@@ -2267,7 +2267,8 @@ WindowsAutomationServiceRenderer
 				return GetWindowsNativeController()->WindowService()->GetMainWindow();
 			}
 
-			WindowsAutomationServiceRenderer::WindowsAutomationServiceRenderer()
+			WindowsAutomationServiceRenderer::WindowsAutomationServiceRenderer(remote_renderer::GuiRemoteRendererSingle* _renderer)
+				: WindowsAutomationServiceBase<AutomationServiceRenderer>(_renderer)
 			{
 			}
 
@@ -2283,7 +2284,6 @@ HttpAutomationService
 			{
 			protected:
 				WString			urlControls;
-				WString			urlControlsVerbose;
 				WString			urlDom;
 				WString			urlIO;
 
@@ -2304,17 +2304,7 @@ HttpAutomationService
 								{
 									asyncService->InvokeInMainThreadAndWait(mainWindow, [&]()
 									{
-										respondString = automationService->DumpControlTree(false);
-									});
-								}
-							}
-							else if (pRequest->CookedUrl.pAbsPath == urlControlsVerbose)
-							{
-								if (automationService->CanDumpControlTree())
-								{
-									asyncService->InvokeInMainThreadAndWait(mainWindow, [&]()
-									{
-										respondString = automationService->DumpControlTree(true);
+										respondString = automationService->DumpControlTree();
 									});
 								}
 							}
@@ -2376,7 +2366,6 @@ HttpAutomationService
 				HttpAutomationService(const WString& applicationName, vint port)
 					: HttpServerApi(WString::Unmanaged(L"http://localhost:") + itow(port) + WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/"), false)
 					, urlControls			(WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/Controls"))
-					, urlControlsVerbose	(WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/ControlsVerbose"))
 					, urlDom				(WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/Dom"))
 					, urlIO					(WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/IO"))
 				{
