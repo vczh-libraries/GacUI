@@ -37,7 +37,7 @@ AutomationService
 
 				for (auto subWindow : app->windows)
 				{
-					if (subWindow->GetVisible() && !dynamic_cast<GuiPopup*>(subWindow))
+					if (subWindow != mainWindow && subWindow->GetVisible() && !dynamic_cast<GuiPopup*>(subWindow))
 					{
 						subWindows->items.Add(DumpWindowClientArea(subWindow, GetNativeWindowId(subWindow->GetNativeWindow()), { 0,0 }));
 					}
@@ -106,9 +106,10 @@ AutomationServiceHosted
 					auto subWindows = Ptr(new glr::json::JsonArray);
 					subWindowsField->value = subWindows;
 
-					auto hostedController = dynamic_cast<GuiHostedController*>(GetHostedApplication());
+					auto hostedController = static_cast<GuiHostedController*>(GetHostedApplication());
 					for (auto wmWindow : From(hostedController->wmManager->topMostedWindowsInOrder).Concat(hostedController->wmManager->ordinaryWindowsInOrder).Reverse())
 					{
+						if (wmWindow->id == mainWindow->GetNativeWindow()) continue;
 						auto subWindow = app->windowMap[wmWindow->id];
 						auto offset = mainWindow->GetNativeWindow()->Convert(wmWindow->bounds.LeftTop());
 						subWindows->items.Add(DumpWindowClientArea(subWindow, {}, offset));

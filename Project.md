@@ -129,6 +129,15 @@ RemoteProtocolTest means `Generated_RemoteProtocolTest.vcxitems`.
 Each project responds to `http://localhost:8888/Automation/<PROJECT-NAME>/...` using `StartWindowsHttpAutomationService`.
 - Checkout `REPO-ROOT/.github/Guidelines/Running-GacUI.md` for details.
 
+Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` offser such service:
+- `RemotingTest_Core` exposes UI in window-control tree concept.
+- `RemotingTest_Rendering_Win32` exposes UI in DOM tree concept.
+- Both supports IO operations:
+  - When performing IO via renderer, remote protocol events are used to pass IO operations to core.
+  - When performing IO via core, renderer only receives UI updates and redraw.
+  - Core and renderer should sync in the same UI state afterwards.
+  - Performaning IO via no matter renderer or core should result in the same UI state.
+
 ## Linux Specific
 
 `REPO-ROOT/Test/Linux` stores linux configurations for:
