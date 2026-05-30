@@ -2176,7 +2176,7 @@ WindowsAutomationServiceBase
 					return L"!Invalid window.";
 				}
 
-				return RunIOCommandOnNativeWindow(GetWindowsNativeController(), windowsForm->listeners, ioCommand);
+				return RunIOCommandOnNativeWindow(&this->ioCommandState, GetWindowsNativeController(), windowsForm->listeners, ioCommand);
 			}
 
 			template<typename TBase>

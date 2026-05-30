@@ -17,6 +17,7 @@ namespace vl
 	namespace presentation
 	{
 		class AutomationService;
+		class AutomationServiceHosted;
 
 		namespace controls
 		{
@@ -34,6 +35,7 @@ Application
 				friend class GuiPopup;
 				friend class Ptr<GuiApplication>;
 				friend class AutomationService;
+				friend class AutomationServiceHosted;
 			private:
 
 				void											InvokeClipboardNotify(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);

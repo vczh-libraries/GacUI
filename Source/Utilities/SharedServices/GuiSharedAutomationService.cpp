@@ -65,7 +65,12 @@ DumpRemoteProtocolRenderingDom
 RunIOCommandOnNativeWindow
 ***********************************************************************/
 
-		WString RunIOCommandOnNativeWindow(INativeController* nativeController, collections::List<INativeWindowListener*>& listeners, WString command)
+		WString RunIOCommandOnNativeWindow(
+			IoCommandState* state,
+			INativeController* nativeController,
+			collections::List<INativeWindowListener*>& listeners,
+			WString command
+		)
 		{
 			if (command == L"!Exit")
 			{

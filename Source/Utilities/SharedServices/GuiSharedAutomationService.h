@@ -39,19 +39,43 @@ namespace vl
 
 		extern WString							DumpJsonToString(Ptr<glr::json::JsonNode> json);
 
+		struct IoCommandState
+		{
+		};
+
 		/*
 		* Predefined Commands:
 		* !Type:<TEXT>
-		*   Type <TEXT> to the focused control.
+		*   Type <TEXT> to the focused control
 		* !Exit
-		*   Try to quit the application, it could be blocked by the application itself.
-		* (to be edited ...)
+		*   Try to quit the application, it could be blocked by the application itself
+		* !KeyDown:Key1+Key2+...+KeyN
+		*   Key1 down, Key2 down, ..., KeyN down
+		* !KeyUp:Key1+Key2+...+KeyN
+		*   KeyN up, ..., Key2 up, Key1 up
+		* !KeyPress:Key1+Key2+...+KeyN
+		*   Key1 down, Key2 down, ..., KeyN down, KeyN up, ..., Key2 up, Key1 up
+		* !MouseMove:X,Y(,ctrl)?(,shift)?(,alt)?
+		* !(Left|Middle|Right)(Down|Up|Click|DbClick):X,Y(,ctrl)?(,shift)?(,alt)?
+		*   Click means Down/Up
+		*   DbClick means Down/Up/Down/DbClick/Up
+		* 
+		*  During calling the event handlers
+		*    ctrl/shift/alt should be set accordingly
+		*    the state argument is for remembering whatever is needed
+		*    RunIOCommandOnNativeWindow assume it is the only source of IO interactions
 		*/
-		extern WString							RunIOCommandOnNativeWindow(INativeController* nativeController, collections::List<INativeWindowListener*>& listeners, WString command);
+		extern WString							RunIOCommandOnNativeWindow(
+													IoCommandState* state,
+													INativeController* nativeController,
+													collections::List<INativeWindowListener*>& listeners,
+													WString command
+													);
 
 		class AutomationServiceBase : public Object, public INativeAutomationService
 		{
 		protected:
+			IoCommandState						ioCommandState;
 			bool								stopped = false;
 
 			virtual Nullable<WString>			GetNativeWindowId(INativeWindow* window) = 0;

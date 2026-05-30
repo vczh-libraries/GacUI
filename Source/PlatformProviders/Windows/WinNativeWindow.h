@@ -56,6 +56,8 @@ Windows Platform Native Controller
 			template<typename TBase>
 			class WindowsAutomationServiceBase : public TBase
 			{
+			protected:
+
 				WString										RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) override;
 
 			public:

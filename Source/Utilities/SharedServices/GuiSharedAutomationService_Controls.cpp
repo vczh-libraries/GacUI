@@ -98,9 +98,21 @@ AutomationServiceHosted
 				dumpRoot->fields.Add(field);
 				field->name.value = L"MainWindow";
 				field->value = DumpWindowClientArea(mainWindow, {});
+				{
+					auto subWindowsField = Ptr(new glr::json::JsonObjectField);
+					field->value.Cast<glr::json::JsonObject>()->fields.Add(subWindowsField);
+					subWindowsField->name.value = L"subWindowsInZOrder";
 
-				auto hostedController = dynamic_cast<GuiHostedController*>(GetHostedApplication());
-				auto windowsInOrder = From(hostedController->wmManager->topMostedWindowsInOrder).Concat(hostedController->wmManager->ordinaryWindowsInOrder).Reverse();
+					auto subWindows = Ptr(new glr::json::JsonArray);
+					subWindowsField->value = subWindows;
+
+					auto hostedController = dynamic_cast<GuiHostedController*>(GetHostedApplication());
+					for (auto wmWindow : From(hostedController->wmManager->topMostedWindowsInOrder).Concat(hostedController->wmManager->ordinaryWindowsInOrder).Reverse())
+					{
+						auto subWindow = app->windowMap[wmWindow->id];
+						subWindows->items.Add(DumpWindowClientArea(subWindow, {}));
+					}
+				}
 			}
 			return DumpJsonToString(dumpRoot);
 		}
@@ -130,7 +142,7 @@ RemoteProtocolAutomationService
 				return L"!Invalid window.";
 			}
 
-			return RunIOCommandOnNativeWindow(GetHostedApplication()->GetNativeController(), window->listeners, ioCommand);
+			return RunIOCommandOnNativeWindow(&ioCommandState, GetHostedApplication()->GetNativeController(), window->listeners, ioCommand);
 		}
 
 		RemoteProtocolAutomationService::RemoteProtocolAutomationService()
