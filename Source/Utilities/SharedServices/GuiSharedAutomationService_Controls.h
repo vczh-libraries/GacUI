@@ -64,6 +64,7 @@ namespace vl
 
 		/*
 		* Schema of /Controls:
+		* --------------------------------------------------------------------------------
 		* {
 		*   WindowManagement: "MultiWindow" | "Hosted" | "HostedRemoteProtocol";
 		*   MainWindow: WindowDump;
@@ -108,6 +109,9 @@ namespace vl
 		* 
 		*   title: string;
 		* }
+		* --------------------------------------------------------------------------------
+		* 
+		* This function construct the WindowDump part (without subWindowsInZOrder)
 		*/
 		extern Ptr<glr::json::JsonNode>			DumpWindowClientArea(controls::GuiWindow* window, Nullable<WString> windowId, Point offset);
 	}

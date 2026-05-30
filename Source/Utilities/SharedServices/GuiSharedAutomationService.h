@@ -19,6 +19,7 @@ namespace vl
 	{
 		/*
 		* Schema of /Dom:
+		* --------------------------------------------------------------------------------
 		* {
 		*   Title: string;
 		*   Window: remoteprotocol::WindowSizingConfig;
@@ -29,6 +30,7 @@ namespace vl
 		*     Data: remoteprotocol::UnitTest_ElementDescVariant;
 		*   }];
 		* }
+		* --------------------------------------------------------------------------------
 		*/
 		extern Ptr<glr::json::JsonNode>			DumpRemoteProtocolRenderingDom(
 													const WString& title,
@@ -45,6 +47,7 @@ namespace vl
 
 		/*
 		* Predefined Commands:
+		* --------------------------------------------------------------------------------
 		* !Type:<TEXT>
 		*   Type <TEXT> to the focused control
 		* !Exit
@@ -59,6 +62,11 @@ namespace vl
 		* !(Left|Middle|Right)(Down|Up|Click|DbClick):X,Y(,ctrl)?(,shift)?(,alt)?
 		*   Click means Down/Up
 		*   DbClick means Down/Up/Down/DbClick/Up
+		* --------------------------------------------------------------------------------
+		* 
+		* If the command satisfies the syntax, call event handlers and then return "Executed"
+		* Otherwise, return "Syntax Error!" followed by command descriptions in this comment
+		* This function will crash if any event handler throws
 		* 
 		* All coordinates are GuiCoordinate
 		*   INativeWindow::Convert should be used to convert them to NativeCoordinate before calling the event handlers
