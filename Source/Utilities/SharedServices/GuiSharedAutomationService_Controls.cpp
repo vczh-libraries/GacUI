@@ -16,6 +16,14 @@ AutomationService
 			CHECK_FAIL(L"Not Implemented!");
 		}
 
+		AutomationService::AutomationService()
+		{
+		}
+
+		AutomationService::~AutomationService()
+		{
+		}
+
 		bool AutomationService::CanDumpControlTree()
 		{
 			return true;
@@ -28,6 +36,14 @@ AutomationServiceHosted
 		WString AutomationServiceHosted::DumpControlTreeInternal()
 		{
 			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		AutomationServiceHosted::AutomationServiceHosted()
+		{
+		}
+
+		AutomationServiceHosted::~AutomationServiceHosted()
+		{
 		}
 
 		bool AutomationServiceHosted::CanDumpControlTree()
@@ -58,6 +74,15 @@ RemoteProtocolAutomationService
 			}
 
 			return RunIOCommandOnNativeWindow(GetHostedApplication()->GetNativeController(), window->listeners, ioCommand);
+		}
+
+		RemoteProtocolAutomationService::RemoteProtocolAutomationService()
+		{
+			windowManagement = WString::Unmanaged(L"HostedRemoteProtocol");
+		}
+
+		RemoteProtocolAutomationService::~RemoteProtocolAutomationService()
+		{
 		}
 
 		bool RemoteProtocolAutomationService::CanRunIOCommands()
