@@ -13,7 +13,13 @@ GPU Accelerated C++ User Interface, with:
   - Generate XML and Workflow to C++ source files for static linking (recommended)
     - Allow C++ dyanmic reflection opt-out to significantly improve performance and reduce binary size
 - FFI Integration with other programming languages (under development)
-- Toolkit for developing with coding agents
+
+## Coding Agent Supports
+
+- Rich context, instructions and documentation for developing with coding agents
+- GacUI applications UI can be understand and operated by coding agents meanwhile:
+  - Works even when the screen is locked.
+  - Does not block you from using the computer.
 
 ## License
 
