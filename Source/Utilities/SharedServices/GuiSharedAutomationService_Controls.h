@@ -98,7 +98,6 @@ namespace vl
 		*   // such native window is a OS native window
 		*   // for a window that owns a OS native window, the valid coordinate space is the client area
 		*   // for a window that doesn't own a OS native window, the valid coordinate space is the partial rectangle of the main window client area
-		*   // native coordinate = logical coordinate * scale
 		* 
 		*   // (x1,y1) always (0,0) for main window or when "MultiWindow"
 		*   bounds: { x1: number, y1: number, x2: number, y2: number };
@@ -108,6 +107,51 @@ namespace vl
 		*   subWindowsInZOrder?: WindowDump[];
 		* 
 		*   title: string;
+		* 
+		*   // begins with GuiWindow::GetBoundsComposition()
+		*   composition: CompositionDump;
+		* }
+		* 
+		* interface CompositionDump
+		* {
+		*   // GuiGraphicsComposition::GetCachedBounds() converted to global bounds then offseted by "offset"
+		*   bounds: { x1: number, y1: number, x2: number, y2: number };
+		* 
+		*   // available when the composition is or inherits from:
+		*   //   GuiTableComposition			: "Table:rows*columns"
+		*   //   GuiCellComposition				: "Cell:(row,column)*(rowSpan,columnSpan)"
+		*   //     available only when its parent composition is GuiTableComposition
+		*   //   GuiRowSplitterComposition		: "RowSplitter:rowsToTheTop"
+		*   //   GuiColumnSplitterComposition	: "ColumnSplitter:columnsToTheLeft"
+		*   //   GuiStackComposition			: "Stack"
+		*   //   GuiStackItemComposition		: "StackItem:index"
+		*   //     available only when its parent composition is GuiStackComposition
+		*   //     index is defined by stack->GetStackItems().IndexOf(stackItem)
+		*   //   GuiFlowComposition: "Flow"
+		*   //   GuiFlowItemComposition			: "FlowItem:index"
+		*   //     available only when its parent composition is GuiFlowComposition
+		*   //     index is defined by flow->GetFlowItems().IndexOf(flowItem)
+		*   layout?: string;
+		* 
+		*   // available when GuiGraphicsComposition::GetOwnedElement is not null and is or inherits from:
+		*   //   GuiSolidBorderElement			: "Border:color,shape
+		*   //   Gui3DBorderElement:			: "3DBorder:color1,color2"
+		*   //   Gui3DSplitterElement:			: "3DSplitter:color1,color2,direction"
+		*   //   GuiSolidBackground				: "Background:color,shape
+		*   //   GuiGradientBackgroundElement	: "Gradient:color1,color2,direction,shape"
+		*   //   GuiInnerShadowElement			: "InnerShadow:color,thickness"
+		*   //   GuiSolidLabelElement			: "Label:color,fontProperties.fontFamily,fontProperties.size(,WrapLine)?(,Ellipse)?(,Multiline)?"
+		*   //   GuiImageFrameElement			: "Image"
+		*   //   GuiPolygonElement				: "Polygon"
+		*   //   GuiDocumentElement				: "Document:Selection(caretBegin.row,caretBegin.column)-(caretEnd.row,caretEnd.column)(,PasswordChar=char)?(,WrapLine)?"
+		*   //
+		*   // Color is in #RRGGBBAA format
+		*   // elementText is only available for GuiSolidLabelElement, storing its text
+		*   // elementDocument is only availaboe for GuiDocumentElement, storing its document in XML representation
+		*   //   The XML representation is done by calling GenerateToStream(XmlPrint(SaveToXml))
+		*   element?: string;
+		*   elementText?: string;
+		*   elementDocument?: string;
 		* }
 		* --------------------------------------------------------------------------------
 		* 
