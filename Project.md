@@ -124,8 +124,9 @@ Automation HTTP service for GUI applications are available for Windows:
 - `RemotingTest_Core`             : Run FullControlTest or RemoteProtocolTest with remote protocol hosted by HTTP or NamedPipe.
 - `RemotingTest_Rendering_Win32`  : Renderer of `RemotingTest_Core`.
 
-FullControlTest means `Generated_FullControlTest.vcxitems`.
-RemoteProtocolTest means `Generated_RemoteProtocolTest.vcxitems`.
+FullControlTest means `Generated_FullControlTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/FullControlTest/Resource.xml`.
+RemoteProtocolTest means `Generated_RemoteProtocolTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/RemoteProtocolTest/Resource.xml`.
+When `FakeDialogService` is used, all system dialogs are replaced by `REPO-ROOT/Source/Utilities/FakeServices/Dialogs/Resource.xml`.
 Each project responds to `http://localhost:8888/Automation/<PROJECT-NAME>/...` using `StartWindowsHttpAutomationService`.
 - Checkout `REPO-ROOT/.github/Guidelines/Running-GacUI.md` for details.
 

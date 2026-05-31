@@ -62,6 +62,9 @@ namespace vl
 		* !(Left|Middle|Right)(Down|Up|Click|DbClick):X,Y(,ctrl)?(,shift)?(,alt)?
 		*   Click means Down/Up
 		*   DbClick means Down/Up/Down/DbClick/Up
+		* !MouseWheel(Up|Down|Left|Right):ticks(,ctrl)?(,shift)?(,alt)?
+		*   WindowMouseInfo_::wheel = ticks * 120 * direction (1 or -1)
+		* 
 		* --------------------------------------------------------------------------------
 		* 
 		* If the command satisfies the syntax, call event handlers and then return "Executed"
