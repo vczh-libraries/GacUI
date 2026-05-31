@@ -2318,11 +2318,7 @@ HttpAutomationService
 								if (automationService->CanRunIOCommands())
 								{
 									WString body = GetUtf8Body(pRequest).Value();
-									asyncService->InvokeInMainThread(mainWindow, [=]()
-									{
-										automationService->RunIOCommand(windowId, body);
-									});
-									respondString = WString::Unmanaged(L"Queued");
+									respondString = automationService->RunIOCommand(windowId, body);
 								}
 							}
 						}

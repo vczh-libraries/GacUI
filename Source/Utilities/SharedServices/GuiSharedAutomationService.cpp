@@ -65,7 +65,7 @@ DumpRemoteProtocolRenderingDom
 RunIOCommandOnNativeWindow
 ***********************************************************************/
 
-		namespace
+		namespace iocommands
 		{
 			const wchar_t* IO_COMMAND_SYNTAX =
 				L"Syntax Error!\r\n"
@@ -110,6 +110,71 @@ RunIOCommandOnNativeWindow
 				Left,
 				Middle,
 				Right,
+			};
+
+			struct SyntaxErrorCommand
+			{
+			};
+
+			struct ExitCommand
+			{
+			};
+
+			struct TypeCommand
+			{
+				WString text;
+			};
+
+			enum class KeyOperation
+			{
+				Down,
+				Up,
+				Press,
+			};
+
+			struct KeyCommand
+			{
+				KeyOperation operation = KeyOperation::Press;
+				collections::List<VKEY> keys;
+			};
+
+			struct MouseMoveCommand
+			{
+				MouseCommandArguments arguments;
+			};
+
+			struct MouseButtonCommand
+			{
+				MouseButton button = MouseButton::Left;
+				WString operation;
+				MouseCommandArguments arguments;
+			};
+
+			struct WheelCommand
+			{
+				vint direction = 0;
+				bool horizontal = false;
+				WheelCommandArguments arguments;
+			};
+
+			using IOCommand = Variant<
+				SyntaxErrorCommand,
+				ExitCommand,
+				TypeCommand,
+				KeyCommand,
+				MouseMoveCommand,
+				MouseButtonCommand,
+				WheelCommand
+				>;
+
+			struct IOCommandHolder : Object
+			{
+				IOCommand command;
+
+				IOCommandHolder(IOCommand&& _command)
+					: command(std::move(_command))
+				{
+				}
 			};
 
 			bool StartsWith(const WString& text, const WString& prefix)
@@ -362,13 +427,11 @@ RunIOCommandOnNativeWindow
 				}
 			}
 
-			NativePoint ConvertGuiPointToNativePoint(INativeController* nativeController, Point position)
+			NativePoint ConvertGuiPointToNativePoint(INativeWindow* targetWindow, Point position)
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
-				CHECK_ERROR(nativeController, ERROR_MESSAGE_PREFIX L"Native controller is missing.");
-				auto mainWindow = nativeController->WindowService()->GetMainWindow();
-				CHECK_ERROR(mainWindow, ERROR_MESSAGE_PREFIX L"Native main window is missing.");
-				return mainWindow->Convert(position);
+				CHECK_ERROR(targetWindow, ERROR_MESSAGE_PREFIX L"Native target window is missing.");
+				return targetWindow->Convert(position);
 #undef ERROR_MESSAGE_PREFIX
 			}
 
@@ -559,7 +622,7 @@ RunIOCommandOnNativeWindow
 				}
 			}
 
-			bool TryRunMouseButtonCommand(IoCommandState* state, INativeController* nativeController, collections::List<INativeWindowListener*>& listeners, const WString& command, MouseButton button, const WString& operation, bool& matched)
+			bool TryParseMouseButtonCommand(const WString& command, MouseButton button, const WString& operation, MouseButtonCommand& mouseCommand, bool& matched)
 			{
 				auto prefix = MouseButtonPrefix(button) + operation + WString::Unmanaged(L":");
 				if (!StartsWith(command, prefix)) return false;
@@ -568,14 +631,13 @@ RunIOCommandOnNativeWindow
 				MouseCommandArguments arguments;
 				if (!TryParseMouseArguments(command.Right(command.Length() - prefix.Length()), arguments)) return false;
 
-				TemporaryModifiers temporary;
-				PressTemporaryModifiers(state, listeners, arguments.modifiers, temporary);
-				MouseButtonOperation(state, listeners, button, operation, ConvertGuiPointToNativePoint(nativeController, arguments.position));
-				ReleaseTemporaryModifiers(state, listeners, temporary);
+				mouseCommand.button = button;
+				mouseCommand.operation = operation;
+				mouseCommand.arguments = arguments;
 				return true;
 			}
 
-			bool TryRunWheelCommand(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, const WString& command, const WString& prefix, vint direction, bool horizontal, bool& matched)
+			bool TryParseWheelCommand(const WString& command, const WString& prefix, vint direction, bool horizontal, WheelCommand& wheelCommand, bool& matched)
 			{
 				if (!StartsWith(command, prefix)) return false;
 				matched = true;
@@ -583,11 +645,205 @@ RunIOCommandOnNativeWindow
 				WheelCommandArguments arguments;
 				if (!TryParseWheelArguments(command.Right(command.Length() - prefix.Length()), arguments)) return false;
 
-				TemporaryModifiers temporary;
-				PressTemporaryModifiers(state, listeners, arguments.modifiers, temporary);
-				Wheel(state, listeners, arguments.ticks * 120 * direction, horizontal);
-				ReleaseTemporaryModifiers(state, listeners, temporary);
+				wheelCommand.direction = direction;
+				wheelCommand.horizontal = horizontal;
+				wheelCommand.arguments = arguments;
 				return true;
+			}
+
+			IOCommand ParseIOCommand(INativeController* nativeController, const WString& command)
+			{
+				if (command == L"!Exit")
+				{
+					return ExitCommand{};
+				}
+
+				if (StartsWith(command, L"!Type:"))
+				{
+					TypeCommand typeCommand;
+					typeCommand.text = command.Right(command.Length() - 6);
+					return typeCommand;
+				}
+
+				if (StartsWith(command, L"!KeyDown:") || StartsWith(command, L"!KeyUp:") || StartsWith(command, L"!KeyPress:"))
+				{
+					WString prefix;
+					KeyOperation operation = KeyOperation::Press;
+					if (StartsWith(command, L"!KeyDown:"))
+					{
+						prefix = WString::Unmanaged(L"!KeyDown:");
+						operation = KeyOperation::Down;
+					}
+					else if (StartsWith(command, L"!KeyUp:"))
+					{
+						prefix = WString::Unmanaged(L"!KeyUp:");
+						operation = KeyOperation::Up;
+					}
+					else
+					{
+						prefix = WString::Unmanaged(L"!KeyPress:");
+					}
+
+					collections::List<VKEY> keys;
+					if (!TryParseKeyList(nativeController, command.Right(command.Length() - prefix.Length()), keys))
+					{
+						return SyntaxErrorCommand{};
+					}
+
+					KeyCommand keyCommand;
+					keyCommand.operation = operation;
+					CopyFrom(keyCommand.keys, keys);
+					return keyCommand;
+				}
+
+				if (StartsWith(command, L"!MouseMove:"))
+				{
+					MouseMoveCommand mouseCommand;
+					if (!TryParseMouseArguments(command.Right(command.Length() - 11), mouseCommand.arguments))
+					{
+						return SyntaxErrorCommand{};
+					}
+					return mouseCommand;
+				}
+
+				const WString operations[] =
+				{
+					WString::Unmanaged(L"Down"),
+					WString::Unmanaged(L"Up"),
+					WString::Unmanaged(L"Click"),
+					WString::Unmanaged(L"DbClick"),
+				};
+
+				for (auto operation : operations)
+				{
+					MouseButtonCommand mouseCommand;
+					bool matched = false;
+					if (TryParseMouseButtonCommand(command, MouseButton::Left, operation, mouseCommand, matched)) return mouseCommand;
+					if (matched) return SyntaxErrorCommand{};
+
+					if (TryParseMouseButtonCommand(command, MouseButton::Middle, operation, mouseCommand, matched)) return mouseCommand;
+					if (matched) return SyntaxErrorCommand{};
+
+					if (TryParseMouseButtonCommand(command, MouseButton::Right, operation, mouseCommand, matched)) return mouseCommand;
+					if (matched) return SyntaxErrorCommand{};
+				}
+
+				{
+					WheelCommand wheelCommand;
+					bool matched = false;
+					if (TryParseWheelCommand(command, L"!MouseWheelUp:", 1, false, wheelCommand, matched)) return wheelCommand;
+					if (matched) return SyntaxErrorCommand{};
+					if (TryParseWheelCommand(command, L"!MouseWheelDown:", -1, false, wheelCommand, matched)) return wheelCommand;
+					if (matched) return SyntaxErrorCommand{};
+					if (TryParseWheelCommand(command, L"!MouseWheelRight:", 1, true, wheelCommand, matched)) return wheelCommand;
+					if (matched) return SyntaxErrorCommand{};
+					if (TryParseWheelCommand(command, L"!MouseWheelLeft:", -1, true, wheelCommand, matched)) return wheelCommand;
+					if (matched) return SyntaxErrorCommand{};
+				}
+
+				return SyntaxErrorCommand{};
+			}
+
+			void ExecuteIOCommand(IoCommandState* state, INativeController* nativeController, INativeWindow* targetWindow, collections::List<INativeWindowListener*>& listeners, IOCommand&& ioCommand)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
+				CHECK_ERROR(nativeController, ERROR_MESSAGE_PREFIX L"Native controller is missing.");
+				CHECK_ERROR(targetWindow, ERROR_MESSAGE_PREFIX L"Native target window is missing.");
+				auto listenerList = &listeners;
+				auto commandHolder = Ptr(new IOCommandHolder(std::move(ioCommand)));
+				nativeController->AsyncService()->InvokeInMainThread(targetWindow, [=]() mutable
+				{
+					auto activateTargetWindow = [=]()
+					{
+						if (!targetWindow->IsActivated())
+						{
+							targetWindow->SetActivate();
+						}
+					};
+
+					commandHolder->command.Apply(Overloading(
+						[](const SyntaxErrorCommand&)
+						{
+							CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Syntax error command should not be executed.");
+						},
+						[=](const ExitCommand&)
+						{
+							targetWindow->Hide(true);
+						},
+						[=](const TypeCommand& typeCommand)
+						{
+							activateTargetWindow();
+							for (vint i = 0; i < typeCommand.text.Length(); i++)
+							{
+								auto ch = typeCommand.text[i];
+								if (ch == L'\r') continue;
+								if (ch == L'\n')
+								{
+									Char(state, *listenerList, L'\r');
+									Char(state, *listenerList, L'\n');
+								}
+								else
+								{
+									Char(state, *listenerList, ch);
+								}
+							}
+						},
+						[=](const KeyCommand& keyCommand)
+						{
+							activateTargetWindow();
+							switch (keyCommand.operation)
+							{
+							case KeyOperation::Down:
+								for (auto key : keyCommand.keys)
+								{
+									KeyDown(state, *listenerList, key);
+								}
+								break;
+							case KeyOperation::Up:
+								for (vint i = keyCommand.keys.Count() - 1; i >= 0; i--)
+								{
+									KeyUp(state, *listenerList, keyCommand.keys[i]);
+								}
+								break;
+							case KeyOperation::Press:
+								for (auto key : keyCommand.keys)
+								{
+									KeyDown(state, *listenerList, key);
+								}
+								for (vint i = keyCommand.keys.Count() - 1; i >= 0; i--)
+								{
+									KeyUp(state, *listenerList, keyCommand.keys[i]);
+								}
+								break;
+							}
+						},
+						[=](const MouseMoveCommand& mouseCommand)
+						{
+							activateTargetWindow();
+							TemporaryModifiers temporary;
+							PressTemporaryModifiers(state, *listenerList, mouseCommand.arguments.modifiers, temporary);
+							MouseMove(state, *listenerList, ConvertGuiPointToNativePoint(targetWindow, mouseCommand.arguments.position));
+							ReleaseTemporaryModifiers(state, *listenerList, temporary);
+						},
+						[=](const MouseButtonCommand& mouseCommand)
+						{
+							activateTargetWindow();
+							TemporaryModifiers temporary;
+							PressTemporaryModifiers(state, *listenerList, mouseCommand.arguments.modifiers, temporary);
+							MouseButtonOperation(state, *listenerList, mouseCommand.button, mouseCommand.operation, ConvertGuiPointToNativePoint(targetWindow, mouseCommand.arguments.position));
+							ReleaseTemporaryModifiers(state, *listenerList, temporary);
+						},
+						[=](const WheelCommand& wheelCommand)
+						{
+							activateTargetWindow();
+							TemporaryModifiers temporary;
+							PressTemporaryModifiers(state, *listenerList, wheelCommand.arguments.modifiers, temporary);
+							Wheel(state, *listenerList, wheelCommand.arguments.ticks * 120 * wheelCommand.direction, wheelCommand.horizontal);
+							ReleaseTemporaryModifiers(state, *listenerList, temporary);
+						}
+						));
+				});
+#undef ERROR_MESSAGE_PREFIX
 			}
 		}
 
@@ -601,157 +857,26 @@ RunIOCommandOnNativeWindow
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
 			CHECK_ERROR(state, ERROR_MESSAGE_PREFIX L"IO command state is missing.");
+			CHECK_ERROR(nativeController, ERROR_MESSAGE_PREFIX L"Native controller is missing.");
 
 			auto targetWindow = nativeWindow;
-			if (!targetWindow && nativeController)
+			if (!targetWindow)
 			{
 				targetWindow = nativeController->WindowService()->GetMainWindow();
 			}
-
-			if (command == L"!Exit")
+			if (!targetWindow)
 			{
-				if (!targetWindow) return WString::Unmanaged(IO_COMMAND_SYNTAX);
-				targetWindow->Hide(true);
-				return WString::Unmanaged(L"Executed");
+				return WString::Unmanaged(iocommands::IO_COMMAND_SYNTAX);
 			}
 
-			if (targetWindow && !targetWindow->IsActivated())
+			auto ioCommand = iocommands::ParseIOCommand(nativeController, command);
+			if (ioCommand.TryGet<iocommands::SyntaxErrorCommand>())
 			{
-				targetWindow->SetActivate();
+				return WString::Unmanaged(iocommands::IO_COMMAND_SYNTAX);
 			}
 
-			if (StartsWith(command, L"!Type:"))
-			{
-				auto text = command.Right(command.Length() - 6);
-				for (vint i = 0; i < text.Length(); i++)
-				{
-					auto ch = text[i];
-					if (ch == L'\r') continue;
-					if (ch == L'\n')
-					{
-						Char(state, listeners, L'\r');
-						Char(state, listeners, L'\n');
-					}
-					else
-					{
-						Char(state, listeners, ch);
-					}
-				}
-				return WString::Unmanaged(L"Executed");
-			}
-
-			if (StartsWith(command, L"!KeyDown:") || StartsWith(command, L"!KeyUp:") || StartsWith(command, L"!KeyPress:"))
-			{
-				WString prefix;
-				enum class KeyOperation { Down, Up, Press } operation;
-				if (StartsWith(command, L"!KeyDown:"))
-				{
-					prefix = WString::Unmanaged(L"!KeyDown:");
-					operation = KeyOperation::Down;
-				}
-				else if (StartsWith(command, L"!KeyUp:"))
-				{
-					prefix = WString::Unmanaged(L"!KeyUp:");
-					operation = KeyOperation::Up;
-				}
-				else
-				{
-					prefix = WString::Unmanaged(L"!KeyPress:");
-					operation = KeyOperation::Press;
-				}
-
-				collections::List<VKEY> keys;
-				if (!TryParseKeyList(nativeController, command.Right(command.Length() - prefix.Length()), keys))
-				{
-					return WString::Unmanaged(IO_COMMAND_SYNTAX);
-				}
-
-				switch (operation)
-				{
-				case KeyOperation::Down:
-					for (auto key : keys)
-					{
-						KeyDown(state, listeners, key);
-					}
-					break;
-				case KeyOperation::Up:
-					for (vint i = keys.Count() - 1; i >= 0; i--)
-					{
-						KeyUp(state, listeners, keys[i]);
-					}
-					break;
-				case KeyOperation::Press:
-					for (auto key : keys)
-					{
-						KeyDown(state, listeners, key);
-					}
-					for (vint i = keys.Count() - 1; i >= 0; i--)
-					{
-						KeyUp(state, listeners, keys[i]);
-					}
-					break;
-				}
-				return WString::Unmanaged(L"Executed");
-			}
-
-			if (StartsWith(command, L"!MouseMove:"))
-			{
-				MouseCommandArguments arguments;
-				if (!TryParseMouseArguments(command.Right(command.Length() - 11), arguments))
-				{
-					return WString::Unmanaged(IO_COMMAND_SYNTAX);
-				}
-
-				TemporaryModifiers temporary;
-				PressTemporaryModifiers(state, listeners, arguments.modifiers, temporary);
-				MouseMove(state, listeners, ConvertGuiPointToNativePoint(nativeController, arguments.position));
-				ReleaseTemporaryModifiers(state, listeners, temporary);
-				return WString::Unmanaged(L"Executed");
-			}
-
-			const WString operations[] =
-			{
-				WString::Unmanaged(L"Down"),
-				WString::Unmanaged(L"Up"),
-				WString::Unmanaged(L"Click"),
-				WString::Unmanaged(L"DbClick"),
-			};
-
-			for (auto operation : operations)
-			{
-				bool matched = false;
-				if (TryRunMouseButtonCommand(state, nativeController, listeners, command, MouseButton::Left, operation, matched))
-				{
-					return WString::Unmanaged(L"Executed");
-				}
-				if (matched) return WString::Unmanaged(IO_COMMAND_SYNTAX);
-
-				if (TryRunMouseButtonCommand(state, nativeController, listeners, command, MouseButton::Middle, operation, matched))
-				{
-					return WString::Unmanaged(L"Executed");
-				}
-				if (matched) return WString::Unmanaged(IO_COMMAND_SYNTAX);
-
-				if (TryRunMouseButtonCommand(state, nativeController, listeners, command, MouseButton::Right, operation, matched))
-				{
-					return WString::Unmanaged(L"Executed");
-				}
-				if (matched) return WString::Unmanaged(IO_COMMAND_SYNTAX);
-			}
-
-			{
-				bool matched = false;
-				if (TryRunWheelCommand(state, listeners, command, L"!MouseWheelUp:", 1, false, matched)) return WString::Unmanaged(L"Executed");
-				if (matched) return WString::Unmanaged(IO_COMMAND_SYNTAX);
-				if (TryRunWheelCommand(state, listeners, command, L"!MouseWheelDown:", -1, false, matched)) return WString::Unmanaged(L"Executed");
-				if (matched) return WString::Unmanaged(IO_COMMAND_SYNTAX);
-				if (TryRunWheelCommand(state, listeners, command, L"!MouseWheelRight:", 1, true, matched)) return WString::Unmanaged(L"Executed");
-				if (matched) return WString::Unmanaged(IO_COMMAND_SYNTAX);
-				if (TryRunWheelCommand(state, listeners, command, L"!MouseWheelLeft:", -1, true, matched)) return WString::Unmanaged(L"Executed");
-				if (matched) return WString::Unmanaged(IO_COMMAND_SYNTAX);
-			}
-
-			return WString::Unmanaged(IO_COMMAND_SYNTAX);
+			iocommands::ExecuteIOCommand(state, nativeController, targetWindow, listeners, std::move(ioCommand));
+			return WString::Unmanaged(L"Queued");
 #undef ERROR_MESSAGE_PREFIX
 		}
 	}

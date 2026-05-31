@@ -73,11 +73,11 @@ namespace vl
 		* 
 		* --------------------------------------------------------------------------------
 		* 
-		* If the command satisfies the syntax, call event handlers and then return "Executed"
+		* If the command satisfies the syntax, queue event handlers and then return "Queued"
 		* Otherwise, return "Syntax Error!" followed by command descriptions in this comment
 		* This function will crash if any event handler throws
-		* HTTP /IO queues this function with INativeAsyncService::InvokeInMainThread and returns "Queued"
-		*   therefore the HTTP response only means the command was accepted, not that it has finished executing
+		* Event handlers are queued with INativeAsyncService::InvokeInMainThread after the command is parsed
+		*   therefore the returned "Queued" only means the command was accepted, not that it has finished executing
 		* 
 		* All coordinates are GuiCoordinate
 		*   INativeWindow::Convert should be used to convert them to NativeCoordinate before calling the event handlers

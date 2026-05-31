@@ -91,8 +91,8 @@ namespace vl
 		*   //   URL `.../IO` is used to send commands to the main window
 		*   //   since sub windows and popups are all child objects of the main window
 		*   //   the main window is responsible for window management, dispatching IO commands to the correct target
-		*   // /IO queues the command with INativeAsyncService::InvokeInMainThread and returns "Queued"
-		*   //   the HTTP response only means the command was accepted, not that it has finished executing
+		*   // /IO parses the command synchronously and returns "Syntax Error!" or "Queued"
+		*   //   "Queued" only means the command was accepted, not that it has finished executing
 		*   windowId?: string;
 		* 
 		*   // bounds defines the valid coordinate space for IO commands
