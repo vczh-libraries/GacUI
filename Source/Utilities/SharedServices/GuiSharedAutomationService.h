@@ -43,6 +43,12 @@ namespace vl
 
 		struct IoCommandState
 		{
+			Nullable<NativePoint>				mousePosition;
+			collections::SortedList<VKEY>		pressingKeys;
+			bool								leftPressing = false;
+			bool								middlePressing = false;
+			bool								rightPressing = false;
+			bool								capslockToggled = false;
 		};
 
 		/*
@@ -70,6 +76,8 @@ namespace vl
 		* If the command satisfies the syntax, call event handlers and then return "Executed"
 		* Otherwise, return "Syntax Error!" followed by command descriptions in this comment
 		* This function will crash if any event handler throws
+		* HTTP /IO queues this function with INativeAsyncService::InvokeInMainThread and returns "Queued"
+		*   therefore the HTTP response only means the command was accepted, not that it has finished executing
 		* 
 		* All coordinates are GuiCoordinate
 		*   INativeWindow::Convert should be used to convert them to NativeCoordinate before calling the event handlers
@@ -82,6 +90,7 @@ namespace vl
 		extern WString							RunIOCommandOnNativeWindow(
 													IoCommandState* state,
 													INativeController* nativeController,
+													INativeWindow* nativeWindow,
 													collections::List<INativeWindowListener*>& listeners,
 													WString command
 													);

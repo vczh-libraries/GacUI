@@ -593,6 +593,11 @@ GuiHostedController::INativeWindowListener (Template)
 		>
 		void GuiHostedController::HandleKeyboardCallback(const TInfo& info)
 		{
+			if (!wmWindow && !wmManager->activeWindow && mainWindow)
+			{
+				mainWindow->wmWindow.Activate();
+			}
+
 			if (wmManager->activeWindow && !wmWindow)
 			{
 				auto hostedWindow = wmManager->activeWindow->id;

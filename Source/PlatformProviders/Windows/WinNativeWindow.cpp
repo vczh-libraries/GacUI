@@ -2176,7 +2176,7 @@ WindowsAutomationServiceBase
 					return L"!Invalid window.";
 				}
 
-				return RunIOCommandOnNativeWindow(&this->ioCommandState, GetWindowsNativeController(), windowsForm->listeners, ioCommand);
+				return RunIOCommandOnNativeWindow(&this->ioCommandState, GetWindowsNativeController(), windowsForm, windowsForm->listeners, ioCommand);
 			}
 
 			template<typename TBase>
@@ -2299,9 +2299,8 @@ HttpAutomationService
 								}
 							}
 						}
-						else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pAbsPath == urlIO)
+						else if (pRequest->Verb == HttpVerbPOST && wcsncmp(pRequest->CookedUrl.pAbsPath, urlIO.Buffer(), (size_t)urlIO.Length()) == 0)
 						{
-							if (wcsncmp(pRequest->CookedUrl.pAbsPath, urlIO.Buffer(), (size_t)urlIO.Length()) == 0)
 							{
 								Nullable<WString> windowId;
 								auto pId = pRequest->CookedUrl.pAbsPath + urlIO.Length();
@@ -2318,10 +2317,11 @@ HttpAutomationService
 								if (automationService->CanRunIOCommands())
 								{
 									WString body = GetUtf8Body(pRequest).Value();
-									asyncService->InvokeInMainThreadAndWait(mainWindow, [&]()
+									asyncService->InvokeInMainThread(mainWindow, [=]()
 									{
-										respondString = automationService->RunIOCommand(windowId, body);
+										automationService->RunIOCommand(windowId, body);
 									});
+									respondString = WString::Unmanaged(L"Queued");
 								}
 							}
 						}
