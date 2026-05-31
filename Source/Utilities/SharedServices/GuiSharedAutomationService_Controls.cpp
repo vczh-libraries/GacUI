@@ -165,6 +165,18 @@ RemoteProtocolAutomationService
 DumpWindowClientArea
 ***********************************************************************/
 
+		WString PrintControlThemeName(theme::ThemeName theme)
+		{
+			switch (theme)
+			{
+			case theme::ThemeName::Window: return WString::Unmanaged(L"Window");
+#define GUI_DEFINE_THEME_NAME(TEMPLATE, CONTROL) case theme::ThemeName::CONTROL: return WString::Unmanaged(L ## #CONTROL);
+				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_THEME_NAME)
+#undef GUI_DEFINE_THEME_NAME
+			default: return WString::Unmanaged(L"Unknown");
+			}
+		}
+
 		Ptr<glr::json::JsonNode> DumpWindowClientArea(controls::GuiWindow* window, Nullable<WString> windowId, Point offset)
 		{
 			auto windowDump = Ptr(new glr::json::JsonObject);

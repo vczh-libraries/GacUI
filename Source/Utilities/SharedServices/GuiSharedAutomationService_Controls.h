@@ -152,6 +152,10 @@ namespace vl
 		*   element?: string;
 		*   elementText?: string;
 		*   elementDocument?: string;
+		* 
+		*   // available when GuiGraphicsComposition::GetAssociatedControl is not null
+		*   // storing PrintControlThemeName(GuiControl::GetControlThemeName())
+		*   control?: string;
 		* }
 		* --------------------------------------------------------------------------------
 		* 
