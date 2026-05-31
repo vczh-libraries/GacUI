@@ -2299,8 +2299,9 @@ HttpAutomationService
 								}
 							}
 						}
-						else if (pRequest->Verb == HttpVerbPOST && wcsncmp(pRequest->CookedUrl.pAbsPath, urlIO.Buffer(), (size_t)urlIO.Length()) == 0)
+						else if (pRequest->Verb == HttpVerbPOST)
 						{
+							if (wcsncmp(pRequest->CookedUrl.pAbsPath, urlIO.Buffer(), (size_t)urlIO.Length()) == 0)
 							{
 								Nullable<WString> windowId;
 								auto pId = pRequest->CookedUrl.pAbsPath + urlIO.Length();

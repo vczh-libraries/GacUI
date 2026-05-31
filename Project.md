@@ -137,7 +137,7 @@ Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` offser such service:
   - When performing IO via renderer, remote protocol events are used to pass IO operations to core.
   - When performing IO via core, renderer only receives UI updates and redraw.
   - Core and renderer should sync in the same UI state afterwards.
-  - Performaning IO via no matter renderer or core should result in the same UI state.
+  - Performaning IO **only** via no matter renderer or core should result in the same UI state.
 
 ## Linux Specific
 
