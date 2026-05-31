@@ -203,3 +203,88 @@ This is exactly the requested edit:
 ## Verification Result
 
 Task 5 is verified for `CppTest`. Pure keyboard automation reaches the document, edits text, selects `CDE`, applies green through the color dialog, and reports the final document XML correctly.
+
+## Rerun After IO Queue Boundary Fix
+
+After changing `/IO` so parsing stays synchronous and accepted commands are queued inside `RunIOCommandOnNativeWindow`, I reran the Task 5 validation against debugger-attached `CppTest`.
+
+First I verified response semantics:
+
+```text
+POST /Automation/CppTest/IO
+!MouseMove:nope
+```
+
+The service returned `Syntax Error! ...` immediately, confirming malformed command text no longer disappears behind `InvokeInMainThread`.
+
+Then I verified a valid keyboard command:
+
+```text
+POST /Automation/CppTest/IO
+!KeyPress:Alt
+```
+
+The service returned:
+
+```text
+Queued
+```
+
+The first live keyboard attempt exposed a queued-closure `Variant` copy assertion. I fixed that by storing the parsed command variant in a reference-counted holder before queuing the lambda, so the function object copies only the holder pointer. After this change, `!KeyPress:Alt` returned `Queued` and the Alt labels appeared in `/Controls`.
+
+I reran the Task 5 workflow:
+
+```text
+!KeyPress:Alt
+!KeyPress:L
+!KeyPress:3
+!KeyPress:Alt
+!KeyPress:D
+!KeyPress:2
+!Type:ABCDEFG
+!KeyPress:Left
+!KeyPress:Left
+!KeyDown:Shift
+!KeyPress:Left
+!KeyPress:Left
+!KeyPress:Left
+!KeyUp:Shift
+!KeyPress:Alt
+!KeyPress:T
+!KeyPress:1
+!KeyPress:C
+!KeyPress:Alt
+!KeyPress:R
+!KeyPress:Ctrl+A
+!Type:0
+!KeyPress:Alt
+!KeyPress:G
+!KeyPress:Ctrl+A
+!Type:255
+!KeyPress:Alt
+!KeyPress:B
+!KeyPress:Ctrl+A
+!Type:0
+!KeyPress:Alt
+!KeyPress:O
+!KeyPress:Alt
+!KeyPress:D
+!KeyPress:2
+!KeyPress:End
+```
+
+The color dialog was reported as a subwindow titled `选择颜色`. Its RGB text boxes reported `0`, `255`, and `0`, and the color preview reported `#00FF00FF`.
+
+After OK, `/Controls` reported:
+
+```xml
+<nop>AB</nop><font color="#00FF00"><nop>CDE</nop></font><nop>FG</nop>
+```
+
+After refocusing the document and pressing `End`, `/Controls` reported:
+
+```text
+Document:Selection(0,7)-(0,7),WrapLine
+```
+
+This confirms the parse/queue fix did not regress Task 5 keyboard automation.

@@ -83,6 +83,20 @@ Perform `Task 5` verification steps on `RemotingTest_Core` and see if both proce
 Perform `Task 5` verification steps on `RemotingTest_Rendering_Win32` and see if both process reports proper UI changes.
 Real system message box will popup up from renderer when core exception raised, the current automation service cannot handle this currently, you will need to kill both processes to exit when it happens.
 # UPDATES
+## UPDATE
+Your fix was basically good but there is one problem. When handling /IO you call InvokeInMainThread in windows::HttpAutomationService, this will make it unable to respond syntax error.
+
+Please fix it to call automationService->RunIOCommand directly and return the result, instead when in RunIOCommandOnNativeWindow, do this:
+- Change all return Executed to Queued
+- Instead of anonymous namespace change it to "iocommands", with one struct as parsing result for one command.
+- Define a Variant of all commands, define a ParseIOCommand function to return the variant
+- define a ExecuteIOCommand function to run Variant::Apply in InvokeInMainThread
+
+In this way you are able to return the parsing error meanwhile queue the command avoiding it being blocked by blocking operations like waiting for a dialog.
+
+## UPDATE
+Read [TODO_Task.md](TODO_Task.md) which is the original task definition, you are going to rerun Task 5 validation to make sure your change actually works
+
 # TEST
 Manual verification uses the HTTP automation service with debugger-attached GacUI applications as requested. Unit verification will build and run `UnitTest` through `.github/Scripts/copilotExecute.ps1`; targeted coverage should exercise automation IO parsing and event dispatch when feasible.
 
@@ -93,6 +107,7 @@ Success criteria:
 - `UnitTest` passes with no memory leak report.
 # PROPOSALS
 - No.1 Implement automation dumping and IO dispatch in the shared automation service
+- No.2 Split IO parsing from queued native execution [CONFIRMED]
 
 ## No.1 Implement automation dumping and IO dispatch in the shared automation service
 Implement `/Controls` by recursively walking visible compositions from each window's bounds composition, reporting cached global bounds, layout tags, supported graphics element properties, and associated control theme names. Implement `/IO` by reusing the unit-test protocol state model for pressing keys/buttons and dispatching native listener callbacks directly on the selected native window. Confirm the proposal incrementally through unit tests plus debugger-attached `CppTest` and remote protocol HTTP automation checks.
@@ -161,3 +176,32 @@ Debugger-attached manual verification:
     - Used the same pure keyboard workflow with explicit synchronization before opening the modal dialog.
     - Final core `/Controls` again reported green `CDE` between `AB` and `FG`.
     - Renderer `/Dom` also contained `ABCDEFG` and `00FF00`.
+
+## No.2 Split IO parsing from queued native execution
+Keep `/IO` syntax parsing synchronous in `windows::HttpAutomationService` by calling `INativeAutomationService::RunIOCommand` directly. Move the asynchronous boundary into `RunIOCommandOnNativeWindow`: parse commands into a `Variant` under an `iocommands` namespace, return syntax errors immediately, and queue only the parsed command execution with `INativeAsyncService::InvokeInMainThread`. This keeps modal or blocking UI work off the HTTP response path while still reporting malformed command text correctly.
+
+### CODE CHANGE
+- Replace the old immediate execution path in `RunIOCommandOnNativeWindow` with `iocommands::ParseIOCommand` and `iocommands::ExecuteIOCommand`.
+- Represent each command as its own parsing-result struct and store them in an `iocommands::IOCommand` `Variant`.
+- Queue parsed command execution with `INativeAsyncService::InvokeInMainThread`, where `Variant::Apply` dispatches to the existing mouse, keyboard, text, wheel, and exit event helpers.
+- Store the parsed `Variant` in a reference-counted command holder before queuing, so the async closure copies only the holder pointer instead of copying the `Variant` through the function object.
+- Change successful command responses from `Executed` to `Queued`.
+- Change Windows HTTP `/IO` handling back to directly returning `automationService->RunIOCommand(...)`, so syntax errors can be returned synchronously.
+- Update comments to say `/IO` synchronously parses and returns either syntax text or `Queued`.
+
+### CONFIRMED
+- Rebuilt after splitting parsing from queued execution:
+  - `C:\Code\VczhLibraries\GacUI\.github\Scripts\copilotBuild.ps1` from `Test\GacUISrc`: succeeded with 0 warnings and 0 errors.
+- Ran the required unit tests after the final source changes:
+  - `C:\Code\VczhLibraries\GacUI\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable UnitTest`: passed `84/84` test files and `1686/1686` test cases.
+- Rechecked `/IO` response behavior against debugger-attached `CppTest`:
+  - Malformed `!MouseMove:nope` returned HTTP 200 with `Syntax Error! ...`, confirming parsing errors are reported synchronously by the HTTP handler.
+  - Valid `!KeyPress:Alt` returned HTTP 200 with `Queued`, confirming accepted commands now cross the async boundary inside `RunIOCommandOnNativeWindow`.
+  - The first live keyboard check exposed a `Variant` copy assertion in the queued closure; storing the command in `IOCommandHolder` fixed it, and the same `!KeyPress:Alt` then returned `Queued`.
+- Reran Task 5 validation on debugger-attached `CppTest`:
+  - Started from `/Controls` reporting document text `ABCDEFG` with the caret at the end.
+  - Selected `CDE` using only keyboard IO: two `Left` presses, `Shift` down, three `Left` presses, then `Shift` up. `/Controls` reported document selection `(0,5)-(0,2)`.
+  - Used Alt labels to activate the ribbon text group (`Alt`, `T`, `1`) and color command (`C`), opening the color dialog as a subwindow titled `选择颜色`.
+  - Used only keyboard IO in the dialog: Alt labels focused the red, green, and blue text boxes; the text boxes reported RGB values `0`, `255`, and `0`; the color preview reported `#00FF00FF`.
+  - Confirmed with `Alt`, `O`; after the dialog closed, `/Controls` reported `<nop>AB</nop><font color="#00FF00"><nop>CDE</nop></font><nop>FG</nop>`.
+  - Refocused the document with `Alt`, `D`, `2`, pressed `End`, and `/Controls` reported `Document:Selection(0,7)-(0,7),WrapLine`, confirming the selection collapsed after the edit.
