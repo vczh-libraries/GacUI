@@ -34,6 +34,7 @@
 - Use 2-space indentation in embedded XML/JSON literals [1]
 - `collections::List` has deleted copy constructor; use `std::move()` for structs with `List` members [1]
 - Compare type descriptors by pointer when descriptor identity is available [1]
+- Parse and validate before queuing asynchronous work [1]
 
 # Refinements
 
@@ -194,3 +195,7 @@ When a failure is part of the public or script-visible semantics and tests are e
 ## Compare type descriptors by pointer when descriptor identity is available
 
 `GetTypeDescriptor<T>()` and `GetTypeDescriptor(typeName)` guarantee one descriptor instance per type in a loaded type manager, so prefer direct `ITypeDescriptor*` pointer comparison over comparing type-name strings. Use `TypeInfo<T>::content.typeName` only where the type manager cannot be loaded yet; if a name lookup is unavoidable, resolve the descriptor once and compare pointers inside hot or repeated paths.
+
+## Parse and validate before queuing asynchronous work
+
+When an API needs to report syntax or validation errors synchronously but execute accepted work asynchronously, split those phases explicitly. Parse and validate the request on the caller/transport path, return errors immediately, then queue only a parsed command object for main-thread or background execution. This keeps modal or blocking work off the response path without hiding malformed input behind an async boundary.

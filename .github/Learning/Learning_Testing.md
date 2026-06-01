@@ -62,6 +62,7 @@
 - Prefer single cohesive smoke tests when setup-heavy [1]
 - Inline-object caret tests: cover every valid caret position one frame at a time [1]
 - Validate imported dependency APIs with GacUI build and unit test [1]
+- Verify `/IO` syntax errors and queued success separately [1]
 
 # Refinements
 
@@ -379,3 +380,7 @@ For inline-object caret behavior, use compact multi-line documents such as `[Ima
 ## Validate imported dependency APIs with GacUI build and unit test
 
 After importing regenerated `VlppOS` or `VlppParser2` release files, build `Test\GacUISrc\GacUISrc.sln` and run the GacUI `UnitTest` executable. Existing GacUI call sites, such as the Windows HTTP automation service, provide downstream compile coverage for imported API signatures, and the unit-test log still needs a memory-leak check.
+
+## Verify `/IO` syntax errors and queued success separately
+
+When changing GacUI HTTP automation `/IO`, verify both response paths under a debugger-attached app. Send a malformed command such as an invalid mouse coordinate and confirm the HTTP response contains the syntax error synchronously; then send a valid command and confirm the response is `Queued` and the UI changes afterward. For modal workflows, avoid treating `Queued` as completion and inspect `/Controls` or `/Dom` only after the dialog/action has actually finished.

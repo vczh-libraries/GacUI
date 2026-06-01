@@ -47,6 +47,7 @@
 - Encapsulate remote inline-object run properties behind query helpers [1]
 - Use Parser2 JSON node list serialization in remote channels [1]
 - Unbox `HttpServerApi::GetUtf8Body` before automation handling [1]
+- Automation `/IO` parses synchronously and queues parsed commands [1]
 
 # Refinements
 
@@ -256,3 +257,7 @@ Remote paragraph query handlers should not directly inspect wrapper internals su
 ## Unbox `HttpServerApi::GetUtf8Body` before automation handling
 
 `HttpServerApi::GetUtf8Body(PHTTP_REQUEST)` returns `Nullable<WString>`. GacUI HTTP automation handlers should call `.Value()` after the helper succeeds and pass the resulting `WString` into the command handler, keeping nullable handling at the HTTP boundary.
+
+## Automation `/IO` parses synchronously and queues parsed commands
+
+For Windows HTTP automation `/IO`, keep syntax parsing inside `INativeAutomationService::RunIOCommand` on the HTTP response path so malformed commands return a concrete syntax error immediately. In `RunIOCommandOnNativeWindow`, parse into explicit command structs under the `iocommands` namespace, store them in an `IOCommand` `Variant`, and queue only parsed command execution through `INativeAsyncService::InvokeInMainThread`. Successful commands should return `Queued`, not `Executed`, because modal dialogs or native listener callbacks may complete later.
