@@ -12,8 +12,10 @@
 
 - Your goal is to finish an investigation document in `Copilot_Investigate.md` to address a problem.
 - You are recommended to modify unit tests, build, run, and debug to understand the problem, or verify your root cause analysis while tracing a bug.
-- **SUPER IMPORTANT** Your should always follow the coding convention when coding: `REPO-ROOT/.github/Guidelines/Coding.md`.
 - DO NOT ASK ANY QUESTION, you are going to complete the work to the end, I am not wathcing you in realtime. Unless you are explicitly instructed to ask questions.
+- **SUPER IMPORTANT**:
+  - Your should always follow the coding convention when coding: `REPO-ROOT/.github/Guidelines/Coding.md`.
+  - When the request is separated by multiple tasks like `## Task N` or `## Task TITLE`, you should strictly follow `## Additional Instructions` to complete tasks in its order, and git commit and push after every single task, it is designed to simplify and work.
 
 ## Copilot_Investigate.md Structure
 
@@ -173,7 +175,7 @@ Propose any solution you can think of and write them down in the document, you m
 ## Additional Instructions
 
 - `git commit` and `git push` all local changes to the current branch, unless there are explicit instructions to override this.
-- When the request is separated by multiple tasks like `## Task N`, it is important to do task one by one strictly, by me designing tasks in this way, we can achieve:
+- When the request is separated by multiple tasks like `## Task N` or `## Task TITLE`, it is important to do task one by one strictly, by me designing tasks in this way, we can achieve:
   - Easy-to-understand commits for file changing that is easy to review.
   - Limit side effects so that you don't have to deal with massive of issues at the same time.
   - `git commit` and `git push` should happen after every single task, unless there are explicit instructions to override this.
