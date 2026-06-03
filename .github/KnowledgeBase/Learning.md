@@ -35,6 +35,8 @@
 - `collections::List` has deleted copy constructor; use `std::move()` for structs with `List` members [1]
 - Compare type descriptors by pointer when descriptor identity is available [1]
 - Parse and validate before queuing asynchronous work [1]
+- Proactively remove code made redundant by refactoring [1]
+- Keep design documentation aligned with code after refactoring [1]
 
 # Refinements
 
@@ -199,3 +201,11 @@ When a failure is part of the public or script-visible semantics and tests are e
 ## Parse and validate before queuing asynchronous work
 
 When an API needs to report syntax or validation errors synchronously but execute accepted work asynchronously, split those phases explicitly. Parse and validate the request on the caller/transport path, return errors immediately, then queue only a parsed command object for main-thread or background execution. This keeps modal or blocking work off the response path without hiding malformed input behind an async boundary.
+
+## Proactively remove code made redundant by refactoring
+
+When a change makes a construction unnecessary or no longer meaningful, delete it as part of the same change instead of leaving it behind. This includes redirection/adapter layers that only forward, transport methods that exist solely for a now-collapsed path, specialized helpers superseded by a generic one, duplicated post-processing a callee already performs, and null checks the callee already handles (e.g. when `BoxValue`/`UnboxValue` already accept null, or when an `Invoke*` helper already reads/checks the result). Do not leave redirections that exist only because of history. It is acceptable to take the risk of breaking tests while removing redundant code, and then fix the tests afterward, rather than preserving dead structure to keep tests green.
+
+## Keep design documentation aligned with code after refactoring
+
+When a refactoring changes architecture or behavior, update the corresponding design documents in the same task rather than deferring it. After a structural change, re-read the related documents and reconcile anything that became misaligned (for example, descriptions of a transport path that no longer exists). Treat documentation drift left by a previous refactoring as part of the current cleanup.
