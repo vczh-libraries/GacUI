@@ -5,8 +5,8 @@
 - Process staged tasks one by one with verification [15]
 - Crash early instead of adding error-tolerance fallbacks [6]
 - Port fixes from imports to source repositories [6]
+- Verify generated artifacts with downstream consumer checks [6]
 - Make `Stop()` drain asynchronous work before returning [5]
-- Verify generated artifacts with downstream consumer checks [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
 - Capture dependent lambdas explicitly [2]
@@ -18,6 +18,7 @@
 - Validate expectations against implementation and existing tests [2]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [2]
 - Treat Debug memory leak dumps as required failures [2]
+- Proactively remove code made redundant by refactoring [2]
 - Prefer well-defined tests over ambiguous edge cases [1]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
@@ -35,7 +36,6 @@
 - `collections::List` has deleted copy constructor; use `std::move()` for structs with `List` members [1]
 - Compare type descriptors by pointer when descriptor identity is available [1]
 - Parse and validate before queuing asynchronous work [1]
-- Proactively remove code made redundant by refactoring [1]
 - Keep design documentation aligned with code after refactoring [1]
 
 # Refinements
@@ -180,6 +180,8 @@ When writing XML or JSON inside a C++ string literal (e.g. `LR"GacUISrc(... )Gac
 
 When a generator produces artifacts for another language or toolchain, validate the generated output with that downstream consumer instead of only checking that the generator runs. For example, generated TypeScript declarations for JSON output should be type-checked against real generated JSON examples with `tsc --noEmit`.
 
+When generated RPC JSON values or request/response transcripts are part of the contract, run the preparation step that copies/regenerates them, include the new folders in the downstream project configuration, type-check them, and sample or audit the generated files for protocol invariants such as request/response id pairing.
+
 ## `vl::regex` separator regex: `L"[\\/\\\\]+"`
 
 In `vl::regex::Regex`, both `/` and `\\` are escaping characters, and incorrect escaping inside `[]` can throw errors like `Illegal character set definition.`
@@ -205,6 +207,8 @@ When an API needs to report syntax or validation errors synchronously but execut
 ## Proactively remove code made redundant by refactoring
 
 When a change makes a construction unnecessary or no longer meaningful, delete it as part of the same change instead of leaving it behind. This includes redirection/adapter layers that only forward, transport methods that exist solely for a now-collapsed path, specialized helpers superseded by a generic one, duplicated post-processing a callee already performs, and null checks the callee already handles (e.g. when `BoxValue`/`UnboxValue` already accept null, or when an `Invoke*` helper already reads/checks the result). Do not leave redirections that exist only because of history. It is acceptable to take the risk of breaking tests while removing redundant code, and then fix the tests afterward, rather than preserving dead structure to keep tests green.
+
+Preserve helper layers that still own observable behavior. For example, flat RPC dispatcher wrappers that only forward can be removed, but JSON wrappers that record generated TypeScript artifacts should stay until their recording responsibility is moved elsewhere.
 
 ## Keep design documentation aligned with code after refactoring
 
