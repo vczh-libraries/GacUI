@@ -37,8 +37,8 @@ if (Test-Path $filePath) {
     Write-Host "Backing up $fileName to Learning folder..."
     Copy-Item -Path $filePath -Destination $destinationPath -Force
 
-    Write-Host "Deleting $fileName..."
-    Remove-Item -Path $filePath -Force
+    Write-Host "Resetting $fileName..."
+    Set-Content -LiteralPath $filePath -Value "# !!!INVESTIGATE!!!"
 }
 
 Write-Host "Copilot remember completed."

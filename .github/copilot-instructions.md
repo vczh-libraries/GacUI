@@ -37,7 +37,11 @@ The C++ project in this repo is built and tested using its own MSBuild wrappers.
 You must strictly follow the instructions in the following documents,
 otherwise it won't work properly.
 
-- **SUPER IMPORTANT** Your should always follow the coding convention when coding: `REPO-ROOT/.github/Guidelines/Coding.md`
+- **SUPER IMPORTANT** Your should always follow the coding convention when coding:
+  - `REPO-ROOT/.github/Guidelines/Coding.md`
+  - `REPO-ROOT/.github/KnowledgeBase/Learning.md`
+  - `REPO-ROOT/.github/Learning/Learning_Coding.md`
+  - `REPO-ROOT/.github/Learning/Learning_Testing.md`
 - Adding/Removing/Renaming Source Files: `REPO-ROOT/.github/Guidelines/SourceFileManagement.md`
 - Building a Solution: `REPO-ROOT/.github/Guidelines/Building.md`
 - Running a Project:

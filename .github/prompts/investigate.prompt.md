@@ -167,8 +167,12 @@ Propose any solution you can think of and write them down in the document, you m
 ## Step 6. Verify and Code Review
 
 - Unit test is always required to ensure the proposal actually works.
-- Review all code you have changed, make sure they are clean and follow the coding convention in `REPO-ROOT/.github/Guidelines/Coding.md`.
-  - If code review changes the code, you need to run the test cases again to confirm the changes.
+- Review all code you have changed, make sure they are clean and follow the coding convention in:
+  - `REPO-ROOT/.github/Guidelines/Coding.md`.
+  - `REPO-ROOT/.github/KnowledgeBase/Learning.md`
+  - `REPO-ROOT/.github/Learning/Learning_Coding.md`
+  - `REPO-ROOT/.github/Learning/Learning_Testing.md`
+- If code review changes the code, you need to run the test cases again to confirm the changes.
 
 ## Git Commits and Multi-Task Request
 
