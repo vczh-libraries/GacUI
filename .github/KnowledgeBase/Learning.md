@@ -29,6 +29,8 @@
 - Construct `Nullable<WString>` explicitly in function calls [1]
 - Sort serialization metadata by deterministic keys, not pointer addresses [1]
 - Start async callbacks after most-derived construction [1]
+- Do not rely on `Event<T>` handler invocation order [1]
+- Use RAII scope cleanup instead of manual catch cleanup [1]
 - `collections::Dictionary` copy assignment is deleted (use move/swap) [1]
 - Dereference `Ptr<T>` via `.Obj()` (not `*ptr`) [1]
 - `vl::regex` separator regex: `L"[\\/\\\\]+"` [1]
@@ -159,6 +161,14 @@ When serializing metadata into stable binary output, do not let pointer-address 
 ## Start async callbacks after most-derived construction
 
 Objects that dispatch asynchronous callbacks should not begin listening or queue callbacks from base constructors. Initialize state in constructors, then expose an explicit `Start()` boundary that callers invoke after the most-derived object is fully constructed, so callbacks can safely dispatch to final overrides.
+
+## Do not rely on `Event<T>` handler invocation order
+
+When multiple handlers attached to the same `Event<T>` can both observe, mutate, or throw, do not assume attach order controls which handler runs first. Existing `Event<void(...)>` storage can make invocation order depend on handler pointer ordering, so fixes should remove order dependence instead of moving logic into another handler or making tests depend on allocator behavior.
+
+## Use RAII scope cleanup instead of manual catch cleanup
+
+When a helper temporarily suppresses callbacks, changes ownership flags, or otherwise establishes scoped state, use a small scope object whose destructor restores state during normal return and exception unwinding. Avoid manual `try`/`catch` blocks that only restore state and rethrow; C++ stack unwinding should own that cleanup.
 
 ## `collections::Dictionary` copy assignment is deleted (use move/swap)
 
