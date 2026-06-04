@@ -3,13 +3,14 @@
 # Orders
 
 - Process staged tasks one by one with verification [15]
+- Port fixes from imports to source repositories [7]
 - Crash early instead of adding error-tolerance fallbacks [6]
-- Port fixes from imports to source repositories [6]
 - Verify generated artifacts with downstream consumer checks [6]
 - Make `Stop()` drain asynchronous work before returning [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
 - Proactively remove code made redundant by refactoring [3]
+- Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [3]
 - Capture dependent lambdas explicitly [2]
 - Don't assume observable changes are batched [2]
 - Do not assume async callback owners are heap allocated [2]
@@ -17,7 +18,6 @@
 - Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages [2]
 - Prefer simple calls before interface casts [2]
 - Validate expectations against implementation and existing tests [2]
-- Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [2]
 - Treat Debug memory leak dumps as required failures [2]
 - Prefer well-defined tests over ambiguous edge cases [1]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
@@ -103,6 +103,8 @@ When a downstream repo such as `GacUI` exposes a bug in imported `VlppOS` inter-
 When validating GacUI remoting reveals a transport issue, keep the same source-of-truth rule: fix `VlppOS`, regenerate its release, copy the generated output into `GacUI\Import`, then validate the downstream scenario again.
 
 For dependency release syncs, copy generated files from the upstream `Release` folder into the downstream `Import` folder and exclude `IncludeOnly` unless the task explicitly requires it. Do not hand-edit the downstream import copy.
+
+If a Workflow task exposes a `VlppReflection` collection-wrapper issue, fix the wrapper behavior in `VlppReflection`, regenerate and verify its release output, then update the Workflow import from that release instead of patching Workflow's imported copy.
 
 ## Validate expectations against implementation and existing tests
 
@@ -205,6 +207,8 @@ When a C++ struct contains `vl::collections::List` fields, the struct's implicit
 ## Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants
 
 When a failure is part of the public or script-visible semantics and tests are expected to catch it as a recoverable error, throw `vl::Exception`. Reserve `CHECK_ERROR` / `CHECK_FAIL` / `vl::Error` for internal invariant violations and states that indicate implementation corruption. For example, duplicate RPC registration can remain a catchable semantic exception when samples intentionally verify it, while impossible local type ids should fail as invariants.
+
+At script-visible reflection boundaries, translate recoverable collection operation failures into `vl::Exception` so Workflow `catch` blocks and RPC exception transport can observe them normally; do not expose `vl::Error` for expected user-data access failures.
 
 ## Compare type descriptors by pointer when descriptor identity is available
 

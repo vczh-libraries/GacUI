@@ -45,7 +45,8 @@ I am starting a fresh new request.
   - At the moment, `Copilot_Investigate.md` may contain the last investigation. Even if it may look like the document is already finished for the current investigation, always clean it up.
 - After overriding, copy precisely my problem description in `# Repro` from the LATEST chat message under `# PROBLEM DESCRIPTION`.
   - If the problem description consists of multiple `## Task N` or `## Task TITLE`:
-    - You should strictly follow `## Git Commits and Multi-Task Request` to create git commit(s) for each task, you are required to push changes before starting the next task.
+    - You should strictly follow `## Git Commits and Multi-Task Request`.
+    - For each `## Task X`, perform the work, git commit and push, before starting the next `## Task X`.
 - Jump to `Step 2` directly.
 
 ### Continue Investigation (only when "# Continue" appears in the LATEST chat message)
@@ -177,10 +178,13 @@ Propose any solution you can think of and write them down in the document, you m
 ## Git Commits and Multi-Task Request
 
 - `git commit` and `git push` all local changes to the current branch, unless there are explicit instructions to override this.
-- When the request is separated by multiple tasks like `## Task N` or `## Task TITLE`, it is important to do task one by one strictly, by me designing tasks in this way, we can achieve:
+- When the request is separated by multiple tasks like `## Task X`, it is important to do task one by one strictly, by me designing tasks in this way, we can achieve:
   - Easy-to-understand commits for file changing that is easy to review.
   - Limit side effects so that you don't have to deal with massive of issues at the same time.
-  - `git commit` and `git push` should happen after every single task, and before the next task, unless there are explicit instructions to override this.
-  - When different tasks happens in different repos, you are going to change the `Copilot_Investigate.md` in that repo.
+  - `git commit` and `git push` should happen after every single `## Task X`, and before the next `## Task X`:
+    - Unless there are explicit instructions to override this.
+    - **DO NOT** wait until all `## Task X` are finished and the do git commit and push. Even when they are related.
+    - By doing this you are able to secure the result of the previous `## Task X`, and when you mess up the current one, you are able to easily revert to the last successful state of the source code.
+  - When different `## Task X` happens in different repos, you are going to change the `Copilot_Investigate.md` in that repo.
     - If multiple repos are involved, for all involved repos that has the `Copilot_Investigate.md` file, decide which repo is the main repo for the task and update that file in the main repo.
     - If the repo does not have such document, you are allowed not to create one, skip writing such file.
