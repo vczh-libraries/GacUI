@@ -1,6 +1,7 @@
 #include "WindowsImageService.h"
 #include "../WinNativeWindow.h"
 #include "../GDI/WinGDI.h"
+#define _WINSOCKAPI_
 #include <Shlwapi.h>
 
 #pragma comment(lib, "WindowsCodecs.lib")

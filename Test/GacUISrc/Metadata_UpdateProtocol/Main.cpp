@@ -2,6 +2,7 @@
 
 #include "../../../Source/Compiler/RemoteProtocol/GuiRemoteProtocolCompiler.h"
 #ifdef VCZH_MSVC
+#define _WINSOCKAPI_
 #include <Windows.h>
 #endif
 

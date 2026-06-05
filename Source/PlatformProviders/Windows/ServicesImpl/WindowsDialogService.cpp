@@ -1,4 +1,5 @@
 #include "WindowsDialogService.h"
+#define _WINSOCKAPI_
 #include <Vfw.h>
 
 #pragma comment(lib, "Vfw32.lib")

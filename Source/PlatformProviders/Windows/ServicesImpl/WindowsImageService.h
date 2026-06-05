@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSIMAGESERIVCE
 
 #include "..\..\..\NativeWindow\GuiNativeWindow.h"
+#define _WINSOCKAPI_
 #include <wincodec.h>
 
 namespace vl

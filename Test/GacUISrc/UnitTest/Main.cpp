@@ -1,6 +1,7 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/UnitTestUtilities/GuiUnitTestUtilities.h"
 #if defined VCZH_MSVC
+#define _WINSOCKAPI_
 #include <Windows.h>
 #endif
 

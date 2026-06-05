@@ -2,6 +2,7 @@
 
 #include "DarkSkin.h"
 #include "../../../Source/UnitTestUtilities/SnapshotViewer/Application/GuiUnitTestSnapshotViewerApp.h"
+#define _WINSOCKAPI_
 #include <Windows.h>
 
 using namespace vl;

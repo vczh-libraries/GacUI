@@ -3,6 +3,7 @@
 #include "..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery.h"
 #include "..\..\..\Source\Resources\GuiParserManager.h"
 #include "..\..\..\Source\PlatformProviders\Windows\WinNativeWindow.h"
+#define _WINSOCKAPI_
 #include <Windows.h>
 #include <msctf.h>
 

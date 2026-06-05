@@ -11,6 +11,7 @@ Interfaces:
 
 #include "..\..\..\..\GraphicsElement\GuiGraphicsDocumentInterfaces.h"
 #include "..\WinGDI.h"
+#define _WINSOCKAPI_
 #include <usp10.h>
 
 namespace vl

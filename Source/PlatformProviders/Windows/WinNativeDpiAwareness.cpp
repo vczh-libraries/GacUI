@@ -1,4 +1,5 @@
 #include "WinNativeDpiAwareness.h"
+#define _WINSOCKAPI_
 #include <ShellScalingApi.h>
 
 #pragma comment(lib, "Shcore.lib")

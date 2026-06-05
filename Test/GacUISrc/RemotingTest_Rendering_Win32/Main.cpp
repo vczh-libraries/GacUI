@@ -1,5 +1,6 @@
 #define GAC_HEADER_USE_NAMESPACE
 #include "../../../Source/GacUI.h"
+#define _WINSOCKAPI_
 #include <Windows.h>
 
 using namespace vl;

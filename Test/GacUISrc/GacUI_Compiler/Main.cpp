@@ -1,5 +1,6 @@
 #include "ResourceCompiler.h"
 #ifdef VCZH_MSVC
+#define _WINSOCKAPI_
 #include <Windows.h>
 #endif
 

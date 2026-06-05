@@ -7,6 +7,7 @@
 #include "../Generated_DarkSkin/Source_x86/DarkSkinReflection.h"
 #endif
 #ifdef VCZH_MSVC
+#define _WINSOCKAPI_
 #include <Windows.h>
 #endif
 

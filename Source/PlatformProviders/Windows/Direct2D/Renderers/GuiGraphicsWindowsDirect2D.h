@@ -12,6 +12,7 @@ Interfaces:
 #include "..\..\..\..\GraphicsElement\GuiGraphicsElement.h"
 #include "..\..\..\..\GraphicsElement\GuiGraphicsDocumentElement.h"
 #include "..\..\..\..\Application\GraphicsCompositions\GuiGraphicsEventReceiver.h"
+#define _WINSOCKAPI_
 #include <d2d1_1.h>
 #include <dwrite_1.h>
 #include <d2d1effects.h>

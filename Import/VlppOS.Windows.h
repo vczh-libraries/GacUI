@@ -21,6 +21,7 @@ Interfaces:
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
+#define _WINSOCKAPI_
 #include <windows.h>
 #include <http.h>
 #define RPC_USE_NATIVE_WCHAR

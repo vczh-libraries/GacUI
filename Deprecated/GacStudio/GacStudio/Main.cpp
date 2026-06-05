@@ -3,6 +3,7 @@
 
 #include "UI\_Source\GacStudioUI.h"
 #include "Studio\StudioModel.h"
+#define _WINSOCKAPI_
 #include <Windows.h>
 
 using namespace vl::collections;

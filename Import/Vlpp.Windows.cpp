@@ -12,6 +12,7 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
+#define _WINSOCKAPI_
 #include <Windows.h>
 
 #ifndef VCZH_MSVC
@@ -100,6 +101,7 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 #include <time.h>
+#define _WINSOCKAPI_
 
 #ifndef VCZH_MSVC
 static_assert(false, "Do not build this file for non-Windows applications.");
@@ -250,6 +252,7 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
+#define _WINSOCKAPI_
 
 #ifndef VCZH_MSVC
 static_assert(false, "Do not build this file for non-Windows applications.");
@@ -281,6 +284,7 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
+#define _WINSOCKAPI_
 
 #ifndef VCZH_MSVC
 static_assert(false, "Do not build this file for non-Windows applications.");

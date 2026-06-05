@@ -8,6 +8,7 @@
 #include "ServicesImpl\WindowsScreenService.h"
 #include "ServicesImpl\WindowsInputService.h"
 #include "ServicesImpl\WindowsDialogService.h"
+#define _WINSOCKAPI_
 #include <CommCtrl.h>
 #include <VlppOS.Windows.h>
 

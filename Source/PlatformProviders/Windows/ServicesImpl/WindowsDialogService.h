@@ -11,6 +11,7 @@ Interfaces:
 
 #include "..\..\..\NativeWindow\GuiNativeWindow.h"
 #include "..\WinNativeDpiAwareness.h"
+#define _WINSOCKAPI_
 #include <commdlg.h>
 
 namespace vl

@@ -1,6 +1,7 @@
 #include "StudioModel.h"
 #include "SolutionModel.h"
 #include "EditorContentModel.h"
+#define _WINSOCKAPI_
 #include <Windows.h>
 
 using namespace vl::stream;

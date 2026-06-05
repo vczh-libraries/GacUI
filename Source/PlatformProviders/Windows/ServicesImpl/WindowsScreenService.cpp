@@ -1,4 +1,5 @@
 #include "WindowsScreenService.h"
+#define _WINSOCKAPI_
 #include <ShellScalingApi.h>
 
 namespace vl

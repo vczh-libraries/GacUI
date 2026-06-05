@@ -7,6 +7,7 @@ DEVELOPER: Zihan Chen(vczh)
 /***********************************************************************
 .\WINNATIVEDPIAWARENESS.CPP
 ***********************************************************************/
+#define _WINSOCKAPI_
 #include <ShellScalingApi.h>
 
 #pragma comment(lib, "Shcore.lib")
@@ -110,6 +111,7 @@ namespace vl
 /***********************************************************************
 .\WINNATIVEWINDOW.CPP
 ***********************************************************************/
+#define _WINSOCKAPI_
 #include <CommCtrl.h>
 
 #pragma comment(lib, "Imm32.lib")
@@ -13255,6 +13257,7 @@ WindowsClipboardService
 /***********************************************************************
 .\SERVICESIMPL\WINDOWSDIALOGSERVICE.CPP
 ***********************************************************************/
+#define _WINSOCKAPI_
 #include <Vfw.h>
 
 #pragma comment(lib, "Vfw32.lib")
@@ -13533,6 +13536,7 @@ WindowsDialogService
 /***********************************************************************
 .\SERVICESIMPL\WINDOWSIMAGESERVICE.CPP
 ***********************************************************************/
+#define _WINSOCKAPI_
 #include <Shlwapi.h>
 
 #pragma comment(lib, "WindowsCodecs.lib")
@@ -14512,6 +14516,7 @@ WindowsResourceService
 /***********************************************************************
 .\SERVICESIMPL\WINDOWSSCREENSERVICE.CPP
 ***********************************************************************/
+#define _WINSOCKAPI_
 
 namespace vl
 {

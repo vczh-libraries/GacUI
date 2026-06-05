@@ -5,6 +5,7 @@
 #include <VlppReflection.h>
 #include <VlppWorkflowCompiler.h>
 #ifdef VCZH_MSVC
+#define _WINSOCKAPI_
 #include <Windows.h>
 #endif
 

@@ -13,6 +13,7 @@ Interfaces:
 #include "..\..\..\..\GraphicsElement\GuiGraphicsDocumentElement.h"
 #include "..\..\..\..\Application\GraphicsCompositions\GuiGraphicsEventReceiver.h"
 #include "..\WinGDI.h"
+#define _WINSOCKAPI_
 #include <wincodec.h>
 #include <MLang.h>
 
