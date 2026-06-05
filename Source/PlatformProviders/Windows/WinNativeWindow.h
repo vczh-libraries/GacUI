@@ -12,6 +12,7 @@ Interfaces:
 #include "..\..\NativeWindow\GuiNativeWindow.h"
 #include "..\..\Utilities\SharedServices\GuiSharedAutomationService_Controls.h"
 #include "WinNativeDpiAwareness.h"
+#include <VlppOS.Windows.h>
 
 namespace vl
 {

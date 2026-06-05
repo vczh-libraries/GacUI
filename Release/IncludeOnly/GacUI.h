@@ -120,6 +120,8 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUI.h"
 #include "..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUIIncludes.h"
 #include "..\..\Source\Utilities\SharedServices\GuiSharedAsyncService.h"
+#include "..\..\Source\Utilities\SharedServices\GuiSharedAutomationService.h"
+#include "..\..\Source\Utilities\SharedServices\GuiSharedAutomationService_Controls.h"
 #include "..\..\Source\Utilities\SharedServices\GuiSharedCallbackService.h"
 #include "..\..\Source\PlatformProviders\Hosted\GuiHostedController.h"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteEvents.h"

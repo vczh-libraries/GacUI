@@ -5227,6 +5227,7 @@ Type Analyzing
 
 			extern void										GetTypeFragments(reflection::description::ITypeDescriptor* typeDescriptor, collections::List<WString>& fragments);
 			extern Ptr<WfExpression>						GetExpressionFromTypeDescriptor(reflection::description::ITypeDescriptor* typeDescriptor);
+			extern Ptr<WfType>								GetTypeFromTypeDescriptor(reflection::description::ITypeDescriptor* typeDescriptor);
 			extern Ptr<WfType>								GetTypeFromTypeInfo(reflection::description::ITypeInfo* typeInfo);
 			extern Ptr<WfLexicalScopeName>					GetScopeNameFromReferenceType(WfLexicalScope* scope, Ptr<WfType> type);
 			extern Ptr<reflection::description::ITypeInfo>	CreateTypeInfoFromType(WfLexicalScope* scope, Ptr<WfType> type, bool checkTypeForValue = true);

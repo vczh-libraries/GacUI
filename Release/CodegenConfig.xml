@@ -7,7 +7,10 @@
   </folders>
   <categories>
     <category name="vlpp" pattern="\Import\Vlpp."/>
-    <category name="vlppos" pattern="\Import\VlppOS."/>
+    <category name="vlppos_windows" pattern="\Import\VlppOS.Windows."/>
+    <category name="vlppos" pattern="\Import\VlppOS.">
+      <except pattern="\Import\VlppOS.Windows." />
+    </category>
     <category name="vlppregex" pattern="\Import\VlppRegex."/>
     <category name="vlppreflection" pattern="\Import\VlppReflection."/>
     <category name="vlppparser2" pattern="\Import\VlppGlrParser."/>
@@ -41,6 +44,7 @@
   </categories>
   <output path=".">
     <codepair category="vlpp" filename="Vlpp" generate="false"/>
+    <codepair category="vlppos_windows" filename="VlppOS.Windows" generate="false"/>
     <codepair category="vlppos" filename="VlppOS" generate="false"/>
     <codepair category="vlppregex" filename="VlppRegex" generate="false"/>
     <codepair category="vlppreflection" filename="VlppReflection" generate="false"/>

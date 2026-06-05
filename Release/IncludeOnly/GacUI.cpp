@@ -154,4 +154,6 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUI.cpp"
 #include "..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUIResource.cpp"
 #include "..\..\Source\Utilities\SharedServices\GuiSharedAsyncService.cpp"
+#include "..\..\Source\Utilities\SharedServices\GuiSharedAutomationService.cpp"
+#include "..\..\Source\Utilities\SharedServices\GuiSharedAutomationService_Controls.cpp"
 #include "..\..\Source\Utilities\SharedServices\GuiSharedCallbackService.cpp"

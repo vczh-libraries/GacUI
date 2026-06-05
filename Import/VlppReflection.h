@@ -6159,6 +6159,19 @@ Collection Wrappers
 #pragma warning(push)
 #pragma warning(disable:4250)
 
+			template<typename TCallback>
+			auto ConvertCollectionError(TCallback&& callback) -> decltype(callback())
+			{
+				try
+				{
+					return callback();
+				}
+				catch (const Error& ex)
+				{
+					throw Exception(WString::Unmanaged(ex.Description()));
+				}
+			}
+
 			template<typename T>
 			class ValueEnumerableWrapper;
 
@@ -6181,7 +6194,10 @@ Collection Wrappers
 				Value GetCurrent()override
 				{
 					if (!enumerableWrapper->wrapperPointer) throw ObjectDisposedException();
-					return BoxValue<ElementType>(wrapperPointer->Current());
+					return ConvertCollectionError([&]()
+					{
+						return BoxValue<ElementType>(wrapperPointer->Current());
+					});
 				}
 
 				vint GetIndex()override
@@ -6193,7 +6209,10 @@ Collection Wrappers
 				bool Next()override
 				{
 					if (!enumerableWrapper->wrapperPointer) throw ObjectDisposedException();
-					return wrapperPointer->Next();
+					return ConvertCollectionError([&]()
+					{
+						return wrapperPointer->Next();
+					});
 				}
 			};
 
@@ -6276,21 +6295,30 @@ Collection Wrappers
 				Value Get(vint index)override
 				{
 					ENSURE_WRAPPER_POINTER;
-					return BoxValue<ElementType>(WRAPPER_POINTER->Get(index));
+					return ConvertCollectionError([&]()
+					{
+						return BoxValue<ElementType>(WRAPPER_POINTER->Get(index));
+					});
 				}
 
 				bool Contains(const Value& value)override
 				{
 					ENSURE_WRAPPER_POINTER;
 					ElementKeyType item = UnboxValue<ElementKeyType>(value);
-					return WRAPPER_POINTER->Contains(item);
+					return ConvertCollectionError([&]()
+					{
+						return WRAPPER_POINTER->Contains(item);
+					});
 				}
 
 				vint IndexOf(const Value& value)override
 				{
 					ENSURE_WRAPPER_POINTER;
 					ElementKeyType item = UnboxValue<ElementKeyType>(value);
-					return WRAPPER_POINTER->IndexOf(item);
+					return ConvertCollectionError([&]()
+					{
+						return WRAPPER_POINTER->IndexOf(item);
+					});
 				}
 			};
 
@@ -6312,13 +6340,19 @@ Collection Wrappers
 				{
 					ENSURE_WRAPPER_POINTER;
 					ElementType item = UnboxValue<ElementType>(value);
-					WRAPPER_POINTER->Set(index, item);
+					ConvertCollectionError([&]()
+					{
+						WRAPPER_POINTER->Set(index, item);
+					});
 				}
 
 				void Resize(vint size)override
 				{
 					ENSURE_WRAPPER_POINTER;
-					return WRAPPER_POINTER->Resize(size);
+					ConvertCollectionError([&]()
+					{
+						WRAPPER_POINTER->Resize(size);
+					});
 				}
 			};
 
@@ -6340,40 +6374,58 @@ Collection Wrappers
 				{
 					ENSURE_WRAPPER_POINTER;
 					ElementType item = UnboxValue<ElementType>(value);
-					WRAPPER_POINTER->Set(index, item);
+					ConvertCollectionError([&]()
+					{
+						WRAPPER_POINTER->Set(index, item);
+					});
 				}
 
 				vint Add(const Value& value)override
 				{
 					ENSURE_WRAPPER_POINTER;
 					ElementType item = UnboxValue<ElementType>(value);
-					return WRAPPER_POINTER->Add(item);
+					return ConvertCollectionError([&]()
+					{
+						return WRAPPER_POINTER->Add(item);
+					});
 				}
 
 				vint Insert(vint index, const Value& value)override
 				{
 					ENSURE_WRAPPER_POINTER;
 					ElementType item = UnboxValue<ElementType>(value);
-					return WRAPPER_POINTER->Insert(index, item);
+					return ConvertCollectionError([&]()
+					{
+						return WRAPPER_POINTER->Insert(index, item);
+					});
 				}
 
 				bool Remove(const Value& value)override
 				{
 					ENSURE_WRAPPER_POINTER;
 					ElementKeyType item = UnboxValue<ElementKeyType>(value);
-					return WRAPPER_POINTER->Remove(item);
+					return ConvertCollectionError([&]()
+					{
+						return WRAPPER_POINTER->Remove(item);
+					});
 				}
 
 				bool RemoveAt(vint index)override
 				{
 					ENSURE_WRAPPER_POINTER;
-					return WRAPPER_POINTER->RemoveAt(index);
+					return ConvertCollectionError([&]()
+					{
+						return WRAPPER_POINTER->RemoveAt(index);
+					});
 				}
 
 				void Clear()override
 				{
 					ENSURE_WRAPPER_POINTER;
-					WRAPPER_POINTER->Clear();
+					ConvertCollectionError([&]()
+					{
+						WRAPPER_POINTER->Clear();
+					});
 				}
 			};
 
@@ -6444,8 +6496,11 @@ Collection Wrappers
 				{
 					ENSURE_WRAPPER_POINTER;
 					KeyKeyType item = UnboxValue<KeyKeyType>(key);
-					ValueType result = wrapperPointer->Get(item);
-					return BoxValue<ValueType>(result);
+					return ConvertCollectionError([&]()
+					{
+						ValueType result = wrapperPointer->Get(item);
+						return BoxValue<ValueType>(result);
+					});
 				}
 
 				const Object* GetCollectionObject()override
@@ -6486,20 +6541,29 @@ Collection Wrappers
 					ENSURE_WRAPPER_POINTER;
 					KEY_VALUE_TYPE item = UnboxValue<KEY_VALUE_TYPE>(key);
 					VALUE_TYPE result = UnboxValue<VALUE_TYPE>(value);
-					WRAPPER_POINTER->Set(item, result);
+					ConvertCollectionError([&]()
+					{
+						WRAPPER_POINTER->Set(item, result);
+					});
 				}
 
 				bool Remove(const Value& key)override
 				{
 					ENSURE_WRAPPER_POINTER;
 					KEY_KEY_TYPE item = UnboxValue<KEY_KEY_TYPE>(key);
-					return WRAPPER_POINTER->Remove(item);
+					return ConvertCollectionError([&]()
+					{
+						return WRAPPER_POINTER->Remove(item);
+					});
 				}
 
 				void Clear()override
 				{
 					ENSURE_WRAPPER_POINTER;
-					WRAPPER_POINTER->Clear();
+					ConvertCollectionError([&]()
+					{
+						WRAPPER_POINTER->Clear();
+					});
 				}
 			};
 #undef KEY_VALUE_TYPE
@@ -6526,6 +6590,7 @@ Collection Wrappers
 }
 
 #endif
+
 
 /***********************************************************************
 .\BOXING\BOXINGPARAMETER_CONTAINERS.H

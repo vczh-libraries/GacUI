@@ -5930,15 +5930,23 @@ interface system::IRpcController : system::IRpcOperations {
 
 @FullName:vl::rpc_controller::IRpcDispatcher
 interface system::IRpcDispatcher : system::Interface {
-    function BroadcastFromClient_ListEventOps(selfClientId : system::Int64) : system::IRpcListEventOps*;
     function BroadcastFromClient_ObjectEventOps(selfClientId : system::Int64) : system::IRpcObjectEventOps*;
     function Finalize() : system::Void;
     function IsRegisteredService(ref : system::RpcObjectReference) : system::Boolean;
     function RegisterService(typeId : system::Int64, ref : system::RpcObjectReference) : system::Void;
     function RequestService(typeId : system::Int64) : system::RpcObjectReference;
-    function SendToClient_ListOps(targetClientId : system::Int64) : system::IRpcListOps*;
     function SendToClient_ObjectOps(targetClientId : system::Int64) : system::IRpcObjectOps*;
 
+}
+
+@FullName:vl::rpc_controller::IRpcJsonMessageDispatcher
+interface system::IRpcJsonMessageDispatcher : system::Interface {
+    function AllocateRequestId() : system::Int64;
+    function OnJsonRequest(message : system::JsonNode^) : system::JsonNode^;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcJsonMessageDispatcher>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcJsonMessageDispatcher>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::IRpcJsonMessageDispatcher^;
 }
 
 @FullName:vl::rpc_controller::IRpcLifecycle
@@ -6000,6 +6008,7 @@ interface system::IRpcListEventOps : system::Interface {
 
 @FullName:vl::rpc_controller::IRpcListOps
 interface system::IRpcListOps : system::Interface {
+    function ArrayResize(ref : system::RpcObjectReference, size : system::Int64) : system::Void;
     function DictClear(ref : system::RpcObjectReference) : system::Void;
     function DictContainsKey(ref : system::RpcObjectReference, key : system::Object) : system::Boolean;
     function DictGet(ref : system::RpcObjectReference, key : system::Object) : system::Object;

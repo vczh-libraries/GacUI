@@ -2169,6 +2169,7 @@ Interfaces:
   INativeInputService					: Input Service
   INativeCallbackService				: Callback Service
   INativeDialogService					: Dialog Service
+  INativeAutomationService				: Automation Service
 
 ***********************************************************************/
 
@@ -3838,6 +3839,73 @@ INativeDialogService
 		}
 
 /***********************************************************************
+INativeAutomationService
+***********************************************************************/
+
+		/// <summary>
+		/// Automation service. To access this service, use [M:vl.presentation.INativeController.AutomationService].
+		/// </summary>
+		class INativeAutomationService : public virtual Interface
+		{
+		public:
+			static INativeAutomationService*		UnavailableService();
+
+			/// <summary>
+			/// Test if the service is available.
+			/// When it returns false, all other memthods should raise an exception.
+			/// Any real implementation should return true, in this case, unsupported features could just no-op.
+			/// </summary>
+			/// <returns>Returns false when the automation service is completely unavailable. This is different from availability of each features.</returns>
+			virtual bool							Available() = 0;
+
+			/// <summary>
+			/// Turn off all features.
+			/// </summary>
+			virtual void							Stop() = 0;
+
+			/// <summary>
+			/// Test if <see cref="DumpControlTree"/> is available.
+			/// This feature only works on GacUI applications, or when remote protocol is in use, the core side.
+			/// </summary>
+			/// <returns>Returns true if this function is available. Otherwise it should returns an empty string.</returns>
+			virtual bool							CanDumpControlTree() = 0;
+
+			/// <summary>
+			/// Dump the control tree.
+			/// </summary>
+			/// <returns>The dump.</returns>
+			virtual WString							DumpControlTree() = 0;
+
+			/// <summary>
+			/// Test if <see cref="DumpDomTree"/> is available.
+			/// This feature only works on the remote protocol renderer side.
+			/// </summary>
+			/// <returns>Returns true if this function is available. Otherwise it should returns an empty string.</returns>
+			virtual bool							CanDumpDomTree() = 0;
+
+			/// <summary>
+			/// Dump the DOM tree.
+			/// </summary>
+			/// <returns>The dump.</returns>
+			virtual WString							DumpDomTree() = 0;
+
+			/// <summary>
+			/// Test if <see cref="RunIOCommands"/> is available.
+			/// This feature only works on GacUI applications, or when remote protocol is in use, the renderer side.
+			/// </summary>
+			/// <returns>Returns true if this function is available. Otherwise it should returns an empty string.</returns>
+			virtual bool							CanRunIOCommands() = 0;
+
+			/// <summary>
+			/// Run an IO command.
+			/// </summary>
+			/// <param name="windowId">The id of the window for the IO command. It should match the content from <see cref="DumpControlTree"/>. Specify null for hosted mode application or remote protocol renderer.</param>
+			/// <param name="ioCommand">The IO command.</param>
+			/// <returns>The result of the IO commands, or an error message starting with "!".</returns>
+			virtual WString							RunIOCommand(Nullable<WString> windowId, const WString& ioCommand) = 0;
+		};
+
+/***********************************************************************
 Native Window Controller
 ***********************************************************************/
 
@@ -3893,6 +3961,11 @@ Native Window Controller
 			/// <returns>The user dialog service</returns>
 			virtual INativeDialogService*			DialogService()=0;
 			/// <summary>
+			/// Get the automation service.
+			/// </summary>
+			/// <returns>The user automation service</returns>
+			virtual INativeAutomationService*		AutomationService()=0;
+			/// <summary>
 			/// Get the file path of the current executable.
 			/// </summary>
 			/// <returns>The file path of the current executable.</returns>
@@ -3935,10 +4008,13 @@ Native Window Controller
 		};
 
 		/// <summary>
-		/// Get the global native system service controller.
+		/// Get the global system service controller.
+		/// This is not the controller passed into <see cref="SetNativeController"/>.
+		/// It is a controller with some services substitutable with <see cref="GetNativeServiceSubstitution"/>.
+		/// Default implementation of substitutable services is specified in <see cref="vl::presentation::GuiInitializeUtilities"/>.
 		/// </summary>
-		/// <returns>The global native system service controller.</returns>
-		extern								INativeController* GetCurrentController();
+		/// <returns>The global system service controller.</returns>
+		extern INativeController*			GetCurrentController();
 		/// <summary>
 		/// Set the global native system service controller.
 		/// </summary>
@@ -3948,6 +4024,7 @@ Native Window Controller
 #define GUI_SUBSTITUTABLE_SERVICES(F)	\
 		F(Clipboard)					\
 		F(Dialog)						\
+		F(Automation)					\
 
 #define GUI_UNSUBSTITUTABLE_SERVICES(F)	\
 		F(Callback)						\
@@ -4039,6 +4116,7 @@ Helper Functions
 }
 
 #endif
+
 
 /***********************************************************************
 .\APPLICATION\GRAPHICSCOMPOSITIONS\GUIGRAPHICSEVENTRECEIVER.H
@@ -7386,6 +7464,7 @@ IGuiHostedApplication
 	public:
 
 		virtual INativeWindow*				GetNativeWindowHost() = 0;
+		virtual INativeController*			GetNativeController() = 0;
 	};
 
 	extern IGuiHostedApplication*			GetHostedApplication();
@@ -10729,6 +10808,9 @@ namespace vl
 {
 	namespace presentation
 	{
+		class AutomationService;
+		class AutomationServiceHosted;
+
 		namespace controls
 		{
 
@@ -10744,6 +10826,8 @@ Application
 				friend class GuiWindow;
 				friend class GuiPopup;
 				friend class Ptr<GuiApplication>;
+				friend class AutomationService;
+				friend class AutomationServiceHosted;
 			private:
 
 				void											InvokeClipboardNotify(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
@@ -23508,6 +23592,11 @@ Interfaces:
 #define VCZH_PRESENTATION_GUIREMOTECONTROLLER_REMOTERENDERER_GUIREMOTERENDERERSINGLE
 
 
+namespace vl::presentation
+{
+	class AutomationServiceRenderer;
+}
+
 namespace vl::presentation::remote_renderer
 {
 	class GuiRemoteRendererSingle
@@ -23517,7 +23606,7 @@ namespace vl::presentation::remote_renderer
 		, protected virtual INativeControllerListener
 	{
 		friend class GuiRemoteDocumentParagraphElement;
-
+		friend class AutomationServiceRenderer;
 	protected:
 		INativeWindow*							window = nullptr;
 		INativeScreen*							screen = nullptr;
@@ -23560,6 +23649,8 @@ namespace vl::presentation::remote_renderer
 			Nullable<Size>											minSize;
 		};
 
+		using RenderingElement = collections::Pair<remoteprotocol::RendererType, Nullable<remoteprotocol::UnitTest_ElementDescVariant>>;
+		using RenderingElementMap = collections::Dictionary<vint, RenderingElement>;
 		using ElementMap = collections::Dictionary<vint, Ptr<elements::IGuiGraphicsElement>>;
 		using ImageMap = collections::Dictionary<vint, Ptr<INativeImage>>;
 		using SolidLabelMeasuringMap = collections::Dictionary<vint, SolidLabelMeasuring>;
@@ -23573,6 +23664,9 @@ namespace vl::presentation::remote_renderer
 		ImageMap								availableImages;
 		Ptr<remoteprotocol::RenderingDom>		renderingDom;
 		remoteprotocol::DomIndex				renderingDomIndex;
+
+		bool									enabledAutomation = false;
+		RenderingElementMap						renderingElements;
 
 		Alignment								GetAlignment(remoteprotocol::ElementHorizontalAlignment alignment);
 		Alignment								GetAlignment(remoteprotocol::ElementVerticalAlignment alignment);
@@ -23643,7 +23737,7 @@ namespace vl::presentation::remote_renderer
 		void									RequestRendererUpdateElement_ImageFrame(const remoteprotocol::ElementDesc_ImageFrame& arguments);
 
 	public:
-		GuiRemoteRendererSingle();
+		GuiRemoteRendererSingle(bool _enabledAutomation);
 		~GuiRemoteRendererSingle();
 
 		void									RegisterMainWindow(INativeWindow* _window);
@@ -28087,6 +28181,378 @@ namespace vl
 #endif
 
 /***********************************************************************
+.\UTILITIES\SHAREDSERVICES\GUISHAREDAUTOMATIONSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Default Service Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDAUTOMATIONSERVICE
+#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDAUTOMATIONSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		/*
+		* Schema of /Dom:
+		* --------------------------------------------------------------------------------
+		* {
+		*   Title: string;
+		*   Window: remoteprotocol::WindowSizingConfig;
+		*   Dom: remoteprotocol::RenderingDom;
+		*   Elements: [{
+		*     Id: number;
+		*     Type: remoteprotocol::RenderingType;
+		*     Data: remoteprotocol::UnitTest_ElementDescVariant;
+		*   }];
+		* }
+		* --------------------------------------------------------------------------------
+		*/
+		extern Ptr<glr::json::JsonNode>			DumpRemoteProtocolRenderingDom(
+													const WString& title,
+													const remoteprotocol::WindowSizingConfig& windowSizingConfig,
+													Ptr<remoteprotocol::RenderingDom> renderingDom,
+													collections::Dictionary<vint, collections::Pair<remoteprotocol::RendererType, Nullable<remoteprotocol::UnitTest_ElementDescVariant>>>& elementData
+													);
+
+		extern WString							DumpJsonToString(Ptr<glr::json::JsonNode> json);
+
+		struct IoCommandState
+		{
+			Nullable<NativePoint>				mousePosition;
+			collections::SortedList<VKEY>		pressingKeys;
+			bool								leftPressing = false;
+			bool								middlePressing = false;
+			bool								rightPressing = false;
+			bool								capslockToggled = false;
+		};
+
+		/*
+		* Predefined Commands:
+		* --------------------------------------------------------------------------------
+		* !Type:<TEXT>
+		*   Type <TEXT> to the focused control
+		* !Exit
+		*   Try to quit the application, it could be blocked by the application itself
+		* !KeyDown:Key1+Key2+...+KeyN
+		*   Key1 down, Key2 down, ..., KeyN down
+		* !KeyUp:Key1+Key2+...+KeyN
+		*   KeyN up, ..., Key2 up, Key1 up
+		* !KeyPress:Key1+Key2+...+KeyN
+		*   Key1 down, Key2 down, ..., KeyN down, KeyN up, ..., Key2 up, Key1 up
+		* !MouseMove:X,Y(,ctrl)?(,shift)?(,alt)?
+		* !(Left|Middle|Right)(Down|Up|Click|DbClick):X,Y(,ctrl)?(,shift)?(,alt)?
+		*   Click means Down/Up
+		*   DbClick means Down/Up/Down/DbClick/Up
+		* !MouseWheel(Up|Down|Left|Right):ticks(,ctrl)?(,shift)?(,alt)?
+		*   WindowMouseInfo_::wheel = ticks * 120 * direction (1 or -1)
+		* 
+		* --------------------------------------------------------------------------------
+		* 
+		* If the command satisfies the syntax, queue event handlers and then return "Queued"
+		* Otherwise, return "Syntax Error!" followed by command descriptions in this comment
+		* This function will crash if any event handler throws
+		* Event handlers are queued with INativeAsyncService::InvokeInMainThread after the command is parsed
+		*   therefore the returned "Queued" only means the command was accepted, not that it has finished executing
+		* 
+		* All coordinates are GuiCoordinate
+		*   INativeWindow::Convert should be used to convert them to NativeCoordinate before calling the event handlers
+		* 
+		* During calling the event handlers
+		*   ctrl/shift/alt should be set accordingly
+		*   the state argument is for remembering whatever is needed
+		*   RunIOCommandOnNativeWindow assume it is the only source of IO interactions
+		*/
+		extern WString							RunIOCommandOnNativeWindow(
+													IoCommandState* state,
+													INativeController* nativeController,
+													INativeWindow* nativeWindow,
+													collections::List<INativeWindowListener*>& listeners,
+													WString command
+													);
+
+		class AutomationServiceBase : public Object, public INativeAutomationService
+		{
+		protected:
+			IoCommandState						ioCommandState;
+			bool								stopped = false;
+
+			virtual Nullable<WString>			GetNativeWindowId(INativeWindow* window) = 0;
+			virtual INativeWindow*				GetNativeWindow(Nullable<WString> windowId) = 0;
+
+			virtual WString						DumpControlTreeInternal() { return WString::Empty; }
+			virtual WString						DumpDomTreeInternal() { return WString::Empty; }
+			virtual WString						RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) { return WString::Empty; }
+		public:
+			AutomationServiceBase() = default;
+			~AutomationServiceBase() = default;
+
+			bool Available() override
+			{
+				return true;
+			}
+
+			void Stop() override
+			{
+				stopped = true;
+			}
+
+			bool CanDumpControlTree() override
+			{
+				return false;
+			}
+
+			WString DumpControlTree() override
+			{
+				return !stopped && CanDumpControlTree() ? DumpControlTreeInternal() : WString::Empty;
+			}
+
+			bool CanDumpDomTree() override
+			{
+				return false;
+			}
+
+			WString DumpDomTree() override
+			{
+				return !stopped && CanDumpDomTree() ? DumpDomTreeInternal() : WString::Empty;
+			}
+
+			bool CanRunIOCommands() override
+			{
+				return false;
+			}
+
+			WString RunIOCommand(Nullable<WString> windowId, const WString& ioCommand) override
+			{
+				return !stopped && CanRunIOCommands() ? RunIOCommandInternal(windowId, ioCommand) : WString::Empty;
+			}
+		};
+
+		class AutomationServiceRenderer : public AutomationServiceBase
+		{
+		private:
+			remote_renderer::GuiRemoteRendererSingle*	renderer = nullptr;
+			
+		protected:
+			Nullable<WString> GetNativeWindowId(INativeWindow* window) override
+			{
+				return {};
+			}
+
+			INativeWindow* GetNativeWindow(Nullable<WString> windowId) override
+			{
+				return GetCurrentController()->WindowService()->GetMainWindow();
+			}
+
+			WString DumpDomTreeInternal() override
+			{
+				auto dumpRoot = DumpRemoteProtocolRenderingDom(
+					GetCurrentController()->WindowService()->GetMainWindow()->GetTitle(),
+					renderer->windowSizingConfig,
+					renderer->renderingDom,
+					renderer->renderingElements);
+				return DumpJsonToString(dumpRoot);
+			}
+
+		public:
+			AutomationServiceRenderer(remote_renderer::GuiRemoteRendererSingle* _renderer)
+				:renderer(_renderer)
+			{
+			}
+
+			bool CanDumpDomTree() override
+			{
+				return true;
+			}
+		};
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\UTILITIES\SHAREDSERVICES\GUISHAREDAUTOMATIONSERVICE_CONTROLS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Default Service Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDAUTOMATIONSERVICE_CONTROLS
+#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDAUTOMATIONSERVICE_CONTROLS
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			class GuiWindow;
+		}
+
+		class AutomationService : public AutomationServiceBase
+		{
+		protected:
+
+			WString								DumpControlTreeInternal() override;
+
+		public:
+			AutomationService();
+			~AutomationService();
+
+			bool								CanDumpControlTree() override;
+		};
+
+		class AutomationServiceHosted : public AutomationServiceBase
+		{
+		protected:
+			WString								windowManagement = WString::Unmanaged(L"Hosted");
+			
+			Nullable<WString>					GetNativeWindowId(INativeWindow* window) override;
+			INativeWindow*						GetNativeWindow(Nullable<WString> windowId) override;
+			WString								DumpControlTreeInternal() override;
+
+		public:
+			AutomationServiceHosted();
+			~AutomationServiceHosted();
+
+			bool								CanDumpControlTree() override;
+		};
+
+		class RemoteProtocolAutomationService : public AutomationServiceHosted
+		{
+		protected:
+			WString								RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) override;
+
+		public:
+			RemoteProtocolAutomationService();
+			~RemoteProtocolAutomationService();
+
+			bool								CanRunIOCommands() override;
+		};
+
+		/*
+		* Schema of /Controls:
+		* --------------------------------------------------------------------------------
+		* {
+		*   WindowManagement: "MultiWindow" | "Hosted" | "HostedRemoteProtocol";
+		*   MainWindow: WindowDump;
+		* 
+		*   // sub windows are normal window
+		*   // no ordering
+		*   // available for "MultiWindow"
+		*   // otherwise sub windows become child objects of the main window
+		*   SubWindows?: WindowDump[];
+		*
+		*   // popups are usually dropdowns, tooltips or menus
+		*   // no ordering
+		*   // available for "MultiWindow"
+		*   // otherwise popups become child objects of the main window
+		*   Popups?: WindowDump[];
+		* }
+		* 
+		* interface WindowDump
+		* {
+		*   // windowId is used to identify a window
+		*   // for "MultiWindow"
+		*   //   URL `.../IO/<windowId>` is used to send commands to a specific window
+		*   // for other modes
+		*   //   URL `.../IO` is used to send commands to the main window
+		*   //   since sub windows and popups are all child objects of the main window
+		*   //   the main window is responsible for window management, dispatching IO commands to the correct target
+		*   // /IO parses the command synchronously and returns "Syntax Error!" or "Queued"
+		*   //   "Queued" only means the command was accepted, not that it has finished executing
+		*   windowId?: string;
+		* 
+		*   // bounds defines the valid coordinate space for IO commands
+		*   // IO commands use the client area of a native window as the coordinate space
+		*   // such native window is a OS native window
+		*   // for a window that owns a OS native window, the valid coordinate space is the client area
+		*   // for a window that doesn't own a OS native window, the valid coordinate space is the partial rectangle of the main window client area
+		* 
+		*   // (x1,y1) always (0,0) for main window or when "MultiWindow"
+		*   bounds: { x1: number, y1: number, x2: number, y2: number };
+		* 
+		*   // available for main window in "Hosted" and "HostedRemoteProtocol"
+		*   // ordered from bottom to top
+		*   subWindowsInZOrder?: WindowDump[];
+		* 
+		*   title: string;
+		* 
+		*   // begins with GuiWindow::GetBoundsComposition()
+		*   composition: CompositionDump;
+		* }
+		* 
+		* interface CompositionDump
+		* {
+		*   // GuiGraphicsComposition::GetCachedBounds() converted to global bounds then offseted by "offset"
+		*   bounds: { x1: number, y1: number, x2: number, y2: number };
+		* 
+		*   // available when the composition is or inherits from:
+		*   //   GuiTableComposition			: "Table:rows*columns"
+		*   //   GuiCellComposition				: "Cell:(row,column)*(rowSpan,columnSpan)"
+		*   //     available only when its parent composition is GuiTableComposition
+		*   //   GuiRowSplitterComposition		: "RowSplitter:rowsToTheTop"
+		*   //   GuiColumnSplitterComposition	: "ColumnSplitter:columnsToTheLeft"
+		*   //   GuiStackComposition			: "Stack"
+		*   //   GuiStackItemComposition		: "StackItem:index"
+		*   //     available only when its parent composition is GuiStackComposition
+		*   //     index is defined by stack->GetStackItems().IndexOf(stackItem)
+		*   //   GuiFlowComposition: "Flow"
+		*   //   GuiFlowItemComposition			: "FlowItem:index"
+		*   //     available only when its parent composition is GuiFlowComposition
+		*   //     index is defined by flow->GetFlowItems().IndexOf(flowItem)
+		*   layout?: string;
+		* 
+		*   // available when GuiGraphicsComposition::GetOwnedElement is not null and is or inherits from:
+		*   //   GuiSolidBorderElement			: "Border:color,shape
+		*   //   Gui3DBorderElement:			: "3DBorder:color1,color2"
+		*   //   Gui3DSplitterElement:			: "3DSplitter:color1,color2,direction"
+		*   //   GuiSolidBackground				: "Background:color,shape
+		*   //   GuiGradientBackgroundElement	: "Gradient:color1,color2,direction,shape"
+		*   //   GuiInnerShadowElement			: "InnerShadow:color,thickness"
+		*   //   GuiSolidLabelElement			: "Label:color,fontProperties.fontFamily,fontProperties.size(,WrapLine)?(,Ellipse)?(,Multiline)?"
+		*   //   GuiImageFrameElement			: "Image"
+		*   //   GuiPolygonElement				: "Polygon"
+		*   //   GuiDocumentElement				: "Document:Selection(caretBegin.row,caretBegin.column)-(caretEnd.row,caretEnd.column)(,PasswordChar=char)?(,WrapLine)?"
+		*   //
+		*   // Color is in #RRGGBBAA format
+		*   // elementText is only available for GuiSolidLabelElement, storing its text
+		*   // elementDocument is only availaboe for GuiDocumentElement, storing its document in XML representation
+		*   //   The XML representation is done by calling GenerateToStream(XmlPrint(SaveToXml))
+		*   element?: string;
+		*   elementText?: string;
+		*   elementDocument?: string;
+		* 
+		*   // available when GuiGraphicsComposition::GetAssociatedControl is not null
+		*   // storing PrintControlThemeName(GuiControl::GetControlThemeName())
+		*   control?: string;
+		*
+		*   children?: CompositionDump[];
+		* }
+		* --------------------------------------------------------------------------------
+		* 
+		* This function construct the WindowDump part (without subWindowsInZOrder)
+		*/
+		extern Ptr<glr::json::JsonNode>			DumpWindowClientArea(controls::GuiWindow* window, Nullable<WString> windowId, Point offset);
+	}
+}
+
+#endif
+
+
+/***********************************************************************
 .\UTILITIES\SHAREDSERVICES\GUISHAREDCALLBACKSERVICE.H
 ***********************************************************************/
 /***********************************************************************
@@ -28157,6 +28623,7 @@ namespace vl
 {
 	namespace presentation
 	{
+		class AutomationServiceHosted;
 
 /***********************************************************************
 GuiHostedController
@@ -28176,6 +28643,7 @@ GuiHostedController
 		{
 			friend class GuiHostedWindow;
 			friend class elements::GuiHostedGraphicsResourceManager;
+			friend class AutomationServiceHosted;
 		protected:
 			SharedCallbackService										callbackService;
 			hosted_window_manager::WindowManager<GuiHostedWindow*>*		wmManager = nullptr;
@@ -28351,6 +28819,7 @@ GuiHostedController
 			// =============================================================
 
 			INativeWindow*					GetNativeWindowHost() override;
+			INativeController*				GetNativeController() override;
 		public:
 			GuiHostedController(INativeController* _nativeController);
 			~GuiHostedController();
@@ -28371,6 +28840,7 @@ GuiHostedController
 			INativeImageService*			ImageService() override;
 			INativeInputService*			InputService() override;
 			INativeDialogService*			DialogService() override;
+			INativeAutomationService*		AutomationService() override;
 			WString							GetExecutablePath() override;
 			
 			INativeScreenService*			ScreenService() override;
@@ -28516,6 +28986,7 @@ Interfaces:
 namespace vl::presentation
 {
 	class GuiRemoteController;
+	class RemoteProtocolAutomationService;
 
 /***********************************************************************
 GuiRemoteWindow
@@ -28525,6 +28996,7 @@ GuiRemoteWindow
 	{
 		friend class GuiRemoteEvents;
 		friend class GuiRemoteController;
+		friend class RemoteProtocolAutomationService;
 	protected:
 		GuiRemoteController*								remote;
 		GuiRemoteMessages&									remoteMessages;
@@ -28820,6 +29292,7 @@ GuiRemoteController
 		INativeImageService*			ImageService() override;
 		INativeInputService*			InputService() override;
 		INativeDialogService*			DialogService() override;
+		INativeAutomationService*		AutomationService() override;
 		WString							GetExecutablePath() override;
 			
 		INativeScreenService*			ScreenService() override;
@@ -28828,3 +29301,4 @@ GuiRemoteController
 }
 
 #endif
+

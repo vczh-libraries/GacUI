@@ -9,6 +9,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppOS.h"
 #include "Vlpp.h"
 #include "VlppRegex.h"
+#include "VlppOS.Windows.h"
 
 /***********************************************************************
 .\WINNATIVEDPIAWARENESS.H
@@ -24,8 +25,8 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_WINDOWS_WINNATIVEDPIAWARENESS
 #define VCZH_PRESENTATION_WINDOWS_WINNATIVEDPIAWARENESS
 
+#define _WINSOCKAPI_
 #include <Windows.h>
-#include <ShellScalingApi.h>
 
 namespace vl
 {
@@ -45,6 +46,147 @@ DPI Awareness Functions
 		}
 	}
 }
+
+#endif
+
+/***********************************************************************
+.\WINNATIVEWINDOW.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Windows Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_WINDOWS_WINNATIVEWINDOW
+#define VCZH_PRESENTATION_WINDOWS_WINNATIVEWINDOW
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		class AutomationService;
+		class AutomationServiceHosted;
+
+		namespace windows
+		{
+
+/***********************************************************************
+Windows Platform Native Controller
+***********************************************************************/
+
+			class INativeMessageHandler : public Interface
+			{
+			public:
+				virtual void								BeforeHandle(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool& skip) = 0;
+				virtual void								AfterHandle(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool& skip, LRESULT& result) = 0;
+			};
+
+			class IWindowsForm : public Interface
+			{
+			public:
+				virtual HWND								GetWindowHandle() = 0;
+				virtual Interface*							GetGraphicsHandler() = 0;
+				virtual void								SetGraphicsHandler(Interface* handler) = 0;
+				virtual bool								InstallMessageHandler(Ptr<INativeMessageHandler> handler) = 0;
+				virtual bool								UninstallMessageHandler(Ptr<INativeMessageHandler> handler) = 0;
+			};
+
+			extern void										SetWindowDefaultIcon(UINT resourceId);
+			extern void										StartWindowsNativeController(HINSTANCE hInstance);
+			extern INativeController*						GetWindowsNativeController();
+			extern IWindowsForm*							GetWindowsFormFromHandle(HWND hwnd);
+			extern IWindowsForm*							GetWindowsForm(INativeWindow* window);
+			extern void										GetAllCreatedWindows(collections::List<IWindowsForm*>& windows, bool rootWindowOnly);
+			extern void										StopWindowsNativeController();
+			extern void										EnableCrossKernelCrashing();
+
+			template<typename TBase>
+			class WindowsAutomationServiceBase : public TBase
+			{
+			protected:
+
+				WString										RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) override;
+
+			public:
+				template<typename ...TArgs>
+				WindowsAutomationServiceBase(TArgs&& ...args)
+					:TBase(std::forward<TArgs>(args)...)
+				{
+				}
+
+				void										Stop() override;
+				bool										CanRunIOCommands() override;
+			};
+
+			class WindowsAutomationService : public WindowsAutomationServiceBase<AutomationService>
+			{
+			protected:
+				Nullable<WString>							GetNativeWindowId(INativeWindow* window) override;
+				INativeWindow*								GetNativeWindow(Nullable<WString> windowId) override;
+
+			public:
+				WindowsAutomationService();
+				~WindowsAutomationService();
+			};
+
+			class WindowsAutomationServiceHosted : public WindowsAutomationServiceBase<AutomationServiceHosted>
+			{
+			public:
+				WindowsAutomationServiceHosted();
+				~WindowsAutomationServiceHosted();
+			};
+
+			class WindowsAutomationServiceRenderer : public WindowsAutomationServiceBase<AutomationServiceRenderer>
+			{
+			public:
+				WindowsAutomationServiceRenderer(remote_renderer::GuiRemoteRendererSingle* _renderer);
+				~WindowsAutomationServiceRenderer();
+			};
+
+			extern void										StartWindowsHttpAutomationService(const WString& applicationName, vint port);
+			extern void										StopWindowsHttpAutomationService();
+		}
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\DIRECT2D\WINDIRECT2DAPPLICATION.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Direct2D Provider for Windows Implementation
+
+Interfaces:
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
+#define VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
+
+#include <d2d1_1.h>
+#include <dwrite_1.h>
+#include <d3d11_1.h>
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			extern ID2D1Factory*						GetDirect2DFactory();
+			extern IDWriteFactory*						GetDirectWriteFactory();
+			extern ID3D11Device*						GetD3D11Device();
+		}
+	}
+}
+
+extern int WinMainDirect2D(HINSTANCE hInstance, void(*RendererMain)());
 
 #endif
 
@@ -94,8 +236,6 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSDIRECT2D
 #define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSDIRECT2D
 
-#include <d2d1_1.h>
-#include <dwrite_1.h>
 #include <d2d1effects.h>
 #include <wincodec.h>
 
@@ -977,6 +1117,36 @@ Device Context
 #endif
 
 /***********************************************************************
+.\GDI\WINGDIAPPLICATION.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::GDI Provider for Windows Implementation
+
+Interfaces:
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
+#define VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			extern WinDC*									GetNativeWindowDC(INativeWindow* window);
+			extern HDC										GetNativeWindowHDC(INativeWindow* window);
+		}
+	}
+}
+
+extern int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)());
+
+#endif
+
+/***********************************************************************
 .\GDI\RENDERERS\GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI.H
 ***********************************************************************/
 /***********************************************************************
@@ -1796,6 +1966,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSDIALOGSERVICE
 #define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSDIALOGSERVICE
 
+#include <commdlg.h>
 
 namespace vl
 {
@@ -1822,6 +1993,7 @@ namespace vl
 }
 
 #endif
+
 
 /***********************************************************************
 .\SERVICESIMPL\WINDOWSIMAGESERVICE.H
@@ -1919,125 +2091,6 @@ namespace vl
 		}
 	}
 }
-
-#endif
-
-/***********************************************************************
-.\WINNATIVEWINDOW.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_WINNATIVEWINDOW
-#define VCZH_PRESENTATION_WINDOWS_WINNATIVEWINDOW
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-
-/***********************************************************************
-Windows Platform Native Controller
-***********************************************************************/
-
-			class INativeMessageHandler : public Interface
-			{
-			public:
-				virtual void								BeforeHandle(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool& skip) = 0;
-				virtual void								AfterHandle(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool& skip, LRESULT& result) = 0;
-			};
-
-			class IWindowsForm : public Interface
-			{
-			public:
-				virtual HWND								GetWindowHandle() = 0;
-				virtual Interface*							GetGraphicsHandler() = 0;
-				virtual void								SetGraphicsHandler(Interface* handler) = 0;
-				virtual bool								InstallMessageHandler(Ptr<INativeMessageHandler> handler) = 0;
-				virtual bool								UninstallMessageHandler(Ptr<INativeMessageHandler> handler) = 0;
-			};
-
-			extern void										SetWindowDefaultIcon(UINT resourceId);
-			extern void										StartWindowsNativeController(HINSTANCE hInstance);
-			extern INativeController*						GetWindowsNativeController();
-			extern IWindowsForm*							GetWindowsFormFromHandle(HWND hwnd);
-			extern IWindowsForm*							GetWindowsForm(INativeWindow* window);
-			extern void										GetAllCreatedWindows(collections::List<IWindowsForm*>& windows, bool rootWindowOnly);
-			extern void										StopWindowsNativeController();
-			extern void										EnableCrossKernelCrashing();
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\DIRECT2D\WINDIRECT2DAPPLICATION.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Direct2D Provider for Windows Implementation
-
-Interfaces:
-***********************************************************************/
-#ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
-#define VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
-
-#include <d3d11_1.h>
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			extern ID2D1Factory*						GetDirect2DFactory();
-			extern IDWriteFactory*						GetDirectWriteFactory();
-			extern ID3D11Device*						GetD3D11Device();
-		}
-	}
-}
-
-extern int WinMainDirect2D(HINSTANCE hInstance, void(*RendererMain)());
-
-#endif
-
-/***********************************************************************
-.\GDI\WINGDIAPPLICATION.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::GDI Provider for Windows Implementation
-
-Interfaces:
-***********************************************************************/
-#ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
-#define VCZH_PRESENTATION_WINDOWS_GDI_WINGDIAPPLICATION
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			extern WinDC*									GetNativeWindowDC(INativeWindow* window);
-			extern HDC										GetNativeWindowHDC(INativeWindow* window);
-		}
-	}
-}
-
-extern int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)());
 
 #endif
 

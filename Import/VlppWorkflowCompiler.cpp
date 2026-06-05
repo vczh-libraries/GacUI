@@ -6193,13 +6193,12 @@ ExpandNewCoroutineExpression
 
 					if (sourceType->GetDecorator() == ITypeInfo::RawPtr)
 					{
-						auto tdType = Ptr(new TypeDescriptorTypeInfo(sourceType->GetTypeDescriptor(), TypeInfoHint::Normal));
-						auto pointerType = Ptr(new SharedPtrTypeInfo(tdType));
-
 						auto castExpr = Ptr(new WfTypeCastingExpression);
 						castExpr->strategy = WfTypeCastingStrategy::Strong;
 						castExpr->expression = varDecl->expression;
-						castExpr->type = GetTypeFromTypeInfo(pointerType.Obj());
+						auto castType = Ptr(new WfSharedPointerType);
+						castType->element = GetTypeFromTypeDescriptor(sourceType->GetTypeDescriptor());
+						castExpr->type = castType;
 
 						varDecl->expression = castExpr;
 					}
@@ -6256,17 +6255,17 @@ ExpandNewCoroutineExpression
 										castExpr->strategy = WfTypeCastingStrategy::Strong;
 										castExpr->expression = refSource;
 										{
-											auto tdType = Ptr(new TypeDescriptorTypeInfo(sourceType->GetTypeDescriptor(), TypeInfoHint::Normal));
-											auto pointerType = Ptr(new RawPtrTypeInfo(tdType));
-											castExpr->type = GetTypeFromTypeInfo(pointerType.Obj());
+											auto castType = Ptr(new WfRawPointerType);
+											castType->element = GetTypeFromTypeDescriptor(sourceType->GetTypeDescriptor());
+											castExpr->type = castType;
 										}
 
 										auto inferExpr = Ptr(new WfInferExpression);
 										inferExpr->expression = castExpr;
 										{
-											auto tdType = Ptr(new TypeDescriptorTypeInfo(method->GetOwnerTypeDescriptor(), TypeInfoHint::Normal));
-											auto pointerType = Ptr(new RawPtrTypeInfo(tdType));
-											inferExpr->type = GetTypeFromTypeInfo(pointerType.Obj());
+											auto inferType = Ptr(new WfRawPointerType);
+											inferType->element = GetTypeFromTypeDescriptor(method->GetOwnerTypeDescriptor());
+											inferExpr->type = inferType;
 										}
 
 										memberExpr->parent = inferExpr;
@@ -6316,6 +6315,7 @@ ExpandNewCoroutineExpression
 		}
 	}
 }
+
 
 /***********************************************************************
 .\ANALYZER\WFANALYZER_EXPANDNEWCOROUTINEEXPRESSION.CPP
@@ -10019,14 +10019,90 @@ namespace vl
 					return type;
 				}
 
-				Ptr<WfType> CreateMapType(Ptr<WfType> keyType, Ptr<WfType> valueType)
+				Nullable<WfPredefinedTypeName> GetPredefinedTypeFromSystemName(const WString& name)
 				{
-					auto type = Ptr(new WfMapType);
-					type->writability = WfMapWritability::Writable;
-					type->key = keyType;
-					type->value = valueType;
+					if (name == L"Boolean") return WfPredefinedTypeName::Bool;
+					if (name == (sizeof(vint) == sizeof(vint64_t) ? L"Int64" : L"Int32")) return WfPredefinedTypeName::Int;
+					if (name == L"String") return WfPredefinedTypeName::String;
+					if (name == L"Object") return WfPredefinedTypeName::Object;
+					if (name == L"Void") return WfPredefinedTypeName::Void;
+					return {};
+				}
+
+				Ptr<WfType> NormalizeRpcGeneratedType(Ptr<WfType> type)
+				{
+					if (!type)
+					{
+						return nullptr;
+					}
+
+					if (auto child = type.Cast<WfChildType>())
+					{
+						child->parent = NormalizeRpcGeneratedType(child->parent);
+						if (auto reference = child->parent.Cast<WfReferenceType>())
+						{
+							if (reference->name.value == L"system")
+							{
+								if (auto predefined = GetPredefinedTypeFromSystemName(child->name.value))
+								{
+									return CreatePredefinedType(predefined.Value());
+								}
+							}
+						}
+					}
+					else if (auto top = type.Cast<WfTopQualifiedType>())
+					{
+						auto reference = Ptr(new WfReferenceType);
+						reference->name = top->name;
+						return reference;
+					}
+					else if (auto raw = type.Cast<WfRawPointerType>())
+					{
+						raw->element = NormalizeRpcGeneratedType(raw->element);
+					}
+					else if (auto shared = type.Cast<WfSharedPointerType>())
+					{
+						shared->element = NormalizeRpcGeneratedType(shared->element);
+					}
+					else if (auto nullable = type.Cast<WfNullableType>())
+					{
+						nullable->element = NormalizeRpcGeneratedType(nullable->element);
+					}
+					else if (auto enumerable = type.Cast<WfEnumerableType>())
+					{
+						enumerable->element = NormalizeRpcGeneratedType(enumerable->element);
+					}
+					else if (auto map = type.Cast<WfMapType>())
+					{
+						if (map->key)
+						{
+							map->key = NormalizeRpcGeneratedType(map->key);
+						}
+						map->value = NormalizeRpcGeneratedType(map->value);
+					}
+					else if (auto observable = type.Cast<WfObservableListType>())
+					{
+						observable->element = NormalizeRpcGeneratedType(observable->element);
+					}
+					else if (auto function = type.Cast<WfFunctionType>())
+					{
+						function->result = NormalizeRpcGeneratedType(function->result);
+						for (vint i = 0; i < function->arguments.Count(); i++)
+						{
+							function->arguments[i] = NormalizeRpcGeneratedType(function->arguments[i]);
+						}
+					}
 					return type;
 				}
+
+#ifndef VCZH_WORKFLOW_RPC_GENERATING_CREATE_TYPE_FROM_CPP
+#define VCZH_WORKFLOW_RPC_GENERATING_CREATE_TYPE_FROM_CPP
+				template<typename T>
+				Ptr<WfType> CreateTypeFromCpp()
+				{
+					return NormalizeRpcGeneratedType(GetTypeFromTypeInfo(TypeInfoRetriver<T>::CreateTypeInfo().Obj()));
+				}
+#endif
 
 				Ptr<WfExpression> CreateNull()
 				{
@@ -10182,12 +10258,12 @@ namespace vl
 				{
 					auto constructor = CreateConstructor();
 					constructor->arguments.Add(CreateConstructorArgument(CreateReference(L"message"), message));
-					return CreateInfer(constructor, CreateQualifiedType(L"system::RpcException"));
+					return CreateInfer(constructor, CreateTypeFromCpp<rpc_controller::RpcException>());
 				}
 
 				Ptr<WfType> CreateRpcEventExceptionMapType()
 				{
-					return CreateMapType(CreatePredefinedType(WfPredefinedTypeName::Int), CreateQualifiedType(L"system::RpcException"));
+					return CreateTypeFromCpp<Dictionary<vint, rpc_controller::RpcException>>();
 				}
 
 				Ptr<WfExpression> CreateNewClass(Ptr<WfType> type)
@@ -10412,7 +10488,7 @@ namespace vl
 					if (IsSharedInterfaceType(typeInfo))
 					{
 						auto serializable = byref
-							? CreateCast(CreateQualifiedType(L"system::RpcObjectReference"), value)
+							? CreateCast(CreateTypeFromCpp<rpc_controller::RpcObjectReference>(), value)
 							: value;
 						unboxed = CreateLifecycleHelperCall(byref ? L"RpcUnboxByref" : L"RpcUnboxByval", serializable, lifecycle);
 						return IsRpcStrongTypedCollection(typeInfo) || IsStrongTypedCollectionType(type.Obj())
@@ -10459,7 +10535,7 @@ namespace vl
 
 				void AddRpcByvalReturnValue(Ptr<WfBlockStatement> block, Ptr<WfExpression> value, Ptr<WfExpression> copiedValue)
 				{
-					AddStatement(block, CreateInferredVariableStatement(L"byvalReturnValue", CreateNewClass(CreateSharedType(L"system::RpcByvalReturnValue"))));
+					AddStatement(block, CreateInferredVariableStatement(L"byvalReturnValue", CreateNewClass(CreateTypeFromCpp<Ptr<rpc_controller::RpcByvalReturnValue>>())));
 					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(L"byvalReturnValue"), L"value"), value)));
 					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(L"byvalReturnValue"), L"slot"), CreateReference(L"_slot"))));
 					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_byvalReturnValues"), L"Set"), CreateReference(L"_slot"), copiedValue)));
@@ -11041,18 +11117,18 @@ namespace vl
 
 				Ptr<WfDeclaration> GenerateObjectOpsFactory(const List<RpcInterfaceModel>& interfaces)
 				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectOps", CreateSharedType(L"system::IRpcObjectOps"), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
-					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectOps")).Cast<WfNewInterfaceExpression>();
-					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectOps", CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectOps>>(), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					auto newOps = CreateNewInterface(CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectOps>>()).Cast<WfNewInterfaceExpression>();
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
 					newOps->declarations.Add(CreateVariableDeclaration(L"_slot", CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(0)));
-					newOps->declarations.Add(CreateVariableDeclaration(L"_byvalReturnValues", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::Int), CreatePredefinedType(WfPredefinedTypeName::Object)), CreateConstructor()));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_byvalReturnValues", CreateTypeFromCpp<Dictionary<vint, Value>>(), CreateConstructor()));
 
 					{
 						auto invokeMethod = CreateFunctionDeclaration(L"InvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
-						invokeMethod->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
+						invokeMethod->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
 						invokeMethod->arguments.Add(CreateFunctionArgument(L"methodId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						invokeMethod->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
+						invokeMethod->arguments.Add(CreateFunctionArgument(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>()));
 						auto block = invokeMethod->statement.Cast<WfBlockStatement>();
 						AddStatement(block, CreateVariableStatement(L"unknownId", CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
 						auto catchBlock = CreateBlock();
@@ -11074,7 +11150,7 @@ namespace vl
 
 					{
 						auto objectHold = CreateFunctionDeclaration(L"ObjectHold", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						objectHold->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
+						objectHold->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
 						objectHold->arguments.Add(CreateFunctionArgument(L"remoteClientId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 						objectHold->arguments.Add(CreateFunctionArgument(L"hold", CreatePredefinedType(WfPredefinedTypeName::Bool)));
 						auto trueBranch = CreateBlock();
@@ -11088,7 +11164,7 @@ namespace vl
 					{
 						auto registerService = CreateFunctionDeclaration(L"RegisterService", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
 						registerService->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						registerService->arguments.Add(CreateFunctionArgument(L"service", CreateSharedType(L"system::Interface")));
+						registerService->arguments.Add(CreateFunctionArgument(L"service", CreateTypeFromCpp<Ptr<reflection::IDescriptable>>()));
 						auto block = registerService->statement.Cast<WfBlockStatement>();
 						AddStatement(block, BuildRegisterService());
 						newOps->declarations.Add(registerService);
@@ -11100,16 +11176,16 @@ namespace vl
 
 				Ptr<WfDeclaration> GenerateObjectEventOpsFactory(const List<RpcInterfaceModel>& interfaces)
 				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectEventOps", CreateSharedType(L"system::IRpcObjectEventOps"), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
-					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectEventOps")).Cast<WfNewInterfaceExpression>();
-					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectEventOps", CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectEventOps>>(), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					auto newOps = CreateNewInterface(CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectEventOps>>()).Cast<WfNewInterfaceExpression>();
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
 
 					{
 						auto invokeEvent = CreateFunctionDeclaration(L"InvokeEvent", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
-						invokeEvent->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
+						invokeEvent->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
 						invokeEvent->arguments.Add(CreateFunctionArgument(L"eventId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						invokeEvent->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
+						invokeEvent->arguments.Add(CreateFunctionArgument(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>()));
 						auto block = invokeEvent->statement.Cast<WfBlockStatement>();
 						if (!HasRpcEvents(interfaces))
 						{
@@ -11325,7 +11401,7 @@ namespace vl
 					}
 
 					{
-						auto baseType = CreateQualifiedType(L"system::IRpcWrapperBase");
+						auto baseType = CreateTypeFromCpp<rpc_controller::IRpcWrapperBase>();
 						interfaceDecl->baseTypes.Add(baseType);
 					}
 
@@ -11359,8 +11435,8 @@ namespace vl
 
 					auto mangledName = MangleRpcFullName(interfaceModel.fullName);
 					auto functionDecl = CreateFunctionDeclaration(L"rpclistener_" + mangledName, CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"target", CreateRawType(interfaceModel.fullName)));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
@@ -11402,9 +11478,9 @@ namespace vl
 				{
 					auto functionDecl = CreateFunctionDeclaration(L"rpclistener_Attach", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"obj", CreateRawType(L"system::Interface")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"obj", CreateTypeFromCpp<reflection::IDescriptable*>()));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
@@ -11467,7 +11543,7 @@ namespace vl
 
 				void AddRpcOpsFunctionArguments(Ptr<WfFunctionDeclaration> functionDecl, const List<RpcParamModel>& params)
 				{
-					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
 					for (auto&& paramModel : params)
 					{
 						functionDecl->arguments.Add(CreateFunctionArgument(GetRpcOpsArgumentName(paramModel), CopyType(paramModel.type.Obj())));
@@ -11478,7 +11554,7 @@ namespace vl
 					Ptr<WfBlockStatement> block,
 					const List<RpcParamModel>& params)
 				{
-					AddStatement(block, CreateVariableStatement(L"arguments", CreateSharedType(L"system::Array"), CreateConstructor()));
+					AddStatement(block, CreateVariableStatement(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>(), CreateConstructor()));
 					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Resize"), CreateInt(params.Count()))));
 
 					for (vint i = 0; i < params.Count(); i++)
@@ -11550,7 +11626,7 @@ namespace vl
 						AddRpcMethodExceptionRaise(block, CreateReference(L"invokeResult"));
 						AddStatement(block, CreateInferredVariableStatement(
 							L"byvalReturnValue",
-							CreateCast(CreateSharedType(L"system::RpcByvalReturnValue"), CreateReference(L"invokeResult"))));
+							CreateCast(CreateTypeFromCpp<Ptr<rpc_controller::RpcByvalReturnValue>>(), CreateReference(L"invokeResult"))));
 						AddStatement(block, CreateInferredVariableStatement(
 							L"result",
 							CreateRpcUnboxExpression(
@@ -11615,9 +11691,9 @@ namespace vl
 				Ptr<WfDeclaration> GenerateRpcOpsFactory(const WString& assemblyName, const List<RpcInterfaceModel>& interfaces)
 				{
 					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IOps_Create", CreateSharedType(GetRpcOpsInterfaceName(assemblyName)), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
 					auto newOps = CreateNewInterface(CreateSharedType(GetRpcOpsInterfaceName(assemblyName))).Cast<WfNewInterfaceExpression>();
-					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
 
 					for (auto&& interfaceModel : interfaces)
 					{
@@ -11647,14 +11723,14 @@ namespace vl
 					CollectInterfaceEvents(interfaceModel, interfaces, events);
 
 					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_" + mangledName, CreateSharedType(wrapperInterfaceFullName), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"proxyRef", CreateQualifiedType(L"system::RpcObjectReference")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"proxyRef", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
 					auto proxyExpr = CreateNewInterface(CreateSharedType(wrapperInterfaceFullName)).Cast<WfNewInterfaceExpression>();
-					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
-					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_ref", CreateQualifiedType(L"system::RpcObjectReference"), CreateReference(L"proxyRef")));
+					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
+					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>(), CreateReference(L"proxyRef")));
 					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_ops", CreateSharedType(opsInterfaceName), CreateReference(L"ops")));
 					for (auto propertyModel : properties)
 					{
@@ -11828,11 +11904,9 @@ namespace vl
 
 				Ptr<WfDeclaration> GenerateWrapperDispatcher(const List<RpcInterfaceModel>& interfaces, const WString& opsInterfaceName)
 				{
-					auto returnType = Ptr(new WfSharedPointerType);
-					returnType->element = CreateQualifiedType(L"system::IRpcWrapperBase");
-					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_Create", returnType, WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
+					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_Create", CreateTypeFromCpp<Ptr<rpc_controller::IRpcWrapperBase>>(), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
@@ -11889,9 +11963,9 @@ namespace vl
 				}
 
 				{
-					auto getIds = CreateFunctionDeclaration(L"rpc_GetIds", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::String), CreatePredefinedType(WfPredefinedTypeName::Int)), WfFunctionKind::Normal);
+					auto getIds = CreateFunctionDeclaration(L"rpc_GetIds", CreateTypeFromCpp<Dictionary<WString, vint>>(), WfFunctionKind::Normal);
 					auto block = getIds->statement.Cast<WfBlockStatement>();
-					AddStatement(block, CreateVariableStatement(L"result", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::String), CreatePredefinedType(WfPredefinedTypeName::Int)), CreateConstructor()));
+					AddStatement(block, CreateVariableStatement(L"result", CreateTypeFromCpp<Dictionary<WString, vint>>(), CreateConstructor()));
 					id = 0;
 					for (auto fullName : manager->rpcMetadata->orderedIds)
 					{
@@ -12603,7 +12677,6 @@ namespace vl
 				Ptr<WfType> CreateRawType(const WString& fullName);
 				Ptr<WfType> CreateSharedType(const WString& fullName);
 				Ptr<WfType> CreateNullableType(const WString& fullName);
-				Ptr<WfType> CreateMapType(Ptr<WfType> keyType, Ptr<WfType> valueType);
 				Ptr<WfExpression> CreateNull();
 				Ptr<WfExpression> CreateIsNull(Ptr<WfExpression> expression);
 				Ptr<WfExpression> CreateIsNotNull(Ptr<WfExpression> expression);
@@ -12665,6 +12738,16 @@ namespace vl
 				Ptr<WfExpression> CreateRpcOpsObjectInvoke(const RpcMethodModel& methodModel, Ptr<WfExpression> objectOps);
 				Ptr<WfExpression> CreateRpcOpsObjectInvoke(const RpcMethodModel& methodModel);
 				Ptr<WfExpression> CreateRpcOpsObjectEventInvoke(const RpcEventModel& eventModel);
+				Ptr<WfType> NormalizeRpcGeneratedType(Ptr<WfType> type);
+
+#ifndef VCZH_WORKFLOW_RPC_GENERATING_CREATE_TYPE_FROM_CPP
+#define VCZH_WORKFLOW_RPC_GENERATING_CREATE_TYPE_FROM_CPP
+				template<typename T>
+				Ptr<WfType> CreateTypeFromCpp()
+				{
+					return NormalizeRpcGeneratedType(GetTypeFromTypeInfo(TypeInfoRetriver<T>::CreateTypeInfo().Obj()));
+				}
+#endif
 
 				enum class RpcJsonPrimitiveKind
 				{
@@ -12815,22 +12898,6 @@ namespace vl
 					return statement;
 				}
 
-				Ptr<WfType> CreateRpcJsonSerializeCallbackType()
-				{
-					auto type = Ptr(new WfFunctionType);
-					type->result = CreateSharedType(L"system::JsonNode");
-					type->arguments.Add(CreatePredefinedType(WfPredefinedTypeName::Object));
-					return type;
-				}
-
-				Ptr<WfType> CreateRpcJsonDeserializeCallbackType()
-				{
-					auto type = Ptr(new WfFunctionType);
-					type->result = CreatePredefinedType(WfPredefinedTypeName::Object);
-					type->arguments.Add(CreateSharedType(L"system::JsonNode"));
-					return type;
-				}
-
 				WString GetRpcJsonSerializeEnumFunctionName(const WString& fullName)
 				{
 					return L"rpcjson_Serialize_Enum_" + MangleRpcFullName(fullName);
@@ -12961,7 +13028,7 @@ namespace vl
 				WString AddRpcJsonLiteral(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, const WString& literal)
 				{
 					auto nodeName = AllocateRpcJsonTemp(context, L"jsonLiteral");
-					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateSharedType(L"system::JsonLiteral"))));
+					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonLiteral>>())));
 					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"value"), CreateQualifiedExpression(L"system::JsonLiteralValue::" + literal))));
 					return nodeName;
 				}
@@ -12969,7 +13036,7 @@ namespace vl
 				WString AddRpcJsonBooleanLiteral(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> value)
 				{
 					auto nodeName = AllocateRpcJsonTemp(context, L"jsonLiteral");
-					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateSharedType(L"system::JsonLiteral"))));
+					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonLiteral>>())));
 					AddStatement(block, CreateIf(
 						value,
 						CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"value"), CreateQualifiedExpression(L"system::JsonLiteralValue::True"))),
@@ -12980,7 +13047,7 @@ namespace vl
 				WString AddRpcJsonString(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> value)
 				{
 					auto nodeName = AllocateRpcJsonTemp(context, L"jsonString");
-					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateSharedType(L"system::JsonString"))));
+					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonString>>())));
 					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"content"), CreateRpcJsonToken(value))));
 					return nodeName;
 				}
@@ -12988,7 +13055,7 @@ namespace vl
 				WString AddRpcJsonNumber(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> value)
 				{
 					auto nodeName = AllocateRpcJsonTemp(context, L"jsonNumber");
-					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateSharedType(L"system::JsonNumber"))));
+					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonNumber>>())));
 					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"content"), CreateRpcJsonToken(value))));
 					return nodeName;
 				}
@@ -13001,7 +13068,7 @@ namespace vl
 				void AddRpcJsonObjectField(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> object, const WString& fieldName, Ptr<WfExpression> value)
 				{
 					auto fieldVar = AllocateRpcJsonTemp(context, L"jsonField");
-					AddStatement(block, CreateInferredVariableStatement(fieldVar, CreateNewClass(CreateSharedType(L"system::JsonObjectField"))));
+					AddStatement(block, CreateInferredVariableStatement(fieldVar, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonObjectField>>())));
 					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(fieldVar), L"name"), CreateRpcJsonToken(CreateString(fieldName)))));
 					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(fieldVar), L"value"), value)));
 					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(object, L"fields"), L"Add"), CreateReference(fieldVar))));
@@ -13011,7 +13078,7 @@ namespace vl
 				{
 					auto resultVar = AllocateRpcJsonTemp(context, L"jsonFieldValue");
 					auto fieldVar = AllocateRpcJsonTemp(context, L"jsonField");
-					AddStatement(block, CreateVariableStatement(resultVar, CreateSharedType(L"system::JsonNode"), CreateNull()));
+					AddStatement(block, CreateVariableStatement(resultVar, CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateNull()));
 					auto forBlock = CreateBlock();
 					AddStatement(forBlock, CreateIf(
 						CreateBinary(WfBinaryOperator::EQ, CreateMember(CreateMember(CreateReference(fieldVar), L"name"), L"value"), CreateString(fieldName)),
@@ -13072,7 +13139,7 @@ namespace vl
 					if (auto nullable = dynamic_cast<WfNullableType*>(type))
 					{
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
-						AddStatement(block, CreateVariableStatement(resultName, CreateSharedType(L"system::JsonNode"), CreateNull()));
+						AddStatement(block, CreateVariableStatement(resultName, CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateNull()));
 						auto nullBranch = CreateBlock();
 						auto nullNode = AddRpcJsonLiteral(nullBranch, context, L"Null");
 						AddStatement(nullBranch, CreateExpressionStatement(CreateAssign(CreateReference(resultName), CreateReference(nullNode))));
@@ -13128,7 +13195,7 @@ namespace vl
 					if (auto enumerable = dynamic_cast<WfEnumerableType*>(type))
 					{
 						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
-						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
 						auto forBlock = CreateBlock();
 						auto itemNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateReference(L"item"), enumerable->element.Obj());
 						AddRpcJsonArrayItem(forBlock, arrayName, CreateReference(itemNode));
@@ -13139,12 +13206,12 @@ namespace vl
 					if (auto map = dynamic_cast<WfMapType*>(type))
 					{
 						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
-						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
 						auto forBlock = CreateBlock();
 						if (map->key)
 						{
 							auto pairName = AllocateRpcJsonTemp(context, L"jsonArray");
-							AddStatement(forBlock, CreateInferredVariableStatement(pairName, CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+							AddStatement(forBlock, CreateInferredVariableStatement(pairName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
 							auto keyNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateReference(L"key"), map->key.Obj());
 							AddRpcJsonArrayItem(forBlock, pairName, CreateReference(keyNode));
 							auto valueNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateIndex(value, CreateReference(L"key")), map->value.Obj());
@@ -13164,7 +13231,7 @@ namespace vl
 					if (auto observable = dynamic_cast<WfObservableListType*>(type))
 					{
 						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
-						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
 						auto forBlock = CreateBlock();
 						auto itemNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateReference(L"item"), observable->element.Obj());
 						AddRpcJsonArrayItem(forBlock, arrayName, CreateReference(itemNode));
@@ -13182,7 +13249,7 @@ namespace vl
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
 						auto literalName = AllocateRpcJsonTemp(context, L"jsonLiteral");
 						AddStatement(block, CreateVariableStatement(resultName, CopyType(type), CreateNull()));
-						AddStatement(block, CreateInferredVariableStatement(literalName, CreateWeakCast(CreateSharedType(L"system::JsonLiteral"), CopyExpression(node, true))));
+						AddStatement(block, CreateInferredVariableStatement(literalName, CreateWeakCast(CreateTypeFromCpp<Ptr<glr::json::JsonLiteral>>(), CopyExpression(node, true))));
 						auto assignBranch = CreateBlock();
 						auto valueName = AddKnownRpcJsonDeserializeValue(context, assignBranch, node, nullable->element.Obj());
 						AddStatement(assignBranch, CreateExpressionStatement(CreateAssign(CreateReference(resultName), CreateReference(valueName))));
@@ -13241,7 +13308,7 @@ namespace vl
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
 						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
 						AddStatement(block, CreateVariableStatement(resultName, CreateWritableRpcJsonCollectionType(type), CreateConstructor()));
-						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateCast(CreateSharedType(L"system::JsonArray"), node)));
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), node)));
 						auto forBlock = CreateBlock();
 						auto itemValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateReference(L"item"), enumerable->element.Obj());
 						AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(resultName), L"Add"), CreateReference(itemValue))));
@@ -13254,12 +13321,12 @@ namespace vl
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
 						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
 						AddStatement(block, CreateVariableStatement(resultName, CreateWritableRpcJsonCollectionType(type), CreateConstructor()));
-						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateCast(CreateSharedType(L"system::JsonArray"), node)));
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), node)));
 						auto forBlock = CreateBlock();
 						if (map->key)
 						{
 							auto pairName = AllocateRpcJsonTemp(context, L"jsonArray");
-							AddStatement(forBlock, CreateInferredVariableStatement(pairName, CreateCast(CreateSharedType(L"system::JsonArray"), CreateReference(L"item"))));
+							AddStatement(forBlock, CreateInferredVariableStatement(pairName, CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), CreateReference(L"item"))));
 							auto keyValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateJsonArrayItem(pairName, 0), map->key.Obj());
 							auto itemValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateJsonArrayItem(pairName, 1), map->value.Obj());
 							AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(resultName), L"Set"), CreateReference(keyValue), CreateReference(itemValue))));
@@ -13278,7 +13345,7 @@ namespace vl
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
 						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
 						AddStatement(block, CreateVariableStatement(resultName, CreateWritableRpcJsonCollectionType(type), CreateConstructor()));
-						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateCast(CreateSharedType(L"system::JsonArray"), node)));
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), node)));
 						auto forBlock = CreateBlock();
 						auto itemValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateReference(L"item"), observable->element.Obj());
 						AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(resultName), L"Add"), CreateReference(itemValue))));
@@ -13295,7 +13362,7 @@ namespace vl
 				{
 					auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
 					auto keywordNode = AddRpcJsonString(block, context, CreateString(keyword));
-					AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+					AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
 					AddRpcJsonArrayItem(block, arrayName, CreateReference(keywordNode));
 					AddRpcJsonArrayItem(block, arrayName, valueNode);
 					AddStatement(block, CreateReturn(CreateReference(arrayName)));
@@ -13303,12 +13370,12 @@ namespace vl
 
 				Ptr<WfDeclaration> GenerateRpcJsonSerializeEnum(RpcJsonGenerationContext& context, const RpcJsonTypeModel& enumModel)
 				{
-					auto functionDecl = CreateFunctionDeclaration(GetRpcJsonSerializeEnumFunctionName(enumModel.fullName), CreateSharedType(L"system::JsonNode"), WfFunctionKind::Normal);
+					auto functionDecl = CreateFunctionDeclaration(GetRpcJsonSerializeEnumFunctionName(enumModel.fullName), CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"value", CopyType(enumModel.type.Obj())));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 					auto nodeName = AddRpcJsonNumber(block, context, CreateCast(
 						CreatePredefinedType(WfPredefinedTypeName::String),
-						CreateCast(CreateQualifiedType(L"system::UInt64"), CreateReference(L"value"))));
+						CreateCast(CreateTypeFromCpp<vuint64_t>(), CreateReference(L"value"))));
 					AddStatement(block, CreateReturn(CreateReference(nodeName)));
 					return functionDecl;
 				}
@@ -13316,11 +13383,11 @@ namespace vl
 				Ptr<WfDeclaration> GenerateRpcJsonDeserializeEnum(RpcJsonGenerationContext& context, const RpcJsonTypeModel& enumModel)
 				{
 					auto functionDecl = CreateFunctionDeclaration(GetRpcJsonDeserializeEnumFunctionName(enumModel.fullName), CopyType(enumModel.type.Obj()), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"node", CreateSharedType(L"system::JsonNode")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"node", CreateTypeFromCpp<Ptr<glr::json::JsonNode>>()));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 					AddStatement(block, CreateReturn(CreateCast(
 						CopyType(enumModel.type.Obj()),
-						CreateCast(CreateQualifiedType(L"system::UInt64"), CreateMember(CreateMember(CreateCast(CreateSharedType(L"system::JsonNumber"), CreateReference(L"node")), L"content"), L"value")))));
+						CreateCast(CreateTypeFromCpp<vuint64_t>(), CreateMember(CreateMember(CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNumber>>(), CreateReference(L"node")), L"content"), L"value")))));
 					return functionDecl;
 				}
 
@@ -13335,10 +13402,10 @@ namespace vl
 
 				Ptr<WfDeclaration> GenerateRpcJsonSerializeStruct(RpcJsonGenerationContext& context, const RpcJsonTypeModel& structModel)
 				{
-					auto functionDecl = CreateFunctionDeclaration(GetRpcJsonSerializeStructFunctionName(structModel.fullName), CreateSharedType(L"system::JsonNode"), WfFunctionKind::Normal);
+					auto functionDecl = CreateFunctionDeclaration(GetRpcJsonSerializeStructFunctionName(structModel.fullName), CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"value", CopyType(structModel.type.Obj())));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-					AddStatement(block, CreateInferredVariableStatement(L"object", CreateNewClass(CreateSharedType(L"system::JsonObject"))));
+					AddStatement(block, CreateInferredVariableStatement(L"object", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>())));
 					AddRpcJsonStructFields(context, block, structModel, L"object", L"value");
 					AddStatement(block, CreateReturn(CreateReference(L"object")));
 					return functionDecl;
@@ -13347,9 +13414,9 @@ namespace vl
 				Ptr<WfDeclaration> GenerateRpcJsonDeserializeStruct(RpcJsonGenerationContext& context, const RpcJsonTypeModel& structModel)
 				{
 					auto functionDecl = CreateFunctionDeclaration(GetRpcJsonDeserializeStructFunctionName(structModel.fullName), CopyType(structModel.type.Obj()), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"node", CreateSharedType(L"system::JsonNode")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"node", CreateTypeFromCpp<Ptr<glr::json::JsonNode>>()));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-					AddStatement(block, CreateInferredVariableStatement(L"object", CreateCast(CreateSharedType(L"system::JsonObject"), CreateReference(L"node"))));
+					AddStatement(block, CreateInferredVariableStatement(L"object", CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>(), CreateReference(L"node"))));
 					auto constructor = CreateConstructor();
 					for (auto&& field : *structModel.fields.Obj())
 					{
@@ -13365,10 +13432,10 @@ namespace vl
 				{
 					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(CreateSharedType(typeFullName), CreateReference(L"value"))));
 					auto trueBranch = CreateBlock();
-					AddStatement(trueBranch, CreateInferredVariableStatement(L"object", CreateNewClass(CreateSharedType(L"system::JsonObject"))));
+					AddStatement(trueBranch, CreateInferredVariableStatement(L"object", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>())));
 					auto keywordNode = AddRpcJsonString(trueBranch, context, CreateString(keyword));
 					AddRpcJsonObjectField(trueBranch, context, CreateReference(L"object"), L"$", CreateReference(keywordNode));
-					AddStatement(trueBranch, CreateInferredVariableStatement(L"values", CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+					AddStatement(trueBranch, CreateInferredVariableStatement(L"values", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
 					auto forBlock = CreateBlock();
 					AddRpcJsonArrayItem(forBlock, L"values", CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"item")));
 					AddStatement(trueBranch, CreateForEach(L"item", CreateReference(varName), forBlock));
@@ -13381,10 +13448,10 @@ namespace vl
 				{
 					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(CreateSharedType(typeFullName), CreateReference(L"value"))));
 					auto trueBranch = CreateBlock();
-					AddStatement(trueBranch, CreateInferredVariableStatement(L"object", CreateNewClass(CreateSharedType(L"system::JsonObject"))));
+					AddStatement(trueBranch, CreateInferredVariableStatement(L"object", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>())));
 					auto keywordNode = AddRpcJsonString(trueBranch, context, CreateString(L"map"));
 					AddRpcJsonObjectField(trueBranch, context, CreateReference(L"object"), L"$", CreateReference(keywordNode));
-					AddStatement(trueBranch, CreateInferredVariableStatement(L"values", CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+					AddStatement(trueBranch, CreateInferredVariableStatement(L"values", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
 					auto forBlock = CreateBlock();
 					AddRpcJsonArrayItem(forBlock, L"values", CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"key")));
 					AddRpcJsonArrayItem(forBlock, L"values", CreateCall(CreateReference(L"rpcjson_Serialize"), CreateCall(CreateMember(CreateReference(varName), L"Get"), CreateReference(L"key"))));
@@ -13442,7 +13509,7 @@ namespace vl
 					nullableType->element = CopyType(structModel.type.Obj());
 					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(nullableType, CreateReference(L"value"))));
 					auto trueBranch = CreateBlock();
-					AddStatement(trueBranch, CreateInferredVariableStatement(L"object", CreateNewClass(CreateSharedType(L"system::JsonObject"))));
+					AddStatement(trueBranch, CreateInferredVariableStatement(L"object", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>())));
 					auto keywordNode = AddRpcJsonString(trueBranch, context, CreateString(structModel.fullName));
 					AddRpcJsonObjectField(trueBranch, context, CreateReference(L"object"), L"$", CreateReference(keywordNode));
 					auto varValueName = AllocateRpcJsonTemp(context, L"value");
@@ -13454,7 +13521,7 @@ namespace vl
 
 				Ptr<WfDeclaration> GenerateRpcJsonSerialize(RpcJsonGenerationContext& context)
 				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_Serialize", CreateSharedType(L"system::JsonNode"), WfFunctionKind::Normal);
+					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_Serialize", CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"value", CreatePredefinedType(WfPredefinedTypeName::Object)));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 					for (auto&& enumModel : *context.enums)
@@ -13507,7 +13574,7 @@ namespace vl
 					auto block = CreateBlock();
 					AddStatement(block, CreateVariableStatement(L"result", CreateSharedType(variableType), CreateConstructor()));
 					auto valuesNode = AddRpcJsonObjectFieldLookup(block, context, CreateReference(L"object"), L"values");
-					AddStatement(block, CreateInferredVariableStatement(L"values", CreateCast(CreateSharedType(L"system::JsonArray"), CreateReference(valuesNode))));
+					AddStatement(block, CreateInferredVariableStatement(L"values", CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), CreateReference(valuesNode))));
 					auto forBlock = CreateBlock();
 					AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Add"), CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"item")))));
 					AddStatement(block, CreateForEach(L"item", CreateMember(CreateReference(L"values"), L"items"), forBlock));
@@ -13518,9 +13585,9 @@ namespace vl
 				Ptr<WfStatement> CreateUnknownDeserializeMapCase(RpcJsonGenerationContext& context)
 				{
 					auto block = CreateBlock();
-					AddStatement(block, CreateVariableStatement(L"result", CreateSharedType(L"system::Dictionary"), CreateConstructor()));
+					AddStatement(block, CreateVariableStatement(L"result", CreateTypeFromCpp<Ptr<IValueDictionary>>(), CreateConstructor()));
 					auto valuesNode = AddRpcJsonObjectFieldLookup(block, context, CreateReference(L"object"), L"values");
-					AddStatement(block, CreateInferredVariableStatement(L"values", CreateCast(CreateSharedType(L"system::JsonArray"), CreateReference(valuesNode))));
+					AddStatement(block, CreateInferredVariableStatement(L"values", CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), CreateReference(valuesNode))));
 					AddStatement(block, CreateInferredVariableStatement(L"index", CreateInt(0)));
 					auto whileBlock = CreateBlock();
 					AddStatement(whileBlock, CreateExpressionStatement(CreateCall(
@@ -13536,12 +13603,12 @@ namespace vl
 				Ptr<WfDeclaration> GenerateRpcJsonDeserialize(RpcJsonGenerationContext& context)
 				{
 					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_Deserialize", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"node", CreateSharedType(L"system::JsonNode")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"node", CreateTypeFromCpp<Ptr<glr::json::JsonNode>>()));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
 					if (context.enums->Count() > 0)
 					{
-						AddStatement(block, CreateInferredVariableStatement(L"array", CreateWeakCast(CreateSharedType(L"system::JsonArray"), CreateReference(L"node"))));
+						AddStatement(block, CreateInferredVariableStatement(L"array", CreateWeakCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), CreateReference(L"node"))));
 						auto arrayBranch = CreateBlock();
 						AddStatement(arrayBranch, CreateInferredVariableStatement(L"keyword", CreateJsonArrayItemContent(L"array", 0, L"system::JsonString")));
 						auto arraySwitch = Ptr(new WfSwitchStatement);
@@ -13554,12 +13621,12 @@ namespace vl
 						AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(L"array")), arrayBranch));
 					}
 
-					AddStatement(block, CreateInferredVariableStatement(L"object", CreateWeakCast(CreateSharedType(L"system::JsonObject"), CreateReference(L"node"))));
+					AddStatement(block, CreateInferredVariableStatement(L"object", CreateWeakCast(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>(), CreateReference(L"node"))));
 					auto objectBranch = CreateBlock();
 					{
 						auto keywordNode = AddRpcJsonObjectFieldLookup(objectBranch, context, CreateReference(L"object"), L"$", false);
 						auto keywordBranch = CreateBlock();
-						AddStatement(keywordBranch, CreateInferredVariableStatement(L"keyword", CreateMember(CreateMember(CreateCast(CreateSharedType(L"system::JsonString"), CreateReference(keywordNode)), L"content"), L"value")));
+						AddStatement(keywordBranch, CreateInferredVariableStatement(L"keyword", CreateMember(CreateMember(CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonString>>(), CreateReference(keywordNode)), L"content"), L"value")));
 						auto objectSwitch = Ptr(new WfSwitchStatement);
 						objectSwitch->expression = CreateReference(L"keyword");
 						for (auto&& structModel : *context.structs)
@@ -13607,8 +13674,8 @@ namespace vl
 
 				Ptr<WfDeclaration> GenerateRpcSerializerFactoryJson()
 				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcSerializer", CreateSharedType(L"system::IRpcSerializer"), WfFunctionKind::Normal);
-					auto newSerializer = CreateNewInterface(CreateSharedType(L"system::IRpcSerializer")).Cast<WfNewInterfaceExpression>();
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcSerializer", CreateTypeFromCpp<Ptr<rpc_controller::IRpcSerializer>>(), WfFunctionKind::Normal);
+					auto newSerializer = CreateNewInterface(CreateTypeFromCpp<Ptr<rpc_controller::IRpcSerializer>>()).Cast<WfNewInterfaceExpression>();
 
 					{
 						auto serialize = CreateFunctionDeclaration(L"Serialize", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
@@ -13625,7 +13692,7 @@ namespace vl
 						auto block = deserialize->statement.Cast<WfBlockStatement>();
 						AddStatement(block, CreateReturn(CreateCall(
 							CreateReference(L"rpcjson_Deserialize"),
-							CreateCast(CreateSharedType(L"system::JsonNode"), CreateReference(L"value")))));
+							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateReference(L"value")))));
 						newSerializer->declarations.Add(deserialize);
 					}
 
@@ -13678,7 +13745,7 @@ namespace vl
 					if (IsSharedInterfaceType(typeInfo))
 					{
 						return byref
-							? CreateQualifiedType(L"system::RpcObjectReference")
+							? CreateTypeFromCpp<rpc_controller::RpcObjectReference>()
 							: CreatePredefinedType(WfPredefinedTypeName::Object);
 					}
 					return CopyType(type);
@@ -13728,7 +13795,7 @@ namespace vl
 							manager,
 							tempIndex,
 							block,
-							CreateCast(CreateSharedType(L"system::JsonNode"), CreateRpcJsonSerializedArgument(i)),
+							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateRpcJsonSerializedArgument(i)),
 							paramModel));
 					}
 
@@ -13785,7 +13852,7 @@ namespace vl
 							manager,
 							tempIndex,
 							block,
-							CreateCast(CreateSharedType(L"system::JsonNode"), CreateRpcJsonSerializedArgument(i)),
+							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateRpcJsonSerializedArgument(i)),
 							paramModel));
 					}
 					AddStatement(block, CreateExpressionStatement(invoke));
@@ -13829,18 +13896,18 @@ namespace vl
 
 				Ptr<WfDeclaration> GenerateObjectOpsFactoryJson(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
 				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectOpsJson", CreateSharedType(L"system::IRpcObjectOps"), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
-					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectOps")).Cast<WfNewInterfaceExpression>();
-					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectOpsJson", CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectOps>>(), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					auto newOps = CreateNewInterface(CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectOps>>()).Cast<WfNewInterfaceExpression>();
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
 					newOps->declarations.Add(CreateVariableDeclaration(L"_slot", CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(0)));
-					newOps->declarations.Add(CreateVariableDeclaration(L"_byvalReturnValues", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::Int), CreatePredefinedType(WfPredefinedTypeName::Object)), CreateConstructor()));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_byvalReturnValues", CreateTypeFromCpp<Dictionary<vint, Value>>(), CreateConstructor()));
 
 					{
 						auto invokeMethod = CreateFunctionDeclaration(L"InvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
-						invokeMethod->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
+						invokeMethod->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
 						invokeMethod->arguments.Add(CreateFunctionArgument(L"methodId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						invokeMethod->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
+						invokeMethod->arguments.Add(CreateFunctionArgument(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>()));
 						auto block = invokeMethod->statement.Cast<WfBlockStatement>();
 						AddStatement(block, CreateVariableStatement(L"unknownId", CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
 						auto catchBlock = CreateBlock();
@@ -13862,7 +13929,7 @@ namespace vl
 
 					{
 						auto objectHold = CreateFunctionDeclaration(L"ObjectHold", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						objectHold->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
+						objectHold->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
 						objectHold->arguments.Add(CreateFunctionArgument(L"remoteClientId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 						objectHold->arguments.Add(CreateFunctionArgument(L"hold", CreatePredefinedType(WfPredefinedTypeName::Bool)));
 						auto trueBranch = CreateBlock();
@@ -13876,7 +13943,7 @@ namespace vl
 					{
 						auto registerService = CreateFunctionDeclaration(L"RegisterService", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
 						registerService->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						registerService->arguments.Add(CreateFunctionArgument(L"service", CreateSharedType(L"system::Interface")));
+						registerService->arguments.Add(CreateFunctionArgument(L"service", CreateTypeFromCpp<Ptr<reflection::IDescriptable>>()));
 						auto block = registerService->statement.Cast<WfBlockStatement>();
 						AddStatement(block, BuildRegisterService());
 						newOps->declarations.Add(registerService);
@@ -13888,16 +13955,16 @@ namespace vl
 
 				Ptr<WfDeclaration> GenerateObjectEventOpsFactoryJson(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
 				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectEventOpsJson", CreateSharedType(L"system::IRpcObjectEventOps"), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
-					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectEventOps")).Cast<WfNewInterfaceExpression>();
-					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectEventOpsJson", CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectEventOps>>(), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					auto newOps = CreateNewInterface(CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectEventOps>>()).Cast<WfNewInterfaceExpression>();
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
 
 					{
 						auto invokeEvent = CreateFunctionDeclaration(L"InvokeEvent", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
-						invokeEvent->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
+						invokeEvent->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
 						invokeEvent->arguments.Add(CreateFunctionArgument(L"eventId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						invokeEvent->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
+						invokeEvent->arguments.Add(CreateFunctionArgument(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>()));
 						auto block = invokeEvent->statement.Cast<WfBlockStatement>();
 						if (!HasRpcEvents(interfaces))
 						{
@@ -13941,7 +14008,7 @@ namespace vl
 					const List<RpcParamModel>& params,
 					vint& tempIndex)
 				{
-					AddStatement(block, CreateVariableStatement(L"arguments", CreateSharedType(L"system::Array"), CreateConstructor()));
+					AddStatement(block, CreateVariableStatement(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>(), CreateConstructor()));
 					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Resize"), CreateInt(params.Count()))));
 
 					for (vint i = 0; i < params.Count(); i++)
@@ -13969,7 +14036,7 @@ namespace vl
 						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
 						AddStatement(block, CreateInferredVariableStatement(
 							L"jsonResult",
-							CreateCast(CreateSharedType(L"system::JsonNode"), CreateReference(L"invokeResult"))));
+							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateReference(L"invokeResult"))));
 						AddStatement(block, CreateInferredVariableStatement(
 							L"methodResult",
 							CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"jsonResult"))));
@@ -13982,16 +14049,16 @@ namespace vl
 						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
 						AddStatement(block, CreateInferredVariableStatement(
 							L"byvalReturnValue",
-							CreateWeakCast(CreateSharedType(L"system::RpcByvalReturnValue"), CreateReference(L"invokeResult"))));
-						AddStatement(block, CreateVariableStatement(L"jsonResult", CreateSharedType(L"system::JsonNode"), CreateNull()));
+							CreateWeakCast(CreateTypeFromCpp<Ptr<rpc_controller::RpcByvalReturnValue>>(), CreateReference(L"invokeResult"))));
+						AddStatement(block, CreateVariableStatement(L"jsonResult", CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateNull()));
 						auto exceptionBranch = CreateBlock();
 						AddStatement(exceptionBranch, CreateExpressionStatement(CreateAssign(
 							CreateReference(L"jsonResult"),
-							CreateCast(CreateSharedType(L"system::JsonNode"), CreateReference(L"invokeResult")))));
+							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateReference(L"invokeResult")))));
 						auto returnBranch = CreateBlock();
 						AddStatement(returnBranch, CreateExpressionStatement(CreateAssign(
 							CreateReference(L"jsonResult"),
-							CreateCast(CreateSharedType(L"system::JsonNode"), CreateMember(CreateReference(L"byvalReturnValue"), L"value")))));
+							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateMember(CreateReference(L"byvalReturnValue"), L"value")))));
 						AddStatement(block, CreateIf(CreateIsNull(CreateReference(L"byvalReturnValue")), exceptionBranch, returnBranch));
 						AddStatement(block, CreateInferredVariableStatement(
 							L"methodResult",
@@ -13999,7 +14066,7 @@ namespace vl
 						AddRpcMethodExceptionRaise(block, CreateReference(L"methodResult"));
 						AddStatement(block, CreateInferredVariableStatement(
 							L"strongByvalReturnValue",
-							CreateCast(CreateSharedType(L"system::RpcByvalReturnValue"), CreateReference(L"byvalReturnValue"))));
+							CreateCast(CreateTypeFromCpp<Ptr<rpc_controller::RpcByvalReturnValue>>(), CreateReference(L"byvalReturnValue"))));
 						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
 						auto valueName = AddRpcJsonDeserializeValue(manager, tempIndex, block, CreateReference(L"jsonResult"), transferType.Obj());
 						AddStatement(block, CreateInferredVariableStatement(
@@ -14016,7 +14083,7 @@ namespace vl
 					{
 						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
 						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
-						AddStatement(block, CreateInferredVariableStatement(L"jsonResult", CreateCast(CreateSharedType(L"system::JsonNode"), CreateReference(L"invokeResult"))));
+						AddStatement(block, CreateInferredVariableStatement(L"jsonResult", CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateReference(L"invokeResult"))));
 						AddStatement(block, CreateInferredVariableStatement(
 							L"methodResult",
 							CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"jsonResult"))));
@@ -14047,7 +14114,7 @@ namespace vl
 					AddStatement(block, CreateInferredVariableStatement(L"invokeResult", CreateRpcOpsObjectEventInvoke(eventModel)));
 					AddStatement(block, CreateInferredVariableStatement(
 						L"jsonResult",
-						CreateCast(CreateSharedType(L"system::JsonNode"), CreateReference(L"invokeResult"))));
+						CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateReference(L"invokeResult"))));
 					AddStatement(block, CreateInferredVariableStatement(
 						L"eventResult",
 						CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"jsonResult"))));
@@ -14058,9 +14125,9 @@ namespace vl
 				Ptr<WfDeclaration> GenerateRpcOpsFactoryJson(WfLexicalScopeManager* manager, const WString& assemblyName, const List<RpcInterfaceModel>& interfaces)
 				{
 					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IOps_CreateJson", CreateSharedType(GetRpcOpsInterfaceName(assemblyName)), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
 					auto newOps = CreateNewInterface(CreateSharedType(GetRpcOpsInterfaceName(assemblyName))).Cast<WfNewInterfaceExpression>();
-					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
 
 					for (auto&& interfaceModel : interfaces)
 					{
@@ -14512,6 +14579,35 @@ GetExpressionFromTypeDescriptor
 			}
 
 /***********************************************************************
+GetTypeFromTypeDescriptor
+***********************************************************************/
+
+			Ptr<WfType> GetTypeFromTypeDescriptor(reflection::description::ITypeDescriptor* typeDescriptor)
+			{
+				List<WString> fragments;
+				GetTypeFragments(typeDescriptor, fragments);
+
+				Ptr<WfType> parentType;
+				for (auto fragment : fragments)
+				{
+					if (!parentType)
+					{
+						auto type = Ptr(new WfTopQualifiedType);
+						type->name.value = fragment;
+						parentType = type;
+					}
+					else
+					{
+						auto type = Ptr(new WfChildType);
+						type->parent = parentType;
+						type->name.value = fragment;
+						parentType = type;
+					}
+				}
+				return parentType;
+			}
+
+/***********************************************************************
 GetTypeFromTypeInfo
 ***********************************************************************/
 
@@ -14561,27 +14657,7 @@ GetTypeFromTypeInfo
 					}
 				case ITypeInfo::TypeDescriptor:
 					{
-						List<WString> fragments;
-						GetTypeFragments(typeInfo->GetTypeDescriptor(), fragments);
-
-						Ptr<WfType> parentType;
-						for (auto fragment : fragments)
-						{
-							if (!parentType)
-							{
-								auto type = Ptr(new WfTopQualifiedType);
-								type->name.value = fragment;
-								parentType = type;
-							}
-							else
-							{
-								auto type = Ptr(new WfChildType);
-								type->parent = parentType;
-								type->name.value = fragment;
-								parentType = type;
-							}
-						}
-						return parentType;
+						return GetTypeFromTypeDescriptor(typeInfo->GetTypeDescriptor());
 					}
 				case ITypeInfo::Generic:
 					{
@@ -15461,6 +15537,7 @@ CreateTypeInfoFromMethodInfo
 		}
 	}
 }
+
 
 /***********************************************************************
 .\ANALYZER\WFANALYZER_VALIDATERPC.CPP
@@ -16794,26 +16871,7 @@ ValidateModuleRPC_GenerateMetadata
 						auto baseTd = td->GetBaseTypeDescriptor(i);
 						if (!IsRpcInterfaceTd(baseTd, rpcInterfaceAttrTd, rpcInterfaceTds)) continue;
 
-						List<WString> baseFragments;
-						GetTypeFragments(baseTd, baseFragments);
-
-						Ptr<WfType> parentType;
-						for (auto fragment : baseFragments)
-						{
-							if (!parentType)
-							{
-								auto type = Ptr(new WfTopQualifiedType);
-								type->name.value = fragment;
-								parentType = type;
-							}
-							else
-							{
-								auto type = Ptr(new WfChildType);
-								type->parent = parentType;
-								type->name.value = fragment;
-								parentType = type;
-							}
-						}
+						auto parentType = GetTypeFromTypeDescriptor(baseTd);
 						if (parentType)
 						{
 							decl->baseTypes.Add(parentType);

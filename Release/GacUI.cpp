@@ -2597,6 +2597,11 @@ GuiControlHost
 			{
 				if (auto window = host->GetNativeWindow())
 				{
+					auto controller = GetCurrentController();
+					if (window == controller->WindowService()->GetMainWindow())
+					{
+						controller->AutomationService()->Stop();
+					}
 					window->Hide(false);
 				}
 			}
@@ -14278,6 +14283,7 @@ TextItemBindableProvider
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::TextItemBindableProvider::GetTextValue(vint)#"
 				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				CHECK_ERROR(0 <= itemIndex && itemIndex < itemSource->GetCount(), ERROR_MESSAGE_PREFIX L"Index out of range.");
 				return ReadProperty(itemSource->Get(itemIndex), textProperty);
 #undef ERROR_MESSAGE_PREFIX
 			}
@@ -14305,14 +14311,22 @@ TextItemBindableProvider
 			
 			bool TextItemBindableProvider::GetChecked(vint itemIndex)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::TextItemBindableProvider::GetChecked(vint)#"
+				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				CHECK_ERROR(0 <= itemIndex && itemIndex < itemSource->GetCount(), ERROR_MESSAGE_PREFIX L"Index out of range.");
 				return ReadProperty(itemSource->Get(itemIndex), checkedProperty);
+#undef ERROR_MESSAGE_PREFIX
 			}
 			
 			void TextItemBindableProvider::SetChecked(vint itemIndex, bool value)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::TextItemBindableProvider::SetChecked(vint, bool)#"
+				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				CHECK_ERROR(0 <= itemIndex && itemIndex < itemSource->GetCount(), ERROR_MESSAGE_PREFIX L"Index out of range.");
 				auto thisValue = itemSource->Get(itemIndex);
 				WriteProperty(thisValue, checkedProperty, value);
 				InvokeOnItemModified(itemIndex, 1, 1, false);
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 /***********************************************************************
@@ -14490,6 +14504,7 @@ ListViewItemBindableProvider
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::ListViewItemBindableProvider::GetSmallImage(vint)#"
 				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				CHECK_ERROR(0 <= itemIndex && itemIndex < itemSource->GetCount(), ERROR_MESSAGE_PREFIX L"Index out of range.");
 				return ReadProperty(itemSource->Get(itemIndex), smallImageProperty);
 #undef ERROR_MESSAGE_PREFIX
 			}
@@ -14498,6 +14513,7 @@ ListViewItemBindableProvider
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::ListViewItemBindableProvider::GetLargeImage(vint)#"
 				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				CHECK_ERROR(0 <= itemIndex && itemIndex < itemSource->GetCount(), ERROR_MESSAGE_PREFIX L"Index out of range.");
 				return ReadProperty(itemSource->Get(itemIndex), largeImageProperty);
 #undef ERROR_MESSAGE_PREFIX
 			}
@@ -14506,6 +14522,7 @@ ListViewItemBindableProvider
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::ListViewItemBindableProvider::GetText(vint)#"
 				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				CHECK_ERROR(0 <= itemIndex && itemIndex < itemSource->GetCount(), ERROR_MESSAGE_PREFIX L"Index out of range.");
 				return ReadProperty(itemSource->Get(itemIndex), columns[0]->GetTextProperty());
 #undef ERROR_MESSAGE_PREFIX
 			}
@@ -14514,6 +14531,7 @@ ListViewItemBindableProvider
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::ListViewItemBindableProvider::GetSubItem(vint, vint)#"
 				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				CHECK_ERROR(0 <= itemIndex && itemIndex < itemSource->GetCount(), ERROR_MESSAGE_PREFIX L"Index out of range.");
 				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"column index cannot be -1, use GetText(itemIndex) instead.");
 				return ReadProperty(itemSource->Get(itemIndex), columns[index + 1]->GetTextProperty());
 #undef ERROR_MESSAGE_PREFIX
@@ -31955,6 +31973,59 @@ namespace vl
 		const NativeWindowFrameConfig NativeWindowFrameConfig::Default = {};
 
 /***********************************************************************
+INativeAutomationService
+***********************************************************************/
+
+		class UnavailableAutomationService : public Object, public INativeAutomationService
+		{
+		public:
+			bool Available() override
+			{
+				return false;
+			}
+
+			void Stop() override
+			{
+			}
+
+			bool CanDumpControlTree() override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			WString DumpControlTree() override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			bool CanDumpDomTree() override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			WString DumpDomTree() override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			bool CanRunIOCommands() override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			WString RunIOCommand(Nullable<WString> windowId, const WString&) override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+		};
+
+		INativeAutomationService* INativeAutomationService::UnavailableService()
+		{
+			static UnavailableAutomationService service;
+			return &service;
+		}
+
+/***********************************************************************
 INativeWindowListener
 ***********************************************************************/
 
@@ -32171,6 +32242,10 @@ Native Window Provider
 						!requested,
 						L"The service cannot be substituted because it has been used."
 						);
+					if (service && !optional && _optional)
+					{
+						return;
+					}
 					service = _service;
 					optional = _optional;
 				}
@@ -32408,6 +32483,7 @@ Helper Functions
 	}
 }
 
+
 /***********************************************************************
 .\PLATFORMPROVIDERS\GACGEN\GACGENCONTROLLER.CPP
 ***********************************************************************/
@@ -32467,6 +32543,11 @@ public:
 	}
 
 	INativeDialogService* DialogService() override
+	{
+		CHECK_FAIL(L"Not implemented!");
+	}
+
+	INativeAutomationService* AutomationService() override
 	{
 		CHECK_FAIL(L"Not implemented!");
 	}
@@ -32654,6 +32735,7 @@ int SetupGacGenNativeController()
 	SetNativeController(nullptr);
 	return 0;
 }
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\HOSTED\GUIHOSTEDAPPLICATION.CPP
@@ -33281,6 +33363,11 @@ GuiHostedController::INativeWindowListener (Template)
 		>
 		void GuiHostedController::HandleKeyboardCallback(const TInfo& info)
 		{
+			if (!wmWindow && !wmManager->activeWindow && mainWindow)
+			{
+				mainWindow->wmWindow.Activate();
+			}
+
 			if (wmManager->activeWindow && !wmWindow)
 			{
 				auto hostedWindow = wmManager->activeWindow->id;
@@ -33807,6 +33894,11 @@ GuiHostedController::IGuiHostedApplication
 			return nativeWindow;
 		}
 
+		INativeController* GuiHostedController::GetNativeController()
+		{
+			return nativeController;
+		}
+
 /***********************************************************************
 GuiHostedController
 ***********************************************************************/
@@ -33896,6 +33988,12 @@ GuiHostedController::INativeController
 		INativeDialogService* GuiHostedController::DialogService()
 		{
 			// Use FakeDialogServiceBase
+			return nullptr;
+		}
+
+		INativeAutomationService* GuiHostedController::AutomationService()
+		{
+			// Use INativeAutomationService::UnavailableService
 			return nullptr;
 		}
 
@@ -35569,6 +35667,12 @@ GuiRemoteController (INativeController)
 	INativeDialogService* GuiRemoteController::DialogService()
 	{
 		// Use FakeDialogServiceBase
+		return nullptr;
+	}
+
+	INativeAutomationService* GuiRemoteController::AutomationService()
+	{
+		// Use INativeAutomationService::UnavailableService
 		return nullptr;
 	}
 
@@ -43903,7 +44007,8 @@ namespace vl::presentation::remote_renderer
 		events->OnWindowActivatedUpdated(false);
 	}
 
-	GuiRemoteRendererSingle::GuiRemoteRendererSingle()
+	GuiRemoteRendererSingle::GuiRemoteRendererSingle(bool _enabledAutomation)
+		: enabledAutomation(_enabledAutomation)
 	{
 	}
 
@@ -44515,6 +44620,13 @@ namespace vl::presentation::remote_renderer
 						availableElements.Add(rc.id, element);
 					}
 				}
+
+				if (enabledAutomation)
+				{
+					RenderingElement renderingElement;
+					renderingElement.key = rc.type;
+					renderingElements.Set(rc.id, renderingElement);
+				}
 			}
 		}
 	}
@@ -44529,6 +44641,11 @@ namespace vl::presentation::remote_renderer
 				focusedParagraphElements.Remove(id);
 				availableElements.Remove(id);
 				solidLabelMeasurings.Remove(id);
+
+				if (enabledAutomation)
+				{
+					renderingElements.Remove(id);
+				}
 			}
 		}
 	}
@@ -44551,6 +44668,40 @@ namespace vl::presentation::remote_renderer
 					[&](const remoteprotocol::ElementDesc_SolidLabel& d) { RequestRendererUpdateElement_SolidLabel(d); },
 					[&](const remoteprotocol::ElementDesc_ImageFrame& d) { RequestRendererUpdateElement_ImageFrame(d); }
 				));
+
+				if (enabledAutomation)
+				{
+					desc.Apply(Overloading(
+						[&](const remoteprotocol::ElementDesc_SolidLabel& d)
+						{
+							vint index = renderingElements.Keys().IndexOf(d.id);
+							if (index != -1)
+							{
+								auto& renderingElement = const_cast<RenderingElement&>(renderingElements.Values()[index]);
+								auto copiedDesc = d;
+								if (renderingElement.value)
+								{
+									if (auto solidLabel = renderingElement.value.Value().TryGet<remoteprotocol::ElementDesc_SolidLabel>())
+									{
+										if (!copiedDesc.font) copiedDesc.font = solidLabel->font;
+										if (!copiedDesc.text) copiedDesc.text = solidLabel->text;
+										if (!copiedDesc.measuringRequest) copiedDesc.measuringRequest = solidLabel->measuringRequest;
+									}
+								}
+								renderingElement.value = copiedDesc;
+							}
+						},
+						[&](const auto& d)
+						{
+							vint index = renderingElements.Keys().IndexOf(d.id);
+							if (index != -1)
+							{
+								auto& renderingElement = const_cast<RenderingElement&>(renderingElements.Values()[index]);
+								renderingElement.value = d;
+							}
+						}
+					));
+				}
 			}
 		}
 	}
@@ -45237,6 +45388,25 @@ namespace vl::presentation::remote_renderer
 		UpdateElement_DocumentParagraphResponse response;
 		wrapper->ApplyUpdateAndFillResponse(arguments, response);
 		events->RespondRendererUpdateElement_DocumentParagraph(id, response);
+
+		if (enabledAutomation)
+		{
+			vint index = renderingElements.Keys().IndexOf(arguments.id);
+			if (index != -1)
+			{
+				auto& renderingElement = const_cast<RenderingElement&>(renderingElements.Values()[index]);
+				remoteprotocol::ElementDesc_DocumentParagraphFull copiedDesc{ arguments };
+				if (renderingElement.value)
+				{
+					if (auto dp = renderingElement.value.Value().TryGet<remoteprotocol::ElementDesc_DocumentParagraphFull>())
+					{
+						if (!copiedDesc.paragraph.text) copiedDesc.paragraph.text = dp->paragraph.text;
+						copiedDesc.caret = dp->caret;
+					}
+				}
+				renderingElement.value = copiedDesc;
+			}
+		}
 	}
 
 	void GuiRemoteRendererSingle::RequestDocumentParagraph_GetCaret(vint id, const remoteprotocol::GetCaretRequest& arguments)
@@ -45307,6 +45477,24 @@ namespace vl::presentation::remote_renderer
 		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments.id);
 		wrapper->OpenCaretAndStore(arguments);
 		focusedParagraphElements.Set(arguments.id, wrapper);
+
+		if (enabledAutomation)
+		{
+			vint index = renderingElements.Keys().IndexOf(arguments.id);
+			if (index != -1)
+			{
+				auto& renderingElement = const_cast<RenderingElement&>(renderingElements.Values()[index]);
+				if (renderingElement.value)
+				{
+					renderingElement.value.Value().TryApply(
+						[&](remoteprotocol::ElementDesc_DocumentParagraphFull& desc)
+						{
+							desc.caret = arguments;
+						}
+					);
+				}
+			}
+		}
 	}
 
 	void GuiRemoteRendererSingle::RequestDocumentParagraph_CloseCaret(const vint& arguments)
@@ -45314,6 +45502,24 @@ namespace vl::presentation::remote_renderer
 		PREPARE_DOCUMENT_WRAPPER(wrapper, arguments);
 		wrapper->CloseCaretAndStore();
 		focusedParagraphElements.Remove(arguments);
+
+		if (enabledAutomation)
+		{
+			vint index = renderingElements.Keys().IndexOf(arguments);
+			if (index != -1)
+			{
+				auto& renderingElement = const_cast<RenderingElement&>(renderingElements.Values()[index]);
+				if (renderingElement.value)
+				{
+					renderingElement.value.Value().TryApply(
+						[](remoteprotocol::ElementDesc_DocumentParagraphFull& desc)
+						{
+							desc.caret.Reset();
+						}
+					);
+				}
+			}
+		}
 	}
 
 #undef PREPARE_DOCUMENT_WRAPPER
@@ -53486,6 +53692,8 @@ Utilities Registration
 
 		void GuiInitializeUtilities()
 		{
+			GetNativeServiceSubstitution()->Substitute(INativeAutomationService::UnavailableService(), true);
+
 			if (!fakeClipboardService)
 			{
 				fakeClipboardService = new FakeClipboardService;
@@ -64118,6 +64326,1346 @@ SharedAsyncService
 		}
 	}
 }
+
+/***********************************************************************
+.\UTILITIES\SHAREDSERVICES\GUISHAREDAUTOMATIONSERVICE.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace remoteprotocol;
+
+/***********************************************************************
+DumpRemoteProtocolRenderingDom
+***********************************************************************/
+
+		Ptr<glr::json::JsonNode> DumpRemoteProtocolRenderingDom(
+			const WString& title,
+			const remoteprotocol::WindowSizingConfig& windowSizingConfig,
+			Ptr<remoteprotocol::RenderingDom> renderingDom,
+			collections::Dictionary<vint, collections::Pair<remoteprotocol::RendererType, Nullable<remoteprotocol::UnitTest_ElementDescVariant>>>& elementData
+		)
+		{
+			auto dumpRoot = Ptr(new glr::json::JsonObject);
+			ConvertCustomTypeToJsonField(dumpRoot, L"Title", title);
+			ConvertCustomTypeToJsonField(dumpRoot, L"Window", windowSizingConfig);
+
+			{
+				auto field = Ptr(new glr::json::JsonObjectField);
+				field->name.value = WString::Unmanaged(L"Elements");
+
+				auto jsonArray = Ptr(new glr::json::JsonArray);
+				field->value = jsonArray;
+				dumpRoot->fields.Add(field);
+
+				for (auto [id, data] : elementData)
+				{
+					auto jsonElement = Ptr(new glr::json::JsonObject);
+					jsonArray->items.Add(jsonElement);
+
+					ConvertCustomTypeToJsonField<vint>(jsonElement, L"Id", id);
+					ConvertCustomTypeToJsonField(jsonElement, L"Type", data.key);
+					ConvertCustomTypeToJsonField(jsonElement, L"Data", data.value);
+				}
+			}
+
+			if (renderingDom)
+			{
+				ConvertCustomTypeToJsonField(dumpRoot, L"Dom", renderingDom);
+			}
+			return dumpRoot;
+		}
+
+		WString DumpJsonToString(Ptr<glr::json::JsonNode> json)
+		{
+			return stream::GenerateToStream([=](stream::TextWriter& writer)
+			{
+				glr::json::JsonFormatting formatting;
+				formatting.spaceAfterColon = true;
+				formatting.spaceAfterComma = true;
+				formatting.crlf = true;
+				formatting.compact = true;
+				formatting.indentation = L"  ";
+				return glr::json::JsonPrint(json, writer, formatting);
+			});
+		}
+
+/***********************************************************************
+RunIOCommandOnNativeWindow
+***********************************************************************/
+
+		namespace iocommands
+		{
+			const wchar_t* IO_COMMAND_SYNTAX =
+				L"Syntax Error!\r\n"
+				L"Predefined Commands:\r\n"
+				L"!Type:<TEXT>\r\n"
+				L"!Exit\r\n"
+				L"!KeyDown:Key1+Key2+...+KeyN\r\n"
+				L"!KeyUp:Key1+Key2+...+KeyN\r\n"
+				L"!KeyPress:Key1+Key2+...+KeyN\r\n"
+				L"!MouseMove:X,Y(,ctrl)?(,shift)?(,alt)?\r\n"
+				L"!(Left|Middle|Right)(Down|Up|Click|DbClick):X,Y(,ctrl)?(,shift)?(,alt)?\r\n"
+				L"!MouseWheel(Up|Down|Left|Right):ticks(,ctrl)?(,shift)?(,alt)?";
+
+			struct IOCommandModifiers
+			{
+				bool ctrl = false;
+				bool shift = false;
+				bool alt = false;
+			};
+
+			struct TemporaryModifiers
+			{
+				bool ctrl = false;
+				bool shift = false;
+				bool alt = false;
+			};
+
+			struct MouseCommandArguments
+			{
+				Point position;
+				IOCommandModifiers modifiers;
+			};
+
+			struct WheelCommandArguments
+			{
+				vint ticks = 0;
+				IOCommandModifiers modifiers;
+			};
+
+			enum class MouseButton
+			{
+				Left,
+				Middle,
+				Right,
+			};
+
+			struct SyntaxErrorCommand
+			{
+			};
+
+			struct ExitCommand
+			{
+			};
+
+			struct TypeCommand
+			{
+				WString text;
+			};
+
+			enum class KeyOperation
+			{
+				Down,
+				Up,
+				Press,
+			};
+
+			struct KeyCommand
+			{
+				KeyOperation operation = KeyOperation::Press;
+				collections::List<VKEY> keys;
+			};
+
+			struct MouseMoveCommand
+			{
+				MouseCommandArguments arguments;
+			};
+
+			struct MouseButtonCommand
+			{
+				MouseButton button = MouseButton::Left;
+				WString operation;
+				MouseCommandArguments arguments;
+			};
+
+			struct WheelCommand
+			{
+				vint direction = 0;
+				bool horizontal = false;
+				WheelCommandArguments arguments;
+			};
+
+			using IOCommand = Variant<
+				SyntaxErrorCommand,
+				ExitCommand,
+				TypeCommand,
+				KeyCommand,
+				MouseMoveCommand,
+				MouseButtonCommand,
+				WheelCommand
+				>;
+
+			struct IOCommandHolder : Object
+			{
+				IOCommand command;
+
+				IOCommandHolder(IOCommand&& _command)
+					: command(std::move(_command))
+				{
+				}
+			};
+
+			bool StartsWith(const WString& text, const WString& prefix)
+			{
+				return text.Length() >= prefix.Length() && text.Left(prefix.Length()) == prefix;
+			}
+
+			WString Trim(const WString& text)
+			{
+				vint begin = 0;
+				vint end = text.Length();
+				while (begin < end && (text[begin] == L' ' || text[begin] == L'\t')) begin++;
+				while (begin < end && (text[end - 1] == L' ' || text[end - 1] == L'\t')) end--;
+				return text.Sub(begin, end - begin);
+			}
+
+			WString ToUpperToken(const WString& text)
+			{
+				WString result;
+				for (vint i = 0; i < text.Length(); i++)
+				{
+					auto ch = text[i];
+					if (L'a' <= ch && ch <= L'z') ch = ch - L'a' + L'A';
+					result += WString::FromChar(ch);
+				}
+				return result;
+			}
+
+			WString NormalizeKeyName(const WString& text)
+			{
+				WString result;
+				for (vint i = 0; i < text.Length(); i++)
+				{
+					auto ch = text[i];
+					if (ch == L' ' || ch == L'\t') continue;
+					if (L'a' <= ch && ch <= L'z') ch = ch - L'a' + L'A';
+					result += WString::FromChar(ch);
+				}
+				return result;
+			}
+
+			void SplitByChar(const WString& text, wchar_t delimiter, collections::List<WString>& fragments)
+			{
+				vint begin = 0;
+				for (vint i = 0; i <= text.Length(); i++)
+				{
+					if (i == text.Length() || text[i] == delimiter)
+					{
+						fragments.Add(Trim(text.Sub(begin, i - begin)));
+						begin = i + 1;
+					}
+				}
+			}
+
+			bool TryParseInteger(const WString& text, vint& value)
+			{
+				auto normalized = Trim(text);
+				if (normalized.Length() == 0) return false;
+				value = wtoi(normalized);
+				return itow(value) == normalized;
+			}
+
+			bool TryParseModifier(const WString& text, IOCommandModifiers& modifiers)
+			{
+				auto token = ToUpperToken(Trim(text));
+				if (token == L"CTRL" || token == L"CONTROL")
+				{
+					modifiers.ctrl = true;
+					return true;
+				}
+				else if (token == L"SHIFT")
+				{
+					modifiers.shift = true;
+					return true;
+				}
+				else if (token == L"ALT" || token == L"MENU")
+				{
+					modifiers.alt = true;
+					return true;
+				}
+				return false;
+			}
+
+			bool TryParseMouseArguments(const WString& text, MouseCommandArguments& arguments)
+			{
+				collections::List<WString> fragments;
+				SplitByChar(text, L',', fragments);
+				if (fragments.Count() < 2) return false;
+
+				vint x = 0;
+				vint y = 0;
+				if (!TryParseInteger(fragments[0], x)) return false;
+				if (!TryParseInteger(fragments[1], y)) return false;
+				arguments.position = Point(x, y);
+
+				for (vint i = 2; i < fragments.Count(); i++)
+				{
+					if (!TryParseModifier(fragments[i], arguments.modifiers)) return false;
+				}
+				return true;
+			}
+
+			bool TryParseWheelArguments(const WString& text, WheelCommandArguments& arguments)
+			{
+				collections::List<WString> fragments;
+				SplitByChar(text, L',', fragments);
+				if (fragments.Count() < 1) return false;
+				if (!TryParseInteger(fragments[0], arguments.ticks)) return false;
+				if (arguments.ticks < 0) return false;
+
+				for (vint i = 1; i < fragments.Count(); i++)
+				{
+					if (!TryParseModifier(fragments[i], arguments.modifiers)) return false;
+				}
+				return true;
+			}
+
+			bool IsPressing(IoCommandState* state, VKEY key)
+			{
+				return state->pressingKeys.Contains(key);
+			}
+
+			bool IsCtrlPressing(IoCommandState* state)
+			{
+				return IsPressing(state, VKEY::KEY_CONTROL) || IsPressing(state, VKEY::KEY_LCONTROL) || IsPressing(state, VKEY::KEY_RCONTROL);
+			}
+
+			bool IsShiftPressing(IoCommandState* state)
+			{
+				return IsPressing(state, VKEY::KEY_SHIFT) || IsPressing(state, VKEY::KEY_LSHIFT) || IsPressing(state, VKEY::KEY_RSHIFT);
+			}
+
+			bool IsAltPressing(IoCommandState* state)
+			{
+				return IsPressing(state, VKEY::KEY_MENU) || IsPressing(state, VKEY::KEY_LMENU) || IsPressing(state, VKEY::KEY_RMENU);
+			}
+
+			NativeWindowMouseInfo MakeMouseInfo(IoCommandState* state)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
+				CHECK_ERROR(state->mousePosition, ERROR_MESSAGE_PREFIX L"The mouse position is not set.");
+				NativeWindowMouseInfo info;
+				info.ctrl = IsCtrlPressing(state);
+				info.shift = IsShiftPressing(state);
+				info.left = state->leftPressing;
+				info.middle = state->middlePressing;
+				info.right = state->rightPressing;
+				info.x = state->mousePosition.Value().x;
+				info.y = state->mousePosition.Value().y;
+				info.wheel = 0;
+				info.nonClient = false;
+				return info;
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			NativeWindowKeyInfo MakeKeyInfo(IoCommandState* state, VKEY key, bool autoRepeatKeyDown = false)
+			{
+				NativeWindowKeyInfo info;
+				info.code = key;
+				info.ctrl = IsCtrlPressing(state);
+				info.shift = IsShiftPressing(state);
+				info.alt = IsAltPressing(state);
+				info.capslock = state->capslockToggled;
+				info.autoRepeatKeyDown = autoRepeatKeyDown;
+				return info;
+			}
+
+			NativeWindowCharInfo MakeCharInfo(IoCommandState* state, wchar_t ch)
+			{
+				NativeWindowCharInfo info;
+				info.code = ch;
+				info.ctrl = IsCtrlPressing(state);
+				info.shift = IsShiftPressing(state);
+				info.alt = IsAltPressing(state);
+				info.capslock = state->capslockToggled;
+				return info;
+			}
+
+			void KeyDown(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, VKEY key)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
+				CHECK_ERROR(!IsPressing(state, key), ERROR_MESSAGE_PREFIX L"The key is already being pressed.");
+				state->pressingKeys.Add(key);
+				if (key == VKEY::KEY_CAPITAL)
+				{
+					state->capslockToggled = !state->capslockToggled;
+				}
+				auto info = MakeKeyInfo(state, key);
+				for (auto listener : listeners)
+				{
+					listener->KeyDown(info);
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			void KeyUp(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, VKEY key)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
+				CHECK_ERROR(IsPressing(state, key), ERROR_MESSAGE_PREFIX L"The key is not being pressed.");
+				state->pressingKeys.Remove(key);
+				auto info = MakeKeyInfo(state, key);
+				for (auto listener : listeners)
+				{
+					listener->KeyUp(info);
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			void Char(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, wchar_t ch)
+			{
+				auto info = MakeCharInfo(state, ch);
+				for (auto listener : listeners)
+				{
+					listener->Char(info);
+				}
+			}
+
+			void PressTemporaryModifiers(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, const IOCommandModifiers& modifiers, TemporaryModifiers& temporary)
+			{
+				if (modifiers.ctrl && !IsCtrlPressing(state))
+				{
+					KeyDown(state, listeners, VKEY::KEY_CONTROL);
+					temporary.ctrl = true;
+				}
+				if (modifiers.shift && !IsShiftPressing(state))
+				{
+					KeyDown(state, listeners, VKEY::KEY_SHIFT);
+					temporary.shift = true;
+				}
+				if (modifiers.alt && !IsAltPressing(state))
+				{
+					KeyDown(state, listeners, VKEY::KEY_MENU);
+					temporary.alt = true;
+				}
+			}
+
+			void ReleaseTemporaryModifiers(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, const TemporaryModifiers& temporary)
+			{
+				if (temporary.alt)
+				{
+					KeyUp(state, listeners, VKEY::KEY_MENU);
+				}
+				if (temporary.shift)
+				{
+					KeyUp(state, listeners, VKEY::KEY_SHIFT);
+				}
+				if (temporary.ctrl)
+				{
+					KeyUp(state, listeners, VKEY::KEY_CONTROL);
+				}
+			}
+
+			NativePoint ConvertGuiPointToNativePoint(INativeWindow* targetWindow, Point position)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
+				CHECK_ERROR(targetWindow, ERROR_MESSAGE_PREFIX L"Native target window is missing.");
+				return targetWindow->Convert(position);
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			void MouseMove(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, NativePoint position)
+			{
+				if (!state->mousePosition)
+				{
+					for (auto listener : listeners)
+					{
+						listener->MouseEntered();
+					}
+				}
+				else if (state->mousePosition.Value() == position)
+				{
+					return;
+				}
+
+				state->mousePosition = position;
+				auto info = MakeMouseInfo(state);
+				for (auto listener : listeners)
+				{
+					listener->MouseMoving(info);
+				}
+			}
+
+			void ButtonDown(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, MouseButton button, NativePoint position)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
+				MouseMove(state, listeners, position);
+				switch (button)
+				{
+				case MouseButton::Left:
+					CHECK_ERROR(!state->leftPressing, ERROR_MESSAGE_PREFIX L"The left button should not be being pressed.");
+					state->leftPressing = true;
+					for (auto listener : listeners) listener->LeftButtonDown(MakeMouseInfo(state));
+					break;
+				case MouseButton::Middle:
+					CHECK_ERROR(!state->middlePressing, ERROR_MESSAGE_PREFIX L"The middle button should not be being pressed.");
+					state->middlePressing = true;
+					for (auto listener : listeners) listener->MiddleButtonDown(MakeMouseInfo(state));
+					break;
+				case MouseButton::Right:
+					CHECK_ERROR(!state->rightPressing, ERROR_MESSAGE_PREFIX L"The right button should not be being pressed.");
+					state->rightPressing = true;
+					for (auto listener : listeners) listener->RightButtonDown(MakeMouseInfo(state));
+					break;
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			void ButtonUp(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, MouseButton button, NativePoint position)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
+				MouseMove(state, listeners, position);
+				switch (button)
+				{
+				case MouseButton::Left:
+					CHECK_ERROR(state->leftPressing, ERROR_MESSAGE_PREFIX L"The left button should be being pressed.");
+					state->leftPressing = false;
+					for (auto listener : listeners) listener->LeftButtonUp(MakeMouseInfo(state));
+					break;
+				case MouseButton::Middle:
+					CHECK_ERROR(state->middlePressing, ERROR_MESSAGE_PREFIX L"The middle button should be being pressed.");
+					state->middlePressing = false;
+					for (auto listener : listeners) listener->MiddleButtonUp(MakeMouseInfo(state));
+					break;
+				case MouseButton::Right:
+					CHECK_ERROR(state->rightPressing, ERROR_MESSAGE_PREFIX L"The right button should be being pressed.");
+					state->rightPressing = false;
+					for (auto listener : listeners) listener->RightButtonUp(MakeMouseInfo(state));
+					break;
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			void ButtonDoubleClick(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, MouseButton button, NativePoint position)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
+				MouseMove(state, listeners, position);
+				switch (button)
+				{
+				case MouseButton::Left:
+					CHECK_ERROR(!state->leftPressing, ERROR_MESSAGE_PREFIX L"The left button should not be being pressed.");
+					state->leftPressing = true;
+					for (auto listener : listeners) listener->LeftButtonDoubleClick(MakeMouseInfo(state));
+					break;
+				case MouseButton::Middle:
+					CHECK_ERROR(!state->middlePressing, ERROR_MESSAGE_PREFIX L"The middle button should not be being pressed.");
+					state->middlePressing = true;
+					for (auto listener : listeners) listener->MiddleButtonDoubleClick(MakeMouseInfo(state));
+					break;
+				case MouseButton::Right:
+					CHECK_ERROR(!state->rightPressing, ERROR_MESSAGE_PREFIX L"The right button should not be being pressed.");
+					state->rightPressing = true;
+					for (auto listener : listeners) listener->RightButtonDoubleClick(MakeMouseInfo(state));
+					break;
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			void MouseButtonOperation(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, MouseButton button, const WString& operation, NativePoint position)
+			{
+				if (operation == L"Down")
+				{
+					ButtonDown(state, listeners, button, position);
+				}
+				else if (operation == L"Up")
+				{
+					ButtonUp(state, listeners, button, position);
+				}
+				else if (operation == L"Click")
+				{
+					ButtonDown(state, listeners, button, position);
+					ButtonUp(state, listeners, button, position);
+				}
+				else if (operation == L"DbClick")
+				{
+					ButtonDown(state, listeners, button, position);
+					ButtonUp(state, listeners, button, position);
+					ButtonDoubleClick(state, listeners, button, position);
+					ButtonUp(state, listeners, button, position);
+				}
+			}
+
+			void Wheel(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, vint wheel, bool horizontal)
+			{
+				auto info = MakeMouseInfo(state);
+				info.wheel = wheel;
+				for (auto listener : listeners)
+				{
+					if (horizontal)
+					{
+						listener->HorizontalWheel(info);
+					}
+					else
+					{
+						listener->VerticalWheel(info);
+					}
+				}
+			}
+
+			bool TryParseKey(INativeController* nativeController, const WString& text, VKEY& key)
+			{
+				auto token = Trim(text);
+				if (token.Length() == 0) return false;
+				if (!nativeController) return false;
+
+				auto inputService = nativeController->InputService();
+				key = inputService->GetKey(token);
+				if (key != VKEY::KEY_UNKNOWN) return true;
+
+				auto normalizedToken = NormalizeKeyName(token);
+				for (vint i = 0; i <= (vint)VKEY::KEY_MAXIMUM; i++)
+				{
+					auto candidate = (VKEY)i;
+					auto candidateName = inputService->GetKeyName(candidate);
+					if (candidateName != WString::Empty && candidateName != L"?" && NormalizeKeyName(candidateName) == normalizedToken)
+					{
+						key = candidate;
+						return true;
+					}
+				}
+				key = VKEY::KEY_UNKNOWN;
+				return false;
+			}
+
+			bool TryParseKeyList(INativeController* nativeController, const WString& text, collections::List<VKEY>& keys)
+			{
+				collections::List<WString> fragments;
+				SplitByChar(text, L'+', fragments);
+				if (fragments.Count() == 0) return false;
+				for (auto fragment : fragments)
+				{
+					VKEY key = VKEY::KEY_UNKNOWN;
+					if (!TryParseKey(nativeController, fragment, key)) return false;
+					keys.Add(key);
+				}
+				return true;
+			}
+
+			WString MouseButtonPrefix(MouseButton button)
+			{
+				switch (button)
+				{
+				case MouseButton::Left: return WString::Unmanaged(L"!Left");
+				case MouseButton::Middle: return WString::Unmanaged(L"!Middle");
+				default: return WString::Unmanaged(L"!Right");
+				}
+			}
+
+			bool TryParseMouseButtonCommand(const WString& command, MouseButton button, const WString& operation, MouseButtonCommand& mouseCommand, bool& matched)
+			{
+				auto prefix = MouseButtonPrefix(button) + operation + WString::Unmanaged(L":");
+				if (!StartsWith(command, prefix)) return false;
+				matched = true;
+
+				MouseCommandArguments arguments;
+				if (!TryParseMouseArguments(command.Right(command.Length() - prefix.Length()), arguments)) return false;
+
+				mouseCommand.button = button;
+				mouseCommand.operation = operation;
+				mouseCommand.arguments = arguments;
+				return true;
+			}
+
+			bool TryParseWheelCommand(const WString& command, const WString& prefix, vint direction, bool horizontal, WheelCommand& wheelCommand, bool& matched)
+			{
+				if (!StartsWith(command, prefix)) return false;
+				matched = true;
+
+				WheelCommandArguments arguments;
+				if (!TryParseWheelArguments(command.Right(command.Length() - prefix.Length()), arguments)) return false;
+
+				wheelCommand.direction = direction;
+				wheelCommand.horizontal = horizontal;
+				wheelCommand.arguments = arguments;
+				return true;
+			}
+
+			IOCommand ParseIOCommand(INativeController* nativeController, const WString& command)
+			{
+				if (command == L"!Exit")
+				{
+					return ExitCommand{};
+				}
+
+				if (StartsWith(command, L"!Type:"))
+				{
+					TypeCommand typeCommand;
+					typeCommand.text = command.Right(command.Length() - 6);
+					return typeCommand;
+				}
+
+				if (StartsWith(command, L"!KeyDown:") || StartsWith(command, L"!KeyUp:") || StartsWith(command, L"!KeyPress:"))
+				{
+					WString prefix;
+					KeyOperation operation = KeyOperation::Press;
+					if (StartsWith(command, L"!KeyDown:"))
+					{
+						prefix = WString::Unmanaged(L"!KeyDown:");
+						operation = KeyOperation::Down;
+					}
+					else if (StartsWith(command, L"!KeyUp:"))
+					{
+						prefix = WString::Unmanaged(L"!KeyUp:");
+						operation = KeyOperation::Up;
+					}
+					else
+					{
+						prefix = WString::Unmanaged(L"!KeyPress:");
+					}
+
+					collections::List<VKEY> keys;
+					if (!TryParseKeyList(nativeController, command.Right(command.Length() - prefix.Length()), keys))
+					{
+						return SyntaxErrorCommand{};
+					}
+
+					KeyCommand keyCommand;
+					keyCommand.operation = operation;
+					CopyFrom(keyCommand.keys, keys);
+					return keyCommand;
+				}
+
+				if (StartsWith(command, L"!MouseMove:"))
+				{
+					MouseMoveCommand mouseCommand;
+					if (!TryParseMouseArguments(command.Right(command.Length() - 11), mouseCommand.arguments))
+					{
+						return SyntaxErrorCommand{};
+					}
+					return mouseCommand;
+				}
+
+				const WString operations[] =
+				{
+					WString::Unmanaged(L"Down"),
+					WString::Unmanaged(L"Up"),
+					WString::Unmanaged(L"Click"),
+					WString::Unmanaged(L"DbClick"),
+				};
+
+				for (auto operation : operations)
+				{
+					MouseButtonCommand mouseCommand;
+					bool matched = false;
+					if (TryParseMouseButtonCommand(command, MouseButton::Left, operation, mouseCommand, matched)) return mouseCommand;
+					if (matched) return SyntaxErrorCommand{};
+
+					if (TryParseMouseButtonCommand(command, MouseButton::Middle, operation, mouseCommand, matched)) return mouseCommand;
+					if (matched) return SyntaxErrorCommand{};
+
+					if (TryParseMouseButtonCommand(command, MouseButton::Right, operation, mouseCommand, matched)) return mouseCommand;
+					if (matched) return SyntaxErrorCommand{};
+				}
+
+				{
+					WheelCommand wheelCommand;
+					bool matched = false;
+					if (TryParseWheelCommand(command, L"!MouseWheelUp:", 1, false, wheelCommand, matched)) return wheelCommand;
+					if (matched) return SyntaxErrorCommand{};
+					if (TryParseWheelCommand(command, L"!MouseWheelDown:", -1, false, wheelCommand, matched)) return wheelCommand;
+					if (matched) return SyntaxErrorCommand{};
+					if (TryParseWheelCommand(command, L"!MouseWheelRight:", 1, true, wheelCommand, matched)) return wheelCommand;
+					if (matched) return SyntaxErrorCommand{};
+					if (TryParseWheelCommand(command, L"!MouseWheelLeft:", -1, true, wheelCommand, matched)) return wheelCommand;
+					if (matched) return SyntaxErrorCommand{};
+				}
+
+				return SyntaxErrorCommand{};
+			}
+
+			void ExecuteIOCommand(IoCommandState* state, INativeController* nativeController, INativeWindow* targetWindow, collections::List<INativeWindowListener*>& listeners, IOCommand&& ioCommand)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
+				CHECK_ERROR(nativeController, ERROR_MESSAGE_PREFIX L"Native controller is missing.");
+				CHECK_ERROR(targetWindow, ERROR_MESSAGE_PREFIX L"Native target window is missing.");
+				auto listenerList = &listeners;
+				auto commandHolder = Ptr(new IOCommandHolder(std::move(ioCommand)));
+				nativeController->AsyncService()->InvokeInMainThread(targetWindow, [=]() mutable
+				{
+					auto activateTargetWindow = [=]()
+					{
+						if (!targetWindow->IsActivated())
+						{
+							targetWindow->SetActivate();
+						}
+					};
+
+					commandHolder->command.Apply(Overloading(
+						[](const SyntaxErrorCommand&)
+						{
+							CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Syntax error command should not be executed.");
+						},
+						[=](const ExitCommand&)
+						{
+							targetWindow->Hide(true);
+						},
+						[=](const TypeCommand& typeCommand)
+						{
+							activateTargetWindow();
+							for (vint i = 0; i < typeCommand.text.Length(); i++)
+							{
+								auto ch = typeCommand.text[i];
+								if (ch == L'\r') continue;
+								if (ch == L'\n')
+								{
+									Char(state, *listenerList, L'\r');
+									Char(state, *listenerList, L'\n');
+								}
+								else
+								{
+									Char(state, *listenerList, ch);
+								}
+							}
+						},
+						[=](const KeyCommand& keyCommand)
+						{
+							activateTargetWindow();
+							switch (keyCommand.operation)
+							{
+							case KeyOperation::Down:
+								for (auto key : keyCommand.keys)
+								{
+									KeyDown(state, *listenerList, key);
+								}
+								break;
+							case KeyOperation::Up:
+								for (vint i = keyCommand.keys.Count() - 1; i >= 0; i--)
+								{
+									KeyUp(state, *listenerList, keyCommand.keys[i]);
+								}
+								break;
+							case KeyOperation::Press:
+								for (auto key : keyCommand.keys)
+								{
+									KeyDown(state, *listenerList, key);
+								}
+								for (vint i = keyCommand.keys.Count() - 1; i >= 0; i--)
+								{
+									KeyUp(state, *listenerList, keyCommand.keys[i]);
+								}
+								break;
+							}
+						},
+						[=](const MouseMoveCommand& mouseCommand)
+						{
+							activateTargetWindow();
+							TemporaryModifiers temporary;
+							PressTemporaryModifiers(state, *listenerList, mouseCommand.arguments.modifiers, temporary);
+							MouseMove(state, *listenerList, ConvertGuiPointToNativePoint(targetWindow, mouseCommand.arguments.position));
+							ReleaseTemporaryModifiers(state, *listenerList, temporary);
+						},
+						[=](const MouseButtonCommand& mouseCommand)
+						{
+							activateTargetWindow();
+							TemporaryModifiers temporary;
+							PressTemporaryModifiers(state, *listenerList, mouseCommand.arguments.modifiers, temporary);
+							MouseButtonOperation(state, *listenerList, mouseCommand.button, mouseCommand.operation, ConvertGuiPointToNativePoint(targetWindow, mouseCommand.arguments.position));
+							ReleaseTemporaryModifiers(state, *listenerList, temporary);
+						},
+						[=](const WheelCommand& wheelCommand)
+						{
+							activateTargetWindow();
+							TemporaryModifiers temporary;
+							PressTemporaryModifiers(state, *listenerList, wheelCommand.arguments.modifiers, temporary);
+							Wheel(state, *listenerList, wheelCommand.arguments.ticks * 120 * wheelCommand.direction, wheelCommand.horizontal);
+							ReleaseTemporaryModifiers(state, *listenerList, temporary);
+						}
+						));
+				});
+#undef ERROR_MESSAGE_PREFIX
+			}
+		}
+
+		WString RunIOCommandOnNativeWindow(
+			IoCommandState* state,
+			INativeController* nativeController,
+			INativeWindow* nativeWindow,
+			collections::List<INativeWindowListener*>& listeners,
+			WString command
+		)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
+			CHECK_ERROR(state, ERROR_MESSAGE_PREFIX L"IO command state is missing.");
+			CHECK_ERROR(nativeController, ERROR_MESSAGE_PREFIX L"Native controller is missing.");
+
+			auto targetWindow = nativeWindow;
+			if (!targetWindow)
+			{
+				targetWindow = nativeController->WindowService()->GetMainWindow();
+			}
+			if (!targetWindow)
+			{
+				return WString::Unmanaged(iocommands::IO_COMMAND_SYNTAX);
+			}
+
+			auto ioCommand = iocommands::ParseIOCommand(nativeController, command);
+			if (ioCommand.TryGet<iocommands::SyntaxErrorCommand>())
+			{
+				return WString::Unmanaged(iocommands::IO_COMMAND_SYNTAX);
+			}
+
+			iocommands::ExecuteIOCommand(state, nativeController, targetWindow, listeners, std::move(ioCommand));
+			return WString::Unmanaged(L"Queued");
+#undef ERROR_MESSAGE_PREFIX
+		}
+	}
+}
+
+
+/***********************************************************************
+.\UTILITIES\SHAREDSERVICES\GUISHAREDAUTOMATIONSERVICE_CONTROLS.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace collections;
+		using namespace controls;
+		using namespace compositions;
+		using namespace elements;
+		using namespace glr::xml;
+		using namespace remoteprotocol;
+		using namespace stream;
+
+/***********************************************************************
+AutomationService
+***********************************************************************/
+
+		WString AutomationService::DumpControlTreeInternal()
+		{
+			auto app = GetApplication();
+			auto mainWindow = app->GetMainWindow();
+
+			auto dumpRoot = Ptr(new glr::json::JsonObject);
+			ConvertCustomTypeToJsonField(dumpRoot, L"WindowManagement", WString::Unmanaged(L"MultiWindow"));
+			{
+				auto field = Ptr(new glr::json::JsonObjectField);
+				dumpRoot->fields.Add(field);
+				field->name.value = L"MainWindow";
+				field->value = DumpWindowClientArea(mainWindow, GetNativeWindowId(mainWindow->GetNativeWindow()), { 0,0 });
+			}
+			{
+				auto field = Ptr(new glr::json::JsonObjectField);
+				dumpRoot->fields.Add(field);
+				field->name.value = L"SubWindows";
+
+				auto subWindows = Ptr(new glr::json::JsonArray);
+				field->value = subWindows;
+
+				for (auto subWindow : app->windows)
+				{
+					if (subWindow != mainWindow && subWindow->GetVisible() && !dynamic_cast<GuiPopup*>(subWindow))
+					{
+						subWindows->items.Add(DumpWindowClientArea(subWindow, GetNativeWindowId(subWindow->GetNativeWindow()), { 0,0 }));
+					}
+				}
+			}
+			{
+				auto field = Ptr(new glr::json::JsonObjectField);
+				dumpRoot->fields.Add(field);
+				field->name.value = L"Popups";
+
+				auto popups = Ptr(new glr::json::JsonArray);
+				field->value = popups;
+
+				for (auto popup : app->openingPopups)
+				{
+					popups->items.Add(DumpWindowClientArea(popup, GetNativeWindowId(popup->GetNativeWindow()), { 0,0 }));
+				}
+			}
+			return DumpJsonToString(dumpRoot);
+		}
+
+		AutomationService::AutomationService()
+		{
+		}
+
+		AutomationService::~AutomationService()
+		{
+		}
+
+		bool AutomationService::CanDumpControlTree()
+		{
+			return true;
+		}
+
+/***********************************************************************
+AutomationServiceHosted
+***********************************************************************/
+
+		Nullable<WString> AutomationServiceHosted::GetNativeWindowId(INativeWindow* window)
+		{
+			return {};
+		}
+
+		INativeWindow* AutomationServiceHosted::GetNativeWindow(Nullable<WString> windowId)
+		{
+			return GetHostedApplication()->GetNativeWindowHost();
+		}
+
+		WString AutomationServiceHosted::DumpControlTreeInternal()
+		{
+			auto app = GetApplication();
+			auto mainWindow = app->GetMainWindow();
+
+			auto dumpRoot = Ptr(new glr::json::JsonObject);
+			ConvertCustomTypeToJsonField(dumpRoot, L"WindowManagement", windowManagement);
+			{
+				auto field = Ptr(new glr::json::JsonObjectField);
+				dumpRoot->fields.Add(field);
+				field->name.value = L"MainWindow";
+				field->value = DumpWindowClientArea(mainWindow, {}, { 0,0 });
+				{
+					auto subWindowsField = Ptr(new glr::json::JsonObjectField);
+					field->value.Cast<glr::json::JsonObject>()->fields.Add(subWindowsField);
+					subWindowsField->name.value = L"subWindowsInZOrder";
+
+					auto subWindows = Ptr(new glr::json::JsonArray);
+					subWindowsField->value = subWindows;
+
+					auto hostedController = static_cast<GuiHostedController*>(GetHostedApplication());
+					for (auto wmWindow : From(hostedController->wmManager->topMostedWindowsInOrder).Concat(hostedController->wmManager->ordinaryWindowsInOrder).Reverse())
+					{
+						if (wmWindow->id == mainWindow->GetNativeWindow()) continue;
+						auto subWindow = app->windowMap[wmWindow->id];
+						auto offset = mainWindow->GetNativeWindow()->Convert(wmWindow->bounds.LeftTop());
+						subWindows->items.Add(DumpWindowClientArea(subWindow, {}, offset));
+					}
+				}
+			}
+			return DumpJsonToString(dumpRoot);
+		}
+
+		AutomationServiceHosted::AutomationServiceHosted()
+		{
+		}
+
+		AutomationServiceHosted::~AutomationServiceHosted()
+		{
+		}
+
+		bool AutomationServiceHosted::CanDumpControlTree()
+		{
+			return true;
+		}
+
+/***********************************************************************
+RemoteProtocolAutomationService
+***********************************************************************/
+
+		WString RemoteProtocolAutomationService::RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand)
+		{
+			auto window = dynamic_cast<GuiRemoteWindow*>(this->GetNativeWindow(windowId));
+			if (!window)
+			{
+				return L"!Invalid window.";
+			}
+
+			return RunIOCommandOnNativeWindow(&ioCommandState, GetHostedApplication()->GetNativeController(), window, window->listeners, ioCommand);
+		}
+
+		RemoteProtocolAutomationService::RemoteProtocolAutomationService()
+		{
+			windowManagement = WString::Unmanaged(L"HostedRemoteProtocol");
+		}
+
+		RemoteProtocolAutomationService::~RemoteProtocolAutomationService()
+		{
+		}
+
+		bool RemoteProtocolAutomationService::CanRunIOCommands()
+		{
+			return true;
+		}
+
+/***********************************************************************
+DumpWindowClientArea
+***********************************************************************/
+
+		WString PrintControlThemeName(theme::ThemeName theme)
+		{
+			switch (theme)
+			{
+			case theme::ThemeName::Window: return WString::Unmanaged(L"Window");
+#define GUI_DEFINE_THEME_NAME(TEMPLATE, CONTROL) case theme::ThemeName::CONTROL: return WString::Unmanaged(L ## #CONTROL);
+				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_THEME_NAME)
+#undef GUI_DEFINE_THEME_NAME
+			default: return WString::Unmanaged(L"Unknown");
+			}
+		}
+
+		void AddJsonField(Ptr<glr::json::JsonObject> dump, const WString& name, Ptr<glr::json::JsonNode> value)
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			dump->fields.Add(field);
+			field->name.value = name;
+			field->value = value;
+		}
+
+		Rect OffsetRect(Rect bounds, Point offset)
+		{
+			bounds.Move(offset.x, offset.y);
+			return bounds;
+		}
+
+		WString HexByte(unsigned char value)
+		{
+			const wchar_t* code = L"0123456789ABCDEF";
+			return WString::FromChar(code[value / 16]) + WString::FromChar(code[value % 16]);
+		}
+
+		WString PrintColor(Color color)
+		{
+			return WString::Unmanaged(L"#") + HexByte(color.r) + HexByte(color.g) + HexByte(color.b) + HexByte(color.a);
+		}
+
+		WString PrintElementShape(ElementShape shape)
+		{
+			switch (shape.shapeType)
+			{
+			case ElementShapeType::Rectangle:
+				return WString::Unmanaged(L"Rectangle");
+			case ElementShapeType::Ellipse:
+				return WString::Unmanaged(L"Ellipse");
+			case ElementShapeType::RoundRect:
+				return L"RoundRect(" + itow(shape.radiusX) + L"," + itow(shape.radiusY) + L")";
+			default:
+				return WString::Unmanaged(L"Unknown");
+			}
+		}
+
+		WString PrintSplitterDirection(Gui3DSplitterElement::Direction direction)
+		{
+			switch (direction)
+			{
+			case Gui3DSplitterElement::Horizontal:
+				return WString::Unmanaged(L"Horizontal");
+			case Gui3DSplitterElement::Vertical:
+				return WString::Unmanaged(L"Vertical");
+			default:
+				return WString::Unmanaged(L"Unknown");
+			}
+		}
+
+		WString PrintGradientDirection(GuiGradientBackgroundElement::Direction direction)
+		{
+			switch (direction)
+			{
+			case GuiGradientBackgroundElement::Horizontal:
+				return WString::Unmanaged(L"Horizontal");
+			case GuiGradientBackgroundElement::Vertical:
+				return WString::Unmanaged(L"Vertical");
+			case GuiGradientBackgroundElement::Slash:
+				return WString::Unmanaged(L"Slash");
+			case GuiGradientBackgroundElement::Backslash:
+				return WString::Unmanaged(L"Backslash");
+			default:
+				return WString::Unmanaged(L"Unknown");
+			}
+		}
+
+		WString PrintTextPos(TextPos position)
+		{
+			return L"(" + itow(position.row) + L"," + itow(position.column) + L")";
+		}
+
+		WString PrintFontStyle(const FontProperties& fontProperties)
+		{
+			return fontProperties.fontFamily + L"," + itow(fontProperties.size);
+		}
+
+		WString PrintLayout(GuiGraphicsComposition* composition)
+		{
+			if (auto table = dynamic_cast<GuiTableComposition*>(composition))
+			{
+				return L"Table:" + itow(table->GetRows()) + L"*" + itow(table->GetColumns());
+			}
+			else if (auto cell = dynamic_cast<GuiCellComposition*>(composition))
+			{
+				if (dynamic_cast<GuiTableComposition*>(cell->GetParent()))
+				{
+					return L"Cell:(" + itow(cell->GetRow()) + L"," + itow(cell->GetColumn()) + L")*(" + itow(cell->GetRowSpan()) + L"," + itow(cell->GetColumnSpan()) + L")";
+				}
+			}
+			else if (auto rowSplitter = dynamic_cast<GuiRowSplitterComposition*>(composition))
+			{
+				return L"RowSplitter:" + itow(rowSplitter->GetRowsToTheTop());
+			}
+			else if (auto columnSplitter = dynamic_cast<GuiColumnSplitterComposition*>(composition))
+			{
+				return L"ColumnSplitter:" + itow(columnSplitter->GetColumnsToTheLeft());
+			}
+			else if (dynamic_cast<GuiStackComposition*>(composition))
+			{
+				return WString::Unmanaged(L"Stack");
+			}
+			else if (auto stackItem = dynamic_cast<GuiStackItemComposition*>(composition))
+			{
+				if (auto stack = dynamic_cast<GuiStackComposition*>(stackItem->GetParent()))
+				{
+					auto index = stack->GetStackItems().IndexOf(stackItem);
+					if (index != -1)
+					{
+						return L"StackItem:" + itow(index);
+					}
+				}
+			}
+			else if (dynamic_cast<GuiFlowComposition*>(composition))
+			{
+				return WString::Unmanaged(L"Flow");
+			}
+			else if (auto flowItem = dynamic_cast<GuiFlowItemComposition*>(composition))
+			{
+				if (auto flow = dynamic_cast<GuiFlowComposition*>(flowItem->GetParent()))
+				{
+					auto index = flow->GetFlowItems().IndexOf(flowItem);
+					if (index != -1)
+					{
+						return L"FlowItem:" + itow(index);
+					}
+				}
+			}
+			return WString::Empty;
+		}
+
+		WString PrintDocument(Ptr<DocumentModel> document)
+		{
+			if (!document) return WString::Empty;
+			return GenerateToStream([&](StreamWriter& writer)
+			{
+				XmlPrint(document->SaveToXml(), writer);
+			});
+		}
+
+		void DumpElement(Ptr<IGuiGraphicsElement> element, Ptr<glr::json::JsonObject> compositionDump)
+		{
+			if (!element) return;
+			auto rawElement = element.Obj();
+			WString elementDescription;
+
+			if (dynamic_cast<GuiFocusRectangleElement*>(rawElement))
+			{
+				elementDescription = WString::Unmanaged(L"FocusRectangle");
+			}
+			else if (auto border = dynamic_cast<GuiSolidBorderElement*>(rawElement))
+			{
+				elementDescription = L"Border:" + PrintColor(border->GetColor()) + L"," + PrintElementShape(border->GetShape());
+			}
+			else if (auto border3D = dynamic_cast<Gui3DBorderElement*>(rawElement))
+			{
+				elementDescription = L"3DBorder:" + PrintColor(border3D->GetColor1()) + L"," + PrintColor(border3D->GetColor2());
+			}
+			else if (auto splitter3D = dynamic_cast<Gui3DSplitterElement*>(rawElement))
+			{
+				elementDescription = L"3DSplitter:" + PrintColor(splitter3D->GetColor1()) + L"," + PrintColor(splitter3D->GetColor2()) + L"," + PrintSplitterDirection(splitter3D->GetDirection());
+			}
+			else if (auto background = dynamic_cast<GuiSolidBackgroundElement*>(rawElement))
+			{
+				elementDescription = L"Background:" + PrintColor(background->GetColor()) + L"," + PrintElementShape(background->GetShape());
+			}
+			else if (auto gradient = dynamic_cast<GuiGradientBackgroundElement*>(rawElement))
+			{
+				elementDescription = L"Gradient:" + PrintColor(gradient->GetColor1()) + L"," + PrintColor(gradient->GetColor2()) + L"," + PrintGradientDirection(gradient->GetDirection()) + L"," + PrintElementShape(gradient->GetShape());
+			}
+			else if (auto shadow = dynamic_cast<GuiInnerShadowElement*>(rawElement))
+			{
+				elementDescription = L"InnerShadow:" + PrintColor(shadow->GetColor()) + L"," + itow(shadow->GetThickness());
+			}
+			else if (auto label = dynamic_cast<GuiSolidLabelElement*>(rawElement))
+			{
+				elementDescription = L"Label:" + PrintColor(label->GetColor()) + L"," + PrintFontStyle(label->GetFont());
+				if (label->GetWrapLine()) elementDescription += L",WrapLine";
+				if (label->GetEllipse()) elementDescription += L",Ellipse";
+				if (label->GetMultiline()) elementDescription += L",Multiline";
+				ConvertCustomTypeToJsonField(compositionDump, L"elementText", label->GetText());
+			}
+			else if (dynamic_cast<GuiImageFrameElement*>(rawElement))
+			{
+				elementDescription = WString::Unmanaged(L"Image");
+			}
+			else if (dynamic_cast<GuiPolygonElement*>(rawElement))
+			{
+				elementDescription = WString::Unmanaged(L"Polygon");
+			}
+			else if (auto document = dynamic_cast<GuiDocumentElement*>(rawElement))
+			{
+				elementDescription = L"Document:Selection" + PrintTextPos(document->GetCaretBegin()) + L"-" + PrintTextPos(document->GetCaretEnd());
+				if (auto passwordChar = document->GetPasswordChar())
+				{
+					elementDescription += L",PasswordChar=" + WString::FromChar(passwordChar);
+				}
+				if (document->GetWrapLine())
+				{
+					elementDescription += L",WrapLine";
+				}
+				ConvertCustomTypeToJsonField(compositionDump, L"elementDocument", PrintDocument(document->GetDocument()));
+			}
+
+			if (elementDescription != WString::Empty)
+			{
+				ConvertCustomTypeToJsonField(compositionDump, L"element", elementDescription);
+			}
+		}
+
+		Ptr<glr::json::JsonNode> DumpComposition(GuiGraphicsComposition* composition, Point offset)
+		{
+			auto compositionDump = Ptr(new glr::json::JsonObject);
+			ConvertCustomTypeToJsonField(compositionDump, L"bounds", OffsetRect(composition->GetGlobalBounds(), offset));
+
+			auto layout = PrintLayout(composition);
+			if (layout != WString::Empty)
+			{
+				ConvertCustomTypeToJsonField(compositionDump, L"layout", layout);
+			}
+
+			DumpElement(composition->GetOwnedElement(), compositionDump);
+
+			if (auto control = composition->GetAssociatedControl())
+			{
+				ConvertCustomTypeToJsonField(compositionDump, L"control", PrintControlThemeName(control->GetControlThemeName()));
+			}
+
+			if (composition->Children().Count() > 0)
+			{
+				auto children = Ptr(new glr::json::JsonArray);
+				for (auto child : composition->Children())
+				{
+					if (child->GetEventuallyVisible())
+					{
+						children->items.Add(DumpComposition(child, offset));
+					}
+				}
+				if (children->items.Count() > 0)
+				{
+					AddJsonField(compositionDump, L"children", children);
+				}
+			}
+
+			return compositionDump;
+		}
+
+		Ptr<glr::json::JsonNode> DumpWindowClientArea(controls::GuiWindow* window, Nullable<WString> windowId, Point offset)
+		{
+			auto windowDump = Ptr(new glr::json::JsonObject);
+			ConvertCustomTypeToJsonField(windowDump, L"title", window->GetText());
+			if (windowId)
+			{
+				ConvertCustomTypeToJsonField(windowDump, L"windowId", windowId.Value());
+			}
+
+			{
+				Size size = window->GetBoundsComposition()->GetCachedBounds().GetSize();
+				ConvertCustomTypeToJsonField(windowDump, L"bounds", Rect(offset, size));
+			}
+			AddJsonField(windowDump, L"composition", DumpComposition(window->GetBoundsComposition(), offset));
+			return windowDump;
+		}
+	}
+}
+
 
 /***********************************************************************
 .\UTILITIES\SHAREDSERVICES\GUISHAREDCALLBACKSERVICE.CPP

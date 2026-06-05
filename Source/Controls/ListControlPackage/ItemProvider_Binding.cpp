@@ -109,6 +109,7 @@ TextItemBindableProvider
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::TextItemBindableProvider::GetTextValue(vint)#"
 				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				CHECK_ERROR(0 <= itemIndex && itemIndex < itemSource->GetCount(), ERROR_MESSAGE_PREFIX L"Index out of range.");
 				return ReadProperty(itemSource->Get(itemIndex), textProperty);
 #undef ERROR_MESSAGE_PREFIX
 			}
@@ -136,14 +137,22 @@ TextItemBindableProvider
 			
 			bool TextItemBindableProvider::GetChecked(vint itemIndex)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::TextItemBindableProvider::GetChecked(vint)#"
+				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				CHECK_ERROR(0 <= itemIndex && itemIndex < itemSource->GetCount(), ERROR_MESSAGE_PREFIX L"Index out of range.");
 				return ReadProperty(itemSource->Get(itemIndex), checkedProperty);
+#undef ERROR_MESSAGE_PREFIX
 			}
 			
 			void TextItemBindableProvider::SetChecked(vint itemIndex, bool value)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::TextItemBindableProvider::SetChecked(vint, bool)#"
+				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				CHECK_ERROR(0 <= itemIndex && itemIndex < itemSource->GetCount(), ERROR_MESSAGE_PREFIX L"Index out of range.");
 				auto thisValue = itemSource->Get(itemIndex);
 				WriteProperty(thisValue, checkedProperty, value);
 				InvokeOnItemModified(itemIndex, 1, 1, false);
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 /***********************************************************************
@@ -321,6 +330,7 @@ ListViewItemBindableProvider
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::ListViewItemBindableProvider::GetSmallImage(vint)#"
 				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				CHECK_ERROR(0 <= itemIndex && itemIndex < itemSource->GetCount(), ERROR_MESSAGE_PREFIX L"Index out of range.");
 				return ReadProperty(itemSource->Get(itemIndex), smallImageProperty);
 #undef ERROR_MESSAGE_PREFIX
 			}
@@ -329,6 +339,7 @@ ListViewItemBindableProvider
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::ListViewItemBindableProvider::GetLargeImage(vint)#"
 				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				CHECK_ERROR(0 <= itemIndex && itemIndex < itemSource->GetCount(), ERROR_MESSAGE_PREFIX L"Index out of range.");
 				return ReadProperty(itemSource->Get(itemIndex), largeImageProperty);
 #undef ERROR_MESSAGE_PREFIX
 			}
@@ -337,6 +348,7 @@ ListViewItemBindableProvider
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::ListViewItemBindableProvider::GetText(vint)#"
 				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				CHECK_ERROR(0 <= itemIndex && itemIndex < itemSource->GetCount(), ERROR_MESSAGE_PREFIX L"Index out of range.");
 				return ReadProperty(itemSource->Get(itemIndex), columns[0]->GetTextProperty());
 #undef ERROR_MESSAGE_PREFIX
 			}
@@ -345,6 +357,7 @@ ListViewItemBindableProvider
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::ListViewItemBindableProvider::GetSubItem(vint, vint)#"
 				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				CHECK_ERROR(0 <= itemIndex && itemIndex < itemSource->GetCount(), ERROR_MESSAGE_PREFIX L"Index out of range.");
 				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"column index cannot be -1, use GetText(itemIndex) instead.");
 				return ReadProperty(itemSource->Get(itemIndex), columns[index + 1]->GetTextProperty());
 #undef ERROR_MESSAGE_PREFIX
