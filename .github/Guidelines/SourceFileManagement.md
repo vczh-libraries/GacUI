@@ -15,6 +15,27 @@
 
 - All affected `*.vcxitems`, `*.vcxproj`, `*.vcxitems.filters` and `*.vcxproj.filters` must be updated.
 
+## Adding new C++ Project
+
+- There are two kinds of projects: `*.vcxproj` and `*.vcxitems`.
+  - Usually `*.vcxproj` comes with a `*.vcxproj.filters` because solution explorer organization of source files are always needed.
+  - Usually `*.vcxitems` does not come with a `*.vcxitems.filters` because all files are just listed below the project in the solution explorer.
+- When adding a new project, find a existing project to copy.
+- For a typical `*.vcxproj` project, there will always be solution explorer folders `Header Files`, `Resource Files` and `Source Files`.
+  - `Header Files` and `Resource Files` should be kept during copy even when there will be no files adding to them.
+  - `Header Files` is never used, all source files, including header files, should be in `Source Files` or custom created folders.
+  - If all options are correctly copied from another `*.vcxproj` files, it should be good but you still need to make sure that:
+    - `Debug` and `Release` are always needed.
+    - `Win32` and `x64` are always needed.
+    - All configuration should define `VCZH_DEBUG_NO_REFLECTION` macro, unless there is special requirement to enable C++ reflection.
+    - All `Debug` configuration should define `VCZH_CHECK_MEMORY_LEAKS`.
+- When `*.vcxproj` is added to the solution, you need to build the solution against all configuration to make sure everything works:
+  - `Debug` and `Release`.
+  - `Win32` and `x64`.
+  - Even if you find any pre-existing issues, you should fix them.
+  - You can skip the test, as adding new project should not affect test cases, unless existing projects are modified as part of the refactoring.
+- Only add the `/bigobj` compiler option to a `*.cpp` file when needed.
+
 ## Working on Linux
 
 `makefile` for each project is generated from MSBuild project files during the build.

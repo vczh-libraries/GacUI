@@ -188,3 +188,11 @@ Propose any solution you can think of and write them down in the document, you m
   - When different `## Task X` happens in different repos, you are going to change the `Copilot_Investigate.md` in that repo.
     - If multiple repos are involved, for all involved repos that has the `Copilot_Investigate.md` file, decide which repo is the main repo for the task and update that file in the main repo.
     - If the repo does not have such document, you are allowed not to create one, skip writing such file.
+- When `git push` is blocked because of needing to merge, you are allowed to rebase by yourself:
+  - Always rebase to the latest change of the remote branch, instead of making a rebase commit.
+  - Usually there is only documentation or instruction changes. In this case, you can rebase and skip the testing.
+  - When there is code conflict, you are required to rebase all local changes first (when multiple commits are created for one task), and redo the testing process.
+  - There are two kinds of source code:
+    - Code files for manual editing, you need to carefully resolve all conflicts.
+    - Code files that is auto generated, you can just accept the remote change, and redo the testing process to regenerate these file and ensure all test cases passed. `git commit` all local changes during the process.
+  - After the rebase is done and all test cases passed, `git push` it again.
