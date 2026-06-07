@@ -10,6 +10,7 @@
   - Each file must be attached to a solution explorer folder, described in this XPath: `/Project/ItemGroup/ClCompile@Include="PhysicalFile"/Filter`.
   - Inside the `Filter` tag there is the solution explorer folder.
   - Edit that `*.vcxitems.filters` or `*.vcxproj.filters` file to include the source file.
+- Wild card is **NOT ALLOWED** in project files, each file should be enumerated one by one.
 
 ## Renaming and Removing Source Files
 
