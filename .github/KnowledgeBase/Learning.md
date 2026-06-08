@@ -9,7 +9,7 @@
 - Make `Stop()` drain asynchronous work before returning [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
-- Proactively remove code made redundant by refactoring [3]
+- Proactively remove code made redundant by refactoring [4]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [3]
 - Capture dependent lambdas explicitly [2]
 - Don't assume observable changes are batched [2]
@@ -225,6 +225,8 @@ When a change makes a construction unnecessary or no longer meaningful, delete i
 Remove unused dependency parameters and fields as part of the refactor too. If every meaningful call path already receives a preconverted representation, do not keep serializer or adapter state only for a fallback that current callers neither need nor should use.
 
 Preserve helper layers that still own observable behavior. For example, flat RPC dispatcher wrappers that only forward can be removed, but JSON wrappers that record generated TypeScript artifacts should stay until their recording responsibility is moved elsewhere.
+
+When a destructor only resets `Ptr`, shared-pointer, or similar owning members to null, remove that destructor/reset code and let member destruction release resources naturally.
 
 ## Keep design documentation aligned with code after refactoring
 

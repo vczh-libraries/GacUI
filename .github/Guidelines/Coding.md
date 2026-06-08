@@ -81,6 +81,7 @@ When `VlppParser2` is available to the current project, complex parsers always r
   - One exception is `WString` which is initialized using `WString::Unmanaged`; such constructors and destructors do not do memory management.
   - Another exception is `Pair`, `Nullable`, `Variant` or `Tuple` with valid types here.
   - If pointers are needed, you could only use `T*` and do initialization or finalization explicitly. All such objects should be destroyed in `main`, `wmain`, `WinMain` or `GuiMain`, before memory leak detector runs.
+- DO NOT reset any raw/shared pointer member to nullPTR in destructorS.
 - Prefer the latest C++ features (up to C++ 20).
 - Prefer template variadic arguments, over hard-coded-counting solutions.
 
