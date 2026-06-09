@@ -131,7 +131,7 @@ namespace
 						Ptr<glr::json::JsonObject> package;
 						ChannelPackageInfo info{ ChannelPackageSemantic::Message, -1, WString::Unmanaged(L"ControllerConnectionStopped") };
 						JsonChannelPack(info, {}, package);
-						jsonChannelToOldRenderer->SendToClient(GacUIRemoteProtocolCoreClientId, oldRendererClientId, package);
+						jsonChannelToOldRenderer->SendToClient(oldRendererClientId, package);
 						bool disconnected = false;
 						jsonChannelToOldRenderer->BatchWrite(disconnected);
 						rendererNotifiedToStop = !disconnected;

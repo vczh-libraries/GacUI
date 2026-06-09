@@ -23052,8 +23052,8 @@ GuiRemoteProtocolJsonChannelRenderer_Async
 	protected:
 		struct QueuedPackage
 		{
-			vint											senderClientId = -1;
 			Nullable<vint>									receiverClientId;
+			Ptr<collections::List<vint>>						blockedReceivers;
 			JsonPackage										package;
 		};
 
@@ -23104,8 +23104,9 @@ GuiRemoteProtocolJsonChannelRenderer_Async
 		const WString&										GetChannelName() override;
 		IJsonChannelReader*								GetReader() override;
 		void												Initialize(IJsonChannelReader* _reader) override;
-		void												SendToClient(vint senderClientId, vint receiverClientId, const JsonPackage& package) override;
-		void												BroadcastFromClient(vint senderClientId, const JsonPackage& package) override;
+		void												SendToClient(vint receiverClientId, const JsonPackage& package) override;
+		void												BroadcastFromClient(const JsonPackage& package) override;
+		void												BroadcastFromClient(const JsonPackage& package, const collections::List<vint>& blockedReceivers) override;
 		void												BatchWrite(bool& disconnected) override;
 
 		IGuiRemoteEventProcessor*							GetRemoteEventProcessor();
@@ -23185,8 +23186,9 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 		const WString&										GetChannelName() override;
 		IJsonChannelReader*								GetReader() override;
 		void												Initialize(IJsonChannelReader* _reader) override;
-		void												SendToClient(vint senderClientId, vint receiverClientId, const JsonPackage& package) override;
-		void												BroadcastFromClient(vint senderClientId, const JsonPackage& package) override;
+		void												SendToClient(vint receiverClientId, const JsonPackage& package) override;
+		void												BroadcastFromClient(const JsonPackage& package) override;
+		void												BroadcastFromClient(const JsonPackage& package, const collections::List<vint>& blockedReceivers) override;
 		void												BatchWrite(bool& disconnected) override;
 
 		void												SetInvokeInMainThread(IGuiRemoteProtocolAsyncRendererInvoker* _invokeInMainThread);

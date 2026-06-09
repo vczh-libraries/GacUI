@@ -1189,18 +1189,24 @@ IGuiRemoteProtocolChannel<T>
 		/// Queue a message to send to a client using the same channel.
 		/// If the remote client doesn't have this channel, the message will be discarded.
 		/// </summary>
-		/// <param name="senderClientId">The sender client id.</param>
 		/// <param name="receiverClientId">The receiver client id.</param>
 		/// <param name="package">The message to send.</param>
-		virtual void							SendToClient(vint senderClientId, vint receiverClientId, const TPackage& package) = 0;
+		virtual void							SendToClient(vint receiverClientId, const TPackage& package) = 0;
 
 		/// <summary>
 		/// Queue a message to broadcast to all other clients using the same channel.
 		/// If the remote client doesn't have this channel, the message will be discarded.
 		/// </summary>
-		/// <param name="senderClientId">The sender client id.</param>
 		/// <param name="package">The message to broadcast.</param>
-		virtual void							BroadcastFromClient(vint senderClientId, const TPackage& package) = 0;
+		virtual void							BroadcastFromClient(const TPackage& package) = 0;
+
+		/// <summary>
+		/// Queue a message to broadcast to all other clients using the same channel.
+		/// If the remote client doesn't have this channel, the message will be discarded.
+		/// </summary>
+		/// <param name="package">The message to broadcast.</param>
+		/// <param name="blockedReceivers">The receiver client ids blocked from this broadcast.</param>
+		virtual void							BroadcastFromClient(const TPackage& package, const collections::List<vint>& blockedReceivers) = 0;
 
 		/// <summary>
 		/// Send all queued messages.
@@ -1503,18 +1509,24 @@ struct
 		{
 		}
 
-		void SendToClient(vint senderClientId, vint receiverClientId, const typename TSerialization::SourceType& package) override
+		void SendToClient(vint receiverClientId, const typename TSerialization::SourceType& package) override
 		{
 			typename TSerialization::DestType serialized;
 			TSerialization::Serialize(context, package, serialized);
-			this->channel->SendToClient(senderClientId, receiverClientId, serialized);
+			this->channel->SendToClient(receiverClientId, serialized);
 		}
 
-		void BroadcastFromClient(vint senderClientId, const typename TSerialization::SourceType& package) override
+		void BroadcastFromClient(const typename TSerialization::SourceType& package) override
+		{
+			collections::List<vint> blockedReceivers;
+			BroadcastFromClient(package, blockedReceivers);
+		}
+
+		void BroadcastFromClient(const typename TSerialization::SourceType& package, const collections::List<vint>& blockedReceivers) override
 		{
 			typename TSerialization::DestType serialized;
 			TSerialization::Serialize(context, package, serialized);
-			this->channel->BroadcastFromClient(senderClientId, serialized);
+			this->channel->BroadcastFromClient(serialized, blockedReceivers);
 		}
 	};
 
@@ -1548,70 +1560,21 @@ String Transformation
 
 
 /***********************************************************************
-.\INTERPROCESS\TEXTNETWORKPROTOCOL.H
+.\INTERPROCESS\NETWORKPROTOCOL.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
 
 Interfaces:
-  INetworkProtocol<T>
-
 ***********************************************************************/
 
-#ifndef VCZH_INTERPROCESS_TEXTNETWORKPROTOCOL
-#define VCZH_INTERPROCESS_TEXTNETWORKPROTOCOL
+#ifndef VCZH_INTERPROCESS_NETWORKPROTOCOL
+#define VCZH_INTERPROCESS_NETWORKPROTOCOL
 
 
 namespace vl::inter_process
 {
-	struct NetworkPackage
-	{
-		Nullable<vint>				clientId;
-		WString						channelName;
-		WString						messageBody;
-
-		static inline NetworkPackage Create(Nullable<vint> _clientId, const WString& _channelName, const WString& _messageBody)
-		{
-			NetworkPackage package;
-			package.clientId = std::move(_clientId);
-			package.channelName = _channelName;
-			package.messageBody = _messageBody;
-			return package;
-		}
-
-		static inline WString ToString(const NetworkPackage& package)
-		{
-			return (package.clientId ? itow(package.clientId.Value()) : WString::Empty)
-				+ L";" + package.channelName
-				+ L";" + package.messageBody
-				;
-		}
-
-		static inline void Parse(const WString& str, NetworkPackage& package)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::inter_process::NetworkPackage::Parse(const WString&, NetworkPackage&)#"
-			const wchar_t* reading = str.Buffer();
-
-			const wchar_t* afterClientId = wcschr(reading, L';');
-			CHECK_ERROR(afterClientId != nullptr, ERROR_MESSAGE_PREFIX L"Invalid package format.");
-			if (afterClientId == reading)
-			{
-				package.clientId.Reset();
-			}
-			else
-			{
-				package.clientId = wtoi(str.Left((vint)(afterClientId - reading)));
-			}
-
-			const wchar_t* afterChannelName = wcschr(afterClientId + 1, L';');
-			CHECK_ERROR(afterChannelName != nullptr, ERROR_MESSAGE_PREFIX L"Invalid package format.");
-			package.channelName = str.Sub((vint)(afterClientId - reading + 1), (vint)(afterChannelName - afterClientId - 1));
-			package.messageBody = str.Right(str.Length() - (vint)(afterChannelName - reading + 1));
-#undef ERROR_MESSAGE_PREFIX
-		}
-	};
-
 /***********************************************************************
 INetworkProtocolServer
 ***********************************************************************/
@@ -1756,34 +1719,27 @@ INetworkProtocolServer
 		virtual bool							IsStopped() = 0;
 	};
 
+}
+
+#endif
+
+
 /***********************************************************************
-Hooking IChannelServer/IChannelClient to INetworkProtocolServer/INetworkProtocolClient
+.\INTERPROCESS\CHANNELIMPLS\CHANNELIMPL.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
 
-The serialization contract is the same to the one described in ChannelSerialization.h
-SourceType will be List<TPackage>
-DestType will be WString
-
-NetworkPackage will be used as text message parsing and formatting for INetworkProtocolConnection.
-BatchWrite belongs to IChannel, meaning each channel sends its own batch messages in one NetworkPackage.
-channelName will be either a system channel or a user defined channel.
-messageBody represents a list of TPackage.
-When sending from client to server, clientId means the target client.
-  Empty means broadcasting.
-When sending from server to client, clientId means the source client.
-  Channel messages delivered by the server always carry a source client id.
-
-When a client establishes a connection to the server, channel names will be sent to the server:
-  clientId will be empty, it does not mean broadcasting.
-  channelName will be empty.
-  messageBody will be all available channel names joined by "!", as "!" cannot be part of the channel name anyway.
-After the server receives the first message from a client, an client id will be sent to the client:
-  clientId is the assigned client id, starting from 1.
-  channelName will be empty.
-  messageBody will be empty.
-
-Later 
+Interfaces:
 ***********************************************************************/
 
+#ifndef VCZH_INTERPROCESS_CHANNELIMPLS_CHANNELIMPL
+#define VCZH_INTERPROCESS_CHANNELIMPLS_CHANNELIMPL
+
+
+namespace vl::inter_process
+{
 /***********************************************************************
 NetworkProtocolChannel
 ***********************************************************************/
@@ -1795,6 +1751,7 @@ NetworkProtocolChannel
 		static_assert(std::is_same_v<typename TSerialization::DestType, WString>);
 	protected:
 		using PackageList = typename TSerialization::SourceType;
+		using ClientIdList = collections::List<vint>;
 		using ChannelMap = collections::Dictionary<WString, IChannel<TPackage>*>;
 		using ChannelNameList = typename ChannelMap::KeyContainer;
 
@@ -1806,8 +1763,8 @@ NetworkProtocolChannel
 
 		struct QueuedPackage
 		{
-			vint								senderClientId = -1;
 			Nullable<vint>						receiverClientId;
+			ClientIdList						blockedReceivers;
 			TPackage							package;
 		};
 
@@ -1822,8 +1779,8 @@ NetworkProtocolChannel
 		SpinLock								lockQueuedPackages;
 		collections::List<QueuedPackage>		queuedPackages;
 
-		virtual void ValidatePackage(vint senderClientId, Nullable<vint> receiverClientId) = 0;
-		virtual bool WriteBatch(vint senderClientId, Nullable<vint> receiverClientId, const PackageList& batch) = 0;
+		virtual void ValidatePackage(Nullable<vint> receiverClientId, const ClientIdList& blockedReceivers) = 0;
+		virtual bool WriteBatch(Nullable<vint> receiverClientId, const ClientIdList& blockedReceivers, const PackageList& batch) = 0;
 
 	public:
 		NetworkProtocolChannel(const WString& _channelName)
@@ -1900,16 +1857,23 @@ NetworkProtocolChannel
 			}
 		}
 
-		void SendToClient(vint senderClientId, vint receiverClientId, const TPackage& package) override
+		void SendToClient(vint receiverClientId, const TPackage& package) override
 		{
-			ValidatePackage(senderClientId, receiverClientId);
-			QueuePackage(senderClientId, receiverClientId, package);
+			ClientIdList blockedReceivers;
+			ValidatePackage(receiverClientId, blockedReceivers);
+			QueuePackage(receiverClientId, blockedReceivers, package);
 		}
 
-		void BroadcastFromClient(vint senderClientId, const TPackage& package) override
+		void BroadcastFromClient(const TPackage& package) override
 		{
-			ValidatePackage(senderClientId, {});
-			QueuePackage(senderClientId, {}, package);
+			ClientIdList blockedReceivers;
+			BroadcastFromClient(package, blockedReceivers);
+		}
+
+		void BroadcastFromClient(const TPackage& package, const ClientIdList& blockedReceivers) override
+		{
+			ValidatePackage({}, blockedReceivers);
+			QueuePackage({}, blockedReceivers, package);
 		}
 
 		void BatchWrite(bool& disconnected) override
@@ -1923,12 +1887,14 @@ NetworkProtocolChannel
 			while (packages.Count() > 0)
 			{
 				PackageList batch;
-				auto senderClientId = packages[0].senderClientId;
 				auto receiverClientId = packages[0].receiverClientId;
+				ClientIdList blockedReceivers = std::move(packages[0].blockedReceivers);
+				batch.Add(packages[0].package);
+				packages.RemoveAt(0);
 				for (vint i = 0; i < packages.Count();)
 				{
 					auto&& package = packages[i];
-					if (package.senderClientId == senderClientId && package.receiverClientId == receiverClientId)
+					if (package.receiverClientId == receiverClientId && ClientIdsEqual(package.blockedReceivers, blockedReceivers))
 					{
 						batch.Add(package.package);
 						packages.RemoveAt(i);
@@ -1939,7 +1905,7 @@ NetworkProtocolChannel
 					}
 				}
 
-				if (WriteBatch(senderClientId, receiverClientId, batch))
+				if (WriteBatch(receiverClientId, blockedReceivers, batch))
 				{
 					disconnected = true;
 					return;
@@ -1970,19 +1936,94 @@ NetworkProtocolChannel
 		}
 
 	protected:
-		void QueuePackage(vint senderClientId, Nullable<vint> receiverClientId, const TPackage& package)
+		static bool ClientIdsEqual(const ClientIdList& a, const ClientIdList& b)
+		{
+			if (a.Count() != b.Count())
+			{
+				return false;
+			}
+			for (vint i = 0; i < a.Count(); i++)
+			{
+				if (a[i] != b[i])
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		void QueuePackage(Nullable<vint> receiverClientId, const ClientIdList& blockedReceivers, const TPackage& package)
 		{
 			SPIN_LOCK(lockQueuedPackages)
 			{
 				QueuedPackage queuedPackage;
-				queuedPackage.senderClientId = senderClientId;
 				queuedPackage.receiverClientId = receiverClientId;
+				for (auto blockedReceiver : blockedReceivers)
+				{
+					queuedPackage.blockedReceivers.Add(blockedReceiver);
+				}
 				queuedPackage.package = package;
-				queuedPackages.Add(queuedPackage);
+				queuedPackages.Add(std::move(queuedPackage));
 			}
 		}
 	};
 
+}
+
+#endif
+
+
+/***********************************************************************
+.\INTERPROCESS\CHANNELIMPLS\CHANNELPACKAGE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_CHANNELIMPLS_CHANNELPACKAGE
+#define VCZH_INTERPROCESS_CHANNELIMPLS_CHANNELPACKAGE
+
+
+namespace vl::inter_process
+{
+	struct NetworkPackage
+	{
+		using ClientIdList = collections::List<vint>;
+
+		Nullable<vint>				clientId;
+		Nullable<ClientIdList>		extraClientIds;
+		WString						channelName;
+		WString						messageBody;
+
+		static NetworkPackage Create(Nullable<vint> _clientId, const WString& _channelName, const WString& _messageBody);
+		static NetworkPackage Create(Nullable<vint> _clientId, const ClientIdList& _extraClientIds, const WString& _channelName, const WString& _messageBody);
+		static WString ToString(const NetworkPackage& package);
+		static void Parse(const WString& str, NetworkPackage& package);
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\INTERPROCESS\CHANNELIMPLS\CHANNELCLIENTBASEIMPL.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_CHANNELIMPLS_CHANNELCLIENTBASEIMPL
+#define VCZH_INTERPROCESS_CHANNELIMPLS_CHANNELCLIENTBASEIMPL
+
+
+namespace vl::inter_process
+{
 /***********************************************************************
 NetworkProtocolChannelClientBase
 ***********************************************************************/
@@ -2000,24 +2041,29 @@ NetworkProtocolChannelClientBase
 		class Channel : public NetworkProtocolChannel<TPackage, TSerialization>
 		{
 			using Base = NetworkProtocolChannel<TPackage, TSerialization>;
+			using ClientIdList = typename Base::ClientIdList;
 
 		private:
 			NetworkProtocolChannelClientBase*				client = nullptr;
 
-			void ValidatePackage(vint senderClientId, Nullable<vint> receiverClientId) override
+			void ValidatePackage(Nullable<vint> receiverClientId, const ClientIdList& blockedReceivers) override
 			{
 				auto currentClientId = client->GetClientId();
 				CHECK_ERROR(currentClientId != -1, L"NetworkProtocolChannelClient::Channel needs to be connected before sending.");
-				CHECK_ERROR(senderClientId == currentClientId, L"NetworkProtocolChannelClient::Channel needs senderClientId to match the current client id.");
 				if (receiverClientId)
 				{
 					CHECK_ERROR(receiverClientId.Value() > 0, L"NetworkProtocolChannelClient::Channel needs a valid receiverClientId.");
+					CHECK_ERROR(blockedReceivers.Count() == 0, L"NetworkProtocolChannelClient::Channel cannot block receivers when sending to a specified client.");
+				}
+				for (auto blockedReceiver : blockedReceivers)
+				{
+					CHECK_ERROR(blockedReceiver > 0 && blockedReceiver != currentClientId, L"NetworkProtocolChannelClient::Channel needs valid blockedReceivers.");
 				}
 			}
 
-			bool WriteBatch(vint, Nullable<vint> receiverClientId, const PackageList& batch) override
+			bool WriteBatch(Nullable<vint> receiverClientId, const ClientIdList& blockedReceivers, const PackageList& batch) override
 			{
-				return client->SendBatch(receiverClientId, this->channelName, batch);
+				return client->SendBatch(receiverClientId, blockedReceivers, this->channelName, batch);
 			}
 
 		public:
@@ -2080,7 +2126,7 @@ NetworkProtocolChannelClientBase
 			return connected;
 		}
 
-		virtual bool SendBatch(Nullable<vint> receiverClientId, const WString& channelName, const PackageList& batch) = 0;
+		virtual bool SendBatch(Nullable<vint> receiverClientId, const NetworkPackage::ClientIdList& blockedReceivers, const WString& channelName, const PackageList& batch) = 0;
 
 		void ReceiveBatch(const WString& channelName, vint senderClientId, const WString& messageBody)
 		{
@@ -2214,6 +2260,27 @@ NetworkProtocolChannelClientBase
 		}
 	};
 
+}
+
+#endif
+
+
+/***********************************************************************
+.\INTERPROCESS\CHANNELIMPLS\CHANNELCLIENTIMPL.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_CHANNELIMPLS_CHANNELCLIENTIMPL
+#define VCZH_INTERPROCESS_CHANNELIMPLS_CHANNELCLIENTIMPL
+
+
+namespace vl::inter_process
+{
 /***********************************************************************
 NetworkProtocolChannelClient
 ***********************************************************************/
@@ -2279,7 +2346,7 @@ NetworkProtocolChannelClient
 		collections::List<NetworkPackage>							queuedPackagesBeforeConnected;
 
 	protected:
-		bool SendBatch(Nullable<vint> receiverClientId, const WString& channelName, const PackageList& batch) override
+		bool SendBatch(Nullable<vint> receiverClientId, const NetworkPackage::ClientIdList& blockedReceivers, const WString& channelName, const PackageList& batch) override
 		{
 			if (this->GetStatus() != ClientStatus::Connected)
 			{
@@ -2289,7 +2356,7 @@ NetworkProtocolChannelClient
 			CHECK_ERROR(npClient, L"NetworkProtocolChannelClient::SendBatch needs an established network connection.");
 			WString messageBody;
 			TSerialization::Serialize(this->context, batch, messageBody);
-			npClient->GetConnection()->SendString(NetworkPackage::ToString(NetworkPackage::Create(std::move(receiverClientId), channelName, messageBody)));
+			npClient->GetConnection()->SendString(NetworkPackage::ToString(NetworkPackage::Create(std::move(receiverClientId), blockedReceivers, channelName, messageBody)));
 			return false;
 		}
 
@@ -2424,6 +2491,27 @@ NetworkProtocolChannelClient
 		}
 	};
 
+}
+
+#endif
+
+
+/***********************************************************************
+.\INTERPROCESS\CHANNELIMPLS\LOCALCHANNELCLIENTIMPL.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_CHANNELIMPLS_LOCALCHANNELCLIENTIMPL
+#define VCZH_INTERPROCESS_CHANNELIMPLS_LOCALCHANNELCLIENTIMPL
+
+
+namespace vl::inter_process
+{
 /***********************************************************************
 NetworkProtocolLocalChannelClient
 ***********************************************************************/
@@ -2461,7 +2549,7 @@ NetworkProtocolLocalChannelClient
 		}
 
 	protected:
-		bool SendBatch(Nullable<vint> receiverClientId, const WString& channelName, const PackageList& batch) override
+		bool SendBatch(Nullable<vint> receiverClientId, const NetworkPackage::ClientIdList& blockedReceivers, const WString& channelName, const PackageList& batch) override
 		{
 			if (this->GetStatus() != ClientStatus::Connected)
 			{
@@ -2470,7 +2558,7 @@ NetworkProtocolLocalChannelClient
 
 			if (localServer)
 			{
-				return localServer->SendFromLocalClient(receiverClientId, this->GetClientId(), channelName, batch);
+				return localServer->SendFromLocalClient(receiverClientId, blockedReceivers, this->GetClientId(), channelName, batch);
 			}
 			return true;
 		}
@@ -2503,6 +2591,27 @@ NetworkProtocolLocalChannelClient
 		}
 	};
 
+}
+
+#endif
+
+
+/***********************************************************************
+.\INTERPROCESS\CHANNELIMPLS\CHANNELSERVERIMPL.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_CHANNELIMPLS_CHANNELSERVERIMPL
+#define VCZH_INTERPROCESS_CHANNELIMPLS_CHANNELSERVERIMPL
+
+
+namespace vl::inter_process
+{
 /***********************************************************************
 NetworkProtocolChannelServer
 ***********************************************************************/
@@ -2665,15 +2774,24 @@ NetworkProtocolChannelServer
 			}
 
 			CHECK_ERROR(ClientHasChannel(connection->clientId, package.channelName), L"NetworkProtocolChannelServer received a message from a client without the specified channel.");
+			NetworkPackage::ClientIdList noBlockedReceivers;
+			auto blockedReceivers = package.extraClientIds ? &package.extraClientIds.Value() : &noBlockedReceivers;
 			if (package.clientId)
 			{
 				auto receiverClientId = package.clientId.Value();
 				CHECK_ERROR(receiverClientId > 0 && ClientHasChannel(receiverClientId, package.channelName), L"NetworkProtocolChannelServer received a message to a client without the specified channel.");
 			}
+			else
+			{
+				for (auto blockedReceiver : *blockedReceivers)
+				{
+					CHECK_ERROR(blockedReceiver > 0 && ClientHasChannel(blockedReceiver, package.channelName), L"NetworkProtocolChannelServer received a message blocking a client without the specified channel.");
+				}
+			}
 
 			PackageList batch;
 			TSerialization::Deserialize(context, package.messageBody, batch);
-			SendBatch(package.clientId, connection->clientId, connection->clientId, package.channelName, batch);
+			SendBatch(package.clientId, *blockedReceivers, connection->clientId, connection->clientId, package.channelName, batch);
 		}
 
 		void OnConnectionDisconnected(Connection* connection)
@@ -2730,7 +2848,7 @@ NetworkProtocolChannelServer
 			}
 		}
 
-		bool SendBatch(Nullable<vint> receiverClientId, vint senderClientId, vint excludedClientId, const WString& channelName, const PackageList& batch)
+		bool SendBatch(Nullable<vint> receiverClientId, const NetworkPackage::ClientIdList& blockedReceivers, vint senderClientId, vint excludedClientId, const WString& channelName, const PackageList& batch)
 		{
 			if (IsStopped())
 			{
@@ -2774,14 +2892,14 @@ NetworkProtocolChannelServer
 					{
 						for (auto&& connection : connections.Values())
 						{
-							if (connection->clientId != excludedClientId && clientChannels.Contains(connection->clientId, channelName))
+							if (connection->clientId != excludedClientId && !blockedReceivers.Contains(connection->clientId) && clientChannels.Contains(connection->clientId, channelName))
 							{
 								targetConnections.Add(connection);
 							}
 						}
 						for (auto&& clientId : localClients.Keys())
 						{
-							if (clientId != excludedClientId && clientChannels.Contains(clientId, channelName))
+							if (clientId != excludedClientId && !blockedReceivers.Contains(clientId) && clientChannels.Contains(clientId, channelName))
 							{
 								targetLocalClients.Add(localClients[clientId]);
 							}
@@ -2800,14 +2918,21 @@ NetworkProtocolChannelServer
 			return false;
 		}
 
-		bool SendFromLocalClient(Nullable<vint> receiverClientId, vint senderClientId, const WString& channelName, const PackageList& batch)
+		bool SendFromLocalClient(Nullable<vint> receiverClientId, const NetworkPackage::ClientIdList& blockedReceivers, vint senderClientId, const WString& channelName, const PackageList& batch)
 		{
 			CHECK_ERROR(senderClientId > 0 && ClientHasChannel(senderClientId, channelName), L"NetworkProtocolChannelServer received a message from a local client without the specified channel.");
 			if (receiverClientId)
 			{
 				CHECK_ERROR(receiverClientId.Value() > 0 && ClientHasChannel(receiverClientId.Value(), channelName), L"NetworkProtocolChannelServer received a message from a local client to a client without the specified channel.");
 			}
-			return SendBatch(receiverClientId, senderClientId, senderClientId, channelName, batch);
+			else
+			{
+				for (auto blockedReceiver : blockedReceivers)
+				{
+					CHECK_ERROR(blockedReceiver > 0 && ClientHasChannel(blockedReceiver, channelName), L"NetworkProtocolChannelServer received a message from a local client blocking a client without the specified channel.");
+				}
+			}
+			return SendBatch(receiverClientId, blockedReceivers, senderClientId, senderClientId, channelName, batch);
 		}
 
 	public:
@@ -3088,6 +3213,54 @@ NetworkProtocolChannelServer
 		}
 	};
 }
+
+#endif
+
+
+/***********************************************************************
+.\INTERPROCESS\NETWORKPROTOCOLCHANNEL.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_NETWORKPROTOCOLCHANNEL
+#define VCZH_INTERPROCESS_NETWORKPROTOCOLCHANNEL
+
+
+/***********************************************************************
+Hooking IChannelServer/IChannelClient to INetworkProtocolServer/INetworkProtocolClient
+
+The serialization contract is the same to the one described in ChannelSerialization.h
+SourceType will be List<TPackage>
+DestType will be WString
+
+NetworkPackage will be used as text message parsing and formatting for INetworkProtocolConnection.
+BatchWrite belongs to IChannel, meaning each channel sends its own batch messages in one NetworkPackage.
+channelName will be either a system channel or a user defined channel.
+messageBody represents a list of TPackage.
+The first section is "clientId,extraClientId1,extraClientId2,...".
+  Empty clientId means no direct client id.
+  Empty or missing extra client ids are equivalent.
+When sending from client to server, clientId means the target client.
+  Empty means broadcasting.
+  When clientId is empty, extraClientIds means blocked receiver client ids.
+  When clientId is not empty, extraClientIds are ignored.
+When sending from server to client, clientId means the source client.
+  Channel messages delivered by the server always carry a source client id.
+
+When a client establishes a connection to the server, channel names will be sent to the server:
+  clientId will be empty, it does not mean broadcasting.
+  channelName will be empty.
+  messageBody will be all available channel names joined by "!", as "!" cannot be part of the channel name anyway.
+After the server receives the first message from a client, an client id will be sent to the client:
+  clientId is the assigned client id, starting from 1.
+  channelName will be empty.
+  messageBody will be empty.
+***********************************************************************/
 
 #endif
 

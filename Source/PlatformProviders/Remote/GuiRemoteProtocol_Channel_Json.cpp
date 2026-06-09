@@ -244,9 +244,9 @@ GuiRemoteProtocolCoreChannel
 
 			for (auto&& pendingPackage : packages)
 			{
-				channel->SendToClient(client->GetClientId(), receiverClientId, pendingPackage);
+				channel->SendToClient(receiverClientId, pendingPackage);
 			}
-			channel->SendToClient(client->GetClientId(), receiverClientId, package);
+			channel->SendToClient(receiverClientId, package);
 		}
 	}
 
@@ -424,7 +424,7 @@ GuiRemoteProtocolCoreChannel
 
 		for (auto&& package : packages)
 		{
-			channel->SendToClient(client->GetClientId(), receiverClientId, package);
+			channel->SendToClient(receiverClientId, package);
 		}
 		channel->BatchWrite(disconnected);
 	}
@@ -527,7 +527,7 @@ GuiRemoteProtocolRendererChannel
 
 	void GuiRemoteProtocolRendererChannel::Write(Ptr<glr::json::JsonObject> package)
 	{
-		channel->SendToClient(client->GetClientId(), GacUIRemoteProtocolCoreClientId, package);
+		channel->SendToClient(GacUIRemoteProtocolCoreClientId, package);
 
 		if (!receiving)
 		{

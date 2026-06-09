@@ -39010,10 +39010,9 @@ GuiRemoteProtocolJsonChannelRenderer_Async
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void GuiRemoteProtocolJsonChannelRenderer_Async::SendToClient(vint senderClientId, vint receiverClientId, const JsonPackage& package)
+	void GuiRemoteProtocolJsonChannelRenderer_Async::SendToClient(vint receiverClientId, const JsonPackage& package)
 	{
 		QueuedPackage queuedPackage;
-		queuedPackage.senderClientId = senderClientId;
 		queuedPackage.receiverClientId = receiverClientId;
 		queuedPackage.package = package;
 
@@ -39023,11 +39022,18 @@ GuiRemoteProtocolJsonChannelRenderer_Async
 		}
 	}
 
-	void GuiRemoteProtocolJsonChannelRenderer_Async::BroadcastFromClient(vint senderClientId, const JsonPackage& package)
+	void GuiRemoteProtocolJsonChannelRenderer_Async::BroadcastFromClient(const JsonPackage& package)
+	{
+		List<vint> blockedReceivers;
+		BroadcastFromClient(package, blockedReceivers);
+	}
+
+	void GuiRemoteProtocolJsonChannelRenderer_Async::BroadcastFromClient(const JsonPackage& package, const List<vint>& blockedReceivers)
 	{
 		QueuedPackage queuedPackage;
-		queuedPackage.senderClientId = senderClientId;
 		queuedPackage.package = package;
+		queuedPackage.blockedReceivers = Ptr(new List<vint>);
+		CopyFrom(*queuedPackage.blockedReceivers.Obj(), blockedReceivers);
 
 		SPIN_LOCK(lockPendingPackages)
 		{
@@ -39086,11 +39092,18 @@ GuiRemoteProtocolJsonChannelRenderer_Async
 		{
 			if (queuedPackage.receiverClientId)
 			{
-				channel->SendToClient(queuedPackage.senderClientId, queuedPackage.receiverClientId.Value(), queuedPackage.package);
+				channel->SendToClient(queuedPackage.receiverClientId.Value(), queuedPackage.package);
 			}
 			else
 			{
-				channel->BroadcastFromClient(queuedPackage.senderClientId, queuedPackage.package);
+				if (queuedPackage.blockedReceivers)
+				{
+					channel->BroadcastFromClient(queuedPackage.package, *queuedPackage.blockedReceivers.Obj());
+				}
+				else
+				{
+					channel->BroadcastFromClient(queuedPackage.package);
+				}
 			}
 		}
 		channel->BatchWrite(disconnected);
@@ -39279,14 +39292,19 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 		}
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelRenderer::SendToClient(vint senderClientId, vint receiverClientId, const JsonPackage& package)
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::SendToClient(vint receiverClientId, const JsonPackage& package)
 	{
-		channel->SendToClient(senderClientId, receiverClientId, package);
+		channel->SendToClient(receiverClientId, package);
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelRenderer::BroadcastFromClient(vint senderClientId, const JsonPackage& package)
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::BroadcastFromClient(const JsonPackage& package)
 	{
-		channel->BroadcastFromClient(senderClientId, package);
+		channel->BroadcastFromClient(package);
+	}
+
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::BroadcastFromClient(const JsonPackage& package, const List<vint>& blockedReceivers)
+	{
+		channel->BroadcastFromClient(package, blockedReceivers);
 	}
 
 	void GuiRemoteProtocolAsyncJsonChannelRenderer::BatchWrite(bool& disconnected)
@@ -39553,9 +39571,9 @@ GuiRemoteProtocolCoreChannel
 
 			for (auto&& pendingPackage : packages)
 			{
-				channel->SendToClient(client->GetClientId(), receiverClientId, pendingPackage);
+				channel->SendToClient(receiverClientId, pendingPackage);
 			}
-			channel->SendToClient(client->GetClientId(), receiverClientId, package);
+			channel->SendToClient(receiverClientId, package);
 		}
 	}
 
@@ -39733,7 +39751,7 @@ GuiRemoteProtocolCoreChannel
 
 		for (auto&& package : packages)
 		{
-			channel->SendToClient(client->GetClientId(), receiverClientId, package);
+			channel->SendToClient(receiverClientId, package);
 		}
 		channel->BatchWrite(disconnected);
 	}
@@ -39836,7 +39854,7 @@ GuiRemoteProtocolRendererChannel
 
 	void GuiRemoteProtocolRendererChannel::Write(Ptr<glr::json::JsonObject> package)
 	{
-		channel->SendToClient(client->GetClientId(), GacUIRemoteProtocolCoreClientId, package);
+		channel->SendToClient(GacUIRemoteProtocolCoreClientId, package);
 
 		if (!receiving)
 		{

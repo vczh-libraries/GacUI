@@ -137,14 +137,19 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 		}
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelRenderer::SendToClient(vint senderClientId, vint receiverClientId, const JsonPackage& package)
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::SendToClient(vint receiverClientId, const JsonPackage& package)
 	{
-		channel->SendToClient(senderClientId, receiverClientId, package);
+		channel->SendToClient(receiverClientId, package);
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelRenderer::BroadcastFromClient(vint senderClientId, const JsonPackage& package)
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::BroadcastFromClient(const JsonPackage& package)
 	{
-		channel->BroadcastFromClient(senderClientId, package);
+		channel->BroadcastFromClient(package);
+	}
+
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::BroadcastFromClient(const JsonPackage& package, const List<vint>& blockedReceivers)
+	{
+		channel->BroadcastFromClient(package, blockedReceivers);
 	}
 
 	void GuiRemoteProtocolAsyncJsonChannelRenderer::BatchWrite(bool& disconnected)
