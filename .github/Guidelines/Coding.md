@@ -101,6 +101,7 @@ When `VlppParser2` is available to the current project, complex parsers always r
 - Prefer lock free construction only when the code would be simple, DO NOT involve complex lock free trick unless explicitly required.
 - `std::atomic<T>` should be considered and use it precisely. The code should be correct when running parallelly while I don't want unnecessary `std::atomic<T>`.
   - `atomic_vint` is widely used in the library, use it for `vint`.
+- Avoid polling at all cost, I strongly prefer scheduling in async way.
 
 ### for Reflectable Types
 
