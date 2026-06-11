@@ -26,6 +26,7 @@
 - Use `Variant<T...>::Index()` to check active alternative [1]
 - Avoid references into containers when mutating them [1]
 - Prefer designated initializers for aggregate-like structs [1]
+- Prefer raw pointers unless shared ownership is required [1]
 - Construct `Nullable<WString>` explicitly in function calls [1]
 - Sort serialization metadata by deterministic keys, not pointer addresses [1]
 - Start async callbacks after most-derived construction [1]
@@ -151,6 +152,10 @@ When iterating a container and performing mutations like `Remove()`/`Add()`, avo
 ## Prefer designated initializers for aggregate-like structs
 
 For small structs used as value objects (especially those with default member initializers), prefer designated initializers like `{ .field = value }` for clarity and to avoid compile-time issues from positional aggregate initialization.
+
+## Prefer raw pointers unless shared ownership is required
+
+When passing an object without transferring or extending ownership, prefer a raw pointer parameter over constructing `Ptr<T>` only to adapt the call. Reserve `Ptr<T>` for APIs that need shared ownership, lifetime extension, or storage in shared-pointer-managed state.
 
 ## Construct `Nullable<WString>` explicitly in function calls
 
