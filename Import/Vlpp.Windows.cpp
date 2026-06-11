@@ -48,29 +48,93 @@ Console
 			}
 		}
 
+		Nullable<WString> Console::TryRead()
+		{
+			auto inHandle = GetStdHandle(STD_INPUT_HANDLE);
+			if (inHandle == INVALID_HANDLE_VALUE || inHandle == NULL)
+			{
+				return {};
+			}
+
+			WString result;
+			DWORD fileMode = 0;
+			if ((GetFileType(inHandle) & FILE_TYPE_CHAR) && GetConsoleMode(inHandle, &fileMode))
+			{
+				for (;;)
+				{
+					wchar_t buffer = 0;
+					DWORD count = 0;
+					if (!ReadConsole(inHandle, &buffer, 1, &count, 0) || count == 0)
+					{
+						return result.Length() == 0 ? Nullable<WString>() : Nullable<WString>(result);
+					}
+
+					if (buffer == L'\r')
+					{
+						if (!ReadConsole(inHandle, &buffer, 1, &count, 0) || count == 0)
+						{
+							return result;
+						}
+						break;
+					}
+					else if (buffer == L'\n')
+					{
+						break;
+					}
+					else
+					{
+						result = result + WString::FromChar(buffer);
+					}
+				}
+				return result;
+			}
+			else
+			{
+				AString buffer;
+				for (;;)
+				{
+					char c = 0;
+					DWORD count = 0;
+					if (!ReadFile(inHandle, &c, 1, &count, 0) || count == 0)
+					{
+						if (buffer.Length() == 0)
+						{
+							return {};
+						}
+						break;
+					}
+
+					if (c == '\n')
+					{
+						break;
+					}
+					else
+					{
+						buffer = buffer + AString::FromChar(c);
+					}
+				}
+
+				if (buffer.Length() > 0 && buffer[buffer.Length() - 1] == '\r')
+				{
+					buffer = buffer.Left(buffer.Length() - 1);
+				}
+				int codePage = GetConsoleCP();
+				if (codePage == 0)
+				{
+					codePage = CP_THREAD_ACP;
+				}
+				auto charCount = MultiByteToWideChar(codePage, 0, buffer.Buffer(), (int)buffer.Length(), nullptr, 0);
+				auto wbuffer = new wchar_t[charCount + 1];
+				MultiByteToWideChar(codePage, 0, buffer.Buffer(), (int)buffer.Length(), wbuffer, charCount);
+				wbuffer[charCount] = 0;
+				return WString::TakeOver(wbuffer, charCount);
+			}
+		}
+
 		WString Console::Read()
 		{
-			WString result;
-			DWORD count;
-			for (;;)
-			{
-				wchar_t buffer;
-				ReadConsole(GetStdHandle(STD_INPUT_HANDLE), &buffer, 1, &count, 0);
-				if (buffer == L'\r')
-				{
-					ReadConsole(GetStdHandle(STD_INPUT_HANDLE), &buffer, 1, &count, 0);
-					break;
-				}
-				else if (buffer == L'\n')
-				{
-					break;
-				}
-				else
-				{
-					result = result + WString::FromChar(buffer);
-				}
-			}
-			return result;
+			auto result = TryRead();
+			return result ? result.Value() : WString::Empty;
 		}
 
 		void Console::SetColor(bool red, bool green, bool blue, bool light)

@@ -1108,6 +1108,32 @@ RepeatingTaskExecutor
 			}
 		}
 	};
+
+/***********************************************************************
+TaskQueue
+***********************************************************************/
+
+	/// <summary>A single-threaded blocking task queue.</summary>
+	class TaskQueue : public Object
+	{
+	private:
+		SpinLock								lockTasks;
+		Semaphore								semaphoreTasks;
+		collections::List<Func<void()>>			tasks;
+		bool									exitTaskQueued = false;
+
+	public:
+		TaskQueue();
+		~TaskQueue();
+
+		/// <summary>Queue a task to be executed by <see cref="RunTaskQueue"/>.</summary>
+		/// <param name="task">The task to execute.</param>
+		void									QueueTask(Func<void()> task);
+		/// <summary>Request <see cref="RunTaskQueue"/> to return after all queued tasks are executed.</summary>
+		void									QueueExitTask();
+		/// <summary>Run queued tasks in the current thread until <see cref="QueueExitTask"/> is called.</summary>
+		void									RunTaskQueue();
+	};
 }
 #endif
 

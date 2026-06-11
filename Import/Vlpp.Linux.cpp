@@ -34,11 +34,27 @@ Console
 			std::wcout << s << std::flush;
 		}
 
-		WString Console::Read()
+		Nullable<WString> Console::TryRead()
 		{
 			std::wstring s;
-			std::getline(std::wcin, s, L'\n');
-			return s.c_str();
+			if (!std::getline(std::wcin, s, L'\n'))
+			{
+				if (s.empty())
+				{
+					return {};
+				}
+			}
+			if (!s.empty() && s[s.size() - 1] == L'\r')
+			{
+				s.pop_back();
+			}
+			return WString::CopyFrom(s.c_str(), (vint)s.size());
+		}
+
+		WString Console::Read()
+		{
+			auto result = TryRead();
+			return result ? result.Value() : WString::Empty;
 		}
 
 		void Console::SetColor(bool red, bool green, bool blue, bool light)
