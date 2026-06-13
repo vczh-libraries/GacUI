@@ -9146,10 +9146,9 @@ interface system::IRpcController : system::IRpcOperations {
 @FullName:vl::rpc_controller::IRpcDispatcher
 interface system::IRpcDispatcher : system::Interface {
     function BroadcastFromClient_ObjectEventOps(selfClientId : system::Int32) : system::IRpcObjectEventOps*;
+    function DeclareLocalService(ref : system::RpcObjectReference) : system::Void;
     function Finalize() : system::Void;
-    function IsRegisteredService(ref : system::RpcObjectReference) : system::Boolean;
-    function RegisterService(typeId : system::Int32, ref : system::RpcObjectReference) : system::Void;
-    function RequestService(typeId : system::Int32) : system::RpcObjectReference;
+    function Initialize() : system::Void;
     function SendToClient_ObjectOps(targetClientId : system::Int32) : system::IRpcObjectOps*;
 
 }
@@ -9157,11 +9156,19 @@ interface system::IRpcDispatcher : system::Interface {
 @FullName:vl::rpc_controller::IRpcJsonMessageDispatcher
 interface system::IRpcJsonMessageDispatcher : system::Interface {
     function AllocateRequestId() : system::Int32;
-    function OnJsonRequest(message : system::JsonNode^) : system::JsonNode^;
+    function OnJsonRequest(message : system::JsonNode^, requestType : system::IRpcJsonMessageDispatcher::RequestType) : system::JsonNode^;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcJsonMessageDispatcher>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcJsonMessageDispatcher>::Create)
     constructor (proxy : system::InterfaceProxy^) : system::IRpcJsonMessageDispatcher^;
+}
+
+@FullName:vl::rpc_controller::IRpcJsonMessageDispatcher::RequestType
+@ValueType
+enum system::IRpcJsonMessageDispatcher::RequestType {
+    Broadcast = 1,
+    BroadcastAndDrop = 2,
+    Direct = 0,
 }
 
 @FullName:vl::rpc_controller::IRpcLifecycle
@@ -9171,11 +9178,14 @@ interface system::IRpcLifecycle : system::Interface {
     property Dispatcher : system::IRpcDispatcher* { get:GetDispatcher }
     property Serializer : system::IRpcSerializer* { get:GetSerializer }
 
+    function DeclareRemoteService(ref : system::RpcObjectReference) : system::Void;
     function Finalize() : system::Void;
     function GetClientId() : system::Int32;
     function GetController() : system::IRpcController*;
     function GetDispatcher() : system::IRpcDispatcher*;
     function GetSerializer() : system::IRpcSerializer*;
+    function GetTypeIdFromName(typeName : system::String) : system::Int32;
+    function Initialize() : system::Void;
     @InvokeTemplate:::vl::rpc_controller::JsonDeserializePredefinedTypes($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::JsonDeserializePredefinedTypes)
     static function JsonDeserializePredefinedTypes(value : system::Object, rpcjson_Deserialize : system::Function<system::Object, system::JsonNode^>^) : system::Object;
@@ -9192,8 +9202,8 @@ interface system::IRpcLifecycle : system::Interface {
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::ReadMethodException)
     static function ReadMethodException(value : system::Object) : system::Void;
     function RefToPtr(ref : system::RpcObjectReference) : system::Interface^;
-    function RegisterService(fullName : system::String, service : system::Interface^) : system::Void;
-    function RequestService(fullName : system::String) : system::Interface^;
+    function RegisterLocalService(typeId : system::Int32, service : system::Interface^) : system::Void;
+    function RequestService(typeName : system::String) : system::Interface^;
     @InvokeTemplate:::vl::rpc_controller::RpcBoxByref($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcBoxByref)
     static function RpcBoxByref(trivial : system::Interface^, lc : system::IRpcLifecycle*) : system::RpcObjectReference;
@@ -9264,7 +9274,6 @@ interface system::IRpcObjectOps : system::Interface {
     function EndInvokeMethod(slot : system::Int32) : system::Void;
     function InvokeMethod(ref : system::RpcObjectReference, methodId : system::Int32, arguments : system::Array^) : system::Object;
     function ObjectHold(ref : system::RpcObjectReference, remoteClientId : system::Int32, hold : system::Boolean) : system::Void;
-    function RegisterService(typeId : system::Int32, service : system::Interface^) : system::Void;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectOps>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectOps>::Create)
@@ -9273,13 +9282,9 @@ interface system::IRpcObjectOps : system::Interface {
 
 @FullName:vl::rpc_controller::IRpcOperations
 interface system::IRpcOperations : system::Interface {
-    property ListEventOps : system::IRpcListEventOps* { get:GetListEventOps }
-    property ListOps : system::IRpcListOps* { get:GetListOps }
     property ObjectEventOps : system::IRpcObjectEventOps* { get:GetObjectEventOps }
     property ObjectOps : system::IRpcObjectOps* { get:GetObjectOps }
 
-    function GetListEventOps() : system::IRpcListEventOps*;
-    function GetListOps() : system::IRpcListOps*;
     function GetObjectEventOps() : system::IRpcObjectEventOps*;
     function GetObjectOps() : system::IRpcObjectOps*;
 
