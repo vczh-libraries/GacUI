@@ -10127,6 +10127,15 @@ namespace vl
 					return testing;
 				}
 
+				Ptr<WfExpression> CreateIsType(Ptr<WfExpression> expression, Ptr<WfType> type)
+				{
+					auto testing = Ptr(new WfTypeTestingExpression);
+					testing->test = WfTypeTesting::IsType;
+					testing->expression = expression;
+					testing->type = type;
+					return testing;
+				}
+
 				Ptr<WfExpression> CreateBool(bool value)
 				{
 					auto expression = Ptr(new WfLiteralExpression);
@@ -11077,44 +11086,6 @@ namespace vl
 					return functionDecl;
 				}
 
-				Ptr<WfStatement> BuildRegisterService()
-				{
-					auto block = CreateBlock();
-					auto registerBranch = CreateBlock();
-					AddStatement(
-						registerBranch,
-						CreateExpressionStatement(
-							CreateCall(
-								CreateMember(CreateMember(CreateReference(L"_lc"), L"Dispatcher"), L"RegisterService"),
-								CreateReference(L"typeId"),
-								CreateCall(CreateMember(CreateReference(L"_lc"), L"PtrToRef"), CreateReference(L"service"))
-								)
-							)
-						);
-					auto nonCtorBranch = CreateBlock();
-					AddStatement(nonCtorBranch, CreateRaise(L"RPC service type id is not an @rpc:Ctor interface."));
-					auto invalidTypeIdBranch = CreateBlock();
-					AddStatement(invalidTypeIdBranch, CreateRaise(L"RPC service type id does not exist."));
-					auto invalidRegisterBranch = CreateBlock();
-					AddStatement(
-						invalidRegisterBranch,
-						CreateIf(
-							CreateCall(CreateReference(L"rpcwrapper_IsInterfaceTypeId"), CreateReference(L"typeId")),
-							nonCtorBranch,
-							invalidTypeIdBranch
-							)
-						);
-					AddStatement(
-						block,
-						CreateIf(
-							CreateCall(CreateReference(L"rpcwrapper_IsCtorInterfaceTypeId"), CreateReference(L"typeId")),
-							registerBranch,
-							invalidRegisterBranch
-						)
-					);
-					return block;
-				}
-
 				Ptr<WfDeclaration> GenerateObjectOpsFactory(const List<RpcInterfaceModel>& interfaces)
 				{
 					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectOps", CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectOps>>(), WfFunctionKind::Normal);
@@ -11159,15 +11130,6 @@ namespace vl
 						AddStatement(falseBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_lc"), L"LocalObjectUnhold"), CreateReference(L"ref"), CreateReference(L"remoteClientId"))));
 						AddStatement(objectHold->statement.Cast<WfBlockStatement>(), CreateIf(CreateReference(L"hold"), trueBranch, falseBranch));
 						newOps->declarations.Add(objectHold);
-					}
-
-					{
-						auto registerService = CreateFunctionDeclaration(L"RegisterService", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						registerService->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						registerService->arguments.Add(CreateFunctionArgument(L"service", CreateTypeFromCpp<Ptr<reflection::IDescriptable>>()));
-						auto block = registerService->statement.Cast<WfBlockStatement>();
-						AddStatement(block, BuildRegisterService());
-						newOps->declarations.Add(registerService);
 					}
 
 					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
@@ -11244,6 +11206,42 @@ namespace vl
 						}
 					}
 					return nullptr;
+				}
+
+				void SortInterfaceModelsLeafFirst(const List<RpcInterfaceModel>& interfaces, List<const RpcInterfaceModel*>& sortedInterfaces)
+				{
+					sortedInterfaces.Clear();
+
+					List<WString> typeFullNames;
+					Group<WString, WString> dependencyGroup;
+					for (auto&& interfaceModel : interfaces)
+					{
+						typeFullNames.Add(interfaceModel.fullName);
+					}
+					for (auto&& interfaceModel : interfaces)
+					{
+						for (auto&& baseFullName : interfaceModel.baseFullNames)
+						{
+							if (typeFullNames.Contains(baseFullName))
+							{
+								dependencyGroup.Add(baseFullName, interfaceModel.fullName);
+							}
+						}
+					}
+
+					PartialOrderingProcessor pop;
+					pop.InitWithGroup(typeFullNames, dependencyGroup);
+					pop.Sort();
+
+					for (auto&& component : pop.components)
+					{
+						for (vint i = 0; i < component.nodeCount; i++)
+						{
+							auto interfaceModel = FindInterfaceModel(interfaces, typeFullNames[component.firstNode[i]]);
+							CHECK_ERROR(interfaceModel, L"SortInterfaceModelsLeafFirst: Invalid RPC interface name.");
+							sortedInterfaces.Add(interfaceModel);
+						}
+					}
 				}
 
 				bool ContainsEventModel(const List<const RpcEventModel*>& events, const WString& fullName)
@@ -11928,6 +11926,28 @@ namespace vl
 					AddStatement(block, switchStat);
 					return functionDecl;
 				}
+
+				Ptr<WfDeclaration> GenerateWrapperGetTypeId(const List<RpcInterfaceModel>& interfaces)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_GetTypeId", CreatePredefinedType(WfPredefinedTypeName::Int), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"obj", CreatePredefinedType(WfPredefinedTypeName::Object)));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+
+					List<const RpcInterfaceModel*> sortedInterfaces;
+					SortInterfaceModelsLeafFirst(interfaces, sortedInterfaces);
+					for (auto interfaceModel : sortedInterfaces)
+					{
+						AddStatement(
+							block,
+							CreateIf(
+								CreateIsType(CreateReference(L"obj"), CreateRawType(interfaceModel->fullName)),
+								CreateReturn(CreateRpcConstantReference(L"rpctype_", interfaceModel->fullName))
+								));
+					}
+
+					AddStatement(block, CreateReturn(CreateInt(rpc_controller::RpcTypeId_NotFound)));
+					return functionDecl;
+				}
 			}
 
 			Ptr<WfModule> GenerateModuleRpc(WfLexicalScopeManager* manager, WString assemblyName)
@@ -12016,6 +12036,7 @@ namespace vl
 				}
 
 				module->declarations.Add(GenerateWrapperDispatcher(interfaces, opsInterfaceName));
+				module->declarations.Add(GenerateWrapperGetTypeId(interfaces));
 
 				return module;
 			}
@@ -12727,7 +12748,6 @@ namespace vl
 				void CollectMangledNames(WfLexicalScopeManager* manager);
 				List<RpcInterfaceModel> BuildInterfaceModels(WfLexicalScopeManager* manager);
 				bool HasRpcEvents(const List<RpcInterfaceModel>& interfaces);
-				Ptr<WfStatement> BuildRegisterService();
 				WString GetRpcOpsInterfaceName(const WString& assemblyName);
 				WString GetRpcOpsInvokeMethodName(const RpcMethodModel& methodModel);
 				WString GetRpcOpsInvokeEventName(const RpcEventModel& eventModel);
@@ -13938,15 +13958,6 @@ namespace vl
 						AddStatement(falseBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_lc"), L"LocalObjectUnhold"), CreateReference(L"ref"), CreateReference(L"remoteClientId"))));
 						AddStatement(objectHold->statement.Cast<WfBlockStatement>(), CreateIf(CreateReference(L"hold"), trueBranch, falseBranch));
 						newOps->declarations.Add(objectHold);
-					}
-
-					{
-						auto registerService = CreateFunctionDeclaration(L"RegisterService", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						registerService->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						registerService->arguments.Add(CreateFunctionArgument(L"service", CreateTypeFromCpp<Ptr<reflection::IDescriptable>>()));
-						auto block = registerService->statement.Cast<WfBlockStatement>();
-						AddStatement(block, BuildRegisterService());
-						newOps->declarations.Add(registerService);
 					}
 
 					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));

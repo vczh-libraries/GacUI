@@ -4061,6 +4061,14 @@ void NamedPipeConnection::InstallCallback(INetworkProtocolCallback* _callback)
 void NamedPipeConnection::Stop()
 {
 	stopped = 1;
+	SPIN_LOCK(lockWrite)
+	{
+		if (hPipe != INVALID_HANDLE_VALUE)
+		{
+			CancelIoEx(hPipe, NULL);
+		}
+	}
+
 	ReadWaitContext* context = readWaitContext.exchange(nullptr);
 	if (context)
 	{
@@ -4081,7 +4089,6 @@ void NamedPipeConnection::Stop()
 	{
 		if (hPipe != INVALID_HANDLE_VALUE)
 		{
-			CancelIoEx(hPipe, NULL);
 			CloseHandle(hPipe);
 			hPipe = INVALID_HANDLE_VALUE;
 		}
