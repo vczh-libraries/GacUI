@@ -17,7 +17,7 @@
 - GacUI Debug|x64 UnitTest: passed, 84/84 files and 1686/1686 cases.
 - Remote protocol test procedure:
   - HTTP: `RemotingTest_Core.exe /Http /RPT` with browser flow `File -> self.Close() (InvokeInMainThread) -> OK` rendered `IGacUIRenderer exited due to receiving RequestControllerConnectionStopped.`
-  - Named pipe: native remote protocol flow completed after confirming the documented shutdown dialog.
+  - Named pipe: native remote protocol flow exited both core and renderer after `File -> self.Close() (InvokeInMainThread) -> OK`, without showing the previous `ERROR from GacUI Core` named-pipe dialog.
 - GacJS:
   - `yarn build`: passed.
   - `yarn test`: passed.
