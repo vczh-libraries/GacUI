@@ -4,6 +4,7 @@
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 #include <VlppOS.Windows.h>
 #include "../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
+#include <type_traits>
 
 using namespace vl;
 using namespace vl::console;
@@ -20,24 +21,25 @@ namespace
 	constexpr const wchar_t* GacUIRemoteProtocolHttpBaseUrl = L"/GacUIRemoteProtocolHttp";
 	constexpr vint GacUIRemoteProtocolHttpPort = 8888;
 
-	class RemotingChannelServerBase : public GuiRemoteProtocolChannelServer
+	template<typename TServerBase>
+	class RemotingChannelServerBase : public GuiRemoteProtocolNetworkChannelServer<TServerBase>
 	{
-		using Base = GuiRemoteProtocolChannelServer;
+		using Base = GuiRemoteProtocolNetworkChannelServer<TServerBase>;
 
 	protected:
-		// covers eventRendererConnected, connectingCoreClient, rendererClientId, coreJsonChannel and coreProtocolChannel
+		// covers eventRendererConnected, rendererClientId, coreJsonChannel and coreProtocolChannel
 		SpinLock						lockConnection;
 		EventObject*					eventRendererConnected = nullptr;
 		IJsonChannel*					coreJsonChannel = nullptr;
 		GuiRemoteProtocolCoreChannel*	coreProtocolChannel = nullptr;
-		bool							connectingCoreClient = false;
 		vint							rendererClientId = -1;
 
 	public:
 		using Base::OnClientConnected;
 
-		RemotingChannelServerBase(Ptr<glr::json::Parser> parser)
-			: Base(parser)
+		template<typename... TArgs>
+		RemotingChannelServerBase(Ptr<glr::json::Parser> parser, TArgs&&... args)
+			: Base(parser, std::forward<TArgs>(args)...)
 		{
 		}
 
@@ -65,22 +67,6 @@ namespace
 			}
 		}
 
-		void BeginConnectCoreClient()
-		{
-			SPIN_LOCK(lockConnection)
-			{
-				connectingCoreClient = true;
-			}
-		}
-
-		void EndConnectCoreClient()
-		{
-			SPIN_LOCK(lockConnection)
-			{
-				connectingCoreClient = false;
-			}
-		}
-
 		vint GetRendererClientId()
 		{
 			vint clientId = -1;
@@ -91,11 +77,11 @@ namespace
 			return clientId;
 		}
 
-		inter_process::WaitForClientResult OnClientConnected(vint clientId, const IJsonChannelClient::ChannelNameList& availableChannels) override
+		inter_process::WaitForClientResult OnClientConnected(vint clientId, const IJsonChannelClient::ChannelNameList& availableChannels, IJsonChannelClient* localClient) override
 		{
 			CHECK_ERROR(
 				availableChannels.Contains(WString::Unmanaged(GacUIRemoteProtocolChannelName)),
-				L"RemotingChannelServerBase::OnClientConnected(vint, const ChannelNameList&)#The client does not have the GacUI remote protocol channel."
+				L"RemotingChannelServerBase::OnClientConnected(vint, const ChannelNameList&, IJsonChannelClient*)#The client does not have the GacUI remote protocol channel."
 				);
 
 			EventObject* eventToSignal = nullptr;
@@ -104,7 +90,7 @@ namespace
 			vint oldRendererClientId = -1;
 			SPIN_LOCK(lockConnection)
 			{
-				if (!connectingCoreClient)
+				if (!localClient)
 				{
 					if (rendererClientId != -1 && rendererClientId != clientId)
 					{
@@ -145,7 +131,7 @@ namespace
 				}
 				if (!rendererNotifiedToStop)
 				{
-					DisconnectClient(oldRendererClientId);
+					this->DisconnectClient(oldRendererClientId);
 				}
 			}
 			if (eventToSignal)
@@ -156,71 +142,30 @@ namespace
 		}
 	};
 
-	class NamedPipeRemotingChannelServer : public RemotingChannelServerBase, public inter_process::NamedPipeServer
+	class NamedPipeRemotingChannelServer : public RemotingChannelServerBase<inter_process::NamedPipeServer>
 	{
+		using Base = RemotingChannelServerBase<inter_process::NamedPipeServer>;
+
 	public:
 		NamedPipeRemotingChannelServer(Ptr<glr::json::Parser> parser, const WString& pipeName)
-			: RemotingChannelServerBase(parser)
-			, inter_process::NamedPipeServer(pipeName)
+			: Base(parser, pipeName)
 		{
-		}
-
-		inter_process::WaitForClientResult OnClientConnected(inter_process::INetworkProtocolConnection* connection) override
-		{
-			return RemotingChannelServerBase::OnClientConnected(connection);
-		}
-
-		void Start() override
-		{
-			RemotingChannelServerBase::Start();
-			inter_process::NamedPipeServer::Start();
-		}
-
-		void Stop() override
-		{
-			RemotingChannelServerBase::Stop();
-			inter_process::NamedPipeServer::Stop();
-		}
-
-		bool IsStopped() override
-		{
-			return RemotingChannelServerBase::IsStopped() || inter_process::NamedPipeServer::IsStopped();
 		}
 	};
 
-	class HttpRemotingChannelServer : public RemotingChannelServerBase, public inter_process::HttpServer
+	class HttpRemotingChannelServer : public RemotingChannelServerBase<inter_process::HttpServer>
 	{
+		using Base = RemotingChannelServerBase<inter_process::HttpServer>;
+
 	public:
 		HttpRemotingChannelServer(Ptr<glr::json::Parser> parser, const WString& baseUrl, vint port)
-			: RemotingChannelServerBase(parser)
-			, inter_process::HttpServer(baseUrl, port)
+			: Base(parser, baseUrl, port)
 		{
-		}
-
-		inter_process::WaitForClientResult OnClientConnected(inter_process::INetworkProtocolConnection* connection) override
-		{
-			return RemotingChannelServerBase::OnClientConnected(connection);
-		}
-
-		void Start() override
-		{
-			RemotingChannelServerBase::Start();
-			inter_process::HttpServer::Start();
-		}
-
-		void Stop() override
-		{
-			inter_process::HttpServer::Stop();
-			RemotingChannelServerBase::Stop();
-		}
-
-		bool IsStopped() override
-		{
-			return RemotingChannelServerBase::IsStopped() || inter_process::HttpServer::IsStopped();
 		}
 	};
 
-	vint WaitForRenderer(RemotingChannelServerBase& channelServer, EventObject& eventRendererConnected)
+	template<typename TServerBase>
+	vint WaitForRenderer(RemotingChannelServerBase<TServerBase>& channelServer, EventObject& eventRendererConnected)
 	{
 		eventRendererConnected.Wait();
 		auto rendererClientId = channelServer.GetRendererClientId();
@@ -229,7 +174,7 @@ namespace
 	}
 }
 
-GuiRemoteProtocolChannelServer* protocolServer = nullptr;
+IJsonLocalChannelServer* protocolServer = nullptr;
 vint mainWindowConstructorIndex = 0;
 
 void GuiMain()
@@ -277,7 +222,8 @@ void GuiMain()
 	}
 }
 
-void StartServer(RemotingChannelServerBase& channelServer, Ptr<glr::json::Parser> jsonParser)
+template<typename TServerBase>
+void StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr::json::Parser> jsonParser)
 {
 	EventObject eventRendererConnected;
 	CHECK_ERROR(eventRendererConnected.CreateManualUnsignal(false), L"StartServer(RemotingChannelServerBase&, Ptr<Parser>)#Failed to create eventRendererConnected.");
@@ -285,9 +231,7 @@ void StartServer(RemotingChannelServerBase& channelServer, Ptr<glr::json::Parser
 	channelServer.Start();
 
 	auto coreClient = Ptr(new GuiRemoteProtocolLocalChannelClient(jsonParser));
-	channelServer.BeginConnectCoreClient();
 	auto coreClientId = channelServer.ConnectLocalClient(coreClient);
-	channelServer.EndConnectCoreClient();
 	CHECK_ERROR(coreClientId == GacUIRemoteProtocolCoreClientId, L"StartServer(RemotingChannelServerBase&, Ptr<Parser>)#Failed to register the core channel client.");
 	channelServer.SetCoreJsonChannel(coreClient->GetProtocolChannel());
 
@@ -308,6 +252,13 @@ void StartServer(RemotingChannelServerBase& channelServer, Ptr<glr::json::Parser
 	channelServer.SetCoreProtocolChannel(&channelSender);
 	protocolServer = &channelServer;
 	SetupRemoteNativeController(&diffConverterProtocol);
+	if constexpr (std::is_same_v<TServerBase, inter_process::NamedPipeServer>)
+	{
+		if (rendererClientId != -1)
+		{
+			channelServer.DisconnectClient(rendererClientId);
+		}
+	}
 	protocolServer = nullptr;
 	channelServer.SetCoreProtocolChannel(nullptr);
 	channelServer.SetCoreJsonChannel(nullptr);
