@@ -44,11 +44,6 @@ public:
 	{
 		asyncRendererChannel = _asyncRendererChannel;
 	}
-
-	void MarkDisconnectedForProcessExit()
-	{
-		NotifyDisconnected();
-	}
 	
 	void OnReadError(const WString& errorMessage) override
 	{
@@ -151,11 +146,6 @@ int StartClient(Ptr<inter_process::INetworkProtocolClient> networkClient)
 	asyncChannel = nullptr;
 	channelClient.SetAsyncRendererChannel(nullptr);
 	channelClient.SetRenderer(nullptr);
-	channelClient.MarkDisconnectedForProcessExit();
-	if (channelClient.GetStatus() != inter_process::ClientStatus::Disconnected)
-	{
-		networkClient->GetConnection()->Stop();
-	}
 
 	return result;
 }
