@@ -1992,8 +1992,9 @@ HttpClient::~HttpClient()
 
 void HttpClient::InstallCallback(INetworkProtocolCallback* _callback)
 {
+	CHECK_ERROR(!callback || !_callback, L"HttpClient::InstallCallback only accepts one callback at a time.");
 	callback = _callback;
-	CHECK_ERROR(callback, L"HttpClient::InstallCallback needs a valid INetworkProtocolCallback.");
+	if (!callback) return;
 	callback->OnInstalled(this);
 }
 
@@ -2921,13 +2922,17 @@ WString HttpServerConnection::SubmitResponse(PHTTP_REQUEST pRequest)
 
 void HttpServerConnection::InstallCallback(INetworkProtocolCallback* _callback)
 {
-	CHECK_ERROR(_callback, L"HttpServerConnection::InstallCallback needs a valid INetworkProtocolCallback.");
-	_callback->OnInstalled(this);
+	CHECK_ERROR(!callback || !_callback, L"HttpServerConnection::InstallCallback only accepts one callback at a time.");
+	if (_callback)
+	{
+		_callback->OnInstalled(this);
+	}
 
 	List<WString> strings;
 	SPIN_LOCK(lockQueuedStrings)
 	{
 		callback = _callback;
+		if (!callback) return;
 		strings = std::move(queuedStrings);
 	}
 	for (const auto& str : strings)
@@ -4070,8 +4075,9 @@ NamedPipeConnection::~NamedPipeConnection()
 
 void NamedPipeConnection::InstallCallback(INetworkProtocolCallback* _callback)
 {
+	CHECK_ERROR(!callback || !_callback, L"NamedPipeConnection::InstallCallback only accepts one callback at a time.");
 	callback = _callback;
-	CHECK_ERROR(callback, L"NamedPipeConnection::InstallCallback needs a valid INetworkProtocolCallback.");
+	if (!callback) return;
 	callback->OnInstalled(this);
 }
 
