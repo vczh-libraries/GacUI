@@ -3,7 +3,7 @@
 # Orders
 
 - Process staged tasks one by one with verification [15]
-- Port fixes from imports to source repositories [7]
+- Port fixes from imports to source repositories [8]
 - Verify generated artifacts with downstream consumer checks [7]
 - Crash early instead of adding error-tolerance fallbacks [6]
 - Make `Stop()` drain asynchronous work before returning [5]
@@ -104,6 +104,8 @@ When a downstream repo such as `GacUI` exposes a bug in imported `VlppOS` inter-
 When validating GacUI remoting reveals a transport issue, keep the same source-of-truth rule: fix `VlppOS`, regenerate its release, copy the generated output into `GacUI\Import`, then validate the downstream scenario again.
 
 For dependency release syncs, copy generated files from the upstream `Release` folder into the downstream `Import` folder and exclude `IncludeOnly` unless the task explicitly requires it. Do not hand-edit the downstream import copy.
+
+When importing multiple dependency releases into GacUI, keep the chain explicit: regenerate and import `VlppOS` and `Workflow` release artifacts, then validate the GacUI remoting scenarios that consume both imported APIs.
 
 If a Workflow task exposes a `VlppReflection` collection-wrapper issue, fix the wrapper behavior in `VlppReflection`, regenerate and verify its release output, then update the Workflow import from that release instead of patching Workflow's imported copy.
 

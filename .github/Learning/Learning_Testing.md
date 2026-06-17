@@ -22,8 +22,9 @@
 - GuiDocumentLabel paragraphs: use `\\r\\n\\r\\n` between paragraphs in `LoadTextAndClearUndoRedo` [2]
 - Use `AssertItems`/`AssertCallbacks` for visible item lists [2]
 - Unit-test renderer `CaretLineLast` should treat CRLF as newline [2]
-- Verify GacJS HTTP fatal errors through browser UI [1]
-- Validate GacJS RPT through browser UI interactions [1]
+- Verify GacJS HTTP fatal errors through browser UI [2]
+- Validate GacJS RPT through browser UI interactions [2]
+- Validate imported dependency APIs with GacUI build and unit test [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
 - Skip callback plumbing when not asserting callbacks [1]
@@ -61,7 +62,7 @@
 - Empty item sources and empty `childrenProperty` only trigger `OnAttached` [1]
 - Prefer single cohesive smoke tests when setup-heavy [1]
 - Inline-object caret tests: cover every valid caret position one frame at a time [1]
-- Validate imported dependency APIs with GacUI build and unit test [1]
+- Verify remoting imports with both HTTP and named-pipe flows [1]
 - Verify `/IO` syntax errors and queued success separately [1]
 
 # Refinements
@@ -361,9 +362,13 @@ For the HTTP FullControlTest remoting pair, pass `/Http /FCT` to `RemotingTest_C
 
 For the HTTP browser remoting path, verify fatal core errors by running `RemotingTest_Core /RPT /Http`, opening GacJS in the browser, triggering the fatal-error UI path, and checking that the browser receives the `!Error` package and displays the error mask/alert. Seeing only a fetch failure or closed transport is not sufficient.
 
+For renderer shutdown cases, verify that the browser UI renders the expected controller-connection-stopped message instead of only checking process exit or network status.
+
 ## Validate GacJS RPT through browser UI interactions
 
 For `RemotingTest_Core /RPT /Http`, validate the GacJS path with real browser interactions before relying on process startup alone. Exercise representative commands such as clicking buttons, adding DataGrid rows, and exiting through the UI, then check that the renderer stops and the core exits cleanly.
+
+After importing remoting protocol dependencies, run the GacJS build and test package, then open the browser target against the live remoting core and verify the UI path end-to-end.
 
 ## Browser E2E tests must handle localized dialogs and host fixtures
 
@@ -380,6 +385,12 @@ For inline-object caret behavior, use compact multi-line documents such as `[Ima
 ## Validate imported dependency APIs with GacUI build and unit test
 
 After importing regenerated `VlppOS` or `VlppParser2` release files, build `Test\GacUISrc\GacUISrc.sln` and run the GacUI `UnitTest` executable. Existing GacUI call sites, such as the Windows HTTP automation service, provide downstream compile coverage for imported API signatures, and the unit-test log still needs a memory-leak check.
+
+When importing both `VlppOS` and `Workflow` releases for remote protocol work, this build/unit-test pass is only the baseline; continue into the remote core/renderer and GacJS checks that exercise the imported channel APIs.
+
+## Verify remoting imports with both HTTP and named-pipe flows
+
+After importing remoting-related dependency releases, verify `RemotingTest_Core` and `RemotingTest_Rendering_Win32` with both HTTP and named-pipe transports. Use the documented RemoteProtocolTest UI shutdown flow and confirm the old named-pipe error dialog does not appear and both core and renderer exit cleanly.
 
 ## Verify `/IO` syntax errors and queued success separately
 

@@ -9,8 +9,10 @@
 - Renderer channel dispatch belongs in async renderer layer [2]
 - Cache renderer packages until main-thread invoker exists [2]
 - Deliver fatal remote-channel errors before transport shutdown [2]
+- Stop remoting transports before stack channel wrappers destruct [2]
 - Remote core accepts replacement renderers by detaching stale renderer [1]
-- Stop remoting transports before stack channel wrappers destruct [1]
+- Parameterize remoting channel servers by concrete protocol server bases [1]
+- Use channel `localClient` callbacks for remoting local-client detection [1]
 - Do not call `IChannel::Initialize(nullptr)` to uninstall readers [1]
 - Use `EventObject` for renderer-connection waits after channel server start [1]
 - `TreeViewItemBindableRootProvider::UpdateBindingProperties` is root-scoped [1]
@@ -137,9 +139,19 @@ When replacing a renderer, detach the old renderer from the core channel before 
 
 Keep remote controller/window connection replay ordered so `Run()` submits only after the pre-run controller connection has been replayed, avoiding duplicate startup or DPI callbacks.
 
+## Parameterize remoting channel servers by concrete protocol server bases
+
+After the `VlppOS` channel-server template change, GacUI remoting aliases should bind `NetworkProtocolChannelServer` to a concrete protocol server base such as HTTP or named pipe. Let the shared channel layer own protocol package routing while the concrete protocol base owns transport startup, shutdown, and connection lifetime.
+
+## Use channel `localClient` callbacks for remoting local-client detection
+
+When `IChannelServer::OnClientConnected` exposes its `localClient` argument, remoting core code should use that callback data to identify local clients instead of maintaining separate explicit connection-tracking flags for the core client.
+
 ## Stop remoting transports before stack channel wrappers destruct
 
 Renderer-side remoting clients should explicitly stop or detach their network connection before stack-owned channel wrappers are destroyed, especially on fatal-exit paths. Do not depend on a wrapper destructor to unwind pending callbacks that still know about the transport.
+
+If a renderer test client exits after the channel is already disconnected, mark the channel as disconnected before deciding whether to stop the underlying network connection so shutdown does not re-enter an already-closed transport path.
 
 ## Do not call `IChannel::Initialize(nullptr)` to uninstall readers
 
