@@ -6,7 +6,7 @@
 
 ## Thread and thread pool
 
-**ThreadPoolLite**is always recommended to use whenever possible, instead of using**Thread**. Waiting for a thread to exit is a little bit tricky, it is much safer to use**EventObject**for this purpose. This is why you are not recommended to use**Thread**directly.
+**ThreadPoolLite**is always recommended to use whenever possible, instead of using**Thread**. Waiting for a thread to exit is a little bit tricky, it is much safer to use**EventObject**for this purpose. This is why you are not recommended to use**Thread**directly. Use**TaskQueue**when work must be posted from multiple threads but executed in order on one blocking task loop.
 
 To start a background task, this is the easiest way:
 ```

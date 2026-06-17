@@ -1,4 +1,4 @@
-﻿# Console Operations
+# Console Operations
 
 ## Overview
 
@@ -49,6 +49,31 @@ Console::WriteLine(const WString& text);
 - **Wide string support**: Accepts `WString` parameters for Unicode text
 - **Cross-platform compatibility**: Consistent behavior across operating systems
 - **Sequential output**: Each call produces a new line of output
+
+## Basic Input Functions
+
+### Console::TryRead Function
+
+Use `Console::TryRead` for line input from either an attached console or redirected stdin. It returns `Nullable<WString>`, with null meaning no line is available, such as EOF or an unavailable input handle.
+
+```cpp
+auto line = Console::TryRead();
+if (line)
+{
+    Console::WriteLine(L"Input: " + line.Value());
+}
+```
+
+**Function usage:**
+```cpp
+Nullable<WString> Console::TryRead();
+```
+
+**Key characteristics:**
+- **Redirection aware**: Handles both interactive console input and stdin redirection
+- **EOF aware**: Returns null instead of forcing callers to treat EOF as an empty line
+- **Wide string result**: Produces `WString` so it composes with console output APIs
+- **Console::Read compatibility**: `Console::Read` calls `TryRead` and returns `WString::Empty` when `TryRead` returns null
 
 ## Usage Patterns
 
@@ -209,6 +234,7 @@ Console operations assume a console window is available:
 - **Console applications**: Always have console access
 - **GUI applications**: May not have console access on some platforms
 - **Service applications**: May redirect console output to logs
+- **Redirected input**: Use `Console::TryRead` when stdin may be redirected or may reach EOF
 
 ## Extra Content
 

@@ -172,5 +172,6 @@ Tips for optimal synchronization performance:
 
 Synchronization primitives work best when combined with the multi-threading APIs:
 - Use with `ThreadPoolLite` for concurrent task execution
+- Use with `TaskQueue` when synchronized producers feed a single-threaded task loop
 - Combine with `ConditionVariable` for complex coordination scenarios
 - Apply appropriate synchronization for shared data structures

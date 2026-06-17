@@ -8,6 +8,8 @@ Use `ThreadPoolLite::Queue` and `ThreadPoolLite::QueueLambda` for thread pool ex
 
 Use static functions `ThreadPoolLite::Queue` or `ThreadPoolLite::QueueLambda` to run a function in another thread.
 
+Use `TaskQueue` when work must be queued from multiple threads but executed by one blocking task loop.
+
 ### ThreadPoolLite Benefits
 
 The thread pool provides several advantages over manual thread creation:
@@ -28,6 +30,26 @@ ThreadPoolLite::QueueLambda([]() {
 });
 ```
 
+## Task Queue Operations
+
+`TaskQueue` owns a FIFO task list and a semaphore-backed blocking loop. Call `QueueTask` from any thread, run `RunTaskQueue` on the thread that should execute the work, and call `QueueExitTask` to leave the loop after already queued tasks are complete.
+
+```cpp
+auto queue = Ptr(new TaskQueue);
+auto thread = Ptr(Thread::CreateAndStart([=]()
+{
+    queue->RunTaskQueue();
+}, false));
+
+queue->QueueTask([]()
+{
+    // Runs on the task queue thread
+});
+queue->QueueExitTask();
+```
+
+Use `TaskQueue` instead of `ThreadPoolLite` when the order and single-threaded execution context of tasks matters.
+
 ## Thread Control Operations
 
 ### Thread Pausing
@@ -47,7 +69,7 @@ Use static function `Thread::GetCurrentThreadId` to get an identifier for the OS
 Use `Thread::CreateAndStart` only when thread pool is insufficient.
 
 `Thread::CreateAndStart` could be used to run a function in another thread while returning a `Thread*` to control it, but this is not recommended.
-Always use `ThreadPoolLite` if possible.
+Always use `ThreadPoolLite` if possible. Use `TaskQueue` when a long-lived single-threaded task loop is required.
 
 ### When to Use Manual Threads
 
@@ -59,7 +81,7 @@ Manual thread creation should only be considered when:
 
 ## Thread Pool with Synchronization
 
-A `ThreadPoolLite` call with an `EventObject` is a better version of `Thread::Wait`.
+A `ThreadPoolLite` call with an `EventObject` is a better version of `Thread::Wait`. `TaskQueue` is the alternative when multiple callers should enqueue work to one owner thread.
 
 This approach provides better resource management and avoids the complexities of manual thread synchronization.
 
@@ -67,7 +89,7 @@ This approach provides better resource management and avoids the complexities of
 
 ### Threading Best Practices
 
-1. **Prefer Thread Pool**: Use `ThreadPoolLite` for most concurrent operations
+1. **Prefer Thread Pool**: Use `ThreadPoolLite` for most concurrent operations, and use `TaskQueue` for serialized owner-thread work
 2. **Avoid Thread Creation**: Manual thread creation adds overhead and complexity
 3. **Use Synchronization Primitives**: Combine threading with proper synchronization objects
 4. **Handle Exceptions**: Ensure proper exception handling in threaded code

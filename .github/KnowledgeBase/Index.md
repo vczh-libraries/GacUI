@@ -155,6 +155,7 @@ Algorithms for arranging data with support for both total and partial ordering r
 Basic input/output operations for console applications.
 
 - Use `Console::Write` and `Console::WriteLine` for console output in CLI applications
+- Use `Console::TryRead` for nullable line input that handles console input, redirection, and EOF
 
 [API Explanation](./KB_Vlpp_ConsoleOperations.md)
 
@@ -285,6 +286,7 @@ Specialized stream types for caching, recording, and broadcasting data operation
 Cross-platform threading primitives and synchronization mechanisms for concurrent programming.
 
 - Use `ThreadPoolLite::Queue` and `ThreadPoolLite::QueueLambda` for thread pool execution
+- Use `TaskQueue` when queued work must run on one blocking task loop instead of the thread pool
 - Use `Thread::Sleep` for thread pausing
 - Use `Thread::GetCurrentThreadId` for thread identification
 - Use `Thread::CreateAndStart` only when thread pool is insufficient
