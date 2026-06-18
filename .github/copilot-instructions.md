@@ -97,7 +97,8 @@ If you need to find any script files, they are in the `REPO-ROOT/.github/Ubuntu`
 - When making design or coding decisions, you must leverage the knowledge base to make the best choice.
 - The main entry is `REPO-ROOT/.github/KnowledgeBase/Index.md`, it is organized in this way:
   - `## Guidance`: General guidance that plays an important role repo-wide.
-  - Each `## Project`: A brief description of each project and its purpose.
+  - Each `## Project`: A brief description of each project and its purpose, plus a link to `Index_<PROJECT>.md` for project-specific guidance.
+  - Each `Index_<PROJECT>.md`: Project-specific API and design guidance linked from the project section in `Index.md`.
     - `### Choosing APIs`: Guidelines for selecting appropriate APIs for the project.
     - `### Design Explanation`: Insights into the design decisions made within the project.
   - `## Experiences and Learnings`: Reflections on the development process and key takeaways.
@@ -106,7 +107,7 @@ If you need to find any script files, they are in the `REPO-ROOT/.github/Ubuntu`
     - Not every project is included.
     - Manual for the unit test framework is in `## Unit Testing`.
 
-### Project/Choosing APIs
+### Index_<PROJECT>.md/Choosing APIs
 
 There are multiple categories under `Choosing APIs`. Each category begins with a short and accurate title `#### Category`.
 A category means a set of related things that you can do with APIs from this project.
@@ -119,7 +120,7 @@ If many classes or functions serve the same, or very similar purpose, one bullet
 
 At the end of the category, there is a hyperlink: `[API Explanation](./KB_Project_Category.md)` (no space between file name, all PascalCase).
 
-### Project/Design Explanation
+### Index_<PROJECT>.md/Design Explanation
 
 There are multiple topics under `Design Explanation`. Each topic begins with a short and accurate title `#### Topic`.
 A topic means a feature of this project; it can involve multiple components combined.

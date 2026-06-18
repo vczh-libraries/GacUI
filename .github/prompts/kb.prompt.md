@@ -5,7 +5,8 @@
   - The `Copilot_KB.md` file should already exist, it may or may not contain content from the last knowledge base writing.
   - If you cannot find the file, you are looking at a wrong folder.
 - Following `Leveraging the Knowledge Base` in `REPO-ROOT/.github/copilot-instructions.md`, find the knowledge and documents for this project in `REPO-ROOT/.github/KnowledgeBase/Index.md`.
-  - `Index.md` below means this file.
+  - `Index.md` below means the main entry file.
+  - `Index_<PROJECT>.md` below means the project-specific guidance file linked from the corresponding project section in `Index.md`.
 
 ## Goal and Constraints
 
@@ -27,7 +28,7 @@
   - `## DRAFT REQUEST`: The exact copy of the draft request I gave you.
   - `## IMPROVEMENTS`:
     - `### IMPROVEMENT`: The exact copy of the improvement request I gave you.
-  - `## (API|DESIGN) EXPLANATION`: The title of the drafting KB document, and where to put the document in `Index.md` and surrounding anchors.
+  - `## (API|DESIGN) EXPLANATION`: The title of the drafting KB document, and where to put the document in `Index_<PROJECT>.md` and surrounding anchors.
   - `## DOCUMENT`: The drafting KB document.
 
 ## Identify the Problem
@@ -113,16 +114,16 @@
 - Keep everything before `# DRAFT` unchanged, DO NOT edit anything in it.
 - Read everything before `# DRAFT` carefully, you are going to draft the document based on all information there, including necessary supporting materials mentioned there.
 - Extra information is already copied to `## DRAFT REQUEST` if any.
-- You are not going to edit `Index.md` at the moment, you are only editing `Copilot_KB.md`.
+- You are not going to edit index files at the moment, you are only editing `Copilot_KB.md`.
 
 ### Decide the Type of the Document
 
 - You are going to decide which project this document belongs to.
 - You are going to decide the type of the document.
 - Change `## (API|DESIGN) EXPLANATION` to `## API EXPLANATION (PROJECT)` if it is more about the usage and contract of APIs.
-  - It means eventually a new section will be added under `### Choosing APIs` under the specified project in `Index.md`.
+  - It means eventually a new section will be added under `### Choosing APIs` in the specified project's `Index_<PROJECT>.md`.
 - Change `## (API|DESIGN) EXPLANATION` to `## DESIGN EXPLANATION (PROJECT)` if it is more about how a set of APIs are working together and the design and implementation of the source code.
-  - It means eventually a new section will be added under `### Design Explanation` under the specified project in `Index.md`.
+  - It means eventually a new section will be added under `### Design Explanation` in the specified project's `Index_<PROJECT>.md`.
 - Fill the section to describe which part you will update in the knowledge base.
 
 ### Draft the Document
@@ -141,20 +142,21 @@
 
 - Your goal is to update `## DOCUMENT` based on my suggestion.
 - The finding I would like you to clarify is already copied to the last `### IMPROVEMENT`.
-- You are not going to edit `Index.md` at the moment, you are only editing `Copilot_KB.md`.
+- You are not going to edit index files at the moment, you are only editing `Copilot_KB.md`.
 
 ## Steps for Execute
 
 - There is `## API EXPLANATION (PROJECT)` or `## DESIGN EXPLANATION (PROJECT)` section filled with the title and content of the document you drafted.
   - If it is `## API EXPLANATION (PROJECT)`:
-    - A new section will be added under `### Choosing APIs` under the specified project in `Index.md`.
+    - A new section will be added under `### Choosing APIs` in the specified project's `Index_<PROJECT>.md`.
     - At the end of the new section, a `[API Explanation]()` link is expected.
   - If it is `## DESIGN EXPLANATION (PROJECT)`:
-    - A new section will be added under `### Design Explanation` under the specified project in `Index.md`.
+    - A new section will be added under `### Design Explanation` in the specified project's `Index_<PROJECT>.md`.
     - At the end of the new section, a `[Design Explanation]()` link is expected.
-- Create a new section in `Index.md`.
+- Create a new section in the specified project's `Index_<PROJECT>.md`.
   - Following `Leveraging the Knowledge Base` in `REPO-ROOT/.github/copilot-instructions.md` to figure out the expected format.
   - The document is super long, you have to carefully figure out where is the exact place to add the new section.
+  - The main `Index.md` only keeps project introductions and links to `Index_<PROJECT>.md`; do not add API or design sections there.
   - Use bullet points for the description of the topic to cover the most important points so that it will be easy to identify in the future if this topic is relevant to work to do.
   - Create a document file according to the hyperlink.
   - The title of the new document file should follow `## API EXPLANATION (PROJECT)` or `## DESIGN EXPLANATION (PROJECT)`.
