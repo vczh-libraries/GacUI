@@ -3,7 +3,7 @@
 # Orders
 
 - Process staged tasks one by one with verification [15]
-- Verify generated artifacts with downstream consumer checks [8]
+- Verify generated artifacts with downstream consumer checks [9]
 - Port fixes from imports to source repositories [8]
 - Crash early instead of adding error-tolerance fallbacks [6]
 - Proactively remove code made redundant by refactoring [6]
@@ -19,6 +19,7 @@
 - Prefer simple calls before interface casts [2]
 - Validate expectations against implementation and existing tests [2]
 - Treat Debug memory leak dumps as required failures [2]
+- Keep design documentation aligned with code after refactoring [2]
 - Prefer well-defined tests over ambiguous edge cases [1]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
@@ -39,7 +40,6 @@
 - `collections::List` has deleted copy constructor; use `std::move()` for structs with `List` members [1]
 - Compare type descriptors by pointer when descriptor identity is available [1]
 - Parse and validate before queuing asynchronous work [1]
-- Keep design documentation aligned with code after refactoring [1]
 
 # Refinements
 
