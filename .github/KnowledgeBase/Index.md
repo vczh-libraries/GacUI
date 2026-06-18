@@ -322,6 +322,18 @@ Cross-process synchronization objects that support waiting operations with timeo
 
 [API Explanation](./KB_VlppOS_WaitableObjects.md)
 
+#### Inter-Process Network Protocols and Channels
+
+Inter-process text transport and typed named-channel communication for applications that need client/server messaging, local server-side channel participants, batched package delivery, and optional Windows-only NamedPipe or HTTP transports.
+
+- Use `INetworkProtocolServer`, `INetworkProtocolClient`, `INetworkProtocolConnection` and `INetworkProtocolCallback` for raw asynchronous text-message transport.
+- Use `IChannelServer<TPackage>`, `IChannelClient<TPackage>`, `IChannel<TPackage>` and `IChannelReader<TPackage>` for typed named channels with client ids, direct sends, broadcasts and batched writes.
+- Use `NetworkProtocolChannelServer<TPackage, TSerialization, TServerBase>`, `NetworkProtocolChannelClient<TPackage, TSerialization>` and `NetworkProtocolLocalChannelClient<TPackage, TSerialization>` for the default channel implementation over an `INetworkProtocol*` transport.
+- Use `NamedPipeServer` / `NamedPipeClient` and `HttpServer` / `HttpClient` only when targeting Windows, because the current built-in NamedPipe and HTTP implementations are Windows-only.
+- Use `HttpClientApi` and `HttpServerApi` when implementing or maintaining the Windows HTTP transport layer directly.
+
+[API Explanation](./KB_VlppOS_InterProcessNetworkProtocolsAndChannels.md)
+
 ### Design Explanation
 
 #### Implementing an Injectable Feature
