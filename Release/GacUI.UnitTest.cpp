@@ -2048,6 +2048,40 @@ void GacUIUnitTest_LogDiffs(const WString& appName, UnitTestRemoteProtocol& unit
 	GacUIUnitTest_WriteSnapshotFileIfChanged(snapshotFile, textLog);
 }
 
+namespace vl::presentation::remoteprotocol::channeling
+{
+	class UnitTestChannelServer
+		: public Object
+		, public virtual inter_process::INetworkProtocolServer
+	{
+	private:
+		bool stopped = true;
+
+	public:
+		inter_process::WaitForClientResult OnClientConnected(inter_process::INetworkProtocolConnection* connection) override
+		{
+			return inter_process::WaitForClientResult::Reject;
+		}
+
+		void Start() override
+		{
+			stopped = false;
+		}
+
+		void Stop() override
+		{
+			stopped = true;
+		}
+
+		bool IsStopped() override
+		{
+			return stopped;
+		}
+	};
+
+	using GuiRemoteProtocolChannelServer = GuiRemoteProtocolNetworkChannelServer<UnitTestChannelServer>;
+}
+
 void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> config)
 {
 	UnitTestScreenConfig globalConfig;

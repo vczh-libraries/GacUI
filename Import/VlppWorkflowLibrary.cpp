@@ -2006,7 +2006,1679 @@ namespace vl
 
 
 /***********************************************************************
-.\RPC\WFLIBRARYRPCJSON.CPP
+.\RPC\WFLIBRARYRPCLIFECYCLE.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace rpc_controller
+	{
+		using namespace reflection;
+		using namespace reflection::description;
+		using namespace collections;
+
+		namespace
+		{
+			bool IsRpcWrapperObject(DescriptableObject* obj)
+			{
+				if (!obj) return false;
+				if (dynamic_cast<IRpcWrapperBase*>(obj)) return true;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+				if (auto typeDescriptor = obj->GetTypeDescriptor())
+				{
+					if (auto wrapperType = GetTypeDescriptor(WString::Unmanaged(L"system::IRpcWrapperBase")))
+					{
+						return typeDescriptor->CanConvertTo(wrapperType);
+					}
+				}
+#endif
+				return false;
+			}
+		}
+
+		WString RpcLifecycleBase::InternalProperty_LocalObjectTracker = WString::Unmanaged(L"RpcLocalObjectTracker");
+		WString RpcLifecycleBase::InternalProperty_WrapperTracker = WString::Unmanaged(L"RpcWrapperTracker");
+
+		RpcLocalObjectTracker::RpcLocalObjectTracker(RpcLifecycleBase* lc, RpcObjectReference r)
+			: lifecycle(lc), ref(r)
+		{
+		}
+
+		RpcLocalObjectTracker::~RpcLocalObjectTracker()
+		{
+			if (lifecycle && lifecycle->IsTracked(ref.objectId))
+			{
+				lifecycle->RemoveLocalObject(ref, false);
+			}
+		}
+
+		void RpcLocalObjectTracker::Attach(RpcLifecycleBase* lc, RpcObjectReference r)
+		{
+			lifecycle = lc;
+			ref = r;
+		}
+
+		void RpcLocalObjectTracker::Detach()
+		{
+			lifecycle = nullptr;
+		}
+
+		RpcWrapperTracker::RpcWrapperTracker(RpcLifecycleBase* lc, RpcObjectReference r)
+			: lifecycle(lc), ref(r)
+		{
+		}
+
+		RpcWrapperTracker::~RpcWrapperTracker()
+		{
+			if (lifecycle)
+			{
+				lifecycle->UntrackWrapper(ref);
+			}
+		}
+
+		void RpcWrapperTracker::Detach()
+		{
+			lifecycle = nullptr;
+		}
+
+/***********************************************************************
+* RpcLifecycleBase (Constructor and Setup)
+***********************************************************************/
+
+		RpcLifecycleBase::RpcLifecycleBase(vint _clientId)
+			: clientId(_clientId)
+		{
+		}
+
+		RpcLifecycleBase::~RpcLifecycleBase()
+		{
+		}
+
+		void RpcLifecycleBase::SetIdMap(const Dictionary<WString, vint>& _idMap)
+		{
+			CopyFrom(idMap, _idMap);
+		}
+
+		void RpcLifecycleBase::SetSerializer(Ptr<IRpcSerializer> _serializer)
+		{
+			serializer = _serializer;
+		}
+
+		IRpcSerializer* RpcLifecycleBase::GetSerializer()
+		{
+			return serializer.Obj();
+		}
+
+		void RpcLifecycleBase::RegisterWrapperFactory(UniversalWrapperFactory factory)
+		{
+			universalWrapperFactory = factory;
+		}
+
+		void RpcLifecycleBase::DisconnectWrappersForFinalize()
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::DisconnectWrappersForFinalize()#"
+			for (auto [ref, properties] : wrapperProperties)
+			{
+				if (properties.root)
+				{
+					auto trackerObj = properties.root->GetInternalProperty(InternalProperty_WrapperTracker);
+					CHECK_ERROR(trackerObj, ERROR_MESSAGE_PREFIX L"Wrapper tracker missing.");
+					auto tracker = trackerObj.Cast<RpcWrapperTracker>();
+					CHECK_ERROR(tracker, ERROR_MESSAGE_PREFIX L"Invalid wrapper tracker type.");
+					tracker->Detach();
+					properties.root->SetInternalProperty(InternalProperty_WrapperTracker, nullptr);
+				}
+
+				if (properties.proxy)
+				{
+					properties.proxy->DisconnectFromLifecycle();
+				}
+			}
+			wrapperProperties.Clear();
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		vint RpcLifecycleBase::DecideTypeId(IDescriptable* obj)const
+		{
+			if (dynamic_cast<IValueObservableList*>(obj)) return RpcTypeId_IValueObservableList;
+			if (dynamic_cast<IValueDictionary*>(obj)) return RpcTypeId_IValueDictionary;
+			if (dynamic_cast<IValueArray*>(obj)) return RpcTypeId_IValueArray;
+			if (dynamic_cast<IValueList*>(obj)) return RpcTypeId_IValueList;
+			if (dynamic_cast<IValueReadonlyList*>(obj)) return RpcTypeId_IValueReadonlyList;
+			if (dynamic_cast<IValueEnumerator*>(obj)) return RpcTypeId_IValueEnumerator;
+			if (dynamic_cast<IValueEnumerable*>(obj)) return RpcTypeId_IValueEnumerable;
+
+			return RpcTypeId_NotFound;
+		}
+
+		void RpcLifecycleBase::TrackLocalObject(RpcObjectReference ref, IDescriptable* obj)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::TrackLocalObject(RpcObjectReference, reflection::IDescriptable*)#"
+			auto index = localObjectProperties.Keys().IndexOf(ref.objectId);
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Object not registered.");
+			auto props = localObjectProperties.Values().Get(index);
+			CHECK_ERROR(props->rawPtr == nullptr, ERROR_MESSAGE_PREFIX L"Object already tracked.");
+
+			props->rawPtr = obj;
+
+			if (auto observable = dynamic_cast<IValueObservableList*>(obj))
+			{
+				auto handler = observable->ItemChanged.Add([this, ref](vint index, vint oldCount, vint newCount)
+				{
+					if (this->GetController()->GetItemChangedSuppressedFlag(ref))
+					{
+						return;
+					}
+					auto listEventOps = Ptr(new RpcCallerListEventOps(
+						this->GetDispatcher()->BroadcastFromClient_ObjectEventOps(this->GetClientId()),
+						serializer.Obj()
+						));
+					listEventOps->OnItemChanged(ref, index, oldCount, newCount);
+				});
+				props->eventHandler = handler;
+			}
+
+			AttachLocalObjectEvents(ref, obj);
+
+			if (auto descriptable = dynamic_cast<DescriptableObject*>(obj))
+			{
+				Ptr<RpcLocalObjectTracker> tracker;
+				if (auto trackerObj = descriptable->GetInternalProperty(InternalProperty_LocalObjectTracker))
+				{
+					tracker = trackerObj.Cast<RpcLocalObjectTracker>();
+					CHECK_ERROR(tracker, ERROR_MESSAGE_PREFIX L"Invalid local object tracker type.");
+					if (tracker->GetClientId() != ref.clientId)
+					{
+						throw Exception(ERROR_MESSAGE_PREFIX L"Object already tracked by a different client.");
+					}
+					CHECK_ERROR(!tracker->IsTracked(), ERROR_MESSAGE_PREFIX L"Object already tracked.");
+				}
+				else
+				{
+					tracker = Ptr(new RpcLocalObjectTracker(this, ref));
+					descriptable->SetInternalProperty(InternalProperty_LocalObjectTracker, tracker);
+				}
+
+				tracker->Attach(this, ref);
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		RpcObjectReference RpcLifecycleBase::CreateLocalObject(Ptr<IDescriptable> obj, RpcObjectReference ref)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::CreateLocalObject(Ptr<reflection::IDescriptable>, RpcObjectReference)#"
+			CHECK_ERROR(ref.clientId == clientId, ERROR_MESSAGE_PREFIX L"Ref is not local.");
+			CHECK_ERROR(!localObjectProperties.Keys().Contains(ref.objectId), ERROR_MESSAGE_PREFIX L"Object ID already registered.");
+			auto props = Ptr(new RpcLocalObjectProperties);
+			props->ref = ref;
+			props->ownedPtr = obj;
+			localObjectProperties.Set(ref.objectId, props);
+			TrackLocalObject(ref, obj.Obj());
+			if (nextObjectId < ref.objectId)
+			{
+				nextObjectId = ref.objectId;
+			}
+			return ref;
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RpcLifecycleBase::UntrackLocalObject(RpcObjectReference ref, bool clearInternalProperty)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::UntrackLocalObject(RpcObjectReference, bool)#"
+			auto index = localObjectProperties.Keys().IndexOf(ref.objectId);
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Object not registered.");
+			auto props = localObjectProperties.Values().Get(index);
+
+			if (props->eventHandler)
+			{
+				if (auto observable = dynamic_cast<IValueObservableList*>(props->rawPtr))
+				{
+					observable->ItemChanged.Remove(props->eventHandler);
+				}
+				props->eventHandler = nullptr;
+			}
+
+			auto rawPtr = props->rawPtr;
+			props->rawPtr = nullptr;
+
+			if (clearInternalProperty && rawPtr)
+			{
+				if (auto descriptable = dynamic_cast<DescriptableObject*>(rawPtr))
+				{
+					if (auto trackerObj = descriptable->GetInternalProperty(InternalProperty_LocalObjectTracker))
+					{
+						auto tracker = trackerObj.Cast<RpcLocalObjectTracker>();
+						CHECK_ERROR(tracker, ERROR_MESSAGE_PREFIX L"Invalid local object tracker type.");
+						tracker->Detach();
+						descriptable->SetInternalProperty(InternalProperty_LocalObjectTracker, nullptr);
+					}
+				}
+			}
+
+			props->ownedPtr = nullptr;
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RpcLifecycleBase::RemoveLocalObject(RpcObjectReference ref, bool clearInternalProperty)
+		{
+			if (localObjectProperties.Keys().Contains(ref.objectId))
+			{
+				UntrackLocalObject(ref, clearInternalProperty);
+				localObjectProperties.Remove(ref.objectId);
+			}
+		}
+
+		bool RpcLifecycleBase::IsTracked(vint objectId)const
+		{
+			auto index = localObjectProperties.Keys().IndexOf(objectId);
+			return index != -1 && localObjectProperties.Values().Get(index)->rawPtr != nullptr;
+		}
+
+		void RpcLifecycleBase::TrackWrapper(DescriptableObject* root, IRpcWrapperBase* proxy, RpcObjectReference ref)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::TrackWrapper(reflection::DescriptableObject*, IRpcWrapperBase*, RpcObjectReference)#"
+			CHECK_ERROR(root != nullptr, ERROR_MESSAGE_PREFIX L"Wrapper does not implement DescriptableObject.");
+			CHECK_ERROR(proxy != nullptr, ERROR_MESSAGE_PREFIX L"Wrapper is null.");
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+			root = root->SafeGetAggregationRoot();
+#endif
+			CHECK_ERROR(root->GetInternalProperty(InternalProperty_WrapperTracker) == nullptr, ERROR_MESSAGE_PREFIX L"Wrapper already tracked.");
+
+			auto tracker = Ptr(new RpcWrapperTracker(this, ref));
+			root->SetInternalProperty(InternalProperty_WrapperTracker, tracker);
+
+			RpcWrapperProperties properties;
+			properties.root = root;
+			properties.proxy = proxy;
+			CHECK_ERROR(!wrapperProperties.Keys().Contains(ref), ERROR_MESSAGE_PREFIX L"Reference already tracked.");
+			wrapperProperties.Set(ref, properties);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RpcLifecycleBase::UntrackWrapper(RpcObjectReference ref)
+		{
+			wrapperProperties.Remove(ref);
+		}
+
+		bool RpcLifecycleBase::TryGetTrackedWrapperRef(DescriptableObject* obj, RpcObjectReference& ref)const
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::TryGetTrackedWrapperRef(reflection::DescriptableObject*, RpcObjectReference&)const#"
+			auto wrapperRoot = obj;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+			if (wrapperRoot)
+			{
+				wrapperRoot = wrapperRoot->SafeGetAggregationRoot();
+			}
+#endif
+
+			if (wrapperRoot)
+			{
+				if (auto trackerObj = wrapperRoot->GetInternalProperty(InternalProperty_WrapperTracker))
+				{
+					auto tracker = trackerObj.Cast<RpcWrapperTracker>();
+					CHECK_ERROR(tracker, ERROR_MESSAGE_PREFIX L"Invalid internal property type.");
+					CHECK_ERROR(tracker->GetLifecycle() == this, ERROR_MESSAGE_PREFIX L"Wrapper registered to a different lifecycle.");
+					ref = tracker->GetRef();
+					return true;
+				}
+			}
+			return false;
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		IRpcWrapperBase* RpcLifecycleBase::GetTrackedWrapper(RpcObjectReference ref)const
+		{
+			if (auto index = wrapperProperties.Keys().IndexOf(ref); index != -1)
+			{
+				return wrapperProperties.Values()[index].proxy;
+			}
+			return nullptr;
+		}
+
+		Ptr<IDescriptable> RpcLifecycleBase::CreateCallerProxy(RpcObjectReference ref, IRpcSerializer* serializer)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::CreateCallerProxy(RpcObjectReference)#"
+			IRpcLifecycle* lc = this;
+			Ptr<IRpcWrapperBase> wrapper;
+
+			switch (ref.typeId)
+			{
+			case RpcTypeId_IValueEnumerable:
+				wrapper = Ptr(new RpcByrefEnumerable(lc, ref, serializer));
+				break;
+			case RpcTypeId_IValueEnumerator:
+				wrapper = Ptr(new RpcByrefEnumerator(lc, ref, serializer));
+				break;
+			case RpcTypeId_IValueArray:
+				wrapper = Ptr(new RpcByrefArray(lc, ref, serializer));
+				break;
+			case RpcTypeId_IValueReadonlyList:
+				wrapper = Ptr(new RpcByrefReadonlyList(lc, ref, serializer));
+				break;
+			case RpcTypeId_IValueList:
+				wrapper = Ptr(new RpcByrefList(lc, ref, serializer));
+				break;
+			case RpcTypeId_IValueObservableList:
+				wrapper = Ptr(new RpcByrefObservableList(lc, ref, serializer));
+				break;
+			case RpcTypeId_IValueDictionary:
+				wrapper = Ptr(new RpcByrefDictionary(lc, ref, serializer));
+				break;
+			default:
+				CHECK_ERROR(universalWrapperFactory, ERROR_MESSAGE_PREFIX L"No wrapper factory registered.");
+				wrapper = universalWrapperFactory(ref, this);
+				CHECK_ERROR(wrapper, ERROR_MESSAGE_PREFIX L"Wrapper factory returned null.");
+				break;
+			}
+
+			auto descriptable = dynamic_cast<IDescriptable*>(wrapper.Obj());
+			CHECK_ERROR(descriptable, ERROR_MESSAGE_PREFIX L"Wrapper does not implement IDescriptable.");
+			auto root = dynamic_cast<DescriptableObject*>(descriptable);
+			TrackWrapper(root, wrapper.Obj(), ref);
+			return Ptr(descriptable);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+/***********************************************************************
+* RpcLifecycleBase (IRpcLifecycle)
+***********************************************************************/
+
+		void RpcLifecycleBase::Finalize()
+		{
+			DisconnectWrappersForFinalize();
+			while (localObjectProperties.Count() > 0)
+			{
+				auto props = localObjectProperties.Values().Get(localObjectProperties.Count() - 1);
+				RemoveLocalObject(props->ref, true);
+			}
+			registeredLocalServices.Clear();
+			registeredRemoteServices.Clear();
+			controller.Finalize();
+		}
+
+		void RpcLifecycleBase::Initialize()
+		{
+			if (!initialized)
+			{
+				GetDispatcher()->Initialize();
+				initialized = true;
+			}
+		}
+
+		vint RpcLifecycleBase::GetClientId()
+		{
+			return clientId;
+		}
+
+		RpcControllerDefault* RpcLifecycleBase::GetController()
+		{
+			return &controller;
+		}
+
+		const RpcLocalServiceMap& RpcLifecycleBase::GetRegisteredLocalServices()
+		{
+			return registeredLocalServices;
+		}
+
+		void RpcLifecycleBase::LocalObjectHold(RpcObjectReference ref, vint remoteClientId)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::LocalObjectHold(RpcObjectReference, vint)#"
+			CHECK_ERROR(ref.clientId == clientId, ERROR_MESSAGE_PREFIX L"Ref is not local.");
+			auto index = localObjectProperties.Keys().IndexOf(ref.objectId);
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Object not registered.");
+			auto props = localObjectProperties.Values().Get(index);
+			if (!props->interestedClients.Contains(remoteClientId))
+			{
+				props->interestedClients.Add(remoteClientId);
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RpcLifecycleBase::LocalObjectUnhold(RpcObjectReference ref, vint remoteClientId)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::LocalObjectUnhold(RpcObjectReference, vint)#"
+			CHECK_ERROR(ref.clientId == clientId, ERROR_MESSAGE_PREFIX L"Ref is not local.");
+			auto index = localObjectProperties.Keys().IndexOf(ref.objectId);
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Object not registered.");
+			auto props = localObjectProperties.Values().Get(index);
+			CHECK_ERROR(props->interestedClients.Contains(remoteClientId), ERROR_MESSAGE_PREFIX L"Client does not hold this object.");
+			props->interestedClients.Remove(remoteClientId);
+			if (props->interestedClients.Count() == 0)
+			{
+				RemoveLocalObject(ref, true);
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RpcLifecycleBase::RegisterLocalService(vint typeId, Ptr<IDescriptable> service)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::RegisterLocalService(vint, Ptr<IDescriptable>)#"
+			CHECK_ERROR(service, ERROR_MESSAGE_PREFIX L"Service is required.");
+			if (initialized)
+			{
+				throw Exception(ERROR_MESSAGE_PREFIX L"RegisterLocalService cannot be called after Initialize.");
+			}
+			if (registeredLocalServices.Keys().Contains(typeId))
+			{
+				throw Exception(ERROR_MESSAGE_PREFIX L"Service is already registered.");
+			}
+
+			auto ref = CreateLocalObject(service, RpcObjectReference{ clientId, typeId, typeId });
+			LocalObjectHold(ref, clientId);
+			registeredLocalServices.Set(typeId, service);
+			GetDispatcher()->DeclareLocalService(ref);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RpcLifecycleBase::DeclareRemoteService(RpcObjectReference ref)
+		{
+			registeredRemoteServices.Set(ref.typeId, ref);
+		}
+
+		vint RpcLifecycleBase::GetTypeIdFromName(WString typeName)
+		{
+			auto typeIndex = idMap.Keys().IndexOf(typeName);
+			if (typeIndex == -1)
+			{
+				return RpcTypeId_NotFound;
+			}
+			return idMap.Values()[typeIndex];
+		}
+
+		Ptr<IDescriptable> RpcLifecycleBase::RequestService(WString typeName)
+		{
+			auto typeId = GetTypeIdFromName(typeName);
+			if (typeId == RpcTypeId_NotFound)
+			{
+				return nullptr;
+			}
+
+			if (auto index = registeredLocalServices.Keys().IndexOf(typeId); index != -1)
+			{
+				return registeredLocalServices.Values()[index];
+			}
+
+			if (auto index = registeredRemoteServices.Keys().IndexOf(typeId); index != -1)
+			{
+				return RefToPtr(registeredRemoteServices.Values()[index]);
+			}
+
+			return nullptr;
+		}
+
+		Ptr<IDescriptable> RpcLifecycleBase::RefToPtr(RpcObjectReference ref)
+		{
+			return RefToPtr(ref, serializer.Obj());
+		}
+
+		Ptr<IDescriptable> RpcLifecycleBase::RefToPtr(RpcObjectReference ref, IRpcSerializer* serializer)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::RefToPtr(RpcObjectReference)#"
+			if (ref.clientId == clientId)
+			{
+				auto index = localObjectProperties.Keys().IndexOf(ref.objectId);
+				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Object not registered.");
+				auto props = localObjectProperties.Values().Get(index);
+				CHECK_ERROR(props->rawPtr != nullptr, ERROR_MESSAGE_PREFIX L"Object not tracked.");
+				return Ptr(props->rawPtr);
+			}
+			else
+			{
+				if (auto index = wrapperProperties.Keys().IndexOf(ref); index != -1)
+				{
+					auto proxy = wrapperProperties.Values()[index].proxy;
+					auto descriptable = dynamic_cast<IDescriptable*>(proxy);
+					CHECK_ERROR(descriptable, ERROR_MESSAGE_PREFIX L"Wrapper does not implement IDescriptable.");
+					return Ptr(descriptable);
+				}
+
+				return CreateCallerProxy(ref, serializer);
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		RpcObjectReference RpcLifecycleBase::PtrToRef(Ptr<IDescriptable> obj)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::PtrToRef(Ptr<reflection::IDescriptable>)#"
+			CHECK_ERROR(obj, ERROR_MESSAGE_PREFIX L"A value is required.");
+
+			if (auto descObj = dynamic_cast<DescriptableObject*>(obj.Obj()))
+			{
+				RpcObjectReference wrapperRef;
+				if (TryGetTrackedWrapperRef(descObj, wrapperRef))
+				{
+					return wrapperRef;
+				}
+
+				if (IsRpcWrapperObject(descObj))
+				{
+					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Wrapper tracker lookup unexpectedly failed.");
+				}
+			}
+
+			if (auto descObj = dynamic_cast<DescriptableObject*>(obj.Obj()))
+			{
+				if (auto trackerObj = descObj->GetInternalProperty(InternalProperty_LocalObjectTracker))
+				{
+					auto tracker = trackerObj.Cast<RpcLocalObjectTracker>();
+					CHECK_ERROR(tracker, ERROR_MESSAGE_PREFIX L"Invalid internal property type.");
+					if (tracker->GetClientId() != clientId)
+					{
+						throw Exception(ERROR_MESSAGE_PREFIX L"Object registered to a different lifecycle.");
+					}
+					if (tracker->IsTracked())
+					{
+						CHECK_ERROR(tracker->GetLifecycle() == this, ERROR_MESSAGE_PREFIX L"Object tracker registered to an invalid lifecycle instance.");
+						return tracker->GetRef();
+					}
+				}
+			}
+
+			auto typeId = DecideTypeId(obj.Obj());
+			CHECK_ERROR(typeId != RpcTypeId_NotFound, ERROR_MESSAGE_PREFIX L"DecideTypeId returned RpcTypeId_NotFound (unknown type).");
+			return CreateLocalObject(obj, RpcObjectReference{ clientId, ++nextObjectId, typeId });
+#undef ERROR_MESSAGE_PREFIX
+		}
+	}
+}
+
+
+/***********************************************************************
+.\RPC\WFLIBRARYRPCWRAPPERS.CPP
+***********************************************************************/
+
+namespace vl
+{
+	using namespace collections;
+
+	namespace rpc_controller
+	{
+		using namespace reflection;
+		using namespace reflection::description;
+
+		namespace
+		{
+#ifndef VCZH_WORKFLOW_RPC_OBJECT_REFERENCE_VALUE_HELPERS
+#define VCZH_WORKFLOW_RPC_OBJECT_REFERENCE_VALUE_HELPERS
+			bool IsRpcObjectReferenceValue(const Value& value)
+			{
+				return value.GetValueType() == Value::BoxedValue && value.GetBoxedValue().Cast<IValueType::TypedBox<RpcObjectReference>>();
+			}
+
+			RpcObjectReference GetRpcObjectReference(const Value& value)
+			{
+				auto boxed = value.GetBoxedValue().Cast<IValueType::TypedBox<RpcObjectReference>>();
+				CHECK_ERROR(boxed, L"RpcObjectReference is expected.");
+				return boxed->value;
+			}
+#endif
+
+			IRpcWrapperBase* CastRpcWrapperBase(IDescriptable* obj)
+			{
+				if (!obj) return nullptr;
+				if (auto wrapper = dynamic_cast<IRpcWrapperBase*>(obj)) return wrapper;
+				return obj->SafeAggregationCast<IRpcWrapperBase>();
+			}
+
+			template<typename TInterface>
+			TInterface* CastRpcInterface(IDescriptable* obj)
+			{
+				if (!obj) return nullptr;
+				if (auto proxy = dynamic_cast<TInterface*>(obj)) return proxy;
+				return obj->SafeAggregationCast<TInterface>();
+			}
+
+			template<typename TWrapper, typename TInterface>
+			Ptr<TInterface> CreateTrackedProxy(IRpcLifecycle* lc, RpcObjectReference ref, IRpcSerializer* serializer)
+			{
+				auto obj = [&]()
+				{
+					if (auto lifecycle = dynamic_cast<RpcLifecycleBase*>(lc))
+					{
+						return lifecycle->RefToPtr(ref, serializer);
+					}
+					return lc->RefToPtr(ref);
+				}();
+				CHECK_ERROR(obj, L"RPC proxy creation returned null.");
+				if (auto wrapper = Ptr(CastRpcWrapperBase(obj.Obj())))
+				{
+					auto proxy = Ptr(CastRpcInterface<TInterface>(obj.Obj()));
+					CHECK_ERROR(proxy, L"RPC proxy creation returned an unexpected type.");
+					return proxy;
+				}
+				return Ptr(new TWrapper(lc, ref, serializer));
+			}
+
+			void SetRemoteObjectHold(IRpcLifecycle* lc, RpcObjectReference ref, bool hold)
+			{
+				lc->GetDispatcher()->SendToClient_ObjectOps(ref.clientId)->ObjectHold(ref, lc->GetClientId(), hold);
+			}
+
+			Ptr<IRpcListOps> GetRemoteListOps(IRpcLifecycle* lc, RpcObjectReference ref, IRpcSerializer* serializer)
+			{
+				return Ptr(new RpcCallerListOps(lc->GetDispatcher()->SendToClient_ObjectOps(ref.clientId), serializer));
+			}
+
+			Value SerializeValue(IRpcSerializer* serializer, const Value& value)
+			{
+				return serializer ? serializer->Serialize(value) : value;
+			}
+
+			Value DeserializeValue(IRpcSerializer* serializer, const Value& value)
+			{
+				return serializer ? serializer->Deserialize(value) : value;
+			}
+
+			template<typename ...TArgs>
+			Ptr<IValueArray> CreateRpcArguments(TArgs&& ...args)
+			{
+				auto arguments = IValueArray::Create();
+				arguments->Resize(sizeof...(TArgs));
+				vint index = 0;
+				((arguments->Set(index++, std::forward<TArgs>(args))), ...);
+				return arguments;
+			}
+
+			Value ReadMethodResult(IRpcSerializer* serializer, const Value& value)
+			{
+				auto deserialized = DeserializeValue(serializer, value);
+				ReadMethodException(deserialized);
+				return deserialized;
+			}
+
+			Value InvokeListMethod(IRpcObjectOps* objectOps, IRpcSerializer* serializer, RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
+			{
+				auto result = objectOps->InvokeMethod(ref, methodId, arguments);
+				return ReadMethodResult(serializer, result);
+			}
+
+			bool IsRpcListMethodId(vint methodId)
+			{
+				switch (methodId)
+				{
+				case RpcMethodId_IValueEnumerable_CreateEnumerator:
+				case RpcMethodId_IValueEnumerator_Next:
+				case RpcMethodId_IValueEnumerator_GetCurrent:
+				case RpcMethodId_IValueReadonlyList_GetCount:
+				case RpcMethodId_IValueReadonlyList_Get:
+				case RpcMethodId_IValueList_Set:
+				case RpcMethodId_IValueList_Add:
+				case RpcMethodId_IValueList_Insert:
+				case RpcMethodId_IValueList_RemoveAt:
+				case RpcMethodId_IValueList_Clear:
+				case RpcMethodId_IValueReadonlyList_Contains:
+				case RpcMethodId_IValueReadonlyList_IndexOf:
+				case RpcMethodId_IValueReadonlyDictionary_GetCount:
+				case RpcMethodId_IValueReadonlyDictionary_Get:
+				case RpcMethodId_IValueDictionary_Set:
+				case RpcMethodId_IValueDictionary_Remove:
+				case RpcMethodId_IValueDictionary_Clear:
+				case RpcMethodId_IValueReadonlyDictionary_ContainsKey:
+				case RpcMethodId_IValueReadonlyDictionary_GetKeys:
+				case RpcMethodId_IValueReadonlyDictionary_GetValues:
+				case RpcMethodId_IValueArray_Resize:
+					return true;
+				default:
+					return false;
+				}
+			}
+
+			Value RpcBoxValueByref(const Value& trivial, IRpcLifecycle* lc)
+			{
+				if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
+				if (trivial.IsNull()) return trivial;
+
+				if (trivial.GetValueType() == Value::SharedPtr)
+				{
+					if (auto raw = trivial.GetRawPtr())
+					{
+						if (auto obj = dynamic_cast<IDescriptable*>(raw))
+						{
+							return BoxValue(RpcBoxByref(Ptr<IDescriptable>(obj), lc));
+						}
+					}
+				}
+
+				return trivial;
+			}
+
+			Value RpcUnboxValueByref(const Value& serializable, IRpcLifecycle* lc)
+			{
+				if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
+				if (serializable.IsNull()) return serializable;
+
+				if (IsRpcObjectReferenceValue(serializable))
+				{
+					auto ref = GetRpcObjectReference(serializable);
+					auto obj = RpcUnboxByref(ref, lc);
+					return BoxValue(obj);
+				}
+
+				return serializable;
+			}
+
+		}
+
+/***********************************************************************
+* RpcByrefEnumerator
+***********************************************************************/
+
+		RpcByrefEnumerator::RpcByrefEnumerator(IRpcLifecycle* lc, RpcObjectReference enumeratorRef, IRpcSerializer* _serializer)
+			: lifecycle(lc)
+			, serializer(_serializer)
+			, ref(enumeratorRef)
+		{
+			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
+			SetRemoteObjectHold(lifecycle, ref, true);
+		}
+
+		RpcByrefEnumerator::~RpcByrefEnumerator()
+		{
+			if (lifecycle) SetRemoteObjectHold(lifecycle, ref, false);
+		}
+
+		void RpcByrefEnumerator::DisconnectFromLifecycle()
+		{
+			lifecycle = nullptr;
+		}
+
+		Value RpcByrefEnumerator::GetCurrent()
+		{
+			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref, serializer)->EnumGetCurrent(ref), lifecycle);
+		}
+
+		vint RpcByrefEnumerator::GetIndex()
+		{
+			return index;
+		}
+
+		bool RpcByrefEnumerator::Next()
+		{
+			if (GetRemoteListOps(lifecycle, ref, serializer)->EnumNext(ref))
+			{
+				index++;
+				return true;
+			}
+			return false;
+		}
+
+		RpcByrefEnumerable::RpcByrefEnumerable(IRpcLifecycle* lc, RpcObjectReference enumerableRef, IRpcSerializer* _serializer)
+			: lifecycle(lc)
+			, serializer(_serializer)
+			, ref(enumerableRef)
+		{
+			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
+			SetRemoteObjectHold(lifecycle, ref, true);
+		}
+
+		RpcByrefEnumerable::~RpcByrefEnumerable()
+		{
+			if (lifecycle) SetRemoteObjectHold(lifecycle, ref, false);
+		}
+
+		void RpcByrefEnumerable::DisconnectFromLifecycle()
+		{
+			lifecycle = nullptr;
+		}
+
+		Ptr<IValueEnumerator> RpcByrefEnumerable::CreateEnumerator()
+		{
+			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifecycle, GetRemoteListOps(lifecycle, ref, serializer)->EnumCreate(ref), serializer);
+		}
+
+/***********************************************************************
+* RpcByrefReadonlyList
+***********************************************************************/
+
+		RpcByrefReadonlyList::RpcByrefReadonlyList(IRpcLifecycle* lc, RpcObjectReference listRef, IRpcSerializer* _serializer)
+			: lifecycle(lc)
+			, serializer(_serializer)
+			, ref(listRef)
+		{
+			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
+			SetRemoteObjectHold(lifecycle, ref, true);
+		}
+
+		RpcByrefReadonlyList::~RpcByrefReadonlyList()
+		{
+			if (lifecycle) SetRemoteObjectHold(lifecycle, ref, false);
+		}
+
+		void RpcByrefReadonlyList::DisconnectFromLifecycle()
+		{
+			lifecycle = nullptr;
+		}
+
+		Ptr<IValueEnumerator> RpcByrefReadonlyList::CreateEnumerator()
+		{
+			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifecycle, GetRemoteListOps(lifecycle, ref, serializer)->EnumCreate(ref), serializer);
+		}
+
+		vint RpcByrefReadonlyList::GetCount()
+		{
+			return GetRemoteListOps(lifecycle, ref, serializer)->ListGetCount(ref);
+		}
+
+		Value RpcByrefReadonlyList::Get(vint index)
+		{
+			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref, serializer)->ListGet(ref, index), lifecycle);
+		}
+
+		bool RpcByrefReadonlyList::Contains(const Value& value)
+		{
+			return GetRemoteListOps(lifecycle, ref, serializer)->ListContains(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
+		}
+
+		vint RpcByrefReadonlyList::IndexOf(const Value& value)
+		{
+			return GetRemoteListOps(lifecycle, ref, serializer)->ListIndexOf(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
+		}
+
+/***********************************************************************
+* RpcByrefList
+***********************************************************************/
+
+		RpcByrefList::RpcByrefList(IRpcLifecycle* lc, RpcObjectReference listRef, IRpcSerializer* _serializer)
+			: RpcByrefReadonlyList(lc, listRef, _serializer)
+		{
+		}
+
+		RpcByrefList::~RpcByrefList()
+		{
+		}
+
+		Ptr<IValueEnumerator> RpcByrefList::CreateEnumerator()
+		{
+			return RpcByrefReadonlyList::CreateEnumerator();
+		}
+
+		vint RpcByrefList::GetCount()
+		{
+			return RpcByrefReadonlyList::GetCount();
+		}
+
+		Value RpcByrefList::Get(vint index)
+		{
+			return RpcByrefReadonlyList::Get(index);
+		}
+
+		bool RpcByrefList::Contains(const Value& value)
+		{
+			return RpcByrefReadonlyList::Contains(value);
+		}
+
+		vint RpcByrefList::IndexOf(const Value& value)
+		{
+			return RpcByrefReadonlyList::IndexOf(value);
+		}
+
+		void RpcByrefList::Set(vint index, const Value& value)
+		{
+			GetRemoteListOps(lifecycle, ref, serializer)->ListSet(ref, index, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
+		}
+
+		vint RpcByrefList::Add(const Value& value)
+		{
+			return GetRemoteListOps(lifecycle, ref, serializer)->ListAdd(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
+		}
+
+		vint RpcByrefList::Insert(vint index, const Value& value)
+		{
+			return GetRemoteListOps(lifecycle, ref, serializer)->ListInsert(ref, index, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
+		}
+
+		bool RpcByrefList::Remove(const Value& value)
+		{
+			auto index = IndexOf(value);
+			return index == -1 ? false : GetRemoteListOps(lifecycle, ref, serializer)->ListRemoveAt(ref, index);
+		}
+
+		bool RpcByrefList::RemoveAt(vint index)
+		{
+			return GetRemoteListOps(lifecycle, ref, serializer)->ListRemoveAt(ref, index);
+		}
+
+		void RpcByrefList::Clear()
+		{
+			GetRemoteListOps(lifecycle, ref, serializer)->ListClear(ref);
+		}
+
+/***********************************************************************
+* RpcByrefArray
+***********************************************************************/
+
+		RpcByrefArray::RpcByrefArray(IRpcLifecycle* lc, RpcObjectReference arrayRef, IRpcSerializer* _serializer)
+			: lifecycle(lc)
+			, serializer(_serializer)
+			, ref(arrayRef)
+		{
+			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
+			SetRemoteObjectHold(lifecycle, ref, true);
+		}
+
+		RpcByrefArray::~RpcByrefArray()
+		{
+			if (lifecycle) SetRemoteObjectHold(lifecycle, ref, false);
+		}
+
+		void RpcByrefArray::DisconnectFromLifecycle()
+		{
+			lifecycle = nullptr;
+		}
+
+		Ptr<IValueEnumerator> RpcByrefArray::CreateEnumerator()
+		{
+			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifecycle, GetRemoteListOps(lifecycle, ref, serializer)->EnumCreate(ref), serializer);
+		}
+
+		vint RpcByrefArray::GetCount()
+		{
+			return GetRemoteListOps(lifecycle, ref, serializer)->ListGetCount(ref);
+		}
+
+		Value RpcByrefArray::Get(vint index)
+		{
+			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref, serializer)->ListGet(ref, index), lifecycle);
+		}
+
+		bool RpcByrefArray::Contains(const Value& value)
+		{
+			return GetRemoteListOps(lifecycle, ref, serializer)->ListContains(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
+		}
+
+		vint RpcByrefArray::IndexOf(const Value& value)
+		{
+			return GetRemoteListOps(lifecycle, ref, serializer)->ListIndexOf(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
+		}
+
+		void RpcByrefArray::Set(vint index, const Value& value)
+		{
+			GetRemoteListOps(lifecycle, ref, serializer)->ListSet(ref, index, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
+		}
+
+		void RpcByrefArray::Resize(vint size)
+		{
+			GetRemoteListOps(lifecycle, ref, serializer)->ArrayResize(ref, size);
+		}
+
+/***********************************************************************
+* RpcByrefObservableList
+***********************************************************************/
+
+		RpcByrefObservableList::RpcByrefObservableList(IRpcLifecycle* lc, RpcObjectReference listRef, IRpcSerializer* _serializer)
+			: lifecycle(lc)
+			, serializer(_serializer)
+			, ref(listRef)
+		{
+			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
+			SetRemoteObjectHold(lifecycle, ref, true);
+		}
+
+		RpcByrefObservableList::~RpcByrefObservableList()
+		{
+			if (lifecycle) SetRemoteObjectHold(lifecycle, ref, false);
+		}
+
+		void RpcByrefObservableList::DisconnectFromLifecycle()
+		{
+			lifecycle = nullptr;
+		}
+
+		Ptr<IValueEnumerator> RpcByrefObservableList::CreateEnumerator()
+		{
+			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifecycle, GetRemoteListOps(lifecycle, ref, serializer)->EnumCreate(ref), serializer);
+		}
+
+		vint RpcByrefObservableList::GetCount()
+		{
+			return GetRemoteListOps(lifecycle, ref, serializer)->ListGetCount(ref);
+		}
+
+		Value RpcByrefObservableList::Get(vint index)
+		{
+			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref, serializer)->ListGet(ref, index), lifecycle);
+		}
+
+		bool RpcByrefObservableList::Contains(const Value& value)
+		{
+			return GetRemoteListOps(lifecycle, ref, serializer)->ListContains(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
+		}
+
+		vint RpcByrefObservableList::IndexOf(const Value& value)
+		{
+			return GetRemoteListOps(lifecycle, ref, serializer)->ListIndexOf(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
+		}
+
+		void RpcByrefObservableList::Set(vint index, const Value& value)
+		{
+			GetRemoteListOps(lifecycle, ref, serializer)->ListSet(ref, index, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
+		}
+
+		vint RpcByrefObservableList::Add(const Value& value)
+		{
+			return GetRemoteListOps(lifecycle, ref, serializer)->ListAdd(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
+		}
+
+		vint RpcByrefObservableList::Insert(vint index, const Value& value)
+		{
+			return GetRemoteListOps(lifecycle, ref, serializer)->ListInsert(ref, index, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
+		}
+
+		bool RpcByrefObservableList::Remove(const Value& value)
+		{
+			auto index = IndexOf(value);
+			return index == -1 ? false : GetRemoteListOps(lifecycle, ref, serializer)->ListRemoveAt(ref, index);
+		}
+
+		bool RpcByrefObservableList::RemoveAt(vint index)
+		{
+			return GetRemoteListOps(lifecycle, ref, serializer)->ListRemoveAt(ref, index);
+		}
+
+		void RpcByrefObservableList::Clear()
+		{
+			GetRemoteListOps(lifecycle, ref, serializer)->ListClear(ref);
+		}
+
+/***********************************************************************
+* RpcByrefDictionary
+***********************************************************************/
+
+		RpcByrefDictionary::RpcByrefDictionary(IRpcLifecycle* lc, RpcObjectReference dictRef, IRpcSerializer* _serializer)
+			: lifecycle(lc)
+			, serializer(_serializer)
+			, ref(dictRef)
+		{
+			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
+			SetRemoteObjectHold(lifecycle, ref, true);
+		}
+
+		RpcByrefDictionary::~RpcByrefDictionary()
+		{
+			if (lifecycle) SetRemoteObjectHold(lifecycle, ref, false);
+		}
+
+		void RpcByrefDictionary::DisconnectFromLifecycle()
+		{
+			lifecycle = nullptr;
+		}
+
+		Ptr<IValueReadonlyList> RpcByrefDictionary::GetKeys()
+		{
+			return CreateTrackedProxy<RpcByrefReadonlyList, IValueReadonlyList>(lifecycle, GetRemoteListOps(lifecycle, ref, serializer)->DictGetKeys(ref), serializer);
+		}
+
+		Ptr<IValueReadonlyList> RpcByrefDictionary::GetValues()
+		{
+			return CreateTrackedProxy<RpcByrefReadonlyList, IValueReadonlyList>(lifecycle, GetRemoteListOps(lifecycle, ref, serializer)->DictGetValues(ref), serializer);
+		}
+
+		vint RpcByrefDictionary::GetCount()
+		{
+			return GetRemoteListOps(lifecycle, ref, serializer)->DictGetCount(ref);
+		}
+
+		Value RpcByrefDictionary::Get(const Value& key)
+		{
+			auto serializedKey = SerializeValue(serializer, RpcBoxValueByref(key, lifecycle));
+			auto serializedValue = GetRemoteListOps(lifecycle, ref, serializer)->DictGet(ref, serializedKey);
+			return RpcUnboxValueByref(serializedValue, lifecycle);
+		}
+
+		void RpcByrefDictionary::Set(const Value& key, const Value& value)
+		{
+			auto serializedKey = SerializeValue(serializer, RpcBoxValueByref(key, lifecycle));
+			auto serializedValue = SerializeValue(serializer, RpcBoxValueByref(value, lifecycle));
+			GetRemoteListOps(lifecycle, ref, serializer)->DictSet(ref, serializedKey, serializedValue);
+		}
+
+		bool RpcByrefDictionary::Remove(const Value& key)
+		{
+			return GetRemoteListOps(lifecycle, ref, serializer)->DictRemove(ref, SerializeValue(serializer, RpcBoxValueByref(key, lifecycle)));
+		}
+
+		void RpcByrefDictionary::Clear()
+		{
+			GetRemoteListOps(lifecycle, ref, serializer)->DictClear(ref);
+		}
+
+/***********************************************************************
+* RpcCalleeListOps
+***********************************************************************/
+
+		RpcCalleeListOps::RpcCalleeListOps(IRpcLifecycle* lc, IRpcSerializer* _serializer)
+			: lifecycle(lc)
+			, serializer(_serializer)
+		{
+			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
+		}
+
+		RpcObjectReference RpcCalleeListOps::EnumCreate(RpcObjectReference ref)
+		{
+			auto obj = lifecycle->RefToPtr(ref);
+			Ptr<IValueEnumerator> enumerator;
+			if (auto xs = Ptr(obj.Obj()->SafeAggregationCast<IValueEnumerable>()))
+			{
+				enumerator = xs->CreateEnumerator();
+			}
+			else
+			{
+				throw Exception(L"RpcCalleeListOps::EnumCreate cannot find the target collection.");
+			}
+
+			return lifecycle->PtrToRef(enumerator);
+		}
+
+		bool RpcCalleeListOps::EnumNext(RpcObjectReference enumerator)
+		{
+			auto obj = lifecycle->RefToPtr(enumerator);
+			auto e = Ptr(obj.Obj()->SafeAggregationCast<IValueEnumerator>());
+			if (!e) throw Exception(L"RpcCalleeListOps::EnumNext cannot find the target enumerator.");
+			return e->Next();
+		}
+
+		Value RpcCalleeListOps::EnumGetCurrent(RpcObjectReference enumerator)
+		{
+			auto obj = lifecycle->RefToPtr(enumerator);
+			auto e = Ptr(obj.Obj()->SafeAggregationCast<IValueEnumerator>());
+			if (!e) throw Exception(L"RpcCalleeListOps::EnumGetCurrent cannot find the target enumerator.");
+			return SerializeValue(serializer, RpcBoxValueByref(e->GetCurrent(), lifecycle));
+		}
+
+		vint RpcCalleeListOps::ListGetCount(RpcObjectReference ref)
+		{
+			auto obj = lifecycle->RefToPtr(ref);
+			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
+				return roList->GetCount();
+			throw Exception(L"RpcCalleeListOps::ListGetCount cannot find the target list.");
+		}
+
+		Value RpcCalleeListOps::ListGet(RpcObjectReference ref, vint index)
+		{
+			auto obj = lifecycle->RefToPtr(ref);
+			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
+				return SerializeValue(serializer, RpcBoxValueByref(roList->Get(index), lifecycle));
+			throw Exception(L"RpcCalleeListOps::ListGet cannot find the target list.");
+		}
+
+		void RpcCalleeListOps::ListSet(RpcObjectReference ref, vint index, const Value& value)
+		{
+			auto trivial = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
+			auto obj = lifecycle->RefToPtr(ref);
+			if (auto array = Ptr(obj.Obj()->SafeAggregationCast<IValueArray>()))
+			{
+				array->Set(index, trivial);
+				return;
+			}
+			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
+			{
+				list->Set(index, trivial);
+				return;
+			}
+			throw Exception(L"RpcCalleeListOps::ListSet cannot find the target list.");
+		}
+
+		vint RpcCalleeListOps::ListAdd(RpcObjectReference ref, const Value& value)
+		{
+			auto trivial = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
+			auto obj = lifecycle->RefToPtr(ref);
+			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
+				return list->Add(trivial);
+			throw Exception(L"RpcCalleeListOps::ListAdd cannot find a writable list.");
+		}
+
+		vint RpcCalleeListOps::ListInsert(RpcObjectReference ref, vint index, const Value& value)
+		{
+			auto trivial = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
+			auto obj = lifecycle->RefToPtr(ref);
+			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
+				return list->Insert(index, trivial);
+			throw Exception(L"RpcCalleeListOps::ListInsert cannot find a writable list.");
+		}
+
+		bool RpcCalleeListOps::ListRemoveAt(RpcObjectReference ref, vint index)
+		{
+			auto obj = lifecycle->RefToPtr(ref);
+			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
+				return list->RemoveAt(index);
+			throw Exception(L"RpcCalleeListOps::ListRemoveAt cannot find the target list.");
+		}
+
+		void RpcCalleeListOps::ListClear(RpcObjectReference ref)
+		{
+			auto obj = lifecycle->RefToPtr(ref);
+			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
+			{
+				list->Clear();
+				return;
+			}
+			throw Exception(L"RpcCalleeListOps::ListClear cannot find the target list.");
+		}
+
+		bool RpcCalleeListOps::ListContains(RpcObjectReference ref, const Value& value)
+		{
+			auto trivial = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
+			auto obj = lifecycle->RefToPtr(ref);
+			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
+				return roList->Contains(trivial);
+			throw Exception(L"RpcCalleeListOps::ListContains cannot find the target list.");
+		}
+
+		vint RpcCalleeListOps::ListIndexOf(RpcObjectReference ref, const Value& value)
+		{
+			auto trivial = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
+			auto obj = lifecycle->RefToPtr(ref);
+			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
+				return roList->IndexOf(trivial);
+			throw Exception(L"RpcCalleeListOps::ListIndexOf cannot find the target list.");
+		}
+
+		void RpcCalleeListOps::ArrayResize(RpcObjectReference ref, vint size)
+		{
+			auto obj = lifecycle->RefToPtr(ref);
+			auto array = Ptr(obj.Obj()->SafeAggregationCast<IValueArray>());
+			if (!array) throw Exception(L"RpcCalleeListOps::ArrayResize cannot find the target array.");
+			array->Resize(size);
+		}
+
+		vint RpcCalleeListOps::DictGetCount(RpcObjectReference ref)
+		{
+			auto obj = lifecycle->RefToPtr(ref);
+			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
+			if (!dict) throw Exception(L"RpcCalleeListOps::DictGetCount cannot find the target dictionary.");
+			return dict->GetCount();
+		}
+
+		Value RpcCalleeListOps::DictGet(RpcObjectReference ref, const Value& key)
+		{
+			auto obj = lifecycle->RefToPtr(ref);
+			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
+			if (!dict) throw Exception(L"RpcCalleeListOps::DictGet cannot find the target dictionary.");
+			auto trivialKey = RpcUnboxValueByref(DeserializeValue(serializer, key), lifecycle);
+			return SerializeValue(serializer, RpcBoxValueByref(dict->Get(trivialKey), lifecycle));
+		}
+
+		void RpcCalleeListOps::DictSet(RpcObjectReference ref, const Value& key, const Value& value)
+		{
+			auto obj = lifecycle->RefToPtr(ref);
+			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueDictionary>());
+			if (!dict) throw Exception(L"RpcCalleeListOps::DictSet cannot find the target dictionary.");
+			auto trivialKey = RpcUnboxValueByref(DeserializeValue(serializer, key), lifecycle);
+			auto trivialValue = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
+			dict->Set(trivialKey, trivialValue);
+		}
+
+		bool RpcCalleeListOps::DictRemove(RpcObjectReference ref, const Value& key)
+		{
+			auto obj = lifecycle->RefToPtr(ref);
+			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueDictionary>());
+			if (!dict) throw Exception(L"RpcCalleeListOps::DictRemove cannot find the target dictionary.");
+			return dict->Remove(RpcUnboxValueByref(DeserializeValue(serializer, key), lifecycle));
+		}
+
+		void RpcCalleeListOps::DictClear(RpcObjectReference ref)
+		{
+			auto obj = lifecycle->RefToPtr(ref);
+			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueDictionary>());
+			if (!dict) throw Exception(L"RpcCalleeListOps::DictClear cannot find the target dictionary.");
+			dict->Clear();
+		}
+
+		bool RpcCalleeListOps::DictContainsKey(RpcObjectReference ref, const Value& key)
+		{
+			auto obj = lifecycle->RefToPtr(ref);
+			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
+			if (!dict) throw Exception(L"RpcCalleeListOps::DictContainsKey cannot find the target dictionary.");
+			return dict->GetKeys()->Contains(RpcUnboxValueByref(DeserializeValue(serializer, key), lifecycle));
+		}
+
+		RpcObjectReference RpcCalleeListOps::DictGetKeys(RpcObjectReference ref)
+		{
+			auto obj = lifecycle->RefToPtr(ref);
+			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
+			if (!dict) throw Exception(L"RpcCalleeListOps::DictGetKeys cannot find the target dictionary.");
+			return lifecycle->PtrToRef(dict->GetKeys());
+		}
+
+		RpcObjectReference RpcCalleeListOps::DictGetValues(RpcObjectReference ref)
+		{
+			auto obj = lifecycle->RefToPtr(ref);
+			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
+			if (!dict) throw Exception(L"RpcCalleeListOps::DictGetValues cannot find the target dictionary.");
+			return lifecycle->PtrToRef(dict->GetValues());
+		}
+
+/***********************************************************************
+* RpcCalleeListEventOps
+***********************************************************************/
+
+		RpcCalleeListEventOps::RpcCalleeListEventOps(IRpcLifecycle* lc, IRpcSerializer* _serializer)
+			: lifecycle(lc)
+			, serializer(_serializer)
+		{
+			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
+		}
+
+		Value RpcCalleeListEventOps::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
+		{
+			struct SuppressFlag
+			{
+				IRpcLifecycle*		lifecycle;
+				RpcObjectReference	ref;
+
+				SuppressFlag(IRpcLifecycle* _lifecycle, RpcObjectReference _ref)
+					: lifecycle(_lifecycle)
+					, ref(_ref)
+				{
+					lifecycle->GetController()->SetItemChangedSuppressedFlag(ref, true);
+				}
+				~SuppressFlag()
+				{
+					lifecycle->GetController()->SetItemChangedSuppressedFlag(ref, false);
+				}
+			};
+
+			auto obj = lifecycle->RefToPtr(ref);
+			auto observable = Ptr(obj.Obj()->SafeAggregationCast<IValueObservableList>());
+			CHECK_ERROR(observable, L"RpcCalleeListEventOps::OnItemChanged cannot find the target observable list.");
+
+			RpcEventExceptionMap exceptions;
+			{
+				SuppressFlag suppressFlag(lifecycle, ref);
+				try
+				{
+					observable->ItemChanged(index, oldCount, newCount);
+				}
+				catch (const Exception& ex)
+				{
+					exceptions = IValueDictionary::Create();
+					exceptions->Set(BoxValue(lifecycle->GetClientId()), BoxValue(RpcException{ ex.Message() }));
+				}
+			}
+			return SerializeValue(serializer, BoxValue(exceptions));
+		}
+
+/***********************************************************************
+* RpcCalleeObjectOpsForList
+***********************************************************************/
+
+		RpcCalleeObjectOpsForList::RpcCalleeObjectOpsForList(Ptr<RpcCalleeListOps> _listOps, Ptr<IRpcObjectOps> _objectOps, IRpcSerializer* _serializer)
+			: listOps(_listOps)
+			, objectOps(_objectOps)
+			, serializer(_serializer)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcCalleeObjectOpsForList::RpcCalleeObjectOpsForList(...)#"
+			CHECK_ERROR(listOps && objectOps, ERROR_MESSAGE_PREFIX L"List ops and object ops are required.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		Value RpcCalleeObjectOpsForList::InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
+		{
+			if (!IsRpcListMethodId(methodId))
+			{
+				return objectOps->InvokeMethod(ref, methodId, arguments);
+			}
+
+			try
+			{
+				switch (methodId)
+				{
+				case RpcMethodId_IValueEnumerable_CreateEnumerator:
+					return SerializeValue(serializer, BoxValue(listOps->EnumCreate(ref)));
+				case RpcMethodId_IValueEnumerator_Next:
+					return SerializeValue(serializer, BoxValue(listOps->EnumNext(ref)));
+				case RpcMethodId_IValueEnumerator_GetCurrent:
+					return listOps->EnumGetCurrent(ref);
+				case RpcMethodId_IValueReadonlyList_GetCount:
+					return SerializeValue(serializer, BoxValue(listOps->ListGetCount(ref)));
+				case RpcMethodId_IValueReadonlyList_Get:
+					return listOps->ListGet(ref, UnboxValue<vint>(DeserializeValue(serializer, arguments->Get(0))));
+				case RpcMethodId_IValueList_Set:
+					listOps->ListSet(ref, UnboxValue<vint>(DeserializeValue(serializer, arguments->Get(0))), arguments->Get(1));
+					return SerializeValue(serializer, Value());
+				case RpcMethodId_IValueList_Add:
+					return SerializeValue(serializer, BoxValue(listOps->ListAdd(ref, arguments->Get(0))));
+				case RpcMethodId_IValueList_Insert:
+					return SerializeValue(serializer, BoxValue(listOps->ListInsert(ref, UnboxValue<vint>(DeserializeValue(serializer, arguments->Get(0))), arguments->Get(1))));
+				case RpcMethodId_IValueList_RemoveAt:
+					return SerializeValue(serializer, BoxValue(listOps->ListRemoveAt(ref, UnboxValue<vint>(DeserializeValue(serializer, arguments->Get(0))))));
+				case RpcMethodId_IValueList_Clear:
+					listOps->ListClear(ref);
+					return SerializeValue(serializer, Value());
+				case RpcMethodId_IValueReadonlyList_Contains:
+					return SerializeValue(serializer, BoxValue(listOps->ListContains(ref, arguments->Get(0))));
+				case RpcMethodId_IValueReadonlyList_IndexOf:
+					return SerializeValue(serializer, BoxValue(listOps->ListIndexOf(ref, arguments->Get(0))));
+				case RpcMethodId_IValueReadonlyDictionary_GetCount:
+					return SerializeValue(serializer, BoxValue(listOps->DictGetCount(ref)));
+				case RpcMethodId_IValueReadonlyDictionary_Get:
+					return listOps->DictGet(ref, arguments->Get(0));
+				case RpcMethodId_IValueDictionary_Set:
+					listOps->DictSet(ref, arguments->Get(0), arguments->Get(1));
+					return SerializeValue(serializer, Value());
+				case RpcMethodId_IValueDictionary_Remove:
+					return SerializeValue(serializer, BoxValue(listOps->DictRemove(ref, arguments->Get(0))));
+				case RpcMethodId_IValueDictionary_Clear:
+					listOps->DictClear(ref);
+					return SerializeValue(serializer, Value());
+				case RpcMethodId_IValueReadonlyDictionary_ContainsKey:
+					return SerializeValue(serializer, BoxValue(listOps->DictContainsKey(ref, arguments->Get(0))));
+				case RpcMethodId_IValueReadonlyDictionary_GetKeys:
+					return SerializeValue(serializer, BoxValue(listOps->DictGetKeys(ref)));
+				case RpcMethodId_IValueReadonlyDictionary_GetValues:
+					return SerializeValue(serializer, BoxValue(listOps->DictGetValues(ref)));
+				case RpcMethodId_IValueArray_Resize:
+					listOps->ArrayResize(ref, UnboxValue<vint>(DeserializeValue(serializer, arguments->Get(0))));
+					return SerializeValue(serializer, Value());
+				}
+			}
+			catch (const Exception& ex)
+			{
+				return SerializeValue(serializer, BoxValue(RpcException{ ex.Message() }));
+			}
+			CHECK_FAIL(L"Unknown RPC list method id.");
+			return {};
+		}
+
+		void RpcCalleeObjectOpsForList::EndInvokeMethod(vint slot)
+		{
+			objectOps->EndInvokeMethod(slot);
+		}
+
+		void RpcCalleeObjectOpsForList::ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)
+		{
+			objectOps->ObjectHold(ref, remoteClientId, hold);
+		}
+
+/***********************************************************************
+* RpcCalleeObjectEventOpsForList
+***********************************************************************/
+
+		RpcCalleeObjectEventOpsForList::RpcCalleeObjectEventOpsForList(Ptr<RpcCalleeListEventOps> _listEventOps, Ptr<IRpcObjectEventOps> _objectEventOps, IRpcSerializer* _serializer)
+			: listEventOps(_listEventOps)
+			, objectEventOps(_objectEventOps)
+			, serializer(_serializer)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcCalleeObjectEventOpsForList::RpcCalleeObjectEventOpsForList(...)#"
+			CHECK_ERROR(listEventOps && objectEventOps, ERROR_MESSAGE_PREFIX L"List event ops and object event ops are required.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		Value RpcCalleeObjectEventOpsForList::InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)
+		{
+			if (eventId == RpcEventId_IValueObservableList_ItemChanged)
+			{
+				return listEventOps->OnItemChanged(
+					ref,
+					UnboxValue<vint>(DeserializeValue(serializer, arguments->Get(0))),
+					UnboxValue<vint>(DeserializeValue(serializer, arguments->Get(1))),
+					UnboxValue<vint>(DeserializeValue(serializer, arguments->Get(2)))
+					);
+			}
+			return objectEventOps->InvokeEvent(ref, eventId, arguments);
+		}
+
+/***********************************************************************
+* RpcCallerListOps
+***********************************************************************/
+
+		RpcCallerListOps::RpcCallerListOps(IRpcObjectOps* _objectOps, IRpcSerializer* _serializer)
+			: objectOps(_objectOps)
+			, serializer(_serializer)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcCallerListOps::RpcCallerListOps(...)#"
+			CHECK_ERROR(objectOps, ERROR_MESSAGE_PREFIX L"Object ops are required.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		RpcObjectReference RpcCallerListOps::EnumCreate(RpcObjectReference ref)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueEnumerable_CreateEnumerator, CreateRpcArguments());
+			return UnboxValue<RpcObjectReference>(result);
+		}
+
+		bool RpcCallerListOps::EnumNext(RpcObjectReference enumerator)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, enumerator, RpcMethodId_IValueEnumerator_Next, CreateRpcArguments());
+			return UnboxValue<bool>(result);
+		}
+
+		Value RpcCallerListOps::EnumGetCurrent(RpcObjectReference enumerator)
+		{
+			return InvokeListMethod(objectOps, serializer, enumerator, RpcMethodId_IValueEnumerator_GetCurrent, CreateRpcArguments());
+		}
+
+		vint RpcCallerListOps::ListGetCount(RpcObjectReference ref)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyList_GetCount, CreateRpcArguments());
+			return UnboxValue<vint>(result);
+		}
+
+		Value RpcCallerListOps::ListGet(RpcObjectReference ref, vint index)
+		{
+			return InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyList_Get, CreateRpcArguments(SerializeValue(serializer, BoxValue(index))));
+		}
+
+		void RpcCallerListOps::ListSet(RpcObjectReference ref, vint index, const Value& value)
+		{
+			InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueList_Set, CreateRpcArguments(SerializeValue(serializer, BoxValue(index)), value));
+		}
+
+		vint RpcCallerListOps::ListAdd(RpcObjectReference ref, const Value& value)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueList_Add, CreateRpcArguments(value));
+			return UnboxValue<vint>(result);
+		}
+
+		vint RpcCallerListOps::ListInsert(RpcObjectReference ref, vint index, const Value& value)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueList_Insert, CreateRpcArguments(SerializeValue(serializer, BoxValue(index)), value));
+			return UnboxValue<vint>(result);
+		}
+
+		bool RpcCallerListOps::ListRemoveAt(RpcObjectReference ref, vint index)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueList_RemoveAt, CreateRpcArguments(SerializeValue(serializer, BoxValue(index))));
+			return UnboxValue<bool>(result);
+		}
+
+		void RpcCallerListOps::ListClear(RpcObjectReference ref)
+		{
+			InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueList_Clear, CreateRpcArguments());
+		}
+
+		bool RpcCallerListOps::ListContains(RpcObjectReference ref, const Value& value)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyList_Contains, CreateRpcArguments(value));
+			return UnboxValue<bool>(result);
+		}
+
+		vint RpcCallerListOps::ListIndexOf(RpcObjectReference ref, const Value& value)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyList_IndexOf, CreateRpcArguments(value));
+			return UnboxValue<vint>(result);
+		}
+
+		void RpcCallerListOps::ArrayResize(RpcObjectReference ref, vint size)
+		{
+			InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueArray_Resize, CreateRpcArguments(SerializeValue(serializer, BoxValue(size))));
+		}
+
+		vint RpcCallerListOps::DictGetCount(RpcObjectReference ref)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyDictionary_GetCount, CreateRpcArguments());
+			return UnboxValue<vint>(result);
+		}
+
+		Value RpcCallerListOps::DictGet(RpcObjectReference ref, const Value& key)
+		{
+			return InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyDictionary_Get, CreateRpcArguments(key));
+		}
+
+		void RpcCallerListOps::DictSet(RpcObjectReference ref, const Value& key, const Value& value)
+		{
+			InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueDictionary_Set, CreateRpcArguments(key, value));
+		}
+
+		bool RpcCallerListOps::DictRemove(RpcObjectReference ref, const Value& key)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueDictionary_Remove, CreateRpcArguments(key));
+			return UnboxValue<bool>(result);
+		}
+
+		void RpcCallerListOps::DictClear(RpcObjectReference ref)
+		{
+			InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueDictionary_Clear, CreateRpcArguments());
+		}
+
+		bool RpcCallerListOps::DictContainsKey(RpcObjectReference ref, const Value& key)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyDictionary_ContainsKey, CreateRpcArguments(key));
+			return UnboxValue<bool>(result);
+		}
+
+		RpcObjectReference RpcCallerListOps::DictGetKeys(RpcObjectReference ref)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyDictionary_GetKeys, CreateRpcArguments());
+			return UnboxValue<RpcObjectReference>(result);
+		}
+
+		RpcObjectReference RpcCallerListOps::DictGetValues(RpcObjectReference ref)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyDictionary_GetValues, CreateRpcArguments());
+			return UnboxValue<RpcObjectReference>(result);
+		}
+
+/***********************************************************************
+* RpcCallerListEventOps
+***********************************************************************/
+
+		RpcCallerListEventOps::RpcCallerListEventOps(IRpcObjectEventOps* _objectEventOps, IRpcSerializer* _serializer)
+			: objectEventOps(_objectEventOps)
+			, serializer(_serializer)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcCallerListEventOps::RpcCallerListEventOps(...)#"
+			CHECK_ERROR(objectEventOps, ERROR_MESSAGE_PREFIX L"Object event ops are required.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		Value RpcCallerListEventOps::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
+		{
+			auto arguments = CreateRpcArguments(
+				SerializeValue(serializer, BoxValue(index)),
+				SerializeValue(serializer, BoxValue(oldCount)),
+				SerializeValue(serializer, BoxValue(newCount))
+				);
+			auto result = objectEventOps->InvokeEvent(ref, RpcEventId_IValueObservableList_ItemChanged, arguments);
+			ReadEventException(UnboxValue<RpcEventExceptionMap>(DeserializeValue(serializer, result)));
+			return result;
+		}
+	}
+}
+
+
+/***********************************************************************
+.\RPCJSON\WFLIBRARYRPCJSON.CPP
 ***********************************************************************/
 
 namespace vl
@@ -3014,1673 +4686,1220 @@ namespace vl
 
 
 /***********************************************************************
-.\RPC\WFLIBRARYRPCLIFECYCLE.CPP
+.\RPCJSON\WFLIBRARYRPCJSONDISPATCHERCLIENT.CPP
 ***********************************************************************/
 
-namespace vl
+#include <cwchar>
+
+namespace vl::rpc_controller::channeling
 {
-	namespace rpc_controller
+	using namespace vl;
+	using namespace vl::collections;
+	using namespace vl::glr::json;
+	using namespace vl::inter_process;
+	using namespace vl::reflection;
+	using namespace vl::reflection::description;
+	using namespace vl::rpc_controller;
+
+	namespace
 	{
-		using namespace reflection;
-		using namespace reflection::description;
-		using namespace collections;
-
-		namespace
+		Ptr<JsonString> CreateJsonString(const WString& value)
 		{
-			bool IsRpcWrapperObject(DescriptableObject* obj)
+			auto node = Ptr(new JsonString);
+			node->content.value = value;
+			return node;
+		}
+
+		Ptr<JsonNumber> CreateJsonNumber(vint value)
+		{
+			auto node = Ptr(new JsonNumber);
+			node->content.value = itow(value);
+			return node;
+		}
+
+		Ptr<JsonObject> CreateJsonObject()
+		{
+			return Ptr(new JsonObject);
+		}
+
+		Ptr<JsonObject> GetJsonObject(Ptr<JsonNode> node)
+		{
+			auto object = node.Cast<JsonObject>();
+			CHECK_ERROR(object, L"RpcJsonDispatcherClient expects a JSON object.");
+			return object;
+		}
+
+		void AddJsonObjectField(Ptr<JsonObject> object, const WString& name, Ptr<JsonNode> value)
+		{
+			auto field = Ptr(new JsonObjectField);
+			field->name.value = name;
+			field->value = value;
+			object->fields.Add(field);
+		}
+
+		void SetJsonObjectField(Ptr<JsonObject> object, const WString& name, Ptr<JsonNode> value)
+		{
+			for (auto field : object->fields)
 			{
-				if (!obj) return false;
-				if (dynamic_cast<IRpcWrapperBase*>(obj)) return true;
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				if (auto typeDescriptor = obj->GetTypeDescriptor())
+				if (field->name.value == name)
 				{
-					if (auto wrapperType = GetTypeDescriptor(WString::Unmanaged(L"system::IRpcWrapperBase")))
+					field->value = value;
+					return;
+				}
+			}
+			AddJsonObjectField(object, name, value);
+		}
+
+		Ptr<JsonNode> FindJsonObjectField(Ptr<JsonObject> object, const WString& name)
+		{
+			for (auto field : object->fields)
+			{
+				if (field->name.value == name)
+				{
+					return field->value;
+				}
+			}
+			return nullptr;
+		}
+
+		Ptr<JsonNode> GetJsonObjectField(Ptr<JsonObject> object, const WString& name)
+		{
+			auto field = FindJsonObjectField(object, name);
+			CHECK_ERROR(field, L"RpcJsonDispatcherClient expects a JSON object field.");
+			return field;
+		}
+
+		WString GetJsonString(Ptr<JsonNode> node)
+		{
+			auto stringNode = node.Cast<JsonString>();
+			CHECK_ERROR(stringNode, L"RpcJsonDispatcherClient expects a JSON string.");
+			return stringNode->content.value;
+		}
+
+		vint GetJsonInt(Ptr<JsonNode> node)
+		{
+			auto numberNode = node.Cast<JsonNumber>();
+			CHECK_ERROR(numberNode, L"RpcJsonDispatcherClient expects a JSON number.");
+			return wtoi(numberNode->content.value);
+		}
+
+		bool StartsWith(const WString& value, const wchar_t* prefix)
+		{
+			auto prefixLength = (vint)wcslen(prefix);
+			return value.Length() >= prefixLength && wcsncmp(value.Buffer(), prefix, prefixLength) == 0;
+		}
+
+		WString TryReadRpcMethod(Ptr<JsonNode> message)
+		{
+			if (auto object = message.Cast<JsonObject>())
+			{
+				if (auto field = FindJsonObjectField(object, WString::Unmanaged(L"rpcMethod")))
+				{
+					if (auto stringNode = field.Cast<JsonString>())
 					{
-						return typeDescriptor->CanConvertTo(wrapperType);
-					}
-				}
-#endif
-				return false;
-			}
-		}
-
-		WString RpcLifecycleBase::InternalProperty_LocalObjectTracker = WString::Unmanaged(L"RpcLocalObjectTracker");
-		WString RpcLifecycleBase::InternalProperty_WrapperTracker = WString::Unmanaged(L"RpcWrapperTracker");
-
-		RpcLocalObjectTracker::RpcLocalObjectTracker(RpcLifecycleBase* lc, RpcObjectReference r)
-			: lifecycle(lc), ref(r)
-		{
-		}
-
-		RpcLocalObjectTracker::~RpcLocalObjectTracker()
-		{
-			if (lifecycle && lifecycle->IsTracked(ref.objectId))
-			{
-				lifecycle->RemoveLocalObject(ref, false);
-			}
-		}
-
-		void RpcLocalObjectTracker::Attach(RpcLifecycleBase* lc, RpcObjectReference r)
-		{
-			lifecycle = lc;
-			ref = r;
-		}
-
-		void RpcLocalObjectTracker::Detach()
-		{
-			lifecycle = nullptr;
-		}
-
-		RpcWrapperTracker::RpcWrapperTracker(RpcLifecycleBase* lc, RpcObjectReference r)
-			: lifecycle(lc), ref(r)
-		{
-		}
-
-		RpcWrapperTracker::~RpcWrapperTracker()
-		{
-			if (lifecycle)
-			{
-				lifecycle->UntrackWrapper(ref);
-			}
-		}
-
-		void RpcWrapperTracker::Detach()
-		{
-			lifecycle = nullptr;
-		}
-
-/***********************************************************************
-* RpcLifecycleBase (Constructor and Setup)
-***********************************************************************/
-
-		RpcLifecycleBase::RpcLifecycleBase(vint _clientId)
-			: clientId(_clientId)
-		{
-		}
-
-		RpcLifecycleBase::~RpcLifecycleBase()
-		{
-		}
-
-		void RpcLifecycleBase::SetIdMap(const Dictionary<WString, vint>& _idMap)
-		{
-			CopyFrom(idMap, _idMap);
-		}
-
-		void RpcLifecycleBase::SetSerializer(Ptr<IRpcSerializer> _serializer)
-		{
-			serializer = _serializer;
-		}
-
-		IRpcSerializer* RpcLifecycleBase::GetSerializer()
-		{
-			return serializer.Obj();
-		}
-
-		void RpcLifecycleBase::RegisterWrapperFactory(UniversalWrapperFactory factory)
-		{
-			universalWrapperFactory = factory;
-		}
-
-		void RpcLifecycleBase::DisconnectWrappersForFinalize()
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::DisconnectWrappersForFinalize()#"
-			for (auto [ref, properties] : wrapperProperties)
-			{
-				if (properties.root)
-				{
-					auto trackerObj = properties.root->GetInternalProperty(InternalProperty_WrapperTracker);
-					CHECK_ERROR(trackerObj, ERROR_MESSAGE_PREFIX L"Wrapper tracker missing.");
-					auto tracker = trackerObj.Cast<RpcWrapperTracker>();
-					CHECK_ERROR(tracker, ERROR_MESSAGE_PREFIX L"Invalid wrapper tracker type.");
-					tracker->Detach();
-					properties.root->SetInternalProperty(InternalProperty_WrapperTracker, nullptr);
-				}
-
-				if (properties.proxy)
-				{
-					properties.proxy->DisconnectFromLifecycle();
-				}
-			}
-			wrapperProperties.Clear();
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-		vint RpcLifecycleBase::DecideTypeId(IDescriptable* obj)const
-		{
-			if (dynamic_cast<IValueObservableList*>(obj)) return RpcTypeId_IValueObservableList;
-			if (dynamic_cast<IValueDictionary*>(obj)) return RpcTypeId_IValueDictionary;
-			if (dynamic_cast<IValueArray*>(obj)) return RpcTypeId_IValueArray;
-			if (dynamic_cast<IValueList*>(obj)) return RpcTypeId_IValueList;
-			if (dynamic_cast<IValueReadonlyList*>(obj)) return RpcTypeId_IValueReadonlyList;
-			if (dynamic_cast<IValueEnumerator*>(obj)) return RpcTypeId_IValueEnumerator;
-			if (dynamic_cast<IValueEnumerable*>(obj)) return RpcTypeId_IValueEnumerable;
-
-			return RpcTypeId_NotFound;
-		}
-
-		void RpcLifecycleBase::TrackLocalObject(RpcObjectReference ref, IDescriptable* obj)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::TrackLocalObject(RpcObjectReference, reflection::IDescriptable*)#"
-			auto index = localObjectProperties.Keys().IndexOf(ref.objectId);
-			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Object not registered.");
-			auto props = localObjectProperties.Values().Get(index);
-			CHECK_ERROR(props->rawPtr == nullptr, ERROR_MESSAGE_PREFIX L"Object already tracked.");
-
-			props->rawPtr = obj;
-
-			if (auto observable = dynamic_cast<IValueObservableList*>(obj))
-			{
-				auto handler = observable->ItemChanged.Add([this, ref](vint index, vint oldCount, vint newCount)
-				{
-					if (this->GetController()->GetItemChangedSuppressedFlag(ref))
-					{
-						return;
-					}
-					auto listEventOps = Ptr(new RpcCallerListEventOps(
-						this->GetDispatcher()->BroadcastFromClient_ObjectEventOps(this->GetClientId()),
-						serializer.Obj()
-						));
-					listEventOps->OnItemChanged(ref, index, oldCount, newCount);
-				});
-				props->eventHandler = handler;
-			}
-
-			AttachLocalObjectEvents(ref, obj);
-
-			if (auto descriptable = dynamic_cast<DescriptableObject*>(obj))
-			{
-				Ptr<RpcLocalObjectTracker> tracker;
-				if (auto trackerObj = descriptable->GetInternalProperty(InternalProperty_LocalObjectTracker))
-				{
-					tracker = trackerObj.Cast<RpcLocalObjectTracker>();
-					CHECK_ERROR(tracker, ERROR_MESSAGE_PREFIX L"Invalid local object tracker type.");
-					if (tracker->GetClientId() != ref.clientId)
-					{
-						throw Exception(ERROR_MESSAGE_PREFIX L"Object already tracked by a different client.");
-					}
-					CHECK_ERROR(!tracker->IsTracked(), ERROR_MESSAGE_PREFIX L"Object already tracked.");
-				}
-				else
-				{
-					tracker = Ptr(new RpcLocalObjectTracker(this, ref));
-					descriptable->SetInternalProperty(InternalProperty_LocalObjectTracker, tracker);
-				}
-
-				tracker->Attach(this, ref);
-			}
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-		RpcObjectReference RpcLifecycleBase::CreateLocalObject(Ptr<IDescriptable> obj, RpcObjectReference ref)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::CreateLocalObject(Ptr<reflection::IDescriptable>, RpcObjectReference)#"
-			CHECK_ERROR(ref.clientId == clientId, ERROR_MESSAGE_PREFIX L"Ref is not local.");
-			CHECK_ERROR(!localObjectProperties.Keys().Contains(ref.objectId), ERROR_MESSAGE_PREFIX L"Object ID already registered.");
-			auto props = Ptr(new RpcLocalObjectProperties);
-			props->ref = ref;
-			props->ownedPtr = obj;
-			localObjectProperties.Set(ref.objectId, props);
-			TrackLocalObject(ref, obj.Obj());
-			if (nextObjectId < ref.objectId)
-			{
-				nextObjectId = ref.objectId;
-			}
-			return ref;
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-		void RpcLifecycleBase::UntrackLocalObject(RpcObjectReference ref, bool clearInternalProperty)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::UntrackLocalObject(RpcObjectReference, bool)#"
-			auto index = localObjectProperties.Keys().IndexOf(ref.objectId);
-			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Object not registered.");
-			auto props = localObjectProperties.Values().Get(index);
-
-			if (props->eventHandler)
-			{
-				if (auto observable = dynamic_cast<IValueObservableList*>(props->rawPtr))
-				{
-					observable->ItemChanged.Remove(props->eventHandler);
-				}
-				props->eventHandler = nullptr;
-			}
-
-			auto rawPtr = props->rawPtr;
-			props->rawPtr = nullptr;
-
-			if (clearInternalProperty && rawPtr)
-			{
-				if (auto descriptable = dynamic_cast<DescriptableObject*>(rawPtr))
-				{
-					if (auto trackerObj = descriptable->GetInternalProperty(InternalProperty_LocalObjectTracker))
-					{
-						auto tracker = trackerObj.Cast<RpcLocalObjectTracker>();
-						CHECK_ERROR(tracker, ERROR_MESSAGE_PREFIX L"Invalid local object tracker type.");
-						tracker->Detach();
-						descriptable->SetInternalProperty(InternalProperty_LocalObjectTracker, nullptr);
+						return stringNode->content.value;
 					}
 				}
 			}
-
-			props->ownedPtr = nullptr;
-#undef ERROR_MESSAGE_PREFIX
+			return WString::Empty;
 		}
 
-		void RpcLifecycleBase::RemoveLocalObject(RpcObjectReference ref, bool clearInternalProperty)
+		bool IsRpcRequest(const WString& rpcMethod)
 		{
-			if (localObjectProperties.Keys().Contains(ref.objectId))
+			return StartsWith(rpcMethod, L"Request:");
+		}
+
+		bool IsRpcResponse(const WString& rpcMethod)
+		{
+			return StartsWith(rpcMethod, L"Response:");
+		}
+
+		bool IsDeclareRemoteServiceRequest(const WString& rpcMethod)
+		{
+			return rpcMethod == WString::Unmanaged(L"Request:IRpcDispatcher_DeclareRemoteService");
+		}
+
+		IRpcJsonMessageDispatcher::RequestType GetRequestType(const WString& rpcMethod)
+		{
+			if (StartsWith(rpcMethod, L"Request:IObjectOps_"))
 			{
-				UntrackLocalObject(ref, clearInternalProperty);
-				localObjectProperties.Remove(ref.objectId);
+				return IRpcJsonMessageDispatcher::RequestType::Direct;
 			}
-		}
-
-		bool RpcLifecycleBase::IsTracked(vint objectId)const
-		{
-			auto index = localObjectProperties.Keys().IndexOf(objectId);
-			return index != -1 && localObjectProperties.Values().Get(index)->rawPtr != nullptr;
-		}
-
-		void RpcLifecycleBase::TrackWrapper(DescriptableObject* root, IRpcWrapperBase* proxy, RpcObjectReference ref)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::TrackWrapper(reflection::DescriptableObject*, IRpcWrapperBase*, RpcObjectReference)#"
-			CHECK_ERROR(root != nullptr, ERROR_MESSAGE_PREFIX L"Wrapper does not implement DescriptableObject.");
-			CHECK_ERROR(proxy != nullptr, ERROR_MESSAGE_PREFIX L"Wrapper is null.");
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-			root = root->SafeGetAggregationRoot();
-#endif
-			CHECK_ERROR(root->GetInternalProperty(InternalProperty_WrapperTracker) == nullptr, ERROR_MESSAGE_PREFIX L"Wrapper already tracked.");
-
-			auto tracker = Ptr(new RpcWrapperTracker(this, ref));
-			root->SetInternalProperty(InternalProperty_WrapperTracker, tracker);
-
-			RpcWrapperProperties properties;
-			properties.root = root;
-			properties.proxy = proxy;
-			CHECK_ERROR(!wrapperProperties.Keys().Contains(ref), ERROR_MESSAGE_PREFIX L"Reference already tracked.");
-			wrapperProperties.Set(ref, properties);
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-		void RpcLifecycleBase::UntrackWrapper(RpcObjectReference ref)
-		{
-			wrapperProperties.Remove(ref);
-		}
-
-		bool RpcLifecycleBase::TryGetTrackedWrapperRef(DescriptableObject* obj, RpcObjectReference& ref)const
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::TryGetTrackedWrapperRef(reflection::DescriptableObject*, RpcObjectReference&)const#"
-			auto wrapperRoot = obj;
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-			if (wrapperRoot)
+			if (StartsWith(rpcMethod, L"Request:IObjectEventOps_"))
 			{
-				wrapperRoot = wrapperRoot->SafeGetAggregationRoot();
+				return IRpcJsonMessageDispatcher::RequestType::Broadcast;
 			}
-#endif
-
-			if (wrapperRoot)
+			if (IsDeclareRemoteServiceRequest(rpcMethod))
 			{
-				if (auto trackerObj = wrapperRoot->GetInternalProperty(InternalProperty_WrapperTracker))
+				return IRpcJsonMessageDispatcher::RequestType::BroadcastAndDrop;
+			}
+			CHECK_FAIL(L"RpcJsonDispatcherClient received an unknown request method.");
+			return IRpcJsonMessageDispatcher::RequestType::Direct;
+		}
+
+		vint ReadRequestId(Ptr<JsonNode> message)
+		{
+			return GetJsonInt(GetJsonObjectField(GetJsonObject(message), WString::Unmanaged(L"rpcRequestId")));
+		}
+
+		vint ReadTargetClientId(Ptr<JsonNode> message)
+		{
+			return GetJsonInt(GetJsonObjectField(GetJsonObject(message), WString::Unmanaged(L"targetClientId")));
+		}
+
+		vint ReadDeclaredServiceTypeId(Ptr<JsonNode> message)
+		{
+			auto ref = GetJsonObject(GetJsonObjectField(GetJsonObject(message), WString::Unmanaged(L"ref")));
+			return GetJsonInt(GetJsonObjectField(ref, WString::Unmanaged(L"typeId")));
+		}
+
+		Ptr<JsonObject> CreateLoginMessage(vint serverClientId)
+		{
+			auto message = CreateJsonObject();
+			AddJsonObjectField(message, WString::Unmanaged(L"rpcChannelingSystem"), CreateJsonString(WString::Unmanaged(L"Login")));
+			AddJsonObjectField(message, WString::Unmanaged(L"serverClientId"), CreateJsonNumber(serverClientId));
+			return message;
+		}
+
+		Ptr<JsonObject> CreateLogoutMessage()
+		{
+			auto message = CreateJsonObject();
+			AddJsonObjectField(message, WString::Unmanaged(L"rpcChannelingSystem"), CreateJsonString(WString::Unmanaged(L"Logout")));
+			return message;
+		}
+
+		bool TryReadLoginMessage(Ptr<JsonNode> message, vint& serverClientId)
+		{
+			if (auto object = message.Cast<JsonObject>())
+			{
+				auto systemField = FindJsonObjectField(object, WString::Unmanaged(L"rpcChannelingSystem"));
+				if (systemField && GetJsonString(systemField) == WString::Unmanaged(L"Login"))
 				{
-					auto tracker = trackerObj.Cast<RpcWrapperTracker>();
-					CHECK_ERROR(tracker, ERROR_MESSAGE_PREFIX L"Invalid internal property type.");
-					CHECK_ERROR(tracker->GetLifecycle() == this, ERROR_MESSAGE_PREFIX L"Wrapper registered to a different lifecycle.");
-					ref = tracker->GetRef();
+					serverClientId = GetJsonInt(GetJsonObjectField(object, WString::Unmanaged(L"serverClientId")));
 					return true;
 				}
 			}
 			return false;
-#undef ERROR_MESSAGE_PREFIX
 		}
-
-		IRpcWrapperBase* RpcLifecycleBase::GetTrackedWrapper(RpcObjectReference ref)const
-		{
-			if (auto index = wrapperProperties.Keys().IndexOf(ref); index != -1)
-			{
-				return wrapperProperties.Values()[index].proxy;
-			}
-			return nullptr;
-		}
-
-		Ptr<IDescriptable> RpcLifecycleBase::CreateCallerProxy(RpcObjectReference ref, IRpcSerializer* serializer)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::CreateCallerProxy(RpcObjectReference)#"
-			IRpcLifecycle* lc = this;
-			Ptr<IRpcWrapperBase> wrapper;
-
-			switch (ref.typeId)
-			{
-			case RpcTypeId_IValueEnumerable:
-				wrapper = Ptr(new RpcByrefEnumerable(lc, ref, serializer));
-				break;
-			case RpcTypeId_IValueEnumerator:
-				wrapper = Ptr(new RpcByrefEnumerator(lc, ref, serializer));
-				break;
-			case RpcTypeId_IValueArray:
-				wrapper = Ptr(new RpcByrefArray(lc, ref, serializer));
-				break;
-			case RpcTypeId_IValueReadonlyList:
-				wrapper = Ptr(new RpcByrefReadonlyList(lc, ref, serializer));
-				break;
-			case RpcTypeId_IValueList:
-				wrapper = Ptr(new RpcByrefList(lc, ref, serializer));
-				break;
-			case RpcTypeId_IValueObservableList:
-				wrapper = Ptr(new RpcByrefObservableList(lc, ref, serializer));
-				break;
-			case RpcTypeId_IValueDictionary:
-				wrapper = Ptr(new RpcByrefDictionary(lc, ref, serializer));
-				break;
-			default:
-				CHECK_ERROR(universalWrapperFactory, ERROR_MESSAGE_PREFIX L"No wrapper factory registered.");
-				wrapper = universalWrapperFactory(ref, this);
-				CHECK_ERROR(wrapper, ERROR_MESSAGE_PREFIX L"Wrapper factory returned null.");
-				break;
-			}
-
-			auto descriptable = dynamic_cast<IDescriptable*>(wrapper.Obj());
-			CHECK_ERROR(descriptable, ERROR_MESSAGE_PREFIX L"Wrapper does not implement IDescriptable.");
-			auto root = dynamic_cast<DescriptableObject*>(descriptable);
-			TrackWrapper(root, wrapper.Obj(), ref);
-			return Ptr(descriptable);
-#undef ERROR_MESSAGE_PREFIX
-		}
+	}
 
 /***********************************************************************
-* RpcLifecycleBase (IRpcLifecycle)
+RpcJsonDispatcherClient
 ***********************************************************************/
 
-		void RpcLifecycleBase::Finalize()
+	RpcJsonDispatcherClient::RpcJsonDispatcherClient()
+	{
+		CHECK_ERROR(semaphoreMessages.Create(0, 65536), L"RpcJsonDispatcherClient failed to create the message semaphore.");
+		CHECK_ERROR(eventServerLocalClientId.CreateManualUnsignal(false), L"RpcJsonDispatcherClient failed to create the server-client-id event.");
+	}
+
+	void RpcJsonDispatcherClient::PrepareConnection(JsonChannel* channel, const List<WString>& _waitingForServices)
+	{
+		CHECK_ERROR(channel, L"RpcJsonDispatcherClient needs an RPC channel.");
+		CHECK_ERROR(!rpcChannel, L"RpcJsonDispatcherClient connection can only be initialized once.");
+		rpcChannel = channel;
+		CopyFrom(waitingForServices, _waitingForServices);
+		if (waitingForServices.Count() > 0)
 		{
-			DisconnectWrappersForFinalize();
-			while (localObjectProperties.Count() > 0)
+			eventWaitingForServicesCreated = true;
+			CHECK_ERROR(eventWaitingForServices.CreateManualUnsignal(false), L"RpcJsonDispatcherClient failed to create the service-waiting event.");
+		}
+		rpcChannel->Initialize(this);
+	}
+
+	void RpcJsonDispatcherClient::SetRpcObjects(Ptr<RpcJsonDispatcher> _rpcDispatcher, Ptr<RpcJsonLifecycle> _lifecycle)
+	{
+		CHECK_ERROR(_rpcDispatcher, L"RpcJsonDispatcherClient needs a dispatcher.");
+		CHECK_ERROR(_lifecycle, L"RpcJsonDispatcherClient needs a lifecycle.");
+		CHECK_ERROR(!rpcDispatcher, L"RpcJsonDispatcherClient RPC objects can only be initialized once.");
+		rpcDispatcher = _rpcDispatcher;
+		lifecycle = _lifecycle;
+	}
+
+	RpcJsonLifecycle* RpcJsonDispatcherClient::GetRpcJsonLifecycle()
+	{
+		CHECK_ERROR(lifecycle, L"RpcJsonDispatcherClient needs a lifecycle.");
+		return lifecycle.Obj();
+	}
+
+	void RpcJsonDispatcherClient::ProcessCachedIncomingServiceDeclarations()
+	{
+		List<JsonPackage> cached;
+		SPIN_LOCK(lockServiceDeclarations)
+		{
+			for (auto request : cachedIncomingServiceDeclarations)
 			{
-				auto props = localObjectProperties.Values().Get(localObjectProperties.Count() - 1);
-				RemoveLocalObject(props->ref, true);
+				cached.Add(request);
 			}
-			registeredLocalServices.Clear();
-			registeredRemoteServices.Clear();
-			controller.Finalize();
+			cachedIncomingServiceDeclarations.Clear();
 		}
 
-		void RpcLifecycleBase::Initialize()
+		for (auto request : cached)
 		{
-			if (!initialized)
+			ProcessIncomingServiceDeclaration(request);
+		}
+	}
+
+	void RpcJsonDispatcherClient::SendCachedOutgoingServiceDeclarations()
+	{
+		List<JsonPackage> cached;
+		SPIN_LOCK(lockServiceDeclarations)
+		{
+			for (auto request : cachedOutgoingServiceDeclarations)
 			{
-				GetDispatcher()->Initialize();
-				initialized = true;
+				cached.Add(request);
+			}
+			cachedOutgoingServiceDeclarations.Clear();
+		}
+
+		for (auto request : cached)
+		{
+			SendJsonRequest(request, RequestType::BroadcastAndDrop);
+		}
+	}
+
+	void RpcJsonDispatcherClient::ProcessIncomingServiceDeclaration(JsonPackage request)
+	{
+		IRpcJsonMessageDispatcher::DefaultTranslate(
+			request,
+			RequestType::BroadcastAndDrop,
+			lifecycle->GetController()->GetObjectOps(),
+			lifecycle->GetController()->GetObjectEventOps(),
+			lifecycle->GetDispatcher(),
+			lifecycle.Obj()
+			);
+		UpdateWaitingForServices(request);
+	}
+
+	void RpcJsonDispatcherClient::UpdateWaitingForServices(JsonPackage request)
+	{
+		auto typeId = ReadDeclaredServiceTypeId(request);
+		bool shouldSignal = false;
+		SPIN_LOCK(lockWaitingForServices)
+		{
+			for (vint i = waitingForServices.Count(); i > 0; i--)
+			{
+				auto index = i - 1;
+				if (lifecycle->GetTypeIdFromName(waitingForServices[index]) == typeId)
+				{
+					waitingForServices.RemoveAt(index);
+				}
+			}
+			shouldSignal = waitingForServices.Count() == 0;
+		}
+		if (shouldSignal && eventWaitingForServicesCreated)
+		{
+			eventWaitingForServices.Signal();
+		}
+	}
+
+	void RpcJsonDispatcherClient::WaitForServerClientId()
+	{
+		if (serverLocalClientId.load() == -1)
+		{
+			eventServerLocalClientId.Wait();
+		}
+	}
+
+	void RpcJsonDispatcherClient::WaitForExpectedServices()
+	{
+		if (eventWaitingForServicesCreated)
+		{
+			eventWaitingForServices.Wait();
+		}
+	}
+
+	void RpcJsonDispatcherClient::SendJsonRequest(JsonPackage message, RequestType requestType)
+	{
+		CHECK_ERROR(rpcChannel, L"RpcJsonDispatcherClient needs an RPC channel.");
+		switch (requestType)
+		{
+		case RequestType::Direct:
+			rpcChannel->SendToClient(ReadTargetClientId(message), message);
+			break;
+		case RequestType::Broadcast:
+		case RequestType::BroadcastAndDrop:
+			WaitForServerClientId();
+			rpcChannel->SendToClient(serverLocalClientId.load(), message);
+			break;
+		default:
+			CHECK_FAIL(L"RpcJsonDispatcherClient received an unknown request type.");
+		}
+		FlushChannel();
+	}
+
+	void RpcJsonDispatcherClient::PushReceivedMessage(vint senderClientId, JsonPackage message)
+	{
+		SPIN_LOCK(lockMessages)
+		{
+			messages.Add({ senderClientId, message });
+		}
+		semaphoreMessages.Release();
+	}
+
+	RpcJsonDispatcherClient::ReceivedJsonMessage RpcJsonDispatcherClient::PopReceivedMessage()
+	{
+		semaphoreMessages.Wait();
+		ReceivedJsonMessage result;
+		SPIN_LOCK(lockMessages)
+		{
+			CHECK_ERROR(messages.Count() > 0, L"RpcJsonDispatcherClient message queue is unexpectedly empty.");
+			result = messages[0];
+			messages.RemoveAt(0);
+		}
+		return result;
+	}
+
+	bool RpcJsonDispatcherClient::TryPopBufferedResponse(vint requestId, ReceivedJsonMessage& message)
+	{
+		SPIN_LOCK(lockMessages)
+		{
+			for (vint i = 0; i < bufferedResponses.Count(); i++)
+			{
+				auto item = bufferedResponses[i];
+				if (ReadRequestId(item.message) == requestId)
+				{
+					message = item;
+					bufferedResponses.RemoveAt(i);
+					return true;
+				}
 			}
 		}
+		return false;
+	}
 
-		vint RpcLifecycleBase::GetClientId()
+	void RpcJsonDispatcherClient::PushBufferedResponse(ReceivedJsonMessage message)
+	{
+		SPIN_LOCK(lockMessages)
 		{
-			return clientId;
+			bufferedResponses.Add(message);
 		}
+	}
 
-		RpcControllerDefault* RpcLifecycleBase::GetController()
+	void RpcJsonDispatcherClient::SendJsonResponse(vint receiverClientId, JsonPackage response)
+	{
+		if (response)
 		{
-			return &controller;
+			CHECK_ERROR(rpcChannel, L"RpcJsonDispatcherClient needs an RPC channel.");
+			rpcChannel->SendToClient(receiverClientId, response);
+			FlushChannel();
 		}
+	}
 
-		const RpcLocalServiceMap& RpcLifecycleBase::GetRegisteredLocalServices()
-		{
-			return registeredLocalServices;
-		}
+	void RpcJsonDispatcherClient::FlushChannel()
+	{
+		CHECK_ERROR(rpcChannel, L"RpcJsonDispatcherClient needs an RPC channel.");
+		bool disconnected = false;
+		rpcChannel->BatchWrite(disconnected);
+	}
 
-		void RpcLifecycleBase::LocalObjectHold(RpcObjectReference ref, vint remoteClientId)
+	void RpcJsonDispatcherClient::ProcessRequestAndSendResponse(vint senderClientId, JsonPackage request)
+	{
+		auto response = TranslateRequest(request);
+		SendJsonResponse(senderClientId, response);
+	}
+
+	JsonPackage RpcJsonDispatcherClient::TranslateRequest(JsonPackage request)
+	{
+		auto rpcMethod = TryReadRpcMethod(request);
+		CHECK_ERROR(IsRpcRequest(rpcMethod), L"RpcJsonDispatcherClient expects an RPC request.");
+
+		return IRpcJsonMessageDispatcher::DefaultTranslate(
+			request,
+			GetRequestType(rpcMethod),
+			lifecycle->GetController()->GetObjectOps(),
+			lifecycle->GetController()->GetObjectEventOps(),
+			lifecycle->GetDispatcher(),
+			lifecycle.Obj()
+			);
+	}
+
+	void RpcJsonDispatcherClient::WaitForServer(JsonChannelClient* channelClient, JsonChannel* channel, const List<WString>& _waitingForServices)
+	{
+		CHECK_ERROR(channelClient, L"RpcJsonDispatcherClient needs a channel client.");
+		PrepareConnection(channel, _waitingForServices);
+		channelClient->WaitForServer();
+		CHECK_ERROR(channelClient->GetStatus() == ClientStatus::Connected, L"RpcJsonDispatcherClient failed to connect to the server.");
+	}
+
+	vint RpcJsonDispatcherClient::ConnectLocalServer(JsonChannelServer* channelServer, Ptr<JsonChannelClient> localClient, JsonChannel* channel, const List<WString>& _waitingForServices)
+	{
+		CHECK_ERROR(channelServer, L"RpcJsonDispatcherClient needs a channel server.");
+		CHECK_ERROR(localClient, L"RpcJsonDispatcherClient needs a local client.");
+		PrepareConnection(channel, _waitingForServices);
+		auto clientId = channelServer->ConnectLocalClient(localClient);
+		CHECK_ERROR(clientId != -1, L"RpcJsonDispatcherClient failed to connect the local client.");
+		return clientId;
+	}
+
+	void RpcJsonDispatcherClient::Initialize()
+	{
+		CHECK_ERROR(lifecycle, L"RpcJsonDispatcherClient needs to connect before Initialize.");
+		CHECK_ERROR(initialized.load() == 0, L"RpcJsonDispatcherClient can only be initialized once.");
+		ProcessCachedIncomingServiceDeclarations();
+		lifecycle->Initialize();
+		initialized.store(1);
+		SendCachedOutgoingServiceDeclarations();
+		WaitForExpectedServices();
+	}
+
+	IRpcLifecycle* RpcJsonDispatcherClient::GetRpcLifecycle()
+	{
+		CHECK_ERROR(lifecycle, L"RpcJsonDispatcherClient needs a lifecycle.");
+		return lifecycle.Obj();
+	}
+
+	IRpcDispatcher* RpcJsonDispatcherClient::GetRpcDispatcher()
+	{
+		CHECK_ERROR(rpcDispatcher, L"RpcJsonDispatcherClient needs a dispatcher.");
+		return rpcDispatcher.Obj();
+	}
+
+	vint RpcJsonDispatcherClient::AllocateRequestId()
+	{
+		return ++nextRequestId;
+	}
+
+	JsonPackage RpcJsonDispatcherClient::OnJsonRequest(JsonPackage message, RequestType requestType)
+	{
+		auto rpcMethod = TryReadRpcMethod(message);
+		CHECK_ERROR(rpcMethod != WString::Empty, L"RpcJsonDispatcherClient expects an RPC message.");
+
+		if (requestType == RequestType::BroadcastAndDrop)
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::LocalObjectHold(RpcObjectReference, vint)#"
-			CHECK_ERROR(ref.clientId == clientId, ERROR_MESSAGE_PREFIX L"Ref is not local.");
-			auto index = localObjectProperties.Keys().IndexOf(ref.objectId);
-			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Object not registered.");
-			auto props = localObjectProperties.Values().Get(index);
-			if (!props->interestedClients.Contains(remoteClientId))
+			CHECK_ERROR(IsDeclareRemoteServiceRequest(rpcMethod), L"RpcJsonDispatcherClient expects a service declaration.");
+			if (initialized.load() == 0)
 			{
-				props->interestedClients.Add(remoteClientId);
-			}
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-		void RpcLifecycleBase::LocalObjectUnhold(RpcObjectReference ref, vint remoteClientId)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::LocalObjectUnhold(RpcObjectReference, vint)#"
-			CHECK_ERROR(ref.clientId == clientId, ERROR_MESSAGE_PREFIX L"Ref is not local.");
-			auto index = localObjectProperties.Keys().IndexOf(ref.objectId);
-			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Object not registered.");
-			auto props = localObjectProperties.Values().Get(index);
-			CHECK_ERROR(props->interestedClients.Contains(remoteClientId), ERROR_MESSAGE_PREFIX L"Client does not hold this object.");
-			props->interestedClients.Remove(remoteClientId);
-			if (props->interestedClients.Count() == 0)
-			{
-				RemoveLocalObject(ref, true);
-			}
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-		void RpcLifecycleBase::RegisterLocalService(vint typeId, Ptr<IDescriptable> service)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::RegisterLocalService(vint, Ptr<IDescriptable>)#"
-			CHECK_ERROR(service, ERROR_MESSAGE_PREFIX L"Service is required.");
-			if (initialized)
-			{
-				throw Exception(ERROR_MESSAGE_PREFIX L"RegisterLocalService cannot be called after Initialize.");
-			}
-			if (registeredLocalServices.Keys().Contains(typeId))
-			{
-				throw Exception(ERROR_MESSAGE_PREFIX L"Service is already registered.");
-			}
-
-			auto ref = CreateLocalObject(service, RpcObjectReference{ clientId, typeId, typeId });
-			LocalObjectHold(ref, clientId);
-			registeredLocalServices.Set(typeId, service);
-			GetDispatcher()->DeclareLocalService(ref);
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-		void RpcLifecycleBase::DeclareRemoteService(RpcObjectReference ref)
-		{
-			registeredRemoteServices.Set(ref.typeId, ref);
-		}
-
-		vint RpcLifecycleBase::GetTypeIdFromName(WString typeName)
-		{
-			auto typeIndex = idMap.Keys().IndexOf(typeName);
-			if (typeIndex == -1)
-			{
-				return RpcTypeId_NotFound;
-			}
-			return idMap.Values()[typeIndex];
-		}
-
-		Ptr<IDescriptable> RpcLifecycleBase::RequestService(WString typeName)
-		{
-			auto typeId = GetTypeIdFromName(typeName);
-			if (typeId == RpcTypeId_NotFound)
-			{
-				return nullptr;
-			}
-
-			if (auto index = registeredLocalServices.Keys().IndexOf(typeId); index != -1)
-			{
-				return registeredLocalServices.Values()[index];
-			}
-
-			if (auto index = registeredRemoteServices.Keys().IndexOf(typeId); index != -1)
-			{
-				return RefToPtr(registeredRemoteServices.Values()[index]);
-			}
-
-			return nullptr;
-		}
-
-		Ptr<IDescriptable> RpcLifecycleBase::RefToPtr(RpcObjectReference ref)
-		{
-			return RefToPtr(ref, serializer.Obj());
-		}
-
-		Ptr<IDescriptable> RpcLifecycleBase::RefToPtr(RpcObjectReference ref, IRpcSerializer* serializer)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::RefToPtr(RpcObjectReference)#"
-			if (ref.clientId == clientId)
-			{
-				auto index = localObjectProperties.Keys().IndexOf(ref.objectId);
-				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Object not registered.");
-				auto props = localObjectProperties.Values().Get(index);
-				CHECK_ERROR(props->rawPtr != nullptr, ERROR_MESSAGE_PREFIX L"Object not tracked.");
-				return Ptr(props->rawPtr);
+				SPIN_LOCK(lockServiceDeclarations)
+				{
+					cachedOutgoingServiceDeclarations.Add(message);
+				}
 			}
 			else
 			{
-				if (auto index = wrapperProperties.Keys().IndexOf(ref); index != -1)
-				{
-					auto proxy = wrapperProperties.Values()[index].proxy;
-					auto descriptable = dynamic_cast<IDescriptable*>(proxy);
-					CHECK_ERROR(descriptable, ERROR_MESSAGE_PREFIX L"Wrapper does not implement IDescriptable.");
-					return Ptr(descriptable);
-				}
-
-				return CreateCallerProxy(ref, serializer);
+				SendJsonRequest(message, requestType);
 			}
-#undef ERROR_MESSAGE_PREFIX
+			return nullptr;
 		}
 
-		RpcObjectReference RpcLifecycleBase::PtrToRef(Ptr<IDescriptable> obj)
+		CHECK_ERROR(initialized.load() != 0, L"RpcJsonDispatcherClient only accepts service declarations before Initialize.");
+
+		struct ActiveJsonRequest
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::PtrToRef(Ptr<reflection::IDescriptable>)#"
-			CHECK_ERROR(obj, ERROR_MESSAGE_PREFIX L"A value is required.");
+			atomic_vint& counter;
 
-			if (auto descObj = dynamic_cast<DescriptableObject*>(obj.Obj()))
+			ActiveJsonRequest(atomic_vint& _counter)
+				: counter(_counter)
 			{
-				RpcObjectReference wrapperRef;
-				if (TryGetTrackedWrapperRef(descObj, wrapperRef))
-				{
-					return wrapperRef;
-				}
-
-				if (IsRpcWrapperObject(descObj))
-				{
-					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Wrapper tracker lookup unexpectedly failed.");
-				}
+				counter++;
 			}
 
-			if (auto descObj = dynamic_cast<DescriptableObject*>(obj.Obj()))
+			~ActiveJsonRequest()
 			{
-				if (auto trackerObj = descObj->GetInternalProperty(InternalProperty_LocalObjectTracker))
-				{
-					auto tracker = trackerObj.Cast<RpcLocalObjectTracker>();
-					CHECK_ERROR(tracker, ERROR_MESSAGE_PREFIX L"Invalid internal property type.");
-					if (tracker->GetClientId() != clientId)
-					{
-						throw Exception(ERROR_MESSAGE_PREFIX L"Object registered to a different lifecycle.");
-					}
-					if (tracker->IsTracked())
-					{
-						CHECK_ERROR(tracker->GetLifecycle() == this, ERROR_MESSAGE_PREFIX L"Object tracker registered to an invalid lifecycle instance.");
-						return tracker->GetRef();
-					}
-				}
+				counter--;
+			}
+		};
+
+		ActiveJsonRequest active(activeJsonRequests);
+		auto requestId = ReadRequestId(message);
+		SendJsonRequest(message, requestType);
+
+		while (true)
+		{
+			ReceivedJsonMessage item;
+			if (!TryPopBufferedResponse(requestId, item))
+			{
+				item = PopReceivedMessage();
+			}
+			rpcMethod = TryReadRpcMethod(item.message);
+			CHECK_ERROR(rpcMethod != WString::Empty, L"RpcJsonDispatcherClient expects an RPC message.");
+
+			if (IsRpcRequest(rpcMethod))
+			{
+				ProcessRequestAndSendResponse(item.senderClientId, item.message);
+				continue;
 			}
 
-			auto typeId = DecideTypeId(obj.Obj());
-			CHECK_ERROR(typeId != RpcTypeId_NotFound, ERROR_MESSAGE_PREFIX L"DecideTypeId returned RpcTypeId_NotFound (unknown type).");
-			return CreateLocalObject(obj, RpcObjectReference{ clientId, ++nextObjectId, typeId });
-#undef ERROR_MESSAGE_PREFIX
+			CHECK_ERROR(IsRpcResponse(rpcMethod), L"RpcJsonDispatcherClient expects an RPC request or response.");
+			if (ReadRequestId(item.message) == requestId)
+			{
+				return item.message;
+			}
+
+			PushBufferedResponse(item);
 		}
+	}
+
+	void RpcJsonDispatcherClient::OnRead(vint senderClientId, const JsonPackage& package)
+	{
+		vint newServerLocalClientId = -1;
+		if (TryReadLoginMessage(package, newServerLocalClientId))
+		{
+			serverLocalClientId.store(newServerLocalClientId);
+			eventServerLocalClientId.Signal();
+			return;
+		}
+
+		auto rpcMethod = TryReadRpcMethod(package);
+		CHECK_ERROR(rpcMethod != WString::Empty, L"RpcJsonDispatcherClient expects an RPC message.");
+
+		if (IsDeclareRemoteServiceRequest(rpcMethod))
+		{
+			if (initialized.load() == 0)
+			{
+				SPIN_LOCK(lockServiceDeclarations)
+				{
+					cachedIncomingServiceDeclarations.Add(package);
+				}
+			}
+			else
+			{
+				ProcessIncomingServiceDeclaration(package);
+			}
+			return;
+		}
+
+		CHECK_ERROR(initialized.load() != 0, L"RpcJsonDispatcherClient only accepts service declarations before Initialize.");
+
+		if (activeJsonRequests.load() > 0)
+		{
+			PushReceivedMessage(senderClientId, package);
+			return;
+		}
+
+		if (IsRpcRequest(rpcMethod))
+		{
+			ScheduleTask(Func<void()>([this, senderClientId, package]()
+			{
+				ProcessRequestAndSendResponse(senderClientId, package);
+			}));
+		}
+		else
+		{
+			CHECK_ERROR(IsRpcResponse(rpcMethod), L"RpcJsonDispatcherClient expects an RPC request or response.");
+			CHECK_FAIL(L"RpcJsonDispatcherClient received an RPC response while no request is waiting.");
+		}
+	}
+
+	void RpcJsonDispatcherClient::FinalizeRpc()
+	{
+		if (lifecycle)
+		{
+			lifecycle->Finalize();
+			lifecycle = nullptr;
+			rpcDispatcher = nullptr;
+		}
+	}
+
+	void RpcJsonDispatcherClient::SetServerLocalClientId(vint clientId)
+	{
+		CHECK_ERROR(clientId != -1, L"RpcJsonDispatcherClient needs a valid server client id.");
+		serverLocalClientId.store(clientId);
+		eventServerLocalClientId.Signal();
+	}
+
+	void RpcJsonDispatcherClient::NotifyServerClientDisconnected()
+	{
+		CHECK_ERROR(rpcChannel, L"RpcJsonDispatcherClient needs an RPC channel.");
+		WaitForServerClientId();
+		rpcChannel->SendToClient(serverLocalClientId.load(), CreateLogoutMessage());
+		FlushChannel();
+	}
+
+/***********************************************************************
+RpcJsonDispatcherClientForTaskQueue
+***********************************************************************/
+
+	void RpcJsonDispatcherClientForTaskQueue::ScheduleTask(Func<void()> task)
+	{
+		taskQueue->QueueTask(task);
+	}
+
+	RpcJsonDispatcherClientForTaskQueue::RpcJsonDispatcherClientForTaskQueue(Ptr<TaskQueue> _taskQueue)
+		: taskQueue(_taskQueue)
+	{
+		CHECK_ERROR(taskQueue, L"RpcJsonDispatcherClientForTaskQueue needs a task queue.");
 	}
 }
 
 
 /***********************************************************************
-.\RPC\WFLIBRARYRPCWRAPPERS.CPP
+.\RPCJSON\WFLIBRARYRPCJSONDISPATCHERSERVER.CPP
 ***********************************************************************/
 
-namespace vl
+
+namespace vl::rpc_controller::channeling
 {
-	using namespace collections;
+	using namespace vl;
+	using namespace vl::collections;
+	using namespace vl::glr::json;
 
-	namespace rpc_controller
+	namespace
 	{
-		using namespace reflection;
-		using namespace reflection::description;
-
-		namespace
+		Ptr<JsonLiteral> ServerCreateJsonLiteral(JsonLiteralValue value)
 		{
-#ifndef VCZH_WORKFLOW_RPC_OBJECT_REFERENCE_VALUE_HELPERS
-#define VCZH_WORKFLOW_RPC_OBJECT_REFERENCE_VALUE_HELPERS
-			bool IsRpcObjectReferenceValue(const Value& value)
-			{
-				return value.GetValueType() == Value::BoxedValue && value.GetBoxedValue().Cast<IValueType::TypedBox<RpcObjectReference>>();
-			}
+			auto node = Ptr(new JsonLiteral);
+			node->value = value;
+			return node;
+		}
 
-			RpcObjectReference GetRpcObjectReference(const Value& value)
-			{
-				auto boxed = value.GetBoxedValue().Cast<IValueType::TypedBox<RpcObjectReference>>();
-				CHECK_ERROR(boxed, L"RpcObjectReference is expected.");
-				return boxed->value;
-			}
-#endif
+		Ptr<JsonString> ServerCreateJsonString(const WString& value)
+		{
+			auto node = Ptr(new JsonString);
+			node->content.value = value;
+			return node;
+		}
 
-			IRpcWrapperBase* CastRpcWrapperBase(IDescriptable* obj)
-			{
-				if (!obj) return nullptr;
-				if (auto wrapper = dynamic_cast<IRpcWrapperBase*>(obj)) return wrapper;
-				return obj->SafeAggregationCast<IRpcWrapperBase>();
-			}
+		Ptr<JsonNumber> ServerCreateJsonNumber(vint value)
+		{
+			auto node = Ptr(new JsonNumber);
+			node->content.value = itow(value);
+			return node;
+		}
 
-			template<typename TInterface>
-			TInterface* CastRpcInterface(IDescriptable* obj)
-			{
-				if (!obj) return nullptr;
-				if (auto proxy = dynamic_cast<TInterface*>(obj)) return proxy;
-				return obj->SafeAggregationCast<TInterface>();
-			}
+		Ptr<JsonArray> ServerCreateJsonArray()
+		{
+			return Ptr(new JsonArray);
+		}
 
-			template<typename TWrapper, typename TInterface>
-			Ptr<TInterface> CreateTrackedProxy(IRpcLifecycle* lc, RpcObjectReference ref, IRpcSerializer* serializer)
+		Ptr<JsonObject> ServerCreateJsonObject()
+		{
+			return Ptr(new JsonObject);
+		}
+
+		Ptr<JsonObject> ServerGetJsonObject(Ptr<JsonNode> node)
+		{
+			auto object = node.Cast<JsonObject>();
+			CHECK_ERROR(object, L"RpcJsonDispatcherServer expects a JSON object.");
+			return object;
+		}
+
+		Ptr<JsonArray> ServerGetJsonArray(Ptr<JsonNode> node)
+		{
+			auto array = node.Cast<JsonArray>();
+			CHECK_ERROR(array, L"RpcJsonDispatcherServer expects a JSON array.");
+			return array;
+		}
+
+		void ServerAddJsonObjectField(Ptr<JsonObject> object, const WString& name, Ptr<JsonNode> value)
+		{
+			auto field = Ptr(new JsonObjectField);
+			field->name.value = name;
+			field->value = value;
+			object->fields.Add(field);
+		}
+
+		void ServerSetJsonObjectField(Ptr<JsonObject> object, const WString& name, Ptr<JsonNode> value)
+		{
+			for (auto field : object->fields)
 			{
-				auto obj = [&]()
+				if (field->name.value == name)
 				{
-					if (auto lifecycle = dynamic_cast<RpcLifecycleBase*>(lc))
-					{
-						return lifecycle->RefToPtr(ref, serializer);
-					}
-					return lc->RefToPtr(ref);
-				}();
-				CHECK_ERROR(obj, L"RPC proxy creation returned null.");
-				if (auto wrapper = Ptr(CastRpcWrapperBase(obj.Obj())))
-				{
-					auto proxy = Ptr(CastRpcInterface<TInterface>(obj.Obj()));
-					CHECK_ERROR(proxy, L"RPC proxy creation returned an unexpected type.");
-					return proxy;
-				}
-				return Ptr(new TWrapper(lc, ref, serializer));
-			}
-
-			void SetRemoteObjectHold(IRpcLifecycle* lc, RpcObjectReference ref, bool hold)
-			{
-				lc->GetDispatcher()->SendToClient_ObjectOps(ref.clientId)->ObjectHold(ref, lc->GetClientId(), hold);
-			}
-
-			Ptr<IRpcListOps> GetRemoteListOps(IRpcLifecycle* lc, RpcObjectReference ref, IRpcSerializer* serializer)
-			{
-				return Ptr(new RpcCallerListOps(lc->GetDispatcher()->SendToClient_ObjectOps(ref.clientId), serializer));
-			}
-
-			Value SerializeValue(IRpcSerializer* serializer, const Value& value)
-			{
-				return serializer ? serializer->Serialize(value) : value;
-			}
-
-			Value DeserializeValue(IRpcSerializer* serializer, const Value& value)
-			{
-				return serializer ? serializer->Deserialize(value) : value;
-			}
-
-			template<typename ...TArgs>
-			Ptr<IValueArray> CreateRpcArguments(TArgs&& ...args)
-			{
-				auto arguments = IValueArray::Create();
-				arguments->Resize(sizeof...(TArgs));
-				vint index = 0;
-				((arguments->Set(index++, std::forward<TArgs>(args))), ...);
-				return arguments;
-			}
-
-			Value ReadMethodResult(IRpcSerializer* serializer, const Value& value)
-			{
-				auto deserialized = DeserializeValue(serializer, value);
-				ReadMethodException(deserialized);
-				return deserialized;
-			}
-
-			Value InvokeListMethod(IRpcObjectOps* objectOps, IRpcSerializer* serializer, RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
-			{
-				auto result = objectOps->InvokeMethod(ref, methodId, arguments);
-				return ReadMethodResult(serializer, result);
-			}
-
-			bool IsRpcListMethodId(vint methodId)
-			{
-				switch (methodId)
-				{
-				case RpcMethodId_IValueEnumerable_CreateEnumerator:
-				case RpcMethodId_IValueEnumerator_Next:
-				case RpcMethodId_IValueEnumerator_GetCurrent:
-				case RpcMethodId_IValueReadonlyList_GetCount:
-				case RpcMethodId_IValueReadonlyList_Get:
-				case RpcMethodId_IValueList_Set:
-				case RpcMethodId_IValueList_Add:
-				case RpcMethodId_IValueList_Insert:
-				case RpcMethodId_IValueList_RemoveAt:
-				case RpcMethodId_IValueList_Clear:
-				case RpcMethodId_IValueReadonlyList_Contains:
-				case RpcMethodId_IValueReadonlyList_IndexOf:
-				case RpcMethodId_IValueReadonlyDictionary_GetCount:
-				case RpcMethodId_IValueReadonlyDictionary_Get:
-				case RpcMethodId_IValueDictionary_Set:
-				case RpcMethodId_IValueDictionary_Remove:
-				case RpcMethodId_IValueDictionary_Clear:
-				case RpcMethodId_IValueReadonlyDictionary_ContainsKey:
-				case RpcMethodId_IValueReadonlyDictionary_GetKeys:
-				case RpcMethodId_IValueReadonlyDictionary_GetValues:
-				case RpcMethodId_IValueArray_Resize:
-					return true;
-				default:
-					return false;
+					field->value = value;
+					return;
 				}
 			}
+			ServerAddJsonObjectField(object, name, value);
+		}
 
-			Value RpcBoxValueByref(const Value& trivial, IRpcLifecycle* lc)
+		Ptr<JsonNode> ServerFindJsonObjectField(Ptr<JsonObject> object, const WString& name)
+		{
+			for (auto field : object->fields)
 			{
-				if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
-				if (trivial.IsNull()) return trivial;
-
-				if (trivial.GetValueType() == Value::SharedPtr)
+				if (field->name.value == name)
 				{
-					if (auto raw = trivial.GetRawPtr())
+					return field->value;
+				}
+			}
+			return nullptr;
+		}
+
+		Ptr<JsonNode> ServerGetJsonObjectField(Ptr<JsonObject> object, const WString& name)
+		{
+			auto field = ServerFindJsonObjectField(object, name);
+			CHECK_ERROR(field, L"RpcJsonDispatcherServer expects a JSON object field.");
+			return field;
+		}
+
+		WString ServerGetJsonString(Ptr<JsonNode> node)
+		{
+			auto stringNode = node.Cast<JsonString>();
+			CHECK_ERROR(stringNode, L"RpcJsonDispatcherServer expects a JSON string.");
+			return stringNode->content.value;
+		}
+
+		vint ServerGetJsonInt(Ptr<JsonNode> node)
+		{
+			auto numberNode = node.Cast<JsonNumber>();
+			CHECK_ERROR(numberNode, L"RpcJsonDispatcherServer expects a JSON number.");
+			return wtoi(numberNode->content.value);
+		}
+
+		bool ServerIsJsonNull(Ptr<JsonNode> node)
+		{
+			auto literal = node.Cast<JsonLiteral>();
+			return literal && literal->value == JsonLiteralValue::Null;
+		}
+
+		bool ServerStartsWith(const WString& value, const wchar_t* prefix)
+		{
+			auto prefixLength = (vint)wcslen(prefix);
+			return value.Length() >= prefixLength && wcsncmp(value.Buffer(), prefix, prefixLength) == 0;
+		}
+
+		WString ServerTryReadRpcMethod(Ptr<JsonNode> message)
+		{
+			if (auto object = message.Cast<JsonObject>())
+			{
+				if (auto field = ServerFindJsonObjectField(object, WString::Unmanaged(L"rpcMethod")))
+				{
+					if (auto stringNode = field.Cast<JsonString>())
 					{
-						if (auto obj = dynamic_cast<IDescriptable*>(raw))
-						{
-							return BoxValue(RpcBoxByref(Ptr<IDescriptable>(obj), lc));
-						}
+						return stringNode->content.value;
 					}
 				}
-
-				return trivial;
 			}
+			return WString::Empty;
+		}
 
-			Value RpcUnboxValueByref(const Value& serializable, IRpcLifecycle* lc)
+		bool ServerIsRpcRequest(const WString& rpcMethod)
+		{
+			return ServerStartsWith(rpcMethod, L"Request:");
+		}
+
+		bool ServerIsRpcResponse(const WString& rpcMethod)
+		{
+			return ServerStartsWith(rpcMethod, L"Response:");
+		}
+
+		bool ServerIsBroadcastRequest(const WString& rpcMethod)
+		{
+			return rpcMethod == WString::Unmanaged(L"Request:IObjectEventOps_InvokeEvent");
+		}
+
+		bool ServerIsBroadcastAndDropRequest(const WString& rpcMethod)
+		{
+			return rpcMethod == WString::Unmanaged(L"Request:IRpcDispatcher_DeclareRemoteService");
+		}
+
+		vint ServerReadRequestId(Ptr<JsonNode> message)
+		{
+			return ServerGetJsonInt(ServerGetJsonObjectField(ServerGetJsonObject(message), WString::Unmanaged(L"rpcRequestId")));
+		}
+
+		void ServerWriteRequestId(Ptr<JsonNode> message, vint requestId)
+		{
+			ServerSetJsonObjectField(ServerGetJsonObject(message), WString::Unmanaged(L"rpcRequestId"), ServerCreateJsonNumber(requestId));
+		}
+
+		vint ServerReadSourceClientId(Ptr<JsonNode> message)
+		{
+			return ServerGetJsonInt(ServerGetJsonObjectField(ServerGetJsonObject(message), WString::Unmanaged(L"sourceClientId")));
+		}
+
+		void ServerWriteSourceClientId(Ptr<JsonNode> message, vint clientId)
+		{
+			ServerSetJsonObjectField(ServerGetJsonObject(message), WString::Unmanaged(L"sourceClientId"), ServerCreateJsonNumber(clientId));
+		}
+
+		Ptr<JsonObject> ServerCreateRpcMessage(const WString& rpcMethod, vint requestId, vint sourceClientId)
+		{
+			auto message = ServerCreateJsonObject();
+			ServerAddJsonObjectField(message, WString::Unmanaged(L"rpcMethod"), ServerCreateJsonString(rpcMethod));
+			ServerAddJsonObjectField(message, WString::Unmanaged(L"rpcRequestId"), ServerCreateJsonNumber(requestId));
+			ServerAddJsonObjectField(message, WString::Unmanaged(L"sourceClientId"), ServerCreateJsonNumber(sourceClientId));
+			return message;
+		}
+
+		Ptr<JsonObject> ServerCreateLoginMessage(vint serverClientId)
+		{
+			auto message = ServerCreateJsonObject();
+			ServerAddJsonObjectField(message, WString::Unmanaged(L"rpcChannelingSystem"), ServerCreateJsonString(WString::Unmanaged(L"Login")));
+			ServerAddJsonObjectField(message, WString::Unmanaged(L"serverClientId"), ServerCreateJsonNumber(serverClientId));
+			return message;
+		}
+
+		bool ServerTryReadLogoutMessage(Ptr<JsonNode> message)
+		{
+			if (auto object = message.Cast<JsonObject>())
 			{
-				if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
-				if (serializable.IsNull()) return serializable;
-
-				if (IsRpcObjectReferenceValue(serializable))
-				{
-					auto ref = GetRpcObjectReference(serializable);
-					auto obj = RpcUnboxByref(ref, lc);
-					return BoxValue(obj);
-				}
-
-				return serializable;
-			}
-
-		}
-		
-/***********************************************************************
-* RpcByrefEnumerator
-***********************************************************************/
-
-		RpcByrefEnumerator::RpcByrefEnumerator(IRpcLifecycle* lc, RpcObjectReference enumeratorRef, IRpcSerializer* _serializer)
-			: lifecycle(lc)
-			, serializer(_serializer)
-			, ref(enumeratorRef)
-		{
-			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
-			SetRemoteObjectHold(lifecycle, ref, true);
-		}
-
-		RpcByrefEnumerator::~RpcByrefEnumerator()
-		{
-			if (lifecycle) SetRemoteObjectHold(lifecycle, ref, false);
-		}
-
-		void RpcByrefEnumerator::DisconnectFromLifecycle()
-		{
-			lifecycle = nullptr;
-		}
-
-		Value RpcByrefEnumerator::GetCurrent()
-		{
-			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref, serializer)->EnumGetCurrent(ref), lifecycle);
-		}
-
-		vint RpcByrefEnumerator::GetIndex()
-		{
-			return index;
-		}
-
-		bool RpcByrefEnumerator::Next()
-		{
-			if (GetRemoteListOps(lifecycle, ref, serializer)->EnumNext(ref))
-			{
-				index++;
-				return true;
+				auto systemField = ServerFindJsonObjectField(object, WString::Unmanaged(L"rpcChannelingSystem"));
+				return systemField && ServerGetJsonString(systemField) == WString::Unmanaged(L"Logout");
 			}
 			return false;
 		}
 
-		RpcByrefEnumerable::RpcByrefEnumerable(IRpcLifecycle* lc, RpcObjectReference enumerableRef, IRpcSerializer* _serializer)
-			: lifecycle(lc)
-			, serializer(_serializer)
-			, ref(enumerableRef)
+		bool ServerIsBroadcastReady(Ptr<RpcJsonDispatcherServer::PendingBroadcast> pending)
 		{
-			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
-			SetRemoteObjectHold(lifecycle, ref, true);
-		}
-
-		RpcByrefEnumerable::~RpcByrefEnumerable()
-		{
-			if (lifecycle) SetRemoteObjectHold(lifecycle, ref, false);
-		}
-
-		void RpcByrefEnumerable::DisconnectFromLifecycle()
-		{
-			lifecycle = nullptr;
-		}
-
-		Ptr<IValueEnumerator> RpcByrefEnumerable::CreateEnumerator()
-		{
-			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifecycle, GetRemoteListOps(lifecycle, ref, serializer)->EnumCreate(ref), serializer);
-		}
-		
-/***********************************************************************
-* RpcByrefReadonlyList
-***********************************************************************/
-
-		RpcByrefReadonlyList::RpcByrefReadonlyList(IRpcLifecycle* lc, RpcObjectReference listRef, IRpcSerializer* _serializer)
-			: lifecycle(lc)
-			, serializer(_serializer)
-			, ref(listRef)
-		{
-			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
-			SetRemoteObjectHold(lifecycle, ref, true);
-		}
-
-		RpcByrefReadonlyList::~RpcByrefReadonlyList()
-		{
-			if (lifecycle) SetRemoteObjectHold(lifecycle, ref, false);
-		}
-
-		void RpcByrefReadonlyList::DisconnectFromLifecycle()
-		{
-			lifecycle = nullptr;
-		}
-
-		Ptr<IValueEnumerator> RpcByrefReadonlyList::CreateEnumerator()
-		{
-			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifecycle, GetRemoteListOps(lifecycle, ref, serializer)->EnumCreate(ref), serializer);
-		}
-
-		vint RpcByrefReadonlyList::GetCount()
-		{
-			return GetRemoteListOps(lifecycle, ref, serializer)->ListGetCount(ref);
-		}
-
-		Value RpcByrefReadonlyList::Get(vint index)
-		{
-			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref, serializer)->ListGet(ref, index), lifecycle);
-		}
-
-		bool RpcByrefReadonlyList::Contains(const Value& value)
-		{
-			return GetRemoteListOps(lifecycle, ref, serializer)->ListContains(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
-		}
-
-		vint RpcByrefReadonlyList::IndexOf(const Value& value)
-		{
-			return GetRemoteListOps(lifecycle, ref, serializer)->ListIndexOf(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
-		}
-		
-/***********************************************************************
-* RpcByrefList
-***********************************************************************/
-
-		RpcByrefList::RpcByrefList(IRpcLifecycle* lc, RpcObjectReference listRef, IRpcSerializer* _serializer)
-			: RpcByrefReadonlyList(lc, listRef, _serializer)
-		{
-		}
-
-		RpcByrefList::~RpcByrefList()
-		{
-		}
-
-		Ptr<IValueEnumerator> RpcByrefList::CreateEnumerator()
-		{
-			return RpcByrefReadonlyList::CreateEnumerator();
-		}
-
-		vint RpcByrefList::GetCount()
-		{
-			return RpcByrefReadonlyList::GetCount();
-		}
-
-		Value RpcByrefList::Get(vint index)
-		{
-			return RpcByrefReadonlyList::Get(index);
-		}
-
-		bool RpcByrefList::Contains(const Value& value)
-		{
-			return RpcByrefReadonlyList::Contains(value);
-		}
-
-		vint RpcByrefList::IndexOf(const Value& value)
-		{
-			return RpcByrefReadonlyList::IndexOf(value);
-		}
-
-		void RpcByrefList::Set(vint index, const Value& value)
-		{
-			GetRemoteListOps(lifecycle, ref, serializer)->ListSet(ref, index, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
-		}
-
-		vint RpcByrefList::Add(const Value& value)
-		{
-			return GetRemoteListOps(lifecycle, ref, serializer)->ListAdd(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
-		}
-
-		vint RpcByrefList::Insert(vint index, const Value& value)
-		{
-			return GetRemoteListOps(lifecycle, ref, serializer)->ListInsert(ref, index, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
-		}
-
-		bool RpcByrefList::Remove(const Value& value)
-		{
-			auto index = IndexOf(value);
-			return index == -1 ? false : GetRemoteListOps(lifecycle, ref, serializer)->ListRemoveAt(ref, index);
-		}
-
-		bool RpcByrefList::RemoveAt(vint index)
-		{
-			return GetRemoteListOps(lifecycle, ref, serializer)->ListRemoveAt(ref, index);
-		}
-
-		void RpcByrefList::Clear()
-		{
-			GetRemoteListOps(lifecycle, ref, serializer)->ListClear(ref);
-		}
-		
-/***********************************************************************
-* RpcByrefArray
-***********************************************************************/
-
-		RpcByrefArray::RpcByrefArray(IRpcLifecycle* lc, RpcObjectReference arrayRef, IRpcSerializer* _serializer)
-			: lifecycle(lc)
-			, serializer(_serializer)
-			, ref(arrayRef)
-		{
-			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
-			SetRemoteObjectHold(lifecycle, ref, true);
-		}
-
-		RpcByrefArray::~RpcByrefArray()
-		{
-			if (lifecycle) SetRemoteObjectHold(lifecycle, ref, false);
-		}
-
-		void RpcByrefArray::DisconnectFromLifecycle()
-		{
-			lifecycle = nullptr;
-		}
-
-		Ptr<IValueEnumerator> RpcByrefArray::CreateEnumerator()
-		{
-			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifecycle, GetRemoteListOps(lifecycle, ref, serializer)->EnumCreate(ref), serializer);
-		}
-
-		vint RpcByrefArray::GetCount()
-		{
-			return GetRemoteListOps(lifecycle, ref, serializer)->ListGetCount(ref);
-		}
-
-		Value RpcByrefArray::Get(vint index)
-		{
-			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref, serializer)->ListGet(ref, index), lifecycle);
-		}
-
-		bool RpcByrefArray::Contains(const Value& value)
-		{
-			return GetRemoteListOps(lifecycle, ref, serializer)->ListContains(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
-		}
-
-		vint RpcByrefArray::IndexOf(const Value& value)
-		{
-			return GetRemoteListOps(lifecycle, ref, serializer)->ListIndexOf(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
-		}
-
-		void RpcByrefArray::Set(vint index, const Value& value)
-		{
-			GetRemoteListOps(lifecycle, ref, serializer)->ListSet(ref, index, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
-		}
-
-		void RpcByrefArray::Resize(vint size)
-		{
-			GetRemoteListOps(lifecycle, ref, serializer)->ArrayResize(ref, size);
-		}
-		
-/***********************************************************************
-* RpcByrefObservableList
-***********************************************************************/
-
-		RpcByrefObservableList::RpcByrefObservableList(IRpcLifecycle* lc, RpcObjectReference listRef, IRpcSerializer* _serializer)
-			: lifecycle(lc)
-			, serializer(_serializer)
-			, ref(listRef)
-		{
-			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
-			SetRemoteObjectHold(lifecycle, ref, true);
-		}
-
-		RpcByrefObservableList::~RpcByrefObservableList()
-		{
-			if (lifecycle) SetRemoteObjectHold(lifecycle, ref, false);
-		}
-
-		void RpcByrefObservableList::DisconnectFromLifecycle()
-		{
-			lifecycle = nullptr;
-		}
-
-		Ptr<IValueEnumerator> RpcByrefObservableList::CreateEnumerator()
-		{
-			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifecycle, GetRemoteListOps(lifecycle, ref, serializer)->EnumCreate(ref), serializer);
-		}
-
-		vint RpcByrefObservableList::GetCount()
-		{
-			return GetRemoteListOps(lifecycle, ref, serializer)->ListGetCount(ref);
-		}
-
-		Value RpcByrefObservableList::Get(vint index)
-		{
-			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref, serializer)->ListGet(ref, index), lifecycle);
-		}
-
-		bool RpcByrefObservableList::Contains(const Value& value)
-		{
-			return GetRemoteListOps(lifecycle, ref, serializer)->ListContains(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
-		}
-
-		vint RpcByrefObservableList::IndexOf(const Value& value)
-		{
-			return GetRemoteListOps(lifecycle, ref, serializer)->ListIndexOf(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
-		}
-
-		void RpcByrefObservableList::Set(vint index, const Value& value)
-		{
-			GetRemoteListOps(lifecycle, ref, serializer)->ListSet(ref, index, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
-		}
-
-		vint RpcByrefObservableList::Add(const Value& value)
-		{
-			return GetRemoteListOps(lifecycle, ref, serializer)->ListAdd(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
-		}
-
-		vint RpcByrefObservableList::Insert(vint index, const Value& value)
-		{
-			return GetRemoteListOps(lifecycle, ref, serializer)->ListInsert(ref, index, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
-		}
-
-		bool RpcByrefObservableList::Remove(const Value& value)
-		{
-			auto index = IndexOf(value);
-			return index == -1 ? false : GetRemoteListOps(lifecycle, ref, serializer)->ListRemoveAt(ref, index);
-		}
-
-		bool RpcByrefObservableList::RemoveAt(vint index)
-		{
-			return GetRemoteListOps(lifecycle, ref, serializer)->ListRemoveAt(ref, index);
-		}
-
-		void RpcByrefObservableList::Clear()
-		{
-			GetRemoteListOps(lifecycle, ref, serializer)->ListClear(ref);
-		}
-		
-/***********************************************************************
-* RpcByrefDictionary
-***********************************************************************/
-
-		RpcByrefDictionary::RpcByrefDictionary(IRpcLifecycle* lc, RpcObjectReference dictRef, IRpcSerializer* _serializer)
-			: lifecycle(lc)
-			, serializer(_serializer)
-			, ref(dictRef)
-		{
-			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
-			SetRemoteObjectHold(lifecycle, ref, true);
-		}
-
-		RpcByrefDictionary::~RpcByrefDictionary()
-		{
-			if (lifecycle) SetRemoteObjectHold(lifecycle, ref, false);
-		}
-
-		void RpcByrefDictionary::DisconnectFromLifecycle()
-		{
-			lifecycle = nullptr;
-		}
-
-		Ptr<IValueReadonlyList> RpcByrefDictionary::GetKeys()
-		{
-			return CreateTrackedProxy<RpcByrefReadonlyList, IValueReadonlyList>(lifecycle, GetRemoteListOps(lifecycle, ref, serializer)->DictGetKeys(ref), serializer);
-		}
-
-		Ptr<IValueReadonlyList> RpcByrefDictionary::GetValues()
-		{
-			return CreateTrackedProxy<RpcByrefReadonlyList, IValueReadonlyList>(lifecycle, GetRemoteListOps(lifecycle, ref, serializer)->DictGetValues(ref), serializer);
-		}
-
-		vint RpcByrefDictionary::GetCount()
-		{
-			return GetRemoteListOps(lifecycle, ref, serializer)->DictGetCount(ref);
-		}
-
-		Value RpcByrefDictionary::Get(const Value& key)
-		{
-			auto serializedKey = SerializeValue(serializer, RpcBoxValueByref(key, lifecycle));
-			auto serializedValue = GetRemoteListOps(lifecycle, ref, serializer)->DictGet(ref, serializedKey);
-			return RpcUnboxValueByref(serializedValue, lifecycle);
-		}
-
-		void RpcByrefDictionary::Set(const Value& key, const Value& value)
-		{
-			auto serializedKey = SerializeValue(serializer, RpcBoxValueByref(key, lifecycle));
-			auto serializedValue = SerializeValue(serializer, RpcBoxValueByref(value, lifecycle));
-			GetRemoteListOps(lifecycle, ref, serializer)->DictSet(ref, serializedKey, serializedValue);
-		}
-
-		bool RpcByrefDictionary::Remove(const Value& key)
-		{
-			return GetRemoteListOps(lifecycle, ref, serializer)->DictRemove(ref, SerializeValue(serializer, RpcBoxValueByref(key, lifecycle)));
-		}
-
-		void RpcByrefDictionary::Clear()
-		{
-			GetRemoteListOps(lifecycle, ref, serializer)->DictClear(ref);
-		}
-		
-/***********************************************************************
-* RpcCalleeListOps
-***********************************************************************/
-
-		RpcCalleeListOps::RpcCalleeListOps(IRpcLifecycle* lc, IRpcSerializer* _serializer)
-			: lifecycle(lc)
-			, serializer(_serializer)
-		{
-			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
-		}
-
-		RpcObjectReference RpcCalleeListOps::EnumCreate(RpcObjectReference ref)
-		{
-			auto obj = lifecycle->RefToPtr(ref);
-			Ptr<IValueEnumerator> enumerator;
-			if (auto xs = Ptr(obj.Obj()->SafeAggregationCast<IValueEnumerable>()))
+			for (auto clientId : pending->expectedClientIds)
 			{
-				enumerator = xs->CreateEnumerator();
+				if (!pending->responses.Keys().Contains(clientId))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+
+/***********************************************************************
+RpcJsonDispatcherServer
+***********************************************************************/
+
+	RpcJsonDispatcherServer::RpcJsonDispatcherServer(JsonChannelClient* _serverClient, JsonChannel* channel)
+	{
+		CHECK_ERROR(_serverClient, L"RpcJsonDispatcherServer needs a server channel client.");
+		CHECK_ERROR(channel, L"RpcJsonDispatcherServer needs an RPC channel.");
+		serverClient = _serverClient;
+		rpcChannel = channel;
+		rpcChannel->Initialize(this);
+	}
+
+	vint RpcJsonDispatcherServer::AllocateRequestId()
+	{
+		return ++nextRequestId;
+	}
+
+	WString RpcJsonDispatcherServer::MakeBroadcastKey(vint clientId, vint requestId)
+	{
+		return itow(clientId) + WString::Unmanaged(L":") + itow(requestId);
+	}
+
+	JsonPackage RpcJsonDispatcherServer::CreateBroadcastResponse(vint sourceClientId, vint targetClientId, vint requestId, Ptr<PendingBroadcast> pending)
+	{
+		auto response = ServerCreateRpcMessage(WString::Unmanaged(L"Response:Broadcast_Response"), requestId, sourceClientId);
+		ServerAddJsonObjectField(response, WString::Unmanaged(L"targetClientId"), ServerCreateJsonNumber(targetClientId));
+
+		if (pending && pending->hasNonNullResponse)
+		{
+			auto consolidated = ServerCreateJsonArray();
+			for (auto clientId : pending->expectedClientIds)
+			{
+				auto index = pending->responses.Keys().IndexOf(clientId);
+				if (index != -1)
+				{
+					auto responseObject = ServerGetJsonObject(pending->responses.Values()[index]);
+					auto responseField = ServerFindJsonObjectField(responseObject, WString::Unmanaged(L"response"));
+					if (responseField && !ServerIsJsonNull(responseField))
+					{
+						auto array = ServerGetJsonArray(responseField);
+						for (auto item : array->items)
+						{
+							consolidated->items.Add(item);
+						}
+					}
+				}
+			}
+			ServerAddJsonObjectField(response, WString::Unmanaged(L"response"), consolidated);
+		}
+		else
+		{
+			ServerAddJsonObjectField(response, WString::Unmanaged(L"response"), ServerCreateJsonLiteral(JsonLiteralValue::Null));
+		}
+		return response;
+	}
+
+	RpcJsonDispatcherServer::CompletedBroadcast RpcJsonDispatcherServer::CompleteBroadcastLocked(const WString& key)
+	{
+		auto pending = pendingBroadcasts[key];
+		auto serverClientId = GetServerClientId();
+		CompletedBroadcast completed;
+		completed.originalClientId = pending->originalClientId;
+		completed.response = CreateBroadcastResponse(serverClientId, pending->originalClientId, pending->originalRequestId, pending);
+
+		redirectedBroadcasts.Remove(pending->redirectedRequestId);
+		pendingBroadcasts.Remove(key);
+		return completed;
+	}
+
+	void RpcJsonDispatcherServer::DeliverCompletedBroadcast(const CompletedBroadcast& completed)
+	{
+		if (completed.response)
+		{
+			SendJsonResponse(completed.originalClientId, completed.response);
+		}
+	}
+
+	JsonPackage RpcJsonDispatcherServer::StartBroadcast(vint originalClientId, vint originalRequestId, JsonPackage message)
+	{
+		auto serverClientId = GetServerClientId();
+		auto redirectedRequestId = AllocateRequestId();
+
+		copy_visitor::AstVisitor copier;
+		auto redirectedMessage = copier.CopyNode(message.Obj());
+		ServerWriteRequestId(redirectedMessage, redirectedRequestId);
+		ServerWriteSourceClientId(redirectedMessage, serverClientId);
+
+		JsonPackage immediateResponse;
+		bool shouldFlush = false;
+		List<vint> blockedReceivers;
+		auto pending = Ptr(new PendingBroadcast);
+		pending->originalClientId = originalClientId;
+		pending->originalRequestId = originalRequestId;
+		pending->redirectedRequestId = redirectedRequestId;
+
+		SPIN_LOCK(lockBroadcasts)
+		{
+			for (auto clientId : connectedClientIds)
+			{
+				if (clientId != originalClientId)
+				{
+					pending->expectedClientIds.Add(clientId);
+				}
+			}
+
+			if (pending->expectedClientIds.Count() == 0)
+			{
+				immediateResponse = CreateBroadcastResponse(serverClientId, originalClientId, originalRequestId, nullptr);
 			}
 			else
 			{
-				throw Exception(L"RpcCalleeListOps::EnumCreate cannot find the target collection.");
-			}
+				auto key = MakeBroadcastKey(originalClientId, originalRequestId);
+				pendingBroadcasts.Add(key, pending);
+				redirectedBroadcasts.Add(redirectedRequestId, key);
 
-			return lifecycle->PtrToRef(enumerator);
-		}
-
-		bool RpcCalleeListOps::EnumNext(RpcObjectReference enumerator)
-		{
-			auto obj = lifecycle->RefToPtr(enumerator);
-			auto e = Ptr(obj.Obj()->SafeAggregationCast<IValueEnumerator>());
-			if (!e) throw Exception(L"RpcCalleeListOps::EnumNext cannot find the target enumerator.");
-			return e->Next();
-		}
-
-		Value RpcCalleeListOps::EnumGetCurrent(RpcObjectReference enumerator)
-		{
-			auto obj = lifecycle->RefToPtr(enumerator);
-			auto e = Ptr(obj.Obj()->SafeAggregationCast<IValueEnumerator>());
-			if (!e) throw Exception(L"RpcCalleeListOps::EnumGetCurrent cannot find the target enumerator.");
-			return SerializeValue(serializer, RpcBoxValueByref(e->GetCurrent(), lifecycle));
-		}
-
-		vint RpcCalleeListOps::ListGetCount(RpcObjectReference ref)
-		{
-			auto obj = lifecycle->RefToPtr(ref);
-			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
-				return roList->GetCount();
-			throw Exception(L"RpcCalleeListOps::ListGetCount cannot find the target list.");
-		}
-
-		Value RpcCalleeListOps::ListGet(RpcObjectReference ref, vint index)
-		{
-			auto obj = lifecycle->RefToPtr(ref);
-			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
-				return SerializeValue(serializer, RpcBoxValueByref(roList->Get(index), lifecycle));
-			throw Exception(L"RpcCalleeListOps::ListGet cannot find the target list.");
-		}
-
-		void RpcCalleeListOps::ListSet(RpcObjectReference ref, vint index, const Value& value)
-		{
-			auto trivial = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
-			auto obj = lifecycle->RefToPtr(ref);
-			if (auto array = Ptr(obj.Obj()->SafeAggregationCast<IValueArray>()))
-			{
-				array->Set(index, trivial);
-				return;
-			}
-			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
-			{
-				list->Set(index, trivial);
-				return;
-			}
-			throw Exception(L"RpcCalleeListOps::ListSet cannot find the target list.");
-		}
-
-		vint RpcCalleeListOps::ListAdd(RpcObjectReference ref, const Value& value)
-		{
-			auto trivial = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
-			auto obj = lifecycle->RefToPtr(ref);
-			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
-				return list->Add(trivial);
-			throw Exception(L"RpcCalleeListOps::ListAdd cannot find a writable list.");
-		}
-
-		vint RpcCalleeListOps::ListInsert(RpcObjectReference ref, vint index, const Value& value)
-		{
-			auto trivial = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
-			auto obj = lifecycle->RefToPtr(ref);
-			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
-				return list->Insert(index, trivial);
-			throw Exception(L"RpcCalleeListOps::ListInsert cannot find a writable list.");
-		}
-
-		bool RpcCalleeListOps::ListRemoveAt(RpcObjectReference ref, vint index)
-		{
-			auto obj = lifecycle->RefToPtr(ref);
-			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
-				return list->RemoveAt(index);
-			throw Exception(L"RpcCalleeListOps::ListRemoveAt cannot find the target list.");
-		}
-
-		void RpcCalleeListOps::ListClear(RpcObjectReference ref)
-		{
-			auto obj = lifecycle->RefToPtr(ref);
-			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
-			{
-				list->Clear();
-				return;
-			}
-			throw Exception(L"RpcCalleeListOps::ListClear cannot find the target list.");
-		}
-
-		bool RpcCalleeListOps::ListContains(RpcObjectReference ref, const Value& value)
-		{
-			auto trivial = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
-			auto obj = lifecycle->RefToPtr(ref);
-			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
-				return roList->Contains(trivial);
-			throw Exception(L"RpcCalleeListOps::ListContains cannot find the target list.");
-		}
-
-		vint RpcCalleeListOps::ListIndexOf(RpcObjectReference ref, const Value& value)
-		{
-			auto trivial = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
-			auto obj = lifecycle->RefToPtr(ref);
-			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
-				return roList->IndexOf(trivial);
-			throw Exception(L"RpcCalleeListOps::ListIndexOf cannot find the target list.");
-		}
-
-		void RpcCalleeListOps::ArrayResize(RpcObjectReference ref, vint size)
-		{
-			auto obj = lifecycle->RefToPtr(ref);
-			auto array = Ptr(obj.Obj()->SafeAggregationCast<IValueArray>());
-			if (!array) throw Exception(L"RpcCalleeListOps::ArrayResize cannot find the target array.");
-			array->Resize(size);
-		}
-
-		vint RpcCalleeListOps::DictGetCount(RpcObjectReference ref)
-		{
-			auto obj = lifecycle->RefToPtr(ref);
-			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
-			if (!dict) throw Exception(L"RpcCalleeListOps::DictGetCount cannot find the target dictionary.");
-			return dict->GetCount();
-		}
-
-		Value RpcCalleeListOps::DictGet(RpcObjectReference ref, const Value& key)
-		{
-			auto obj = lifecycle->RefToPtr(ref);
-			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
-			if (!dict) throw Exception(L"RpcCalleeListOps::DictGet cannot find the target dictionary.");
-			auto trivialKey = RpcUnboxValueByref(DeserializeValue(serializer, key), lifecycle);
-			return SerializeValue(serializer, RpcBoxValueByref(dict->Get(trivialKey), lifecycle));
-		}
-
-		void RpcCalleeListOps::DictSet(RpcObjectReference ref, const Value& key, const Value& value)
-		{
-			auto obj = lifecycle->RefToPtr(ref);
-			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueDictionary>());
-			if (!dict) throw Exception(L"RpcCalleeListOps::DictSet cannot find the target dictionary.");
-			auto trivialKey = RpcUnboxValueByref(DeserializeValue(serializer, key), lifecycle);
-			auto trivialValue = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
-			dict->Set(trivialKey, trivialValue);
-		}
-
-		bool RpcCalleeListOps::DictRemove(RpcObjectReference ref, const Value& key)
-		{
-			auto obj = lifecycle->RefToPtr(ref);
-			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueDictionary>());
-			if (!dict) throw Exception(L"RpcCalleeListOps::DictRemove cannot find the target dictionary.");
-			return dict->Remove(RpcUnboxValueByref(DeserializeValue(serializer, key), lifecycle));
-		}
-
-		void RpcCalleeListOps::DictClear(RpcObjectReference ref)
-		{
-			auto obj = lifecycle->RefToPtr(ref);
-			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueDictionary>());
-			if (!dict) throw Exception(L"RpcCalleeListOps::DictClear cannot find the target dictionary.");
-			dict->Clear();
-		}
-
-		bool RpcCalleeListOps::DictContainsKey(RpcObjectReference ref, const Value& key)
-		{
-			auto obj = lifecycle->RefToPtr(ref);
-			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
-			if (!dict) throw Exception(L"RpcCalleeListOps::DictContainsKey cannot find the target dictionary.");
-			return dict->GetKeys()->Contains(RpcUnboxValueByref(DeserializeValue(serializer, key), lifecycle));
-		}
-
-		RpcObjectReference RpcCalleeListOps::DictGetKeys(RpcObjectReference ref)
-		{
-			auto obj = lifecycle->RefToPtr(ref);
-			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
-			if (!dict) throw Exception(L"RpcCalleeListOps::DictGetKeys cannot find the target dictionary.");
-			return lifecycle->PtrToRef(dict->GetKeys());
-		}
-
-		RpcObjectReference RpcCalleeListOps::DictGetValues(RpcObjectReference ref)
-		{
-			auto obj = lifecycle->RefToPtr(ref);
-			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
-			if (!dict) throw Exception(L"RpcCalleeListOps::DictGetValues cannot find the target dictionary.");
-			return lifecycle->PtrToRef(dict->GetValues());
-		}
-		
-/***********************************************************************
-* RpcCalleeListEventOps
-***********************************************************************/
-
-		RpcCalleeListEventOps::RpcCalleeListEventOps(IRpcLifecycle* lc, IRpcSerializer* _serializer)
-			: lifecycle(lc)
-			, serializer(_serializer)
-		{
-			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
-		}
-
-		Value RpcCalleeListEventOps::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
-		{
-			struct SuppressFlag
-			{
-				IRpcLifecycle*		lifecycle;
-				RpcObjectReference	ref;
-
-				SuppressFlag(IRpcLifecycle* _lifecycle, RpcObjectReference _ref)
-					: lifecycle(_lifecycle)
-					, ref(_ref)
+				if (connectedClientIds.Contains(originalClientId))
 				{
-					lifecycle->GetController()->SetItemChangedSuppressedFlag(ref, true);
+					blockedReceivers.Add(originalClientId);
 				}
-				~SuppressFlag()
-				{
-					lifecycle->GetController()->SetItemChangedSuppressedFlag(ref, false);
-				}
-			};
+				CHECK_ERROR(rpcChannel, L"RpcJsonDispatcherServer needs an RPC channel.");
+				rpcChannel->BroadcastFromClient(redirectedMessage, blockedReceivers);
+				shouldFlush = true;
+			}
+		}
 
-			auto obj = lifecycle->RefToPtr(ref);
-			auto observable = Ptr(obj.Obj()->SafeAggregationCast<IValueObservableList>());
-			CHECK_ERROR(observable, L"RpcCalleeListEventOps::OnItemChanged cannot find the target observable list.");
+		if (shouldFlush)
+		{
+			FlushChannel();
+		}
+		return immediateResponse;
+	}
 
-			RpcEventExceptionMap exceptions;
+	void RpcJsonDispatcherServer::StartBroadcastAndDrop(vint originalClientId, JsonPackage message)
+	{
+		List<vint> blockedReceivers;
+		SPIN_LOCK(lockBroadcasts)
+		{
+			if (connectedClientIds.Contains(originalClientId))
 			{
-				SuppressFlag suppressFlag(lifecycle, ref);
-				try
+				blockedReceivers.Add(originalClientId);
+			}
+			CHECK_ERROR(rpcChannel, L"RpcJsonDispatcherServer needs an RPC channel.");
+			rpcChannel->BroadcastFromClient(message, blockedReceivers);
+		}
+		FlushChannel();
+	}
+
+	bool RpcJsonDispatcherServer::TryHandleBroadcastResponse(vint senderClientId, JsonPackage response)
+	{
+		if (ServerTryReadRpcMethod(response) != WString::Unmanaged(L"Response:Broadcast_Response"))
+		{
+			return false;
+		}
+
+		CompletedBroadcast completed;
+		auto redirectedRequestId = ServerReadRequestId(response);
+		bool handled = false;
+
+		SPIN_LOCK(lockBroadcasts)
+		{
+			auto index = redirectedBroadcasts.Keys().IndexOf(redirectedRequestId);
+			if (index != -1)
+			{
+				handled = true;
+				auto key = redirectedBroadcasts.Values()[index];
+				auto pending = pendingBroadcasts[key];
+
+				if (pending->expectedClientIds.Contains(senderClientId))
 				{
-					observable->ItemChanged(index, oldCount, newCount);
-				}
-				catch (const Exception& ex)
-				{
-					exceptions = IValueDictionary::Create();
-					exceptions->Set(BoxValue(lifecycle->GetClientId()), BoxValue(RpcException{ ex.Message() }));
+					auto responseObject = ServerGetJsonObject(response);
+					auto responseField = ServerFindJsonObjectField(responseObject, WString::Unmanaged(L"response"));
+					if (responseField && !ServerIsJsonNull(responseField))
+					{
+						pending->hasNonNullResponse = true;
+					}
+					pending->responses.Set(senderClientId, response);
+
+					if (ServerIsBroadcastReady(pending))
+					{
+						completed = CompleteBroadcastLocked(key);
+					}
 				}
 			}
-			return SerializeValue(serializer, BoxValue(exceptions));
 		}
 
-/***********************************************************************
-* RpcCalleeObjectOpsForList
-***********************************************************************/
+		DeliverCompletedBroadcast(completed);
+		return handled;
+	}
 
-		RpcCalleeObjectOpsForList::RpcCalleeObjectOpsForList(Ptr<RpcCalleeListOps> _listOps, Ptr<IRpcObjectOps> _objectOps, IRpcSerializer* _serializer)
-			: listOps(_listOps)
-			, objectOps(_objectOps)
-			, serializer(_serializer)
+	void RpcJsonDispatcherServer::HandleServiceDeclaration(vint senderClientId, JsonPackage request)
+	{
+		SPIN_LOCK(lockBroadcasts)
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcCalleeObjectOpsForList::RpcCalleeObjectOpsForList(...)#"
-			CHECK_ERROR(listOps && objectOps, ERROR_MESSAGE_PREFIX L"List ops and object ops are required.");
-#undef ERROR_MESSAGE_PREFIX
+			cachedServiceDeclarations.Add(request);
 		}
+		StartBroadcastAndDrop(senderClientId, request);
+	}
 
-		Value RpcCalleeObjectOpsForList::InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
+	void RpcJsonDispatcherServer::SendLoginMessages(vint clientId)
+	{
+		List<JsonPackage> declarations;
+		SPIN_LOCK(lockBroadcasts)
 		{
-			if (!IsRpcListMethodId(methodId))
+			for (auto request : cachedServiceDeclarations)
 			{
-				return objectOps->InvokeMethod(ref, methodId, arguments);
+				declarations.Add(request);
+			}
+		}
+
+		CHECK_ERROR(rpcChannel, L"RpcJsonDispatcherServer needs an RPC channel.");
+		rpcChannel->SendToClient(clientId, ServerCreateLoginMessage(GetServerClientId()));
+		for (auto request : declarations)
+		{
+			rpcChannel->SendToClient(clientId, request);
+		}
+		FlushChannel();
+	}
+
+	void RpcJsonDispatcherServer::SendJsonResponse(vint receiverClientId, JsonPackage response)
+	{
+		CHECK_ERROR(rpcChannel, L"RpcJsonDispatcherServer needs an RPC channel.");
+		rpcChannel->SendToClient(receiverClientId, response);
+		FlushChannel();
+	}
+
+	void RpcJsonDispatcherServer::FlushChannel()
+	{
+		CHECK_ERROR(rpcChannel, L"RpcJsonDispatcherServer needs an RPC channel.");
+		bool disconnected = false;
+		rpcChannel->BatchWrite(disconnected);
+	}
+
+	bool RpcJsonDispatcherServer::HasServerClientId()
+	{
+		return serverClient->GetClientId() != -1;
+	}
+
+	void RpcJsonDispatcherServer::RegisterClient(vint clientId)
+	{
+		CHECK_ERROR(clientId != -1, L"RpcJsonDispatcherServer needs a valid client id.");
+		CHECK_ERROR(HasServerClientId(), L"RpcJsonDispatcherServer needs its server local client to connect first.");
+
+		SPIN_LOCK(lockBroadcasts)
+		{
+			if (!connectedClientIds.Contains(clientId))
+			{
+				connectedClientIds.Add(clientId);
+			}
+		}
+
+		ScheduleTask(Func<void()>([this, clientId]()
+		{
+			SendLoginMessages(clientId);
+		}));
+	}
+
+	void RpcJsonDispatcherServer::DisconnectClient(vint clientId)
+	{
+		if (clientId == GetServerClientId())
+		{
+			return;
+		}
+
+		List<CompletedBroadcast> completedBroadcasts;
+		SPIN_LOCK(lockBroadcasts)
+		{
+			if (connectedClientIds.Contains(clientId))
+			{
+				connectedClientIds.Remove(clientId);
 			}
 
-			try
+			for (vint i = pendingBroadcasts.Count(); i > 0; i--)
 			{
-				switch (methodId)
+				auto index = i - 1;
+				auto key = pendingBroadcasts.Keys().Get(index);
+				auto pending = pendingBroadcasts.Values().Get(index);
+				auto expectedIndex = pending->expectedClientIds.IndexOf(clientId);
+				if (expectedIndex != -1)
 				{
-				case RpcMethodId_IValueEnumerable_CreateEnumerator:
-					return SerializeValue(serializer, BoxValue(listOps->EnumCreate(ref)));
-				case RpcMethodId_IValueEnumerator_Next:
-					return SerializeValue(serializer, BoxValue(listOps->EnumNext(ref)));
-				case RpcMethodId_IValueEnumerator_GetCurrent:
-					return listOps->EnumGetCurrent(ref);
-				case RpcMethodId_IValueReadonlyList_GetCount:
-					return SerializeValue(serializer, BoxValue(listOps->ListGetCount(ref)));
-				case RpcMethodId_IValueReadonlyList_Get:
-					return listOps->ListGet(ref, UnboxValue<vint>(DeserializeValue(serializer, arguments->Get(0))));
-				case RpcMethodId_IValueList_Set:
-					listOps->ListSet(ref, UnboxValue<vint>(DeserializeValue(serializer, arguments->Get(0))), arguments->Get(1));
-					return SerializeValue(serializer, Value());
-				case RpcMethodId_IValueList_Add:
-					return SerializeValue(serializer, BoxValue(listOps->ListAdd(ref, arguments->Get(0))));
-				case RpcMethodId_IValueList_Insert:
-					return SerializeValue(serializer, BoxValue(listOps->ListInsert(ref, UnboxValue<vint>(DeserializeValue(serializer, arguments->Get(0))), arguments->Get(1))));
-				case RpcMethodId_IValueList_RemoveAt:
-					return SerializeValue(serializer, BoxValue(listOps->ListRemoveAt(ref, UnboxValue<vint>(DeserializeValue(serializer, arguments->Get(0))))));
-				case RpcMethodId_IValueList_Clear:
-					listOps->ListClear(ref);
-					return SerializeValue(serializer, Value());
-				case RpcMethodId_IValueReadonlyList_Contains:
-					return SerializeValue(serializer, BoxValue(listOps->ListContains(ref, arguments->Get(0))));
-				case RpcMethodId_IValueReadonlyList_IndexOf:
-					return SerializeValue(serializer, BoxValue(listOps->ListIndexOf(ref, arguments->Get(0))));
-				case RpcMethodId_IValueReadonlyDictionary_GetCount:
-					return SerializeValue(serializer, BoxValue(listOps->DictGetCount(ref)));
-				case RpcMethodId_IValueReadonlyDictionary_Get:
-					return listOps->DictGet(ref, arguments->Get(0));
-				case RpcMethodId_IValueDictionary_Set:
-					listOps->DictSet(ref, arguments->Get(0), arguments->Get(1));
-					return SerializeValue(serializer, Value());
-				case RpcMethodId_IValueDictionary_Remove:
-					return SerializeValue(serializer, BoxValue(listOps->DictRemove(ref, arguments->Get(0))));
-				case RpcMethodId_IValueDictionary_Clear:
-					listOps->DictClear(ref);
-					return SerializeValue(serializer, Value());
-				case RpcMethodId_IValueReadonlyDictionary_ContainsKey:
-					return SerializeValue(serializer, BoxValue(listOps->DictContainsKey(ref, arguments->Get(0))));
-				case RpcMethodId_IValueReadonlyDictionary_GetKeys:
-					return SerializeValue(serializer, BoxValue(listOps->DictGetKeys(ref)));
-				case RpcMethodId_IValueReadonlyDictionary_GetValues:
-					return SerializeValue(serializer, BoxValue(listOps->DictGetValues(ref)));
-				case RpcMethodId_IValueArray_Resize:
-					listOps->ArrayResize(ref, UnboxValue<vint>(DeserializeValue(serializer, arguments->Get(0))));
-					return SerializeValue(serializer, Value());
+					pending->expectedClientIds.RemoveAt(expectedIndex);
+					if (ServerIsBroadcastReady(pending))
+					{
+						completedBroadcasts.Add(CompleteBroadcastLocked(key));
+					}
 				}
 			}
-			catch (const Exception& ex)
+		}
+
+		for (auto&& completed : completedBroadcasts)
+		{
+			DeliverCompletedBroadcast(completed);
+		}
+	}
+
+	vint RpcJsonDispatcherServer::GetServerClientId()
+	{
+		auto result = serverClient->GetClientId();
+		CHECK_ERROR(result != -1, L"RpcJsonDispatcherServer server client has not been connected.");
+		return result;
+	}
+
+	void RpcJsonDispatcherServer::OnRead(vint senderClientId, const JsonPackage& package)
+	{
+		if (ServerTryReadLogoutMessage(package))
+		{
+			DisconnectClient(senderClientId);
+			return;
+		}
+
+		auto rpcMethod = ServerTryReadRpcMethod(package);
+		CHECK_ERROR(rpcMethod != WString::Empty, L"RpcJsonDispatcherServer expects an RPC message.");
+
+		if (ServerIsRpcRequest(rpcMethod))
+		{
+			auto originalClientId = ServerReadSourceClientId(package);
+			CHECK_ERROR(originalClientId == senderClientId, L"RpcJsonDispatcherServer received a request with a mismatched source client id.");
+
+			if (ServerIsBroadcastAndDropRequest(rpcMethod))
 			{
-				return SerializeValue(serializer, BoxValue(RpcException{ ex.Message() }));
+				HandleServiceDeclaration(originalClientId, package);
 			}
-			CHECK_FAIL(L"Unknown RPC list method id.");
-			return {};
-		}
-
-		void RpcCalleeObjectOpsForList::EndInvokeMethod(vint slot)
-		{
-			objectOps->EndInvokeMethod(slot);
-		}
-
-		void RpcCalleeObjectOpsForList::ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)
-		{
-			objectOps->ObjectHold(ref, remoteClientId, hold);
-		}
-
-/***********************************************************************
-* RpcCalleeObjectEventOpsForList
-***********************************************************************/
-
-		RpcCalleeObjectEventOpsForList::RpcCalleeObjectEventOpsForList(Ptr<RpcCalleeListEventOps> _listEventOps, Ptr<IRpcObjectEventOps> _objectEventOps, IRpcSerializer* _serializer)
-			: listEventOps(_listEventOps)
-			, objectEventOps(_objectEventOps)
-			, serializer(_serializer)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcCalleeObjectEventOpsForList::RpcCalleeObjectEventOpsForList(...)#"
-			CHECK_ERROR(listEventOps && objectEventOps, ERROR_MESSAGE_PREFIX L"List event ops and object event ops are required.");
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-		Value RpcCalleeObjectEventOpsForList::InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)
-		{
-			if (eventId == RpcEventId_IValueObservableList_ItemChanged)
+			else if (ServerIsBroadcastRequest(rpcMethod))
 			{
-				return listEventOps->OnItemChanged(
-					ref,
-					UnboxValue<vint>(DeserializeValue(serializer, arguments->Get(0))),
-					UnboxValue<vint>(DeserializeValue(serializer, arguments->Get(1))),
-					UnboxValue<vint>(DeserializeValue(serializer, arguments->Get(2)))
-					);
+				auto immediateResponse = StartBroadcast(originalClientId, ServerReadRequestId(package), package);
+				if (immediateResponse)
+				{
+					SendJsonResponse(originalClientId, immediateResponse);
+				}
 			}
-			return objectEventOps->InvokeEvent(ref, eventId, arguments);
+			else
+			{
+				CHECK_FAIL(L"RpcJsonDispatcherServer only accepts broadcast requests.");
+			}
+			return;
 		}
+
+		CHECK_ERROR(ServerIsRpcResponse(rpcMethod), L"RpcJsonDispatcherServer expects an RPC request or response.");
+		if (!TryHandleBroadcastResponse(senderClientId, package))
+		{
+			CHECK_FAIL(L"RpcJsonDispatcherServer received an unmatched RPC response.");
+		}
+	}
 
 /***********************************************************************
-* RpcCallerListOps
+RpcJsonDispatcherServerForTaskQueue
 ***********************************************************************/
 
-		RpcCallerListOps::RpcCallerListOps(IRpcObjectOps* _objectOps, IRpcSerializer* _serializer)
-			: objectOps(_objectOps)
-			, serializer(_serializer)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcCallerListOps::RpcCallerListOps(...)#"
-			CHECK_ERROR(objectOps, ERROR_MESSAGE_PREFIX L"Object ops are required.");
-#undef ERROR_MESSAGE_PREFIX
-		}
+	void RpcJsonDispatcherServerForTaskQueue::ScheduleTask(Func<void()> task)
+	{
+		taskQueue->QueueTask(task);
+	}
 
-		RpcObjectReference RpcCallerListOps::EnumCreate(RpcObjectReference ref)
-		{
-			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueEnumerable_CreateEnumerator, CreateRpcArguments());
-			return UnboxValue<RpcObjectReference>(result);
-		}
-
-		bool RpcCallerListOps::EnumNext(RpcObjectReference enumerator)
-		{
-			auto result = InvokeListMethod(objectOps, serializer, enumerator, RpcMethodId_IValueEnumerator_Next, CreateRpcArguments());
-			return UnboxValue<bool>(result);
-		}
-
-		Value RpcCallerListOps::EnumGetCurrent(RpcObjectReference enumerator)
-		{
-			return InvokeListMethod(objectOps, serializer, enumerator, RpcMethodId_IValueEnumerator_GetCurrent, CreateRpcArguments());
-		}
-
-		vint RpcCallerListOps::ListGetCount(RpcObjectReference ref)
-		{
-			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyList_GetCount, CreateRpcArguments());
-			return UnboxValue<vint>(result);
-		}
-
-		Value RpcCallerListOps::ListGet(RpcObjectReference ref, vint index)
-		{
-			return InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyList_Get, CreateRpcArguments(SerializeValue(serializer, BoxValue(index))));
-		}
-
-		void RpcCallerListOps::ListSet(RpcObjectReference ref, vint index, const Value& value)
-		{
-			InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueList_Set, CreateRpcArguments(SerializeValue(serializer, BoxValue(index)), value));
-		}
-
-		vint RpcCallerListOps::ListAdd(RpcObjectReference ref, const Value& value)
-		{
-			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueList_Add, CreateRpcArguments(value));
-			return UnboxValue<vint>(result);
-		}
-
-		vint RpcCallerListOps::ListInsert(RpcObjectReference ref, vint index, const Value& value)
-		{
-			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueList_Insert, CreateRpcArguments(SerializeValue(serializer, BoxValue(index)), value));
-			return UnboxValue<vint>(result);
-		}
-
-		bool RpcCallerListOps::ListRemoveAt(RpcObjectReference ref, vint index)
-		{
-			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueList_RemoveAt, CreateRpcArguments(SerializeValue(serializer, BoxValue(index))));
-			return UnboxValue<bool>(result);
-		}
-
-		void RpcCallerListOps::ListClear(RpcObjectReference ref)
-		{
-			InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueList_Clear, CreateRpcArguments());
-		}
-
-		bool RpcCallerListOps::ListContains(RpcObjectReference ref, const Value& value)
-		{
-			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyList_Contains, CreateRpcArguments(value));
-			return UnboxValue<bool>(result);
-		}
-
-		vint RpcCallerListOps::ListIndexOf(RpcObjectReference ref, const Value& value)
-		{
-			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyList_IndexOf, CreateRpcArguments(value));
-			return UnboxValue<vint>(result);
-		}
-
-		void RpcCallerListOps::ArrayResize(RpcObjectReference ref, vint size)
-		{
-			InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueArray_Resize, CreateRpcArguments(SerializeValue(serializer, BoxValue(size))));
-		}
-
-		vint RpcCallerListOps::DictGetCount(RpcObjectReference ref)
-		{
-			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyDictionary_GetCount, CreateRpcArguments());
-			return UnboxValue<vint>(result);
-		}
-
-		Value RpcCallerListOps::DictGet(RpcObjectReference ref, const Value& key)
-		{
-			return InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyDictionary_Get, CreateRpcArguments(key));
-		}
-
-		void RpcCallerListOps::DictSet(RpcObjectReference ref, const Value& key, const Value& value)
-		{
-			InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueDictionary_Set, CreateRpcArguments(key, value));
-		}
-
-		bool RpcCallerListOps::DictRemove(RpcObjectReference ref, const Value& key)
-		{
-			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueDictionary_Remove, CreateRpcArguments(key));
-			return UnboxValue<bool>(result);
-		}
-
-		void RpcCallerListOps::DictClear(RpcObjectReference ref)
-		{
-			InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueDictionary_Clear, CreateRpcArguments());
-		}
-
-		bool RpcCallerListOps::DictContainsKey(RpcObjectReference ref, const Value& key)
-		{
-			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyDictionary_ContainsKey, CreateRpcArguments(key));
-			return UnboxValue<bool>(result);
-		}
-
-		RpcObjectReference RpcCallerListOps::DictGetKeys(RpcObjectReference ref)
-		{
-			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyDictionary_GetKeys, CreateRpcArguments());
-			return UnboxValue<RpcObjectReference>(result);
-		}
-
-		RpcObjectReference RpcCallerListOps::DictGetValues(RpcObjectReference ref)
-		{
-			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyDictionary_GetValues, CreateRpcArguments());
-			return UnboxValue<RpcObjectReference>(result);
-		}
-
-/***********************************************************************
-* RpcCallerListEventOps
-***********************************************************************/
-
-		RpcCallerListEventOps::RpcCallerListEventOps(IRpcObjectEventOps* _objectEventOps, IRpcSerializer* _serializer)
-			: objectEventOps(_objectEventOps)
-			, serializer(_serializer)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcCallerListEventOps::RpcCallerListEventOps(...)#"
-			CHECK_ERROR(objectEventOps, ERROR_MESSAGE_PREFIX L"Object event ops are required.");
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-		Value RpcCallerListEventOps::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
-		{
-			auto arguments = CreateRpcArguments(
-				SerializeValue(serializer, BoxValue(index)),
-				SerializeValue(serializer, BoxValue(oldCount)),
-				SerializeValue(serializer, BoxValue(newCount))
-				);
-			auto result = objectEventOps->InvokeEvent(ref, RpcEventId_IValueObservableList_ItemChanged, arguments);
-			ReadEventException(UnboxValue<RpcEventExceptionMap>(DeserializeValue(serializer, result)));
-			return result;
-		}
+	RpcJsonDispatcherServerForTaskQueue::RpcJsonDispatcherServerForTaskQueue(JsonChannelClient* _serverClient, JsonChannel* channel, Ptr<TaskQueue> _taskQueue)
+		: RpcJsonDispatcherServer(_serverClient, channel)
+		, taskQueue(_taskQueue)
+	{
+		CHECK_ERROR(taskQueue, L"RpcJsonDispatcherServerForTaskQueue needs a task queue.");
 	}
 }
 
