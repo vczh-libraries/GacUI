@@ -137,6 +137,8 @@
   - The document is for understanding the source code, so you must keep mentioning names instead of using language that is too abstract.
   - You must use everything before `# DRAFT` with details. Do not just make a summary; that material is already a summary.
   - Multiple levels of `#` markdown topics containing bullet points are favored.
+  - Try your best to mention actual file names as other repos might not see the same source structure, mention classes/functions/etc instead.
+    - Except for naming convention of generated files, or metadata files offered in the release.
 
 ## Steps for Improve
 

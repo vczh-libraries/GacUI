@@ -43,6 +43,7 @@ Online documentation: https://gaclib.net/doc/current/vlppos/home.html
 VlppOS provides cross-platform OS abstraction for file system operations, streams, locale support, and multi-threading.
 Use this when you need to interact with the operating system in a portable way.
 It offers locale-aware string manipulation, file system access, various stream types with encoding/decoding capabilities, and comprehensive multi-threading support with synchronization primitives.
+It offers inter-process communication structure, but actual network protocol implementations are subject for referencing or writing demoes.
 
 Detailed project guidance: [Index_VlppOS.md](./Index_VlppOS.md)
 
@@ -113,6 +114,7 @@ Workflow is a script language based on C++ reflection that can execute scripts a
 Use this when you need scripting capabilities, code generation, or when working with GacUI XML files.
 It can execute the script if reflection is turned on.
 It can generate equivalent C++ source files from the the script.
+It can run Workflow with RPC on Workflow declared interfaces, but the user is responsible to offere ability of data transmission.
 
 Detailed project guidance: [Index_Workflow.md](./Index_Workflow.md)
 

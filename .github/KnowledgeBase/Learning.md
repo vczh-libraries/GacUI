@@ -19,7 +19,7 @@
 - Prefer simple calls before interface casts [2]
 - Validate expectations against implementation and existing tests [2]
 - Treat Debug memory leak dumps as required failures [2]
-- Keep design documentation aligned with code after refactoring [2]
+- Keep design documentation aligned with code after refactoring [3]
 - Prefer well-defined tests over ambiguous edge cases [1]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
