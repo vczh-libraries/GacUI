@@ -9642,4560 +9642,6 @@ ExpandCoProviderStatement
 }
 
 /***********************************************************************
-.\ANALYZER\WFANALYZER_GENERATERPC.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace workflow
-	{
-		namespace analyzer
-		{
-			using namespace collections;
-
-			namespace rpc_generating
-			{
-				using namespace copy_visitor;
-				using namespace reflection::description;
-
-				bool IsRpcAttribute(WfAttribute* attribute, const wchar_t* name)
-				{
-					return attribute
-						&& attribute->category.value == L"rpc"
-						&& attribute->name.value == name;
-				}
-
-				bool HasRpcAttribute(List<Ptr<WfAttribute>>& attributes, const wchar_t* name)
-				{
-					for (auto attribute : attributes)
-					{
-						if (IsRpcAttribute(attribute.Obj(), name))
-						{
-							return true;
-						}
-					}
-					return false;
-				}
-
-				bool HasAttribute(IAttributeBag* bag, ITypeDescriptor* attrTd)
-				{
-					if (!bag || !attrTd)
-					{
-						return false;
-					}
-
-					for (vint i = 0; i < bag->GetAttributeCount(); i++)
-					{
-						if (bag->GetAttribute(i)->GetAttributeType() == attrTd)
-						{
-							return true;
-						}
-					}
-					return false;
-				}
-
-				bool IsStrongTypedCollectionType(WfType* type)
-				{
-					return dynamic_cast<WfEnumerableType*>(type) != nullptr
-						|| dynamic_cast<WfMapType*>(type) != nullptr
-						|| dynamic_cast<WfObservableListType*>(type) != nullptr;
-				}
-
-				bool IsRpcStrongTypedCollection(ITypeInfo* type)
-				{
-					if (!type || type->GetDecorator() != ITypeInfo::SharedPtr) return false;
-					auto genericType = type->GetElementType();
-					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return false;
-
-					auto collectionType = genericType->GetElementType();
-					if (!collectionType || collectionType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
-
-					auto collectionTd = collectionType->GetTypeDescriptor();
-					if (collectionTd == GetTypeDescriptor<IValueEnumerable>()
-						|| collectionTd == GetTypeDescriptor<IValueReadonlyList>()
-						|| collectionTd == GetTypeDescriptor<IValueList>()
-						|| collectionTd == GetTypeDescriptor<IValueObservableList>())
-					{
-						return genericType->GetGenericArgumentCount() == 1;
-					}
-
-					if (collectionTd == GetTypeDescriptor<IValueReadonlyDictionary>()
-						|| collectionTd == GetTypeDescriptor<IValueDictionary>())
-					{
-						return genericType->GetGenericArgumentCount() == 2;
-					}
-
-					switch (type->GetHint())
-					{
-					case TypeInfoHint::LazyList:
-					case TypeInfoHint::Array:
-					case TypeInfoHint::List:
-						return genericType->GetGenericArgumentCount() == 1;
-					case TypeInfoHint::Dictionary:
-						return genericType->GetGenericArgumentCount() == 2;
-					default:
-						return false;
-					}
-				}
-
-				ITypeInfo* GetRpcStrongTypedCollectionElementType(ITypeInfo* type)
-				{
-					if (!IsRpcStrongTypedCollection(type)) return nullptr;
-					auto genericType = type->GetElementType();
-					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return nullptr;
-					switch (genericType->GetGenericArgumentCount())
-					{
-					case 1:
-						return genericType->GetGenericArgument(0);
-					case 2:
-						return genericType->GetGenericArgument(1);
-					default:
-						return nullptr;
-					}
-				}
-
-				bool IsRpcObservableStrongTypedCollection(ITypeInfo* type)
-				{
-					if (!IsRpcStrongTypedCollection(type)) return false;
-					auto genericType = type->GetElementType();
-					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return false;
-					auto collectionType = genericType->GetElementType();
-					if (!collectionType || collectionType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
-					return collectionType->GetTypeDescriptor() == GetTypeDescriptor<IValueObservableList>();
-				}
-
-				bool IsRpcInterfaceSharedType(ITypeInfo* type, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
-				{
-					if (!type || type->GetDecorator() != ITypeInfo::SharedPtr) return false;
-					auto elementType = type->GetElementType();
-					if (!elementType || elementType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
-					auto td = elementType->GetTypeDescriptor();
-					return td
-						&& (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::Interface) != TypeDescriptorFlags::Undefined
-						&& rpcInterfaceTds.Contains(td);
-				}
-
-				bool IsSharedInterfaceType(ITypeInfo* type)
-				{
-					if (!type || type->GetDecorator() != ITypeInfo::SharedPtr) return false;
-					auto elementType = type->GetElementType();
-					if (!elementType) return false;
-					if (elementType->GetDecorator() == ITypeInfo::Generic)
-					{
-						elementType = elementType->GetElementType();
-					}
-					if (!elementType || elementType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
-					auto td = elementType->GetTypeDescriptor();
-					return td
-						&& (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::Interface) != TypeDescriptorFlags::Undefined;
-				}
-
-				IMethodInfo* FindRpcMethodInfo(WfLexicalScopeManager* manager, WfClassDeclaration* interfaceDecl, WfFunctionDeclaration* methodDecl, ITypeDescriptor* typeDescriptor)
-				{
-					if (auto index = manager->declarationMemberInfos.Keys().IndexOf(methodDecl); index != -1)
-					{
-						if (auto methodInfo = dynamic_cast<IMethodInfo*>(manager->declarationMemberInfos.Values()[index].Obj()))
-						{
-							return methodInfo;
-						}
-					}
-
-					if (!typeDescriptor) return nullptr;
-					auto group = typeDescriptor->GetMethodGroupByName(methodDecl->name.value, false);
-					if (!group) return nullptr;
-
-					vint overloadIndex = 0;
-					for (auto declaration : interfaceDecl->declarations)
-					{
-						if (declaration.Obj() == methodDecl)
-						{
-							break;
-						}
-						if (auto previousMethod = declaration.Cast<WfFunctionDeclaration>())
-						{
-							if (previousMethod->name.value == methodDecl->name.value)
-							{
-								overloadIndex++;
-							}
-						}
-					}
-					return overloadIndex < group->GetMethodCount() ? group->GetMethod(overloadIndex) : nullptr;
-				}
-
-				bool IsRpcStrongTypedCollectionContainingRpcInterface(ITypeInfo* type, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
-				{
-					auto elementType = GetRpcStrongTypedCollectionElementType(type);
-					if (!elementType) return false;
-					return IsRpcInterfaceSharedType(elementType, rpcInterfaceTds)
-						|| IsRpcStrongTypedCollectionContainingRpcInterface(elementType, rpcInterfaceTds);
-				}
-
-				bool IsDefaultRpcTransferByref(ITypeInfo* type, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
-				{
-					return IsRpcStrongTypedCollection(type)
-						&& (IsRpcObservableStrongTypedCollection(type)
-							|| IsRpcStrongTypedCollectionContainingRpcInterface(type, rpcInterfaceTds));
-				}
-
-				void SplitTypeFullName(const WString& typeFullName, List<WString>& fragments)
-				{
-					vint start = 0;
-					while (start <= typeFullName.Length())
-					{
-						vint separator = -1;
-						for (vint i = start; i + 1 < typeFullName.Length(); i++)
-						{
-							if (typeFullName[i] == L':' && typeFullName[i + 1] == L':')
-							{
-								separator = i;
-								break;
-							}
-						}
-						if (separator == -1)
-						{
-							fragments.Add(typeFullName.Sub(start, typeFullName.Length() - start));
-							break;
-						}
-
-						fragments.Add(typeFullName.Sub(start, separator - start));
-						start = separator + 2;
-					}
-				}
-
-				WString MangleRpcFullName(const WString& fullName)
-				{
-					WString mangled;
-					for (vint i = 0; i < fullName.Length(); i++)
-					{
-						if (i + 1 < fullName.Length() && fullName[i] == L':' && fullName[i + 1] == L':')
-						{
-							mangled += L"__";
-							i++;
-						}
-						else if (fullName[i] == L'.' || fullName[i] == L'(' || fullName[i] == L')' || fullName[i] == L',')
-						{
-							mangled += L"_";
-						}
-						else
-						{
-							mangled += WString::FromChar(fullName[i]);
-						}
-					}
-					return mangled;
-				}
-
-				WfDeclaration* FindRpcDeclaration(WfLexicalScopeManager* manager, const WString& fullName)
-				{
-					if (auto index = manager->rpcMetadata->typeNames.Keys().IndexOf(fullName); index != -1)
-					{
-						return manager->rpcMetadata->typeNames.Values()[index];
-					}
-					if (auto index = manager->rpcMetadata->methodNames.Keys().IndexOf(fullName); index != -1)
-					{
-						return manager->rpcMetadata->methodNames.Values()[index];
-					}
-					if (auto index = manager->rpcMetadata->eventNames.Keys().IndexOf(fullName); index != -1)
-					{
-						return manager->rpcMetadata->eventNames.Values()[index];
-					}
-					return nullptr;
-				}
-
-				template<typename TDecl>
-				WString FindFullName(const Dictionary<WString, TDecl*>& names, TDecl* declaration)
-				{
-					for (vint i = 0; i < names.Count(); i++)
-					{
-						if (names.Values()[i] == declaration)
-						{
-							return names.Keys()[i];
-						}
-					}
-					return L"";
-				}
-
-				ITypeDescriptor* FindRpcTypeDescriptor(WfLexicalScopeManager* manager, const WString& fullName)
-				{
-					for (vint i = 0; i < manager->declarationTypes.Count(); i++)
-					{
-						auto typeDescriptor = manager->declarationTypes.Values()[i].Obj();
-						if (typeDescriptor && typeDescriptor->GetTypeName() == fullName)
-						{
-							return typeDescriptor;
-						}
-					}
-					return nullptr;
-				}
-
-				Ptr<WfType> CopyType(WfType* type)
-				{
-					AstVisitor copier;
-					return copier.CopyNode(type);
-				}
-
-				Ptr<WfType> CreatePredefinedType(WfPredefinedTypeName name)
-				{
-					auto type = Ptr(new WfPredefinedType);
-					type->name = name;
-					return type;
-				}
-
-				Ptr<WfType> CreateQualifiedType(const WString& fullName)
-				{
-					List<WString> fragments;
-					SplitTypeFullName(fullName, fragments);
-					if (fragments.Count() == 0)
-					{
-						return nullptr;
-					}
-
-					Ptr<WfType> type;
-					for (vint i = 0; i < fragments.Count(); i++)
-					{
-						if (i == 0)
-						{
-							auto top = Ptr(new WfReferenceType);
-							top->name.value = fragments[i];
-							type = top;
-						}
-						else
-						{
-							auto child = Ptr(new WfChildType);
-							child->parent = type;
-							child->name.value = fragments[i];
-							type = child;
-						}
-					}
-					return type;
-				}
-
-				Ptr<WfType> CreateTopQualifiedType(const WString& fullName)
-				{
-					List<WString> fragments;
-					SplitTypeFullName(fullName, fragments);
-					if (fragments.Count() == 0)
-					{
-						return nullptr;
-					}
-
-					Ptr<WfType> type;
-					for (vint i = 0; i < fragments.Count(); i++)
-					{
-						if (i == 0)
-						{
-							auto top = Ptr(new WfTopQualifiedType);
-							top->name.value = fragments[i];
-							type = top;
-						}
-						else
-						{
-							auto child = Ptr(new WfChildType);
-							child->parent = type;
-							child->name.value = fragments[i];
-							type = child;
-						}
-					}
-					return type;
-				}
-
-				Ptr<WfType> CreateSharedType(const WString& fullName)
-				{
-					auto type = Ptr(new WfSharedPointerType);
-					type->element = CreateQualifiedType(fullName);
-					return type;
-				}
-
-				Ptr<WfType> CreateRawType(const WString& fullName)
-				{
-					auto type = Ptr(new WfRawPointerType);
-					type->element = CreateQualifiedType(fullName);
-					return type;
-				}
-
-				Ptr<WfType> CreateNullableType(const WString& fullName)
-				{
-					auto type = Ptr(new WfNullableType);
-					type->element = CreateQualifiedType(fullName);
-					return type;
-				}
-
-				Nullable<WfPredefinedTypeName> GetPredefinedTypeFromSystemName(const WString& name)
-				{
-					if (name == L"Boolean") return WfPredefinedTypeName::Bool;
-					if (name == (sizeof(vint) == sizeof(vint64_t) ? L"Int64" : L"Int32")) return WfPredefinedTypeName::Int;
-					if (name == L"String") return WfPredefinedTypeName::String;
-					if (name == L"Object") return WfPredefinedTypeName::Object;
-					if (name == L"Void") return WfPredefinedTypeName::Void;
-					return {};
-				}
-
-				Ptr<WfType> NormalizeRpcGeneratedType(Ptr<WfType> type)
-				{
-					if (!type)
-					{
-						return nullptr;
-					}
-
-					if (auto child = type.Cast<WfChildType>())
-					{
-						child->parent = NormalizeRpcGeneratedType(child->parent);
-						if (auto reference = child->parent.Cast<WfReferenceType>())
-						{
-							if (reference->name.value == L"system")
-							{
-								if (auto predefined = GetPredefinedTypeFromSystemName(child->name.value))
-								{
-									return CreatePredefinedType(predefined.Value());
-								}
-							}
-						}
-					}
-					else if (auto top = type.Cast<WfTopQualifiedType>())
-					{
-						auto reference = Ptr(new WfReferenceType);
-						reference->name = top->name;
-						return reference;
-					}
-					else if (auto raw = type.Cast<WfRawPointerType>())
-					{
-						raw->element = NormalizeRpcGeneratedType(raw->element);
-					}
-					else if (auto shared = type.Cast<WfSharedPointerType>())
-					{
-						shared->element = NormalizeRpcGeneratedType(shared->element);
-					}
-					else if (auto nullable = type.Cast<WfNullableType>())
-					{
-						nullable->element = NormalizeRpcGeneratedType(nullable->element);
-					}
-					else if (auto enumerable = type.Cast<WfEnumerableType>())
-					{
-						enumerable->element = NormalizeRpcGeneratedType(enumerable->element);
-					}
-					else if (auto map = type.Cast<WfMapType>())
-					{
-						if (map->key)
-						{
-							map->key = NormalizeRpcGeneratedType(map->key);
-						}
-						map->value = NormalizeRpcGeneratedType(map->value);
-					}
-					else if (auto observable = type.Cast<WfObservableListType>())
-					{
-						observable->element = NormalizeRpcGeneratedType(observable->element);
-					}
-					else if (auto function = type.Cast<WfFunctionType>())
-					{
-						function->result = NormalizeRpcGeneratedType(function->result);
-						for (vint i = 0; i < function->arguments.Count(); i++)
-						{
-							function->arguments[i] = NormalizeRpcGeneratedType(function->arguments[i]);
-						}
-					}
-					return type;
-				}
-
-#ifndef VCZH_WORKFLOW_RPC_GENERATING_CREATE_TYPE_FROM_CPP
-#define VCZH_WORKFLOW_RPC_GENERATING_CREATE_TYPE_FROM_CPP
-				template<typename T>
-				Ptr<WfType> CreateTypeFromCpp()
-				{
-					return NormalizeRpcGeneratedType(GetTypeFromTypeInfo(TypeInfoRetriver<T>::CreateTypeInfo().Obj()));
-				}
-#endif
-
-				Ptr<WfExpression> CreateNull()
-				{
-					auto expression = Ptr(new WfLiteralExpression);
-					expression->value = WfLiteralValue::Null;
-					return expression;
-				}
-
-				Ptr<WfExpression> CreateIsNull(Ptr<WfExpression> expression)
-				{
-					auto testing = Ptr(new WfTypeTestingExpression);
-					testing->test = WfTypeTesting::IsNull;
-					testing->expression = expression;
-					return testing;
-				}
-
-				Ptr<WfExpression> CreateIsNotNull(Ptr<WfExpression> expression)
-				{
-					auto testing = Ptr(new WfTypeTestingExpression);
-					testing->test = WfTypeTesting::IsNotNull;
-					testing->expression = expression;
-					return testing;
-				}
-
-				Ptr<WfExpression> CreateIsType(Ptr<WfExpression> expression, Ptr<WfType> type)
-				{
-					auto testing = Ptr(new WfTypeTestingExpression);
-					testing->test = WfTypeTesting::IsType;
-					testing->expression = expression;
-					testing->type = type;
-					return testing;
-				}
-
-				Ptr<WfExpression> CreateBool(bool value)
-				{
-					auto expression = Ptr(new WfLiteralExpression);
-					expression->value = value ? WfLiteralValue::True : WfLiteralValue::False;
-					return expression;
-				}
-
-				Ptr<WfExpression> CreateInt(vint value)
-				{
-					auto expression = Ptr(new WfIntegerExpression);
-					expression->value.value = itow(value);
-					return expression;
-				}
-
-				Ptr<WfExpression> CreateString(const WString& value)
-				{
-					auto expression = Ptr(new WfStringExpression);
-					expression->value.value = value;
-					return expression;
-				}
-
-				Ptr<WfExpression> CreateReference(const WString& name)
-				{
-					auto expression = Ptr(new WfReferenceExpression);
-					expression->name.value = name;
-					return expression;
-				}
-
-				Ptr<WfExpression> CreateThis()
-				{
-					return Ptr(new WfThisExpression);
-				}
-
-				Ptr<WfExpression> CreateQualifiedExpression(const WString& fullName)
-				{
-					List<WString> fragments;
-					SplitTypeFullName(fullName, fragments);
-					if (fragments.Count() == 0)
-					{
-						return nullptr;
-					}
-
-					Ptr<WfExpression> expression = CreateReference(fragments[0]);
-					for (vint i = 1; i < fragments.Count(); i++)
-					{
-						auto child = Ptr(new WfChildExpression);
-						child->parent = expression;
-						child->name.value = fragments[i];
-						expression = child;
-					}
-					return expression;
-				}
-
-				Ptr<WfExpression> CreateMember(Ptr<WfExpression> parent, const WString& name)
-				{
-					auto expression = Ptr(new WfMemberExpression);
-					expression->parent = parent;
-					expression->name.value = name;
-					return expression;
-				}
-
-				Ptr<WfExpression> CreateBinary(WfBinaryOperator op, Ptr<WfExpression> first, Ptr<WfExpression> second)
-				{
-					auto expression = Ptr(new WfBinaryExpression);
-					expression->op = op;
-					expression->first = first;
-					expression->second = second;
-					return expression;
-				}
-
-				Ptr<WfExpression> CreateUnary(WfUnaryOperator op, Ptr<WfExpression> operand)
-				{
-					auto expression = Ptr(new WfUnaryExpression);
-					expression->op = op;
-					expression->operand = operand;
-					return expression;
-				}
-
-				Ptr<WfExpression> CreateAssign(Ptr<WfExpression> left, Ptr<WfExpression> right)
-				{
-					return CreateBinary(WfBinaryOperator::Assign, left, right);
-				}
-
-				Ptr<WfExpression> CreateIndex(Ptr<WfExpression> collection, Ptr<WfExpression> index)
-				{
-					return CreateBinary(WfBinaryOperator::Index, collection, index);
-				}
-
-				Ptr<WfExpression> CreateCast(Ptr<WfType> type, Ptr<WfExpression> expression)
-				{
-					auto cast = Ptr(new WfTypeCastingExpression);
-					cast->strategy = WfTypeCastingStrategy::Strong;
-					cast->type = type;
-					cast->expression = expression;
-					return cast;
-				}
-
-				Ptr<WfExpression> CreateWeakCast(Ptr<WfType> type, Ptr<WfExpression> expression)
-				{
-					auto cast = Ptr(new WfTypeCastingExpression);
-					cast->strategy = WfTypeCastingStrategy::Weak;
-					cast->type = type;
-					cast->expression = expression;
-					return cast;
-				}
-
-				Ptr<WfExpression> CreateInfer(Ptr<WfExpression> expression, Ptr<WfType> type)
-				{
-					auto infer = Ptr(new WfInferExpression);
-					infer->expression = expression;
-					infer->type = type;
-					return infer;
-				}
-
-				Ptr<WfConstructorArgument> CreateConstructorArgument(Ptr<WfExpression> key, Ptr<WfExpression> value)
-				{
-					auto argument = Ptr(new WfConstructorArgument);
-					argument->key = key;
-					argument->value = value;
-					return argument;
-				}
-
-				Ptr<WfConstructorExpression> CreateConstructor()
-				{
-					return Ptr(new WfConstructorExpression);
-				}
-
-				Ptr<WfExpression> CreateRpcExceptionExpression(Ptr<WfExpression> message)
-				{
-					auto constructor = CreateConstructor();
-					constructor->arguments.Add(CreateConstructorArgument(CreateReference(L"message"), message));
-					return CreateInfer(constructor, CreateTypeFromCpp<rpc_controller::RpcException>());
-				}
-
-				Ptr<WfType> CreateRpcEventExceptionMapType()
-				{
-					return CreateTypeFromCpp<Dictionary<vint, rpc_controller::RpcException>>();
-				}
-
-				Ptr<WfExpression> CreateNewClass(Ptr<WfType> type)
-				{
-					auto expression = Ptr(new WfNewClassExpression);
-					expression->type = type;
-					return expression;
-				}
-
-				Ptr<WfExpression> CreateNewInterface(Ptr<WfType> type)
-				{
-					auto expression = Ptr(new WfNewInterfaceExpression);
-					expression->type = type;
-					return expression;
-				}
-
-				Ptr<WfStatement> CreateExpressionStatement(Ptr<WfExpression> expression)
-				{
-					auto statement = Ptr(new WfExpressionStatement);
-					statement->expression = expression;
-					return statement;
-				}
-
-				Ptr<WfStatement> CreateReturn(Ptr<WfExpression> expression)
-				{
-					auto statement = Ptr(new WfReturnStatement);
-					statement->expression = expression;
-					return statement;
-				}
-
-				Ptr<WfStatement> CreateRaise(const WString& message)
-				{
-					auto statement = Ptr(new WfRaiseExceptionStatement);
-					statement->expression = CreateString(message);
-					return statement;
-				}
-
-				Ptr<WfStatement> CreateRaise(Ptr<WfExpression> expression)
-				{
-					auto statement = Ptr(new WfRaiseExceptionStatement);
-					statement->expression = expression;
-					return statement;
-				}
-
-				Ptr<WfVariableDeclaration> CreateVariableDeclaration(const WString& name, Ptr<WfType> type, Ptr<WfExpression> expression)
-				{
-					auto declaration = Ptr(new WfVariableDeclaration);
-					declaration->name.value = name;
-					declaration->type = type;
-					declaration->expression = expression;
-					return declaration;
-				}
-
-				Ptr<WfStatement> CreateVariableStatement(const WString& name, Ptr<WfType> type, Ptr<WfExpression> expression)
-				{
-					auto statement = Ptr(new WfVariableStatement);
-					statement->variable = CreateVariableDeclaration(name, type, expression);
-					return statement;
-				}
-
-				Ptr<WfStatement> CreateInferredVariableStatement(const WString& name, Ptr<WfExpression> expression)
-				{
-					return CreateVariableStatement(name, nullptr, expression);
-				}
-
-				Ptr<WfStatement> CreateIf(Ptr<WfExpression> condition, Ptr<WfStatement> trueBranch, Ptr<WfStatement> falseBranch)
-				{
-					auto statement = Ptr(new WfIfStatement);
-					statement->expression = condition;
-					statement->trueBranch = trueBranch;
-					statement->falseBranch = falseBranch;
-					return statement;
-				}
-
-				Ptr<WfStatement> CreateTry(Ptr<WfStatement> protectedStatement, const WString& name, Ptr<WfStatement> catchStatement, Ptr<WfStatement> finallyStatement)
-				{
-					auto statement = Ptr(new WfTryStatement);
-					statement->protectedStatement = protectedStatement;
-					statement->name.value = name;
-					statement->catchStatement = catchStatement;
-					statement->finallyStatement = finallyStatement;
-					return statement;
-				}
-
-				Ptr<WfStatement> CreateTryCatch(Ptr<WfStatement> protectedStatement, const WString& name, Ptr<WfStatement> catchStatement)
-				{
-					return CreateTry(protectedStatement, name, catchStatement, nullptr);
-				}
-
-				Ptr<WfForEachStatement> CreateForEach(const WString& name, Ptr<WfExpression> collection, Ptr<WfStatement> body)
-				{
-					auto statement = Ptr(new WfForEachStatement);
-					statement->name.value = name;
-					statement->direction = WfForEachDirection::Normal;
-					statement->collection = collection;
-					statement->statement = body;
-					return statement;
-				}
-
-				Ptr<WfBlockStatement> CreateBlock()
-				{
-					return Ptr(new WfBlockStatement);
-				}
-
-				void AddStatement(Ptr<WfBlockStatement> block, Ptr<WfStatement> statement)
-				{
-					block->statements.Add(statement);
-				}
-
-				void AddRpcMethodExceptionRaise(Ptr<WfBlockStatement> block, Ptr<WfExpression> value)
-				{
-					AddStatement(
-						block,
-						CreateExpressionStatement(CreateCall(
-							CreateQualifiedExpression(L"system::IRpcLifecycle::ReadMethodException"),
-							value)));
-				}
-
-				void AddRpcEventExceptionMapSet(Ptr<WfBlockStatement> block, const WString& mapName, Ptr<WfExpression> clientId, Ptr<WfExpression> message)
-				{
-					AddStatement(block, CreateExpressionStatement(CreateCall(
-						CreateMember(CreateReference(mapName), L"Set"),
-						clientId,
-						CreateRpcExceptionExpression(message))));
-				}
-
-				void AddRpcEventExceptionRaise(Ptr<WfBlockStatement> block, Ptr<WfExpression> value)
-				{
-					AddStatement(
-						block,
-						CreateExpressionStatement(CreateCall(
-							CreateQualifiedExpression(L"system::IRpcLifecycle::ReadEventException"),
-							value)));
-				}
-
-				Ptr<WfFunctionArgument> CreateFunctionArgument(const WString& name, Ptr<WfType> type)
-				{
-					auto argument = Ptr(new WfFunctionArgument);
-					argument->name.value = name;
-					argument->type = type;
-					return argument;
-				}
-
-				Ptr<WfFunctionDeclaration> CreateFunctionDeclaration(const WString& name, Ptr<WfType> returnType, WfFunctionKind kind, WfFunctionAnonymity anonymity)
-				{
-					auto declaration = Ptr(new WfFunctionDeclaration);
-					declaration->name.value = name;
-					declaration->returnType = returnType;
-					declaration->functionKind = kind;
-					declaration->anonymity = anonymity;
-					declaration->statement = CreateBlock();
-					return declaration;
-				}
-
-				Ptr<WfExpression> CreateFunctionExpression(Ptr<WfFunctionDeclaration> declaration)
-				{
-					auto expression = Ptr(new WfFunctionExpression);
-					expression->function = declaration;
-					return expression;
-				}
-
-				Ptr<WfClassDeclaration> CreateClassDeclaration(const WString& name)
-				{
-					auto declaration = Ptr(new WfClassDeclaration);
-					declaration->name.value = name;
-					declaration->kind = WfClassKind::Class;
-					declaration->constructorType = WfConstructorType::Undefined;
-					return declaration;
-				}
-
-				Ptr<WfConstructorDeclaration> CreateConstructorDeclaration(WfConstructorType constructorType = WfConstructorType::SharedPtr)
-				{
-					auto declaration = Ptr(new WfConstructorDeclaration);
-					declaration->constructorType = constructorType;
-					declaration->statement = CreateBlock();
-					return declaration;
-				}
-
-				void AddSwitchCase(Ptr<WfSwitchStatement> switchStat, Ptr<WfExpression> expression, Ptr<WfStatement> statement)
-				{
-					auto switchCase = Ptr(new WfSwitchCase);
-					switchCase->expression = expression;
-					switchCase->statement = statement;
-					switchStat->caseBranches.Add(switchCase);
-				}
-
-				Ptr<WfExpression> CreateLifecycleHelperCall(const wchar_t* helperName, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
-				{
-					return CreateCall(CreateQualifiedExpression(L"system::IRpcLifecycle::" + WString::Unmanaged(helperName)), value, lifecycle);
-				}
-
-				Ptr<WfExpression> CreateRpcBoxExpression(ITypeInfo* typeInfo, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
-				{
-					if (IsSharedInterfaceType(typeInfo))
-					{
-						return CreateLifecycleHelperCall(byref ? L"RpcBoxByref" : L"RpcBoxByval", value, lifecycle);
-					}
-					return value;
-				}
-
-				Ptr<WfExpression> CreateRpcCachedPropertyInitialValue(const RpcPropertyModel& propertyModel)
-				{
-					if (!propertyModel.typeInfo)
-					{
-						return CreateNull();
-					}
-
-					switch (propertyModel.typeInfo->GetDecorator())
-					{
-					case ITypeInfo::RawPtr:
-					case ITypeInfo::SharedPtr:
-					case ITypeInfo::Nullable:
-						return CreateNull();
-					default:
-						return CreateDefaultValue(propertyModel.typeInfo);
-					}
-				}
-
-				Ptr<WfExpression> CreateRpcUnboxExpression(ITypeInfo* typeInfo, Ptr<WfType> type, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
-				{
-					Ptr<WfExpression> unboxed;
-					if (IsSharedInterfaceType(typeInfo))
-					{
-						auto serializable = byref
-							? CreateCast(CreateTypeFromCpp<rpc_controller::RpcObjectReference>(), value)
-							: value;
-						unboxed = CreateLifecycleHelperCall(byref ? L"RpcUnboxByref" : L"RpcUnboxByval", serializable, lifecycle);
-						return IsRpcStrongTypedCollection(typeInfo) || IsStrongTypedCollectionType(type.Obj())
-							? CreateCast(CopyType(type.Obj()), unboxed)
-							: CreateWeakCast(CopyType(type.Obj()), unboxed);
-					}
-					else
-					{
-						unboxed = value;
-					}
-					return CreateCast(CopyType(type.Obj()), unboxed);
-				}
-
-				Ptr<WfExpression> CreateRpcCopyByvalExpression(Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
-				{
-					return CreateLifecycleHelperCall(L"RpcCopyByval", value, lifecycle);
-				}
-
-				bool IsVoidType(WfType* type)
-				{
-					if (auto predefined = dynamic_cast<WfPredefinedType*>(type))
-					{
-						return predefined->name == WfPredefinedTypeName::Void;
-					}
-					if (auto child = dynamic_cast<WfChildType*>(type))
-					{
-						if (child->name.value == L"Void")
-						{
-							if (auto top = dynamic_cast<WfTopQualifiedType*>(child->parent.Obj()))
-							{
-								return top->name.value == L"system";
-							}
-						}
-					}
-					return false;
-				}
-
-				bool IsRpcByvalReturn(const RpcMethodModel& methodModel)
-				{
-					return !IsVoidType(methodModel.returnType.Obj())
-						&& !methodModel.returnByref
-						&& (IsStrongTypedCollectionType(methodModel.returnType.Obj()) || IsRpcStrongTypedCollection(methodModel.returnTypeInfo));
-				}
-
-				void AddRpcByvalReturnValue(Ptr<WfBlockStatement> block, Ptr<WfExpression> value, Ptr<WfExpression> copiedValue)
-				{
-					AddStatement(block, CreateInferredVariableStatement(L"byvalReturnValue", CreateNewClass(CreateTypeFromCpp<Ptr<rpc_controller::RpcByvalReturnValue>>())));
-					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(L"byvalReturnValue"), L"value"), value)));
-					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(L"byvalReturnValue"), L"slot"), CreateReference(L"_slot"))));
-					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_byvalReturnValues"), L"Set"), CreateReference(L"_slot"), copiedValue)));
-					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateReference(L"_slot"), CreateBinary(WfBinaryOperator::Add, CreateReference(L"_slot"), CreateInt(1)))));
-					AddStatement(block, CreateReturn(CreateReference(L"byvalReturnValue")));
-				}
-
-				Ptr<WfExpression> CreateRpcConstantReference(const wchar_t* prefix, const WString& fullName)
-				{
-					return CreateReference(WString::Unmanaged(prefix) + MangleRpcFullName(fullName));
-				}
-
-				vint GetRpcId(WfLexicalScopeManager* manager, const WString& fullName)
-				{
-					auto id = manager->rpcMetadata->orderedIds.IndexOf(fullName);
-					CHECK_ERROR(id != -1, L"RPC metadata ID list does not contain a generated RPC full name.");
-					return id;
-				}
-
-				const wchar_t* GetRpcConstantPrefix(WfLexicalScopeManager* manager, const WString& fullName)
-				{
-					if (manager->rpcMetadata->typeNames.Keys().Contains(fullName))
-					{
-						return L"rpctype_";
-					}
-					if (manager->rpcMetadata->methodNames.Keys().Contains(fullName))
-					{
-						return L"rpcmethod_";
-					}
-					if (manager->rpcMetadata->eventNames.Keys().Contains(fullName))
-					{
-						return L"rpcevent_";
-					}
-					CHECK_FAIL(L"RPC metadata ID list contains an unknown generated RPC full name.");
-				}
-
-				void AddIdLookupEntry(Ptr<WfConstructorExpression> expression, Ptr<WfExpression> key, Ptr<WfExpression> value)
-				{
-					expression->arguments.Add(CreateConstructorArgument(key, value));
-				}
-
-				void CollectMangledNames(WfLexicalScopeManager* manager)
-				{
-					Dictionary<WString, WString> mangledNames;
-					for (auto fullName : manager->rpcMetadata->orderedIds)
-					{
-						auto mangled = MangleRpcFullName(fullName);
-						auto index = mangledNames.Keys().IndexOf(mangled);
-						if (index != -1 && mangledNames.Values()[index] != fullName)
-						{
-							manager->errors.Add(WfErrors::RpcMangledNameConflict(FindRpcDeclaration(manager, fullName), mangled, mangledNames.Values()[index], fullName));
-							return;
-						}
-						if (index == -1)
-						{
-							mangledNames.Add(mangled, fullName);
-						}
-					}
-				}
-
-				List<RpcInterfaceModel> BuildInterfaceModels(WfLexicalScopeManager* manager)
-				{
-					List<RpcInterfaceModel> interfaces;
-					auto rpcByrefAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Byref>();
-					auto rpcCachedAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Cached>();
-					auto rpcDynamicAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Dynamic>();
-					SortedList<ITypeDescriptor*> rpcInterfaceTds;
-
-					for (auto typeFullName : manager->rpcMetadata->typeFullNames)
-					{
-						if (auto td = FindRpcTypeDescriptor(manager, typeFullName))
-						{
-							if (!rpcInterfaceTds.Contains(td))
-							{
-								rpcInterfaceTds.Add(td);
-							}
-						}
-					}
-
-					for (auto typeFullName : manager->rpcMetadata->typeFullNames)
-					{
-						auto typeIndex = manager->rpcMetadata->typeNames.Keys().IndexOf(typeFullName);
-						if (typeIndex == -1)
-						{
-							continue;
-						}
-
-						auto interfaceDecl = manager->rpcMetadata->typeNames.Values()[typeIndex];
-						List<WString> fragments;
-						SplitTypeFullName(typeFullName, fragments);
-
-						RpcInterfaceModel interfaceModel;
-						interfaceModel.fullName = typeFullName;
-						interfaceModel.interfaceName = fragments[fragments.Count() - 1];
-						interfaceModel.typeId = GetRpcId(manager, typeFullName);
-						interfaceModel.ctor = HasRpcAttribute(interfaceDecl->attributes, L"Ctor");
-						interfaceModel.interfaceDecl = interfaceDecl;
-						auto typeDescriptor = FindRpcTypeDescriptor(manager, typeFullName);
-
-						if (typeDescriptor)
-						{
-							for (vint i = 0; i < typeDescriptor->GetBaseTypeDescriptorCount(); i++)
-							{
-								auto baseTypeDescriptor = typeDescriptor->GetBaseTypeDescriptor(i);
-								if (!baseTypeDescriptor)
-								{
-									continue;
-								}
-
-								auto baseFullName = baseTypeDescriptor->GetTypeName();
-								if (manager->rpcMetadata->typeFullNames.Contains(baseFullName))
-								{
-									interfaceModel.baseFullNames.Add(baseFullName);
-								}
-							}
-						}
-
-						Dictionary<WString, vint> getterPropertyIndexes;
-						Dictionary<WString, vint> setterPropertyIndexes;
-
-						for (auto declaration : interfaceDecl->declarations)
-						{
-							if (auto propertyDecl = declaration.Cast<WfPropertyDeclaration>())
-							{
-								RpcPropertyModel propertyModel;
-								propertyModel.name = propertyDecl->name.value;
-								propertyModel.type = CopyType(propertyDecl->type.Obj());
-								propertyModel.byref = HasRpcAttribute(propertyDecl->attributes, L"Byref");
-								propertyModel.cached = !HasRpcAttribute(propertyDecl->attributes, L"Dynamic");
-								propertyModel.getterName = propertyDecl->getter.value;
-								propertyModel.setterName = propertyDecl->setter.value;
-								propertyModel.valueChangedEvent = propertyDecl->valueChangedEvent.value;
-								if (!HasRpcAttribute(propertyDecl->attributes, L"Cached") && !HasRpcAttribute(propertyDecl->attributes, L"Dynamic"))
-								{
-									manager->errors.Add(WfErrors::RpcWrapperGenerationRequiresPropertyMode(propertyDecl.Obj(), typeFullName + L"." + propertyDecl->name.value));
-								}
-								interfaceModel.properties.Add(std::move(propertyModel));
-
-								auto propertyIndex = interfaceModel.properties.Count() - 1;
-								auto&& insertedProperty = interfaceModel.properties[propertyIndex];
-								if (insertedProperty.getterName != L"")
-								{
-									getterPropertyIndexes.Add(insertedProperty.getterName, propertyIndex);
-								}
-								if (insertedProperty.setterName != L"")
-								{
-									setterPropertyIndexes.Add(insertedProperty.setterName, propertyIndex);
-								}
-							}
-						}
-
-						if (typeDescriptor)
-						{
-							for (vint i = 0; i < typeDescriptor->GetPropertyCount(); i++)
-							{
-								auto propertyInfo = typeDescriptor->GetProperty(i);
-								if (!propertyInfo || propertyInfo->GetOwnerTypeDescriptor() != typeDescriptor)
-								{
-									continue;
-								}
-
-								vint propertyIndex = -1;
-								for (vint j = 0; j < interfaceModel.properties.Count(); j++)
-								{
-									if (interfaceModel.properties[j].name == propertyInfo->GetName())
-									{
-										propertyIndex = j;
-										break;
-									}
-								}
-
-								if (propertyIndex != -1)
-								{
-									auto&& propertyModel = interfaceModel.properties[propertyIndex];
-									propertyModel.typeInfo = propertyInfo->GetReturn();
-								}
-								else
-								{
-									RpcPropertyModel propertyModel;
-									propertyModel.name = propertyInfo->GetName();
-									propertyModel.type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
-									propertyModel.typeInfo = propertyInfo->GetReturn();
-									propertyModel.byref = HasAttribute(propertyInfo, rpcByrefAttrTd);
-									propertyModel.cached = !HasAttribute(propertyInfo, rpcDynamicAttrTd);
-									if (auto getter = propertyInfo->GetGetter())
-									{
-										propertyModel.getterName = getter->GetName();
-									}
-									if (auto setter = propertyInfo->GetSetter())
-									{
-										propertyModel.setterName = setter->GetName();
-									}
-									if (auto valueChangedEvent = propertyInfo->GetValueChangedEvent())
-									{
-										propertyModel.valueChangedEvent = valueChangedEvent->GetName();
-									}
-									if (!HasAttribute(propertyInfo, rpcCachedAttrTd) && !HasAttribute(propertyInfo, rpcDynamicAttrTd))
-									{
-										propertyModel.cached = true;
-									}
-									interfaceModel.properties.Add(std::move(propertyModel));
-
-									propertyIndex = interfaceModel.properties.Count() - 1;
-									auto&& insertedProperty = interfaceModel.properties[propertyIndex];
-									if (insertedProperty.getterName != L"")
-									{
-										getterPropertyIndexes.Add(insertedProperty.getterName, propertyIndex);
-									}
-									if (insertedProperty.setterName != L"")
-									{
-										setterPropertyIndexes.Add(insertedProperty.setterName, propertyIndex);
-									}
-								}
-							}
-						}
-
-						for (auto declaration : interfaceDecl->declarations)
-						{
-							if (auto methodDecl = declaration.Cast<WfFunctionDeclaration>())
-							{
-								auto methodFullName = FindFullName(manager->rpcMetadata->methodNames, methodDecl.Obj());
-								if (methodFullName == L"")
-								{
-									continue;
-								}
-
-								RpcMethodModel methodModel;
-								methodModel.fullName = methodFullName;
-								methodModel.name = methodDecl->name.value;
-								methodModel.methodId = GetRpcId(manager, methodFullName);
-								methodModel.returnType = CopyType(methodDecl->returnType.Obj());
-								auto methodInfo = FindRpcMethodInfo(manager, interfaceDecl, methodDecl.Obj(), typeDescriptor);
-								if (methodInfo)
-								{
-									methodModel.returnTypeInfo = methodInfo->GetReturn();
-								}
-								methodModel.returnByref = HasRpcAttribute(methodDecl->attributes, L"Byref");
-								if (IsStrongTypedCollectionType(methodModel.returnType.Obj())
-									&& !methodModel.returnByref
-									&& !HasRpcAttribute(methodDecl->attributes, L"Byval"))
-								{
-									manager->errors.Add(WfErrors::RpcWrapperGenerationRequiresCollectionReturnTransfer(methodDecl.Obj(), typeFullName + L"." + methodDecl->name.value));
-								}
-
-								if (auto getterIndex = getterPropertyIndexes.Keys().IndexOf(methodModel.name); getterIndex != -1)
-								{
-									auto&& property = interfaceModel.properties[getterPropertyIndexes.Values()[getterIndex]];
-									methodModel.kind = RpcMethodKind::PropertyGetter;
-									methodModel.returnType = CopyType(property.type.Obj());
-									methodModel.returnTypeInfo = property.typeInfo;
-								}
-								else if (auto setterIndex = setterPropertyIndexes.Keys().IndexOf(methodModel.name); setterIndex != -1)
-								{
-									methodModel.kind = RpcMethodKind::PropertySetter;
-									methodModel.returnByref = false;
-								}
-
-								for (vint i = 0; i < methodDecl->arguments.Count(); i++)
-								{
-									auto argumentDecl = methodDecl->arguments[i];
-									RpcParamModel paramModel;
-									paramModel.name = argumentDecl->name.value;
-									paramModel.type = CopyType(argumentDecl->type.Obj());
-									if (methodInfo && i < methodInfo->GetParameterCount())
-									{
-										paramModel.typeInfo = methodInfo->GetParameter(i)->GetType();
-									}
-									paramModel.byref = HasRpcAttribute(argumentDecl->attributes, L"Byref");
-									if (IsStrongTypedCollectionType(paramModel.type.Obj())
-										&& !paramModel.byref
-										&& !HasRpcAttribute(argumentDecl->attributes, L"Byval"))
-									{
-										manager->errors.Add(WfErrors::RpcWrapperGenerationRequiresCollectionParameterTransfer(argumentDecl.Obj(), typeFullName + L"." + methodDecl->name.value + L"(" + argumentDecl->name.value + L")"));
-									}
-
-									if (methodModel.kind == RpcMethodKind::PropertySetter && i == 0)
-									{
-										auto setterIndex = setterPropertyIndexes.Keys().IndexOf(methodModel.name);
-										auto&& property = interfaceModel.properties[setterPropertyIndexes.Values()[setterIndex]];
-										paramModel.type = CopyType(property.type.Obj());
-										paramModel.typeInfo = property.typeInfo;
-									}
-
-									methodModel.params.Add(std::move(paramModel));
-								}
-
-								interfaceModel.methods.Add(std::move(methodModel));
-							}
-							else if (auto eventDecl = declaration.Cast<WfEventDeclaration>())
-							{
-								auto eventFullName = FindFullName(manager->rpcMetadata->eventNames, eventDecl.Obj());
-								if (eventFullName == L"")
-								{
-									continue;
-								}
-
-								RpcEventModel eventModel;
-								eventModel.fullName = eventFullName;
-								eventModel.name = eventDecl->name.value;
-								eventModel.eventId = GetRpcId(manager, eventFullName);
-
-								ITypeInfo* handlerGenericType = nullptr;
-								if (typeDescriptor)
-								{
-									for (vint j = 0; j < typeDescriptor->GetEventCount(); j++)
-									{
-										auto eventInfo = typeDescriptor->GetEvent(j);
-										if (eventInfo && eventInfo->GetOwnerTypeDescriptor() == typeDescriptor && eventInfo->GetName() == eventModel.name)
-										{
-											auto handlerType = eventInfo->GetHandlerType();
-											if (handlerType && handlerType->GetDecorator() == ITypeInfo::SharedPtr)
-											{
-												auto genericType = handlerType->GetElementType();
-												if (genericType && genericType->GetDecorator() == ITypeInfo::Generic)
-												{
-													handlerGenericType = genericType;
-												}
-											}
-											break;
-										}
-									}
-								}
-
-								for (vint i = 0; i < eventDecl->arguments.Count(); i++)
-								{
-									RpcParamModel paramModel;
-									paramModel.name = L"arg" + itow(i);
-									paramModel.type = CopyType(eventDecl->arguments[i].Obj());
-									auto genericArgumentIndex = i + 1;
-									paramModel.typeInfo = handlerGenericType && genericArgumentIndex < handlerGenericType->GetGenericArgumentCount()
-										? handlerGenericType->GetGenericArgument(genericArgumentIndex)
-										: nullptr;
-									paramModel.byref = handlerGenericType && genericArgumentIndex < handlerGenericType->GetGenericArgumentCount()
-										? IsDefaultRpcTransferByref(handlerGenericType->GetGenericArgument(genericArgumentIndex), rpcInterfaceTds)
-										: dynamic_cast<WfObservableListType*>(eventDecl->arguments[i].Obj()) != nullptr;
-									eventModel.params.Add(std::move(paramModel));
-								}
-
-								interfaceModel.events.Add(std::move(eventModel));
-							}
-						}
-
-						interfaces.Add(std::move(interfaceModel));
-					}
-
-					return interfaces;
-				}
-
-				void AddDeclarationToNamespaces(
-					List<Ptr<WfDeclaration>>& rootDeclarations,
-					Dictionary<WString, Ptr<WfNamespaceDeclaration>>& namespaceMap,
-					const List<WString>& namespaceFragments,
-					Ptr<WfDeclaration> declaration)
-				{
-					auto currentDeclarations = &rootDeclarations;
-					WString currentPath;
-
-					for (auto fragment : namespaceFragments)
-					{
-						currentPath = currentPath == L"" ? fragment : currentPath + L"::" + fragment;
-						auto index = namespaceMap.Keys().IndexOf(currentPath);
-						if (index == -1)
-						{
-							auto namespaceDecl = Ptr(new WfNamespaceDeclaration);
-							namespaceDecl->name.value = fragment;
-							currentDeclarations->Add(namespaceDecl);
-							namespaceMap.Add(currentPath, namespaceDecl);
-							currentDeclarations = &namespaceDecl->declarations;
-						}
-						else
-						{
-							currentDeclarations = &namespaceMap.Values()[index]->declarations;
-						}
-					}
-
-					currentDeclarations->Add(declaration);
-				}
-
-				Ptr<WfStatement> BuildInvokeMethodBranch(const RpcInterfaceModel& interfaceModel, const RpcMethodModel& methodModel)
-				{
-					auto block = CreateBlock();
-					AddStatement(block, CreateInferredVariableStatement(L"target", CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
-
-					List<Ptr<WfExpression>> arguments;
-					for (vint i = 0; i < methodModel.params.Count(); i++)
-					{
-						auto&& paramModel = methodModel.params[i];
-						auto argument = CreateIndex(CreateReference(L"arguments"), CreateInt(i));
-						arguments.Add(CreateRpcUnboxExpression(paramModel.typeInfo, paramModel.type, paramModel.byref, argument, CreateReference(L"_lc")));
-					}
-
-					auto invokeTarget = CreateMember(CreateReference(L"target"), methodModel.name);
-					auto invoke = Ptr(new WfCallExpression);
-					invoke->function = invokeTarget;
-					for (auto argument : arguments)
-					{
-						invoke->arguments.Add(argument);
-					}
-
-					if (IsVoidType(methodModel.returnType.Obj()))
-					{
-						AddStatement(block, CreateExpressionStatement(invoke));
-						AddStatement(block, CreateReturn(CreateNull()));
-					}
-					else
-					{
-						if (IsRpcByvalReturn(methodModel))
-						{
-							AddStatement(block, CreateInferredVariableStatement(L"copiedReturnValue", CreateRpcCopyByvalExpression(invoke, CreateReference(L"_lc"))));
-							AddStatement(block, CreateInferredVariableStatement(L"boxedReturnValue", CreateRpcBoxExpression(methodModel.returnTypeInfo, methodModel.returnByref, CreateReference(L"copiedReturnValue"), CreateReference(L"_lc"))));
-							AddRpcByvalReturnValue(block, CreateReference(L"boxedReturnValue"), CreateReference(L"copiedReturnValue"));
-						}
-						else
-						{
-							AddStatement(block, CreateReturn(CreateRpcBoxExpression(methodModel.returnTypeInfo, methodModel.returnByref, invoke, CreateReference(L"_lc"))));
-						}
-					}
-					return block;
-				}
-
-				Ptr<WfStatement> BuildInvokeEventBranch(const RpcInterfaceModel& interfaceModel, const RpcEventModel& eventModel)
-				{
-					auto block = CreateBlock();
-					AddStatement(block, CreateInferredVariableStatement(L"target", CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
-
-					auto invoke = Ptr(new WfCallExpression);
-					invoke->function = CreateMember(CreateReference(L"target"), eventModel.name);
-					for (vint i = 0; i < eventModel.params.Count(); i++)
-					{
-						auto&& paramModel = eventModel.params[i];
-						auto argument = CreateIndex(CreateReference(L"arguments"), CreateInt(i));
-						invoke->arguments.Add(CreateRpcUnboxExpression(paramModel.typeInfo, paramModel.type, paramModel.byref, argument, CreateReference(L"_lc")));
-					}
-					AddStatement(block, CreateExpressionStatement(invoke));
-					return block;
-				}
-
-				bool HasRpcEvents(const List<RpcInterfaceModel>& interfaces)
-				{
-					for (auto&& interfaceModel : interfaces)
-					{
-						if (interfaceModel.events.Count() > 0)
-						{
-							return true;
-						}
-					}
-					return false;
-				}
-
-				Ptr<WfStatement> BuildDispatchChain(const List<RpcInterfaceModel>& interfaces, bool forEvent, const WString& unknownIdVariable = WString::Empty)
-				{
-					auto switchStat = Ptr(new WfSwitchStatement);
-					switchStat->expression = CreateReference(forEvent ? L"eventId" : L"methodId");
-					switchStat->defaultBranch =
-						unknownIdVariable == L""
-						? CreateRaise(forEvent ? L"Unknown RPC event id." : L"Unknown RPC method id.")
-						: CreateExpressionStatement(CreateAssign(CreateReference(unknownIdVariable), CreateBool(true)));
-
-					for (auto&& interfaceModel : interfaces)
-					{
-						if (forEvent)
-						{
-							for (auto&& eventModel : interfaceModel.events)
-							{
-								auto switchCase = Ptr(new WfSwitchCase);
-								switchCase->expression = CreateRpcConstantReference(L"rpcevent_", eventModel.fullName);
-								switchCase->statement = BuildInvokeEventBranch(interfaceModel, eventModel);
-								switchStat->caseBranches.Add(switchCase);
-							}
-						}
-						else
-						{
-							for (auto&& methodModel : interfaceModel.methods)
-							{
-								auto switchCase = Ptr(new WfSwitchCase);
-								switchCase->expression = CreateRpcConstantReference(L"rpcmethod_", methodModel.fullName);
-								switchCase->statement = BuildInvokeMethodBranch(interfaceModel, methodModel);
-								switchStat->caseBranches.Add(switchCase);
-							}
-						}
-					}
-					return switchStat;
-				}
-
-				Ptr<WfDeclaration> GenerateIsInterfaceTypeIdHelper(const List<RpcInterfaceModel>& interfaces)
-				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_IsInterfaceTypeId", CreatePredefinedType(WfPredefinedTypeName::Bool), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-					auto isCollectionTypeId = CreateBinary(
-						WfBinaryOperator::And,
-						CreateBinary(WfBinaryOperator::GE, CreateReference(L"typeId"), CreateInt(rpc_controller::RpcTypeId_IValueReadonlyList)),
-						CreateBinary(WfBinaryOperator::LE, CreateReference(L"typeId"), CreateInt(rpc_controller::RpcTypeId_IValueEnumerable))
-					);
-					AddStatement(block, CreateIf(isCollectionTypeId, CreateReturn(CreateBool(true))));
-					auto switchStat = Ptr(new WfSwitchStatement);
-					switchStat->expression = CreateReference(L"typeId");
-					switchStat->defaultBranch = CreateReturn(CreateBool(false));
-
-					auto addKnownType = [&](Ptr<WfExpression> expression)
-					{
-						auto switchCase = Ptr(new WfSwitchCase);
-						switchCase->expression = expression;
-						switchCase->statement = CreateReturn(CreateBool(true));
-						switchStat->caseBranches.Add(switchCase);
-					};
-
-					for (auto&& interfaceModel : interfaces)
-					{
-						addKnownType(CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName));
-					}
-
-					AddStatement(block, switchStat);
-					return functionDecl;
-				}
-
-				Ptr<WfDeclaration> GenerateIsCtorInterfaceTypeIdHelper(const List<RpcInterfaceModel>& interfaces)
-				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_IsCtorInterfaceTypeId", CreatePredefinedType(WfPredefinedTypeName::Bool), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-					auto switchStat = Ptr(new WfSwitchStatement);
-					switchStat->expression = CreateReference(L"typeId");
-					switchStat->defaultBranch = CreateReturn(CreateBool(false));
-
-					for (auto&& interfaceModel : interfaces)
-					{
-						if (!interfaceModel.ctor)
-						{
-							continue;
-						}
-
-						auto switchCase = Ptr(new WfSwitchCase);
-						switchCase->expression = CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName);
-						switchCase->statement = CreateReturn(CreateBool(true));
-						switchStat->caseBranches.Add(switchCase);
-					}
-
-					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), switchStat);
-					return functionDecl;
-				}
-
-				Ptr<WfDeclaration> GenerateObjectOpsFactory(const List<RpcInterfaceModel>& interfaces)
-				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectOps", CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectOps>>(), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
-					auto newOps = CreateNewInterface(CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectOps>>()).Cast<WfNewInterfaceExpression>();
-					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
-					newOps->declarations.Add(CreateVariableDeclaration(L"_slot", CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(0)));
-					newOps->declarations.Add(CreateVariableDeclaration(L"_byvalReturnValues", CreateTypeFromCpp<Dictionary<vint, Value>>(), CreateConstructor()));
-
-					{
-						auto invokeMethod = CreateFunctionDeclaration(L"InvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
-						invokeMethod->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
-						invokeMethod->arguments.Add(CreateFunctionArgument(L"methodId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						invokeMethod->arguments.Add(CreateFunctionArgument(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>()));
-						auto block = invokeMethod->statement.Cast<WfBlockStatement>();
-						AddStatement(block, CreateVariableStatement(L"unknownId", CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
-						auto catchBlock = CreateBlock();
-						AddStatement(catchBlock, CreateReturn(CreateRpcExceptionExpression(CreateMember(CreateReference(L"ex"), L"Message"))));
-						AddStatement(block, CreateTryCatch(BuildDispatchChain(interfaces, false, L"unknownId"), L"ex", catchBlock));
-						auto unknownIdBranch = CreateBlock();
-						AddStatement(unknownIdBranch, CreateRaise(L"Unknown RPC method id."));
-						AddStatement(block, CreateIf(CreateReference(L"unknownId"), unknownIdBranch));
-						AddStatement(block, CreateReturn(CreateNull()));
-						newOps->declarations.Add(invokeMethod);
-					}
-
-					{
-						auto endInvokeMethod = CreateFunctionDeclaration(L"EndInvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						endInvokeMethod->arguments.Add(CreateFunctionArgument(L"slot", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						AddStatement(endInvokeMethod->statement.Cast<WfBlockStatement>(), CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_byvalReturnValues"), L"Remove"), CreateReference(L"slot"))));
-						newOps->declarations.Add(endInvokeMethod);
-					}
-
-					{
-						auto objectHold = CreateFunctionDeclaration(L"ObjectHold", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						objectHold->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
-						objectHold->arguments.Add(CreateFunctionArgument(L"remoteClientId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						objectHold->arguments.Add(CreateFunctionArgument(L"hold", CreatePredefinedType(WfPredefinedTypeName::Bool)));
-						auto trueBranch = CreateBlock();
-						AddStatement(trueBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_lc"), L"LocalObjectHold"), CreateReference(L"ref"), CreateReference(L"remoteClientId"))));
-						auto falseBranch = CreateBlock();
-						AddStatement(falseBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_lc"), L"LocalObjectUnhold"), CreateReference(L"ref"), CreateReference(L"remoteClientId"))));
-						AddStatement(objectHold->statement.Cast<WfBlockStatement>(), CreateIf(CreateReference(L"hold"), trueBranch, falseBranch));
-						newOps->declarations.Add(objectHold);
-					}
-
-					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
-					return functionDecl;
-				}
-
-				Ptr<WfDeclaration> GenerateObjectEventOpsFactory(const List<RpcInterfaceModel>& interfaces)
-				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectEventOps", CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectEventOps>>(), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
-					auto newOps = CreateNewInterface(CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectEventOps>>()).Cast<WfNewInterfaceExpression>();
-					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
-
-					{
-						auto invokeEvent = CreateFunctionDeclaration(L"InvokeEvent", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
-						invokeEvent->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
-						invokeEvent->arguments.Add(CreateFunctionArgument(L"eventId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						invokeEvent->arguments.Add(CreateFunctionArgument(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>()));
-						auto block = invokeEvent->statement.Cast<WfBlockStatement>();
-						if (!HasRpcEvents(interfaces))
-						{
-							AddStatement(block, CreateRaise(L"Unknown RPC event id."));
-							newOps->declarations.Add(invokeEvent);
-						}
-						else
-						{
-							AddStatement(block, CreateVariableStatement(L"unknownId", CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
-							AddStatement(block, CreateVariableStatement(L"rpcEventExceptions", CreateRpcEventExceptionMapType(), CreateConstructor()));
-							AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(true))));
-							auto finallyBlock = CreateBlock();
-							AddStatement(finallyBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(false))));
-							auto catchBlock = CreateBlock();
-							AddRpcEventExceptionMapSet(catchBlock, L"rpcEventExceptions", CreateMember(CreateReference(L"_lc"), L"ClientId"), CreateMember(CreateReference(L"ex"), L"Message"));
-							AddStatement(block, CreateTry(BuildDispatchChain(interfaces, true, L"unknownId"), L"ex", catchBlock, finallyBlock));
-							auto unknownIdBranch = CreateBlock();
-							AddStatement(unknownIdBranch, CreateRaise(L"Unknown RPC event id."));
-							AddStatement(block, CreateIf(CreateReference(L"unknownId"), unknownIdBranch));
-							auto returnExceptionBranch = CreateBlock();
-							AddStatement(returnExceptionBranch, CreateReturn(CreateReference(L"rpcEventExceptions")));
-							auto returnNullBranch = CreateBlock();
-							AddStatement(returnNullBranch, CreateReturn(CreateNull()));
-							AddStatement(
-								block,
-								CreateIf(
-									CreateBinary(WfBinaryOperator::GT, CreateMember(CreateReference(L"rpcEventExceptions"), L"Count"), CreateInt(0)),
-									returnExceptionBranch,
-									returnNullBranch));
-							newOps->declarations.Add(invokeEvent);
-						}
-					}
-
-					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
-					return functionDecl;
-				}
-
-				Ptr<WfFunctionDeclaration> CreateAnonymousLambda(const List<RpcParamModel>& params, Ptr<WfBlockStatement> body)
-				{
-					auto functionDecl = CreateFunctionDeclaration(L"", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal, WfFunctionAnonymity::Anonymous);
-					functionDecl->statement = body;
-					for (auto&& param : params)
-					{
-						functionDecl->arguments.Add(CreateFunctionArgument(param.name, CopyType(param.type.Obj())));
-					}
-					return functionDecl;
-				}
-
-				const RpcInterfaceModel* FindInterfaceModel(const List<RpcInterfaceModel>& interfaces, const WString& fullName)
-				{
-					for (auto&& interfaceModel : interfaces)
-					{
-						if (interfaceModel.fullName == fullName)
-						{
-							return &interfaceModel;
-						}
-					}
-					return nullptr;
-				}
-
-				void SortInterfaceModelsLeafFirst(const List<RpcInterfaceModel>& interfaces, List<const RpcInterfaceModel*>& sortedInterfaces)
-				{
-					sortedInterfaces.Clear();
-
-					List<WString> typeFullNames;
-					Group<WString, WString> dependencyGroup;
-					for (auto&& interfaceModel : interfaces)
-					{
-						typeFullNames.Add(interfaceModel.fullName);
-					}
-					for (auto&& interfaceModel : interfaces)
-					{
-						for (auto&& baseFullName : interfaceModel.baseFullNames)
-						{
-							if (typeFullNames.Contains(baseFullName))
-							{
-								dependencyGroup.Add(baseFullName, interfaceModel.fullName);
-							}
-						}
-					}
-
-					PartialOrderingProcessor pop;
-					pop.InitWithGroup(typeFullNames, dependencyGroup);
-					pop.Sort();
-
-					for (auto&& component : pop.components)
-					{
-						for (vint i = 0; i < component.nodeCount; i++)
-						{
-							auto interfaceModel = FindInterfaceModel(interfaces, typeFullNames[component.firstNode[i]]);
-							CHECK_ERROR(interfaceModel, L"SortInterfaceModelsLeafFirst: Invalid RPC interface name.");
-							sortedInterfaces.Add(interfaceModel);
-						}
-					}
-				}
-
-				bool ContainsEventModel(const List<const RpcEventModel*>& events, const WString& fullName)
-				{
-					for (auto eventModel : events)
-					{
-						if (eventModel->fullName == fullName)
-						{
-							return true;
-						}
-					}
-					return false;
-				}
-
-				bool ContainsPropertyModel(const List<const RpcPropertyModel*>& properties, const WString& name)
-				{
-					for (auto propertyModel : properties)
-					{
-						if (propertyModel->name == name)
-						{
-							return true;
-						}
-					}
-					return false;
-				}
-
-				bool ContainsMethodModel(const List<const RpcMethodModel*>& methods, const WString& fullName)
-				{
-					for (auto methodModel : methods)
-					{
-						if (methodModel->fullName == fullName)
-						{
-							return true;
-						}
-					}
-					return false;
-				}
-
-				void CollectInterfaceProperties(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces, List<const RpcPropertyModel*>& properties)
-				{
-					for (auto&& baseFullName : interfaceModel.baseFullNames)
-					{
-						if (auto baseModel = FindInterfaceModel(interfaces, baseFullName))
-						{
-							CollectInterfaceProperties(*baseModel, interfaces, properties);
-						}
-					}
-
-					for (auto&& propertyModel : interfaceModel.properties)
-					{
-						if (!ContainsPropertyModel(properties, propertyModel.name))
-						{
-							properties.Add(&propertyModel);
-						}
-					}
-				}
-
-				void CollectInterfaceMethods(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces, List<const RpcMethodModel*>& methods)
-				{
-					for (auto&& baseFullName : interfaceModel.baseFullNames)
-					{
-						if (auto baseModel = FindInterfaceModel(interfaces, baseFullName))
-						{
-							CollectInterfaceMethods(*baseModel, interfaces, methods);
-						}
-					}
-
-					for (auto&& methodModel : interfaceModel.methods)
-					{
-						if (!ContainsMethodModel(methods, methodModel.fullName))
-						{
-							methods.Add(&methodModel);
-						}
-					}
-				}
-
-				void CollectInterfaceEvents(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces, List<const RpcEventModel*>& events)
-				{
-					for (auto&& baseFullName : interfaceModel.baseFullNames)
-					{
-						if (auto baseModel = FindInterfaceModel(interfaces, baseFullName))
-						{
-							CollectInterfaceEvents(*baseModel, interfaces, events);
-						}
-					}
-
-					for (auto&& eventModel : interfaceModel.events)
-					{
-						if (!ContainsEventModel(events, eventModel.fullName))
-						{
-							events.Add(&eventModel);
-						}
-					}
-				}
-
-				bool HasInterfaceEvents(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces)
-				{
-					List<const RpcEventModel*> events;
-					CollectInterfaceEvents(interfaceModel, interfaces, events);
-					return events.Count() > 0;
-				}
-
-				const RpcEventModel* FindInterfaceEvent(const List<const RpcEventModel*>& events, const WString& name)
-				{
-					for (auto eventModel : events)
-					{
-						if (eventModel->name == name)
-						{
-							return eventModel;
-						}
-					}
-					return nullptr;
-				}
-
-				WString GetPropertyCacheAvailableName(const RpcPropertyModel& propertyModel)
-				{
-					return propertyModel.name + L"<Available>";
-				}
-
-				WString GetPropertyCacheValueName(const RpcPropertyModel& propertyModel)
-				{
-					return propertyModel.name + L"<Cached>";
-				}
-
-				WString GetPropertyCacheResetFunctionName(const RpcPropertyModel& propertyModel)
-				{
-					return L"_rpcInvalidate_" + propertyModel.name;
-				}
-
-				Ptr<WfExpression> CreatePropertyCacheAvailableRead(const RpcPropertyModel& propertyModel)
-				{
-					return CreateReference(GetPropertyCacheAvailableName(propertyModel));
-				}
-
-				Ptr<WfExpression> CreatePropertyCacheValueRead(const RpcPropertyModel& propertyModel)
-				{
-					return CreateReference(GetPropertyCacheValueName(propertyModel));
-				}
-
-				Ptr<WfDeclaration> GenerateWrapperInterface(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces)
-				{
-					List<const RpcPropertyModel*> properties;
-					CollectInterfaceProperties(interfaceModel, interfaces, properties);
-
-					auto interfaceDecl = Ptr(new WfClassDeclaration);
-					interfaceDecl->name.value = L"IRpcWrapper_" + interfaceModel.interfaceName;
-					interfaceDecl->kind = WfClassKind::Interface;
-					interfaceDecl->constructorType = WfConstructorType::SharedPtr;
-
-					{
-						auto baseType = Ptr(new WfReferenceType);
-						baseType->name.value = interfaceModel.fullName;
-						auto qualType = CreateQualifiedType(interfaceModel.fullName);
-						interfaceDecl->baseTypes.Add(qualType);
-					}
-
-					{
-						auto baseType = CreateTypeFromCpp<rpc_controller::IRpcWrapperBase>();
-						interfaceDecl->baseTypes.Add(baseType);
-					}
-
-					for (auto propertyModel : properties)
-					{
-						if (propertyModel->cached && propertyModel->valueChangedEvent != L"")
-						{
-							auto invalidateDecl = Ptr(new WfFunctionDeclaration);
-							invalidateDecl->name.value = GetPropertyCacheResetFunctionName(*propertyModel);
-							invalidateDecl->returnType = CreatePredefinedType(WfPredefinedTypeName::Void);
-							invalidateDecl->functionKind = WfFunctionKind::Normal;
-							invalidateDecl->anonymity = WfFunctionAnonymity::Named;
-							interfaceDecl->declarations.Add(invalidateDecl);
-						}
-					}
-
-					return interfaceDecl;
-				}
-
-				WString GetRpcOpsInvokeMethodName(const RpcMethodModel& methodModel);
-				WString GetRpcOpsInvokeEventName(const RpcEventModel& eventModel);
-
-				Ptr<WfDeclaration> GenerateListenerFactory(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces, const WString& opsInterfaceName)
-				{
-					List<const RpcEventModel*> events;
-					CollectInterfaceEvents(interfaceModel, interfaces, events);
-					if (events.Count() == 0)
-					{
-						return nullptr;
-					}
-
-					auto mangledName = MangleRpcFullName(interfaceModel.fullName);
-					auto functionDecl = CreateFunctionDeclaration(L"rpclistener_" + mangledName, CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"target", CreateRawType(interfaceModel.fullName)));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
-					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-
-					for (auto eventModel : events)
-					{
-						auto lambdaBody = CreateBlock();
-
-						AddStatement(
-							lambdaBody,
-							CreateIf(
-								CreateCall(
-									CreateMember(CreateMember(CreateReference(L"lc"), L"Controller"), L"GetEventSuppressedFlag"),
-									CreateReference(L"ref"),
-									CreateRpcConstantReference(L"rpcevent_", eventModel->fullName)
-									),
-								CreateReturn(nullptr)
-								)
-							);
-						auto invoke = CreateCall(
-							CreateMember(CreateReference(L"ops"), GetRpcOpsInvokeEventName(*eventModel)),
-							CreateReference(L"ref"));
-						for (auto&& paramModel : eventModel->params)
-						{
-							invoke->arguments.Add(CreateReference(paramModel.name));
-						}
-						AddStatement(lambdaBody, CreateExpressionStatement(invoke));
-
-						auto attach = Ptr(new WfAttachEventExpression);
-						attach->event = CreateMember(CreateReference(L"target"), eventModel->name);
-						attach->function = CreateFunctionExpression(CreateAnonymousLambda(eventModel->params, lambdaBody));
-						AddStatement(block, CreateExpressionStatement(attach));
-					}
-
-					return functionDecl;
-				}
-
-				Ptr<WfDeclaration> GenerateListenerDispatcher(const List<RpcInterfaceModel>& interfaces, const WString& opsInterfaceName)
-				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpclistener_Attach", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"obj", CreateTypeFromCpp<reflection::IDescriptable*>()));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
-					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-
-					auto switchStat = Ptr(new WfSwitchStatement);
-					switchStat->expression = CreateReference(L"typeId");
-					switchStat->defaultBranch = CreateRaise(L"Unknown RPC type id for listener attachment.");
-
-					for (auto&& interfaceModel : interfaces)
-					{
-						auto switchCase = Ptr(new WfSwitchCase);
-						switchCase->expression = CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName);
-						auto caseBranch = CreateBlock();
-						if (HasInterfaceEvents(interfaceModel, interfaces))
-						{
-							auto mangledName = MangleRpcFullName(interfaceModel.fullName);
-							AddStatement(caseBranch, CreateExpressionStatement(CreateCall(CreateReference(L"rpclistener_" + mangledName), CreateReference(L"lc"), CreateReference(L"ref"), CreateCast(CreateRawType(interfaceModel.fullName), CreateReference(L"obj")), CreateReference(L"ops"))));
-						}
-						AddStatement(caseBranch, CreateReturn(nullptr));
-						switchCase->statement = caseBranch;
-						switchStat->caseBranches.Add(switchCase);
-					}
-
-					AddStatement(block, switchStat);
-					return functionDecl;
-				}
-
-				WString GetRpcOpsInterfaceName(const WString& assemblyName)
-				{
-					return L"rpcops_IOps_" + assemblyName;
-				}
-
-				WString GetRpcOpsInvokeMethodName(const RpcMethodModel& methodModel)
-				{
-					return L"InvokeMethod_" + MangleRpcFullName(methodModel.fullName);
-				}
-
-				WString GetRpcOpsInvokeEventName(const RpcEventModel& eventModel)
-				{
-					return L"InvokeEvent_" + MangleRpcFullName(eventModel.fullName);
-				}
-
-				WString GetRpcOpsArgumentName(const RpcParamModel& paramModel)
-				{
-					return L"arg_" + paramModel.name;
-				}
-
-				Ptr<WfFunctionDeclaration> CreateRpcOpsFunctionDeclaration(const WString& name, Ptr<WfType> returnType, WfFunctionKind kind)
-				{
-					auto functionDecl = Ptr(new WfFunctionDeclaration);
-					functionDecl->name.value = name;
-					functionDecl->returnType = returnType;
-					functionDecl->functionKind = kind;
-					functionDecl->anonymity = WfFunctionAnonymity::Named;
-					if (kind == WfFunctionKind::Override)
-					{
-						functionDecl->statement = CreateBlock();
-					}
-					return functionDecl;
-				}
-
-				void AddRpcOpsFunctionArguments(Ptr<WfFunctionDeclaration> functionDecl, const List<RpcParamModel>& params)
-				{
-					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
-					for (auto&& paramModel : params)
-					{
-						functionDecl->arguments.Add(CreateFunctionArgument(GetRpcOpsArgumentName(paramModel), CopyType(paramModel.type.Obj())));
-					}
-				}
-
-				void AddRpcOpsArgumentsArray(
-					Ptr<WfBlockStatement> block,
-					const List<RpcParamModel>& params)
-				{
-					AddStatement(block, CreateVariableStatement(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>(), CreateConstructor()));
-					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Resize"), CreateInt(params.Count()))));
-
-					for (vint i = 0; i < params.Count(); i++)
-					{
-						auto&& paramModel = params[i];
-						auto value = CreateReference(GetRpcOpsArgumentName(paramModel));
-						auto argument = CreateRpcBoxExpression(paramModel.typeInfo, paramModel.byref, value, CreateReference(L"_lc"));
-						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Set"), CreateInt(i), argument)));
-					}
-				}
-
-				Ptr<WfExpression> CreateRpcOpsObjectOps()
-				{
-					return CreateCall(
-						CreateMember(CreateMember(CreateReference(L"_lc"), L"Dispatcher"), L"SendToClient_ObjectOps"),
-						CreateMember(CreateReference(L"ref"), L"clientId")
-						);
-				}
-
-				Ptr<WfExpression> CreateRpcOpsObjectInvoke(const RpcMethodModel& methodModel, Ptr<WfExpression> objectOps)
-				{
-					return CreateCall(
-						CreateMember(objectOps, L"InvokeMethod"),
-						CreateReference(L"ref"),
-						CreateRpcConstantReference(L"rpcmethod_", methodModel.fullName),
-						CreateReference(L"arguments")
-						);
-				}
-
-				Ptr<WfExpression> CreateRpcOpsObjectInvoke(const RpcMethodModel& methodModel)
-				{
-					return CreateRpcOpsObjectInvoke(methodModel, CreateRpcOpsObjectOps());
-				}
-
-				Ptr<WfExpression> CreateRpcOpsObjectEventInvoke(const RpcEventModel& eventModel)
-				{
-					return CreateCall(
-						CreateMember(
-							CreateCall(
-								CreateMember(CreateMember(CreateReference(L"_lc"), L"Dispatcher"), L"BroadcastFromClient_ObjectEventOps"),
-								CreateMember(CreateReference(L"_lc"), L"ClientId")
-								),
-							L"InvokeEvent"
-							),
-						CreateReference(L"ref"),
-						CreateRpcConstantReference(L"rpcevent_", eventModel.fullName),
-						CreateReference(L"arguments")
-						);
-				}
-
-				Ptr<WfFunctionDeclaration> GenerateRpcOpsMethodImplementation(const RpcMethodModel& methodModel)
-				{
-					auto functionDecl = CreateRpcOpsFunctionDeclaration(GetRpcOpsInvokeMethodName(methodModel), CopyType(methodModel.returnType.Obj()), WfFunctionKind::Override);
-					AddRpcOpsFunctionArguments(functionDecl, methodModel.params);
-					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-
-					AddRpcOpsArgumentsArray(block, methodModel.params);
-					if (IsVoidType(methodModel.returnType.Obj()))
-					{
-						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
-						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
-						AddRpcMethodExceptionRaise(block, CreateReference(L"invokeResult"));
-					}
-					else if (IsRpcByvalReturn(methodModel))
-					{
-						AddStatement(block, CreateInferredVariableStatement(L"objectOps", CreateRpcOpsObjectOps()));
-						auto invoke = CreateRpcOpsObjectInvoke(methodModel, CreateReference(L"objectOps"));
-						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
-						AddRpcMethodExceptionRaise(block, CreateReference(L"invokeResult"));
-						AddStatement(block, CreateInferredVariableStatement(
-							L"byvalReturnValue",
-							CreateCast(CreateTypeFromCpp<Ptr<rpc_controller::RpcByvalReturnValue>>(), CreateReference(L"invokeResult"))));
-						AddStatement(block, CreateInferredVariableStatement(
-							L"result",
-							CreateRpcUnboxExpression(
-								methodModel.returnTypeInfo,
-								methodModel.returnType,
-								methodModel.returnByref,
-								CreateMember(CreateReference(L"byvalReturnValue"), L"value"),
-								CreateReference(L"_lc"))));
-						AddStatement(block, CreateExpressionStatement(CreateCall(
-							CreateMember(CreateReference(L"objectOps"), L"EndInvokeMethod"),
-							CreateMember(CreateReference(L"byvalReturnValue"), L"slot"))));
-						AddStatement(block, CreateReturn(CreateReference(L"result")));
-					}
-					else
-					{
-						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
-						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
-						AddRpcMethodExceptionRaise(block, CreateReference(L"invokeResult"));
-						AddStatement(block, CreateReturn(CreateRpcUnboxExpression(methodModel.returnTypeInfo, methodModel.returnType, methodModel.returnByref, CreateReference(L"invokeResult"), CreateReference(L"_lc"))));
-					}
-
-					return functionDecl;
-				}
-
-				Ptr<WfFunctionDeclaration> GenerateRpcOpsEventImplementation(const RpcEventModel& eventModel)
-				{
-					auto functionDecl = CreateRpcOpsFunctionDeclaration(GetRpcOpsInvokeEventName(eventModel), CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-					AddRpcOpsFunctionArguments(functionDecl, eventModel.params);
-					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-
-					AddRpcOpsArgumentsArray(block, eventModel.params);
-					AddRpcEventExceptionRaise(block, CreateCast(CreateRpcEventExceptionMapType(), CreateRpcOpsObjectEventInvoke(eventModel)));
-					return functionDecl;
-				}
-
-				Ptr<WfDeclaration> GenerateRpcOpsInterface(const WString& assemblyName, const List<RpcInterfaceModel>& interfaces)
-				{
-					auto interfaceDecl = Ptr(new WfClassDeclaration);
-					interfaceDecl->name.value = GetRpcOpsInterfaceName(assemblyName);
-					interfaceDecl->kind = WfClassKind::Interface;
-					interfaceDecl->constructorType = WfConstructorType::SharedPtr;
-
-					for (auto&& interfaceModel : interfaces)
-					{
-						for (auto&& methodModel : interfaceModel.methods)
-						{
-							auto methodDecl = CreateRpcOpsFunctionDeclaration(GetRpcOpsInvokeMethodName(methodModel), CopyType(methodModel.returnType.Obj()), WfFunctionKind::Normal);
-							AddRpcOpsFunctionArguments(methodDecl, methodModel.params);
-							interfaceDecl->declarations.Add(methodDecl);
-						}
-						for (auto&& eventModel : interfaceModel.events)
-						{
-							auto eventDecl = CreateRpcOpsFunctionDeclaration(GetRpcOpsInvokeEventName(eventModel), CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal);
-							AddRpcOpsFunctionArguments(eventDecl, eventModel.params);
-							interfaceDecl->declarations.Add(eventDecl);
-						}
-					}
-
-					return interfaceDecl;
-				}
-
-				Ptr<WfDeclaration> GenerateRpcOpsFactory(const WString& assemblyName, const List<RpcInterfaceModel>& interfaces)
-				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IOps_Create", CreateSharedType(GetRpcOpsInterfaceName(assemblyName)), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
-					auto newOps = CreateNewInterface(CreateSharedType(GetRpcOpsInterfaceName(assemblyName))).Cast<WfNewInterfaceExpression>();
-					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
-
-					for (auto&& interfaceModel : interfaces)
-					{
-						for (auto&& methodModel : interfaceModel.methods)
-						{
-							newOps->declarations.Add(GenerateRpcOpsMethodImplementation(methodModel));
-						}
-						for (auto&& eventModel : interfaceModel.events)
-						{
-							newOps->declarations.Add(GenerateRpcOpsEventImplementation(eventModel));
-						}
-					}
-
-					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
-					return functionDecl;
-				}
-
-				Ptr<WfDeclaration> GenerateWrapperFactory(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces, const WString& opsInterfaceName)
-				{
-					auto mangledName = MangleRpcFullName(interfaceModel.fullName);
-					auto wrapperInterfaceFullName = interfaceModel.fullName.Sub(0, interfaceModel.fullName.Length() - interfaceModel.interfaceName.Length()) + L"IRpcWrapper_" + interfaceModel.interfaceName;
-					List<const RpcPropertyModel*> properties;
-					CollectInterfaceProperties(interfaceModel, interfaces, properties);
-					List<const RpcMethodModel*> methods;
-					CollectInterfaceMethods(interfaceModel, interfaces, methods);
-					List<const RpcEventModel*> events;
-					CollectInterfaceEvents(interfaceModel, interfaces, events);
-
-					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_" + mangledName, CreateSharedType(wrapperInterfaceFullName), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"proxyRef", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
-					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-
-					auto proxyExpr = CreateNewInterface(CreateSharedType(wrapperInterfaceFullName)).Cast<WfNewInterfaceExpression>();
-					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
-					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>(), CreateReference(L"proxyRef")));
-					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_ops", CreateSharedType(opsInterfaceName), CreateReference(L"ops")));
-					for (auto propertyModel : properties)
-					{
-						if (propertyModel->cached)
-						{
-							proxyExpr->declarations.Add(CreateVariableDeclaration(GetPropertyCacheValueName(*propertyModel), CopyType(propertyModel->type.Obj()), CreateRpcCachedPropertyInitialValue(*propertyModel)));
-							proxyExpr->declarations.Add(CreateVariableDeclaration(GetPropertyCacheAvailableName(*propertyModel), CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
-						}
-					}
-
-					for (auto propertyModel : properties)
-					{
-						if (propertyModel->cached && propertyModel->valueChangedEvent != L"")
-						{
-							auto invalidateDecl = CreateFunctionDeclaration(GetPropertyCacheResetFunctionName(*propertyModel), CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-							auto invalidateBlock = invalidateDecl->statement.Cast<WfBlockStatement>();
-							AddStatement(invalidateBlock, CreateExpressionStatement(CreateAssign(CreateReference(GetPropertyCacheAvailableName(*propertyModel)), CreateBool(false))));
-							proxyExpr->declarations.Add(invalidateDecl);
-						}
-					}
-
-					// Generate DisconnectFromLifecycle override
-					{
-						auto disconnectDecl = CreateFunctionDeclaration(L"DisconnectFromLifecycle", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						auto disconnectBlock = disconnectDecl->statement.Cast<WfBlockStatement>();
-						AddStatement(disconnectBlock, CreateExpressionStatement(CreateAssign(CreateReference(L"_lc"), CreateNull())));
-						AddStatement(disconnectBlock, CreateExpressionStatement(CreateAssign(CreateReference(L"_ops"), CreateNull())));
-						proxyExpr->declarations.Add(disconnectDecl);
-					}
-
-					// Generate destructor: delete{}
-					{
-						auto dtorDecl = Ptr(new WfDestructorDeclaration);
-						auto dtorBlock = CreateBlock();
-						dtorDecl->statement = dtorBlock;
-
-						// if (_lc is not null) { _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false); }
-						auto condition = CreateIsNotNull(CreateReference(L"_lc"));
-						auto trueBranch = CreateBlock();
-						AddStatement(
-							trueBranch,
-							CreateExpressionStatement(
-								CreateCall(
-									CreateMember(
-										CreateCall(
-											CreateMember(CreateMember(CreateReference(L"_lc"), L"Dispatcher"), L"SendToClient_ObjectOps"),
-											CreateMember(CreateReference(L"_ref"), L"clientId")
-											),
-										L"ObjectHold"
-										),
-									CreateReference(L"_ref"),
-									CreateMember(CreateReference(L"_lc"), L"ClientId"),
-									CreateBool(false)
-									)
-								)
-							);
-						AddStatement(dtorBlock, CreateIf(condition, trueBranch));
-
-						proxyExpr->declarations.Add(dtorDecl);
-					}
-
-					for (auto methodModel : methods)
-					{
-						const RpcPropertyModel* cachedProperty = nullptr;
-						if (methodModel->kind == RpcMethodKind::PropertyGetter)
-						{
-							for (auto propertyModel : properties)
-							{
-								if (propertyModel->cached && propertyModel->getterName == methodModel->name)
-								{
-									cachedProperty = propertyModel;
-									break;
-								}
-							}
-						}
-
-						auto methodDecl = CreateFunctionDeclaration(methodModel->name, CopyType(methodModel->returnType.Obj()), WfFunctionKind::Override);
-						for (auto&& paramModel : methodModel->params)
-						{
-							methodDecl->arguments.Add(CreateFunctionArgument(paramModel.name, CopyType(paramModel.type.Obj())));
-						}
-
-						auto methodBlock = methodDecl->statement.Cast<WfBlockStatement>();
-
-						// null check: if (_lc is null) raise "..."
-						{
-							auto condition = CreateIsNull(CreateReference(L"_lc"));
-							auto trueBranch = CreateRaise(L"RPC wrapper has been disconnected from lifecycle.");
-							AddStatement(methodBlock, CreateIf(condition, trueBranch));
-						}
-
-						if (cachedProperty)
-						{
-							auto trueBranch = CreateBlock();
-							AddStatement(trueBranch, CreateReturn(CreatePropertyCacheValueRead(*cachedProperty)));
-							AddStatement(methodBlock, CreateIf(CreatePropertyCacheAvailableRead(*cachedProperty), trueBranch));
-						}
-
-						auto invoke = Ptr(new WfCallExpression);
-						invoke->function = CreateMember(CreateReference(L"_ops"), GetRpcOpsInvokeMethodName(*methodModel));
-						invoke->arguments.Add(CreateReference(L"_ref"));
-						for (auto&& paramModel : methodModel->params)
-						{
-							invoke->arguments.Add(CreateReference(paramModel.name));
-						}
-
-						if (IsVoidType(methodModel->returnType.Obj()))
-						{
-							AddStatement(methodBlock, CreateExpressionStatement(invoke));
-						}
-						else if (cachedProperty)
-						{
-							AddStatement(methodBlock, CreateExpressionStatement(CreateAssign(CreateReference(GetPropertyCacheValueName(*cachedProperty)), invoke)));
-							AddStatement(methodBlock, CreateExpressionStatement(CreateAssign(CreateReference(GetPropertyCacheAvailableName(*cachedProperty)), CreateBool(true))));
-							AddStatement(methodBlock, CreateReturn(CreatePropertyCacheValueRead(*cachedProperty)));
-						}
-						else
-						{
-							AddStatement(methodBlock, CreateReturn(invoke));
-						}
-
-						proxyExpr->declarations.Add(methodDecl);
-					}
-
-					AddStatement(block, CreateInferredVariableStatement(L"proxy", proxyExpr));
-					AddStatement(
-						block,
-						CreateExpressionStatement(
-							CreateCall(
-								CreateMember(
-									CreateCall(
-										CreateMember(CreateMember(CreateReference(L"lc"), L"Dispatcher"), L"SendToClient_ObjectOps"),
-										CreateMember(CreateReference(L"proxyRef"), L"clientId")
-										),
-									L"ObjectHold"
-									),
-								CreateReference(L"proxyRef"),
-								CreateMember(CreateReference(L"lc"), L"ClientId"),
-								CreateBool(true)
-								)
-							)
-						);
-
-					for (auto propertyModel : properties)
-					{
-						if (propertyModel->cached && propertyModel->valueChangedEvent != L"")
-						{
-							if (auto eventModel = FindInterfaceEvent(events, propertyModel->valueChangedEvent))
-							{
-								auto lambdaBody = CreateBlock();
-								auto invalidateTarget = CreateCast(CreateSharedType(wrapperInterfaceFullName), CreateCall(CreateMember(CreateReference(L"lc"), L"RefToPtr"), CreateReference(L"proxyRef")));
-								AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(invalidateTarget, GetPropertyCacheResetFunctionName(*propertyModel)))));
-
-								auto attach = Ptr(new WfAttachEventExpression);
-								attach->event = CreateMember(CreateCast(CreateSharedType(interfaceModel.fullName), CreateReference(L"proxy")), eventModel->name);
-								attach->function = CreateFunctionExpression(CreateAnonymousLambda(eventModel->params, lambdaBody));
-								AddStatement(block, CreateExpressionStatement(attach));
-							}
-						}
-					}
-
-					if (events.Count() > 0)
-					{
-						AddStatement(block, CreateExpressionStatement(CreateCall(CreateReference(L"rpclistener_" + mangledName), CreateReference(L"lc"), CreateReference(L"proxyRef"), CreateCast(CreateRawType(interfaceModel.fullName), CreateReference(L"proxy")), CreateReference(L"ops"))));
-					}
-
-					AddStatement(block, CreateReturn(CreateReference(L"proxy")));
-					return functionDecl;
-				}
-
-
-				Ptr<WfDeclaration> GenerateWrapperDispatcher(const List<RpcInterfaceModel>& interfaces, const WString& opsInterfaceName)
-				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_Create", CreateTypeFromCpp<Ptr<rpc_controller::IRpcWrapperBase>>(), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
-					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-
-					auto switchStat = Ptr(new WfSwitchStatement);
-					switchStat->expression = CreateMember(CreateReference(L"ref"), L"typeId");
-					switchStat->defaultBranch = CreateRaise(L"Unknown RPC type id for wrapper creation.");
-
-					for (auto&& interfaceModel : interfaces)
-					{
-						auto switchCase = Ptr(new WfSwitchCase);
-						switchCase->expression = CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName);
-						auto caseBranch = CreateBlock();
-						auto mangledName = MangleRpcFullName(interfaceModel.fullName);
-						AddStatement(caseBranch, CreateReturn(CreateCall(CreateReference(L"rpcwrapper_" + mangledName), CreateReference(L"lc"), CreateReference(L"ref"), CreateReference(L"ops"))));
-						switchCase->statement = caseBranch;
-						switchStat->caseBranches.Add(switchCase);
-					}
-
-					AddStatement(block, switchStat);
-					return functionDecl;
-				}
-
-				Ptr<WfDeclaration> GenerateWrapperGetTypeId(const List<RpcInterfaceModel>& interfaces)
-				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_GetTypeId", CreatePredefinedType(WfPredefinedTypeName::Int), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"obj", CreatePredefinedType(WfPredefinedTypeName::Object)));
-					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-
-					List<const RpcInterfaceModel*> sortedInterfaces;
-					SortInterfaceModelsLeafFirst(interfaces, sortedInterfaces);
-					for (auto interfaceModel : sortedInterfaces)
-					{
-						AddStatement(
-							block,
-							CreateIf(
-								CreateIsType(CreateReference(L"obj"), CreateRawType(interfaceModel->fullName)),
-								CreateReturn(CreateRpcConstantReference(L"rpctype_", interfaceModel->fullName))
-								));
-					}
-
-					AddStatement(block, CreateReturn(CreateInt(rpc_controller::RpcTypeId_NotFound)));
-					return functionDecl;
-				}
-			}
-
-			Ptr<WfModule> GenerateModuleRpc(WfLexicalScopeManager* manager, WString assemblyName)
-			{
-				using namespace rpc_generating;
-
-				if (!manager || !manager->rpcMetadata || !manager->rpcMetadata->metadataModule)
-				{
-					return nullptr;
-				}
-
-				CollectMangledNames(manager);
-				if (manager->errors.Count() > 0)
-				{
-					return nullptr;
-				}
-
-				auto interfaces = BuildInterfaceModels(manager);
-				if (manager->errors.Count() > 0)
-				{
-					return nullptr;
-				}
-				auto module = Ptr(new WfModule);
-				module->moduleType = WfModuleType::Module;
-				module->name.value = L"RpcMetadata";
-				auto opsInterfaceName = GetRpcOpsInterfaceName(assemblyName);
-
-				vint id = 0;
-				for (auto fullName : manager->rpcMetadata->orderedIds)
-				{
-					auto name = WString::Unmanaged(GetRpcConstantPrefix(manager, fullName)) + MangleRpcFullName(fullName);
-					module->declarations.Add(CreateVariableDeclaration(name, CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(id++)));
-				}
-
-				{
-					auto getIds = CreateFunctionDeclaration(L"rpc_GetIds", CreateTypeFromCpp<Dictionary<WString, vint>>(), WfFunctionKind::Normal);
-					auto block = getIds->statement.Cast<WfBlockStatement>();
-					AddStatement(block, CreateVariableStatement(L"result", CreateTypeFromCpp<Dictionary<WString, vint>>(), CreateConstructor()));
-					id = 0;
-					for (auto fullName : manager->rpcMetadata->orderedIds)
-					{
-						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(rpc_generating::CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
-					}
-					AddStatement(block, CreateReturn(rpc_generating::CreateReference(L"result")));
-					module->declarations.Add(getIds);
-				}
-
-				module->declarations.Add(GenerateIsInterfaceTypeIdHelper(interfaces));
-				module->declarations.Add(GenerateIsCtorInterfaceTypeIdHelper(interfaces));
-				module->declarations.Add(GenerateRpcOpsInterface(assemblyName, interfaces));
-				module->declarations.Add(GenerateObjectOpsFactory(interfaces));
-				module->declarations.Add(GenerateObjectEventOpsFactory(interfaces));
-				module->declarations.Add(GenerateRpcOpsFactory(assemblyName, interfaces));
-
-				List<Ptr<WfDeclaration>> wrapperDeclarations;
-				Dictionary<WString, Ptr<WfNamespaceDeclaration>> wrapperNamespaces;
-				for (auto&& interfaceModel : interfaces)
-				{
-					List<WString> namespaceFragments;
-					SplitTypeFullName(interfaceModel.fullName, namespaceFragments);
-					namespaceFragments.RemoveAt(namespaceFragments.Count() - 1);
-					AddDeclarationToNamespaces(wrapperDeclarations, wrapperNamespaces, namespaceFragments, GenerateWrapperInterface(interfaceModel, interfaces));
-				}
-				for (auto declaration : wrapperDeclarations)
-				{
-					module->declarations.Add(declaration);
-				}
-
-				vint listenerCount = 0;
-				for (auto&& interfaceModel : interfaces)
-				{
-					if (auto listener = GenerateListenerFactory(interfaceModel, interfaces, opsInterfaceName))
-					{
-						module->declarations.Add(listener);
-						listenerCount++;
-					}
-				}
-				if (listenerCount > 0)
-				{
-					module->declarations.Add(GenerateListenerDispatcher(interfaces, opsInterfaceName));
-				}
-
-				for (auto&& interfaceModel : interfaces)
-				{
-					module->declarations.Add(GenerateWrapperFactory(interfaceModel, interfaces, opsInterfaceName));
-				}
-
-				module->declarations.Add(GenerateWrapperDispatcher(interfaces, opsInterfaceName));
-				module->declarations.Add(GenerateWrapperGetTypeId(interfaces));
-
-				return module;
-			}
-		}
-	}
-}
-
-
-/***********************************************************************
-.\ANALYZER\WFANALYZER_GENERATERPC_JSONDTS.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace workflow
-	{
-		namespace analyzer
-		{
-/***********************************************************************
-GenerateDtsFromRpcMetadata
-***********************************************************************/
-
-			namespace rpc_dts_generating
-			{
-				using namespace collections;
-				using namespace reflection;
-				using namespace reflection::description;
-
-				enum class DtsPrimitiveKind
-				{
-					Number,
-					Boolean,
-					String,
-				};
-
-				struct DtsPrimitiveModel
-				{
-					WString					keyword;
-					DtsPrimitiveKind		kind = DtsPrimitiveKind::Number;
-				};
-
-				struct DtsEnumItemModel
-				{
-					WString					name;
-					vuint64_t				value = 0;
-				};
-
-				struct DtsEnumModel
-				{
-					WString						fullName;
-					Ptr<List<DtsEnumItemModel>>	items;
-				};
-
-				struct DtsFieldModel
-				{
-					WString					name;
-					Ptr<WfType>				type;
-				};
-
-				struct DtsStructModel
-				{
-					WString					fullName;
-					Ptr<List<DtsFieldModel>> fields;
-				};
-
-				struct DtsContext
-				{
-					WfLexicalScopeManager*	manager = nullptr;
-					List<DtsEnumModel>*		enums = nullptr;
-					List<DtsStructModel>*	structs = nullptr;
-				};
-
-				void AppendChar(WString& text, wchar_t c)
-				{
-					text += WString::CopyFrom(&c, 1);
-				}
-
-				bool IsDtsIdentifierStart(wchar_t c)
-				{
-					return (L'a' <= c && c <= L'z')
-						|| (L'A' <= c && c <= L'Z')
-						|| c == L'_'
-						|| c == L'$';
-				}
-
-				bool IsDtsIdentifierPart(wchar_t c)
-				{
-					return IsDtsIdentifierStart(c) || (L'0' <= c && c <= L'9');
-				}
-
-				WString EscapeDtsString(const WString& value)
-				{
-					WString result = L"\"";
-					for (vint i = 0; i < value.Length(); i++)
-					{
-						auto c = value[i];
-						switch (c)
-						{
-						case L'\\': result += L"\\\\"; break;
-						case L'"': result += L"\\\""; break;
-						case L'\r': result += L"\\r"; break;
-						case L'\n': result += L"\\n"; break;
-						case L'\t': result += L"\\t"; break;
-						default:
-							AppendChar(result, c);
-							break;
-						}
-					}
-					result += L"\"";
-					return result;
-				}
-
-				WString GetDtsPropertyName(const WString& name)
-				{
-					if (name.Length() > 0 && IsDtsIdentifierStart(name[0]))
-					{
-						bool isIdentifier = true;
-						for (vint i = 1; i < name.Length(); i++)
-						{
-							if (!IsDtsIdentifierPart(name[i]))
-							{
-								isIdentifier = false;
-								break;
-							}
-						}
-						if (isIdentifier)
-						{
-							return name;
-						}
-					}
-					return EscapeDtsString(name);
-				}
-
-				WString MakeDtsTypeName(const WString& fullName)
-				{
-					WString result;
-					for (vint i = 0; i < fullName.Length(); i++)
-					{
-						auto c = fullName[i];
-						if ((result.Length() == 0 && IsDtsIdentifierStart(c)) || (result.Length() > 0 && IsDtsIdentifierPart(c)))
-						{
-							AppendChar(result, c);
-						}
-						else if (result.Length() == 0 || result[result.Length() - 1] != L'_')
-						{
-							result += L"_";
-						}
-					}
-					if (result.Length() == 0)
-					{
-						return L"_";
-					}
-					if (result[result.Length() - 1] == L'_')
-					{
-						result = result.Left(result.Length() - 1);
-					}
-					return result;
-				}
-
-				WString MakeUnknownStructDtsTypeName(const WString& fullName)
-				{
-					return L"UnknownType_" + MakeDtsTypeName(fullName);
-				}
-
-				bool TryGetPrimitiveModel(const WString& fullName, DtsPrimitiveModel& primitive)
-				{
-					auto tryName = [&](const wchar_t* name, DtsPrimitiveKind kind)
-					{
-						if (fullName == WString::Unmanaged(L"system::") + name)
-						{
-							primitive.keyword = WString::Unmanaged(name);
-							primitive.kind = kind;
-							return true;
-						}
-						return false;
-					};
-
-					return tryName(L"UInt8", DtsPrimitiveKind::Number)
-						|| tryName(L"UInt16", DtsPrimitiveKind::Number)
-						|| tryName(L"UInt32", DtsPrimitiveKind::Number)
-						|| tryName(L"UInt64", DtsPrimitiveKind::Number)
-						|| tryName(L"Int8", DtsPrimitiveKind::Number)
-						|| tryName(L"Int16", DtsPrimitiveKind::Number)
-						|| tryName(L"Int32", DtsPrimitiveKind::Number)
-						|| tryName(L"Int64", DtsPrimitiveKind::Number)
-						|| tryName(L"Single", DtsPrimitiveKind::Number)
-						|| tryName(L"Double", DtsPrimitiveKind::Number)
-						|| tryName(L"Boolean", DtsPrimitiveKind::Boolean)
-						|| tryName(L"Char", DtsPrimitiveKind::String)
-						|| tryName(L"String", DtsPrimitiveKind::String)
-						|| tryName(L"DateTime", DtsPrimitiveKind::String)
-						|| tryName(L"Locale", DtsPrimitiveKind::String);
-				}
-
-				WString GetPredefinedFullName(WfLexicalScopeManager* manager, WfPredefinedTypeName name)
-				{
-					switch (name)
-					{
-					case WfPredefinedTypeName::Int:
-						return manager && manager->cputdSInt ? manager->cputdSInt->GetTypeName() : WString::Unmanaged(L"system::Int64");
-					case WfPredefinedTypeName::UInt:
-						return manager && manager->cputdUInt ? manager->cputdUInt->GetTypeName() : WString::Unmanaged(L"system::UInt64");
-					case WfPredefinedTypeName::Float:
-						return L"system::Single";
-					case WfPredefinedTypeName::Double:
-						return L"system::Double";
-					case WfPredefinedTypeName::String:
-						return L"system::String";
-					case WfPredefinedTypeName::Char:
-						return L"system::Char";
-					case WfPredefinedTypeName::Bool:
-						return L"system::Boolean";
-					case WfPredefinedTypeName::Object:
-						return L"system::Object";
-					case WfPredefinedTypeName::Interface:
-						return L"system::Interface";
-					default:
-						return L"";
-					}
-				}
-
-				WString GetTypeFullName(WfLexicalScopeManager* manager, WfType* type)
-				{
-					if (!type)
-					{
-						return L"";
-					}
-					if (auto predefined = dynamic_cast<WfPredefinedType*>(type))
-					{
-						return GetPredefinedFullName(manager, predefined->name);
-					}
-					if (auto top = dynamic_cast<WfTopQualifiedType*>(type))
-					{
-						return top->name.value;
-					}
-					if (auto reference = dynamic_cast<WfReferenceType*>(type))
-					{
-						return reference->name.value;
-					}
-					if (auto child = dynamic_cast<WfChildType*>(type))
-					{
-						auto parent = GetTypeFullName(manager, child->parent.Obj());
-						return parent == L"" ? child->name.value : parent + L"::" + child->name.value;
-					}
-					if (auto raw = dynamic_cast<WfRawPointerType*>(type))
-					{
-						return GetTypeFullName(manager, raw->element.Obj());
-					}
-					if (auto shared = dynamic_cast<WfSharedPointerType*>(type))
-					{
-						return GetTypeFullName(manager, shared->element.Obj());
-					}
-					if (auto nullable = dynamic_cast<WfNullableType*>(type))
-					{
-						return GetTypeFullName(manager, nullable->element.Obj());
-					}
-					return L"";
-				}
-
-				vint FindStruct(const List<DtsStructModel>& structs, const WString& fullName)
-				{
-					for (vint i = 0; i < structs.Count(); i++)
-					{
-						if (structs[i].fullName == fullName)
-						{
-							return i;
-						}
-					}
-					return -1;
-				}
-
-				vint FindEnum(const List<DtsEnumModel>& enums, const WString& fullName)
-				{
-					for (vint i = 0; i < enums.Count(); i++)
-					{
-						if (enums[i].fullName == fullName)
-						{
-							return i;
-						}
-					}
-					return -1;
-				}
-
-				WString GetDtsTypeFromFullName(DtsContext& context, const WString& fullName)
-				{
-					DtsPrimitiveModel primitive;
-					if (TryGetPrimitiveModel(fullName, primitive))
-					{
-						switch (primitive.kind)
-						{
-						case DtsPrimitiveKind::Number:
-							return L"number";
-						case DtsPrimitiveKind::Boolean:
-							return L"boolean";
-						case DtsPrimitiveKind::String:
-							return L"string";
-						default:
-							CHECK_FAIL(L"Internal error: Unknown primitive kind.");
-						}
-					}
-					if (context.enums && FindEnum(*context.enums, fullName) != -1)
-					{
-						return L"number";
-					}
-					if (context.structs && FindStruct(*context.structs, fullName) != -1)
-					{
-						return MakeDtsTypeName(fullName);
-					}
-					return L"UnknownTypeSchema";
-				}
-
-				WString GetDtsTypeFromType(DtsContext& context, WfType* type)
-				{
-					if (!type)
-					{
-						return L"UnknownTypeSchema";
-					}
-					if (auto nullable = dynamic_cast<WfNullableType*>(type))
-					{
-						return GetDtsTypeFromType(context, nullable->element.Obj()) + L" | null";
-					}
-					if (auto raw = dynamic_cast<WfRawPointerType*>(type))
-					{
-						return GetDtsTypeFromType(context, raw->element.Obj());
-					}
-					if (auto shared = dynamic_cast<WfSharedPointerType*>(type))
-					{
-						return GetDtsTypeFromType(context, shared->element.Obj());
-					}
-					if (auto enumerable = dynamic_cast<WfEnumerableType*>(type))
-					{
-						return GetDtsTypeFromType(context, enumerable->element.Obj()) + L"[]";
-					}
-					if (auto map = dynamic_cast<WfMapType*>(type))
-					{
-						if (map->key)
-						{
-							return L"[" + GetDtsTypeFromType(context, map->key.Obj()) + L", " + GetDtsTypeFromType(context, map->value.Obj()) + L"][]";
-						}
-						return GetDtsTypeFromType(context, map->value.Obj()) + L"[]";
-					}
-					if (auto observable = dynamic_cast<WfObservableListType*>(type))
-					{
-						return GetDtsTypeFromType(context, observable->element.Obj()) + L"[]";
-					}
-					return GetDtsTypeFromFullName(context, GetTypeFullName(context.manager, type));
-				}
-
-				void AddDtsTypesFromDeclarations(
-					const List<Ptr<WfDeclaration>>& declarations,
-					const WString& prefix,
-					List<DtsEnumModel>& enums,
-					List<DtsStructModel>& structs)
-				{
-					for (auto declaration : declarations)
-					{
-						auto fullName = prefix == L"" ? declaration->name.value : prefix + L"::" + declaration->name.value;
-						if (auto namespaceDecl = declaration.Cast<WfNamespaceDeclaration>())
-						{
-							AddDtsTypesFromDeclarations(namespaceDecl->declarations, fullName, enums, structs);
-						}
-						else if (auto enumDecl = declaration.Cast<WfEnumDeclaration>())
-						{
-							if (FindEnum(enums, fullName) == -1)
-							{
-								DtsEnumModel model;
-								model.fullName = fullName;
-								model.items = Ptr(new List<DtsEnumItemModel>);
-								Dictionary<WString, vuint64_t> values;
-								for (auto item : enumDecl->items)
-								{
-									DtsEnumItemModel itemModel;
-									itemModel.name = item->name.value;
-									if (item->kind == WfEnumItemKind::Constant)
-									{
-										itemModel.value = wtou64(item->number.value);
-									}
-									else
-									{
-										for (auto intersection : item->intersections)
-										{
-											auto index = values.Keys().IndexOf(intersection->name.value);
-											if (index != -1)
-											{
-												itemModel.value |= values.Values()[index];
-											}
-										}
-									}
-									values.Add(itemModel.name, itemModel.value);
-									model.items->Add(itemModel);
-								}
-								enums.Add(model);
-							}
-						}
-						else if (auto structDecl = declaration.Cast<WfStructDeclaration>())
-						{
-							if (FindStruct(structs, fullName) != -1)
-							{
-								continue;
-							}
-
-							DtsStructModel model;
-							model.fullName = fullName;
-							model.fields = Ptr(new List<DtsFieldModel>);
-							for (auto member : structDecl->members)
-							{
-								DtsFieldModel field;
-								field.name = member->name.value;
-								field.type = CopyType(member->type.Obj());
-								model.fields->Add(field);
-							}
-							structs.Add(model);
-						}
-					}
-				}
-
-				void AddRpcBuiltinDtsStruct(List<DtsStructModel>& structs, const WString& fullName, ITypeDescriptor* td)
-				{
-					if (FindStruct(structs, fullName) != -1)
-					{
-						return;
-					}
-
-					if (!td)
-					{
-						return;
-					}
-
-					DtsStructModel model;
-					model.fullName = fullName;
-					model.fields = Ptr(new List<DtsFieldModel>);
-					for (vint i = 0; i < td->GetPropertyCount(); i++)
-					{
-						auto propertyInfo = td->GetProperty(i);
-						DtsFieldModel field;
-						field.name = propertyInfo->GetName();
-						field.type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
-						model.fields->Add(field);
-					}
-					structs.Add(model);
-				}
-
-				const wchar_t* GetDtsPrimitiveTypeScriptType(DtsPrimitiveKind kind)
-				{
-					switch (kind)
-					{
-					case DtsPrimitiveKind::Number:
-						return L"number";
-					case DtsPrimitiveKind::Boolean:
-						return L"boolean";
-					case DtsPrimitiveKind::String:
-						return L"string";
-					default:
-						CHECK_FAIL(L"Internal error: Unknown primitive kind.");
-					}
-				}
-
-				void AppendUnknownTypePrimitiveSchema(WString& dts)
-				{
-					const Pair<const wchar_t*, DtsPrimitiveKind> primitiveNames[] =
-					{
-						{ L"UInt8", DtsPrimitiveKind::Number },
-						{ L"UInt16", DtsPrimitiveKind::Number },
-						{ L"UInt32", DtsPrimitiveKind::Number },
-						{ L"UInt64", DtsPrimitiveKind::Number },
-						{ L"Int8", DtsPrimitiveKind::Number },
-						{ L"Int16", DtsPrimitiveKind::Number },
-						{ L"Int32", DtsPrimitiveKind::Number },
-						{ L"Int64", DtsPrimitiveKind::Number },
-						{ L"Single", DtsPrimitiveKind::Number },
-						{ L"Double", DtsPrimitiveKind::Number },
-						{ L"Char", DtsPrimitiveKind::String },
-						{ L"DateTime", DtsPrimitiveKind::String },
-						{ L"Locale", DtsPrimitiveKind::String },
-					};
-
-					dts += L"export type UnknownType_PrimitiveSchema =\r\n";
-					for (auto&& [name, kind] : primitiveNames)
-					{
-						dts += L"  | [" + EscapeDtsString(WString::Unmanaged(name)) + L", " + WString::Unmanaged(GetDtsPrimitiveTypeScriptType(kind)) + L"]\r\n";
-					}
-					dts += L"  | null\r\n";
-					dts += L"  | true\r\n";
-					dts += L"  | false\r\n";
-					dts += L"  | string\r\n";
-					dts += L"  ;\r\n\r\n";
-				}
-
-				void AppendTypeListEnum(WString& dts, const List<DtsEnumModel>& enums)
-				{
-					if (enums.Count() == 0)
-					{
-						dts += L"export type TypeList_Enum = never;\r\n\r\n";
-						return;
-					}
-
-					dts += L"export type TypeList_Enum =\r\n";
-					for (auto&& model : enums)
-					{
-						dts += L"  | " + EscapeDtsString(model.fullName) + L"\r\n";
-					}
-					dts += L"  ;\r\n\r\n";
-				}
-
-				void AppendUnknownTypeEnumSchema(WString& dts)
-				{
-					dts += L"export type UnknownType_EnumSchema = [TypeList_Enum, number];\r\n\r\n";
-				}
-
-				void AppendUnknownTypeList(WString& dts)
-				{
-					dts += L"export interface UnknownType_List\r\n";
-					dts += L"{\r\n";
-					dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(L"list") + L" | " + EscapeDtsString(L"oblist") + L";\r\n";
-					dts += L"  values: UnknownTypeSchema[];\r\n";
-					dts += L"}\r\n\r\n";
-				}
-
-				void AppendUnknownTypeMap(WString& dts)
-				{
-					dts += L"export interface UnknownType_Map\r\n";
-					dts += L"{\r\n";
-					dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(L"map") + L";\r\n";
-					dts += L"  values: [UnknownTypeSchema, UnknownTypeSchema][];\r\n";
-					dts += L"}\r\n\r\n";
-				}
-
-				void AppendUnknownTypeSchemaUnion(WString& dts, const List<DtsStructModel>& structs)
-				{
-					dts += L"export type UnknownTypeSchema =\r\n";
-					dts += L"  | UnknownType_PrimitiveSchema\r\n";
-					dts += L"  | UnknownType_EnumSchema\r\n";
-					dts += L"  | UnknownType_List\r\n";
-					dts += L"  | UnknownType_Map\r\n";
-					for (auto&& model : structs)
-					{
-						dts += L"  | " + MakeUnknownStructDtsTypeName(model.fullName) + L"\r\n";
-					}
-					dts += L"  ;\r\n\r\n";
-				}
-
-				void AppendUnknownStructSchemas(WString& dts, DtsContext& context)
-				{
-					for (auto&& model : *context.structs)
-					{
-						dts += L"export interface " + MakeUnknownStructDtsTypeName(model.fullName) + L" extends " + MakeDtsTypeName(model.fullName) + L"\r\n";
-						dts += L"{\r\n";
-						dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(model.fullName) + L";\r\n";
-						dts += L"}\r\n\r\n";
-					}
-				}
-
-				void AppendKnownEnums(WString& dts, const List<DtsEnumModel>& enums)
-				{
-					for (auto&& model : enums)
-					{
-						dts += L"export enum " + MakeDtsTypeName(model.fullName) + L"\r\n";
-						dts += L"{\r\n";
-						for (auto&& item : *model.items.Obj())
-						{
-							dts += L"  " + GetDtsPropertyName(item.name) + L" = " + u64tow(item.value) + L",\r\n";
-						}
-						dts += L"}\r\n\r\n";
-					}
-				}
-
-				void AppendKnownStructs(WString& dts, DtsContext& context)
-				{
-					for (auto&& model : *context.structs)
-					{
-						dts += L"export interface " + MakeDtsTypeName(model.fullName) + L"\r\n";
-						dts += L"{\r\n";
-						for (auto&& field : *model.fields.Obj())
-						{
-							dts += L"  " + GetDtsPropertyName(field.name) + L": " + GetDtsTypeFromType(context, field.type.Obj()) + L";\r\n";
-						}
-						dts += L"}\r\n\r\n";
-					}
-				}
-
-				void AppendKnownTypeSchema(WString& dts, const List<DtsStructModel>& structs)
-				{
-					dts += L"// All enum_type_full_name is omitted because in known type enums are just numbers\r\n";
-					dts += L"export type KnownTypeSchema =\r\n";
-					dts += L"  | number\r\n";
-					dts += L"  | true\r\n";
-					dts += L"  | false\r\n";
-					dts += L"  | string\r\n";
-					dts += L"  | KnownTypeSchema[]\r\n";
-					dts += L"  | [KnownTypeSchema, KnownTypeSchema][]\r\n";
-					for (auto&& model : structs)
-					{
-						dts += L"  | " + MakeDtsTypeName(model.fullName) + L"\r\n";
-					}
-					dts += L"  ;\r\n";
-				}
-			}
-
-			WString GenerateDtsFromRpcMetadata(WfLexicalScopeManager* manager)
-			{
-				using namespace rpc_dts_generating;
-
-				WString dts;
-				if (!manager || !manager->rpcMetadata || !manager->rpcMetadata->metadataModule)
-				{
-					return dts;
-				}
-
-				List<DtsEnumModel> enums;
-				List<DtsStructModel> structs;
-				AddDtsTypesFromDeclarations(manager->rpcMetadata->metadataModule->declarations, L"", enums, structs);
-				AddRpcBuiltinDtsStruct(structs, WString::Unmanaged(L"system::RpcObjectReference"), GetTypeDescriptor<vl::rpc_controller::RpcObjectReference>());
-				AddRpcBuiltinDtsStruct(structs, WString::Unmanaged(L"system::RpcException"), GetTypeDescriptor<vl::rpc_controller::RpcException>());
-
-				DtsContext context;
-				context.manager = manager;
-				context.enums = &enums;
-				context.structs = &structs;
-
-				AppendUnknownTypePrimitiveSchema(dts);
-				AppendTypeListEnum(dts, enums);
-				AppendUnknownTypeEnumSchema(dts);
-				AppendUnknownTypeList(dts);
-				AppendUnknownTypeMap(dts);
-				AppendUnknownTypeSchemaUnion(dts, structs);
-				AppendUnknownStructSchemas(dts, context);
-				dts += L"// below are all known types\r\n\r\n";
-				AppendKnownEnums(dts, enums);
-				AppendKnownStructs(dts, context);
-				AppendKnownTypeSchema(dts, structs);
-				return dts;
-			}
-		}
-	}
-}
-
-
-/***********************************************************************
-.\ANALYZER\WFANALYZER_GENERATERPC_JSONSERIALIZATION.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace workflow
-	{
-		namespace analyzer
-		{
-			using namespace collections;
-
-			namespace rpc_generating
-			{
-				using namespace reflection::description;
-
-				WString MangleRpcFullName(const WString& fullName);
-				Ptr<WfType> CopyType(WfType* type);
-				Ptr<WfType> CreatePredefinedType(WfPredefinedTypeName name);
-				Ptr<WfType> CreateQualifiedType(const WString& fullName);
-				Ptr<WfType> CreateTopQualifiedType(const WString& fullName);
-				Ptr<WfType> CreateRawType(const WString& fullName);
-				Ptr<WfType> CreateSharedType(const WString& fullName);
-				Ptr<WfType> CreateNullableType(const WString& fullName);
-				Ptr<WfExpression> CreateNull();
-				Ptr<WfExpression> CreateIsNull(Ptr<WfExpression> expression);
-				Ptr<WfExpression> CreateIsNotNull(Ptr<WfExpression> expression);
-				Ptr<WfExpression> CreateBool(bool value);
-				Ptr<WfExpression> CreateInt(vint value);
-				Ptr<WfExpression> CreateString(const WString& value);
-				Ptr<WfExpression> CreateReference(const WString& name);
-				Ptr<WfExpression> CreateQualifiedExpression(const WString& fullName);
-				Ptr<WfExpression> CreateMember(Ptr<WfExpression> parent, const WString& name);
-				Ptr<WfExpression> CreateBinary(WfBinaryOperator op, Ptr<WfExpression> first, Ptr<WfExpression> second);
-				Ptr<WfExpression> CreateAssign(Ptr<WfExpression> left, Ptr<WfExpression> right);
-				Ptr<WfExpression> CreateIndex(Ptr<WfExpression> collection, Ptr<WfExpression> index);
-				Ptr<WfExpression> CreateCast(Ptr<WfType> type, Ptr<WfExpression> expression);
-				Ptr<WfExpression> CreateWeakCast(Ptr<WfType> type, Ptr<WfExpression> expression);
-				Ptr<WfExpression> CreateInfer(Ptr<WfExpression> expression, Ptr<WfType> type);
-
-				Ptr<WfConstructorArgument> CreateConstructorArgument(Ptr<WfExpression> key, Ptr<WfExpression> value);
-				Ptr<WfConstructorExpression> CreateConstructor();
-				Ptr<WfExpression> CreateRpcExceptionExpression(Ptr<WfExpression> message);
-				Ptr<WfType> CreateRpcEventExceptionMapType();
-				Ptr<WfExpression> CreateNewClass(Ptr<WfType> type);
-				Ptr<WfExpression> CreateNewInterface(Ptr<WfType> type);
-				Ptr<WfStatement> CreateExpressionStatement(Ptr<WfExpression> expression);
-				Ptr<WfStatement> CreateReturn(Ptr<WfExpression> expression);
-				Ptr<WfStatement> CreateRaise(const WString& message);
-				Ptr<WfStatement> CreateRaise(Ptr<WfExpression> expression);
-				Ptr<WfStatement> CreateTry(Ptr<WfStatement> protectedStatement, const WString& name, Ptr<WfStatement> catchStatement, Ptr<WfStatement> finallyStatement);
-				Ptr<WfStatement> CreateTryCatch(Ptr<WfStatement> protectedStatement, const WString& name, Ptr<WfStatement> catchStatement);
-				Ptr<WfVariableDeclaration> CreateVariableDeclaration(const WString& name, Ptr<WfType> type, Ptr<WfExpression> expression);
-				Ptr<WfStatement> CreateVariableStatement(const WString& name, Ptr<WfType> type, Ptr<WfExpression> expression);
-				Ptr<WfStatement> CreateInferredVariableStatement(const WString& name, Ptr<WfExpression> expression);
-				Ptr<WfForEachStatement> CreateForEach(const WString& name, Ptr<WfExpression> collection, Ptr<WfStatement> body);
-				Ptr<WfBlockStatement> CreateBlock();
-				void AddStatement(Ptr<WfBlockStatement> block, Ptr<WfStatement> statement);
-				void AddRpcMethodExceptionRaise(Ptr<WfBlockStatement> block, Ptr<WfExpression> value);
-				void AddRpcEventExceptionMapSet(Ptr<WfBlockStatement> block, const WString& mapName, Ptr<WfExpression> clientId, Ptr<WfExpression> message);
-				void AddRpcEventExceptionRaise(Ptr<WfBlockStatement> block, Ptr<WfExpression> value);
-				Ptr<WfFunctionArgument> CreateFunctionArgument(const WString& name, Ptr<WfType> type);
-				void AddSwitchCase(Ptr<WfSwitchStatement> switchStat, Ptr<WfExpression> expression, Ptr<WfStatement> statement);
-				bool IsSharedInterfaceType(ITypeInfo* type);
-				bool IsVoidType(WfType* type);
-				bool IsRpcByvalReturn(const RpcMethodModel& methodModel);
-				Ptr<WfExpression> CreateRpcBoxExpression(ITypeInfo* typeInfo, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle);
-				Ptr<WfExpression> CreateRpcUnboxExpression(ITypeInfo* typeInfo, Ptr<WfType> type, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle);
-				Ptr<WfExpression> CreateRpcCopyByvalExpression(Ptr<WfExpression> value, Ptr<WfExpression> lifecycle);
-				void AddRpcByvalReturnValue(Ptr<WfBlockStatement> block, Ptr<WfExpression> value, Ptr<WfExpression> copiedValue);
-				Ptr<WfExpression> CreateRpcConstantReference(const wchar_t* prefix, const WString& fullName);
-				void CollectMangledNames(WfLexicalScopeManager* manager);
-				List<RpcInterfaceModel> BuildInterfaceModels(WfLexicalScopeManager* manager);
-				bool HasRpcEvents(const List<RpcInterfaceModel>& interfaces);
-				WString GetRpcOpsInterfaceName(const WString& assemblyName);
-				WString GetRpcOpsInvokeMethodName(const RpcMethodModel& methodModel);
-				WString GetRpcOpsInvokeEventName(const RpcEventModel& eventModel);
-				WString GetRpcOpsArgumentName(const RpcParamModel& paramModel);
-				Ptr<WfFunctionDeclaration> CreateRpcOpsFunctionDeclaration(const WString& name, Ptr<WfType> returnType, WfFunctionKind kind);
-				void AddRpcOpsFunctionArguments(Ptr<WfFunctionDeclaration> functionDecl, const List<RpcParamModel>& params);
-				Ptr<WfExpression> CreateRpcOpsObjectOps();
-				Ptr<WfExpression> CreateRpcOpsObjectInvoke(const RpcMethodModel& methodModel, Ptr<WfExpression> objectOps);
-				Ptr<WfExpression> CreateRpcOpsObjectInvoke(const RpcMethodModel& methodModel);
-				Ptr<WfExpression> CreateRpcOpsObjectEventInvoke(const RpcEventModel& eventModel);
-				Ptr<WfType> NormalizeRpcGeneratedType(Ptr<WfType> type);
-
-#ifndef VCZH_WORKFLOW_RPC_GENERATING_CREATE_TYPE_FROM_CPP
-#define VCZH_WORKFLOW_RPC_GENERATING_CREATE_TYPE_FROM_CPP
-				template<typename T>
-				Ptr<WfType> CreateTypeFromCpp()
-				{
-					return NormalizeRpcGeneratedType(GetTypeFromTypeInfo(TypeInfoRetriver<T>::CreateTypeInfo().Obj()));
-				}
-#endif
-
-				enum class RpcJsonPrimitiveKind
-				{
-					Number,
-					Boolean,
-					String,
-				};
-
-				struct RpcJsonPrimitiveModel
-				{
-					WString						fullName;
-					WString						keyword;
-					RpcJsonPrimitiveKind		kind = RpcJsonPrimitiveKind::Number;
-				};
-
-				struct RpcJsonFieldModel
-				{
-					WString						name;
-					Ptr<WfType>					type;
-				};
-
-				struct RpcJsonTypeModel
-				{
-					WString						fullName;
-					Ptr<WfType>					type;
-					Ptr<List<RpcJsonFieldModel>>	fields;
-				};
-
-				Ptr<WfExpression> CreateJsonArrayItem(const WString& arrayName, vint index)
-				{
-					return CreateIndex(CreateMember(CreateReference(arrayName), L"items"), CreateInt(index));
-				}
-
-				Ptr<WfExpression> CreateJsonArrayItemContent(const WString& arrayName, vint index, const WString& jsonType)
-				{
-					return CreateMember(CreateMember(CreateCast(CreateSharedType(jsonType), CreateJsonArrayItem(arrayName, index)), L"content"), L"value");
-				}
-
-				void AddRpcJsonTypesFromDeclarations(
-					const List<Ptr<WfDeclaration>>& declarations,
-					const WString& prefix,
-					List<RpcJsonTypeModel>& enums,
-					List<RpcJsonTypeModel>& structs)
-				{
-					for (auto declaration : declarations)
-					{
-						auto fullName = prefix == L"" ? declaration->name.value : prefix + L"::" + declaration->name.value;
-						if (auto namespaceDecl = declaration.Cast<WfNamespaceDeclaration>())
-						{
-							AddRpcJsonTypesFromDeclarations(namespaceDecl->declarations, fullName, enums, structs);
-						}
-						else if (declaration.Cast<WfEnumDeclaration>())
-						{
-							RpcJsonTypeModel model;
-							model.fullName = fullName;
-							model.type = CreateTopQualifiedType(fullName);
-							enums.Add(model);
-						}
-						else if (auto structDecl = declaration.Cast<WfStructDeclaration>())
-						{
-							RpcJsonTypeModel model;
-							model.fullName = fullName;
-							model.type = CreateTopQualifiedType(fullName);
-							model.fields = Ptr(new List<RpcJsonFieldModel>);
-							for (auto member : structDecl->members)
-							{
-								RpcJsonFieldModel field;
-								field.name = member->name.value;
-								field.type = CopyType(member->type.Obj());
-								model.fields->Add(field);
-							}
-							structs.Add(model);
-						}
-					}
-				}
-
-				void AddRpcBuiltinJsonType(List<RpcJsonTypeModel>& structs, const WString& fullName, ITypeDescriptor* td)
-				{
-					for (auto&& model : structs)
-					{
-						if (model.fullName == fullName)
-						{
-							return;
-						}
-					}
-
-					if (!td)
-					{
-						return;
-					}
-
-					RpcJsonTypeModel model;
-					model.fullName = fullName;
-					model.type = CreateTopQualifiedType(fullName);
-					model.fields = Ptr(new List<RpcJsonFieldModel>);
-					for (vint i = 0; i < td->GetPropertyCount(); i++)
-					{
-						auto propertyInfo = td->GetProperty(i);
-						RpcJsonFieldModel field;
-						field.name = propertyInfo->GetName();
-						field.type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
-						model.fields->Add(field);
-					}
-					structs.Add(model);
-				}
-
-				void CollectRpcJsonTypes(WfLexicalScopeManager* manager, List<RpcJsonTypeModel>& enums, List<RpcJsonTypeModel>& structs)
-				{
-					if (manager->rpcMetadata && manager->rpcMetadata->metadataModule)
-					{
-						AddRpcJsonTypesFromDeclarations(manager->rpcMetadata->metadataModule->declarations, L"", enums, structs);
-					}
-				}
-
-				void CollectRpcJsonPrimitives(List<RpcJsonPrimitiveModel>& primitives)
-				{
-					auto add = [&](const wchar_t* fullName, const wchar_t* keyword, RpcJsonPrimitiveKind kind)
-					{
-						RpcJsonPrimitiveModel model;
-						model.fullName = WString::Unmanaged(fullName);
-						model.keyword = WString::Unmanaged(keyword);
-						model.kind = kind;
-						primitives.Add(model);
-					};
-
-					add(L"system::UInt8", L"UInt8", RpcJsonPrimitiveKind::Number);
-					add(L"system::UInt16", L"UInt16", RpcJsonPrimitiveKind::Number);
-					add(L"system::UInt32", L"UInt32", RpcJsonPrimitiveKind::Number);
-					add(L"system::UInt64", L"UInt64", RpcJsonPrimitiveKind::Number);
-					add(L"system::Int8", L"Int8", RpcJsonPrimitiveKind::Number);
-					add(L"system::Int16", L"Int16", RpcJsonPrimitiveKind::Number);
-					add(L"system::Int32", L"Int32", RpcJsonPrimitiveKind::Number);
-					add(L"system::Int64", L"Int64", RpcJsonPrimitiveKind::Number);
-					add(L"system::Single", L"Single", RpcJsonPrimitiveKind::Number);
-					add(L"system::Double", L"Double", RpcJsonPrimitiveKind::Number);
-					add(L"system::Boolean", L"Boolean", RpcJsonPrimitiveKind::Boolean);
-					add(L"system::Char", L"Char", RpcJsonPrimitiveKind::String);
-					add(L"system::String", L"String", RpcJsonPrimitiveKind::String);
-					add(L"system::DateTime", L"DateTime", RpcJsonPrimitiveKind::String);
-					add(L"system::Locale", L"Locale", RpcJsonPrimitiveKind::String);
-				}
-
-				Ptr<WfStatement> CreateWhile(Ptr<WfExpression> condition, Ptr<WfStatement> body)
-				{
-					auto statement = Ptr(new WfWhileStatement);
-					statement->condition = condition;
-					statement->statement = body;
-					return statement;
-				}
-
-				WString GetRpcJsonSerializeEnumFunctionName(const WString& fullName)
-				{
-					return L"rpcjson_Serialize_Enum_" + MangleRpcFullName(fullName);
-				}
-
-				WString GetRpcJsonDeserializeEnumFunctionName(const WString& fullName)
-				{
-					return L"rpcjson_Deserialize_Enum_" + MangleRpcFullName(fullName);
-				}
-
-				WString GetRpcJsonSerializeStructFunctionName(const WString& fullName)
-				{
-					return L"rpcjson_Serialize_Struct_" + MangleRpcFullName(fullName);
-				}
-
-				WString GetRpcJsonDeserializeStructFunctionName(const WString& fullName)
-				{
-					return L"rpcjson_Deserialize_Struct_" + MangleRpcFullName(fullName);
-				}
-
-				WString GetRpcJsonPredefinedFullName(WfLexicalScopeManager* manager, WfPredefinedTypeName name)
-				{
-					switch (name)
-					{
-					case WfPredefinedTypeName::Int:
-						return manager && manager->cputdSInt ? manager->cputdSInt->GetTypeName() : WString::Unmanaged(L"system::Int64");
-					case WfPredefinedTypeName::UInt:
-						return manager && manager->cputdUInt ? manager->cputdUInt->GetTypeName() : WString::Unmanaged(L"system::UInt64");
-					case WfPredefinedTypeName::Float:
-						return L"system::Single";
-					case WfPredefinedTypeName::Double:
-						return L"system::Double";
-					case WfPredefinedTypeName::String:
-						return L"system::String";
-					case WfPredefinedTypeName::Char:
-						return L"system::Char";
-					case WfPredefinedTypeName::Bool:
-						return L"system::Boolean";
-					case WfPredefinedTypeName::Object:
-						return L"system::Object";
-					case WfPredefinedTypeName::Interface:
-						return L"system::Interface";
-					default:
-						return L"";
-					}
-				}
-
-				WString GetRpcJsonTypeFullName(WfLexicalScopeManager* manager, WfType* type)
-				{
-					if (!type) return L"";
-					if (auto predefined = dynamic_cast<WfPredefinedType*>(type))
-					{
-						return GetRpcJsonPredefinedFullName(manager, predefined->name);
-					}
-					if (auto top = dynamic_cast<WfTopQualifiedType*>(type))
-					{
-						return top->name.value;
-					}
-					if (auto reference = dynamic_cast<WfReferenceType*>(type))
-					{
-						return reference->name.value;
-					}
-					if (auto child = dynamic_cast<WfChildType*>(type))
-					{
-						auto parent = GetRpcJsonTypeFullName(manager, child->parent.Obj());
-						return parent == L"" ? child->name.value : parent + L"::" + child->name.value;
-					}
-					if (auto raw = dynamic_cast<WfRawPointerType*>(type))
-					{
-						return GetRpcJsonTypeFullName(manager, raw->element.Obj());
-					}
-					if (auto shared = dynamic_cast<WfSharedPointerType*>(type))
-					{
-						return GetRpcJsonTypeFullName(manager, shared->element.Obj());
-					}
-					if (auto nullable = dynamic_cast<WfNullableType*>(type))
-					{
-						return GetRpcJsonTypeFullName(manager, nullable->element.Obj());
-					}
-					return L"";
-				}
-
-				RpcJsonPrimitiveModel* FindRpcJsonPrimitive(List<RpcJsonPrimitiveModel>& primitives, const WString& fullName)
-				{
-					for (vint i = 0; i < primitives.Count(); i++)
-					{
-						if (primitives[i].fullName == fullName)
-						{
-							return &primitives[i];
-						}
-					}
-					return nullptr;
-				}
-
-				const RpcJsonTypeModel* FindRpcJsonType(const List<RpcJsonTypeModel>& types, const WString& fullName)
-				{
-					for (vint i = 0; i < types.Count(); i++)
-					{
-						if (types[i].fullName == fullName)
-						{
-							return &types[i];
-						}
-					}
-					return nullptr;
-				}
-
-				struct RpcJsonGenerationContext
-				{
-					WfLexicalScopeManager*			manager = nullptr;
-					List<RpcJsonPrimitiveModel>*	primitives = nullptr;
-					List<RpcJsonTypeModel>*		enums = nullptr;
-					List<RpcJsonTypeModel>*		structs = nullptr;
-					vint						tempIndex = 0;
-				};
-
-				WString AllocateRpcJsonTemp(RpcJsonGenerationContext& context, const wchar_t* prefix)
-				{
-					return WString::Unmanaged(prefix) + itow(context.tempIndex++);
-				}
-
-				Ptr<WfExpression> CreateRpcJsonToken(Ptr<WfExpression> value)
-				{
-					auto constructor = CreateConstructor();
-					constructor->arguments.Add(CreateConstructorArgument(CreateReference(L"value"), value));
-					return constructor;
-				}
-
-				WString AddRpcJsonLiteral(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, const WString& literal)
-				{
-					auto nodeName = AllocateRpcJsonTemp(context, L"jsonLiteral");
-					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonLiteral>>())));
-					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"value"), CreateQualifiedExpression(L"system::JsonLiteralValue::" + literal))));
-					return nodeName;
-				}
-
-				WString AddRpcJsonBooleanLiteral(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> value)
-				{
-					auto nodeName = AllocateRpcJsonTemp(context, L"jsonLiteral");
-					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonLiteral>>())));
-					AddStatement(block, CreateIf(
-						value,
-						CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"value"), CreateQualifiedExpression(L"system::JsonLiteralValue::True"))),
-						CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"value"), CreateQualifiedExpression(L"system::JsonLiteralValue::False")))));
-					return nodeName;
-				}
-
-				WString AddRpcJsonString(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> value)
-				{
-					auto nodeName = AllocateRpcJsonTemp(context, L"jsonString");
-					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonString>>())));
-					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"content"), CreateRpcJsonToken(value))));
-					return nodeName;
-				}
-
-				WString AddRpcJsonNumber(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> value)
-				{
-					auto nodeName = AllocateRpcJsonTemp(context, L"jsonNumber");
-					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonNumber>>())));
-					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"content"), CreateRpcJsonToken(value))));
-					return nodeName;
-				}
-
-				void AddRpcJsonArrayItem(Ptr<WfBlockStatement> block, const WString& arrayName, Ptr<WfExpression> value)
-				{
-					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(arrayName), L"items"), L"Add"), value)));
-				}
-
-				void AddRpcJsonObjectField(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> object, const WString& fieldName, Ptr<WfExpression> value)
-				{
-					auto fieldVar = AllocateRpcJsonTemp(context, L"jsonField");
-					AddStatement(block, CreateInferredVariableStatement(fieldVar, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonObjectField>>())));
-					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(fieldVar), L"name"), CreateRpcJsonToken(CreateString(fieldName)))));
-					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(fieldVar), L"value"), value)));
-					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(object, L"fields"), L"Add"), CreateReference(fieldVar))));
-				}
-
-				WString AddRpcJsonObjectFieldLookup(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> object, const WString& fieldName, bool required = true)
-				{
-					auto resultVar = AllocateRpcJsonTemp(context, L"jsonFieldValue");
-					auto fieldVar = AllocateRpcJsonTemp(context, L"jsonField");
-					AddStatement(block, CreateVariableStatement(resultVar, CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateNull()));
-					auto forBlock = CreateBlock();
-					AddStatement(forBlock, CreateIf(
-						CreateBinary(WfBinaryOperator::EQ, CreateMember(CreateMember(CreateReference(fieldVar), L"name"), L"value"), CreateString(fieldName)),
-						CreateExpressionStatement(CreateAssign(CreateReference(resultVar), CreateMember(CreateReference(fieldVar), L"value")))));
-					AddStatement(block, CreateForEach(fieldVar, CreateMember(object, L"fields"), forBlock));
-					if (required)
-					{
-						AddStatement(block, CreateIf(CreateIsNull(CreateReference(resultVar)), CreateRaise(L"JSON object field not found: " + fieldName)));
-					}
-					return resultVar;
-				}
-
-				WString AddKnownRpcJsonSerializeValue(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, Ptr<WfExpression> value, WfType* type);
-				WString AddKnownRpcJsonDeserializeValue(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, Ptr<WfExpression> node, WfType* type);
-
-				Ptr<WfType> CreateWritableRpcJsonCollectionType(WfType* type)
-				{
-					if (auto enumerable = dynamic_cast<WfEnumerableType*>(type))
-					{
-						auto listType = Ptr(new WfMapType);
-						listType->writability = WfMapWritability::Writable;
-						listType->value = CopyType(enumerable->element.Obj());
-						return listType;
-					}
-					if (auto map = dynamic_cast<WfMapType*>(type))
-					{
-						auto mapType = Ptr(new WfMapType);
-						mapType->writability = WfMapWritability::Writable;
-						mapType->key = map->key ? CopyType(map->key.Obj()) : nullptr;
-						mapType->value = CopyType(map->value.Obj());
-						return mapType;
-					}
-					if (auto observable = dynamic_cast<WfObservableListType*>(type))
-					{
-						auto listType = Ptr(new WfObservableListType);
-						listType->element = CopyType(observable->element.Obj());
-						return listType;
-					}
-					return CopyType(type);
-				}
-
-				Ptr<WfExpression> CreateRpcJsonSerializedArgument(vint index)
-				{
-					return CreateIndex(CreateReference(L"arguments"), CreateInt(index));
-				}
-
-				WString AddUnknownRpcJsonSerializeValue(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, Ptr<WfExpression> value)
-				{
-					auto valueName = AllocateRpcJsonTemp(context, L"jsonValue");
-					auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
-					AddStatement(block, CreateInferredVariableStatement(valueName, value));
-					AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(valueName))));
-					return resultName;
-				}
-
-				WString AddKnownRpcJsonSerializeValue(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, Ptr<WfExpression> value, WfType* type)
-				{
-					if (auto nullable = dynamic_cast<WfNullableType*>(type))
-					{
-						auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
-						AddStatement(block, CreateVariableStatement(resultName, CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateNull()));
-						auto nullBranch = CreateBlock();
-						auto nullNode = AddRpcJsonLiteral(nullBranch, context, L"Null");
-						AddStatement(nullBranch, CreateExpressionStatement(CreateAssign(CreateReference(resultName), CreateReference(nullNode))));
-						auto valueBranch = CreateBlock();
-						auto valueNode = AddKnownRpcJsonSerializeValue(context, valueBranch, CreateCast(CopyType(nullable->element.Obj()), CopyExpression(value, true)), nullable->element.Obj());
-						AddStatement(valueBranch, CreateExpressionStatement(CreateAssign(CreateReference(resultName), CreateReference(valueNode))));
-						AddStatement(block, CreateIf(CreateIsNull(value), nullBranch, valueBranch));
-						return resultName;
-					}
-
-					auto fullName = GetRpcJsonTypeFullName(context.manager, type);
-					if (auto primitive = FindRpcJsonPrimitive(*context.primitives, fullName))
-					{
-						switch (primitive->kind)
-						{
-						case RpcJsonPrimitiveKind::Number:
-							return AddRpcJsonNumber(block, context, CreateCast(CreatePredefinedType(WfPredefinedTypeName::String), value));
-						case RpcJsonPrimitiveKind::Boolean:
-							return AddRpcJsonBooleanLiteral(block, context, value);
-						case RpcJsonPrimitiveKind::String:
-							return AddRpcJsonString(block, context, CreateCast(CreatePredefinedType(WfPredefinedTypeName::String), value));
-						default:
-							CHECK_FAIL(L"Internal error: Unknown primitive kind.");
-						}
-					}
-
-					if (fullName == L"system::JsonNode")
-					{
-						auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
-						AddStatement(block, CreateInferredVariableStatement(resultName, value));
-						return resultName;
-					}
-
-					if (fullName == L"system::Object" || fullName == L"system::Interface")
-					{
-						return AddUnknownRpcJsonSerializeValue(context, block, value);
-					}
-
-					if (FindRpcJsonType(*context.enums, fullName))
-					{
-						auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
-						AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(GetRpcJsonSerializeEnumFunctionName(fullName)), value)));
-						return resultName;
-					}
-
-					if (FindRpcJsonType(*context.structs, fullName))
-					{
-						auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
-						AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(GetRpcJsonSerializeStructFunctionName(fullName)), value)));
-						return resultName;
-					}
-
-					if (auto enumerable = dynamic_cast<WfEnumerableType*>(type))
-					{
-						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
-						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
-						auto forBlock = CreateBlock();
-						auto itemNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateReference(L"item"), enumerable->element.Obj());
-						AddRpcJsonArrayItem(forBlock, arrayName, CreateReference(itemNode));
-						AddStatement(block, CreateForEach(L"item", value, forBlock));
-						return arrayName;
-					}
-
-					if (auto map = dynamic_cast<WfMapType*>(type))
-					{
-						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
-						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
-						auto forBlock = CreateBlock();
-						if (map->key)
-						{
-							auto pairName = AllocateRpcJsonTemp(context, L"jsonArray");
-							AddStatement(forBlock, CreateInferredVariableStatement(pairName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
-							auto keyNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateReference(L"key"), map->key.Obj());
-							AddRpcJsonArrayItem(forBlock, pairName, CreateReference(keyNode));
-							auto valueNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateIndex(value, CreateReference(L"key")), map->value.Obj());
-							AddRpcJsonArrayItem(forBlock, pairName, CreateReference(valueNode));
-							AddRpcJsonArrayItem(forBlock, arrayName, CreateReference(pairName));
-							AddStatement(block, CreateForEach(L"key", CreateMember(value, L"Keys"), forBlock));
-						}
-						else
-						{
-							auto itemNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateReference(L"item"), map->value.Obj());
-							AddRpcJsonArrayItem(forBlock, arrayName, CreateReference(itemNode));
-							AddStatement(block, CreateForEach(L"item", value, forBlock));
-						}
-						return arrayName;
-					}
-
-					if (auto observable = dynamic_cast<WfObservableListType*>(type))
-					{
-						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
-						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
-						auto forBlock = CreateBlock();
-						auto itemNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateReference(L"item"), observable->element.Obj());
-						AddRpcJsonArrayItem(forBlock, arrayName, CreateReference(itemNode));
-						AddStatement(block, CreateForEach(L"item", value, forBlock));
-						return arrayName;
-					}
-
-					return AddUnknownRpcJsonSerializeValue(context, block, value);
-				}
-
-				WString AddKnownRpcJsonDeserializeValue(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, Ptr<WfExpression> node, WfType* type)
-				{
-					if (auto nullable = dynamic_cast<WfNullableType*>(type))
-					{
-						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
-						auto literalName = AllocateRpcJsonTemp(context, L"jsonLiteral");
-						AddStatement(block, CreateVariableStatement(resultName, CopyType(type), CreateNull()));
-						AddStatement(block, CreateInferredVariableStatement(literalName, CreateWeakCast(CreateTypeFromCpp<Ptr<glr::json::JsonLiteral>>(), CopyExpression(node, true))));
-						auto assignBranch = CreateBlock();
-						auto valueName = AddKnownRpcJsonDeserializeValue(context, assignBranch, node, nullable->element.Obj());
-						AddStatement(assignBranch, CreateExpressionStatement(CreateAssign(CreateReference(resultName), CreateReference(valueName))));
-						AddStatement(block, CreateIf(
-							CreateBinary(
-								WfBinaryOperator::Or,
-								CreateIsNull(CreateReference(literalName)),
-								CreateBinary(WfBinaryOperator::NE, CreateMember(CreateReference(literalName), L"value"), CreateQualifiedExpression(L"system::JsonLiteralValue::Null"))),
-							assignBranch));
-						return resultName;
-					}
-
-					auto fullName = GetRpcJsonTypeFullName(context.manager, type);
-					if (auto primitive = FindRpcJsonPrimitive(*context.primitives, fullName))
-					{
-						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
-						auto deserialized = CreateCall(CreateReference(L"rpcjson_Deserialize"), node);
-						auto value =
-							primitive->kind == RpcJsonPrimitiveKind::Boolean || fullName == L"system::String"
-							? CreateCast(CreateTopQualifiedType(fullName), deserialized)
-							: CreateCast(CreateTopQualifiedType(fullName), CreateCast(CreatePredefinedType(WfPredefinedTypeName::String), deserialized));
-						AddStatement(block, CreateInferredVariableStatement(resultName, value));
-						return resultName;
-					}
-
-					if (fullName == L"system::JsonNode")
-					{
-						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
-						AddStatement(block, CreateInferredVariableStatement(resultName, node));
-						return resultName;
-					}
-
-					if (fullName == L"system::Object" || fullName == L"system::Interface")
-					{
-						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
-						AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(L"rpcjson_Deserialize"), node)));
-						return resultName;
-					}
-
-					if (FindRpcJsonType(*context.enums, fullName))
-					{
-						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
-						AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(GetRpcJsonDeserializeEnumFunctionName(fullName)), node)));
-						return resultName;
-					}
-
-					if (FindRpcJsonType(*context.structs, fullName))
-					{
-						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
-						AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(GetRpcJsonDeserializeStructFunctionName(fullName)), node)));
-						return resultName;
-					}
-
-					if (auto enumerable = dynamic_cast<WfEnumerableType*>(type))
-					{
-						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
-						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
-						AddStatement(block, CreateVariableStatement(resultName, CreateWritableRpcJsonCollectionType(type), CreateConstructor()));
-						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), node)));
-						auto forBlock = CreateBlock();
-						auto itemValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateReference(L"item"), enumerable->element.Obj());
-						AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(resultName), L"Add"), CreateReference(itemValue))));
-						AddStatement(block, CreateForEach(L"item", CreateMember(CreateReference(arrayName), L"items"), forBlock));
-						return resultName;
-					}
-
-					if (auto map = dynamic_cast<WfMapType*>(type))
-					{
-						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
-						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
-						AddStatement(block, CreateVariableStatement(resultName, CreateWritableRpcJsonCollectionType(type), CreateConstructor()));
-						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), node)));
-						auto forBlock = CreateBlock();
-						if (map->key)
-						{
-							auto pairName = AllocateRpcJsonTemp(context, L"jsonArray");
-							AddStatement(forBlock, CreateInferredVariableStatement(pairName, CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), CreateReference(L"item"))));
-							auto keyValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateJsonArrayItem(pairName, 0), map->key.Obj());
-							auto itemValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateJsonArrayItem(pairName, 1), map->value.Obj());
-							AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(resultName), L"Set"), CreateReference(keyValue), CreateReference(itemValue))));
-						}
-						else
-						{
-							auto itemValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateReference(L"item"), map->value.Obj());
-							AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(resultName), L"Add"), CreateReference(itemValue))));
-						}
-						AddStatement(block, CreateForEach(L"item", CreateMember(CreateReference(arrayName), L"items"), forBlock));
-						return resultName;
-					}
-
-					if (auto observable = dynamic_cast<WfObservableListType*>(type))
-					{
-						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
-						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
-						AddStatement(block, CreateVariableStatement(resultName, CreateWritableRpcJsonCollectionType(type), CreateConstructor()));
-						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), node)));
-						auto forBlock = CreateBlock();
-						auto itemValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateReference(L"item"), observable->element.Obj());
-						AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(resultName), L"Add"), CreateReference(itemValue))));
-						AddStatement(block, CreateForEach(L"item", CreateMember(CreateReference(arrayName), L"items"), forBlock));
-						return resultName;
-					}
-
-					auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
-					AddStatement(block, CreateInferredVariableStatement(resultName, CreateCast(CopyType(type), CreateCall(CreateReference(L"rpcjson_Deserialize"), node))));
-					return resultName;
-				}
-
-				void AddRpcJsonUnknownTupleReturn(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, const WString& keyword, Ptr<WfExpression> valueNode)
-				{
-					auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
-					auto keywordNode = AddRpcJsonString(block, context, CreateString(keyword));
-					AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
-					AddRpcJsonArrayItem(block, arrayName, CreateReference(keywordNode));
-					AddRpcJsonArrayItem(block, arrayName, valueNode);
-					AddStatement(block, CreateReturn(CreateReference(arrayName)));
-				}
-
-				Ptr<WfDeclaration> GenerateRpcJsonSerializeEnum(RpcJsonGenerationContext& context, const RpcJsonTypeModel& enumModel)
-				{
-					auto functionDecl = CreateFunctionDeclaration(GetRpcJsonSerializeEnumFunctionName(enumModel.fullName), CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"value", CopyType(enumModel.type.Obj())));
-					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-					auto nodeName = AddRpcJsonNumber(block, context, CreateCast(
-						CreatePredefinedType(WfPredefinedTypeName::String),
-						CreateCast(CreateTypeFromCpp<vuint64_t>(), CreateReference(L"value"))));
-					AddStatement(block, CreateReturn(CreateReference(nodeName)));
-					return functionDecl;
-				}
-
-				Ptr<WfDeclaration> GenerateRpcJsonDeserializeEnum(RpcJsonGenerationContext& context, const RpcJsonTypeModel& enumModel)
-				{
-					auto functionDecl = CreateFunctionDeclaration(GetRpcJsonDeserializeEnumFunctionName(enumModel.fullName), CopyType(enumModel.type.Obj()), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"node", CreateTypeFromCpp<Ptr<glr::json::JsonNode>>()));
-					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-					AddStatement(block, CreateReturn(CreateCast(
-						CopyType(enumModel.type.Obj()),
-						CreateCast(CreateTypeFromCpp<vuint64_t>(), CreateMember(CreateMember(CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNumber>>(), CreateReference(L"node")), L"content"), L"value")))));
-					return functionDecl;
-				}
-
-				void AddRpcJsonStructFields(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, const RpcJsonTypeModel& structModel, const WString& objectName, const WString& valueName)
-				{
-					for (auto&& field : *structModel.fields.Obj())
-					{
-						auto fieldNode = AddKnownRpcJsonSerializeValue(context, block, CreateMember(CreateReference(valueName), field.name), field.type.Obj());
-						AddRpcJsonObjectField(block, context, CreateReference(objectName), field.name, CreateReference(fieldNode));
-					}
-				}
-
-				Ptr<WfDeclaration> GenerateRpcJsonSerializeStruct(RpcJsonGenerationContext& context, const RpcJsonTypeModel& structModel)
-				{
-					auto functionDecl = CreateFunctionDeclaration(GetRpcJsonSerializeStructFunctionName(structModel.fullName), CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"value", CopyType(structModel.type.Obj())));
-					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-					AddStatement(block, CreateInferredVariableStatement(L"object", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>())));
-					AddRpcJsonStructFields(context, block, structModel, L"object", L"value");
-					AddStatement(block, CreateReturn(CreateReference(L"object")));
-					return functionDecl;
-				}
-
-				Ptr<WfDeclaration> GenerateRpcJsonDeserializeStruct(RpcJsonGenerationContext& context, const RpcJsonTypeModel& structModel)
-				{
-					auto functionDecl = CreateFunctionDeclaration(GetRpcJsonDeserializeStructFunctionName(structModel.fullName), CopyType(structModel.type.Obj()), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"node", CreateTypeFromCpp<Ptr<glr::json::JsonNode>>()));
-					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-					AddStatement(block, CreateInferredVariableStatement(L"object", CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>(), CreateReference(L"node"))));
-					auto constructor = CreateConstructor();
-					for (auto&& field : *structModel.fields.Obj())
-					{
-						auto fieldNode = AddRpcJsonObjectFieldLookup(block, context, CreateReference(L"object"), field.name);
-						auto fieldValue = AddKnownRpcJsonDeserializeValue(context, block, CreateReference(fieldNode), field.type.Obj());
-						constructor->arguments.Add(CreateConstructorArgument(CreateReference(field.name), CreateReference(fieldValue)));
-					}
-					AddStatement(block, CreateReturn(constructor));
-					return functionDecl;
-				}
-
-				void AddUnknownSerializeCollectionCase(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, const WString& varName, const WString& typeFullName, const WString& keyword)
-				{
-					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(CreateSharedType(typeFullName), CreateReference(L"value"))));
-					auto trueBranch = CreateBlock();
-					AddStatement(trueBranch, CreateInferredVariableStatement(L"object", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>())));
-					auto keywordNode = AddRpcJsonString(trueBranch, context, CreateString(keyword));
-					AddRpcJsonObjectField(trueBranch, context, CreateReference(L"object"), L"$", CreateReference(keywordNode));
-					AddStatement(trueBranch, CreateInferredVariableStatement(L"values", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
-					auto forBlock = CreateBlock();
-					AddRpcJsonArrayItem(forBlock, L"values", CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"item")));
-					AddStatement(trueBranch, CreateForEach(L"item", CreateReference(varName), forBlock));
-					AddRpcJsonObjectField(trueBranch, context, CreateReference(L"object"), L"values", CreateReference(L"values"));
-					AddStatement(trueBranch, CreateReturn(CreateReference(L"object")));
-					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(varName)), trueBranch));
-				}
-
-				void AddUnknownSerializeMapCase(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, const WString& varName, const WString& typeFullName)
-				{
-					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(CreateSharedType(typeFullName), CreateReference(L"value"))));
-					auto trueBranch = CreateBlock();
-					AddStatement(trueBranch, CreateInferredVariableStatement(L"object", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>())));
-					auto keywordNode = AddRpcJsonString(trueBranch, context, CreateString(L"map"));
-					AddRpcJsonObjectField(trueBranch, context, CreateReference(L"object"), L"$", CreateReference(keywordNode));
-					AddStatement(trueBranch, CreateInferredVariableStatement(L"values", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
-					auto forBlock = CreateBlock();
-					AddRpcJsonArrayItem(forBlock, L"values", CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"key")));
-					AddRpcJsonArrayItem(forBlock, L"values", CreateCall(CreateReference(L"rpcjson_Serialize"), CreateCall(CreateMember(CreateReference(varName), L"Get"), CreateReference(L"key"))));
-					AddStatement(trueBranch, CreateForEach(L"key", CreateMember(CreateReference(varName), L"Keys"), forBlock));
-					AddRpcJsonObjectField(trueBranch, context, CreateReference(L"object"), L"values", CreateReference(L"values"));
-					AddStatement(trueBranch, CreateReturn(CreateReference(L"object")));
-					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(varName)), trueBranch));
-				}
-
-				void AddUnknownSerializePrimitiveCase(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, const RpcJsonPrimitiveModel& primitive)
-				{
-					if (primitive.kind == RpcJsonPrimitiveKind::Boolean || primitive.fullName == L"system::String")
-					{
-						return;
-					}
-
-					auto varName = L"value_" + MangleRpcFullName(primitive.fullName);
-					auto nullableType = CreateNullableType(primitive.fullName);
-					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(nullableType, CreateReference(L"value"))));
-					auto trueBranch = CreateBlock();
-					auto varValue = CreateCast(CreateTopQualifiedType(primitive.fullName), CreateReference(varName));
-					WString nodeName;
-					switch (primitive.kind)
-					{
-					case RpcJsonPrimitiveKind::Number:
-						nodeName = AddRpcJsonNumber(trueBranch, context, CreateCast(CreatePredefinedType(WfPredefinedTypeName::String), varValue));
-						break;
-					case RpcJsonPrimitiveKind::String:
-						nodeName = AddRpcJsonString(trueBranch, context, CreateCast(CreatePredefinedType(WfPredefinedTypeName::String), varValue));
-						break;
-					default:
-						CHECK_FAIL(L"Internal error: Unexpected primitive kind.");
-					}
-					AddRpcJsonUnknownTupleReturn(context, trueBranch, primitive.keyword, CreateReference(nodeName));
-					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(varName)), trueBranch));
-				}
-
-				void AddUnknownSerializeEnumCase(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, const RpcJsonTypeModel& enumModel)
-				{
-					auto varName = L"value_" + MangleRpcFullName(enumModel.fullName);
-					auto nullableType = Ptr(new WfNullableType);
-					nullableType->element = CopyType(enumModel.type.Obj());
-					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(nullableType, CreateReference(L"value"))));
-					auto trueBranch = CreateBlock();
-					auto valueNode = AllocateRpcJsonTemp(context, L"jsonNode");
-					AddStatement(trueBranch, CreateInferredVariableStatement(valueNode, CreateCall(CreateReference(GetRpcJsonSerializeEnumFunctionName(enumModel.fullName)), CreateCast(CopyType(enumModel.type.Obj()), CreateReference(varName)))));
-					AddRpcJsonUnknownTupleReturn(context, trueBranch, enumModel.fullName, CreateReference(valueNode));
-					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(varName)), trueBranch));
-				}
-
-				void AddUnknownSerializeStructCase(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, const RpcJsonTypeModel& structModel)
-				{
-					auto varName = L"value_" + MangleRpcFullName(structModel.fullName);
-					auto nullableType = Ptr(new WfNullableType);
-					nullableType->element = CopyType(structModel.type.Obj());
-					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(nullableType, CreateReference(L"value"))));
-					auto trueBranch = CreateBlock();
-					AddStatement(trueBranch, CreateInferredVariableStatement(L"object", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>())));
-					auto keywordNode = AddRpcJsonString(trueBranch, context, CreateString(structModel.fullName));
-					AddRpcJsonObjectField(trueBranch, context, CreateReference(L"object"), L"$", CreateReference(keywordNode));
-					auto varValueName = AllocateRpcJsonTemp(context, L"value");
-					AddStatement(trueBranch, CreateInferredVariableStatement(varValueName, CreateCast(CopyType(structModel.type.Obj()), CreateReference(varName))));
-					AddRpcJsonStructFields(context, trueBranch, structModel, L"object", varValueName);
-					AddStatement(trueBranch, CreateReturn(CreateReference(L"object")));
-					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(varName)), trueBranch));
-				}
-
-				Ptr<WfDeclaration> GenerateRpcJsonSerialize(RpcJsonGenerationContext& context)
-				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_Serialize", CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"value", CreatePredefinedType(WfPredefinedTypeName::Object)));
-					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-					for (auto&& enumModel : *context.enums)
-					{
-						AddUnknownSerializeEnumCase(context, block, enumModel);
-					}
-					for (auto&& structModel : *context.structs)
-					{
-						AddUnknownSerializeStructCase(context, block, structModel);
-					}
-					AddStatement(block, CreateReturn(CreateCall(
-						CreateQualifiedExpression(L"system::IRpcLifecycle::JsonSerializePredefinedTypes"),
-						CreateReference(L"value"),
-						CreateReference(L"rpcjson_Serialize"))));
-					return functionDecl;
-				}
-
-				void AddUnknownDeserializePrimitiveCase(Ptr<WfSwitchStatement> switchStat, const RpcJsonPrimitiveModel& primitive)
-				{
-					if (primitive.kind == RpcJsonPrimitiveKind::Boolean || primitive.fullName == L"system::String")
-					{
-						return;
-					}
-
-					auto jsonType = primitive.kind == RpcJsonPrimitiveKind::Number ? L"system::JsonNumber" : L"system::JsonString";
-					AddSwitchCase(
-						switchStat,
-						CreateString(primitive.keyword),
-						CreateReturn(CreateCast(CreateTopQualifiedType(primitive.fullName), CreateJsonArrayItemContent(L"array", 1, jsonType))));
-				}
-
-				void AddUnknownDeserializeEnumCase(Ptr<WfSwitchStatement> switchStat, const RpcJsonTypeModel& enumModel)
-				{
-					AddSwitchCase(
-						switchStat,
-						CreateString(enumModel.fullName),
-						CreateReturn(CreateCall(CreateReference(GetRpcJsonDeserializeEnumFunctionName(enumModel.fullName)), CreateJsonArrayItem(L"array", 1))));
-				}
-
-				void AddUnknownDeserializeStructCase(Ptr<WfSwitchStatement> switchStat, const RpcJsonTypeModel& structModel)
-				{
-					AddSwitchCase(
-						switchStat,
-						CreateString(structModel.fullName),
-						CreateReturn(CreateCall(CreateReference(GetRpcJsonDeserializeStructFunctionName(structModel.fullName)), CreateReference(L"object"))));
-				}
-
-				Ptr<WfStatement> CreateUnknownDeserializeListCase(RpcJsonGenerationContext& context, const WString& variableType)
-				{
-					auto block = CreateBlock();
-					AddStatement(block, CreateVariableStatement(L"result", CreateSharedType(variableType), CreateConstructor()));
-					auto valuesNode = AddRpcJsonObjectFieldLookup(block, context, CreateReference(L"object"), L"values");
-					AddStatement(block, CreateInferredVariableStatement(L"values", CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), CreateReference(valuesNode))));
-					auto forBlock = CreateBlock();
-					AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Add"), CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"item")))));
-					AddStatement(block, CreateForEach(L"item", CreateMember(CreateReference(L"values"), L"items"), forBlock));
-					AddStatement(block, CreateReturn(CreateReference(L"result")));
-					return block;
-				}
-
-				Ptr<WfStatement> CreateUnknownDeserializeMapCase(RpcJsonGenerationContext& context)
-				{
-					auto block = CreateBlock();
-					AddStatement(block, CreateVariableStatement(L"result", CreateTypeFromCpp<Ptr<IValueDictionary>>(), CreateConstructor()));
-					auto valuesNode = AddRpcJsonObjectFieldLookup(block, context, CreateReference(L"object"), L"values");
-					AddStatement(block, CreateInferredVariableStatement(L"values", CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), CreateReference(valuesNode))));
-					AddStatement(block, CreateInferredVariableStatement(L"index", CreateInt(0)));
-					auto whileBlock = CreateBlock();
-					AddStatement(whileBlock, CreateExpressionStatement(CreateCall(
-						CreateMember(CreateReference(L"result"), L"Set"),
-						CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateIndex(CreateMember(CreateReference(L"values"), L"items"), CreateReference(L"index"))),
-						CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateIndex(CreateMember(CreateReference(L"values"), L"items"), CreateBinary(WfBinaryOperator::Add, CreateReference(L"index"), CreateInt(1)))))));
-					AddStatement(whileBlock, CreateExpressionStatement(CreateAssign(CreateReference(L"index"), CreateBinary(WfBinaryOperator::Add, CreateReference(L"index"), CreateInt(2)))));
-					AddStatement(block, CreateWhile(CreateBinary(WfBinaryOperator::LT, CreateReference(L"index"), CreateMember(CreateMember(CreateReference(L"values"), L"items"), L"Count")), whileBlock));
-					AddStatement(block, CreateReturn(CreateReference(L"result")));
-					return block;
-				}
-
-				Ptr<WfDeclaration> GenerateRpcJsonDeserialize(RpcJsonGenerationContext& context)
-				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_Deserialize", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"node", CreateTypeFromCpp<Ptr<glr::json::JsonNode>>()));
-					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-
-					if (context.enums->Count() > 0)
-					{
-						AddStatement(block, CreateInferredVariableStatement(L"array", CreateWeakCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), CreateReference(L"node"))));
-						auto arrayBranch = CreateBlock();
-						AddStatement(arrayBranch, CreateInferredVariableStatement(L"keyword", CreateJsonArrayItemContent(L"array", 0, L"system::JsonString")));
-						auto arraySwitch = Ptr(new WfSwitchStatement);
-						arraySwitch->expression = CreateReference(L"keyword");
-						for (auto&& enumModel : *context.enums)
-						{
-							AddUnknownDeserializeEnumCase(arraySwitch, enumModel);
-						}
-						AddStatement(arrayBranch, arraySwitch);
-						AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(L"array")), arrayBranch));
-					}
-
-					AddStatement(block, CreateInferredVariableStatement(L"object", CreateWeakCast(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>(), CreateReference(L"node"))));
-					auto objectBranch = CreateBlock();
-					{
-						auto keywordNode = AddRpcJsonObjectFieldLookup(objectBranch, context, CreateReference(L"object"), L"$", false);
-						auto keywordBranch = CreateBlock();
-						AddStatement(keywordBranch, CreateInferredVariableStatement(L"keyword", CreateMember(CreateMember(CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonString>>(), CreateReference(keywordNode)), L"content"), L"value")));
-						auto objectSwitch = Ptr(new WfSwitchStatement);
-						objectSwitch->expression = CreateReference(L"keyword");
-						for (auto&& structModel : *context.structs)
-						{
-							AddUnknownDeserializeStructCase(objectSwitch, structModel);
-						}
-						AddStatement(keywordBranch, objectSwitch);
-						AddStatement(objectBranch, CreateIf(CreateIsNotNull(CreateReference(keywordNode)), keywordBranch));
-					}
-					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(L"object")), objectBranch));
-					AddStatement(block, CreateReturn(CreateCall(
-						CreateQualifiedExpression(L"system::IRpcLifecycle::JsonDeserializePredefinedTypes"),
-						CreateReference(L"node"),
-						CreateReference(L"rpcjson_Deserialize"))));
-					return functionDecl;
-				}
-
-				void AddRpcJsonDeclarations(WfLexicalScopeManager* manager, Ptr<WfModule> module)
-				{
-					List<RpcJsonPrimitiveModel> primitives;
-					List<RpcJsonTypeModel> enums;
-					List<RpcJsonTypeModel> structs;
-					CollectRpcJsonPrimitives(primitives);
-					CollectRpcJsonTypes(manager, enums, structs);
-
-					RpcJsonGenerationContext context;
-					context.manager = manager;
-					context.primitives = &primitives;
-					context.enums = &enums;
-					context.structs = &structs;
-
-					for (auto&& enumModel : enums)
-					{
-						module->declarations.Add(GenerateRpcJsonSerializeEnum(context, enumModel));
-						module->declarations.Add(GenerateRpcJsonDeserializeEnum(context, enumModel));
-					}
-					for (auto&& structModel : structs)
-					{
-						module->declarations.Add(GenerateRpcJsonSerializeStruct(context, structModel));
-						module->declarations.Add(GenerateRpcJsonDeserializeStruct(context, structModel));
-					}
-					module->declarations.Add(GenerateRpcJsonSerialize(context));
-					module->declarations.Add(GenerateRpcJsonDeserialize(context));
-				}
-
-				Ptr<WfDeclaration> GenerateRpcSerializerFactoryJson()
-				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcSerializer", CreateTypeFromCpp<Ptr<rpc_controller::IRpcSerializer>>(), WfFunctionKind::Normal);
-					auto newSerializer = CreateNewInterface(CreateTypeFromCpp<Ptr<rpc_controller::IRpcSerializer>>()).Cast<WfNewInterfaceExpression>();
-
-					{
-						auto serialize = CreateFunctionDeclaration(L"Serialize", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
-						serialize->arguments.Add(CreateFunctionArgument(L"value", CreatePredefinedType(WfPredefinedTypeName::Object)));
-						auto block = serialize->statement.Cast<WfBlockStatement>();
-						AddStatement(block, CreateInferredVariableStatement(L"result", CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"value"))));
-						AddStatement(block, CreateReturn(CreateReference(L"result")));
-						newSerializer->declarations.Add(serialize);
-					}
-
-					{
-						auto deserialize = CreateFunctionDeclaration(L"Deserialize", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
-						deserialize->arguments.Add(CreateFunctionArgument(L"value", CreatePredefinedType(WfPredefinedTypeName::Object)));
-						auto block = deserialize->statement.Cast<WfBlockStatement>();
-						AddStatement(block, CreateReturn(CreateCall(
-							CreateReference(L"rpcjson_Deserialize"),
-							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateReference(L"value")))));
-						newSerializer->declarations.Add(deserialize);
-					}
-
-					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newSerializer));
-					return functionDecl;
-				}
-
-				WString AddRpcJsonSerializeValue(WfLexicalScopeManager* manager, vint& tempIndex, Ptr<WfBlockStatement> block, Ptr<WfExpression> value, WfType* type)
-				{
-					List<RpcJsonPrimitiveModel> primitives;
-					List<RpcJsonTypeModel> enums;
-					List<RpcJsonTypeModel> structs;
-					CollectRpcJsonPrimitives(primitives);
-					CollectRpcJsonTypes(manager, enums, structs);
-
-					RpcJsonGenerationContext context;
-					context.manager = manager;
-					context.primitives = &primitives;
-					context.enums = &enums;
-					context.structs = &structs;
-					context.tempIndex = tempIndex;
-
-					auto result = AddKnownRpcJsonSerializeValue(context, block, value, type);
-					tempIndex = context.tempIndex;
-					return result;
-				}
-
-				WString AddRpcJsonDeserializeValue(WfLexicalScopeManager* manager, vint& tempIndex, Ptr<WfBlockStatement> block, Ptr<WfExpression> node, WfType* type)
-				{
-					List<RpcJsonPrimitiveModel> primitives;
-					List<RpcJsonTypeModel> enums;
-					List<RpcJsonTypeModel> structs;
-					CollectRpcJsonPrimitives(primitives);
-					CollectRpcJsonTypes(manager, enums, structs);
-
-					RpcJsonGenerationContext context;
-					context.manager = manager;
-					context.primitives = &primitives;
-					context.enums = &enums;
-					context.structs = &structs;
-					context.tempIndex = tempIndex;
-
-					auto result = AddKnownRpcJsonDeserializeValue(context, block, node, type);
-					tempIndex = context.tempIndex;
-					return result;
-				}
-
-				Ptr<WfType> CreateRpcJsonTransferType(ITypeInfo* typeInfo, bool byref, WfType* type)
-				{
-					if (IsSharedInterfaceType(typeInfo))
-					{
-						return byref
-							? CreateTypeFromCpp<rpc_controller::RpcObjectReference>()
-							: CreatePredefinedType(WfPredefinedTypeName::Object);
-					}
-					return CopyType(type);
-				}
-
-				Ptr<WfExpression> CreateRpcJsonTransferExpression(ITypeInfo* typeInfo, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
-				{
-					if (IsSharedInterfaceType(typeInfo))
-					{
-						return CreateRpcBoxExpression(typeInfo, byref, value, lifecycle);
-					}
-					return value;
-				}
-
-				Ptr<WfExpression> CreateRpcJsonTransferExpression(const RpcParamModel& paramModel, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
-				{
-					return CreateRpcJsonTransferExpression(paramModel.typeInfo, paramModel.byref, value, lifecycle);
-				}
-
-				Ptr<WfExpression> CreateJsonDispatchArgument(
-					WfLexicalScopeManager* manager,
-					vint& tempIndex,
-					Ptr<WfBlockStatement> block,
-					Ptr<WfExpression> node,
-					const RpcParamModel& paramModel)
-				{
-					auto transferType = CreateRpcJsonTransferType(paramModel.typeInfo, paramModel.byref, paramModel.type.Obj());
-					auto valueName = AddRpcJsonDeserializeValue(manager, tempIndex, block, node, transferType.Obj());
-					if (IsSharedInterfaceType(paramModel.typeInfo))
-					{
-						return CreateRpcUnboxExpression(paramModel.typeInfo, paramModel.type, paramModel.byref, CreateReference(valueName), CreateReference(L"_lc"));
-					}
-					return CreateReference(valueName);
-				}
-
-				Ptr<WfStatement> BuildInvokeMethodBranchJson(WfLexicalScopeManager* manager, const RpcInterfaceModel& interfaceModel, const RpcMethodModel& methodModel)
-				{
-					auto block = CreateBlock();
-					AddStatement(block, CreateInferredVariableStatement(L"target", CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
-
-					List<Ptr<WfExpression>> arguments;
-					vint tempIndex = 0;
-					for (vint i = 0; i < methodModel.params.Count(); i++)
-					{
-						auto&& paramModel = methodModel.params[i];
-						arguments.Add(CreateJsonDispatchArgument(
-							manager,
-							tempIndex,
-							block,
-							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateRpcJsonSerializedArgument(i)),
-							paramModel));
-					}
-
-					auto invokeTarget = CreateMember(CreateReference(L"target"), methodModel.name);
-					auto invoke = Ptr(new WfCallExpression);
-					invoke->function = invokeTarget;
-					for (auto argument : arguments)
-					{
-						invoke->arguments.Add(argument);
-					}
-
-					if (IsVoidType(methodModel.returnType.Obj()))
-					{
-						AddStatement(block, CreateExpressionStatement(invoke));
-						RpcJsonGenerationContext context;
-						context.manager = manager;
-						context.tempIndex = tempIndex;
-						auto nodeName = AddRpcJsonLiteral(block, context, L"Null");
-						tempIndex = context.tempIndex;
-						AddStatement(block, CreateReturn(CreateReference(nodeName)));
-					}
-					else
-					{
-						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
-						if (IsRpcByvalReturn(methodModel))
-						{
-							AddStatement(block, CreateInferredVariableStatement(L"copiedReturnValue", CreateRpcCopyByvalExpression(invoke, CreateReference(L"_lc"))));
-							auto transferValue = CreateRpcJsonTransferExpression(methodModel.returnTypeInfo, methodModel.returnByref, CreateReference(L"copiedReturnValue"), CreateReference(L"_lc"));
-							auto nodeName = AddRpcJsonSerializeValue(manager, tempIndex, block, transferValue, transferType.Obj());
-							AddRpcByvalReturnValue(block, CreateReference(nodeName), CreateReference(L"copiedReturnValue"));
-						}
-						else
-						{
-							auto transferValue = CreateRpcJsonTransferExpression(methodModel.returnTypeInfo, methodModel.returnByref, invoke, CreateReference(L"_lc"));
-							auto nodeName = AddRpcJsonSerializeValue(manager, tempIndex, block, transferValue, transferType.Obj());
-							AddStatement(block, CreateReturn(CreateReference(nodeName)));
-						}
-					}
-					return block;
-				}
-
-				Ptr<WfStatement> BuildInvokeEventBranchJson(WfLexicalScopeManager* manager, const RpcInterfaceModel& interfaceModel, const RpcEventModel& eventModel)
-				{
-					auto block = CreateBlock();
-					AddStatement(block, CreateInferredVariableStatement(L"target", CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
-
-					auto invoke = Ptr(new WfCallExpression);
-					invoke->function = CreateMember(CreateReference(L"target"), eventModel.name);
-					vint tempIndex = 0;
-					for (vint i = 0; i < eventModel.params.Count(); i++)
-					{
-						auto&& paramModel = eventModel.params[i];
-						invoke->arguments.Add(CreateJsonDispatchArgument(
-							manager,
-							tempIndex,
-							block,
-							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateRpcJsonSerializedArgument(i)),
-							paramModel));
-					}
-					AddStatement(block, CreateExpressionStatement(invoke));
-					return block;
-				}
-
-				Ptr<WfStatement> BuildDispatchChainJson(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces, bool forEvent, const WString& unknownIdVariable = WString::Empty)
-				{
-					auto switchStat = Ptr(new WfSwitchStatement);
-					switchStat->expression = CreateReference(forEvent ? L"eventId" : L"methodId");
-					switchStat->defaultBranch =
-						unknownIdVariable == L""
-						? CreateRaise(forEvent ? L"Unknown RPC event id." : L"Unknown RPC method id.")
-						: CreateExpressionStatement(CreateAssign(CreateReference(unknownIdVariable), CreateBool(true)));
-
-					for (auto&& interfaceModel : interfaces)
-					{
-						if (forEvent)
-						{
-							for (auto&& eventModel : interfaceModel.events)
-							{
-								auto switchCase = Ptr(new WfSwitchCase);
-								switchCase->expression = CreateRpcConstantReference(L"rpcevent_", eventModel.fullName);
-								switchCase->statement = BuildInvokeEventBranchJson(manager, interfaceModel, eventModel);
-								switchStat->caseBranches.Add(switchCase);
-							}
-						}
-						else
-						{
-							for (auto&& methodModel : interfaceModel.methods)
-							{
-								auto switchCase = Ptr(new WfSwitchCase);
-								switchCase->expression = CreateRpcConstantReference(L"rpcmethod_", methodModel.fullName);
-								switchCase->statement = BuildInvokeMethodBranchJson(manager, interfaceModel, methodModel);
-								switchStat->caseBranches.Add(switchCase);
-							}
-						}
-					}
-					return switchStat;
-				}
-
-				Ptr<WfDeclaration> GenerateObjectOpsFactoryJson(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
-				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectOpsJson", CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectOps>>(), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
-					auto newOps = CreateNewInterface(CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectOps>>()).Cast<WfNewInterfaceExpression>();
-					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
-					newOps->declarations.Add(CreateVariableDeclaration(L"_slot", CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(0)));
-					newOps->declarations.Add(CreateVariableDeclaration(L"_byvalReturnValues", CreateTypeFromCpp<Dictionary<vint, Value>>(), CreateConstructor()));
-
-					{
-						auto invokeMethod = CreateFunctionDeclaration(L"InvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
-						invokeMethod->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
-						invokeMethod->arguments.Add(CreateFunctionArgument(L"methodId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						invokeMethod->arguments.Add(CreateFunctionArgument(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>()));
-						auto block = invokeMethod->statement.Cast<WfBlockStatement>();
-						AddStatement(block, CreateVariableStatement(L"unknownId", CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
-						auto catchBlock = CreateBlock();
-						AddStatement(catchBlock, CreateReturn(CreateCall(CreateReference(L"rpcjson_Serialize"), CreateRpcExceptionExpression(CreateMember(CreateReference(L"ex"), L"Message")))));
-						AddStatement(block, CreateTryCatch(BuildDispatchChainJson(manager, interfaces, false, L"unknownId"), L"ex", catchBlock));
-						auto unknownIdBranch = CreateBlock();
-						AddStatement(unknownIdBranch, CreateRaise(L"Unknown RPC method id."));
-						AddStatement(block, CreateIf(CreateReference(L"unknownId"), unknownIdBranch));
-						AddStatement(block, CreateReturn(CreateCall(CreateReference(L"rpcjson_Serialize"), CreateNull())));
-						newOps->declarations.Add(invokeMethod);
-					}
-
-					{
-						auto endInvokeMethod = CreateFunctionDeclaration(L"EndInvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						endInvokeMethod->arguments.Add(CreateFunctionArgument(L"slot", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						AddStatement(endInvokeMethod->statement.Cast<WfBlockStatement>(), CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_byvalReturnValues"), L"Remove"), CreateReference(L"slot"))));
-						newOps->declarations.Add(endInvokeMethod);
-					}
-
-					{
-						auto objectHold = CreateFunctionDeclaration(L"ObjectHold", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						objectHold->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
-						objectHold->arguments.Add(CreateFunctionArgument(L"remoteClientId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						objectHold->arguments.Add(CreateFunctionArgument(L"hold", CreatePredefinedType(WfPredefinedTypeName::Bool)));
-						auto trueBranch = CreateBlock();
-						AddStatement(trueBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_lc"), L"LocalObjectHold"), CreateReference(L"ref"), CreateReference(L"remoteClientId"))));
-						auto falseBranch = CreateBlock();
-						AddStatement(falseBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_lc"), L"LocalObjectUnhold"), CreateReference(L"ref"), CreateReference(L"remoteClientId"))));
-						AddStatement(objectHold->statement.Cast<WfBlockStatement>(), CreateIf(CreateReference(L"hold"), trueBranch, falseBranch));
-						newOps->declarations.Add(objectHold);
-					}
-
-					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
-					return functionDecl;
-				}
-
-				Ptr<WfDeclaration> GenerateObjectEventOpsFactoryJson(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
-				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectEventOpsJson", CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectEventOps>>(), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
-					auto newOps = CreateNewInterface(CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectEventOps>>()).Cast<WfNewInterfaceExpression>();
-					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
-
-					{
-						auto invokeEvent = CreateFunctionDeclaration(L"InvokeEvent", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
-						invokeEvent->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
-						invokeEvent->arguments.Add(CreateFunctionArgument(L"eventId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						invokeEvent->arguments.Add(CreateFunctionArgument(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>()));
-						auto block = invokeEvent->statement.Cast<WfBlockStatement>();
-						if (!HasRpcEvents(interfaces))
-						{
-							AddStatement(block, CreateRaise(L"Unknown RPC event id."));
-							newOps->declarations.Add(invokeEvent);
-						}
-						else
-						{
-							AddStatement(block, CreateVariableStatement(L"unknownId", CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
-							AddStatement(block, CreateVariableStatement(L"rpcEventExceptions", CreateRpcEventExceptionMapType(), CreateConstructor()));
-							AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(true))));
-							auto finallyBlock = CreateBlock();
-							AddStatement(finallyBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(false))));
-							auto catchBlock = CreateBlock();
-							AddRpcEventExceptionMapSet(catchBlock, L"rpcEventExceptions", CreateMember(CreateReference(L"_lc"), L"ClientId"), CreateMember(CreateReference(L"ex"), L"Message"));
-							AddStatement(block, CreateTry(BuildDispatchChainJson(manager, interfaces, true, L"unknownId"), L"ex", catchBlock, finallyBlock));
-							auto unknownIdBranch = CreateBlock();
-							AddStatement(unknownIdBranch, CreateRaise(L"Unknown RPC event id."));
-							AddStatement(block, CreateIf(CreateReference(L"unknownId"), unknownIdBranch));
-							auto returnExceptionBranch = CreateBlock();
-							AddStatement(returnExceptionBranch, CreateReturn(CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"rpcEventExceptions"))));
-							auto returnNullBranch = CreateBlock();
-							AddStatement(returnNullBranch, CreateReturn(CreateCall(CreateReference(L"rpcjson_Serialize"), CreateNull())));
-							AddStatement(
-								block,
-								CreateIf(
-									CreateBinary(WfBinaryOperator::GT, CreateMember(CreateReference(L"rpcEventExceptions"), L"Count"), CreateInt(0)),
-									returnExceptionBranch,
-									returnNullBranch));
-							newOps->declarations.Add(invokeEvent);
-						}
-					}
-
-					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
-					return functionDecl;
-				}
-
-				void AddRpcOpsArgumentsArrayJson(
-					WfLexicalScopeManager* manager,
-					Ptr<WfBlockStatement> block,
-					const List<RpcParamModel>& params,
-					vint& tempIndex)
-				{
-					AddStatement(block, CreateVariableStatement(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>(), CreateConstructor()));
-					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Resize"), CreateInt(params.Count()))));
-
-					for (vint i = 0; i < params.Count(); i++)
-					{
-						auto&& paramModel = params[i];
-						auto value = CreateReference(GetRpcOpsArgumentName(paramModel));
-						auto transferValue = CreateRpcJsonTransferExpression(paramModel, value, CreateReference(L"_lc"));
-						auto transferType = CreateRpcJsonTransferType(paramModel.typeInfo, paramModel.byref, paramModel.type.Obj());
-						auto nodeName = AddRpcJsonSerializeValue(manager, tempIndex, block, transferValue, transferType.Obj());
-						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Set"), CreateInt(i), CreateReference(nodeName))));
-					}
-				}
-
-				Ptr<WfFunctionDeclaration> GenerateRpcOpsMethodImplementationJson(WfLexicalScopeManager* manager, const RpcMethodModel& methodModel)
-				{
-					auto functionDecl = CreateRpcOpsFunctionDeclaration(GetRpcOpsInvokeMethodName(methodModel), CopyType(methodModel.returnType.Obj()), WfFunctionKind::Override);
-					AddRpcOpsFunctionArguments(functionDecl, methodModel.params);
-					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-
-					vint tempIndex = 0;
-					AddRpcOpsArgumentsArrayJson(manager, block, methodModel.params, tempIndex);
-					if (IsVoidType(methodModel.returnType.Obj()))
-					{
-						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
-						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
-						AddStatement(block, CreateInferredVariableStatement(
-							L"jsonResult",
-							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateReference(L"invokeResult"))));
-						AddStatement(block, CreateInferredVariableStatement(
-							L"methodResult",
-							CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"jsonResult"))));
-						AddRpcMethodExceptionRaise(block, CreateReference(L"methodResult"));
-					}
-					else if (IsRpcByvalReturn(methodModel))
-					{
-						AddStatement(block, CreateInferredVariableStatement(L"objectOps", CreateRpcOpsObjectOps()));
-						auto invoke = CreateRpcOpsObjectInvoke(methodModel, CreateReference(L"objectOps"));
-						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
-						AddStatement(block, CreateInferredVariableStatement(
-							L"byvalReturnValue",
-							CreateWeakCast(CreateTypeFromCpp<Ptr<rpc_controller::RpcByvalReturnValue>>(), CreateReference(L"invokeResult"))));
-						AddStatement(block, CreateVariableStatement(L"jsonResult", CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateNull()));
-						auto exceptionBranch = CreateBlock();
-						AddStatement(exceptionBranch, CreateExpressionStatement(CreateAssign(
-							CreateReference(L"jsonResult"),
-							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateReference(L"invokeResult")))));
-						auto returnBranch = CreateBlock();
-						AddStatement(returnBranch, CreateExpressionStatement(CreateAssign(
-							CreateReference(L"jsonResult"),
-							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateMember(CreateReference(L"byvalReturnValue"), L"value")))));
-						AddStatement(block, CreateIf(CreateIsNull(CreateReference(L"byvalReturnValue")), exceptionBranch, returnBranch));
-						AddStatement(block, CreateInferredVariableStatement(
-							L"methodResult",
-							CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"jsonResult"))));
-						AddRpcMethodExceptionRaise(block, CreateReference(L"methodResult"));
-						AddStatement(block, CreateInferredVariableStatement(
-							L"strongByvalReturnValue",
-							CreateCast(CreateTypeFromCpp<Ptr<rpc_controller::RpcByvalReturnValue>>(), CreateReference(L"byvalReturnValue"))));
-						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
-						auto valueName = AddRpcJsonDeserializeValue(manager, tempIndex, block, CreateReference(L"jsonResult"), transferType.Obj());
-						AddStatement(block, CreateInferredVariableStatement(
-							L"result",
-							IsSharedInterfaceType(methodModel.returnTypeInfo)
-								? CreateRpcUnboxExpression(methodModel.returnTypeInfo, methodModel.returnType, methodModel.returnByref, CreateReference(valueName), CreateReference(L"_lc"))
-								: CreateReference(valueName)));
-						AddStatement(block, CreateExpressionStatement(CreateCall(
-							CreateMember(CreateReference(L"objectOps"), L"EndInvokeMethod"),
-							CreateMember(CreateReference(L"strongByvalReturnValue"), L"slot"))));
-						AddStatement(block, CreateReturn(CreateReference(L"result")));
-					}
-					else
-					{
-						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
-						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
-						AddStatement(block, CreateInferredVariableStatement(L"jsonResult", CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateReference(L"invokeResult"))));
-						AddStatement(block, CreateInferredVariableStatement(
-							L"methodResult",
-							CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"jsonResult"))));
-						AddRpcMethodExceptionRaise(block, CreateReference(L"methodResult"));
-						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
-						auto valueName = AddRpcJsonDeserializeValue(manager, tempIndex, block, CreateReference(L"jsonResult"), transferType.Obj());
-						if (IsSharedInterfaceType(methodModel.returnTypeInfo))
-						{
-							AddStatement(block, CreateReturn(CreateRpcUnboxExpression(methodModel.returnTypeInfo, methodModel.returnType, methodModel.returnByref, CreateReference(valueName), CreateReference(L"_lc"))));
-						}
-						else
-						{
-							AddStatement(block, CreateReturn(CreateReference(valueName)));
-						}
-					}
-
-					return functionDecl;
-				}
-
-				Ptr<WfFunctionDeclaration> GenerateRpcOpsEventImplementationJson(WfLexicalScopeManager* manager, const RpcEventModel& eventModel)
-				{
-					auto functionDecl = CreateRpcOpsFunctionDeclaration(GetRpcOpsInvokeEventName(eventModel), CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-					AddRpcOpsFunctionArguments(functionDecl, eventModel.params);
-					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-
-					vint tempIndex = 0;
-					AddRpcOpsArgumentsArrayJson(manager, block, eventModel.params, tempIndex);
-					AddStatement(block, CreateInferredVariableStatement(L"invokeResult", CreateRpcOpsObjectEventInvoke(eventModel)));
-					AddStatement(block, CreateInferredVariableStatement(
-						L"jsonResult",
-						CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateReference(L"invokeResult"))));
-					AddStatement(block, CreateInferredVariableStatement(
-						L"eventResult",
-						CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"jsonResult"))));
-					AddRpcEventExceptionRaise(block, CreateCast(CreateRpcEventExceptionMapType(), CreateReference(L"eventResult")));
-					return functionDecl;
-				}
-
-				Ptr<WfDeclaration> GenerateRpcOpsFactoryJson(WfLexicalScopeManager* manager, const WString& assemblyName, const List<RpcInterfaceModel>& interfaces)
-				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IOps_CreateJson", CreateSharedType(GetRpcOpsInterfaceName(assemblyName)), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
-					auto newOps = CreateNewInterface(CreateSharedType(GetRpcOpsInterfaceName(assemblyName))).Cast<WfNewInterfaceExpression>();
-					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
-
-					for (auto&& interfaceModel : interfaces)
-					{
-						for (auto&& methodModel : interfaceModel.methods)
-						{
-							newOps->declarations.Add(GenerateRpcOpsMethodImplementationJson(manager, methodModel));
-						}
-						for (auto&& eventModel : interfaceModel.events)
-						{
-							newOps->declarations.Add(GenerateRpcOpsEventImplementationJson(manager, eventModel));
-						}
-					}
-
-					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
-					return functionDecl;
-				}
-			}
-
-			Ptr<WfModule> GenerateModuleRpcJson(WfLexicalScopeManager* manager, WString assemblyName)
-			{
-				using namespace rpc_generating;
-
-				if (!manager || !manager->rpcMetadata || !manager->rpcMetadata->metadataModule)
-				{
-					return nullptr;
-				}
-
-				CollectMangledNames(manager);
-				if (manager->errors.Count() > 0)
-				{
-					return nullptr;
-				}
-
-				auto interfaces = BuildInterfaceModels(manager);
-				if (manager->errors.Count() > 0)
-				{
-					return nullptr;
-				}
-
-				auto module = Ptr(new WfModule);
-				module->moduleType = WfModuleType::Module;
-				module->name.value = L"RpcMetadataJson";
-
-				AddRpcJsonDeclarations(manager, module);
-				module->declarations.Add(GenerateRpcSerializerFactoryJson());
-				module->declarations.Add(GenerateObjectOpsFactoryJson(manager, interfaces));
-				module->declarations.Add(GenerateObjectEventOpsFactoryJson(manager, interfaces));
-				module->declarations.Add(GenerateRpcOpsFactoryJson(manager, assemblyName, interfaces));
-
-				return module;
-			}
-		}
-	}
-}
-
-
-/***********************************************************************
 .\ANALYZER\WFANALYZER_MISC.CPP
 ***********************************************************************/
 
@@ -15545,2258 +10991,6 @@ CreateTypeInfoFromMethodInfo
 				}
 				return Ptr(new SharedPtrTypeInfo(genericType));
 			}
-		}
-	}
-}
-
-
-/***********************************************************************
-.\ANALYZER\WFANALYZER_VALIDATERPC.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace workflow
-	{
-		namespace analyzer
-		{
-			namespace rpc_compiling
-			{
-				using namespace collections;
-				using namespace reflection;
-				using namespace reflection::description;
-
-/***********************************************************************
-ValidateModuleRPC_Ast
-***********************************************************************/
-
-				enum class RpcDeferredKind
-				{
-					Cached,
-					Dynamic,
-					ByvalProperty,
-					ByrefProperty,
-					ByvalMethod,
-					ByrefMethod,
-					ByvalParameter,
-					ByrefParameter,
-				};
-
-				struct RpcDeferredCheck
-				{
-					RpcDeferredKind							kind = RpcDeferredKind::Cached;
-					WfAttribute*							attribute = nullptr;
-					ITypeDescriptor*						ownerTd = nullptr;
-					WfPropertyDeclaration*					propertyDecl = nullptr;
-					WfFunctionDeclaration*					methodDecl = nullptr;
-					WfFunctionArgument*						parameterDecl = nullptr;
-				};
-
-				struct RpcPhase1Context
-				{
-					SortedList<ITypeDescriptor*>										workflowRpcInterfaceTds;
-					Dictionary<Pair<ITypeDescriptor*, ITypeDescriptor*>, WfType*>		baseTypeNodeMap;
-					List<RpcDeferredCheck>												deferredChecks;
-				};
-
-				bool IsRpcAttribute(WfAttribute* attribute, const wchar_t* name)
-				{
-					return attribute
-						&& attribute->category.value == L"rpc"
-						&& attribute->name.value == name;
-				}
-
-				bool HasRpcAttribute(List<Ptr<WfAttribute>>& attributes, const wchar_t* name)
-				{
-					for (auto attribute : attributes)
-					{
-						if (IsRpcAttribute(attribute.Obj(), name))
-						{
-							return true;
-						}
-					}
-					return false;
-				}
-
-				bool HasEarlierRpcAttribute(List<Ptr<WfAttribute>>& attributes, WfAttribute* currentAttribute, const wchar_t* name)
-				{
-					for (auto attribute : attributes)
-					{
-						if (attribute.Obj() == currentAttribute)
-						{
-							break;
-						}
-
-						if (IsRpcAttribute(attribute.Obj(), name))
-						{
-							return true;
-						}
-					}
-					return false;
-				}
-
-				ITypeDescriptor* GetClassTypeDescriptor(WfLexicalScopeManager* manager, WfClassDeclaration* classDecl)
-				{
-					if (!classDecl)
-					{
-						return nullptr;
-					}
-					return manager->declarationTypes[classDecl].Obj();
-				}
-
-				WfPropertyDeclaration* GetRpcPropertyDeclaration(WfDeclaration* declaration)
-				{
-					if (auto propertyDecl = dynamic_cast<WfPropertyDeclaration*>(declaration))
-					{
-						return propertyDecl;
-					}
-
-					if (auto autoPropertyDecl = dynamic_cast<WfAutoPropertyDeclaration*>(declaration))
-					{
-						for (auto expandedDeclaration : autoPropertyDecl->expandedDeclarations)
-						{
-							if (auto propertyDecl = expandedDeclaration.Cast<WfPropertyDeclaration>())
-							{
-								return propertyDecl.Obj();
-							}
-						}
-					}
-
-					return nullptr;
-				}
-
-				WString GetDeclarationFullName(WfLexicalScopeManager* manager, WfDeclaration* declaration, WfClassDeclaration* ownerClassDecl)
-				{
-					if (auto classDecl = dynamic_cast<WfClassDeclaration*>(declaration))
-					{
-						if (auto td = GetClassTypeDescriptor(manager, classDecl))
-						{
-							return td->GetTypeName();
-						}
-					}
-
-					if (auto ownerTd = GetClassTypeDescriptor(manager, ownerClassDecl))
-					{
-						if (declaration)
-						{
-							return ownerTd->GetTypeName() + L"." + declaration->name.value;
-						}
-						return ownerTd->GetTypeName();
-					}
-
-					if (declaration && declaration->name.value != L"")
-					{
-						return declaration->name.value;
-					}
-
-					return L"<anonymous>";
-				}
-
-				WString GetAttributeTargetFullName(WfLexicalScopeManager* manager, WfDeclaration* declaration, WfFunctionArgument* argument, WfClassDeclaration* ownerClassDecl)
-				{
-					auto ownerTd = GetClassTypeDescriptor(manager, ownerClassDecl);
-					auto ownerPrefix = ownerTd ? ownerTd->GetTypeName() + L"." : WString();
-
-					if (argument && declaration)
-					{
-						return ownerPrefix + declaration->name.value + L"(" + argument->name.value + L")";
-					}
-					else if (declaration)
-					{
-						return ownerPrefix + declaration->name.value;
-					}
-					else if (argument)
-					{
-						return ownerPrefix + argument->name.value;
-					}
-					else
-					{
-						return ownerTd ? ownerTd->GetTypeName() : WString(L"<unknown>");
-					}
-				}
-
-				bool ContainsFunctionType(WfType* type)
-				{
-					class V : public Object, public WfType::IVisitor
-					{
-					public:
-						bool found = false;
-
-						void Visit(WfFunctionType* node)override { found = true; }
-						void Visit(WfRawPointerType* node)override { node->element->Accept(this); }
-						void Visit(WfSharedPointerType* node)override { node->element->Accept(this); }
-						void Visit(WfNullableType* node)override { node->element->Accept(this); }
-						void Visit(WfEnumerableType* node)override { node->element->Accept(this); }
-						void Visit(WfMapType* node)override { if (node->key) node->key->Accept(this); node->value->Accept(this); }
-						void Visit(WfObservableListType* node)override { node->element->Accept(this); }
-						void Visit(WfChildType* node)override { node->parent->Accept(this); }
-						void Visit(WfPredefinedType* node)override {}
-						void Visit(WfTopQualifiedType* node)override {}
-						void Visit(WfReferenceType* node)override {}
-					};
-
-					V visitor;
-					type->Accept(&visitor);
-					return visitor.found;
-				}
-
-				bool IsGenericRpcInterface(WfClassDeclaration* classDecl)
-				{
-					if (!classDecl || classDecl->kind != WfClassKind::Interface)
-					{
-						return false;
-					}
-
-					for (auto baseType : classDecl->baseTypes)
-					{
-						if (ContainsFunctionType(baseType.Obj()))
-						{
-							return true;
-						}
-					}
-					return false;
-				}
-
-				bool IsAstRpcInterface(WfClassDeclaration* classDecl)
-				{
-					return classDecl
-						&& classDecl->kind == WfClassKind::Interface
-						&& !IsGenericRpcInterface(classDecl)
-						&& HasRpcAttribute(classDecl->attributes, L"Interface");
-				}
-
-				void CollectAllWorkflowRpcInterfaceTds(WfLexicalScopeManager* manager, SortedList<ITypeDescriptor*>& rpcInterfaceTds)
-				{
-					for (vint i = 0; i < manager->declarationTypes.Count(); i++)
-					{
-						auto classDecl = manager->declarationTypes.Keys()[i].Cast<WfClassDeclaration>();
-						if (!classDecl || !IsAstRpcInterface(classDecl.Obj()))
-						{
-							continue;
-						}
-
-						auto td = manager->declarationTypes.Values()[i].Obj();
-						if (td && !rpcInterfaceTds.Contains(td))
-						{
-							rpcInterfaceTds.Add(td);
-						}
-					}
-				}
-
-				void BuildMemberDeclarationMap(WfLexicalScopeManager* manager, Dictionary<IMemberInfo*, Ptr<WfDeclaration>>& memberDeclMap)
-				{
-					for (vint i = 0; i < manager->declarationMemberInfos.Count(); i++)
-					{
-						auto memberInfo = manager->declarationMemberInfos.Values()[i].Obj();
-						if (memberInfo && !memberDeclMap.Keys().Contains(memberInfo))
-						{
-							memberDeclMap.Add(memberInfo, manager->declarationMemberInfos.Keys()[i]);
-						}
-					}
-				}
-
-				Ptr<WfFunctionArgument> FindFunctionArgument(WfFunctionDeclaration* functionDecl, const WString& parameterName, vint index)
-				{
-					if (!functionDecl)
-					{
-						return nullptr;
-					}
-
-					for (auto argument : functionDecl->arguments)
-					{
-						if (argument->name.value == parameterName)
-						{
-							return argument;
-						}
-					}
-
-					if (0 <= index && index < functionDecl->arguments.Count())
-					{
-						return functionDecl->arguments[index];
-					}
-
-					return nullptr;
-				}
-
-				bool HasAttribute(IAttributeBag* bag, ITypeDescriptor* attrTd)
-				{
-					if (!bag || !attrTd)
-					{
-						return false;
-					}
-
-					for (vint i = 0; i < bag->GetAttributeCount(); i++)
-					{
-						if (bag->GetAttribute(i)->GetAttributeType() == attrTd) return true;
-					}
-					return false;
-				}
-
-				bool IsRpcInterfaceTd(ITypeDescriptor* td, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
-				{
-					if (!td) return false;
-					if (rpcInterfaceTds.Contains(td)) return true;
-					return HasAttribute(td, rpcInterfaceAttrTd);
-				}
-
-				bool IsStrongTypedCollection(ITypeInfo* type)
-				{
-					if (!type || type->GetDecorator() != ITypeInfo::SharedPtr) return false;
-					auto genericType = type->GetElementType();
-					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return false;
-
-					auto collectionType = genericType->GetElementType();
-					if (!collectionType || collectionType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
-
-					auto collectionTd = collectionType->GetTypeDescriptor();
-					if (collectionTd == GetTypeDescriptor<IValueEnumerable>()
-						|| collectionTd == GetTypeDescriptor<IValueReadonlyList>()
-						|| collectionTd == GetTypeDescriptor<IValueList>()
-						|| collectionTd == GetTypeDescriptor<IValueObservableList>())
-					{
-						return genericType->GetGenericArgumentCount() == 1;
-					}
-
-					if (collectionTd == GetTypeDescriptor<IValueReadonlyDictionary>()
-						|| collectionTd == GetTypeDescriptor<IValueDictionary>())
-					{
-						return genericType->GetGenericArgumentCount() == 2;
-					}
-
-					switch (type->GetHint())
-					{
-					case TypeInfoHint::LazyList:
-					case TypeInfoHint::Array:
-					case TypeInfoHint::List:
-						return genericType->GetGenericArgumentCount() == 1;
-					case TypeInfoHint::Dictionary:
-						return genericType->GetGenericArgumentCount() == 2;
-					default:
-						return false;
-					}
-				}
-
-				Ptr<WfAttribute> CreateRpcAttribute(const WString& name)
-				{
-					auto attribute = Ptr(new WfAttribute);
-					attribute->category.value = L"rpc";
-					attribute->name.value = name;
-					return attribute;
-				}
-
-				Ptr<WfAttribute> CreateRpcAttribute(const WString& name, Ptr<WfExpression> value)
-				{
-					auto attribute = CreateRpcAttribute(name);
-					attribute->value = value;
-					return attribute;
-				}
-
-				Ptr<WfExpression> CreateRpcStringLiteral(const WString& value)
-				{
-					auto expression = Ptr(new WfStringExpression);
-					expression->value.value = value;
-					return expression;
-				}
-
-				Ptr<WfExpression> CreateRpcIntegerLiteral(vint value)
-				{
-					auto expression = Ptr(new WfIntegerExpression);
-					expression->value.value = itow(value);
-					return expression;
-				}
-
-				void EnsureRpcAttribute(List<Ptr<WfAttribute>>& attributes, const WString& name)
-				{
-					if (!HasRpcAttribute(attributes, name.Buffer()))
-					{
-						attributes.Add(CreateRpcAttribute(name));
-					}
-				}
-
-				ITypeInfo* GetStrongTypedCollectionElementType(ITypeInfo* type)
-				{
-					if (!IsStrongTypedCollection(type)) return nullptr;
-					auto genericType = type->GetElementType();
-					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return nullptr;
-					switch (genericType->GetGenericArgumentCount())
-					{
-					case 1:
-						return genericType->GetGenericArgument(0);
-					case 2:
-						return genericType->GetGenericArgument(1);
-					default:
-						return nullptr;
-					}
-				}
-
-				bool IsObservableStrongTypedCollection(ITypeInfo* type)
-				{
-					if (!IsStrongTypedCollection(type)) return false;
-					auto genericType = type->GetElementType();
-					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return false;
-					auto collectionType = genericType->GetElementType();
-					if (!collectionType || collectionType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
-					return collectionType->GetTypeDescriptor() == GetTypeDescriptor<IValueObservableList>();
-				}
-
-				bool IsRpcInterfaceSharedType(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
-				{
-					if (!type || type->GetDecorator() != ITypeInfo::SharedPtr) return false;
-					auto elementType = type->GetElementType();
-					if (!elementType || elementType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
-					auto td = elementType->GetTypeDescriptor();
-					return td
-						&& (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::Interface) != TypeDescriptorFlags::Undefined
-						&& IsRpcInterfaceTd(td, rpcInterfaceAttrTd, rpcInterfaceTds);
-				}
-
-				bool IsStrongTypedCollectionContainingRpcInterface(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
-				{
-					auto elementType = GetStrongTypedCollectionElementType(type);
-					if (!elementType) return false;
-					return IsRpcInterfaceSharedType(elementType, rpcInterfaceAttrTd, rpcInterfaceTds)
-						|| IsStrongTypedCollectionContainingRpcInterface(elementType, rpcInterfaceAttrTd, rpcInterfaceTds);
-				}
-
-				WString GetDefaultRpcTransferAttribute(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
-				{
-					if (!IsStrongTypedCollection(type)) return L"";
-					if (IsObservableStrongTypedCollection(type)
-						|| IsStrongTypedCollectionContainingRpcInterface(type, rpcInterfaceAttrTd, rpcInterfaceTds))
-					{
-						return L"Byref";
-					}
-					return L"Byval";
-				}
-
-				bool IsSerializableType(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
-				{
-					if (!type) return false;
-					switch (type->GetDecorator())
-					{
-					case ITypeInfo::Nullable:
-						return IsSerializableType(type->GetElementType(), rpcInterfaceAttrTd, rpcInterfaceTds);
-
-					case ITypeInfo::SharedPtr:
-						{
-							auto e = type->GetElementType();
-							if (!e) return false;
-
-							if (e->GetDecorator() == ITypeInfo::Generic)
-							{
-								if (!IsStrongTypedCollection(type)) return false;
-								for (vint i = 0; i < e->GetGenericArgumentCount(); i++)
-								{
-									if (!IsSerializableType(e->GetGenericArgument(i), rpcInterfaceAttrTd, rpcInterfaceTds)) return false;
-								}
-								return true;
-							}
-
-							if (e->GetDecorator() == ITypeInfo::TypeDescriptor)
-							{
-								auto td = e->GetTypeDescriptor();
-								return (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::Interface) != TypeDescriptorFlags::Undefined
-									&& IsRpcInterfaceTd(td, rpcInterfaceAttrTd, rpcInterfaceTds);
-							}
-
-							return false;
-						}
-
-					case ITypeInfo::TypeDescriptor:
-						{
-							auto td = type->GetTypeDescriptor();
-							if (td == GetTypeDescriptor<void>()) return false;
-							switch (td->GetTypeDescriptorFlags())
-							{
-							case TypeDescriptorFlags::Primitive:
-							case TypeDescriptorFlags::Struct:
-							case TypeDescriptorFlags::FlagEnum:
-							case TypeDescriptorFlags::NormalEnum:
-								return true;
-							default:
-								return false;
-							}
-						}
-
-					default:
-						return false;
-					}
-				}
-
-				bool IsSerializableReturnType(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
-				{
-					if (!type) return false;
-					if (type->GetDecorator() == ITypeInfo::TypeDescriptor && type->GetTypeDescriptor() == GetTypeDescriptor<void>()) return true;
-					return IsSerializableType(type, rpcInterfaceAttrTd, rpcInterfaceTds);
-				}
-
-				ITypeDescriptor* GetReservedRpcType(ITypeInfo* type)
-				{
-					if (!type) return nullptr;
-					switch (type->GetDecorator())
-					{
-					case ITypeInfo::Nullable:
-					case ITypeInfo::RawPtr:
-						return GetReservedRpcType(type->GetElementType());
-					case ITypeInfo::SharedPtr:
-						{
-							auto elementType = type->GetElementType();
-							if (!elementType) return nullptr;
-							if (elementType->GetDecorator() == ITypeInfo::Generic)
-							{
-								for (vint i = 0; i < elementType->GetGenericArgumentCount(); i++)
-								{
-									if (auto td = GetReservedRpcType(elementType->GetGenericArgument(i)))
-									{
-										return td;
-									}
-								}
-								return nullptr;
-							}
-							return GetReservedRpcType(elementType);
-						}
-					case ITypeInfo::TypeDescriptor:
-						{
-							auto td = type->GetTypeDescriptor();
-							if (td == GetTypeDescriptor<vl::rpc_controller::RpcObjectReference>()
-								|| td == GetTypeDescriptor<vl::rpc_controller::RpcException>())
-							{
-								return td;
-							}
-							return nullptr;
-						}
-					default:
-						return nullptr;
-					}
-				}
-
-				WString GetReservedRpcTypeName(ITypeInfo* type)
-				{
-					if (auto td = GetReservedRpcType(type))
-					{
-						return td->GetTypeName();
-					}
-					return L"";
-				}
-
-				WString GetDeferredAttributeName(RpcDeferredKind kind)
-				{
-					switch (kind)
-					{
-					case RpcDeferredKind::Cached:			return L"Cached";
-					case RpcDeferredKind::Dynamic:			return L"Dynamic";
-					case RpcDeferredKind::ByvalProperty:
-					case RpcDeferredKind::ByvalMethod:
-					case RpcDeferredKind::ByvalParameter:	return L"Byval";
-					case RpcDeferredKind::ByrefProperty:
-					case RpcDeferredKind::ByrefMethod:
-					case RpcDeferredKind::ByrefParameter:	return L"Byref";
-					default:								return L"";
-					}
-				}
-
-				void ValidateModuleRPC_Ast(WfLexicalScopeManager* manager, Ptr<WfModule> module, RpcPhase1Context& context)
-				{
-					class Visitor
-						: public Object
-						, public WfDeclaration::IVisitor
-						, public WfVirtualCseDeclaration::IVisitor
-					{
-					public:
-						WfLexicalScopeManager*					manager;
-						RpcPhase1Context&						context;
-						WfClassDeclaration*						currentClassDecl = nullptr;
-
-						Visitor(WfLexicalScopeManager* _manager, RpcPhase1Context& _context)
-							:manager(_manager)
-							, context(_context)
-						{
-						}
-
-						void VisitDeclaration(Ptr<WfDeclaration> declaration)
-						{
-							ProcessAttributes(declaration->attributes, declaration.Obj(), nullptr);
-							declaration->Accept(this);
-						}
-
-						void ProcessAttributes(List<Ptr<WfAttribute>>& attributes, WfDeclaration* declaration, WfFunctionArgument* argument)
-						{
-							for (auto attribute : attributes)
-							{
-								auto name = attribute->name.value;
-								if (attribute->category.value != L"rpc")
-								{
-									continue;
-								}
-
-								if (name == L"Interface")
-								{
-									auto classDecl = dynamic_cast<WfClassDeclaration*>(declaration);
-									if (!classDecl || classDecl->kind != WfClassKind::Interface || IsGenericRpcInterface(classDecl))
-									{
-										manager->errors.Add(WfErrors::RpcInterfaceCanOnlyApplyToInterface(attribute.Obj(), GetDeclarationFullName(manager, declaration, currentClassDecl)));
-										continue;
-									}
-
-									auto td = manager->declarationTypes[classDecl].Obj();
-									if (td && !context.workflowRpcInterfaceTds.Contains(td))
-									{
-										context.workflowRpcInterfaceTds.Add(td);
-
-										auto scope = manager->nodeScopes[classDecl];
-										for (auto baseType : classDecl->baseTypes)
-										{
-											auto scopeName = GetScopeNameFromReferenceType(scope->parentScope.Obj(), baseType);
-											if (scopeName && scopeName->typeDescriptor)
-											{
-												auto key = Pair(td, scopeName->typeDescriptor);
-												if (!context.baseTypeNodeMap.Keys().Contains(key))
-												{
-													context.baseTypeNodeMap.Add(key, baseType.Obj());
-												}
-											}
-										}
-									}
-								}
-								else if (name == L"Ctor")
-								{
-									auto classDecl = dynamic_cast<WfClassDeclaration*>(declaration);
-									if (!classDecl || !IsAstRpcInterface(classDecl))
-									{
-										manager->errors.Add(WfErrors::RpcCtorCanOnlyApplyToRpcInterface(attribute.Obj()));
-									}
-								}
-								else if (name == L"Byval" || name == L"Byref")
-								{
-									auto propertyDecl = GetRpcPropertyDeclaration(declaration);
-									auto isProperty = propertyDecl != nullptr;
-									auto isMethod = dynamic_cast<WfFunctionDeclaration*>(declaration) != nullptr;
-									auto isParameter = argument != nullptr && isMethod;
-									if (!isProperty && !isMethod && !isParameter)
-									{
-										manager->errors.Add(WfErrors::RpcAttributeCanOnlyApplyToPropertyMethodOrParameter(attribute.Obj(), name));
-										continue;
-									}
-
-									if (name == L"Byref" && HasEarlierRpcAttribute(attributes, attribute.Obj(), L"Byval"))
-									{
-										manager->errors.Add(WfErrors::RpcAttributeCannotCoexistWithOther(attribute.Obj(), name, L"Byval", GetAttributeTargetFullName(manager, declaration, argument, currentClassDecl)));
-										continue;
-									}
-
-									if (name == L"Byval" && HasEarlierRpcAttribute(attributes, attribute.Obj(), L"Byref"))
-									{
-										manager->errors.Add(WfErrors::RpcAttributeCannotCoexistWithOther(attribute.Obj(), name, L"Byref", GetAttributeTargetFullName(manager, declaration, argument, currentClassDecl)));
-										continue;
-									}
-
-									if (!IsAstRpcInterface(currentClassDecl))
-									{
-										manager->errors.Add(WfErrors::RpcAttributeCanOnlyBeUsedInsideRpcInterface(attribute.Obj(), name));
-										continue;
-									}
-
-									RpcDeferredCheck check;
-									check.attribute = attribute.Obj();
-									check.ownerTd = GetClassTypeDescriptor(manager, currentClassDecl);
-									check.propertyDecl = propertyDecl;
-									check.methodDecl = dynamic_cast<WfFunctionDeclaration*>(declaration);
-									check.parameterDecl = argument;
-									check.kind =
-										isParameter ? (name == L"Byval" ? RpcDeferredKind::ByvalParameter : RpcDeferredKind::ByrefParameter) :
-										isMethod ? (name == L"Byval" ? RpcDeferredKind::ByvalMethod : RpcDeferredKind::ByrefMethod) :
-										(name == L"Byval" ? RpcDeferredKind::ByvalProperty : RpcDeferredKind::ByrefProperty);
-									context.deferredChecks.Add(check);
-								}
-								else if (name == L"Cached" || name == L"Dynamic")
-								{
-									auto propertyDecl = GetRpcPropertyDeclaration(declaration);
-									if (!propertyDecl)
-									{
-										manager->errors.Add(WfErrors::RpcAttributeCanOnlyApplyToProperty(attribute.Obj(), name));
-										continue;
-									}
-
-									if (name == L"Dynamic" && HasEarlierRpcAttribute(attributes, attribute.Obj(), L"Cached"))
-									{
-										manager->errors.Add(WfErrors::RpcAttributeCannotCoexistWithOther(attribute.Obj(), name, L"Cached", GetAttributeTargetFullName(manager, declaration, argument, currentClassDecl)));
-										continue;
-									}
-
-									if (name == L"Cached" && HasEarlierRpcAttribute(attributes, attribute.Obj(), L"Dynamic"))
-									{
-										manager->errors.Add(WfErrors::RpcAttributeCannotCoexistWithOther(attribute.Obj(), name, L"Dynamic", GetAttributeTargetFullName(manager, declaration, argument, currentClassDecl)));
-										continue;
-									}
-
-									RpcDeferredCheck check;
-									check.kind = name == L"Cached" ? RpcDeferredKind::Cached : RpcDeferredKind::Dynamic;
-									check.attribute = attribute.Obj();
-									check.ownerTd = GetClassTypeDescriptor(manager, currentClassDecl);
-									check.propertyDecl = propertyDecl;
-									context.deferredChecks.Add(check);
-								}
-							}
-						}
-
-						void Visit(WfNamespaceDeclaration* node)override
-						{
-							for (auto declaration : node->declarations)
-							{
-								VisitDeclaration(declaration);
-							}
-						}
-
-						void Visit(WfFunctionDeclaration* node)override
-						{
-							for (auto argument : node->arguments)
-							{
-								ProcessAttributes(argument->attributes, node, argument.Obj());
-							}
-						}
-
-						void Visit(WfVariableDeclaration* node)override
-						{
-						}
-
-						void Visit(WfEventDeclaration* node)override
-						{
-						}
-
-						void Visit(WfPropertyDeclaration* node)override
-						{
-						}
-
-						void Visit(WfStaticInitDeclaration* node)override
-						{
-						}
-
-						void Visit(WfConstructorDeclaration* node)override
-						{
-						}
-
-						void Visit(WfDestructorDeclaration* node)override
-						{
-						}
-
-						void Visit(WfClassDeclaration* node)override
-						{
-							auto oldClassDecl = currentClassDecl;
-							currentClassDecl = node;
-							for (auto declaration : node->declarations)
-							{
-								VisitDeclaration(declaration);
-							}
-							currentClassDecl = oldClassDecl;
-						}
-
-						void Visit(WfEnumDeclaration* node)override
-						{
-							for (auto item : node->items)
-							{
-								ProcessAttributes(item->attributes, nullptr, nullptr);
-							}
-						}
-
-						void Visit(WfStructDeclaration* node)override
-						{
-							for (auto member : node->members)
-							{
-								ProcessAttributes(member->attributes, nullptr, nullptr);
-							}
-						}
-
-						void Visit(WfVirtualCfeDeclaration* node)override
-						{
-							for (auto declaration : node->expandedDeclarations)
-							{
-								VisitDeclaration(declaration);
-							}
-						}
-
-						void Visit(WfVirtualCseDeclaration* node)override
-						{
-							node->Accept((WfVirtualCseDeclaration::IVisitor*)this);
-							for (auto declaration : node->expandedDeclarations)
-							{
-								VisitDeclaration(declaration);
-							}
-						}
-
-						void Visit(WfStateMachineDeclaration* node)override
-						{
-						}
-					};
-
-					Visitor visitor(manager, context);
-					for (auto declaration : module->declarations)
-					{
-						visitor.VisitDeclaration(declaration);
-					}
-				}
-
-/***********************************************************************
-ValidateModuleRPC_Reflection
-***********************************************************************/
-
-				void ValidateModuleRPC_Reflection(WfLexicalScopeManager* manager, const RpcPhase1Context& context)
-				{
-					auto rpcInterfaceAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Interface>();
-					SortedList<ITypeDescriptor*> allWorkflowRpcInterfaceTds;
-					for (auto td : context.workflowRpcInterfaceTds)
-					{
-						if (!allWorkflowRpcInterfaceTds.Contains(td))
-						{
-							allWorkflowRpcInterfaceTds.Add(td);
-						}
-					}
-					CollectAllWorkflowRpcInterfaceTds(manager, allWorkflowRpcInterfaceTds);
-
-					Dictionary<IMemberInfo*, Ptr<WfDeclaration>> memberDeclMap;
-					BuildMemberDeclarationMap(manager, memberDeclMap);
-
-					for (auto td : context.workflowRpcInterfaceTds)
-					{
-						for (vint i = 0; i < td->GetBaseTypeDescriptorCount(); i++)
-						{
-							auto baseTd = td->GetBaseTypeDescriptor(i);
-							if (!IsRpcInterfaceTd(baseTd, rpcInterfaceAttrTd, allWorkflowRpcInterfaceTds))
-							{
-								auto key = Pair(td, baseTd);
-								auto index = context.baseTypeNodeMap.Keys().IndexOf(key);
-								if (index != -1)
-								{
-									manager->errors.Add(WfErrors::RpcInterfaceBaseNotSerializable(context.baseTypeNodeMap.Values()[index], td->GetTypeName(), baseTd->GetTypeName()));
-								}
-							}
-						}
-
-						for (vint i = 0; i < td->GetPropertyCount(); i++)
-						{
-							auto propertyInfo = td->GetProperty(i);
-							if (propertyInfo->GetOwnerTypeDescriptor() != td)
-							{
-								continue;
-							}
-
-							if (!IsSerializableType(propertyInfo->GetReturn(), rpcInterfaceAttrTd, allWorkflowRpcInterfaceTds))
-							{
-								auto declIndex = memberDeclMap.Keys().IndexOf(propertyInfo);
-								if (declIndex != -1)
-								{
-									manager->errors.Add(WfErrors::RpcInterfaceMemberNotSerializable(memberDeclMap.Values()[declIndex].Obj(), td->GetTypeName(), td->GetTypeName() + L"." + propertyInfo->GetName()));
-								}
-							}
-							else if (auto typeName = GetReservedRpcTypeName(propertyInfo->GetReturn()); typeName != L"")
-							{
-								auto declIndex = memberDeclMap.Keys().IndexOf(propertyInfo);
-								if (declIndex != -1)
-								{
-									manager->errors.Add(WfErrors::RpcReservedTypeInReturnValue(memberDeclMap.Values()[declIndex].Obj(), td->GetTypeName(), td->GetTypeName() + L"." + propertyInfo->GetName(), typeName));
-								}
-							}
-						}
-
-						for (vint i = 0; i < td->GetMethodGroupCount(); i++)
-						{
-							auto group = td->GetMethodGroup(i);
-							if (group->GetOwnerTypeDescriptor() != td)
-							{
-								continue;
-							}
-
-							for (vint j = 0; j < group->GetMethodCount(); j++)
-							{
-								auto methodInfo = group->GetMethod(j);
-								auto declIndex = memberDeclMap.Keys().IndexOf(methodInfo);
-								if (declIndex == -1)
-								{
-									continue;
-								}
-
-								auto functionDecl = memberDeclMap.Values()[declIndex].Cast<WfFunctionDeclaration>();
-								if (!functionDecl)
-								{
-									continue;
-								}
-
-								for (vint k = 0; k < methodInfo->GetParameterCount(); k++)
-								{
-									auto parameterInfo = methodInfo->GetParameter(k);
-									if (auto typeName = GetReservedRpcTypeName(parameterInfo->GetType()); typeName != L"")
-									{
-										if (auto argument = FindFunctionArgument(functionDecl.Obj(), parameterInfo->GetName(), k))
-										{
-											manager->errors.Add(WfErrors::RpcReservedTypeInFunctionArgument(argument.Obj(), td->GetTypeName(), td->GetTypeName() + L"." + methodInfo->GetName() + L"(" + parameterInfo->GetName() + L")", typeName));
-										}
-									}
-									else if (!IsSerializableType(parameterInfo->GetType(), rpcInterfaceAttrTd, allWorkflowRpcInterfaceTds))
-									{
-										if (auto argument = FindFunctionArgument(functionDecl.Obj(), parameterInfo->GetName(), k))
-										{
-											manager->errors.Add(WfErrors::RpcInterfaceMemberNotSerializable(argument.Obj(), td->GetTypeName(), td->GetTypeName() + L"." + methodInfo->GetName() + L"(" + parameterInfo->GetName() + L")"));
-										}
-									}
-								}
-
-								if (auto typeName = GetReservedRpcTypeName(methodInfo->GetReturn()); typeName != L"")
-								{
-									manager->errors.Add(WfErrors::RpcReservedTypeInReturnValue(functionDecl.Obj(), td->GetTypeName(), td->GetTypeName() + L"." + methodInfo->GetName(), typeName));
-								}
-								else if (!IsSerializableReturnType(methodInfo->GetReturn(), rpcInterfaceAttrTd, allWorkflowRpcInterfaceTds))
-								{
-									manager->errors.Add(WfErrors::RpcInterfaceMemberNotSerializable(functionDecl.Obj(), td->GetTypeName(), td->GetTypeName() + L"." + methodInfo->GetName()));
-								}
-							}
-						}
-
-						for (vint i = 0; i < td->GetEventCount(); i++)
-						{
-							auto eventInfo = td->GetEvent(i);
-							if (eventInfo->GetOwnerTypeDescriptor() != td)
-							{
-								continue;
-							}
-
-							Ptr<WfEventDeclaration> eventDecl;
-							auto declIndex = memberDeclMap.Keys().IndexOf(eventInfo);
-							if (declIndex != -1)
-							{
-								eventDecl = memberDeclMap.Values()[declIndex].Cast<WfEventDeclaration>();
-							}
-							auto handlerType = eventInfo->GetHandlerType();
-							if (handlerType && handlerType->GetDecorator() == ITypeInfo::SharedPtr)
-							{
-								auto genericType = handlerType->GetElementType();
-								if (genericType && genericType->GetDecorator() == ITypeInfo::Generic)
-								{
-									for (vint j = 1; j < genericType->GetGenericArgumentCount(); j++)
-									{
-										if (auto typeName = GetReservedRpcTypeName(genericType->GetGenericArgument(j)); typeName != L"")
-										{
-											if (eventDecl && j - 1 < eventDecl->arguments.Count())
-											{
-												manager->errors.Add(WfErrors::RpcReservedTypeInEventArgument(eventDecl->arguments[j - 1].Obj(), td->GetTypeName(), td->GetTypeName() + L"." + eventInfo->GetName() + L"(" + itow(j - 1) + L")", typeName));
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-
-					for (auto&& check : context.deferredChecks)
-					{
-						auto attributeName = GetDeferredAttributeName(check.kind);
-						switch (check.kind)
-						{
-						case RpcDeferredKind::Cached:
-						case RpcDeferredKind::Dynamic:
-							if (!IsRpcInterfaceTd(check.ownerTd, rpcInterfaceAttrTd, allWorkflowRpcInterfaceTds))
-							{
-								manager->errors.Add(WfErrors::RpcAttributeCanOnlyBeUsedInsideRpcInterface(check.attribute, attributeName));
-							}
-							break;
-						default:
-							{
-								ITypeInfo* targetType = nullptr;
-								WString memberName;
-
-								switch (check.kind)
-								{
-								case RpcDeferredKind::ByvalProperty:
-								case RpcDeferredKind::ByrefProperty:
-									{
-										auto propertyInfo = manager->declarationMemberInfos[check.propertyDecl].Cast<IPropertyInfo>();
-										targetType = propertyInfo ? propertyInfo->GetReturn() : nullptr;
-										if (propertyInfo && check.ownerTd)
-										{
-											memberName = check.ownerTd->GetTypeName() + L"." + propertyInfo->GetName();
-										}
-									}
-									break;
-								case RpcDeferredKind::ByvalMethod:
-								case RpcDeferredKind::ByrefMethod:
-									{
-										auto methodInfo = manager->declarationMemberInfos[check.methodDecl].Cast<IMethodInfo>();
-										targetType = methodInfo ? methodInfo->GetReturn() : nullptr;
-										if (methodInfo && check.ownerTd)
-										{
-											memberName = check.ownerTd->GetTypeName() + L"." + methodInfo->GetName();
-										}
-									}
-									break;
-								case RpcDeferredKind::ByvalParameter:
-								case RpcDeferredKind::ByrefParameter:
-									{
-										auto methodInfo = manager->declarationMemberInfos[check.methodDecl].Cast<IMethodInfo>();
-										if (methodInfo)
-										{
-											for (vint i = 0; i < methodInfo->GetParameterCount(); i++)
-											{
-												auto parameterInfo = methodInfo->GetParameter(i);
-												if (parameterInfo->GetName() == check.parameterDecl->name.value)
-												{
-													targetType = parameterInfo->GetType();
-													if (check.ownerTd)
-													{
-														memberName = check.ownerTd->GetTypeName() + L"." + methodInfo->GetName() + L"(" + parameterInfo->GetName() + L")";
-													}
-													break;
-												}
-											}
-										}
-									}
-									break;
-								default:
-									break;
-								}
-
-								if (!IsStrongTypedCollection(targetType))
-								{
-									manager->errors.Add(WfErrors::RpcAttributeRequiresStrongTypedCollection(check.attribute, attributeName, memberName));
-								}
-							}
-							break;
-						}
-					}
-				}
-
-/***********************************************************************
-ValidateModuleRPC_GenerateMetadata
-***********************************************************************/
-
-				bool IsGeneratedRpcIdAttribute(const WString& category, const WString& name)
-				{
-					return category == L"rpc" && (name == L"IdString" || name == L"IdNumber");
-				}
-
-				void GenerateAttributesFromBag(IAttributeBag* bag, List<Ptr<WfAttribute>>& attributes)
-				{
-					if (!bag) return;
-					for (vint i = 0; i < bag->GetAttributeCount(); i++)
-					{
-						auto attrInfo = bag->GetAttribute(i);
-						auto attrTd = attrInfo->GetAttributeType();
-						if (!attrTd) continue;
-
-						WString typeName = attrTd->GetTypeName();
-						const wchar_t* reading = typeName.Buffer();
-						const wchar_t* simpleName = reading;
-						while (true)
-						{
-							auto delimiter = wcsstr(simpleName, L"::");
-							if (!delimiter) break;
-							simpleName = delimiter + 2;
-						}
-
-						if (wcsncmp(simpleName, L"att_", 4) != 0) continue;
-						auto afterAtt = simpleName + 4;
-						auto underscore = wcschr(afterAtt, L'_');
-						if (!underscore) continue;
-
-						auto attr = Ptr(new WfAttribute);
-						attr->category.value = WString::CopyFrom(afterAtt, vint(underscore - afterAtt));
-						attr->name.value = underscore + 1;
-						if (IsGeneratedRpcIdAttribute(attr->category.value, attr->name.value))
-						{
-							continue;
-						}
-						attributes.Add(attr);
-					}
-				}
-
-				void AddOrderedRpcId(WfRpcMetadata* metadata, const WString& fullName)
-				{
-					if (!metadata->orderedIds.Contains(fullName))
-					{
-						metadata->orderedIds.Add(fullName);
-					}
-				}
-
-				void AddGeneratedRpcIdAttributes(WfRpcMetadata* metadata, const WString& fullName, List<Ptr<WfAttribute>>& attributes)
-				{
-					auto id = metadata->orderedIds.IndexOf(fullName);
-					CHECK_ERROR(id != -1, L"RPC metadata ID list does not contain a generated RPC full name.");
-					attributes.Add(CreateRpcAttribute(L"IdString", CreateRpcStringLiteral(fullName)));
-					attributes.Add(CreateRpcAttribute(L"IdNumber", CreateRpcIntegerLiteral(id)));
-				}
-
-				void AddGeneratedRpcIdAttributes(WfRpcMetadata* metadata)
-				{
-					for (vint i = 0; i < metadata->typeNames.Count(); i++)
-					{
-						AddGeneratedRpcIdAttributes(metadata, metadata->typeNames.Keys()[i], metadata->typeNames.Values()[i]->attributes);
-					}
-					for (vint i = 0; i < metadata->methodNames.Count(); i++)
-					{
-						AddGeneratedRpcIdAttributes(metadata, metadata->methodNames.Keys()[i], metadata->methodNames.Values()[i]->attributes);
-					}
-					for (vint i = 0; i < metadata->eventNames.Count(); i++)
-					{
-						AddGeneratedRpcIdAttributes(metadata, metadata->eventNames.Keys()[i], metadata->eventNames.Values()[i]->attributes);
-					}
-				}
-
-				void CollectSerializableTypesFromTypeInfo(
-					ITypeInfo* typeInfo,
-					SortedList<ITypeDescriptor*>& collectedEnums,
-					SortedList<ITypeDescriptor*>& collectedStructs,
-					List<ITypeDescriptor*>& structVisitOrder,
-					const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
-				{
-					if (!typeInfo) return;
-					switch (typeInfo->GetDecorator())
-					{
-					case ITypeInfo::SharedPtr:
-						{
-							auto e = typeInfo->GetElementType();
-							if (!e) return;
-							if (e->GetDecorator() == ITypeInfo::Generic)
-							{
-								for (vint i = 0; i < e->GetGenericArgumentCount(); i++)
-								{
-									CollectSerializableTypesFromTypeInfo(e->GetGenericArgument(i), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
-								}
-							}
-						}
-						break;
-					case ITypeInfo::TypeDescriptor:
-						{
-							auto td = typeInfo->GetTypeDescriptor();
-							if (!td) return;
-							switch (td->GetTypeDescriptorFlags())
-							{
-							case TypeDescriptorFlags::FlagEnum:
-							case TypeDescriptorFlags::NormalEnum:
-								if (!collectedEnums.Contains(td))
-								{
-									collectedEnums.Add(td);
-								}
-								break;
-							case TypeDescriptorFlags::Struct:
-								if (!collectedStructs.Contains(td))
-								{
-									collectedStructs.Add(td);
-									// Recursively collect types used by struct members
-									for (vint i = 0; i < td->GetPropertyCount(); i++)
-									{
-										CollectSerializableTypesFromTypeInfo(td->GetProperty(i)->GetReturn(), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
-									}
-									structVisitOrder.Add(td);
-								}
-								break;
-							default:
-								break;
-							}
-						}
-						break;
-					default:
-						break;
-					}
-				}
-
-				void CollectTypesFromInterface(
-					ITypeDescriptor* td,
-					SortedList<ITypeDescriptor*>& collectedEnums,
-					SortedList<ITypeDescriptor*>& collectedStructs,
-					List<ITypeDescriptor*>& structVisitOrder,
-					const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
-				{
-					for (vint i = 0; i < td->GetPropertyCount(); i++)
-					{
-						auto propertyInfo = td->GetProperty(i);
-						if (propertyInfo->GetOwnerTypeDescriptor() != td) continue;
-						CollectSerializableTypesFromTypeInfo(propertyInfo->GetReturn(), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
-					}
-
-					for (vint i = 0; i < td->GetMethodGroupCount(); i++)
-					{
-						auto group = td->GetMethodGroup(i);
-						if (group->GetOwnerTypeDescriptor() != td) continue;
-						for (vint j = 0; j < group->GetMethodCount(); j++)
-						{
-							auto methodInfo = group->GetMethod(j);
-							CollectSerializableTypesFromTypeInfo(methodInfo->GetReturn(), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
-							for (vint k = 0; k < methodInfo->GetParameterCount(); k++)
-							{
-								CollectSerializableTypesFromTypeInfo(methodInfo->GetParameter(k)->GetType(), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
-							}
-						}
-					}
-
-					for (vint i = 0; i < td->GetEventCount(); i++)
-					{
-						auto eventInfo = td->GetEvent(i);
-						if (eventInfo->GetOwnerTypeDescriptor() != td) continue;
-						auto handlerType = eventInfo->GetHandlerType();
-						if (handlerType && handlerType->GetDecorator() == ITypeInfo::SharedPtr)
-						{
-							auto genericType = handlerType->GetElementType();
-							if (genericType && genericType->GetDecorator() == ITypeInfo::Generic)
-							{
-								for (vint j = 1; j < genericType->GetGenericArgumentCount(); j++)
-								{
-									CollectSerializableTypesFromTypeInfo(genericType->GetGenericArgument(j), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
-								}
-							}
-						}
-					}
-				}
-
-				Ptr<WfEnumDeclaration> GenerateEnumDecl(ITypeDescriptor* td)
-				{
-					auto enumType = td->GetEnumType();
-					if (!enumType) return nullptr;
-
-					auto decl = Ptr(new WfEnumDeclaration);
-					List<WString> fragments;
-					GetTypeFragments(td, fragments);
-					decl->name.value = fragments[fragments.Count() - 1];
-					decl->kind = enumType->IsFlagEnum() ? WfEnumKind::Flag : WfEnumKind::Normal;
-
-					// Collect items sorted by value
-					List<Pair<WString, vuint64_t>> items;
-					for (vint i = 0; i < enumType->GetItemCount(); i++)
-					{
-						items.Add({ enumType->GetItemName(i), enumType->GetItemValue(i) });
-					}
-					if (items.Count() > 1)
-					{
-						Sort(&items[0], items.Count(), [](const Pair<WString, vuint64_t>& a, const Pair<WString, vuint64_t>& b)
-						{
-							return (a.value <=> b.value);
-						});
-					}
-
-					if (enumType->IsFlagEnum())
-					{
-						// Build a map from power-of-2 values to item names
-						Dictionary<vuint64_t, WString> powerOf2Names;
-
-						// First pass: add constant items (0 and powers of 2)
-						for (auto&& [name, value] : items)
-						{
-							if (value == 0 || (value != 0 && (value & (value - 1)) == 0))
-							{
-								auto item = Ptr(new WfEnumItem);
-								item->name.value = name;
-								item->kind = WfEnumItemKind::Constant;
-								item->number.value = u64tow(value);
-								decl->items.Add(item);
-								powerOf2Names.Add(value, name);
-							}
-						}
-
-						// Second pass: add intersection items (composite values)
-						for (auto&& [name, value] : items)
-						{
-							if (value != 0 && (value & (value - 1)) != 0)
-							{
-								auto item = Ptr(new WfEnumItem);
-								item->name.value = name;
-								item->kind = WfEnumItemKind::Intersection;
-								for (vint bit = 0; bit < 64; bit++)
-								{
-									auto mask = (vuint64_t)1 << bit;
-									if (value & mask)
-									{
-										auto nameIndex = powerOf2Names.Keys().IndexOf(mask);
-										if (nameIndex != -1)
-										{
-											auto intersection = Ptr(new WfEnumItemIntersection);
-											intersection->name.value = powerOf2Names.Values()[nameIndex];
-											item->intersections.Add(intersection);
-										}
-									}
-								}
-								decl->items.Add(item);
-							}
-						}
-					}
-					else
-					{
-						for (auto&& [name, value] : items)
-						{
-							auto item = Ptr(new WfEnumItem);
-							item->name.value = name;
-							item->kind = WfEnumItemKind::Constant;
-							item->number.value = u64tow(value);
-							decl->items.Add(item);
-						}
-					}
-					return decl;
-				}
-
-				Ptr<WfStructDeclaration> GenerateStructDecl(ITypeDescriptor* td)
-				{
-					auto decl = Ptr(new WfStructDeclaration);
-					List<WString> fragments;
-					GetTypeFragments(td, fragments);
-					decl->name.value = fragments[fragments.Count() - 1];
-
-					for (vint i = 0; i < td->GetPropertyCount(); i++)
-					{
-						auto propertyInfo = td->GetProperty(i);
-						auto member = Ptr(new WfStructMember);
-						member->name.value = propertyInfo->GetName();
-						member->type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
-						decl->members.Add(member);
-					}
-					return decl;
-				}
-
-				Ptr<WfClassDeclaration> GenerateInterfaceDecl(ITypeDescriptor* td, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
-				{
-					auto decl = Ptr(new WfClassDeclaration);
-					Dictionary<WString, WString> getterTransferAttributes;
-					Dictionary<WString, WString> setterTransferAttributes;
-					List<WString> fragments;
-					GetTypeFragments(td, fragments);
-					decl->name.value = fragments[fragments.Count() - 1];
-					decl->kind = WfClassKind::Interface;
-
-					// Determine constructor type from reflection
-					if (auto ctorGroup = td->GetConstructorGroup())
-					{
-						if (ctorGroup->GetMethodCount() > 0)
-						{
-							auto ctorReturn = ctorGroup->GetMethod(0)->GetReturn();
-							if (ctorReturn && ctorReturn->GetDecorator() == ITypeInfo::RawPtr)
-							{
-								decl->constructorType = WfConstructorType::RawPtr;
-							}
-							else
-							{
-								decl->constructorType = WfConstructorType::SharedPtr;
-							}
-						}
-					}
-
-					// Generate attributes from reflection
-					GenerateAttributesFromBag(td, decl->attributes);
-
-					// Generate base types from reflection (only RPC interfaces, skip implicit IDescriptable)
-					for (vint i = 0; i < td->GetBaseTypeDescriptorCount(); i++)
-					{
-						auto baseTd = td->GetBaseTypeDescriptor(i);
-						if (!IsRpcInterfaceTd(baseTd, rpcInterfaceAttrTd, rpcInterfaceTds)) continue;
-
-						auto parentType = GetTypeFromTypeDescriptor(baseTd);
-						if (parentType)
-						{
-							decl->baseTypes.Add(parentType);
-						}
-					}
-
-					// Generate properties from reflection
-					for (vint i = 0; i < td->GetPropertyCount(); i++)
-					{
-						auto propertyInfo = td->GetProperty(i);
-						if (propertyInfo->GetOwnerTypeDescriptor() != td) continue;
-
-						auto propDecl = Ptr(new WfPropertyDeclaration);
-						propDecl->name.value = propertyInfo->GetName();
-						propDecl->type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
-
-						if (auto getter = propertyInfo->GetGetter())
-						{
-							propDecl->getter.value = getter->GetName();
-						}
-						if (auto setter = propertyInfo->GetSetter())
-						{
-							propDecl->setter.value = setter->GetName();
-						}
-						if (auto valueChangedEvent = propertyInfo->GetValueChangedEvent())
-						{
-							propDecl->valueChangedEvent.value = valueChangedEvent->GetName();
-						}
-
-						GenerateAttributesFromBag(propertyInfo, propDecl->attributes);
-						if (!HasRpcAttribute(propDecl->attributes, L"Cached") && !HasRpcAttribute(propDecl->attributes, L"Dynamic"))
-						{
-							EnsureRpcAttribute(propDecl->attributes, L"Cached");
-						}
-
-						auto transferAttribute = GetDefaultRpcTransferAttribute(propertyInfo->GetReturn(), rpcInterfaceAttrTd, rpcInterfaceTds);
-						if (transferAttribute != L"")
-						{
-							if (HasRpcAttribute(propDecl->attributes, L"Byref"))
-							{
-								transferAttribute = L"Byref";
-							}
-							else if (HasRpcAttribute(propDecl->attributes, L"Byval"))
-							{
-								transferAttribute = L"Byval";
-							}
-
-							if (propDecl->getter.value != L"")
-							{
-								auto getterIndex = getterTransferAttributes.Keys().IndexOf(propDecl->getter.value);
-								if (getterIndex == -1)
-								{
-									getterTransferAttributes.Add(propDecl->getter.value, transferAttribute);
-								}
-								else
-								{
-									getterTransferAttributes.Set(propDecl->getter.value, transferAttribute);
-								}
-							}
-
-							if (propDecl->setter.value != L"")
-							{
-								auto setterIndex = setterTransferAttributes.Keys().IndexOf(propDecl->setter.value);
-								if (setterIndex == -1)
-								{
-									setterTransferAttributes.Add(propDecl->setter.value, transferAttribute);
-								}
-								else
-								{
-									setterTransferAttributes.Set(propDecl->setter.value, transferAttribute);
-								}
-							}
-						}
-						decl->declarations.Add(propDecl);
-					}
-
-					// Generate events from reflection
-					for (vint i = 0; i < td->GetEventCount(); i++)
-					{
-						auto eventInfo = td->GetEvent(i);
-						if (eventInfo->GetOwnerTypeDescriptor() != td) continue;
-
-						auto eventDecl = Ptr(new WfEventDeclaration);
-						eventDecl->name.value = eventInfo->GetName();
-
-						// Extract event argument types from handler type
-						auto handlerType = eventInfo->GetHandlerType();
-						if (handlerType && handlerType->GetDecorator() == ITypeInfo::SharedPtr)
-						{
-							auto genericType = handlerType->GetElementType();
-							if (genericType && genericType->GetDecorator() == ITypeInfo::Generic)
-							{
-								for (vint j = 1; j < genericType->GetGenericArgumentCount(); j++)
-								{
-									auto argType = GetTypeFromTypeInfo(genericType->GetGenericArgument(j));
-									if (argType)
-									{
-										eventDecl->arguments.Add(argType);
-									}
-								}
-							}
-						}
-
-						GenerateAttributesFromBag(eventInfo, eventDecl->attributes);
-						decl->declarations.Add(eventDecl);
-					}
-
-					// Generate methods from reflection
-					for (vint i = 0; i < td->GetMethodGroupCount(); i++)
-					{
-						auto group = td->GetMethodGroup(i);
-						if (group->GetOwnerTypeDescriptor() != td) continue;
-
-						for (vint j = 0; j < group->GetMethodCount(); j++)
-						{
-							auto methodInfo = group->GetMethod(j);
-							if (methodInfo->GetOwnerProperty()) continue;
-
-							auto funcDecl = Ptr(new WfFunctionDeclaration);
-							funcDecl->name.value = methodInfo->GetName();
-							funcDecl->anonymity = WfFunctionAnonymity::Named;
-							funcDecl->functionKind = WfFunctionKind::Normal;
-							funcDecl->returnType = GetTypeFromTypeInfo(methodInfo->GetReturn());
-
-							for (vint k = 0; k < methodInfo->GetParameterCount(); k++)
-							{
-								auto parameterInfo = methodInfo->GetParameter(k);
-								auto argument = Ptr(new WfFunctionArgument);
-								argument->name.value = parameterInfo->GetName();
-								argument->type = GetTypeFromTypeInfo(parameterInfo->GetType());
-								GenerateAttributesFromBag(parameterInfo, argument->attributes);
-								if (!HasRpcAttribute(argument->attributes, L"Byref") && !HasRpcAttribute(argument->attributes, L"Byval"))
-								{
-									WString transferAttribute;
-									if (k == 0)
-									{
-										auto setterIndex = setterTransferAttributes.Keys().IndexOf(methodInfo->GetName());
-										if (setterIndex != -1)
-										{
-											transferAttribute = setterTransferAttributes.Values()[setterIndex];
-										}
-									}
-									if (transferAttribute == L"")
-									{
-										transferAttribute = GetDefaultRpcTransferAttribute(parameterInfo->GetType(), rpcInterfaceAttrTd, rpcInterfaceTds);
-									}
-									if (transferAttribute != L"")
-									{
-										EnsureRpcAttribute(argument->attributes, transferAttribute);
-									}
-								}
-								funcDecl->arguments.Add(argument);
-							}
-
-							GenerateAttributesFromBag(methodInfo, funcDecl->attributes);
-							if (!HasRpcAttribute(funcDecl->attributes, L"Byref") && !HasRpcAttribute(funcDecl->attributes, L"Byval"))
-							{
-								WString transferAttribute;
-								auto getterIndex = getterTransferAttributes.Keys().IndexOf(methodInfo->GetName());
-								if (getterIndex != -1)
-								{
-									transferAttribute = getterTransferAttributes.Values()[getterIndex];
-								}
-								if (transferAttribute == L"")
-								{
-									transferAttribute = GetDefaultRpcTransferAttribute(methodInfo->GetReturn(), rpcInterfaceAttrTd, rpcInterfaceTds);
-								}
-								if (transferAttribute != L"")
-								{
-									EnsureRpcAttribute(funcDecl->attributes, transferAttribute);
-								}
-							}
-							decl->declarations.Add(funcDecl);
-						}
-					}
-
-					return decl;
-				}
-
-				Ptr<WfNamespaceDeclaration> EnsureNamespace(
-					List<Ptr<WfDeclaration>>& rootDeclarations,
-					Dictionary<WString, Ptr<WfNamespaceDeclaration>>& namespaceMap,
-					const List<WString>& fragments)
-				{
-					if (fragments.Count() <= 1)
-					{
-						return nullptr;
-					}
-
-					WString currentPath;
-					Ptr<WfNamespaceDeclaration> currentNs;
-					List<Ptr<WfDeclaration>>* currentList = &rootDeclarations;
-
-					for (vint i = 0; i < fragments.Count() - 1; i++)
-					{
-						if (currentPath.Length() > 0)
-						{
-							currentPath = currentPath + L"::" + fragments[i];
-						}
-						else
-						{
-							currentPath = fragments[i];
-						}
-
-						auto index = namespaceMap.Keys().IndexOf(currentPath);
-						if (index != -1)
-						{
-							currentNs = namespaceMap.Values()[index];
-							currentList = &currentNs->declarations;
-						}
-						else
-						{
-							auto ns = Ptr(new WfNamespaceDeclaration);
-							ns->name.value = fragments[i];
-							currentList->Add(ns);
-							namespaceMap.Add(currentPath, ns);
-							currentNs = ns;
-							currentList = &ns->declarations;
-						}
-					}
-
-					return currentNs;
-				}
-
-				void AddDeclToModule(
-					List<Ptr<WfDeclaration>>& rootDeclarations,
-					Dictionary<WString, Ptr<WfNamespaceDeclaration>>& namespaceMap,
-					ITypeDescriptor* td,
-					Ptr<WfDeclaration> decl)
-				{
-					List<WString> fragments;
-					GetTypeFragments(td, fragments);
-
-					auto ns = EnsureNamespace(rootDeclarations, namespaceMap, fragments);
-					if (ns)
-					{
-						ns->declarations.Add(decl);
-					}
-					else
-					{
-						rootDeclarations.Add(decl);
-					}
-				}
-
-				void CollectOrderedRpcInterfaces(
-					WfLexicalScopeManager* manager,
-					const List<Ptr<WfDeclaration>>& declarations,
-					const SortedList<ITypeDescriptor*>& rpcInterfaceTds,
-					List<ITypeDescriptor*>& orderedInterfaces)
-				{
-					for (auto decl : declarations)
-					{
-						if (auto classDecl = decl.Cast<WfClassDeclaration>())
-						{
-							auto td = GetClassTypeDescriptor(manager, classDecl.Obj());
-							if (td && rpcInterfaceTds.Contains(td) && !orderedInterfaces.Contains(td))
-							{
-								orderedInterfaces.Add(td);
-							}
-							CollectOrderedRpcInterfaces(manager, classDecl->declarations, rpcInterfaceTds, orderedInterfaces);
-						}
-						else if (auto nsDecl = decl.Cast<WfNamespaceDeclaration>())
-						{
-							CollectOrderedRpcInterfaces(manager, nsDecl->declarations, rpcInterfaceTds, orderedInterfaces);
-						}
-					}
-				}
-
-				WfClassDeclaration* FindRpcInterfaceDeclaration(WfLexicalScopeManager* manager, ITypeDescriptor* td)
-				{
-					for (vint i = 0; i < manager->declarationTypes.Count(); i++)
-					{
-						if (manager->declarationTypes.Values()[i].Obj() == td)
-						{
-							if (auto classDecl = manager->declarationTypes.Keys()[i].Cast<WfClassDeclaration>())
-							{
-								return classDecl.Obj();
-							}
-						}
-					}
-					return nullptr;
-				}
-
-				WfFunctionDeclaration* GetGeneratedMethodByOccurrence(WfClassDeclaration* interfaceDecl, const WString& name, vint occurrence)
-				{
-					vint index = 0;
-					for (auto decl : interfaceDecl->declarations)
-					{
-						if (auto methodDecl = decl.Cast<WfFunctionDeclaration>())
-						{
-							if (methodDecl->name.value == name)
-							{
-								if (index++ == occurrence)
-								{
-									return methodDecl.Obj();
-								}
-							}
-						}
-					}
-					return nullptr;
-				}
-
-				WfEventDeclaration* GetGeneratedEventByOccurrence(WfClassDeclaration* interfaceDecl, const WString& name, vint occurrence)
-				{
-					vint index = 0;
-					for (auto decl : interfaceDecl->declarations)
-					{
-						if (auto eventDecl = decl.Cast<WfEventDeclaration>())
-						{
-							if (eventDecl->name.value == name)
-							{
-								if (index++ == occurrence)
-								{
-									return eventDecl.Obj();
-								}
-							}
-						}
-					}
-					return nullptr;
-				}
-
-				WString MakeRpcMethodFullName(const WString& typeFullName, WfFunctionDeclaration* methodDecl, bool appendArgNames)
-				{
-					auto name = typeFullName + L"." + methodDecl->name.value;
-					if (appendArgNames)
-					{
-						name += L"(";
-						for (vint i = 0; i < methodDecl->arguments.Count(); i++)
-						{
-							if (i > 0)
-							{
-								name += L",";
-							}
-							name += methodDecl->arguments[i]->name.value;
-						}
-						name += L")";
-					}
-					return name;
-				}
-
-				void ValidateModuleRPC_GenerateMetadata(WfLexicalScopeManager* manager, Ptr<WfModule> module, const RpcPhase1Context& context)
-				{
-					auto rpcInterfaceAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Interface>();
-					SortedList<ITypeDescriptor*> allRpcInterfaceTds;
-					for (auto td : context.workflowRpcInterfaceTds)
-					{
-						if (!allRpcInterfaceTds.Contains(td))
-						{
-							allRpcInterfaceTds.Add(td);
-						}
-					}
-					CollectAllWorkflowRpcInterfaceTds(manager, allRpcInterfaceTds);
-
-					// Collect all enum and struct types used by RPC interfaces
-					SortedList<ITypeDescriptor*> collectedEnums;
-					SortedList<ITypeDescriptor*> collectedStructs;
-					List<ITypeDescriptor*> structVisitOrder;
-
-					for (auto td : context.workflowRpcInterfaceTds)
-					{
-						CollectTypesFromInterface(td, collectedEnums, collectedStructs, structVisitOrder, context.workflowRpcInterfaceTds);
-					}
-
-					// Sort enums by name
-					List<ITypeDescriptor*> sortedEnums;
-					for (auto td : collectedEnums)
-					{
-						sortedEnums.Add(td);
-					}
-					if (sortedEnums.Count() > 1)
-					{
-						Sort(&sortedEnums[0], sortedEnums.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
-						{
-							return wcscmp(a->GetTypeName().Buffer(), b->GetTypeName().Buffer()) <=> 0;
-						});
-					}
-
-					// Collect RPC interfaces in AST order
-					List<ITypeDescriptor*> orderedInterfaces;
-					CollectOrderedRpcInterfaces(manager, module->declarations, context.workflowRpcInterfaceTds, orderedInterfaces);
-
-					// Build the metadata module
-					auto metadataModule = Ptr(new WfModule);
-					metadataModule->moduleType = WfModuleType::Module;
-					metadataModule->name.value = L"RpcMetadata";
-					manager->rpcMetadata = Ptr(new WfRpcMetadata);
-
-					List<Ptr<WfDeclaration>> rootDeclarations;
-					Dictionary<WString, Ptr<WfNamespaceDeclaration>> namespaceMap;
-
-					// Add enums (sorted by name)
-					for (auto td : sortedEnums)
-					{
-						auto decl = GenerateEnumDecl(td);
-						if (decl)
-						{
-							AddDeclToModule(rootDeclarations, namespaceMap, td, decl);
-						}
-					}
-
-					// Add structs (sorted by visiting order - dependency correct)
-					for (auto td : structVisitOrder)
-					{
-						auto decl = GenerateStructDecl(td);
-						if (decl)
-						{
-							AddDeclToModule(rootDeclarations, namespaceMap, td, decl);
-						}
-					}
-
-					// Add interfaces (sorted by AST order)
-					for (auto td : orderedInterfaces)
-					{
-						auto decl = GenerateInterfaceDecl(td, rpcInterfaceAttrTd, allRpcInterfaceTds);
-						if (decl)
-						{
-							AddDeclToModule(rootDeclarations, namespaceMap, td, decl);
-
-							auto typeFullName = td->GetTypeName();
-							if (manager->rpcMetadata->typeNames.Keys().Contains(typeFullName))
-							{
-								manager->errors.Add(WfErrors::RpcGeneratedNameConflict(decl.Obj(), L"type", typeFullName));
-							}
-							else
-							{
-								manager->rpcMetadata->typeNames.Add(typeFullName, decl.Obj());
-								manager->rpcMetadata->typeFullNames.Add(typeFullName);
-								AddOrderedRpcId(manager->rpcMetadata.Obj(), typeFullName);
-							}
-
-							auto sourceDecl = FindRpcInterfaceDeclaration(manager, td);
-							if (!sourceDecl)
-							{
-								continue;
-							}
-
-							List<WfFunctionDeclaration*> orderedMethods;
-							List<WfFunctionDeclaration*> generatedMethods;
-							List<WfEventDeclaration*> orderedEvents;
-							List<WfEventDeclaration*> generatedEvents;
-							Dictionary<WString, vint> methodNameCounters;
-							Dictionary<WString, vint> eventNameCounters;
-
-							auto collectSourceMember = [&](WfDeclaration* memberDecl)
-							{
-								if (auto methodDecl = dynamic_cast<WfFunctionDeclaration*>(memberDecl))
-								{
-									auto name = methodDecl->name.value;
-									auto nameIndex = methodNameCounters.Keys().IndexOf(name);
-									auto occurrence = nameIndex == -1 ? 0 : methodNameCounters.Values()[nameIndex];
-									auto generatedMethod = GetGeneratedMethodByOccurrence(decl.Obj(), name, occurrence);
-									if (generatedMethod)
-									{
-										orderedMethods.Add(methodDecl);
-										generatedMethods.Add(generatedMethod);
-									}
-
-									if (nameIndex == -1)
-									{
-										methodNameCounters.Add(name, 1);
-									}
-									else
-									{
-										methodNameCounters.Set(name, occurrence + 1);
-									}
-								}
-								else if (auto eventDecl = dynamic_cast<WfEventDeclaration*>(memberDecl))
-								{
-									auto name = eventDecl->name.value;
-									auto nameIndex = eventNameCounters.Keys().IndexOf(name);
-									auto occurrence = nameIndex == -1 ? 0 : eventNameCounters.Values()[nameIndex];
-									auto generatedEvent = GetGeneratedEventByOccurrence(decl.Obj(), name, occurrence);
-									if (generatedEvent)
-									{
-										orderedEvents.Add(eventDecl);
-										generatedEvents.Add(generatedEvent);
-									}
-
-									if (nameIndex == -1)
-									{
-										eventNameCounters.Add(name, 1);
-									}
-									else
-									{
-										eventNameCounters.Set(name, occurrence + 1);
-									}
-								}
-							};
-
-							for (auto memberDecl : sourceDecl->declarations)
-							{
-								collectSourceMember(memberDecl.Obj());
-								if (auto virtualCfeDecl = memberDecl.Cast<WfVirtualCfeDeclaration>())
-								{
-									for (auto expandedDecl : virtualCfeDecl->expandedDeclarations)
-									{
-										collectSourceMember(expandedDecl.Obj());
-									}
-								}
-							}
-
-							SortedList<WString> processedMethodBaseNames;
-							for (vint i = 0; i < orderedMethods.Count(); i++)
-							{
-								auto baseName = MakeRpcMethodFullName(typeFullName, orderedMethods[i], false);
-								if (processedMethodBaseNames.Contains(baseName))
-								{
-									continue;
-								}
-								processedMethodBaseNames.Add(baseName);
-
-								List<vint> methodIndexes;
-								List<WString> candidateNames;
-								for (vint j = 0; j < orderedMethods.Count(); j++)
-								{
-									if (MakeRpcMethodFullName(typeFullName, orderedMethods[j], false) == baseName)
-									{
-										methodIndexes.Add(j);
-										candidateNames.Add(MakeRpcMethodFullName(typeFullName, orderedMethods[j], true));
-									}
-								}
-
-								if (methodIndexes.Count() == 1)
-								{
-									candidateNames[0] = baseName;
-								}
-								else
-								{
-									List<vint> duplicateCounts;
-									for (vint j = 0; j < candidateNames.Count(); j++)
-									{
-										vint duplicateCount = 0;
-										for (vint k = 0; k < candidateNames.Count(); k++)
-										{
-											if (candidateNames[j] == candidateNames[k])
-											{
-												duplicateCount++;
-											}
-										}
-										duplicateCounts.Add(duplicateCount);
-									}
-
-									Dictionary<WString, vint> duplicateIndexes;
-									for (vint j = 0; j < candidateNames.Count(); j++)
-									{
-										if (duplicateCounts[j] <= 1)
-										{
-											continue;
-										}
-
-										auto duplicateName = candidateNames[j];
-										auto duplicateIndex = duplicateIndexes.Keys().IndexOf(duplicateName);
-										auto occurrence = duplicateIndex == -1 ? 1 : duplicateIndexes.Values()[duplicateIndex] + 1;
-										if (duplicateIndex == -1)
-										{
-											duplicateIndexes.Add(duplicateName, occurrence);
-										}
-										else
-										{
-											duplicateIndexes.Set(duplicateName, occurrence);
-										}
-										candidateNames[j] = duplicateName + L"." + itow(occurrence);
-									}
-								}
-
-								for (vint j = 0; j < methodIndexes.Count(); j++)
-								{
-									auto finalName = candidateNames[j];
-									auto generatedMethod = generatedMethods[methodIndexes[j]];
-									if (manager->rpcMetadata->methodNames.Keys().Contains(finalName))
-									{
-										manager->errors.Add(WfErrors::RpcGeneratedNameConflict(generatedMethod, L"method", finalName));
-									}
-									else
-									{
-										manager->rpcMetadata->methodNames.Add(finalName, generatedMethod);
-										manager->rpcMetadata->methodFullNames.Add(finalName);
-										AddOrderedRpcId(manager->rpcMetadata.Obj(), finalName);
-									}
-								}
-							}
-
-							for (vint i = 0; i < orderedEvents.Count(); i++)
-							{
-								auto finalName = typeFullName + L"." + orderedEvents[i]->name.value;
-								auto generatedEvent = generatedEvents[i];
-								if (manager->rpcMetadata->eventNames.Keys().Contains(finalName))
-								{
-									manager->errors.Add(WfErrors::RpcGeneratedNameConflict(generatedEvent, L"event", finalName));
-								}
-								else
-								{
-									manager->rpcMetadata->eventNames.Add(finalName, generatedEvent);
-									manager->rpcMetadata->eventFullNames.Add(finalName);
-									AddOrderedRpcId(manager->rpcMetadata.Obj(), finalName);
-								}
-							}
-						}
-					}
-
-					AddGeneratedRpcIdAttributes(manager->rpcMetadata.Obj());
-
-					for (auto decl : rootDeclarations)
-					{
-						metadataModule->declarations.Add(decl);
-					}
-
-					manager->rpcMetadata->metadataModule = metadataModule;
-				}
-			}
-
-/***********************************************************************
-PopulateAttributesOnTypeDescriptors
-***********************************************************************/
-
-			namespace attribute_populating
-			{
-				using namespace collections;
-				using namespace reflection;
-				using namespace reflection::description;
-
-				Value EvaluateAttributeLiteralExpression(WfLexicalScopeManager* manager, Ptr<WfExpression> expr, ITypeDescriptor* argumentTd)
-				{
-					if (auto literalExpr = expr.Cast<WfLiteralExpression>())
-					{
-						switch (literalExpr->value)
-						{
-						case WfLiteralValue::True:	return BoxValue(true);
-						case WfLiteralValue::False:	return BoxValue(false);
-						default:					return Value();
-						}
-					}
-					else if (auto stringExpr = expr.Cast<WfStringExpression>())
-					{
-						Value output;
-						argumentTd->GetSerializableType()->Deserialize(stringExpr->value.value, output);
-						return output;
-					}
-					else if (auto intExpr = expr.Cast<WfIntegerExpression>())
-					{
-						Value output;
-						argumentTd->GetSerializableType()->Deserialize(intExpr->value.value, output);
-						return output;
-					}
-					else if (auto floatExpr = expr.Cast<WfFloatingExpression>())
-					{
-						Value output;
-						argumentTd->GetSerializableType()->Deserialize(floatExpr->value.value, output);
-						return output;
-					}
-					else if (auto typeOfExpr = expr.Cast<WfTypeOfTypeExpression>())
-					{
-						auto scope = manager->nodeScopes[typeOfExpr.Obj()].Obj();
-						auto type = CreateTypeInfoFromType(scope, typeOfExpr->type, false);
-						auto td = type->GetTypeDescriptor();
-						if (argumentTd->GetSerializableType())
-						{
-							Value output;
-							argumentTd->GetSerializableType()->Deserialize(td->GetTypeName(), output);
-							return output;
-						}
-						return BoxValue<ITypeDescriptor*>(td);
-					}
-					else
-					{
-						auto&& result = manager->expressionResolvings[expr.Obj()];
-						if (auto enumType = result.type->GetTypeDescriptor()->GetEnumType())
-						{
-							auto refExpr = expr.Cast<WfReferenceExpression>();
-							auto childExpr = expr.Cast<WfChildExpression>();
-							WString name = refExpr ? refExpr->name.value : (childExpr ? childExpr->name.value : WString::Empty);
-							vint index = enumType->IndexOfItem(name);
-							if (index != -1)
-							{
-								return enumType->ToEnum(enumType->GetItemValue(index));
-							}
-						}
-						return Value();
-					}
-				}
-
-				void PopulateAttributesOnBag(
-					WfLexicalScopeManager* manager,
-					TypeDescriptorImplBase* td,
-					IMemberInfo* memberInfo,
-					List<Ptr<WfAttribute>>& atts
-				)
-				{
-					for (auto att : atts)
-					{
-						auto info = manager->ResolveWorkflowAttribute(att->category.value, att->name.value);
-						if (!info.exists || !info.attributeType) continue;
-
-						auto attInfo = Ptr(new AttributeInfoImpl(info.attributeType));
-						if (info.hasArgument && att->value)
-						{
-							auto valueTypeTd = info.argumentType->GetTypeDescriptor();
-							auto boxedValue = EvaluateAttributeLiteralExpression(manager, att->value, valueTypeTd);
-							attInfo->AddValue(valueTypeTd, boxedValue);
-						}
-						td->RegisterAttribute(memberInfo, attInfo);
-					}
-				}
-			}
-
-			void PopulateAttributesOnTypeDescriptors(WfLexicalScopeManager* manager)
-			{
-				using namespace collections;
-				using namespace reflection;
-				using namespace reflection::description;
-
-				for (auto [decl, index] : indexed(manager->declarationTypes.Keys()))
-				{
-					auto td = manager->declarationTypes.Values()[index];
-					auto tdImpl = dynamic_cast<TypeDescriptorImplBase*>(td.Obj());
-					if (!tdImpl) continue;
-
-					// Type-level attributes
-					attribute_populating::PopulateAttributesOnBag(manager, tdImpl, nullptr, decl->attributes);
-
-					// Member attributes for class/interface
-					if (auto classDecl = decl.Cast<WfClassDeclaration>())
-					{
-						for (auto memberDecl : classDecl->declarations)
-						{
-							vint memberIndex = manager->declarationMemberInfos.Keys().IndexOf(memberDecl.Obj());
-							if (memberIndex != -1)
-							{
-								auto memberInfoPtr = manager->declarationMemberInfos.Values()[memberIndex];
-								if (memberDecl->attributes.Count() > 0)
-								{
-									attribute_populating::PopulateAttributesOnBag(manager, tdImpl, memberInfoPtr.Obj(), memberDecl->attributes);
-								}
-
-								// Function argument attributes
-								if (auto funcDecl = memberDecl.Cast<WfFunctionDeclaration>())
-								{
-									if (auto methodInfo = dynamic_cast<IMethodInfo*>(memberInfoPtr.Obj()))
-									{
-										for (vint k = 0; k < funcDecl->arguments.Count() && k < methodInfo->GetParameterCount(); k++)
-										{
-											auto& argAttrs = funcDecl->arguments[k]->attributes;
-											if (argAttrs.Count() > 0)
-											{
-												auto paramInfo = methodInfo->GetParameter(k);
-												attribute_populating::PopulateAttributesOnBag(manager, tdImpl, paramInfo, argAttrs);
-											}
-										}
-									}
-								}
-							}
-							else if (auto autoPropDecl = memberDecl.Cast<WfAutoPropertyDeclaration>())
-							{
-								auto propInfo = td->GetPropertyByName(autoPropDecl->name.value, false);
-								if (propInfo && memberDecl->attributes.Count() > 0)
-								{
-									attribute_populating::PopulateAttributesOnBag(manager, tdImpl, propInfo, memberDecl->attributes);
-								}
-							}
-						}
-					}
-
-					// Member attributes for struct
-					if (auto structDecl = decl.Cast<WfStructDeclaration>())
-					{
-						for (auto member : structDecl->members)
-						{
-							if (member->attributes.Count() == 0) continue;
-							auto propInfo = td->GetPropertyByName(member->name.value, false);
-							if (!propInfo) continue;
-							attribute_populating::PopulateAttributesOnBag(manager, tdImpl, propInfo, member->attributes);
-						}
-					}
-				}
-			}
-
-/***********************************************************************
-ValidateModuleRPC
-***********************************************************************/
-
-			void ValidateModuleRPC(WfLexicalScopeManager* manager, Ptr<WfModule> module)
-			{
-				rpc_compiling::RpcPhase1Context context;
-
-				// Phase 1 collects workflow-defined RPC interfaces and enqueues attribute occurrences for phase 2.
-				rpc_compiling::ValidateModuleRPC_Ast(manager, module, context);
-
-				// Phase 2 uses reflection (ITypeDescriptor/ITypeInfo) to validate the remaining rules.
-				rpc_compiling::ValidateModuleRPC_Reflection(manager, context);
-
-				// Phase 3 generates rpc metadata module.
-				if (context.workflowRpcInterfaceTds.Count() > 0 && manager->errors.Count() == 0)
-				{
-					rpc_compiling::ValidateModuleRPC_GenerateMetadata(manager, module, context);
-					if (manager->rpcMetadata)
-					{
-						manager->rpcMetadata->dts = GenerateDtsFromRpcMetadata(manager);
-					}
-				}
-			}
-
-			namespace rpc_metadata_copying
-			{
-				using namespace collections;
-				using namespace reflection;
-				using namespace reflection::description;
-
-				class ClearExistingTypesVisitor : public empty_visitor::DeclarationVisitor
-				{
-				private:
-					List<WString>			fragments;
-					bool					removeDeclaration = false;
-
-					WString GetFullName(const WString& name)
-					{
-						WString fullName;
-						for (auto fragment : fragments)
-						{
-							if (fullName != L"")
-							{
-								fullName += L"::";
-							}
-							fullName += fragment;
-						}
-
-						if (fullName != L"")
-						{
-							fullName += L"::";
-						}
-						fullName += name;
-						return fullName;
-					}
-
-					bool IsExistingType(const WString& name)
-					{
-						return reflection::description::GetTypeDescriptor(GetFullName(name)) != nullptr;
-					}
-
-					void VisitNestedType(const WString& name, List<Ptr<WfDeclaration>>& declarations)
-					{
-						if (IsExistingType(name))
-						{
-							removeDeclaration = true;
-							return;
-						}
-
-						fragments.Add(name);
-						Clear(declarations);
-						fragments.RemoveAt(fragments.Count() - 1);
-						removeDeclaration = false;
-					}
-
-				protected:
-					void Dispatch(WfVirtualCfeDeclaration* node)override
-					{
-						removeDeclaration = false;
-					}
-
-					void Dispatch(WfVirtualCseDeclaration* node)override
-					{
-						removeDeclaration = false;
-					}
-
-				public:
-					void Clear(List<Ptr<WfDeclaration>>& declarations)
-					{
-						for (vint i = 0; i < declarations.Count();)
-						{
-							removeDeclaration = false;
-							declarations[i]->Accept(this);
-							if (removeDeclaration)
-							{
-								declarations.RemoveAt(i);
-							}
-							else
-							{
-								i++;
-							}
-						}
-					}
-
-					void Visit(WfNamespaceDeclaration* node)override
-					{
-						fragments.Add(node->name.value);
-						Clear(node->declarations);
-						fragments.RemoveAt(fragments.Count() - 1);
-						removeDeclaration = false;
-					}
-
-					void Visit(WfClassDeclaration* node)override
-					{
-						VisitNestedType(node->name.value, node->declarations);
-					}
-
-					void Visit(WfEnumDeclaration* node)override
-					{
-						removeDeclaration = IsExistingType(node->name.value);
-					}
-
-					void Visit(WfStructDeclaration* node)override
-					{
-						removeDeclaration = IsExistingType(node->name.value);
-					}
-				};
-			}
-
-			Ptr<WfModule> CopyAndClearRpcMetadata(Ptr<WfModule> module)
-			{
-				auto copiedModule = CopyModule(module, false);
-				rpc_metadata_copying::ClearExistingTypesVisitor visitor;
-				visitor.Clear(copiedModule->declarations);
-				return copiedModule;
-			}
-
 		}
 	}
 }
@@ -23680,6 +16874,6728 @@ ValidateStructure
 			{
 				ValidateStructureTypeVisitor::Execute(type, manager, strategy, classDecl);
 			}
+		}
+	}
+}
+
+
+/***********************************************************************
+.\ANALYZER\RPC\WFANALYZER_GENERATERPC.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace analyzer
+		{
+			using namespace collections;
+
+			namespace rpc_generating
+			{
+				using namespace reflection::description;
+
+				bool IsRpcAttribute(WfAttribute* attribute, const wchar_t* name)
+				{
+					return attribute
+						&& attribute->category.value == L"rpc"
+						&& attribute->name.value == name;
+				}
+
+				bool HasRpcAttribute(List<Ptr<WfAttribute>>& attributes, const wchar_t* name)
+				{
+					for (auto attribute : attributes)
+					{
+						if (IsRpcAttribute(attribute.Obj(), name))
+						{
+							return true;
+						}
+					}
+					return false;
+				}
+
+				bool HasAttribute(IAttributeBag* bag, ITypeDescriptor* attrTd)
+				{
+					if (!bag || !attrTd)
+					{
+						return false;
+					}
+
+					for (vint i = 0; i < bag->GetAttributeCount(); i++)
+					{
+						if (bag->GetAttribute(i)->GetAttributeType() == attrTd)
+						{
+							return true;
+						}
+					}
+					return false;
+				}
+
+				bool IsStrongTypedCollectionType(WfType* type)
+				{
+					return dynamic_cast<WfEnumerableType*>(type) != nullptr
+						|| dynamic_cast<WfMapType*>(type) != nullptr
+						|| dynamic_cast<WfObservableListType*>(type) != nullptr;
+				}
+
+				bool IsRpcStrongTypedCollection(ITypeInfo* type)
+				{
+					if (!type || type->GetDecorator() != ITypeInfo::SharedPtr) return false;
+					auto genericType = type->GetElementType();
+					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return false;
+
+					auto collectionType = genericType->GetElementType();
+					if (!collectionType || collectionType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
+
+					auto collectionTd = collectionType->GetTypeDescriptor();
+					if (collectionTd == GetTypeDescriptor<IValueEnumerable>()
+						|| collectionTd == GetTypeDescriptor<IValueReadonlyList>()
+						|| collectionTd == GetTypeDescriptor<IValueList>()
+						|| collectionTd == GetTypeDescriptor<IValueObservableList>())
+					{
+						return genericType->GetGenericArgumentCount() == 1;
+					}
+
+					if (collectionTd == GetTypeDescriptor<IValueReadonlyDictionary>()
+						|| collectionTd == GetTypeDescriptor<IValueDictionary>())
+					{
+						return genericType->GetGenericArgumentCount() == 2;
+					}
+
+					switch (type->GetHint())
+					{
+					case TypeInfoHint::LazyList:
+					case TypeInfoHint::Array:
+					case TypeInfoHint::List:
+						return genericType->GetGenericArgumentCount() == 1;
+					case TypeInfoHint::Dictionary:
+						return genericType->GetGenericArgumentCount() == 2;
+					default:
+						return false;
+					}
+				}
+
+				ITypeInfo* GetRpcStrongTypedCollectionElementType(ITypeInfo* type)
+				{
+					if (!IsRpcStrongTypedCollection(type)) return nullptr;
+					auto genericType = type->GetElementType();
+					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return nullptr;
+					switch (genericType->GetGenericArgumentCount())
+					{
+					case 1:
+						return genericType->GetGenericArgument(0);
+					case 2:
+						return genericType->GetGenericArgument(1);
+					default:
+						return nullptr;
+					}
+				}
+
+				bool IsRpcObservableStrongTypedCollection(ITypeInfo* type)
+				{
+					if (!IsRpcStrongTypedCollection(type)) return false;
+					auto genericType = type->GetElementType();
+					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return false;
+					auto collectionType = genericType->GetElementType();
+					if (!collectionType || collectionType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
+					return collectionType->GetTypeDescriptor() == GetTypeDescriptor<IValueObservableList>();
+				}
+
+				bool IsRpcInterfaceSharedType(ITypeInfo* type, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					if (!type || type->GetDecorator() != ITypeInfo::SharedPtr) return false;
+					auto elementType = type->GetElementType();
+					if (!elementType || elementType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
+					auto td = elementType->GetTypeDescriptor();
+					return td
+						&& (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::Interface) != TypeDescriptorFlags::Undefined
+						&& rpcInterfaceTds.Contains(td);
+				}
+
+				bool IsSharedInterfaceType(ITypeInfo* type)
+				{
+					if (!type || type->GetDecorator() != ITypeInfo::SharedPtr) return false;
+					auto elementType = type->GetElementType();
+					if (!elementType) return false;
+					if (elementType->GetDecorator() == ITypeInfo::Generic)
+					{
+						elementType = elementType->GetElementType();
+					}
+					if (!elementType || elementType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
+					auto td = elementType->GetTypeDescriptor();
+					return td
+						&& (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::Interface) != TypeDescriptorFlags::Undefined;
+				}
+
+				IMethodInfo* FindRpcMethodInfo(WfLexicalScopeManager* manager, WfClassDeclaration* interfaceDecl, WfFunctionDeclaration* methodDecl, ITypeDescriptor* typeDescriptor)
+				{
+					if (auto index = manager->declarationMemberInfos.Keys().IndexOf(methodDecl); index != -1)
+					{
+						if (auto methodInfo = dynamic_cast<IMethodInfo*>(manager->declarationMemberInfos.Values()[index].Obj()))
+						{
+							return methodInfo;
+						}
+					}
+
+					if (!typeDescriptor) return nullptr;
+					auto group = typeDescriptor->GetMethodGroupByName(methodDecl->name.value, false);
+					if (!group) return nullptr;
+
+					vint overloadIndex = 0;
+					for (auto declaration : interfaceDecl->declarations)
+					{
+						if (declaration.Obj() == methodDecl)
+						{
+							break;
+						}
+						if (auto previousMethod = declaration.Cast<WfFunctionDeclaration>())
+						{
+							if (previousMethod->name.value == methodDecl->name.value)
+							{
+								overloadIndex++;
+							}
+						}
+					}
+					return overloadIndex < group->GetMethodCount() ? group->GetMethod(overloadIndex) : nullptr;
+				}
+
+				bool IsRpcStrongTypedCollectionContainingRpcInterface(ITypeInfo* type, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					auto elementType = GetRpcStrongTypedCollectionElementType(type);
+					if (!elementType) return false;
+					return IsRpcInterfaceSharedType(elementType, rpcInterfaceTds)
+						|| IsRpcStrongTypedCollectionContainingRpcInterface(elementType, rpcInterfaceTds);
+				}
+
+				bool IsDefaultRpcTransferByref(ITypeInfo* type, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					return IsRpcStrongTypedCollection(type)
+						&& (IsRpcObservableStrongTypedCollection(type)
+							|| IsRpcStrongTypedCollectionContainingRpcInterface(type, rpcInterfaceTds));
+				}
+
+				WString MangleRpcFullName(const WString& fullName)
+				{
+					WString mangled;
+					for (vint i = 0; i < fullName.Length(); i++)
+					{
+						if (i + 1 < fullName.Length() && fullName[i] == L':' && fullName[i + 1] == L':')
+						{
+							mangled += L"__";
+							i++;
+						}
+						else if (fullName[i] == L'.' || fullName[i] == L'(' || fullName[i] == L')' || fullName[i] == L',')
+						{
+							mangled += L"_";
+						}
+						else
+						{
+							mangled += WString::FromChar(fullName[i]);
+						}
+					}
+					return mangled;
+				}
+
+				WfDeclaration* FindRpcDeclaration(WfLexicalScopeManager* manager, const WString& fullName)
+				{
+					if (auto index = manager->rpcMetadata->typeNames.Keys().IndexOf(fullName); index != -1)
+					{
+						return manager->rpcMetadata->typeNames.Values()[index];
+					}
+					if (auto index = manager->rpcMetadata->methodNames.Keys().IndexOf(fullName); index != -1)
+					{
+						return manager->rpcMetadata->methodNames.Values()[index];
+					}
+					if (auto index = manager->rpcMetadata->eventNames.Keys().IndexOf(fullName); index != -1)
+					{
+						return manager->rpcMetadata->eventNames.Values()[index];
+					}
+					return nullptr;
+				}
+
+				template<typename TDecl>
+				WString FindFullName(const Dictionary<WString, TDecl*>& names, TDecl* declaration)
+				{
+					for (vint i = 0; i < names.Count(); i++)
+					{
+						if (names.Values()[i] == declaration)
+						{
+							return names.Keys()[i];
+						}
+					}
+					return L"";
+				}
+
+				ITypeDescriptor* FindRpcTypeDescriptor(WfLexicalScopeManager* manager, const WString& fullName)
+				{
+					for (vint i = 0; i < manager->declarationTypes.Count(); i++)
+					{
+						auto typeDescriptor = manager->declarationTypes.Values()[i].Obj();
+						if (typeDescriptor && typeDescriptor->GetTypeName() == fullName)
+						{
+							return typeDescriptor;
+						}
+					}
+					return nullptr;
+				}
+
+				Ptr<WfExpression> CreateLifecycleHelperCall(const wchar_t* helperName, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
+				{
+					return CreateCall(CreateQualifiedExpression(L"system::IRpcLifecycle::" + WString::Unmanaged(helperName)), value, lifecycle);
+				}
+
+				Ptr<WfExpression> CreateRpcBoxExpression(ITypeInfo* typeInfo, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
+				{
+					if (IsSharedInterfaceType(typeInfo))
+					{
+						return CreateLifecycleHelperCall(byref ? L"RpcBoxByref" : L"RpcBoxByval", value, lifecycle);
+					}
+					return value;
+				}
+
+				Ptr<WfExpression> CreateRpcCachedPropertyInitialValue(const RpcPropertyModel& propertyModel)
+				{
+					if (!propertyModel.typeInfo)
+					{
+						return CreateNull();
+					}
+
+					switch (propertyModel.typeInfo->GetDecorator())
+					{
+					case ITypeInfo::RawPtr:
+					case ITypeInfo::SharedPtr:
+					case ITypeInfo::Nullable:
+						return CreateNull();
+					default:
+						return CreateDefaultValue(propertyModel.typeInfo);
+					}
+				}
+
+				Ptr<WfExpression> CreateRpcUnboxExpression(ITypeInfo* typeInfo, Ptr<WfType> type, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
+				{
+					Ptr<WfExpression> unboxed;
+					if (IsSharedInterfaceType(typeInfo))
+					{
+						auto serializable = byref
+							? CreateCast(CreateTypeFromCpp<rpc_controller::RpcObjectReference>(), value)
+							: value;
+						unboxed = CreateLifecycleHelperCall(byref ? L"RpcUnboxByref" : L"RpcUnboxByval", serializable, lifecycle);
+						return IsRpcStrongTypedCollection(typeInfo) || IsStrongTypedCollectionType(type.Obj())
+							? CreateCast(CopyType(type.Obj()), unboxed)
+							: CreateWeakCast(CopyType(type.Obj()), unboxed);
+					}
+					else
+					{
+						unboxed = value;
+					}
+					return CreateCast(CopyType(type.Obj()), unboxed);
+				}
+
+				Ptr<WfExpression> CreateRpcCopyByvalExpression(Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
+				{
+					return CreateLifecycleHelperCall(L"RpcCopyByval", value, lifecycle);
+				}
+
+				bool IsVoidType(WfType* type)
+				{
+					if (auto predefined = dynamic_cast<WfPredefinedType*>(type))
+					{
+						return predefined->name == WfPredefinedTypeName::Void;
+					}
+					if (auto child = dynamic_cast<WfChildType*>(type))
+					{
+						if (child->name.value == L"Void")
+						{
+							if (auto top = dynamic_cast<WfTopQualifiedType*>(child->parent.Obj()))
+							{
+								return top->name.value == L"system";
+							}
+						}
+					}
+					return false;
+				}
+
+				bool IsRpcByvalReturn(const RpcMethodModel& methodModel)
+				{
+					return !IsVoidType(methodModel.returnType.Obj())
+						&& !methodModel.returnByref
+						&& (IsStrongTypedCollectionType(methodModel.returnType.Obj()) || IsRpcStrongTypedCollection(methodModel.returnTypeInfo));
+				}
+
+				void AddRpcByvalReturnValue(Ptr<WfBlockStatement> block, Ptr<WfExpression> value, Ptr<WfExpression> copiedValue)
+				{
+					AddStatement(block, CreateInferredVariableStatement(L"byvalReturnValue", CreateNewClass(CreateTypeFromCpp<Ptr<rpc_controller::RpcByvalReturnValue>>())));
+					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(L"byvalReturnValue"), L"value"), value)));
+					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(L"byvalReturnValue"), L"slot"), CreateReference(L"_slot"))));
+					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_byvalReturnValues"), L"Set"), CreateReference(L"_slot"), copiedValue)));
+					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateReference(L"_slot"), CreateBinary(WfBinaryOperator::Add, CreateReference(L"_slot"), CreateInt(1)))));
+					AddStatement(block, CreateReturn(CreateReference(L"byvalReturnValue")));
+				}
+
+				Ptr<WfExpression> CreateRpcConstantReference(const wchar_t* prefix, const WString& fullName)
+				{
+					return CreateReference(WString::Unmanaged(prefix) + MangleRpcFullName(fullName));
+				}
+
+				vint GetRpcId(WfLexicalScopeManager* manager, const WString& fullName)
+				{
+					auto id = manager->rpcMetadata->orderedIds.IndexOf(fullName);
+					CHECK_ERROR(id != -1, L"RPC metadata ID list does not contain a generated RPC full name.");
+					return id;
+				}
+
+				const wchar_t* GetRpcConstantPrefix(WfLexicalScopeManager* manager, const WString& fullName)
+				{
+					if (manager->rpcMetadata->typeNames.Keys().Contains(fullName))
+					{
+						return L"rpctype_";
+					}
+					if (manager->rpcMetadata->methodNames.Keys().Contains(fullName))
+					{
+						return L"rpcmethod_";
+					}
+					if (manager->rpcMetadata->eventNames.Keys().Contains(fullName))
+					{
+						return L"rpcevent_";
+					}
+					CHECK_FAIL(L"RPC metadata ID list contains an unknown generated RPC full name.");
+				}
+
+				void AddIdLookupEntry(Ptr<WfConstructorExpression> expression, Ptr<WfExpression> key, Ptr<WfExpression> value)
+				{
+					expression->arguments.Add(CreateConstructorArgument(key, value));
+				}
+
+				void CollectMangledNames(WfLexicalScopeManager* manager)
+				{
+					Dictionary<WString, WString> mangledNames;
+					for (auto fullName : manager->rpcMetadata->orderedIds)
+					{
+						auto mangled = MangleRpcFullName(fullName);
+						auto index = mangledNames.Keys().IndexOf(mangled);
+						if (index != -1 && mangledNames.Values()[index] != fullName)
+						{
+							manager->errors.Add(WfErrors::RpcMangledNameConflict(FindRpcDeclaration(manager, fullName), mangled, mangledNames.Values()[index], fullName));
+							return;
+						}
+						if (index == -1)
+						{
+							mangledNames.Add(mangled, fullName);
+						}
+					}
+				}
+
+				List<RpcInterfaceModel> BuildInterfaceModels(WfLexicalScopeManager* manager)
+				{
+					List<RpcInterfaceModel> interfaces;
+					auto rpcByrefAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Byref>();
+					auto rpcCachedAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Cached>();
+					auto rpcDynamicAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Dynamic>();
+					SortedList<ITypeDescriptor*> rpcInterfaceTds;
+
+					for (auto typeFullName : manager->rpcMetadata->typeFullNames)
+					{
+						if (auto td = FindRpcTypeDescriptor(manager, typeFullName))
+						{
+							if (!rpcInterfaceTds.Contains(td))
+							{
+								rpcInterfaceTds.Add(td);
+							}
+						}
+					}
+
+					for (auto typeFullName : manager->rpcMetadata->typeFullNames)
+					{
+						auto typeIndex = manager->rpcMetadata->typeNames.Keys().IndexOf(typeFullName);
+						if (typeIndex == -1)
+						{
+							continue;
+						}
+
+						auto interfaceDecl = manager->rpcMetadata->typeNames.Values()[typeIndex];
+						List<WString> fragments;
+						SplitTypeFullName(typeFullName, fragments);
+
+						RpcInterfaceModel interfaceModel;
+						interfaceModel.fullName = typeFullName;
+						interfaceModel.interfaceName = fragments[fragments.Count() - 1];
+						interfaceModel.typeId = GetRpcId(manager, typeFullName);
+						interfaceModel.ctor = HasRpcAttribute(interfaceDecl->attributes, L"Ctor");
+						interfaceModel.interfaceDecl = interfaceDecl;
+						auto typeDescriptor = FindRpcTypeDescriptor(manager, typeFullName);
+
+						if (typeDescriptor)
+						{
+							for (vint i = 0; i < typeDescriptor->GetBaseTypeDescriptorCount(); i++)
+							{
+								auto baseTypeDescriptor = typeDescriptor->GetBaseTypeDescriptor(i);
+								if (!baseTypeDescriptor)
+								{
+									continue;
+								}
+
+								auto baseFullName = baseTypeDescriptor->GetTypeName();
+								if (manager->rpcMetadata->typeFullNames.Contains(baseFullName))
+								{
+									interfaceModel.baseFullNames.Add(baseFullName);
+								}
+							}
+						}
+
+						Dictionary<WString, vint> getterPropertyIndexes;
+						Dictionary<WString, vint> setterPropertyIndexes;
+
+						for (auto declaration : interfaceDecl->declarations)
+						{
+							if (auto propertyDecl = declaration.Cast<WfPropertyDeclaration>())
+							{
+								RpcPropertyModel propertyModel;
+								propertyModel.name = propertyDecl->name.value;
+								propertyModel.type = CopyType(propertyDecl->type.Obj());
+								propertyModel.byref = HasRpcAttribute(propertyDecl->attributes, L"Byref");
+								propertyModel.cached = !HasRpcAttribute(propertyDecl->attributes, L"Dynamic");
+								propertyModel.getterName = propertyDecl->getter.value;
+								propertyModel.setterName = propertyDecl->setter.value;
+								propertyModel.valueChangedEvent = propertyDecl->valueChangedEvent.value;
+								if (!HasRpcAttribute(propertyDecl->attributes, L"Cached") && !HasRpcAttribute(propertyDecl->attributes, L"Dynamic"))
+								{
+									manager->errors.Add(WfErrors::RpcWrapperGenerationRequiresPropertyMode(propertyDecl.Obj(), typeFullName + L"." + propertyDecl->name.value));
+								}
+								interfaceModel.properties.Add(std::move(propertyModel));
+
+								auto propertyIndex = interfaceModel.properties.Count() - 1;
+								auto&& insertedProperty = interfaceModel.properties[propertyIndex];
+								if (insertedProperty.getterName != L"")
+								{
+									getterPropertyIndexes.Add(insertedProperty.getterName, propertyIndex);
+								}
+								if (insertedProperty.setterName != L"")
+								{
+									setterPropertyIndexes.Add(insertedProperty.setterName, propertyIndex);
+								}
+							}
+						}
+
+						if (typeDescriptor)
+						{
+							for (vint i = 0; i < typeDescriptor->GetPropertyCount(); i++)
+							{
+								auto propertyInfo = typeDescriptor->GetProperty(i);
+								if (!propertyInfo || propertyInfo->GetOwnerTypeDescriptor() != typeDescriptor)
+								{
+									continue;
+								}
+
+								vint propertyIndex = -1;
+								for (vint j = 0; j < interfaceModel.properties.Count(); j++)
+								{
+									if (interfaceModel.properties[j].name == propertyInfo->GetName())
+									{
+										propertyIndex = j;
+										break;
+									}
+								}
+
+								if (propertyIndex != -1)
+								{
+									auto&& propertyModel = interfaceModel.properties[propertyIndex];
+									propertyModel.typeInfo = propertyInfo->GetReturn();
+								}
+								else
+								{
+									RpcPropertyModel propertyModel;
+									propertyModel.name = propertyInfo->GetName();
+									propertyModel.type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
+									propertyModel.typeInfo = propertyInfo->GetReturn();
+									propertyModel.byref = HasAttribute(propertyInfo, rpcByrefAttrTd);
+									propertyModel.cached = !HasAttribute(propertyInfo, rpcDynamicAttrTd);
+									if (auto getter = propertyInfo->GetGetter())
+									{
+										propertyModel.getterName = getter->GetName();
+									}
+									if (auto setter = propertyInfo->GetSetter())
+									{
+										propertyModel.setterName = setter->GetName();
+									}
+									if (auto valueChangedEvent = propertyInfo->GetValueChangedEvent())
+									{
+										propertyModel.valueChangedEvent = valueChangedEvent->GetName();
+									}
+									if (!HasAttribute(propertyInfo, rpcCachedAttrTd) && !HasAttribute(propertyInfo, rpcDynamicAttrTd))
+									{
+										propertyModel.cached = true;
+									}
+									interfaceModel.properties.Add(std::move(propertyModel));
+
+									propertyIndex = interfaceModel.properties.Count() - 1;
+									auto&& insertedProperty = interfaceModel.properties[propertyIndex];
+									if (insertedProperty.getterName != L"")
+									{
+										getterPropertyIndexes.Add(insertedProperty.getterName, propertyIndex);
+									}
+									if (insertedProperty.setterName != L"")
+									{
+										setterPropertyIndexes.Add(insertedProperty.setterName, propertyIndex);
+									}
+								}
+							}
+						}
+
+						for (auto declaration : interfaceDecl->declarations)
+						{
+							if (auto methodDecl = declaration.Cast<WfFunctionDeclaration>())
+							{
+								auto methodFullName = FindFullName(manager->rpcMetadata->methodNames, methodDecl.Obj());
+								if (methodFullName == L"")
+								{
+									continue;
+								}
+
+								RpcMethodModel methodModel;
+								methodModel.fullName = methodFullName;
+								methodModel.name = methodDecl->name.value;
+								methodModel.methodId = GetRpcId(manager, methodFullName);
+								methodModel.returnType = CopyType(methodDecl->returnType.Obj());
+								auto methodInfo = FindRpcMethodInfo(manager, interfaceDecl, methodDecl.Obj(), typeDescriptor);
+								if (methodInfo)
+								{
+									methodModel.returnTypeInfo = methodInfo->GetReturn();
+								}
+								methodModel.returnByref = HasRpcAttribute(methodDecl->attributes, L"Byref");
+								if (IsStrongTypedCollectionType(methodModel.returnType.Obj())
+									&& !methodModel.returnByref
+									&& !HasRpcAttribute(methodDecl->attributes, L"Byval"))
+								{
+									manager->errors.Add(WfErrors::RpcWrapperGenerationRequiresCollectionReturnTransfer(methodDecl.Obj(), typeFullName + L"." + methodDecl->name.value));
+								}
+
+								if (auto getterIndex = getterPropertyIndexes.Keys().IndexOf(methodModel.name); getterIndex != -1)
+								{
+									auto&& property = interfaceModel.properties[getterPropertyIndexes.Values()[getterIndex]];
+									methodModel.kind = RpcMethodKind::PropertyGetter;
+									methodModel.returnType = CopyType(property.type.Obj());
+									methodModel.returnTypeInfo = property.typeInfo;
+								}
+								else if (auto setterIndex = setterPropertyIndexes.Keys().IndexOf(methodModel.name); setterIndex != -1)
+								{
+									methodModel.kind = RpcMethodKind::PropertySetter;
+									methodModel.returnByref = false;
+								}
+
+								for (vint i = 0; i < methodDecl->arguments.Count(); i++)
+								{
+									auto argumentDecl = methodDecl->arguments[i];
+									RpcParamModel paramModel;
+									paramModel.name = argumentDecl->name.value;
+									paramModel.type = CopyType(argumentDecl->type.Obj());
+									if (methodInfo && i < methodInfo->GetParameterCount())
+									{
+										paramModel.typeInfo = methodInfo->GetParameter(i)->GetType();
+									}
+									paramModel.byref = HasRpcAttribute(argumentDecl->attributes, L"Byref");
+									if (IsStrongTypedCollectionType(paramModel.type.Obj())
+										&& !paramModel.byref
+										&& !HasRpcAttribute(argumentDecl->attributes, L"Byval"))
+									{
+										manager->errors.Add(WfErrors::RpcWrapperGenerationRequiresCollectionParameterTransfer(argumentDecl.Obj(), typeFullName + L"." + methodDecl->name.value + L"(" + argumentDecl->name.value + L")"));
+									}
+
+									if (methodModel.kind == RpcMethodKind::PropertySetter && i == 0)
+									{
+										auto setterIndex = setterPropertyIndexes.Keys().IndexOf(methodModel.name);
+										auto&& property = interfaceModel.properties[setterPropertyIndexes.Values()[setterIndex]];
+										paramModel.type = CopyType(property.type.Obj());
+										paramModel.typeInfo = property.typeInfo;
+									}
+
+									methodModel.params.Add(std::move(paramModel));
+								}
+
+								interfaceModel.methods.Add(std::move(methodModel));
+							}
+							else if (auto eventDecl = declaration.Cast<WfEventDeclaration>())
+							{
+								auto eventFullName = FindFullName(manager->rpcMetadata->eventNames, eventDecl.Obj());
+								if (eventFullName == L"")
+								{
+									continue;
+								}
+
+								RpcEventModel eventModel;
+								eventModel.fullName = eventFullName;
+								eventModel.name = eventDecl->name.value;
+								eventModel.eventId = GetRpcId(manager, eventFullName);
+
+								ITypeInfo* handlerGenericType = nullptr;
+								if (typeDescriptor)
+								{
+									for (vint j = 0; j < typeDescriptor->GetEventCount(); j++)
+									{
+										auto eventInfo = typeDescriptor->GetEvent(j);
+										if (eventInfo && eventInfo->GetOwnerTypeDescriptor() == typeDescriptor && eventInfo->GetName() == eventModel.name)
+										{
+											auto handlerType = eventInfo->GetHandlerType();
+											if (handlerType && handlerType->GetDecorator() == ITypeInfo::SharedPtr)
+											{
+												auto genericType = handlerType->GetElementType();
+												if (genericType && genericType->GetDecorator() == ITypeInfo::Generic)
+												{
+													handlerGenericType = genericType;
+												}
+											}
+											break;
+										}
+									}
+								}
+
+								for (vint i = 0; i < eventDecl->arguments.Count(); i++)
+								{
+									RpcParamModel paramModel;
+									paramModel.name = L"arg" + itow(i);
+									paramModel.type = CopyType(eventDecl->arguments[i].Obj());
+									auto genericArgumentIndex = i + 1;
+									paramModel.typeInfo = handlerGenericType && genericArgumentIndex < handlerGenericType->GetGenericArgumentCount()
+										? handlerGenericType->GetGenericArgument(genericArgumentIndex)
+										: nullptr;
+									paramModel.byref = handlerGenericType && genericArgumentIndex < handlerGenericType->GetGenericArgumentCount()
+										? IsDefaultRpcTransferByref(handlerGenericType->GetGenericArgument(genericArgumentIndex), rpcInterfaceTds)
+										: dynamic_cast<WfObservableListType*>(eventDecl->arguments[i].Obj()) != nullptr;
+									eventModel.params.Add(std::move(paramModel));
+								}
+
+								interfaceModel.events.Add(std::move(eventModel));
+							}
+						}
+
+						interfaces.Add(std::move(interfaceModel));
+					}
+
+					return interfaces;
+				}
+
+				void AddDeclarationToNamespaces(
+					List<Ptr<WfDeclaration>>& rootDeclarations,
+					Dictionary<WString, Ptr<WfNamespaceDeclaration>>& namespaceMap,
+					const List<WString>& namespaceFragments,
+					Ptr<WfDeclaration> declaration)
+				{
+					auto currentDeclarations = &rootDeclarations;
+					WString currentPath;
+
+					for (auto fragment : namespaceFragments)
+					{
+						currentPath = currentPath == L"" ? fragment : currentPath + L"::" + fragment;
+						auto index = namespaceMap.Keys().IndexOf(currentPath);
+						if (index == -1)
+						{
+							auto namespaceDecl = Ptr(new WfNamespaceDeclaration);
+							namespaceDecl->name.value = fragment;
+							currentDeclarations->Add(namespaceDecl);
+							namespaceMap.Add(currentPath, namespaceDecl);
+							currentDeclarations = &namespaceDecl->declarations;
+						}
+						else
+						{
+							currentDeclarations = &namespaceMap.Values()[index]->declarations;
+						}
+					}
+
+					currentDeclarations->Add(declaration);
+				}
+
+				Ptr<WfStatement> BuildInvokeMethodBranch(const RpcInterfaceModel& interfaceModel, const RpcMethodModel& methodModel)
+				{
+					auto block = CreateBlock();
+					AddStatement(block, CreateInferredVariableStatement(L"target", CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
+
+					List<Ptr<WfExpression>> arguments;
+					for (vint i = 0; i < methodModel.params.Count(); i++)
+					{
+						auto&& paramModel = methodModel.params[i];
+						auto argument = CreateIndex(CreateReference(L"arguments"), CreateInt(i));
+						arguments.Add(CreateRpcUnboxExpression(paramModel.typeInfo, paramModel.type, paramModel.byref, argument, CreateReference(L"_lc")));
+					}
+
+					auto invokeTarget = CreateMember(CreateReference(L"target"), methodModel.name);
+					auto invoke = Ptr(new WfCallExpression);
+					invoke->function = invokeTarget;
+					for (auto argument : arguments)
+					{
+						invoke->arguments.Add(argument);
+					}
+
+					if (IsVoidType(methodModel.returnType.Obj()))
+					{
+						AddStatement(block, CreateExpressionStatement(invoke));
+						AddStatement(block, CreateReturn(CreateNull()));
+					}
+					else
+					{
+						if (IsRpcByvalReturn(methodModel))
+						{
+							AddStatement(block, CreateInferredVariableStatement(L"copiedReturnValue", CreateRpcCopyByvalExpression(invoke, CreateReference(L"_lc"))));
+							AddStatement(block, CreateInferredVariableStatement(L"boxedReturnValue", CreateRpcBoxExpression(methodModel.returnTypeInfo, methodModel.returnByref, CreateReference(L"copiedReturnValue"), CreateReference(L"_lc"))));
+							AddRpcByvalReturnValue(block, CreateReference(L"boxedReturnValue"), CreateReference(L"copiedReturnValue"));
+						}
+						else
+						{
+							AddStatement(block, CreateReturn(CreateRpcBoxExpression(methodModel.returnTypeInfo, methodModel.returnByref, invoke, CreateReference(L"_lc"))));
+						}
+					}
+					return block;
+				}
+
+				Ptr<WfStatement> BuildInvokeEventBranch(const RpcInterfaceModel& interfaceModel, const RpcEventModel& eventModel)
+				{
+					auto block = CreateBlock();
+					AddStatement(block, CreateInferredVariableStatement(L"target", CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
+
+					auto invoke = Ptr(new WfCallExpression);
+					invoke->function = CreateMember(CreateReference(L"target"), eventModel.name);
+					for (vint i = 0; i < eventModel.params.Count(); i++)
+					{
+						auto&& paramModel = eventModel.params[i];
+						auto argument = CreateIndex(CreateReference(L"arguments"), CreateInt(i));
+						invoke->arguments.Add(CreateRpcUnboxExpression(paramModel.typeInfo, paramModel.type, paramModel.byref, argument, CreateReference(L"_lc")));
+					}
+					AddStatement(block, CreateExpressionStatement(invoke));
+					return block;
+				}
+
+				bool HasRpcEvents(const List<RpcInterfaceModel>& interfaces)
+				{
+					for (auto&& interfaceModel : interfaces)
+					{
+						if (interfaceModel.events.Count() > 0)
+						{
+							return true;
+						}
+					}
+					return false;
+				}
+
+				Ptr<WfStatement> BuildDispatchChain(const List<RpcInterfaceModel>& interfaces, bool forEvent, const WString& unknownIdVariable = WString::Empty)
+				{
+					auto switchStat = Ptr(new WfSwitchStatement);
+					switchStat->expression = CreateReference(forEvent ? L"eventId" : L"methodId");
+					switchStat->defaultBranch =
+						unknownIdVariable == L""
+						? CreateRaise(forEvent ? L"Unknown RPC event id." : L"Unknown RPC method id.")
+						: CreateExpressionStatement(CreateAssign(CreateReference(unknownIdVariable), CreateBool(true)));
+
+					for (auto&& interfaceModel : interfaces)
+					{
+						if (forEvent)
+						{
+							for (auto&& eventModel : interfaceModel.events)
+							{
+								auto switchCase = Ptr(new WfSwitchCase);
+								switchCase->expression = CreateRpcConstantReference(L"rpcevent_", eventModel.fullName);
+								switchCase->statement = BuildInvokeEventBranch(interfaceModel, eventModel);
+								switchStat->caseBranches.Add(switchCase);
+							}
+						}
+						else
+						{
+							for (auto&& methodModel : interfaceModel.methods)
+							{
+								auto switchCase = Ptr(new WfSwitchCase);
+								switchCase->expression = CreateRpcConstantReference(L"rpcmethod_", methodModel.fullName);
+								switchCase->statement = BuildInvokeMethodBranch(interfaceModel, methodModel);
+								switchStat->caseBranches.Add(switchCase);
+							}
+						}
+					}
+					return switchStat;
+				}
+
+				Ptr<WfDeclaration> GenerateIsInterfaceTypeIdHelper(const List<RpcInterfaceModel>& interfaces)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_IsInterfaceTypeId", CreatePredefinedType(WfPredefinedTypeName::Bool), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					auto isCollectionTypeId = CreateBinary(
+						WfBinaryOperator::And,
+						CreateBinary(WfBinaryOperator::GE, CreateReference(L"typeId"), CreateInt(rpc_controller::RpcTypeId_IValueReadonlyList)),
+						CreateBinary(WfBinaryOperator::LE, CreateReference(L"typeId"), CreateInt(rpc_controller::RpcTypeId_IValueEnumerable))
+					);
+					AddStatement(block, CreateIf(isCollectionTypeId, CreateReturn(CreateBool(true))));
+					auto switchStat = Ptr(new WfSwitchStatement);
+					switchStat->expression = CreateReference(L"typeId");
+					switchStat->defaultBranch = CreateReturn(CreateBool(false));
+
+					auto addKnownType = [&](Ptr<WfExpression> expression)
+					{
+						auto switchCase = Ptr(new WfSwitchCase);
+						switchCase->expression = expression;
+						switchCase->statement = CreateReturn(CreateBool(true));
+						switchStat->caseBranches.Add(switchCase);
+					};
+
+					for (auto&& interfaceModel : interfaces)
+					{
+						addKnownType(CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName));
+					}
+
+					AddStatement(block, switchStat);
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateIsCtorInterfaceTypeIdHelper(const List<RpcInterfaceModel>& interfaces)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_IsCtorInterfaceTypeId", CreatePredefinedType(WfPredefinedTypeName::Bool), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+					auto switchStat = Ptr(new WfSwitchStatement);
+					switchStat->expression = CreateReference(L"typeId");
+					switchStat->defaultBranch = CreateReturn(CreateBool(false));
+
+					for (auto&& interfaceModel : interfaces)
+					{
+						if (!interfaceModel.ctor)
+						{
+							continue;
+						}
+
+						auto switchCase = Ptr(new WfSwitchCase);
+						switchCase->expression = CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName);
+						switchCase->statement = CreateReturn(CreateBool(true));
+						switchStat->caseBranches.Add(switchCase);
+					}
+
+					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), switchStat);
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateObjectOpsFactory(const List<RpcInterfaceModel>& interfaces)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectOps", CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectOps>>(), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					auto newOps = CreateNewInterface(CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectOps>>()).Cast<WfNewInterfaceExpression>();
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_slot", CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(0)));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_byvalReturnValues", CreateTypeFromCpp<Dictionary<vint, Value>>(), CreateConstructor()));
+
+					{
+						auto invokeMethod = CreateFunctionDeclaration(L"InvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
+						invokeMethod->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
+						invokeMethod->arguments.Add(CreateFunctionArgument(L"methodId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+						invokeMethod->arguments.Add(CreateFunctionArgument(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>()));
+						auto block = invokeMethod->statement.Cast<WfBlockStatement>();
+						AddStatement(block, CreateVariableStatement(L"unknownId", CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
+						auto catchBlock = CreateBlock();
+						AddStatement(catchBlock, CreateReturn(CreateRpcExceptionExpression(CreateMember(CreateReference(L"ex"), L"Message"))));
+						AddStatement(block, CreateTryCatch(BuildDispatchChain(interfaces, false, L"unknownId"), L"ex", catchBlock));
+						auto unknownIdBranch = CreateBlock();
+						AddStatement(unknownIdBranch, CreateRaise(L"Unknown RPC method id."));
+						AddStatement(block, CreateIf(CreateReference(L"unknownId"), unknownIdBranch));
+						AddStatement(block, CreateReturn(CreateNull()));
+						newOps->declarations.Add(invokeMethod);
+					}
+
+					{
+						auto endInvokeMethod = CreateFunctionDeclaration(L"EndInvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+						endInvokeMethod->arguments.Add(CreateFunctionArgument(L"slot", CreatePredefinedType(WfPredefinedTypeName::Int)));
+						AddStatement(endInvokeMethod->statement.Cast<WfBlockStatement>(), CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_byvalReturnValues"), L"Remove"), CreateReference(L"slot"))));
+						newOps->declarations.Add(endInvokeMethod);
+					}
+
+					{
+						auto objectHold = CreateFunctionDeclaration(L"ObjectHold", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+						objectHold->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
+						objectHold->arguments.Add(CreateFunctionArgument(L"remoteClientId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+						objectHold->arguments.Add(CreateFunctionArgument(L"hold", CreatePredefinedType(WfPredefinedTypeName::Bool)));
+						auto trueBranch = CreateBlock();
+						AddStatement(trueBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_lc"), L"LocalObjectHold"), CreateReference(L"ref"), CreateReference(L"remoteClientId"))));
+						auto falseBranch = CreateBlock();
+						AddStatement(falseBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_lc"), L"LocalObjectUnhold"), CreateReference(L"ref"), CreateReference(L"remoteClientId"))));
+						AddStatement(objectHold->statement.Cast<WfBlockStatement>(), CreateIf(CreateReference(L"hold"), trueBranch, falseBranch));
+						newOps->declarations.Add(objectHold);
+					}
+
+					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateObjectEventOpsFactory(const List<RpcInterfaceModel>& interfaces)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectEventOps", CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectEventOps>>(), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					auto newOps = CreateNewInterface(CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectEventOps>>()).Cast<WfNewInterfaceExpression>();
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
+
+					{
+						auto invokeEvent = CreateFunctionDeclaration(L"InvokeEvent", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
+						invokeEvent->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
+						invokeEvent->arguments.Add(CreateFunctionArgument(L"eventId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+						invokeEvent->arguments.Add(CreateFunctionArgument(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>()));
+						auto block = invokeEvent->statement.Cast<WfBlockStatement>();
+						if (!HasRpcEvents(interfaces))
+						{
+							AddStatement(block, CreateRaise(L"Unknown RPC event id."));
+							newOps->declarations.Add(invokeEvent);
+						}
+						else
+						{
+							AddStatement(block, CreateVariableStatement(L"unknownId", CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
+							AddStatement(block, CreateVariableStatement(L"rpcEventExceptions", CreateRpcEventExceptionMapType(), CreateConstructor()));
+							AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(true))));
+							auto finallyBlock = CreateBlock();
+							AddStatement(finallyBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(false))));
+							auto catchBlock = CreateBlock();
+							AddRpcEventExceptionMapSet(catchBlock, L"rpcEventExceptions", CreateMember(CreateReference(L"_lc"), L"ClientId"), CreateMember(CreateReference(L"ex"), L"Message"));
+							AddStatement(block, CreateTry(BuildDispatchChain(interfaces, true, L"unknownId"), L"ex", catchBlock, finallyBlock));
+							auto unknownIdBranch = CreateBlock();
+							AddStatement(unknownIdBranch, CreateRaise(L"Unknown RPC event id."));
+							AddStatement(block, CreateIf(CreateReference(L"unknownId"), unknownIdBranch));
+							auto returnExceptionBranch = CreateBlock();
+							AddStatement(returnExceptionBranch, CreateReturn(CreateReference(L"rpcEventExceptions")));
+							auto returnNullBranch = CreateBlock();
+							AddStatement(returnNullBranch, CreateReturn(CreateNull()));
+							AddStatement(
+								block,
+								CreateIf(
+									CreateBinary(WfBinaryOperator::GT, CreateMember(CreateReference(L"rpcEventExceptions"), L"Count"), CreateInt(0)),
+									returnExceptionBranch,
+									returnNullBranch));
+							newOps->declarations.Add(invokeEvent);
+						}
+					}
+
+					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
+					return functionDecl;
+				}
+
+				Ptr<WfFunctionDeclaration> CreateAnonymousLambda(const List<RpcParamModel>& params, Ptr<WfBlockStatement> body)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal, WfFunctionAnonymity::Anonymous);
+					functionDecl->statement = body;
+					for (auto&& param : params)
+					{
+						functionDecl->arguments.Add(CreateFunctionArgument(param.name, CopyType(param.type.Obj())));
+					}
+					return functionDecl;
+				}
+
+				const RpcInterfaceModel* FindInterfaceModel(const List<RpcInterfaceModel>& interfaces, const WString& fullName)
+				{
+					for (auto&& interfaceModel : interfaces)
+					{
+						if (interfaceModel.fullName == fullName)
+						{
+							return &interfaceModel;
+						}
+					}
+					return nullptr;
+				}
+
+				void SortInterfaceModelsLeafFirst(const List<RpcInterfaceModel>& interfaces, List<const RpcInterfaceModel*>& sortedInterfaces)
+				{
+					sortedInterfaces.Clear();
+
+					List<WString> typeFullNames;
+					Group<WString, WString> dependencyGroup;
+					for (auto&& interfaceModel : interfaces)
+					{
+						typeFullNames.Add(interfaceModel.fullName);
+					}
+					for (auto&& interfaceModel : interfaces)
+					{
+						for (auto&& baseFullName : interfaceModel.baseFullNames)
+						{
+							if (typeFullNames.Contains(baseFullName))
+							{
+								dependencyGroup.Add(baseFullName, interfaceModel.fullName);
+							}
+						}
+					}
+
+					PartialOrderingProcessor pop;
+					pop.InitWithGroup(typeFullNames, dependencyGroup);
+					pop.Sort();
+
+					for (auto&& component : pop.components)
+					{
+						for (vint i = 0; i < component.nodeCount; i++)
+						{
+							auto interfaceModel = FindInterfaceModel(interfaces, typeFullNames[component.firstNode[i]]);
+							CHECK_ERROR(interfaceModel, L"SortInterfaceModelsLeafFirst: Invalid RPC interface name.");
+							sortedInterfaces.Add(interfaceModel);
+						}
+					}
+				}
+
+				bool ContainsEventModel(const List<const RpcEventModel*>& events, const WString& fullName)
+				{
+					for (auto eventModel : events)
+					{
+						if (eventModel->fullName == fullName)
+						{
+							return true;
+						}
+					}
+					return false;
+				}
+
+				bool ContainsPropertyModel(const List<const RpcPropertyModel*>& properties, const WString& name)
+				{
+					for (auto propertyModel : properties)
+					{
+						if (propertyModel->name == name)
+						{
+							return true;
+						}
+					}
+					return false;
+				}
+
+				bool ContainsMethodModel(const List<const RpcMethodModel*>& methods, const WString& fullName)
+				{
+					for (auto methodModel : methods)
+					{
+						if (methodModel->fullName == fullName)
+						{
+							return true;
+						}
+					}
+					return false;
+				}
+
+				void CollectInterfaceProperties(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces, List<const RpcPropertyModel*>& properties)
+				{
+					for (auto&& baseFullName : interfaceModel.baseFullNames)
+					{
+						if (auto baseModel = FindInterfaceModel(interfaces, baseFullName))
+						{
+							CollectInterfaceProperties(*baseModel, interfaces, properties);
+						}
+					}
+
+					for (auto&& propertyModel : interfaceModel.properties)
+					{
+						if (!ContainsPropertyModel(properties, propertyModel.name))
+						{
+							properties.Add(&propertyModel);
+						}
+					}
+				}
+
+				void CollectInterfaceMethods(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces, List<const RpcMethodModel*>& methods)
+				{
+					for (auto&& baseFullName : interfaceModel.baseFullNames)
+					{
+						if (auto baseModel = FindInterfaceModel(interfaces, baseFullName))
+						{
+							CollectInterfaceMethods(*baseModel, interfaces, methods);
+						}
+					}
+
+					for (auto&& methodModel : interfaceModel.methods)
+					{
+						if (!ContainsMethodModel(methods, methodModel.fullName))
+						{
+							methods.Add(&methodModel);
+						}
+					}
+				}
+
+				void CollectInterfaceEvents(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces, List<const RpcEventModel*>& events)
+				{
+					for (auto&& baseFullName : interfaceModel.baseFullNames)
+					{
+						if (auto baseModel = FindInterfaceModel(interfaces, baseFullName))
+						{
+							CollectInterfaceEvents(*baseModel, interfaces, events);
+						}
+					}
+
+					for (auto&& eventModel : interfaceModel.events)
+					{
+						if (!ContainsEventModel(events, eventModel.fullName))
+						{
+							events.Add(&eventModel);
+						}
+					}
+				}
+
+				bool HasInterfaceEvents(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces)
+				{
+					List<const RpcEventModel*> events;
+					CollectInterfaceEvents(interfaceModel, interfaces, events);
+					return events.Count() > 0;
+				}
+
+				const RpcEventModel* FindInterfaceEvent(const List<const RpcEventModel*>& events, const WString& name)
+				{
+					for (auto eventModel : events)
+					{
+						if (eventModel->name == name)
+						{
+							return eventModel;
+						}
+					}
+					return nullptr;
+				}
+
+				WString GetPropertyCacheAvailableName(const RpcPropertyModel& propertyModel)
+				{
+					return propertyModel.name + L"<Available>";
+				}
+
+				WString GetPropertyCacheValueName(const RpcPropertyModel& propertyModel)
+				{
+					return propertyModel.name + L"<Cached>";
+				}
+
+				WString GetPropertyCacheResetFunctionName(const RpcPropertyModel& propertyModel)
+				{
+					return L"_rpcInvalidate_" + propertyModel.name;
+				}
+
+				Ptr<WfExpression> CreatePropertyCacheAvailableRead(const RpcPropertyModel& propertyModel)
+				{
+					return CreateReference(GetPropertyCacheAvailableName(propertyModel));
+				}
+
+				Ptr<WfExpression> CreatePropertyCacheValueRead(const RpcPropertyModel& propertyModel)
+				{
+					return CreateReference(GetPropertyCacheValueName(propertyModel));
+				}
+
+				Ptr<WfDeclaration> GenerateWrapperInterface(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces)
+				{
+					List<const RpcPropertyModel*> properties;
+					CollectInterfaceProperties(interfaceModel, interfaces, properties);
+
+					auto interfaceDecl = Ptr(new WfClassDeclaration);
+					interfaceDecl->name.value = L"IRpcWrapper_" + interfaceModel.interfaceName;
+					interfaceDecl->kind = WfClassKind::Interface;
+					interfaceDecl->constructorType = WfConstructorType::SharedPtr;
+
+					{
+						auto baseType = Ptr(new WfReferenceType);
+						baseType->name.value = interfaceModel.fullName;
+						auto qualType = CreateQualifiedType(interfaceModel.fullName);
+						interfaceDecl->baseTypes.Add(qualType);
+					}
+
+					{
+						auto baseType = CreateTypeFromCpp<rpc_controller::IRpcWrapperBase>();
+						interfaceDecl->baseTypes.Add(baseType);
+					}
+
+					for (auto propertyModel : properties)
+					{
+						if (propertyModel->cached && propertyModel->valueChangedEvent != L"")
+						{
+							auto invalidateDecl = Ptr(new WfFunctionDeclaration);
+							invalidateDecl->name.value = GetPropertyCacheResetFunctionName(*propertyModel);
+							invalidateDecl->returnType = CreatePredefinedType(WfPredefinedTypeName::Void);
+							invalidateDecl->functionKind = WfFunctionKind::Normal;
+							invalidateDecl->anonymity = WfFunctionAnonymity::Named;
+							interfaceDecl->declarations.Add(invalidateDecl);
+						}
+					}
+
+					return interfaceDecl;
+				}
+
+				WString GetRpcOpsInvokeMethodName(const RpcMethodModel& methodModel);
+				WString GetRpcOpsInvokeEventName(const RpcEventModel& eventModel);
+
+				Ptr<WfDeclaration> GenerateListenerFactory(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces, const WString& opsInterfaceName)
+				{
+					List<const RpcEventModel*> events;
+					CollectInterfaceEvents(interfaceModel, interfaces, events);
+					if (events.Count() == 0)
+					{
+						return nullptr;
+					}
+
+					auto mangledName = MangleRpcFullName(interfaceModel.fullName);
+					auto functionDecl = CreateFunctionDeclaration(L"rpclistener_" + mangledName, CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"target", CreateRawType(interfaceModel.fullName)));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+
+					for (auto eventModel : events)
+					{
+						auto lambdaBody = CreateBlock();
+
+						AddStatement(
+							lambdaBody,
+							CreateIf(
+								CreateCall(
+									CreateMember(CreateMember(CreateReference(L"lc"), L"Controller"), L"GetEventSuppressedFlag"),
+									CreateReference(L"ref"),
+									CreateRpcConstantReference(L"rpcevent_", eventModel->fullName)
+									),
+								CreateReturn(nullptr)
+								)
+							);
+						auto invoke = CreateCall(
+							CreateMember(CreateReference(L"ops"), GetRpcOpsInvokeEventName(*eventModel)),
+							CreateReference(L"ref"));
+						for (auto&& paramModel : eventModel->params)
+						{
+							invoke->arguments.Add(CreateReference(paramModel.name));
+						}
+						AddStatement(lambdaBody, CreateExpressionStatement(invoke));
+
+						auto attach = Ptr(new WfAttachEventExpression);
+						attach->event = CreateMember(CreateReference(L"target"), eventModel->name);
+						attach->function = CreateFunctionExpression(CreateAnonymousLambda(eventModel->params, lambdaBody));
+						AddStatement(block, CreateExpressionStatement(attach));
+					}
+
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateListenerDispatcher(const List<RpcInterfaceModel>& interfaces, const WString& opsInterfaceName)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpclistener_Attach", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"obj", CreateTypeFromCpp<reflection::IDescriptable*>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+
+					auto switchStat = Ptr(new WfSwitchStatement);
+					switchStat->expression = CreateReference(L"typeId");
+					switchStat->defaultBranch = CreateRaise(L"Unknown RPC type id for listener attachment.");
+
+					for (auto&& interfaceModel : interfaces)
+					{
+						auto switchCase = Ptr(new WfSwitchCase);
+						switchCase->expression = CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName);
+						auto caseBranch = CreateBlock();
+						if (HasInterfaceEvents(interfaceModel, interfaces))
+						{
+							auto mangledName = MangleRpcFullName(interfaceModel.fullName);
+							AddStatement(caseBranch, CreateExpressionStatement(CreateCall(CreateReference(L"rpclistener_" + mangledName), CreateReference(L"lc"), CreateReference(L"ref"), CreateCast(CreateRawType(interfaceModel.fullName), CreateReference(L"obj")), CreateReference(L"ops"))));
+						}
+						AddStatement(caseBranch, CreateReturn(nullptr));
+						switchCase->statement = caseBranch;
+						switchStat->caseBranches.Add(switchCase);
+					}
+
+					AddStatement(block, switchStat);
+					return functionDecl;
+				}
+
+				WString GetRpcOpsInterfaceName(const WString& assemblyName)
+				{
+					return L"rpcops_IOps_" + assemblyName;
+				}
+
+				WString GetRpcOpsInvokeMethodName(const RpcMethodModel& methodModel)
+				{
+					return L"InvokeMethod_" + MangleRpcFullName(methodModel.fullName);
+				}
+
+				WString GetRpcOpsInvokeEventName(const RpcEventModel& eventModel)
+				{
+					return L"InvokeEvent_" + MangleRpcFullName(eventModel.fullName);
+				}
+
+				WString GetRpcOpsArgumentName(const RpcParamModel& paramModel)
+				{
+					return L"arg_" + paramModel.name;
+				}
+
+				Ptr<WfFunctionDeclaration> CreateRpcOpsFunctionDeclaration(const WString& name, Ptr<WfType> returnType, WfFunctionKind kind)
+				{
+					auto functionDecl = Ptr(new WfFunctionDeclaration);
+					functionDecl->name.value = name;
+					functionDecl->returnType = returnType;
+					functionDecl->functionKind = kind;
+					functionDecl->anonymity = WfFunctionAnonymity::Named;
+					if (kind == WfFunctionKind::Override)
+					{
+						functionDecl->statement = CreateBlock();
+					}
+					return functionDecl;
+				}
+
+				void AddRpcOpsFunctionArguments(Ptr<WfFunctionDeclaration> functionDecl, const List<RpcParamModel>& params)
+				{
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
+					for (auto&& paramModel : params)
+					{
+						functionDecl->arguments.Add(CreateFunctionArgument(GetRpcOpsArgumentName(paramModel), CopyType(paramModel.type.Obj())));
+					}
+				}
+
+				void AddRpcOpsArgumentsArray(
+					Ptr<WfBlockStatement> block,
+					const List<RpcParamModel>& params)
+				{
+					AddStatement(block, CreateVariableStatement(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>(), CreateConstructor()));
+					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Resize"), CreateInt(params.Count()))));
+
+					for (vint i = 0; i < params.Count(); i++)
+					{
+						auto&& paramModel = params[i];
+						auto value = CreateReference(GetRpcOpsArgumentName(paramModel));
+						auto argument = CreateRpcBoxExpression(paramModel.typeInfo, paramModel.byref, value, CreateReference(L"_lc"));
+						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Set"), CreateInt(i), argument)));
+					}
+				}
+
+				Ptr<WfExpression> CreateRpcOpsObjectOps()
+				{
+					return CreateCall(
+						CreateMember(CreateMember(CreateReference(L"_lc"), L"Dispatcher"), L"SendToClient_ObjectOps"),
+						CreateMember(CreateReference(L"ref"), L"clientId")
+						);
+				}
+
+				Ptr<WfExpression> CreateRpcOpsObjectInvoke(const RpcMethodModel& methodModel, Ptr<WfExpression> objectOps)
+				{
+					return CreateCall(
+						CreateMember(objectOps, L"InvokeMethod"),
+						CreateReference(L"ref"),
+						CreateRpcConstantReference(L"rpcmethod_", methodModel.fullName),
+						CreateReference(L"arguments")
+						);
+				}
+
+				Ptr<WfExpression> CreateRpcOpsObjectInvoke(const RpcMethodModel& methodModel)
+				{
+					return CreateRpcOpsObjectInvoke(methodModel, CreateRpcOpsObjectOps());
+				}
+
+				Ptr<WfExpression> CreateRpcOpsObjectEventInvoke(const RpcEventModel& eventModel)
+				{
+					return CreateCall(
+						CreateMember(
+							CreateCall(
+								CreateMember(CreateMember(CreateReference(L"_lc"), L"Dispatcher"), L"BroadcastFromClient_ObjectEventOps"),
+								CreateMember(CreateReference(L"_lc"), L"ClientId")
+								),
+							L"InvokeEvent"
+							),
+						CreateReference(L"ref"),
+						CreateRpcConstantReference(L"rpcevent_", eventModel.fullName),
+						CreateReference(L"arguments")
+						);
+				}
+
+				Ptr<WfFunctionDeclaration> GenerateRpcOpsMethodImplementation(const RpcMethodModel& methodModel)
+				{
+					auto functionDecl = CreateRpcOpsFunctionDeclaration(GetRpcOpsInvokeMethodName(methodModel), CopyType(methodModel.returnType.Obj()), WfFunctionKind::Override);
+					AddRpcOpsFunctionArguments(functionDecl, methodModel.params);
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+
+					AddRpcOpsArgumentsArray(block, methodModel.params);
+					if (IsVoidType(methodModel.returnType.Obj()))
+					{
+						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
+						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
+						AddRpcMethodExceptionRaise(block, CreateReference(L"invokeResult"));
+					}
+					else if (IsRpcByvalReturn(methodModel))
+					{
+						AddStatement(block, CreateInferredVariableStatement(L"objectOps", CreateRpcOpsObjectOps()));
+						auto invoke = CreateRpcOpsObjectInvoke(methodModel, CreateReference(L"objectOps"));
+						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
+						AddRpcMethodExceptionRaise(block, CreateReference(L"invokeResult"));
+						AddStatement(block, CreateInferredVariableStatement(
+							L"byvalReturnValue",
+							CreateCast(CreateTypeFromCpp<Ptr<rpc_controller::RpcByvalReturnValue>>(), CreateReference(L"invokeResult"))));
+						AddStatement(block, CreateInferredVariableStatement(
+							L"result",
+							CreateRpcUnboxExpression(
+								methodModel.returnTypeInfo,
+								methodModel.returnType,
+								methodModel.returnByref,
+								CreateMember(CreateReference(L"byvalReturnValue"), L"value"),
+								CreateReference(L"_lc"))));
+						AddStatement(block, CreateExpressionStatement(CreateCall(
+							CreateMember(CreateReference(L"objectOps"), L"EndInvokeMethod"),
+							CreateMember(CreateReference(L"byvalReturnValue"), L"slot"))));
+						AddStatement(block, CreateReturn(CreateReference(L"result")));
+					}
+					else
+					{
+						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
+						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
+						AddRpcMethodExceptionRaise(block, CreateReference(L"invokeResult"));
+						AddStatement(block, CreateReturn(CreateRpcUnboxExpression(methodModel.returnTypeInfo, methodModel.returnType, methodModel.returnByref, CreateReference(L"invokeResult"), CreateReference(L"_lc"))));
+					}
+
+					return functionDecl;
+				}
+
+				Ptr<WfFunctionDeclaration> GenerateRpcOpsEventImplementation(const RpcEventModel& eventModel)
+				{
+					auto functionDecl = CreateRpcOpsFunctionDeclaration(GetRpcOpsInvokeEventName(eventModel), CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+					AddRpcOpsFunctionArguments(functionDecl, eventModel.params);
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+
+					AddRpcOpsArgumentsArray(block, eventModel.params);
+					AddRpcEventExceptionRaise(block, CreateCast(CreateRpcEventExceptionMapType(), CreateRpcOpsObjectEventInvoke(eventModel)));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateRpcOpsInterface(const WString& assemblyName, const List<RpcInterfaceModel>& interfaces)
+				{
+					auto interfaceDecl = Ptr(new WfClassDeclaration);
+					interfaceDecl->name.value = GetRpcOpsInterfaceName(assemblyName);
+					interfaceDecl->kind = WfClassKind::Interface;
+					interfaceDecl->constructorType = WfConstructorType::SharedPtr;
+
+					for (auto&& interfaceModel : interfaces)
+					{
+						for (auto&& methodModel : interfaceModel.methods)
+						{
+							auto methodDecl = CreateRpcOpsFunctionDeclaration(GetRpcOpsInvokeMethodName(methodModel), CopyType(methodModel.returnType.Obj()), WfFunctionKind::Normal);
+							AddRpcOpsFunctionArguments(methodDecl, methodModel.params);
+							interfaceDecl->declarations.Add(methodDecl);
+						}
+						for (auto&& eventModel : interfaceModel.events)
+						{
+							auto eventDecl = CreateRpcOpsFunctionDeclaration(GetRpcOpsInvokeEventName(eventModel), CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal);
+							AddRpcOpsFunctionArguments(eventDecl, eventModel.params);
+							interfaceDecl->declarations.Add(eventDecl);
+						}
+					}
+
+					return interfaceDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateRpcOpsFactory(const WString& assemblyName, const List<RpcInterfaceModel>& interfaces)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IOps_Create", CreateSharedType(GetRpcOpsInterfaceName(assemblyName)), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					auto newOps = CreateNewInterface(CreateSharedType(GetRpcOpsInterfaceName(assemblyName))).Cast<WfNewInterfaceExpression>();
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
+
+					for (auto&& interfaceModel : interfaces)
+					{
+						for (auto&& methodModel : interfaceModel.methods)
+						{
+							newOps->declarations.Add(GenerateRpcOpsMethodImplementation(methodModel));
+						}
+						for (auto&& eventModel : interfaceModel.events)
+						{
+							newOps->declarations.Add(GenerateRpcOpsEventImplementation(eventModel));
+						}
+					}
+
+					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateWrapperFactory(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces, const WString& opsInterfaceName)
+				{
+					auto mangledName = MangleRpcFullName(interfaceModel.fullName);
+					auto wrapperInterfaceFullName = interfaceModel.fullName.Sub(0, interfaceModel.fullName.Length() - interfaceModel.interfaceName.Length()) + L"IRpcWrapper_" + interfaceModel.interfaceName;
+					List<const RpcPropertyModel*> properties;
+					CollectInterfaceProperties(interfaceModel, interfaces, properties);
+					List<const RpcMethodModel*> methods;
+					CollectInterfaceMethods(interfaceModel, interfaces, methods);
+					List<const RpcEventModel*> events;
+					CollectInterfaceEvents(interfaceModel, interfaces, events);
+
+					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_" + mangledName, CreateSharedType(wrapperInterfaceFullName), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"proxyRef", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+
+					auto proxyExpr = CreateNewInterface(CreateSharedType(wrapperInterfaceFullName)).Cast<WfNewInterfaceExpression>();
+					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
+					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>(), CreateReference(L"proxyRef")));
+					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_ops", CreateSharedType(opsInterfaceName), CreateReference(L"ops")));
+					for (auto propertyModel : properties)
+					{
+						if (propertyModel->cached)
+						{
+							proxyExpr->declarations.Add(CreateVariableDeclaration(GetPropertyCacheValueName(*propertyModel), CopyType(propertyModel->type.Obj()), CreateRpcCachedPropertyInitialValue(*propertyModel)));
+							proxyExpr->declarations.Add(CreateVariableDeclaration(GetPropertyCacheAvailableName(*propertyModel), CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
+						}
+					}
+
+					for (auto propertyModel : properties)
+					{
+						if (propertyModel->cached && propertyModel->valueChangedEvent != L"")
+						{
+							auto invalidateDecl = CreateFunctionDeclaration(GetPropertyCacheResetFunctionName(*propertyModel), CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+							auto invalidateBlock = invalidateDecl->statement.Cast<WfBlockStatement>();
+							AddStatement(invalidateBlock, CreateExpressionStatement(CreateAssign(CreateReference(GetPropertyCacheAvailableName(*propertyModel)), CreateBool(false))));
+							proxyExpr->declarations.Add(invalidateDecl);
+						}
+					}
+
+					// Generate DisconnectFromLifecycle override
+					{
+						auto disconnectDecl = CreateFunctionDeclaration(L"DisconnectFromLifecycle", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+						auto disconnectBlock = disconnectDecl->statement.Cast<WfBlockStatement>();
+						AddStatement(disconnectBlock, CreateExpressionStatement(CreateAssign(CreateReference(L"_lc"), CreateNull())));
+						AddStatement(disconnectBlock, CreateExpressionStatement(CreateAssign(CreateReference(L"_ops"), CreateNull())));
+						proxyExpr->declarations.Add(disconnectDecl);
+					}
+
+					// Generate destructor: delete{}
+					{
+						auto dtorDecl = Ptr(new WfDestructorDeclaration);
+						auto dtorBlock = CreateBlock();
+						dtorDecl->statement = dtorBlock;
+
+						// if (_lc is not null) { _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false); }
+						auto condition = CreateIsNotNull(CreateReference(L"_lc"));
+						auto trueBranch = CreateBlock();
+						AddStatement(
+							trueBranch,
+							CreateExpressionStatement(
+								CreateCall(
+									CreateMember(
+										CreateCall(
+											CreateMember(CreateMember(CreateReference(L"_lc"), L"Dispatcher"), L"SendToClient_ObjectOps"),
+											CreateMember(CreateReference(L"_ref"), L"clientId")
+											),
+										L"ObjectHold"
+										),
+									CreateReference(L"_ref"),
+									CreateMember(CreateReference(L"_lc"), L"ClientId"),
+									CreateBool(false)
+									)
+								)
+							);
+						AddStatement(dtorBlock, CreateIf(condition, trueBranch));
+
+						proxyExpr->declarations.Add(dtorDecl);
+					}
+
+					for (auto methodModel : methods)
+					{
+						const RpcPropertyModel* cachedProperty = nullptr;
+						if (methodModel->kind == RpcMethodKind::PropertyGetter)
+						{
+							for (auto propertyModel : properties)
+							{
+								if (propertyModel->cached && propertyModel->getterName == methodModel->name)
+								{
+									cachedProperty = propertyModel;
+									break;
+								}
+							}
+						}
+
+						auto methodDecl = CreateFunctionDeclaration(methodModel->name, CopyType(methodModel->returnType.Obj()), WfFunctionKind::Override);
+						for (auto&& paramModel : methodModel->params)
+						{
+							methodDecl->arguments.Add(CreateFunctionArgument(paramModel.name, CopyType(paramModel.type.Obj())));
+						}
+
+						auto methodBlock = methodDecl->statement.Cast<WfBlockStatement>();
+
+						// null check: if (_lc is null) raise "..."
+						{
+							auto condition = CreateIsNull(CreateReference(L"_lc"));
+							auto trueBranch = CreateRaise(L"RPC wrapper has been disconnected from lifecycle.");
+							AddStatement(methodBlock, CreateIf(condition, trueBranch));
+						}
+
+						if (cachedProperty)
+						{
+							auto trueBranch = CreateBlock();
+							AddStatement(trueBranch, CreateReturn(CreatePropertyCacheValueRead(*cachedProperty)));
+							AddStatement(methodBlock, CreateIf(CreatePropertyCacheAvailableRead(*cachedProperty), trueBranch));
+						}
+
+						auto invoke = Ptr(new WfCallExpression);
+						invoke->function = CreateMember(CreateReference(L"_ops"), GetRpcOpsInvokeMethodName(*methodModel));
+						invoke->arguments.Add(CreateReference(L"_ref"));
+						for (auto&& paramModel : methodModel->params)
+						{
+							invoke->arguments.Add(CreateReference(paramModel.name));
+						}
+
+						if (IsVoidType(methodModel->returnType.Obj()))
+						{
+							AddStatement(methodBlock, CreateExpressionStatement(invoke));
+						}
+						else if (cachedProperty)
+						{
+							AddStatement(methodBlock, CreateExpressionStatement(CreateAssign(CreateReference(GetPropertyCacheValueName(*cachedProperty)), invoke)));
+							AddStatement(methodBlock, CreateExpressionStatement(CreateAssign(CreateReference(GetPropertyCacheAvailableName(*cachedProperty)), CreateBool(true))));
+							AddStatement(methodBlock, CreateReturn(CreatePropertyCacheValueRead(*cachedProperty)));
+						}
+						else
+						{
+							AddStatement(methodBlock, CreateReturn(invoke));
+						}
+
+						proxyExpr->declarations.Add(methodDecl);
+					}
+
+					AddStatement(block, CreateInferredVariableStatement(L"proxy", proxyExpr));
+					AddStatement(
+						block,
+						CreateExpressionStatement(
+							CreateCall(
+								CreateMember(
+									CreateCall(
+										CreateMember(CreateMember(CreateReference(L"lc"), L"Dispatcher"), L"SendToClient_ObjectOps"),
+										CreateMember(CreateReference(L"proxyRef"), L"clientId")
+										),
+									L"ObjectHold"
+									),
+								CreateReference(L"proxyRef"),
+								CreateMember(CreateReference(L"lc"), L"ClientId"),
+								CreateBool(true)
+								)
+							)
+						);
+
+					for (auto propertyModel : properties)
+					{
+						if (propertyModel->cached && propertyModel->valueChangedEvent != L"")
+						{
+							if (auto eventModel = FindInterfaceEvent(events, propertyModel->valueChangedEvent))
+							{
+								auto lambdaBody = CreateBlock();
+								auto invalidateTarget = CreateCast(CreateSharedType(wrapperInterfaceFullName), CreateCall(CreateMember(CreateReference(L"lc"), L"RefToPtr"), CreateReference(L"proxyRef")));
+								AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(invalidateTarget, GetPropertyCacheResetFunctionName(*propertyModel)))));
+
+								auto attach = Ptr(new WfAttachEventExpression);
+								attach->event = CreateMember(CreateCast(CreateSharedType(interfaceModel.fullName), CreateReference(L"proxy")), eventModel->name);
+								attach->function = CreateFunctionExpression(CreateAnonymousLambda(eventModel->params, lambdaBody));
+								AddStatement(block, CreateExpressionStatement(attach));
+							}
+						}
+					}
+
+					if (events.Count() > 0)
+					{
+						AddStatement(block, CreateExpressionStatement(CreateCall(CreateReference(L"rpclistener_" + mangledName), CreateReference(L"lc"), CreateReference(L"proxyRef"), CreateCast(CreateRawType(interfaceModel.fullName), CreateReference(L"proxy")), CreateReference(L"ops"))));
+					}
+
+					AddStatement(block, CreateReturn(CreateReference(L"proxy")));
+					return functionDecl;
+				}
+
+
+				Ptr<WfDeclaration> GenerateWrapperDispatcher(const List<RpcInterfaceModel>& interfaces, const WString& opsInterfaceName)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_Create", CreateTypeFromCpp<Ptr<rpc_controller::IRpcWrapperBase>>(), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+
+					auto switchStat = Ptr(new WfSwitchStatement);
+					switchStat->expression = CreateMember(CreateReference(L"ref"), L"typeId");
+					switchStat->defaultBranch = CreateRaise(L"Unknown RPC type id for wrapper creation.");
+
+					for (auto&& interfaceModel : interfaces)
+					{
+						auto switchCase = Ptr(new WfSwitchCase);
+						switchCase->expression = CreateRpcConstantReference(L"rpctype_", interfaceModel.fullName);
+						auto caseBranch = CreateBlock();
+						auto mangledName = MangleRpcFullName(interfaceModel.fullName);
+						AddStatement(caseBranch, CreateReturn(CreateCall(CreateReference(L"rpcwrapper_" + mangledName), CreateReference(L"lc"), CreateReference(L"ref"), CreateReference(L"ops"))));
+						switchCase->statement = caseBranch;
+						switchStat->caseBranches.Add(switchCase);
+					}
+
+					AddStatement(block, switchStat);
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateWrapperGetTypeId(const List<RpcInterfaceModel>& interfaces)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_GetTypeId", CreatePredefinedType(WfPredefinedTypeName::Int), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"obj", CreatePredefinedType(WfPredefinedTypeName::Object)));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+
+					List<const RpcInterfaceModel*> sortedInterfaces;
+					SortInterfaceModelsLeafFirst(interfaces, sortedInterfaces);
+					for (auto interfaceModel : sortedInterfaces)
+					{
+						AddStatement(
+							block,
+							CreateIf(
+								CreateIsType(CreateReference(L"obj"), CreateRawType(interfaceModel->fullName)),
+								CreateReturn(CreateRpcConstantReference(L"rpctype_", interfaceModel->fullName))
+								));
+					}
+
+					AddStatement(block, CreateReturn(CreateInt(rpc_controller::RpcTypeId_NotFound)));
+					return functionDecl;
+				}
+			}
+
+			Ptr<WfModule> GenerateModuleRpc(WfLexicalScopeManager* manager, WString assemblyName)
+			{
+				using namespace rpc_generating;
+
+				if (!manager || !manager->rpcMetadata || !manager->rpcMetadata->metadataModule)
+				{
+					return nullptr;
+				}
+
+				CollectMangledNames(manager);
+				if (manager->errors.Count() > 0)
+				{
+					return nullptr;
+				}
+
+				auto interfaces = BuildInterfaceModels(manager);
+				if (manager->errors.Count() > 0)
+				{
+					return nullptr;
+				}
+				auto module = Ptr(new WfModule);
+				module->moduleType = WfModuleType::Module;
+				module->name.value = L"RpcMetadata";
+				auto opsInterfaceName = GetRpcOpsInterfaceName(assemblyName);
+
+				vint id = 0;
+				for (auto fullName : manager->rpcMetadata->orderedIds)
+				{
+					auto name = WString::Unmanaged(GetRpcConstantPrefix(manager, fullName)) + MangleRpcFullName(fullName);
+					module->declarations.Add(CreateVariableDeclaration(name, CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(id++)));
+				}
+
+				{
+					auto getIds = CreateFunctionDeclaration(L"rpc_GetIds", CreateTypeFromCpp<Dictionary<WString, vint>>(), WfFunctionKind::Normal);
+					auto block = getIds->statement.Cast<WfBlockStatement>();
+					AddStatement(block, CreateVariableStatement(L"result", CreateTypeFromCpp<Dictionary<WString, vint>>(), CreateConstructor()));
+					id = 0;
+					for (auto fullName : manager->rpcMetadata->orderedIds)
+					{
+						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(rpc_generating::CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
+					}
+					AddStatement(block, CreateReturn(rpc_generating::CreateReference(L"result")));
+					module->declarations.Add(getIds);
+				}
+
+				module->declarations.Add(GenerateIsInterfaceTypeIdHelper(interfaces));
+				module->declarations.Add(GenerateIsCtorInterfaceTypeIdHelper(interfaces));
+				module->declarations.Add(GenerateRpcOpsInterface(assemblyName, interfaces));
+				module->declarations.Add(GenerateObjectOpsFactory(interfaces));
+				module->declarations.Add(GenerateObjectEventOpsFactory(interfaces));
+				module->declarations.Add(GenerateRpcOpsFactory(assemblyName, interfaces));
+
+				List<Ptr<WfDeclaration>> wrapperDeclarations;
+				Dictionary<WString, Ptr<WfNamespaceDeclaration>> wrapperNamespaces;
+				for (auto&& interfaceModel : interfaces)
+				{
+					List<WString> namespaceFragments;
+					SplitTypeFullName(interfaceModel.fullName, namespaceFragments);
+					namespaceFragments.RemoveAt(namespaceFragments.Count() - 1);
+					AddDeclarationToNamespaces(wrapperDeclarations, wrapperNamespaces, namespaceFragments, GenerateWrapperInterface(interfaceModel, interfaces));
+				}
+				for (auto declaration : wrapperDeclarations)
+				{
+					module->declarations.Add(declaration);
+				}
+
+				vint listenerCount = 0;
+				for (auto&& interfaceModel : interfaces)
+				{
+					if (auto listener = GenerateListenerFactory(interfaceModel, interfaces, opsInterfaceName))
+					{
+						module->declarations.Add(listener);
+						listenerCount++;
+					}
+				}
+				if (listenerCount > 0)
+				{
+					module->declarations.Add(GenerateListenerDispatcher(interfaces, opsInterfaceName));
+				}
+
+				for (auto&& interfaceModel : interfaces)
+				{
+					module->declarations.Add(GenerateWrapperFactory(interfaceModel, interfaces, opsInterfaceName));
+				}
+
+				module->declarations.Add(GenerateWrapperDispatcher(interfaces, opsInterfaceName));
+				module->declarations.Add(GenerateWrapperGetTypeId(interfaces));
+
+				return module;
+			}
+		}
+	}
+}
+
+
+/***********************************************************************
+.\ANALYZER\RPC\WFANALYZER_GENERATERPC_JSONDTS.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace analyzer
+		{
+/***********************************************************************
+GenerateDtsFromRpcMetadata
+***********************************************************************/
+
+			namespace rpc_dts_generating
+			{
+				using namespace collections;
+				using namespace reflection;
+				using namespace reflection::description;
+
+				enum class DtsPrimitiveKind
+				{
+					Number,
+					Boolean,
+					String,
+				};
+
+				struct DtsPrimitiveModel
+				{
+					WString					keyword;
+					DtsPrimitiveKind		kind = DtsPrimitiveKind::Number;
+				};
+
+				struct DtsEnumItemModel
+				{
+					WString					name;
+					vuint64_t				value = 0;
+				};
+
+				struct DtsEnumModel
+				{
+					WString						fullName;
+					Ptr<List<DtsEnumItemModel>>	items;
+				};
+
+				struct DtsFieldModel
+				{
+					WString					name;
+					Ptr<WfType>				type;
+				};
+
+				struct DtsStructModel
+				{
+					WString					fullName;
+					Ptr<List<DtsFieldModel>> fields;
+				};
+
+				struct DtsContext
+				{
+					WfLexicalScopeManager*	manager = nullptr;
+					List<DtsEnumModel>*		enums = nullptr;
+					List<DtsStructModel>*	structs = nullptr;
+				};
+
+				void AppendChar(WString& text, wchar_t c)
+				{
+					text += WString::CopyFrom(&c, 1);
+				}
+
+				bool IsDtsIdentifierStart(wchar_t c)
+				{
+					return (L'a' <= c && c <= L'z')
+						|| (L'A' <= c && c <= L'Z')
+						|| c == L'_'
+						|| c == L'$';
+				}
+
+				bool IsDtsIdentifierPart(wchar_t c)
+				{
+					return IsDtsIdentifierStart(c) || (L'0' <= c && c <= L'9');
+				}
+
+				WString EscapeDtsString(const WString& value)
+				{
+					WString result = L"\"";
+					for (vint i = 0; i < value.Length(); i++)
+					{
+						auto c = value[i];
+						switch (c)
+						{
+						case L'\\': result += L"\\\\"; break;
+						case L'"': result += L"\\\""; break;
+						case L'\r': result += L"\\r"; break;
+						case L'\n': result += L"\\n"; break;
+						case L'\t': result += L"\\t"; break;
+						default:
+							AppendChar(result, c);
+							break;
+						}
+					}
+					result += L"\"";
+					return result;
+				}
+
+				WString GetDtsPropertyName(const WString& name)
+				{
+					if (name.Length() > 0 && IsDtsIdentifierStart(name[0]))
+					{
+						bool isIdentifier = true;
+						for (vint i = 1; i < name.Length(); i++)
+						{
+							if (!IsDtsIdentifierPart(name[i]))
+							{
+								isIdentifier = false;
+								break;
+							}
+						}
+						if (isIdentifier)
+						{
+							return name;
+						}
+					}
+					return EscapeDtsString(name);
+				}
+
+				WString MakeDtsTypeName(const WString& fullName)
+				{
+					WString result;
+					for (vint i = 0; i < fullName.Length(); i++)
+					{
+						auto c = fullName[i];
+						if ((result.Length() == 0 && IsDtsIdentifierStart(c)) || (result.Length() > 0 && IsDtsIdentifierPart(c)))
+						{
+							AppendChar(result, c);
+						}
+						else if (result.Length() == 0 || result[result.Length() - 1] != L'_')
+						{
+							result += L"_";
+						}
+					}
+					if (result.Length() == 0)
+					{
+						return L"_";
+					}
+					if (result[result.Length() - 1] == L'_')
+					{
+						result = result.Left(result.Length() - 1);
+					}
+					return result;
+				}
+
+				WString MakeUnknownStructDtsTypeName(const WString& fullName)
+				{
+					return L"UnknownType_" + MakeDtsTypeName(fullName);
+				}
+
+				bool TryGetPrimitiveModel(const WString& fullName, DtsPrimitiveModel& primitive)
+				{
+					auto tryName = [&](const wchar_t* name, DtsPrimitiveKind kind)
+					{
+						if (fullName == WString::Unmanaged(L"system::") + name)
+						{
+							primitive.keyword = WString::Unmanaged(name);
+							primitive.kind = kind;
+							return true;
+						}
+						return false;
+					};
+
+					return tryName(L"UInt8", DtsPrimitiveKind::Number)
+						|| tryName(L"UInt16", DtsPrimitiveKind::Number)
+						|| tryName(L"UInt32", DtsPrimitiveKind::Number)
+						|| tryName(L"UInt64", DtsPrimitiveKind::Number)
+						|| tryName(L"Int8", DtsPrimitiveKind::Number)
+						|| tryName(L"Int16", DtsPrimitiveKind::Number)
+						|| tryName(L"Int32", DtsPrimitiveKind::Number)
+						|| tryName(L"Int64", DtsPrimitiveKind::Number)
+						|| tryName(L"Single", DtsPrimitiveKind::Number)
+						|| tryName(L"Double", DtsPrimitiveKind::Number)
+						|| tryName(L"Boolean", DtsPrimitiveKind::Boolean)
+						|| tryName(L"Char", DtsPrimitiveKind::String)
+						|| tryName(L"String", DtsPrimitiveKind::String)
+						|| tryName(L"DateTime", DtsPrimitiveKind::String)
+						|| tryName(L"Locale", DtsPrimitiveKind::String);
+				}
+
+				WString GetPredefinedFullName(WfLexicalScopeManager* manager, WfPredefinedTypeName name)
+				{
+					switch (name)
+					{
+					case WfPredefinedTypeName::Int:
+						return manager && manager->cputdSInt ? manager->cputdSInt->GetTypeName() : WString::Unmanaged(L"system::Int64");
+					case WfPredefinedTypeName::UInt:
+						return manager && manager->cputdUInt ? manager->cputdUInt->GetTypeName() : WString::Unmanaged(L"system::UInt64");
+					case WfPredefinedTypeName::Float:
+						return L"system::Single";
+					case WfPredefinedTypeName::Double:
+						return L"system::Double";
+					case WfPredefinedTypeName::String:
+						return L"system::String";
+					case WfPredefinedTypeName::Char:
+						return L"system::Char";
+					case WfPredefinedTypeName::Bool:
+						return L"system::Boolean";
+					case WfPredefinedTypeName::Object:
+						return L"system::Object";
+					case WfPredefinedTypeName::Interface:
+						return L"system::Interface";
+					default:
+						return L"";
+					}
+				}
+
+				WString GetTypeFullName(WfLexicalScopeManager* manager, WfType* type)
+				{
+					if (!type)
+					{
+						return L"";
+					}
+					if (auto predefined = dynamic_cast<WfPredefinedType*>(type))
+					{
+						return GetPredefinedFullName(manager, predefined->name);
+					}
+					if (auto top = dynamic_cast<WfTopQualifiedType*>(type))
+					{
+						return top->name.value;
+					}
+					if (auto reference = dynamic_cast<WfReferenceType*>(type))
+					{
+						return reference->name.value;
+					}
+					if (auto child = dynamic_cast<WfChildType*>(type))
+					{
+						auto parent = GetTypeFullName(manager, child->parent.Obj());
+						return parent == L"" ? child->name.value : parent + L"::" + child->name.value;
+					}
+					if (auto raw = dynamic_cast<WfRawPointerType*>(type))
+					{
+						return GetTypeFullName(manager, raw->element.Obj());
+					}
+					if (auto shared = dynamic_cast<WfSharedPointerType*>(type))
+					{
+						return GetTypeFullName(manager, shared->element.Obj());
+					}
+					if (auto nullable = dynamic_cast<WfNullableType*>(type))
+					{
+						return GetTypeFullName(manager, nullable->element.Obj());
+					}
+					return L"";
+				}
+
+				vint FindStruct(const List<DtsStructModel>& structs, const WString& fullName)
+				{
+					for (vint i = 0; i < structs.Count(); i++)
+					{
+						if (structs[i].fullName == fullName)
+						{
+							return i;
+						}
+					}
+					return -1;
+				}
+
+				vint FindEnum(const List<DtsEnumModel>& enums, const WString& fullName)
+				{
+					for (vint i = 0; i < enums.Count(); i++)
+					{
+						if (enums[i].fullName == fullName)
+						{
+							return i;
+						}
+					}
+					return -1;
+				}
+
+				WString GetDtsTypeFromFullName(DtsContext& context, const WString& fullName)
+				{
+					DtsPrimitiveModel primitive;
+					if (TryGetPrimitiveModel(fullName, primitive))
+					{
+						switch (primitive.kind)
+						{
+						case DtsPrimitiveKind::Number:
+							return L"number";
+						case DtsPrimitiveKind::Boolean:
+							return L"boolean";
+						case DtsPrimitiveKind::String:
+							return L"string";
+						default:
+							CHECK_FAIL(L"Internal error: Unknown primitive kind.");
+						}
+					}
+					if (context.enums && FindEnum(*context.enums, fullName) != -1)
+					{
+						return L"number";
+					}
+					if (context.structs && FindStruct(*context.structs, fullName) != -1)
+					{
+						return MakeDtsTypeName(fullName);
+					}
+					return L"UnknownTypeSchema";
+				}
+
+				WString GetDtsTypeFromType(DtsContext& context, WfType* type)
+				{
+					if (!type)
+					{
+						return L"UnknownTypeSchema";
+					}
+					if (auto nullable = dynamic_cast<WfNullableType*>(type))
+					{
+						return GetDtsTypeFromType(context, nullable->element.Obj()) + L" | null";
+					}
+					if (auto raw = dynamic_cast<WfRawPointerType*>(type))
+					{
+						return GetDtsTypeFromType(context, raw->element.Obj());
+					}
+					if (auto shared = dynamic_cast<WfSharedPointerType*>(type))
+					{
+						return GetDtsTypeFromType(context, shared->element.Obj());
+					}
+					if (auto enumerable = dynamic_cast<WfEnumerableType*>(type))
+					{
+						return GetDtsTypeFromType(context, enumerable->element.Obj()) + L"[]";
+					}
+					if (auto map = dynamic_cast<WfMapType*>(type))
+					{
+						if (map->key)
+						{
+							return L"[" + GetDtsTypeFromType(context, map->key.Obj()) + L", " + GetDtsTypeFromType(context, map->value.Obj()) + L"][]";
+						}
+						return GetDtsTypeFromType(context, map->value.Obj()) + L"[]";
+					}
+					if (auto observable = dynamic_cast<WfObservableListType*>(type))
+					{
+						return GetDtsTypeFromType(context, observable->element.Obj()) + L"[]";
+					}
+					return GetDtsTypeFromFullName(context, GetTypeFullName(context.manager, type));
+				}
+
+				void AddDtsTypesFromDeclarations(
+					const List<Ptr<WfDeclaration>>& declarations,
+					const WString& prefix,
+					List<DtsEnumModel>& enums,
+					List<DtsStructModel>& structs)
+				{
+					for (auto declaration : declarations)
+					{
+						auto fullName = prefix == L"" ? declaration->name.value : prefix + L"::" + declaration->name.value;
+						if (auto namespaceDecl = declaration.Cast<WfNamespaceDeclaration>())
+						{
+							AddDtsTypesFromDeclarations(namespaceDecl->declarations, fullName, enums, structs);
+						}
+						else if (auto enumDecl = declaration.Cast<WfEnumDeclaration>())
+						{
+							if (FindEnum(enums, fullName) == -1)
+							{
+								DtsEnumModel model;
+								model.fullName = fullName;
+								model.items = Ptr(new List<DtsEnumItemModel>);
+								Dictionary<WString, vuint64_t> values;
+								for (auto item : enumDecl->items)
+								{
+									DtsEnumItemModel itemModel;
+									itemModel.name = item->name.value;
+									if (item->kind == WfEnumItemKind::Constant)
+									{
+										itemModel.value = wtou64(item->number.value);
+									}
+									else
+									{
+										for (auto intersection : item->intersections)
+										{
+											auto index = values.Keys().IndexOf(intersection->name.value);
+											if (index != -1)
+											{
+												itemModel.value |= values.Values()[index];
+											}
+										}
+									}
+									values.Add(itemModel.name, itemModel.value);
+									model.items->Add(itemModel);
+								}
+								enums.Add(model);
+							}
+						}
+						else if (auto structDecl = declaration.Cast<WfStructDeclaration>())
+						{
+							if (FindStruct(structs, fullName) != -1)
+							{
+								continue;
+							}
+
+							DtsStructModel model;
+							model.fullName = fullName;
+							model.fields = Ptr(new List<DtsFieldModel>);
+							for (auto member : structDecl->members)
+							{
+								DtsFieldModel field;
+								field.name = member->name.value;
+								field.type = CopyType(member->type.Obj());
+								model.fields->Add(field);
+							}
+							structs.Add(model);
+						}
+					}
+				}
+
+				void AddRpcBuiltinDtsStruct(List<DtsStructModel>& structs, const WString& fullName, ITypeDescriptor* td)
+				{
+					if (FindStruct(structs, fullName) != -1)
+					{
+						return;
+					}
+
+					if (!td)
+					{
+						return;
+					}
+
+					DtsStructModel model;
+					model.fullName = fullName;
+					model.fields = Ptr(new List<DtsFieldModel>);
+					for (vint i = 0; i < td->GetPropertyCount(); i++)
+					{
+						auto propertyInfo = td->GetProperty(i);
+						DtsFieldModel field;
+						field.name = propertyInfo->GetName();
+						field.type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
+						model.fields->Add(field);
+					}
+					structs.Add(model);
+				}
+
+				const wchar_t* GetDtsPrimitiveTypeScriptType(DtsPrimitiveKind kind)
+				{
+					switch (kind)
+					{
+					case DtsPrimitiveKind::Number:
+						return L"number";
+					case DtsPrimitiveKind::Boolean:
+						return L"boolean";
+					case DtsPrimitiveKind::String:
+						return L"string";
+					default:
+						CHECK_FAIL(L"Internal error: Unknown primitive kind.");
+					}
+				}
+
+				void AppendUnknownTypePrimitiveSchema(WString& dts)
+				{
+					const Pair<const wchar_t*, DtsPrimitiveKind> primitiveNames[] =
+					{
+						{ L"UInt8", DtsPrimitiveKind::Number },
+						{ L"UInt16", DtsPrimitiveKind::Number },
+						{ L"UInt32", DtsPrimitiveKind::Number },
+						{ L"UInt64", DtsPrimitiveKind::Number },
+						{ L"Int8", DtsPrimitiveKind::Number },
+						{ L"Int16", DtsPrimitiveKind::Number },
+						{ L"Int32", DtsPrimitiveKind::Number },
+						{ L"Int64", DtsPrimitiveKind::Number },
+						{ L"Single", DtsPrimitiveKind::Number },
+						{ L"Double", DtsPrimitiveKind::Number },
+						{ L"Char", DtsPrimitiveKind::String },
+						{ L"DateTime", DtsPrimitiveKind::String },
+						{ L"Locale", DtsPrimitiveKind::String },
+					};
+
+					dts += L"export type UnknownType_PrimitiveSchema =\r\n";
+					for (auto&& [name, kind] : primitiveNames)
+					{
+						dts += L"  | [" + EscapeDtsString(WString::Unmanaged(name)) + L", " + WString::Unmanaged(GetDtsPrimitiveTypeScriptType(kind)) + L"]\r\n";
+					}
+					dts += L"  | null\r\n";
+					dts += L"  | true\r\n";
+					dts += L"  | false\r\n";
+					dts += L"  | string\r\n";
+					dts += L"  ;\r\n\r\n";
+				}
+
+				void AppendTypeListEnum(WString& dts, const List<DtsEnumModel>& enums)
+				{
+					if (enums.Count() == 0)
+					{
+						dts += L"export type TypeList_Enum = never;\r\n\r\n";
+						return;
+					}
+
+					dts += L"export type TypeList_Enum =\r\n";
+					for (auto&& model : enums)
+					{
+						dts += L"  | " + EscapeDtsString(model.fullName) + L"\r\n";
+					}
+					dts += L"  ;\r\n\r\n";
+				}
+
+				void AppendUnknownTypeEnumSchema(WString& dts)
+				{
+					dts += L"export type UnknownType_EnumSchema = [TypeList_Enum, number];\r\n\r\n";
+				}
+
+				void AppendUnknownTypeList(WString& dts)
+				{
+					dts += L"export interface UnknownType_List\r\n";
+					dts += L"{\r\n";
+					dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(L"list") + L" | " + EscapeDtsString(L"oblist") + L";\r\n";
+					dts += L"  values: UnknownTypeSchema[];\r\n";
+					dts += L"}\r\n\r\n";
+				}
+
+				void AppendUnknownTypeMap(WString& dts)
+				{
+					dts += L"export interface UnknownType_Map\r\n";
+					dts += L"{\r\n";
+					dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(L"map") + L";\r\n";
+					dts += L"  values: [UnknownTypeSchema, UnknownTypeSchema][];\r\n";
+					dts += L"}\r\n\r\n";
+				}
+
+				void AppendUnknownTypeSchemaUnion(WString& dts, const List<DtsStructModel>& structs)
+				{
+					dts += L"export type UnknownTypeSchema =\r\n";
+					dts += L"  | UnknownType_PrimitiveSchema\r\n";
+					dts += L"  | UnknownType_EnumSchema\r\n";
+					dts += L"  | UnknownType_List\r\n";
+					dts += L"  | UnknownType_Map\r\n";
+					for (auto&& model : structs)
+					{
+						dts += L"  | " + MakeUnknownStructDtsTypeName(model.fullName) + L"\r\n";
+					}
+					dts += L"  ;\r\n\r\n";
+				}
+
+				void AppendUnknownStructSchemas(WString& dts, DtsContext& context)
+				{
+					for (auto&& model : *context.structs)
+					{
+						dts += L"export interface " + MakeUnknownStructDtsTypeName(model.fullName) + L" extends " + MakeDtsTypeName(model.fullName) + L"\r\n";
+						dts += L"{\r\n";
+						dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(model.fullName) + L";\r\n";
+						dts += L"}\r\n\r\n";
+					}
+				}
+
+				void AppendKnownEnums(WString& dts, const List<DtsEnumModel>& enums)
+				{
+					for (auto&& model : enums)
+					{
+						dts += L"export enum " + MakeDtsTypeName(model.fullName) + L"\r\n";
+						dts += L"{\r\n";
+						for (auto&& item : *model.items.Obj())
+						{
+							dts += L"  " + GetDtsPropertyName(item.name) + L" = " + u64tow(item.value) + L",\r\n";
+						}
+						dts += L"}\r\n\r\n";
+					}
+				}
+
+				void AppendKnownStructs(WString& dts, DtsContext& context)
+				{
+					for (auto&& model : *context.structs)
+					{
+						dts += L"export interface " + MakeDtsTypeName(model.fullName) + L"\r\n";
+						dts += L"{\r\n";
+						for (auto&& field : *model.fields.Obj())
+						{
+							dts += L"  " + GetDtsPropertyName(field.name) + L": " + GetDtsTypeFromType(context, field.type.Obj()) + L";\r\n";
+						}
+						dts += L"}\r\n\r\n";
+					}
+				}
+
+				void AppendKnownTypeSchema(WString& dts, const List<DtsStructModel>& structs)
+				{
+					dts += L"// All enum_type_full_name is omitted because in known type enums are just numbers\r\n";
+					dts += L"export type KnownTypeSchema =\r\n";
+					dts += L"  | number\r\n";
+					dts += L"  | true\r\n";
+					dts += L"  | false\r\n";
+					dts += L"  | string\r\n";
+					dts += L"  | KnownTypeSchema[]\r\n";
+					dts += L"  | [KnownTypeSchema, KnownTypeSchema][]\r\n";
+					for (auto&& model : structs)
+					{
+						dts += L"  | " + MakeDtsTypeName(model.fullName) + L"\r\n";
+					}
+					dts += L"  ;\r\n";
+				}
+			}
+
+			WString GenerateDtsFromRpcMetadata(WfLexicalScopeManager* manager)
+			{
+				using namespace rpc_dts_generating;
+
+				WString dts;
+				if (!manager || !manager->rpcMetadata || !manager->rpcMetadata->metadataModule)
+				{
+					return dts;
+				}
+
+				List<DtsEnumModel> enums;
+				List<DtsStructModel> structs;
+				AddDtsTypesFromDeclarations(manager->rpcMetadata->metadataModule->declarations, L"", enums, structs);
+				AddRpcBuiltinDtsStruct(structs, WString::Unmanaged(L"system::RpcObjectReference"), GetTypeDescriptor<vl::rpc_controller::RpcObjectReference>());
+				AddRpcBuiltinDtsStruct(structs, WString::Unmanaged(L"system::RpcException"), GetTypeDescriptor<vl::rpc_controller::RpcException>());
+
+				DtsContext context;
+				context.manager = manager;
+				context.enums = &enums;
+				context.structs = &structs;
+
+				AppendUnknownTypePrimitiveSchema(dts);
+				AppendTypeListEnum(dts, enums);
+				AppendUnknownTypeEnumSchema(dts);
+				AppendUnknownTypeList(dts);
+				AppendUnknownTypeMap(dts);
+				AppendUnknownTypeSchemaUnion(dts, structs);
+				AppendUnknownStructSchemas(dts, context);
+				dts += L"// below are all known types\r\n\r\n";
+				AppendKnownEnums(dts, enums);
+				AppendKnownStructs(dts, context);
+				AppendKnownTypeSchema(dts, structs);
+				return dts;
+			}
+		}
+	}
+}
+
+
+/***********************************************************************
+.\ANALYZER\RPC\WFANALYZER_GENERATERPC_JSONSERIALIZATION.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace analyzer
+		{
+			using namespace collections;
+
+			namespace rpc_generating
+			{
+				using namespace reflection::description;
+
+				enum class RpcJsonPrimitiveKind
+				{
+					Number,
+					Boolean,
+					String,
+				};
+
+				struct RpcJsonPrimitiveModel
+				{
+					WString						fullName;
+					WString						keyword;
+					RpcJsonPrimitiveKind		kind = RpcJsonPrimitiveKind::Number;
+				};
+
+				struct RpcJsonFieldModel
+				{
+					WString						name;
+					Ptr<WfType>					type;
+				};
+
+				struct RpcJsonTypeModel
+				{
+					WString						fullName;
+					Ptr<WfType>					type;
+					Ptr<List<RpcJsonFieldModel>>	fields;
+				};
+
+				Ptr<WfExpression> CreateJsonArrayItem(const WString& arrayName, vint index)
+				{
+					return CreateIndex(CreateMember(CreateReference(arrayName), L"items"), CreateInt(index));
+				}
+
+				Ptr<WfExpression> CreateJsonArrayItemContent(const WString& arrayName, vint index, const WString& jsonType)
+				{
+					return CreateMember(CreateMember(CreateCast(CreateSharedType(jsonType), CreateJsonArrayItem(arrayName, index)), L"content"), L"value");
+				}
+
+				void AddRpcJsonTypesFromDeclarations(
+					const List<Ptr<WfDeclaration>>& declarations,
+					const WString& prefix,
+					List<RpcJsonTypeModel>& enums,
+					List<RpcJsonTypeModel>& structs)
+				{
+					for (auto declaration : declarations)
+					{
+						auto fullName = prefix == L"" ? declaration->name.value : prefix + L"::" + declaration->name.value;
+						if (auto namespaceDecl = declaration.Cast<WfNamespaceDeclaration>())
+						{
+							AddRpcJsonTypesFromDeclarations(namespaceDecl->declarations, fullName, enums, structs);
+						}
+						else if (declaration.Cast<WfEnumDeclaration>())
+						{
+							RpcJsonTypeModel model;
+							model.fullName = fullName;
+							model.type = CreateTopQualifiedType(fullName);
+							enums.Add(model);
+						}
+						else if (auto structDecl = declaration.Cast<WfStructDeclaration>())
+						{
+							RpcJsonTypeModel model;
+							model.fullName = fullName;
+							model.type = CreateTopQualifiedType(fullName);
+							model.fields = Ptr(new List<RpcJsonFieldModel>);
+							for (auto member : structDecl->members)
+							{
+								RpcJsonFieldModel field;
+								field.name = member->name.value;
+								field.type = CopyType(member->type.Obj());
+								model.fields->Add(field);
+							}
+							structs.Add(model);
+						}
+					}
+				}
+
+				void AddRpcBuiltinJsonType(List<RpcJsonTypeModel>& structs, const WString& fullName, ITypeDescriptor* td)
+				{
+					for (auto&& model : structs)
+					{
+						if (model.fullName == fullName)
+						{
+							return;
+						}
+					}
+
+					if (!td)
+					{
+						return;
+					}
+
+					RpcJsonTypeModel model;
+					model.fullName = fullName;
+					model.type = CreateTopQualifiedType(fullName);
+					model.fields = Ptr(new List<RpcJsonFieldModel>);
+					for (vint i = 0; i < td->GetPropertyCount(); i++)
+					{
+						auto propertyInfo = td->GetProperty(i);
+						RpcJsonFieldModel field;
+						field.name = propertyInfo->GetName();
+						field.type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
+						model.fields->Add(field);
+					}
+					structs.Add(model);
+				}
+
+				void CollectRpcJsonTypes(WfLexicalScopeManager* manager, List<RpcJsonTypeModel>& enums, List<RpcJsonTypeModel>& structs)
+				{
+					if (manager->rpcMetadata && manager->rpcMetadata->metadataModule)
+					{
+						AddRpcJsonTypesFromDeclarations(manager->rpcMetadata->metadataModule->declarations, L"", enums, structs);
+					}
+				}
+
+				void CollectRpcJsonPrimitives(List<RpcJsonPrimitiveModel>& primitives)
+				{
+					auto add = [&](const wchar_t* fullName, const wchar_t* keyword, RpcJsonPrimitiveKind kind)
+					{
+						RpcJsonPrimitiveModel model;
+						model.fullName = WString::Unmanaged(fullName);
+						model.keyword = WString::Unmanaged(keyword);
+						model.kind = kind;
+						primitives.Add(model);
+					};
+
+					add(L"system::UInt8", L"UInt8", RpcJsonPrimitiveKind::Number);
+					add(L"system::UInt16", L"UInt16", RpcJsonPrimitiveKind::Number);
+					add(L"system::UInt32", L"UInt32", RpcJsonPrimitiveKind::Number);
+					add(L"system::UInt64", L"UInt64", RpcJsonPrimitiveKind::Number);
+					add(L"system::Int8", L"Int8", RpcJsonPrimitiveKind::Number);
+					add(L"system::Int16", L"Int16", RpcJsonPrimitiveKind::Number);
+					add(L"system::Int32", L"Int32", RpcJsonPrimitiveKind::Number);
+					add(L"system::Int64", L"Int64", RpcJsonPrimitiveKind::Number);
+					add(L"system::Single", L"Single", RpcJsonPrimitiveKind::Number);
+					add(L"system::Double", L"Double", RpcJsonPrimitiveKind::Number);
+					add(L"system::Boolean", L"Boolean", RpcJsonPrimitiveKind::Boolean);
+					add(L"system::Char", L"Char", RpcJsonPrimitiveKind::String);
+					add(L"system::String", L"String", RpcJsonPrimitiveKind::String);
+					add(L"system::DateTime", L"DateTime", RpcJsonPrimitiveKind::String);
+					add(L"system::Locale", L"Locale", RpcJsonPrimitiveKind::String);
+				}
+
+				WString GetRpcJsonSerializeEnumFunctionName(const WString& fullName)
+				{
+					return L"rpcjson_Serialize_Enum_" + MangleRpcFullName(fullName);
+				}
+
+				WString GetRpcJsonDeserializeEnumFunctionName(const WString& fullName)
+				{
+					return L"rpcjson_Deserialize_Enum_" + MangleRpcFullName(fullName);
+				}
+
+				WString GetRpcJsonSerializeStructFunctionName(const WString& fullName)
+				{
+					return L"rpcjson_Serialize_Struct_" + MangleRpcFullName(fullName);
+				}
+
+				WString GetRpcJsonDeserializeStructFunctionName(const WString& fullName)
+				{
+					return L"rpcjson_Deserialize_Struct_" + MangleRpcFullName(fullName);
+				}
+
+				WString GetRpcJsonPredefinedFullName(WfLexicalScopeManager* manager, WfPredefinedTypeName name)
+				{
+					switch (name)
+					{
+					case WfPredefinedTypeName::Int:
+						return manager && manager->cputdSInt ? manager->cputdSInt->GetTypeName() : WString::Unmanaged(L"system::Int64");
+					case WfPredefinedTypeName::UInt:
+						return manager && manager->cputdUInt ? manager->cputdUInt->GetTypeName() : WString::Unmanaged(L"system::UInt64");
+					case WfPredefinedTypeName::Float:
+						return L"system::Single";
+					case WfPredefinedTypeName::Double:
+						return L"system::Double";
+					case WfPredefinedTypeName::String:
+						return L"system::String";
+					case WfPredefinedTypeName::Char:
+						return L"system::Char";
+					case WfPredefinedTypeName::Bool:
+						return L"system::Boolean";
+					case WfPredefinedTypeName::Object:
+						return L"system::Object";
+					case WfPredefinedTypeName::Interface:
+						return L"system::Interface";
+					default:
+						return L"";
+					}
+				}
+
+				WString GetRpcJsonTypeFullName(WfLexicalScopeManager* manager, WfType* type)
+				{
+					if (!type) return L"";
+					if (auto predefined = dynamic_cast<WfPredefinedType*>(type))
+					{
+						return GetRpcJsonPredefinedFullName(manager, predefined->name);
+					}
+					if (auto top = dynamic_cast<WfTopQualifiedType*>(type))
+					{
+						return top->name.value;
+					}
+					if (auto reference = dynamic_cast<WfReferenceType*>(type))
+					{
+						return reference->name.value;
+					}
+					if (auto child = dynamic_cast<WfChildType*>(type))
+					{
+						auto parent = GetRpcJsonTypeFullName(manager, child->parent.Obj());
+						return parent == L"" ? child->name.value : parent + L"::" + child->name.value;
+					}
+					if (auto raw = dynamic_cast<WfRawPointerType*>(type))
+					{
+						return GetRpcJsonTypeFullName(manager, raw->element.Obj());
+					}
+					if (auto shared = dynamic_cast<WfSharedPointerType*>(type))
+					{
+						return GetRpcJsonTypeFullName(manager, shared->element.Obj());
+					}
+					if (auto nullable = dynamic_cast<WfNullableType*>(type))
+					{
+						return GetRpcJsonTypeFullName(manager, nullable->element.Obj());
+					}
+					return L"";
+				}
+
+				RpcJsonPrimitiveModel* FindRpcJsonPrimitive(List<RpcJsonPrimitiveModel>& primitives, const WString& fullName)
+				{
+					for (vint i = 0; i < primitives.Count(); i++)
+					{
+						if (primitives[i].fullName == fullName)
+						{
+							return &primitives[i];
+						}
+					}
+					return nullptr;
+				}
+
+				const RpcJsonTypeModel* FindRpcJsonType(const List<RpcJsonTypeModel>& types, const WString& fullName)
+				{
+					for (vint i = 0; i < types.Count(); i++)
+					{
+						if (types[i].fullName == fullName)
+						{
+							return &types[i];
+						}
+					}
+					return nullptr;
+				}
+
+				struct RpcJsonGenerationContext
+				{
+					WfLexicalScopeManager*			manager = nullptr;
+					List<RpcJsonPrimitiveModel>*	primitives = nullptr;
+					List<RpcJsonTypeModel>*		enums = nullptr;
+					List<RpcJsonTypeModel>*		structs = nullptr;
+					vint						tempIndex = 0;
+				};
+
+				WString AllocateRpcJsonTemp(RpcJsonGenerationContext& context, const wchar_t* prefix)
+				{
+					return WString::Unmanaged(prefix) + itow(context.tempIndex++);
+				}
+
+				Ptr<WfExpression> CreateRpcJsonToken(Ptr<WfExpression> value)
+				{
+					auto constructor = CreateConstructor();
+					constructor->arguments.Add(CreateConstructorArgument(CreateReference(L"value"), value));
+					return constructor;
+				}
+
+				WString AddRpcJsonLiteral(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, const WString& literal)
+				{
+					auto nodeName = AllocateRpcJsonTemp(context, L"jsonLiteral");
+					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonLiteral>>())));
+					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"value"), CreateQualifiedExpression(L"system::JsonLiteralValue::" + literal))));
+					return nodeName;
+				}
+
+				WString AddRpcJsonBooleanLiteral(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> value)
+				{
+					auto nodeName = AllocateRpcJsonTemp(context, L"jsonLiteral");
+					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonLiteral>>())));
+					AddStatement(block, CreateIf(
+						value,
+						CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"value"), CreateQualifiedExpression(L"system::JsonLiteralValue::True"))),
+						CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"value"), CreateQualifiedExpression(L"system::JsonLiteralValue::False")))));
+					return nodeName;
+				}
+
+				WString AddRpcJsonString(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> value)
+				{
+					auto nodeName = AllocateRpcJsonTemp(context, L"jsonString");
+					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonString>>())));
+					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"content"), CreateRpcJsonToken(value))));
+					return nodeName;
+				}
+
+				WString AddRpcJsonNumber(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> value)
+				{
+					auto nodeName = AllocateRpcJsonTemp(context, L"jsonNumber");
+					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonNumber>>())));
+					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"content"), CreateRpcJsonToken(value))));
+					return nodeName;
+				}
+
+				void AddRpcJsonArrayItem(Ptr<WfBlockStatement> block, const WString& arrayName, Ptr<WfExpression> value)
+				{
+					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(arrayName), L"items"), L"Add"), value)));
+				}
+
+				void AddRpcJsonObjectField(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> object, const WString& fieldName, Ptr<WfExpression> value)
+				{
+					auto fieldVar = AllocateRpcJsonTemp(context, L"jsonField");
+					AddStatement(block, CreateInferredVariableStatement(fieldVar, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonObjectField>>())));
+					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(fieldVar), L"name"), CreateRpcJsonToken(CreateString(fieldName)))));
+					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(fieldVar), L"value"), value)));
+					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(object, L"fields"), L"Add"), CreateReference(fieldVar))));
+				}
+
+				WString AddRpcJsonObjectFieldLookup(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> object, const WString& fieldName, bool required = true)
+				{
+					auto resultVar = AllocateRpcJsonTemp(context, L"jsonFieldValue");
+					auto fieldVar = AllocateRpcJsonTemp(context, L"jsonField");
+					AddStatement(block, CreateVariableStatement(resultVar, CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateNull()));
+					auto forBlock = CreateBlock();
+					AddStatement(forBlock, CreateIf(
+						CreateBinary(WfBinaryOperator::EQ, CreateMember(CreateMember(CreateReference(fieldVar), L"name"), L"value"), CreateString(fieldName)),
+						CreateExpressionStatement(CreateAssign(CreateReference(resultVar), CreateMember(CreateReference(fieldVar), L"value")))));
+					AddStatement(block, CreateForEach(fieldVar, CreateMember(object, L"fields"), forBlock));
+					if (required)
+					{
+						AddStatement(block, CreateIf(CreateIsNull(CreateReference(resultVar)), CreateRaise(L"JSON object field not found: " + fieldName)));
+					}
+					return resultVar;
+				}
+
+				WString AddKnownRpcJsonSerializeValue(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, Ptr<WfExpression> value, WfType* type);
+				WString AddKnownRpcJsonDeserializeValue(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, Ptr<WfExpression> node, WfType* type);
+
+				Ptr<WfType> CreateWritableRpcJsonCollectionType(WfType* type)
+				{
+					if (auto enumerable = dynamic_cast<WfEnumerableType*>(type))
+					{
+						auto listType = Ptr(new WfMapType);
+						listType->writability = WfMapWritability::Writable;
+						listType->value = CopyType(enumerable->element.Obj());
+						return listType;
+					}
+					if (auto map = dynamic_cast<WfMapType*>(type))
+					{
+						auto mapType = Ptr(new WfMapType);
+						mapType->writability = WfMapWritability::Writable;
+						mapType->key = map->key ? CopyType(map->key.Obj()) : nullptr;
+						mapType->value = CopyType(map->value.Obj());
+						return mapType;
+					}
+					if (auto observable = dynamic_cast<WfObservableListType*>(type))
+					{
+						auto listType = Ptr(new WfObservableListType);
+						listType->element = CopyType(observable->element.Obj());
+						return listType;
+					}
+					return CopyType(type);
+				}
+
+				Ptr<WfExpression> CreateRpcJsonSerializedArgument(vint index)
+				{
+					return CreateIndex(CreateReference(L"arguments"), CreateInt(index));
+				}
+
+				WString AddUnknownRpcJsonSerializeValue(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, Ptr<WfExpression> value)
+				{
+					auto valueName = AllocateRpcJsonTemp(context, L"jsonValue");
+					auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
+					AddStatement(block, CreateInferredVariableStatement(valueName, value));
+					AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(valueName))));
+					return resultName;
+				}
+
+				WString AddKnownRpcJsonSerializeValue(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, Ptr<WfExpression> value, WfType* type)
+				{
+					if (auto nullable = dynamic_cast<WfNullableType*>(type))
+					{
+						auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
+						AddStatement(block, CreateVariableStatement(resultName, CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateNull()));
+						auto nullBranch = CreateBlock();
+						auto nullNode = AddRpcJsonLiteral(nullBranch, context, L"Null");
+						AddStatement(nullBranch, CreateExpressionStatement(CreateAssign(CreateReference(resultName), CreateReference(nullNode))));
+						auto valueBranch = CreateBlock();
+						auto valueNode = AddKnownRpcJsonSerializeValue(context, valueBranch, CreateCast(CopyType(nullable->element.Obj()), CopyExpression(value, true)), nullable->element.Obj());
+						AddStatement(valueBranch, CreateExpressionStatement(CreateAssign(CreateReference(resultName), CreateReference(valueNode))));
+						AddStatement(block, CreateIf(CreateIsNull(value), nullBranch, valueBranch));
+						return resultName;
+					}
+
+					auto fullName = GetRpcJsonTypeFullName(context.manager, type);
+					if (auto primitive = FindRpcJsonPrimitive(*context.primitives, fullName))
+					{
+						switch (primitive->kind)
+						{
+						case RpcJsonPrimitiveKind::Number:
+							return AddRpcJsonNumber(block, context, CreateCast(CreatePredefinedType(WfPredefinedTypeName::String), value));
+						case RpcJsonPrimitiveKind::Boolean:
+							return AddRpcJsonBooleanLiteral(block, context, value);
+						case RpcJsonPrimitiveKind::String:
+							return AddRpcJsonString(block, context, CreateCast(CreatePredefinedType(WfPredefinedTypeName::String), value));
+						default:
+							CHECK_FAIL(L"Internal error: Unknown primitive kind.");
+						}
+					}
+
+					if (fullName == L"system::JsonNode")
+					{
+						auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
+						AddStatement(block, CreateInferredVariableStatement(resultName, value));
+						return resultName;
+					}
+
+					if (fullName == L"system::Object" || fullName == L"system::Interface")
+					{
+						return AddUnknownRpcJsonSerializeValue(context, block, value);
+					}
+
+					if (FindRpcJsonType(*context.enums, fullName))
+					{
+						auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
+						AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(GetRpcJsonSerializeEnumFunctionName(fullName)), value)));
+						return resultName;
+					}
+
+					if (FindRpcJsonType(*context.structs, fullName))
+					{
+						auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
+						AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(GetRpcJsonSerializeStructFunctionName(fullName)), value)));
+						return resultName;
+					}
+
+					if (auto enumerable = dynamic_cast<WfEnumerableType*>(type))
+					{
+						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
+						auto forBlock = CreateBlock();
+						auto itemNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateReference(L"item"), enumerable->element.Obj());
+						AddRpcJsonArrayItem(forBlock, arrayName, CreateReference(itemNode));
+						AddStatement(block, CreateForEach(L"item", value, forBlock));
+						return arrayName;
+					}
+
+					if (auto map = dynamic_cast<WfMapType*>(type))
+					{
+						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
+						auto forBlock = CreateBlock();
+						if (map->key)
+						{
+							auto pairName = AllocateRpcJsonTemp(context, L"jsonArray");
+							AddStatement(forBlock, CreateInferredVariableStatement(pairName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
+							auto keyNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateReference(L"key"), map->key.Obj());
+							AddRpcJsonArrayItem(forBlock, pairName, CreateReference(keyNode));
+							auto valueNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateIndex(value, CreateReference(L"key")), map->value.Obj());
+							AddRpcJsonArrayItem(forBlock, pairName, CreateReference(valueNode));
+							AddRpcJsonArrayItem(forBlock, arrayName, CreateReference(pairName));
+							AddStatement(block, CreateForEach(L"key", CreateMember(value, L"Keys"), forBlock));
+						}
+						else
+						{
+							auto itemNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateReference(L"item"), map->value.Obj());
+							AddRpcJsonArrayItem(forBlock, arrayName, CreateReference(itemNode));
+							AddStatement(block, CreateForEach(L"item", value, forBlock));
+						}
+						return arrayName;
+					}
+
+					if (auto observable = dynamic_cast<WfObservableListType*>(type))
+					{
+						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
+						auto forBlock = CreateBlock();
+						auto itemNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateReference(L"item"), observable->element.Obj());
+						AddRpcJsonArrayItem(forBlock, arrayName, CreateReference(itemNode));
+						AddStatement(block, CreateForEach(L"item", value, forBlock));
+						return arrayName;
+					}
+
+					return AddUnknownRpcJsonSerializeValue(context, block, value);
+				}
+
+				WString AddKnownRpcJsonDeserializeValue(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, Ptr<WfExpression> node, WfType* type)
+				{
+					if (auto nullable = dynamic_cast<WfNullableType*>(type))
+					{
+						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
+						auto literalName = AllocateRpcJsonTemp(context, L"jsonLiteral");
+						AddStatement(block, CreateVariableStatement(resultName, CopyType(type), CreateNull()));
+						AddStatement(block, CreateInferredVariableStatement(literalName, CreateWeakCast(CreateTypeFromCpp<Ptr<glr::json::JsonLiteral>>(), CopyExpression(node, true))));
+						auto assignBranch = CreateBlock();
+						auto valueName = AddKnownRpcJsonDeserializeValue(context, assignBranch, node, nullable->element.Obj());
+						AddStatement(assignBranch, CreateExpressionStatement(CreateAssign(CreateReference(resultName), CreateReference(valueName))));
+						AddStatement(block, CreateIf(
+							CreateBinary(
+								WfBinaryOperator::Or,
+								CreateIsNull(CreateReference(literalName)),
+								CreateBinary(WfBinaryOperator::NE, CreateMember(CreateReference(literalName), L"value"), CreateQualifiedExpression(L"system::JsonLiteralValue::Null"))),
+							assignBranch));
+						return resultName;
+					}
+
+					auto fullName = GetRpcJsonTypeFullName(context.manager, type);
+					if (auto primitive = FindRpcJsonPrimitive(*context.primitives, fullName))
+					{
+						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
+						auto deserialized = CreateCall(CreateReference(L"rpcjson_Deserialize"), node);
+						auto value =
+							primitive->kind == RpcJsonPrimitiveKind::Boolean || fullName == L"system::String"
+							? CreateCast(CreateTopQualifiedType(fullName), deserialized)
+							: CreateCast(CreateTopQualifiedType(fullName), CreateCast(CreatePredefinedType(WfPredefinedTypeName::String), deserialized));
+						AddStatement(block, CreateInferredVariableStatement(resultName, value));
+						return resultName;
+					}
+
+					if (fullName == L"system::JsonNode")
+					{
+						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
+						AddStatement(block, CreateInferredVariableStatement(resultName, node));
+						return resultName;
+					}
+
+					if (fullName == L"system::Object" || fullName == L"system::Interface")
+					{
+						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
+						AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(L"rpcjson_Deserialize"), node)));
+						return resultName;
+					}
+
+					if (FindRpcJsonType(*context.enums, fullName))
+					{
+						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
+						AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(GetRpcJsonDeserializeEnumFunctionName(fullName)), node)));
+						return resultName;
+					}
+
+					if (FindRpcJsonType(*context.structs, fullName))
+					{
+						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
+						AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(GetRpcJsonDeserializeStructFunctionName(fullName)), node)));
+						return resultName;
+					}
+
+					if (auto enumerable = dynamic_cast<WfEnumerableType*>(type))
+					{
+						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
+						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
+						AddStatement(block, CreateVariableStatement(resultName, CreateWritableRpcJsonCollectionType(type), CreateConstructor()));
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), node)));
+						auto forBlock = CreateBlock();
+						auto itemValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateReference(L"item"), enumerable->element.Obj());
+						AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(resultName), L"Add"), CreateReference(itemValue))));
+						AddStatement(block, CreateForEach(L"item", CreateMember(CreateReference(arrayName), L"items"), forBlock));
+						return resultName;
+					}
+
+					if (auto map = dynamic_cast<WfMapType*>(type))
+					{
+						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
+						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
+						AddStatement(block, CreateVariableStatement(resultName, CreateWritableRpcJsonCollectionType(type), CreateConstructor()));
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), node)));
+						auto forBlock = CreateBlock();
+						if (map->key)
+						{
+							auto pairName = AllocateRpcJsonTemp(context, L"jsonArray");
+							AddStatement(forBlock, CreateInferredVariableStatement(pairName, CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), CreateReference(L"item"))));
+							auto keyValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateJsonArrayItem(pairName, 0), map->key.Obj());
+							auto itemValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateJsonArrayItem(pairName, 1), map->value.Obj());
+							AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(resultName), L"Set"), CreateReference(keyValue), CreateReference(itemValue))));
+						}
+						else
+						{
+							auto itemValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateReference(L"item"), map->value.Obj());
+							AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(resultName), L"Add"), CreateReference(itemValue))));
+						}
+						AddStatement(block, CreateForEach(L"item", CreateMember(CreateReference(arrayName), L"items"), forBlock));
+						return resultName;
+					}
+
+					if (auto observable = dynamic_cast<WfObservableListType*>(type))
+					{
+						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
+						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
+						AddStatement(block, CreateVariableStatement(resultName, CreateWritableRpcJsonCollectionType(type), CreateConstructor()));
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), node)));
+						auto forBlock = CreateBlock();
+						auto itemValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateReference(L"item"), observable->element.Obj());
+						AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(resultName), L"Add"), CreateReference(itemValue))));
+						AddStatement(block, CreateForEach(L"item", CreateMember(CreateReference(arrayName), L"items"), forBlock));
+						return resultName;
+					}
+
+					auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
+					AddStatement(block, CreateInferredVariableStatement(resultName, CreateCast(CopyType(type), CreateCall(CreateReference(L"rpcjson_Deserialize"), node))));
+					return resultName;
+				}
+
+				void AddRpcJsonUnknownTupleReturn(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, const WString& keyword, Ptr<WfExpression> valueNode)
+				{
+					auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
+					auto keywordNode = AddRpcJsonString(block, context, CreateString(keyword));
+					AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
+					AddRpcJsonArrayItem(block, arrayName, CreateReference(keywordNode));
+					AddRpcJsonArrayItem(block, arrayName, valueNode);
+					AddStatement(block, CreateReturn(CreateReference(arrayName)));
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonSerializeEnum(RpcJsonGenerationContext& context, const RpcJsonTypeModel& enumModel)
+				{
+					auto functionDecl = CreateFunctionDeclaration(GetRpcJsonSerializeEnumFunctionName(enumModel.fullName), CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"value", CopyType(enumModel.type.Obj())));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					auto nodeName = AddRpcJsonNumber(block, context, CreateCast(
+						CreatePredefinedType(WfPredefinedTypeName::String),
+						CreateCast(CreateTypeFromCpp<vuint64_t>(), CreateReference(L"value"))));
+					AddStatement(block, CreateReturn(CreateReference(nodeName)));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonDeserializeEnum(RpcJsonGenerationContext& context, const RpcJsonTypeModel& enumModel)
+				{
+					auto functionDecl = CreateFunctionDeclaration(GetRpcJsonDeserializeEnumFunctionName(enumModel.fullName), CopyType(enumModel.type.Obj()), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"node", CreateTypeFromCpp<Ptr<glr::json::JsonNode>>()));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					AddStatement(block, CreateReturn(CreateCast(
+						CopyType(enumModel.type.Obj()),
+						CreateCast(CreateTypeFromCpp<vuint64_t>(), CreateMember(CreateMember(CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNumber>>(), CreateReference(L"node")), L"content"), L"value")))));
+					return functionDecl;
+				}
+
+				void AddRpcJsonStructFields(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, const RpcJsonTypeModel& structModel, const WString& objectName, const WString& valueName)
+				{
+					for (auto&& field : *structModel.fields.Obj())
+					{
+						auto fieldNode = AddKnownRpcJsonSerializeValue(context, block, CreateMember(CreateReference(valueName), field.name), field.type.Obj());
+						AddRpcJsonObjectField(block, context, CreateReference(objectName), field.name, CreateReference(fieldNode));
+					}
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonSerializeStruct(RpcJsonGenerationContext& context, const RpcJsonTypeModel& structModel)
+				{
+					auto functionDecl = CreateFunctionDeclaration(GetRpcJsonSerializeStructFunctionName(structModel.fullName), CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"value", CopyType(structModel.type.Obj())));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					AddStatement(block, CreateInferredVariableStatement(L"object", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>())));
+					AddRpcJsonStructFields(context, block, structModel, L"object", L"value");
+					AddStatement(block, CreateReturn(CreateReference(L"object")));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonDeserializeStruct(RpcJsonGenerationContext& context, const RpcJsonTypeModel& structModel)
+				{
+					auto functionDecl = CreateFunctionDeclaration(GetRpcJsonDeserializeStructFunctionName(structModel.fullName), CopyType(structModel.type.Obj()), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"node", CreateTypeFromCpp<Ptr<glr::json::JsonNode>>()));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					AddStatement(block, CreateInferredVariableStatement(L"object", CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>(), CreateReference(L"node"))));
+					auto constructor = CreateConstructor();
+					for (auto&& field : *structModel.fields.Obj())
+					{
+						auto fieldNode = AddRpcJsonObjectFieldLookup(block, context, CreateReference(L"object"), field.name);
+						auto fieldValue = AddKnownRpcJsonDeserializeValue(context, block, CreateReference(fieldNode), field.type.Obj());
+						constructor->arguments.Add(CreateConstructorArgument(CreateReference(field.name), CreateReference(fieldValue)));
+					}
+					AddStatement(block, CreateReturn(constructor));
+					return functionDecl;
+				}
+
+				void AddUnknownSerializeCollectionCase(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, const WString& varName, const WString& typeFullName, const WString& keyword)
+				{
+					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(CreateSharedType(typeFullName), CreateReference(L"value"))));
+					auto trueBranch = CreateBlock();
+					AddStatement(trueBranch, CreateInferredVariableStatement(L"object", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>())));
+					auto keywordNode = AddRpcJsonString(trueBranch, context, CreateString(keyword));
+					AddRpcJsonObjectField(trueBranch, context, CreateReference(L"object"), L"$", CreateReference(keywordNode));
+					AddStatement(trueBranch, CreateInferredVariableStatement(L"values", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
+					auto forBlock = CreateBlock();
+					AddRpcJsonArrayItem(forBlock, L"values", CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"item")));
+					AddStatement(trueBranch, CreateForEach(L"item", CreateReference(varName), forBlock));
+					AddRpcJsonObjectField(trueBranch, context, CreateReference(L"object"), L"values", CreateReference(L"values"));
+					AddStatement(trueBranch, CreateReturn(CreateReference(L"object")));
+					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(varName)), trueBranch));
+				}
+
+				void AddUnknownSerializeMapCase(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, const WString& varName, const WString& typeFullName)
+				{
+					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(CreateSharedType(typeFullName), CreateReference(L"value"))));
+					auto trueBranch = CreateBlock();
+					AddStatement(trueBranch, CreateInferredVariableStatement(L"object", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>())));
+					auto keywordNode = AddRpcJsonString(trueBranch, context, CreateString(L"map"));
+					AddRpcJsonObjectField(trueBranch, context, CreateReference(L"object"), L"$", CreateReference(keywordNode));
+					AddStatement(trueBranch, CreateInferredVariableStatement(L"values", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>())));
+					auto forBlock = CreateBlock();
+					AddRpcJsonArrayItem(forBlock, L"values", CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"key")));
+					AddRpcJsonArrayItem(forBlock, L"values", CreateCall(CreateReference(L"rpcjson_Serialize"), CreateCall(CreateMember(CreateReference(varName), L"Get"), CreateReference(L"key"))));
+					AddStatement(trueBranch, CreateForEach(L"key", CreateMember(CreateReference(varName), L"Keys"), forBlock));
+					AddRpcJsonObjectField(trueBranch, context, CreateReference(L"object"), L"values", CreateReference(L"values"));
+					AddStatement(trueBranch, CreateReturn(CreateReference(L"object")));
+					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(varName)), trueBranch));
+				}
+
+				void AddUnknownSerializePrimitiveCase(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, const RpcJsonPrimitiveModel& primitive)
+				{
+					if (primitive.kind == RpcJsonPrimitiveKind::Boolean || primitive.fullName == L"system::String")
+					{
+						return;
+					}
+
+					auto varName = L"value_" + MangleRpcFullName(primitive.fullName);
+					auto nullableType = CreateNullableType(primitive.fullName);
+					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(nullableType, CreateReference(L"value"))));
+					auto trueBranch = CreateBlock();
+					auto varValue = CreateCast(CreateTopQualifiedType(primitive.fullName), CreateReference(varName));
+					WString nodeName;
+					switch (primitive.kind)
+					{
+					case RpcJsonPrimitiveKind::Number:
+						nodeName = AddRpcJsonNumber(trueBranch, context, CreateCast(CreatePredefinedType(WfPredefinedTypeName::String), varValue));
+						break;
+					case RpcJsonPrimitiveKind::String:
+						nodeName = AddRpcJsonString(trueBranch, context, CreateCast(CreatePredefinedType(WfPredefinedTypeName::String), varValue));
+						break;
+					default:
+						CHECK_FAIL(L"Internal error: Unexpected primitive kind.");
+					}
+					AddRpcJsonUnknownTupleReturn(context, trueBranch, primitive.keyword, CreateReference(nodeName));
+					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(varName)), trueBranch));
+				}
+
+				void AddUnknownSerializeEnumCase(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, const RpcJsonTypeModel& enumModel)
+				{
+					auto varName = L"value_" + MangleRpcFullName(enumModel.fullName);
+					auto nullableType = Ptr(new WfNullableType);
+					nullableType->element = CopyType(enumModel.type.Obj());
+					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(nullableType, CreateReference(L"value"))));
+					auto trueBranch = CreateBlock();
+					auto valueNode = AllocateRpcJsonTemp(context, L"jsonNode");
+					AddStatement(trueBranch, CreateInferredVariableStatement(valueNode, CreateCall(CreateReference(GetRpcJsonSerializeEnumFunctionName(enumModel.fullName)), CreateCast(CopyType(enumModel.type.Obj()), CreateReference(varName)))));
+					AddRpcJsonUnknownTupleReturn(context, trueBranch, enumModel.fullName, CreateReference(valueNode));
+					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(varName)), trueBranch));
+				}
+
+				void AddUnknownSerializeStructCase(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, const RpcJsonTypeModel& structModel)
+				{
+					auto varName = L"value_" + MangleRpcFullName(structModel.fullName);
+					auto nullableType = Ptr(new WfNullableType);
+					nullableType->element = CopyType(structModel.type.Obj());
+					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(nullableType, CreateReference(L"value"))));
+					auto trueBranch = CreateBlock();
+					AddStatement(trueBranch, CreateInferredVariableStatement(L"object", CreateNewClass(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>())));
+					auto keywordNode = AddRpcJsonString(trueBranch, context, CreateString(structModel.fullName));
+					AddRpcJsonObjectField(trueBranch, context, CreateReference(L"object"), L"$", CreateReference(keywordNode));
+					auto varValueName = AllocateRpcJsonTemp(context, L"value");
+					AddStatement(trueBranch, CreateInferredVariableStatement(varValueName, CreateCast(CopyType(structModel.type.Obj()), CreateReference(varName))));
+					AddRpcJsonStructFields(context, trueBranch, structModel, L"object", varValueName);
+					AddStatement(trueBranch, CreateReturn(CreateReference(L"object")));
+					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(varName)), trueBranch));
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonSerialize(RpcJsonGenerationContext& context)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_Serialize", CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"value", CreatePredefinedType(WfPredefinedTypeName::Object)));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+					for (auto&& enumModel : *context.enums)
+					{
+						AddUnknownSerializeEnumCase(context, block, enumModel);
+					}
+					for (auto&& structModel : *context.structs)
+					{
+						AddUnknownSerializeStructCase(context, block, structModel);
+					}
+					AddStatement(block, CreateReturn(CreateCall(
+						CreateQualifiedExpression(L"system::IRpcLifecycle::JsonSerializePredefinedTypes"),
+						CreateReference(L"value"),
+						CreateReference(L"rpcjson_Serialize"))));
+					return functionDecl;
+				}
+
+				void AddUnknownDeserializePrimitiveCase(Ptr<WfSwitchStatement> switchStat, const RpcJsonPrimitiveModel& primitive)
+				{
+					if (primitive.kind == RpcJsonPrimitiveKind::Boolean || primitive.fullName == L"system::String")
+					{
+						return;
+					}
+
+					auto jsonType = primitive.kind == RpcJsonPrimitiveKind::Number ? L"system::JsonNumber" : L"system::JsonString";
+					AddSwitchCase(
+						switchStat,
+						CreateString(primitive.keyword),
+						CreateReturn(CreateCast(CreateTopQualifiedType(primitive.fullName), CreateJsonArrayItemContent(L"array", 1, jsonType))));
+				}
+
+				void AddUnknownDeserializeEnumCase(Ptr<WfSwitchStatement> switchStat, const RpcJsonTypeModel& enumModel)
+				{
+					AddSwitchCase(
+						switchStat,
+						CreateString(enumModel.fullName),
+						CreateReturn(CreateCall(CreateReference(GetRpcJsonDeserializeEnumFunctionName(enumModel.fullName)), CreateJsonArrayItem(L"array", 1))));
+				}
+
+				void AddUnknownDeserializeStructCase(Ptr<WfSwitchStatement> switchStat, const RpcJsonTypeModel& structModel)
+				{
+					AddSwitchCase(
+						switchStat,
+						CreateString(structModel.fullName),
+						CreateReturn(CreateCall(CreateReference(GetRpcJsonDeserializeStructFunctionName(structModel.fullName)), CreateReference(L"object"))));
+				}
+
+				Ptr<WfStatement> CreateUnknownDeserializeListCase(RpcJsonGenerationContext& context, const WString& variableType)
+				{
+					auto block = CreateBlock();
+					AddStatement(block, CreateVariableStatement(L"result", CreateSharedType(variableType), CreateConstructor()));
+					auto valuesNode = AddRpcJsonObjectFieldLookup(block, context, CreateReference(L"object"), L"values");
+					AddStatement(block, CreateInferredVariableStatement(L"values", CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), CreateReference(valuesNode))));
+					auto forBlock = CreateBlock();
+					AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Add"), CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"item")))));
+					AddStatement(block, CreateForEach(L"item", CreateMember(CreateReference(L"values"), L"items"), forBlock));
+					AddStatement(block, CreateReturn(CreateReference(L"result")));
+					return block;
+				}
+
+				Ptr<WfStatement> CreateUnknownDeserializeMapCase(RpcJsonGenerationContext& context)
+				{
+					auto block = CreateBlock();
+					AddStatement(block, CreateVariableStatement(L"result", CreateTypeFromCpp<Ptr<IValueDictionary>>(), CreateConstructor()));
+					auto valuesNode = AddRpcJsonObjectFieldLookup(block, context, CreateReference(L"object"), L"values");
+					AddStatement(block, CreateInferredVariableStatement(L"values", CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), CreateReference(valuesNode))));
+					AddStatement(block, CreateInferredVariableStatement(L"index", CreateInt(0)));
+					auto whileBlock = CreateBlock();
+					AddStatement(whileBlock, CreateExpressionStatement(CreateCall(
+						CreateMember(CreateReference(L"result"), L"Set"),
+						CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateIndex(CreateMember(CreateReference(L"values"), L"items"), CreateReference(L"index"))),
+						CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateIndex(CreateMember(CreateReference(L"values"), L"items"), CreateBinary(WfBinaryOperator::Add, CreateReference(L"index"), CreateInt(1)))))));
+					AddStatement(whileBlock, CreateExpressionStatement(CreateAssign(CreateReference(L"index"), CreateBinary(WfBinaryOperator::Add, CreateReference(L"index"), CreateInt(2)))));
+					AddStatement(block, CreateWhile(CreateBinary(WfBinaryOperator::LT, CreateReference(L"index"), CreateMember(CreateMember(CreateReference(L"values"), L"items"), L"Count")), whileBlock));
+					AddStatement(block, CreateReturn(CreateReference(L"result")));
+					return block;
+				}
+
+				Ptr<WfDeclaration> GenerateRpcJsonDeserialize(RpcJsonGenerationContext& context)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcjson_Deserialize", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"node", CreateTypeFromCpp<Ptr<glr::json::JsonNode>>()));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+
+					if (context.enums->Count() > 0)
+					{
+						AddStatement(block, CreateInferredVariableStatement(L"array", CreateWeakCast(CreateTypeFromCpp<Ptr<glr::json::JsonArray>>(), CreateReference(L"node"))));
+						auto arrayBranch = CreateBlock();
+						AddStatement(arrayBranch, CreateInferredVariableStatement(L"keyword", CreateJsonArrayItemContent(L"array", 0, L"system::JsonString")));
+						auto arraySwitch = Ptr(new WfSwitchStatement);
+						arraySwitch->expression = CreateReference(L"keyword");
+						for (auto&& enumModel : *context.enums)
+						{
+							AddUnknownDeserializeEnumCase(arraySwitch, enumModel);
+						}
+						AddStatement(arrayBranch, arraySwitch);
+						AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(L"array")), arrayBranch));
+					}
+
+					AddStatement(block, CreateInferredVariableStatement(L"object", CreateWeakCast(CreateTypeFromCpp<Ptr<glr::json::JsonObject>>(), CreateReference(L"node"))));
+					auto objectBranch = CreateBlock();
+					{
+						auto keywordNode = AddRpcJsonObjectFieldLookup(objectBranch, context, CreateReference(L"object"), L"$", false);
+						auto keywordBranch = CreateBlock();
+						AddStatement(keywordBranch, CreateInferredVariableStatement(L"keyword", CreateMember(CreateMember(CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonString>>(), CreateReference(keywordNode)), L"content"), L"value")));
+						auto objectSwitch = Ptr(new WfSwitchStatement);
+						objectSwitch->expression = CreateReference(L"keyword");
+						for (auto&& structModel : *context.structs)
+						{
+							AddUnknownDeserializeStructCase(objectSwitch, structModel);
+						}
+						AddStatement(keywordBranch, objectSwitch);
+						AddStatement(objectBranch, CreateIf(CreateIsNotNull(CreateReference(keywordNode)), keywordBranch));
+					}
+					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(L"object")), objectBranch));
+					AddStatement(block, CreateReturn(CreateCall(
+						CreateQualifiedExpression(L"system::IRpcLifecycle::JsonDeserializePredefinedTypes"),
+						CreateReference(L"node"),
+						CreateReference(L"rpcjson_Deserialize"))));
+					return functionDecl;
+				}
+
+				void AddRpcJsonDeclarations(WfLexicalScopeManager* manager, Ptr<WfModule> module)
+				{
+					List<RpcJsonPrimitiveModel> primitives;
+					List<RpcJsonTypeModel> enums;
+					List<RpcJsonTypeModel> structs;
+					CollectRpcJsonPrimitives(primitives);
+					CollectRpcJsonTypes(manager, enums, structs);
+
+					RpcJsonGenerationContext context;
+					context.manager = manager;
+					context.primitives = &primitives;
+					context.enums = &enums;
+					context.structs = &structs;
+
+					for (auto&& enumModel : enums)
+					{
+						module->declarations.Add(GenerateRpcJsonSerializeEnum(context, enumModel));
+						module->declarations.Add(GenerateRpcJsonDeserializeEnum(context, enumModel));
+					}
+					for (auto&& structModel : structs)
+					{
+						module->declarations.Add(GenerateRpcJsonSerializeStruct(context, structModel));
+						module->declarations.Add(GenerateRpcJsonDeserializeStruct(context, structModel));
+					}
+					module->declarations.Add(GenerateRpcJsonSerialize(context));
+					module->declarations.Add(GenerateRpcJsonDeserialize(context));
+				}
+
+				Ptr<WfDeclaration> GenerateRpcSerializerFactoryJson()
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcSerializer", CreateTypeFromCpp<Ptr<rpc_controller::IRpcSerializer>>(), WfFunctionKind::Normal);
+					auto newSerializer = CreateNewInterface(CreateTypeFromCpp<Ptr<rpc_controller::IRpcSerializer>>()).Cast<WfNewInterfaceExpression>();
+
+					{
+						auto serialize = CreateFunctionDeclaration(L"Serialize", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
+						serialize->arguments.Add(CreateFunctionArgument(L"value", CreatePredefinedType(WfPredefinedTypeName::Object)));
+						auto block = serialize->statement.Cast<WfBlockStatement>();
+						AddStatement(block, CreateInferredVariableStatement(L"result", CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"value"))));
+						AddStatement(block, CreateReturn(CreateReference(L"result")));
+						newSerializer->declarations.Add(serialize);
+					}
+
+					{
+						auto deserialize = CreateFunctionDeclaration(L"Deserialize", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
+						deserialize->arguments.Add(CreateFunctionArgument(L"value", CreatePredefinedType(WfPredefinedTypeName::Object)));
+						auto block = deserialize->statement.Cast<WfBlockStatement>();
+						AddStatement(block, CreateReturn(CreateCall(
+							CreateReference(L"rpcjson_Deserialize"),
+							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateReference(L"value")))));
+						newSerializer->declarations.Add(deserialize);
+					}
+
+					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newSerializer));
+					return functionDecl;
+				}
+
+				WString AddRpcJsonSerializeValue(WfLexicalScopeManager* manager, vint& tempIndex, Ptr<WfBlockStatement> block, Ptr<WfExpression> value, WfType* type)
+				{
+					List<RpcJsonPrimitiveModel> primitives;
+					List<RpcJsonTypeModel> enums;
+					List<RpcJsonTypeModel> structs;
+					CollectRpcJsonPrimitives(primitives);
+					CollectRpcJsonTypes(manager, enums, structs);
+
+					RpcJsonGenerationContext context;
+					context.manager = manager;
+					context.primitives = &primitives;
+					context.enums = &enums;
+					context.structs = &structs;
+					context.tempIndex = tempIndex;
+
+					auto result = AddKnownRpcJsonSerializeValue(context, block, value, type);
+					tempIndex = context.tempIndex;
+					return result;
+				}
+
+				WString AddRpcJsonDeserializeValue(WfLexicalScopeManager* manager, vint& tempIndex, Ptr<WfBlockStatement> block, Ptr<WfExpression> node, WfType* type)
+				{
+					List<RpcJsonPrimitiveModel> primitives;
+					List<RpcJsonTypeModel> enums;
+					List<RpcJsonTypeModel> structs;
+					CollectRpcJsonPrimitives(primitives);
+					CollectRpcJsonTypes(manager, enums, structs);
+
+					RpcJsonGenerationContext context;
+					context.manager = manager;
+					context.primitives = &primitives;
+					context.enums = &enums;
+					context.structs = &structs;
+					context.tempIndex = tempIndex;
+
+					auto result = AddKnownRpcJsonDeserializeValue(context, block, node, type);
+					tempIndex = context.tempIndex;
+					return result;
+				}
+
+				Ptr<WfType> CreateRpcJsonTransferType(ITypeInfo* typeInfo, bool byref, WfType* type)
+				{
+					if (IsSharedInterfaceType(typeInfo))
+					{
+						return byref
+							? CreateTypeFromCpp<rpc_controller::RpcObjectReference>()
+							: CreatePredefinedType(WfPredefinedTypeName::Object);
+					}
+					return CopyType(type);
+				}
+
+				Ptr<WfExpression> CreateRpcJsonTransferExpression(ITypeInfo* typeInfo, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
+				{
+					if (IsSharedInterfaceType(typeInfo))
+					{
+						return CreateRpcBoxExpression(typeInfo, byref, value, lifecycle);
+					}
+					return value;
+				}
+
+				Ptr<WfExpression> CreateRpcJsonTransferExpression(const RpcParamModel& paramModel, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
+				{
+					return CreateRpcJsonTransferExpression(paramModel.typeInfo, paramModel.byref, value, lifecycle);
+				}
+
+				Ptr<WfExpression> CreateJsonDispatchArgument(
+					WfLexicalScopeManager* manager,
+					vint& tempIndex,
+					Ptr<WfBlockStatement> block,
+					Ptr<WfExpression> node,
+					const RpcParamModel& paramModel)
+				{
+					auto transferType = CreateRpcJsonTransferType(paramModel.typeInfo, paramModel.byref, paramModel.type.Obj());
+					auto valueName = AddRpcJsonDeserializeValue(manager, tempIndex, block, node, transferType.Obj());
+					if (IsSharedInterfaceType(paramModel.typeInfo))
+					{
+						return CreateRpcUnboxExpression(paramModel.typeInfo, paramModel.type, paramModel.byref, CreateReference(valueName), CreateReference(L"_lc"));
+					}
+					return CreateReference(valueName);
+				}
+
+				Ptr<WfStatement> BuildInvokeMethodBranchJson(WfLexicalScopeManager* manager, const RpcInterfaceModel& interfaceModel, const RpcMethodModel& methodModel)
+				{
+					auto block = CreateBlock();
+					AddStatement(block, CreateInferredVariableStatement(L"target", CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
+
+					List<Ptr<WfExpression>> arguments;
+					vint tempIndex = 0;
+					for (vint i = 0; i < methodModel.params.Count(); i++)
+					{
+						auto&& paramModel = methodModel.params[i];
+						arguments.Add(CreateJsonDispatchArgument(
+							manager,
+							tempIndex,
+							block,
+							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateRpcJsonSerializedArgument(i)),
+							paramModel));
+					}
+
+					auto invokeTarget = CreateMember(CreateReference(L"target"), methodModel.name);
+					auto invoke = Ptr(new WfCallExpression);
+					invoke->function = invokeTarget;
+					for (auto argument : arguments)
+					{
+						invoke->arguments.Add(argument);
+					}
+
+					if (IsVoidType(methodModel.returnType.Obj()))
+					{
+						AddStatement(block, CreateExpressionStatement(invoke));
+						RpcJsonGenerationContext context;
+						context.manager = manager;
+						context.tempIndex = tempIndex;
+						auto nodeName = AddRpcJsonLiteral(block, context, L"Null");
+						tempIndex = context.tempIndex;
+						AddStatement(block, CreateReturn(CreateReference(nodeName)));
+					}
+					else
+					{
+						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
+						if (IsRpcByvalReturn(methodModel))
+						{
+							AddStatement(block, CreateInferredVariableStatement(L"copiedReturnValue", CreateRpcCopyByvalExpression(invoke, CreateReference(L"_lc"))));
+							auto transferValue = CreateRpcJsonTransferExpression(methodModel.returnTypeInfo, methodModel.returnByref, CreateReference(L"copiedReturnValue"), CreateReference(L"_lc"));
+							auto nodeName = AddRpcJsonSerializeValue(manager, tempIndex, block, transferValue, transferType.Obj());
+							AddRpcByvalReturnValue(block, CreateReference(nodeName), CreateReference(L"copiedReturnValue"));
+						}
+						else
+						{
+							auto transferValue = CreateRpcJsonTransferExpression(methodModel.returnTypeInfo, methodModel.returnByref, invoke, CreateReference(L"_lc"));
+							auto nodeName = AddRpcJsonSerializeValue(manager, tempIndex, block, transferValue, transferType.Obj());
+							AddStatement(block, CreateReturn(CreateReference(nodeName)));
+						}
+					}
+					return block;
+				}
+
+				Ptr<WfStatement> BuildInvokeEventBranchJson(WfLexicalScopeManager* manager, const RpcInterfaceModel& interfaceModel, const RpcEventModel& eventModel)
+				{
+					auto block = CreateBlock();
+					AddStatement(block, CreateInferredVariableStatement(L"target", CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
+
+					auto invoke = Ptr(new WfCallExpression);
+					invoke->function = CreateMember(CreateReference(L"target"), eventModel.name);
+					vint tempIndex = 0;
+					for (vint i = 0; i < eventModel.params.Count(); i++)
+					{
+						auto&& paramModel = eventModel.params[i];
+						invoke->arguments.Add(CreateJsonDispatchArgument(
+							manager,
+							tempIndex,
+							block,
+							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateRpcJsonSerializedArgument(i)),
+							paramModel));
+					}
+					AddStatement(block, CreateExpressionStatement(invoke));
+					return block;
+				}
+
+				Ptr<WfStatement> BuildDispatchChainJson(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces, bool forEvent, const WString& unknownIdVariable = WString::Empty)
+				{
+					auto switchStat = Ptr(new WfSwitchStatement);
+					switchStat->expression = CreateReference(forEvent ? L"eventId" : L"methodId");
+					switchStat->defaultBranch =
+						unknownIdVariable == L""
+						? CreateRaise(forEvent ? L"Unknown RPC event id." : L"Unknown RPC method id.")
+						: CreateExpressionStatement(CreateAssign(CreateReference(unknownIdVariable), CreateBool(true)));
+
+					for (auto&& interfaceModel : interfaces)
+					{
+						if (forEvent)
+						{
+							for (auto&& eventModel : interfaceModel.events)
+							{
+								auto switchCase = Ptr(new WfSwitchCase);
+								switchCase->expression = CreateRpcConstantReference(L"rpcevent_", eventModel.fullName);
+								switchCase->statement = BuildInvokeEventBranchJson(manager, interfaceModel, eventModel);
+								switchStat->caseBranches.Add(switchCase);
+							}
+						}
+						else
+						{
+							for (auto&& methodModel : interfaceModel.methods)
+							{
+								auto switchCase = Ptr(new WfSwitchCase);
+								switchCase->expression = CreateRpcConstantReference(L"rpcmethod_", methodModel.fullName);
+								switchCase->statement = BuildInvokeMethodBranchJson(manager, interfaceModel, methodModel);
+								switchStat->caseBranches.Add(switchCase);
+							}
+						}
+					}
+					return switchStat;
+				}
+
+				Ptr<WfDeclaration> GenerateObjectOpsFactoryJson(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectOpsJson", CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectOps>>(), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					auto newOps = CreateNewInterface(CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectOps>>()).Cast<WfNewInterfaceExpression>();
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_slot", CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(0)));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_byvalReturnValues", CreateTypeFromCpp<Dictionary<vint, Value>>(), CreateConstructor()));
+
+					{
+						auto invokeMethod = CreateFunctionDeclaration(L"InvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
+						invokeMethod->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
+						invokeMethod->arguments.Add(CreateFunctionArgument(L"methodId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+						invokeMethod->arguments.Add(CreateFunctionArgument(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>()));
+						auto block = invokeMethod->statement.Cast<WfBlockStatement>();
+						AddStatement(block, CreateVariableStatement(L"unknownId", CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
+						auto catchBlock = CreateBlock();
+						AddStatement(catchBlock, CreateReturn(CreateCall(CreateReference(L"rpcjson_Serialize"), CreateRpcExceptionExpression(CreateMember(CreateReference(L"ex"), L"Message")))));
+						AddStatement(block, CreateTryCatch(BuildDispatchChainJson(manager, interfaces, false, L"unknownId"), L"ex", catchBlock));
+						auto unknownIdBranch = CreateBlock();
+						AddStatement(unknownIdBranch, CreateRaise(L"Unknown RPC method id."));
+						AddStatement(block, CreateIf(CreateReference(L"unknownId"), unknownIdBranch));
+						AddStatement(block, CreateReturn(CreateCall(CreateReference(L"rpcjson_Serialize"), CreateNull())));
+						newOps->declarations.Add(invokeMethod);
+					}
+
+					{
+						auto endInvokeMethod = CreateFunctionDeclaration(L"EndInvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+						endInvokeMethod->arguments.Add(CreateFunctionArgument(L"slot", CreatePredefinedType(WfPredefinedTypeName::Int)));
+						AddStatement(endInvokeMethod->statement.Cast<WfBlockStatement>(), CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_byvalReturnValues"), L"Remove"), CreateReference(L"slot"))));
+						newOps->declarations.Add(endInvokeMethod);
+					}
+
+					{
+						auto objectHold = CreateFunctionDeclaration(L"ObjectHold", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+						objectHold->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
+						objectHold->arguments.Add(CreateFunctionArgument(L"remoteClientId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+						objectHold->arguments.Add(CreateFunctionArgument(L"hold", CreatePredefinedType(WfPredefinedTypeName::Bool)));
+						auto trueBranch = CreateBlock();
+						AddStatement(trueBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_lc"), L"LocalObjectHold"), CreateReference(L"ref"), CreateReference(L"remoteClientId"))));
+						auto falseBranch = CreateBlock();
+						AddStatement(falseBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_lc"), L"LocalObjectUnhold"), CreateReference(L"ref"), CreateReference(L"remoteClientId"))));
+						AddStatement(objectHold->statement.Cast<WfBlockStatement>(), CreateIf(CreateReference(L"hold"), trueBranch, falseBranch));
+						newOps->declarations.Add(objectHold);
+					}
+
+					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateObjectEventOpsFactoryJson(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectEventOpsJson", CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectEventOps>>(), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					auto newOps = CreateNewInterface(CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectEventOps>>()).Cast<WfNewInterfaceExpression>();
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
+
+					{
+						auto invokeEvent = CreateFunctionDeclaration(L"InvokeEvent", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
+						invokeEvent->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
+						invokeEvent->arguments.Add(CreateFunctionArgument(L"eventId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+						invokeEvent->arguments.Add(CreateFunctionArgument(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>()));
+						auto block = invokeEvent->statement.Cast<WfBlockStatement>();
+						if (!HasRpcEvents(interfaces))
+						{
+							AddStatement(block, CreateRaise(L"Unknown RPC event id."));
+							newOps->declarations.Add(invokeEvent);
+						}
+						else
+						{
+							AddStatement(block, CreateVariableStatement(L"unknownId", CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
+							AddStatement(block, CreateVariableStatement(L"rpcEventExceptions", CreateRpcEventExceptionMapType(), CreateConstructor()));
+							AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(true))));
+							auto finallyBlock = CreateBlock();
+							AddStatement(finallyBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(false))));
+							auto catchBlock = CreateBlock();
+							AddRpcEventExceptionMapSet(catchBlock, L"rpcEventExceptions", CreateMember(CreateReference(L"_lc"), L"ClientId"), CreateMember(CreateReference(L"ex"), L"Message"));
+							AddStatement(block, CreateTry(BuildDispatchChainJson(manager, interfaces, true, L"unknownId"), L"ex", catchBlock, finallyBlock));
+							auto unknownIdBranch = CreateBlock();
+							AddStatement(unknownIdBranch, CreateRaise(L"Unknown RPC event id."));
+							AddStatement(block, CreateIf(CreateReference(L"unknownId"), unknownIdBranch));
+							auto returnExceptionBranch = CreateBlock();
+							AddStatement(returnExceptionBranch, CreateReturn(CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"rpcEventExceptions"))));
+							auto returnNullBranch = CreateBlock();
+							AddStatement(returnNullBranch, CreateReturn(CreateCall(CreateReference(L"rpcjson_Serialize"), CreateNull())));
+							AddStatement(
+								block,
+								CreateIf(
+									CreateBinary(WfBinaryOperator::GT, CreateMember(CreateReference(L"rpcEventExceptions"), L"Count"), CreateInt(0)),
+									returnExceptionBranch,
+									returnNullBranch));
+							newOps->declarations.Add(invokeEvent);
+						}
+					}
+
+					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
+					return functionDecl;
+				}
+
+				void AddRpcOpsArgumentsArrayJson(
+					WfLexicalScopeManager* manager,
+					Ptr<WfBlockStatement> block,
+					const List<RpcParamModel>& params,
+					vint& tempIndex)
+				{
+					AddStatement(block, CreateVariableStatement(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>(), CreateConstructor()));
+					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Resize"), CreateInt(params.Count()))));
+
+					for (vint i = 0; i < params.Count(); i++)
+					{
+						auto&& paramModel = params[i];
+						auto value = CreateReference(GetRpcOpsArgumentName(paramModel));
+						auto transferValue = CreateRpcJsonTransferExpression(paramModel, value, CreateReference(L"_lc"));
+						auto transferType = CreateRpcJsonTransferType(paramModel.typeInfo, paramModel.byref, paramModel.type.Obj());
+						auto nodeName = AddRpcJsonSerializeValue(manager, tempIndex, block, transferValue, transferType.Obj());
+						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Set"), CreateInt(i), CreateReference(nodeName))));
+					}
+				}
+
+				Ptr<WfFunctionDeclaration> GenerateRpcOpsMethodImplementationJson(WfLexicalScopeManager* manager, const RpcMethodModel& methodModel)
+				{
+					auto functionDecl = CreateRpcOpsFunctionDeclaration(GetRpcOpsInvokeMethodName(methodModel), CopyType(methodModel.returnType.Obj()), WfFunctionKind::Override);
+					AddRpcOpsFunctionArguments(functionDecl, methodModel.params);
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+
+					vint tempIndex = 0;
+					AddRpcOpsArgumentsArrayJson(manager, block, methodModel.params, tempIndex);
+					if (IsVoidType(methodModel.returnType.Obj()))
+					{
+						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
+						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
+						AddStatement(block, CreateInferredVariableStatement(
+							L"jsonResult",
+							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateReference(L"invokeResult"))));
+						AddStatement(block, CreateInferredVariableStatement(
+							L"methodResult",
+							CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"jsonResult"))));
+						AddRpcMethodExceptionRaise(block, CreateReference(L"methodResult"));
+					}
+					else if (IsRpcByvalReturn(methodModel))
+					{
+						AddStatement(block, CreateInferredVariableStatement(L"objectOps", CreateRpcOpsObjectOps()));
+						auto invoke = CreateRpcOpsObjectInvoke(methodModel, CreateReference(L"objectOps"));
+						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
+						AddStatement(block, CreateInferredVariableStatement(
+							L"byvalReturnValue",
+							CreateWeakCast(CreateTypeFromCpp<Ptr<rpc_controller::RpcByvalReturnValue>>(), CreateReference(L"invokeResult"))));
+						AddStatement(block, CreateVariableStatement(L"jsonResult", CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateNull()));
+						auto exceptionBranch = CreateBlock();
+						AddStatement(exceptionBranch, CreateExpressionStatement(CreateAssign(
+							CreateReference(L"jsonResult"),
+							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateReference(L"invokeResult")))));
+						auto returnBranch = CreateBlock();
+						AddStatement(returnBranch, CreateExpressionStatement(CreateAssign(
+							CreateReference(L"jsonResult"),
+							CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateMember(CreateReference(L"byvalReturnValue"), L"value")))));
+						AddStatement(block, CreateIf(CreateIsNull(CreateReference(L"byvalReturnValue")), exceptionBranch, returnBranch));
+						AddStatement(block, CreateInferredVariableStatement(
+							L"methodResult",
+							CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"jsonResult"))));
+						AddRpcMethodExceptionRaise(block, CreateReference(L"methodResult"));
+						AddStatement(block, CreateInferredVariableStatement(
+							L"strongByvalReturnValue",
+							CreateCast(CreateTypeFromCpp<Ptr<rpc_controller::RpcByvalReturnValue>>(), CreateReference(L"byvalReturnValue"))));
+						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
+						auto valueName = AddRpcJsonDeserializeValue(manager, tempIndex, block, CreateReference(L"jsonResult"), transferType.Obj());
+						AddStatement(block, CreateInferredVariableStatement(
+							L"result",
+							IsSharedInterfaceType(methodModel.returnTypeInfo)
+								? CreateRpcUnboxExpression(methodModel.returnTypeInfo, methodModel.returnType, methodModel.returnByref, CreateReference(valueName), CreateReference(L"_lc"))
+								: CreateReference(valueName)));
+						AddStatement(block, CreateExpressionStatement(CreateCall(
+							CreateMember(CreateReference(L"objectOps"), L"EndInvokeMethod"),
+							CreateMember(CreateReference(L"strongByvalReturnValue"), L"slot"))));
+						AddStatement(block, CreateReturn(CreateReference(L"result")));
+					}
+					else
+					{
+						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
+						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
+						AddStatement(block, CreateInferredVariableStatement(L"jsonResult", CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateReference(L"invokeResult"))));
+						AddStatement(block, CreateInferredVariableStatement(
+							L"methodResult",
+							CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"jsonResult"))));
+						AddRpcMethodExceptionRaise(block, CreateReference(L"methodResult"));
+						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
+						auto valueName = AddRpcJsonDeserializeValue(manager, tempIndex, block, CreateReference(L"jsonResult"), transferType.Obj());
+						if (IsSharedInterfaceType(methodModel.returnTypeInfo))
+						{
+							AddStatement(block, CreateReturn(CreateRpcUnboxExpression(methodModel.returnTypeInfo, methodModel.returnType, methodModel.returnByref, CreateReference(valueName), CreateReference(L"_lc"))));
+						}
+						else
+						{
+							AddStatement(block, CreateReturn(CreateReference(valueName)));
+						}
+					}
+
+					return functionDecl;
+				}
+
+				Ptr<WfFunctionDeclaration> GenerateRpcOpsEventImplementationJson(WfLexicalScopeManager* manager, const RpcEventModel& eventModel)
+				{
+					auto functionDecl = CreateRpcOpsFunctionDeclaration(GetRpcOpsInvokeEventName(eventModel), CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+					AddRpcOpsFunctionArguments(functionDecl, eventModel.params);
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+
+					vint tempIndex = 0;
+					AddRpcOpsArgumentsArrayJson(manager, block, eventModel.params, tempIndex);
+					AddStatement(block, CreateInferredVariableStatement(L"invokeResult", CreateRpcOpsObjectEventInvoke(eventModel)));
+					AddStatement(block, CreateInferredVariableStatement(
+						L"jsonResult",
+						CreateCast(CreateTypeFromCpp<Ptr<glr::json::JsonNode>>(), CreateReference(L"invokeResult"))));
+					AddStatement(block, CreateInferredVariableStatement(
+						L"eventResult",
+						CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"jsonResult"))));
+					AddRpcEventExceptionRaise(block, CreateCast(CreateRpcEventExceptionMapType(), CreateReference(L"eventResult")));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateRpcOpsFactoryJson(WfLexicalScopeManager* manager, const WString& assemblyName, const List<RpcInterfaceModel>& interfaces)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IOps_CreateJson", CreateSharedType(GetRpcOpsInterfaceName(assemblyName)), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					auto newOps = CreateNewInterface(CreateSharedType(GetRpcOpsInterfaceName(assemblyName))).Cast<WfNewInterfaceExpression>();
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
+
+					for (auto&& interfaceModel : interfaces)
+					{
+						for (auto&& methodModel : interfaceModel.methods)
+						{
+							newOps->declarations.Add(GenerateRpcOpsMethodImplementationJson(manager, methodModel));
+						}
+						for (auto&& eventModel : interfaceModel.events)
+						{
+							newOps->declarations.Add(GenerateRpcOpsEventImplementationJson(manager, eventModel));
+						}
+					}
+
+					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
+					return functionDecl;
+				}
+			}
+
+			Ptr<WfModule> GenerateModuleRpcJson(WfLexicalScopeManager* manager, WString assemblyName)
+			{
+				using namespace rpc_generating;
+
+				if (!manager || !manager->rpcMetadata || !manager->rpcMetadata->metadataModule)
+				{
+					return nullptr;
+				}
+
+				CollectMangledNames(manager);
+				if (manager->errors.Count() > 0)
+				{
+					return nullptr;
+				}
+
+				auto interfaces = BuildInterfaceModels(manager);
+				if (manager->errors.Count() > 0)
+				{
+					return nullptr;
+				}
+
+				auto module = Ptr(new WfModule);
+				module->moduleType = WfModuleType::Module;
+				module->name.value = L"RpcMetadataJson";
+
+				AddRpcJsonDeclarations(manager, module);
+				module->declarations.Add(GenerateRpcSerializerFactoryJson());
+				module->declarations.Add(GenerateObjectOpsFactoryJson(manager, interfaces));
+				module->declarations.Add(GenerateObjectEventOpsFactoryJson(manager, interfaces));
+				module->declarations.Add(GenerateRpcOpsFactoryJson(manager, assemblyName, interfaces));
+
+				return module;
+			}
+		}
+	}
+}
+
+
+/***********************************************************************
+.\ANALYZER\RPC\WFANALYZER_RPCASTHELPERS.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace analyzer
+		{
+			using namespace collections;
+			using namespace reflection::description;
+
+			namespace rpc_generating
+			{
+				void SplitTypeFullName(const WString& typeFullName, List<WString>& fragments)
+				{
+					vint start = 0;
+					while (start <= typeFullName.Length())
+					{
+						vint separator = -1;
+						for (vint i = start; i + 1 < typeFullName.Length(); i++)
+						{
+							if (typeFullName[i] == L':' && typeFullName[i + 1] == L':')
+							{
+								separator = i;
+								break;
+							}
+						}
+						if (separator == -1)
+						{
+							fragments.Add(typeFullName.Sub(start, typeFullName.Length() - start));
+							break;
+						}
+
+						fragments.Add(typeFullName.Sub(start, separator - start));
+						start = separator + 2;
+					}
+				}
+
+				Ptr<WfType> CopyType(WfType* type)
+				{
+					return vl::workflow::analyzer::CopyType(type);
+				}
+
+				Ptr<WfType> CreatePredefinedType(WfPredefinedTypeName name)
+				{
+					auto type = Ptr(new WfPredefinedType);
+					type->name = name;
+					return type;
+				}
+
+				Ptr<WfType> CreateQualifiedType(const WString& fullName)
+				{
+					List<WString> fragments;
+					SplitTypeFullName(fullName, fragments);
+					if (fragments.Count() == 0)
+					{
+						return nullptr;
+					}
+
+					Ptr<WfType> type;
+					for (vint i = 0; i < fragments.Count(); i++)
+					{
+						if (i == 0)
+						{
+							auto top = Ptr(new WfReferenceType);
+							top->name.value = fragments[i];
+							type = top;
+						}
+						else
+						{
+							auto child = Ptr(new WfChildType);
+							child->parent = type;
+							child->name.value = fragments[i];
+							type = child;
+						}
+					}
+					return type;
+				}
+
+				Ptr<WfType> CreateTopQualifiedType(const WString& fullName)
+				{
+					List<WString> fragments;
+					SplitTypeFullName(fullName, fragments);
+					if (fragments.Count() == 0)
+					{
+						return nullptr;
+					}
+
+					Ptr<WfType> type;
+					for (vint i = 0; i < fragments.Count(); i++)
+					{
+						if (i == 0)
+						{
+							auto top = Ptr(new WfTopQualifiedType);
+							top->name.value = fragments[i];
+							type = top;
+						}
+						else
+						{
+							auto child = Ptr(new WfChildType);
+							child->parent = type;
+							child->name.value = fragments[i];
+							type = child;
+						}
+					}
+					return type;
+				}
+
+				Ptr<WfType> CreateSharedType(const WString& fullName)
+				{
+					auto type = Ptr(new WfSharedPointerType);
+					type->element = CreateQualifiedType(fullName);
+					return type;
+				}
+
+				Ptr<WfType> CreateRawType(const WString& fullName)
+				{
+					auto type = Ptr(new WfRawPointerType);
+					type->element = CreateQualifiedType(fullName);
+					return type;
+				}
+
+				Ptr<WfType> CreateNullableType(const WString& fullName)
+				{
+					auto type = Ptr(new WfNullableType);
+					type->element = CreateQualifiedType(fullName);
+					return type;
+				}
+
+				Nullable<WfPredefinedTypeName> GetPredefinedTypeFromSystemName(const WString& name)
+				{
+					if (name == L"Boolean") return WfPredefinedTypeName::Bool;
+					if (name == (sizeof(vint) == sizeof(vint64_t) ? L"Int64" : L"Int32")) return WfPredefinedTypeName::Int;
+					if (name == L"String") return WfPredefinedTypeName::String;
+					if (name == L"Object") return WfPredefinedTypeName::Object;
+					if (name == L"Void") return WfPredefinedTypeName::Void;
+					return {};
+				}
+
+				Ptr<WfType> NormalizeRpcGeneratedType(Ptr<WfType> type)
+				{
+					if (!type)
+					{
+						return nullptr;
+					}
+
+					if (auto child = type.Cast<WfChildType>())
+					{
+						child->parent = NormalizeRpcGeneratedType(child->parent);
+						if (auto reference = child->parent.Cast<WfReferenceType>())
+						{
+							if (reference->name.value == L"system")
+							{
+								if (auto predefined = GetPredefinedTypeFromSystemName(child->name.value))
+								{
+									return CreatePredefinedType(predefined.Value());
+								}
+							}
+						}
+					}
+					else if (auto top = type.Cast<WfTopQualifiedType>())
+					{
+						auto reference = Ptr(new WfReferenceType);
+						reference->name = top->name;
+						return reference;
+					}
+					else if (auto raw = type.Cast<WfRawPointerType>())
+					{
+						raw->element = NormalizeRpcGeneratedType(raw->element);
+					}
+					else if (auto shared = type.Cast<WfSharedPointerType>())
+					{
+						shared->element = NormalizeRpcGeneratedType(shared->element);
+					}
+					else if (auto nullable = type.Cast<WfNullableType>())
+					{
+						nullable->element = NormalizeRpcGeneratedType(nullable->element);
+					}
+					else if (auto enumerable = type.Cast<WfEnumerableType>())
+					{
+						enumerable->element = NormalizeRpcGeneratedType(enumerable->element);
+					}
+					else if (auto map = type.Cast<WfMapType>())
+					{
+						if (map->key)
+						{
+							map->key = NormalizeRpcGeneratedType(map->key);
+						}
+						map->value = NormalizeRpcGeneratedType(map->value);
+					}
+					else if (auto observable = type.Cast<WfObservableListType>())
+					{
+						observable->element = NormalizeRpcGeneratedType(observable->element);
+					}
+					else if (auto function = type.Cast<WfFunctionType>())
+					{
+						function->result = NormalizeRpcGeneratedType(function->result);
+						for (vint i = 0; i < function->arguments.Count(); i++)
+						{
+							function->arguments[i] = NormalizeRpcGeneratedType(function->arguments[i]);
+						}
+					}
+					return type;
+				}
+
+				Ptr<WfExpression> CreateNull()
+				{
+					auto expression = Ptr(new WfLiteralExpression);
+					expression->value = WfLiteralValue::Null;
+					return expression;
+				}
+
+				Ptr<WfExpression> CreateIsNull(Ptr<WfExpression> expression)
+				{
+					auto testing = Ptr(new WfTypeTestingExpression);
+					testing->test = WfTypeTesting::IsNull;
+					testing->expression = expression;
+					return testing;
+				}
+
+				Ptr<WfExpression> CreateIsNotNull(Ptr<WfExpression> expression)
+				{
+					auto testing = Ptr(new WfTypeTestingExpression);
+					testing->test = WfTypeTesting::IsNotNull;
+					testing->expression = expression;
+					return testing;
+				}
+
+				Ptr<WfExpression> CreateIsType(Ptr<WfExpression> expression, Ptr<WfType> type)
+				{
+					auto testing = Ptr(new WfTypeTestingExpression);
+					testing->test = WfTypeTesting::IsType;
+					testing->expression = expression;
+					testing->type = type;
+					return testing;
+				}
+
+				Ptr<WfExpression> CreateBool(bool value)
+				{
+					auto expression = Ptr(new WfLiteralExpression);
+					expression->value = value ? WfLiteralValue::True : WfLiteralValue::False;
+					return expression;
+				}
+
+				Ptr<WfExpression> CreateInt(vint value)
+				{
+					auto expression = Ptr(new WfIntegerExpression);
+					expression->value.value = itow(value);
+					return expression;
+				}
+
+				Ptr<WfExpression> CreateString(const WString& value)
+				{
+					auto expression = Ptr(new WfStringExpression);
+					expression->value.value = value;
+					return expression;
+				}
+
+				Ptr<WfExpression> CreateReference(const WString& name)
+				{
+					auto expression = Ptr(new WfReferenceExpression);
+					expression->name.value = name;
+					return expression;
+				}
+
+				Ptr<WfExpression> CreateThis()
+				{
+					return Ptr(new WfThisExpression);
+				}
+
+				Ptr<WfExpression> CreateQualifiedExpression(const WString& fullName)
+				{
+					List<WString> fragments;
+					SplitTypeFullName(fullName, fragments);
+					if (fragments.Count() == 0)
+					{
+						return nullptr;
+					}
+
+					Ptr<WfExpression> expression = CreateReference(fragments[0]);
+					for (vint i = 1; i < fragments.Count(); i++)
+					{
+						auto child = Ptr(new WfChildExpression);
+						child->parent = expression;
+						child->name.value = fragments[i];
+						expression = child;
+					}
+					return expression;
+				}
+
+				Ptr<WfExpression> CreateMember(Ptr<WfExpression> parent, const WString& name)
+				{
+					auto expression = Ptr(new WfMemberExpression);
+					expression->parent = parent;
+					expression->name.value = name;
+					return expression;
+				}
+
+				Ptr<WfExpression> CreateBinary(WfBinaryOperator op, Ptr<WfExpression> first, Ptr<WfExpression> second)
+				{
+					auto expression = Ptr(new WfBinaryExpression);
+					expression->op = op;
+					expression->first = first;
+					expression->second = second;
+					return expression;
+				}
+
+				Ptr<WfExpression> CreateUnary(WfUnaryOperator op, Ptr<WfExpression> operand)
+				{
+					auto expression = Ptr(new WfUnaryExpression);
+					expression->op = op;
+					expression->operand = operand;
+					return expression;
+				}
+
+				Ptr<WfExpression> CreateAssign(Ptr<WfExpression> left, Ptr<WfExpression> right)
+				{
+					return CreateBinary(WfBinaryOperator::Assign, left, right);
+				}
+
+				Ptr<WfExpression> CreateIndex(Ptr<WfExpression> collection, Ptr<WfExpression> index)
+				{
+					return CreateBinary(WfBinaryOperator::Index, collection, index);
+				}
+
+				Ptr<WfExpression> CreateCast(Ptr<WfType> type, Ptr<WfExpression> expression)
+				{
+					auto cast = Ptr(new WfTypeCastingExpression);
+					cast->strategy = WfTypeCastingStrategy::Strong;
+					cast->type = type;
+					cast->expression = expression;
+					return cast;
+				}
+
+				Ptr<WfExpression> CreateWeakCast(Ptr<WfType> type, Ptr<WfExpression> expression)
+				{
+					auto cast = Ptr(new WfTypeCastingExpression);
+					cast->strategy = WfTypeCastingStrategy::Weak;
+					cast->type = type;
+					cast->expression = expression;
+					return cast;
+				}
+
+				Ptr<WfExpression> CreateInfer(Ptr<WfExpression> expression, Ptr<WfType> type)
+				{
+					auto infer = Ptr(new WfInferExpression);
+					infer->expression = expression;
+					infer->type = type;
+					return infer;
+				}
+
+				Ptr<WfConstructorArgument> CreateConstructorArgument(Ptr<WfExpression> key, Ptr<WfExpression> value)
+				{
+					auto argument = Ptr(new WfConstructorArgument);
+					argument->key = key;
+					argument->value = value;
+					return argument;
+				}
+
+				Ptr<WfConstructorExpression> CreateConstructor()
+				{
+					return Ptr(new WfConstructorExpression);
+				}
+
+				Ptr<WfExpression> CreateRpcExceptionExpression(Ptr<WfExpression> message)
+				{
+					auto constructor = CreateConstructor();
+					constructor->arguments.Add(CreateConstructorArgument(CreateReference(L"message"), message));
+					return CreateInfer(constructor, CreateTypeFromCpp<rpc_controller::RpcException>());
+				}
+
+				Ptr<WfType> CreateRpcEventExceptionMapType()
+				{
+					return CreateTypeFromCpp<Dictionary<vint, rpc_controller::RpcException>>();
+				}
+
+				Ptr<WfExpression> CreateNewClass(Ptr<WfType> type)
+				{
+					auto expression = Ptr(new WfNewClassExpression);
+					expression->type = type;
+					return expression;
+				}
+
+				Ptr<WfExpression> CreateNewInterface(Ptr<WfType> type)
+				{
+					auto expression = Ptr(new WfNewInterfaceExpression);
+					expression->type = type;
+					return expression;
+				}
+
+				Ptr<WfStatement> CreateExpressionStatement(Ptr<WfExpression> expression)
+				{
+					auto statement = Ptr(new WfExpressionStatement);
+					statement->expression = expression;
+					return statement;
+				}
+
+				Ptr<WfStatement> CreateReturn(Ptr<WfExpression> expression)
+				{
+					auto statement = Ptr(new WfReturnStatement);
+					statement->expression = expression;
+					return statement;
+				}
+
+				Ptr<WfStatement> CreateRaise(const WString& message)
+				{
+					auto statement = Ptr(new WfRaiseExceptionStatement);
+					statement->expression = CreateString(message);
+					return statement;
+				}
+
+				Ptr<WfStatement> CreateRaise(Ptr<WfExpression> expression)
+				{
+					auto statement = Ptr(new WfRaiseExceptionStatement);
+					statement->expression = expression;
+					return statement;
+				}
+
+				Ptr<WfVariableDeclaration> CreateVariableDeclaration(const WString& name, Ptr<WfType> type, Ptr<WfExpression> expression)
+				{
+					auto declaration = Ptr(new WfVariableDeclaration);
+					declaration->name.value = name;
+					declaration->type = type;
+					declaration->expression = expression;
+					return declaration;
+				}
+
+				Ptr<WfStatement> CreateVariableStatement(const WString& name, Ptr<WfType> type, Ptr<WfExpression> expression)
+				{
+					auto statement = Ptr(new WfVariableStatement);
+					statement->variable = CreateVariableDeclaration(name, type, expression);
+					return statement;
+				}
+
+				Ptr<WfStatement> CreateInferredVariableStatement(const WString& name, Ptr<WfExpression> expression)
+				{
+					return CreateVariableStatement(name, nullptr, expression);
+				}
+
+				Ptr<WfStatement> CreateIf(Ptr<WfExpression> condition, Ptr<WfStatement> trueBranch, Ptr<WfStatement> falseBranch)
+				{
+					auto statement = Ptr(new WfIfStatement);
+					statement->expression = condition;
+					statement->trueBranch = trueBranch;
+					statement->falseBranch = falseBranch;
+					return statement;
+				}
+
+				Ptr<WfStatement> CreateTry(Ptr<WfStatement> protectedStatement, const WString& name, Ptr<WfStatement> catchStatement, Ptr<WfStatement> finallyStatement)
+				{
+					auto statement = Ptr(new WfTryStatement);
+					statement->protectedStatement = protectedStatement;
+					statement->name.value = name;
+					statement->catchStatement = catchStatement;
+					statement->finallyStatement = finallyStatement;
+					return statement;
+				}
+
+				Ptr<WfStatement> CreateTryCatch(Ptr<WfStatement> protectedStatement, const WString& name, Ptr<WfStatement> catchStatement)
+				{
+					return CreateTry(protectedStatement, name, catchStatement, nullptr);
+				}
+
+				Ptr<WfForEachStatement> CreateForEach(const WString& name, Ptr<WfExpression> collection, Ptr<WfStatement> body)
+				{
+					auto statement = Ptr(new WfForEachStatement);
+					statement->name.value = name;
+					statement->direction = WfForEachDirection::Normal;
+					statement->collection = collection;
+					statement->statement = body;
+					return statement;
+				}
+
+				Ptr<WfStatement> CreateWhile(Ptr<WfExpression> condition, Ptr<WfStatement> body)
+				{
+					auto statement = Ptr(new WfWhileStatement);
+					statement->condition = condition;
+					statement->statement = body;
+					return statement;
+				}
+
+				Ptr<WfBlockStatement> CreateBlock()
+				{
+					return Ptr(new WfBlockStatement);
+				}
+
+				void AddStatement(Ptr<WfBlockStatement> block, Ptr<WfStatement> statement)
+				{
+					block->statements.Add(statement);
+				}
+
+				void AddRpcMethodExceptionRaise(Ptr<WfBlockStatement> block, Ptr<WfExpression> value)
+				{
+					AddStatement(
+						block,
+						CreateExpressionStatement(CreateCall(
+							CreateQualifiedExpression(L"system::IRpcLifecycle::ReadMethodException"),
+							value)));
+				}
+
+				void AddRpcEventExceptionMapSet(Ptr<WfBlockStatement> block, const WString& mapName, Ptr<WfExpression> clientId, Ptr<WfExpression> message)
+				{
+					AddStatement(block, CreateExpressionStatement(CreateCall(
+						CreateMember(CreateReference(mapName), L"Set"),
+						clientId,
+						CreateRpcExceptionExpression(message))));
+				}
+
+				void AddRpcEventExceptionRaise(Ptr<WfBlockStatement> block, Ptr<WfExpression> value)
+				{
+					AddStatement(
+						block,
+						CreateExpressionStatement(CreateCall(
+							CreateQualifiedExpression(L"system::IRpcLifecycle::ReadEventException"),
+							value)));
+				}
+
+				Ptr<WfFunctionArgument> CreateFunctionArgument(const WString& name, Ptr<WfType> type)
+				{
+					auto argument = Ptr(new WfFunctionArgument);
+					argument->name.value = name;
+					argument->type = type;
+					return argument;
+				}
+
+				Ptr<WfFunctionDeclaration> CreateFunctionDeclaration(const WString& name, Ptr<WfType> returnType, WfFunctionKind kind, WfFunctionAnonymity anonymity)
+				{
+					auto declaration = Ptr(new WfFunctionDeclaration);
+					declaration->name.value = name;
+					declaration->returnType = returnType;
+					declaration->functionKind = kind;
+					declaration->anonymity = anonymity;
+					declaration->statement = CreateBlock();
+					return declaration;
+				}
+
+				Ptr<WfExpression> CreateFunctionExpression(Ptr<WfFunctionDeclaration> declaration)
+				{
+					auto expression = Ptr(new WfFunctionExpression);
+					expression->function = declaration;
+					return expression;
+				}
+
+				Ptr<WfClassDeclaration> CreateClassDeclaration(const WString& name)
+				{
+					auto declaration = Ptr(new WfClassDeclaration);
+					declaration->name.value = name;
+					declaration->kind = WfClassKind::Class;
+					declaration->constructorType = WfConstructorType::Undefined;
+					return declaration;
+				}
+
+				Ptr<WfConstructorDeclaration> CreateConstructorDeclaration(WfConstructorType constructorType)
+				{
+					auto declaration = Ptr(new WfConstructorDeclaration);
+					declaration->constructorType = constructorType;
+					declaration->statement = CreateBlock();
+					return declaration;
+				}
+
+				void AddSwitchCase(Ptr<WfSwitchStatement> switchStat, Ptr<WfExpression> expression, Ptr<WfStatement> statement)
+				{
+					auto switchCase = Ptr(new WfSwitchCase);
+					switchCase->expression = expression;
+					switchCase->statement = statement;
+					switchStat->caseBranches.Add(switchCase);
+				}
+			}
+		}
+	}
+}
+
+
+/***********************************************************************
+.\ANALYZER\RPC\WFANALYZER_VALIDATERPC.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace analyzer
+		{
+			namespace rpc_compiling
+			{
+				using namespace collections;
+				using namespace reflection;
+				using namespace reflection::description;
+
+/***********************************************************************
+ValidateModuleRPC_Ast
+***********************************************************************/
+
+				enum class RpcDeferredKind
+				{
+					Cached,
+					Dynamic,
+					ByvalProperty,
+					ByrefProperty,
+					ByvalMethod,
+					ByrefMethod,
+					ByvalParameter,
+					ByrefParameter,
+				};
+
+				struct RpcDeferredCheck
+				{
+					RpcDeferredKind							kind = RpcDeferredKind::Cached;
+					WfAttribute*							attribute = nullptr;
+					ITypeDescriptor*						ownerTd = nullptr;
+					WfPropertyDeclaration*					propertyDecl = nullptr;
+					WfFunctionDeclaration*					methodDecl = nullptr;
+					WfFunctionArgument*						parameterDecl = nullptr;
+				};
+
+				struct RpcPhase1Context
+				{
+					SortedList<ITypeDescriptor*>										workflowRpcInterfaceTds;
+					Dictionary<Pair<ITypeDescriptor*, ITypeDescriptor*>, WfType*>		baseTypeNodeMap;
+					List<RpcDeferredCheck>												deferredChecks;
+				};
+
+				bool IsRpcAttribute(WfAttribute* attribute, const wchar_t* name)
+				{
+					return attribute
+						&& attribute->category.value == L"rpc"
+						&& attribute->name.value == name;
+				}
+
+				bool HasRpcAttribute(List<Ptr<WfAttribute>>& attributes, const wchar_t* name)
+				{
+					for (auto attribute : attributes)
+					{
+						if (IsRpcAttribute(attribute.Obj(), name))
+						{
+							return true;
+						}
+					}
+					return false;
+				}
+
+				bool HasEarlierRpcAttribute(List<Ptr<WfAttribute>>& attributes, WfAttribute* currentAttribute, const wchar_t* name)
+				{
+					for (auto attribute : attributes)
+					{
+						if (attribute.Obj() == currentAttribute)
+						{
+							break;
+						}
+
+						if (IsRpcAttribute(attribute.Obj(), name))
+						{
+							return true;
+						}
+					}
+					return false;
+				}
+
+				ITypeDescriptor* GetClassTypeDescriptor(WfLexicalScopeManager* manager, WfClassDeclaration* classDecl)
+				{
+					if (!classDecl)
+					{
+						return nullptr;
+					}
+					return manager->declarationTypes[classDecl].Obj();
+				}
+
+				WfPropertyDeclaration* GetRpcPropertyDeclaration(WfDeclaration* declaration)
+				{
+					if (auto propertyDecl = dynamic_cast<WfPropertyDeclaration*>(declaration))
+					{
+						return propertyDecl;
+					}
+
+					if (auto autoPropertyDecl = dynamic_cast<WfAutoPropertyDeclaration*>(declaration))
+					{
+						for (auto expandedDeclaration : autoPropertyDecl->expandedDeclarations)
+						{
+							if (auto propertyDecl = expandedDeclaration.Cast<WfPropertyDeclaration>())
+							{
+								return propertyDecl.Obj();
+							}
+						}
+					}
+
+					return nullptr;
+				}
+
+				WString GetDeclarationFullName(WfLexicalScopeManager* manager, WfDeclaration* declaration, WfClassDeclaration* ownerClassDecl)
+				{
+					if (auto classDecl = dynamic_cast<WfClassDeclaration*>(declaration))
+					{
+						if (auto td = GetClassTypeDescriptor(manager, classDecl))
+						{
+							return td->GetTypeName();
+						}
+					}
+
+					if (auto ownerTd = GetClassTypeDescriptor(manager, ownerClassDecl))
+					{
+						if (declaration)
+						{
+							return ownerTd->GetTypeName() + L"." + declaration->name.value;
+						}
+						return ownerTd->GetTypeName();
+					}
+
+					if (declaration && declaration->name.value != L"")
+					{
+						return declaration->name.value;
+					}
+
+					return L"<anonymous>";
+				}
+
+				WString GetAttributeTargetFullName(WfLexicalScopeManager* manager, WfDeclaration* declaration, WfFunctionArgument* argument, WfClassDeclaration* ownerClassDecl)
+				{
+					auto ownerTd = GetClassTypeDescriptor(manager, ownerClassDecl);
+					auto ownerPrefix = ownerTd ? ownerTd->GetTypeName() + L"." : WString();
+
+					if (argument && declaration)
+					{
+						return ownerPrefix + declaration->name.value + L"(" + argument->name.value + L")";
+					}
+					else if (declaration)
+					{
+						return ownerPrefix + declaration->name.value;
+					}
+					else if (argument)
+					{
+						return ownerPrefix + argument->name.value;
+					}
+					else
+					{
+						return ownerTd ? ownerTd->GetTypeName() : WString(L"<unknown>");
+					}
+				}
+
+				bool ContainsFunctionType(WfType* type)
+				{
+					class V : public Object, public WfType::IVisitor
+					{
+					public:
+						bool found = false;
+
+						void Visit(WfFunctionType* node)override { found = true; }
+						void Visit(WfRawPointerType* node)override { node->element->Accept(this); }
+						void Visit(WfSharedPointerType* node)override { node->element->Accept(this); }
+						void Visit(WfNullableType* node)override { node->element->Accept(this); }
+						void Visit(WfEnumerableType* node)override { node->element->Accept(this); }
+						void Visit(WfMapType* node)override { if (node->key) node->key->Accept(this); node->value->Accept(this); }
+						void Visit(WfObservableListType* node)override { node->element->Accept(this); }
+						void Visit(WfChildType* node)override { node->parent->Accept(this); }
+						void Visit(WfPredefinedType* node)override {}
+						void Visit(WfTopQualifiedType* node)override {}
+						void Visit(WfReferenceType* node)override {}
+					};
+
+					V visitor;
+					type->Accept(&visitor);
+					return visitor.found;
+				}
+
+				bool IsGenericRpcInterface(WfClassDeclaration* classDecl)
+				{
+					if (!classDecl || classDecl->kind != WfClassKind::Interface)
+					{
+						return false;
+					}
+
+					for (auto baseType : classDecl->baseTypes)
+					{
+						if (ContainsFunctionType(baseType.Obj()))
+						{
+							return true;
+						}
+					}
+					return false;
+				}
+
+				bool IsAstRpcInterface(WfClassDeclaration* classDecl)
+				{
+					return classDecl
+						&& classDecl->kind == WfClassKind::Interface
+						&& !IsGenericRpcInterface(classDecl)
+						&& HasRpcAttribute(classDecl->attributes, L"Interface");
+				}
+
+				void CollectAllWorkflowRpcInterfaceTds(WfLexicalScopeManager* manager, SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					for (vint i = 0; i < manager->declarationTypes.Count(); i++)
+					{
+						auto classDecl = manager->declarationTypes.Keys()[i].Cast<WfClassDeclaration>();
+						if (!classDecl || !IsAstRpcInterface(classDecl.Obj()))
+						{
+							continue;
+						}
+
+						auto td = manager->declarationTypes.Values()[i].Obj();
+						if (td && !rpcInterfaceTds.Contains(td))
+						{
+							rpcInterfaceTds.Add(td);
+						}
+					}
+				}
+
+				void BuildMemberDeclarationMap(WfLexicalScopeManager* manager, Dictionary<IMemberInfo*, Ptr<WfDeclaration>>& memberDeclMap)
+				{
+					for (vint i = 0; i < manager->declarationMemberInfos.Count(); i++)
+					{
+						auto memberInfo = manager->declarationMemberInfos.Values()[i].Obj();
+						if (memberInfo && !memberDeclMap.Keys().Contains(memberInfo))
+						{
+							memberDeclMap.Add(memberInfo, manager->declarationMemberInfos.Keys()[i]);
+						}
+					}
+				}
+
+				Ptr<WfFunctionArgument> FindFunctionArgument(WfFunctionDeclaration* functionDecl, const WString& parameterName, vint index)
+				{
+					if (!functionDecl)
+					{
+						return nullptr;
+					}
+
+					for (auto argument : functionDecl->arguments)
+					{
+						if (argument->name.value == parameterName)
+						{
+							return argument;
+						}
+					}
+
+					if (0 <= index && index < functionDecl->arguments.Count())
+					{
+						return functionDecl->arguments[index];
+					}
+
+					return nullptr;
+				}
+
+				bool HasAttribute(IAttributeBag* bag, ITypeDescriptor* attrTd)
+				{
+					if (!bag || !attrTd)
+					{
+						return false;
+					}
+
+					for (vint i = 0; i < bag->GetAttributeCount(); i++)
+					{
+						if (bag->GetAttribute(i)->GetAttributeType() == attrTd) return true;
+					}
+					return false;
+				}
+
+				bool IsRpcInterfaceTd(ITypeDescriptor* td, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					if (!td) return false;
+					if (rpcInterfaceTds.Contains(td)) return true;
+					return HasAttribute(td, rpcInterfaceAttrTd);
+				}
+
+				bool IsStrongTypedCollection(ITypeInfo* type)
+				{
+					if (!type || type->GetDecorator() != ITypeInfo::SharedPtr) return false;
+					auto genericType = type->GetElementType();
+					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return false;
+
+					auto collectionType = genericType->GetElementType();
+					if (!collectionType || collectionType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
+
+					auto collectionTd = collectionType->GetTypeDescriptor();
+					if (collectionTd == GetTypeDescriptor<IValueEnumerable>()
+						|| collectionTd == GetTypeDescriptor<IValueReadonlyList>()
+						|| collectionTd == GetTypeDescriptor<IValueList>()
+						|| collectionTd == GetTypeDescriptor<IValueObservableList>())
+					{
+						return genericType->GetGenericArgumentCount() == 1;
+					}
+
+					if (collectionTd == GetTypeDescriptor<IValueReadonlyDictionary>()
+						|| collectionTd == GetTypeDescriptor<IValueDictionary>())
+					{
+						return genericType->GetGenericArgumentCount() == 2;
+					}
+
+					switch (type->GetHint())
+					{
+					case TypeInfoHint::LazyList:
+					case TypeInfoHint::Array:
+					case TypeInfoHint::List:
+						return genericType->GetGenericArgumentCount() == 1;
+					case TypeInfoHint::Dictionary:
+						return genericType->GetGenericArgumentCount() == 2;
+					default:
+						return false;
+					}
+				}
+
+				Ptr<WfAttribute> CreateRpcAttribute(const WString& name)
+				{
+					auto attribute = Ptr(new WfAttribute);
+					attribute->category.value = L"rpc";
+					attribute->name.value = name;
+					return attribute;
+				}
+
+				Ptr<WfAttribute> CreateRpcAttribute(const WString& name, Ptr<WfExpression> value)
+				{
+					auto attribute = CreateRpcAttribute(name);
+					attribute->value = value;
+					return attribute;
+				}
+
+				void EnsureRpcAttribute(List<Ptr<WfAttribute>>& attributes, const WString& name)
+				{
+					if (!HasRpcAttribute(attributes, name.Buffer()))
+					{
+						attributes.Add(CreateRpcAttribute(name));
+					}
+				}
+
+				ITypeInfo* GetStrongTypedCollectionElementType(ITypeInfo* type)
+				{
+					if (!IsStrongTypedCollection(type)) return nullptr;
+					auto genericType = type->GetElementType();
+					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return nullptr;
+					switch (genericType->GetGenericArgumentCount())
+					{
+					case 1:
+						return genericType->GetGenericArgument(0);
+					case 2:
+						return genericType->GetGenericArgument(1);
+					default:
+						return nullptr;
+					}
+				}
+
+				bool IsObservableStrongTypedCollection(ITypeInfo* type)
+				{
+					if (!IsStrongTypedCollection(type)) return false;
+					auto genericType = type->GetElementType();
+					if (!genericType || genericType->GetDecorator() != ITypeInfo::Generic) return false;
+					auto collectionType = genericType->GetElementType();
+					if (!collectionType || collectionType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
+					return collectionType->GetTypeDescriptor() == GetTypeDescriptor<IValueObservableList>();
+				}
+
+				bool IsRpcInterfaceSharedType(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					if (!type || type->GetDecorator() != ITypeInfo::SharedPtr) return false;
+					auto elementType = type->GetElementType();
+					if (!elementType || elementType->GetDecorator() != ITypeInfo::TypeDescriptor) return false;
+					auto td = elementType->GetTypeDescriptor();
+					return td
+						&& (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::Interface) != TypeDescriptorFlags::Undefined
+						&& IsRpcInterfaceTd(td, rpcInterfaceAttrTd, rpcInterfaceTds);
+				}
+
+				bool IsStrongTypedCollectionContainingRpcInterface(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					auto elementType = GetStrongTypedCollectionElementType(type);
+					if (!elementType) return false;
+					return IsRpcInterfaceSharedType(elementType, rpcInterfaceAttrTd, rpcInterfaceTds)
+						|| IsStrongTypedCollectionContainingRpcInterface(elementType, rpcInterfaceAttrTd, rpcInterfaceTds);
+				}
+
+				WString GetDefaultRpcTransferAttribute(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					if (!IsStrongTypedCollection(type)) return L"";
+					if (IsObservableStrongTypedCollection(type)
+						|| IsStrongTypedCollectionContainingRpcInterface(type, rpcInterfaceAttrTd, rpcInterfaceTds))
+					{
+						return L"Byref";
+					}
+					return L"Byval";
+				}
+
+				bool IsSerializableType(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					if (!type) return false;
+					switch (type->GetDecorator())
+					{
+					case ITypeInfo::Nullable:
+						return IsSerializableType(type->GetElementType(), rpcInterfaceAttrTd, rpcInterfaceTds);
+
+					case ITypeInfo::SharedPtr:
+						{
+							auto e = type->GetElementType();
+							if (!e) return false;
+
+							if (e->GetDecorator() == ITypeInfo::Generic)
+							{
+								if (!IsStrongTypedCollection(type)) return false;
+								for (vint i = 0; i < e->GetGenericArgumentCount(); i++)
+								{
+									if (!IsSerializableType(e->GetGenericArgument(i), rpcInterfaceAttrTd, rpcInterfaceTds)) return false;
+								}
+								return true;
+							}
+
+							if (e->GetDecorator() == ITypeInfo::TypeDescriptor)
+							{
+								auto td = e->GetTypeDescriptor();
+								return (td->GetTypeDescriptorFlags() & TypeDescriptorFlags::Interface) != TypeDescriptorFlags::Undefined
+									&& IsRpcInterfaceTd(td, rpcInterfaceAttrTd, rpcInterfaceTds);
+							}
+
+							return false;
+						}
+
+					case ITypeInfo::TypeDescriptor:
+						{
+							auto td = type->GetTypeDescriptor();
+							if (td == GetTypeDescriptor<void>()) return false;
+							switch (td->GetTypeDescriptorFlags())
+							{
+							case TypeDescriptorFlags::Primitive:
+							case TypeDescriptorFlags::Struct:
+							case TypeDescriptorFlags::FlagEnum:
+							case TypeDescriptorFlags::NormalEnum:
+								return true;
+							default:
+								return false;
+							}
+						}
+
+					default:
+						return false;
+					}
+				}
+
+				bool IsSerializableReturnType(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					if (!type) return false;
+					if (type->GetDecorator() == ITypeInfo::TypeDescriptor && type->GetTypeDescriptor() == GetTypeDescriptor<void>()) return true;
+					return IsSerializableType(type, rpcInterfaceAttrTd, rpcInterfaceTds);
+				}
+
+				ITypeDescriptor* GetReservedRpcType(ITypeInfo* type)
+				{
+					if (!type) return nullptr;
+					switch (type->GetDecorator())
+					{
+					case ITypeInfo::Nullable:
+					case ITypeInfo::RawPtr:
+						return GetReservedRpcType(type->GetElementType());
+					case ITypeInfo::SharedPtr:
+						{
+							auto elementType = type->GetElementType();
+							if (!elementType) return nullptr;
+							if (elementType->GetDecorator() == ITypeInfo::Generic)
+							{
+								for (vint i = 0; i < elementType->GetGenericArgumentCount(); i++)
+								{
+									if (auto td = GetReservedRpcType(elementType->GetGenericArgument(i)))
+									{
+										return td;
+									}
+								}
+								return nullptr;
+							}
+							return GetReservedRpcType(elementType);
+						}
+					case ITypeInfo::TypeDescriptor:
+						{
+							auto td = type->GetTypeDescriptor();
+							if (td == GetTypeDescriptor<vl::rpc_controller::RpcObjectReference>()
+								|| td == GetTypeDescriptor<vl::rpc_controller::RpcException>())
+							{
+								return td;
+							}
+							return nullptr;
+						}
+					default:
+						return nullptr;
+					}
+				}
+
+				WString GetReservedRpcTypeName(ITypeInfo* type)
+				{
+					if (auto td = GetReservedRpcType(type))
+					{
+						return td->GetTypeName();
+					}
+					return L"";
+				}
+
+				WString GetDeferredAttributeName(RpcDeferredKind kind)
+				{
+					switch (kind)
+					{
+					case RpcDeferredKind::Cached:			return L"Cached";
+					case RpcDeferredKind::Dynamic:			return L"Dynamic";
+					case RpcDeferredKind::ByvalProperty:
+					case RpcDeferredKind::ByvalMethod:
+					case RpcDeferredKind::ByvalParameter:	return L"Byval";
+					case RpcDeferredKind::ByrefProperty:
+					case RpcDeferredKind::ByrefMethod:
+					case RpcDeferredKind::ByrefParameter:	return L"Byref";
+					default:								return L"";
+					}
+				}
+
+				void ValidateModuleRPC_Ast(WfLexicalScopeManager* manager, Ptr<WfModule> module, RpcPhase1Context& context)
+				{
+					class Visitor
+						: public Object
+						, public WfDeclaration::IVisitor
+						, public WfVirtualCseDeclaration::IVisitor
+					{
+					public:
+						WfLexicalScopeManager*					manager;
+						RpcPhase1Context&						context;
+						WfClassDeclaration*						currentClassDecl = nullptr;
+
+						Visitor(WfLexicalScopeManager* _manager, RpcPhase1Context& _context)
+							:manager(_manager)
+							, context(_context)
+						{
+						}
+
+						void VisitDeclaration(Ptr<WfDeclaration> declaration)
+						{
+							ProcessAttributes(declaration->attributes, declaration.Obj(), nullptr);
+							declaration->Accept(this);
+						}
+
+						void ProcessAttributes(List<Ptr<WfAttribute>>& attributes, WfDeclaration* declaration, WfFunctionArgument* argument)
+						{
+							for (auto attribute : attributes)
+							{
+								auto name = attribute->name.value;
+								if (attribute->category.value != L"rpc")
+								{
+									continue;
+								}
+
+								if (name == L"Interface")
+								{
+									auto classDecl = dynamic_cast<WfClassDeclaration*>(declaration);
+									if (!classDecl || classDecl->kind != WfClassKind::Interface || IsGenericRpcInterface(classDecl))
+									{
+										manager->errors.Add(WfErrors::RpcInterfaceCanOnlyApplyToInterface(attribute.Obj(), GetDeclarationFullName(manager, declaration, currentClassDecl)));
+										continue;
+									}
+
+									auto td = manager->declarationTypes[classDecl].Obj();
+									if (td && !context.workflowRpcInterfaceTds.Contains(td))
+									{
+										context.workflowRpcInterfaceTds.Add(td);
+
+										auto scope = manager->nodeScopes[classDecl];
+										for (auto baseType : classDecl->baseTypes)
+										{
+											auto scopeName = GetScopeNameFromReferenceType(scope->parentScope.Obj(), baseType);
+											if (scopeName && scopeName->typeDescriptor)
+											{
+												auto key = Pair(td, scopeName->typeDescriptor);
+												if (!context.baseTypeNodeMap.Keys().Contains(key))
+												{
+													context.baseTypeNodeMap.Add(key, baseType.Obj());
+												}
+											}
+										}
+									}
+								}
+								else if (name == L"Ctor")
+								{
+									auto classDecl = dynamic_cast<WfClassDeclaration*>(declaration);
+									if (!classDecl || !IsAstRpcInterface(classDecl))
+									{
+										manager->errors.Add(WfErrors::RpcCtorCanOnlyApplyToRpcInterface(attribute.Obj()));
+									}
+								}
+								else if (name == L"Byval" || name == L"Byref")
+								{
+									auto propertyDecl = GetRpcPropertyDeclaration(declaration);
+									auto isProperty = propertyDecl != nullptr;
+									auto isMethod = dynamic_cast<WfFunctionDeclaration*>(declaration) != nullptr;
+									auto isParameter = argument != nullptr && isMethod;
+									if (!isProperty && !isMethod && !isParameter)
+									{
+										manager->errors.Add(WfErrors::RpcAttributeCanOnlyApplyToPropertyMethodOrParameter(attribute.Obj(), name));
+										continue;
+									}
+
+									if (name == L"Byref" && HasEarlierRpcAttribute(attributes, attribute.Obj(), L"Byval"))
+									{
+										manager->errors.Add(WfErrors::RpcAttributeCannotCoexistWithOther(attribute.Obj(), name, L"Byval", GetAttributeTargetFullName(manager, declaration, argument, currentClassDecl)));
+										continue;
+									}
+
+									if (name == L"Byval" && HasEarlierRpcAttribute(attributes, attribute.Obj(), L"Byref"))
+									{
+										manager->errors.Add(WfErrors::RpcAttributeCannotCoexistWithOther(attribute.Obj(), name, L"Byref", GetAttributeTargetFullName(manager, declaration, argument, currentClassDecl)));
+										continue;
+									}
+
+									if (!IsAstRpcInterface(currentClassDecl))
+									{
+										manager->errors.Add(WfErrors::RpcAttributeCanOnlyBeUsedInsideRpcInterface(attribute.Obj(), name));
+										continue;
+									}
+
+									RpcDeferredCheck check;
+									check.attribute = attribute.Obj();
+									check.ownerTd = GetClassTypeDescriptor(manager, currentClassDecl);
+									check.propertyDecl = propertyDecl;
+									check.methodDecl = dynamic_cast<WfFunctionDeclaration*>(declaration);
+									check.parameterDecl = argument;
+									check.kind =
+										isParameter ? (name == L"Byval" ? RpcDeferredKind::ByvalParameter : RpcDeferredKind::ByrefParameter) :
+										isMethod ? (name == L"Byval" ? RpcDeferredKind::ByvalMethod : RpcDeferredKind::ByrefMethod) :
+										(name == L"Byval" ? RpcDeferredKind::ByvalProperty : RpcDeferredKind::ByrefProperty);
+									context.deferredChecks.Add(check);
+								}
+								else if (name == L"Cached" || name == L"Dynamic")
+								{
+									auto propertyDecl = GetRpcPropertyDeclaration(declaration);
+									if (!propertyDecl)
+									{
+										manager->errors.Add(WfErrors::RpcAttributeCanOnlyApplyToProperty(attribute.Obj(), name));
+										continue;
+									}
+
+									if (name == L"Dynamic" && HasEarlierRpcAttribute(attributes, attribute.Obj(), L"Cached"))
+									{
+										manager->errors.Add(WfErrors::RpcAttributeCannotCoexistWithOther(attribute.Obj(), name, L"Cached", GetAttributeTargetFullName(manager, declaration, argument, currentClassDecl)));
+										continue;
+									}
+
+									if (name == L"Cached" && HasEarlierRpcAttribute(attributes, attribute.Obj(), L"Dynamic"))
+									{
+										manager->errors.Add(WfErrors::RpcAttributeCannotCoexistWithOther(attribute.Obj(), name, L"Dynamic", GetAttributeTargetFullName(manager, declaration, argument, currentClassDecl)));
+										continue;
+									}
+
+									RpcDeferredCheck check;
+									check.kind = name == L"Cached" ? RpcDeferredKind::Cached : RpcDeferredKind::Dynamic;
+									check.attribute = attribute.Obj();
+									check.ownerTd = GetClassTypeDescriptor(manager, currentClassDecl);
+									check.propertyDecl = propertyDecl;
+									context.deferredChecks.Add(check);
+								}
+							}
+						}
+
+						void Visit(WfNamespaceDeclaration* node)override
+						{
+							for (auto declaration : node->declarations)
+							{
+								VisitDeclaration(declaration);
+							}
+						}
+
+						void Visit(WfFunctionDeclaration* node)override
+						{
+							for (auto argument : node->arguments)
+							{
+								ProcessAttributes(argument->attributes, node, argument.Obj());
+							}
+						}
+
+						void Visit(WfVariableDeclaration* node)override
+						{
+						}
+
+						void Visit(WfEventDeclaration* node)override
+						{
+						}
+
+						void Visit(WfPropertyDeclaration* node)override
+						{
+						}
+
+						void Visit(WfStaticInitDeclaration* node)override
+						{
+						}
+
+						void Visit(WfConstructorDeclaration* node)override
+						{
+						}
+
+						void Visit(WfDestructorDeclaration* node)override
+						{
+						}
+
+						void Visit(WfClassDeclaration* node)override
+						{
+							auto oldClassDecl = currentClassDecl;
+							currentClassDecl = node;
+							for (auto declaration : node->declarations)
+							{
+								VisitDeclaration(declaration);
+							}
+							currentClassDecl = oldClassDecl;
+						}
+
+						void Visit(WfEnumDeclaration* node)override
+						{
+							for (auto item : node->items)
+							{
+								ProcessAttributes(item->attributes, nullptr, nullptr);
+							}
+						}
+
+						void Visit(WfStructDeclaration* node)override
+						{
+							for (auto member : node->members)
+							{
+								ProcessAttributes(member->attributes, nullptr, nullptr);
+							}
+						}
+
+						void Visit(WfVirtualCfeDeclaration* node)override
+						{
+							for (auto declaration : node->expandedDeclarations)
+							{
+								VisitDeclaration(declaration);
+							}
+						}
+
+						void Visit(WfVirtualCseDeclaration* node)override
+						{
+							node->Accept((WfVirtualCseDeclaration::IVisitor*)this);
+							for (auto declaration : node->expandedDeclarations)
+							{
+								VisitDeclaration(declaration);
+							}
+						}
+
+						void Visit(WfStateMachineDeclaration* node)override
+						{
+						}
+					};
+
+					Visitor visitor(manager, context);
+					for (auto declaration : module->declarations)
+					{
+						visitor.VisitDeclaration(declaration);
+					}
+				}
+
+/***********************************************************************
+ValidateModuleRPC_Reflection
+***********************************************************************/
+
+				void ValidateModuleRPC_Reflection(WfLexicalScopeManager* manager, const RpcPhase1Context& context)
+				{
+					auto rpcInterfaceAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Interface>();
+					SortedList<ITypeDescriptor*> allWorkflowRpcInterfaceTds;
+					for (auto td : context.workflowRpcInterfaceTds)
+					{
+						if (!allWorkflowRpcInterfaceTds.Contains(td))
+						{
+							allWorkflowRpcInterfaceTds.Add(td);
+						}
+					}
+					CollectAllWorkflowRpcInterfaceTds(manager, allWorkflowRpcInterfaceTds);
+
+					Dictionary<IMemberInfo*, Ptr<WfDeclaration>> memberDeclMap;
+					BuildMemberDeclarationMap(manager, memberDeclMap);
+
+					for (auto td : context.workflowRpcInterfaceTds)
+					{
+						for (vint i = 0; i < td->GetBaseTypeDescriptorCount(); i++)
+						{
+							auto baseTd = td->GetBaseTypeDescriptor(i);
+							if (!IsRpcInterfaceTd(baseTd, rpcInterfaceAttrTd, allWorkflowRpcInterfaceTds))
+							{
+								auto key = Pair(td, baseTd);
+								auto index = context.baseTypeNodeMap.Keys().IndexOf(key);
+								if (index != -1)
+								{
+									manager->errors.Add(WfErrors::RpcInterfaceBaseNotSerializable(context.baseTypeNodeMap.Values()[index], td->GetTypeName(), baseTd->GetTypeName()));
+								}
+							}
+						}
+
+						for (vint i = 0; i < td->GetPropertyCount(); i++)
+						{
+							auto propertyInfo = td->GetProperty(i);
+							if (propertyInfo->GetOwnerTypeDescriptor() != td)
+							{
+								continue;
+							}
+
+							if (!IsSerializableType(propertyInfo->GetReturn(), rpcInterfaceAttrTd, allWorkflowRpcInterfaceTds))
+							{
+								auto declIndex = memberDeclMap.Keys().IndexOf(propertyInfo);
+								if (declIndex != -1)
+								{
+									manager->errors.Add(WfErrors::RpcInterfaceMemberNotSerializable(memberDeclMap.Values()[declIndex].Obj(), td->GetTypeName(), td->GetTypeName() + L"." + propertyInfo->GetName()));
+								}
+							}
+							else if (auto typeName = GetReservedRpcTypeName(propertyInfo->GetReturn()); typeName != L"")
+							{
+								auto declIndex = memberDeclMap.Keys().IndexOf(propertyInfo);
+								if (declIndex != -1)
+								{
+									manager->errors.Add(WfErrors::RpcReservedTypeInReturnValue(memberDeclMap.Values()[declIndex].Obj(), td->GetTypeName(), td->GetTypeName() + L"." + propertyInfo->GetName(), typeName));
+								}
+							}
+						}
+
+						for (vint i = 0; i < td->GetMethodGroupCount(); i++)
+						{
+							auto group = td->GetMethodGroup(i);
+							if (group->GetOwnerTypeDescriptor() != td)
+							{
+								continue;
+							}
+
+							for (vint j = 0; j < group->GetMethodCount(); j++)
+							{
+								auto methodInfo = group->GetMethod(j);
+								auto declIndex = memberDeclMap.Keys().IndexOf(methodInfo);
+								if (declIndex == -1)
+								{
+									continue;
+								}
+
+								auto functionDecl = memberDeclMap.Values()[declIndex].Cast<WfFunctionDeclaration>();
+								if (!functionDecl)
+								{
+									continue;
+								}
+
+								for (vint k = 0; k < methodInfo->GetParameterCount(); k++)
+								{
+									auto parameterInfo = methodInfo->GetParameter(k);
+									if (auto typeName = GetReservedRpcTypeName(parameterInfo->GetType()); typeName != L"")
+									{
+										if (auto argument = FindFunctionArgument(functionDecl.Obj(), parameterInfo->GetName(), k))
+										{
+											manager->errors.Add(WfErrors::RpcReservedTypeInFunctionArgument(argument.Obj(), td->GetTypeName(), td->GetTypeName() + L"." + methodInfo->GetName() + L"(" + parameterInfo->GetName() + L")", typeName));
+										}
+									}
+									else if (!IsSerializableType(parameterInfo->GetType(), rpcInterfaceAttrTd, allWorkflowRpcInterfaceTds))
+									{
+										if (auto argument = FindFunctionArgument(functionDecl.Obj(), parameterInfo->GetName(), k))
+										{
+											manager->errors.Add(WfErrors::RpcInterfaceMemberNotSerializable(argument.Obj(), td->GetTypeName(), td->GetTypeName() + L"." + methodInfo->GetName() + L"(" + parameterInfo->GetName() + L")"));
+										}
+									}
+								}
+
+								if (auto typeName = GetReservedRpcTypeName(methodInfo->GetReturn()); typeName != L"")
+								{
+									manager->errors.Add(WfErrors::RpcReservedTypeInReturnValue(functionDecl.Obj(), td->GetTypeName(), td->GetTypeName() + L"." + methodInfo->GetName(), typeName));
+								}
+								else if (!IsSerializableReturnType(methodInfo->GetReturn(), rpcInterfaceAttrTd, allWorkflowRpcInterfaceTds))
+								{
+									manager->errors.Add(WfErrors::RpcInterfaceMemberNotSerializable(functionDecl.Obj(), td->GetTypeName(), td->GetTypeName() + L"." + methodInfo->GetName()));
+								}
+							}
+						}
+
+						for (vint i = 0; i < td->GetEventCount(); i++)
+						{
+							auto eventInfo = td->GetEvent(i);
+							if (eventInfo->GetOwnerTypeDescriptor() != td)
+							{
+								continue;
+							}
+
+							Ptr<WfEventDeclaration> eventDecl;
+							auto declIndex = memberDeclMap.Keys().IndexOf(eventInfo);
+							if (declIndex != -1)
+							{
+								eventDecl = memberDeclMap.Values()[declIndex].Cast<WfEventDeclaration>();
+							}
+							auto handlerType = eventInfo->GetHandlerType();
+							if (handlerType && handlerType->GetDecorator() == ITypeInfo::SharedPtr)
+							{
+								auto genericType = handlerType->GetElementType();
+								if (genericType && genericType->GetDecorator() == ITypeInfo::Generic)
+								{
+									for (vint j = 1; j < genericType->GetGenericArgumentCount(); j++)
+									{
+										if (auto typeName = GetReservedRpcTypeName(genericType->GetGenericArgument(j)); typeName != L"")
+										{
+											if (eventDecl && j - 1 < eventDecl->arguments.Count())
+											{
+												manager->errors.Add(WfErrors::RpcReservedTypeInEventArgument(eventDecl->arguments[j - 1].Obj(), td->GetTypeName(), td->GetTypeName() + L"." + eventInfo->GetName() + L"(" + itow(j - 1) + L")", typeName));
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+
+					for (auto&& check : context.deferredChecks)
+					{
+						auto attributeName = GetDeferredAttributeName(check.kind);
+						switch (check.kind)
+						{
+						case RpcDeferredKind::Cached:
+						case RpcDeferredKind::Dynamic:
+							if (!IsRpcInterfaceTd(check.ownerTd, rpcInterfaceAttrTd, allWorkflowRpcInterfaceTds))
+							{
+								manager->errors.Add(WfErrors::RpcAttributeCanOnlyBeUsedInsideRpcInterface(check.attribute, attributeName));
+							}
+							break;
+						default:
+							{
+								ITypeInfo* targetType = nullptr;
+								WString memberName;
+
+								switch (check.kind)
+								{
+								case RpcDeferredKind::ByvalProperty:
+								case RpcDeferredKind::ByrefProperty:
+									{
+										auto propertyInfo = manager->declarationMemberInfos[check.propertyDecl].Cast<IPropertyInfo>();
+										targetType = propertyInfo ? propertyInfo->GetReturn() : nullptr;
+										if (propertyInfo && check.ownerTd)
+										{
+											memberName = check.ownerTd->GetTypeName() + L"." + propertyInfo->GetName();
+										}
+									}
+									break;
+								case RpcDeferredKind::ByvalMethod:
+								case RpcDeferredKind::ByrefMethod:
+									{
+										auto methodInfo = manager->declarationMemberInfos[check.methodDecl].Cast<IMethodInfo>();
+										targetType = methodInfo ? methodInfo->GetReturn() : nullptr;
+										if (methodInfo && check.ownerTd)
+										{
+											memberName = check.ownerTd->GetTypeName() + L"." + methodInfo->GetName();
+										}
+									}
+									break;
+								case RpcDeferredKind::ByvalParameter:
+								case RpcDeferredKind::ByrefParameter:
+									{
+										auto methodInfo = manager->declarationMemberInfos[check.methodDecl].Cast<IMethodInfo>();
+										if (methodInfo)
+										{
+											for (vint i = 0; i < methodInfo->GetParameterCount(); i++)
+											{
+												auto parameterInfo = methodInfo->GetParameter(i);
+												if (parameterInfo->GetName() == check.parameterDecl->name.value)
+												{
+													targetType = parameterInfo->GetType();
+													if (check.ownerTd)
+													{
+														memberName = check.ownerTd->GetTypeName() + L"." + methodInfo->GetName() + L"(" + parameterInfo->GetName() + L")";
+													}
+													break;
+												}
+											}
+										}
+									}
+									break;
+								default:
+									break;
+								}
+
+								if (!IsStrongTypedCollection(targetType))
+								{
+									manager->errors.Add(WfErrors::RpcAttributeRequiresStrongTypedCollection(check.attribute, attributeName, memberName));
+								}
+							}
+							break;
+						}
+					}
+				}
+
+/***********************************************************************
+ValidateModuleRPC_GenerateMetadata
+***********************************************************************/
+
+				bool IsGeneratedRpcIdAttribute(const WString& category, const WString& name)
+				{
+					return category == L"rpc" && (name == L"IdString" || name == L"IdNumber");
+				}
+
+				void GenerateAttributesFromBag(IAttributeBag* bag, List<Ptr<WfAttribute>>& attributes)
+				{
+					if (!bag) return;
+					for (vint i = 0; i < bag->GetAttributeCount(); i++)
+					{
+						auto attrInfo = bag->GetAttribute(i);
+						auto attrTd = attrInfo->GetAttributeType();
+						if (!attrTd) continue;
+
+						WString typeName = attrTd->GetTypeName();
+						const wchar_t* reading = typeName.Buffer();
+						const wchar_t* simpleName = reading;
+						while (true)
+						{
+							auto delimiter = wcsstr(simpleName, L"::");
+							if (!delimiter) break;
+							simpleName = delimiter + 2;
+						}
+
+						if (wcsncmp(simpleName, L"att_", 4) != 0) continue;
+						auto afterAtt = simpleName + 4;
+						auto underscore = wcschr(afterAtt, L'_');
+						if (!underscore) continue;
+
+						auto attr = Ptr(new WfAttribute);
+						attr->category.value = WString::CopyFrom(afterAtt, vint(underscore - afterAtt));
+						attr->name.value = underscore + 1;
+						if (IsGeneratedRpcIdAttribute(attr->category.value, attr->name.value))
+						{
+							continue;
+						}
+						attributes.Add(attr);
+					}
+				}
+
+				void AddOrderedRpcId(WfRpcMetadata* metadata, const WString& fullName)
+				{
+					if (!metadata->orderedIds.Contains(fullName))
+					{
+						metadata->orderedIds.Add(fullName);
+					}
+				}
+
+				void AddGeneratedRpcIdAttributes(WfRpcMetadata* metadata, const WString& fullName, List<Ptr<WfAttribute>>& attributes)
+				{
+					auto id = metadata->orderedIds.IndexOf(fullName);
+					CHECK_ERROR(id != -1, L"RPC metadata ID list does not contain a generated RPC full name.");
+					attributes.Add(CreateRpcAttribute(L"IdString", rpc_generating::CreateString(fullName)));
+					attributes.Add(CreateRpcAttribute(L"IdNumber", rpc_generating::CreateInt(id)));
+				}
+
+				void AddGeneratedRpcIdAttributes(WfRpcMetadata* metadata)
+				{
+					for (vint i = 0; i < metadata->typeNames.Count(); i++)
+					{
+						AddGeneratedRpcIdAttributes(metadata, metadata->typeNames.Keys()[i], metadata->typeNames.Values()[i]->attributes);
+					}
+					for (vint i = 0; i < metadata->methodNames.Count(); i++)
+					{
+						AddGeneratedRpcIdAttributes(metadata, metadata->methodNames.Keys()[i], metadata->methodNames.Values()[i]->attributes);
+					}
+					for (vint i = 0; i < metadata->eventNames.Count(); i++)
+					{
+						AddGeneratedRpcIdAttributes(metadata, metadata->eventNames.Keys()[i], metadata->eventNames.Values()[i]->attributes);
+					}
+				}
+
+				void CollectSerializableTypesFromTypeInfo(
+					ITypeInfo* typeInfo,
+					SortedList<ITypeDescriptor*>& collectedEnums,
+					SortedList<ITypeDescriptor*>& collectedStructs,
+					List<ITypeDescriptor*>& structVisitOrder,
+					const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					if (!typeInfo) return;
+					switch (typeInfo->GetDecorator())
+					{
+					case ITypeInfo::SharedPtr:
+						{
+							auto e = typeInfo->GetElementType();
+							if (!e) return;
+							if (e->GetDecorator() == ITypeInfo::Generic)
+							{
+								for (vint i = 0; i < e->GetGenericArgumentCount(); i++)
+								{
+									CollectSerializableTypesFromTypeInfo(e->GetGenericArgument(i), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
+								}
+							}
+						}
+						break;
+					case ITypeInfo::TypeDescriptor:
+						{
+							auto td = typeInfo->GetTypeDescriptor();
+							if (!td) return;
+							switch (td->GetTypeDescriptorFlags())
+							{
+							case TypeDescriptorFlags::FlagEnum:
+							case TypeDescriptorFlags::NormalEnum:
+								if (!collectedEnums.Contains(td))
+								{
+									collectedEnums.Add(td);
+								}
+								break;
+							case TypeDescriptorFlags::Struct:
+								if (!collectedStructs.Contains(td))
+								{
+									collectedStructs.Add(td);
+									// Recursively collect types used by struct members
+									for (vint i = 0; i < td->GetPropertyCount(); i++)
+									{
+										CollectSerializableTypesFromTypeInfo(td->GetProperty(i)->GetReturn(), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
+									}
+									structVisitOrder.Add(td);
+								}
+								break;
+							default:
+								break;
+							}
+						}
+						break;
+					default:
+						break;
+					}
+				}
+
+				void CollectTypesFromInterface(
+					ITypeDescriptor* td,
+					SortedList<ITypeDescriptor*>& collectedEnums,
+					SortedList<ITypeDescriptor*>& collectedStructs,
+					List<ITypeDescriptor*>& structVisitOrder,
+					const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					for (vint i = 0; i < td->GetPropertyCount(); i++)
+					{
+						auto propertyInfo = td->GetProperty(i);
+						if (propertyInfo->GetOwnerTypeDescriptor() != td) continue;
+						CollectSerializableTypesFromTypeInfo(propertyInfo->GetReturn(), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
+					}
+
+					for (vint i = 0; i < td->GetMethodGroupCount(); i++)
+					{
+						auto group = td->GetMethodGroup(i);
+						if (group->GetOwnerTypeDescriptor() != td) continue;
+						for (vint j = 0; j < group->GetMethodCount(); j++)
+						{
+							auto methodInfo = group->GetMethod(j);
+							CollectSerializableTypesFromTypeInfo(methodInfo->GetReturn(), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
+							for (vint k = 0; k < methodInfo->GetParameterCount(); k++)
+							{
+								CollectSerializableTypesFromTypeInfo(methodInfo->GetParameter(k)->GetType(), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
+							}
+						}
+					}
+
+					for (vint i = 0; i < td->GetEventCount(); i++)
+					{
+						auto eventInfo = td->GetEvent(i);
+						if (eventInfo->GetOwnerTypeDescriptor() != td) continue;
+						auto handlerType = eventInfo->GetHandlerType();
+						if (handlerType && handlerType->GetDecorator() == ITypeInfo::SharedPtr)
+						{
+							auto genericType = handlerType->GetElementType();
+							if (genericType && genericType->GetDecorator() == ITypeInfo::Generic)
+							{
+								for (vint j = 1; j < genericType->GetGenericArgumentCount(); j++)
+								{
+									CollectSerializableTypesFromTypeInfo(genericType->GetGenericArgument(j), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
+								}
+							}
+						}
+					}
+				}
+
+				Ptr<WfEnumDeclaration> GenerateEnumDecl(ITypeDescriptor* td)
+				{
+					auto enumType = td->GetEnumType();
+					if (!enumType) return nullptr;
+
+					auto decl = Ptr(new WfEnumDeclaration);
+					List<WString> fragments;
+					GetTypeFragments(td, fragments);
+					decl->name.value = fragments[fragments.Count() - 1];
+					decl->kind = enumType->IsFlagEnum() ? WfEnumKind::Flag : WfEnumKind::Normal;
+
+					// Collect items sorted by value
+					List<Pair<WString, vuint64_t>> items;
+					for (vint i = 0; i < enumType->GetItemCount(); i++)
+					{
+						items.Add({ enumType->GetItemName(i), enumType->GetItemValue(i) });
+					}
+					if (items.Count() > 1)
+					{
+						Sort(&items[0], items.Count(), [](const Pair<WString, vuint64_t>& a, const Pair<WString, vuint64_t>& b)
+						{
+							return (a.value <=> b.value);
+						});
+					}
+
+					if (enumType->IsFlagEnum())
+					{
+						// Build a map from power-of-2 values to item names
+						Dictionary<vuint64_t, WString> powerOf2Names;
+
+						// First pass: add constant items (0 and powers of 2)
+						for (auto&& [name, value] : items)
+						{
+							if (value == 0 || (value != 0 && (value & (value - 1)) == 0))
+							{
+								auto item = Ptr(new WfEnumItem);
+								item->name.value = name;
+								item->kind = WfEnumItemKind::Constant;
+								item->number.value = u64tow(value);
+								decl->items.Add(item);
+								powerOf2Names.Add(value, name);
+							}
+						}
+
+						// Second pass: add intersection items (composite values)
+						for (auto&& [name, value] : items)
+						{
+							if (value != 0 && (value & (value - 1)) != 0)
+							{
+								auto item = Ptr(new WfEnumItem);
+								item->name.value = name;
+								item->kind = WfEnumItemKind::Intersection;
+								for (vint bit = 0; bit < 64; bit++)
+								{
+									auto mask = (vuint64_t)1 << bit;
+									if (value & mask)
+									{
+										auto nameIndex = powerOf2Names.Keys().IndexOf(mask);
+										if (nameIndex != -1)
+										{
+											auto intersection = Ptr(new WfEnumItemIntersection);
+											intersection->name.value = powerOf2Names.Values()[nameIndex];
+											item->intersections.Add(intersection);
+										}
+									}
+								}
+								decl->items.Add(item);
+							}
+						}
+					}
+					else
+					{
+						for (auto&& [name, value] : items)
+						{
+							auto item = Ptr(new WfEnumItem);
+							item->name.value = name;
+							item->kind = WfEnumItemKind::Constant;
+							item->number.value = u64tow(value);
+							decl->items.Add(item);
+						}
+					}
+					return decl;
+				}
+
+				Ptr<WfStructDeclaration> GenerateStructDecl(ITypeDescriptor* td)
+				{
+					auto decl = Ptr(new WfStructDeclaration);
+					List<WString> fragments;
+					GetTypeFragments(td, fragments);
+					decl->name.value = fragments[fragments.Count() - 1];
+
+					for (vint i = 0; i < td->GetPropertyCount(); i++)
+					{
+						auto propertyInfo = td->GetProperty(i);
+						auto member = Ptr(new WfStructMember);
+						member->name.value = propertyInfo->GetName();
+						member->type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
+						decl->members.Add(member);
+					}
+					return decl;
+				}
+
+				Ptr<WfClassDeclaration> GenerateInterfaceDecl(ITypeDescriptor* td, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
+				{
+					auto decl = Ptr(new WfClassDeclaration);
+					Dictionary<WString, WString> getterTransferAttributes;
+					Dictionary<WString, WString> setterTransferAttributes;
+					List<WString> fragments;
+					GetTypeFragments(td, fragments);
+					decl->name.value = fragments[fragments.Count() - 1];
+					decl->kind = WfClassKind::Interface;
+
+					// Determine constructor type from reflection
+					if (auto ctorGroup = td->GetConstructorGroup())
+					{
+						if (ctorGroup->GetMethodCount() > 0)
+						{
+							auto ctorReturn = ctorGroup->GetMethod(0)->GetReturn();
+							if (ctorReturn && ctorReturn->GetDecorator() == ITypeInfo::RawPtr)
+							{
+								decl->constructorType = WfConstructorType::RawPtr;
+							}
+							else
+							{
+								decl->constructorType = WfConstructorType::SharedPtr;
+							}
+						}
+					}
+
+					// Generate attributes from reflection
+					GenerateAttributesFromBag(td, decl->attributes);
+
+					// Generate base types from reflection (only RPC interfaces, skip implicit IDescriptable)
+					for (vint i = 0; i < td->GetBaseTypeDescriptorCount(); i++)
+					{
+						auto baseTd = td->GetBaseTypeDescriptor(i);
+						if (!IsRpcInterfaceTd(baseTd, rpcInterfaceAttrTd, rpcInterfaceTds)) continue;
+
+						auto parentType = GetTypeFromTypeDescriptor(baseTd);
+						if (parentType)
+						{
+							decl->baseTypes.Add(parentType);
+						}
+					}
+
+					// Generate properties from reflection
+					for (vint i = 0; i < td->GetPropertyCount(); i++)
+					{
+						auto propertyInfo = td->GetProperty(i);
+						if (propertyInfo->GetOwnerTypeDescriptor() != td) continue;
+
+						auto propDecl = Ptr(new WfPropertyDeclaration);
+						propDecl->name.value = propertyInfo->GetName();
+						propDecl->type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
+
+						if (auto getter = propertyInfo->GetGetter())
+						{
+							propDecl->getter.value = getter->GetName();
+						}
+						if (auto setter = propertyInfo->GetSetter())
+						{
+							propDecl->setter.value = setter->GetName();
+						}
+						if (auto valueChangedEvent = propertyInfo->GetValueChangedEvent())
+						{
+							propDecl->valueChangedEvent.value = valueChangedEvent->GetName();
+						}
+
+						GenerateAttributesFromBag(propertyInfo, propDecl->attributes);
+						if (!HasRpcAttribute(propDecl->attributes, L"Cached") && !HasRpcAttribute(propDecl->attributes, L"Dynamic"))
+						{
+							EnsureRpcAttribute(propDecl->attributes, L"Cached");
+						}
+
+						auto transferAttribute = GetDefaultRpcTransferAttribute(propertyInfo->GetReturn(), rpcInterfaceAttrTd, rpcInterfaceTds);
+						if (transferAttribute != L"")
+						{
+							if (HasRpcAttribute(propDecl->attributes, L"Byref"))
+							{
+								transferAttribute = L"Byref";
+							}
+							else if (HasRpcAttribute(propDecl->attributes, L"Byval"))
+							{
+								transferAttribute = L"Byval";
+							}
+
+							if (propDecl->getter.value != L"")
+							{
+								auto getterIndex = getterTransferAttributes.Keys().IndexOf(propDecl->getter.value);
+								if (getterIndex == -1)
+								{
+									getterTransferAttributes.Add(propDecl->getter.value, transferAttribute);
+								}
+								else
+								{
+									getterTransferAttributes.Set(propDecl->getter.value, transferAttribute);
+								}
+							}
+
+							if (propDecl->setter.value != L"")
+							{
+								auto setterIndex = setterTransferAttributes.Keys().IndexOf(propDecl->setter.value);
+								if (setterIndex == -1)
+								{
+									setterTransferAttributes.Add(propDecl->setter.value, transferAttribute);
+								}
+								else
+								{
+									setterTransferAttributes.Set(propDecl->setter.value, transferAttribute);
+								}
+							}
+						}
+						decl->declarations.Add(propDecl);
+					}
+
+					// Generate events from reflection
+					for (vint i = 0; i < td->GetEventCount(); i++)
+					{
+						auto eventInfo = td->GetEvent(i);
+						if (eventInfo->GetOwnerTypeDescriptor() != td) continue;
+
+						auto eventDecl = Ptr(new WfEventDeclaration);
+						eventDecl->name.value = eventInfo->GetName();
+
+						// Extract event argument types from handler type
+						auto handlerType = eventInfo->GetHandlerType();
+						if (handlerType && handlerType->GetDecorator() == ITypeInfo::SharedPtr)
+						{
+							auto genericType = handlerType->GetElementType();
+							if (genericType && genericType->GetDecorator() == ITypeInfo::Generic)
+							{
+								for (vint j = 1; j < genericType->GetGenericArgumentCount(); j++)
+								{
+									auto argType = GetTypeFromTypeInfo(genericType->GetGenericArgument(j));
+									if (argType)
+									{
+										eventDecl->arguments.Add(argType);
+									}
+								}
+							}
+						}
+
+						GenerateAttributesFromBag(eventInfo, eventDecl->attributes);
+						decl->declarations.Add(eventDecl);
+					}
+
+					// Generate methods from reflection
+					for (vint i = 0; i < td->GetMethodGroupCount(); i++)
+					{
+						auto group = td->GetMethodGroup(i);
+						if (group->GetOwnerTypeDescriptor() != td) continue;
+
+						for (vint j = 0; j < group->GetMethodCount(); j++)
+						{
+							auto methodInfo = group->GetMethod(j);
+							if (methodInfo->GetOwnerProperty()) continue;
+
+							auto funcDecl = Ptr(new WfFunctionDeclaration);
+							funcDecl->name.value = methodInfo->GetName();
+							funcDecl->anonymity = WfFunctionAnonymity::Named;
+							funcDecl->functionKind = WfFunctionKind::Normal;
+							funcDecl->returnType = GetTypeFromTypeInfo(methodInfo->GetReturn());
+
+							for (vint k = 0; k < methodInfo->GetParameterCount(); k++)
+							{
+								auto parameterInfo = methodInfo->GetParameter(k);
+								auto argument = Ptr(new WfFunctionArgument);
+								argument->name.value = parameterInfo->GetName();
+								argument->type = GetTypeFromTypeInfo(parameterInfo->GetType());
+								GenerateAttributesFromBag(parameterInfo, argument->attributes);
+								if (!HasRpcAttribute(argument->attributes, L"Byref") && !HasRpcAttribute(argument->attributes, L"Byval"))
+								{
+									WString transferAttribute;
+									if (k == 0)
+									{
+										auto setterIndex = setterTransferAttributes.Keys().IndexOf(methodInfo->GetName());
+										if (setterIndex != -1)
+										{
+											transferAttribute = setterTransferAttributes.Values()[setterIndex];
+										}
+									}
+									if (transferAttribute == L"")
+									{
+										transferAttribute = GetDefaultRpcTransferAttribute(parameterInfo->GetType(), rpcInterfaceAttrTd, rpcInterfaceTds);
+									}
+									if (transferAttribute != L"")
+									{
+										EnsureRpcAttribute(argument->attributes, transferAttribute);
+									}
+								}
+								funcDecl->arguments.Add(argument);
+							}
+
+							GenerateAttributesFromBag(methodInfo, funcDecl->attributes);
+							if (!HasRpcAttribute(funcDecl->attributes, L"Byref") && !HasRpcAttribute(funcDecl->attributes, L"Byval"))
+							{
+								WString transferAttribute;
+								auto getterIndex = getterTransferAttributes.Keys().IndexOf(methodInfo->GetName());
+								if (getterIndex != -1)
+								{
+									transferAttribute = getterTransferAttributes.Values()[getterIndex];
+								}
+								if (transferAttribute == L"")
+								{
+									transferAttribute = GetDefaultRpcTransferAttribute(methodInfo->GetReturn(), rpcInterfaceAttrTd, rpcInterfaceTds);
+								}
+								if (transferAttribute != L"")
+								{
+									EnsureRpcAttribute(funcDecl->attributes, transferAttribute);
+								}
+							}
+							decl->declarations.Add(funcDecl);
+						}
+					}
+
+					return decl;
+				}
+
+				Ptr<WfNamespaceDeclaration> EnsureNamespace(
+					List<Ptr<WfDeclaration>>& rootDeclarations,
+					Dictionary<WString, Ptr<WfNamespaceDeclaration>>& namespaceMap,
+					const List<WString>& fragments)
+				{
+					if (fragments.Count() <= 1)
+					{
+						return nullptr;
+					}
+
+					WString currentPath;
+					Ptr<WfNamespaceDeclaration> currentNs;
+					List<Ptr<WfDeclaration>>* currentList = &rootDeclarations;
+
+					for (vint i = 0; i < fragments.Count() - 1; i++)
+					{
+						if (currentPath.Length() > 0)
+						{
+							currentPath = currentPath + L"::" + fragments[i];
+						}
+						else
+						{
+							currentPath = fragments[i];
+						}
+
+						auto index = namespaceMap.Keys().IndexOf(currentPath);
+						if (index != -1)
+						{
+							currentNs = namespaceMap.Values()[index];
+							currentList = &currentNs->declarations;
+						}
+						else
+						{
+							auto ns = Ptr(new WfNamespaceDeclaration);
+							ns->name.value = fragments[i];
+							currentList->Add(ns);
+							namespaceMap.Add(currentPath, ns);
+							currentNs = ns;
+							currentList = &ns->declarations;
+						}
+					}
+
+					return currentNs;
+				}
+
+				void AddDeclToModule(
+					List<Ptr<WfDeclaration>>& rootDeclarations,
+					Dictionary<WString, Ptr<WfNamespaceDeclaration>>& namespaceMap,
+					ITypeDescriptor* td,
+					Ptr<WfDeclaration> decl)
+				{
+					List<WString> fragments;
+					GetTypeFragments(td, fragments);
+
+					auto ns = EnsureNamespace(rootDeclarations, namespaceMap, fragments);
+					if (ns)
+					{
+						ns->declarations.Add(decl);
+					}
+					else
+					{
+						rootDeclarations.Add(decl);
+					}
+				}
+
+				void CollectOrderedRpcInterfaces(
+					WfLexicalScopeManager* manager,
+					const List<Ptr<WfDeclaration>>& declarations,
+					const SortedList<ITypeDescriptor*>& rpcInterfaceTds,
+					List<ITypeDescriptor*>& orderedInterfaces)
+				{
+					for (auto decl : declarations)
+					{
+						if (auto classDecl = decl.Cast<WfClassDeclaration>())
+						{
+							auto td = GetClassTypeDescriptor(manager, classDecl.Obj());
+							if (td && rpcInterfaceTds.Contains(td) && !orderedInterfaces.Contains(td))
+							{
+								orderedInterfaces.Add(td);
+							}
+							CollectOrderedRpcInterfaces(manager, classDecl->declarations, rpcInterfaceTds, orderedInterfaces);
+						}
+						else if (auto nsDecl = decl.Cast<WfNamespaceDeclaration>())
+						{
+							CollectOrderedRpcInterfaces(manager, nsDecl->declarations, rpcInterfaceTds, orderedInterfaces);
+						}
+					}
+				}
+
+				WfClassDeclaration* FindRpcInterfaceDeclaration(WfLexicalScopeManager* manager, ITypeDescriptor* td)
+				{
+					for (vint i = 0; i < manager->declarationTypes.Count(); i++)
+					{
+						if (manager->declarationTypes.Values()[i].Obj() == td)
+						{
+							if (auto classDecl = manager->declarationTypes.Keys()[i].Cast<WfClassDeclaration>())
+							{
+								return classDecl.Obj();
+							}
+						}
+					}
+					return nullptr;
+				}
+
+				WfFunctionDeclaration* GetGeneratedMethodByOccurrence(WfClassDeclaration* interfaceDecl, const WString& name, vint occurrence)
+				{
+					vint index = 0;
+					for (auto decl : interfaceDecl->declarations)
+					{
+						if (auto methodDecl = decl.Cast<WfFunctionDeclaration>())
+						{
+							if (methodDecl->name.value == name)
+							{
+								if (index++ == occurrence)
+								{
+									return methodDecl.Obj();
+								}
+							}
+						}
+					}
+					return nullptr;
+				}
+
+				WfEventDeclaration* GetGeneratedEventByOccurrence(WfClassDeclaration* interfaceDecl, const WString& name, vint occurrence)
+				{
+					vint index = 0;
+					for (auto decl : interfaceDecl->declarations)
+					{
+						if (auto eventDecl = decl.Cast<WfEventDeclaration>())
+						{
+							if (eventDecl->name.value == name)
+							{
+								if (index++ == occurrence)
+								{
+									return eventDecl.Obj();
+								}
+							}
+						}
+					}
+					return nullptr;
+				}
+
+				WString MakeRpcMethodFullName(const WString& typeFullName, WfFunctionDeclaration* methodDecl, bool appendArgNames)
+				{
+					auto name = typeFullName + L"." + methodDecl->name.value;
+					if (appendArgNames)
+					{
+						name += L"(";
+						for (vint i = 0; i < methodDecl->arguments.Count(); i++)
+						{
+							if (i > 0)
+							{
+								name += L",";
+							}
+							name += methodDecl->arguments[i]->name.value;
+						}
+						name += L")";
+					}
+					return name;
+				}
+
+				void ValidateModuleRPC_GenerateMetadata(WfLexicalScopeManager* manager, Ptr<WfModule> module, const RpcPhase1Context& context)
+				{
+					auto rpcInterfaceAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Interface>();
+					SortedList<ITypeDescriptor*> allRpcInterfaceTds;
+					for (auto td : context.workflowRpcInterfaceTds)
+					{
+						if (!allRpcInterfaceTds.Contains(td))
+						{
+							allRpcInterfaceTds.Add(td);
+						}
+					}
+					CollectAllWorkflowRpcInterfaceTds(manager, allRpcInterfaceTds);
+
+					// Collect all enum and struct types used by RPC interfaces
+					SortedList<ITypeDescriptor*> collectedEnums;
+					SortedList<ITypeDescriptor*> collectedStructs;
+					List<ITypeDescriptor*> structVisitOrder;
+
+					for (auto td : context.workflowRpcInterfaceTds)
+					{
+						CollectTypesFromInterface(td, collectedEnums, collectedStructs, structVisitOrder, context.workflowRpcInterfaceTds);
+					}
+
+					// Sort enums by name
+					List<ITypeDescriptor*> sortedEnums;
+					for (auto td : collectedEnums)
+					{
+						sortedEnums.Add(td);
+					}
+					if (sortedEnums.Count() > 1)
+					{
+						Sort(&sortedEnums[0], sortedEnums.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
+						{
+							return wcscmp(a->GetTypeName().Buffer(), b->GetTypeName().Buffer()) <=> 0;
+						});
+					}
+
+					// Collect RPC interfaces in AST order
+					List<ITypeDescriptor*> orderedInterfaces;
+					CollectOrderedRpcInterfaces(manager, module->declarations, context.workflowRpcInterfaceTds, orderedInterfaces);
+
+					// Build the metadata module
+					auto metadataModule = Ptr(new WfModule);
+					metadataModule->moduleType = WfModuleType::Module;
+					metadataModule->name.value = L"RpcMetadata";
+					manager->rpcMetadata = Ptr(new WfRpcMetadata);
+
+					List<Ptr<WfDeclaration>> rootDeclarations;
+					Dictionary<WString, Ptr<WfNamespaceDeclaration>> namespaceMap;
+
+					// Add enums (sorted by name)
+					for (auto td : sortedEnums)
+					{
+						auto decl = GenerateEnumDecl(td);
+						if (decl)
+						{
+							AddDeclToModule(rootDeclarations, namespaceMap, td, decl);
+						}
+					}
+
+					// Add structs (sorted by visiting order - dependency correct)
+					for (auto td : structVisitOrder)
+					{
+						auto decl = GenerateStructDecl(td);
+						if (decl)
+						{
+							AddDeclToModule(rootDeclarations, namespaceMap, td, decl);
+						}
+					}
+
+					// Add interfaces (sorted by AST order)
+					for (auto td : orderedInterfaces)
+					{
+						auto decl = GenerateInterfaceDecl(td, rpcInterfaceAttrTd, allRpcInterfaceTds);
+						if (decl)
+						{
+							AddDeclToModule(rootDeclarations, namespaceMap, td, decl);
+
+							auto typeFullName = td->GetTypeName();
+							if (manager->rpcMetadata->typeNames.Keys().Contains(typeFullName))
+							{
+								manager->errors.Add(WfErrors::RpcGeneratedNameConflict(decl.Obj(), L"type", typeFullName));
+							}
+							else
+							{
+								manager->rpcMetadata->typeNames.Add(typeFullName, decl.Obj());
+								manager->rpcMetadata->typeFullNames.Add(typeFullName);
+								AddOrderedRpcId(manager->rpcMetadata.Obj(), typeFullName);
+							}
+
+							auto sourceDecl = FindRpcInterfaceDeclaration(manager, td);
+							if (!sourceDecl)
+							{
+								continue;
+							}
+
+							List<WfFunctionDeclaration*> orderedMethods;
+							List<WfFunctionDeclaration*> generatedMethods;
+							List<WfEventDeclaration*> orderedEvents;
+							List<WfEventDeclaration*> generatedEvents;
+							Dictionary<WString, vint> methodNameCounters;
+							Dictionary<WString, vint> eventNameCounters;
+
+							auto collectSourceMember = [&](WfDeclaration* memberDecl)
+							{
+								if (auto methodDecl = dynamic_cast<WfFunctionDeclaration*>(memberDecl))
+								{
+									auto name = methodDecl->name.value;
+									auto nameIndex = methodNameCounters.Keys().IndexOf(name);
+									auto occurrence = nameIndex == -1 ? 0 : methodNameCounters.Values()[nameIndex];
+									auto generatedMethod = GetGeneratedMethodByOccurrence(decl.Obj(), name, occurrence);
+									if (generatedMethod)
+									{
+										orderedMethods.Add(methodDecl);
+										generatedMethods.Add(generatedMethod);
+									}
+
+									if (nameIndex == -1)
+									{
+										methodNameCounters.Add(name, 1);
+									}
+									else
+									{
+										methodNameCounters.Set(name, occurrence + 1);
+									}
+								}
+								else if (auto eventDecl = dynamic_cast<WfEventDeclaration*>(memberDecl))
+								{
+									auto name = eventDecl->name.value;
+									auto nameIndex = eventNameCounters.Keys().IndexOf(name);
+									auto occurrence = nameIndex == -1 ? 0 : eventNameCounters.Values()[nameIndex];
+									auto generatedEvent = GetGeneratedEventByOccurrence(decl.Obj(), name, occurrence);
+									if (generatedEvent)
+									{
+										orderedEvents.Add(eventDecl);
+										generatedEvents.Add(generatedEvent);
+									}
+
+									if (nameIndex == -1)
+									{
+										eventNameCounters.Add(name, 1);
+									}
+									else
+									{
+										eventNameCounters.Set(name, occurrence + 1);
+									}
+								}
+							};
+
+							for (auto memberDecl : sourceDecl->declarations)
+							{
+								collectSourceMember(memberDecl.Obj());
+								if (auto virtualCfeDecl = memberDecl.Cast<WfVirtualCfeDeclaration>())
+								{
+									for (auto expandedDecl : virtualCfeDecl->expandedDeclarations)
+									{
+										collectSourceMember(expandedDecl.Obj());
+									}
+								}
+							}
+
+							SortedList<WString> processedMethodBaseNames;
+							for (vint i = 0; i < orderedMethods.Count(); i++)
+							{
+								auto baseName = MakeRpcMethodFullName(typeFullName, orderedMethods[i], false);
+								if (processedMethodBaseNames.Contains(baseName))
+								{
+									continue;
+								}
+								processedMethodBaseNames.Add(baseName);
+
+								List<vint> methodIndexes;
+								List<WString> candidateNames;
+								for (vint j = 0; j < orderedMethods.Count(); j++)
+								{
+									if (MakeRpcMethodFullName(typeFullName, orderedMethods[j], false) == baseName)
+									{
+										methodIndexes.Add(j);
+										candidateNames.Add(MakeRpcMethodFullName(typeFullName, orderedMethods[j], true));
+									}
+								}
+
+								if (methodIndexes.Count() == 1)
+								{
+									candidateNames[0] = baseName;
+								}
+								else
+								{
+									List<vint> duplicateCounts;
+									for (vint j = 0; j < candidateNames.Count(); j++)
+									{
+										vint duplicateCount = 0;
+										for (vint k = 0; k < candidateNames.Count(); k++)
+										{
+											if (candidateNames[j] == candidateNames[k])
+											{
+												duplicateCount++;
+											}
+										}
+										duplicateCounts.Add(duplicateCount);
+									}
+
+									Dictionary<WString, vint> duplicateIndexes;
+									for (vint j = 0; j < candidateNames.Count(); j++)
+									{
+										if (duplicateCounts[j] <= 1)
+										{
+											continue;
+										}
+
+										auto duplicateName = candidateNames[j];
+										auto duplicateIndex = duplicateIndexes.Keys().IndexOf(duplicateName);
+										auto occurrence = duplicateIndex == -1 ? 1 : duplicateIndexes.Values()[duplicateIndex] + 1;
+										if (duplicateIndex == -1)
+										{
+											duplicateIndexes.Add(duplicateName, occurrence);
+										}
+										else
+										{
+											duplicateIndexes.Set(duplicateName, occurrence);
+										}
+										candidateNames[j] = duplicateName + L"." + itow(occurrence);
+									}
+								}
+
+								for (vint j = 0; j < methodIndexes.Count(); j++)
+								{
+									auto finalName = candidateNames[j];
+									auto generatedMethod = generatedMethods[methodIndexes[j]];
+									if (manager->rpcMetadata->methodNames.Keys().Contains(finalName))
+									{
+										manager->errors.Add(WfErrors::RpcGeneratedNameConflict(generatedMethod, L"method", finalName));
+									}
+									else
+									{
+										manager->rpcMetadata->methodNames.Add(finalName, generatedMethod);
+										manager->rpcMetadata->methodFullNames.Add(finalName);
+										AddOrderedRpcId(manager->rpcMetadata.Obj(), finalName);
+									}
+								}
+							}
+
+							for (vint i = 0; i < orderedEvents.Count(); i++)
+							{
+								auto finalName = typeFullName + L"." + orderedEvents[i]->name.value;
+								auto generatedEvent = generatedEvents[i];
+								if (manager->rpcMetadata->eventNames.Keys().Contains(finalName))
+								{
+									manager->errors.Add(WfErrors::RpcGeneratedNameConflict(generatedEvent, L"event", finalName));
+								}
+								else
+								{
+									manager->rpcMetadata->eventNames.Add(finalName, generatedEvent);
+									manager->rpcMetadata->eventFullNames.Add(finalName);
+									AddOrderedRpcId(manager->rpcMetadata.Obj(), finalName);
+								}
+							}
+						}
+					}
+
+					AddGeneratedRpcIdAttributes(manager->rpcMetadata.Obj());
+
+					for (auto decl : rootDeclarations)
+					{
+						metadataModule->declarations.Add(decl);
+					}
+
+					manager->rpcMetadata->metadataModule = metadataModule;
+				}
+			}
+
+/***********************************************************************
+PopulateAttributesOnTypeDescriptors
+***********************************************************************/
+
+			namespace attribute_populating
+			{
+				using namespace collections;
+				using namespace reflection;
+				using namespace reflection::description;
+
+				Value EvaluateAttributeLiteralExpression(WfLexicalScopeManager* manager, Ptr<WfExpression> expr, ITypeDescriptor* argumentTd)
+				{
+					if (auto literalExpr = expr.Cast<WfLiteralExpression>())
+					{
+						switch (literalExpr->value)
+						{
+						case WfLiteralValue::True:	return BoxValue(true);
+						case WfLiteralValue::False:	return BoxValue(false);
+						default:					return Value();
+						}
+					}
+					else if (auto stringExpr = expr.Cast<WfStringExpression>())
+					{
+						Value output;
+						argumentTd->GetSerializableType()->Deserialize(stringExpr->value.value, output);
+						return output;
+					}
+					else if (auto intExpr = expr.Cast<WfIntegerExpression>())
+					{
+						Value output;
+						argumentTd->GetSerializableType()->Deserialize(intExpr->value.value, output);
+						return output;
+					}
+					else if (auto floatExpr = expr.Cast<WfFloatingExpression>())
+					{
+						Value output;
+						argumentTd->GetSerializableType()->Deserialize(floatExpr->value.value, output);
+						return output;
+					}
+					else if (auto typeOfExpr = expr.Cast<WfTypeOfTypeExpression>())
+					{
+						auto scope = manager->nodeScopes[typeOfExpr.Obj()].Obj();
+						auto type = CreateTypeInfoFromType(scope, typeOfExpr->type, false);
+						auto td = type->GetTypeDescriptor();
+						if (argumentTd->GetSerializableType())
+						{
+							Value output;
+							argumentTd->GetSerializableType()->Deserialize(td->GetTypeName(), output);
+							return output;
+						}
+						return BoxValue<ITypeDescriptor*>(td);
+					}
+					else
+					{
+						auto&& result = manager->expressionResolvings[expr.Obj()];
+						if (auto enumType = result.type->GetTypeDescriptor()->GetEnumType())
+						{
+							auto refExpr = expr.Cast<WfReferenceExpression>();
+							auto childExpr = expr.Cast<WfChildExpression>();
+							WString name = refExpr ? refExpr->name.value : (childExpr ? childExpr->name.value : WString::Empty);
+							vint index = enumType->IndexOfItem(name);
+							if (index != -1)
+							{
+								return enumType->ToEnum(enumType->GetItemValue(index));
+							}
+						}
+						return Value();
+					}
+				}
+
+				void PopulateAttributesOnBag(
+					WfLexicalScopeManager* manager,
+					TypeDescriptorImplBase* td,
+					IMemberInfo* memberInfo,
+					List<Ptr<WfAttribute>>& atts
+				)
+				{
+					for (auto att : atts)
+					{
+						auto info = manager->ResolveWorkflowAttribute(att->category.value, att->name.value);
+						if (!info.exists || !info.attributeType) continue;
+
+						auto attInfo = Ptr(new AttributeInfoImpl(info.attributeType));
+						if (info.hasArgument && att->value)
+						{
+							auto valueTypeTd = info.argumentType->GetTypeDescriptor();
+							auto boxedValue = EvaluateAttributeLiteralExpression(manager, att->value, valueTypeTd);
+							attInfo->AddValue(valueTypeTd, boxedValue);
+						}
+						td->RegisterAttribute(memberInfo, attInfo);
+					}
+				}
+			}
+
+			void PopulateAttributesOnTypeDescriptors(WfLexicalScopeManager* manager)
+			{
+				using namespace collections;
+				using namespace reflection;
+				using namespace reflection::description;
+
+				for (auto [decl, index] : indexed(manager->declarationTypes.Keys()))
+				{
+					auto td = manager->declarationTypes.Values()[index];
+					auto tdImpl = dynamic_cast<TypeDescriptorImplBase*>(td.Obj());
+					if (!tdImpl) continue;
+
+					// Type-level attributes
+					attribute_populating::PopulateAttributesOnBag(manager, tdImpl, nullptr, decl->attributes);
+
+					// Member attributes for class/interface
+					if (auto classDecl = decl.Cast<WfClassDeclaration>())
+					{
+						for (auto memberDecl : classDecl->declarations)
+						{
+							vint memberIndex = manager->declarationMemberInfos.Keys().IndexOf(memberDecl.Obj());
+							if (memberIndex != -1)
+							{
+								auto memberInfoPtr = manager->declarationMemberInfos.Values()[memberIndex];
+								if (memberDecl->attributes.Count() > 0)
+								{
+									attribute_populating::PopulateAttributesOnBag(manager, tdImpl, memberInfoPtr.Obj(), memberDecl->attributes);
+								}
+
+								// Function argument attributes
+								if (auto funcDecl = memberDecl.Cast<WfFunctionDeclaration>())
+								{
+									if (auto methodInfo = dynamic_cast<IMethodInfo*>(memberInfoPtr.Obj()))
+									{
+										for (vint k = 0; k < funcDecl->arguments.Count() && k < methodInfo->GetParameterCount(); k++)
+										{
+											auto& argAttrs = funcDecl->arguments[k]->attributes;
+											if (argAttrs.Count() > 0)
+											{
+												auto paramInfo = methodInfo->GetParameter(k);
+												attribute_populating::PopulateAttributesOnBag(manager, tdImpl, paramInfo, argAttrs);
+											}
+										}
+									}
+								}
+							}
+							else if (auto autoPropDecl = memberDecl.Cast<WfAutoPropertyDeclaration>())
+							{
+								auto propInfo = td->GetPropertyByName(autoPropDecl->name.value, false);
+								if (propInfo && memberDecl->attributes.Count() > 0)
+								{
+									attribute_populating::PopulateAttributesOnBag(manager, tdImpl, propInfo, memberDecl->attributes);
+								}
+							}
+						}
+					}
+
+					// Member attributes for struct
+					if (auto structDecl = decl.Cast<WfStructDeclaration>())
+					{
+						for (auto member : structDecl->members)
+						{
+							if (member->attributes.Count() == 0) continue;
+							auto propInfo = td->GetPropertyByName(member->name.value, false);
+							if (!propInfo) continue;
+							attribute_populating::PopulateAttributesOnBag(manager, tdImpl, propInfo, member->attributes);
+						}
+					}
+				}
+			}
+
+/***********************************************************************
+ValidateModuleRPC
+***********************************************************************/
+
+			void ValidateModuleRPC(WfLexicalScopeManager* manager, Ptr<WfModule> module)
+			{
+				rpc_compiling::RpcPhase1Context context;
+
+				// Phase 1 collects workflow-defined RPC interfaces and enqueues attribute occurrences for phase 2.
+				rpc_compiling::ValidateModuleRPC_Ast(manager, module, context);
+
+				// Phase 2 uses reflection (ITypeDescriptor/ITypeInfo) to validate the remaining rules.
+				rpc_compiling::ValidateModuleRPC_Reflection(manager, context);
+
+				// Phase 3 generates rpc metadata module.
+				if (context.workflowRpcInterfaceTds.Count() > 0 && manager->errors.Count() == 0)
+				{
+					rpc_compiling::ValidateModuleRPC_GenerateMetadata(manager, module, context);
+					if (manager->rpcMetadata)
+					{
+						manager->rpcMetadata->dts = GenerateDtsFromRpcMetadata(manager);
+					}
+				}
+			}
+
+			namespace rpc_metadata_copying
+			{
+				using namespace collections;
+				using namespace reflection;
+				using namespace reflection::description;
+
+				class ClearExistingTypesVisitor : public empty_visitor::DeclarationVisitor
+				{
+				private:
+					List<WString>			fragments;
+					bool					removeDeclaration = false;
+
+					WString GetFullName(const WString& name)
+					{
+						WString fullName;
+						for (auto fragment : fragments)
+						{
+							if (fullName != L"")
+							{
+								fullName += L"::";
+							}
+							fullName += fragment;
+						}
+
+						if (fullName != L"")
+						{
+							fullName += L"::";
+						}
+						fullName += name;
+						return fullName;
+					}
+
+					bool IsExistingType(const WString& name)
+					{
+						return reflection::description::GetTypeDescriptor(GetFullName(name)) != nullptr;
+					}
+
+					void VisitNestedType(const WString& name, List<Ptr<WfDeclaration>>& declarations)
+					{
+						if (IsExistingType(name))
+						{
+							removeDeclaration = true;
+							return;
+						}
+
+						fragments.Add(name);
+						Clear(declarations);
+						fragments.RemoveAt(fragments.Count() - 1);
+						removeDeclaration = false;
+					}
+
+				protected:
+					void Dispatch(WfVirtualCfeDeclaration* node)override
+					{
+						removeDeclaration = false;
+					}
+
+					void Dispatch(WfVirtualCseDeclaration* node)override
+					{
+						removeDeclaration = false;
+					}
+
+				public:
+					void Clear(List<Ptr<WfDeclaration>>& declarations)
+					{
+						for (vint i = 0; i < declarations.Count();)
+						{
+							removeDeclaration = false;
+							declarations[i]->Accept(this);
+							if (removeDeclaration)
+							{
+								declarations.RemoveAt(i);
+							}
+							else
+							{
+								i++;
+							}
+						}
+					}
+
+					void Visit(WfNamespaceDeclaration* node)override
+					{
+						fragments.Add(node->name.value);
+						Clear(node->declarations);
+						fragments.RemoveAt(fragments.Count() - 1);
+						removeDeclaration = false;
+					}
+
+					void Visit(WfClassDeclaration* node)override
+					{
+						VisitNestedType(node->name.value, node->declarations);
+					}
+
+					void Visit(WfEnumDeclaration* node)override
+					{
+						removeDeclaration = IsExistingType(node->name.value);
+					}
+
+					void Visit(WfStructDeclaration* node)override
+					{
+						removeDeclaration = IsExistingType(node->name.value);
+					}
+				};
+			}
+
+			Ptr<WfModule> CopyAndClearRpcMetadata(Ptr<WfModule> module)
+			{
+				auto copiedModule = CopyModule(module, false);
+				rpc_metadata_copying::ClearExistingTypesVisitor visitor;
+				visitor.Clear(copiedModule->declarations);
+				return copiedModule;
+			}
+
 		}
 	}
 }
