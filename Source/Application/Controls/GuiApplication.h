@@ -34,8 +34,8 @@ Application
 				friend class GuiWindow;
 				friend class GuiPopup;
 				friend class Ptr<GuiApplication>;
-				friend class AutomationService;
-				friend class AutomationServiceHosted;
+				friend class ::vl::presentation::AutomationService;
+				friend class ::vl::presentation::AutomationServiceHosted;
 			private:
 
 				void											InvokeClipboardNotify(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);

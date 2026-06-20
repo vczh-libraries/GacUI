@@ -11,6 +11,13 @@ CPP_VCXPROJS=(
     "../../GacUISrc/Source_GacUI_Compiler/Source_GacUI_Compiler.vcxitems"
     "../../GacUISrc/GacUI_Compiler/GacUI_Compiler.vcxproj"
     )
+CPP_ADDS=(
+    "../../../Source/Utilities/FakeServices/Dialogs/GuiFakeDialogService.cpp"
+    "../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUI.cpp"
+    "../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.cpp"
+    "../../../Source/Utilities/GuiUtilitiesRegistration.cpp"
+    "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.cpp"
+    )
 CPP_REMOVES=(
     "../../../Import/Vlpp.Windows.cpp"
     "../../../Import/VlppOS.Windows.cpp"

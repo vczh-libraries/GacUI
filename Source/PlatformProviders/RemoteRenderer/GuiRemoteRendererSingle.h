@@ -28,7 +28,7 @@ namespace vl::presentation::remote_renderer
 		, protected virtual INativeControllerListener
 	{
 		friend class GuiRemoteDocumentParagraphElement;
-		friend class AutomationServiceRenderer;
+		friend class ::vl::presentation::AutomationServiceRenderer;
 	protected:
 		INativeWindow*							window = nullptr;
 		INativeScreen*							screen = nullptr;

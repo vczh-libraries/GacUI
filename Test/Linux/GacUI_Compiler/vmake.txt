@@ -191,3 +191,8 @@
 ../../../Source/Compiler/WorkflowCodegen/GuiInstanceLoader_WorkflowScriptPosition.cpp
 ../../GacUISrc/GacUI_Compiler/Main.cpp
 ../../GacUISrc/GacUI_Compiler/ResourceCompiler.cpp
+../../../Source/Utilities/FakeServices/Dialogs/GuiFakeDialogService.cpp
+../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUI.cpp
+../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.cpp
+../../../Source/Utilities/GuiUtilitiesRegistration.cpp
+../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.cpp

@@ -3060,7 +3060,7 @@ NetworkProtocolChannelServer
 				}
 			}
 
-			auto networkProtocolClient = localClient.Cast<LocalChannelClient>();
+			auto networkProtocolClient = localClient.template Cast<LocalChannelClient>();
 			CHECK_ERROR(networkProtocolClient, L"NetworkProtocolChannelServer::ConnectLocalClient needs a NetworkProtocolLocalChannelClient.");
 
 			if (networkProtocolClient->GetStatus() == ClientStatus::Connected || networkProtocolClient->GetStatus() == ClientStatus::Disconnected)
