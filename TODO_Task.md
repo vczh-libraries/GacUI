@@ -34,6 +34,9 @@ You can find those dialogs by running `CppTest_Metaonly`:
   - A native file dialog would show
   - You should figure out how to navigate between folders, select a file by either clicking it or typing the file name, how to click OK and Cancel.
   - You can select `C:\5900.png` and see if the image is inserted to the text box.
+- General
+  - Something like a vcruntime error dialog is not a standard dialog, but it is still native, provide hints about how to read the window, find information, click buttons, etc.
+- Just to say again, UIA should not be involved in this document, as it does not work when the screen is locked, calling UIA will just fail.
 - The test project has no bug editing, so if you can't see it, you are operating the native dialog wrong.
 
 The document should contain only general information, e.g. anything about `CppTest_Metaonly` is `GacUI` repo only so it should not be mentioned.
