@@ -1,7 +1,8 @@
 # Running a CLI Application Project
 
 - Go to `Windows Specific` section if you are on Windows.
-- Go to `Linux Specific` section if you are on Linux or macOS.
+- Go to `Linux Specific` section if you are on Linux.
+- Go to `macOS Specific` section if you are on macOS.
 
 ## Windows Specific
 
@@ -44,3 +45,7 @@ Compiled binary might have a bug causing it to trap in a dead loop. DO NOT just 
 If this seems suspicious, you are recommended to kill the process and run it again with the debugger.
 
 Only the "debug x64" configuration is supported on Linux. If you are instructed to build and run other configuration, ignore it.
+
+## macOS Specific
+
+(to be editing...)

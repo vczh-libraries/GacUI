@@ -1,7 +1,8 @@
 # Running a Unit Test Project
 
 - Go to `Windows Specific` section if you are on Windows.
-- Go to `Linux Specific` section if you are on Linux or macOS.
+- Go to `Linux Specific` section if you are on Linux.
+- Go to `macOS Specific` section if you are on macOS.
 
 ## Windows Specific
 
@@ -94,3 +95,7 @@ If this seems suspicious, you are recommended to kill the process and run it aga
 When `/D` or `/C` is specified, the unit test binary stops at the first failure, causing it to be unable to summarize how many test cases pass or fail at the end. This is an obvious signal that it fails.
 
 Only the "debug x64" configuration is supported on Linux. If you are instructed to build and run other configuration, ignore it.
+
+## macOS Specific
+
+(to be editing...)

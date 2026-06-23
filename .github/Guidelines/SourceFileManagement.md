@@ -55,3 +55,7 @@ In `vmake`, these variables are available for configuration, most of them are op
 - `CPP_COMPILE_OPTIONS`: Extra compiler options for `clang++` or `g++`.
 - `FOLDERS`: Folders that contain generated files. These folders will be completely removed during a full build.
 - `CPP_TARGET`: The compiled binary.
+
+## Working on Mac
+
+(to be editing...)

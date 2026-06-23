@@ -1,7 +1,8 @@
 # Building a Solution
 
 - Go to `Windows Specific` section if you are on Windows.
-- Go to `Linux Specific` section if you are on Linux or macOS.
+- Go to `Linux Specific` section if you are on Linux.
+- Go to `macOS Specific` section if you are on macOS.
 
 ## Windows Specific
 
@@ -57,3 +58,7 @@ Call `REPO-ROOT/.github/Ubuntu/build.sh -f` for full rebuild.
 `build.sh` will also run other script files in that folder; you may need to run `chmod +x` if any script file is blocked.
 
 Only the "debug x64" configuration is supported on Linux. If you are instructed to build and run other configuration, ignore it.
+
+## macOS Specific
+
+(to be editing...)

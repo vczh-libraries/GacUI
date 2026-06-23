@@ -1,7 +1,8 @@
 # Running a GacUI Application Project
 
 - Go to `Windows Specific` section if you are on Windows.
-- Go to `Linux Specific` section if you are on Linux or macOS.
+- Go to `Linux Specific` section if you are on Linux.
+- Go to `macOS Specific` section if you are on macOS.
 
 ## Windows Specific
 
@@ -40,6 +41,12 @@ When remote protocol is in use:
 
 GacUI does not support UI Automation so far, but this situation will be changed very soon.
 
+UI Automation does not work when the screen is locked. Calling any UIA tools in this case will just fail.
+
 ## Linux Specific
 
-NOT SUPPORTED
+(to be editing...)
+
+## macOS Specific
+
+(to be editing...)

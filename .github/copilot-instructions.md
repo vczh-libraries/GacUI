@@ -39,6 +39,7 @@ otherwise it won't work properly.
 
 - **SUPER IMPORTANT** Your should always follow the coding convention when coding:
   - `REPO-ROOT/.github/Guidelines/Coding.md`
+  - `REPO-ROOT/.github/Guidelines/Coding_MultiThreading.md`
   - `REPO-ROOT/.github/KnowledgeBase/Learning.md`
   - `REPO-ROOT/.github/Learning/Learning_Coding.md`
   - `REPO-ROOT/.github/Learning/Learning_Testing.md`
@@ -48,6 +49,11 @@ otherwise it won't work properly.
   - Unit Test: `REPO-ROOT/.github/Guidelines/Running-UnitTest.md`
   - CLI Application: `REPO-ROOT/.github/Guidelines/Running-CLI.md`
   - GacUI Application: `REPO-ROOT/.github/Guidelines/Running-GacUI.md`
+  - Basic Computer Use: `REPO-ROOT/.github/Guidelines/Running-ComputerUse.md`
+    - This instruction is important for both Unit Test, CLI and GacUI applications.
+    - MSVC compiled applications are inevitably (but not always) prompting a native dialog when crashed.
+    - GacUI applications could invoke native dialogs proactivately, even when `FakeDialogService` is used.
+    - This document describes how to handle native UI to unblock the debugging or testing process.
 - Debugging a Project: `REPO-ROOT/.github/Guidelines/Debugging.md`
 - Using Unit Test Framework: `REPO-ROOT/.github/KnowledgeBase/manual/unittest/vlpp.md`
 - Using Unit Test Framework for GacUI Application:

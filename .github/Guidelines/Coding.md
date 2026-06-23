@@ -13,6 +13,10 @@ In general, here is my preference for any languages:
   - DRY requires finding if a feature has already been implemented somewhere else before implementing it. avoiding massive duplication.
     - If the existing implementation is not sharable, refactoring is preferred.
 
+## C++ Thread Safety and Multi-Threading Synchronization
+
+Check out [Coding_MultiThreading.md](./Coding_MultiThreading.md).
+
 ## C++ Coding Convention
 
 - Although C++ does not require this but we want to have `extern` on all function forward declarations.
@@ -85,28 +89,15 @@ When `VlppParser2` is available to the current project, complex parsers always r
 - Prefer the latest C++ features (up to C++ 20).
 - Prefer template variadic arguments, over hard-coded-counting solutions.
 
-### for Thread Safe Programming
-
-- Most of the code do not require thread safety, DO NOT over engineering.
-- `SpinLock` is only for protecting a piece of code or data in a super flashy short time.
-  - When defining a `SpinLock` field, names it begins with `lock`, a `// covers a, b, c` comment is recommended to put above it, a empty line is recommended to put around it.
-  - When doing `read-process-write` but the `write` part doesn't depend on the result of `process`:
-    - The below rules only involve when `process` is heavy, if anything is simple, keep it simple.
-    - You can copy or move the heavy structure in `SPIN_LOCK`, and `process` after `SPIN_LOCK`.
-    - Especially for scenario when a container should be processed and cleared, `std::move` would be the best choice to copy and clean `Vlpp` containers. Using moved `Vlpp` containers is not undefined behavior.
-- When using other locks, try your best to only use methods that available to all platforms.
-  - Write cross platform code when it is performance optimal for all platforms.
-  - If Windows specific methods could make Windows implementation much better, then you are allowed to implement them in different ways.
-  - Use `lock` (both `SpinLock` and `CriticalSection`), `mutex`, `semaphore`, `event`, `semaphore`, `rwlock`, `cv` as lock variable prefixes.
-- Prefer lock free construction only when the code would be simple, DO NOT involve complex lock free trick unless explicitly required.
-- `std::atomic<T>` should be considered and use it precisely. The code should be correct when running parallelly while I don't want unnecessary `std::atomic<T>`.
-  - `atomic_vint` is widely used in the library, use it for `vint`.
-- Avoid polling at all cost, I strongly prefer scheduling in async way.
-
 ### for Reflectable Types
 
 - Any interface or class `X` should inherit from `vl::reflection::Description<X>`.
   - If such a class (not including interface) should be inheritable in Workflow script, use `AggregatableDescription` instead of `Description`.
+  - If a class inherits directly or indirectly from multiple registered classes/interfaces:
+    - Either register this class.
+    - Or if multiple registered base types are all interfaces, another valid option would be to create a registered interface inheriting all of them, and let the class inherits from this new interface.
+    - The reason is that, an object only has one pointer to a piece of reflection metadata. If a class is not registered but it inherits from multiple registered types, only a metadata from one of these base types will be brought along with the actual
+object, causing missing of a complete picture.
 - No `const` is allowed for methods or reference types.
 - Prefer `IValue*` interfaces for container types on interfaces.
 - Container types and some other types support range-based for loop. Always prefer range-based for loop over other loops.

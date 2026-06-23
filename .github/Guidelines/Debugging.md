@@ -1,7 +1,8 @@
 # Debugging a Project
 
 - Go to `Windows Specific` section if you are on Windows.
-- Go to `Linux Specific` section if you are on Linux or macOS.
+- Go to `Linux Specific` section if you are on Linux.
+- Go to `macOS Specific` section if you are on macOS.
 
 ## Windows Specific
 
@@ -101,3 +102,7 @@ quit
 ```
 
 For non-interactive one-shot debugging, wrap `lldb` with `timeout` so it cannot block forever.
+
+## macOS Specific
+
+(to be editing...)
