@@ -8,6 +8,9 @@
 
 - Only run `copilotExecute.ps1` to run a CLI application project.
 - DO NOT call executables or scripts yourself.
+- CLI applications are interactable, or could end up in dead loop or dead locks so DO NOT JUST wait for the process to exit.
+  - When it is crashed, sometimes (but not always) a native dialog would show and block the process.
+  - If you believe the processing is blocked or is running too long, you are going to check out `Running-ComputerUse.md` and deal with it.
 
 ### Executing copilotExecute.ps1
 
