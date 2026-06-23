@@ -2,81 +2,39 @@
 - you have to run unit test to make sure your change works.
 - commit and push after finishing the work.
 
-You are going to implement `DumpWindowClientArea` and `RunIOCommandOnNativeWindow` following the incremental strategy in tasks.
-You are required to always attach a debugger to GacUI applications, so that you can handle automation requests crashing or IO operations not properly implemented.
-Use `!Exit` to close the application.
-- This has already been implemented in `RunIOCommandOnNativeWindow`, `/IO/windowId` could trigger it.
-- When remote protocol is used, `!Exit` should be sent to the renderer.
+You are going to complete `REPO-ROOT\.github\Guidelines\Running-ComputerUse.md`.
+You are going to sync the completed document to `REPO-ROOT\..\Tools\Copilot\Guidelines\Running-ComputerUse.md`.
+You are going to commit and push all changes in both repos.
 
-## Task 1
+UIA does not work when the screen is locked, so the safest way is to taking screenshots and/or using Powershell with embedded C# code calling Win32 API to deal with native dialogs.
+Win32 API could include enumerating windows, sending messages, or anything you need.
+You are going to figure out how to actually operate on those dialogs to complete the document.
+You can find those dialogs by running `CppTest_Metaonly`:
+- Message
+  - Pressing `CTRL+Q` and a native message box would show.
+  - You should figure out how to click OK or close the message box.
+  - The document should contain extra instructions about, if the message box has other combination of buttons, what to do.
+- Color
+  - Switch to `Control` tab and in the `Document Editor (Ribbon)` tab there is a text box.
+  - Type something and select all
+  - Click the text color button on the ribbon
+  - A native color dialog would show
+  - You should figure out how to change color, how to click OK and Cancel
+  - You will need to check the text box and see if the expected color applies, you should unselect the text to reveal its color.
+- Font
+  - Switch to `Control` tab and in the `Document Editor (Ribbon)` tab there is a text box.
+  - Type something and select all
+  - Click the text font button on the ribbon
+  - A native font dialog would show
+  - You should figure out how to change all components of the font, how to click OK and Cancel
+  - You will need to check the text box and see if the expected font applies.
+- File
+  - Switch to `Control` tab and in the `Document Editor (Ribbon)` tab there is a text box.
+  - Switch to `Insert` tab and click `Insert Image ...` button.
+  - A native file dialog would show
+  - You should figure out how to navigate between folders, select a file by either clicking it or typing the file name, how to click OK and Cancel.
+  - You can select `C:\5900.png` and see if the image is inserted to the text box.
+- The test project has no bug editing, so if you can't see it, you are operating the native dialog wrong.
 
-Implement `DumpWindowClientArea` following the comment.
-- Ignore document so far.
-To verify:
-- Start `CppTest` and request for `/Controls`.
-- See if it the returned JSON correct describes everything in the default UI state.
-
-## Task 2
-
-Implement `RunIOCommandOnNativeWindow`.
-- Focus on mouse move or mouse button.
-To verify:
-- Start `CppTest`.
-- Call `!MouseMove` on `Add 10 Items` and see if the button is highlighed.
-- Click this button and see if 10 items appears.
-- Click `Text` and you will see a new sub window representing the combo box drop down:
-  - Switch to `Check` and see if items marked with a rectangle.
-  - Switch to `Radio` add see if teism marked with a circle.
-
-## Task 3
-
-Ensure `DumpWindowClientArea` correctly reporting all kinds of elements.
-- Ignore document so far.
-To verify:
-- Start `CppTest`.
-- Switch to `Misc` tab and under `Elements` it enumerates all kinds of elements.
-- Verify if element properties are properly reported.
-
-## Task 4
-
-Implement `RunIOCommandOnNativeWindow`.
-- Focus on document element.
-Implement `RunIOCommandOnNativeWindow`
-- Focus on `!Type:Text`, you should ignore all `\r` characters and send `\r\n` for any `\n`.
-To verify:
-- Start `CppTest`.
-- Switch to `Control` tab, click the document element, and begin typing.
-- In this control, CRLF is interpreted as new paragraph.
-- Type several lines of text and see if document element report attributes correctly.
-
-## Task 5
-
-Implement `RunIOCommandOnNativeWindow`
-- Focus on keyboard operations.
-To verify:
-- Start `CppTest`.
-- Press `ALT` and you can find that the UI adds additional labels to guide you how to navigate and eventually focus or activate a control.
-- You are going to do pure keyboard navigation and do this:
-  - Swtich to `Control` tab and focus on the document element.
-  - Type `ABCDEFG`.
-  - Select `CDE`.
-  - Activate the toolbar button to open a color dialog, choose green (red:0 green:255 blue:0).
-  - Focus on the document element again and press `END` therefore the selection is gone.
-  - See if the document is properly edited.
-You need to carefully reads the knowledge base, the UI definition and the source code of document control to figure out how to done all these without mouse.
-
-## Task 6
-
-Implement `RunIOCommandOnNativeWindow`
-- Focus on wheel operations.
-- Unfortunately you are only able to test up/down, but you should make sure left/right is propertly implemented.
-To verify:
-- Start `CppTest` and click `Add 10 items` multiple times.
-- Wheel the left list box up and down and see if it actually scrolls.
-
-## Task 7
-
-Start `RemotingTest_Core /Http /FCT` and `RemotingTest_Rendering_Win32`, you are able to read UI and perform IO operations by both two processes.
-Perform `Task 5` verification steps on `RemotingTest_Core` and see if both process reports proper UI changes.
-Perform `Task 5` verification steps on `RemotingTest_Rendering_Win32` and see if both process reports proper UI changes.
-Real system message box will popup up from renderer when core exception raised, the current automation service cannot handle this currently, you will need to kill both processes to exit when it happens.
+The document should contain only general information, e.g. anything about `CppTest_Metaonly` is `GacUI` repo only so it should not be mentioned.
+If any useful code snippet is helpful, especially `using Powershell with embedded C# code calling Win32 API` or whatever, you should include it in the document.
