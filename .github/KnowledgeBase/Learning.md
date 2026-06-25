@@ -40,6 +40,7 @@
 - `collections::List` has deleted copy constructor; use `std::move()` for structs with `List` members [1]
 - Compare type descriptors by pointer when descriptor identity is available [1]
 - Parse and validate before queuing asynchronous work [1]
+- Use Win32 messages for native dialogs when UIA is unavailable [1]
 
 # Refinements
 
@@ -230,6 +231,10 @@ At script-visible reflection boundaries, translate recoverable collection operat
 ## Parse and validate before queuing asynchronous work
 
 When an API needs to report syntax or validation errors synchronously but execute accepted work asynchronously, split those phases explicitly. Parse and validate the request on the caller/transport path, return errors immediately, then queue only a parsed command object for main-thread or background execution. This keeps modal or blocking work off the response path without hiding malformed input behind an async boundary.
+
+## Use Win32 messages for native dialogs when UIA is unavailable
+
+When native Windows dialogs must be handled under conditions where UI Automation is unreliable or unavailable, use screenshots and Win32 enumeration/messages from a separate process. Enumerate top-level and child windows, read text/class/control ids, then use standard messages such as `BM_CLICK`, `WM_SETTEXT`, and combo-box selection messages to confirm, cancel, or fill controls. Do not wait indefinitely on the application under test while a native modal dialog is open; that app may be blocked until the external Win32 operation closes the dialog.
 
 ## Proactively remove code made redundant by refactoring
 

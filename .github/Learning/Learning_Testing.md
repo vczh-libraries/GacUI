@@ -64,6 +64,7 @@
 - Inline-object caret tests: cover every valid caret position one frame at a time [1]
 - Verify remoting imports with both HTTP and named-pipe flows [1]
 - Verify `/IO` syntax errors and queued success separately [1]
+- Native modal dialogs block GacUI HTTP automation [1]
 
 # Refinements
 
@@ -395,3 +396,7 @@ After importing remoting-related dependency releases, verify `RemotingTest_Core`
 ## Verify `/IO` syntax errors and queued success separately
 
 When changing GacUI HTTP automation `/IO`, verify both response paths under a debugger-attached app. Send a malformed command such as an invalid mouse coordinate and confirm the HTTP response contains the syntax error synchronously; then send a valid command and confirm the response is `Queued` and the UI changes afterward. For modal workflows, avoid treating `Queued` as completion and inspect `/Controls` or `/Dom` only after the dialog/action has actually finished.
+
+## Native modal dialogs block GacUI HTTP automation
+
+When a native dialog is open from a GacUI test application, the app's HTTP automation endpoint can block behind the modal loop. Handle the dialog from another process using Win32 enumeration and messages, then resume app-level automation only after the native dialog has been confirmed or canceled. This applies to standard message, color, font, and file dialogs as well as non-standard crash/error windows.
