@@ -1,121 +1,90 @@
 # Remote Protocol Core Application
 
-Unlike working in the unit test framework, we usually needs to start a GacUI application with remote protocol asynchronously. So that we can give a dedicated thread for handling actual communitation with the remote client. A typical example would be:
+A remote protocol core application is a normal GacUI application that calls SetupRemoteNativeController. It becomes headless and is forced into hosted mode. The core does not draw to an OS native window; it sends JSON remote protocol packages through a vl::inter_process channel.
+
+The standard C++ path is small:
+- Start a GuiRemoteProtocolNetworkChannelServer\<TServerBase\> over an INetworkProtocolServer implementation such as NamedPipeServer or HttpServer.
+- Connect the core to that server with GuiRemoteProtocolLocalChannelClient.
+- Wrap the core channel with GuiRemoteProtocolJsonChannelRenderer_Async and GuiRemoteProtocolCoreChannel.
+- Pass the protocol, usually after GuiRemoteProtocolFilter and GuiRemoteProtocolDomDiffConverter, to SetupRemoteNativeController.
+
+The core client is expected to be registered as GacUIRemoteProtocolCoreClientId. A renderer created by GuiRemoteProtocolChannelClient advertises GacUIRemoteProtocolChannelName. GuiRemoteProtocolCoreChannel learns the renderer client id from the renderer's ControllerConnect event, so user code does not need to route individual remote protocol messages.
+
+A compact named pipe setup looks like this:
 ```c++
-class CoreChannel : public Object, public IGuiRemoteProtocolChannel<WString>
+using namespace vl;
+using namespace vl::presentation;
+using namespace vl::presentation::remoteprotocol;
+using namespace vl::presentation::remoteprotocol::channeling;
+using namespace vl::presentation::remoteprotocol::repeatfiltering;
+
+class NamedPipeRemoteCoreServer
+    : public GuiRemoteProtocolNetworkChannelServer<inter_process::NamedPipeServer>
 {
+    using Base = GuiRemoteProtocolNetworkChannelServer<inter_process::NamedPipeServer>;
+
+    EventObject rendererConnected;
+
 public:
-    void Initialize(IGuiRemoteProtocolChannelReceiver<WString>* receiver) override
+    NamedPipeRemoteCoreServer(Ptr<glr::json::Parser> parser, const WString& pipeName)
+        : Base(parser, pipeName)
     {
-        // when you get any string later you need to call receiver->OnReceive(str)
-        // receiver->OnReceive must be called with asyncChannel->ExecuteInChannelThread
-        // asyncChannel is the argument of WaitForConnected
+        rendererConnected.CreateManualUnsignal(false);
     }
 
-    IGuiRemoteProtocolChannelReceiver<WString>* GetReceiver() override
+    void WaitForRenderer()
     {
-        // return the argument passed to Initialize
-    }
-    
-    void Write(const WString& package) override
-    {
-        // send the string away
-    }
-    
-    WString GetExecutablePath() override
-    {
-        // anything that you want GetCurrentController()->GetExecutablePath() to return
-    }
-    
-    void Submit(bool& disconnected) override
-    {
-        // you can also save all Write calls and send them in batch here
-    }
-    
-    IGuiRemoteEventProcessor* GetRemoteEventProcessor() override
-    {
-        return nullptr;
-    }
-    
-    void WaitForConnected(GuiRemoteProtocolAsyncJsonChannelSerializer* asyncChannel)
-    {
-        // block until a remote client is connected
+        rendererConnected.Wait();
     }
 
-    void WaitForDisconnected()
+protected:
+    inter_process::WaitForClientResult OnClientConnected(
+        vint clientId,
+        const IJsonChannelClient::ChannelNameList& availableChannels,
+        IJsonChannelClient* localClient) override
     {
-        // tell the remote client that all work is done
-        // block until the remote client is disconnected
-    }
+        if (localClient)
+        {
+            return inter_process::WaitForClientResult::Accept;
+        }
 
-    void WriteError(const WString& error)
-    {
-        // send an error message to the remote client
-        // such error will be a fetal error and the remote client is supposed to stop
+        if (availableChannels.Contains(WString::Unmanaged(GacUIRemoteProtocolChannelName)))
+        {
+            rendererConnected.Signal();
+            return inter_process::WaitForClientResult::Accept;
+        }
+        return inter_process::WaitForClientResult::Reject;
     }
 };
 
-CoreChannel* coreChannel = nullptr;
-
-void GuiMain()
+void StartNamedPipeRemoteCore()
 {
-    theme::RegisterTheme(Ptr(new darkskin::Theme));
-    {
-        rptest::MainWindow window;
-        window.ForceCalculateSizeImmediately();
-        window.MoveToScreenCenter();
-        try
-        {
-            GetApplication()->Run(&window);
-        }
-        catch (const Exception& e)
-        {
-            coreChannel->WriteError(e.Message());
-        }
-        catch (const Error& e)
-        {
-            coreChannel->WriteError(WString::Unmanaged(e.Description()));
-        }
-    }
-}
-
-int main(int argc, char* argv[])
-{
-    CoreChannel serverCoreChannel(&server);
-
     auto jsonParser = Ptr(new glr::json::Parser);
-    GuiRemoteJsonChannelStringSerializer channelJsonSerializer(&serverCoreChannel, jsonParser);
+    NamedPipeRemoteCoreServer server(jsonParser, L"GacUIRemoteProtocolNamedPipe");
+    server.Start();
 
-    GuiRemoteProtocolAsyncJsonChannelSerializer asyncChannelSender;
-    asyncChannelSender.Start(
-        &channelJsonSerializer,
-        [&serverCoreChannel](GuiRemoteProtocolAsyncJsonChannelSerializer* channel)
-        {
-            GuiRemoteProtocolFromJsonChannel channelSender(channel);
-            GuiRemoteProtocolFilter filteredProtocol(&channelSender);
-            GuiRemoteProtocolDomDiffConverter diffConverterProtocol(&filteredProtocol);
-            coreChannel = &serverCoreChannel;
-            SetupRemoteNativeController(&diffConverterProtocol);
-            coreChannel = nullptr;
-        },
-        [&serverCoreChannel](
-            GuiRemoteProtocolAsyncJsonChannelSerializer::TChannelThreadProc channelThreadProc,
-            GuiRemoteProtocolAsyncJsonChannelSerializer::TUIThreadProc uiThreadProc
-            )
-        {
-            Thread::CreateAndStart(channelThreadProc);
-            Thread::CreateAndStart(uiThreadProc);
-        });
+    auto coreClient = Ptr(new GuiRemoteProtocolLocalChannelClient(jsonParser));
+    auto coreClientId = server.ConnectLocalClient(coreClient);
+    CHECK_ERROR(coreClientId == GacUIRemoteProtocolCoreClientId, L"Failed to register the core client.");
 
-    Console::WriteLine(L"> Waiting for a renderer ...");
-    serverCoreChannel.WaitForConnected(&asyncChannelSender);
-    asyncChannelSender.WaitForStopped();
-    serverCoreChannel.WaitForDisconnected();
+    server.WaitForRenderer();
 
-    return 0;
+    GuiRemoteProtocolJsonChannelRenderer_Async asyncChannel(coreClient->GetProtocolChannel());
+    GuiRemoteProtocolCoreChannel coreProtocol(
+        coreClient.Obj(),
+        &asyncChannel,
+        L"MyRemoteCore.exe",
+        asyncChannel.GetRemoteEventProcessor());
+
+    GuiRemoteProtocolFilter filteredProtocol(&coreProtocol);
+    GuiRemoteProtocolDomDiffConverter diffProtocol(&filteredProtocol);
+    SetupRemoteNativeController(&diffProtocol);
+
+    server.Stop();
 }
 ```
 
+GuiMain still creates and runs GacUI windows. If the UI throws while the remote server is alive, send the error through IJsonLocalChannelServer::BroadcastError so the renderer stops instead of waiting for more packages. A production server can also reject clients that do not offer GacUIRemoteProtocolChannelName, disconnect previous renderers, or call GuiRemoteProtocolCoreChannel::DetachRenderer when replacing a renderer.
 
-This sample simplifies all the details leaving the sending and receiving of strings to you. Check out[this test project](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_Core)for a complete example.
+See [RemotingTest_Core](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_Core) for the complete named pipe and HTTP implementation.
 

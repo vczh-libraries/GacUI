@@ -1,12 +1,12 @@
 # \<Image\>
 
-[Here](https://github.com/vczh-libraries/Release/blob/master/SampleForDoc/GacUI/XmlRes/kb_xmlres_data/ImagePage.xml)is the sample used in this topic.
+[Here](https://github.com/vczh-libraries/Release/blob/master/SampleForDoc/GacUI/XmlRes/kb_xmlres_data/ImagePage.xml) is the sample used in this topic.
 
-**\<Image/\>**works like**\<Text/\>**, but there are a few differences:
-- **content="File"**is always required.
-- It can be assigned to properties that accept**presentation::INativeImage^**or**presentation::GuiImageData^**.
+**\<Image/\>** works like **\<Text/\>**, but there are a few differences:
+- **content="File"** is always required.
+- It can be assigned to properties that accept **presentation::INativeImage^** or **presentation::GuiImageData^**.
 
-In GacUI,**GuiImageElement**, menus, toolstrip buttons, ribbon buttons and list items are able to be assigned images.
+In GacUI, **GuiImageElement**, menus, toolstrip buttons, ribbon buttons and list items are able to be assigned images.
 
 In the sample, images are stored in a folder in a separated file:
 ```
@@ -27,8 +27,7 @@ In the sample, images are stored in a folder in a separated file:
 </Folder>
 ```
 
-
-Then a set of**ToolstripCommand**are created, images are assigned to them.
+Then a set of **ToolstripCommand** are created, images are assigned to them.
 ```
 <Instance ref.Class="sample::ImagePage">
   <TabPage Text="&lt;Image/&gt;">
@@ -54,11 +53,10 @@ Then a set of**ToolstripCommand**are created, images are assigned to them.
   </TabPage>
 </Instance>
 ```
-A**ToolstripCommand**can be assigned to multiple menu items, toolstrip buttons and ribbon buttons. In this way, these controls share the same image, text, shortcut. If a toolstrip command is disabled, associated controls will all be disabled.
+ A **ToolstripCommand** can be assigned to multiple menu items, toolstrip buttons and ribbon buttons. In this way, these controls share the same image, text, shortcut. If a toolstrip command is disabled, associated controls will all be disabled.
 
 Here is how it looks like:
 
-
-- Source code:[kb_xmlres_data](https://github.com/vczh-libraries/Release/blob/master/SampleForDoc/GacUI/XmlRes/kb_xmlres_data/ImagePage.xml)
+- Source code: [kb_xmlres_data](https://github.com/vczh-libraries/Release/blob/master/SampleForDoc/GacUI/XmlRes/kb_xmlres_data/ImagePage.xml)
 - ![](https://gaclib.net/doc/gacui/kb_xmlres_tag_image.gif)
 

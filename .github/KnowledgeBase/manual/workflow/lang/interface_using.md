@@ -1,6 +1,6 @@
 # Generic (interface)
 
-Interfaces do not actually support generic, but sometimes it works like generic in[coroutines](../.././workflow/lang/coroutine.md).
+Interfaces do not actually support generic, but sometimes it works like generic in [coroutines](../.././workflow/lang/coroutine.md).
 
 Here is an example of a coroutine that created by Workflow:
 ```
@@ -112,10 +112,10 @@ func main(): string
     return cast string e.result;
 }
 ```
-The**Sum**function does:
-- calls**$Set**to set a number collection.
-- calls**$Read**to read numbers one by one.
-- returns the sum of all numbers.The**main**function gets the coroutine created from**Sum**, drives the coroutine to run until a result is produced.
+ The **Sum** function does:
+- calls **$Set** to set a number collection.
+- calls **$Read** to read numbers one by one.
+- returns the sum of all numbers. The **main** function gets the coroutine created from **Sum**, drives the coroutine to run until a result is produced.
 
 ## $interface IDerived: IBase\<TYPE\>;
 
@@ -124,7 +124,7 @@ In the example there is:
 $interface IntReader: Reader<int?>;
 $interface StringReader: Reader<string?>;
 ```
-which expands to:
+ which expands to:
 ```
 interface IntReader : Reader
 {
@@ -139,33 +139,32 @@ interface IntReader : Reader
     }
 }
 ```
-So as:
+ So as:
 ```
 $interface StringReader: Reader<string?>;
 ```
 
+**$interface** simply creates an interface which inherits from the one that is specified, and add static functions **CastResult** and **StoreResult** for casting values between **object** and the generic argument that is specified.
 
-**$interface**simply creates an interface which inherits from the one that is specified, and add static functions**CastResult**and**StoreResult**for casting values between**object**and the generic argument that is specified.
-
-This is how**$Get**knows the type of the return value. obviously in:
+This is how **$Get** knows the type of the return value. obviously in:
 ```
 var current = $Get ReadInt();
 ```
-the type of**current**is**int?**, because**ReadInt**returns**IntReader^**, in which the**CastResult**function returns**int?**.
+ the type of **current** is **int?**, because **ReadInt** returns **IntReader^**, in which the **CastResult** function returns **int?**.
 
 It doesn't matter what the original interface looks like.
 
 ## new TYPE^(using OBJECT)
 
-This expression creates an object of interface**TYPE**, redirecting all methods to**OBJECT**.
+This expression creates an object of interface **TYPE**, redirecting all methods to **OBJECT**.
 
 It needs to meet the following requirements:
-- **TYPE**and the type of**OBJECT**should both be interfaces.
-- **TYPE**must be different from the type of**OBJECT**.
-- **TYPE**must inherit from the type of**OBJECT**. It doesn't have to be the direct base type.
-- **TYPE**must not have more members than the type of**OBJECT**.
+- **TYPE** and the type of **OBJECT** should both be interfaces.
+- **TYPE** must be different from the type of **OBJECT**.
+- **TYPE** must inherit from the type of **OBJECT**. It doesn't have to be the direct base type.
+- **TYPE** must not have more members than the type of **OBJECT**.
 
-**new TYPE***is also available, according to how**TYPE**is declared.
+**new TYPE*** is also available, according to how **TYPE** is declared.
 
 For example:
 ```
@@ -181,7 +180,7 @@ func ReadInt(): IntReader^
     return new IntReader^(using Read());
 }
 ```
-**ReadInt**expands to:
+**ReadInt** expands to:
 ```
 func ReadInt() : (IntReader^)
 {
@@ -196,5 +195,5 @@ func ReadInt() : (IntReader^)
     };
 }
 ```
-It is clear that, if**OBJECT**is a raw pointer, then the created object holds a raw pointer to**OBJECT**. In this case, you must be very careful to object life cycles.
+ It is clear that, if **OBJECT** is a raw pointer, then the created object holds a raw pointer to **OBJECT**. In this case, you must be very careful to object life cycles.
 

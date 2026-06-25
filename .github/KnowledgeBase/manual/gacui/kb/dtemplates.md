@@ -1,8 +1,8 @@
 # Default Template Registrations
 
-GacUI is released with a set of**DarkSkin**control templates, but it is you who is responsible to register them.
+GacUI is released with a set of **DarkSkin** control templates, but it is you who is responsible to register them.
 
-Registering**DarkSkin**is very easy, just write the following code in any cpp file, so that it will be executed before the application entry function (e.g.**WinMain**):
+Registering **DarkSkin** is very easy, just write the following code in any cpp file, so that it will be executed before the application entry function (e.g. **WinMain**):
 ```
 class DefaultSkinPlugin : public Object, public IGuiPlugin
 {
@@ -22,14 +22,13 @@ public:
     }
 };
 ```
-This piece of code register**darkskin::Theme**has a builder of all kinds of control templates after**GacGen_DarkSkinResourceLoader**is loaded. GacUI has a very simple and efficient plugin system, which load plugins according to dependencies between each other. If**DefaultSkinPlugin**is registered before the**GacGen_DarkSkinResourceLoader**, it will just hold it until**GacGen_DarkSkinResourceLoader**is registered.
+ This piece of code register **darkskin::Theme** has a builder of all kinds of control templates after **GacGen_DarkSkinResourceLoader** is loaded. GacUI has a very simple and efficient plugin system, which load plugins according to dependencies between each other. If **DefaultSkinPlugin** is registered before the **GacGen_DarkSkinResourceLoader**, it will just hold it until **GacGen_DarkSkinResourceLoader** is registered.
 
-Maybe someday you decide to create another set of control templates and want to make it the default one. It is very simple, just create an**\<Instance/\>**of**\<ThemeTemplates\>**like the one below, and modify the above plugin code to have the correct dependencies and theme types.
+Maybe someday you decide to create another set of control templates and want to make it the default one. It is very simple, just create an **\<Instance/\>** of **\<ThemeTemplates\>** like the one below, and modify the above plugin code to have the correct dependencies and theme types.
 
-The**\<ThemeTemplates\>**of**DarkSkin**looks like this, which lists all control template type names for each kind of control. By specifying**ref.Class="darkskin::Theme"**, a C++ class**darkskin::Theme**is created, and now it is ready to register default control templates.
+The **\<ThemeTemplates\>** of **DarkSkin** looks like this, which lists all control template type names for each kind of control. By specifying **ref.Class="darkskin::Theme"**, a C++ class **darkskin::Theme** is created, and now it is ready to register default control templates.
 
 There is not default item templates in this list, because default item templates are specified in each control template for list controls.
-
 
 ```
 <Instance ref.CodeBehind="false" ref.Class="darkskin::Theme" xmlns:x="darkskin::*">
@@ -96,5 +95,4 @@ There is not default item templates in this list, because default item templates
   </ThemeTemplates>
 </Instance>
 ```
-
 

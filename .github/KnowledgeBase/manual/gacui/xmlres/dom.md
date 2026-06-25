@@ -1,10 +1,10 @@
 # Folders and Resources
 
-A**GacUI XML Resource**begins with a**\<Resource/\>**tag as a root folder. In this root folder, there can be multiple folders and resource items.
+A **GacUI XML Resource** begins with a **\<Resource/\>** tag as a root folder. In this root folder, there can be multiple folders and resource items.
 
 Folders and resource items can be stored in other files.
 
-The[TextEditor](https://github.com/vczh-libraries/Release/tree/master/Tutorial/GacUI_Controls/TextEditor/UI)tutorial is an exmaple of how to create folders in different files:
+The [TextEditor](https://github.com/vczh-libraries/Release/tree/master/Tutorial/GacUI_Controls/TextEditor/UI) tutorial is an exmaple of how to create folders in different files:
 ```
 <?xml version="1.0" encoding="utf-8"?>
 <Resource>
@@ -23,10 +23,9 @@ The[TextEditor](https://github.com/vczh-libraries/Release/tree/master/Tutorial/G
 </Resource>
 ```
 
+For creating a folder, use **\<Folder name="NAME-OF-FOLDER"\>\</Folder\>** and put everything inside the tag.
 
-For creating a folder, use**\<Folder name="NAME-OF-FOLDER"\>\</Folder\>**and put everything inside the tag.
-
-For creating a folder but you want to put the content in another file, use**\<Folder name="NAME-OF-FOLDER" content="Link"\>FOLDER-XML-FILE\</Folder\>**. In this**FOLDER-XML-FILE**, use**\<Folder/\>**as the root element and put everything in it:
+For creating a folder but you want to put the content in another file, use **\<Folder name="NAME-OF-FOLDER" content="Link"\>FOLDER-XML-FILE\</Folder\>**. In this **FOLDER-XML-FILE**, use **\<Folder/\>** as the root element and put everything in it:
 ```
 <?xml version="1.0" encoding="utf-8"?>
 <Folder>
@@ -46,10 +45,9 @@ For creating a folder but you want to put the content in another file, use**\<Fo
 </Folder>
 ```
 
+Writing a resource item in another file is just like folders, but you need **content="File"** instead of **content="Link"**.
 
-Writing a resource item in another file is just like folders, but you need**content="File"**instead of**content="Link"**.
-
-The[ListControls](https://github.com/vczh-libraries/Release/tree/master/Tutorial/GacUI_Controls/ListControls/UI)tutorial is another exmaple of how to create resource items in different files:
+The [ListControls](https://github.com/vczh-libraries/Release/tree/master/Tutorial/GacUI_Controls/ListControls/UI) tutorial is another exmaple of how to create resource items in different files:
 ```
 <Resource>
   ...
@@ -78,12 +76,11 @@ The[ListControls](https://github.com/vczh-libraries/Release/tree/master/Tutorial
 </Resource>
 ```
 
+There is one important thing, to create an **\<Instance/\>**, there are two nested **\<Instance/\>** tags.
 
-There is one important thing, to create an**\<Instance/\>**, there are two nested**\<Instance/\>**tags.
+The outside one is to declare a resource item. The **name** attribute is required, and the **content** attribute is optional. When you just want to write everything in the same file, you don't need to **content** attribute. When you want to write **\<Instance/\>** in another file, you must specify **content="File"**.
 
-The outside one is to declare a resource item. The**name**attribute is required, and the**content**attribute is optional. When you just want to write everything in the same file, you don't need to**content**attribute. When you want to write**\<Instance/\>**in another file, you must specify**content="File"**.
-
-The inside one is the content of the resource item. When you want to write**\<Instance/\>**in another file, you only need to have to inside**\<Instance/\>**in that file. For example, the content of**TextListTabPage.xml**is:
+The inside one is the content of the resource item. When you want to write **\<Instance/\>** in another file, you only need to have to inside **\<Instance/\>** in that file. For example, the content of **TextListTabPage.xml** is:
 ```
 <Instance ref.CodeBehind="false" ref.Class="demo::TextListTabPage">
   <ref.Members>
@@ -98,14 +95,13 @@ The inside one is the content of the resource item. When you want to write**\<In
 </Instance>
 ```
 
+**\<Image/\>** is required to write the content in another file, because they are binary files.
 
-**\<Image/\>**is required to write the content in another file, because they are binary files.
+**\<Text/\>** supports both, but since the content of **\<Text/\>** is plain text, so when you specify **content="File"**, the external file will be treated as a text file and everything in that file will become the content.
 
-**\<Text/\>**supports both, but since the content of**\<Text/\>**is plain text, so when you specify**content="File"**, the external file will be treated as a text file and everything in that file will become the content.
+**\<Xml/\>** supports both, but since the content of **\<Xml/\>** is also Xml, so when you specify **content="File"**, the external file will be treated as an Xml file and everything in that file will become the content.
 
-**\<Xml/\>**supports both, but since the content of**\<Xml/\>**is also Xml, so when you specify**content="File"**, the external file will be treated as an Xml file and everything in that file will become the content.
-
-For any other kinds of resource items, they all have a**resource item tag**and a**resource content tag**. These two tags may or may not have the same name:
+For any other kinds of resource items, they all have a **resource item tag** and a **resource content tag**. These two tags may or may not have the same name:
 ```
 <Doc name="NAME">
     <Doc">...</Doc>
@@ -131,5 +127,4 @@ For any other kinds of resource items, they all have a**resource item tag**and a
     <LocalizedStrings>...</LocalizedStrings>
 </LocalizedStrings>
 ```
-
 

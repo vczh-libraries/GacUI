@@ -1,10 +1,10 @@
 # Using Input Methods
 
-Like any function,**$state_input**is allowed to have zero, one or multiple parameters. But since it always returns**void**, so you don't need to specify the return value.
+Like any function, **$state_input** is allowed to have zero, one or multiple parameters. But since it always returns **void**, so you don't need to specify the return value.
 
-When**$switch()**happens, it waits for selected inputs. If unexpected inputs are called, you can specify what should happen[in the parentheses](../.././workflow/lang/state_switch.md).
+When **$switch()** happens, it waits for selected inputs. If unexpected inputs are called, you can specify what should happen [in the parentheses](../.././workflow/lang/state_switch.md).
 
-You don't have to keep the same parameter names in**case**. For example:
+You don't have to keep the same parameter names in **case**. For example:
 ```
 module sampleModule;
 
@@ -43,11 +43,11 @@ func main(): string
     return sm.Output;
 }
 ```
-The**main**function returns**"A(John)"**.
+ The **main** function returns **"A(John)"**.
 
-Although it defines**A**using**$state_input A(name: string);**, but you can still use**case A(foo):**.**name**is not accessible here, because the parameter name is**foo**.
+Although it defines **A** using **$state_input A(name: string);**, but you can still use **case A(foo):**. **name** is not accessible here, because the parameter name is **foo**.
 
-You don't need to keep the parameter name consistent in all**case**statements:
+You don't need to keep the parameter name consistent in all **case** statements:
 ```
 module sampleModule;
 
@@ -98,5 +98,5 @@ func main(): string
     return sm.Output;
 }
 ```
-The**main**function returns**"A(John) B(Smith) "**.
+ The **main** function returns **"A(John) B(Smith) "**.
 

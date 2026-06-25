@@ -1,83 +1,69 @@
 # Remote Protocol Client Application
 
-**GuiRemoteRendererSingle**is a remote client implementation that renders everything to**INativeWindow**offering full user interaction features. A typical example would be:
+GuiRemoteRendererSingle is the standard C++ renderer for one remote GacUI core. It implements IGuiRemoteProtocol, renders to one INativeWindow, and sends user input, window, screen, measuring, and automation events back to the core.
+
+The renderer side does not implement a string channel anymore. It only chooses a vl::inter_process transport client, creates a GuiRemoteProtocolChannelClient, and bridges that JSON channel to GuiRemoteRendererSingle.
+
+A compact named pipe renderer looks like this:
 ```c++
-class RendererChannel : public Object, public virtual IGuiRemoteProtocolChannelReceiver<WString>
+using namespace vl;
+using namespace vl::presentation;
+using namespace vl::presentation::remoteprotocol;
+using namespace vl::presentation::remoteprotocol::channeling;
+using namespace vl::presentation::remote_renderer;
+
+GuiRemoteRendererSingle* remoteRenderer = nullptr;
+GuiRemoteProtocolAsyncJsonChannelRenderer* asyncChannel = nullptr;
+
+class GuiMainInvoker : public IGuiRemoteProtocolAsyncRendererInvoker
 {
 public:
-    RendererChannel(GuiRemoteRendererSingle* renderer, IGuiRemoteProtocolChannel<WString>* channel)
+    void InvokeInMainThread(const Func<void()>& proc) override
     {
-        // connect to the remote core application
-    }
-
-    void OnReceive(const TPackage& package) override
-    {
-        // send the string away
-    }
-
-    void RegisterMainWindow(INativeWindow* _window)
-    {
-        // begin handling messages
-        // when a message is received, call channel->Write
-        // when it is a fetal error, call renderer->ForceExitByFatelError()
-        // they must be called with GetCurrentController()->AsyncService()->InvokeInMainThread
-        // renderer and channel are the arguments of the constructor
-    }
-
-    void UnregisterMainWindow()
-    {
-    }
-
-    void WaitForDisconnected()
-    {
-        // block until the remote core application tells the remote client the work is done
+        GetApplication()->InvokeInMainThread(nullptr, proc);
     }
 };
-
-RendererChannel* rendererChannel = nullptr;
-GuiRemoteRendererSingle* renderer = nullptr;
 
 void GuiMain()
 {
     auto mainWindow = GetCurrentController()->WindowService()->CreateNativeWindow(INativeWindow::Normal);
     mainWindow->SetTitle(L"Connecting ...");
-    {
-        auto size = mainWindow->Convert(Size(320, 240));
-        auto screen = GetCurrentController()->ScreenService()->GetScreen((vint)0);
-        auto client = screen->GetClientBounds();
-        auto x = client.Left() + (client.Width() - size.x) / 2;
-        auto y = client.Top() + (client.Height() - size.y) / 2;
-        mainWindow->SetBounds({ {x,y},size });
-    }
-    rendererChannel->RegisterMainWindow(mainWindow);
-    renderer->RegisterMainWindow(mainWindow);
+
+    GuiMainInvoker invoker;
+    remoteRenderer->RegisterMainWindow(mainWindow);
+    asyncChannel->SetInvokeInMainThread(&invoker);
+
     GetCurrentController()->WindowService()->Run(mainWindow);
-    renderer->UnregisterMainWindow();
-    rendererChannel->UnregisterMainWindow();
+
+    asyncChannel->SetInvokeInMainThread(nullptr);
+    remoteRenderer->UnregisterMainWindow();
 }
 
-int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int CmdShow)
+int StartNamedPipeRemoteRenderer()
 {
     auto jsonParser = Ptr(new glr::json::Parser);
-    GuiRemoteRendererSingle remoteRenderer;
-    GuiRemoteJsonChannelFromProtocol channelReceiver(&remoteRenderer);
-    GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, jsonParser);
-    RendererChannel clientRendererChannel(&remoteRenderer, &channelJsonDeserializer);
+    auto networkClient = Ptr(new inter_process::NamedPipeClient(L"GacUIRemoteProtocolNamedPipe"));
 
-    channelReceiver.BeforeWrite.Add([&](const ChannelPackageInfo& info) { clientRendererChannel.BeforeWrite(info); });
-    channelReceiver.BeforeOnReceive.Add([&](const ChannelPackageInfo& info) { clientRendererChannel.BeforeOnReceive(info); });
+    GuiRemoteProtocolChannelClient channelClient(networkClient, jsonParser);
+    GuiRemoteProtocolAsyncJsonChannelRenderer asyncRendererChannel(channelClient.GetProtocolChannel());
+    GuiRemoteRendererSingle renderer(true);
+    GuiRemoteProtocolRendererChannel rendererChannel(
+        &channelClient,
+        &asyncRendererChannel,
+        &renderer);
 
-    rendererChannel = &clientRendererChannel;
-    renderer = &remoteRenderer;
-    int result = SetupRawWindowsDirect2DRenderer();
-    clientRendererChannel.WaitForDisconnected();
-    renderer = nullptr;
-    rendererChannel = nullptr;
+    channelClient.WaitForServer();
 
+    remoteRenderer = &renderer;
+    asyncChannel = &asyncRendererChannel;
+    auto result = SetupRawWindowsDirect2DRenderer();
+    asyncChannel = nullptr;
+    remoteRenderer = nullptr;
     return result;
 }
 ```
 
+GuiRemoteProtocolAsyncJsonChannelRenderer queues messages from the channel and runs them on the UI thread through IGuiRemoteProtocolAsyncRendererInvoker. GuiRemoteProtocolRendererChannel converts JSON channel packages to calls on GuiRemoteRendererSingle, and converts renderer events back to JSON packages for the core client id.
 
-This sample simplifies all the details leaving the sending and receiving of strings to you. Check out[this test project](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_Rendering_Win32)for a complete example.
+Override GuiRemoteProtocolChannelClient::OnReadError, OnLocalError, or OnDisconnected when the renderer should show a fatal error dialog or call GuiRemoteRendererSingle::ForceExitByFatelError. See [RemotingTest_Rendering_Win32](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_Rendering_Win32) for the complete named pipe and HTTP implementation.
 

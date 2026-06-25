@@ -1,13 +1,13 @@
 # \<LocalizedStrings\>
 
-After a**GacUI XML Resource**is converted to a resource binary:
+After a **GacUI XML Resource** is converted to a resource binary:
 - This resource does not exist in the resource binary.
 - The equivalent Workflow script will be included in the Workflow assembly part in the resource binary.
-- If you use the one specified in**GacGenConfig/Cpp**, the Workflow assembly is also not included in the resource binary, because you are supposed to use the generated C++ code.
+- If you use the one specified in **GacGenConfig/Cpp**, the Workflow assembly is also not included in the resource binary, because you are supposed to use the generated C++ code.
 
 \<LocalizedStrings/\> generate a class with a local property and methods returning text. By using data binding to bind these text to UI, changing the locale will also change texts in UI.
 
-[Here](https://github.com/vczh-libraries/Release/blob/master/SampleForDoc/GacUI/XmlRes/kb_localizedstrings/Resource.xml)is a sample for \<LocalizedStrings/\>. In this same, there is a \<LocalizedStrings/\> like this:
+[Here](https://github.com/vczh-libraries/Release/blob/master/SampleForDoc/GacUI/XmlRes/kb_localizedstrings/Resource.xml) is a sample for \<LocalizedStrings/\>. In this same, there is a \<LocalizedStrings/\> like this:
 ```
 <LocalizedStrings name="StringResource">
   <LocalizedStrings ref.Class="sample::StringResource" DefaultLocale="en-US">
@@ -22,7 +22,7 @@ After a**GacUI XML Resource**is converted to a resource binary:
       <String Name="OK" Text="OK"/>
       <String Name="Cancel" Text="Cancel"/>
     </Strings>
-    
+
     <Strings Locales="zh-CN">
       <String Name="Date" Text="日期：$(0:LongDate)"/>
       <String Name="Week" Text="，$(0:Date:dddd)"/>
@@ -34,7 +34,7 @@ After a**GacUI XML Resource**is converted to a resource binary:
       <String Name="OK" Text="确定"/>
       <String Name="Cancel" Text="取消"/>
     </Strings>
-    
+
     <Strings Locales="ja-JP">
       <String Name="Date" Text="日付：$(0:LongDate)"/>
       <String Name="Week" Text=" $(0:Date:dddd)"/>
@@ -50,17 +50,16 @@ After a**GacUI XML Resource**is converted to a resource binary:
 </LocalizedStrings>
 ```
 
-
 There are two attributes for \<LocalizedStrings/\>:
 - **ref.Class**: The class name. This is used in \<ref.LocalizedStrings/\> in \<Instance/\>.
-- **DefaultLocale**The default locale name. If the translation for a locale does not exist, it uses the**DefaultLocale**.
+- **DefaultLocale** The default locale name. If the translation for a locale does not exist, it uses the **DefaultLocale**.
 
-In any \<String/\>,**Name**is the method name of this text item,**Text**is the content. Content consists of the following items:
+In any \<String/\>, **Name** is the method name of this text item, **Text** is the content. Content consists of the following items:
 - Normal text.
 - **$($)**, which is the $ character.
 - **$(ARGUMENT-INDEX)**: A string parameter. Parameters are zero-based.
 - **$(ARGUMENT-INDEX:TYPE)**: A typed parameter.
-- **$(ARGUMENT-INDEX:TYPE:FORMAT)**: A typed parameter with specified format.Type must be one of the following:
+- **$(ARGUMENT-INDEX:TYPE:FORMAT)**: A typed parameter with specified format. Type must be one of the following:
 - ShortDate
 - LongDate
 - YearMonthData
@@ -69,29 +68,28 @@ In any \<String/\>,**Name**is the method name of this text item,**Text**is the c
 - Date
 - Time
 - Number
-- CurrencyIf the type is**Date**or**Time**, the format must be compatible toLocale::FormatTime`missing document: /vlppos/ref/VL__LOCALE__FORMATTIME@__VL__WSTRING(__VL__WSTRING_CONST_&,___VL.html`.
+- Currency If the type is **Date** or **Time**, the format must be compatible to Locale::FormatTime`missing document: /vlppos/ref/VL__LOCALE__FORMATTIME@__VL__WSTRING(__VL__WSTRING_CONST_&,___VL.html`.
 
 There are three attributes for \<ref.LocalizedStrings/\> in \<Instance/\>:
-- **Name**: The property name of this string resource. This property is added to the instance, and it could be**null**.
-- **Class**:**ref.Class**in the \<LocalizedStrings/\>.
-- **Default**:**true**or**false**. Only one string resource could be default.
+- **Name**: The property name of this string resource. This property is added to the instance, and it could be **null**.
+- **Class**: **ref.Class** in the \<LocalizedStrings/\>.
+- **Default**: **true** or **false**. Only one string resource could be default.
 
 After the configuration is ready, a text item could be accessed in one of the following ways:
 - **Property-str="METHOD(ARGUMENT, ...)"**
 - **Property-str="NAME.METHOD(ARGUMENT, ...)"**
-- **self.NAME.METHOD(ARGUMENT, ...)**, note that**self.NAME**could be**null**, the**??**operator is recommended.
+- **self.NAME.METHOD(ARGUMENT, ...)**, note that **self.NAME** could be **null**, the **??** operator is recommended.
 
-**NAME**must be the name of one of the  \<ref.LocalizedStrings/\>. If it is not specified, the default one kicks in.
+**NAME** must be the name of one of the \<ref.LocalizedStrings/\>. If it is not specified, the default one kicks in.
 
-**METHOD**must be one of the text item name in the string resource.
+**METHOD** must be one of the text item name in the string resource.
 
-**ARGUMENTS**could be any valid Workflow expression that is a string or can be implicitly converted to a string.
+**ARGUMENTS** could be any valid Workflow expression that is a string or can be implicitly converted to a string.
 
-When the UI is created, the locale is set to**Application::GetApplication().Locale**, which is the default locale in the OS. To change the locale of the UI, just change**Application::GetApplication().Locale**, and all string resources will be updated if it is used in**-str**,**-format**or**-bind**.
+When the UI is created, the locale is set to **Application::GetApplication().Locale**, which is the default locale in the OS. To change the locale of the UI, just change **Application::GetApplication().Locale**, and all string resources will be updated if it is used in **-str**, **-format** or **-bind**.
 
 Here is how it looks like:
 
-
-- Source code:[kb_localizedstrings](https://github.com/vczh-libraries/Release/blob/master/SampleForDoc/GacUI/XmlRes/kb_localizedstrings/Resource.xml)
+- Source code: [kb_localizedstrings](https://github.com/vczh-libraries/Release/blob/master/SampleForDoc/GacUI/XmlRes/kb_localizedstrings/Resource.xml)
 - ![](https://gaclib.net/doc/gacui/kb_localizedstrings.gif)
 

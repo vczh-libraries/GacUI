@@ -136,6 +136,11 @@ Detailed project guidance: [Index_GacUI.md](./Index_GacUI.md)
 
 - [Using Streams](./manual/vlppos/using-streams.md)
 - [Using Threads and Locks](./manual/vlppos/using-threads.md)
+- [Using Inter-Process Channels](./manual/vlppos/using-inter-process.md)
+
+## Vlpp Reflection
+
+- [Registration Macros and Attributes](./manual/vlppreflection/registration-macros.md)
 
 ## Vlpp Parser2
 
@@ -188,6 +193,9 @@ Detailed project guidance: [Index_GacUI.md](./Index_GacUI.md)
     - [Example: Calculator](./manual/workflow/lang/state_calculator.md)
   - [Index of Keywords](./manual/workflow/lang/index.md)
   - [Index of Errors](./manual/workflow/lang/error.md)
+- [Attributes](./manual/workflow/attributes.md)
+- [RPC](./manual/workflow/rpc.md)
+  - [JSON RPC Channel Setup](./manual/workflow/rpc/json-channel.md)
 - [Runtime Instructions](./manual/workflow/ins.md)
 - [C++ Code Generation](./manual/workflow/codegen.md)
 
@@ -331,7 +339,20 @@ Detailed project guidance: [Index_GacUI.md](./Index_GacUI.md)
 - [Hosted Mode and Remote Protocol](./manual/gacui/modes/home.md)
   - [Remote Protocol Core Application](./manual/gacui/modes/remote_core.md)
   - [Remote Protocol Client Application](./manual/gacui/modes/remote_client.md)
-  - [Implementing a Communication Protocol](./manual/gacui/modes/remote_communication.md)
+  - [Remote Protocol Channel Layer](./manual/gacui/modes/remote_communication.md)
+- Coding Agent Supports
+  - [AutomationService](./manual/gacui/coding-agent/automation-service.md)
+
+## Working with Coding Agent
+
+- Installing required tools
+  - [Windows](./manual/coding-agent/installing/windows.md)
+  - [Linux](./manual/coding-agent/installing/linux.md)
+  - [macOS](./manual/coding-agent/installing/macos.md)
+- [Preparing Context Files](./manual/coding-agent/context.md)
+  - [Writing Project.md](./manual/coding-agent/project-md.md)
+- [Investigate and Refine Jobs](./manual/coding-agent/jobs.md)
+- [AutomationService and Basic Computer Use](./manual/coding-agent/gacui-debugging.md)
 
 ## Unit Testing
 

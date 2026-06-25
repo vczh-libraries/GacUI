@@ -26,7 +26,6 @@ int main(int argc, char** argv)
 }
 ```
 
-
 A typical test file would be:
 ```c++
 #include <GacUI.UnitTest.h>
@@ -76,7 +75,7 @@ TEST_FILE
     });
 }
 ```
-Or if you are loading an existing window instead of making one from GacUI XML resource:
+ Or if you are loading an existing window instead of making one from GacUI XML resource:
 ```c++
 #include <GacUI.UnitTest.h>
 using namespace vl;
@@ -133,36 +132,35 @@ TEST_FILE
 });
 ```
 
-
 ## About Snapshots and Frames
 
-This test case will create a bunch of file in**UnitTestFrameworkConfig::snapshotFolder**, under the path**Controls/Basic/GuiButton**. There will be**ClickOnMouseUp.json**and two**ClickOnMouseUp/frame_*.json**, with some other**ClickOnMouseUp.*.json**files. If you**git commit**them, after running a test case you can easily find out which test cases have been affected.
+This test case will create a bunch of file in **UnitTestFrameworkConfig::snapshotFolder**, under the path **Controls/Basic/GuiButton**. There will be **ClickOnMouseUp.json** and two **ClickOnMouseUp/frame_*.json**, with some other **ClickOnMouseUp.*.json** files. If you **git commit** them, after running a test case you can easily find out which test cases have been affected.
 
 In this test case, the unit test framework does the following thing:
-- Compile the resource and run**gacuisrc_unittest::MainWindow**as the main window, offering no arguments.
+- Compile the resource and run **gacuisrc_unittest::MainWindow** as the main window, offering no arguments.
 - Wait until the layout finishes.
-- Save the snapshot of the current UI to**frame_0.json**.
+- Save the snapshot of the current UI to **frame_0.json**.
 - Click the button.
 - Wait until the layout finishes.
-- Save the snapshot of the current UI to**frame_1.json**.
+- Save the snapshot of the current UI to **frame_1.json**.
 - exit.
 
 Each frame needs to make some visible UI changes, the unit test framework will detect and fail if no visible UI change has been made.
 
-Each frame should not call blocking functions directly. For example, if a button displays a dialog, the**ShowDialog**or**ShowModal**or**ShowModalAndDelete**function only returns after the dialog is closed, such functions are blocking functions. In case when clicking a button displaying a dialog, you should use:
+Each frame should not call blocking functions directly. For example, if a button displays a dialog, the **ShowDialog** or **ShowModal** or **ShowModalAndDelete** function only returns after the dialog is closed, such functions are blocking functions. In case when clicking a button displaying a dialog, you should use:
 ```c++
 GetApplication()->InvokeInMainThread(window, [=]()
 {
     protocol->LClick(location);
 });
 ```
-The next frame will starts right after the dialog is shown, and you can then interact with it.**ShowModalAsync**does not have such limitation.
+ The next frame will starts right after the dialog is shown, and you can then interact with it. **ShowModalAsync** does not have such limitation.
 
 So the title of the frame should describe what the UI looks like before the action, or just describe what the previous frame has done, as a snapshot is taken combining with the title name before executing the code inside a frame.
 
 ## Using Images
 
-**UnitTestFrameworkConfig::resourceFolder**is the working directly when compiling the GacUI XML resource. If it needs to add other resource files, e.g. images, you can put them there.
+**UnitTestFrameworkConfig::resourceFolder** is the working directly when compiling the GacUI XML resource. If it needs to add other resource files, e.g. images, you can put them there.
 
 The following code shows how to reference image files in the resource:
 ```xml
@@ -172,7 +170,7 @@ The following code shows how to reference image files in the resource:
   ...
 </Resource>
 ```
-By saying this,**ListViewImagesData.xml**and**ListViewImagesFolder.xml**should be put under**UnitTestFrameworkConfig::resourceFolder**.
+ By saying this, **ListViewImagesData.xml** and **ListViewImagesFolder.xml** should be put under **UnitTestFrameworkConfig::resourceFolder**.
 
 **ListViewImagesData.xml**
 ```xml
@@ -186,7 +184,6 @@ By saying this,**ListViewImagesData.xml**and**ListViewImagesFolder.xml**should b
 </Folder>
 ```
 
-
 **ListViewImagesFolder.xml**
 ```xml
 <Folder>
@@ -198,6 +195,5 @@ By saying this,**ListViewImagesData.xml**and**ListViewImagesFolder.xml**should b
 </Folder>
 ```
 
-
-The unit test framework will not actually read the image file, but in order to perform UI layouting, it will instead read**UnitTestConfig/ImageData**to search for the metadata of the image. In this example,**res://ListViewImages/LargeImages/Cert**will match the record**Format="Png" Width="32" Height="32"**.
+The unit test framework will not actually read the image file, but in order to perform UI layouting, it will instead read **UnitTestConfig/ImageData** to search for the metadata of the image. In this example, **res://ListViewImages/LargeImages/Cert** will match the record **Format="Png" Width="32" Height="32"**.
 

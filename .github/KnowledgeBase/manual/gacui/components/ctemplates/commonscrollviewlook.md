@@ -1,6 +1,6 @@
 # \<CommonScrollViewLook\>
 
-This is a helper class for implementing any control templates inherit from**\<ScrollViewTemplate/\>**. It inherits from**GuiTemplate**.
+This is a helper class for implementing any control templates inherit from **\<ScrollViewTemplate/\>**. It inherits from **GuiTemplate**.
 
 This helper class is expected to be used in this way:
 ```
@@ -23,13 +23,12 @@ This helper class is expected to be used in this way:
 </Instance>
 ```
 
-
-These properties are expected to pass from**\<CommonScrollViewLook/\>**to**\<ScrollViewTemplate/\>**:
+These properties are expected to pass from **\<CommonScrollViewLook/\>** to **\<ScrollViewTemplate/\>**:
 - **ContainerComposition**
 - **HorizontalScroll**
-- **VerticalScroll**These properties defines control templates for:
+- **VerticalScroll** These properties defines control templates for:
 - **HScrollTemplate**: Horizontal scroll.
-- **VScrollTemplate**: Vertical scroll.These properties defines the thickness of scroll bars:
+- **VScrollTemplate**: Vertical scroll. These properties defines the thickness of scroll bars:
 - **DefaultScrollSize**: Height of the horizontal scroll, and width of the vertical scroll.
 
 After installing this helper class properly, parameters of scroll bars will be taken care of by the control itself. For control templates of list controls, control templates don't need to worry about rendering items, they just need to provide more configurations like colors or control templates of sub objects.

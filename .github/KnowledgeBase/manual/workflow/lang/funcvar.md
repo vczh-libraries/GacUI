@@ -1,6 +1,6 @@
 # Functions and Variables
 
-Functions and variables can be defined in**modules**,**namespaces**and**classes**.
+Functions and variables can be defined in **modules**, **namespaces** and **classes**.
 
 ## Variable
 
@@ -10,15 +10,13 @@ var a = "Hello";
 var b: string = "Hello";
 ```
 
-
 The type is optional, when it can be inferred from the initializer.
 
-Type inferring is available for most expressions, but there are still a few kinds of expression which don't have an explicit type. Like**null**. In this case, you have two choices, one is to specify the variable type, another one is to specify the expression type:
+Type inferring is available for most expressions, but there are still a few kinds of expression which don't have an explicit type. Like **null**. In this case, you have two choices, one is to specify the variable type, another one is to specify the expression type:
 ```
 var a: MyClass = null;
 var b = null of MyClass;
 ```
-
 
 The initializer can be any expression, it cannot be omitted.
 
@@ -36,8 +34,7 @@ func main(): string
 }
 ```
 
-
-This function is called**main**. Multiple variables could share the same name in one scope, this is overloading. When such functions are called, One of them is picked according to argument types.
+This function is called **main**. Multiple variables could share the same name in one scope, this is overloading. When such functions are called, One of them is picked according to argument types.
 
 The return type and the function body cannot be omitted.
 
@@ -49,18 +46,16 @@ func add(x: int, y: int): int
 }
 ```
 
-
 Two arguments are required to call this function:
 ```
 add(1, 2);
 ```
 
-
 There is no default value for any parameter. Function overloading is recommended to simulate default values for parameters.
 
-When the return type of a function is**void**, any**return**statement in this function is not allowed to have an expression. When the return type is not**void**, any**return**statement in this function must have an expression.
+When the return type of a function is **void**, any **return** statement in this function is not allowed to have an expression. When the return type is not **void**, any **return** statement in this function must have an expression.
 
-The compiler does not check if any exit point of a function is missing a return value. If a function exits without a return value, it returns**null**. If the return type is not compatible with**null**, no error will be generated during compiling, it is an undefined behavior.
+The compiler does not check if any exit point of a function is missing a return value. If a function exits without a return value, it returns **null**. If the return type is not compatible with **null**, no error will be generated during compiling, it is an undefined behavior.
 
 When such code is generated to C++, the C++ compiler will tell you that it is wrong.
 
@@ -77,7 +72,7 @@ Secondly, function arguments are used to pick one from overloaded functions. But
 
 After all arguments with explicit types are recognized, each valid candidate is examined by counting the number of arguments that need type conversions.
 
-During the examination, some functions may end up being discarded because arguments type are not appropriate. For example, passing**null**to an**int**parameter.
+During the examination, some functions may end up being discarded because arguments type are not appropriate. For example, passing **null** to an **int** parameter.
 
 In the reduced candidate list, we pick one that has minimum numbers of argument type conversions. If there are more than one, then an error is generated.
 
@@ -89,5 +84,5 @@ class Derived: Base{}
 func F(x: Base^): void {}
 func F(x: Derived^): void {}
 ```
-**F(new Derived^())**will always pick the second one, because the first one needs 1 type conversion, but the second needs 0 type conversion. The second one wins.
+**F(new Derived^())** will always pick the second one, because the first one needs 1 type conversion, but the second needs 0 type conversion. The second one wins.
 

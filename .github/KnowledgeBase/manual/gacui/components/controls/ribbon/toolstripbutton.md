@@ -1,6 +1,5 @@
 # \<ToolstripButton\>
 
-
 - **C++/Workflow**: (vl::)presentation::controls::GuiToolstripButton*
 - **Template Tag**: \<ToolstripButtonTemplate/\>
 - **\<RibbonSmallButton/\>**
@@ -16,11 +15,10 @@
 - **\<RibbonLargeSplitButton/\>**
   - **Template Name**: RibbonLargeSplitButton
 
-**\<ToolstripButton/\>**is the button control for toolstrips and ribbons. It respons to the**Large**,**Small**and**Icon**size in**\<RibbonButtons/\>**.
+**\<ToolstripButton/\>** is the button control for toolstrips and ribbons. It respons to the **Large**, **Small** and **Icon** size in **\<RibbonButtons/\>**.
 
-Please check out[Toolstrip Controls](../../../.././gacui/components/controls/toolstrip/toolstripbutton.md)for details about using**\<ToolstripButton/\>**. Toolstrip buttons in toolstrip controls and ribbon controls have exactly same functionalities. Ribbon controls only provide more themes.
+Please check out [Toolstrip Controls](../../../.././gacui/components/controls/toolstrip/toolstripbutton.md) for details about using **\<ToolstripButton/\>**. Toolstrip buttons in toolstrip controls and ribbon controls have exactly same functionalities. Ribbon controls only provide more themes.
 
-
-- Source code:[control_ribbon_buttonsize2](https://github.com/vczh-libraries/Release/blob/master/SampleForDoc/GacUI/XmlRes/control_ribbon_buttonsize2/Resource.xml)
+- Source code: [control_ribbon_buttonsize2](https://github.com/vczh-libraries/Release/blob/master/SampleForDoc/GacUI/XmlRes/control_ribbon_buttonsize2/Resource.xml)
 - ![](https://gaclib.net/doc/gacui/control_ribbon_buttonsize2.gif)
 

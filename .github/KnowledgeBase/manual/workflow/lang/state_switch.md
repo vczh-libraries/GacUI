@@ -1,17 +1,17 @@
 # Handling Unexpected Inputs
 
 Workflow offers built-in strategy for handling unexpected inputs.
-- **$switch(raise)**raises an exception on unexpected input and stops the state machine.
-- **$switch()**and**$switch(return)**consume the unexpected input.
-- **$switch(continue)**and**$switch(continue, return)**do not consume the unexpected input.
-- **$switch()**and**$switch(continue)**stop the current**$switch**and continue.
-- **$switch(return)**and**$switch(continue, return)**stop the current state and continue.
+- **$switch(raise)** raises an exception on unexpected input and stops the state machine.
+- **$switch()** and **$switch(return)** consume the unexpected input.
+- **$switch(continue)** and **$switch(continue, return)** do not consume the unexpected input.
+- **$switch()** and **$switch(continue)** stop the current **$switch** and continue.
+- **$switch(return)** and **$switch(continue, return)** stop the current state and continue.
 
 ## $switch()
 
 **$switch()**
 - ignores and consumes an unpected input
-- continues to execute code after**$switch**
+- continues to execute code after **$switch**
 ```
 module sampleModule;
 
@@ -70,9 +70,9 @@ func main(): string
     return sm.Output;
 }
 ```
-The**main**function returns**"Finishes WaitForName(); Finishes default(); "**.
+ The **main** function returns **"Finishes WaitForName(); Finishes default(); "**.
 
-When**C("John")**is called,**$switch**found that this is an unexpected input, it continues to run code after**$switch**.
+When **C("John")** is called, **$switch** found that this is an unexpected input, it continues to run code after **$switch**.
 
 ## $switch(raise)
 
@@ -145,9 +145,9 @@ func main(): string
     return sm.Output;
 }
 ```
-The**main**function returns**"Method "C" of class "MySM" cannot be called at this moment.; The state machine has been stopped.; "**.
+ The **main** function returns **"Method "C" of class "MySM" cannot be called at this moment.; The state machine has been stopped.; "**.
 
-When**C("John")**is called,**$switch**found that this is an unexpected input, it throws an exception, and the state machine is stopped.
+When **C("John")** is called, **$switch** found that this is an unexpected input, it throws an exception, and the state machine is stopped.
 
 ## $switch(return)
 
@@ -213,16 +213,16 @@ func main(): string
     return sm.Output;
 }
 ```
-The**main**function returns**"Finishes default(); "**.
+ The **main** function returns **"Finishes default(); "**.
 
-When**C("John")**is called,**$switch**found that this is an unexpected input, it stops**$state WaitForName()**and continues in**$state default()**.
+When **C("John")** is called, **$switch** found that this is an unexpected input, it stops **$state WaitForName()** and continues in **$state default()**.
 
 ## $switch(continue)
 
 **$switch(continue)**
 - consumes an unpected input
-- continues to execute code after**$switch**
-- the unpected input is not consumes, it is left for the next**$switch**
+- continues to execute code after **$switch**
+- the unpected input is not consumes, it is left for the next **$switch**
 ```
 module sampleModule;
 
@@ -312,11 +312,11 @@ func main(): string
     return sm.Output;
 }
 ```
-The**main**function returns**"2nd C(John); Finishes WaitForName(); 3rd C(John); Finishes default(); "**.
+ The **main** function returns **"2nd C(John); Finishes WaitForName(); 3rd C(John); Finishes default(); "**.
 
-When**C("John")**is called, the first**$switch**found that this is an unexpected input, it continues to run code after**$switch**.
+When **C("John")** is called, the first **$switch** found that this is an unexpected input, it continues to run code after **$switch**.
 
-And then the second**$switch**is executed, it found that**C("John")**is an expected input at this moment, and consumes it.
+And then the second **$switch** is executed, it found that **C("John")** is an expected input at this moment, and consumes it.
 
 ## $switch(continue, return)
 
@@ -324,7 +324,7 @@ And then the second**$switch**is executed, it found that**C("John")**is an expec
 - consumes an unpected input
 - stops the current state
 - continues to execute code after this state
-- the unpected input is not consumes, it is left for the next**$switch**
+- the unpected input is not consumes, it is left for the next **$switch**
 ```
 module sampleModule;
 
@@ -414,13 +414,13 @@ func main(): string
     return sm.Output;
 }
 ```
-The**main**function returns**"3rd C(John); Finishes default(); The state machine has been stopped.; "**.
+ The **main** function returns **"3rd C(John); Finishes default(); The state machine has been stopped.; "**.
 
-When**C("John")**is called, the first**$switch**found that this is an unexpected input, it stops**$state WaitForName()**and continues in**$state default()**.
+When **C("John")** is called, the first **$switch** found that this is an unexpected input, it stops **$state WaitForName()** and continues in **$state default()**.
 
-The second**$switch**is skipped.
+The second **$switch** is skipped.
 
-And then the third**$switch**is executed, it found that**C("John")**is an expected input at this moment, and consumes it.
+And then the third **$switch** is executed, it found that **C("John")** is an expected input at this moment, and consumes it.
 
-When**C("John")**is called for the second time, the state machine has stopped, it throws an exception.
+When **C("John")** is called for the second time, the state machine has stopped, it throws an exception.
 

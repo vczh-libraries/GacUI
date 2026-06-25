@@ -14,8 +14,7 @@ public:
 };
 ```
 
-
-By inheriting from**IDescriptable**and**Description**, instances of this interface are accessible in Workflow scripts. But in order to make Workflow scripts being able to implement this interface, more things need to be done:
+By inheriting from **IDescriptable** and **Description**, instances of this interface are accessible in Workflow scripts. But in order to make Workflow scripts being able to implement this interface, more things need to be done:
 ```
 namespace vl::reflection::description
 {
@@ -27,9 +26,9 @@ namespace vl::reflection::description
     END_INTERFACE_PROXY(IScripting)
 }
 ```
-Unfortunately it looks boring, but this version of reflection requires you to write such code to allow it to be implemented by Workflow script code.
+ Unfortunately it looks boring, but this version of reflection requires you to write such code to allow it to be implemented by Workflow script code.
 
-Here we use**BEGIN_INTERFACE_PROXY_SHAREDPTR**, because we want instances of this interface to be shared pointers.
+Here we use **BEGIN_INTERFACE_PROXY_SHAREDPTR**, because we want instances of this interface to be shared pointers.
 
 Now, we are able to implement this interface in Workflow script:
 ```
@@ -47,10 +46,9 @@ func main(): IScripting^
     };
 }
 ```
-And call it in C++:
+ And call it in C++:
 ```
 auto mainFunction = LoadFunction<Ptr<myapi::IScripting>()>(globalContext, L"main");
 mainFunction()->Execute(L"Gaclib");
 ```
-
 

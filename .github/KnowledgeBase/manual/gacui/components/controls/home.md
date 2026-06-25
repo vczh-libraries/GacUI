@@ -1,11 +1,10 @@
 # Controls
 
-[Controls](../../.././gacui/kb/controls.md)offer a rich set of predefined UI functionalities. Controls organize and visualize data by data binding. Controls define their skins by control templates and item templates. Controls have**BoundsComposition**and**ContainerComposition**to connect with compositions.
+[Controls](../../.././gacui/kb/controls.md) offer a rich set of predefined UI functionalities. Controls organize and visualize data by data binding. Controls define their skins by control templates and item templates. Controls have **BoundsComposition** and **ContainerComposition** to connect with compositions.
 
 Here are predefined controls by category:
 
 ## Basic Controls
-
 
 - GuiControl
   - GuiControlHost
@@ -16,22 +15,21 @@ Here are predefined controls by category:
   - **\<Label\>**
   - **\<Button\>**
     - GuiSelectableButton
-      - **\<CheckBox\>**(virtual)
-      - **\<RadioButton\>**(virtual)
+      - **\<CheckBox\>** (virtual)
+      - **\<RadioButton\>** (virtual)
       - GuiMenuButton
         - GuiComboBoxBase
           - GuiComboBoxListControl
             - **\<DateComboBox\>**
   - GuiScroll
-    - **\<HScroll\>**(virtual)
-    - **\<VScroll\>**(virtual)
-    - **\<HTracker\>**(virtual)
-    - **\<VTracker\>**(virtual)
-    - **\<ProgressBar\>**(virtual)
+    - **\<HScroll\>** (virtual)
+    - **\<VScroll\>** (virtual)
+    - **\<HTracker\>** (virtual)
+    - **\<VTracker\>** (virtual)
+    - **\<ProgressBar\>** (virtual)
   - **\<DatePicker\>**
 
 ## Container Controls
-
 
 - GuiControl
   - \<CustomControl\>
@@ -39,10 +37,9 @@ Here are predefined controls by category:
   - **\<Tab\>**
   - GuiScrollView
     - **\<ScrollContainer\>**
-  - **\<GroupBox\>**(virtual)
+  - **\<GroupBox\>** (virtual)
 
 ## Editor Controls
-
 
 - GuiControl
   - GuiScrollView
@@ -50,11 +47,10 @@ Here are predefined controls by category:
       - **\<DocumentViewer\>**
         - **\<MultilineTextBox\>**
   - **\<DocumentLabel\>**
-    - **\<DocumentTextBox\>**(virtual)
+    - **\<DocumentTextBox\>** (virtual)
     - **\<SinglelineTextBox\>**
 
 ## List Controls
-
 
 - GuiControl
   - \<Button\>
@@ -62,7 +58,7 @@ Here are predefined controls by category:
       - GuiMenuButton
         - GuiComboBoxBase
           - GuiComboBoxListControl
-            - **\<ComboBox\>**(virtual)
+            - **\<ComboBox\>** (virtual)
   - GuiScrollView
     - GuiListControl
       - GuiSelectableListControl
@@ -82,7 +78,6 @@ Here are predefined controls by category:
 
 ## Toolstrip Controls
 
-
 - GuiControl
   - GuiControlHost
     - \<Window\>
@@ -92,24 +87,23 @@ Here are predefined controls by category:
   - GuiMenuBar
     - **\<ToolstripMenuBar\>**
   - **\<ToolstripToolBar\>**
-    - **\<ToolstripToolBarInMenu\>**(Virtual)
+    - **\<ToolstripToolBarInMenu\>** (Virtual)
   - \<Button\>
     - GuiSelectableButton
       - GuiMenuButton
         - **\<ToolstripButton\>**
-          - **\<MenuBarButton\>**(virtual)
-          - **\<MenuItemButton\>**(virtual)
-          - **\<ToolstripDropdownButton\>**(virtual)
-          - **\<ToolstripSplitButton\>**(virtual)
-  - **\<MenuSplitter\>**(virtual)
-  - **\<ToolstripSplitter\>**(virtual)
-  - **\<ToolstripSplitterInMenu\>**(virtual)
+          - **\<MenuBarButton\>** (virtual)
+          - **\<MenuItemButton\>** (virtual)
+          - **\<ToolstripDropdownButton\>** (virtual)
+          - **\<ToolstripSplitButton\>** (virtual)
+  - **\<MenuSplitter\>** (virtual)
+  - **\<ToolstripSplitter\>** (virtual)
+  - **\<ToolstripSplitterInMenu\>** (virtual)
   - GuiToolstripNestedContainer
     - **\<ToolstripGroupContainer\>**
     - **\<ToolstripGroup\>**
 
 ## Ribbon Controls
-
 
 - GuiControl
   - GuiControlHost
@@ -122,12 +116,12 @@ Here are predefined controls by category:
     - GuiSelectableButton
       - GuiMenuButton
         - \<ToolstripButton\>
-          - **\<RibbonSmallButton\>**(virtual)
-          - **\<RibbonSmallDropdownButton\>**(virtual)
-          - **\<RibbonSmallSplitButton\>**(virtual)
-          - **\<RibbonLargeButton\>**(virtual)
-          - **\<RibbonLargeDropdownButton\>**(virtual)
-          - **\<RibbonLargeSplitButton\>**(virtual)
+          - **\<RibbonSmallButton\>** (virtual)
+          - **\<RibbonSmallDropdownButton\>** (virtual)
+          - **\<RibbonSmallSplitButton\>** (virtual)
+          - **\<RibbonLargeButton\>** (virtual)
+          - **\<RibbonLargeDropdownButton\>** (virtual)
+          - **\<RibbonLargeSplitButton\>** (virtual)
   - \<CustomControl\>
     - \<TabPage\>
       - **\<RibbonTabPage\>**
@@ -135,11 +129,11 @@ Here are predefined controls by category:
     - **\<RibbonTab\>**
   - **\<RibbonGroup\>**
   - **\<RibbonIconLabel\>**
-    - **\<RibbonSmallIconLabel\>**(virtual)
+    - **\<RibbonSmallIconLabel\>** (virtual)
   - **\<RibbonButtons\>**
   - **\<RibbonToolstrips\>**
   - **\<RibbonGallery\>**
     - **\<BindableRibbonGalleryList\>**
-  - **\<RibbonSplitter\>**(virtual)
-  - **\<RibbonToolstripHeader\>**(virtual)
+  - **\<RibbonSplitter\>** (virtual)
+  - **\<RibbonToolstripHeader\>** (virtual)
 

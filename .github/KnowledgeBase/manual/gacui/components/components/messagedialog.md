@@ -1,10 +1,10 @@
 # \<MessageDialog\>
 
-**\<MessageDialog/\>**displays a OS native message dialog.
+**\<MessageDialog/\>** displays a OS native message dialog.
 
 ## Input Properties
 
-Set these properties before calling**ShowDialog**to define the content of the dialog.
+Set these properties before calling **ShowDialog** to define the content of the dialog.
 
 ### Input
 
@@ -38,7 +38,7 @@ The value of this property must be one of the followuing values:
 The value of this property must be one of the followuing values:
 - **ModalWindow**: The current window is disabled until the dialog is closed.
 - **ModalTask**: All window of the current application is disabled until the dialog is closed.
-- **ModalSystem**: Same as**ModelTask**and the dialog is set to top-most.
+- **ModalSystem**: Same as **ModelTask** and the dialog is set to top-most.
 
 ### Text
 

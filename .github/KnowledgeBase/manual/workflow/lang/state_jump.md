@@ -1,11 +1,10 @@
 # Jumping Between States
 
-Like any function,**$state**is allowed to have zero, one or multiple parameters.
+Like any function, **$state** is allowed to have zero, one or multiple parameters.
 
-Jump to another state by**$push_state**is similar to calling a function. When that state finishes, the state machine continues from code after**$push_state**.
+Jump to another state by **$push_state** is similar to calling a function. When that state finishes, the state machine continues from code after **$push_state**.
 
-Jump to another state by**$goto_state**is similar to**goto**. When that state finishes, the state machine doesn't continue from code after**$goto_state**. If there is no stacked**$push_state**, the state machine stops.
-
+Jump to another state by **$goto_state** is similar to **goto**. When that state finishes, the state machine doesn't continue from code after **$goto_state**. If there is no stacked **$push_state**, the state machine stops.
 
 ```
 module sampleModule;
@@ -78,15 +77,15 @@ func main(): string
     return r[0];
 }
 ```
-The**main**function returns**"21; 20; 63; "**.
+ The **main** function returns **"21; 20; 63; "**.
 
-This state machine accumulate numbers by**Add**and output sum of them by**sum**.
+This state machine accumulate numbers by **Add** and output sum of them by **sum**.
 
-When**Sum**is called,**$push_state ResultGenerated(sum);**is executed. When**$state ResultGenerated**finishes, the state machine continue from the last**$push_state**, which is**break;**.
+When **Sum** is called, **$push_state ResultGenerated(sum);** is executed. When **$state ResultGenerated** finishes, the state machine continue from the last **$push_state**, which is **break;**.
 
-And then**$goto_state NumberExpected();**is executed. This is a**$goto_state**, so it jumps to the state instead of calling it.
+And then **$goto_state NumberExpected();** is executed. This is a **$goto_state**, so it jumps to the state instead of calling it.
 
-Using**$jump_state NumberExpected();**for making a loop results in memory leaks, because variables and resuming point for previous states are saved, but the state never finishes.
+Using **$jump_state NumberExpected();** for making a loop results in memory leaks, because variables and resuming point for previous states are saved, but the state never finishes.
 
-This is an infinite state machine,**$default**never ends.
+This is an infinite state machine, **$default** never ends.
 

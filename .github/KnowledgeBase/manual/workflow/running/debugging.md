@@ -14,32 +14,31 @@ func main(): void
     App::Print($"Hello, $(name)!");
 }
 ```
-We will set a break point at**App::Print**, and change the**name**variable, and continue running the script.
+ We will set a break point at **App::Print**, and change the **name** variable, and continue running the script.
 
 Firstly, after initializing the assembly, we start debugging:
 ```
 auto debugger = Ptr(new MyDebugger);
 SetDebuggerForCurrentThread(debugger);
 ```
-**MyDebugger**inherits**WfDebugger**, it will be explained later.
+**MyDebugger** inherits **WfDebugger**, it will be explained later.
 
 Secondly, we set a break point:
 ```
 debugger->AddCodeLineBreakPoint(assembly.Obj(), 0, 9, true);
 ```
-"0" means the first file, and "9" means the 10th line, which is**App::Print($"Hello, $(name)!");**.
+ "0" means the first file, and "9" means the 10th line, which is **App::Print($"Hello, $(name)!");**.
 
-We run the script as usual. After the**main**function is executed, we stop debugging:
+We run the script as usual. After the **main** function is executed, we stop debugging:
 ```
 auto mainFunction = LoadFunction<void()>(globalContext, L"main");
 mainFunction();
 SetDebuggerForCurrentThread(nullptr);
 ```
 
+Now, before **App::Print** is called, the debugger will be notified. Please note that, after a break point is triggered, if **WfDebugger::Run** or other similar functions are not called, **mainFunction() will be blocked forever.**
 
-Now, before**App::Print**is called, the debugger will be notified. Please note that, after a break point is triggered, if**WfDebugger::Run**or other similar functions are not called,**mainFunction() will be blocked forever.**
-
-In order to take action when a break point is triggered, we need to override**WfDebugger::OnBlockExecution**like this:
+In order to take action when a break point is triggered, we need to override **WfDebugger::OnBlockExecution** like this:
 ```
 class MyDebugger : public WfDebugger
 {
@@ -63,14 +62,13 @@ protected:
 };
 ```
 
+Details of Workflow runtime API will not be explained here. Basically what this function does is that, we first get the thread context that we are currently debugging against, and then use the metadata in the assembly to know how to change the **name** variable. After it is done, continue running the script.
 
-Details of Workflow runtime API will not be explained here. Basically what this function does is that, we first get the thread context that we are currently debugging against, and then use the metadata in the assembly to know how to change the**name**variable. After it is done, continue running the script.
-
-Since we only set one break point, so we don't need to tell which break point is triggered in**OnBlockExecution**.
+Since we only set one break point, so we don't need to tell which break point is triggered in **OnBlockExecution**.
 
 Here is what we need to know when debugging Workflow scripts:
 - Threads are by default not assigned with any debugger.
 - A debugger is activated when it is assigned to a specific thread.
 - The same debugger can be assigned to multiple threads.
-- Each call to a function returned from**LoadFunction**creates a separate**WfRuntimeThreadContext**object. Do not assume that you will always get the same**WfRuntimeThreadContext**object per thread.
+- Each call to a function returned from **LoadFunction** creates a separate **WfRuntimeThreadContext** object. Do not assume that you will always get the same **WfRuntimeThreadContext** object per thread.
 

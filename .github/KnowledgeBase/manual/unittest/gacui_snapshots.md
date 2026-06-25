@@ -1,6 +1,6 @@
 # Snapshot Viewer
 
-After running the GacUI unit test, snapshots will be stored in a folder specified by**UnitTestFrameworkConfig::snapshotFolder**, which is passed to**GacUIUnitTest_Initialize**in the**main**function. You can write your own snapshot viewer to render any snapshot from a test run like this.
+After running the GacUI unit test, snapshots will be stored in a folder specified by **UnitTestFrameworkConfig::snapshotFolder**, which is passed to **GacUIUnitTest_Initialize** in the **main** function. You can write your own snapshot viewer to render any snapshot from a test run like this.
 ```c++
 #include <GacUI.UnitTest.UI.h>
 #include <Windows.h>
@@ -34,5 +34,5 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     return SetupWindowsDirect2DRenderer();
 }
 ```
-**UnitTestSnapshotViewerAppWindow**and**UnitTestSnapshotViewerViewModel**are defined in**GacUI.UnitTest.UI**.
+**UnitTestSnapshotViewerAppWindow** and **UnitTestSnapshotViewerViewModel** are defined in **GacUI.UnitTest.UI**.
 

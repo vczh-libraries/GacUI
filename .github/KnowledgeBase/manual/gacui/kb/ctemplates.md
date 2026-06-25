@@ -2,29 +2,29 @@
 
 Control templates change controls' outfit, and they are working based on data bindings.
 
-Controls have their own control template types. For example,**SelectableButton**needs**SelectableButtonTemplate**. Any derived classes of**SelectableButtonTemplate**is acceptable, but extra members will be ignored.
+Controls have their own control template types. For example, **SelectableButton** needs **SelectableButtonTemplate**. Any derived classes of **SelectableButtonTemplate** is acceptable, but extra members will be ignored.
 
 A control template has input properties and output properties. Input properties are for data binding, when the control's state is changed, these properties will be changed, and the control template reacts to these properties and changes how it looks, for example, some colors. Output properties are configuration to the control's outfit related behavior, almost all of them will only be read once, so changing them at runtime takes no effect.
 
-Here we demo how to write a control template for**SelectableButton**. When the mouse is hovering on the button, it becomes brighter. When the button is selected, it becomes less brighter.
+Here we demo how to write a control template for **SelectableButton**. When the mouse is hovering on the button, it becomes brighter. When the button is selected, it becomes less brighter.
 
-These are properties in**ControlTemplate**:
+These are properties in **ControlTemplate**:
 - **Input Properties:**
   - **Focused**: True when the control is focused.
   - **VisuallyEnabled**: Trhe when the control is enabled. It requires all parent controls to be enabled.
   - **Font**: The control's font. If a font is not associated to the control, it will be the font from a parent control.
-  - **Context**: The control's**Context**property.
-  - **Text**: The control's**Text**property.
+  - **Context**: The control's **Context** property.
+  - **Text**: The control's **Text** property.
 - **Output Properties:**
   - **ContainerComposition**: A composition for control's children, anything put in \<SelectableButton\>\</SelectableButton\> will be in this composition.
   - **FocusableComposition**: A composition for receiving keyboard events. It works only when the control is focusable.
 
-These are properties in**ButtonTemplate**and**SelectableButtonTemplate**:
+These are properties in **ButtonTemplate** and **SelectableButtonTemplate**:
 - **Input Properties:**
-  - **State**: The button's state, can be**Normal**,**Active**or**Pressed**.
+  - **State**: The button's state, can be **Normal**, **Active** or **Pressed**.
   - **Selected**: True when the button is selected.
 
-We can use all of them to create a control template for**SelectableButton**:
+We can use all of them to create a control template for **SelectableButton**:
 ```
 <Instance ref.Class="sample::TabHeaderButtonTemplate">
   <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
@@ -58,7 +58,6 @@ We can use all of them to create a control template for**SelectableButton**:
 </Instance>
 ```
 
-
 And then a window containing three check boxes with this control template:
 ```
 <Instance ref.Class="sample::MainWindow" ref.Styles="res://MainWindow/SharedStyle">
@@ -73,7 +72,6 @@ And then a window containing three check boxes with this control template:
 </Instance>
 ```
 
-
 With a style to assign control templates to all check boxes:
 ```
 <Styles>
@@ -84,18 +82,17 @@ With a style to assign control templates to all check boxes:
 </Styles>
 ```
 
-
 Finally we get:
 
 ![](https://gaclib.net/doc/gacui/kb_ctemplates_button.gif)
 
 With this new control template, we can create a more complex control template for tab control.
 
-**Tab**needs**TabTemplate**, and it has two important properties:**Commands**and**TabPages**. These are all input properties.**Commands**is an interface with a method**ShowTab**for activate a tab page.**TabPages**is an observable collection for all tab pages at runtime.
+**Tab** needs **TabTemplate**, and it has two important properties: **Commands** and **TabPages**. These are all input properties. **Commands** is an interface with a method **ShowTab** for activate a tab page. **TabPages** is an observable collection for all tab pages at runtime.
 
-By binding**TabPages**to a**RepeatStack**, we can easily create a list of buttons for each tab pages. When tab pages are inserted to or removed from the tab control, the list of buttons will be automatically refreshed.
+By binding **TabPages** to a **RepeatStack**, we can easily create a list of buttons for each tab pages. When tab pages are inserted to or removed from the tab control, the list of buttons will be automatically refreshed.
 
-Firstly we create a control template for**Tab**:
+Firstly we create a control template for **Tab**:
 ```
 <Instance ref.Class="sample::TabTemplate">
   <TabTemplate ref.Name="self" ContainerComposition-ref="container" TabOrder="TopToBottom" MinSizeLimitation="LimitToElementAndChildren">
@@ -132,9 +129,9 @@ Firstly we create a control template for**Tab**:
   </TabTemplate>
 </Instance>
 ```
-In this control template, we create a list of buttons using**RepeatStack**on the left side, and create a container for tab page contents on the right side.
+ In this control template, we create a list of buttons using **RepeatStack** on the left side, and create a container for tab page contents on the right side.
 
-The item template in**RepeatStack**is named**sample::TabHeaderTemplate**, which is:
+The item template in **RepeatStack** is named **sample::TabHeaderTemplate**, which is:
 ```
 <Instance ref.Class="sample::TabHeaderTemplate">
   <ref.Parameter Name="CurrentTabPage" Class="presentation::controls::GuiTabPage"/>
@@ -163,16 +160,15 @@ The item template in**RepeatStack**is named**sample::TabHeaderTemplate**, which 
 </Instance>
 ```
 
+**sample::TabHeaderTemplate** has a **Commands** property, it needs to be assigned in **sample::TabTemplate**, so that when a tab header is clicked, it can tell the tab control to switch to that tab.
 
-**sample::TabHeaderTemplate**has a**Commands**property, it needs to be assigned in**sample::TabTemplate**, so that when a tab header is clicked, it can tell the tab control to switch to that tab.
+**sample::TabTemplate** reacts to **ItemInserted** event in **RepeatStack**, by accessing **arguments.itemIndex** which is provided by the event, it knows a new item template is created, and grab that item template to set the **Commands** property.
 
-**sample::TabTemplate**reacts to**ItemInserted**event in**RepeatStack**, by accessing**arguments.itemIndex**which is provided by the event, it knows a new item template is created, and grab that item template to set the**Commands**property.
+This ensures that whenever a new item template for the tab header appears in the tab control, the **Commands** property has already been assigned.
 
-This ensures that whenever a new item template for the tab header appears in the tab control, the**Commands**property has already been assigned.
+In **RepeatStack** there is **\<att.ItemSource-bind\>self.TabPages\</att.ItemSource-bind\>**. This code binds **TabPages** to **RepeatStack**. And **\<att.ItemTemplate\>sample::TabHeaderTemplate\</att.ItemTemplate\>** tells it to create **sample::TabHeaderTemplate** for each tab page.
 
-In**RepeatStack**there is**\<att.ItemSource-bind\>self.TabPages\</att.ItemSource-bind\>**. This code binds**TabPages**to**RepeatStack**. And**\<att.ItemTemplate\>sample::TabHeaderTemplate\</att.ItemTemplate\>**tells it to create**sample::TabHeaderTemplate**for each tab page.
-
-The assigned tab page for a particular**sample::TabHeaderTemplate**will be in**ref.Parameter**, which is a readonly property and constructor argument.
+The assigned tab page for a particular **sample::TabHeaderTemplate** will be in **ref.Parameter**, which is a readonly property and constructor argument.
 
 Knowledge base for item templates will be introduces in the next chapter.
 
@@ -226,12 +222,10 @@ Finally, we create a window with three tab pages to see how it works:
 </Folder>
 ```
 
-
 Here we have a button for the first tab page, three check boxes for the second tab page, and three radio buttons for the third tab page. Each radio button is assigned the same group controller so that they know they are exclusive to each other. By assigning different group controllers to radio buttons, it is very easy to tell these radio buttons who are their allies.
 
 Finally we get:
 
-
-- Source code:[kb_ctemplates](https://github.com/vczh-libraries/Release/blob/master/SampleForDoc/GacUI/XmlRes/kb_ctemplates/Resource.xml)
+- Source code: [kb_ctemplates](https://github.com/vczh-libraries/Release/blob/master/SampleForDoc/GacUI/XmlRes/kb_ctemplates/Resource.xml)
 - ![](https://gaclib.net/doc/gacui/kb_ctemplates_tab.gif)
 

@@ -1,6 +1,6 @@
 # \<CommonDatePickerLook\>
 
-This is a helper class for implementing a**\<DatePickerTemplate/\>**. It inherits from**GuiTemplate**.
+This is a helper class for implementing a **\<DatePickerTemplate/\>**. It inherits from **GuiTemplate**.
 
 This helper class is expected to be used in this way:
 ```
@@ -18,15 +18,14 @@ This helper class is expected to be used in this way:
 </Instance>
 ```
 
-
-These properties are expected to pass from**\<DatePickerTemplate/\>**to**\<CommonDatePickerLook/\>**:
+These properties are expected to pass from **\<DatePickerTemplate/\>** to **\<CommonDatePickerLook/\>**:
 - **Commands**
 - **DateLocale**
-- **Font**These properties are expected to be bidirectional binded between**\<DatePickerTemplate/\>**and**\<CommonDatePickerLook/\>**:
-- **Date**These properties defines control templates for:
+- **Font** These properties are expected to be bidirectional binded between **\<DatePickerTemplate/\>** and **\<CommonDatePickerLook/\>**:
+- **Date** These properties defines control templates for:
 - **DateButtonTemplate**: Date buttons.
 - **DateTextListTemplate**: Month and year dropdown list.
-- **DateComboBoxTemplate**: Month and year combo boxes.These properties defines main colors of the control template:
+- **DateComboBoxTemplate**: Month and year combo boxes. These properties defines main colors of the control template:
 - **BackgroundColor**: Background color.
 - **PrimaryTextColor**: Text color for date buttons in the selected month in the calendar.
 - **SecondaryTextColor**: Text color for date buttons in the previous or next month of the selected month in the calendar.

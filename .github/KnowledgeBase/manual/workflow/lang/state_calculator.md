@@ -2,10 +2,9 @@
 
 The following example shows how to make a calculator using state machine.
 
-
 ```
 module sampleModule;
-        
+
 using system::*;
 
 class Calculator : StateMachine
@@ -110,7 +109,7 @@ class Calculator : StateMachine
             }
             $goto_state Operator();
         }
-    
+
         $state default()
         {
             $goto_state Operator();
@@ -133,10 +132,9 @@ func main(): string
 }
 ```
 
-
 The state machine simulates how numbers on a calculator is changed while pressing buttons.
 
-The**main**function returns:
+The **main** function returns:
 ```
 1
 12
@@ -154,7 +152,7 @@ The**main**function returns:
 65536
 0
 ```
-It calculates:
+ It calculates:
 - 12 + 34 = 46
 - 46 * 56 = 2576
 - 2 * 2 = 4

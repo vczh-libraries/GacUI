@@ -35,12 +35,11 @@ namespace myapi
     };
 }
 ```
-The destructor code is important, so it is not hidden.
+ The destructor code is important, so it is not hidden.
 
-An inheritable class need to use**AggregatableDescription**instead of**Description**.**FinalizeAggregation**is also very important. If this function is not called when destructing a Workflow class that inherits from App, it will crash by design.
+An inheritable class need to use **AggregatableDescription** instead of **Description**. **FinalizeAggregation** is also very important. If this function is not called when destructing a Workflow class that inherits from App, it will crash by design.
 
 Inheriting a reflectable C++ class is very straight forward, but there is no virtual methods in classes in this version of Workflow script, so you cannot override virtual methods in reflectable C++ classes.
-
 
 ```
 module sampleModule;
@@ -72,13 +71,13 @@ namespace myscript
     }
 }
 ```
-Constructors and destructors are allowed in Workflow classes.
+ Constructors and destructors are allowed in Workflow classes.
 
-Data binding will not be explained in detail here, basically the code is tracking the changing of**$"Hello, $(self.Name)"**. When**Name**property is changed, it is obviously that the result of this expression is also changed. Whenever the data binding is changed,**ValueChanged**will be called. Here it prints the formatted string to the console window.
+Data binding will not be explained in detail here, basically the code is tracking the changing of **$"Hello, $(self.Name)"**. When **Name** property is changed, it is obviously that the result of this expression is also changed. Whenever the data binding is changed, **ValueChanged** will be called. Here it prints the formatted string to the console window.
 
 All classes and interfaces defined in Workflow scripts will be registered when loadong an assembly. This is why you cannot load it twice, because types are conflict with each other.
 
-When a reflectable class is loaded, regardless whether it is implemented in Workflow or C++, the way to call does not change. But since it inherits from**App**, it is much easier to get an instance of**App**.
+When a reflectable class is loaded, regardless whether it is implemented in Workflow or C++, the way to call does not change. But since it inherits from **App**, it is much easier to get an instance of **App**.
 ```
 auto myapp = UnboxValue<Ptr<App>>(Value::Create(
     L"myscript::MyApp",
@@ -90,5 +89,5 @@ myapp->SetName(L"Vczh Libraries++");
 myapp->SetName(L"Workflow");
 myapp->SetName(L"Gaclib");
 ```
-This code creates**myscript::MyApp**with a string passed to the constructor. It changes**Name**three times, so four lines will be printed to the console window. The last one is from the destructor.
+ This code creates **myscript::MyApp** with a string passed to the constructor. It changes **Name** three times, so four lines will be printed to the console window. The last one is from the destructor.
 

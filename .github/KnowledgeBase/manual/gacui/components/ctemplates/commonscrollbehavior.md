@@ -1,19 +1,19 @@
 # \<CommonScrollBehavior\>
 
-This is a helper class for implementing a**\<DatePickerTemplate/\>**. It inherits from**GuiComponent**.
+This is a helper class for implementing a **\<DatePickerTemplate/\>**. It inherits from **GuiComponent**.
 
 This helper class is a component. The control template must take care of the rendering of the control. After all compositions and controls are ready, call the following methods of the helper class to deliver user inputs to scroll control:
-- **AttachScrollTemplate**: Make the helper class has access to the**Commands**property of the control template.
-- **AttachDecreaseButton**: Let the helper class handles the**Clicked**event of the decrease button in a scroll bar.
-- **AttachIncreaseButton**: Let the helper class handles the**Clicked**event of the increase button in a scroll bar.
+- **AttachScrollTemplate**: Make the helper class has access to the **Commands** property of the control template.
+- **AttachDecreaseButton**: Let the helper class handles the **Clicked** event of the decrease button in a scroll bar.
+- **AttachIncreaseButton**: Let the helper class handles the **Clicked** event of the increase button in a scroll bar.
 - **AttachHorizontalScrollHandle**: Let the helper class handle mouse draggings of the handle. This method is only for horizontal scroll bars.
 - **AttachVerticalScrollHandle**: Let the helper class handle mouse draggings of the handle. This method is only for vertical scroll bars.
 - **AttachHorizontalTrackerHandle**: Let the helper class handle mouse draggings of the handle. This method is only for horizontal trackers.
 - **AttachVerticalTrackerHandle**: Let the helper class handle mouse draggings of the handle. This method is only for vertical trackers.
 
-The handle must be a**\<PartialView/\>**composition.
+The handle must be a **\<PartialView/\>** composition.
 
-All methods should not be called more than once.**AttachScrollTemplate**must be called in all scroll bars and trackers.
+All methods should not be called more than once. **AttachScrollTemplate** must be called in all scroll bars and trackers.
 
 Here is an example of a control template of horizontal scroll bars:
 ```
@@ -58,5 +58,4 @@ Here is an example of a control template of horizontal scroll bars:
   </ScrollTemplate>
 </Instance>
 ```
-
 

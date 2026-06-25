@@ -1,12 +1,12 @@
 # GacUI Components
 
-**GacUI**has a rich set of predefined objects in**GacUI XML Resource**.
+**GacUI** has a rich set of predefined objects in **GacUI XML Resource**.
 
 ## Elements
 
-[Elements](../.././gacui/kb/elements.md)offer rendering of geometry shapes and texts.
+[Elements](../.././gacui/kb/elements.md) offer rendering of geometry shapes and texts.
 
-[Here](../.././gacui/components/elements/home.md)contains detailed introduction for:
+[Here](../.././gacui/components/elements/home.md) contains detailed introduction for:
 - \<FocusRectangle\>
 - \<SolidBorder\>
 - \<SolidBackground\>
@@ -18,13 +18,13 @@
 - \<ImageFrame\>
 - \<Polygon\>
 
-**presentation::elements::GuiColorizedTextElement**and**presentation::elements::GuiDocumentElement**are not expected to be used directly. Editor controls will create and update these elements in the specified area provided by the control template.
+**presentation::elements::GuiColorizedTextElement** and **presentation::elements::GuiDocumentElement** are not expected to be used directly. Editor controls will create and update these elements in the specified area provided by the control template.
 
 ## Compositions
 
-[Composition](../.././gacui/kb/compositions.md)offer layout algorithms based on constraints.
+[Composition](../.././gacui/kb/compositions.md) offer layout algorithms based on constraints.
 
-[Here](../.././gacui/components/compositions/home.md)contains detailed introduction for:
+[Here](../.././gacui/components/compositions/home.md) contains detailed introduction for:
 - \<Bounds\>
 - \<Stack\>, \<RepeatStack\>, \<StackItem\>
 - \<Flow\>, \<RepeatFlow\>, \<FlowItem\>
@@ -42,9 +42,9 @@
 
 ## Controls
 
-[Controls](../.././gacui/kb/controls.md)offer a rich set of predefined UI functionalities.
+[Controls](../.././gacui/kb/controls.md) offer a rich set of predefined UI functionalities.
 
-[Here](../.././gacui/components/controls/home.md)contains detailed introduction for:
+[Here](../.././gacui/components/controls/home.md) contains detailed introduction for:
 - Basic Controls
 - Container Controls
 - Editor Controls
@@ -52,15 +52,15 @@
 - Toolstrip Controls
 - Ribbon Controls
 
-Generally controls are in singly rooted inheritance based on their appearances. Like every controls with scroll bars inherit from**GuiScrollView**.
+Generally controls are in singly rooted inheritance based on their appearances. Like every controls with scroll bars inherit from **GuiScrollView**.
 
-But there are also**GuiDocumentCommonInterface**for editor controls, offering rendering and editing features.
+But there are also **GuiDocumentCommonInterface** for editor controls, offering rendering and editing features.
 
 ## Control Templates
 
-[Control Templates](../.././gacui/kb/ctemplates.md)offer customization of control appearances.
+[Control Templates](../.././gacui/kb/ctemplates.md) offer customization of control appearances.
 
-[Here](../.././gacui/components/ctemplates/home.md)contains detailed introduction for:
+[Here](../.././gacui/components/ctemplates/home.md) contains detailed introduction for:
 - \<ControlTemplate/\>
   - \<LabelTemplate/\>
   - \<DocumentLabelTemplate/\>
@@ -92,9 +92,9 @@ But there are also**GuiDocumentCommonInterface**for editor controls, offering re
 
 ## Item Templates
 
-[Item Templates](../.././gacui/kb/itemplates.md)offer customization of list item appearances.
+[Item Templates](../.././gacui/kb/itemplates.md) offer customization of list item appearances.
 
-[Here](../.././gacui/components/itemplates/home.md)contains detailed introduction for:
+[Here](../.././gacui/components/itemplates/home.md) contains detailed introduction for:
 - \<ListItemTemplate\>
   - \<TextListItemTemplate\>
     - \<TreeItemTemplate\>
@@ -106,7 +106,7 @@ But there are also**GuiDocumentCommonInterface**for editor controls, offering re
 
 Components offer other features that are not involved in rendering.
 
-[Here](../.././gacui/components/components/home.md)contains detailed introduction for:
+[Here](../.././gacui/components/components/home.md) contains detailed introduction for:
 - \<MessageDialog\>
 - \<ColorDialog\>
 - \<FontDialog\>

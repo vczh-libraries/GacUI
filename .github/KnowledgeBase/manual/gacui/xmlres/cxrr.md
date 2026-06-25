@@ -1,16 +1,16 @@
 # Cross XML Resource References
 
-A**GacUI XML Resource**can import types from other resource files. These resource files should satisfy the following conditions:
-- They should be able to be discovered under one**GacUI.xml**.
+A **GacUI XML Resource** can import types from other resource files. These resource files should satisfy the following conditions:
+- They should be able to be discovered under one **GacUI.xml**.
 - The resource file being imported must have a name in its metadata.
 - The resource file importing others must specify dependencies in its metadata.
 
 These items will be removed from the resource binary and cannot be imported:
-- \<InstanceStyle/\>These items can be imported by URI like**import-res://RESOURCE-NAME/path/to/the/resource/item**:
+- \<InstanceStyle/\> These items can be imported by URI like **import-res://RESOURCE-NAME/path/to/the/resource/item**:
 - \<Text/\>
 - \<Image/\>
 - \<Xml/\>
-- \<Doc/\>These items will be removed from the resource binary, but their generated types can be used in resource files that import them:
+- \<Doc/\> These items will be removed from the resource binary, but their generated types can be used in resource files that import them:
 - \<Script/\>
 - \<Instance/\>
 - \<Animation/\>
