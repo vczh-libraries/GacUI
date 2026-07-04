@@ -44,11 +44,11 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 		};
 
 		IJsonChannel*										channel = nullptr;
-		IJsonChannelReader*								reader = nullptr;
+		IJsonChannelReader*									reader = nullptr;
 
 		// Covers invokeInMainThread, queuedMessages and uiTaskQueued.
 		SpinLock											lockMessages;
-		IGuiRemoteProtocolAsyncRendererInvoker*			invokeInMainThread = nullptr;
+		IGuiRemoteProtocolAsyncRendererInvoker*				invokeInMainThread = nullptr;
 		collections::List<ReceivedPackage>					queuedMessages;
 		vint												messageVersion = 0;
 		bool												channelInitialized = false;
@@ -64,7 +64,7 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 		~GuiRemoteProtocolAsyncJsonChannelRenderer();
 
 		const WString&										GetChannelName() override;
-		IJsonChannelReader*								GetReader() override;
+		IJsonChannelReader*									GetReader() override;
 		void												Initialize(IJsonChannelReader* _reader) override;
 		void												SendToClient(vint receiverClientId, const JsonPackage& package) override;
 		void												BroadcastFromClient(const JsonPackage& package) override;

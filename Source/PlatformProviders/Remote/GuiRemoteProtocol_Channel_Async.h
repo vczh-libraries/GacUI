@@ -4,7 +4,7 @@ Developer: Zihan Chen(vczh)
 GacUI::Remote Window
 
 Interfaces:
-  GuiRemoteProtocolJsonChannelRenderer_Async
+  GuiRemoteProtocolAsyncJsonChannel
 
 ***********************************************************************/
 
@@ -17,10 +17,10 @@ namespace vl::presentation::remoteprotocol::channeling
 {
 
 /***********************************************************************
-GuiRemoteProtocolJsonChannelRenderer_Async
+GuiRemoteProtocolAsyncJsonChannel
 ***********************************************************************/
 
-	class GuiRemoteProtocolJsonChannelRenderer_Async
+	class GuiRemoteProtocolAsyncJsonChannel
 		: public Object
 		, public virtual IJsonChannel
 		, protected virtual IJsonChannelReader
@@ -30,7 +30,7 @@ GuiRemoteProtocolJsonChannelRenderer_Async
 		struct QueuedPackage
 		{
 			Nullable<vint>									receiverClientId;
-			Ptr<collections::List<vint>>						blockedReceivers;
+			Ptr<collections::List<vint>>					blockedReceivers;
 			JsonPackage										package;
 		};
 
@@ -47,7 +47,7 @@ GuiRemoteProtocolJsonChannelRenderer_Async
 		};
 
 		IJsonChannel*										channel = nullptr;
-		IJsonChannelReader*								reader = nullptr;
+		IJsonChannelReader*									reader = nullptr;
 		IGuiRemoteEventProcessor*							remoteEventProcessor = nullptr;
 
 		SpinLock											lockPendingPackages;
@@ -75,11 +75,11 @@ GuiRemoteProtocolJsonChannelRenderer_Async
 		void												OnRead(vint senderClientId, const JsonPackage& package) override;
 
 	public:
-		GuiRemoteProtocolJsonChannelRenderer_Async(IJsonChannel* _channel, IGuiRemoteEventProcessor* _remoteEventProcessor = nullptr);
-		~GuiRemoteProtocolJsonChannelRenderer_Async();
+		GuiRemoteProtocolAsyncJsonChannel(IJsonChannel* _channel, IGuiRemoteEventProcessor* _remoteEventProcessor = nullptr);
+		~GuiRemoteProtocolAsyncJsonChannel();
 
 		const WString&										GetChannelName() override;
-		IJsonChannelReader*								GetReader() override;
+		IJsonChannelReader*									GetReader() override;
 		void												Initialize(IJsonChannelReader* _reader) override;
 		void												SendToClient(vint receiverClientId, const JsonPackage& package) override;
 		void												BroadcastFromClient(const JsonPackage& package) override;

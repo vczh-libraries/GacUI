@@ -571,9 +571,8 @@ GuiRemoteProtocolRendererChannel
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	GuiRemoteProtocolRendererChannel::GuiRemoteProtocolRendererChannel(IJsonChannelClient* _client, IJsonChannel* _channel, IGuiRemoteProtocol* _protocol)
-		: client(_client)
-		, channel(_channel)
+	GuiRemoteProtocolRendererChannel::GuiRemoteProtocolRendererChannel(IJsonChannel* _channel, IGuiRemoteProtocol* _protocol)
+		: channel(_channel)
 		, protocol(_protocol)
 	{
 #define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					writeHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteProtocolRendererChannel::Write_ ## NAME);

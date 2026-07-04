@@ -134,7 +134,7 @@ int StartClient(Ptr<inter_process::INetworkProtocolClient> networkClient)
 	RemotingTestChannelClient channelClient(networkClient, jsonParser);
 	GuiRemoteProtocolAsyncJsonChannelRenderer asyncRendererChannel(channelClient.GetProtocolChannel());
 	GuiRemoteRendererSingle remoteRenderer(true); // true to enable automation data collection
-	GuiRemoteProtocolRendererChannel rendererChannel(&channelClient, &asyncRendererChannel, &remoteRenderer);
+	GuiRemoteProtocolRendererChannel rendererChannel(&asyncRendererChannel, &remoteRenderer);
 	channelClient.SetRenderer(&remoteRenderer);
 	channelClient.SetAsyncRendererChannel(&asyncRendererChannel);
 	channelClient.WaitForServer();
@@ -142,6 +142,7 @@ int StartClient(Ptr<inter_process::INetworkProtocolClient> networkClient)
 	asyncChannel = &asyncRendererChannel;
 	renderer = &remoteRenderer;
 	int result = SetupRawWindowsDirect2DRenderer();
+	networkClient->GetConnection()->Stop();
 	renderer = nullptr;
 	asyncChannel = nullptr;
 	channelClient.SetAsyncRendererChannel(nullptr);

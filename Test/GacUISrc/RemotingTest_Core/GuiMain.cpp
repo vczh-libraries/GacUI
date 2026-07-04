@@ -239,7 +239,7 @@ void StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr:
 	auto rendererClientId = WaitForRenderer(channelServer, eventRendererConnected);
 	Console::WriteLine(L"> Renderer connected: " + itow(rendererClientId));
 
-	GuiRemoteProtocolJsonChannelRenderer_Async asyncChannelSender(coreClient->GetProtocolChannel());
+	GuiRemoteProtocolAsyncJsonChannel asyncChannelSender(coreClient->GetProtocolChannel());
 	GuiRemoteProtocolCoreChannel channelSender(
 		coreClient.Obj(),
 		&asyncChannelSender,

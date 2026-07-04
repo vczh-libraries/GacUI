@@ -167,7 +167,6 @@ GuiRemoteProtocolRendererChannel
 		, protected virtual IGuiRemoteProtocolEvents
 	{
 	protected:
-		IJsonChannelClient*								client = nullptr;
 		IJsonChannel*									channel = nullptr;
 		IGuiRemoteProtocol*								protocol = nullptr;
 		bool											receiving = false;
@@ -212,7 +211,7 @@ GuiRemoteProtocolRendererChannel
 
 	public:
 
-		GuiRemoteProtocolRendererChannel(IJsonChannelClient* _client, IJsonChannel* _channel, IGuiRemoteProtocol* _protocol);
+		GuiRemoteProtocolRendererChannel(IJsonChannel* _channel, IGuiRemoteProtocol* _protocol);
 		~GuiRemoteProtocolRendererChannel();
 
 		vl::Event<void(const ChannelPackageInfo&)>		BeforeWrite;
