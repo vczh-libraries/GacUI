@@ -33,11 +33,11 @@ If a test case contains only one call to `TEST_ASSERT`, it can be simplified to 
 
 ## Hierarchical Organization
 
-### TEST_FILE
+### `TEST_FILE`
 
 `TEST_FILE` defines the test file scope and serves as the root container for all test cases and categories within a source file. There can be only one `TEST_FILE` per source file.
 
-### TEST_CATEGORY
+### `TEST_CATEGORY`
 
 `TEST_CATEGORY(L"CATEGORY-NAME")` groups related tests under a descriptive category name. Key characteristics:
 
@@ -46,7 +46,7 @@ If a test case contains only one call to `TEST_ASSERT`, it can be simplified to 
 - Categories help organize tests logically by functionality or feature area
 - Category names should be descriptive and use wide character string literals
 
-### TEST_CASE
+### `TEST_CASE`
 
 `TEST_CASE(L"TOPIC-NAME")` defines individual test implementations. Key characteristics:
 
@@ -55,9 +55,13 @@ If a test case contains only one call to `TEST_ASSERT`, it can be simplified to 
 - Each test case should focus on testing a specific behavior or functionality
 - Test case names should clearly describe what is being tested
 
+### `TEST_CASE_ASSERT`
+
+`TEST_CASE_ASSERT(EXPRESSION-TO-VERIFY)` is shorthand for a `TEST_CASE` containing one `TEST_ASSERT`. The generated test case name is the expression text.
+
 ## Test Assertions
 
-### TEST_ASSERT
+### `TEST_ASSERT`
 
 `TEST_ASSERT(EXPRESSION-TO-VERIFY)` performs test assertions within test cases. Key characteristics:
 
@@ -65,6 +69,18 @@ If a test case contains only one call to `TEST_ASSERT`, it can be simplified to 
 - Takes a boolean expression that should evaluate to true for the test to pass
 - When the expression evaluates to false, the test fails and reports the failure
 - Multiple assertions can be used within a single test case
+
+### `TEST_ERROR`
+
+`TEST_ERROR(STATEMENT)` executes one statement and passes only when it throws `vl::Error`.
+
+### `TEST_EXCEPTION`
+
+`TEST_EXCEPTION(STATEMENT, EXCEPTION, ASSERT_FUNCTION)` executes one statement and passes only when it throws the specified exception type. The assertion callback receives the caught exception for additional checks.
+
+### `TEST_PRINT`
+
+`TEST_PRINT(MESSAGE)` writes an informational message through the unit-test output channel.
 
 ## Test Execution Integration
 
@@ -90,7 +106,9 @@ The unit test framework supports various command line options for controlling te
 
 - `/D`: Disable failure suppression (for debugging)
 - `/R`: Enable failure suppression (for release mode)
+- `/C`: Copilot mode. Stop immediately on the first failure for automated testing.
 - `/F:TestFile`: Run only specific test files
+- `/DebugOutput:File`: Redirect debug output to the specified file
 
 ### Test Output and Reporting
 

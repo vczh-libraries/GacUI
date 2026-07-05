@@ -42,8 +42,16 @@ namespace vl::reflection::description
 #pragma warning(push)
 #pragma warning(disable:4250)
 
-    BEGIN_INTERFACE_PROXY...(::my::namespaces::ISecond)
-      ...
+    BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::my::namespaces::ISecond)
+        vint ThisFunction() override
+        {
+            INVOKEGET_INTERFACE_PROXY_NOPARAMS(ThisFunction);
+        }
+
+        vint ThatFunction(vint arg1, vint arg2) override
+        {
+            INVOKEGET_INTERFACE_PROXY(ThatFunction, arg1, arg2);
+        }
     END_INTERFACE_PROXY(::my::namespaces::ISecond)
 
 #pragma warning(pop)
@@ -66,18 +74,9 @@ namespace vl::reflection::description
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
 
-    BEGIN_CLASS_MEMBER(::my::namespaces::ISecond)
+    BEGIN_INTERFACE_MEMBER(::my::namespaces::ISecond)
         CLASS_MEMBER_METHOD(ThisFunction, NO_PARAMETER)
         CLASS_MEMBER_METHOD(ThatFunction, { L"arg1" _ L"arg2" })
-        ...
-    END_CLASS_MEMBER(::my::namespaces::ISecond)
-
-    BEGIN_INTERFACE_MEMBER(::my::namespaces::ISecond)
-        vint Func(vint a, vint b) override
-        {
-            INVOKEGET_INTERFACE_PROXY_NOPARAMS(Func, a, b);
-        }
-        ...
     END_INTERFACE_MEMBER(::my::namespaces::ISecond)
 
 #undef _

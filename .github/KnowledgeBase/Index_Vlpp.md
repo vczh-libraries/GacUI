@@ -117,9 +117,9 @@ Check out comments before `#ifndef VCZH_COLLECTIONS_OPERATION` for a full list o
 
 Algorithms for arranging data with support for both total and partial ordering relationships.
 
-- Use `Sort(T*, vint)` for quick sort on raw pointer ranges
-- Use lambda expressions returning `std::strong_ordering` or `std::weak_ordering` as comparators
-- Use `PartialOrderingProcessor` for partial ordering scenarios where Sort doesn't work
+- Use `Sort(T*, vint)` for quick sort on raw pointer ranges using `<=>`
+- Use `Sort(T*, vint, comparer)` with comparators returning `std::strong_ordering`, `std::weak_ordering`, or usable `std::partial_ordering`
+- Use `PartialOrderingProcessor` for dependency sorting by initializing relationships with `InitWithGroup`, `InitWithFunc`, or `InitWithSubClass`, then calling `Sort`
 - Use `<=>` operator to obtain ordering values for comparators
 
 [API Explanation](./KB_Vlpp_SortingOrdering.md)
@@ -151,7 +151,9 @@ Testing infrastructure with hierarchical test organization and assertion capabil
 - Use `TEST_FILE` to define test file scope
 - Use `TEST_CATEGORY(name)` for grouping related tests
 - Use `TEST_CASE(name)` for individual test implementations
+- Use `TEST_CASE_ASSERT(expression)` for a one-assertion test case
 - Use `TEST_ASSERT(expression)` for test assertions
+- Use `TEST_ERROR(statement)` and `TEST_EXCEPTION(statement, exception, assertFunction)` for exception expectations
 - Use nested `TEST_CATEGORY` for hierarchical organization
 - Use `TEST_PRINT` for logging information to CLI in tests
 

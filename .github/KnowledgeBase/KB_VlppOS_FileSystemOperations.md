@@ -6,7 +6,8 @@ Cross-platform file and directory manipulation with path handling and content ac
 
 `FilePath` is a string representation of file path.
 
-- Use `GetName`, `GetFolder`, `GetFullPath` and `GetRelativePathFor` for path manipulation.
+- Use `GetPathDelimiter` to get the platform path delimiter.
+- Use `operator/`, `GetName`, `GetFolder`, `GetFullPath` and `GetRelativePathFor` for path manipulation.
 - Use `IsFile`, `IsFolder` and `IsRoot` to tell the object represented by the path.
 
 ## File Class
@@ -39,7 +40,7 @@ Use `Rename` to change the name or move a file to a different location.
 When `FilePath::IsFolder` or `FilePath::IsRoot` return true, `Folder` could be initialized with such path. It offers:
 
 - Content enumerations by `GetFolders` and `GetFiles` to enumerate the content.
-- Folder operation by `Exists`, `Delete` and `Rename`.
+- Folder operation by `Exists`, `Create`, `Delete` and `Rename`.
 
 ### Content Enumeration
 
@@ -49,12 +50,19 @@ Use `GetFiles` to retrieve all files within the folder.
 ### Folder Operations
 
 Use `Exists` to check if a folder exists at the specified path.
-Use `Delete` to remove an existing folder and its contents.
+Use `Create(false)` to create the folder directly, and `Create(true)` to create missing containing folders first.
+Use `Delete(false)` to remove an existing folder directly, and `Delete(true)` to remove its contents recursively.
 Use `Rename` to change the name or move a folder to a different location.
 
 ### Creating Folders
 
 `Folder::Create` is special, it creates a new folder, which means you have to initialize `Folder` with an unexisting `FilePath` before doing that. In such case `FilePath::IsFolder` would return false before calling `Create`.
+
+Pass `false` to `Create` when only the final folder should be created. Pass `true` when missing containing folders should be created recursively.
+
+### Deleting Folders
+
+Pass `false` to `Delete` when only the specified folder should be removed. Pass `true` when the folder tree should be removed recursively.
 
 ## Root Directory Handling
 

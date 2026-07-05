@@ -29,7 +29,7 @@ Cross-platform localization and globalization with culture-aware string operatio
 Cross-platform file and directory manipulation with path handling and content access.
 
 - Use `FilePath` for path representation and manipulation
-- Use `GetName`, `GetFolder`, `GetFullPath`, `GetRelativePathFor` for path operations
+- Use `GetPathDelimiter`, `operator/`, `GetName`, `GetFolder`, `GetFullPath`, `GetRelativePathFor` for path operations
 - Use `IsFile`, `IsFolder`, `IsRoot` to determine path object types
 - Use `File` class for file operations when `FilePath::IsFile` returns true
 - Use `ReadAllTextWithEncodingTesting`, `ReadAllTextByBom`, `ReadAllLinesByBom` for text reading
@@ -37,7 +37,7 @@ Cross-platform file and directory manipulation with path handling and content ac
 - Use `Exists`, `Delete`, `Rename` for file operations
 - Use `Folder` class for directory operations when `FilePath::IsFolder` or `FilePath::IsRoot` returns true
 - Use `GetFolders`, `GetFiles` for directory content enumeration
-- Use `Create` for creating new folders
+- Use `Create(bool recursively)`, `Delete(bool recursively)`, `Rename` for folder operations
 - Use `InjectFileSystemImpl` to replace file system implementation for testing and customization
 - Use `EjectFileSystemImpl` to remove specific injected implementations or reset to default
 
@@ -52,8 +52,8 @@ Unified stream interface for file, memory, and data transformation operations wi
 - Use `MemoryStream` for in-memory buffer operations
 - Use `MemoryWrapperStream` for operating on existing memory buffers
 - Use `EncoderStream` and `DecoderStream` for data transformation pipelines
-- Use `IsAvailable`, `CanRead`, `CanWrite`, `CanSeek`, `IsLimited` for capability checking
-- Use `Read`, `Write`, `Peek`, `Seek`, `Position`, `Size` for stream operations
+- Use `IsAvailable`, `CanRead`, `CanWrite`, `CanSeek`, `CanPeek`, `IsLimited` for capability checking
+- Use `Read`, `Write`, `Peek`, `Seek`, `SeekFromBegin`, `SeekFromEnd`, `Position`, `Size` for stream operations
 - Use `Close` for resource cleanup (automatic on destruction)
 
 [API Explanation](./KB_VlppOS_StreamOperations.md)
@@ -106,7 +106,7 @@ Non-waitable synchronization objects for protecting shared resources in multi-th
 - Use `Enter`, `TryEnter`, `Leave` for manual lock management
 - Use `SPIN_LOCK`, `CS_LOCK`, `READER_LOCK`, `WRITER_LOCK` macros for exception-safe automatic locking
 - Use `ConditionVariable` with `SleepWith`, `SleepWithForTime` for conditional waiting
-- Use `WakeOnePending`, `WaitAllPendings` for condition variable signaling
+- Use `WakeOnePending`, `WakeAllPendings` for condition variable signaling
 
 [API Explanation](./KB_VlppOS_SynchronizationPrimitives.md)
 

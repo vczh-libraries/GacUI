@@ -72,13 +72,16 @@ Comprehensive registration system for classes and interfaces with methods, prope
 - Use `CLASS_MEMBER_BASE` for reflectable base class declaration
 - Use `CLASS_MEMBER_FIELD` for member field registration
 - Use `CLASS_MEMBER_CONSTRUCTOR` for constructor registration with `Ptr<Class>(types...)` or `Class*(types...)`
-- Use `CLASS_MEMBER_EXTERNALCTOR` for external function constructors
-- Use `CLASS_MEMBER_METHOD` for method registration with parameter names
-- Use `CLASS_MEMBER_METHOD_OVERLOAD` for overloaded method registration
-- Use `CLASS_MEMBER_EXTERNALMETHOD` for external function methods
-- Use `CLASS_MEMBER_STATIC_METHOD` for static method registration
+- Use `CLASS_MEMBER_EXTERNALCTOR`, `CLASS_MEMBER_EXTERNALCTOR_TEMPLATE` for external function constructors
+- Use `CLASS_MEMBER_METHOD`, `CLASS_MEMBER_METHOD_RENAME` for method registration with parameter names
+- Use `CLASS_MEMBER_METHOD_OVERLOAD`, `CLASS_MEMBER_METHOD_OVERLOAD_RENAME` for overloaded method registration
+- Use `CLASS_MEMBER_EXTERNALMETHOD`, `CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE` for external function methods
+- Use `CLASS_MEMBER_STATIC_METHOD`, `CLASS_MEMBER_STATIC_METHOD_OVERLOAD` for static method registration
+- Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD`, `CLASS_MEMBER_STATIC_EXTERNALMETHOD_TEMPLATE` for global functions registered as static methods
 - Use `CLASS_MEMBER_EVENT` for event registration
 - Use `CLASS_MEMBER_PROPERTY_READONLY`, `CLASS_MEMBER_PROPERTY` for property registration
+- Use `CLASS_MEMBER_PROPERTY_EVENT_READONLY`, `CLASS_MEMBER_PROPERTY_EVENT` for properties with explicit getter/setter/event methods
+- Use `CLASS_MEMBER_PROPERTY_REFERENCETEMPLATE` for properties with custom generated C++ reference code
 - Use `CLASS_MEMBER_PROPERTY_READONLY_FAST`, `CLASS_MEMBER_PROPERTY_FAST` for standard getter/setter patterns
 - Use `CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST`, `CLASS_MEMBER_PROPERTY_EVENT_FAST` for properties with change events
 - Use `NO_PARAMETER` for parameterless functions
@@ -107,7 +110,7 @@ Proxy generation for interfaces to enable inheritance in Workflow scripts.
 
 Attach metadata attributes to types, members, and method parameters during reflection registration.
 
-Attributes are instances of reflectable structs whose constructor arguments are serializable primitive values.
+Attributes are instances of reflectable structs whose constructor arguments are serializable values, with `ITypeDescriptor*` as the explicit descriptor-reference exception.
 They are stored centrally in the owning type descriptor and can be queried at runtime via the `IAttributeBag` / `IAttributeInfo` interfaces.
 Attributes survive metaonly metadata serialization and deserialization, and appear in the logged text output.
 
@@ -115,7 +118,7 @@ Attributes survive metaonly metadata serialization and deserialization, and appe
 - Use `ATTRIBUTE_MEMBER(TYPE, ...)` to attach an attribute to the most recently registered member (field, property, event, method, or constructor)
 - Use `ATTRIBUTE_PARAMETER(PARAMETER_NAME, TYPE, ...)` to attach an attribute to a named parameter of the most recently registered method or constructor
 - Use `IAttributeBag::GetAttributeCount` and `IAttributeBag::GetAttribute` to query attributes at runtime
-- Use `IAttributeInfo::GetAttributeType`, `IAttributeInfo::GetAttributeValueCount`, `IAttributeInfo::GetAttributeValue` to inspect attribute content
+- Use `IAttributeInfo::GetAttributeType`, `IAttributeInfo::GetAttributeValueCount`, `IAttributeInfo::GetAttributeValueType`, `IAttributeInfo::GetAttributeValue` to inspect attribute content
 
 [API Explanation](./KB_VlppReflection_AttributeRegistration.md)
 

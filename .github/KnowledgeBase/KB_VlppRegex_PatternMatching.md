@@ -2,9 +2,11 @@
 
 Text pattern matching and searching operations with support for different UTF encodings.
 
-The definition and the string to match could be in different UTF encoding.
+The definition and the string to match can use different UTF encodings.
 `Regex_<T>` accepts `ObjectString<T>` as the definition.
-`MatchHead<U>`, `Match<U>`, `TestHead<U>`, `Test<U>`, `Search<U>`, `Split<U>` and `Cut<U>` accepts `ObjectString<U>` to match with the regular expression.
+`MatchHead<U>`, `Match<U>`, `TestHead<U>`, `Test<U>`, `Search<U>`, `Split<U>` and `Cut<U>` accept `ObjectString<U>` or `const U*` text to match with the regular expression.
+`Search<U>`, `Split<U>` and `Cut<U>` append results to a caller-provided `RegexMatch_<U>::List&`; they do not return a collection.
+`Split<U>` and `Cut<U>` also take `keepEmptyMatch` to decide whether empty unmatched fragments are included.
 
 ## Core Pattern Matching Methods
 
@@ -38,19 +40,19 @@ This is an optimization when you only need to know whether the string contains a
 
 `Search` finds all substrings which match the regular expression. All results do not overlap with each other.
 
-This method returns a collection of all non-overlapping matches found in the input string. When multiple matches are possible at the same position, it will choose one and continue searching from after that match.
+This method appends all non-overlapping successful matches found in the input string to `RegexMatch_<U>::List&`. When a match is found, searching continues after that match.
 
 ### Split<U>
 
-`Split` use the regular expression as a splitter, finding all remaining substrings.
+`Split` uses the regular expression as a splitter, finding all remaining substrings.
 
-This method treats the pattern as a delimiter and splits the input string wherever the pattern matches, returning the parts between the matches. This is similar to string split operations but with the power of regular expressions.
+This method treats the pattern as a delimiter and appends the parts between successful matches. The appended `RegexMatch_<U>` objects have `Success()` equal to `false`. `keepEmptyMatch` controls whether empty unmatched fragments are appended.
 
 ### Cut<U>
 
 `Cut` combines both `Search` and `Split`, finding all substrings in order, regardless if one matches or not.
 
-This method returns all parts of the string in sequence, both the parts that match the pattern and the parts that don't match. This gives you a complete decomposition of the input string.
+This method appends all parts of the string in sequence, both the parts that match the pattern and the parts that do not match. `Success()` distinguishes successful pattern matches from unmatched fragments, and `keepEmptyMatch` controls empty unmatched fragments.
 
 ## Extra Content
 
@@ -59,7 +61,7 @@ This method returns all parts of the string in sequence, both the parts that mat
 One of the key features of VlppRegex is its support for different UTF encodings between the pattern definition and the input text:
 
 - The regex pattern is defined using `Regex_<T>` where `T` is the character type for the pattern
-- The input text uses type `U` in the matching methods  
+- The input text uses type `U` in the matching methods, through `ObjectString<U>` or `const U*`
 - This allows patterns defined in one encoding to match text in another encoding
 - Supported character types include `wchar_t`, `char8_t`, `char16_t`, `char32_t`
 
@@ -67,39 +69,42 @@ One of the key features of VlppRegex is its support for different UTF encodings 
 
 The VlppRegex engine has specific performance characteristics:
 
-- **DFA Compatible vs Incompatible**: Features that break DFA compatibility (like backreferences) significantly impact performance
+- **DFA Compatible vs Incompatible**: Features that break DFA compatibility, including captures, backreferences, lookahead, and lazy loops, require rich mode and significantly impact performance
 - **Escaping Optimization**: Using `/` instead of `\` for escaping can improve readability in C++ code
 - **Method Selection**: Choose simpler methods like `Test` or `TestHead` when you only need boolean results
+- **Mode Inspection**: Use `IsPureMatch()` and `IsPureTest()` to check whether DFA mode is used for matching and testing
 
 ### Syntax Differences from .NET
 
 While mostly compatible with .NET regex syntax, VlppRegex has important differences:
 
-- **Dot Character**: `.` matches literal '.' character, while `/.` or `\.` matches all characters
+- **Dot Character**: `.` matches literal '.' character, while `/.` or `\.` matches any character
 - **Escaping**: Both `/` and `\` perform escaping (prefer `/` for C++ compatibility)
-- **Character Classes**: Standard character classes work the same as .NET
+- **Character Classes**: `\s`, `\S`, `\d`, `\D`, `\l`, `\L`, `\w` and `\W` are supported, and each one can also be written with `/`
 - **Quantifiers**: Standard quantifiers (`*`, `+`, `?`, `{n,m}`) work as expected
 
 ### Error Handling
 
 When using regex operations:
 
-- Invalid patterns will cause compilation errors when constructing `Regex_<T>`
-- Invalid input strings generally won't cause errors but may produce no matches
-- Method calls on empty or invalid regex objects may result in undefined behavior
+- Invalid patterns trigger `CHECK_ERROR` during `Regex_<T>` construction
+- `MatchHead<U>` and `Match<U>` return `nullptr` when no match is found
+- `TestHead<U>` and `Test<U>` return `false` when no match is found
+- `Search<U>` appends no items when no successful match is found
 
 ### Common Usage Patterns
 
-**Simple validation**: (note that `^` is not required and `$` does not make sense here)
+**Prefix test**:
 ```cpp
-Regex regex(L"[0-9]+");
-bool isNumber = regex.TestHead(input);
+Regex regex(L"/d+");
+bool hasNumberPrefix = regex.TestHead(input);
 ```
 
 **Extracting all matches**:
 ```cpp
-Regex regex(L"\\w+");
-auto matches = regex.Search(text);
+Regex regex(L"/w+");
+RegexMatch::List matches;
+regex.Search(text, matches);
 for (auto match : matches) {
     // Process each word
 }
@@ -108,11 +113,13 @@ for (auto match : matches) {
 **Splitting text**:
 ```cpp
 Regex regex(L"[,;]");
-auto parts = regex.Split(csvLine);
+RegexMatch::List parts;
+regex.Split(csvLine, false, parts);
 ```
 
 **Complete decomposition**:
 ```cpp
-Regex regex(L"\\d+");
-auto parts = regex.Cut(mixedText);  // Returns both numbers and non-numbers
+Regex regex(L"/d+");
+RegexMatch::List parts;
+regex.Cut(mixedText, false, parts);  // Appends both numbers and non-numbers
 ```

@@ -6,31 +6,38 @@ Vlpp provides algorithms for arranging data with support for both total and part
 
 ## Quick Sort Implementation
 
-### Sort(T*, vint) Function
+### `Sort(T*, vint)` Functions
 
-The primary sorting function performs quick sort on raw pointer ranges with custom comparators.
+The sorting functions perform quick sort on raw pointer ranges. Use the two-argument overload when the element type has a usable `<=>` operator, or the three-argument overload when custom ordering is needed.
 
 ```cpp
 // Sort an array of integers
 vint numbers[] = {5, 2, 8, 1, 9};
-Sort(numbers, 5, [](vint a, vint b) { return a <=> b; });
+Sort(numbers, 5);
+
+// Sort with a custom comparator
+Sort(numbers, 5, [](vint a, vint b) { return b <=> a; });
 ```
 
-**Function signature:**
+**Function signatures:**
 ```cpp
 template<typename T, typename Compare>
 void Sort(T* begin, vint count, Compare compare);
+
+template<typename T>
+void Sort(T* begin, vint count);
 ```
 
 **Parameters:**
 - **`T* begin`**: Pointer to the first element of the array to sort
 - **`vint count`**: Number of elements in the array
-- **`Compare compare`**: Lambda expression or function object for comparison
+- **`Compare compare`**: Lambda expression or function object returning an ordering value
 
 **Key characteristics:**
 - **In-place sorting**: Modifies the original array
 - **Quick sort algorithm**: Efficient O(n log n) average case performance
-- **Custom comparators**: Flexible comparison logic through lambda expressions
+- **Default comparator**: Uses `a <=> b` when no comparator is supplied
+- **Custom comparators**: Flexible comparison logic through lambda expressions or function objects
 
 ## Modern C++ Comparison Support
 
@@ -50,7 +57,7 @@ Sort(data, count, [](const MyType& a, const MyType& b) {
 
 ### Comparison Return Types
 
-#### std::strong_ordering
+#### `std::strong_ordering`
 Use for types with total ordering where all elements can be compared:
 ```cpp
 Sort(numbers, count, [](vint a, vint b) -> std::strong_ordering {
@@ -58,11 +65,20 @@ Sort(numbers, count, [](vint a, vint b) -> std::strong_ordering {
 });
 ```
 
-#### std::weak_ordering  
+#### `std::weak_ordering`
 Use for types where equivalent elements may not be identical:
 ```cpp
 Sort(strings, count, [](const WString& a, const WString& b) -> std::weak_ordering {
     return a.Compare(b) <=> 0;  // Case-insensitive comparison
+});
+```
+
+#### `std::partial_ordering`
+Use only when every pair that reaches `Sort` is still comparable. If the comparator returns `std::partial_ordering::unordered`, `Sort` raises an `Error`.
+
+```cpp
+Sort(items, count, [](const MyType& a, const MyType& b) -> std::partial_ordering {
+    return a.PartialCompare(b);
 });
 ```
 
@@ -86,56 +102,69 @@ Sort(items, count, [](const Item& a, const Item& b) {
 
 ## Partial Ordering Support
 
-### PartialOrderingProcessor
+### `PartialOrderingProcessor`
 
-For scenarios where not all elements can be compared (partial ordering), use `PartialOrderingProcessor` instead of the standard `Sort` function.
+For dependency sorting, use `PartialOrderingProcessor` instead of `Sort`. `PartialOrderingProcessor` is not a template. Initialize it with one relationship source, call `Sort()`, then read `components` and `nodes`.
 
 ```cpp
-// Example: Dependency sorting where some items have no ordering relationship
-PartialOrderingProcessor<MyType> processor;
+List<WString> items;
+items.Add(L"compile");
+items.Add(L"link");
+items.Add(L"package");
 
-// Add items and their relationships
-processor.AddItem(item1);
-processor.AddItem(item2);
-processor.AddItem(item3);
+Group<WString, WString> dependencies;
+dependencies.Add(L"link", L"compile");
+dependencies.Add(L"package", L"link");
 
-// Define partial ordering relationships
-processor.AddDependency(item2, item1);  // item2 depends on item1
-processor.AddDependency(item3, item1);  // item3 depends on item1
+PartialOrderingProcessor processor;
+processor.InitWithGroup(items, dependencies);
+processor.Sort();
 
-// Process to get topologically sorted result
-auto sortedItems = processor.Process();
+for (vint i = 0; i < processor.components.Count(); i++)
+{
+    auto& component = processor.components[i];
+    // component.firstNode points to indexes in processor.nodes.
+}
 ```
 
-**Use cases for partial ordering:**
+**Initialization APIs:**
+- **`InitWithGroup(items, depGroup)`**: Use a `Group<T, T>` where `depGroup.Add(a, b)` means `a` depends on `b`
+- **`InitWithFunc(items, depFunc)`**: Use a callback where `depFunc(a, b)` returns true when `a` depends on `b`
+- **`InitWithSubClass(items, depGroup, subClasses)`**: Group items into subclasses before sorting dependencies
+
+**Result fields:**
+- **`components`**: Sorted components. A component can contain multiple nodes when dependencies form a cycle.
+- **`nodes`**: Node data referenced by components. With subclass sorting, a node can represent a subclass and exposes `firstSubClassItem` and `subClassItemCount`.
+
+**Use cases for dependency sorting:**
 - **Dependency resolution**: When items have prerequisites
 - **Task scheduling**: When some tasks must complete before others
-- **Type hierarchies**: When comparing types with inheritance relationships
-- **Version constraints**: When some versions are incomparable
+- **Type hierarchies**: When subclass groups must be ordered from relationships among original objects
+- **Cycle grouping**: When mutually dependent items should be reported in the same component
 
 ### When Sort Doesn't Work
 
-The standard `Sort` function requires total ordering - every pair of elements must be comparable. Use `PartialOrderingProcessor` when:
+The standard `Sort` function requires every pair it compares to produce an ordered result. Use `PartialOrderingProcessor` when:
 
 - Some elements cannot be meaningfully compared
-- Circular dependencies need to be detected
 - Topological sorting is required
-- The comparison relationship is not transitive across all elements
+- Dependency cycles need to be grouped into components
+- Relationships are expressed as dependencies instead of pairwise ordering
 
 ## Best Practices
 
 ### Choosing the Right Approach
 
 1. **Use `Sort()` when:**
-   - All elements have a clear total ordering
+   - All element pairs that may be compared produce ordered results
    - Performance is critical (quick sort is very efficient)
    - Working with simple data types (numbers, strings)
 
 2. **Use `PartialOrderingProcessor` when:**
-   - Not all elements can be compared
-   - Dealing with dependency graphs
+   - Working with dependency graphs
    - Need topological sorting
-   - Circular dependency detection is important
+   - Cycles should be represented as grouped components
+   - Items should be sorted through subclass groups
 
 ### Comparator Best Practices
 
@@ -199,7 +228,7 @@ sortedNumbers.Add(8);
 
 ### Performance Characteristics
 
-- **Quick Sort**: Average O(n log n), worst case O(n²)
+- **Quick Sort**: Average O(n log n), worst case O(n^2)
 - **In-place**: No additional memory allocation for sorting
 - **Comparison-based**: Performance depends on comparison function complexity
 - **Cache-friendly**: Works with contiguous memory arrays
@@ -216,7 +245,7 @@ The sorting functions are not thread-safe. For concurrent access:
 For custom types used in sorting:
 - Implement appropriate comparison operators (`<=>` recommended)
 - Ensure comparison is consistent and transitive
-- Consider providing both strong and weak ordering overloads as needed
+- Consider providing strong, weak, or partial ordering overloads as needed
 
 ### Debugging Comparators
 

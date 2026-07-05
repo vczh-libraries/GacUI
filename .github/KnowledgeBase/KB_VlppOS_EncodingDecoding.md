@@ -14,7 +14,7 @@ Use `UtfGeneralEncoder<Native, Expect>` and `UtfGeneralDecoder<Native, Expect>` 
 
 `UtfGeneralEncoder<Native, Expect>` encode from `Expect` to `Native`, `UtfGeneralDecoder<Native, Expect>` decode from `Native` to `Expect`. They should be one of `wchar_t`, `char8_t`, `char16_t`, `char32_t` and `char16be_t`.
 
-Unlike `BomEncoder` and `BomDecoder`, `UtfGeneralEncoder` and `UtfGeneralDecodes` is without BOM.
+Unlike `BomEncoder` and `BomDecoder`, `UtfGeneralEncoder` and `UtfGeneralDecoder` are without BOM.
 
 `char16be_t` means UTF-16 Big Endian, which is not a C++ native type, it can't be used with any string literal.
 
@@ -47,7 +47,7 @@ There is a function `TestEncoding` to scan a binary data and guess the most poss
 
 Use `Utf8Base64Encoder` and `Utf8Base64Decoder` for Base64 encoding in UTF-8.
 
-`Utf8Base64Encoder` and `Utf6Base64Decoder` convert between binary data to Base64 in UTF8 encoding.
+`Utf8Base64Encoder` and `Utf8Base64Decoder` convert between binary data and Base64 in UTF-8 encoding.
 They can work with `UtfGeneralEncoder` and `UtfGeneralDecoder` to convert binary data to Base64 in a `WString`.
 
 ### Example: Converting Binary Data to Base64 WString
@@ -58,27 +58,27 @@ MemoryStream memoryStream;
   UtfGeneralEncoder<wchar_t, char8_t> u8towEncoder;
   EncoderStream u8towStream(memoryStream, u8towEncoder);
   Utf8Base64Encoder base64Encoder;
-  EncoderStream base64Stream(u8t0wStream, base64Encoder);
+  EncoderStream base64Stream(u8towStream, base64Encoder);
   base64Stream.Write(binary ...);
 }
 memoryStream.SeekFromBegin(0);
 {
   StreamReader reader(memoryStream);
-  auto base64 = reader.ReadToEnd(reader);
+  auto base64 = reader.ReadToEnd();
 }
 ```
 
 ### Example: Converting Base64 WString to Binary Data
 
 ```cpp
-MemoryStream memoryStreamn;
+MemoryStream memoryStream;
 {
   StreamWriter writer(memoryStream);
   writer.WriteString(base64);
 }
 memoryStream.SeekFromBegin(0);
 {
-  UtfGeneralEncoder<wchar_t, char8_t> wtou8Decoder;
+  UtfGeneralDecoder<wchar_t, char8_t> wtou8Decoder;
   DecoderStream wtou8Stream(memoryStream, wtou8Decoder);
   Utf8Base64Decoder base64Decoder;
   DecoderStream base64Stream(wtou8Stream, base64Decoder);

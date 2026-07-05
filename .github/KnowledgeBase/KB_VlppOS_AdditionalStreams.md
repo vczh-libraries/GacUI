@@ -16,6 +16,7 @@ or when the same part of the data needs to be modified repeatly.
 - Readable when the underlying stream is readable
 - Writable when the underlying stream is writable  
 - Seekable when the underlying stream is seekable
+- Peekable when the underlying stream is peekable
 - Limited/finite when the underlying stream is limited/finite
 
 ### Use Cases
@@ -35,6 +36,8 @@ Use `RecorderStream` for copying data from one stream to another during reading.
 ### RecorderStream Behavior
 
 - It is a read-only stream that wraps another readable stream
+- It is not seekable or peekable
+- It is finite only when the input stream is finite
 - Every read operation is simultaneously written to a target stream
 - Useful for creating backups or logs of data as it's being processed
 - The recorded data can be written to any writable stream (file, memory, etc.)

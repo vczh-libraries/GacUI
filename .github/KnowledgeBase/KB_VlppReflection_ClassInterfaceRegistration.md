@@ -31,13 +31,20 @@ VlppReflection provides extensive macros for registering classes and interfaces,
 ### Constructor Registration
 - Use `CLASS_MEMBER_CONSTRUCTOR` for constructor registration with `Ptr<Class>(types...)` or `Class*(types...)`
 - Use `CLASS_MEMBER_EXTERNALCTOR` for external function constructors
+- Use `CLASS_MEMBER_EXTERNALCTOR_TEMPLATE` when an external constructor needs custom generated C++ code templates
 - Constructor type determines whether instances are boxed in `Ptr<T>` or not
 
 ### Method Registration
 - Use `CLASS_MEMBER_METHOD` for method registration with parameter names
+- Use `CLASS_MEMBER_METHOD_RENAME` to register a non-overloaded member function under a different reflected name
 - Use `CLASS_MEMBER_METHOD_OVERLOAD` for overloaded method registration
+- Use `CLASS_MEMBER_METHOD_OVERLOAD_RENAME` to register a specific overload under a different reflected name
 - Use `CLASS_MEMBER_EXTERNALMETHOD` for external function methods
+- Use `CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE` when an external method needs custom generated C++ code templates
 - Use `CLASS_MEMBER_STATIC_METHOD` for static method registration
+- Use `CLASS_MEMBER_STATIC_METHOD_OVERLOAD` for overloaded static method registration
+- Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD` for global functions registered as static methods
+- Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD_TEMPLATE` when a static external method needs custom generated C++ code templates
 
 ### Event Registration
 - Use `CLASS_MEMBER_EVENT` for event registration
@@ -46,6 +53,8 @@ VlppReflection provides extensive macros for registering classes and interfaces,
 
 ### Property Registration
 - Use `CLASS_MEMBER_PROPERTY_READONLY`, `CLASS_MEMBER_PROPERTY` for property registration
+- Use `CLASS_MEMBER_PROPERTY_EVENT_READONLY`, `CLASS_MEMBER_PROPERTY_EVENT` for properties with explicit getter/setter/event methods
+- Use `CLASS_MEMBER_PROPERTY_REFERENCETEMPLATE` when generated C++ needs custom reference code for the property
 - Use `CLASS_MEMBER_PROPERTY_READONLY_FAST`, `CLASS_MEMBER_PROPERTY_FAST` for standard getter/setter patterns
 - Use `CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST`, `CLASS_MEMBER_PROPERTY_EVENT_FAST` for properties with change events
 
@@ -99,7 +108,7 @@ END_CLASS_MEMBER(MyClass)
 - Use `ATTRIBUTE_MEMBER(TYPE, ...)` after any member registration to attach an attribute to that member
 - Use `ATTRIBUTE_PARAMETER(PARAMETER_NAME, TYPE, ...)` after a method or constructor registration to attach an attribute to a named parameter
 - The attribute type must be a reflected struct
-- Each argument must be a serializable primitive value
+- Each ordinary argument must be serializable; `ITypeDescriptor*` is supported as a raw-pointer descriptor reference
 - Multiple attributes can be attached to the same target
 - See [Attribute Registration](./KB_VlppReflection_AttributeRegistration.md) for full details
 
@@ -140,19 +149,30 @@ There is no constructor in an interface registration - only classes support cons
 For overloaded methods, use specific macros:
 - `CLASS_MEMBER_METHOD_OVERLOAD(name, parameter, function-type)`
 - `CLASS_MEMBER_METHOD_OVERLOAD_RENAME(new-name, name, parameter, function-type)`
+- `CLASS_MEMBER_METHOD_RENAME(new-name, name, parameters)` for non-overloaded methods that need a different reflected name
 - Function type must be a pointer to member function
 
 #### External Methods
 For methods implemented as external functions:
 - `CLASS_MEMBER_EXTERNALMETHOD(name, parameters, function-type, source)`
+- `CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE(name, parameters, function-type, source, invoke-template, closure-template)`
 - First parameter acts as `this` pointer
 - Should not appear in parameters or function-type
+
+#### Static Methods
+For static methods and global functions registered as static methods:
+- `CLASS_MEMBER_STATIC_METHOD(name, parameters)` for non-overloaded static member functions
+- `CLASS_MEMBER_STATIC_METHOD_OVERLOAD(name, parameters, function-type)` for overloaded static member functions
+- `CLASS_MEMBER_STATIC_EXTERNALMETHOD(name, parameters, function-type, source)` for global functions
+- `CLASS_MEMBER_STATIC_EXTERNALMETHOD_TEMPLATE(name, parameters, function-type, source, invoke-template, closure-template)` when generated C++ needs custom templates
 
 #### Property Shortcuts
 Fast property registration shortcuts:
 - `CLASS_MEMBER_PROPERTY_READONLY_FAST(X)` for `GetX()` getter and property `X`
 - `CLASS_MEMBER_PROPERTY_FAST(X)` for `GetX()` getter, `SetX()` setter, and property `X`
-- `CLASS_MEMBER_PROPERTY_EVENT_FAST(X)` includes `XChanged` event
+- `CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(X, XChanged)` for `GetX()` and an existing `XChanged` event
+- `CLASS_MEMBER_PROPERTY_EVENT_FAST(X, XChanged)` for `GetX()`, `SetX()`, and an existing `XChanged` event
+- `CLASS_MEMBER_PROPERTY_REFERENCETEMPLATE(X, GetX, SetX, template)` when generated C++ needs a custom property reference expression
 
 ### Best Practices
 

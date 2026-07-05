@@ -35,17 +35,17 @@ The project provides convenient aliases instead of using `ObjectString<T>` direc
 
 Use these static functions to create string instances:
 
-#### Unmanaged(L"string-literal")
+#### `Unmanaged(externally-owned-buffer)`
 ```cpp
 auto str = WString::Unmanaged(L"Hello World");
 ```
-- **Use case**: String literals only
-- **Performance**: Zero-copy for string literals
-- **Safety**: Only works with compile-time string literals
+- **Use case**: String literals or other externally owned zero-terminated buffers
+- **Performance**: Zero-copy because the string points at the supplied buffer
+- **Safety**: The buffer must outlive the string and is not released by the string
 
-#### CopyFrom(wchar_t*, vint)
+#### `CopyFrom(const wchar_t*, vint)`
 ```cpp
-wchar_t* buffer = GetSomeBuffer();
+const wchar_t* buffer = GetSomeBuffer();
 vint length = GetBufferLength();
 auto str = WString::CopyFrom(buffer, length);
 ```
@@ -171,7 +171,7 @@ U8String u16to8 = u16tou8(utf16);   // UTF-16 to UTF-8
 3. **Avoid `char` and `std::string`** - use project's string types instead
 
 ### Initialization Best Practices
-1. **Use `WString::Unmanaged(L"...")`** for string literals
+1. **Use `WString::Unmanaged(L"...")`** for string literals and only use it with other buffers when their lifetime is externally guaranteed
 2. **Use constructor or `CopyFrom`** when you need to copy external data
 3. **Use `TakeOver`** only when you want to transfer ownership of allocated memory
 
@@ -195,7 +195,7 @@ The `wchar_t` type behaves differently across platforms:
 The string conversion system automatically handles these differences internally.
 
 ### Performance Considerations
-- **String literals with `Unmanaged`**: Zero-copy initialization
+- **Externally owned buffers with `Unmanaged`**: Zero-copy initialization without ownership transfer
 - **Immutable strings**: Thread-safe sharing but creates new instances for modifications
 - **UTF conversions**: May involve memory allocation and encoding conversion overhead
 - **Case conversions**: Create new string instances rather than modifying in-place

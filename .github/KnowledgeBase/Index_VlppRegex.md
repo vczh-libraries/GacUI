@@ -6,16 +6,16 @@ Project introduction remains in [Index.md](./Index.md#vlppregex).
 
 #### Pattern Matching Operations
 
-Text pattern matching and searching operations with support for different UTF encodings.
+Text pattern matching and searching operations with support for different UTF encodings between pattern definitions and input text.
 
 - Use `Regex_<T>` for pattern definition with `ObjectString<T>` encoding
 - Use `MatchHead<U>` for finding longest prefix matching the pattern
 - Use `Match<U>` for finding earliest substring matching the pattern
 - Use `TestHead<U>` for boolean prefix matching without detailed results
 - Use `Test<U>` for boolean substring matching without detailed results
-- Use `Search<U>` for finding all non-overlapping matches
-- Use `Split<U>` for using pattern as delimiter to split text
-- Use `Cut<U>` for combined search and split operations
+- Use `Search<U>` for appending all non-overlapping successful matches to `RegexMatch_<U>::List`
+- Use `Split<U>` for appending delimiter-separated unmatched fragments to `RegexMatch_<U>::List`
+- Use `Cut<U>` for appending both successful and failed fragments in order
 
 [API Explanation](./KB_VlppRegex_PatternMatching.md)
 

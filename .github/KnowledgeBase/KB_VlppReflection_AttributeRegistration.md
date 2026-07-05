@@ -3,7 +3,7 @@
 ## Attach metadata attributes to types, members, and method parameters during reflection registration.
 
 VlppReflection provides three macros for attaching attribute metadata to reflected types and their members.
-An attribute is an instance of a reflectable struct whose constructor arguments are serializable primitive values (e.g., `WString`, `vint`, `bool`, `float`, `double`).
+An attribute is an instance of a reflectable struct whose constructor arguments are serializable values (e.g., `WString`, `vint`, `bool`, `float`, `double`), with `ITypeDescriptor*` as the explicit descriptor-reference exception.
 Attributes are stored centrally in the owning type descriptor and can be queried at runtime or through metaonly metadata.
 
 ## Attribute Macros
@@ -31,7 +31,9 @@ Must appear after a method or constructor registration macro.
 - The attribute type must be a reflected struct (`TypeDescriptorFlags::Struct`).
 - It must be registered via `BEGIN_STRUCT_MEMBER` / `END_STRUCT_MEMBER` before use.
 - `TYPE{ ARG1, ARG2, ... }` must be a valid C++ aggregate initialization expression.
-- Each argument is boxed as a `Value` and its type descriptor must have a non-null `GetSerializableType()`.
+- Each argument is boxed as a `Value`.
+- Ordinary argument type descriptors must have a non-null `GetSerializableType()`.
+- `ITypeDescriptor*` arguments are the supported non-serializable exception. They must be boxed as a raw pointer or null, not as a shared pointer or arbitrary boxed object.
 
 ## Argument Type Inference
 
@@ -59,12 +61,14 @@ Use the `IAttributeBag` interface (inherited by `ITypeDescriptor`, `IMemberInfo`
 Use `IAttributeInfo` to inspect an attribute:
 - `GetAttributeType()` — returns the `ITypeDescriptor` of the attribute struct.
 - `GetAttributeValueCount()` — returns the number of constructor argument values.
+- `GetAttributeValueType(index)` — returns the reflected type descriptor used to serialize or interpret the argument value.
 - `GetAttributeValue(index)` — returns the boxed `Value` of the argument at the given index.
 
 ## Metaonly Metadata
 
 Attributes are serialized into metaonly binary metadata by `GenerateMetaonlyTypes` and deserialized by `LoadMetaonlyTypes`.
-Each attribute value is serialized through `ISerializableType::Serialize` and deserialized through `ISerializableType::Deserialize`.
+Ordinary attribute values are serialized through `ISerializableType::Serialize` and deserialized through `ISerializableType::Deserialize`.
+`ITypeDescriptor*` attribute values are encoded separately as referenced type-descriptor indices with empty serialized data.
 Attributes appear in the logged text output (`.txt` baseline files) in the format:
 ```
 @Attribute:<AttributeTypeName>(<ArgTypeName>:<SerializedData>, ...)
@@ -151,7 +155,7 @@ END_CLASS_MEMBER(MyClass)
 - `ATTRIBUTE_PARAMETER` raises `CHECK_ERROR` if the last registered member is not a method or constructor.
 - `ATTRIBUTE_PARAMETER` raises `CHECK_ERROR` if the named parameter does not exist or is ambiguous.
 - A `static_assert` fires at compile time if `TYPE{ ARG1, ... }` is not a valid expression.
-- `CHECK_ERROR` is raised if the attribute type is not a reflected struct or if an argument is not serializable.
+- `CHECK_ERROR` is raised if the attribute type is not a reflected struct, if an ordinary argument is not serializable, or if an `ITypeDescriptor*` argument is not a raw pointer or null.
 
 ## Workflow Script Attributes
 

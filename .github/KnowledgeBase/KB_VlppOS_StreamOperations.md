@@ -16,11 +16,11 @@ Usually we don't need to call `Close` explicitly, it will be called internally w
 
 ### Stream Capabilities
 
-Use `IsAvailable`, `CanRead`, `CanWrite`, `CanSeek`, `IsLimited` for capability checking.
+Use `IsAvailable`, `CanRead`, `CanWrite`, `CanSeek`, `CanPeek`, `IsLimited` for capability checking.
 
 #### Readable Streams
 
-A stream is readable when `CanRead` returns true. `Read` and `Peek` can only be used in this case.
+A stream is readable when `CanRead` returns true. `Read` can only be used in this case.
 
 Here are all streams that guaranteed to be readable so no further checking is needed:
 - `FileStream` with `FileStream::ReadOnly` or `FileStream::ReadWrite` in the constructor.
@@ -29,6 +29,17 @@ Here are all streams that guaranteed to be readable so no further checking is ne
 - `DecoderStream`
 - `RecorderStream`
 - The following streams are readable when their underlying streams are readable
+  - `CacheStream`
+
+#### Peekable Streams
+
+A stream is peekable when `CanPeek` returns true. `Peek` can only be used in this case.
+
+Here are all streams that guaranteed to be peekable so no further checking is needed:
+- `FileStream` with `FileStream::ReadOnly` or `FileStream::ReadWrite` in the constructor.
+- `MemoryStream`
+- `MemoryWrapperStream`
+- The following streams are peekable when their underlying streams are peekable
   - `CacheStream`
 
 #### Writable Streams
@@ -41,7 +52,7 @@ Here are all streams that guaranteed to be writable so no further checking is ne
 - `MemoryWrapperStream`
 - `EncoderStream`
 - `BroadcastStream`
-- The following streams are readable when their underlying streams are writable 
+- The following streams are writable when their underlying streams are writable
   - `CacheStream`
 
 #### Seekable Streams
@@ -54,7 +65,7 @@ Here are all streams that guaranteed to be seekable so no further checking is ne
 - `FileStream`
 - `MemoryStream`
 - `MemoryWrapperStream`
-- The following streams are readable when their underlying streams are seekable
+- The following streams are seekable when their underlying streams are seekable
   - `CacheStream`
 
 #### Limited/Finite Streams
@@ -65,24 +76,20 @@ The `Size` and `SeekFromEnd` method only make sense for a finite stream.
 Here are all streams that guaranteed to be limited/finite so no further checking is needed:
 - `FileStream` with `FileStream::ReadOnly` in the constructor.
 - `MemoryWrapperStream`
-- The following streams are readable when their underlying streams are limited/finite
+- The following streams are limited/finite when their underlying streams are limited/finite
   - `DecoderStream`
   - `EncoderStream`
   - `CacheStream`
   - `RecorderStream`
 
-Here are all streams that guaranteed to be infinite so no further checking is needed:
+Here are all streams that guaranteed to be unlimited so no further checking is needed:
 - `FileStream` with `FileStream::WriteOnly` or `FileStream::ReadWrite` in the constructor.
 - `MemoryStream`
-- The following streams are readable when their underlying streams are limited/finite
-  - `DecoderStream`
-  - `EncoderStream`
-  - `CacheStream`
-  - `RecorderStream`
+- `BroadcastStream`
 
 ### Basic Stream Operations
 
-Use `Read`, `Write`, `Peek`, `Seek`, `Position`, `Size` for stream operations.
+Use `Read`, `Write`, `Peek`, `Seek`, `SeekFromBegin`, `SeekFromEnd`, `Position`, `Size` for stream operations.
 Use `Close` for resource cleanup (automatic on destruction).
 
 ## FileStream
@@ -98,7 +105,7 @@ The buffer will be deleted when `MemoryStream` is destroyed.
 
 ## MemoryWrapperStream
 
-`MemoryWrapperStream` operates on a given memory buffer, `MemoryWrapperStream` will be delete the buffer.
+`MemoryWrapperStream` operates on a given memory buffer. It does not own or delete the buffer.
 
 ## EncoderStream and DecoderStream
 

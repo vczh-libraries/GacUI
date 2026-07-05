@@ -101,7 +101,7 @@ A `ConditionVariable` works with a `CriticalSection` or a `ReaderWriterLock`.
 
 ### ConditionVariable with ReaderWriterLock
 
-- Call `SleepWithReader`, `SleepWithReaderForTime`, `SleepWriter` or `SleepWriterForTime` to work with a `ReaderWriterLock`. They only work on Windows.
+- Call `SleepWithReader`, `SleepWithReaderForTime`, `SleepWithWriter` or `SleepWithWriterForTime` to work with a `ReaderWriterLock`. They only work on Windows.
 
 ### ConditionVariable Behavior
 
@@ -109,15 +109,15 @@ The `Sleep*` function temporarily releases the lock from the current thread, and
 
 - Before calling the `Sleep*` function, the current thread must own the lock.
 - Calling the `Sleep*` function releases the lock from the current thread, and block the current thread.
-- The `Sleep*` function returns when `WakeOnePending` or `WaitAllPendings` is called.
+- The `Sleep*` function returns when `WakeOnePending` or `WakeAllPendings` is called.
   - The `Sleep*ForTime` function could also return when it reaches the timeout. But this will not always happen, because:
-    - `WaitOnePending` only activates one thread pending on the condition variable.
-    - `WaitAllPendings` activates all thread but they are also controlled by the lock.
+    - `WakeOnePending` only activates one thread pending on the condition variable.
+    - `WakeAllPendings` activates all thread but they are also controlled by the lock.
   - When `Sleep*` returns, the current thread owns the lock.
 
 ### ConditionVariable Signaling
 
-Use `WakeOnePending`, `WaitAllPendings` for condition variable signaling.
+Use `WakeOnePending`, `WakeAllPendings` for condition variable signaling.
 
 ## Extra Content
 

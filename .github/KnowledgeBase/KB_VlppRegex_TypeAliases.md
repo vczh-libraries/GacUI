@@ -111,16 +111,16 @@ Using aliases vs explicit templates has no performance impact:
 
 **Basic pattern matching**:
 ```cpp
-Regex pattern(L"\\d+");
+Regex pattern(L"/d+");
 auto match = pattern.Match(text);
 ```
 
 **Lexical analysis**:
 ```cpp
 List<WString> tokenDefs;
-tokenDefs.Add(L"\\b(if|else|while)\\b");  // keywords
-tokenDefs.Add(L"\\b[a-zA-Z_][a-zA-Z0-9_]*\\b");  // identifiers
-tokenDefs.Add(L"\\d+");  // numbers
+tokenDefs.Add(L"if|else|while");  // keywords
+tokenDefs.Add(L"[a-zA-Z_]/w*");  // identifiers
+tokenDefs.Add(L"/d+");  // numbers
 
 RegexLexer lexer(tokenDefs);
 auto tokens = lexer.Parse(sourceCode);
@@ -129,7 +129,7 @@ auto tokens = lexer.Parse(sourceCode);
 **Syntax highlighting**:
 ```cpp
 List<WString> tokenDefs;
-tokenDefs.Add(L"\\bclass\\b");  // token 0: keywords
+tokenDefs.Add(L"class");  // token 0: keywords
 tokenDefs.Add(L"\"[^\"]*\"");   // token 1: strings
 
 RegexProc proc;
