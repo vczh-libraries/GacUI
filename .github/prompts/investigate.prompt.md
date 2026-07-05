@@ -47,6 +47,12 @@ I am starting a fresh new request.
   - If the problem description consists of multiple `## Task N` or `## Task TITLE`:
     - You should strictly follow `## Git Commits and Multi-Task Request`.
     - For each `## Task X`, perform the work, git commit and push, before starting the next `## Task X`.
+- If there is an `## REVIEW COMMENTS` section in the request:
+  - This section must be copied along with the problem description.
+  - Answers to these review comments are my direct input, they are very important.
+  - Some review comments may be tagged with `[CLOSED]`:
+    - DO NOT include the tag in the problem description.
+    - All comments and answers are equally important, no matter if the review comment is closed or not.
 - Jump to `Step 2` directly.
 
 ### Continue Investigation (only when "# Continue" appears in the LATEST chat message)

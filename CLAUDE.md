@@ -7,15 +7,17 @@
 
 ## Step 1
 
-Read the first word of the request, and read an additional instruction file if it is:
+Read the first phrase of the request, and read an additional instruction file if it is:
 - "ask": REPO-ROOT/.github/prompts/ask.prompt.md
 - "investigate": REPO-ROOT/.github/prompts/investigate.prompt.md
+- "review": REPO-ROOT/.github/prompts/review.prompt.md
 - "refine": REPO-ROOT/.github/prompts/refine.prompt.md
 - "kb": REPO-ROOT/.github/prompts/kb.prompt.md
+- "kb refine": REPO-ROOT/.github/prompts/kb-refine.prompt.md
 
 ### Exceptions
 
-The following rules apply when the first word is not in the list:
+The following rules apply when the first phrase is not in the list:
 - If the request looks like a research or question, treat the request as if it begins with "ask".
 - If the request looks like a coding work, treat the request as if it begins with "investigate repro".
 - If the request looks like other non-coding work, just execute the request directly. Such works usually include but not limit to:
@@ -25,16 +27,21 @@ The following rules apply when the first word is not in the list:
 
 ## Step 2
 
-- Only applies when the first word is:
+- Only applies when the first phrase is:
   - "investigate"
   - "kb"
-- Read the second word if it exists, convert it to a title `# THE-WORD`.
+- Read the next word if it exists, convert it to a title `# THE-WORD`.
 
 ## Step 3
 
-Keep the remaining as is.
-Treat the processed request as "the LATEST chat message" in the additional instruction file.
-Follow the additional instruction file and start working immediately, there will be no more input.
+- Keep the remaining as is.
+  - Special treatment only for `investigate repro`:
+    - If the remaining is just tagging a file, replace the tagging with the content of the file.
+    - If the remaining is empty, use the content of `REPO-ROOT/TODO_TASK.md`.
+  - Special treatment only for `review`:
+    - If the remaining is empty, tag `REPO-ROOT/TODO_TASK.md`.
+- Treat the processed request as "the LATEST chat message" in the additional instruction file.
+- Follow the additional instruction file and start working immediately, there will be no more input.
 
 ## Fixing Typos
 
@@ -52,13 +59,26 @@ When the request is `kb execute`, follow `kb.prompt.md` and "the LATEST chat mes
 # Execute
 ```
 
+When the request is `review`, follow `review.prompt.md` and "the LATEST chat message" becomes
+```
+<tagging REPO-ROOT/TODO_TASK.md>
+```
+Special treatment applied
+
+When the request is `investigate repro <tagging REPO-ROOT/TODO_ANOTHER_TASK.md>`, follow `investigate.prompt.md` and "the LATEST chat message" becomes
+```
+# Repro
+<CONTENT OF REPO-ROOT/TODO_ANOTHER_TASK.md>
+```
+Special treatment applied
+
 When the request is `investigate repro this issue`, follow `investigate.prompt.md` and "the LATEST chat message" becomes
 ```
 # Repro
 this issue
 ```
 
-When the request is `do this and do that`, because the first word is not in the list, follow `investigate.prompt.md`; "the LATEST chat message" becomes
+When the request is `do this and do that`, because the first phrase is not in the list, follow `investigate.prompt.md`; "the LATEST chat message" becomes
 ```
 # Repro
 do this and do that

@@ -4,6 +4,13 @@
 - Go to `Linux Specific` section if you are on Linux.
 - Go to `macOS Specific` section if you are on macOS.
 
+When the model `gpt-5.3-codex-spark` is available:
+- If multiple steps need to be done to operate the GUI:
+  - Summarize what to look for and what to do.
+  - Start a sub agent with this model to perform all GUI operations.
+  - If the target application has bugs, it is normal that steps can't be performed to the end. The sub agent should summarize what is going wrong to prevent steps to be done.
+  - This model is fast, it significantly improves the performance of operating the GUI.
+
 ## Windows Specific
 
 - You are strongly recommended to attach a debugger when running any GacUI application.
