@@ -79,6 +79,8 @@ A connection begins when the renderer side fires `OnControllerConnect(Controller
 
 `GuiRemoteWindow::OnControllerConnect()` re-sends all current window styles when `applicationRunning` is true, enabling seamless reconnection — the renderer side experiences a fresh complete window state setup.
 
+Channel servers distinguish the local core client from renderer clients through the `localClient` argument in `OnClientConnected`. A new renderer client is accepted even if an older renderer is still connected: the server records the new renderer as current, detaches the old renderer from `GuiRemoteProtocolCoreChannel`, sends a raw `ControllerConnectionStopped` package when possible, and disconnects the old transport only as a fallback.
+
 ### Disconnection
 
 The renderer side fires `OnControllerDisconnect()`. Each subsystem (`GuiRemoteWindow`, `GuiRemoteGraphicsImageService`, `GuiRemoteGraphicsResourceManager`) marks itself disconnected and suspends protocol communication until reconnection.
@@ -219,7 +221,7 @@ Unlike ordinary elements (borders, backgrounds, labels) that send their visual s
 
 ### Lifecycle
 
-Paragraphs are created by `GuiRemoteGraphicsResourceManager::CreateParagraph()`. Each paragraph gets its own element ID (shared ID space with element renderers), registered via `RegisterParagraph()` instead of `RegisterRenderer()`. Creations are batched in `pendingParagraphCreations` alongside element creates in `EnsureRequestedRenderersCreated()`.
+Paragraphs are created by `GuiRemoteGraphicsResourceManager::CreateParagraph()`. Each paragraph gets its own element ID (shared ID space with element renderers), registered on `GuiRemoteGraphicsRenderTarget` via `RegisterParagraph()` instead of `RegisterRenderer()`. Creations are batched in `pendingParagraphCreations` alongside element creates in `EnsureRequestedRenderersCreated()`. The paragraph treats `id == -1` as the single "not registered / unavailable" state, and `UnregisterParagraph(id)` removes either a pending creation or an active paragraph before queuing renderer destruction.
 
 ### Run Property System
 
@@ -232,26 +234,28 @@ Paragraph styling uses a run-based system with three layers:
 
 ### Core Synchronization (EnsureRemoteParagraphSynced)
 
-This is the core synchronization method, called before any query:
+This is the core synchronization method, called before any query. It returns `false` when the paragraph is unavailable (`id == -1` or no render target) or when a synchronous submit reports disconnection, allowing callers to return conservative defaults instead of using stale remote state:
 1. `EnsureRequestedRenderersCreated()` — ensures the paragraph element exists on the renderer side
 2. Merge text and inline object runs into `stagedRuns`
 3. `DiffRuns(committedRuns, stagedRuns, desc)` — compute diff between last committed and current state
 4. Send `RequestRendererUpdateElement_DocumentParagraph(desc)` with the diff
 5. `Submit()` synchronously — the response includes the new `documentSize`
-6. Store `cachedSize` from response, swap `stagedRuns` to `committedRuns`
+6. If still connected, store `cachedSize` from response, remove stale cached inline-object bounds reported by `removedInlineObjects`, move `stagedRuns` to `committedRuns`, and mark `remoteParagraphCreated = true`
 
 The first sync sends full text content; subsequent syncs send only run property diffs. This is efficient for scenarios like syntax highlighting where only styling changes between frames.
+
+On controller reconnection, `GuiRemoteGraphicsRenderTarget::OnControllerConnect()` re-registers all paragraph IDs, calls `ResetRemoteParagraphSyncState()` on each paragraph, and immediately re-syncs them so the new renderer receives complete paragraph state.
 
 ### Layout Queries (Delegated to Renderer Side)
 
 All layout-dependent operations require synchronous round-trips or cached data:
-- **`GetSize()`**: returns `cachedSize` from the last sync
-- **`GetCaret(comparingCaret, position, preferFrontSide)`**: sends `RequestDocumentParagraph_GetCaret` — the renderer side performs text layout-aware caret navigation
-- **`GetCaretBounds(caret, frontSide)`**: uses `GetCaretBoundsInternal()` which lazily fetches ALL caret bounds (front and back arrays) in one request via `RequestDocumentParagraph_GetCaretBounds` and caches them in `cachedCaretBounds`. Subsequent calls use the cache.
-- **`GetCaretFromPoint(point)`**: iterates all caret positions locally using cached bounds from `GetCaretBoundsInternal()`, finding the nearest by Manhattan distance — no additional remote call if bounds are cached
-- **`GetInlineObjectFromPoint(point)`**: sends `RequestDocumentParagraph_GetInlineObjectFromPoint` for hit-test, then looks up `inlineObjectProperties` locally
-- **`GetNearestCaretFromTextPos(textPos, frontSide)`**: sends `RequestDocumentParagraph_GetNearestCaretFromTextPos`
-- **`IsValidCaret(caret)`**: sends `RequestDocumentParagraph_IsValidCaret`
+- **`GetSize()`**: calls `EnsureRemoteParagraphSynced()` and returns `cachedSize`; when sync fails, the current cached value is returned.
+- **`GetCaret(comparingCaret, position, preferFrontSide)`**: sends `RequestDocumentParagraph_GetCaret`; if sync or submit fails, it returns `comparingCaret` and resets `preferFrontSide` to false.
+- **`GetCaretBounds(caret, frontSide)`**: uses `GetCaretBoundsInternal()` which lazily fetches ALL caret bounds (front and back arrays) in one request via `RequestDocumentParagraph_GetCaretBounds` and caches them in `cachedCaretBounds`. Subsequent calls use the cache; failed sync returns an empty rectangle.
+- **`GetCaretFromPoint(point)`**: iterates all caret positions locally using cached bounds from `GetCaretBoundsInternal()`, finding the nearest by Manhattan distance; if bounds cannot be fetched, it returns the best caret found so far.
+- **`GetInlineObjectFromPoint(point)`**: sends `RequestDocumentParagraph_GetInlineObjectFromPoint` for hit-test, then looks up `inlineObjectProperties` locally; failed sync or submit returns null.
+- **`GetNearestCaretFromTextPos(textPos, frontSide)`**: sends `RequestDocumentParagraph_GetNearestCaretFromTextPos`; failed sync or submit returns `textPos`.
+- **`IsValidCaret(caret)`**: sends `RequestDocumentParagraph_IsValidCaret`; failed sync or submit returns false.
 - **`IsValidTextPos(textPos)`**: purely local — checks bounds against `text.Length()`
 
 ### Caret Display
@@ -263,7 +267,7 @@ All layout-dependent operations require synchronous round-trips or cached data:
 ### Paragraph Rendering
 
 `GuiRemoteGraphicsParagraph::Render(bounds)`:
-1. `EnsureRemoteParagraphSynced()` — ensure current state sent to renderer side
+1. Return immediately if there is no render target or if `EnsureRemoteParagraphSynced()` fails.
 2. For each inline object with cached bounds, call `callback->OnRenderInlineObject()` — if the inline object's size changed, update `inlineObjectRuns` and mark dirty
 3. Send `RequestRendererRenderElement` — same as ordinary elements
 
@@ -274,7 +278,7 @@ All layout-dependent operations require synchronous round-trips or cached data:
 - `cachedSize = {0,0}` if `invalidateSize` is true (forcing re-measurement from renderer side)
 - `needUpdateCaretBoundsCache = true` if `invalidateCaretBoundsCache` is true (forcing caret bounds refetch)
 
-Size-affecting changes (font, size, text content, wrap line, max width) set both invalidation flags. Color-only changes skip size invalidation because they don't affect layout.
+Size-affecting changes (font, size, text content, wrap line, max width) set both invalidation flags. Text color and background color changes still mark the paragraph dirty and clear `cachedSize`, but they do not force the caret-bounds cache to be refreshed.
 
 ## DOM Diff Layer
 
@@ -290,6 +294,7 @@ Without DOM diff, each frame sends per-element rendering commands (`RenderElemen
   - First frame: sends `RequestRendererRenderDom` with the full tree
   - Subsequent frames: `DiffDom(lastDom, lastDomIndex, newDom, newDomIndex, diffs)` computes structural diffs, sends `RequestRendererRenderDomDiff`
 - `lastDom` is stored for next frame; `OnControllerConnect` clears it to force a full DOM send on reconnection
+- Renderer-side diff application uses `UpdateDomInplace(renderingDom, renderingDomIndex, diffs)`, then marks `needRefresh = true`. `RequestRendererEndRendering` can immediately force a repaint for a completed frame, so empty or measurement-only frame traffic still reaches the native render target when the DOM path reports a frame.
 
 DOM node IDs encode their type: element IDs use `(elementId << 2) + 0`, hit test compositions use `(compositionId << 2) + 2`, with parent variants at `+1` and `+3`.
 
@@ -309,11 +314,15 @@ The filter queues messages internally and applies drop logic in `ProcessRequests
 
 ## Channel Layer
 
-For real remote deployment, `IGuiRemoteProtocolChannel<T>` provides a bidirectional channel abstraction. The typical stack:
-1. `GuiRemoteProtocolFromJsonChannel` adapts a JSON channel to `IGuiRemoteProtocol`
-2. `GuiRemoteProtocolAsyncChannelSerializer<Ptr<JsonObject>>` (aliased as `GuiRemoteProtocolAsyncJsonChannelSerializer`) runs channel IO on a separate thread
+For real remote deployment, `channeling::IJsonChannel` is an alias of `inter_process::IChannel<Ptr<glr::json::JsonNode>>`. Network channels are built with `GuiRemoteProtocolNetworkChannelServer<TServerBase>`, `GuiRemoteProtocolChannelClient`, and `glr::json::JsonNodeListSerializer`, so protocol packages move as Parser2 JSON node lists instead of ad-hoc string serialization.
 
-The async serializer's design: the UI thread batches messages and blocks on `Submit()` until the channel thread completes the round-trip. Events from the channel thread are queued and processed on the UI thread during `ProcessRemoteEvents()`. Connection/disconnection is tracked via a `connectionCounter` to handle race conditions when the channel thread delivers events after disconnection.
+The core-side stack uses:
+1. `GuiRemoteProtocolCoreChannel` to implement `IGuiRemoteProtocol` over an `IJsonChannel`, pack requests/events with `JsonChannelPack`, dispatch responses/events by protocol name, queue packages until a renderer client is known, and detach stale renderer clients.
+2. `GuiRemoteProtocolAsyncJsonChannel` when core/channel separation is needed. It wraps an `IJsonChannel`, queues outgoing packages, queues received events for `ProcessRemoteEvents()`, stores responses by request id, and uses `connectionCounter` plus `PendingRequestGroup` to keep blocking `Submit()` calls consistent across disconnects.
+
+The renderer-side stack uses:
+1. `GuiRemoteProtocolAsyncJsonChannelRenderer` when network packages can arrive before the native GacUI window is ready. It queues received packages until `SetInvokeInMainThread(...)` installs an `IGuiRemoteProtocolAsyncRendererInvoker`, then drains them on the renderer UI thread. Its message version prevents callbacks captured by an old reader from running after the reader is replaced.
+2. `GuiRemoteProtocolRendererChannel` to bridge the renderer JSON channel to a concrete renderer `IGuiRemoteProtocol` implementation and to serialize renderer events/responses back to the channel.
 
 ## Image Service
 

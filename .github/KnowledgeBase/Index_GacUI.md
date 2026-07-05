@@ -13,7 +13,7 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 - Use `GacUIUnitTest_LinkGuiMainProxy` for decorator-style proxy chaining to compose setup layers.
 - Use `GacUIUnitTest_StartFast_WithResourceAsText<Theme>` for the most common entry point that compiles XML resources, registers themes, creates windows, and runs the application.
 - Use `GacUIUnitTest_Start` and `GacUIUnitTest_StartAsync` for synchronous and async protocol stack tests.
-- Use `OnNextIdleFrame(name, callback)` on `UnitTestRemoteProtocol` to register frame callbacks; the name describes the rendering result, not the upcoming action.
+- Use `OnNextIdleFrame(name, callback)` on `UnitTestRemoteProtocol` to register flat frame callbacks; the name describes the already-captured rendering result, and the callback should perform an observable UI-changing action.
 - Use `LocationOf(controlOrComposition)` to compute absolute screen coordinates for input simulation.
 - Use `LClick`, `RClick`, `MClick`, `LDBClick`, `MouseMove` for mouse input simulation.
 - Use `KeyPress`, `KeyDown`, `KeyUp`, `TypeString` for keyboard input simulation.
@@ -124,7 +124,7 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 
 #### Remote Protocol Core Architecture
 
-- Remote protocol mode separates GacUI into a core side (application logic) and a renderer side (rendering and OS services), communicating through `IGuiRemoteProtocol`.
+- Remote protocol mode separates GacUI into a core side (application logic) and a renderer side (rendering and OS services), communicating through `IGuiRemoteProtocol` over Parser2 JSON channel packages.
 - Messages flow core → renderer via `IGuiRemoteProtocolMessages`; events and responses flow renderer → core via `IGuiRemoteProtocolEvents`.
 - `GuiRemoteMessages` provides synchronous batched request-response with auto-incrementing IDs and blocking `Submit()`.
 - `GuiRemoteController` implements `INativeController` and all sub-services as virtual stubs: single window only, intentionally null clipboard/dialog services, synchronous key state queries.
@@ -133,7 +133,7 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 - `GuiRemoteGraphicsParagraph` handles rich text with run property system, incremental diff synchronization, delegated layout queries, and caret bounds caching.
 - DOM diff layer (`GuiRemoteProtocolDomDiffConverter`) converts per-frame command streams into diffed tree structures.
 - Protocol combinator and filter layers enable composable transformations and traffic optimization via `[@DropRepeat]`/`[@DropConsecutive]` annotations.
-- Channel layer (`IGuiRemoteProtocolChannel`, `GuiRemoteProtocolAsyncChannelSerializer`) supports real remote deployment with async IO on a separate thread.
+- Channel layer (`GuiRemoteProtocolCoreChannel`, `GuiRemoteProtocolRendererChannel`, `GuiRemoteProtocolAsyncJsonChannel`, `GuiRemoteProtocolAsyncJsonChannelRenderer`) supports real remote deployment, local clients, replacement renderers, and async main-thread dispatch.
 
 [Design Explanation](./KB_GacUI_Design_RemoteProtocolCoreArchitecture.md)
 
@@ -141,11 +141,11 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 
 - `GuiRemoteRendererSingle` is the renderer-side implementation that bridges `IGuiRemoteProtocol` to a real native window with actual graphics rendering, relying on an existing platform provider (e.g., Windows Direct2D).
 - It implements `IGuiRemoteProtocol` to receive protocol messages and translates them into native element operations, and implements `INativeWindowListener`/`INativeControllerListener` to forward OS events back as protocol events.
-- Rendering pipeline: receives `RequestRendererBeginRendering` with `OrdinaryElementDescVariant` updates, applies them to real graphics elements, renders the DOM tree in `GlobalTimer()`, and returns measurement feedback via `RespondRendererEndRendering`.
+- Rendering pipeline: receives `RequestRendererBeginRendering` with `OrdinaryElementDescVariant` updates, applies them to real graphics elements, updates the DOM through full DOM or DOM diff messages, refreshes completed frames, and returns measurement feedback via `RespondRendererEndRendering`.
 - Event forwarding coalesces high-frequency events (mouse move, wheel, key auto-repeat) and sends discrete events immediately; hit testing is performed locally by traversing the rendering DOM tree.
-- Layered channel architecture for protocol serialization: `IGuiRemoteProtocol` ↔ `JsonObject` (via `GuiRemoteProtocolFromJsonChannel`/`GuiRemoteJsonChannelFromProtocol`) ↔ `WString` (via `JsonToStringSerializer`) ↔ user-implemented transport.
+- Layered channel architecture for protocol serialization: `IGuiRemoteProtocol` is bridged by `GuiRemoteProtocolCoreChannel`/`GuiRemoteProtocolRendererChannel` over `IJsonChannel` packages, with network clients/servers using `glr::json::JsonNodeListSerializer`.
 - JSON envelope format with `semantic`, `id`, `name`, `arguments` fields; protocol types code-generated from `Protocol/*.txt` with `JsonHelper<T>` specializations.
-- `GuiRemoteProtocolAsyncChannelSerializer` provides thread separation (channel thread for IO, UI thread for application logic) with queued event delivery and connection-safe request matching.
+- `GuiRemoteProtocolAsyncJsonChannel` and `GuiRemoteProtocolAsyncJsonChannelRenderer` provide async channel separation with queued events/responses, connection-safe request matching, renderer main-thread dispatch, and startup message caching.
 - Demo project pair (`RemotingTest_Core` and `RemotingTest_Rendering_Win32`) demonstrates full protocol stack assembly for both core and renderer sides with named-pipe/HTTP transport.
 
 [Design Explanation](./KB_GacUI_Design_RemoteProtocolRendererAndSerialization.md)

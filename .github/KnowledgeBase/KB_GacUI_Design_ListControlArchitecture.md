@@ -23,6 +23,7 @@
 - `IItemProviderCallback` receives notifications via `OnItemModified(start, count, newCount, itemReferenceUpdated)`
 - `itemReferenceUpdated` flag indicates whether item identity changed (requires recreation) or just content changed (can refresh in place)
 - Base implementation `ItemProviderBase` manages callbacks and editing counter
+- `DetachCallback(IItemProviderCallback*)` is observable: when a registered callback is detached, the provider calls `OnAttached(nullptr)` on that callback before returning success.
 
 **View System**: Providers expose multiple view interfaces via `RequestView(identifier)` for specialized data access:
 - `ITextItemView`: Checkbox state for `GuiVirtualTextList`
@@ -212,12 +213,15 @@ All predefined arrangers use `RangedItemArrangerBase` which delegates to `GuiVir
 - `ListViewItemBindableProvider`: Wraps `IValueObservableList` as list view items
 - `TreeViewItemBindableRootProvider`: Wraps object graph as tree
 - Uses reflection (`description::Value`) to access properties
+- `TreeViewItemBindableRootProvider::UpdateBindingProperties(true)` is root-scoped: it unprepares and re-prepares the root node's immediate children, but it does not recursively process already-prepared descendants.
 
 **Converter Providers**:
 - `NodeItemProvider`: Converts `INodeRootProvider` (tree) to `IItemProvider` (flat list)
 - Implements `INodeItemView` for node access
 - Tracks expanded/collapsed state
 - Updates indices when tree structure changes
+- `RequestNode(index)` returns the visible node for a valid flat index and returns `nullptr` for out-of-range indices. APIs that require a valid item, such as `GetTextValue` and `GetBindingValue`, validate the range with `CHECK_ERROR` before requesting the node.
+- `CalculateNodeVisibilityIndex(node)` returns `-1` for nodes that belong to the tree but are invisible because an ancestor is collapsed. Passing a node from another tree is invalid and fails through `CHECK_ERROR` with an `ERROR_MESSAGE_PREFIX` diagnostic.
 
 **Base Class Hierarchy**:
 - `ItemProviderBase`: Manages callbacks and editing counter

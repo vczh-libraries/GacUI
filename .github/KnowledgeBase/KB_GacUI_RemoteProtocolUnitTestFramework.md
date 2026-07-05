@@ -151,31 +151,29 @@ It also saves the compiled Workflow script text as a snapshot file (`[x64].txt` 
 
 ### Synchronous Mode (GacUIUnitTest_Start)
 
-`GacUIUnitTest_Start` constructs the full protocol stack in-process:
+`GacUIUnitTest_Start` constructs the protocol stack in-process. When `useChannel == UnitTestRemoteChannel::Sync`, it creates a local Parser2 JSON channel server and two local channel clients:
 
-**Renderer side (deserialization direction):**
-- `UnitTestRemoteProtocol` — mock `IGuiRemoteProtocol` implementation.
-- `GuiRemoteJsonChannelFromProtocol` — converts protocol calls to JSON.
-- `GuiRemoteJsonChannelStringDeserializer` — JSON to String.
-- `GuiRemoteUtfStringChannelDeserializer<wchar_t, char8_t>` — String to UTF-8.
+**Renderer side:**
+- `UnitTestRemoteProtocol` — mock `IGuiRemoteProtocol` implementation and `IGuiRemoteEventProcessor`.
+- `GuiRemoteProtocolLocalChannelClient` — local renderer-side JSON channel client.
+- `GuiRemoteProtocolRendererChannel` — bridges the renderer client's `IJsonChannel` to `UnitTestRemoteProtocol`.
 
-**Core side (serialization direction, mirrors back):**
-- `GuiRemoteUtfStringChannelSerializer<wchar_t, char8_t>` — UTF-8 to String.
-- `GuiRemoteJsonChannelStringSerializer` — String to JSON.
-- `GuiRemoteProtocolFromJsonChannel` — JSON to typed protocol calls.
+**Core side:**
+- `GuiRemoteProtocolLocalChannelClient` — local core-side JSON channel client.
+- `GuiRemoteProtocolCoreChannel` — implements `IGuiRemoteProtocol` over the core client's `IJsonChannel`, using the unit-test executable path and `UnitTestRemoteProtocol` event processor.
 
 **Protocol filter layers on core side:**
 - `GuiRemoteProtocolFilterVerifier` — validates repeat-filtering invariants.
 - `GuiRemoteProtocolFilter` — filters redundant messages.
 - `GuiRemoteProtocolDomDiffConverter` — (optional, when `useDomDiff` is true) converts full DOM to DOM diffs.
 
-When `useChannel == UnitTestRemoteChannel::None`, the verifier directly wraps `UnitTestRemoteProtocol`'s `IGuiRemoteProtocol`, bypassing the serialization layers for speed. Otherwise, the full serialization channel is used for testing round-trip fidelity.
+When `useChannel == UnitTestRemoteChannel::None`, the verifier directly wraps `UnitTestRemoteProtocol`'s `IGuiRemoteProtocol`, bypassing the channel layer for speed. When `useChannel == UnitTestRemoteChannel::Sync`, the channel path tests round-trip JSON package fidelity through the local channel server.
 
 Finally, `SetupRemoteNativeController(protocol)` creates the runtime stack: `GuiRemoteController` → `GuiHostedController` → resource managers, then calls `GuiApplicationMain()` → `GuiMain()` → the registered test proxy.
 
 ### Async Mode (GacUIUnitTest_StartAsync)
 
-`GacUIUnitTest_StartAsync` inserts `GuiRemoteProtocolAsyncJsonChannelSerializer` into the channel, placing the core and renderer on separate threads. Two threads are spawned via `RunInNewThread`: a channel thread for serialization I/O and a UI thread for the GacUI application. The call waits for `asyncChannelSender.WaitForStopped()` before writing snapshots.
+`GacUIUnitTest_StartAsync` uses the same local channel server/client setup, but wraps the core client's protocol channel in `GuiRemoteProtocolAsyncJsonChannel`. The renderer still uses `GuiRemoteProtocolRendererChannel`; the core thread creates `GuiRemoteProtocolCoreChannel` over the async JSON channel and then runs the normal verifier/filter/DOM-diff stack. `GuiRemoteProtocolAsyncJsonChannel` queues channel events and responses, exposes its `IGuiRemoteEventProcessor`, and uses connection counters to keep pending request groups consistent across disconnects.
 
 ## UnitTestRemoteProtocol Class Hierarchy
 
@@ -223,6 +221,9 @@ The frame name is assigned to the **already-committed snapshot** (the rendering 
 - The `frameName` describes what **led to** the current visual state, not what the callback will do next.
 - The first frame is conventionally named `"Ready"`, representing the initial rendering state after the window opens.
 - Subsequent frame names describe the action taken in the previous callback (e.g., `"Hover"` means the previous callback moved the mouse, and this snapshot shows the hover state).
+- Register all `OnNextIdleFrame` callbacks flatly in the test proxy; do not register a new idle frame from inside another idle-frame callback.
+- A frame callback should usually perform an action that can trigger a rendering update, such as typing, clicking, changing selection, showing/closing a dialog, or hiding the window. Avoid standalone verification-only frames, because the framework expects progress toward a new settled rendering frame.
+- Re-find windows and controls inside each frame callback instead of caching GUI control pointers across frames.
 
 The sequence is:
 1. Application renders → DOM/elements captured as `candidateFrame`.
@@ -286,6 +287,8 @@ Overloads accept either `GuiGraphicsComposition*` or `GuiControl*`.
 - `KeyPress(key)` — `KeyDown` followed by `KeyUp`.
 - `KeyPress(key, ctrl, shift, alt)` — wraps the key press with modifier key down/up events.
 - `TypeString(text)` — sends a sequence of `OnIOChar` events for each character via `MakeCharInfo`, without synthesizing key down/up events.
+
+Keyboard helpers target the currently focused control. Focus the target control in the frame (for example with `SetFocused()` or a click) before using `TypeString`, `KeyPress`, `KeyDown`, or `KeyUp`.
 
 ### Event Flow Through the Pipeline
 
