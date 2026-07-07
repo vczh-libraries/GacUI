@@ -13,6 +13,16 @@ In general, here is my preference for any languages:
   - DRY requires finding if a feature has already been implemented somewhere else before implementing it. avoiding massive duplication.
     - If the existing implementation is not sharable, refactoring is preferred.
 
+## Be Brave Enough to Fix Upstream Code and Make Breaking Change
+
+- Always fix the bug at its root cause.
+  - If you find any API that doesn't work, fix instead of making a replacement. Even when the API is in an upstream repo, prefer fixing in the upstream repo and releasing it to the current repo.
+- DO NOT concern about making breaking change.
+  - The project is well covered by unit test, any unexpecting breaking change is highly possibly to be cought.
+  - If such breaking change is intented, unit test could help you perform complete refactoring.
+  - If an API design does not fit the requirement or contract, just change it.
+- Interface design could have been wrong, DO NOT implement twisted logic just to finish the current task while fitting the wrong design. 
+
 ## C++ Thread Safety and Multi-Threading Synchronization
 
 Check out [Coding_MultiThreading.md](./Coding_MultiThreading.md).
@@ -77,18 +87,6 @@ When `VlppParser2` is available to the current project, complex parsers always r
 - Each parser should already provide functions for converting AST back to string, you should not invent it by your own, unless you are making a new parser.
 - Each parser should already provide multiple visitors, try to reuse them. To invent your own algorithm, especially recursive algorithm, you should always try to create visitors.
 
-## Advanced C++ Coding Rules
-
-- DO NOT make helper functions that are only used once, especially if they are only called in one destructor.
-- DO NOT make global variables with types that carry constructors or destructors, even when they are implicit.
-  - This could mess up the order of initialization, finalization or memory leak detector.
-  - One exception is `WString` which is initialized using `WString::Unmanaged`; such constructors and destructors do not do memory management.
-  - Another exception is `Pair`, `Nullable`, `Variant` or `Tuple` with valid types here.
-  - If pointers are needed, you could only use `T*` and do initialization or finalization explicitly. All such objects should be destroyed in `main`, `wmain`, `WinMain` or `GuiMain`, before memory leak detector runs.
-- DO NOT reset any raw/shared pointer member to nullPTR in destructorS.
-- Prefer the latest C++ features (up to C++ 20).
-- Prefer template variadic arguments, over hard-coded-counting solutions.
-
 ### for Reflectable Types
 
 - Any interface or class `X` should inherit from `vl::reflection::Description<X>`.
@@ -110,6 +108,54 @@ object, causing missing of a complete picture.
   - You are not allowed to test if `VCZH_DEBUG_METAONLY_REFLECTION` is defined.
   - You are not allowed to call any function that does not work with `VCZH_DEBUG_NO_REFLECTION`.
   - Reflection registration is an exception follow the document for recommended patterns.
+
+## Advanced C++ Coding Rules
+
+- DO NOT make helper functions that are only used once, especially if they are only called in one destructor.
+- DO NOT make global variables with types that carry constructors or destructors, even when they are implicit.
+  - This could mess up the order of initialization, finalization or memory leak detector.
+  - One exception is `WString` which is initialized using `WString::Unmanaged`; such constructors and destructors do not do memory management.
+  - Another exception is `Pair`, `Nullable`, `Variant` or `Tuple` with valid types here.
+  - If pointers are needed, you could only use `T*` and do initialization or finalization explicitly. All such objects should be destroyed in `main`, `wmain`, `WinMain` or `GuiMain`, before memory leak detector runs.
+- DO NOT reset any raw/shared pointer member to nullPTR in destructorS.
+- Prefer the latest C++ features (up to C++ 20).
+- Prefer template variadic arguments, over hard-coded-counting solutions.
+
+### Object Oriented Programming
+
+- I don't have strong preference of which is bettern between inheritance and composition, choose the best one in the context.
+- When doing inheritance, the interface design should follow LSP (Liskov Substitution Principle), that is basically:
+  - Wherever accepts a type, it means all sub types could be used.
+  - Any sub type should not loosen the contract, stricker contract is allowed/encouraged.
+- I prefer interface oriented programming.
+  - Interface is a general concept, I an not forcing creating abstract classes.
+  - Interface means contract. Such contract could be forced by the type system, or described in the class/method level comments on signatures.
+- Ownership should be clear.
+  - A owns B is usually implemented by `A` inheriting from `B`, `A` having a `Ptr<B>` or `B` field, unless further instructed.
+    - Inheriting happens only when it satisfies LSP.
+    - Using `B` is preferred, and exposing `B*`, `B&`, or `const B&` is also easy to do.
+    - Only use `Ptr<B>` when the relationship is able to rebuild, or the interface requires exposing `Ptr<B>`.
+  - Other relationships are usually implemented by A having a `B*` field, with manual lifecycle maintenance.
+  - For a group of coupled objects without ownership, it is also acceptable to create one object owning all sub objects, to control their lifecycle in an easy way. 
+
+### Combinator Oriented Programming
+
+- Combinator oriented programming is very common in this project. that is basically:
+  - Design an interface that is supposed to build up large/complex strategy or logic recursively, e.g. `vl::collections::LazyList<T>`, `vl::stream::IStream` or `vl::presentation::controls::GuiControl`.
+  - Such interface should satisfy LSP.
+- A good interface maintains good shape in components forming up a recursive algorithms by cutting in a good place, therefore making it simple, and easy to implement.
+- A good interface letting users building recursive algorithms with fluent code.
+
+### RAII (Resource Acquisition Is Initialization)
+
+- RAII is preferred in:
+  - Building a value type.
+  - Ensure initialization/finalization to happen in pair.
+  - Exception handling.
+- Especially in exception handling, if a finalization should happen, write it in a destructor, instead of running the same piece of code everywhere in `catch` and before `return`.
+  - Such finalization includes but not limited to:
+    - Free an object or memory (`Ptr<T>` is a good example).
+    - Release a lock (`SPIN_LOCK` and other similar macros are good examples).
 
 ## Keep C++ Code Cross Platform
 
