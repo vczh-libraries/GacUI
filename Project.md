@@ -113,6 +113,15 @@ After running `GacUI_Compiler`, you should always `git status` to find if there 
 - `GacUI_Compiler` may also fail by printing one line of error message or return non-zero exit code. If the `*.UI.errors.txt` file does not exist, you are recommended to debug the project to find out what happened.
 - Whenever `GacUI_Compiler` reports any error, you must fix the issue immediately, even those errors are unrelated to the issue you are working on.
 
+## Maintaining `darkskin::Theme`
+
+This is a default skin that not only releases, but also used by all projects in this solution.
+To make a change:
+- Update `REPO-ROOT/Test/Resources/DarkSkin`.
+- Run `GacUI_Compiler` and make sure it updated generated C++ code expectely.
+  - Sometimes reordering could happen in generated C++ code even when correlated resource is not changed.
+- Rebuild before running any test project.
+
 ## Windows Specific
 
 Automation HTTP service for GUI applications are available for Windows:
@@ -120,7 +129,7 @@ Automation HTTP service for GUI applications are available for Windows:
 - `CppTest_Metaonly`              : Run FullControlTest, built with metaonly reflection (`VCZH_DEBUG_METAONLY_REFLECTION`).
 - `CppTest_Reflection`            : Run FullControlTest, built with full reflection.
 - `GacUI_Host`                    : Run FullControlTest, by loading Workflow binary assembly instead of generated C++ code.
-- `Playground`                    : Run `REPO-ROOT/Test/GacUISrc/Playground/Resources/Resource.xml`, main window specified in `OpenMainWindow` function.
+- `Playground`                    : Run `REPO-ROOT/Test/GacUISrc/Playground/Resources/Resource*.xml`, resource file to load specified, main window specified in `OpenMainWindow` function.
 - `RemotingTest_Core`             : Run FullControlTest or RemoteProtocolTest with remote protocol hosted by HTTP or NamedPipe.
 - `RemotingTest_Rendering_Win32`  : Renderer of `RemotingTest_Core`.
 
@@ -138,6 +147,11 @@ Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` offser such service:
   - When performing IO via core, renderer only receives UI updates and redraw.
   - Core and renderer should sync in the same UI state afterwards.
   - Performaning IO **only** via no matter renderer or core should result in the same UI state.
+
+`Playground` is for adhoc testing:
+- The UI in resource file, including `GuiMain` and `OpenMainWindow`, could be modified freely without any concern, it is not part of the release.
+- Actual resource files to load is specified in `GuiMain`.
+- Actual theme type and main window type is specified in `OpenMainWindow`.
 
 ## Linux Specific
 

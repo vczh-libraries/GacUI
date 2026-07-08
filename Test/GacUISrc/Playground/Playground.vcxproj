@@ -185,7 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="Resources\Document.xml" />
-    <Xml Include="Resources\Resource.xml" />
+    <Xml Include="Resources\ResourceDataGrid.xml" />
     <Xml Include="Resources\ResourceBigJson.xml" />
     <Xml Include="Resources\ResourceDocument.xml" />
     <Xml Include="Resources\ResourceRawElement.xml" />

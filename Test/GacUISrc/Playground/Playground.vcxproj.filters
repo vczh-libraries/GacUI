@@ -31,7 +31,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="Resources\Resource.xml">
+    <Xml Include="Resources\ResourceDataGrid.xml">
       <Filter>Resource Files</Filter>
     </Xml>
     <Xml Include="Resources\ResourceRawElement.xml">
