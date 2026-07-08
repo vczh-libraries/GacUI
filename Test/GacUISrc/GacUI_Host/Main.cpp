@@ -60,6 +60,7 @@ void GuiMain()
 
 		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/GacUI_Host"), 8888);
 		GetApplication()->Run(window);
+		windows::StopWindowsHttpAutomationService();
 		delete window;
 	}
 }

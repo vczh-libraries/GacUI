@@ -26,6 +26,7 @@ void GuiMain()
 
 		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/CppTest"), 8888);
 		GetApplication()->Run(&window);
+		windows::StopWindowsHttpAutomationService();
 	}
 }
 

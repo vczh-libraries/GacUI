@@ -96,6 +96,7 @@ void OpenMainWindow()
 
 		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/Playground"), 8888);
 		GetApplication()->Run(window);
+		windows::StopWindowsHttpAutomationService();
 		delete window;
 	}
 }
