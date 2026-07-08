@@ -65,6 +65,7 @@
 - Verify remoting imports with both HTTP and named-pipe flows [1]
 - Verify `/IO` syntax errors and queued success separately [1]
 - Native modal dialogs block GacUI HTTP automation [1]
+- Verify DarkSkin cursor ownership through regression and Playground automation [1]
 
 # Refinements
 
@@ -400,3 +401,9 @@ When changing GacUI HTTP automation `/IO`, verify both response paths under a de
 ## Native modal dialogs block GacUI HTTP automation
 
 When a native dialog is open from a GacUI test application, the app's HTTP automation endpoint can block behind the modal loop. Handle the dialog from another process using Win32 enumeration and messages, then resume app-level automation only after the native dialog has been confirmed or canceled. This applies to standard message, color, font, and file dialogs as well as non-standard crash/error windows.
+
+## Verify DarkSkin cursor ownership through regression and Playground automation
+
+For DarkSkin cursor bugs in text/document controls, add a focused regression with `GuiMultilineTextBox` and `GuiDocumentViewer` using forced horizontal and vertical scrollbars. Assert that the editable text content resolves to `IBeam`, while the control bounds, horizontal scrollbar, vertical scrollbar, scrollbar buttons, and scroll corner omit explicit cursor metadata (`nullptr` / default). Use `GuiDocumentViewer` as a guard for existing correct scope, including view-only cases where the content should not resolve to `IBeam`.
+
+Also verify the scenario through Playground automation by loading a resource with both controls and reading `http://localhost:8888/Automation/Playground/Controls`. Run Playground from `Test/GacUISrc/Playground` so relative resource paths such as `ResourceDocument.xml` resolve correctly. If DarkSkin XML changes are involved, run `GacUI_Compiler`, inspect generated output, then run the required unit test.

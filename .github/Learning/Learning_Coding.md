@@ -50,6 +50,8 @@
 - Use Parser2 JSON node list serialization in remote channels [1]
 - Unbox `HttpServerApi::GetUtf8Body` before automation handling [1]
 - Automation `/IO` parses synchronously and queues parsed commands [1]
+- `GuiDocumentCommonInterface` cursor belongs to the document mouse area [1]
+- Automation composition dumps omit default cursor [1]
 
 # Refinements
 
@@ -273,3 +275,11 @@ Remote paragraph query handlers should not directly inspect wrapper internals su
 ## Automation `/IO` parses synchronously and queues parsed commands
 
 For Windows HTTP automation `/IO`, keep syntax parsing inside `INativeAutomationService::RunIOCommand` on the HTTP response path so malformed commands return a concrete syntax error immediately. In `RunIOCommandOnNativeWindow`, parse into explicit command structs under the `iocommands` namespace, store them in an `IOCommand` `Variant`, and queue only parsed command execution through `INativeAsyncService::InvokeInMainThread`. Successful commands should return `Queued`, not `Executed`, because modal dialogs or native listener callbacks may complete later.
+
+## `GuiDocumentCommonInterface` cursor belongs to the document mouse area
+
+For document/text editing controls, the edit cursor should be owned by the current document mouse/content area, not by the control bounds, the scroll-view container, or DarkSkin scrollbar parts. `GuiDocumentCommonInterface::ReplaceMouseArea` should move the remembered cursor from the old temporary mouse area to the new template-provided mouse area, and `UpdateCursor` should update both the remembered cursor and the current mouse area. Avoid fixing inherited `IBeam` leaks by duplicating `darkskin::DocumentViewerTemplate` or by forcing `Arrow` onto scrollbar containers/corners; those are symptom patches when the real issue is cursor ownership.
+
+## Automation composition dumps omit default cursor
+
+When exposing composition cursor state through the Playground/automation `/Controls` dump, emit a `cursor` field only when `AssociatedCursor` is non-null, using the system cursor enum name as the value. Omitted `cursor` means default/inherited cursor state (`nullptr`) and keeps the JSON smaller while preserving the distinction needed for cursor-ownership checks.

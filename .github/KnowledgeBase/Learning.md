@@ -11,6 +11,7 @@
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [3]
+- Keep design documentation aligned with code after refactoring [3]
 - Capture dependent lambdas explicitly [2]
 - Don't assume observable changes are batched [2]
 - Do not assume async callback owners are heap allocated [2]
@@ -19,8 +20,8 @@
 - Prefer simple calls before interface casts [2]
 - Validate expectations against implementation and existing tests [2]
 - Treat Debug memory leak dumps as required failures [2]
-- Keep design documentation aligned with code after refactoring [3]
 - Prefer well-defined tests over ambiguous edge cases [1]
+- Fix behavior at the owning state instead of patching symptoms [1]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
 - Use named sentinel constants instead of raw values [1]
@@ -253,3 +254,7 @@ For application refactors, remove helper wrappers that only duplicate an already
 ## Keep design documentation aligned with code after refactoring
 
 When a refactoring changes architecture or behavior, update the corresponding design documents in the same task rather than deferring it. After a structural change, re-read the related documents and reconcile anything that became misaligned (for example, descriptions of a transport path that no longer exists). Treat documentation drift left by a previous refactoring as part of the current cleanup.
+
+## Fix behavior at the owning state instead of patching symptoms
+
+When a bug is caused by state attached to a temporary or overly broad owner, move the state to the object or region that semantically owns it. Avoid compensating fixes such as forcing override values on every affected descendant, duplicating a template/resource just to mask inherited state, or adding side-channel code that only makes the symptom disappear. If a proposed fix looks like a patch, revisit the ownership boundary and preserve naturally correct inherited/default behavior for unaffected parts.
