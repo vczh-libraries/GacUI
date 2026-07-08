@@ -149,9 +149,10 @@ Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` offser such service:
   - Performaning IO **only** via no matter renderer or core should result in the same UI state.
 
 `Playground` is for adhoc testing:
-- The UI in resource file, including `GuiMain` and `OpenMainWindow`, could be modified freely without any concern, it is not part of the release.
+- The UI in resource file, including `GuiMain` and `OpenMainWindow`, could be modified freely without any concern, it is not part of the release. DO NOT revert `Playground` change as I can also use it for manual verification.
 - Actual resource files to load is specified in `GuiMain`.
 - Actual theme type and main window type is specified in `OpenMainWindow`.
+- All candidate resource files to load are supposed to put in the same folder, and add to the same solution explorer folder in `Playground` project.
 
 ## Linux Specific
 
