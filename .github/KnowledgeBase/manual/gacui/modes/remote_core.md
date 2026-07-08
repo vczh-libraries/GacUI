@@ -5,7 +5,7 @@ A remote protocol core application is a normal GacUI application that calls Setu
 The standard C++ path is small:
 - Start a GuiRemoteProtocolNetworkChannelServer\<TServerBase\> over an INetworkProtocolServer implementation such as NamedPipeServer or HttpServer.
 - Connect the core to that server with GuiRemoteProtocolLocalChannelClient.
-- Wrap the core channel with GuiRemoteProtocolJsonChannelRenderer_Async and GuiRemoteProtocolCoreChannel.
+- Wrap the core channel with GuiRemoteProtocolAsyncJsonChannel and GuiRemoteProtocolCoreChannel.
 - Pass the protocol, usually after GuiRemoteProtocolFilter and GuiRemoteProtocolDomDiffConverter, to SetupRemoteNativeController.
 
 The core client is expected to be registered as GacUIRemoteProtocolCoreClientId. A renderer created by GuiRemoteProtocolChannelClient advertises GacUIRemoteProtocolChannelName. GuiRemoteProtocolCoreChannel learns the renderer client id from the renderer's ControllerConnect event, so user code does not need to route individual remote protocol messages.
@@ -69,7 +69,7 @@ void StartNamedPipeRemoteCore()
 
     server.WaitForRenderer();
 
-    GuiRemoteProtocolJsonChannelRenderer_Async asyncChannel(coreClient->GetProtocolChannel());
+    GuiRemoteProtocolAsyncJsonChannel asyncChannel(coreClient->GetProtocolChannel());
     GuiRemoteProtocolCoreChannel coreProtocol(
         coreClient.Obj(),
         &asyncChannel,

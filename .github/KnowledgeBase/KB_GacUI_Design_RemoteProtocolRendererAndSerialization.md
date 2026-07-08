@@ -85,7 +85,7 @@ The channel system converts typed protocol calls to Parser2 JSON node packages a
 Two channel adapters bridge typed protocol calls and JSON packages:
 
 - `GuiRemoteProtocolCoreChannel`: Implements `IGuiRemoteProtocol` and reads from an `IJsonChannel`. `RequestNAME(...)` serializes arguments with `ConvertCustomTypeToJson()`, packs an envelope with `JsonChannelPack()`, and sends it to the current renderer client. Incoming packages are unpacked with `JsonChannelUnpack()`, dispatched by name, deserialized with `ConvertJsonToCustomType()`, and delivered as `events->OnNAME(...)` or `events->RespondNAME(...)`. It also queues outgoing packages before a renderer is known and exposes `DetachRenderer(clientId)` for renderer replacement.
-- `GuiRemoteProtocolRendererChannel`: Reads renderer-side JSON packages and calls the wrapped `IGuiRemoteProtocol`. It also implements `IGuiRemoteProtocolEvents` so renderer events and responses are serialized back to JSON packages and flushed through the renderer channel.
+- `GuiRemoteProtocolRendererChannel`: Reads renderer-side JSON packages and calls the wrapped `IGuiRemoteProtocol`. Its constructor takes the renderer-side `IJsonChannel` and the `IGuiRemoteProtocol`; the channel sends renderer events and responses back to `GacUIRemoteProtocolCoreClientId`.
 
 ### Transport Layer
 

@@ -48,7 +48,6 @@ int StartNamedPipeRemoteRenderer()
     GuiRemoteProtocolAsyncJsonChannelRenderer asyncRendererChannel(channelClient.GetProtocolChannel());
     GuiRemoteRendererSingle renderer(true);
     GuiRemoteProtocolRendererChannel rendererChannel(
-        &channelClient,
         &asyncRendererChannel,
         &renderer);
 

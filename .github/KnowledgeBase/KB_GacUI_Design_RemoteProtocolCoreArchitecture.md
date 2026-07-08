@@ -322,7 +322,7 @@ The core-side stack uses:
 
 The renderer-side stack uses:
 1. `GuiRemoteProtocolAsyncJsonChannelRenderer` when network packages can arrive before the native GacUI window is ready. It queues received packages until `SetInvokeInMainThread(...)` installs an `IGuiRemoteProtocolAsyncRendererInvoker`, then drains them on the renderer UI thread. Its message version prevents callbacks captured by an old reader from running after the reader is replaced.
-2. `GuiRemoteProtocolRendererChannel` to bridge the renderer JSON channel to a concrete renderer `IGuiRemoteProtocol` implementation and to serialize renderer events/responses back to the channel.
+2. `GuiRemoteProtocolRendererChannel` to bridge the renderer JSON channel to a concrete renderer `IGuiRemoteProtocol` implementation and to serialize renderer events/responses back to `GacUIRemoteProtocolCoreClientId`. Construct it with the renderer-side `IJsonChannel` and the `IGuiRemoteProtocol`.
 
 ## Image Service
 
