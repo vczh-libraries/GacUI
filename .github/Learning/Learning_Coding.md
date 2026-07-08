@@ -52,6 +52,7 @@
 - Automation `/IO` parses synchronously and queues parsed commands [1]
 - `GuiDocumentCommonInterface` cursor belongs to the document mouse area [1]
 - Automation composition dumps omit default cursor [1]
+- Clear `GacUI_Compiler` preloaded generated resources once at entry [1]
 
 # Refinements
 
@@ -283,3 +284,7 @@ For document/text editing controls, the edit cursor should be owned by the curre
 ## Automation composition dumps omit default cursor
 
 When exposing composition cursor state through the Playground/automation `/Controls` dump, emit a `cursor` field only when `AssociatedCursor` is non-null, using the system cursor enum name as the value. Omitted `cursor` means default/inherited cursor state (`nullptr`) and keeps the JSON smaller while preserving the distinction needed for cursor-ownership checks.
+
+## Clear `GacUI_Compiler` preloaded generated resources once at entry
+
+`GacUI_Compiler.vcxproj` can link generated resource loader plugins that preload generated resource names before `GuiMain()` begins. If `LoadResource(CompileResources(...))` then reports a duplicate generated resource name, clear the compiler-owned generated resources once at `GuiMain()` entry instead of replacing every load with `ReloadResource`. Preserve `GuiResourceManager::SetResource` duplicate-name checks as fail-fast invariants during the actual compile/load sequence.
