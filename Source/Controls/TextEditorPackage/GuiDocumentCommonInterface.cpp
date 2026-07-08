@@ -298,6 +298,11 @@ GuiDocumentCommonInterface
 			{
 				if (documentMouseArea)
 				{
+					if (documentMouseArea->GetAssociatedCursor() == documentCursor)
+					{
+						documentMouseArea->SetAssociatedCursor(nullptr);
+					}
+
 					documentMouseArea->GetEventReceiver()->mouseMove.Detach(onMouseMoveHandler);
 					documentMouseArea->GetEventReceiver()->leftButtonDown.Detach(onMouseDownHandler);
 					documentMouseArea->GetEventReceiver()->leftButtonUp.Detach(onMouseUpHandler);
@@ -311,6 +316,11 @@ GuiDocumentCommonInterface
 				documentMouseArea = _mouseArea;
 				if (documentMouseArea)
 				{
+					if (documentCursor)
+					{
+						documentMouseArea->SetAssociatedCursor(documentCursor);
+					}
+
 					onMouseMoveHandler = documentMouseArea->GetEventReceiver()->mouseMove.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseMove);
 					onMouseDownHandler = documentMouseArea->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseDown);
 					onMouseUpHandler = documentMouseArea->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseUp);
@@ -526,6 +536,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::UpdateCursor(INativeCursor* cursor)
 			{
+				documentCursor = cursor;
 				if (documentMouseArea)
 				{
 					documentMouseArea->SetAssociatedCursor(cursor);
@@ -674,6 +685,10 @@ GuiDocumentCommonInterface
 			void GuiDocumentCommonInterface::OnMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				SetActiveHyperlink(nullptr);
+				if (editMode == GuiDocumentEditMode::ViewOnly)
+				{
+					UpdateCursor(nullptr);
+				}
 			}
 
 			//================ callback

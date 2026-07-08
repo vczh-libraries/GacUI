@@ -71,6 +71,7 @@ GuiDocumentCommonInterface
 				compositions::GuiBoundsComposition*			documentComposition = nullptr;
 
 				compositions::GuiGraphicsComposition*		documentMouseArea = nullptr;
+				INativeCursor*								documentCursor = nullptr;
 				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseMoveHandler;
 				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseDownHandler;
 				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseUpHandler;

@@ -178,7 +178,7 @@ void GuiMain()
 	List<WString> dependencies;
 
 #ifdef BUILD_FAKEDIALOG
-	LoadResource(CompileResources(
+	ReloadResource(L"GuiFakeDialogServiceUI", CompileResources(
 		targetCpuArchitecture,
 		L"GuiFakeDialogServiceUI",
 		L"Source: GacUI FakeDialogServiceUI",
@@ -193,7 +193,7 @@ void GuiMain()
 #endif
 
 #ifdef BUILD_UNITTESTVIEWER
-	LoadResource(CompileResources(
+	ReloadResource(L"GuiUnitTestSnapshotViewer", CompileResources(
 		targetCpuArchitecture,
 		L"GuiUnitTestSnapshotViewer",
 		L"Source: GacUI UnitTestSnapshotViewer",
@@ -208,7 +208,7 @@ void GuiMain()
 #endif
 
 #ifdef BUILD_DARKSKIN
-	LoadResource(CompileResources(
+	ReloadResource(L"DarkSkin", CompileResources(
 		targetCpuArchitecture,
 		L"DarkSkin",
 		L"Source: Generated_DarkSkin.vcxitems",
@@ -223,7 +223,7 @@ void GuiMain()
 #endif
 
 #ifdef BUILD_FULLCONTROLTEST
-	LoadResource(CompileResources(
+	ReloadResource(L"FullControlTest", CompileResources(
 		targetCpuArchitecture,
 		L"FullControlTest",
 		L"Source: Generated_FullControlTest",
@@ -238,7 +238,7 @@ void GuiMain()
 #endif
 
 #ifdef BUILD_REMOTEPROTOCOL_TEST
-	LoadResource(CompileResources(
+	ReloadResource(L"RemoteProtocolTest", CompileResources(
 		targetCpuArchitecture,
 		L"RemoteProtocolTest",
 		L"Source: Generated_RemoteProtocolTest",

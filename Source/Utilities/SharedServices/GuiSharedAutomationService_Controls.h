@@ -134,6 +134,9 @@ namespace vl
 		*   //     available only when its parent composition is GuiFlowComposition
 		*   //     index is defined by flow->GetFlowItems().IndexOf(flowItem)
 		*   layout?: string;
+		*
+		*   // available when GuiGraphicsComposition::GetAssociatedCursor is not null
+		*   cursor?: string;
 		* 
 		*   // available when GuiGraphicsComposition::GetOwnedElement is not null and is or inherits from:
 		*   //   GuiSolidBorderElement			: "Border:color,shape

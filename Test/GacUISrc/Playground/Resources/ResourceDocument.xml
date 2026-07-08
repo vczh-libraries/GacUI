@@ -53,7 +53,7 @@
             </DocumentTextBox>
           </Cell>
           <Cell Site="row:3 column:0">
-            <DocumentViewer EditMode="Editable" Document-uri="res://EmbeddedDocument/Document">
+            <DocumentViewer EditMode="Editable" HorizontalAlwaysVisible="true" VerticalAlwaysVisible="true" Document-uri="res://EmbeddedDocument/Document">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </DocumentViewer>
           </Cell>
@@ -65,7 +65,7 @@
             </SinglelineTextBox>
           </Cell>
           <Cell Site="row:3 column:1">
-            <MultilineTextBox Document-uri="res://EmbeddedDocument/Document">
+            <MultilineTextBox HorizontalAlwaysVisible="true" VerticalAlwaysVisible="true" Document-uri="res://EmbeddedDocument/Document">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </MultilineTextBox>
           </Cell>

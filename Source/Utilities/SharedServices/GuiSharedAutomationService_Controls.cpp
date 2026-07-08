@@ -319,6 +319,29 @@ DumpWindowClientArea
 			return WString::Empty;
 		}
 
+		WString PrintCursor(INativeCursor* cursor)
+		{
+			if (!cursor) return WString::Empty;
+			if (!cursor->IsSystemCursor()) return WString::Unmanaged(L"Custom");
+
+			switch (cursor->GetSystemCursorType())
+			{
+			case INativeCursor::SmallWaiting: return WString::Unmanaged(L"SmallWaiting");
+			case INativeCursor::LargeWaiting: return WString::Unmanaged(L"LargeWaiting");
+			case INativeCursor::Arrow: return WString::Unmanaged(L"Arrow");
+			case INativeCursor::Cross: return WString::Unmanaged(L"Cross");
+			case INativeCursor::Hand: return WString::Unmanaged(L"Hand");
+			case INativeCursor::Help: return WString::Unmanaged(L"Help");
+			case INativeCursor::IBeam: return WString::Unmanaged(L"IBeam");
+			case INativeCursor::SizeAll: return WString::Unmanaged(L"SizeAll");
+			case INativeCursor::SizeNESW: return WString::Unmanaged(L"SizeNESW");
+			case INativeCursor::SizeNS: return WString::Unmanaged(L"SizeNS");
+			case INativeCursor::SizeNWSE: return WString::Unmanaged(L"SizeNWSE");
+			case INativeCursor::SizeWE: return WString::Unmanaged(L"SizeWE");
+			default: return WString::Unmanaged(L"Unknown");
+			}
+		}
+
 		WString PrintDocument(Ptr<DocumentModel> document)
 		{
 			if (!document) return WString::Empty;
@@ -407,6 +430,12 @@ DumpWindowClientArea
 			if (layout != WString::Empty)
 			{
 				ConvertCustomTypeToJsonField(compositionDump, L"layout", layout);
+			}
+
+			auto cursor = PrintCursor(composition->GetAssociatedCursor());
+			if (cursor != WString::Empty)
+			{
+				ConvertCustomTypeToJsonField(compositionDump, L"cursor", cursor);
 			}
 
 			DumpElement(composition->GetOwnedElement(), compositionDump);
