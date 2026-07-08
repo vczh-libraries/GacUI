@@ -177,12 +177,6 @@ void LoadResource(FilePath binaryPath)
 	GetResourceManager()->LoadResourceOrPending(fileStream, GuiResourceUsage::InstanceClass);
 }
 
-void ReloadResource(const WString& name, FilePath binaryPath)
-{
-	GetResourceManager()->UnloadResource(name);
-	LoadResource(binaryPath);
-}
-
 /***********************************************************************
 MergeCppFiles
 ***********************************************************************/

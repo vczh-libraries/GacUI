@@ -46,7 +46,6 @@ extern FilePath CompileResources(
 	);
 
 extern void LoadResource(FilePath binaryPath);
-extern void ReloadResource(const WString& name, FilePath binaryPath);
 extern void DumpComposition(presentation::compositions::GuiGraphicsComposition* composition, stream::TextWriter& writer);
 
 extern void MergeCppFiles(
