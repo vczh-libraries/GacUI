@@ -795,49 +795,37 @@
                     },
                     "children": [
                       {
-                        "id": 58,
+                        "id": 96,
                         "content": {
                           "hitTestResult": null,
-                          "cursor": "Hand",
-                          "element": null,
-                          "bounds": {"x1": 13, "y1": 41, "x2": 467, "y2": 307},
-                          "validArea": {"x1": 13, "y1": 41, "x2": 467, "y2": 307}
+                          "cursor": null,
+                          "element": 24,
+                          "bounds": {"x1": 15, "y1": 43, "x2": 465, "y2": 59},
+                          "validArea": {"x1": 15, "y1": 43, "x2": 465, "y2": 59}
                         },
-                        "children": [
-                          {
-                            "id": 96,
-                            "content": {
-                              "hitTestResult": null,
-                              "cursor": null,
-                              "element": 24,
-                              "bounds": {"x1": 15, "y1": 43, "x2": 465, "y2": 59},
-                              "validArea": {"x1": 15, "y1": 43, "x2": 465, "y2": 59}
-                            },
-                            "children": null
-                          },
-                          {
-                            "id": 100,
-                            "content": {
-                              "hitTestResult": null,
-                              "cursor": null,
-                              "element": 25,
-                              "bounds": {"x1": 15, "y1": 71, "x2": 465, "y2": 87},
-                              "validArea": {"x1": 15, "y1": 71, "x2": 465, "y2": 87}
-                            },
-                            "children": null
-                          },
-                          {
-                            "id": 92,
-                            "content": {
-                              "hitTestResult": null,
-                              "cursor": null,
-                              "element": 23,
-                              "bounds": {"x1": 15, "y1": 99, "x2": 465, "y2": 115},
-                              "validArea": {"x1": 15, "y1": 99, "x2": 465, "y2": 115}
-                            },
-                            "children": null
-                          }
-                        ]
+                        "children": null
+                      },
+                      {
+                        "id": 100,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": null,
+                          "element": 25,
+                          "bounds": {"x1": 15, "y1": 71, "x2": 465, "y2": 87},
+                          "validArea": {"x1": 15, "y1": 71, "x2": 465, "y2": 87}
+                        },
+                        "children": null
+                      },
+                      {
+                        "id": 92,
+                        "content": {
+                          "hitTestResult": null,
+                          "cursor": null,
+                          "element": 23,
+                          "bounds": {"x1": 15, "y1": 99, "x2": 465, "y2": 115},
+                          "validArea": {"x1": 15, "y1": 99, "x2": 465, "y2": 115}
+                        },
+                        "children": null
                       }
                     ]
                   }
