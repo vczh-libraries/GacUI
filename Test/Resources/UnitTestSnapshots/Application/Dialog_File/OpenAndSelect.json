@@ -245,7 +245,7 @@
       "root": null
     },
     {
-      "frameId": 17,
+      "frameId": 18,
       "frameName": "DbClick: A",
       "windowSize": {
         "bounds": {
@@ -272,7 +272,7 @@
       "root": null
     },
     {
-      "frameId": 20,
+      "frameId": 21,
       "frameName": "Click: a.txt",
       "windowSize": {
         "bounds": {
@@ -299,7 +299,7 @@
       "root": null
     },
     {
-      "frameId": 22,
+      "frameId": 23,
       "frameName": "Open",
       "windowSize": {
         "bounds": {
