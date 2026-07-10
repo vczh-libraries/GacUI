@@ -69,6 +69,8 @@ I will put my reply here
     - Potential error handling issues.
     - Potential synchronization and multi-threading issues.
     - Potential performance issues.
+  - You should de-ambiguous proactively, if there is an obvious best answer to the review comment, you should also propose your solution:
+    - You can find my preference in `REPO-ROOT/.github/Guidelines/Coding.md`.
 - Take into accounts of my replies to all review comments.
 - Expand missing details:
   - Verification would be the most important part of the task. If the original task do not have, or only has a simple verification step, you need to add detailes to the `## VERIFICATION` before `## REVIEW COMMENTS`.
