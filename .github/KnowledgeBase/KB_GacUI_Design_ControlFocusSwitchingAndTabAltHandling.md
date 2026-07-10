@@ -138,11 +138,11 @@ Hosts create a hierarchy of ALT contexts that can be entered/exited:
 ALT action collection from controls (`IGuiAltActionHost::CollectAltActionsFromControl`):
 
 - Recursively traverses control tree starting from the specified control
-- If control has `IGuiAltActionContainer`: collects all actions from it
-- Else if control has `IGuiAltAction` and `IsAltAvailable()` and `IsAltEnabled()`: adds single action
-- **Critical behavior**: When a control has an ALT action, executes `continue` which prevents its children from being added to the traversal queue
+- If a control has `IGuiAltActionContainer`: collects all actions from it and executes `continue`
+- Else if a control has `IGuiAltAction` and both `IsAltAvailable()` and `IsAltEnabled()` return true: adds the single action and executes `continue`
+- **Critical behavior**: These `continue` paths prevent the control's children from being added to the traversal queue
 - This creates a "barrier" effect where children are hidden unless you enter a nested ALT context
-- Recursively processes all children only if the control doesn't have its own ALT action
+- A disabled or unavailable single `IGuiAltAction` does not create a barrier; collection continues into that control's children
 
 ### ALT Mode Lifecycle
 
@@ -188,8 +188,7 @@ Processing typed characters in ALT mode:
   - If action has `GetActivatingAltHost()`: calls `EnterAltHost` to enter nested ALT host
   - Otherwise: calls `CloseAltHost` to exit ALT mode
   - Calls `action->OnActiveAlt()` to activate the action (usually focuses the control)
-  - Sets `supressAltKey` to prevent key from being processed further
-  - Returns true
+  - `EnterAltKey` returns true; `GuiAltActionManager::KeyDown` then stores the source key in `supressAltKey` to prevent it from being processed further
 
 #### Label Filtering (`FilterTitles`)
 
@@ -206,7 +205,8 @@ Ways to exit ALT mode:
 
 - Press ESCAPE: calls `LeaveAltHost` to exit current host and restore previous
 - Press BACKSPACE: calls `LeaveAltKey` to remove last character from prefix
-- Clicking or any other key: depends on whether key matches an action
+- A mouse-button down or double-click makes `GuiGraphicsHost` call `GuiAltActionManager::CloseAltHost()`
+- An unmatched keyboard key is consumed while ALT mode remains active; an invalid prefix character is removed when it leaves no visible titles
 - `CloseAltHost`: clears all state, deletes all labels, and exits all hosts in the hierarchy
 
 #### Character and Key Suppression
@@ -220,7 +220,7 @@ Input suppression while in ALT mode:
 
 #### Why Nested ALT Hosts Are Needed
 
-The `continue` statement in `CollectAltActionsFromControl` creates a "barrier" when a control has its own ALT action. This prevents the control's children from being collected at the parent level. Nested ALT hosts provide a mechanism to enter the control's context and collect children's ALT actions at a nested level.
+The `continue` statements in `CollectAltActionsFromControl` create a "barrier" for an `IGuiAltActionContainer`, or for a single `IGuiAltAction` that is both available and enabled. This prevents the control's children from being collected at the parent level. Nested ALT hosts provide a mechanism to enter the control's context and collect children's ALT actions at a nested level.
 
 **Design Rationales for Custom `GetActivatingAltHost` Implementations:**
 
@@ -239,13 +239,13 @@ The `continue` statement in `CollectAltActionsFromControl` creates a "barrier" w
 3. **Dynamic/Temporary Content** (`GuiVirtualDataGrid`):
    - Problem: Cell editor is created on-demand, not a permanent child
    - Default collection only sees permanent children, misses temporary editor
-   - Solution: When `currentEditor` exists and has ALT action, calls `SetAltComposition(currentEditor->GetTemplate())` and `SetAltControl(focusControl, true)`, returns `this`
+   - Solution: When `currentEditor` has a focus control whose `IGuiAltAction` is both available and enabled, calls `SetAltComposition(currentEditor->GetTemplate())` and `SetAltControl(focusControl, true)`, then returns `this`; otherwise clears both values and delegates to `GuiVirtualListView::GetActivatingAltHost()`
    - Result: Can navigate within cell editor using ALT keys
 
 4. **Scoped Navigation for Dense Control Groups** (`GuiRibbonGroup`):
    - Problem: Ribbon groups contain many buttons, exposing all at window level creates too many conflicts
    - Default would collect all buttons at same level as the group (if group didn't have its own ALT action)
-   - But: `GuiRibbonGroup` has its own ALT action (from `GuiControl` base), which blocks children via `continue`
+   - But: when `GuiRibbonGroup` has an available and enabled ALT action, it blocks children via `continue`
    - Solution: Returns `this` when `IsAltAvailable()` is true, creating two-level navigation
    - Result: First press ALT+[group-key] to enter group, then press ALT+[button-key] to select button
    - Benefit: Reduces conflicts and creates logical grouping
@@ -259,7 +259,7 @@ The `continue` statement in `CollectAltActionsFromControl` creates a "barrier" w
 
 The `continue` statement in `CollectAltActionsFromControl` serves as a crucial design element:
 
-- **Without nested hosts**: When a control has an ALT action, the `continue` prevents children from being collected, making them unreachable
+- **Without nested hosts**: An ALT container, or an available and enabled single ALT action, prevents children from being collected at that level
 - **With nested hosts**: `GetActivatingAltHost` provides a way to "un-hide" children by entering a nested context that re-collects them
 - **For containers like `GuiRibbonGroup`**: This creates hierarchical navigation instead of flat navigation, reducing ALT key conflicts and improving scalability for interfaces with many controls
 
@@ -278,8 +278,8 @@ The `continue` statement in `CollectAltActionsFromControl` serves as a crucial d
 
 `GuiGraphicsHost::Char` processes character input in this order:
 
-1. First tries `GuiTabActionManager::Char`: suppresses TAB character if just navigated
-2. Then tries `GuiAltActionManager::Char`: suppresses all input while in ALT mode
+1. First tries `GuiAltActionManager::Char`: suppresses all input while in ALT mode
+2. Then tries `GuiTabActionManager::Char`: suppresses TAB character if just navigated
 3. Finally delivers to focused composition's event receiver if not suppressed
 
 ### Control Visibility and Enable State

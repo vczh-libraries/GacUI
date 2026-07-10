@@ -7,20 +7,22 @@ GacUI is designed to support multiple platforms with different rendering backend
 1. **Windows Direct2D** - Modern Windows graphics using Direct2D and DirectWrite with hardware acceleration
 2. **Windows GDI** - Legacy Windows graphics using traditional GDI for compatibility with older systems  
 3. **Linux GTK** - Linux platform support with GTK rendering (declared as `SetupGtkRenderer()` but implementation in separate repository)
-4. **macOS Cocoa** - macOS platform support with Core Graphics rendering (declared as `SetupOSXCoreGraphicsRenderer()` but implementation in separate repository)
-5. **Remote Rendering** - Platform-agnostic remote rendering over network protocols for testing and distributed applications
-6. **Code Generation** - Special mode for compile-time code generation (GacGen)
+4. **Wayland WGac** - Wayland support with standard and hosted entry points (`elements::wgac::SetupWGacRenderer()` and `elements::wgac::SetupWGacHostedRenderer()`)
+5. **macOS Cocoa** - macOS platform support with Core Graphics rendering (declared as `SetupOSXCoreGraphicsRenderer()` and `SetupOSXHostedCoreGraphicsRenderer()` but implemented in a separate repository)
+6. **Remote Rendering** - Platform-agnostic remote rendering over network protocols for testing and distributed applications
+7. **Code Generation** - Special mode for compile-time code generation through `SetupGacGenNativeController()`
 
-The actual Linux and macOS implementations are maintained in separate repositories, but the entry points are declared in this codebase to maintain API consistency. The architecture is designed for extensibility, with clear separation between platform-specific implementations and the core framework.
+The GTK, WGac, and macOS entry points are declared in this codebase to maintain API consistency, while their implementations are supplied separately. The architecture is designed for extensibility, with clear separation between platform-specific implementations and the core framework.
 
 ## Entry Point Architecture
 
-The initialization system uses a consistent naming pattern for entry points: `Setup[Platform][Renderer][Mode]()`. Each combination provides different capabilities:
+Entry-point names are platform-specific. Windows puts `Hosted` or `Raw` before the platform and renderer name, while WGac and macOS use hosted suffixes, and remote and code-generation modes use `NativeController` names.
 
 ### Standard Mode Entry Points
 - `SetupWindowsDirect2DRenderer()` - Full Direct2D application with complete framework and native OS windows
 - `SetupWindowsGDIRenderer()` - Full GDI application with complete framework and native OS windows
 - `SetupGtkRenderer()` - Full Linux/GTK application (implementation in separate repository)
+- `elements::wgac::SetupWGacRenderer()` - Full Wayland/WGac application (implementation supplied separately)
 - `SetupOSXCoreGraphicsRenderer()` - Full macOS application (implementation in separate repository)
 - `SetupRemoteNativeController(protocol)` - Full remote application with protocol communication
 
@@ -29,6 +31,8 @@ Standard mode provides the complete GacUI application framework including `GuiAp
 ### Hosted Mode Entry Points  
 - `SetupHostedWindowsDirect2DRenderer()` - Direct2D embedded within a single native OS window
 - `SetupHostedWindowsGDIRenderer()` - GDI embedded within a single native OS window
+- `elements::wgac::SetupWGacHostedRenderer()` - Hosted Wayland/WGac application (implementation supplied separately)
+- `SetupOSXHostedCoreGraphicsRenderer()` - Hosted macOS application (implementation supplied separately)
 
 Hosted mode runs the entire GacUI application within only one native OS window. All GacUI sub-windows, dialogs, and menus are rendered as graphics rather than creating additional native OS windows. This is achieved by wrapping the native controller with `GuiHostedController`, which provides window abstraction while sharing the host application's window handle.
 
@@ -37,6 +41,9 @@ Hosted mode runs the entire GacUI application within only one native OS window. 
 - `SetupRawWindowsGDIRenderer()` - GDI rendering without `GuiApplication` or `GuiWindow`
 
 Raw mode provides minimal rendering capabilities without the application framework. It completely bypasses `GuiApplication` and `GuiWindow` creation, calling `GuiRawMain()` instead of the full application initialization. This mode is suitable for custom applications that need direct control over initialization and only require graphics rendering capabilities.
+
+### Special-Purpose Entry Point
+- `SetupGacGenNativeController()` - Runs the application framework with the code-generation native controller.
 
 ## Initialization Flow
 
@@ -47,9 +54,9 @@ The process begins at platform-specific entry points (`WinMain` on Windows, `mai
 
 ### Phase 2: Setup Function Routing
 Setup functions route to internal implementation functions:
-- `SetupWindowsDirect2DRenderer()` ? `SetupWindowsDirect2DRendererInternal(false, false)`
-- `SetupHostedWindowsDirect2DRenderer()` ? `SetupWindowsDirect2DRendererInternal(true, false)`  
-- `SetupRawWindowsDirect2DRenderer()` ? `SetupWindowsDirect2DRendererInternal(false, true)`
+- `SetupWindowsDirect2DRenderer()` → `SetupWindowsDirect2DRendererInternal(false, false)`
+- `SetupHostedWindowsDirect2DRenderer()` → `SetupWindowsDirect2DRendererInternal(true, false)`
+- `SetupRawWindowsDirect2DRenderer()` → `SetupWindowsDirect2DRendererInternal(false, true)`
 
 ### Phase 3: Renderer Main Functions
 Internal setup functions call platform-specific renderer main functions:
@@ -58,8 +65,8 @@ Internal setup functions call platform-specific renderer main functions:
 
 ### Phase 4: Application vs Raw Initialization
 Renderer main functions branch based on mode:
-- **Standard/Hosted Mode**: `GuiApplicationMain()` ? `GuiApplicationInitialize()` 
-- **Raw Mode**: `GuiRawInitialize()` ? `GuiRawMain()`
+- **Standard/Hosted Mode**: `GuiApplicationMain()` → `GuiApplicationInitialize()` → user-defined `GuiMain()`
+- **Raw Mode**: `GuiRawMain()` → `GuiRawInitialize()` → user-defined `GuiMain()`
 
 ### Phase 5: Framework Setup (Non-Raw Only)
 `GuiApplicationInitialize()` performs comprehensive framework initialization:
@@ -154,9 +161,9 @@ static void Register()
 
 The registration mechanism uses the `GuiElementRendererBase` template which provides the `Register()` static method that calls `GetGuiGraphicsResourceManager()->RegisterRendererFactory()` to bind element types to renderer factories.
 
-## Service Registration and Dependencies
+## Native Controller Services
 
-The application framework registers services in a specific order to handle dependencies correctly:
+`INativeController` exposes the following services to the application framework:
 
 1. **Callback Service** - Foundation event dispatch system
 2. **Resource Service** - System fonts, cursors, and default resources  
@@ -167,6 +174,7 @@ The application framework registers services in a specific order to handle depen
 7. **Window Service** - Window creation, management, and lifecycle
 8. **Input Service** - Keyboard, mouse, and timer services
 9. **Dialog Service** - File dialogs and message boxes
+10. **Automation Service** - Optional automation access for inspecting and controlling an application
 
 ## Remote Mode Architecture
 

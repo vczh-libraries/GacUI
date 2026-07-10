@@ -21,7 +21,7 @@ Messages are requests sent from the core side to the renderer side. They cover c
 
 ### IGuiRemoteProtocolEvents (Renderer Side → Core Side)
 
-Events are notifications sent from the renderer side to the core side. They include connection lifecycle (`OnControllerConnect`, `OnControllerDisconnect`, `OnControllerRequestExit`), user input (`OnIOKeyDown`, `OnIOKeyUp`, `OnIOMouseMoving`, etc.), and window state changes (`OnWindowBoundsUpdated`).
+Events are notifications sent from the renderer side to the core side. They include connection lifecycle (`OnControllerConnect`, `OnControllerDisconnect`, `OnControllerRequestExit`, `OnControllerForceExit`), user input (`OnIOKeyDown`, `OnIOKeyUp`, `OnIOMouseMoving`, etc.), and window state changes (`OnWindowBoundsUpdated`).
 
 Responses are also delivered through `IGuiRemoteProtocolEvents` via `RespondNAME(id, arguments)` methods, matched to their originating request by request ID.
 
@@ -54,7 +54,7 @@ The core side operates synchronously from its own perspective despite the underl
 ### Service Design Decisions
 
 - **Single window only**: `CreateNativeWindow` can only be called once (enforced by `CHECK_ERROR`). Multiple sub-windows are managed by `GuiHostedController` through hosted mode.
-- **Intentionally null services**: `ClipboardService()` and `DialogService()` return `nullptr`, causing GacUI to fall back to built-in fakes (`FakeDialogServiceBase`). This is intentional — the core side cannot access real OS clipboard or dialogs.
+- **Intentionally null services**: `ClipboardService()`, `DialogService()`, and `AutomationService()` return `nullptr`. GacUI consequently uses its fake clipboard, `FakeDialogServiceBase`, and `INativeAutomationService::UnavailableService`; the core side cannot directly use those renderer-side OS services.
 - **Synchronous key state queries**: `IsKeyPressing()` and `IsKeyToggled()` perform synchronous request-submit-retrieve round-trips. This is expensive but rarely called.
 - **Global shortcut keys**: Tracked core-side and batch-sent to the renderer side on update.
 
@@ -85,14 +85,14 @@ Channel servers distinguish the local core client from renderer clients through 
 
 The renderer side fires `OnControllerDisconnect()`. Each subsystem (`GuiRemoteWindow`, `GuiRemoteGraphicsImageService`, `GuiRemoteGraphicsResourceManager`) marks itself disconnected and suspends protocol communication until reconnection.
 
-### Graceful Exit
+### Graceful and Forced Exit
 
 The renderer side fires `OnControllerRequestExit()`:
 1. `remoteWindow.Hide(true)` triggers the close sequence
 2. `BeforeClosing` / `AfterClosing` listener chain fires
 3. `DestroyNativeWindow` is scheduled
 
-`connectionForcedToStop` bypasses the `BeforeClosing` cancellation check for forced shutdown.
+For a forced shutdown, the renderer fires `OnControllerForceExit()`. `GuiRemoteController` first sets `connectionForcedToStop = true` and then calls `remoteWindow.Hide(true)`. The flag makes the close path bypass the `BeforeClosing` cancellation check.
 
 ### Run Loop (RunOneCycle)
 
@@ -103,6 +103,8 @@ The renderer side fires `OnControllerRequestExit()`:
 4. Execute async tasks
 
 The timer-driven rendering is crucial: `InvokeGlobalTimer()` causes `GuiHostedController` to decide whether to render, which calls into `GuiRemoteGraphicsRenderTarget`.
+
+When the hosted controller determines that rendering has become idle, `GuiRemoteGraphicsRenderTarget::HostedRenderingIdle()` queues `RequestRendererIdle()`. This is an idle hint rather than a rendering frame.
 
 ## GuiRemoteWindow: Virtual Native Window
 
@@ -237,7 +239,7 @@ Paragraph styling uses a run-based system with three layers:
 This is the core synchronization method, called before any query. It returns `false` when the paragraph is unavailable (`id == -1` or no render target) or when a synchronous submit reports disconnection, allowing callers to return conservative defaults instead of using stale remote state:
 1. `EnsureRequestedRenderersCreated()` — ensures the paragraph element exists on the renderer side
 2. Merge text and inline object runs into `stagedRuns`
-3. `DiffRuns(committedRuns, stagedRuns, desc)` — compute diff between last committed and current state
+3. `DiffRuns(committedRuns, stagedRuns, desc)` — compute diff between last committed and current state; it requires every old run range to remain fully covered by the new run ranges and fails with `CHECK_ERROR` if that invariant is violated
 4. Send `RequestRendererUpdateElement_DocumentParagraph(desc)` with the diff
 5. `Submit()` synchronously — the response includes the new `documentSize`
 6. If still connected, store `cachedSize` from response, remove stale cached inline-object bounds reported by `removedInlineObjects`, move `stagedRuns` to `committedRuns`, and mark `remoteParagraphCreated = true`
@@ -321,7 +323,7 @@ The core-side stack uses:
 2. `GuiRemoteProtocolAsyncJsonChannel` when core/channel separation is needed. It wraps an `IJsonChannel`, queues outgoing packages, queues received events for `ProcessRemoteEvents()`, stores responses by request id, and uses `connectionCounter` plus `PendingRequestGroup` to keep blocking `Submit()` calls consistent across disconnects.
 
 The renderer-side stack uses:
-1. `GuiRemoteProtocolAsyncJsonChannelRenderer` when network packages can arrive before the native GacUI window is ready. It queues received packages until `SetInvokeInMainThread(...)` installs an `IGuiRemoteProtocolAsyncRendererInvoker`, then drains them on the renderer UI thread. Its message version prevents callbacks captured by an old reader from running after the reader is replaced.
+1. `GuiRemoteProtocolAsyncJsonChannelRenderer` when network packages can arrive before the native GacUI window is ready. It queues received packages until `SetInvokeInMainThread(...)` installs an `IGuiRemoteProtocolAsyncRendererInvoker`, then drains them on the renderer UI thread. Calling `Detach()` clears the reader, increments `messageVersion`, and prevents callbacks queued before detachment from running after a later reader installation.
 2. `GuiRemoteProtocolRendererChannel` to bridge the renderer JSON channel to a concrete renderer `IGuiRemoteProtocol` implementation and to serialize renderer events/responses back to `GacUIRemoteProtocolCoreClientId`. Construct it with the renderer-side `IJsonChannel` and the `IGuiRemoteProtocol`.
 
 ## Image Service
