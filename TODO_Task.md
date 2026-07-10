@@ -2,12 +2,13 @@
 - you have to run unit test to make sure your change works.
 - commit and push after finishing the work.
 
-- `GuiRemoteProtocolRendererSingle` when receives a fatal error:
+- `GuiRemoteRendererSingle` when receiving a fatal error from GacUI Core:
   - Display a system message box to ask if the user wants to close the application.
   - Yes: goes the old way.
   - No:
     - displays remote errors on a half transparent white background instead of system message box.
-    - `/Dom` returns error.
+    - `/Dom` keeps returning the frozen DOM and includes the fatal error.
+    - `/IO` reports that the application has stopped responding.
     - Being able to exit by `!Exit` or closing the window.
     - Already disconnected from GacUI Core.
 
@@ -17,6 +18,22 @@
 - The current fatal-error path queues an OK-only native message box and then calls `GuiRemoteRendererSingle::ForceExitByFatelError`, which marks the renderer as disconnecting and posts a close. `RemotingTestChannelClient::OnDisconnected` detaches incoming renderer messages and deliberately skips that exit call after a fatal error.
 - Keeping the renderer visible requires a distinct terminal state that marks it disconnected without immediately hiding the window. Otherwise both the title-bar close and automation `!Exit` are cancelled by `GuiRemoteRendererSingle::BeforeClosing` and forwarded to the disconnected core.
 - A fatal error can arrive before `SetupRawWindowsDirect2DRenderer` creates the native controller/window, before the first rendering DOM, or while a frame has suppressed refreshing. The retained-error path cannot assume an existing window, DOM, or completed frame.
+- `GuiRemoteRendererSingle` owns the reusable disconnected-but-visible state, stopped rendering, and suppression of further core events. `RemotingTest_Rendering_Win32` owns the native Yes/No interaction and passes the remote error and selected policy into the renderer.
+- Yes is the default message-box choice and immediately uses the existing fatal-exit path. No keeps the renderer window alive, changes its title to `[STOPPED] <original-title>`, preserves the last renderable state, and draws the remote error over a full-client 50%-transparent white mask.
+- Renderer automation remains available after No. Add the renderer-specific `SetFatalError(Nullable<WString>)` operation to `AutomationServiceRenderer` (and therefore `WindowsAutomationServiceRenderer`), not to the platform-wide `INativeAutomationService`. Keep access to this state synchronized across the UI and HTTP callback threads.
+- A healthy `/Dom` response keeps its existing schema. After No, it remains an HTTP success containing the frozen renderer DOM, plus an exact lowercase top-level string field `fatalError` with the original remote error; the locally drawn mask is not part of the remote DOM. Omit `fatalError` while the nullable value is empty.
+- The fatal notification must be cached thread-safely if it arrives before `GuiMain` registers the window and automation service, then dispatched exactly once through the renderer UI-thread invoker. Transport callbacks must not access `GetCurrentController()`, the native window, renderer UI state, or the automation service before that boundary exists.
+- Manual RemoteProtocolTest runs use `/RPT /Pipe` or `/RPT /Http` on `RemotingTest_Core`; `RemotingTest_Rendering_Win32` accepts only the matching `/Pipe` or `/Http` argument.
+
+## VERIFICATION
+
+- Build `Test/GacUISrc/GacUISrc.sln` in the default Debug|x64 configuration through `.github/Scripts/copilotBuild.ps1`; require `Build.log` to end in build success with zero warnings and errors. Run `UnitTest` through `.github/Scripts/copilotExecute.ps1 -Mode UnitTest -Executable UnitTest`; require all selected test files and cases to pass with no memory-leak dump.
+- Perform manual two-process Windows verification with `RemotingTest_Rendering_Win32` under the debugger; do not add an automated test for the native-prompt scenario. Test core `/RPT /Pipe` with renderer `/Pipe`, then core `/RPT /Http` with renderer `/Http`, starting the core before the renderer.
+- In each fresh session, confirm that the RemoteProtocolTest UI appears, record the original title and `/Dom`, and manually activate its currently labelled `Fatel Error` button. While the native modal prompt is open, do not call application HTTP automation; inspect and operate the renderer process's `#32770` dialog from a separate Win32 helper process following `.github/Guidelines/Running-ComputerUse.md`. Confirm that the fatal text and both Yes and No buttons appear and that Yes is the default.
+- Yes case: accept the default Yes and confirm the old fatal-exit behavior completes, the renderer closes, the core has already stopped, neither process hangs, and the debugger reports no unexpected exception.
+- No case: choose No and confirm the core is already stopped/disconnected while the renderer remains alive; the title is exactly `[STOPPED] <original-title>`; a readable fatal message appears on a full-client 50%-transparent white mask over the retained UI; and ordinary mouse/keyboard input causes no UI change. Resize and minimize/restore the window to prove the mask redraws and still covers the client.
+- After No, GET `http://localhost:8888/Automation/RemotingTest_Rendering_Win32/Dom`; require HTTP success, the frozen pre-error DOM, and the exact `fatalError` string. POST a representative non-exit `/IO` command such as `!Type:x`; require the defined stopped-response rather than 404, an empty response, or `Queued`, and confirm the renderer stays alive. In one fresh No session POST `!Exit` and confirm it closes the renderer locally; in another, use the native title-bar close and confirm the same clean exit.
+- Explicitly regress `ToDo/KnownIssues.md` by completing five consecutive fresh `/Pipe` fatal-error sessions without a hang, including the default Yes path, No plus `!Exit`, and No plus title-bar close. Run Yes and both No exit paths at least once with `/Http`. After every run, confirm no stale core/renderer process remains and the next pair can bind and connect normally.
 
 ## REVIEW COMMENTS
 
@@ -43,14 +60,38 @@ Since the app already no responding, `/IO` will not make any sense at all. So `/
 
 covered above.
 
-### Define The `/Dom` Error Contract
+### Define The `/Dom` Error Contract [CLOSED]
 
 **review comment**: “`/Dom` returns error” is not testable yet. Today it returns an HTTP success containing the renderer DOM JSON, while thrown errors become HTTP 404. Please specify the exact HTTP status, content type, and response body/schema; whether it contains the original fatal error as one string or a list; whether `CanDumpDomTree()` remains true; and whether the frozen DOM/locally drawn overlay is omitted from the response. A stable exact response is needed for automation clients and verification.
 
 covered above.
 
-### Require End-To-End Verification
+### Require End-To-End Verification [CLOSED]
 
 **review comment**: The required unit test cannot cover this behavior by itself because `Project.md` explicitly excludes `GuiRemoteRendererSingle` from unit-test coverage. Please add debugger-attached two-process verification for both named-pipe and HTTP modes: fatal error + Yes exits by the old path; fatal error + No leaves a readable overlay over the frozen window; `/Dom` returns the specified error; the core is already disconnected; and both a title-bar close and POST `/IO` with `!Exit` terminate the retained renderer cleanly. Include a fatal error before the first DOM/frame if that lifecycle is supported, handle the native prompt from another process before issuing HTTP automation requests, and explicitly repeat the existing `/Pipe` Fatal Error repro from `ToDo/KnownIssues.md` to prove the intermittent hang is gone.
 
 You are going to operate `RemotingTest_Rendering_Win32` by yourself with `/RPT`, which has a `Fatal Error` button for you to click and let GacUI core crash. No test automation will cover this scenario.
+
+### Preserve `!Exit` While Rejecting Stopped IO
+
+**review comment**: The original requirement still says the retained renderer must exit through `!Exit`, but the reply says `/IO` should be disabled. `!Exit` is itself accepted only through POST `/IO`, and making `CanRunIOCommands()` false makes the HTTP layer return 404 before reading the command. Please make `!Exit` the sole stopped-state exception: keep renderer IO capability enabled, let exact `!Exit` retain its normal `Queued` response and close locally, and return one stable HTTP-success error such as `!Application stopped responding.` for every other command without queuing it or touching the disconnected core.
+
+Your finding is valid, we should definitely respond to `!Exit` meanwhile disables all other IO commands. Therefore `CanRunIOCommands()` might need to return an enum class (Enabled, Disabled, ExitOnly) instead of bool. By doing this, the automation service implementation knows it should respond only to `!Exit` when the function returns `ExitOnly` and drop all other commands. The implementation of this function could also check the `Nullable<WString>` fatalError mentioned above so that when it is not empty it returns `ExitOnly`.
+
+### Define The Fatal Callback Policy And Single Source Of State
+
+**review comment**: The reply scopes its explanation to a fatal error broadcast by GacUI Core, but current fatal `OnLocalError` delegates to `OnReadError`, an unexplained `OnDisconnected` takes a different immediate-exit path, and repeated callbacks can queue multiple dialogs. Please state which callbacks receive the Yes/No policy. The simplest policy is remote `OnReadError` only, with fatal local errors and unexplained disconnects retaining the old immediate-exit behavior. Whichever policy is chosen, the first fatal error must win, prompt at most once, and populate one synchronized stored error that drives the renderer mask/title and `AutomationServiceRenderer::fatalError`; separate renderer and automation copies can otherwise diverge.
+
+You already see `OnLocalError` delegates when `fatal` is true, that is expected, so we still handle the message box in both function. But only native `OnReadError` means GacUI core will shutting down, so we can extract one method to do that, and extra remote protocol will be sent to Core from `OnLocalError` branch, telling the core to exit. There is a force exit event which doesn't trigger the BeforeClosing from the core.
+
+### Complete Renderer-Local Shutdown And Channel Detachment
+
+**review comment**: Core termination does not clean up renderer-owned OS state. A retained renderer can still own mouse capture, registered global shortcuts, accumulated IO/window updates, and native listeners that send through `events`. The disconnected-but-visible transition therefore still needs to release capture, unregister shortcuts, clear pending updates, suppress all core-bound callbacks, and permit local close while keeping paint/resize active. Also replace `GuiRemoteProtocolAsyncJsonChannelRenderer::Initialize(nullptr)` with an explicit detach operation because `IChannel::Initialize` is install-only; the wrapper's current private null convention should not leak into application code.
+
+"Disconnect" means the remote protocol disconnecting thing, you don't need to take care of the actual remote networking disconnecting stuff.
+
+### Make The Claimed Early And Partial-Frame Scope Verifiable
+
+**review comment**: The manual `Fatel Error` button runs only after a window and DOM are visible, so it cannot verify the existing DETAILS claim that a fatal error may arrive before setup/the first DOM or during a suppressed frame. Please either narrow the supported scope to errors after the first completed frame, or add a debugger/fault-injection procedure for each earlier lifecycle point. If those points remain supported, define whether the mask covers the last completed native frame or partially applied next-frame state and require painting to recover from suppressed refresh, resize/DPI changes, and render-target recreation without dereferencing a missing DOM.
+
+It doesn't matter, since `RemotingTest_Rendering_Win32` are going to set the fatal error to the automation service, just add `fatalError` field to the JSON when the fatal error is set.

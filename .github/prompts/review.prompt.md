@@ -52,7 +52,7 @@ I will put my reply here
   - I agree with your comment, which points out missing details in the task. Or I disagree with your comment. Or I provide detailed explanation:
     - If you agree with my reply:
       - Keep the comment and the reply, as this will be taken as important hints when executing the task.
-      - Append `[CLOSED]` after the specific comment section, so you don't need to process them the next time.
+      - Append `[CLOSED]` after the title of the specific comment section, so you don't need to process them the next time.
       - Update the content of the task file or source code accordingly, if necessary, based on the reply.
     - If you have further comments:
       - Put new comments.
