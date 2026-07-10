@@ -53,6 +53,7 @@ I will put my reply here
     - If you agree with my reply:
       - Keep the comment and the reply, as this will be taken as important hints when executing the task.
       - Append `[CLOSED]` after the specific comment section, so you don't need to process them the next time.
+      - Update the content of the task file or source code accordingly, if necessary, based on the reply.
     - If you have further comments:
       - Put new comments.
       - DO NOT tag it with `[CLOSED]`.
@@ -69,3 +70,4 @@ I will put my reply here
     - Potential synchronization and multi-threading issues.
     - Potential performance issues.
 - Take into accounts of my replies to all review comments.
+- If you find the task is not detailed enough, add your finding to the `## DETAILS` section before `## REVIEW COMMENTS`.
