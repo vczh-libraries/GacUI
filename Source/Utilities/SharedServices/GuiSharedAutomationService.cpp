@@ -62,6 +62,48 @@ DumpRemoteProtocolRenderingDom
 		}
 
 /***********************************************************************
+AutomationServiceRenderer
+***********************************************************************/
+
+		Nullable<WString> AutomationServiceRenderer::CopyFatalError()
+		{
+			Nullable<WString> copiedFatalError;
+			SPIN_LOCK(lockFatalError)
+			{
+				copiedFatalError = fatalError;
+			}
+			return copiedFatalError;
+		}
+
+		void AutomationServiceRenderer::SetFatalError(Nullable<WString> value)
+		{
+			SPIN_LOCK(lockFatalError)
+			{
+				fatalError = value;
+			}
+		}
+
+		WString AutomationServiceRenderer::DumpDomTreeInternal()
+		{
+			auto copiedFatalError = CopyFatalError();
+			auto dumpRoot = DumpRemoteProtocolRenderingDom(
+				GetCurrentController()->WindowService()->GetMainWindow()->GetTitle(),
+				renderer->windowSizingConfig,
+				renderer->renderingDom,
+				renderer->renderingElements);
+			if (copiedFatalError)
+			{
+				ConvertCustomTypeToJsonField(dumpRoot.Cast<glr::json::JsonObject>(), L"fatalError", copiedFatalError.Value());
+			}
+			return DumpJsonToString(dumpRoot);
+		}
+
+		INativeAutomationService::IOCommandAvailability AutomationServiceRenderer::CanRunIOCommands()
+		{
+			return CopyFatalError() ? INativeAutomationService::IOCommandAvailability::ExitOnly : INativeAutomationService::IOCommandAvailability::Enabled;
+		}
+
+/***********************************************************************
 RunIOCommandOnNativeWindow
 ***********************************************************************/
 

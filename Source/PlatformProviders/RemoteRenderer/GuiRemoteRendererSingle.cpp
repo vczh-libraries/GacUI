@@ -5,6 +5,39 @@ namespace vl::presentation::remote_renderer
 	using namespace elements;
 	using namespace remoteprotocol;
 
+	bool GuiRemoteRendererSingle::CanSendEvents()
+	{
+		return events && !disconnectingFromCore;
+	}
+
+	void GuiRemoteRendererSingle::ClearPendingCoreEvents()
+	{
+		pendingMouseMove.Reset();
+		pendingHWheel.Reset();
+		pendingVWheel.Reset();
+		pendingKeyAutoDown.Reset();
+		pendingWindowBoundsUpdate.Reset();
+	}
+
+	void GuiRemoteRendererSingle::DisconnectFromCore()
+	{
+		disconnectingFromCore = true;
+		if (window)
+		{
+			window->ReleaseCapture();
+		}
+		UnregisterGlobalShortcutKeys();
+		ClearPendingCoreEvents();
+	}
+
+	void GuiRemoteRendererSingle::RequestCoreForceExitByFatalError()
+	{
+		if (CanSendEvents())
+		{
+			events->OnControllerForceExit();
+		}
+	}
+
 	remoteprotocol::ScreenConfig GuiRemoteRendererSingle::GetScreenConfig(INativeScreen* screen)
 	{
 		ScreenConfig response;
@@ -27,6 +60,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::UpdateConfigsIfNecessary()
 	{
+		if (!CanSendEvents()) return;
 		if (screen)
 		{
 			auto currentScreen = GetCurrentController()->ScreenService()->GetScreen(window);
@@ -68,6 +102,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::Opened()
 	{
+		if (!CanSendEvents()) return;
 		vl::presentation::remoteprotocol::ControllerGlobalConfig globalConfig;
 #if defined VCZH_WCHAR_UTF16
 		globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF16;
@@ -101,6 +136,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder)
 	{
 		NativeWindowListener_Moving(window, suggestedMinSize, bounds, fixSizeOnly, draggingBorder);
+		if (disconnectingFromCore) return;
 		if (draggingBorder)
 		{
 			auto config = GetWindowSizingConfig();
@@ -136,6 +172,11 @@ namespace vl::presentation::remote_renderer
 			GetGuiGraphicsResourceManager()->RecreateRenderTarget(window);
 			UpdateRenderTarget(GetGuiGraphicsResourceManager()->GetRenderTarget(window));
 			UpdateConfigsIfNecessary();
+			if (stoppedByFatalError)
+			{
+				needRefresh = true;
+				ForceRender();
+			}
 		}
 	}
 
@@ -177,8 +218,26 @@ namespace vl::presentation::remote_renderer
 	{
 		if (window)
 		{
-			disconnectingFromCore = true;
+			DisconnectFromCore();
 			window->Hide(true);
+		}
+	}
+
+	void GuiRemoteRendererSingle::RetainByFatalError(const WString& errorMessage)
+	{
+		if (stoppedByFatalError) return;
+
+		DisconnectFromCore();
+		stoppedByFatalError = true;
+		fatalError = errorMessage;
+		supressRefresh = false;
+
+		if (window)
+		{
+			titleBeforeFatalError = window->GetTitle();
+			window->SetTitle(WString::Unmanaged(L"[STOPPED] ") + titleBeforeFatalError);
+			needRefresh = true;
+			ForceRender();
 		}
 	}
 

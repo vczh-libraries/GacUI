@@ -115,6 +115,8 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 
 	void GuiRemoteProtocolAsyncJsonChannelRenderer::Initialize(IJsonChannelReader* _reader)
 	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelRenderer::Initialize(IJsonChannelReader*)#"
+		CHECK_ERROR(_reader, ERROR_MESSAGE_PREFIX L"The reader must not be null. Call Detach() to clear the reader.");
 		bool initializeChannel = false;
 		SPIN_LOCK(lockMessages)
 		{
@@ -124,17 +126,12 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 				channelInitialized = true;
 				initializeChannel = true;
 			}
-			if (!reader)
-			{
-				messageVersion++;
-				queuedMessages.Clear();
-				uiTaskQueued = false;
-			}
 		}
 		if (initializeChannel)
 		{
 			channel->Initialize(this);
 		}
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	void GuiRemoteProtocolAsyncJsonChannelRenderer::SendToClient(vint receiverClientId, const JsonPackage& package)
@@ -164,5 +161,16 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 			invokeInMainThread = _invokeInMainThread;
 		}
 		ScheduleProcessRemoteMessages();
+	}
+
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::Detach()
+	{
+		SPIN_LOCK(lockMessages)
+		{
+			reader = nullptr;
+			messageVersion++;
+			queuedMessages.Clear();
+			uiTaskQueued = false;
+		}
 	}
 }

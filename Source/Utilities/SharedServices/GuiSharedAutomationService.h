@@ -29,6 +29,7 @@ namespace vl
 		*     Type: remoteprotocol::RenderingType;
 		*     Data: remoteprotocol::UnitTest_ElementDescVariant;
 		*   }];
+		*   fatalError?: string;
 		* }
 		* --------------------------------------------------------------------------------
 		*/
@@ -141,14 +142,23 @@ namespace vl
 				return !stopped && CanDumpDomTree() ? DumpDomTreeInternal() : WString::Empty;
 			}
 
-			bool CanRunIOCommands() override
+			IOCommandAvailability CanRunIOCommands() override
 			{
-				return false;
+				return IOCommandAvailability::Disabled;
 			}
 
 			WString RunIOCommand(Nullable<WString> windowId, const WString& ioCommand) override
 			{
-				return !stopped && CanRunIOCommands() ? RunIOCommandInternal(windowId, ioCommand) : WString::Empty;
+				auto availability = stopped ? IOCommandAvailability::Disabled : CanRunIOCommands();
+				switch (availability)
+				{
+				case IOCommandAvailability::Enabled:
+					return RunIOCommandInternal(windowId, ioCommand);
+				case IOCommandAvailability::ExitOnly:
+					return ioCommand == L"!Exit" ? RunIOCommandInternal(windowId, ioCommand) : WString::Unmanaged(L"!Application stopped responding.");
+				default:
+					return WString::Empty;
+				}
 			}
 		};
 
@@ -156,6 +166,10 @@ namespace vl
 		{
 		private:
 			remote_renderer::GuiRemoteRendererSingle*	renderer = nullptr;
+			SpinLock									lockFatalError; // covers fatalError
+			Nullable<WString>							fatalError;
+
+			Nullable<WString>							CopyFatalError();
 			
 		protected:
 			Nullable<WString> GetNativeWindowId(INativeWindow* window) override
@@ -168,15 +182,7 @@ namespace vl
 				return GetCurrentController()->WindowService()->GetMainWindow();
 			}
 
-			WString DumpDomTreeInternal() override
-			{
-				auto dumpRoot = DumpRemoteProtocolRenderingDom(
-					GetCurrentController()->WindowService()->GetMainWindow()->GetTitle(),
-					renderer->windowSizingConfig,
-					renderer->renderingDom,
-					renderer->renderingElements);
-				return DumpJsonToString(dumpRoot);
-			}
+			WString DumpDomTreeInternal() override;
 
 		public:
 			AutomationServiceRenderer(remote_renderer::GuiRemoteRendererSingle* _renderer)
@@ -188,6 +194,9 @@ namespace vl
 			{
 				return true;
 			}
+
+			void SetFatalError(Nullable<WString> value);
+			IOCommandAvailability CanRunIOCommands() override;
 		};
 	}
 }

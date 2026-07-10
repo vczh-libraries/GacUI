@@ -66,6 +66,9 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestAutomationService.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="TestResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

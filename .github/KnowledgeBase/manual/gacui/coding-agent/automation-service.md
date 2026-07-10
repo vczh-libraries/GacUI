@@ -13,7 +13,12 @@ The service is independent from the remote protocol. A normal Windows applicatio
 - `CanDumpDomTree` and `DumpDomTree`: expose the remote protocol renderer DOM.
 - `CanRunIOCommands` and `RunIOCommand`: send a textual IO command to the main window or to a selected native window.
 
-Feature availability is checked separately. A real service returns true from `Available` even if a specific feature is unsupported. Unsupported features should return false from the corresponding `Can...` function and return an empty string from the operation.
+Feature availability is checked separately. A real service returns true from `Available` even if a specific feature is unsupported. Unsupported dump features should return false from the corresponding `Can...` function and return an empty string from the operation.
+
+`CanRunIOCommands` returns `INativeAutomationService::IOCommandAvailability`:
+- `Disabled`: `RunIOCommand` returns an empty string and endpoint layers should treat IO as unsupported.
+- `Enabled`: `RunIOCommand` accepts every syntactically valid command and queues accepted work.
+- `ExitOnly`: only the exact command `!Exit` is forwarded and keeps the normal `Queued` result. Every other command returns exactly `!Application stopped responding.` synchronously without queuing work.
 
 ## Windows HTTP Layer
 
@@ -25,7 +30,7 @@ The function takes `applicationName` as a URL path fragment and `port` as the lo
 - `POST http://localhost:8888/Automation/MyApp/IO`: passes the UTF-8 request body to `RunIOCommand` with no window id.
 - `POST http://localhost:8888/Automation/MyApp/IO/<windowId>`: passes the UTF-8 request body to `RunIOCommand` with the window id path segment.
 
-The window id is a path segment after `IO`, not a query parameter. All other methods, paths, and malformed `IO` suffixes return HTTP 404 with a text response. Successful IO command parsing returns `Queued`; this means the command was accepted and posted to the UI thread, not that every visible effect has already finished. Syntax errors and command errors are returned synchronously as text beginning with `!`.
+The window id is a path segment after `IO`, not a query parameter. All other methods, paths, and malformed `IO` suffixes return HTTP 404 with a text response. The HTTP wrapper returns 404 only when `CanRunIOCommands` returns `Disabled`; both `Enabled` and `ExitOnly` call `RunIOCommand`. Successful IO command parsing returns `Queued`; this means the command was accepted and posted to the UI thread, not that every visible effect has already finished. Syntax errors, command errors, and `ExitOnly` rejections are returned synchronously as text beginning with `!`.
 
 ## Starting The Service
 
@@ -111,6 +116,8 @@ void GuiMain()
 ```
 
 A remote protocol renderer that owns a `GuiRemoteRendererSingle` can substitute `WindowsAutomationServiceRenderer` in the same scope before starting the HTTP service. This is the case where `GET /Dom` becomes meaningful.
+
+When a remote renderer is retained after a fatal remote-protocol error, renderer automation keeps `GET /Dom` available. The DOM response is still an HTTP success containing the frozen renderer DOM, and it adds a lowercase top-level `fatalError` string with the original error. Renderer IO switches to `ExitOnly`: ordinary IO returns exactly `!Application stopped responding.`, while exact `!Exit` is still accepted so automation can close the retained renderer.
 
 ## Implementing Another Platform
 

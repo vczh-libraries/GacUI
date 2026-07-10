@@ -42,7 +42,7 @@ INativeAutomationService
 				CHECK_FAIL(L"Not Implemented!");
 			}
 
-			bool CanRunIOCommands() override
+			INativeAutomationService::IOCommandAvailability CanRunIOCommands() override
 			{
 				CHECK_FAIL(L"Not Implemented!");
 			}

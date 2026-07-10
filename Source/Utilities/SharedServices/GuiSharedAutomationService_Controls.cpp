@@ -164,9 +164,9 @@ RemoteProtocolAutomationService
 		{
 		}
 
-		bool RemoteProtocolAutomationService::CanRunIOCommands()
+		INativeAutomationService::IOCommandAvailability RemoteProtocolAutomationService::CanRunIOCommands()
 		{
-			return true;
+			return INativeAutomationService::IOCommandAvailability::Enabled;
 		}
 
 /***********************************************************************

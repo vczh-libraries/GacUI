@@ -20,14 +20,90 @@ namespace
 
 GuiRemoteRendererSingle* renderer = nullptr;
 GuiRemoteProtocolAsyncJsonChannelRenderer* asyncChannel = nullptr;
+AutomationServiceRenderer* rendererAutomationService = nullptr;
 
 class RemotingTestChannelClient : public GuiRemoteProtocolChannelClient
 {
 	using Base = GuiRemoteProtocolChannelClient;
 private:
+	SpinLock									lockFatalError; // covers triggeredFatalError, fatalTitle, fatalMessage
 	bool										triggeredFatalError = false;
+	WString										fatalTitle;
+	WString										fatalMessage;
 	GuiRemoteRendererSingle*					renderer = nullptr;
 	GuiRemoteProtocolAsyncJsonChannelRenderer*	asyncRendererChannel = nullptr;
+
+	bool ClaimFatalError(const WString& title, const WString& errorMessage)
+	{
+		bool claimed = false;
+		SPIN_LOCK(lockFatalError)
+		{
+			if (!triggeredFatalError)
+			{
+				triggeredFatalError = true;
+				fatalTitle = title;
+				fatalMessage = errorMessage;
+				claimed = true;
+			}
+		}
+		return claimed;
+	}
+
+	bool HasFatalError()
+	{
+		bool hasFatalError = false;
+		SPIN_LOCK(lockFatalError)
+		{
+			hasFatalError = triggeredFatalError;
+		}
+		return hasFatalError;
+	}
+
+	void QueueFatalPrompt()
+	{
+		WString title;
+		WString message;
+		SPIN_LOCK(lockFatalError)
+		{
+			title = fatalTitle;
+			message = fatalMessage;
+		}
+
+		auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
+		auto targetRenderer = renderer;
+		auto targetAutomationService = rendererAutomationService;
+		GetCurrentController()->AsyncService()->InvokeInMainThread(
+			mainWindow,
+			[=]()
+			{
+				auto result = GetCurrentController()->DialogService()->ShowMessageBox(
+					mainWindow,
+					message + WString::Unmanaged(L"\r\n\r\nDo you want to close the renderer?"),
+					title,
+					INativeDialogService::DisplayYesNo,
+					INativeDialogService::DefaultFirst,
+					INativeDialogService::IconError
+				);
+				if (result == INativeDialogService::SelectYes)
+				{
+					if (targetRenderer)
+					{
+						targetRenderer->ForceExitByFatelError();
+					}
+				}
+				else
+				{
+					if (targetRenderer)
+					{
+						targetRenderer->RetainByFatalError(message);
+					}
+					if (targetAutomationService)
+					{
+						targetAutomationService->SetFatalError(Nullable<WString>(message));
+					}
+				}
+			});
+	}
 
 public:
 	RemotingTestChannelClient(Ptr<inter_process::INetworkProtocolClient> client, Ptr<glr::json::Parser> parser)
@@ -44,35 +120,27 @@ public:
 	{
 		asyncRendererChannel = _asyncRendererChannel;
 	}
-	
+
 	void OnReadError(const WString& errorMessage) override
 	{
-		triggeredFatalError = true;
-		auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
-		GetCurrentController()->AsyncService()->InvokeInMainThread(
-			mainWindow,
-			[=]()
-			{
-				GetCurrentController()->DialogService()->ShowMessageBox(
-					mainWindow,
-					errorMessage,
-					L"ERROR from GacUI Core",
-					INativeDialogService::DisplayOK,
-					INativeDialogService::DefaultFirst,
-					INativeDialogService::IconError
-				);
-				if (renderer)
-				{
-					renderer->ForceExitByFatelError();
-				}
-			});
+		if (ClaimFatalError(L"ERROR from GacUI Core", errorMessage))
+		{
+			QueueFatalPrompt();
+		}
 	}
 
 	void OnLocalError(const WString& errorMessage, bool fatal) override
 	{
 		if (fatal)
 		{
-			OnReadError(errorMessage);
+			if (ClaimFatalError(L"ERROR from Renderer Transport", errorMessage))
+			{
+				if (renderer)
+				{
+					renderer->RequestCoreForceExitByFatalError();
+				}
+				QueueFatalPrompt();
+			}
 		}
 	}
 
@@ -81,9 +149,9 @@ public:
 		Base::OnDisconnected();
 		if (asyncRendererChannel)
 		{
-			asyncRendererChannel->Initialize(nullptr);
+			asyncRendererChannel->Detach();
 		}
-		if (renderer && !triggeredFatalError)
+		if (renderer && !HasFatalError())
 		{
 			renderer->ForceExitByFatelError();
 		}
@@ -117,12 +185,14 @@ void GuiMain()
 
 	{
 		windows::WindowsAutomationServiceRenderer automationService(renderer);
+		rendererAutomationService = &automationService;
 		GetNativeServiceSubstitution()->Substitute(&automationService, false);
 		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/RemotingTest_Rendering_Win32"), 8888);
 		GetCurrentController()->WindowService()->Run(mainWindow);
 		GetCurrentController()->AutomationService()->Stop();
 		windows::StopWindowsHttpAutomationService();
 		GetNativeServiceSubstitution()->Unsubstitute(&automationService);
+		rendererAutomationService = nullptr;
 	}
 
 	asyncChannel->SetInvokeInMainThread(nullptr);

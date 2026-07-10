@@ -7,6 +7,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestControllerGetFontConfig(vint id)
 	{
+		if (!CanSendEvents()) return;
 		FontConfig response;
 		auto rs = GetCurrentController()->ResourceService();
 		response.defaultFont = rs->GetDefaultFont();
@@ -17,6 +18,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestControllerGetScreenConfig(vint id)
 	{
+		if (!CanSendEvents()) return;
 		auto primary = screen ? screen : GetCurrentController()->ScreenService()->GetScreen((vint)0);
 		events->RespondControllerGetScreenConfig(id, GetScreenConfig(primary));
 	}
@@ -29,8 +31,7 @@ namespace vl::presentation::remote_renderer
 	{
 		if (window)
 		{
-			disconnectingFromCore = true;
-			window->ReleaseCapture();
+			DisconnectFromCore();
 			window->Hide(true);
 		}
 	}

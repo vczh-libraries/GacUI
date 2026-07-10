@@ -1705,6 +1705,17 @@ INativeAutomationService
 		class INativeAutomationService : public virtual Interface
 		{
 		public:
+			/// <summary>Availability of <see cref="RunIOCommand"/>.</summary>
+			enum class IOCommandAvailability
+			{
+				/// <summary>IO commands are not available.</summary>
+				Disabled,
+				/// <summary>All IO commands are available.</summary>
+				Enabled,
+				/// <summary>Only the exact command "!Exit" is available. Other commands must return "!Application stopped responding.".</summary>
+				ExitOnly,
+			};
+
 			static INativeAutomationService*		UnavailableService();
 
 			/// <summary>
@@ -1747,11 +1758,11 @@ INativeAutomationService
 			virtual WString							DumpDomTree() = 0;
 
 			/// <summary>
-			/// Test if <see cref="RunIOCommands"/> is available.
+			/// Test how <see cref="RunIOCommand"/> is available.
 			/// This feature only works on GacUI applications, or when remote protocol is in use, the renderer side.
 			/// </summary>
-			/// <returns>Returns true if this function is available. Otherwise it should returns an empty string.</returns>
-			virtual bool							CanRunIOCommands() = 0;
+			/// <returns>Returns Disabled if this function is unavailable. Returns ExitOnly when only "!Exit" is accepted and other commands return "!Application stopped responding.".</returns>
+			virtual IOCommandAvailability			CanRunIOCommands() = 0;
 
 			/// <summary>
 			/// Run an IO command.

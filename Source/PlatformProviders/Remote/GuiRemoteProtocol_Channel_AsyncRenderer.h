@@ -72,6 +72,7 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 		void												BatchWrite(bool& disconnected) override;
 
 		void												SetInvokeInMainThread(IGuiRemoteProtocolAsyncRendererInvoker* _invokeInMainThread);
+		void												Detach();
 	};
 }
 

@@ -34,11 +34,17 @@ namespace vl::presentation::remote_renderer
 		INativeScreen*							screen = nullptr;
 		IGuiRemoteProtocolEvents*				events = nullptr;
 		bool									disconnectingFromCore = false;
+		bool									stoppedByFatalError = false;
+		Nullable<WString>						fatalError;
+		WString									titleBeforeFatalError;
 
 		bool									updatingBounds = false;
 		remoteprotocol::WindowSizingConfig		windowSizingConfig;
 		NativeSize								suggestedMinSize;
 
+		bool									CanSendEvents();
+		void									ClearPendingCoreEvents();
+		void									DisconnectFromCore();
 		remoteprotocol::ScreenConfig			GetScreenConfig(INativeScreen* screen);
 		remoteprotocol::WindowSizingConfig		GetWindowSizingConfig();
 		void									UpdateConfigsIfNecessary();
@@ -109,8 +115,12 @@ namespace vl::presentation::remote_renderer
 		bool									supressRefresh = false;		// true to supress repainting in INativeControllerListener::GlobalTimer event
 		bool									supressPaint = false;		// true to not handling INativeWindowListener::Paint event
 		bool									needRefresh = false;
+		Ptr<elements::GuiSolidBackgroundElement>	fatalMaskElement;
+		Ptr<elements::GuiSolidLabelElement>		fatalTextElement;
 
 		void									UpdateRenderTarget(elements::IGuiGraphicsRenderTarget* rt);
+		void									EnsureFatalOverlayElements(elements::IGuiGraphicsRenderTarget* rt);
+		void									RenderFatalOverlay(elements::IGuiGraphicsRenderTarget* rt);
 		void									RenderDom(Ptr<remoteprotocol::RenderingDom> dom, elements::IGuiGraphicsRenderTarget* rt);
 		void									HitTestInternal(Ptr<remoteprotocol::RenderingDom> dom, Point location, Nullable<INativeWindowListener::HitTestResult>& hitTestResult, Nullable<INativeCursor::SystemCursorType>& cursorType);
 		void									HitTest(Ptr<remoteprotocol::RenderingDom> dom, Point location, INativeWindowListener::HitTestResult& hitTestResult, INativeCursor*& cursor);
@@ -165,6 +175,8 @@ namespace vl::presentation::remote_renderer
 		void									RegisterMainWindow(INativeWindow* _window);
 		void									UnregisterMainWindow();
 		void									ForceExitByFatelError();
+		void									RequestCoreForceExitByFatalError();
+		void									RetainByFatalError(const WString& errorMessage);
 
 		WString									GetExecutablePath() override;
 		void									Initialize(IGuiRemoteProtocolEvents* _events) override;

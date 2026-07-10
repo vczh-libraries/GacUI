@@ -59,7 +59,8 @@ namespace vl
 			RemoteProtocolAutomationService();
 			~RemoteProtocolAutomationService();
 
-			bool								CanRunIOCommands() override;
+			INativeAutomationService::IOCommandAvailability
+												CanRunIOCommands() override;
 		};
 
 		/*

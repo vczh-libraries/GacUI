@@ -32,6 +32,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererCreated(const Ptr<collections::List<remoteprotocol::RendererCreation>>& arguments)
 	{
+		if (disconnectingFromCore) return;
 		supressRefresh = true;
 		if (arguments)
 		{
@@ -105,6 +106,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererDestroyed(const Ptr<collections::List<vint>>& arguments)
 	{
+		if (disconnectingFromCore) return;
 		supressRefresh = true;
 		if (arguments)
 		{
@@ -124,6 +126,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments)
 	{
+		if (disconnectingFromCore) return;
 		supressRefresh = true;
 		if (arguments.updatedElements)
 		{
@@ -180,6 +183,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererEndRendering(vint id)
 	{
+		if (!CanSendEvents()) return;
 		supressRefresh = false;
 		if (needRefresh)
 		{
@@ -202,6 +206,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererRenderDom(const Ptr<remoteprotocol::RenderingDom>& arguments)
 	{
+		if (disconnectingFromCore) return;
 		renderingDom = arguments;
 		if (renderingDom)
 		{
@@ -212,6 +217,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererRenderDomDiff(const remoteprotocol::RenderingDom_DiffsInOrder& arguments)
 	{
+		if (disconnectingFromCore) return;
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererRenderDomDiff(const RenderingDom_DiffsInOrder&)#"
 		CHECK_ERROR(renderingDom, ERROR_MESSAGE_PREFIX L"This function must be called after RequestRendererRenderDom.");
 
@@ -226,6 +232,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments)
 	{
+		if (disconnectingFromCore) return;
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererBeginBoundary(const ElementBoundary&)#"
 		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"The current implementation require dom-diff enabled in core side.");
 #undef ERROR_MESSAGE_PREFIX
@@ -233,6 +240,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererEndBoundary()
 	{
+		if (disconnectingFromCore) return;
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererEndBoundary()#"
 		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"The current implementation require dom-diff enabled in core side.");
 #undef ERROR_MESSAGE_PREFIX
@@ -240,6 +248,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments)
 	{
+		if (disconnectingFromCore) return;
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererRenderElement(const ElementRendering&)#"
 		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"The current implementation require dom-diff enabled in core side.");
 #undef ERROR_MESSAGE_PREFIX
@@ -255,6 +264,61 @@ namespace vl::presentation::remote_renderer
 		{
 			element->GetRenderer()->SetRenderTarget(rt);
 		}
+		if (fatalMaskElement)
+		{
+			fatalMaskElement->GetRenderer()->SetRenderTarget(rt);
+		}
+		if (fatalTextElement)
+		{
+			fatalTextElement->GetRenderer()->SetRenderTarget(rt);
+		}
+	}
+
+	void GuiRemoteRendererSingle::EnsureFatalOverlayElements(elements::IGuiGraphicsRenderTarget* rt)
+	{
+		if (!fatalMaskElement)
+		{
+			fatalMaskElement = Ptr(GuiSolidBackgroundElement::Create());
+			fatalMaskElement->SetColor(Color(255, 255, 255, 128));
+		}
+		if (!fatalTextElement)
+		{
+			fatalTextElement = Ptr(GuiSolidLabelElement::Create());
+			auto font = GetCurrentController()->ResourceService()->GetDefaultFont();
+			if (font.size < 14)
+			{
+				font.size = 14;
+			}
+			font.bold = true;
+			fatalTextElement->SetFont(font);
+			fatalTextElement->SetColor(Color(128, 0, 0));
+			fatalTextElement->SetMultiline(true);
+			fatalTextElement->SetWrapLine(true);
+			fatalTextElement->SetAlignments(Alignment::Center, Alignment::Center);
+		}
+		fatalMaskElement->GetRenderer()->SetRenderTarget(rt);
+		fatalTextElement->GetRenderer()->SetRenderTarget(rt);
+	}
+
+	void GuiRemoteRendererSingle::RenderFatalOverlay(elements::IGuiGraphicsRenderTarget* rt)
+	{
+		if (!stoppedByFatalError || !fatalError) return;
+
+		EnsureFatalOverlayElements(rt);
+		fatalTextElement->SetText(fatalError.Value());
+
+		auto bounds = Rect(Point(0, 0), window->Convert(window->GetClientSize()));
+		fatalMaskElement->GetRenderer()->Render(bounds);
+
+		auto textBounds = bounds;
+		if (textBounds.Width() > 32 && textBounds.Height() > 32)
+		{
+			textBounds.x1 += 16;
+			textBounds.y1 += 16;
+			textBounds.x2 -= 16;
+			textBounds.y2 -= 16;
+		}
+		fatalTextElement->GetRenderer()->Render(textBounds);
 	}
 
 	void GuiRemoteRendererSingle::RenderDom(Ptr<remoteprotocol::RenderingDom> dom, elements::IGuiGraphicsRenderTarget* rt)
@@ -357,7 +421,11 @@ namespace vl::presentation::remote_renderer
 		supressPaint = true;
 		auto rt = GetGuiGraphicsResourceManager()->GetRenderTarget(window);
 		rt->StartRendering();
-		RenderDom(renderingDom, rt);
+		if (renderingDom)
+		{
+			RenderDom(renderingDom, rt);
+		}
+		RenderFatalOverlay(rt);
 		auto result = rt->StopRendering();
 		window->RedrawContent();
 		supressPaint = false;
@@ -380,13 +448,20 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::GlobalTimer()
 	{
-		DateTime now = DateTime::UtcTime();
-		if (now.osMilliseconds - lastCaretTime >= CaretInterval)
+		if (!disconnectingFromCore)
 		{
-			lastCaretTime = now.osMilliseconds;
-			OnCaretNotify();
+			DateTime now = DateTime::UtcTime();
+			if (now.osMilliseconds - lastCaretTime >= CaretInterval)
+			{
+				lastCaretTime = now.osMilliseconds;
+				OnCaretNotify();
+			}
+			SendAccumulatedMessages();
 		}
-		SendAccumulatedMessages();
+		else
+		{
+			ClearPendingCoreEvents();
+		}
 
 		// Between any element destroying, element creating, start rendering
 		// and end rendering
@@ -395,7 +470,7 @@ namespace vl::presentation::remote_renderer
 		if (!needRefresh) return;
 		needRefresh = false;
 		if (!window) return;
-		if (!renderingDom) return;
+		if (!renderingDom && !stoppedByFatalError) return;
 		ForceRender();
 	}
 
