@@ -209,6 +209,7 @@
 ../../GacUISrc/Generated_DarkSkin/Source_x64/DarkSkinReflection.cpp
 ../../GacUISrc/Generated_DarkSkin/Source_x64/DarkSkinResource.cpp
 ../../GacUISrc/UnitTest/Main.cpp
+../../GacUISrc/UnitTest/TestAutomationService.cpp
 ../../GacUISrc/UnitTest/TestApplication_Dialog_Color.cpp
 ../../GacUISrc/UnitTest/TestApplication_Dialog_File.cpp
 ../../GacUISrc/UnitTest/TestApplication_Dialog_Font.cpp
