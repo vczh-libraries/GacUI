@@ -7,8 +7,8 @@
 - Don’t schedule redundant idle frames [7]
 - Preserve existing idle-frame titles when requested [6]
 - Seed key-behavior tests via `protocol->TypeString` [6]
+- Debug remote core/renderer stress runs instead of plain launching [5]
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
-- Debug remote core/renderer stress runs instead of plain launching [4]
 - Caret navigation tests: type markers to expose caret [3]
 - Avoid duplicate tests across related categories [3]
 - Account for eager child preparation in item-provider tests [2]
@@ -25,6 +25,8 @@
 - Verify GacJS HTTP fatal errors through browser UI [2]
 - Validate GacJS RPT through browser UI interactions [2]
 - Validate imported dependency APIs with GacUI build and unit test [2]
+- Verify `/IO` synchronous errors and queued success separately [2]
+- Native modal dialogs block GacUI HTTP automation [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
 - Skip callback plumbing when not asserting callbacks [1]
@@ -63,8 +65,6 @@
 - Prefer single cohesive smoke tests when setup-heavy [1]
 - Inline-object caret tests: cover every valid caret position one frame at a time [1]
 - Verify remoting imports with both HTTP and named-pipe flows [1]
-- Verify `/IO` syntax errors and queued success separately [1]
-- Native modal dialogs block GacUI HTTP automation [1]
 - Verify DarkSkin cursor ownership through regression and Playground automation [1]
 
 # Refinements
@@ -360,6 +360,8 @@ For `/Http /FCT` or renderer-communication validation, launch both core and rend
 
 For the HTTP FullControlTest remoting pair, pass `/Http /FCT` to `RemotingTest_Core` and only `/Http` to `RemotingTest_Rendering_Win32`; `/FCT` is core-side scenario selection. Closing the visible renderer window gently should make the renderer exit first and then the core exit after observing the disconnect.
 
+For retained-fatal RemoteProtocolTest behavior, start `RemotingTest_Core` first with `/RPT /Pipe` or `/RPT /Http`, then start `RemotingTest_Rendering_Win32` with the matching transport, with both processes under the debugger. Verify the default Yes path preserves the old exit behavior. Verify No keeps the renderer locally closeable with its frozen DOM and fatal error, rejects ordinary `/IO` synchronously, and still accepts exact `!Exit`; also cover title-bar close, resize/minimize/restore, repeated fresh sessions, and absence of stale processes.
+
 ## Verify GacJS HTTP fatal errors through browser UI
 
 For the HTTP browser remoting path, verify fatal core errors by running `RemotingTest_Core /RPT /Http`, opening GacJS in the browser, triggering the fatal-error UI path, and checking that the browser receives the `!Error` package and displays the error mask/alert. Seeing only a fetch failure or closed transport is not sufficient.
@@ -394,13 +396,15 @@ When importing both `VlppOS` and `Workflow` releases for remote protocol work, t
 
 After importing remoting-related dependency releases, verify `RemotingTest_Core` and `RemotingTest_Rendering_Win32` with both HTTP and named-pipe transports. Use the documented RemoteProtocolTest UI shutdown flow and confirm the old named-pipe error dialog does not appear and both core and renderer exit cleanly.
 
-## Verify `/IO` syntax errors and queued success separately
+## Verify `/IO` synchronous errors and queued success separately
 
-When changing GacUI HTTP automation `/IO`, verify both response paths under a debugger-attached app. Send a malformed command such as an invalid mouse coordinate and confirm the HTTP response contains the syntax error synchronously; then send a valid command and confirm the response is `Queued` and the UI changes afterward. For modal workflows, avoid treating `Queued` as completion and inspect `/Controls` or `/Dom` only after the dialog/action has actually finished.
+When changing GacUI HTTP automation `/IO`, verify synchronous error paths separately from queued success under a debugger-attached app. Send a malformed command such as an invalid mouse coordinate and confirm the response contains the syntax error immediately. For restricted modes such as `ExitOnly`, confirm ordinary commands return the exact contract error without queuing work while exact `!Exit` still returns `Queued`. Then send a healthy valid command and confirm the response is `Queued` and the UI changes afterward. For modal workflows, avoid treating `Queued` as completion and inspect `/Controls` or `/Dom` only after the dialog/action has actually finished.
 
 ## Native modal dialogs block GacUI HTTP automation
 
 When a native dialog is open from a GacUI test application, the app's HTTP automation endpoint can block behind the modal loop. Handle the dialog from another process using Win32 enumeration and messages, then resume app-level automation only after the native dialog has been confirmed or canceled. This applies to standard message, color, font, and file dialogs as well as non-standard crash/error windows.
+
+For the renderer fatal-error Yes/No prompt, inspect and operate the `#32770` window from the helper process and confirm Yes is the default. Do not issue renderer HTTP automation while the native prompt is open; dismiss it first, then verify the selected retained or exit policy through `/Dom`, `/IO`, and process state.
 
 ## Verify DarkSkin cursor ownership through regression and Playground automation
 

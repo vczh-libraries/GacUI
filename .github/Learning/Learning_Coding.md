@@ -10,10 +10,12 @@
 - Cache renderer packages until main-thread invoker exists [2]
 - Deliver fatal remote-channel errors before transport shutdown [2]
 - Stop remoting transports before stack channel wrappers destruct [2]
+- Do not call `IChannel::Initialize(nullptr)` to uninstall readers [2]
+- Automation `/IO` parses synchronously and queues parsed commands [2]
 - Remote core accepts replacement renderers by detaching stale renderer [1]
 - Parameterize remoting channel servers by concrete protocol server bases [1]
 - Use channel `localClient` callbacks for remoting local-client detection [1]
-- Do not call `IChannel::Initialize(nullptr)` to uninstall readers [1]
+- Keep reusable renderer terminal state separate from host policy [1]
 - Use `EventObject` for renderer-connection waits after channel server start [1]
 - `TreeViewItemBindableRootProvider::UpdateBindingProperties` is root-scoped [1]
 - Validate `tree::NodeItemProvider::RequestNode` indices [1]
@@ -49,7 +51,6 @@
 - Encapsulate remote inline-object run properties behind query helpers [1]
 - Use Parser2 JSON node list serialization in remote channels [1]
 - Unbox `HttpServerApi::GetUtf8Body` before automation handling [1]
-- Automation `/IO` parses synchronously and queues parsed commands [1]
 - `GuiDocumentCommonInterface` cursor belongs to the document mouse area [1]
 - Automation composition dumps omit default cursor [1]
 - Clear `GacUI_Compiler` preloaded generated resources once at entry [1]
@@ -158,7 +159,11 @@ If a renderer test client exits after the channel is already disconnected, mark 
 
 ## Do not call `IChannel::Initialize(nullptr)` to uninstall readers
 
-Treat `IChannel::Initialize(...)` as an install-only boundary. To shut down or detach a remote channel, clear/detach the async wrapper state and stop the transport instead of calling `Initialize(nullptr)` as an implicit uninstaller.
+Treat `IChannel::Initialize(...)` as an install-only boundary. To detach a renderer reader, use an explicit async-wrapper operation such as `GuiRemoteProtocolAsyncJsonChannelRenderer::Detach()`, which clears the reader and queued messages without pretending to reinitialize the channel. Keep renderer-local protocol cleanup separate from raw network shutdown, and stop the transport only at the layer that actually owns its lifetime.
+
+## Keep reusable renderer terminal state separate from host policy
+
+Put reusable disconnected-but-visible behavior in `GuiRemoteRendererSingle`: it owns renderer-local stopped state, suppression of core-bound events, preserved DOM/rendering state, and permission for local close. Keep application-specific interaction, such as the native Yes/No policy and error titles, in the renderer host application (`RemotingTest_Rendering_Win32`). Renderer-only automation state such as a retained fatal error belongs in `AutomationServiceRenderer`, not in the platform-wide `INativeAutomationService` interface.
 
 ## Use `EventObject` for renderer-connection waits after channel server start
 
@@ -276,6 +281,8 @@ Remote paragraph query handlers should not directly inspect wrapper internals su
 ## Automation `/IO` parses synchronously and queues parsed commands
 
 For Windows HTTP automation `/IO`, keep syntax parsing inside `INativeAutomationService::RunIOCommand` on the HTTP response path so malformed commands return a concrete syntax error immediately. In `RunIOCommandOnNativeWindow`, parse into explicit command structs under the `iocommands` namespace, store them in an `IOCommand` `Variant`, and queue only parsed command execution through `INativeAsyncService::InvokeInMainThread`. Successful commands should return `Queued`, not `Executed`, because modal dialogs or native listener callbacks may complete later.
+
+Enforce partial IO availability at the shared service boundary on every call, not only in an endpoint capability check. For `IOCommandAvailability::ExitOnly`, `AutomationServiceBase::RunIOCommand` forwards only exact `!Exit`; every other command returns the specified synchronous error without queuing work. Endpoint layers should treat only `Disabled` as unsupported and still call `RunIOCommand` for `ExitOnly`.
 
 ## `GuiDocumentCommonInterface` cursor belongs to the document mouse area
 
