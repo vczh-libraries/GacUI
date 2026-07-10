@@ -70,4 +70,7 @@ I will put my reply here
     - Potential synchronization and multi-threading issues.
     - Potential performance issues.
 - Take into accounts of my replies to all review comments.
-- If you find the task is not detailed enough, add your finding to the `## DETAILS` section before `## REVIEW COMMENTS`.
+- Expand missing details:
+  - Verification would be the most important part of the task. If the original task do not have, or only has a simple verification step, you need to add detailes to the `## VERIFICATION` before `## REVIEW COMMENTS`.
+  - If you find the task is not detailed enough, add your finding to the `## DETAILS` section before `## REVIEW COMMENTS`.
+  - If the original task is organized in a multi-task form, `## DETAILS` and `## VERIFICATION` would become `### DETAILS` and `### VERIFICATION` at the end of every separated tasks.
