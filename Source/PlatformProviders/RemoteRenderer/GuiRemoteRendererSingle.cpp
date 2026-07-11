@@ -123,6 +123,8 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::AfterClosing()
 	{
+		fatalMaskElement = nullptr;
+		fatalTextElement = nullptr;
 		renderingDom = nullptr;
 		focusedParagraphElements.Clear();
 		availableElements.Clear();
