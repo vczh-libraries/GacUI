@@ -3,12 +3,17 @@ USE_GCC?=NO
 
 # add "--stdlib=libc++" after bug #808086 is fixed
 
+CPP_PLATFORM_LINK_OPTIONS=
+ifeq ($(shell uname -s),Darwin)
+CPP_PLATFORM_LINK_OPTIONS=-framework CoreFoundation
+endif
+
 ifeq ($(USE_GCC), YES)
-CPP_LINK=g++ -std=c++20 -g -pthread $(CPP_LINK_OPTIONS) -o $@ $^
+CPP_LINK=g++ -std=c++20 -g -pthread $(CPP_LINK_OPTIONS) $(CPP_PLATFORM_LINK_OPTIONS) -o $@ $^
 else ifeq ($(COVERAGE),NO)
-CPP_LINK=clang++ -std=c++20 -pthread -g $(CPP_COMPILE_OPTIONS) -o $@ $^
+CPP_LINK=clang++ -std=c++20 -pthread -g $(CPP_COMPILE_OPTIONS) $(CPP_LINK_OPTIONS) $(CPP_PLATFORM_LINK_OPTIONS) -o $@ $^
 else
-CPP_LINK=clang++ -std=c++20 -pthread -g --coverage $(CPP_LINK_OPTIONS) -o $@ $^
+CPP_LINK=clang++ -std=c++20 -pthread -g --coverage $(CPP_LINK_OPTIONS) $(CPP_PLATFORM_LINK_OPTIONS) -o $@ $^
 endif
 
 ifeq ($(USE_GCC), YES)
