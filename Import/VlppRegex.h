@@ -45,7 +45,7 @@ Data Structure
 ***********************************************************************/
 
 		/// <summary>A sub string of the string that a <see cref="Regex"/> is matched against.</summary>
-		/// <typeparam name="T>The character type.</typeparam>
+		/// <typeparam name="T">The encoded code-unit type.</typeparam>
 		template<typename T>
 		class RegexString_ : public Object
 		{
@@ -68,13 +68,13 @@ Data Structure
 				}
 			}
 
-			/// <summary>The position of the input string in characters.</summary>
+			/// <summary>The position in the input string in encoded code units of <typeparamref name="T"/>.</summary>
 			/// <returns>The position.</returns>
 			vint Start() const { return start; }
-			/// <summary>The size of the sub string in characters.</summary>
+			/// <summary>The size of the sub string in encoded code units of <typeparamref name="T"/>.</summary>
 			/// <returns>The size.</returns>
 			vint Length() const { return length; }
-			/// <summary>Get the sub string as a <see cref="U32String"/>.</summary>
+			/// <summary>Get the sub string as an <see cref="ObjectString"/> of <typeparamref name="T"/>.</summary>
 			/// <returns>The sub string.</returns>
 			const ObjectString<T>& Value() const { return value; }
 
@@ -85,7 +85,7 @@ Data Structure
 		};
 
 		/// <summary>A match produces by a <see cref="Regex"/>.</summary>
-		/// <typeparam name="T>The character type.</typeparam>
+		/// <typeparam name="T">The encoded code-unit type.</typeparam>
 		template<typename T>
 		class RegexMatch_ : public Object
 		{
@@ -409,31 +409,31 @@ Tokenizer
 ***********************************************************************/
 
 		/// <summary>A token.</summary>
-		/// <typeparam name="T>The character type.</typeparam>
+		/// <typeparam name="T">The encoded code-unit type.</typeparam>
 		template<typename T>
 		struct RegexToken_
 		{
-			/// <summary>Position in the input string in characters.</summary>
+			/// <summary>Position in the input string in encoded code units of <typeparamref name="T"/>.</summary>
 			vint										start;
-			/// <summary>Size of this token in characters.</summary>
+			/// <summary>Size of this token in encoded code units of <typeparamref name="T"/>.</summary>
 			vint										length;
 			/// <summary>The token id, begins at 0, represents the regular expression in the list (the first argument in the contructor of <see cref="RegexLexer"/>) that matches this token. -1 means this token is produced by an error.</summary>
 			vint										token;
 			/// <summary>The pointer to where this token starts in the input string .</summary>
-			/// <remarks>This pointer comes from a <see cref="U32String"/> that used to be analyzed. You should keep a variable to that string alive, so that to keep this pointer alive.</remarks>
+			/// <remarks>This pointer comes from an <see cref="ObjectString"/> that is being analyzed. Keep that string alive to keep this pointer valid.</remarks>
 			const T*									reading;
 			/// <summary>The "codeIndex" argument from [M:vl.regex.RegexLexer.Parse].</summary>
 			vint										codeIndex;
 			/// <summary>True if this token is complete. False if this token does not end here. This could happend when colorizing a text line by line.</summary>
 			bool										completeToken;
 
-			/// <summary>Row number of the first character, begins at 0.</summary>
+			/// <summary>Row number of the first encoded code unit, begins at 0.</summary>
 			vint										rowStart;
-			/// <summary>Column number of the first character, begins at 0.</summary>
+			/// <summary>Column number of the first encoded code unit, begins at 0.</summary>
 			vint										columnStart;
-			/// <summary>Row number of the last character, begins at 0.</summary>
+			/// <summary>Row number of the last encoded code unit, begins at 0.</summary>
 			vint										rowEnd;
-			/// <summary>Column number of the last character, begins at 0.</summary>
+			/// <summary>Column number of the last encoded code unit, begins at 0.</summary>
 			vint										columnEnd;
 
 			bool operator==(const RegexToken_<T>& _token)const
@@ -446,12 +446,12 @@ Tokenizer
 		struct RegexProcessingToken
 		{
 			/// <summary>
-			/// The read only start position of the token.
+			/// The read only start position of the token in the same encoded code units as the callback buffer.
 			/// This value will be -1 if <see cref="interTokenState"/> is not null.
 			/// </summary>
 			const vint									start;
 			/// <summary>
-			/// The length of the token, allowing to be updated by the callback.
+			/// The length of the token in the same encoded code units as the callback buffer, allowing to be updated by the callback.
 			/// When the callback returns, the length is not allowed to be decreased.
 			/// This value will be -1 if <see cref="interTokenState"/> is not null.
 			/// </summary>
@@ -491,7 +491,7 @@ Tokenizer
 		using RegexTokenColorizeProc =  void(*)(void* argument, vint start, vint length, vint token);
 
 		/// <summary>Callback procedures</summary>
-		/// <typeparam name="T>The character type.</typeparam>
+		/// <typeparam name="T">The encoded code-unit type of callback buffers and lengths.</typeparam>
 		template<typename T>
 		struct RegexProc_
 		{
@@ -504,7 +504,7 @@ Tokenizer
 			/// <summary>
 			/// <p>The token extend callback. It is called after recognizing any token, and run a customized procedure to modify the token based on the given context.</p>
 			/// <p>If the length parameter is -1, it means the caller does not measure the incoming text buffer, which automatically indicates that the buffer is null-terminated.</p>
-			/// <p>If the length parameter is not -1, it means the number of available characters in the buffer.</p>
+			/// <p>If the length parameter is not -1, it means the number of available encoded code units of <typeparamref name="T"/> in the buffer.</p>
 			/// <p>The completeText parameter could be true or false. When it is false, it means that the buffer does not contain all the text.</p>
 			/// </summary>
 			/// <remarks>
@@ -533,11 +533,11 @@ Tokenizer
 			/// The first argument is <see cref="argument"/>.
 			/// </p>
 			/// <p>
-			/// The second argument is a pointer to the buffer of the first character in this token.
-			/// If the previous token is incomplete, then the buffer begins at the first character of the new buffer.
+			/// The second argument is a pointer to the first encoded code unit of this token.
+			/// If the previous token is incomplete, then the buffer begins at the first encoded code unit of the new buffer.
 			/// </p>
 			/// <p>
-			/// The third argument is the length of the recognized token in characters.
+			/// The third argument is the length of the recognized token in encoded code units of <typeparamref name="T"/>.
 			/// </p>
 			/// <p>
 			/// The fourth character indicates if the token is completed.
@@ -686,10 +686,10 @@ Tokenizer
 			/// The first argument is <see cref="argument"/>.
 			/// </p>
 			/// <p>
-			/// The second argument is the position of the first character of the token in characters.
+			/// The second argument is the position of the first encoded code unit of the token.
 			/// </p>
 			/// <p>
-			/// The third argument is the length of the recognized token in characters.
+			/// The third argument is the length of the recognized token in encoded code units of <typeparamref name="T"/>.
 			/// </p>
 			/// <p>
 			/// The fourth character is the regular expression in the list (the first argument in the contructor of <see cref="RegexLexer"/>) that matches this token.
@@ -703,7 +703,7 @@ Tokenizer
 		};
 
 		/// <summary>Token collection representing the result from the lexical analyzer. Call <see cref="RegexLexer::Parse"/> to create this object.</summary>
-		/// <typeparam name="T>The character type.</typeparam>
+		/// <typeparam name="T">The encoded code-unit type of the tokenized text.</typeparam>
 		/// <example><![CDATA[
 		/// int main()
 		/// {
@@ -776,7 +776,7 @@ RegexLexerWalker
 ***********************************************************************/
 		
 		/// <summary>A type for walking through a text against a <see cref="RegexLexer"/>. Call <see cref="RegexLexer::Walk"/> to create this object.</summary>
-		/// <typeparam name="T>The character type.</typeparam>
+		/// <typeparam name="T">The encoded code-unit type accepted by <see cref="Walk"/> and range-based APIs.</typeparam>
 		/// <example><![CDATA[
 		/// int main()
 		/// {
@@ -787,13 +787,13 @@ RegexLexerWalker
 		///     tokenDefs.Add(L"/s+");
 		/// 
 		///     RegexLexer lexer(tokenDefs);
-		///     RegexLexerWalker walker = lexer.Walk();
+		///     auto walker = lexer.Walk<char8_t>();
 		/// 
-		///     WString input = L"This book costs 2.5. That book costs 2.";
-		///     const wchar_t* reading = input.Buffer();
+		///     U8String input = u8"This \U0002605A book costs 2.5. That book costs 2.";
+		///     const char8_t* reading = input.Buffer();
 		/// 
-		///     const wchar_t* tokenBegin = reading;
-		///     const wchar_t* tokenEnd = nullptr;
+		///     const char8_t* tokenBegin = reading;
+		///     const char8_t* tokenEnd = nullptr;
 		///     vint tokenId = -1;
 		/// 
 		///     vint state = walker.GetStartState();
@@ -810,7 +810,7 @@ RegexLexerWalker
 		///             {
 		///                 if (tokenBegin == tokenEnd)
 		///                 {
-		///                     Console::WriteLine(L"Recognized token: " + itow(tokenId) + L": <" + WString(*tokenBegin) + L">");
+		///                     Console::WriteLine(L"Recognized token: " + itow(tokenId) + L": <" + u8tow(U8String::FromChar(*tokenBegin)) + L">");
 		///                     tokenBegin = reading;
 		///                     tokenEnd = nullptr;
 		///                     tokenId = -1;
@@ -818,7 +818,7 @@ RegexLexerWalker
 		///                 }
 		///                 else
 		///                 {
-		///                     Console::WriteLine(L"Recognized token: " + itow(tokenId) + L": <" + WString(tokenBegin, tokenEnd - tokenBegin) + L">");
+		///                     Console::WriteLine(L"Recognized token: " + itow(tokenId) + L": <" + u8tow(U8String::CopyFrom(tokenBegin, tokenEnd - tokenBegin)) + L">");
 		///                     tokenBegin = reading = tokenEnd;
 		///                     tokenEnd = nullptr;
 		///                     tokenId = -1;
@@ -827,8 +827,8 @@ RegexLexerWalker
 		///             }
 		///             else
 		///             {
-		///                 Console::WriteLine(L"Unrecognized character: <" + WString(*tokenBegin) + L">");
-		///                 tokenBegin++;
+		///                 Console::WriteLine(L"Unrecognized character: <" + u8tow(U8String::CopyFrom(tokenBegin, reading - tokenBegin)) + L">");
+		///                 tokenBegin = reading;
 		///                 state = walker.GetStartState();
 		///             }
 		///         }
@@ -844,9 +844,16 @@ RegexLexerWalker
 		class RegexLexerWalker_ : public Object
 		{
 			friend class RegexLexerBase_;
+			template<typename U>
+			friend class RegexLexerColorizer_;
 		protected:
 			regex_internal::PureInterpretor*			pure;
 			const collections::Array<vint>&				stateTokens;
+			mutable T								readingBuffer[6] = {};
+			mutable vint							readingLength = 0;
+
+			vint									ReadInput(T input, char32_t& scalar)const;
+			void									WalkScalar(char32_t input, vint& state, vint& token, bool& finalState, bool& previousTokenStop)const;
 			
 			RegexLexerWalker_(regex_internal::PureInterpretor* _pure, const collections::Array<vint>& _stateTokens);
 		public:
@@ -855,18 +862,18 @@ RegexLexerWalker
 			
 			/// <summary>Get the start DFA state number, which represents the correct state before parsing any input.</summary>
 			/// <returns>The DFA state number.</returns>
-			/// <remarks>When calling <see cref="Walk"/> for the first character, the return value should be passed to the second parameter.</remarks>
+			/// <remarks>When calling <see cref="Walk"/> for the first encoded code unit, the return value should be passed to the second parameter.</remarks>
 			vint										GetStartState()const;
 			/// <summary>Test if this state can only lead to the end of one kind of token.</summary>
 			/// <returns>Returns the token index if this state can only lead to the end of one kind of token. Returns -1 if not.</returns>
 			/// <param name="state">The DFA state number.</param>
 			vint										GetRelatedToken(vint state)const;
-			/// <summary>Step forward by one character.</summary>
-			/// <param name="input">The input character.</param>
+			/// <summary>Step forward by one encoded code unit.</summary>
+			/// <param name="input">One encoded code unit of <typeparamref name="T"/>.</param>
 			/// <param name="state">The current state. Returns the new current state when this function returns.</param>
 			/// <param name="token">Returns the token index at the end of the token.</param>
 			/// <param name="finalState">Returns true if it reach the end of the token.</param>
-			/// <param name="previousTokenStop">Returns true if the previous character is the end of the token.</param>
+			/// <param name="previousTokenStop">Returns true if the previous Unicode scalar is the end of the token.</param>
 			/// <remarks>
 			/// <p>
 			/// The "finalState" argument is important.
@@ -878,18 +885,22 @@ RegexLexerWalker
 			/// </p>
 			/// <p>
 			/// See the example for <see cref="RegexLexerWalker"/> about how to use this function.
+			/// Code units are buffered until they form one Unicode scalar, and the DFA advances only when the scalar is complete.
+			/// Before that, <paramref name="state"/> is unchanged, <paramref name="token"/> is -1, and both boolean outputs are false.
+			/// One walker instance processes one sequential encoded input stream; do not interleave code units from different streams.
+			/// The input must contain valid, complete UTF sequences.
 			/// </p>
 			/// </remarks>
 			void										Walk(T input, vint& state, vint& token, bool& finalState, bool& previousTokenStop)const;
-			/// <summary>Step forward by one character.</summary>
+			/// <summary>Step forward by one encoded code unit.</summary>
 			/// <returns>Returns the new current state. It is used to walk the next character.</returns>
-			/// <param name="input">The input character.</param>
+			/// <param name="input">One encoded code unit of <typeparamref name="T"/>.</param>
 			/// <param name="state">The current state.</param>
 			vint										Walk(T input, vint state)const;
 			/// <summary>Test if the input text is a closed token.</summary>
 			/// <returns>Returns true if the input text is a closed token.</returns>
 			/// <param name="input">The input text.</param>
-			/// <param name="length">Size of the input text in characters.</param>
+			/// <param name="length">Size of the input text in encoded code units of <typeparamref name="T"/>.</param>
 			/// <remarks>
 			/// <p>
 			/// A closed token means that,
@@ -994,7 +1005,7 @@ RegexLexerColorizer
 ***********************************************************************/
 
 		/// <summary>Lexical colorizer. Call <see cref="RegexLexer::Colorize"/> to create this object.</summary>
-		/// <typeparam name="T>The character type.</typeparam>
+		/// <typeparam name="T">The encoded code-unit type of colorized buffers and callbacks.</typeparam>
 		/// <example><![CDATA[
 		/// int main()
 		/// {
@@ -1060,6 +1071,8 @@ RegexLexerColorizer
 				vint									currentState = -1;
 				vint									interTokenId = -1;
 				void*									interTokenState = nullptr;
+				T									readingBuffer[6] = {};
+				vint									readingLength = 0;
 			};
 
 		protected:
@@ -1094,17 +1107,17 @@ RegexLexerColorizer
 			/// <summary>Restore the colorizer to a specified state.</summary>
 			/// <param name="state">The state to restore.</param>
 			void										SetInternalState(InternalState state);
-			/// <summary>Step forward by one character.</summary>
-			/// <param name="input">The input character.</param>
-			/// <remarks>Callbacks in <see cref="RegexProc"/> will be called <b>except colorizeProc</b>, which is from the second argument of the constructor of <see cref="RegexLexer"/>.</remarks>
+			/// <summary>Step forward by one encoded code unit without invoking the color callback.</summary>
+			/// <param name="input">One encoded code unit of <typeparamref name="T"/>.</param>
+			/// <remarks>Code units passed consecutively are buffered until one Unicode scalar is complete. Callbacks in <see cref="RegexProc"/> are invoked with the complete encoded source cluster <b>except colorizeProc</b>, which is from the second argument of the constructor of <see cref="RegexLexer"/>.</remarks>
 			void										Pass(T input);
-			/// <summary>Get the start DFA state number, which represents the correct state before colorizing any characters.</summary>
+			/// <summary>Get the start DFA state number, which represents the correct state before colorizing any encoded code units.</summary>
 			/// <returns>The DFA state number.</returns>
 			vint										GetStartState()const;
 			/// <summary>Colorize a text.</summary>
 			/// <returns>An inter token state at the end of this line. It could be the same object to which is returned from the previous call.</returns>
 			/// <param name="input">The text to colorize.</param>
-			/// <param name="length">Size of the text in characters.</param>
+			/// <param name="length">Size of the text in encoded code units of <typeparamref name="T"/>.</param>
 			/// <remarks>
 			/// <p>See <see cref="RegexProcessingToken::interTokenState"/> and <see cref="RegexProc::extendProc"/> for more information about the return value.</p>
 			/// <p>Callbacks in <see cref="RegexProc"/> will be called, which is from the second argument of the constructor of <see cref="RegexLexer"/>.</p>
@@ -1126,7 +1139,7 @@ RegexLexer
 			~RegexLexerBase_();
 
 			/// <summary>Tokenize an input text.</summary>
-			/// <typeparam name="T>The character type of the text to parse.</typeparam>
+			/// <typeparam name="T">The encoded code-unit type of the text to parse.</typeparam>
 			/// <returns>All tokens, including recognized tokens or unrecognized tokens. For unrecognized tokens, [F:vl.regex.RegexToken.token] will be -1.</returns>
 			/// <param name="code">The text to tokenize.</param>
 			/// <param name="proc">Configuration of all callbacks.</param>
@@ -1271,6 +1284,7 @@ Template Instantiation
 }
 
 #endif
+
 
 /***********************************************************************
 .\REGEXCHARREADER.H

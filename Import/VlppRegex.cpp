@@ -489,7 +489,10 @@ RegexTokens_<T>
 
 						if (id == -1)
 						{
-							result.length = 1;
+							encoding::UtfStringToStringReader<T, char32_t> reader(reading);
+							reader.Read();
+							result.length = reader.SourceCluster().size;
+							CHECK_ERROR(result.length > 0, L"RegexTokenEnumerator::Next()#The input must contain valid, complete UTF sequences.");
 						}
 						else
 						{
@@ -636,7 +639,12 @@ RegexLexerWalker_<T>
 		RegexLexerWalker_<T>::RegexLexerWalker_(const RegexLexerWalker_<T>& tokens)
 			: pure(tokens.pure)
 			, stateTokens(tokens.stateTokens)
+			, readingLength(tokens.readingLength)
 		{
+			for (vint i = 0; i < readingLength; i++)
+			{
+				readingBuffer[i] = tokens.readingBuffer[i];
+			}
 		}
 
 		template<typename T>
@@ -653,7 +661,41 @@ RegexLexerWalker_<T>
 		}
 
 		template<typename T>
-		void RegexLexerWalker_<T>::Walk(T input, vint& state, vint& token, bool& finalState, bool& previousTokenStop)const
+		vint RegexLexerWalker_<T>::ReadInput(T input, char32_t& scalar)const
+		{
+			if constexpr (std::is_same_v<T, char32_t>)
+			{
+				scalar = input;
+				return 1;
+			}
+			else
+			{
+				static_assert(encoding::UtfConversion<T>::BufferLength <= 6);
+				CHECK_ERROR(
+					readingLength < encoding::UtfConversion<T>::BufferLength,
+					L"RegexLexerWalker::Walk(T)#The input must contain valid, complete UTF sequences."
+				);
+				readingBuffer[readingLength++] = input;
+				vint length = encoding::UtfConversion<T>::To32(readingBuffer, readingLength, scalar);
+				if (length == -1)
+				{
+					CHECK_ERROR(
+						readingLength < encoding::UtfConversion<T>::BufferLength,
+						L"RegexLexerWalker::Walk(T)#The input must contain valid, complete UTF sequences."
+					);
+					return 0;
+				}
+				CHECK_ERROR(
+					length == readingLength,
+					L"RegexLexerWalker::Walk(T)#The input must contain valid, complete UTF sequences."
+				);
+				readingLength = 0;
+				return length;
+			}
+		}
+
+		template<typename T>
+		void RegexLexerWalker_<T>::WalkScalar(char32_t input, vint& state, vint& token, bool& finalState, bool& previousTokenStop)const
 		{
 			vint previousState = state;
 			token = -1;
@@ -665,7 +707,7 @@ RegexLexerWalker_<T>
 				previousTokenStop = true;
 			}
 
-			state = pure->Transit(static_cast<char32_t>(input), state);
+			state = pure->Transit(input, state);
 			if (state == -1)
 			{
 				previousTokenStop = true;
@@ -676,7 +718,7 @@ RegexLexerWalker_<T>
 				}
 				else if (pure->IsFinalState(previousState))
 				{
-					state = pure->Transit(static_cast<char32_t>(input), pure->GetStartState());
+					state = pure->Transit(input, pure->GetStartState());
 				}
 			}
 			if (pure->IsFinalState(state))
@@ -693,6 +735,17 @@ RegexLexerWalker_<T>
 		}
 
 		template<typename T>
+		void RegexLexerWalker_<T>::Walk(T input, vint& state, vint& token, bool& finalState, bool& previousTokenStop)const
+		{
+			token = -1;
+			finalState = false;
+			previousTokenStop = false;
+			char32_t scalar = 0;
+			if (ReadInput(input, scalar) == 0) return;
+			WalkScalar(scalar, state, token, finalState, previousTokenStop);
+		}
+
+		template<typename T>
 		vint RegexLexerWalker_<T>::Walk(T input, vint state)const
 		{
 			vint token = -1;
@@ -706,9 +759,10 @@ RegexLexerWalker_<T>
 		bool RegexLexerWalker_<T>::IsClosedToken(const T* input, vint length)const
 		{
 			vint state = pure->GetStartState();
-			for (vint i = 0; i < length; i++)
+			encoding::UtfStringRangeToStringRangeReader<T, char32_t> reader(input, length);
+			while (auto c = reader.Read())
 			{
-				state = pure->Transit(static_cast<char32_t>(input[i]), state);
+				state = pure->Transit(c, state);
 				if (state == -1) return true;
 				if (pure->IsDeadState(state)) return true;
 			}
@@ -748,7 +802,40 @@ RegexLexerColorizer_<T>
 		template<typename T>
 		void RegexLexerColorizer_<T>::Pass(T input)
 		{
-			WalkOneToken(&input, 1, 0, false);
+			auto& buffer = internalState.readingBuffer;
+			auto& readingLength = internalState.readingLength;
+			if constexpr (std::is_same_v<T, char32_t>)
+			{
+				buffer[0] = input;
+				readingLength = 1;
+			}
+			else
+			{
+				static_assert(encoding::UtfConversion<T>::BufferLength <= 6);
+				char32_t scalar = 0;
+				CHECK_ERROR(
+					readingLength < encoding::UtfConversion<T>::BufferLength,
+					L"RegexLexerColorizer::Pass(T)#The input must contain valid, complete UTF sequences."
+				);
+				buffer[readingLength++] = input;
+				vint length = encoding::UtfConversion<T>::To32(buffer, readingLength, scalar);
+				if (length == -1)
+				{
+					CHECK_ERROR(
+						readingLength < encoding::UtfConversion<T>::BufferLength,
+						L"RegexLexerColorizer::Pass(T)#The input must contain valid, complete UTF sequences."
+					);
+					return;
+				}
+				CHECK_ERROR(
+					length == readingLength,
+					L"RegexLexerColorizer::Pass(T)#The input must contain valid, complete UTF sequences."
+				);
+			}
+
+			vint length = readingLength;
+			readingLength = 0;
+			WalkOneToken(buffer, length, 0, false);
 		}
 
 		template<typename T>
@@ -767,19 +854,19 @@ RegexLexerColorizer_<T>
 				bool pausedAtTheEnd = token.start + token.length == length && !token.completeToken;
 				CHECK_ERROR(
 					token.completeToken || pausedAtTheEnd,
-					L"RegexLexerColorizer::WalkOneToken(const char32_t*, vint, vint, bool)#The extendProc is not allowed pause before the end of the input."
+					L"RegexLexerColorizer::WalkOneToken(const T*, vint, vint, bool)#The extendProc is not allowed pause before the end of the input."
 				);
 				CHECK_ERROR(
 					token.completeToken || token.token != -1,
-					L"RegexLexerColorizer::WalkOneToken(const char32_t*, vint, vint, bool)#The extendProc is not allowed to pause without a valid token id."
+					L"RegexLexerColorizer::WalkOneToken(const T*, vint, vint, bool)#The extendProc is not allowed to pause without a valid token id."
 				);
 				CHECK_ERROR(
 					oldTokenLength <= token.length,
-					L"RegexLexerColorizer::WalkOneToken(const char32_t*, vint, vint, bool)#The extendProc is not allowed to decrease the token length."
+					L"RegexLexerColorizer::WalkOneToken(const T*, vint, vint, bool)#The extendProc is not allowed to decrease the token length."
 				);
 				CHECK_ERROR(
 					(token.interTokenState == nullptr) == !pausedAtTheEnd,
-					L"RegexLexerColorizer::Colorize(const char32_t*, vint, void*)#The extendProc should return an inter token state object if and only if a valid token does not end at the end of the input."
+					L"RegexLexerColorizer::Colorize(const T*, vint)#The extendProc should return an inter token state object if and only if a valid token does not end at the end of the input."
 				);
 			}
 #endif
@@ -805,15 +892,15 @@ RegexLexerColorizer_<T>
 					bool pausedAtTheEnd = token.length == length && !token.completeToken;
 					CHECK_ERROR(
 						token.completeToken || pausedAtTheEnd,
-						L"RegexLexerColorizer::WalkOneToken(const char32_t*, vint, vint, bool)#The extendProc is not allowed to pause before the end of the input."
+						L"RegexLexerColorizer::WalkOneToken(const T*, vint, vint, bool)#The extendProc is not allowed to pause before the end of the input."
 					);
 					CHECK_ERROR(
 						token.completeToken || token.token == internalState.interTokenId,
-						L"RegexLexerColorizer::WalkOneToken(const char32_t*, vint, vint, bool)#The extendProc is not allowed to continue pausing with a different token id."
+						L"RegexLexerColorizer::WalkOneToken(const T*, vint, vint, bool)#The extendProc is not allowed to continue pausing with a different token id."
 					);
 					CHECK_ERROR(
 						(token.interTokenState == nullptr) == !pausedAtTheEnd,
-						L"RegexLexerColorizer::Colorize(const char32_t*, vint, void*)#The extendProc should return an inter token state object if and only if a valid token does not end at the end of the input."
+						L"RegexLexerColorizer::Colorize(const T*, vint)#The extendProc should return an inter token state object if and only if a valid token does not end at the end of the input."
 					);
 				}
 #endif
@@ -833,12 +920,16 @@ RegexLexerColorizer_<T>
 			vint lastFinalStateState = -1;
 
 			vint tokenStartState = internalState.currentState;
-			for (vint i = start; i < length; i++)
+			encoding::UtfStringRangeToStringRangeReader<T, char32_t> reader(input + start, length - start);
+			while (auto c = reader.Read())
 			{
+				auto cluster = reader.SourceCluster();
+				vint i = start + cluster.index;
+				vint next = i + cluster.size;
 				vint currentToken = -1;
 				bool finalState = false;
 				bool previousTokenStop = false;
-				walker.Walk(input[i], internalState.currentState, currentToken, finalState, previousTokenStop);
+				walker.WalkScalar(c, internalState.currentState, currentToken, finalState, previousTokenStop);
 
 				if (previousTokenStop)
 				{
@@ -858,10 +949,10 @@ RegexLexerColorizer_<T>
 						{
 							if (colorize)
 							{
-								proc.colorizeProc(proc.argument, start, 1, -1);
+								proc.colorizeProc(proc.argument, start, cluster.size, -1);
 							}
 							internalState.currentState = walker.GetStartState();
-							return i + 1;
+							return next;
 						}
 					}
 					else
@@ -877,7 +968,7 @@ RegexLexerColorizer_<T>
 
 				if (finalState)
 				{
-					lastFinalStateLength = i + 1 - start;
+					lastFinalStateLength = next - start;
 					lastFinalStateToken = currentToken;
 					lastFinalStateState = internalState.currentState;
 				}
@@ -905,6 +996,10 @@ RegexLexerColorizer_<T>
 		template<typename T>
 		void* RegexLexerColorizer_<T>::Colorize(const T* input, vint length)
 		{
+			CHECK_ERROR(
+				internalState.readingLength == 0,
+				L"RegexLexerColorizer::Colorize(const T*, vint)#Pass(T) must complete a UTF sequence before colorizing a buffer."
+			);
 			vint index = 0;
 			while (index != length)
 			{
