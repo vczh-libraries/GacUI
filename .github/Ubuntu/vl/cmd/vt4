@@ -15,13 +15,13 @@ function Error {
 }
 
 function Preprocess {
-    PATTERN='^\s*<#@\s*include\s*"([^"]*)"\s*#>\s*$'
+    PATTERN='^[[:space:]]*<#@[[:space:]]*include[[:space:]]*"([^"]*)"[[:space:]]*#>[[:space:]]*$'
     cat $1 | while read -r LINE; do
-        INCLUDE_STAT=`echo "${LINE}" | grep -E ${PATTERN}`
+        INCLUDE_STAT=`echo "${LINE}" | grep -E "${PATTERN}"`
         if [[ "$INCLUDE_STAT" == "" ]]; then
             echo "${LINE}"
         else
-            INCLUDE_FILE=`echo "${LINE}" | sed -r -e 's%'${PATTERN}'%\1%g'`
+            INCLUDE_FILE=`echo "${LINE}" | sed -E -e 's%'${PATTERN}'%\1%g'`
             INCLUDE_DIR=`dirname ${INCLUDE_FILE}`
             INCLUDE_NAME=`basename ${INCLUDE_FILE}`
 
@@ -47,8 +47,8 @@ function Evaluate {
     cat $1 | while read -r LINE; do
         COLUMN_NUMBER=0
 
-        PARTS=`echo $LINE | sed -r -e 's%(<#=\s*|<#\s*|\s*#>)%\n\1\n%g'`
-        PARTS=`echo "$PARTS" | sed -r -e 's%^<#=\s*$%<#=%g;s%^<#\s*$%<#%g;s%^\s*#>$%#>%g'`
+        PARTS=`echo $LINE | sed -E -e 's%(<#=[[:space:]]*|<#[[:space:]]*|[[:space:]]*#>)%\n\1\n%g'`
+        PARTS=`echo "$PARTS" | sed -E -e 's%^<#=[[:space:]]*$%<#=%g;s%^<#[[:space:]]*$%<#%g;s%^[[:space:]]*#>$%#>%g'`
         PURE_COMMAND=1
 
         while read -r PART; do

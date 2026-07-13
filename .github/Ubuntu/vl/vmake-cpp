@@ -9,16 +9,32 @@ for CPP_VCXPROJ_ITEM in "${CPP_VCXPROJS[@]}"; do
 done
 
 # Remove duplicated items (preserve the first occurrence, like LINQ Distinct)
-declare -A __vutil_seen_cpp_files
 __vutil_distinct_cpp_files=()
-for __vutil_cpp_file in "${CPP_FILES[@]}"; do
-    if [ "${__vutil_seen_cpp_files["${__vutil_cpp_file}"]+x}" == "" ]; then
-        __vutil_seen_cpp_files["${__vutil_cpp_file}"]=1
-        __vutil_distinct_cpp_files+=("${__vutil_cpp_file}")
-    fi
-done
+if [ "${BASH_VERSINFO[0]}" -ge 4 ]; then
+    declare -A __vutil_seen_cpp_files
+    for __vutil_cpp_file in "${CPP_FILES[@]}"; do
+        if [ "${__vutil_seen_cpp_files["${__vutil_cpp_file}"]+x}" == "" ]; then
+            __vutil_seen_cpp_files["${__vutil_cpp_file}"]=1
+            __vutil_distinct_cpp_files+=("${__vutil_cpp_file}")
+        fi
+    done
+    unset __vutil_seen_cpp_files
+else
+    for __vutil_cpp_file in "${CPP_FILES[@]}"; do
+        __vutil_cpp_file_exists=0
+        for __vutil_distinct_cpp_file in "${__vutil_distinct_cpp_files[@]}"; do
+            if [ "${__vutil_cpp_file}" == "${__vutil_distinct_cpp_file}" ]; then
+                __vutil_cpp_file_exists=1
+                break
+            fi
+        done
+        if [ "${__vutil_cpp_file_exists}" -eq 0 ]; then
+            __vutil_distinct_cpp_files+=("${__vutil_cpp_file}")
+        fi
+    done
+fi
 CPP_FILES=("${__vutil_distinct_cpp_files[@]}")
-unset __vutil_seen_cpp_files __vutil_distinct_cpp_files __vutil_cpp_file
+unset __vutil_distinct_cpp_files __vutil_cpp_file __vutil_cpp_file_exists __vutil_distinct_cpp_file
 
 for CPP_REMOVE in "${CPP_REMOVES[@]}"; do
     CPP_FILES=(${CPP_FILES[@]/$CPP_REMOVE})
@@ -32,7 +48,7 @@ CPP_FILE_LIST=("${CPP_FILES[@]}")
 printf -v CPP_FILES "%s\n" "${CPP_FILE_LIST[@]}"
 CPP_FILES=${CPP_FILES%?}
 
-O_FILES=`echo "${CPP_FILES}" | sed -r -e 's%([^/]*/)*([^/]+).cpp%./Obj/\2.o%g'`
+O_FILES=`echo "${CPP_FILES}" | sed -E -e 's%([^/]*/)*([^/]+).cpp%./Obj/\2.o%g'`
 O_FILES=`echo ${O_FILES}`
 
 printf "%s\n" "${CPP_FILE_LIST[@]}" > vmake.txt

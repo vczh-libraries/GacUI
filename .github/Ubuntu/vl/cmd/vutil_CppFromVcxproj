@@ -7,13 +7,18 @@ fi
 CONTENT=`cat $1`
 
 # extract all cpp files
-PATTERN='<ClCompile\s+Include="(\$\(MSBuildThisFileDirectory\))?([^"]+.cpp)"\s*/?\s*>'
-COMPILES=`echo "${CONTENT}" | grep -E ${PATTERN}`
-CPPS=`echo "${COMPILES}" | sed -r -e 's%\s*'${PATTERN}'\s*%\2%g'`
+PATTERN='<ClCompile[[:space:]]+Include="(\$\(MSBuildThisFileDirectory\))?([^"]+.cpp)"[[:space:]]*/?[[:space:]]*>'
+COMPILES=`echo "${CONTENT}" | grep -E "${PATTERN}"`
+CPPS=`echo "${COMPILES}" | sed -E -e 's%[[:space:]]*'${PATTERN}'[[:space:]]*%\2%g'`
 
 # refine file names
 CPPS=`echo "${CPPS}" | sed -e 's%[\]%/%g'`
 CPPS=`echo "${CPPS}" | sed -e 's%^%'${PWD}/$(dirname $1)/'%g'`
+if [ "$(uname -s)" == "Darwin" ]; then
+    REALPATH=grealpath
+else
+    REALPATH=realpath
+fi
 echo "${CPPS}" | while read -r CPP; do
-    realpath --relative-to="${PWD}" ${CPP}
+    "${REALPATH}" --relative-to="${PWD}" "${CPP}"
 done

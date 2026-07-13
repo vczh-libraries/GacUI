@@ -8,7 +8,7 @@ function Help {
 
 function Make {
     if [ -a vmake ]; then
-        vt4 --preprocess ./vmake | vt4 --evaluate | ${SHELL} > makefile
+        vt4 --preprocess ./vmake | vt4 --evaluate | "${BASH}" > makefile
     else
         echo "Cannot find ./vmake ."
         exit 1
