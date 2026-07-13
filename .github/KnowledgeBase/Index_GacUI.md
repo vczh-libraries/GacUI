@@ -16,7 +16,7 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 - Use `OnNextIdleFrame(name, callback)` on `UnitTestRemoteProtocol` to register flat frame callbacks; the name describes the already-captured rendering result, and the callback should perform an observable UI-changing action.
 - Use `LocationOf(controlOrComposition)` to compute absolute screen coordinates for input simulation.
 - Use `LClick`, `RClick`, `MClick`, `LDBClick`, `MouseMove` for mouse input simulation.
-- Use `KeyPress`, `KeyDown`, `KeyUp`, `TypeString` for keyboard input simulation.
+- Use `KeyPress`, `_KeyDown`, `_KeyDownRepeat`, `_KeyUp`, and `TypeString` for keyboard input simulation.
 - Use `TryFindObjectByName<T>(window, name)` to look up named controls from GacUI XML resources.
 - Use `GetApplication()->InvokeInMainThread` to defer IO actions that would trigger blocking functions like `ShowDialog`.
 
@@ -30,11 +30,12 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 - The initialization process follows a layered architecture from platform entry points through renderer setup to application framework. It supports:
   - Windows Direct2D/GDI
   - Linux GTK
+  - Wayland/WGac
   - macOS Cocoa
   - remote rendering for testing
   - hosted mode for embedded applications.
-- The system uses a consistent naming pattern `Setup[Platform][Renderer][Mode]()` with standard mode providing full application framework, hosted mode running within a single native window, and raw mode bypassing GuiApplication entirely.
-- Key features include hardware acceleration fallbacks, comprehensive error handling, frame-based unit testing through remote mode, and systematic service registration with proper dependency management.
+- Entry-point names are platform-specific: Windows uses `SetupWindows*`, `SetupHostedWindows*`, and `SetupRawWindows*`; macOS and WGac expose standard and hosted variants; GTK, remote mode, and code generation use their own setup names.
+- Key features include hardware acceleration fallbacks, comprehensive error handling, frame-based unit testing through remote mode, and systematic native-controller service provisioning.
 
 [Design Explanation](./KB_GacUI_Design_PlatformInitialization.md)
 
@@ -63,9 +64,9 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 
 - Core layout system centered on `GuiGraphicsComposition` with measurement (`Layout_CalculateMinSize`) and arrangement (`Layout_CalculateBounds`) passes driven only by host render loop invalidation.
 - Three subclass archetypes (`_Trivial`, `_Controlled`, `_Specialized`) define ownership of size calculation and parent-child constraint propagation.
-- Eight predefined layout families (Bounds, Table, Stack, Flow, Shared Size, Side Aligned, Partial View, Window Root) plus responsive (`GuiResponsive*`) adaptive level-based system.
+- Nine predefined layout families (Bounds, Table, Stack, Flow, Shared Size, Side Aligned, Partial View, Window Root, Repeat) plus the responsive (`GuiResponsive*`) adaptive level-based system.
 - Bidirectional constraints: parent supplies space; children optionally enlarge parent via `Layout_CalculateMinClientSizeForParent`; controlled items receive bounds from parent setters.
-- Invalidation via `InvokeOnCompositionStateChanged`; `GuiGraphicsHost::Render` iteratively recalculates until stable; `ForceCalculateSizeImmediately` only for interactive latency.
+- Invalidation via `InvokeOnCompositionStateChanged` requests rendering; host layout and rendering converge across successive cycles; `ForceCalculateSizeImmediately` is reserved for interactive latency.
 - Responsive compositions add multi-level adaptive switching with aggregation strategies (View, Stack, Group, Fixed) and automatic container adjustment.
 
 [Design Explanation](./KB_GacUI_Design_LayoutAndGuiGraphicsComposition.md)
@@ -75,8 +76,8 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 - Three-layered architecture from composition focus (`GuiGraphicsHost`) through control focus (`GuiControl`) to automatic clearing on state changes.
 - TAB navigation managed by `GuiTabActionManager` with `IGuiTabAction` service, prioritized control list building, wrapping navigation logic, and character suppression.
 - ALT navigation managed by `GuiAltActionManager` with `IGuiAltAction` service, nested ALT host hierarchy (`IGuiAltActionHost`), visual label creation, and prefix-based key filtering.
-- Critical `continue` barrier in `CollectAltActionsFromControl` blocks children from parent-level collection when control has ALT action, enabling nested context pattern.
-- Custom `GetActivatingAltHost` implementations handle non-child relationships (menu popups), intentional blocking (combo boxes), dynamic content (grid editors), and scoped navigation (ribbon groups, date pickers).
+- The `continue` barriers in `CollectAltActionsFromControl` always stop descent at an ALT-action container, and stop at a single ALT action only when it is available and enabled, preserving nested contexts.
+- Custom `GetActivatingAltHost` implementations handle non-child relationships (menu popups), intentional blocking (combo boxes), dynamic content (grid editors whose focus control exposes an available and enabled ALT action), and scoped navigation (ribbon groups, date pickers).
 - Event flow integration processes ALT before TAB in key event chain, with character suppression for both managers in character event chain.
 
 [Design Explanation](./KB_GacUI_Design_ControlFocusSwitchingAndTabAltHandling.md)
@@ -98,9 +99,9 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 #### Adding a New Control
 
 - Coordinated changes across control class definition, template system, theme management, reflection registration, and XML compiler integration.
-- Control class inherits from `GuiControl` and `Description<T>`, specifies template type via macro, overrides lifecycle methods, attaches event handlers to `boundsComposition`, and defines events/properties.
+- A control class inherits from `GuiControl` and `Description<T>`, specifies its template with `GUI_SPECIFY_CONTROL_TEMPLATE_TYPE`, defines the required underscore template hooks used by the macro-generated lifecycle overrides, attaches event handlers to `boundsComposition`, and defines events/properties.
 - Template system with declaration in `GuiControlTemplates.h` using macro expansion, property definition macros, auto-generated implementations including getters/setters/change events.
-- Inheritance pattern for derived controls using parent template as base, selective lifecycle override, and attachment to parent events instead of re-implementing handlers.
+- Derived controls use the parent template as a base, define both underscore template hooks even when empty, optionally override feature hooks such as `OnParentLineChanged`, `OnActiveAlt`, or `IsTabAvailable`, and attach to parent events instead of re-implementing handlers.
 - Reflection registration in three steps: type list addition, control class registration with base/constructor/members, automatic template registration.
 - XML loader registration via `ADD_TEMPLATE_CONTROL` or `ADD_VIRTUAL_CONTROL` for themed variants.
 - Theme integration through `GUI_CONTROL_TEMPLATE_TYPES` macro generating `ThemeName` enum values.
@@ -127,8 +128,8 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 - Remote protocol mode separates GacUI into a core side (application logic) and a renderer side (rendering and OS services), communicating through `IGuiRemoteProtocol` over Parser2 JSON channel packages.
 - Messages flow core → renderer via `IGuiRemoteProtocolMessages`; events and responses flow renderer → core via `IGuiRemoteProtocolEvents`.
 - `GuiRemoteMessages` provides synchronous batched request-response with auto-incrementing IDs and blocking `Submit()`.
-- `GuiRemoteController` implements `INativeController` and all sub-services as virtual stubs: single window only, intentionally null clipboard/dialog services, synchronous key state queries.
-- Connection lifecycle: `SetupRemoteNativeController` creates a layered stack (`GuiRemoteController` → `GuiHostedController` → resource managers), with connect/disconnect/reconnection handling that re-sends all window state.
+- `GuiRemoteController` implements `INativeController` and all sub-services as virtual stubs: single window only, intentionally null clipboard/dialog/automation services, synchronous key state queries.
+- Connection lifecycle: `SetupRemoteNativeController` creates a layered stack (`GuiRemoteController` → `GuiHostedController` → resource managers), with connect/disconnect/reconnection handling that re-sends all window state and explicit forced-exit handling from the renderer.
 - Rendering pipeline: element lifecycle via ID allocation, diff-based element updates, frame rendering flow (`StartRenderingOnNativeWindow` → traversal → `StopRenderingOnNativeWindow`), and measurement feedback loop (font heights, min sizes, image metadata, inline object bounds).
 - `GuiRemoteGraphicsParagraph` handles rich text with run property system, incremental diff synchronization, delegated layout queries, and caret bounds caching.
 - DOM diff layer (`GuiRemoteProtocolDomDiffConverter`) converts per-frame command streams into diffed tree structures.

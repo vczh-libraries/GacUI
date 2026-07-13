@@ -130,16 +130,17 @@ Each test case follows a standard pattern:
 
 ### GacUIUnitTest_StartFast_WithResourceAsText
 
-This template function is the most commonly used entry point. It internally calls `GacUIUnitTest_LinkGuiMainProxy` to inject:
-1. Sending `OnControllerConnect` with `ControllerGlobalConfig` to the protocol.
-2. Registering a theme (e.g., `DarkSkin`).
-3. Compiling the GacUI XML resource via `GacUIUnitTest_CompileAndLoad`.
-4. Creating the main window from the resource via `Value::Create(windowTypeFullName)`.
-5. Calling `previousMainProxy(protocol, context)` to let the test register its frame callbacks.
-6. Running the application via `GetApplication()->Run(window)`.
-7. Unregistering the theme on cleanup.
-
-It also saves the compiled Workflow script text as a snapshot file (`[x64].txt` or `[x86].txt`) for Workflow generation stability verification.
+This template function is the most commonly used entry point. `GacUIUnitTest_StartFast_WithResourceAsText` and `GacUIUnitTest_Start_WithResourceAsText` install two proxy layers. When `GuiMain` invokes the resulting proxy chain, it performs these steps in order:
+1. Compile and load the GacUI XML resource via `GacUIUnitTest_CompileAndLoad`.
+2. Save the compiled Workflow script text as a snapshot file (`[x64].txt` or `[x86].txt`) for Workflow generation stability verification.
+3. Send `OnControllerConnect` with `ControllerGlobalConfig` to the protocol.
+4. Register the requested theme type.
+5. Call the optional `GacUIUnitTest_Installer::initialize` callback.
+6. Create the main window via `Value::Create(windowTypeFullName)`.
+7. Call the optional `GacUIUnitTest_Installer::installWindow` callback, then center the window with `MoveToScreenCenter()`.
+8. Call `previousMainProxy(protocol, context)` to let the test register its frame callbacks.
+9. Run the application via `GetApplication()->Run(window)`.
+10. Call the optional `GacUIUnitTest_Installer::finalize` callback and unregister the theme during cleanup.
 
 ### Start Functions
 
@@ -276,19 +277,20 @@ Overloads accept either `GuiGraphicsComposition*` or `GuiControl*`.
 - `MouseMove(location)` — sends `OnIOMouseMoving`. If mouse was previously unset, first sends `OnIOMouseEntered`.
 - `_LDown(location)` / `_LUp(location)` — low-level left button down/up. `_LDown` calls `MouseMove` if position changed, then `UseEvents().OnIOButtonDown({Left, ...})`.
 - `LClick(location)` — `_LDown` followed by `_LUp`.
-- `LDBClick(location)` — two `LClick` calls (the framework detects double click from timing).
+- `LDBClick(location)` — sends a normal down/up pair, an explicit `OnIOButtonDoubleClick`, and the final up event.
 - Analogous `RClick`, `MClick`, `RDBClick`, `MDBClick` for right and middle buttons.
 - `WheelUp(jumps)` / `WheelDown(jumps)` — `OnIOVWheel` with delta scaled by 120 per jump.
 - `HWheelLeft(jumps)` / `HWheelRight(jumps)` — `OnIOHWheel` similarly.
 
 ### Key and Character Input Methods
 
-- `KeyDown(key)` / `KeyUp(key)` — sends `OnIOKeyDown` / `OnIOKeyUp`. Tracks `pressingKeys` state. Special handling for `VKEY::KEY_CAPITAL` toggles `capslockToggled`.
-- `KeyPress(key)` — `KeyDown` followed by `KeyUp`.
+- `_KeyDown(key)` / `_KeyUp(key)` — sends `OnIOKeyDown` / `OnIOKeyUp`. Tracks `pressingKeys` state. Special handling for `VKEY::KEY_CAPITAL` toggles `capslockToggled`.
+- `_KeyDownRepeat(key)` — sends an auto-repeat `OnIOKeyDown` for a key that is already pressed.
+- `KeyPress(key)` — `_KeyDown` followed by `_KeyUp`.
 - `KeyPress(key, ctrl, shift, alt)` — wraps the key press with modifier key down/up events.
 - `TypeString(text)` — sends a sequence of `OnIOChar` events for each character via `MakeCharInfo`, without synthesizing key down/up events.
 
-Keyboard helpers target the currently focused control. Focus the target control in the frame (for example with `SetFocused()` or a click) before using `TypeString`, `KeyPress`, `KeyDown`, or `KeyUp`.
+Keyboard helpers target the currently focused control. Focus the target control in the frame (for example with `SetFocused()` or a click) before using `TypeString`, `KeyPress`, `_KeyDown`, or `_KeyUp`.
 
 ### Event Flow Through the Pipeline
 
@@ -311,6 +313,6 @@ If an IO action triggers a blocking function (like `ShowDialog`), the frame call
 
 Each call to `GacUIUnitTest_Start` runs one complete application lifecycle (from `GuiMain()` to window close). Typically each `TEST_CASE` calls the full `GacUIUnitTest_SetGuiMainProxy` → `GacUIUnitTest_Start` sequence independently.
 
-Within a single application instance, multiple windows can be created inside frame callbacks using `Value::Create(L"namespace::ClassName")` and shown with `Show()`, `ShowModal()`, or `ShowDialog()`.
+Within a single application instance, multiple windows can be created inside frame callbacks using `Value::Create(L"namespace::ClassName")` and shown with `Show()`, `ShowWithOwner()`, or `ShowModal()`. `ShowDialog()` belongs to dialog component classes such as `GuiOpenFileDialog`, not to `GuiWindow`.
 
 `GacUIUnitTest_LinkGuiMainProxy` can be called multiple times before `GacUIUnitTest_Start`, chaining multiple setup layers (e.g., one for resources, one for theme, one for additional initialization).

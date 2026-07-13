@@ -72,7 +72,7 @@ Modal windows in GacUI provide traditional blocking semantics without actually b
 - Ensures proper resource cleanup after modal completion
 
 **ShowModalAsync(owner):**
-- Returns `IFuture` for async/await pattern integration
+- Returns `Ptr<reflection::description::IAsync>` for async/await integration; the implementation creates an `IFuture` internally and returns it through the async interface
 - Demonstrates the truly non-blocking nature of the modal system
 - Enables modern asynchronous programming patterns
 

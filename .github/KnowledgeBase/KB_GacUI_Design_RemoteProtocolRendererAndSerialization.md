@@ -1,6 +1,6 @@
 #### Remote Protocol Renderer and Serialization
 
-The remote protocol renderer side receives protocol messages from the core side and translates them into native window operations and graphics rendering. The serialization and channel infrastructure provides composable layers that convert between typed protocol calls and transport-ready strings, enabling GacUI applications to run across process boundaries over any user-provided transport (named pipe, HTTP, WebSocket, etc.).
+The remote protocol renderer side receives protocol messages from the core side and translates them into native window operations and graphics rendering. The serialization and channel infrastructure provides composable layers that convert between typed protocol calls and Parser2 JSON node packages, enabling GacUI applications to run across process boundaries over any user-provided transport (named pipe, HTTP, WebSocket, etc.).
 
 ## GuiRemoteRendererSingle
 
@@ -22,14 +22,16 @@ The remote protocol renderer side receives protocol messages from the core side 
 - `renderingDom` / `renderingDomIndex`: The rendering DOM tree received from the core side, used for on-screen rendering and hit testing.
 - `solidLabelMeasurings` / `fontHeightMeasurings`: Caches and measurement tracking for text elements, supporting the measurement feedback loop.
 - `pendingMouseMove`, `pendingHWheel`, `pendingVWheel`, `pendingKeyAutoDown`, `pendingWindowBoundsUpdate`: Accumulation fields for coalescing high-frequency events before sending.
+- `disconnectingFromCore`: Prevents further protocol requests and events after the renderer disconnects from the core.
+- `stoppedByFatalError` / `fatalError` / `fatalMaskElement` / `fatalTextElement`: Retain-mode state and graphics for displaying a fatal-error overlay instead of immediately closing the renderer.
 
 ### Source File Organization
 
-- `GuiRemoteRendererSingle.cpp`: Construction, destruction, main window registration, connection lifecycle (`Opened`, `BeforeClosing`, `Closed`), screen/config management.
+- `GuiRemoteRendererSingle.cpp`: Construction, destruction, main window registration, connection lifecycle (`Opened`, `BeforeClosing`, `AfterClosing`, `Closed`), screen/config management, core disconnection, and fatal-error retention.
 - `GuiRemoteRendererSingle_Controller.cpp`: Controller-level requests — `RequestControllerGetFontConfig`, `RequestControllerGetScreenConfig`, `RequestControllerConnectionEstablished`, `RequestControllerConnectionStopped`.
 - `GuiRemoteRendererSingle_MainWindow.cpp`: Window style notifications — `RequestWindowNotifySetBounds`, `RequestWindowNotifySetTitle`, `RequestWindowNotifySetEnabled`, `RequestWindowNotifyShow`, etc.
 - `GuiRemoteRendererSingle_IO.cpp`: IO requests (global shortcuts, mouse capture, key state queries) and native-to-protocol input event conversion. Contains `SendAccumulatedMessages()` for batching high-frequency events.
-- `GuiRemoteRendererSingle_Rendering.cpp`: Core rendering pipeline — element creation/destruction (`RequestRendererCreated`, `RequestRendererDestroyed`), begin/end rendering, DOM rendering (`Render` recursive traversal), hit testing, and `GlobalTimer`/`Paint` driven refresh.
+- `GuiRemoteRendererSingle_Rendering.cpp`: Core rendering pipeline — element creation/destruction (`RequestRendererCreated`, `RequestRendererDestroyed`), begin/end rendering, DOM rendering (`RenderDom` recursive traversal), fatal-overlay rendering, hit testing, and `GlobalTimer`/`Paint` driven refresh.
 - `GuiRemoteRendererSingle_Rendering_Elements.cpp`: Property updates on ordinary graphics elements (solid border, sink border, splitter, background, gradient, inner shadow, polygon).
 - `GuiRemoteRendererSingle_Rendering_Label.cpp`: Solid label measurement and property updates.
 - `GuiRemoteRendererSingle_Rendering_Image.cpp`: Image creation, metadata, and image frame element updates.
@@ -43,18 +45,20 @@ The core sends `RequestRendererRenderDom` or `RequestRendererRenderDomDiff` to u
 
 `RequestRendererRenderDom` installs a full `RenderingDom`, rebuilds `renderingDomIndex`, and sets `needRefresh = true`. `RequestRendererRenderDomDiff` requires an existing DOM, applies `UpdateDomInplace(renderingDom, renderingDomIndex, diffs)`, and also sets `needRefresh = true`.
 
-Actual painting happens in either `RequestRendererEndRendering` or `GlobalTimer()`: when `needRefresh` is true and refresh is no longer suppressed, `ForceRender()` recursively traverses `renderingDom`, renders each element in order with clipping, redraws the native window, and handles render-target resize/lost-device failures by resizing/recreating the target and scheduling another refresh. `RequestRendererEndRendering` clears suppression and can force the completed frame to render before returning `RespondRendererEndRendering(id, elementMeasurings)`. `GlobalTimer()` also flushes accumulated IO events, drives caret blinking, and renders any pending refresh not already handled at frame end.
+Actual painting happens in either `RequestRendererEndRendering` or `GlobalTimer()`: when `needRefresh` is true and refresh is no longer suppressed, `ForceRender()` calls `RenderDom` to recursively traverse `renderingDom`, renders each element in order with clipping, optionally draws the fatal-error overlay, redraws the native window, and handles render-target resize/lost-device failures by resizing/recreating the target and scheduling another refresh. `RequestRendererEndRendering` clears suppression and can force the completed frame to render before returning `RespondRendererEndRendering(id, elementMeasurings)`. While connected, `GlobalTimer()` also flushes accumulated IO events and drives caret blinking; after disconnection it clears pending core events but can continue rendering a retained fatal-error overlay. `RequestRendererIdle()` is an idle hint and is intentionally ignored by this renderer.
 
 ### Event Forwarding
 
 `GuiRemoteRendererSingle` implements all `INativeWindowListener` mouse/keyboard callbacks to forward OS events as protocol events:
-- **Discrete events** (button clicks, key presses): Sent immediately via `events->OnIOMouseLeft`, `events->OnIOKeyDown`, etc.
+- **Discrete events** (button clicks, key presses): Sent immediately via `events->OnIOButtonDown`, `events->OnIOButtonUp`, `events->OnIOButtonDoubleClick`, `events->OnIOKeyDown`, etc. Mouse-button events carry an `IOMouseInfoWithButton` whose `button` is `IOMouseButton::Left`, `Right`, or `Middle`.
 - **High-frequency events** (mouse move, wheel, key auto-repeat): Accumulated and coalesced:
   - `pendingMouseMove`: Only the latest mouse position is kept.
   - `pendingHWheel` / `pendingVWheel`: Wheel deltas are summed across frames.
   - `pendingKeyAutoDown`: Only the latest auto-repeat key is kept.
   - `SendAccumulatedMessages()` is called from `GlobalTimer()` to flush these accumulated events.
 - **Window lifecycle events** (`Opened`, `BeforeClosing`, `Moved`, `DpiChanged`): Translated to protocol events like `OnControllerConnect`, `OnControllerRequestExit`, `OnWindowBoundsUpdated`.
+
+All outgoing callbacks and responses are guarded by `CanSendEvents()`. `DisconnectFromCore()` marks the renderer as disconnecting, releases mouse capture, unregisters global shortcuts, and clears all accumulated events so no stale input is sent afterward.
 
 ### Hit Testing
 
@@ -113,7 +117,7 @@ Protocol types are code-generated from `Protocol/*.txt` files into `GuiRemotePro
 
 `GuiRemoteProtocolAsyncJsonChannel` is the core-side async wrapper around an `IJsonChannel`. It queues outgoing packages, queues incoming events for `ProcessRemoteEvents()`, stores incoming responses by request id, and blocks `BatchWrite(disconnected)` until the current `PendingRequestGroup` is satisfied or disconnected. `connectionCounter` and `connectionClientId` protect pending requests when channel events arrive after disconnect/reconnect boundaries.
 
-`GuiRemoteProtocolAsyncJsonChannelRenderer` is the renderer-side async wrapper. It queues received packages and schedules `ProcessRemoteMessages()` through an `IGuiRemoteProtocolAsyncRendererInvoker`. Before `SetInvokeInMainThread(...)` is called by renderer `GuiMain`, packages are cached. After the invoker is installed, they are drained on the renderer UI thread. A `messageVersion` stamp prevents messages captured by an old reader from running after the channel reader is replaced or detached.
+`GuiRemoteProtocolAsyncJsonChannelRenderer` is the renderer-side async wrapper. It queues received packages and schedules `ProcessRemoteMessages()` through an `IGuiRemoteProtocolAsyncRendererInvoker`. Before `SetInvokeInMainThread(...)` is called by renderer `GuiMain`, packages are cached. After the invoker is installed, they are drained on the renderer UI thread. `Initialize(reader)` requires a non-null reader; `Detach()` explicitly clears it, increments `messageVersion`, and drops queued work. The version check prevents callbacks queued before `Detach()` from running after detachment or a later reader installation.
 
 ## Demo Project Pair
 
@@ -137,15 +141,15 @@ Located at `Test/GacUISrc/RemotingTest_Core/`. Accepts `/Pipe` or `/Http` argume
 
 Located at `Test/GacUISrc/RemotingTest_Rendering_Win32/`. Accepts `/Pipe` or `/Http` arguments to start as a named-pipe or HTTP client.
 
-**Protocol stack setup** (`StartClient<TClient>` in `GuiMain.cpp`):
-1. Creates `RemotingTestChannelClient`, derived from `GuiRemoteProtocolChannelClient`, over a named-pipe or HTTP `INetworkProtocolClient`.
+**Protocol stack setup** (`StartClient` in `GuiMain.cpp`; this function is not a template):
+1. Receives a named-pipe or HTTP `INetworkProtocolClient` and creates `RemotingTestChannelClient`, derived from `GuiRemoteProtocolChannelClient`, over it.
 2. Creates `GuiRemoteProtocolAsyncJsonChannelRenderer` over the client's protocol channel.
 3. Creates `GuiRemoteRendererSingle` and `GuiRemoteProtocolRendererChannel(&asyncRendererChannel, &remoteRenderer)`.
 4. Waits for the server, then calls `SetupRawWindowsDirect2DRenderer()` to run the native window event loop.
 5. In `GuiMain()`, creates the native window, registers it with `GuiRemoteRendererSingle`, installs `GuiMainAsyncRendererInvoker` through `asyncChannel->SetInvokeInMainThread(&invoker)`, and runs the window service.
 6. On exit, clears the invoker, unregisters the main window, stops the network connection, and clears stack-owned renderer/channel pointers.
 
-`RemotingTestChannelClient` handles remote fatal errors by showing a native error message and calling `GuiRemoteRendererSingle::ForceExitByFatelError()`. On disconnect, it detaches the async renderer channel with `Initialize(nullptr)` and forces renderer exit unless the disconnect was already caused by a fatal error.
+`RemotingTestChannelClient` records only the first fatal error and queues a native Yes/No prompt asking whether to close the renderer. A core read error uses the core-error title. A fatal local transport error uses the renderer-transport title and first calls `GuiRemoteRendererSingle::RequestCoreForceExitByFatalError()`. Choosing Yes calls `ForceExitByFatelError()`; choosing No calls `RetainByFatalError(message)`, keeps the native renderer window open with a `[STOPPED]` title and fatal overlay, and exposes the error through the renderer automation service. On disconnect, the client calls `GuiRemoteProtocolAsyncJsonChannelRenderer::Detach()` and forces renderer exit only when no fatal error has already been claimed.
 
 ### Protocol Stack Direction
 

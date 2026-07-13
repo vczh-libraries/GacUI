@@ -20,7 +20,7 @@ Responsibilities:
   * `Layout_UpdateMinSize()` (calls overridden min size function then caches and fires `CachedMinSizeChanged`).
   * `Layout_UpdateBounds(Size parentSize)` (computes own bounds then recurses to children).
   * `Layout_CalculateMinSizeHelper()` shared policy used by most containers.
-- Invalidation trigger: `InvokeOnCompositionStateChanged(forceRequestRender)` sets flags; does not directly perform layout.
+- Invalidation trigger: `InvokeOnCompositionStateChanged(forceRequestRender)` calls the virtual `OnCompositionStateChanged()` hook and requests rendering when the composition has a related host and is visible (or rendering is forced). Container overrides use the hook to set their own dirty flags; the base method does not perform layout.
 - Synchronous optional recompute: `ForceCalculateSizeImmediately()` (used sparingly, e.g., interactive splitters).
 - Rendering entry: `Render` consumes only `cachedBounds` (no layout recalculation inside rendering).
 
@@ -28,13 +28,13 @@ Responsibilities:
 Purpose: Distinguish measurement & arrangement control patterns.
 1. `GuiGraphicsComposition_Trivial`
    - Container autonomously computes measurement and bounds using standard algorithm (often via `Layout_CalculateMinSizeHelper`).
-   - Examples: `GuiBoundsComposition`, `GuiTableComposition`, `GuiStackComposition`, `GuiFlowComposition`, `GuiSharedSizeRootComposition` (directly or indirectly).
+   - Examples: `GuiBoundsComposition`, `GuiTableComposition`, `GuiStackComposition`, `GuiFlowComposition`, `GuiSharedSizeRootComposition`, and `GuiSharedSizeItemComposition` (directly or indirectly).
 2. `GuiGraphicsComposition_Controlled`
    - Measurement / bounds set externally by parent; overrides `Layout_CalculateMinSize` & `Layout_CalculateBounds` to simply return cached values (no internal recompute). Parent writes caches using specialized setters (e.g., `GuiCellComposition::Layout_SetCellBounds`, `GuiStackItemComposition::Layout_SetStackItemBounds`, `GuiFlowItemComposition::Layout_SetFlowItemBounds`).
-   - Typical for helper items: `GuiCellComposition`, splitters, stack items, flow items, shared size items.
+   - Used by `GuiCellComposition`, `GuiStackItemComposition`, and `GuiFlowItemComposition`.
 3. `GuiGraphicsComposition_Specialized`
    - Container with custom arrangement while limiting child -> parent enlargement; usually still uses `Layout_CalculateMinSizeHelper` but overrides `Layout_CalculateMinClientSizeForParent` to `{0,0}`.
-   - Examples: `GuiSideAlignedComposition`, `GuiPartialViewComposition`, `GuiWindowComposition`.
+   - Examples: `GuiSideAlignedComposition`, `GuiPartialViewComposition`, `GuiWindowComposition`, and `GuiTableSplitterCompositionBase` (the base of row and column splitters).
 
 ## 3. Layout Pass Orchestration
 ### 3.1 Measurement Flow
@@ -55,9 +55,9 @@ Purpose: Distinguish measurement & arrangement control patterns.
 3. Controlled children rely on parent precomputed rectangles delivered via container-specific setters instead of independent calculation.
 
 ### 3.3 Host-Driven Iteration
-- Changes call `InvokeOnCompositionStateChanged()` marking layout invalid (and optionally requesting a render).
-- `GuiGraphicsHost::Render` loops: if any layout-invalid flag is set for the window root subtree, perform a full layout (measurement + arrangement cascade), then render. Repeats until no invalidation remains.
-- Ensures deterministic stabilization without requiring synchronous recalculation inside property setters.
+- Changes call `InvokeOnCompositionStateChanged()`. Composition-specific hooks can mark cached calculations dirty, while the base method requests a render from the related host.
+- A `GuiGraphicsHost::Render` call first renders the composition tree using its current `cachedBounds`. After successful rendering, it performs the window-root measurement and arrangement cascade.
+- If updating cached sizes or bounds requests another render, a later `GlobalTimer` / `Render` cycle consumes the new layout. Cascading invalidations therefore stabilize across successive render cycles, not through an inner loop in one `Render` call.
 - `ForceCalculateSizeImmediately()` is an optimization for immediate feedback inside event handlers (e.g., splitter dragging) but never required for correctness.
 
 ## 4. Invalidation Sources & Flags
@@ -84,7 +84,7 @@ Purpose: Distinguish measurement & arrangement control patterns.
 
 ### 5.2 Child -> Parent Constraint
 - During parent measurement, after calling each child's `Layout_UpdateMinSize`, parent optionally adds `child->Layout_CalculateMinClientSizeForParent(internalMargin)` to its accumulated client size if own `minSizeLimitation == LimitToElementAndChildren`.
-- Controlled children often contribute `{0,0}` because parent already manually accounts for them (e.g., table computing row/column sizes; stack computing cumulative lengths; flow computing wrapping layout).
+- Controlled children contribute `{0,0}` because their parent manually accounts for them (e.g., table computing row/column sizes; stack computing cumulative lengths; flow computing wrapping layout).
 
 ## 6. Predefined Layout Families
 Distinct algorithms (excluding helper-only controlled items):
@@ -96,7 +96,9 @@ Distinct algorithms (excluding helper-only controlled items):
 6. Side Aligned: `GuiSideAlignedComposition` (dock to a specified side with length ratio / max constraints).
 7. Partial View: `GuiPartialViewComposition` (scroll / viewport style fractional sub-rectangle selection with offsets).
 8. Window Root: `GuiWindowComposition` (ties client area to native window size, root for layout passes).
-Helper controlled participants: `GuiCellComposition`, `GuiStackItemComposition`, `GuiFlowItemComposition`, `GuiSharedSizeItemComposition`, `GuiRowSplitterComposition`, `GuiColumnSplitterComposition`.
+9. Repeat: `GuiRepeatStackComposition` and `GuiRepeatFlowComposition` for non-virtual repeated templates, plus `GuiVirtualRepeatCompositionBase` and its free-height, fixed-height, fixed-size multi-column, and fixed-height multi-column implementations for virtualized item layout.
+
+Controlled helper participants are `GuiCellComposition`, `GuiStackItemComposition`, and `GuiFlowItemComposition`. `GuiSharedSizeItemComposition` is a bounds/trivial composition, while `GuiRowSplitterComposition` and `GuiColumnSplitterComposition` derive through the specialized `GuiTableSplitterCompositionBase`.
 
 ## 7. Internal Optimization Flags & Lazy Strategies
 - Table maintains `layout_invalid`, `layout_invalidCellBounds`, recalculating row/column metrics and cell rectangles only when flagged inside `Layout_CalculateMinSize` / `Layout_CalculateBounds` (helpers: `Layout_UpdateCellBoundsInternal`, `Layout_UpdateCellBoundsPercentages`, `Layout_UpdateCellBoundsOffsets`).
@@ -156,9 +158,9 @@ Add adaptive multi-level representations (compact to expanded) without duplicati
 ## 9. Detailed Constraint Examples
 ### 9.1 Table Example (Column Percentage Change)
 1. Setter `GuiTableComposition::SetColumnOption` updates model then calls `InvokeOnCompositionStateChanged()`.
-2. Next `GuiGraphicsHost::Render` detects invalid layout, triggers full window layout.
-3. Table `Layout_CalculateMinSize` sees `layout_invalid` -> recomputes metrics; `Layout_CalculateBounds` updates each `GuiCellComposition` via `Layout_SetCellBounds`.
-4. Rendering consumes new `cachedBounds`.
+2. The next `GuiGraphicsHost::Render` renders the current cached layout, then runs the full window measurement and arrangement cascade.
+3. Table `Layout_CalculateMinSize` sees `layout_invalid` and recomputes metrics; `Layout_CalculateBounds` updates each `GuiCellComposition` via `Layout_SetCellBounds`.
+4. Changed cached bounds request another render, and a subsequent cycle renders the new geometry.
 
 ### 9.2 Interactive Splitter Drag
 1. Mouse move updates adjacent Absolute options.
@@ -189,11 +191,11 @@ Steps:
 
 ## 12. Separation of Concerns
 - Layout computation (measurement + arrangement) is strictly segregated from rendering (`Render` side-effect-free wrt layout state).
-- Invalidation is single entry (`InvokeOnCompositionStateChanged`) leaving scheduling & iteration to the host.
+- Invalidation enters through `InvokeOnCompositionStateChanged`, leaving scheduling to the host and container-specific dirty state to `OnCompositionStateChanged` overrides.
 - Responsive system layers on top without altering the base pass algorithm; it only manipulates subtree structure and min-size outputs between passes.
 
 ## 13. Reliability & Stability Patterns
-- Iterative host loop ensures eventual fixpoint when cascading invalidations occur (e.g., responsive level changes causing new size measurements).
+- Successive host render cycles converge when cascading invalidations occur (e.g., responsive level changes causing new size measurements).
 - Dirty flag + lazy recomputation prevents redundant heavy recomputations (especially table & flow geometry).
 - Controlled compositions decouple per-item geometry from measuring logic to simplify parent algorithms.
 
@@ -205,6 +207,7 @@ Steps:
 - Stack: `GuiStackComposition::{SetDirection,Layout_UpdateStackItemMinSizes,Layout_CalculateMinSize,Layout_UpdateStackItemBounds}`, item setter `GuiStackItemComposition::Layout_SetStackItemBounds`.
 - Flow: `GuiFlowComposition::{SetAxis,SetRowPadding,Layout_UpdateFlowItemLayout,Layout_UpdateFlowItemLayoutByConstraint}`, item setter `GuiFlowItemComposition::Layout_SetFlowItemBounds`.
 - Shared Size: `GuiSharedSizeRootComposition::{CalculateOriginalMinSizes,CollectSizes,AlignSizes}`, item logic `GuiSharedSizeItemComposition::Layout_CalculateMinSize`.
+- Repeat: `GuiRepeatCompositionBase`, `GuiNonVirtialRepeatCompositionBase`, `GuiRepeatStackComposition`, `GuiRepeatFlowComposition`, `GuiVirtualRepeatCompositionBase`, and the `GuiRepeat*ItemComposition` implementations.
 - Splitters: `GuiTableSplitterCompositionBase::OnMouseMoveHelper`.
 - Responsive Base: `GuiResponsiveCompositionBase::{OnParentLineChanged,OnResponsiveChildLevelUpdated}`.
 - Responsive View: `GuiResponsiveViewComposition::{LevelDown,LevelUp,CalculateLevelCount,CalculateCurrentLevel}`.
@@ -215,4 +218,4 @@ Steps:
 - Responsive Container: `GuiResponsiveContainerComposition::{Layout_CalculateBounds,Layout_AdjustLevelUp,Layout_AdjustLevelDown,Layout_CompareSize}`.
 
 ## 15. Summary
-The GacUI layout engine employs a clean separation between invalidation, measurement, arrangement, and rendering, with composition classification enabling optimized parent-child cooperation patterns. Predefined container families cover common layout paradigms (grid, linear, wrapping, docking, viewport, shared sizing) while the responsive layer introduces adaptive multi-level UI transformation without complicating the core pass. Extension points are well-localized: new algorithms implement three virtual layout functions (or override contribution behavior), while responsive strategies implement discrete level semantics. Lazy flags and controlled item abstractions keep recomputation efficient, and host-driven iterative stabilization guarantees correctness even under cascading dynamic changes.
+The GacUI layout engine employs a clean separation between invalidation, measurement, arrangement, and rendering, with composition classification enabling optimized parent-child cooperation patterns. Predefined container families cover common layout paradigms (grid, linear, wrapping, docking, viewport, shared sizing, and repeated/virtualized items) while the responsive layer introduces adaptive multi-level UI transformation without complicating the core pass. Extension points are well-localized: new algorithms implement three virtual layout functions (or override contribution behavior), while responsive strategies implement discrete level semantics. Lazy flags and controlled item abstractions keep recomputation efficient, and successive host render cycles guarantee eventual stabilization even under cascading dynamic changes.

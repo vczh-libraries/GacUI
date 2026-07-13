@@ -47,7 +47,7 @@ For remote mode in `SetupRemoteNativeController`:
 - `INativeAsyncService` — to redirect async operations through the real native controller
 - `INativeScreenService` / `INativeScreen` — to provide a virtual single screen
 - `INativeWindowService` — to create, destroy, and manage virtual windows
-- `IGuiHostedApplication` — to expose the native window host
+- `IGuiHostedApplication` — to expose both the native window host and the wrapped native controller
 
 ### Service Delegation
 
@@ -56,7 +56,11 @@ The controller delegates most services to the underlying native controller:
 - `ClipboardService()` → `nativeController->ClipboardService()`
 - `ImageService()` → `nativeController->ImageService()`
 - `InputService()` → `nativeController->InputService()`
-- `DialogService()` → returns `nullptr` (replaced by `FakeDialogServiceBase`)
+- `GetExecutablePath()` → `nativeController->GetExecutablePath()`
+
+Services intentionally unavailable in hosted mode:
+- `DialogService()` → returns `nullptr` so GacUI uses `FakeDialogServiceBase`
+- `AutomationService()` → returns `nullptr` so GacUI uses `INativeAutomationService::UnavailableService`
 
 Services it implements itself:
 - `CallbackService()` → local `SharedCallbackService` instance
@@ -236,7 +240,7 @@ Individual mouse event methods (`LeftButtonDown`, `MouseMoving`, etc.) are wired
 
 ### Keyboard Events
 
-`HandleKeyboardCallback` dispatches keyboard events (`KeyDown`, `KeyUp`, `Char`) to the active window's listeners.
+`HandleKeyboardCallback` dispatches keyboard events (`KeyDown`, `KeyUp`, `Char`) to the active window's listeners. If there is no active window, no window-manager operation is in progress, and the main window exists, it activates the main window before dispatching.
 
 ## Rendering Pipeline
 
@@ -245,8 +249,9 @@ Individual mouse event methods (`LeftButtonDown`, `MouseMoving`, etc.) are wired
 `GuiHostedController::GlobalTimer()` drives the rendering cycle. On each global timer tick:
 1. Skip if the native window is not visible or already in hosted rendering
 2. Check all visible windows' listeners for `NeedRefresh()` — if any returns true, set `needRefresh`
-3. If no refresh is needed and nothing was updated last frame, skip rendering
+3. If no refresh is needed and nothing was updated last frame, call `renderTarget->HostedRenderingIdle()` once for this transition to idle, then skip rendering
 4. Enter rendering loop:
+   - Reset the idle-notified state because rendering is active again
    - Call `renderTarget->StartHostedRendering()` on the native resource manager's render target
    - Iterate ordinary windows (back to front, reversed list order) then top-most windows
    - For each window, call each listener's `ForceRefresh(false, updated, failureByResized, failureByLostDevice)`
@@ -260,6 +265,7 @@ Individual mouse event methods (`LeftButtonDown`, `MouseMoving`, etc.) are wired
 - `StartHostedRendering()` sets `hostedRendering = true` and calls `StartRenderingOnNativeWindow()` once
 - During hosted rendering, individual `StartRendering()` / `StopRendering()` pairs do NOT call `StartRenderingOnNativeWindow()` / `StopRenderingOnNativeWindow()` — they just toggle the `rendering` flag
 - `StopHostedRendering()` calls `StopRenderingOnNativeWindow()` once
+- `HostedRenderingIdle()` is a hook indicating that the hosted controller expects no more rendering until state changes; the base implementation is empty, while `GuiRemoteGraphicsRenderTarget` sends `RequestRendererIdle()`
 - This means all hosted windows render within a single begin/end rendering session on the native render target
 
 ### Per-Window Rendering Offset (GuiGraphicsHost)

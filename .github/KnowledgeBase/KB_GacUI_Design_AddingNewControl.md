@@ -13,12 +13,11 @@ The control class must:
 - **Inherit from base class**: `GuiControl` (or another control) and `Description<YourControl>` for reflection
 - **Specify template type**: Use `GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TemplateName, BaseControlType)` macro
 - **Declare state variables**: Member variables to track control state
-- **Override lifecycle methods** from `GuiControl`:
+- **Implement the generated template hooks in the `.cpp` file**:
   - `BeforeControlTemplateUninstalled_()` - cleanup before template removal
   - `AfterControlTemplateInstalled_(bool initialize)` - setup after template installation
-  - `OnParentLineChanged()` - handle parent hierarchy changes
-  - `OnActiveAlt()` - handle ALT key activation
-  - `IsTabAvailable()` - control TAB navigation availability
+  - Do not redeclare these underscore functions in the class: `GUI_SPECIFY_CONTROL_TEMPLATE_TYPE` declares them and generates the actual `BeforeControlTemplateUninstalled()` and `AfterControlTemplateInstalled(bool)` overrides
+- **Override feature-specific virtual methods only when needed**, such as `OnParentLineChanged()`, `OnActiveAlt()`, or `IsTabAvailable()`
 - **Attach event handlers**: In constructor to `boundsComposition->GetEventReceiver()` for mouse/keyboard events
 - **Define public events**: Using `compositions::GuiNotifyEvent`
 - **Define properties**: With getters/setters
@@ -32,8 +31,6 @@ class GuiButton : public GuiControl, public Description<GuiButton>
     GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ButtonTemplate, GuiControl)
 protected:
     ButtonState controlState;
-    void BeforeControlTemplateUninstalled_() override;
-    void AfterControlTemplateInstalled_(bool initialize) override;
     void OnMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
     void UpdateControlState();
 public:
@@ -60,8 +57,8 @@ Implement:
   - Set up events: `eventName.SetAssociatedComposition(boundsComposition)`
   - Attach handlers: `boundsComposition->GetEventReceiver()->eventName.AttachMethod(this, &GuiYourControl::Handler)`
 - **Destructor**: Cleanup (usually minimal, automatic cleanup happens)
-- **`BeforeControlTemplateUninstalled_()`**: Clear template-specific state
-- **`AfterControlTemplateInstalled_(bool initialize)`**: Sync state to template
+- **Generated hook definition `BeforeControlTemplateUninstalled_()`**: Clear template-specific state; the definition may be empty
+- **Generated hook definition `AfterControlTemplateInstalled_(bool initialize)`**: Sync state to template; the definition may be empty when no synchronization is needed
   - Call template methods: `TypedControlTemplateObject(true)->SetState(controlState)`
 - **Event handlers**: Mouse events (`leftButtonDown`, `leftButtonUp`, `mouseEnter`, `mouseLeave`), keyboard events (`keyDown`, `keyUp`)
 - **Property getters/setters**: Update state and notify template
@@ -221,7 +218,8 @@ When creating a control that inherits from another control (e.g., `GuiSelectable
 
 ### Minimal Changes Approach
 
-- **Parent handles lifecycle**: Override `BeforeControlTemplateUninstalled_`, etc. only if needed
+- **Define both generated hooks**: `GUI_SPECIFY_CONTROL_TEMPLATE_TYPE` declares `BeforeControlTemplateUninstalled_()` and `AfterControlTemplateInstalled_(bool)`, so provide definitions even when they are empty
+- **Parent handles the actual lifecycle overrides**: The macro-generated overrides invoke the derived hook and chain to the parent control in the required order
 - **Parent's event handlers inherited**: No need to re-implement
 - **Focus on new functionality**: Don't repeat parent's work
 
@@ -247,7 +245,7 @@ The macro system provides:
 
 - `GUI_TEMPLATE_CLASS_DECL`: Generates class declaration with properties
 - `GUI_TEMPLATE_CLASS_IMPL`: Generates implementation (constructor, destructor, property accessors)
-- `GUI_SPECIFY_CONTROL_TEMPLATE_TYPE`: Links control to its template type with automatic casting
+- `GUI_SPECIFY_CONTROL_TEMPLATE_TYPE`: Links a control to its template type, declares the two underscore hook functions, generates the lifecycle overrides, and provides typed template access
 - Property macros: Generate private field, getter, setter, and change event
 
 ## Minimal Working Example
@@ -263,11 +261,7 @@ class GuiMyControl : public GuiControl, public Description<GuiMyControl>
 protected:
     // State variables
     bool myState = false;
-    
-    // Lifecycle overrides
-    void BeforeControlTemplateUninstalled_() override;
-    void AfterControlTemplateInstalled_(bool initialize) override;
-    
+
     // Event handlers
     void OnMouseClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
     
