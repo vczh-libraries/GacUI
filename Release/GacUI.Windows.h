@@ -119,7 +119,8 @@ Windows Platform Native Controller
 				}
 
 				void										Stop() override;
-				bool										CanRunIOCommands() override;
+				INativeAutomationService::IOCommandAvailability
+															CanRunIOCommands() override;
 			};
 
 			class WindowsAutomationService : public WindowsAutomationServiceBase<AutomationService>
@@ -145,6 +146,9 @@ Windows Platform Native Controller
 			public:
 				WindowsAutomationServiceRenderer(remote_renderer::GuiRemoteRendererSingle* _renderer);
 				~WindowsAutomationServiceRenderer();
+
+				INativeAutomationService::IOCommandAvailability
+															CanRunIOCommands() override;
 			};
 
 			extern void										StartWindowsHttpAutomationService(const WString& applicationName, vint port);

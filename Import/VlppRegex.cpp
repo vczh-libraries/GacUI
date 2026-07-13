@@ -665,7 +665,7 @@ RegexLexerWalker_<T>
 				previousTokenStop = true;
 			}
 
-			state = pure->Transit(input, state);
+			state = pure->Transit(static_cast<char32_t>(input), state);
 			if (state == -1)
 			{
 				previousTokenStop = true;
@@ -676,7 +676,7 @@ RegexLexerWalker_<T>
 				}
 				else if (pure->IsFinalState(previousState))
 				{
-					state = pure->Transit(input, pure->GetStartState());
+					state = pure->Transit(static_cast<char32_t>(input), pure->GetStartState());
 				}
 			}
 			if (pure->IsFinalState(state))
@@ -708,7 +708,7 @@ RegexLexerWalker_<T>
 			vint state = pure->GetStartState();
 			for (vint i = 0; i < length; i++)
 			{
-				state = pure->Transit(input[i], state);
+				state = pure->Transit(static_cast<char32_t>(input[i]), state);
 				if (state == -1) return true;
 				if (pure->IsDeadState(state)) return true;
 			}
@@ -1165,6 +1165,7 @@ Template Instantiation
 		template class RegexLexer_<char32_t>;
 	}
 }
+
 
 /***********************************************************************
 .\REGEXPURE.CPP

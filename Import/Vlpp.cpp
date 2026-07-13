@@ -1014,7 +1014,7 @@ namespace vl
 #if defined VCZH_GCC
 	void _itoa_s(vint32_t value, char* buffer, size_t size, vint radix)
 	{
-		sprintf(buffer, "%d", value);
+		snprintf(buffer, size, "%d", value);
 	}
 
 	void _itow_s(vint32_t value, wchar_t* buffer, size_t size, vint radix)
@@ -1024,17 +1024,17 @@ namespace vl
 
 	void _i64toa_s(vint64_t value, char* buffer, size_t size, vint radix)
 	{
-		sprintf(buffer, "%ld", value);
+		snprintf(buffer, size, "%lld", static_cast<long long>(value));
 	}
 
 	void _i64tow_s(vint64_t value, wchar_t* buffer, size_t size, vint radix)
 	{
-		swprintf(buffer, size - 1, L"%ld", value);
+		swprintf(buffer, size - 1, L"%lld", static_cast<long long>(value));
 	}
 
 	void _uitoa_s(vuint32_t value, char* buffer, size_t size, vint radix)
 	{
-		sprintf(buffer, "%u", value);
+		snprintf(buffer, size, "%u", value);
 	}
 
 	void _uitow_s(vuint32_t value, wchar_t* buffer, size_t size, vint radix)
@@ -1044,17 +1044,17 @@ namespace vl
 
 	void _ui64toa_s(vuint64_t value, char* buffer, size_t size, vint radix)
 	{
-		sprintf(buffer, "%lu", value);
+		snprintf(buffer, size, "%llu", static_cast<unsigned long long>(value));
 	}
 
 	void _ui64tow_s(vuint64_t value, wchar_t* buffer, size_t size, vint radix)
 	{
-		swprintf(buffer, size - 1, L"%lu", value);
+		swprintf(buffer, size - 1, L"%llu", static_cast<unsigned long long>(value));
 	}
 
 	void _gcvt_s(char* buffer, size_t size, double value, vint numberOfDigits)
 	{
-		sprintf(buffer, "%f", value);
+		snprintf(buffer, size, "%f", value);
 		char* point = strchr(buffer, '.');
 		if(!point) return;
 		char* zero = buffer + strlen(buffer);

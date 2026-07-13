@@ -2423,6 +2423,15 @@ DescriptableObject
 					if (!root->destructing)
 					{
 						destructing = true;
+						// The old root skips this destructing subtree, so keep its descendants rooted in a live object.
+						aggregationInfo[aggregationSize] = nullptr;
+						for (vint i = 0; i < aggregationSize; i++)
+						{
+							if (auto parent = GetAggregationParent(i))
+							{
+								parent->SetAggregationRoot(this);
+							}
+						}
 						delete root;
 					}
 				}

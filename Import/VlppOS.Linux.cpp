@@ -608,7 +608,9 @@ Semaphore
 			}
 			else
 			{
+#if !defined(__APPLE__)
 				sem_destroy(&internalData->semUnnamed);
+#endif
 			}
 			delete internalData;
 		}

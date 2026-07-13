@@ -2113,7 +2113,7 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 		TEST_ASSERT(channelServer->ConnectLocalClient(coreClient) > 0);
 		TEST_ASSERT(channelServer->ConnectLocalClient(rendererClient) > 0);
 
-		rendererChannel = Ptr(new channeling::GuiRemoteProtocolRendererChannel(rendererClient.Obj(), rendererClient->GetProtocolChannel(), unitTestProtocol.GetProtocol()));
+		rendererChannel = Ptr(new channeling::GuiRemoteProtocolRendererChannel(rendererClient->GetProtocolChannel(), unitTestProtocol.GetProtocol()));
 		coreChannel = Ptr(new channeling::GuiRemoteProtocolCoreChannel(coreClient.Obj(), coreClient->GetProtocolChannel(), globalConfig.executablePath, unitTestProtocol.GetRemoteEventProcessor()));
 		coreProtocol = coreChannel.Obj();
 	}
@@ -2180,8 +2180,8 @@ void GacUIUnitTest_StartAsync(const WString& appName, Nullable<UnitTestScreenCon
 	TEST_ASSERT(channelServer->ConnectLocalClient(coreClient) > 0);
 	TEST_ASSERT(channelServer->ConnectLocalClient(rendererClient) > 0);
 
-	channeling::GuiRemoteProtocolRendererChannel rendererChannel(rendererClient.Obj(), rendererClient->GetProtocolChannel(), unitTestProtocol.GetProtocol());
-	channeling::GuiRemoteProtocolJsonChannelRenderer_Async asyncChannelSender(coreClient->GetProtocolChannel(), unitTestProtocol.GetRemoteEventProcessor());
+	channeling::GuiRemoteProtocolRendererChannel rendererChannel(rendererClient->GetProtocolChannel(), unitTestProtocol.GetProtocol());
+	channeling::GuiRemoteProtocolAsyncJsonChannel asyncChannelSender(coreClient->GetProtocolChannel(), unitTestProtocol.GetRemoteEventProcessor());
 
 	EventObject eventStopped;
 	TEST_ASSERT(eventStopped.CreateManualUnsignal(false));

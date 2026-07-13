@@ -2290,9 +2290,9 @@ WindowsAutomationServiceBase
 			}
 
 			template<typename TBase>
-			bool WindowsAutomationServiceBase<TBase>::CanRunIOCommands()
+			INativeAutomationService::IOCommandAvailability WindowsAutomationServiceBase<TBase>::CanRunIOCommands()
 			{
-				return true;
+				return INativeAutomationService::IOCommandAvailability::Enabled;
 			}
 
 /***********************************************************************
@@ -2359,6 +2359,11 @@ WindowsAutomationServiceRenderer
 			{
 			}
 
+			INativeAutomationService::IOCommandAvailability WindowsAutomationServiceRenderer::CanRunIOCommands()
+			{
+				return AutomationServiceRenderer::CanRunIOCommands();
+			}
+
 /***********************************************************************
 HttpAutomationService
 ***********************************************************************/
@@ -2418,7 +2423,7 @@ HttpAutomationService
 									return;
 								}
 
-								if (automationService->CanRunIOCommands())
+								if (automationService->CanRunIOCommands() != INativeAutomationService::IOCommandAvailability::Disabled)
 								{
 									WString body = GetUtf8Body(pRequest).Value();
 									respondString = automationService->RunIOCommand(windowId, body);
