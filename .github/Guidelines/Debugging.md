@@ -1,7 +1,7 @@
 # Debugging a Project
 
 - Go to `Windows Specific` section if you are on Windows.
-- Go to `Linux Specific` section if you are on Linux.
+- Go to `Linux/macOS Specific` section if you are on Linux/macOS.
 - Go to `macOS Specific` section if you are on macOS.
 
 ## Windows Specific
@@ -72,7 +72,7 @@ You can also use `dv -rX` to expand "X" levels of fields. The default option is 
 - DO NOT use **dt**.
 - DO NOT use **q**, **qd**, **qq**, **qqd** etc. to stop the debugger.
 
-## Linux Specific
+## Linux/macOS Specific
 
 Like building and running, debugging must be performed from the same folder that contains `vmake`:
 - If the repo has only one project, it is in `REPO-ROOT/Test/Linux`.
@@ -102,7 +102,3 @@ quit
 ```
 
 For non-interactive one-shot debugging, wrap `lldb` with `timeout` so it cannot block forever.
-
-## macOS Specific
-
-(to be editing...)

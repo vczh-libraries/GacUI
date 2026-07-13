@@ -1,7 +1,7 @@
 # Running a CLI Application Project
 
 - Go to `Windows Specific` section if you are on Windows.
-- Go to `Linux Specific` section if you are on Linux.
+- Go to `Linux/macOS Specific` section if you are on Linux/macOS.
 - Go to `macOS Specific` section if you are on macOS.
 
 ## Windows Specific
@@ -31,7 +31,7 @@ cd SOLUTION-ROOT
 - `-Platform` can be `x64` (default) or `Win32`
 - Pick the default option (omit both arguments) when there is no specific requirement.
 
-## Linux Specific
+## Linux/macOS Specific
 
 Building only happens in a folder that has a `vmake` file.
 - If the repo has only one project, it is in `REPO-ROOT/Test/Linux`.
@@ -48,7 +48,3 @@ Compiled binary might have a bug causing it to trap in a dead loop. DO NOT just 
 If this seems suspicious, you are recommended to kill the process and run it again with the debugger.
 
 Only the "debug x64" configuration is supported on Linux. If you are instructed to build and run other configuration, ignore it.
-
-## macOS Specific
-
-(to be editing...)

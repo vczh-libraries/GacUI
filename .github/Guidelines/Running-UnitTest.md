@@ -1,7 +1,7 @@
 # Running a Unit Test Project
 
 - Go to `Windows Specific` section if you are on Windows.
-- Go to `Linux Specific` section if you are on Linux.
+- Go to `Linux/macOS Specific` section if you are on Linux/macOS.
 - Go to `macOS Specific` section if you are on macOS.
 
 ## Windows Specific
@@ -73,7 +73,7 @@ Ignore `LocalDebuggerCommandArgumentsHistory` in `*.vcxproj.user`.
   - Treat memory leak fixes as required work, especially after all test cases pass and the remaining failure signal is only the appended leak dump.
 - DO NOT delete the log file by yourself.
 
-## Linux Specific
+## Linux/macOS Specific
 
 Building only happens in a folder that has a `vmake` file.
 - If the repo has only one project, it is in `REPO-ROOT/Test/Linux`.
@@ -98,7 +98,3 @@ If this seems suspicious, you are recommended to kill the process and run it aga
 When `/D` or `/C` is specified, the unit test binary stops at the first failure, causing it to be unable to summarize how many test cases pass or fail at the end. This is an obvious signal that it fails.
 
 Only the "debug x64" configuration is supported on Linux. If you are instructed to build and run other configuration, ignore it.
-
-## macOS Specific
-
-(to be editing...)

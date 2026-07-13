@@ -1,8 +1,7 @@
 # Building a Solution
 
 - Go to `Windows Specific` section if you are on Windows.
-- Go to `Linux Specific` section if you are on Linux.
-- Go to `macOS Specific` section if you are on macOS.
+- Go to `Linux/macOS Specific` section if you are on Linux/macOS.
 
 ## Windows Specific
 
@@ -44,7 +43,7 @@ It is possible that, before running `copilotBuild.ps1`, the binary to compile is
   - "0 Error(s)"
 - DO NOT delete the log file by yourself.
 
-## Linux Specific
+## Linux/macOS Specific
 
 Building only happens in a folder that has a `vmake` file.
 - If the repo has only one project, it is in `REPO-ROOT/Test/Linux`.
@@ -58,7 +57,3 @@ Call `REPO-ROOT/.github/Ubuntu/build.sh -f` for full rebuild.
 `build.sh` will also run other script files in that folder; you may need to run `chmod +x` if any script file is blocked.
 
 Only the "debug x64" configuration is supported on Linux. If you are instructed to build and run other configuration, ignore it.
-
-## macOS Specific
-
-(to be editing...)
