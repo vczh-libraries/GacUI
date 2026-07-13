@@ -694,6 +694,10 @@ public:
 		auto binaryName64 = WString::Unmanaged(L"Reflection64.bin");
 		{
 			File metadataOverride = exeFolder / L"Metadata.txt";
+			if (!metadataOverride.Exists())
+			{
+				metadataOverride = exeFolder / L"../Metadata.txt";
+			}
 			if (metadataOverride.Exists())
 			{
 				List<WString> lines;
@@ -703,7 +707,7 @@ public:
 					Console::WriteLine(L"Metadata.txt should contains 3 lines for <MetadataFolder>, <Binary for x86>, <Binary for x64>.");
 					CHECK_FAIL(L"Metadata.txt should contains 3 lines for <MetadataFolder>, <Binary for x86>, <Binary for x64>.");
 				}
-				metadataFolder = exeFolder / lines[0];
+				metadataFolder = metadataOverride.GetFilePath().GetFolder() / lines[0];
 				binaryName32 = lines[1];
 				binaryName64 = lines[2];
 			}
