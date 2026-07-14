@@ -45,3 +45,15 @@ Build GacJS, require its generated index page to be reachable, and use a visible
 A source scan finds the rest of the compile migration surface that will become reachable after fixing that first shared source: `RemotingTest_Core` has three `NamedPipeServer` references and two `HttpServer` references, while `RemotingTest_Rendering_Win32` constructs one `NamedPipeClient` and one `HttpClient`. These are exactly the concrete Windows transport types moved by VlppOS; no other stale concrete transport reference exists under GacUI `Source` or `Test`.
 
 # PROPOSALS
+
+- No.1 Qualify concrete Windows transport types at GacUI composition boundaries
+
+## No.1 Qualify concrete Windows transport types at GacUI composition boundaries
+
+Keep the VlppOS namespace separation intact and migrate only GacUI's concrete transport composition points. Change `HttpAutomationService` to inherit from `vl::inter_process::windows_http::HttpServerApi`. In `RemotingTest_Core`, bind the HTTP server wrapper to `vl::inter_process::windows_http::HttpServer` and the named-pipe wrapper plus its type comparison to `vl::inter_process::named_pipe::NamedPipeServer`. In `RemotingTest_Rendering_Win32`, construct `vl::inter_process::windows_http::HttpClient` and `vl::inter_process::named_pipe::NamedPipeClient`.
+
+Do not add compatibility aliases in `vl::inter_process` and do not import either concrete namespace globally. The explicit qualifications preserve the visible transport boundary while generic `INetworkProtocolClient`, channel, wait-result and status APIs remain in their existing parent namespace.
+
+After the source migration, build Debug x64 and run GacUI `UnitTest`, then complete every native HTTP, native named-pipe, browser RPT and GacJS E2E gate documented under `# TEST`. Regenerate GacUI's Release through the prescribed monorepo build only after all source behavior is verified.
+
+### CODE CHANGE
