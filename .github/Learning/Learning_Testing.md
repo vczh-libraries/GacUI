@@ -11,6 +11,8 @@
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
 - Caret navigation tests: type markers to expose caret [3]
 - Avoid duplicate tests across related categories [3]
+- Validate GacJS RPT through browser UI interactions [3]
+- Validate imported dependency APIs with GacUI build and unit test [3]
 - Account for eager child preparation in item-provider tests [2]
 - Isolate callbacks per test case (fresh log + callback) [2]
 - Prefer comments that name the exercised interface [2]
@@ -23,10 +25,9 @@
 - Use `AssertItems`/`AssertCallbacks` for visible item lists [2]
 - Unit-test renderer `CaretLineLast` should treat CRLF as newline [2]
 - Verify GacJS HTTP fatal errors through browser UI [2]
-- Validate GacJS RPT through browser UI interactions [2]
-- Validate imported dependency APIs with GacUI build and unit test [2]
 - Verify `/IO` synchronous errors and queued success separately [2]
 - Native modal dialogs block GacUI HTTP automation [2]
+- Verify remoting imports with both HTTP and named-pipe flows [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
 - Skip callback plumbing when not asserting callbacks [1]
@@ -64,7 +65,6 @@
 - Empty item sources and empty `childrenProperty` only trigger `OnAttached` [1]
 - Prefer single cohesive smoke tests when setup-heavy [1]
 - Inline-object caret tests: cover every valid caret position one frame at a time [1]
-- Verify remoting imports with both HTTP and named-pipe flows [1]
 - Verify DarkSkin cursor ownership through regression and Playground automation [1]
 
 # Refinements
