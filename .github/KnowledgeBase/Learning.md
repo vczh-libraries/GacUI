@@ -215,7 +215,7 @@ When a generator produces runnable sample applications, verify the generated out
 
 When a shared dispatcher schema such as `Rpc.d.ts` changes, type-check the shared schema itself as well as generated fixtures so envelope changes are caught even before concrete generated values instantiate every request shape.
 
-For a released VlppOS namespace change, validate Workflow through the ChatBot SOP and validate GacUI through `RemotingTest_Core` and `RemotingTest_Rendering_Win32` with `/RCP /HTTP`, plus GacJS against `RemotingTest_Core`. An upstream build alone does not prove the imported public surface works.
+For a released VlppOS namespace change, validate Workflow through the ChatBot SOP and validate GacUI through `RemotingTest_Core /RPT /Http` with `RemotingTest_Rendering_Win32 /Http`, plus GacJS against the HTTP remoting core. An upstream build alone does not prove the imported public surface works.
 
 ## `vl::regex` separator regex: `L"[\\/\\\\]+"`
 
