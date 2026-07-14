@@ -54,6 +54,8 @@ Keep the VlppOS namespace separation intact and migrate only GacUI's concrete tr
 
 Do not add compatibility aliases in `vl::inter_process` and do not import either concrete namespace globally. The explicit qualifications preserve the visible transport boundary while generic `INetworkProtocolClient`, channel, wait-result and status APIs remain in their existing parent namespace.
 
+The first successful Debug x64 build can expose an existing MSVC C4297 warning in `RemotingTest_Rendering_Win32/Main.cpp`: the Windows entry point directly expands `CHECK_FAIL` to a throw for an invalid transport argument, even though `WinMain` is assumed not to throw. Meet the SOP's zero-warning gate by returning the function's already initialized `-1` result from that invalid-argument branch. This matches `RemotingTest_Core`, which validates bad switches by returning nonzero instead of throwing across the process entry boundary, and does not alter either valid `/Pipe` or `/Http` path.
+
 After the source migration, build Debug x64 and run GacUI `UnitTest`, then complete every native HTTP, native named-pipe, browser RPT and GacJS E2E gate documented under `# TEST`. Regenerate GacUI's Release through the prescribed monorepo build only after all source behavior is verified.
 
 ### CODE CHANGE
