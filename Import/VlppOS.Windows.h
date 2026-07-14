@@ -6,7 +6,68 @@ DEVELOPER: Zihan Chen(vczh)
 #include "Vlpp.h"
 
 /***********************************************************************
-.\NETWORKPROTOCOL.WINDOWS.H
+.\ASYNCSOCKET\ASYNCSOCKET.WINDOWS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Windows implementation of IAsyncSocket(Server|Client)
+
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_ASYNCSOCKET_WINDOWS
+#define VCZH_INTERPROCESS_ASYNCSOCKET_WINDOWS
+
+// Winsock must precede every include that can include windows.h.
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <WinSock2.h>
+#include <MSWSock.h>
+#define _WINSOCKAPI_
+#include <Windows.h>
+
+
+namespace vl::inter_process::async_tcp_socket::windows_socket
+{
+	class AsyncSocketServer : public Object, public virtual IAsyncSocketServer
+	{
+	private:
+		class Impl;
+		Impl*								impl = nullptr;
+
+	public:
+		AsyncSocketServer(vint port);
+		~AsyncSocketServer();
+
+		WaitForClientResult					OnClientConnected(IAsyncSocketConnection* connection) override;
+		void								Start() override;
+		void								Stop() override;
+		bool								IsStopped() override;
+	};
+
+	class AsyncSocketClient : public Object, public virtual IAsyncSocketClient
+	{
+	private:
+		class Impl;
+		Impl*								impl = nullptr;
+
+	public:
+		AsyncSocketClient(vint port);
+		~AsyncSocketClient();
+
+		IAsyncSocketConnection*				GetConnection() override;
+		void								WaitForServer() override;
+		ClientStatus						GetStatus() override;
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\WINDOWS\NETWORKPROTOCOL.WINDOWS.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -62,7 +123,7 @@ namespace vl::inter_process
 
 
 /***********************************************************************
-.\HTTPCLIENTAPI.WINDOWS.H
+.\WINDOWS\HTTPCLIENTAPI.WINDOWS.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -77,7 +138,7 @@ Interfaces:
 #define VCZH_INTERPROCESS_WINDOWS_HTTPCLIENTAPI
 
 
-namespace vl::inter_process
+namespace vl::inter_process::windows_http
 {
 
 /// <summary>An http request.</summary>
@@ -218,7 +279,7 @@ public:
 
 
 /***********************************************************************
-.\HTTPCLIENT.WINDOWS.H
+.\WINDOWS\HTTPCLIENT.WINDOWS.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -233,7 +294,7 @@ Interfaces:
 #define VCZH_INTERPROCESS_WINDOWS_HTTPCLIENT
 
 
-namespace vl::inter_process
+namespace vl::inter_process::windows_http
 {
 
 class HttpClient : public Object, public virtual INetworkProtocolConnection, public virtual INetworkProtocolClient
@@ -328,7 +389,7 @@ public:
 
 
 /***********************************************************************
-.\HTTPSERVERAPI.WINDOWS.H
+.\WINDOWS\HTTPSERVERAPI.WINDOWS.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -343,7 +404,7 @@ Interfaces:
 #define VCZH_INTERPROCESS_WINDOWS_HTTPSERVERAPI
 
 
-namespace vl::inter_process
+namespace vl::inter_process::windows_http
 {
 
 /// <summary>A response to be sent by <see cref="HttpServerApi"/>.</summary>
@@ -423,7 +484,7 @@ public:
 
 
 /***********************************************************************
-.\HTTPSERVER.WINDOWS.H
+.\WINDOWS\HTTPSERVER.WINDOWS.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -438,7 +499,7 @@ Interfaces:
 #define VCZH_INTERPROCESS_WINDOWS_HTTPSERVER
 
 
-namespace vl::inter_process
+namespace vl::inter_process::windows_http
 {
 
 class HttpServer;
@@ -525,7 +586,7 @@ public:
 
 
 /***********************************************************************
-.\NAMEDPIPE.WINDOWS.H
+.\WINDOWS\NAMEDPIPE.WINDOWS.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -541,7 +602,7 @@ Interfaces:
 #define VCZH_INTERPROCESS_WINDOWS_NAMEDPIPE
 
 
-namespace vl::inter_process
+namespace vl::inter_process::named_pipe
 {
 
 class NamedPipeServer;
