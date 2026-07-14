@@ -97,7 +97,7 @@ A `ConditionVariable` works with a `CriticalSection` or a `ReaderWriterLock`.
 ### ConditionVariable with CriticalSection
 
 - Call `SleepWith` to work with a `CriticalSection`. It works on both Windows and Linux.
-- Call `SleepWithForTime` to work with a `CriticalSection` with a timeout. It only works on Windows.
+- Call `SleepWithForTime` to work with a `CriticalSection` with a timeout. It works on Windows and GCC platforms (Linux and macOS).
 
 ### ConditionVariable with ReaderWriterLock
 
@@ -148,8 +148,8 @@ All automation macros (`SPIN_LOCK`, `CS_LOCK`, `READER_LOCK`, `WRITER_LOCK`) pro
 ### Platform Differences
 
 Synchronization behavior varies across platforms:
-- Windows: Full support for all features including timeout operations
-- Linux: Limited timeout support for some operations
+- Windows: Full support for all condition-variable lock and timeout combinations
+- GCC platforms: `CriticalSection` supports both `SleepWith` and `SleepWithForTime`; reader/writer-lock condition-variable waits remain Windows-only
 - Cross-platform code should avoid Windows-only features when possible
 
 ### Deadlock Prevention

@@ -8,7 +8,7 @@ All locks mentioned here implements `WaitableObject`. A `WaitableObject` offer t
 
 - `Wait`: wait until it signals. It could return false meaning the wait operation did not succeed and there is no guarantee about the status of the `WaitableObject`.
 - `WaitForTime`: wait until it signals with a timeout. It could return false like `Wait`, including reaching the timeout.
-  - IMPORTANT: it is Windows only.
+  - IMPORTANT: this base-interface API is Windows-only. `EventObject` additionally exposes its own GCC `WaitForTime` implementation.
 
 ### Multiple Object Waiting
 
@@ -76,6 +76,7 @@ Use `EventObject` for event signaling across processes.
 Use `Signal`, `Unsignal` for event object state management.
 
 - Calling `Wait` will block the current thread until it is signaled.
+- Calling `WaitForTime` will block until it is signaled or the timeout expires. It is available on Windows and GCC platforms.
 - Calling `Signal` to signal an event object.
 - Calling `Unsignal` to unsignal an event object.
 
@@ -130,7 +131,7 @@ Guidelines for effective use of waitable objects:
 Feature availability varies by platform:
 
 - **Windows**: Full support for all waitable object features
-- **Linux**: Limited timeout support and fewer object types
+- **GCC platforms**: `EventObject` supports single-object timed waits; the base and multiple-object timed-wait APIs remain Windows-only
 - **Portability**: Stick to basic features for cross-platform compatibility
 
 ### Integration Patterns

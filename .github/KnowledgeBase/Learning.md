@@ -2,26 +2,26 @@
 
 # Orders
 
-- Process staged tasks one by one with verification [16]
-- Verify generated artifacts with downstream consumer checks [10]
-- Port fixes from imports to source repositories [9]
+- Process staged tasks one by one with verification [18]
+- Verify generated artifacts with downstream consumer checks [12]
+- Port fixes from imports to source repositories [11]
+- Keep design documentation aligned with code after refactoring [7]
 - Crash early instead of adding error-tolerance fallbacks [6]
 - Proactively remove code made redundant by refactoring [6]
 - Make `Stop()` drain asynchronous work before returning [6]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
-- Keep design documentation aligned with code after refactoring [4]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [3]
+- Extract abstractions only for real shared behavior [3]
+- Validate expectations against implementation and existing tests [3]
 - Capture dependent lambdas explicitly [2]
 - Don't assume observable changes are batched [2]
 - Do not assume async callback owners are heap allocated [2]
-- Extract abstractions only for real shared behavior [2]
 - Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages [2]
 - Prefer simple calls before interface casts [2]
-- Validate expectations against implementation and existing tests [2]
 - Treat Debug memory leak dumps as required failures [2]
+- Fix behavior at the owning state instead of patching symptoms [2]
 - Prefer well-defined tests over ambiguous edge cases [1]
-- Fix behavior at the owning state instead of patching symptoms [1]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
 - Use named sentinel constants instead of raw values [1]
@@ -89,6 +89,8 @@ When refactoring client/server or similar paired implementations, extract common
 
 For role-specific implementations, extract a base that contains only truly shared state and operations. Keep transport-only or role-only members in the concrete subtype so no implementation inherits fields that do not apply to it.
 
+When several platform implementations must satisfy the same behavioral contract, define and register each scenario once in a platform-neutral runner and parameterize only the concrete types and genuine platform seams. Duplicating test registrations per platform invites feature drift.
+
 ## Make `Stop()` drain asynchronous work before returning
 
 If an API exposes `Stop()`, callers should be able to rely on it as the shutdown boundary: after it returns, no pending action, wait callback, overlapped I/O, or async completion should still touch the object. Do not paper over a broken `Stop()` with sleeps in tests; fix the stop path.
@@ -113,11 +115,15 @@ When importing multiple dependency releases into GacUI, keep the chain explicit:
 
 If a Workflow task exposes a `VlppReflection` collection-wrapper issue, fix the wrapper behavior in `VlppReflection`, regenerate and verify its release output, then update the Workflow import from that release instead of patching Workflow's imported copy.
 
+When a VlppOS public namespace refactor changes released APIs, regenerate the VlppOS release and update Workflow and GacUI from that release before repairing downstream build breaks; do not patch imported copies.
+
 ## Validate expectations against implementation and existing tests
 
 Before encoding expectations (especially for return value conventions and error semantics), read the relevant implementation and check existing tests for established patterns. This reduces churn from mismatched assumptions (e.g. public API returning a normalized error value even if internals use different sentinel codes).
 
 This also applies to enums and API surface: verify that enum values and method names/signatures actually exist before using them.
+
+For regression tests, verify that the proposed case actually distinguishes broken and fixed behavior. A positive control can pass under both implementations, so retain a root-cause-sensitive reproduction and assert the relevant observable boundary, such as callback count and range, rather than only a coarse aggregate result.
 
 ## Prefer `operator<=> = default` for lexicographic key structs
 
@@ -209,6 +215,8 @@ When a generator produces runnable sample applications, verify the generated out
 
 When a shared dispatcher schema such as `Rpc.d.ts` changes, type-check the shared schema itself as well as generated fixtures so envelope changes are caught even before concrete generated values instantiate every request shape.
 
+For a released VlppOS namespace change, validate Workflow through the ChatBot SOP and validate GacUI through `RemotingTest_Core` and `RemotingTest_Rendering_Win32` with `/RCP /HTTP`, plus GacJS against `RemotingTest_Core`. An upstream build alone does not prove the imported public surface works.
+
 ## `vl::regex` separator regex: `L"[\\/\\\\]+"`
 
 In `vl::regex::Regex`, both `/` and `\\` are escaping characters, and incorrect escaping inside `[]` can throw errors like `Illegal character set definition.`
@@ -255,6 +263,12 @@ For application refactors, remove helper wrappers that only duplicate an already
 
 When a refactoring changes architecture or behavior, update the corresponding design documents in the same task rather than deferring it. After a structural change, re-read the related documents and reconcile anything that became misaligned (for example, descriptions of a transport path that no longer exists). Treat documentation drift left by a previous refactoring as part of the current cleanup.
 
+Public namespace refactors require corresponding knowledge-base and documentation-site updates; publish the site when its generated or documented surface actually changes.
+
+Once a shared behavioral suite already exists, follow-up platform implementation task documents should point to binding and running that suite rather than requesting duplicate test cases. Reuse authoritative platform details from existing design documents and preserve explicit out-of-scope sections.
+
 ## Fix behavior at the owning state instead of patching symptoms
 
 When a bug is caused by state attached to a temporary or overly broad owner, move the state to the object or region that semantically owns it. Avoid compensating fixes such as forcing override values on every affected descendant, duplicating a template/resource just to mask inherited state, or adding side-channel code that only makes the symptom disappear. If a proposed fix looks like a patch, revisit the ownership boundary and preserve naturally correct inherited/default behavior for unaffected parts.
+
+When an incremental API receives encoded code units but downstream logic consumes complete logical values, keep partial assembly or decoding state in the stream-processing object. Do not change the public input unit or force every caller to assemble complete values merely to fit an internal helper.
