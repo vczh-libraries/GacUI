@@ -132,8 +132,8 @@ Inter-process text transport and typed named-channel communication for applicati
 - Use `INetworkProtocolServer`, `INetworkProtocolClient`, `INetworkProtocolConnection` and `INetworkProtocolCallback` for raw asynchronous text-message transport.
 - Use `IChannelServer<TPackage>`, `IChannelClient<TPackage>`, `IChannel<TPackage>` and `IChannelReader<TPackage>` for typed named channels with client ids, direct sends, broadcasts and batched writes.
 - Use `NetworkProtocolChannelServer<TPackage, TSerialization, TServerBase>`, `NetworkProtocolChannelClient<TPackage, TSerialization>` and `NetworkProtocolLocalChannelClient<TPackage, TSerialization>` for the default channel implementation over an `INetworkProtocol*` transport.
-- Use `NamedPipeServer` / `NamedPipeClient` and `HttpServer` / `HttpClient` only when targeting Windows, because the current built-in NamedPipe and HTTP implementations are Windows-only.
-- Use `HttpClientApi` and `HttpServerApi` when implementing or maintaining the Windows HTTP transport layer directly.
+- Use `vl::inter_process::named_pipe::NamedPipeServer` / `vl::inter_process::named_pipe::NamedPipeClient` and `vl::inter_process::windows_http::HttpServer` / `vl::inter_process::windows_http::HttpClient` only when targeting Windows, because the current built-in NamedPipe and HTTP implementations are Windows-only.
+- Use `vl::inter_process::windows_http::HttpClientApi` and `vl::inter_process::windows_http::HttpServerApi` when implementing or maintaining the Windows HTTP transport layer directly.
 
 [API Explanation](./KB_VlppOS_InterProcessNetworkProtocolsAndChannels.md)
 

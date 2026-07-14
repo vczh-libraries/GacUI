@@ -4,9 +4,9 @@
 
 The `vl::inter_process` namespace is designed for inter-process communication. Some abstractions are general enough to carry messages inside one process or across a custom transport, but the lifecycle, error handling, connection model and naming are intended for communication between processes.
 
-The built-in `INetworkProtocol*` transports should be treated as reference implementations, validation targets and demo-friendly options. The current concrete `NamedPipeServer` / `NamedPipeClient` and `HttpServer` / `HttpClient` implementations are Windows-only, and they are not meant to be the only production transport choice for every application.
+The built-in `INetworkProtocol*` transports should be treated as reference implementations, validation targets and demo-friendly options. The current concrete `vl::inter_process::named_pipe::NamedPipeServer` / `vl::inter_process::named_pipe::NamedPipeClient` and `vl::inter_process::windows_http::HttpServer` / `vl::inter_process::windows_http::HttpClient` implementations are Windows-only, and they are not meant to be the only production transport choice for every application.
 
-This distinction is especially important for HTTP. `HttpServer` and `HttpClient` are raw `INetworkProtocol*` reference/demo transports, while `HttpServerApi` and `HttpClientApi` are lower-level Windows HTTP helper utilities. When a Windows feature needs HTTP request/response behavior directly, the helper utilities can still be used without adopting the inter-process raw transport as the feature contract.
+This distinction is especially important for HTTP. `vl::inter_process::windows_http::HttpServer` and `vl::inter_process::windows_http::HttpClient` are raw `INetworkProtocol*` reference/demo transports, while `vl::inter_process::windows_http::HttpServerApi` and `vl::inter_process::windows_http::HttpClientApi` are lower-level Windows HTTP helper utilities. When a Windows feature needs HTTP request/response behavior directly, the helper utilities can still be used without adopting the inter-process raw transport as the feature contract.
 
 When the built-in raw protocol implementation does not fit the platform, security model, deployment shape, performance target or reconnection behavior of a feature, implement a custom `INetworkProtocolServer`, `INetworkProtocolClient` and `INetworkProtocolConnection`. The default channel bridge can still be reused as long as the custom raw transport follows the `INetworkProtocol*` contract.
 
@@ -17,6 +17,8 @@ The inter-process communication APIs in `vl::inter_process` are layered:
 - The raw protocol layer, represented by `INetworkProtocolServer`, `INetworkProtocolClient`, `INetworkProtocolConnection` and `INetworkProtocolCallback`, exchanges asynchronous `WString` messages between a server and clients.
 - The channel layer, represented by `IChannelServer<TPackage>`, `IChannelClient<TPackage>`, `IChannel<TPackage>` and `IChannelReader<TPackage>`, builds typed named channels on top of a connected client id model.
 - The default bridge, represented by `NetworkProtocolChannelServer<TPackage, TSerialization, TServerBase>`, `NetworkProtocolChannelClient<TPackage, TSerialization>` and `NetworkProtocolLocalChannelClient<TPackage, TSerialization>`, serializes channel batches into raw `WString` messages over an `INetworkProtocol*` transport.
+
+The transport-agnostic contracts and channel templates stay directly in `vl::inter_process`. Windows concrete implementations are grouped by feature: named-pipe types are in `vl::inter_process::named_pipe`, and HTTP transport, helper, request, response and error types are in `vl::inter_process::windows_http`.
 
 The interfaces are transport-agnostic. Use the abstract interfaces in portable feature code, and bind them to concrete transports at application composition boundaries.
 
@@ -202,7 +204,7 @@ Channel message semantics:
 
 `NetworkProtocolChannelServer<TPackage, TSerialization, TServerBase>` combines the channel server with a raw protocol server.
 
-- `TServerBase` is a concrete `INetworkProtocolServer` implementation, such as `NamedPipeServer` or `HttpServer`.
+- `TServerBase` is a concrete `INetworkProtocolServer` implementation, such as `vl::inter_process::named_pipe::NamedPipeServer` or `vl::inter_process::windows_http::HttpServer`.
 - The class inherits `TServerBase`, `IChannelServer<TPackage>` and the private local-client server interface.
 - `Start` records the channel server as started, then calls `TServerBase::Start`.
 - Raw `OnClientConnected(INetworkProtocolConnection*)` rejects connections before start or after stop, creates a pending connection context, installs a raw callback, starts raw reading, and waits for the channel handshake.
@@ -245,11 +247,11 @@ To build a typed channel application over a raw transport:
 
 ## Current Windows-Only Raw Transports
 
-The built-in `NamedPipeServer` / `NamedPipeClient` and `HttpServer` / `HttpClient` classes are currently Windows-only implementations of the raw protocol interfaces. They should not be treated as cross-platform transport classes.
+The built-in `vl::inter_process::named_pipe::NamedPipeServer` / `vl::inter_process::named_pipe::NamedPipeClient` and `vl::inter_process::windows_http::HttpServer` / `vl::inter_process::windows_http::HttpClient` classes are currently Windows-only implementations of the raw protocol interfaces. They should not be treated as cross-platform transport classes.
 
-### `NamedPipeServer` and `NamedPipeClient`
+### `vl::inter_process::named_pipe::NamedPipeServer` and `vl::inter_process::named_pipe::NamedPipeClient`
 
-`NamedPipeConnection` implements `INetworkProtocolConnection`. `NamedPipeClient` derives from `NamedPipeConnection` and implements `INetworkProtocolClient`. `NamedPipeServer` implements `INetworkProtocolServer`.
+`vl::inter_process::named_pipe::NamedPipeConnection` implements `INetworkProtocolConnection`. `vl::inter_process::named_pipe::NamedPipeClient` derives from `vl::inter_process::named_pipe::NamedPipeConnection` and implements `INetworkProtocolClient`. `vl::inter_process::named_pipe::NamedPipeServer` implements `INetworkProtocolServer`.
 
 - `NamedPipeServer::Start` begins overlapped named-pipe accepting.
 - `NamedPipeServer` keeps both accepted `NamedPipeConnection` objects and pending `ConnectNamedPipe` operations.
@@ -262,9 +264,9 @@ The built-in `NamedPipeServer` / `NamedPipeClient` and `HttpServer` / `HttpClien
 - `NamedPipeConnection::Stop` cancels pending overlapped pipe I/O, unregisters pending waits, waits for pending callbacks, and closes handles.
 - `NamedPipeServer::Stop` drains both pending accepts and accepted connections.
 
-### `HttpServer` and `HttpClient`
+### `vl::inter_process::windows_http::HttpServer` and `vl::inter_process::windows_http::HttpClient`
 
-`HttpClient` implements both `INetworkProtocolConnection` and `INetworkProtocolClient`. `HttpServer` derives from `HttpServerApi` and implements `INetworkProtocolServer`. This is also a Windows-only reference/demo implementation.
+`vl::inter_process::windows_http::HttpClient` implements both `INetworkProtocolConnection` and `INetworkProtocolClient`. `vl::inter_process::windows_http::HttpServer` derives from `vl::inter_process::windows_http::HttpServerApi` and implements `INetworkProtocolServer`. This is also a Windows-only reference/demo implementation.
 
 The HTTP protocol uses three routes:
 
@@ -282,7 +284,7 @@ The HTTP protocol uses three routes:
 - `/Request` failures are retried while the client is still running.
 - `HttpClient::Stop` stops the underlying `HttpClientApi`, signals any waiting `WaitForServer`, and reports `OnDisconnected`.
 
-`HttpServer` and `HttpServerConnection` behavior:
+`vl::inter_process::windows_http::HttpServer` and `vl::inter_process::windows_http::HttpServerConnection` behavior:
 
 - On `/Connect`, `HttpServer` creates a `HttpServerConnection`, assigns a GUID, calls `OnClientConnected`, and returns the per-connection request and response URLs, or rejects with an HTTP error response.
 - `HttpServerConnection::BeginReadingLoopUnsafe` is a no-op because `HttpServerApi` owns the receive loop.
@@ -295,7 +297,7 @@ The HTTP protocol uses three routes:
 
 ## Windows HTTP Helper Layer
 
-`HttpClientApi` and `HttpServerApi` are reusable Windows helper classes used by `HttpClient` and `HttpServer`. Use `HttpClient` and `HttpServer` only when the reference/demo raw `INetworkProtocol*` transport is the desired shape; use the helper APIs directly when a Windows-specific feature needs lower-level HTTP request/response behavior.
+`vl::inter_process::windows_http::HttpClientApi` and `vl::inter_process::windows_http::HttpServerApi` are reusable Windows helper classes used by `vl::inter_process::windows_http::HttpClient` and `vl::inter_process::windows_http::HttpServer`. The supporting `HttpRequest`, `HttpResponse`, `HttpError` and `HttpServerResponse` value types are in the same `vl::inter_process::windows_http` namespace. Use the raw transport classes only when the reference/demo `INetworkProtocol*` shape is desired; use the helper APIs directly when a Windows-specific feature needs lower-level HTTP request/response behavior.
 
 `HttpClientApi` owns one WinHTTP session and connection for one host and port.
 

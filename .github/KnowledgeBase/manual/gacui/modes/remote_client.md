@@ -42,7 +42,7 @@ void GuiMain()
 int StartNamedPipeRemoteRenderer()
 {
     auto jsonParser = Ptr(new glr::json::Parser);
-    auto networkClient = Ptr(new inter_process::NamedPipeClient(L"GacUIRemoteProtocolNamedPipe"));
+    auto networkClient = Ptr(new inter_process::named_pipe::NamedPipeClient(L"GacUIRemoteProtocolNamedPipe"));
 
     GuiRemoteProtocolChannelClient channelClient(networkClient, jsonParser);
     GuiRemoteProtocolAsyncJsonChannelRenderer asyncRendererChannel(channelClient.GetProtocolChannel());

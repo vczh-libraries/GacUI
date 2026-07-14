@@ -3,7 +3,7 @@
 A remote protocol core application is a normal GacUI application that calls SetupRemoteNativeController. It becomes headless and is forced into hosted mode. The core does not draw to an OS native window; it sends JSON remote protocol packages through a vl::inter_process channel.
 
 The standard C++ path is small:
-- Start a GuiRemoteProtocolNetworkChannelServer\<TServerBase\> over an INetworkProtocolServer implementation such as NamedPipeServer or HttpServer.
+- Start a GuiRemoteProtocolNetworkChannelServer\<TServerBase\> over an INetworkProtocolServer implementation such as **vl::inter_process::named_pipe::NamedPipeServer** or **vl::inter_process::windows_http::HttpServer**.
 - Connect the core to that server with GuiRemoteProtocolLocalChannelClient.
 - Wrap the core channel with GuiRemoteProtocolAsyncJsonChannel and GuiRemoteProtocolCoreChannel.
 - Pass the protocol, usually after GuiRemoteProtocolFilter and GuiRemoteProtocolDomDiffConverter, to SetupRemoteNativeController.
@@ -19,9 +19,9 @@ using namespace vl::presentation::remoteprotocol::channeling;
 using namespace vl::presentation::remoteprotocol::repeatfiltering;
 
 class NamedPipeRemoteCoreServer
-    : public GuiRemoteProtocolNetworkChannelServer<inter_process::NamedPipeServer>
+    : public GuiRemoteProtocolNetworkChannelServer<inter_process::named_pipe::NamedPipeServer>
 {
-    using Base = GuiRemoteProtocolNetworkChannelServer<inter_process::NamedPipeServer>;
+    using Base = GuiRemoteProtocolNetworkChannelServer<inter_process::named_pipe::NamedPipeServer>;
 
     EventObject rendererConnected;
 

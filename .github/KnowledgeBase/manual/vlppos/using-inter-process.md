@@ -177,11 +177,11 @@ using namespace vl;
 using namespace vl::inter_process;
 
 class ChatServer
-    : public NetworkProtocolChannelServer<WString, WStringListSerializer, NamedPipeServer>
+    : public NetworkProtocolChannelServer<WString, WStringListSerializer, named_pipe::NamedPipeServer>
 {
 public:
     ChatServer(const WString& pipeName)
-        : NetworkProtocolChannelServer<WString, WStringListSerializer, NamedPipeServer>(pipeName)
+        : NetworkProtocolChannelServer<WString, WStringListSerializer, named_pipe::NamedPipeServer>(pipeName)
     {
     }
 
@@ -206,28 +206,28 @@ The concrete raw protocol implementations currently provided by VlppOS are Windo
 
 ### Named Pipe Transport
 
-**NamedPipeServer** implements **INetworkProtocolServer**. **NamedPipeClient** derives from **NamedPipeConnection** and implements **INetworkProtocolClient**. **NamedPipeConnection** implements **INetworkProtocolConnection**.
+**vl::inter_process::named_pipe::NamedPipeServer** implements **INetworkProtocolServer**. **vl::inter_process::named_pipe::NamedPipeClient** derives from **vl::inter_process::named_pipe::NamedPipeConnection** and implements **INetworkProtocolClient**. **vl::inter_process::named_pipe::NamedPipeConnection** implements **INetworkProtocolConnection**.
 
 The server starts overlapped named-pipe accepting in **Start** and owns both accepted connections and pending accepts. The client opens **\\.\pipe\NAME**, waits for the server and switches the pipe into message-read mode. **SendString** frames one **WString** with length data. The implementation chunks writes because a Windows named pipe message is limited to 64K bytes. Broken-pipe cases become disconnection events, and fatal local pipe failures become **OnLocalError** followed by disconnection.
 
 ### HTTP Transport
 
-**HttpServer** derives from **HttpServerApi** and implements **INetworkProtocolServer**. **HttpClient** implements both **INetworkProtocolClient** and **INetworkProtocolConnection**. This transport is a raw protocol implementation over Windows HTTP APIs, not a general web framework.
+**vl::inter_process::windows_http::HttpServer** derives from **vl::inter_process::windows_http::HttpServerApi** and implements **INetworkProtocolServer**. **vl::inter_process::windows_http::HttpClient** implements both **INetworkProtocolClient** and **INetworkProtocolConnection**. This transport is a raw protocol implementation over Windows HTTP APIs, not a general web framework.
 
 The raw HTTP protocol uses these routes under the configured base URL:
 - **GET /VlppInterProcess/Connect** creates a logical connection and returns per-connection request and response URLs.
 - **POST /VlppInterProcess/Request/GUID** is the client-maintained long-poll request for server-to-client messages.
 - **POST /VlppInterProcess/Response/GUID** sends client-to-server messages and may also receive one queued server-to-client message.
 
-**HttpClient::WaitForServer** sends the connect request, validates the returned URLs, records them and reports connection. **BeginReadingLoopUnsafe** starts the long-poll request loop. **SendString** posts to the response URL. Connect and response failures retry a limited number of times; request failures retry while the client is still running.
+**vl::inter_process::windows_http::HttpClient::WaitForServer** sends the connect request, validates the returned URLs, records them and reports connection. **BeginReadingLoopUnsafe** starts the long-poll request loop. **SendString** posts to the response URL. Connect and response failures retry a limited number of times; request failures retry while the client is still running.
 
-**HttpServer** creates a **HttpServerConnection** for each connect request. Server-to-client messages are returned through a pending long-poll request when possible, or queued until the next request. Client-to-server request bodies are dispatched as inbound strings. When the server stops, pending long-poll requests are cancelled and connection callbacks receive disconnection.
+**vl::inter_process::windows_http::HttpServer** creates a **vl::inter_process::windows_http::HttpServerConnection** for each connect request. Server-to-client messages are returned through a pending long-poll request when possible, or queued until the next request. Client-to-server request bodies are dispatched as inbound strings. When the server stops, pending long-poll requests are cancelled and connection callbacks receive disconnection.
 
 ### Windows HTTP Helper APIs
 
-**HttpClientApi** and **HttpServerApi** are lower-level Windows helpers used by **HttpClient** and **HttpServer**. Use them directly when a Windows feature needs asynchronous HTTP request and response behavior without adopting the raw **INetworkProtocol** transport shape.
+**vl::inter_process::windows_http::HttpClientApi** and **vl::inter_process::windows_http::HttpServerApi** are lower-level Windows helpers used by **vl::inter_process::windows_http::HttpClient** and **vl::inter_process::windows_http::HttpServer**. Use them directly when a Windows feature needs asynchronous HTTP request and response behavior without adopting the raw **INetworkProtocol** transport shape.
 
-**HttpClientApi** owns one WinHTTP session and connection for a host and port. **HttpQuery** sends one asynchronous request described by **HttpRequest**, whose fields include method, query, body, content type, accept types, credentials, cookies, extra headers and timeouts. Results are either **HttpResponse** or **HttpError**; HTTP status codes such as 404 are represented as **HttpResponse** values.
+**vl::inter_process::windows_http::HttpClientApi** owns one WinHTTP session and connection for a host and port. **HttpQuery** sends one asynchronous request described by **vl::inter_process::windows_http::HttpRequest**, whose fields include method, query, body, content type, accept types, credentials, cookies, extra headers and timeouts. Results are either **vl::inter_process::windows_http::HttpResponse** or **vl::inter_process::windows_http::HttpError**; HTTP status codes such as 404 are represented as **HttpResponse** values.
 
-**HttpServerApi** owns one HTTP.sys URL prefix. Override **OnHttpRequestReceived** to dispatch requests and **OnHttpServerStopping** to clean up feature state. Helpers such as **GetUtf8Body**, **SendResponse** and **SendResponseUtf8** handle common request-body and response tasks.
+**vl::inter_process::windows_http::HttpServerApi** owns one HTTP.sys URL prefix. Override **OnHttpRequestReceived** to dispatch requests and **OnHttpServerStopping** to clean up feature state. Helpers such as **GetUtf8Body**, **SendResponse** and **SendResponseUtf8** handle common request-body and response tasks.
 
