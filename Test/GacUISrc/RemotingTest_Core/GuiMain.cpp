@@ -142,9 +142,9 @@ namespace
 		}
 	};
 
-	class NamedPipeRemotingChannelServer : public RemotingChannelServerBase<inter_process::NamedPipeServer>
+	class NamedPipeRemotingChannelServer : public RemotingChannelServerBase<inter_process::named_pipe::NamedPipeServer>
 	{
-		using Base = RemotingChannelServerBase<inter_process::NamedPipeServer>;
+		using Base = RemotingChannelServerBase<inter_process::named_pipe::NamedPipeServer>;
 
 	public:
 		NamedPipeRemotingChannelServer(Ptr<glr::json::Parser> parser, const WString& pipeName)
@@ -153,9 +153,9 @@ namespace
 		}
 	};
 
-	class HttpRemotingChannelServer : public RemotingChannelServerBase<inter_process::HttpServer>
+	class HttpRemotingChannelServer : public RemotingChannelServerBase<inter_process::windows_http::HttpServer>
 	{
-		using Base = RemotingChannelServerBase<inter_process::HttpServer>;
+		using Base = RemotingChannelServerBase<inter_process::windows_http::HttpServer>;
 
 	public:
 		HttpRemotingChannelServer(Ptr<glr::json::Parser> parser, const WString& baseUrl, vint port)
@@ -252,7 +252,7 @@ void StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr:
 	channelServer.SetCoreProtocolChannel(&channelSender);
 	protocolServer = &channelServer;
 	SetupRemoteNativeController(&diffConverterProtocol);
-	if constexpr (std::is_same_v<TServerBase, inter_process::NamedPipeServer>)
+	if constexpr (std::is_same_v<TServerBase, inter_process::named_pipe::NamedPipeServer>)
 	{
 		if (rendererClientId != -1)
 		{

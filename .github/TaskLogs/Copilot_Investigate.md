@@ -46,7 +46,7 @@ A source scan finds the rest of the compile migration surface that will become r
 
 # PROPOSALS
 
-- No.1 Qualify concrete Windows transport types at GacUI composition boundaries
+- No.1 Qualify concrete Windows transport types at GacUI composition boundaries [CONFIRMED]
 
 ## No.1 Qualify concrete Windows transport types at GacUI composition boundaries
 
@@ -59,3 +59,19 @@ The first successful Debug x64 build can expose an existing MSVC C4297 warning i
 After the source migration, build Debug x64 and run GacUI `UnitTest`, then complete every native HTTP, native named-pipe, browser RPT and GacJS E2E gate documented under `# TEST`. Regenerate GacUI's Release through the prescribed monorepo build only after all source behavior is verified.
 
 ### CODE CHANGE
+
+Updated the shared Windows automation provider so `HttpAutomationService` inherits from `inter_process::windows_http::HttpServerApi`. Updated `RemotingTest_Core` to use `inter_process::windows_http::HttpServer` and `inter_process::named_pipe::NamedPipeServer`, including its server-type comparison. Updated `RemotingTest_Rendering_Win32` to construct `inter_process::windows_http::HttpClient` and `inter_process::named_pipe::NamedPipeClient`.
+
+The first successful Debug x64 rebuild exposed MSVC C4297 at the renderer's `WinMain` invalid-argument branch. Replaced the throwing `CHECK_FAIL` there with `return result`; `result` is initialized to `-1`, while both valid transport branches are unchanged. The subsequent wrapper build completed with 0 warnings and 0 errors.
+
+Regenerated `Release/GacUI.Windows.cpp` with the prescribed monorepo build. The merged release now contains the same nested `windows_http::HttpServerApi` qualification as its source; no Release file was edited directly.
+
+### CONFIRMED
+
+The migration is exhaustive under GacUI `Source`, `Test`, and the generated Windows Release: no concrete `HttpServerApi`, `HttpServer`, `HttpClient`, `NamedPipeServer`, or `NamedPipeClient` reference remains directly under `inter_process`. An independent diff review confirmed all eight downstream transport references use the intended nested namespaces, the imported VlppOS files match the upstream Release, and the invalid-argument warning fix does not affect `/Pipe` or `/Http`.
+
+Debug x64 rebuilt with 0 warnings and 0 errors. The supported `UnitTest` wrapper passed 85/85 test files and 1690/1690 test cases, left no unfinished-log sentinel, and reported no memory leak. Native Remote Protocol Test verification passed for both `/RPT /Http` with renderer `/Http` and `/RPT /Pipe` with renderer `/Pipe`: both automation endpoints returned the expected `Remote Protocol Test` controls/DOM, two-way File-menu synchronization was exercised, the exit confirmation was handled, both processes exited, and port 8888 was released. The optional named-pipe error dialog did not appear.
+
+GacJS built all five packages and served the generated `index.html` and `index.js` at HTTP 200. In the browser, `/FCT /Http` rendered `Complete Control Showcase`, opened the Control tab, and round-tripped the unique Search value `ANAMESPACECHECK20260714`. With `/RPT /Http`, File > `self.Close() (InvokeInMainThread)` > OK exited the core and rendered exactly `IGacUIRenderer exited due to receiving RequestControllerConnectionStopped.` The complete current protocol inventory then passed all 6 files and 44 tests without skips or leaked processes; the other GacJS package suites passed 1/1 and 87/87 tests.
+
+Finally, `Tools\Tools\Build.ps1 GacUI` completed end to end with exit code 0 after Release Win32/x64 rebuilds, metadata generation and tests on both platforms, UnitTest on both platforms, Codepack release generation, GacGen, DarkSkin regeneration, and the final Codepack pass. File-dialog snapshot changes produced by the test runs were confirmed unrelated timing churn and excluded from this namespace change.

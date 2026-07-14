@@ -224,10 +224,10 @@ int StartClient(Ptr<inter_process::INetworkProtocolClient> networkClient)
 
 int StartNamedPipeClient()
 {
-	return StartClient(Ptr(new inter_process::NamedPipeClient(WString::Unmanaged(GacUIRemoteProtocolNamedPipeName))));
+	return StartClient(Ptr(new inter_process::named_pipe::NamedPipeClient(WString::Unmanaged(GacUIRemoteProtocolNamedPipeName))));
 }
 
 int StartHttpClient()
 {
-	return StartClient(Ptr(new inter_process::HttpClient(WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl), GacUIRemoteProtocolHttpPort)));
+	return StartClient(Ptr(new inter_process::windows_http::HttpClient(WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl), GacUIRemoteProtocolHttpPort)));
 }

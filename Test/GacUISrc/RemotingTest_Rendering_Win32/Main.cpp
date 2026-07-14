@@ -22,7 +22,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	}
 	else
 	{
-		CHECK_FAIL(L"WinMain(...)#The command line argument must be either /Pipe or /Http.");
+		return result;
 	}
 #if VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();

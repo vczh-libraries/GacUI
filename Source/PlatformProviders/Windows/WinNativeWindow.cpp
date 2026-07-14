@@ -2266,7 +2266,7 @@ WindowsAutomationServiceRenderer
 HttpAutomationService
 ***********************************************************************/
 
-			class HttpAutomationService : public inter_process::HttpServerApi
+			class HttpAutomationService : public inter_process::windows_http::HttpServerApi
 			{
 			protected:
 				WString			urlControls;
