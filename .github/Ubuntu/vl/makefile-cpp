@@ -3,23 +3,31 @@ USE_GCC?=NO
 
 # add "--stdlib=libc++" after bug #808086 is fixed
 
+CPP_DEPENDENCY_OPTIONS=-MMD -MP -MF $(@:.o=.d) -MT $@
+CPP_PLATFORM_NAME=$(shell uname -s)
+CPP_PLATFORM_COMPILE_OPTIONS=
 CPP_PLATFORM_LINK_OPTIONS=
-ifeq ($(shell uname -s),Darwin)
-CPP_PLATFORM_LINK_OPTIONS=-framework CoreFoundation
+ifeq ($(CPP_PLATFORM_NAME),Darwin)
+CPP_PLATFORM_COMPILE_OPTIONS=-fblocks
+CPP_PLATFORM_LINK_OPTIONS=-framework CoreFoundation -framework Network
+else ifeq ($(CPP_PLATFORM_NAME),Linux)
+CPP_PLATFORM_LINK_OPTIONS=-luring
+endif
+
+-include $(wildcard ./Obj/*.d)
+
+ifeq ($(USE_GCC), YES)
+CPP_LINK=g++ -std=c++20 -g -pthread -o $@ $^ $(CPP_LINK_OPTIONS) $(CPP_PLATFORM_LINK_OPTIONS)
+else ifeq ($(COVERAGE),NO)
+CPP_LINK=clang++ -std=c++20 -pthread -g $(CPP_COMPILE_OPTIONS) -o $@ $^ $(CPP_LINK_OPTIONS) $(CPP_PLATFORM_LINK_OPTIONS)
+else
+CPP_LINK=clang++ -std=c++20 -pthread -g --coverage -o $@ $^ $(CPP_LINK_OPTIONS) $(CPP_PLATFORM_LINK_OPTIONS)
 endif
 
 ifeq ($(USE_GCC), YES)
-CPP_LINK=g++ -std=c++20 -g -pthread $(CPP_LINK_OPTIONS) $(CPP_PLATFORM_LINK_OPTIONS) -o $@ $^
+CPP_COMPILE=g++ -std=c++20 -g $(CPP_COMPILE_OPTIONS) $(CPP_PLATFORM_COMPILE_OPTIONS) $(CPP_DEPENDENCY_OPTIONS) -o $@ -c $<
 else ifeq ($(COVERAGE),NO)
-CPP_LINK=clang++ -std=c++20 -pthread -g $(CPP_COMPILE_OPTIONS) $(CPP_LINK_OPTIONS) $(CPP_PLATFORM_LINK_OPTIONS) -o $@ $^
+CPP_COMPILE=clang++ -std=c++20 -g $(CPP_COMPILE_OPTIONS) $(CPP_PLATFORM_COMPILE_OPTIONS) $(CPP_DEPENDENCY_OPTIONS) -o $@ -c $<
 else
-CPP_LINK=clang++ -std=c++20 -pthread -g --coverage $(CPP_LINK_OPTIONS) $(CPP_PLATFORM_LINK_OPTIONS) -o $@ $^
-endif
-
-ifeq ($(USE_GCC), YES)
-CPP_COMPILE=g++ -std=c++20 -g $(CPP_COMPILE_OPTIONS) -o $@ -c $<
-else ifeq ($(COVERAGE),NO)
-CPP_COMPILE=clang++ -std=c++20 -g $(CPP_COMPILE_OPTIONS) -o $@ -c $<
-else
-CPP_COMPILE=clang++ -std=c++20 -g -fprofile-arcs -ftest-coverage $(CPP_COMPILE_OPTIONS) -o $@ -c $<
+CPP_COMPILE=clang++ -std=c++20 -g -fprofile-arcs -ftest-coverage $(CPP_COMPILE_OPTIONS) $(CPP_PLATFORM_COMPILE_OPTIONS) $(CPP_DEPENDENCY_OPTIONS) -o $@ -c $<
 endif

@@ -45,11 +45,12 @@ for CPP_ADD in "${CPP_ADDS[@]}"; do
 done
 
 CPP_FILE_LIST=("${CPP_FILES[@]}")
-printf -v CPP_FILES "%s\n" "${CPP_FILE_LIST[@]}"
-CPP_FILES=${CPP_FILES%?}
-
-O_FILES=`echo "${CPP_FILES}" | sed -E -e 's%([^/]*/)*([^/]+).cpp%./Obj/\2.o%g'`
-O_FILES=`echo ${O_FILES}`
+O_FILE_LIST=()
+for CPP_FILE in "${CPP_FILE_LIST[@]}"; do
+    O_FILE="$(printf "%s\n" "${CPP_FILE}" | sed -E -e 's%([^/]*/)*([^/]+).cpp%./Obj/\2.o%g')"
+    O_FILE_LIST+=("${O_FILE}")
+done
+O_FILES="${O_FILE_LIST[*]}"
 
 printf "%s\n" "${CPP_FILE_LIST[@]}" > vmake.txt
 #>
@@ -84,8 +85,10 @@ all:pre-build <#= ${TARGETS[@]} #>
 
 <#= $CPP_TARGET #>:<#= ${O_FILES} #>
 	$(CPP_LINK)
-<#echo "${CPP_FILES}" | while read -r CPP_FILE; do#>
+<#for CPP_FILE_INDEX in "${!CPP_FILE_LIST[@]}"; do#>
+<#CPP_FILE="${CPP_FILE_LIST[$CPP_FILE_INDEX]}"#>
+<#O_FILE="${O_FILE_LIST[$CPP_FILE_INDEX]}"#>
 
-./Obj/<#= `vutil_CppDependencies "${CPP_COMPILE_OPTIONS}" ${CPP_FILE}` #>
+<#= ${O_FILE} #>: <#= ${CPP_FILE} #>
 	$(CPP_COMPILE)
 <#done#>
