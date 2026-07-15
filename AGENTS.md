@@ -24,6 +24,7 @@ The following rules apply when the first phrase is not in the list:
   - Planning.
   - Document refining.
   - Daily maintenance.
+  - Script fixing, especially for build/CI.
 
 ## Step 2
 

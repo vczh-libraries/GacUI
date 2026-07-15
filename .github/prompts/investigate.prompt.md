@@ -202,3 +202,6 @@ Propose any solution you can think of and write them down in the document, you m
     - Code files for manual editing, you need to carefully resolve all conflicts.
     - Code files that is auto generated, you can just accept the remote change, and redo the testing process to regenerate these file and ensure all test cases passed. `git commit` all local changes during the process.
   - After the rebase is done and all test cases passed, `git push` it again.
+- Unless explicitly instructed:
+  - If the request is separated by multiple tasks like `## Task X`, you are going to make one commit and immediately push after each task.
+  - Otherwise, only one commit and push is needed for the entire request.

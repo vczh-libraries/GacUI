@@ -2,26 +2,26 @@
 
 # Orders
 
-- Process staged tasks one by one with verification [18]
-- Verify generated artifacts with downstream consumer checks [12]
-- Port fixes from imports to source repositories [11]
+- Process staged tasks one by one with verification [19]
+- Verify generated artifacts with downstream consumer checks [14]
+- Port fixes from imports to source repositories [12]
+- Crash early instead of adding error-tolerance fallbacks [8]
 - Keep design documentation aligned with code after refactoring [7]
-- Crash early instead of adding error-tolerance fallbacks [6]
 - Proactively remove code made redundant by refactoring [6]
 - Make `Stop()` drain asynchronous work before returning [6]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
+- Validate expectations against implementation and existing tests [4]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [3]
 - Extract abstractions only for real shared behavior [3]
-- Validate expectations against implementation and existing tests [3]
+- Fix behavior at the owning state instead of patching symptoms [3]
 - Capture dependent lambdas explicitly [2]
 - Don't assume observable changes are batched [2]
 - Do not assume async callback owners are heap allocated [2]
 - Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages [2]
 - Prefer simple calls before interface casts [2]
 - Treat Debug memory leak dumps as required failures [2]
-- Fix behavior at the owning state instead of patching symptoms [2]
-- Prefer well-defined tests over ambiguous edge cases [1]
+- Prefer well-defined tests over ambiguous edge cases [2]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
 - Use named sentinel constants instead of raw values [1]
@@ -42,6 +42,7 @@
 - Compare type descriptors by pointer when descriptor identity is available [1]
 - Parse and validate before queuing asynchronous work [1]
 - Use Win32 messages for native dialogs when UIA is unavailable [1]
+- Keep generated makefiles platform-invariant [1]
 
 # Refinements
 
@@ -58,6 +59,8 @@ When verifying callbacks from an observable collection, do not assume multiple o
 For public API arguments that callers can validate with query methods, fail with `CHECK_ERROR` when the argument is invalid instead of accepting impossible protocol states.
 
 When an invariant says a value must exist or a conversion must succeed, prefer using it directly or using a strong cast so a violation crashes or throws immediately. Do not add speculative null checks, weak casts, or silent fallbacks that hide protocol or ownership bugs. Fix the real cause instead of making the code tolerant of states that should be impossible.
+
+Build-generation scripts must also preserve failures from compiler or dependency probes across command substitutions and formatting pipelines. Stop before emitting tracked output when a required header or package is missing, and declare the dependency in the canonical environment bootstrap so the original diagnostic is reported instead of a malformed generated rule.
 
 ## Process staged tasks one by one with verification
 
@@ -76,6 +79,8 @@ Do not add explicit interface casting (e.g. `dynamic_cast<IFoo*>(...)`) just bec
 ## Prefer well-defined tests over ambiguous edge cases
 
 When a scenario’s expected behavior is unclear or undocumented (e.g. calling an operation while an object is in an “invisible”/non-effective state), avoid turning it into a test requirement. Prefer fewer tests that validate the public contract and real-world usage; if an edge case is important, first clarify the intended semantics from implementation and/or documentation.
+
+Use timing to diagnose a performance problem, not as a lasting pass/fail assertion. When a dedicated deterministic test already owns startup-retry behavior, shared protocol tests should synchronize incidental listener startup and retain their meaningful repetition, FIFO, framing, routing, and shutdown checks instead of depending on a scheduler race.
 
 ## Do not assume async callback owners are heap allocated
 
@@ -113,6 +118,8 @@ For dependency release syncs, copy generated files from the upstream `Release` f
 
 When importing multiple dependency releases into GacUI, keep the chain explicit: regenerate and import `VlppOS` and `Workflow` release artifacts, then validate the GacUI remoting scenarios that consume both imported APIs.
 
+Shared Ubuntu build infrastructure must be changed in the canonical `Tools/Ubuntu` source first, committed and pushed there, and then propagated into a repository with `vgo uci REPO`. Do not make a propagated repository-local copy the source of truth.
+
 If a Workflow task exposes a `VlppReflection` collection-wrapper issue, fix the wrapper behavior in `VlppReflection`, regenerate and verify its release output, then update the Workflow import from that release instead of patching Workflow's imported copy.
 
 When a VlppOS public namespace refactor changes released APIs, regenerate the VlppOS release and update Workflow and GacUI from that release before repairing downstream build breaks; do not patch imported copies.
@@ -124,6 +131,8 @@ Before encoding expectations (especially for return value conventions and error 
 This also applies to enums and API surface: verify that enum values and method names/signatures actually exist before using them.
 
 For regression tests, verify that the proposed case actually distinguishes broken and fixed behavior. A positive control can pass under both implementations, so retain a root-cause-sensitive reproduction and assert the relevant observable boundary, such as callback count and range, rather than only a coarse aggregate result.
+
+For performance regressions, establish a same-machine baseline and instrument construction, connection, exchange, draining, and shutdown separately. Rule out each plausible hypothesis with direct state and timing evidence before changing production code; a plausible platform theory or a nearby commit is not a substitute for measuring the actual slow boundary.
 
 ## Prefer `operator<=> = default` for lexicographic key structs
 
@@ -211,6 +220,10 @@ When a generator produces artifacts for another language or toolchain, validate 
 
 When generated RPC JSON values or request/response transcripts are part of the contract, run the preparation step that copies/regenerates them, include the new folders in the downstream project configuration, type-check them, and sample or audit the generated files for protocol invariants such as request/response id pairing.
 
+For generated build files, compare the selected source list with the owning project metadata and platform add/remove rules, then perform a clean build. This catches stale tracked output and generators that appear to succeed after silently losing a compiler or dependency-scanner failure.
+
+When generated build metadata must be platform-invariant, generate it with native and simulated host selection and compare tracked `makefile` and `vmake.txt` output byte for byte. Then perform clean and no-op incremental builds and inspect host-local dependency files, ensuring stable tracked output does not break platform-specific includes or incremental rebuilds.
+
 When a generator produces runnable sample applications, verify the generated output through the actual app workflow too. For example, generated ChatBot RPC code should be checked by running the server and multiple clients through joins, chat messages, client exit, and server shutdown, not only by confirming generation succeeds.
 
 When a shared dispatcher schema such as `Rpc.d.ts` changes, type-check the shared schema itself as well as generated fixtures so envelope changes are caught even before concrete generated values instantiate every request shape.
@@ -272,3 +285,11 @@ Once a shared behavioral suite already exists, follow-up platform implementation
 When a bug is caused by state attached to a temporary or overly broad owner, move the state to the object or region that semantically owns it. Avoid compensating fixes such as forcing override values on every affected descendant, duplicating a template/resource just to mask inherited state, or adding side-channel code that only makes the symptom disappear. If a proposed fix looks like a patch, revisit the ownership boundary and preserve naturally correct inherited/default behavior for unaffected parts.
 
 When an incremental API receives encoded code units but downstream logic consumes complete logical values, keep partial assembly or decoding state in the stream-processing object. Do not change the public input unit or force every caller to assemble complete values merely to fit an internal helper.
+
+When a lifecycle guarantee applies to every subclass, publish completion and final state in the common native entry/exit path. Do not patch one derived class with a private completion event or duplicate the guarantee only in factory-created wrappers.
+
+## Keep generated makefiles platform-invariant
+
+Tracked `makefile` and `vmake.txt` output should remain identical across Linux and macOS. Keep every platform-guarded translation unit in the stable source list; the inactive translation unit should compile harmlessly through its preprocessor guards. Put monorepo-wide platform policy in the canonical shared `makefile-cpp` and select it at make execution time—for example, Darwin compile/framework options and Linux `-luring`—with libraries placed after object prerequisites.
+
+Do not embed host-preprocessed `clang++ -MM` dependency output in tracked makefiles. Continue running the dependency probe as fail-fast validation, discard its host-specific output, and emit stable source-only object rules that depend on the shared make fragment. Generate ignored `Obj/*.d` files during actual compilation with `-MMD -MP` and include them for correct host-local incremental dependency tracking.
