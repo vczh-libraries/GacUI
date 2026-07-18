@@ -1668,14 +1668,33 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 
 	class IocpOperation;
 	class IocpRuntime;
-	static thread_local IocpRuntime* currentCompletionRuntime = nullptr;
-	static thread_local IocpRuntime* currentCallbackRuntime = nullptr;
+	class ConnectionState;
+	class AsyncSocketConnection;
 
 	struct NativeOverlapped
 	{
 		OVERLAPPED							overlapped;
 		IocpOperation*					operation = nullptr;
 	};
+
+	struct CallbackFrame
+	{
+		ConnectionState*					connection = nullptr;
+		CallbackFrame*						previous = nullptr;
+	};
+
+	static thread_local IocpRuntime* currentCompletionRuntime = nullptr;
+	static thread_local IocpRuntime* currentCallbackRuntime = nullptr;
+	static thread_local CallbackFrame* currentCallbackFrame = nullptr;
+
+	WString SocketErrorMessage(const wchar_t* operation, DWORD error)
+	{
+		return WString::Unmanaged(operation) + L" failed with Windows error " + itow((vint)error) + L".";
+	}
+
+/***********************************************************************
+IocpOperation
+***********************************************************************/
 
 	class IocpOperation
 	{
@@ -1692,6 +1711,10 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 		virtual bool Complete(DWORD bytes, DWORD error) = 0;
 		virtual void EndPending() = 0;
 	};
+
+/***********************************************************************
+IocpRuntime
+***********************************************************************/
 
 	class IocpRuntime : public Object
 	{
@@ -1918,15 +1941,9 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 		}
 	};
 
-	class ConnectionState;
-
-	struct CallbackFrame
-	{
-		ConnectionState*					connection = nullptr;
-		CallbackFrame*						previous = nullptr;
-	};
-
-	static thread_local CallbackFrame* currentCallbackFrame = nullptr;
+/***********************************************************************
+ReadBlock
+***********************************************************************/
 
 	class ReadBlock : public Object
 	{
@@ -1939,7 +1956,9 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 		}
 	};
 
-	class AsyncSocketConnection;
+/***********************************************************************
+ConnectionState
+***********************************************************************/
 
 	class ConnectionState : public Object
 	{
@@ -2145,6 +2164,10 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 		ClientStatus GetStatus();
 	};
 
+/***********************************************************************
+AsyncSocketConnection
+***********************************************************************/
+
 	class AsyncSocketConnection : public Object, public virtual IAsyncSocketConnection
 	{
 	private:
@@ -2189,16 +2212,9 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 		}
 	};
 
-	Ptr<ConnectionState> ConnectionState::Retain()
-	{
-		CHECK_ERROR(owner != nullptr, L"IAsyncSocketConnection lost its canonical state owner.");
-		return owner->GetState();
-	}
-
-	WString SocketErrorMessage(const wchar_t* operation, DWORD error)
-	{
-		return WString::Unmanaged(operation) + L" failed with Windows error " + itow((vint)error) + L".";
-	}
+/***********************************************************************
+ConnectionState::ReadOperation
+***********************************************************************/
 
 	class ConnectionState::ReadOperation : public IocpOperation
 	{
@@ -2249,6 +2265,10 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 			connection->EndPending();
 		}
 	};
+
+/***********************************************************************
+ConnectionState::WriteOperation
+***********************************************************************/
 
 	class ConnectionState::WriteOperation : public IocpOperation
 	{
@@ -2330,6 +2350,10 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 		}
 	};
 
+/***********************************************************************
+ConnectionState::ConnectOperation
+***********************************************************************/
+
 	class ConnectionState::ConnectOperation : public IocpOperation
 	{
 	public:
@@ -2355,6 +2379,16 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 			connection->EndPending();
 		}
 	};
+
+/***********************************************************************
+ConnectionState
+***********************************************************************/
+
+	Ptr<ConnectionState> ConnectionState::Retain()
+	{
+		CHECK_ERROR(owner != nullptr, L"IAsyncSocketConnection lost its canonical state owner.");
+		return owner->GetState();
+	}
 
 	void ConnectionState::InstallCallback(IAsyncSocketCallback* value)
 	{
@@ -2934,6 +2968,10 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 		}
 	}
 
+/***********************************************************************
+AsyncSocketServer::Impl
+***********************************************************************/
+
 	class AsyncSocketServer::Impl : public Object
 	{
 	private:
@@ -2963,20 +3001,53 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 			}
 		};
 
-		AsyncSocketServer*					owner = nullptr;
 		vint								port = 0;
 		Ptr<IocpRuntime>						runtime;
 		CriticalSection					lockState;
+		IAsyncSocketServerCallback*		callback = nullptr;
+		bool							startCalled = false;
+		bool							starting = false;
+		vint							startingThreadId = -1;
 		bool							started = false;
 		bool							stopping = false;
 		bool							stopped = false;
+		bool							unexpectedStopQueued = false;
+		bool							unexpectedStopNotified = false;
 		SOCKET							listener = INVALID_SOCKET;
 		LPFN_ACCEPTEX						acceptEx = nullptr;
 		bool							acceptPending = false;
 		vint							pendingAccepts = 0;
 		EventObject						eventAcceptDrained;
+		EventObject						eventStartFinished;
 		EventObject						eventStopped;
 		List<Ptr<AsyncSocketConnection>>		connections;
+
+		void FinishStart()
+		{
+			CS_LOCK(lockState)
+			{
+				starting = false;
+				startingThreadId = -1;
+				eventStartFinished.Signal();
+			}
+		}
+
+		class StartScope
+		{
+		private:
+			Impl*							server = nullptr;
+
+		public:
+			StartScope(Impl* _server)
+				: server(_server)
+			{
+			}
+
+			~StartScope()
+			{
+				server->FinishStart();
+			}
+		};
 
 		void BeginAcceptPendingLocked()
 		{
@@ -3063,6 +3134,48 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 			}
 		}
 
+		void QueueUnexpectedStop()
+		{
+			bool queue = false;
+			CS_LOCK(lockState)
+			{
+				if (started && !stopping && !unexpectedStopQueued)
+				{
+					unexpectedStopQueued = true;
+					queue = true;
+				}
+			}
+			if (!queue)
+			{
+				return;
+			}
+
+			auto self = this;
+			runtime->QueueCallback(Func<void()>([self]()
+			{
+				IAsyncSocketServerCallback* installed = nullptr;
+				CS_LOCK(self->lockState)
+				{
+					if (self->started && !self->stopping && !self->unexpectedStopNotified)
+					{
+						self->unexpectedStopNotified = true;
+						installed = self->callback;
+					}
+				}
+				if (installed)
+				{
+					try
+					{
+						installed->OnServerStopped();
+					}
+					catch (...)
+					{
+					}
+				}
+				self->Stop();
+			}));
+		}
+
 		void CompleteAccept(AcceptOperation* operation, DWORD error)
 		{
 			bool running = false;
@@ -3078,7 +3191,10 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 				closesocket(acceptedSocket);
 				if (running)
 				{
-					PostAccept();
+					if (!PostAccept())
+					{
+						QueueUnexpectedStop();
+					}
 				}
 				return;
 			}
@@ -3086,7 +3202,10 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 			if (setsockopt(acceptedSocket, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, (CHAR*)&listener, sizeof(listener)) == SOCKET_ERROR || !runtime->Associate(acceptedSocket))
 			{
 				closesocket(acceptedSocket);
-				PostAccept();
+				if (!PostAccept())
+				{
+					QueueUnexpectedStop();
+				}
 				return;
 			}
 
@@ -3102,7 +3221,10 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 				}
 			}
 
-			PostAccept();
+			if (!PostAccept())
+			{
+				QueueUnexpectedStop();
+			}
 			if (!retain)
 			{
 				connection->Stop();
@@ -3113,9 +3235,14 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 			runtime->QueueCallback(Func<void()>([self, connection]()
 			{
 				bool invoke = false;
+				IAsyncSocketServerCallback* installed = nullptr;
 				CS_LOCK(self->lockState)
 				{
 					invoke = self->started && !self->stopping;
+					if (invoke)
+					{
+						installed = self->callback;
+					}
 				}
 				if (!invoke)
 				{
@@ -3126,25 +3253,29 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 				WaitForClientResult result = WaitForClientResult::Reject;
 				try
 				{
-					result = self->owner->OnClientConnected(connection.Obj());
+					result = installed->OnClientConnected(connection.Obj());
 				}
 				catch (...)
 				{
 				}
 				if (result == WaitForClientResult::Reject)
 				{
+					CS_LOCK(self->lockState)
+					{
+						self->connections.Remove(connection.Obj());
+					}
 					connection->Stop();
 				}
 			}));
 		}
 
 	public:
-		Impl(AsyncSocketServer* _owner, vint _port)
-			: owner(_owner)
-			, port(_port)
+		Impl(vint _port)
+			: port(_port)
 			, runtime(Ptr(new IocpRuntime))
 		{
 			CHECK_ERROR(eventAcceptDrained.CreateManualUnsignal(true), L"AsyncSocketServer failed to create its accept drain event.");
+			CHECK_ERROR(eventStartFinished.CreateManualUnsignal(true), L"AsyncSocketServer failed to create its startup drain event.");
 			CHECK_ERROR(eventStopped.CreateManualUnsignal(false), L"AsyncSocketServer failed to create its stop event.");
 		}
 
@@ -3153,31 +3284,58 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 			Stop();
 		}
 
-		void Start()
+		void Start(IAsyncSocketServerCallback* _callback)
 		{
+			CHECK_ERROR(_callback != nullptr, L"AsyncSocketServer::Start requires a callback.");
+			bool begin = false;
+			CS_LOCK(lockState)
+			{
+				if (!startCalled && !stopping)
+				{
+					startCalled = true;
+					starting = true;
+					startingThreadId = Thread::GetCurrentThreadId();
+					eventStartFinished.Unsignal();
+					begin = true;
+				}
+			}
+			CHECK_ERROR(begin, L"AsyncSocketServer::Start can only be called once.");
+			StartScope startScope(this);
 			SOCKET createdListener = WSASocketW(AF_INET, SOCK_STREAM, IPPROTO_TCP, nullptr, 0, WSA_FLAG_OVERLAPPED);
-			CHECK_ERROR(createdListener != INVALID_SOCKET, L"AsyncSocketServer failed to create its listener socket.");
+			if (createdListener == INVALID_SOCKET)
+			{
+				throw AsyncSocketServerStartException(AsyncSocketServerStartFailure::Other, L"AsyncSocketServer failed to create its listener socket.");
+			}
 
 			BOOL exclusive = TRUE;
 			if (setsockopt(createdListener, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, (CHAR*)&exclusive, sizeof(exclusive)) == SOCKET_ERROR)
 			{
 				closesocket(createdListener);
-				CHECK_ERROR(false, L"AsyncSocketServer failed to apply SO_EXCLUSIVEADDRUSE.");
+				throw AsyncSocketServerStartException(AsyncSocketServerStartFailure::Other, L"AsyncSocketServer failed to apply SO_EXCLUSIVEADDRUSE.");
 			}
 
 			SOCKADDR_IN address = {};
 			address.sin_family = AF_INET;
 			address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 			address.sin_port = htons((u_short)port);
-			if (bind(createdListener, (SOCKADDR*)&address, sizeof(address)) == SOCKET_ERROR || listen(createdListener, SOMAXCONN) == SOCKET_ERROR)
+			if (bind(createdListener, (SOCKADDR*)&address, sizeof(address)) == SOCKET_ERROR)
 			{
+				auto error = WSAGetLastError();
 				closesocket(createdListener);
-				CHECK_ERROR(false, L"AsyncSocketServer failed to bind or listen on 127.0.0.1.");
+				auto failure = error == WSAEADDRINUSE || error == WSAEACCES ? AsyncSocketServerStartFailure::AddressInUse : AsyncSocketServerStartFailure::Other;
+				throw AsyncSocketServerStartException(failure, SocketErrorMessage(L"AsyncSocketServer bind", error));
+			}
+			if (listen(createdListener, SOMAXCONN) == SOCKET_ERROR)
+			{
+				auto error = WSAGetLastError();
+				closesocket(createdListener);
+				auto failure = error == WSAEADDRINUSE || error == WSAEACCES ? AsyncSocketServerStartFailure::AddressInUse : AsyncSocketServerStartFailure::Other;
+				throw AsyncSocketServerStartException(failure, SocketErrorMessage(L"AsyncSocketServer listen", error));
 			}
 			if (!runtime->Associate(createdListener))
 			{
 				closesocket(createdListener);
-				CHECK_ERROR(false, L"AsyncSocketServer failed to associate its listener with the IO completion port.");
+				throw AsyncSocketServerStartException(AsyncSocketServerStartFailure::Other, L"AsyncSocketServer failed to associate its listener with the IO completion port.");
 			}
 
 			LPFN_ACCEPTEX loadedAcceptEx = nullptr;
@@ -3196,16 +3354,17 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 			) == SOCKET_ERROR)
 			{
 				closesocket(createdListener);
-				CHECK_ERROR(false, L"AsyncSocketServer failed to load AcceptEx.");
+				throw AsyncSocketServerStartException(AsyncSocketServerStartFailure::Other, L"AsyncSocketServer failed to load AcceptEx.");
 			}
 
 			bool canStart = false;
 			CS_LOCK(lockState)
 			{
-				if (!started && !stopping)
+				if (!stopping)
 				{
 					listener = createdListener;
 					acceptEx = loadedAcceptEx;
+					callback = _callback;
 					started = true;
 					canStart = true;
 				}
@@ -3213,12 +3372,12 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 			if (!canStart)
 			{
 				closesocket(createdListener);
+				throw AsyncSocketServerStartException(AsyncSocketServerStartFailure::Other, L"AsyncSocketServer was stopped during startup.");
 			}
-			CHECK_ERROR(canStart, L"AsyncSocketServer::Start can only be called once.");
 			if (!PostAccept())
 			{
 				Stop();
-				CHECK_ERROR(false, L"AsyncSocketServer failed to post AcceptEx.");
+				throw AsyncSocketServerStartException(AsyncSocketServerStartFailure::Other, L"AsyncSocketServer failed to post AcceptEx.");
 			}
 		}
 
@@ -3226,7 +3385,10 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 		{
 			SOCKET closingListener = INVALID_SOCKET;
 			bool first = false;
+			bool waitForStart = false;
+			bool selfStarting = false;
 			auto selfWorker = currentCallbackRuntime == runtime.Obj() || currentCompletionRuntime == runtime.Obj();
+			auto currentThreadId = Thread::GetCurrentThreadId();
 			CS_LOCK(lockState)
 			{
 				if (!stopping)
@@ -3237,9 +3399,19 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 					listener = INVALID_SOCKET;
 					first = true;
 				}
+				selfStarting = starting && startingThreadId == currentThreadId;
+				waitForStart = starting && !selfStarting;
+			}
+			if (waitForStart)
+			{
+				eventStartFinished.Wait();
 			}
 			if (!first)
 			{
+				if (selfStarting)
+				{
+					return;
+				}
 				// A runtime callback must not wait for the caller that is draining it.
 				if (!selfWorker)
 				{
@@ -3247,6 +3419,10 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 					// A callback-worker caller requests runtime exit but cannot join itself.
 					// An external repeated Stop completes that deferred finalization here.
 					runtime->Stop();
+					CS_LOCK(lockState)
+					{
+						callback = nullptr;
+					}
 				}
 				return;
 			}
@@ -3273,6 +3449,10 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 			runtime->Stop();
 			CS_LOCK(lockState)
 			{
+				if (!selfWorker)
+				{
+					callback = nullptr;
+				}
 				stopped = true;
 			}
 			eventStopped.Signal();
@@ -3289,10 +3469,14 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 		}
 	};
 
+/***********************************************************************
+AsyncSocketServer
+***********************************************************************/
+
 	AsyncSocketServer::AsyncSocketServer(vint port)
 	{
 		CHECK_ERROR(1 <= port && port <= 65535, L"AsyncSocketServer requires a port in 1..65535.");
-		impl = new Impl(this, port);
+		impl = new Impl(port);
 	}
 
 	AsyncSocketServer::~AsyncSocketServer()
@@ -3300,14 +3484,9 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 		delete impl;
 	}
 
-	WaitForClientResult AsyncSocketServer::OnClientConnected(IAsyncSocketConnection*)
+	void AsyncSocketServer::Start(IAsyncSocketServerCallback* callback)
 	{
-		return WaitForClientResult::Accept;
-	}
-
-	void AsyncSocketServer::Start()
-	{
-		impl->Start();
+		impl->Start(callback);
 	}
 
 	void AsyncSocketServer::Stop()
@@ -3319,6 +3498,10 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 	{
 		return impl->IsStopped();
 	}
+
+/***********************************************************************
+AsyncSocketClient::Impl
+***********************************************************************/
 
 	class AsyncSocketClient::Impl : public Object
 	{
@@ -3377,6 +3560,10 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 		}
 	};
 
+/***********************************************************************
+AsyncSocketClient
+***********************************************************************/
+
 	AsyncSocketClient::AsyncSocketClient(vint port)
 	{
 		CHECK_ERROR(1 <= port && port <= 65535, L"AsyncSocketClient requires a port in 1..65535.");
@@ -3401,6 +3588,16 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 	ClientStatus AsyncSocketClient::GetStatus()
 	{
 		return impl->GetStatus();
+	}
+
+	Ptr<IAsyncSocketServer> CreateDefaultAsyncSocketServer(vint port)
+	{
+		return Ptr(new AsyncSocketServer(port));
+	}
+
+	Ptr<IAsyncSocketClient> CreateDefaultAsyncSocketClient(vint port)
+	{
+		return Ptr(new AsyncSocketClient(port));
 	}
 }
 
@@ -3798,41 +3995,6 @@ namespace vl::inter_process::windows_http
 using namespace vl::collections;
 
 /***********************************************************************
-HttpRequest
-***********************************************************************/
-
-void HttpRequest::SetBodyUtf8(const WString& bodyString)
-{
-	vint utf8Size = WideCharToMultiByte(CP_UTF8, 0, bodyString.Buffer(), (int)bodyString.Length(), NULL, 0, NULL, NULL);
-	body.Resize(utf8Size);
-	if (utf8Size > 0)
-	{
-		WideCharToMultiByte(CP_UTF8, 0, bodyString.Buffer(), (int)bodyString.Length(), &body[0], (int)utf8Size, NULL, NULL);
-	}
-}
-
-/***********************************************************************
-HttpResponse
-***********************************************************************/
-
-WString HttpResponse::GetBodyUtf8() const
-{
-	if (body.Count() == 0)
-	{
-		return WString::Empty;
-	}
-
-	vint utf16Size = MultiByteToWideChar(CP_UTF8, 0, &body[0], (int)body.Count(), NULL, 0);
-	Array<wchar_t> utf16(utf16Size + 1);
-	ZeroMemory(&utf16[0], utf16.Count() * sizeof(wchar_t));
-	if (utf16Size > 0)
-	{
-		MultiByteToWideChar(CP_UTF8, 0, &body[0], (int)body.Count(), &utf16[0], (int)utf16Size);
-	}
-	return &utf16[0];
-}
-
-/***********************************************************************
 HttpClientApi
 ***********************************************************************/
 
@@ -3843,14 +4005,6 @@ HttpError HttpClientApi::MakeError(const WString& operation, DWORD errorCode)
 	error.errorCode = errorCode;
 	error.message = operation + L" failed with Windows error " + itow((vint)errorCode) + L".";
 	return error;
-}
-
-vint HttpClientApi::HexValue(wchar_t c)
-{
-	if (L'0' <= c && c <= L'9') return c - L'0';
-	if (L'a' <= c && c <= L'f') return c - L'a' + 10;
-	if (L'A' <= c && c <= L'F') return c - L'A' + 10;
-	return -1;
 }
 
 bool HttpClientApi::IsStopping()
@@ -3873,9 +4027,12 @@ void HttpClientApi::BeginPendingCallback()
 
 void HttpClientApi::EndPendingCallback()
 {
-	if (--pendingCallbacks == 0)
+	SPIN_LOCK(lockActiveRequests)
 	{
-		eventPendingCallbacks.Signal();
+		if (--pendingCallbacks == 0)
+		{
+			eventPendingCallbacks.Signal();
+		}
 	}
 }
 
@@ -4187,6 +4344,12 @@ HttpClientApi::HttpClientApi(const WString& _server, vint _port)
 		WINHTTP_FLAG_ASYNC);
 	CHECK_ERROR(httpSession != NULL, L"WinHttpOpen failed.");
 
+#ifdef WINHTTP_OPTION_IPV6_FAST_FALLBACK
+	// This option is unavailable before Windows 10 1903. Keep the default address fallback when unsupported.
+	BOOL ipv6FastFallback = TRUE;
+	WinHttpSetOption(httpSession, WINHTTP_OPTION_IPV6_FAST_FALLBACK, &ipv6FastFallback, sizeof(ipv6FastFallback));
+#endif
+
 	httpConnection = WinHttpConnect(
 		httpSession,
 		server.Buffer(),
@@ -4476,91 +4639,12 @@ void HttpClientApi::Stop()
 
 WString HttpClientApi::UrlEncodeQuery(const WString& query)
 {
-	vint utf8Size = WideCharToMultiByte(CP_UTF8, 0, query.Buffer(), (int)query.Length(), NULL, 0, NULL, NULL);
-	Array<char> utf8(utf8Size);
-	if (utf8Size > 0)
-	{
-		WideCharToMultiByte(CP_UTF8, 0, query.Buffer(), (int)query.Length(), &utf8[0], (int)utf8Size, NULL, NULL);
-	}
-
-	Array<wchar_t> encoded(utf8Size * 3 + 1);
-	ZeroMemory(&encoded[0], encoded.Count() * sizeof(wchar_t));
-	wchar_t* writing = &encoded[0];
-	for (vint i = 0; i < utf8Size; i++)
-	{
-		unsigned char x = (unsigned char)utf8[i];
-		if ((L'a' <= x && x <= L'z') || (L'A' <= x && x <= L'Z') || (L'0' <= x && x <= L'9'))
-		{
-			writing[0] = x;
-			writing += 1;
-		}
-		else
-		{
-			writing[0] = L'%';
-			writing[1] = L"0123456789ABCDEF"[x / 16];
-			writing[2] = L"0123456789ABCDEF"[x % 16];
-			writing += 3;
-		}
-	}
-
-	return &encoded[0];
+	return HttpUrlEncodeQuery(query);
 }
 
 WString HttpClientApi::UrlDecodeQuery(const WString& query)
 {
-	List<char> utf8;
-	for (vint i = 0; i < query.Length(); i++)
-	{
-		wchar_t c = query[i];
-		if (c == L'%' && i + 2 < query.Length())
-		{
-			vint high = HexValue(query[i + 1]);
-			vint low = HexValue(query[i + 2]);
-			if (high != -1 && low != -1)
-			{
-				utf8.Add((char)(high * 16 + low));
-				i += 2;
-				continue;
-			}
-		}
-
-		if (c == L'+')
-		{
-			utf8.Add(' ');
-		}
-		else if (c <= 0x7F)
-		{
-			utf8.Add((char)c);
-		}
-		else
-		{
-			wchar_t single[] = { c, 0 };
-			vint utf8Size = WideCharToMultiByte(CP_UTF8, 0, single, 1, NULL, 0, NULL, NULL);
-			if (utf8Size > 0)
-			{
-				Array<char> singleUtf8(utf8Size);
-				WideCharToMultiByte(CP_UTF8, 0, single, 1, &singleUtf8[0], (int)utf8Size, NULL, NULL);
-				for (vint j = 0; j < utf8Size; j++)
-				{
-					utf8.Add(singleUtf8[j]);
-				}
-			}
-		}
-	}
-
-	if (utf8.Count() == 0)
-	{
-		return WString::Empty;
-	}
-
-	vint utf16Size = MultiByteToWideChar(CP_UTF8, 0, &utf8[0], (int)utf8.Count(), NULL, 0);
-	Array<wchar_t> utf16(utf16Size + 1);
-	ZeroMemory(&utf16[0], utf16.Count() * sizeof(wchar_t));
-	if (utf16Size > 0)
-	{
-		MultiByteToWideChar(CP_UTF8, 0, &utf8[0], (int)utf8.Count(), &utf16[0], (int)utf16Size);
-	}
-	return &utf16[0];
+	return HttpUrlDecodeQuery(query);
 }
 
 }

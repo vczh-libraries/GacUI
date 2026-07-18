@@ -1204,9 +1204,13 @@ SpinLock
 
 	void SpinLock::Enter()
 	{
-		vint expected = 0;
-		while (!token.compare_exchange_strong(expected, 1))
+		while (true)
 		{
+			vint expected = 0;
+			if (token.compare_exchange_strong(expected, 1))
+			{
+				return;
+			}
 			while (token != 0)
 			{
 #ifdef VCZH_ARM
@@ -4911,3 +4915,10372 @@ RecorderStream
 		}
 	}
 }
+
+/***********************************************************************
+.\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET.CPP
+***********************************************************************/
+#include <chrono>
+#include <cstring>
+#include <limits>
+
+namespace vl::inter_process::async_tcp_socket
+{
+	thread_local NetworkProtocolCallbackDomain::CallbackFrame*	NetworkProtocolCallbackDomain::currentCallbackFrame = nullptr;
+	thread_local NetworkProtocolConnection::CallbackFrame*	NetworkProtocolConnection::currentCallbackFrame = nullptr;
+	thread_local NetworkProtocolConnection::SocketCallbackFrame*
+										NetworkProtocolConnection::currentSocketCallbackFrame = nullptr;
+
+/***********************************************************************
+IAsyncSocketCallback
+***********************************************************************/
+
+	void IAsyncSocketCallback::OnWriteCompleted(Ptr<AsyncSocketBuffer>)
+	{
+	}
+
+	void IAsyncSocketCallback::OnError(const WString&, bool)
+	{
+	}
+
+	void IAsyncSocketCallback::OnConnected()
+	{
+	}
+
+	void IAsyncSocketCallback::OnDisconnected()
+	{
+	}
+
+	AsyncSocketServerStartException::AsyncSocketServerStartException(AsyncSocketServerStartFailure _failure, const WString& message)
+		: Exception(message)
+		, failure(_failure)
+	{
+	}
+
+	AsyncSocketServerStartFailure AsyncSocketServerStartException::GetFailure()const
+	{
+		return failure;
+	}
+
+	void IAsyncSocketServerCallback::OnServerStopped()
+	{
+	}
+
+/***********************************************************************
+NetworkProtocolCallbackDomain::CallbackFrame
+***********************************************************************/
+
+	NetworkProtocolCallbackDomain::CallbackFrame::CallbackFrame(Ptr<NetworkProtocolCallbackDomain> _domain)
+		: domain(_domain)
+	{
+		if (domain)
+		{
+			previous = currentCallbackFrame;
+			currentCallbackFrame = this;
+			CS_LOCK(domain->lockState)
+			{
+				domain->activeCallbacks++;
+			}
+		}
+	}
+
+	NetworkProtocolCallbackDomain::CallbackFrame::~CallbackFrame()
+	{
+		if (domain)
+		{
+			currentCallbackFrame = previous;
+			CS_LOCK(domain->lockState)
+			{
+				domain->activeCallbacks--;
+				domain->cvState.WakeAllPendings();
+			}
+		}
+	}
+
+/***********************************************************************
+NetworkProtocolCallbackDomain
+***********************************************************************/
+
+	vint NetworkProtocolCallbackDomain::CurrentCallbackDepth()
+	{
+		vint depth = 0;
+		for (auto frame = currentCallbackFrame; frame; frame = frame->previous)
+		{
+			if (frame->domain.Obj() == this)
+			{
+				depth++;
+			}
+		}
+		return depth;
+	}
+
+	void NetworkProtocolCallbackDomain::WaitForCallbacks(vint callbackDepth)
+	{
+		CS_LOCK(lockState)
+		{
+			while (activeCallbacks > callbackDepth)
+			{
+				cvState.SleepWith(lockState);
+			}
+		}
+	}
+
+/***********************************************************************
+NetworkProtocolConnectionLifecycle
+***********************************************************************/
+
+	void NetworkProtocolConnectionLifecycle::TakeRetainedAdapterIfDrained(Ptr<Object>& releasing)
+	{
+		if (stopFinished && disconnectFinished && activeCallbacks == 0 && activeSocketCallbacks == 0 && activeSocketCalls == 0)
+		{
+			releasing = std::move(retainedAdapter);
+		}
+	}
+
+/***********************************************************************
+NetworkProtocolConnection::CallbackFrame
+***********************************************************************/
+
+	NetworkProtocolConnection::CallbackFrame::CallbackFrame(Ptr<Lifecycle> _state)
+		: state(_state)
+		, previous(currentCallbackFrame)
+		, domainFrame(state->callbackDomain)
+	{
+		currentCallbackFrame = this;
+	}
+
+	NetworkProtocolConnection::CallbackFrame::~CallbackFrame()
+	{
+		currentCallbackFrame = previous;
+		Ptr<Object> releasing;
+		CS_LOCK(state->lockState)
+		{
+			state->activeCallbacks--;
+			state->TakeRetainedAdapterIfDrained(releasing);
+			state->cvState.WakeAllPendings();
+		}
+	}
+
+/***********************************************************************
+NetworkProtocolConnection::SocketCallbackFrame
+***********************************************************************/
+
+	NetworkProtocolConnection::SocketCallbackFrame::SocketCallbackFrame(Ptr<Lifecycle> _state)
+		: state(_state)
+		, previous(currentSocketCallbackFrame)
+	{
+		currentSocketCallbackFrame = this;
+		CS_LOCK(state->lockState)
+		{
+			state->activeSocketCallbacks++;
+		}
+	}
+
+	NetworkProtocolConnection::SocketCallbackFrame::~SocketCallbackFrame()
+	{
+		currentSocketCallbackFrame = previous;
+		Ptr<Object> releasing;
+		CS_LOCK(state->lockState)
+		{
+			state->activeSocketCallbacks--;
+			state->TakeRetainedAdapterIfDrained(releasing);
+			state->cvState.WakeAllPendings();
+		}
+	}
+
+/***********************************************************************
+NetworkProtocolConnection
+***********************************************************************/
+
+	vint NetworkProtocolConnection::CurrentCallbackDepth(Ptr<Lifecycle> state)
+	{
+		vint depth = 0;
+		for (auto frame = currentCallbackFrame; frame; frame = frame->previous)
+		{
+			if (frame->state.Obj() == state.Obj())
+			{
+				depth++;
+			}
+		}
+		return depth;
+	}
+
+	vint NetworkProtocolConnection::CurrentSocketCallbackDepth(Ptr<Lifecycle> state)
+	{
+		vint depth = 0;
+		for (auto frame = currentSocketCallbackFrame; frame; frame = frame->previous)
+		{
+			if (frame->state.Obj() == state.Obj())
+			{
+				depth++;
+			}
+		}
+		return depth;
+	}
+
+	void NetworkProtocolConnection::FinishSocketCall(Ptr<Lifecycle> state)
+	{
+		CS_LOCK(state->lockState)
+		{
+			state->activeSocketCalls--;
+			state->cvState.WakeAllPendings();
+		}
+	}
+
+	template<typename TCallback>
+	void NetworkProtocolConnection::InvokeProtocolCallback(Ptr<Lifecycle> state, bool allowTerminal, TCallback&& invoke)
+	{
+		INetworkProtocolCallback* installed = nullptr;
+		auto callbackDepth = CurrentCallbackDepth(state);
+		state->lockState.Enter();
+		while (state->callbackInstalling && callbackDepth == 0 && state->callback)
+		{
+			state->cvState.SleepWith(state->lockState);
+		}
+		if (state->callback && (allowTerminal || (!state->stopStarted && !state->terminal)))
+		{
+			installed = state->callback;
+			state->activeCallbacks++;
+		}
+		state->lockState.Leave();
+
+		if (installed)
+		{
+			CallbackFrame frame(state);
+			invoke(installed);
+		}
+	}
+
+	void NetworkProtocolConnection::SubmitWrite(Ptr<Lifecycle> state, IAsyncSocketConnection* connection, Ptr<AsyncSocketBuffer> buffer)
+	{
+		try
+		{
+			connection->WriteAsync(buffer);
+		}
+		catch (...)
+		{
+			CS_LOCK(state->lockState)
+			{
+				state->queuedWrites.Clear();
+				state->writePending = false;
+				state->cvState.WakeAllPendings();
+			}
+			FinishSocketCall(state);
+			throw;
+		}
+		FinishSocketCall(state);
+	}
+
+	void NetworkProtocolConnection::NotifyProtocolDisconnected(Ptr<Lifecycle> state)
+	{
+		auto callbackDepth = CurrentCallbackDepth(state);
+		state->lockState.Enter();
+		if (!state->disconnectedNotified)
+		{
+			state->disconnectedNotified = true;
+			state->terminal = true;
+			state->queuedWrites.Clear();
+			state->writePending = false;
+			state->cvState.WakeAllPendings();
+		}
+		if (state->disconnectFinished)
+		{
+			state->lockState.Leave();
+			return;
+		}
+
+		if (state->disconnectDelivering)
+		{
+			if (callbackDepth == 0)
+			{
+				while (!state->disconnectFinished)
+				{
+					state->cvState.SleepWith(state->lockState);
+				}
+			}
+			state->lockState.Leave();
+			return;
+		}
+
+		if (callbackDepth == 0)
+		{
+			while (state->activeCallbacks > 0 && !state->disconnectDelivering && !state->disconnectFinished)
+			{
+				state->cvState.SleepWith(state->lockState);
+			}
+			if (state->disconnectFinished)
+			{
+				state->lockState.Leave();
+				return;
+			}
+			if (state->disconnectDelivering)
+			{
+				while (!state->disconnectFinished)
+				{
+					state->cvState.SleepWith(state->lockState);
+				}
+				state->lockState.Leave();
+				return;
+			}
+		}
+
+		state->disconnectDelivering = true;
+		while (state->activeCallbacks > callbackDepth)
+		{
+			state->cvState.SleepWith(state->lockState);
+		}
+		state->lockState.Leave();
+
+		try
+		{
+			InvokeProtocolCallback(state, true, [](INetworkProtocolCallback* installed)
+			{
+				installed->OnDisconnected();
+			});
+		}
+		catch (...)
+		{
+			Ptr<Object> releasing;
+			CS_LOCK(state->lockState)
+			{
+				state->callback = nullptr;
+				while (state->activeCallbacks > callbackDepth)
+				{
+					state->cvState.SleepWith(state->lockState);
+				}
+				state->disconnectFinished = true;
+				state->TakeRetainedAdapterIfDrained(releasing);
+				state->cvState.WakeAllPendings();
+			}
+			throw;
+		}
+
+		Ptr<Object> releasing;
+		CS_LOCK(state->lockState)
+		{
+			state->callback = nullptr;
+			while (state->activeCallbacks > callbackDepth)
+			{
+				state->cvState.SleepWith(state->lockState);
+			}
+			state->disconnectFinished = true;
+			state->TakeRetainedAdapterIfDrained(releasing);
+			state->cvState.WakeAllPendings();
+		}
+	}
+
+	void NetworkProtocolConnection::DetachSocketCallback(Ptr<Lifecycle> state, IAsyncSocketConnection* connection)
+	{
+		if (connection)
+		{
+			connection->InstallCallback(nullptr);
+		}
+		CS_LOCK(state->lockState)
+		{
+			if (state->socketConnection == connection)
+			{
+				state->socketConnection = nullptr;
+			}
+			state->cvState.WakeAllPendings();
+		}
+	}
+
+	void NetworkProtocolConnection::StopConnection(Ptr<Lifecycle> state, Ptr<Object> retainedAdapter)
+	{
+		auto callbackDepth = CurrentCallbackDepth(state);
+		auto socketCallbackDepth = CurrentSocketCallbackDepth(state);
+		auto nestedCallback = callbackDepth > 0 || socketCallbackDepth > 0;
+		IAsyncSocketConnection* connection = nullptr;
+		bool executeStop = false;
+		bool nestedFollower = false;
+		Ptr<Object> releasing;
+
+		state->lockState.Enter();
+		if (retainedAdapter)
+		{
+			state->retainedAdapter = retainedAdapter;
+		}
+		if (!state->stopStarted)
+		{
+			state->stopStarted = true;
+			if (!nestedCallback && !state->terminal && state->queuedWrites.Count() > 0)
+			{
+				state->drainWrites = true;
+				auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(WriteDrainTimeout);
+				while (state->queuedWrites.Count() > 0 && !state->terminal)
+				{
+					auto now = std::chrono::steady_clock::now();
+					if (now >= deadline)
+					{
+						break;
+					}
+					auto remaining = std::chrono::ceil<std::chrono::milliseconds>(deadline - now).count();
+					state->cvState.SleepWithForTime(state->lockState, (vint)remaining);
+				}
+				state->drainWrites = false;
+			}
+			state->queuedWrites.Clear();
+			state->writePending = false;
+			while (state->activeSocketCalls > 0)
+			{
+				state->cvState.SleepWith(state->lockState);
+			}
+			connection = state->socketConnection;
+			executeStop = true;
+		}
+		else if (nestedCallback)
+		{
+			connection = state->socketConnection;
+			nestedFollower = true;
+		}
+		else
+		{
+			while (!state->stopFinished)
+			{
+				state->cvState.SleepWith(state->lockState);
+			}
+			while (state->activeCallbacks > 0 || state->activeSocketCallbacks > 0 || state->activeSocketCalls > 0)
+			{
+				state->cvState.SleepWith(state->lockState);
+			}
+			state->TakeRetainedAdapterIfDrained(releasing);
+			state->lockState.Leave();
+			return;
+		}
+		state->lockState.Leave();
+
+		if (nestedFollower)
+		{
+			if (connection && socketCallbackDepth > 0)
+			{
+				connection->Stop();
+			}
+			NotifyProtocolDisconnected(state);
+			return;
+		}
+
+		if (executeStop && connection)
+		{
+			connection->Stop();
+		}
+		NotifyProtocolDisconnected(state);
+
+		CS_LOCK(state->lockState)
+		{
+			while (state->activeCallbacks > callbackDepth || state->activeSocketCallbacks > socketCallbackDepth)
+			{
+				state->cvState.SleepWith(state->lockState);
+			}
+			state->stopFinished = true;
+			state->TakeRetainedAdapterIfDrained(releasing);
+			state->cvState.WakeAllPendings();
+		}
+	}
+
+	void NetworkProtocolConnection::ReportFatalError(Ptr<Lifecycle> state, const WString& error)
+	{
+		bool report = false;
+		CS_LOCK(state->lockState)
+		{
+			if (!state->terminal && !state->stopStarted)
+			{
+				state->terminal = true;
+				state->queuedWrites.Clear();
+				state->writePending = false;
+				state->cvState.WakeAllPendings();
+				report = true;
+			}
+		}
+		if (report)
+		{
+			try
+			{
+				InvokeProtocolCallback(state, true, [&](INetworkProtocolCallback* installed)
+				{
+					installed->OnLocalError(error, true);
+				});
+			}
+			catch (...)
+			{
+				StopConnection(state);
+				throw;
+			}
+			StopConnection(state);
+		}
+	}
+
+	void NetworkProtocolConnection::StopWithRetainedAdapter(Ptr<NetworkProtocolConnection> retainedAdapter)
+	{
+		StopConnection(lifecycle, retainedAdapter);
+	}
+
+	NetworkProtocolConnection::NetworkProtocolConnection(IAsyncSocketConnection* connection, Ptr<NetworkProtocolCallbackDomain> callbackDomain)
+		: lifecycle(Ptr(new Lifecycle))
+	{
+		CHECK_ERROR(connection, L"NetworkProtocolConnection requires a valid async socket connection.");
+		lifecycle->socketConnection = connection;
+		lifecycle->callbackDomain = callbackDomain;
+		connection->InstallCallback(this);
+	}
+
+	NetworkProtocolConnection::~NetworkProtocolConnection()
+	{
+		StopConnection(lifecycle);
+	}
+
+	void NetworkProtocolConnection::InstallCallback(INetworkProtocolCallback* value)
+	{
+		auto state = lifecycle;
+		if (!value)
+		{
+			auto callbackDepth = CurrentCallbackDepth(state);
+			bool uninstallOwner = false;
+			CS_LOCK(state->lockState)
+			{
+				uninstallOwner = state->callback != nullptr;
+				state->callback = nullptr;
+				while ((callbackDepth == 0 || uninstallOwner) && state->activeCallbacks > callbackDepth)
+				{
+					state->cvState.SleepWith(state->lockState);
+				}
+			}
+			return;
+		}
+
+		bool canInstall = false;
+		CS_LOCK(state->lockState)
+		{
+			if (!state->callback && !state->callbackInstalling && !state->stopStarted && !state->terminal)
+			{
+				state->callback = value;
+				state->callbackInstalling = true;
+				state->activeCallbacks++;
+				canInstall = true;
+			}
+		}
+		CHECK_ERROR(canInstall, L"NetworkProtocolConnection::InstallCallback cannot replace a callback or install one on a stopped connection.");
+
+		CallbackFrame frame(state);
+		try
+		{
+			value->OnInstalled(this);
+		}
+		catch (...)
+		{
+			CS_LOCK(state->lockState)
+			{
+				if (state->callback == value)
+				{
+					state->callback = nullptr;
+				}
+				state->callbackInstalling = false;
+				state->cvState.WakeAllPendings();
+			}
+			throw;
+		}
+
+		CS_LOCK(state->lockState)
+		{
+			state->callbackInstalling = false;
+			state->cvState.WakeAllPendings();
+		}
+	}
+
+	void NetworkProtocolConnection::BeginReadingLoopUnsafe()
+	{
+		auto state = lifecycle;
+		IAsyncSocketConnection* connection = nullptr;
+		CS_LOCK(state->lockState)
+		{
+			if (!state->stopStarted && !state->terminal && state->socketConnection)
+			{
+				connection = state->socketConnection;
+				state->activeSocketCalls++;
+			}
+		}
+		if (!connection)
+		{
+			return;
+		}
+
+		try
+		{
+			connection->BeginReadingLoopUnsafe();
+		}
+		catch (...)
+		{
+			FinishSocketCall(state);
+			throw;
+		}
+		FinishSocketCall(state);
+	}
+
+	void NetworkProtocolConnection::SendString(const WString& str)
+	{
+		auto state = lifecycle;
+		auto length = str.Length();
+		CHECK_ERROR(length >= 0 && length <= (std::numeric_limits<vint32_t>::max)(), L"NetworkProtocolConnection::SendString cannot encode a string longer than vint32_t.");
+		CHECK_ERROR((size_t)length <= ((size_t)(std::numeric_limits<vint>::max)() - sizeof(vint32_t)) / sizeof(wchar_t), L"NetworkProtocolConnection::SendString frame size overflow.");
+
+		auto buffer = Ptr(new AsyncSocketBuffer);
+		auto characterBytes = (size_t)length * sizeof(wchar_t);
+		auto frameBytes = sizeof(vint32_t) + characterBytes;
+		buffer->data.Resize((vint)frameBytes);
+		auto encodedLength = (vint32_t)length;
+		std::memcpy(&buffer->data[0], &encodedLength, sizeof(encodedLength));
+		if (characterBytes > 0)
+		{
+			std::memcpy(&buffer->data[sizeof(encodedLength)], str.Buffer(), characterBytes);
+		}
+
+		IAsyncSocketConnection* connection = nullptr;
+		Ptr<AsyncSocketBuffer> submitting;
+		CS_LOCK(state->lockState)
+		{
+			if (!state->stopStarted && !state->terminal && state->socketConnection)
+			{
+				state->queuedWrites.Add(buffer);
+				if (!state->writePending)
+				{
+					state->writePending = true;
+					connection = state->socketConnection;
+					submitting = state->queuedWrites[0];
+					state->activeSocketCalls++;
+				}
+			}
+		}
+		if (submitting)
+		{
+			SubmitWrite(state, connection, submitting);
+		}
+	}
+
+	void NetworkProtocolConnection::Stop()
+	{
+		StopConnection(lifecycle);
+	}
+
+	void NetworkProtocolConnection::OnRead(const vuint8_t* buffer, vint size)
+	{
+		auto state = lifecycle;
+		SocketCallbackFrame socketCallbackFrame(state);
+		if (!buffer || size <= 0)
+		{
+			return;
+		}
+
+		collections::List<WString> completedStrings;
+		bool malformed = false;
+		CS_LOCK(state->lockParser)
+		{
+			if (state->parserFailed)
+			{
+				return;
+			}
+
+			auto reading = buffer;
+			auto available = size;
+			while (available > 0)
+			{
+				if (state->expectedCharacters == -1)
+				{
+					auto required = (vint)sizeof(vint32_t) - state->lengthBytesReceived;
+					auto copied = required < available ? required : available;
+					std::memcpy(state->lengthBytes + state->lengthBytesReceived, reading, (size_t)copied);
+					state->lengthBytesReceived += copied;
+					reading += copied;
+					available -= copied;
+					if (state->lengthBytesReceived < (vint)sizeof(vint32_t))
+					{
+						continue;
+					}
+
+					std::memcpy(&state->expectedCharacters, state->lengthBytes, sizeof(state->expectedCharacters));
+					state->lengthBytesReceived = 0;
+					if (state->expectedCharacters < 0 || (size_t)state->expectedCharacters > ((size_t)(std::numeric_limits<vint>::max)() - sizeof(vint32_t)) / sizeof(wchar_t))
+					{
+						state->parserFailed = true;
+						malformed = true;
+						break;
+					}
+
+					state->characterBuffer.Resize((vint)state->expectedCharacters);
+					state->characterBytesReceived = 0;
+					if (state->expectedCharacters == 0)
+					{
+						completedStrings.Add(WString());
+						state->expectedCharacters = -1;
+					}
+				}
+
+				if (state->expectedCharacters >= 0)
+				{
+					auto characterBytes = (vint)((size_t)state->expectedCharacters * sizeof(wchar_t));
+					auto required = characterBytes - state->characterBytesReceived;
+					auto copied = required < available ? required : available;
+					std::memcpy((vuint8_t*)&state->characterBuffer[0] + state->characterBytesReceived, reading, (size_t)copied);
+					state->characterBytesReceived += copied;
+					reading += copied;
+					available -= copied;
+					if (state->characterBytesReceived == characterBytes)
+					{
+						completedStrings.Add(WString::CopyFrom(&state->characterBuffer[0], state->expectedCharacters));
+						state->characterBuffer.Resize(0);
+						state->characterBytesReceived = 0;
+						state->expectedCharacters = -1;
+					}
+				}
+			}
+		}
+
+		for (auto&& str : completedStrings)
+		{
+			InvokeProtocolCallback(state, false, [&](INetworkProtocolCallback* installed)
+			{
+				installed->OnReadString(str);
+			});
+		}
+		if (malformed)
+		{
+			ReportFatalError(state, L"The async socket protocol received an invalid string length.");
+		}
+	}
+
+	void NetworkProtocolConnection::OnWriteCompleted(Ptr<AsyncSocketBuffer> buffer)
+	{
+		auto state = lifecycle;
+		SocketCallbackFrame socketCallbackFrame(state);
+		IAsyncSocketConnection* connection = nullptr;
+		Ptr<AsyncSocketBuffer> submitting;
+		bool mismatched = false;
+		CS_LOCK(state->lockState)
+		{
+			if (state->queuedWrites.Count() == 0)
+			{
+				return;
+			}
+			if (state->queuedWrites[0].Obj() != buffer.Obj())
+			{
+				state->queuedWrites.Clear();
+				state->writePending = false;
+				mismatched = true;
+				state->cvState.WakeAllPendings();
+			}
+			else
+			{
+				state->queuedWrites.RemoveAt(0);
+				if ((!state->stopStarted || state->drainWrites) && !state->terminal && state->socketConnection && state->queuedWrites.Count() > 0)
+				{
+					connection = state->socketConnection;
+					submitting = state->queuedWrites[0];
+					state->activeSocketCalls++;
+				}
+				else
+				{
+					state->writePending = false;
+				}
+				state->cvState.WakeAllPendings();
+			}
+		}
+		CHECK_ERROR(!mismatched, L"NetworkProtocolConnection received a completion for an unexpected async socket buffer.");
+		if (submitting)
+		{
+			SubmitWrite(state, connection, submitting);
+		}
+	}
+
+	void NetworkProtocolConnection::OnError(const WString& error, bool fatal)
+	{
+		auto state = lifecycle;
+		SocketCallbackFrame socketCallbackFrame(state);
+		if (fatal)
+		{
+			ReportFatalError(state, error);
+		}
+		else
+		{
+			InvokeProtocolCallback(state, false, [&](INetworkProtocolCallback* installed)
+			{
+				installed->OnLocalError(error, false);
+			});
+		}
+	}
+
+	void NetworkProtocolConnection::OnConnected()
+	{
+		auto state = lifecycle;
+		SocketCallbackFrame socketCallbackFrame(state);
+		InvokeProtocolCallback(state, false, [](INetworkProtocolCallback* installed)
+		{
+			installed->OnConnected();
+		});
+	}
+
+	void NetworkProtocolConnection::OnDisconnected()
+	{
+		auto state = lifecycle;
+		SocketCallbackFrame socketCallbackFrame(state);
+		IAsyncSocketConnection* connection = nullptr;
+		CS_LOCK(state->lockState)
+		{
+			while (state->activeSocketCalls > 0)
+			{
+				state->cvState.SleepWith(state->lockState);
+			}
+			connection = state->socketConnection;
+		}
+
+		try
+		{
+			DetachSocketCallback(state, connection);
+		}
+		catch (...)
+		{
+			CS_LOCK(state->lockState)
+			{
+				if (state->socketConnection == connection)
+				{
+					state->socketConnection = nullptr;
+				}
+				state->cvState.WakeAllPendings();
+			}
+			NotifyProtocolDisconnected(state);
+			throw;
+		}
+		NotifyProtocolDisconnected(state);
+	}
+
+	void NetworkProtocolConnection::OnInstalled(IAsyncSocketConnection* connection)
+	{
+		auto state = lifecycle;
+		SocketCallbackFrame socketCallbackFrame(state);
+		CHECK_ERROR(connection == state->socketConnection, L"NetworkProtocolConnection was installed on an unexpected async socket connection.");
+	}
+}
+
+
+/***********************************************************************
+.\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPCLIENT.CPP
+***********************************************************************/
+
+#if defined VCZH_MSVC
+namespace vl::inter_process::async_tcp_socket::windows_socket
+{
+	extern Ptr<IAsyncSocketClient> CreateDefaultAsyncSocketClient(vint port);
+}
+#elif defined VCZH_GCC && defined VCZH_APPLE
+namespace vl::inter_process::async_tcp_socket::macos_socket
+{
+	extern Ptr<IAsyncSocketClient> CreateDefaultAsyncSocketClient(vint port);
+}
+#elif defined VCZH_GCC
+namespace vl::inter_process::async_tcp_socket::linux_socket
+{
+	extern Ptr<IAsyncSocketClient> CreateDefaultAsyncSocketClient(vint port);
+}
+#endif
+
+
+namespace vl::inter_process::async_tcp_socket
+{
+	using namespace vl::collections;
+
+	namespace
+	{
+		constexpr const wchar_t*		JsonContentType = L"application/json; charset=utf8";
+		constexpr vint				HttpRequestMaxAttempts = 3;
+		constexpr vint				SendDrainTimeout = 1000;
+
+		vint HexValue(wchar_t c)
+		{
+			if (L'0' <= c && c <= L'9') return c - L'0';
+			if (L'a' <= c && c <= L'f') return c - L'a' + 10;
+			if (L'A' <= c && c <= L'F') return c - L'A' + 10;
+			return -1;
+		}
+
+		bool IsLegalOriginPathCharacter(wchar_t c)
+		{
+			if (L'a' <= c && c <= L'z') return true;
+			if (L'A' <= c && c <= L'Z') return true;
+			if (L'0' <= c && c <= L'9') return true;
+			switch (c)
+			{
+			case L'-': case L'.': case L'_': case L'~':
+			case L'!': case L'$': case L'&': case L'\'':
+			case L'(': case L')': case L'*': case L'+':
+			case L',': case L';': case L'=': case L':':
+			case L'@': case L'/':
+				return true;
+			default:
+				return false;
+			}
+		}
+
+		bool ValidateUtf8(const char* buffer, vint size)
+		{
+			for (vint i = 0; i < size;)
+			{
+				auto c = (vuint8_t)buffer[i];
+				if (c == 0) return false;
+				if (c <= 0x7F)
+				{
+					i++;
+					continue;
+				}
+
+				vint count = 0;
+				vuint32_t code = 0;
+				vuint32_t minimum = 0;
+				if (0xC2 <= c && c <= 0xDF)
+				{
+					count = 2;
+					code = c & 0x1F;
+					minimum = 0x80;
+				}
+				else if (0xE0 <= c && c <= 0xEF)
+				{
+					count = 3;
+					code = c & 0x0F;
+					minimum = 0x800;
+				}
+				else if (0xF0 <= c && c <= 0xF4)
+				{
+					count = 4;
+					code = c & 0x07;
+					minimum = 0x10000;
+				}
+				else
+				{
+					return false;
+				}
+
+				if (i > size - count) return false;
+				for (vint j = 1; j < count; j++)
+				{
+					auto continuation = (vuint8_t)buffer[i + j];
+					if ((continuation & 0xC0) != 0x80) return false;
+					code = (code << 6) | (continuation & 0x3F);
+				}
+				if (code < minimum || code > 0x10FFFF || (0xD800 <= code && code <= 0xDFFF)) return false;
+				i += count;
+			}
+			return true;
+		}
+
+		bool ValidateWString(const WString& text)
+		{
+			for (vint i = 0; i < text.Length(); i++)
+			{
+				auto code = (vuint32_t)text[i];
+				if (code == 0) return false;
+				if constexpr (sizeof(wchar_t) == 2)
+				{
+					if (0xD800 <= code && code <= 0xDBFF)
+					{
+						if (i + 1 >= text.Length()) return false;
+						auto low = (vuint32_t)text[++i];
+						if (low < 0xDC00 || low > 0xDFFF) return false;
+					}
+					else if (0xDC00 <= code && code <= 0xDFFF)
+					{
+						return false;
+					}
+				}
+				else
+				{
+					if (code > 0x10FFFF || (0xD800 <= code && code <= 0xDFFF)) return false;
+				}
+			}
+			return true;
+		}
+
+		bool GetUtf8Size(const WString& text, vint& size)
+		{
+			if (!ValidateWString(text)) return false;
+			auto utf8 = wtou8(text);
+			size = utf8.Length();
+			return true;
+		}
+
+		bool DecodeUtf8(const Array<char>& bytes, WString& text)
+		{
+			if (bytes.Count() == 0)
+			{
+				text = WString::Empty;
+				return true;
+			}
+			if (!ValidateUtf8(&bytes[0], bytes.Count())) return false;
+
+			Array<char8_t> utf8(bytes.Count());
+			for (vint i = 0; i < bytes.Count(); i++)
+			{
+				utf8[i] = (char8_t)bytes[i];
+			}
+			text = u8tow(U8String::CopyFrom(&utf8[0], utf8.Count()));
+			return ValidateWString(text);
+		}
+
+		bool ValidateOriginPath(const WString& path, bool rejectTrailingSlash)
+		{
+			if (path.Length() == 0 || path[0] != L'/') return false;
+			if (rejectTrailingSlash && path[path.Length() - 1] == L'/') return false;
+
+			List<char> decoded;
+			for (vint i = 0; i < path.Length(); i++)
+			{
+				auto c = path[i];
+				if (c == L'%')
+				{
+					if (i + 2 >= path.Length()) return false;
+					auto high = HexValue(path[i + 1]);
+					auto low = HexValue(path[i + 2]);
+					if (high == -1 || low == -1) return false;
+					auto value = (char)(high * 16 + low);
+					if (value == 0 || value == '/' || value == '\\') return false;
+					decoded.Add(value);
+					i += 2;
+				}
+				else
+				{
+					if (!IsLegalOriginPathCharacter(c)) return false;
+					decoded.Add((char)c);
+				}
+			}
+			return decoded.Count() == 0 || ValidateUtf8(&decoded[0], decoded.Count());
+		}
+
+		bool ValidateRequestTarget(const WString& target, const wchar_t* method)
+		{
+			if (!ValidateOriginPath(target, false)) return false;
+			vint methodLength = 0;
+			while (method[methodLength]) methodLength++;
+			return target.Length() <= HttpRequestLineSizeLimit - 10 - methodLength;
+		}
+
+		WString DescribeHttpError(const wchar_t* operation, const windows_http::HttpError& error)
+		{
+			return WString::Unmanaged(operation) + L" failed: " + error.message;
+		}
+
+		bool DecodeSuccessfulResponse(
+			const windows_http::HttpResponse& response,
+			const wchar_t* operation,
+			WString& body,
+			WString& error
+			)
+		{
+			if (response.statusCode != 200)
+			{
+				error = WString::Unmanaged(operation) + L" returned status code " + itow(response.statusCode) + L".";
+				return false;
+			}
+			if (response.contentType != JsonContentType)
+			{
+				error = WString::Unmanaged(operation) + L" did not return the required content type.";
+				return false;
+			}
+			if (!DecodeUtf8(response.body, body))
+			{
+				error = WString::Unmanaged(operation) + L" returned malformed UTF-8 or an embedded NUL.";
+				return false;
+			}
+			return true;
+		}
+
+		BEGIN_GLOBAL_STORAGE_CLASS(SocketHttpClientTestHooks)
+			SpinLock						lock;
+			Func<void()>					receiveSubmitted;
+			Func<void()>					fatalReserved;
+			Func<void()>					stopStarted;
+		INITIALIZE_GLOBAL_STORAGE_CLASS
+		FINALIZE_GLOBAL_STORAGE_CLASS
+			SPIN_LOCK(lock)
+			{
+				receiveSubmitted = {};
+				fatalReserved = {};
+				stopStarted = {};
+			}
+		END_GLOBAL_STORAGE_CLASS(SocketHttpClientTestHooks)
+
+		void InvokeReceiveSubmittedForTesting()
+		{
+			Func<void()> callback;
+			auto& hooks = GetSocketHttpClientTestHooks();
+			SPIN_LOCK(hooks.lock)
+			{
+				callback = hooks.receiveSubmitted;
+			}
+			if (callback)
+			{
+				try { callback(); }
+				catch (...) {}
+			}
+		}
+
+		void InvokeFatalReservedForTesting()
+		{
+			Func<void()> callback;
+			auto& hooks = GetSocketHttpClientTestHooks();
+			SPIN_LOCK(hooks.lock)
+			{
+				callback = hooks.fatalReserved;
+			}
+			if (callback)
+			{
+				try { callback(); }
+				catch (...) {}
+			}
+		}
+
+		void InvokeStopStartedForTesting()
+		{
+			Func<void()> callback;
+			auto& hooks = GetSocketHttpClientTestHooks();
+			SPIN_LOCK(hooks.lock)
+			{
+				callback = hooks.stopStarted;
+			}
+			if (callback)
+			{
+				try { callback(); }
+				catch (...) {}
+			}
+		}
+
+		SocketHttpClient::NativeClientFactory CreateDefaultClientFactory()
+		{
+#if defined VCZH_MSVC
+			return windows_socket::CreateDefaultAsyncSocketClient;
+#elif defined VCZH_GCC && defined VCZH_APPLE
+			return macos_socket::CreateDefaultAsyncSocketClient;
+#elif defined VCZH_GCC
+			return linux_socket::CreateDefaultAsyncSocketClient;
+#else
+			return {};
+#endif
+		}
+	}
+
+	void SetSocketHttpClientReceiveSubmittedCallbackForTesting(const Func<void()>& callback)
+	{
+		auto& hooks = GetSocketHttpClientTestHooks();
+		SPIN_LOCK(hooks.lock)
+		{
+			hooks.receiveSubmitted = callback;
+		}
+	}
+
+	void ResetSocketHttpClientReceiveSubmittedCallbackForTesting()
+	{
+		SetSocketHttpClientReceiveSubmittedCallbackForTesting({});
+	}
+
+	void SetSocketHttpClientFatalStopCallbacksForTesting(
+		const Func<void()>& fatalReserved,
+		const Func<void()>& stopStarted
+		)
+	{
+		auto& hooks = GetSocketHttpClientTestHooks();
+		SPIN_LOCK(hooks.lock)
+		{
+			hooks.fatalReserved = fatalReserved;
+			hooks.stopStarted = stopStarted;
+		}
+	}
+
+	void ResetSocketHttpClientFatalStopCallbacksForTesting()
+	{
+		SetSocketHttpClientFatalStopCallbacksForTesting({}, {});
+	}
+
+/***********************************************************************
+SocketHttpClient::Impl
+***********************************************************************/
+
+	class SocketHttpClient::Impl : public Object
+	{
+		using QueryResult = Variant<windows_http::HttpResponse, windows_http::HttpError>;
+
+		enum class State
+		{
+			Ready,
+			WaitingForServer,
+			Connected,
+			Stopping,
+		};
+
+		class SendItem : public Object
+		{
+		public:
+			WString						body;
+			vint						attempt = 1;
+		};
+
+		class QueryWaiter : public Object
+		{
+		private:
+			CriticalSection				lock;
+			ConditionVariable			cv;
+			Ptr<QueryResult>				result;
+
+		public:
+			void Complete(QueryResult value)
+			{
+				CS_LOCK(lock)
+				{
+					if (!result)
+					{
+						result = Ptr(new QueryResult(std::move(value)));
+						cv.WakeAllPendings();
+					}
+				}
+			}
+
+			Ptr<QueryResult> Wait()
+			{
+				CS_LOCK(lock)
+				{
+					while (!result) cv.SleepWith(lock);
+					return result;
+				}
+				return nullptr;
+			}
+		};
+
+		struct CallbackFrame
+		{
+			Ptr<Impl>						state;
+			CallbackFrame*				previous = nullptr;
+			NetworkProtocolCallbackDomain::CallbackFrame
+										domainFrame;
+
+			CallbackFrame(Ptr<Impl> _state)
+				: state(_state)
+				, previous(currentCallbackFrame)
+				, domainFrame(state->callbackDomain)
+			{
+				currentCallbackFrame = this;
+			}
+
+			~CallbackFrame()
+			{
+				currentCallbackFrame = previous;
+				CS_LOCK(state->lockState)
+				{
+					state->activeCallbacks--;
+					state->cvState.WakeAllPendings();
+				}
+			}
+		};
+
+		struct WorkerFrame
+		{
+			Ptr<Impl>						state;
+			WorkerFrame*					previous = nullptr;
+
+			WorkerFrame(Ptr<Impl> _state)
+				: state(_state)
+				, previous(currentWorkerFrame)
+			{
+				currentWorkerFrame = this;
+			}
+
+			~WorkerFrame()
+			{
+				currentWorkerFrame = previous;
+				CS_LOCK(state->lockState)
+				{
+					state->activeWorkers--;
+					if (state->hardStopping)
+					{
+						state->sendReconnecting = false;
+						state->receiveReconnecting = false;
+					}
+					state->cvState.WakeAllPendings();
+				}
+			}
+		};
+
+		struct WaitFrame
+		{
+			Ptr<Impl>						state;
+			WaitFrame*					previous = nullptr;
+
+			WaitFrame(Ptr<Impl> _state)
+				: state(_state)
+				, previous(currentWaitFrame)
+			{
+				currentWaitFrame = this;
+				CS_LOCK(state->lockState)
+				{
+					state->activeWaits++;
+				}
+			}
+
+			~WaitFrame()
+			{
+				currentWaitFrame = previous;
+				CS_LOCK(state->lockState)
+				{
+					state->activeWaits--;
+					state->cvState.WakeAllPendings();
+				}
+			}
+		};
+
+		static thread_local CallbackFrame*	currentCallbackFrame;
+		static thread_local WorkerFrame*	currentWorkerFrame;
+		static thread_local WaitFrame*		currentWaitFrame;
+
+		SocketHttpClient*				owner = nullptr;
+		NativeClientFactory				clientFactory;
+		vint							port = 0;
+		WString							baseUrl;
+		WString							authority;
+		WString							urlConnect;
+		WString							urlRequest;
+		WString							urlResponse;
+		Ptr<Impl>						selfReference;
+		Ptr<NetworkProtocolCallbackDomain>	callbackDomain = Ptr(new NetworkProtocolCallbackDomain);
+
+		CriticalSection					lockState;
+		ConditionVariable				cvState;
+		State							state = State::Ready;
+		INetworkProtocolCallback*		callback = nullptr;
+		bool							callbackInstalling = false;
+		vint							activeCallbacks = 0;
+		vint							activeWorkers = 0;
+		vint							activeWaits = 0;
+		bool							readingStarted = false;
+		bool							receivePollActive = false;
+		bool							receiveReconnecting = false;
+		bool							sendActive = false;
+		bool							sendReconnecting = false;
+		bool							stopStarted = false;
+		bool							drainSends = false;
+		bool							hardStopping = false;
+		bool							stopFinished = false;
+		bool							fatalStarted = false;
+		bool							disconnectedNotified = false;
+		bool							disconnectDelivering = false;
+		bool							disconnectFinished = false;
+		Ptr<SocketHttpClientApi>			sendApi;
+		Ptr<SocketHttpClientApi>			receiveApi;
+		List<Ptr<SendItem>>				sendQueue;
+
+		Ptr<Impl> RetainSelf()
+		{
+			CS_LOCK(lockState)
+			{
+				return selfReference;
+			}
+			return nullptr;
+		}
+
+		vint CurrentCallbackDepth()
+		{
+			vint depth = 0;
+			for (auto frame = currentCallbackFrame; frame; frame = frame->previous)
+			{
+				if (frame->state.Obj() == this) depth++;
+			}
+			return depth;
+		}
+
+		vint CurrentWorkerDepth()
+		{
+			vint depth = 0;
+			for (auto frame = currentWorkerFrame; frame; frame = frame->previous)
+			{
+				if (frame->state.Obj() == this) depth++;
+			}
+			return depth;
+		}
+
+		vint CurrentWaitDepth()
+		{
+			vint depth = 0;
+			for (auto frame = currentWaitFrame; frame; frame = frame->previous)
+			{
+				if (frame->state.Obj() == this) depth++;
+			}
+			return depth;
+		}
+
+		template<typename TCallback>
+		void InvokeProtocolCallback(bool allowStopping, TCallback&& invoke)
+		{
+			INetworkProtocolCallback* installed = nullptr;
+			auto callbackDepth = CurrentCallbackDepth();
+			lockState.Enter();
+			while (callbackInstalling && callbackDepth == 0 && callback)
+			{
+				cvState.SleepWith(lockState);
+			}
+			if (callback && (allowStopping || !stopStarted))
+			{
+				installed = callback;
+				activeCallbacks++;
+			}
+			lockState.Leave();
+
+			if (installed)
+			{
+				CallbackFrame frame(RetainSelf());
+				invoke(installed);
+			}
+		}
+
+		bool IsStopped()
+		{
+			CS_LOCK(lockState)
+			{
+				return stopStarted;
+			}
+			return true;
+		}
+
+		bool CanReceiveUnsafe()
+		{
+			return state == State::Connected && readingStarted && !stopStarted && !hardStopping;
+		}
+
+		bool CanSendUnsafe()
+		{
+			return !hardStopping && (state == State::Connected || drainSends);
+		}
+
+		void StopApiNoThrow(Ptr<SocketHttpClientApi> api)
+		{
+			if (!api) return;
+			try
+			{
+				api->Stop();
+			}
+			catch (...)
+			{
+			}
+		}
+
+		Ptr<SocketHttpClientApi> CreateApi()
+		{
+			auto nativeClient = clientFactory(port);
+			CHECK_ERROR(nativeClient, L"SocketHttpClient::NativeClientFactory returned null.");
+			return Ptr(new SocketHttpClientApi(nativeClient, authority));
+		}
+
+		bool WaitApiForServer(Ptr<SocketHttpClientApi> api)
+		{
+			api->WaitForServer();
+			return api->GetStatus() == ClientStatus::Connected;
+		}
+
+		void ReportLocalError(const WString& error, bool fatal)
+		{
+			InvokeProtocolCallback(fatal, [&](INetworkProtocolCallback* installed)
+			{
+				installed->OnLocalError(error, fatal);
+			});
+		}
+
+		void NotifyDisconnected()
+		{
+			auto callbackDepth = CurrentCallbackDepth();
+			lockState.Enter();
+			if (!disconnectedNotified)
+			{
+				disconnectedNotified = true;
+				cvState.WakeAllPendings();
+			}
+			if (disconnectFinished)
+			{
+				lockState.Leave();
+				return;
+			}
+			if (disconnectDelivering)
+			{
+				if (callbackDepth == 0)
+				{
+					while (!disconnectFinished) cvState.SleepWith(lockState);
+				}
+				lockState.Leave();
+				return;
+			}
+			if (callbackDepth == 0)
+			{
+				while (activeCallbacks > 0 && !disconnectDelivering && !disconnectFinished)
+				{
+					cvState.SleepWith(lockState);
+				}
+				if (disconnectFinished)
+				{
+					lockState.Leave();
+					return;
+				}
+			}
+			disconnectDelivering = true;
+			while (activeCallbacks > callbackDepth) cvState.SleepWith(lockState);
+			lockState.Leave();
+
+			try
+			{
+				InvokeProtocolCallback(true, [](INetworkProtocolCallback* installed)
+				{
+					installed->OnDisconnected();
+				});
+			}
+			catch (...)
+			{
+				CS_LOCK(lockState)
+				{
+					callback = nullptr;
+					disconnectFinished = true;
+					cvState.WakeAllPendings();
+				}
+				throw;
+			}
+
+			CS_LOCK(lockState)
+			{
+				callback = nullptr;
+				disconnectFinished = true;
+				cvState.WakeAllPendings();
+			}
+		}
+
+		void ReportFatalError(const WString& error)
+		{
+			INetworkProtocolCallback* installed = nullptr;
+			auto callbackDepth = CurrentCallbackDepth();
+			bool report = false;
+			lockState.Enter();
+			while (callbackInstalling && callbackDepth == 0 && callback && !stopStarted)
+			{
+				cvState.SleepWith(lockState);
+			}
+			if (!fatalStarted && !stopStarted)
+			{
+				fatalStarted = true;
+				report = true;
+				if (callback)
+				{
+					installed = callback;
+					activeCallbacks++;
+				}
+			}
+			lockState.Leave();
+			if (!report) return;
+			InvokeFatalReservedForTesting();
+
+			try
+			{
+				if (installed)
+				{
+					CallbackFrame frame(RetainSelf());
+					installed->OnLocalError(error, true);
+				}
+			}
+			catch (...)
+			{
+				Stop(true);
+				throw;
+			}
+			Stop(true);
+		}
+
+		bool HandleConnectFailure(WString error, vint& attempt)
+		{
+			if (IsStopped()) return false;
+			if (attempt >= HttpRequestMaxAttempts)
+			{
+				ReportFatalError(error);
+				return false;
+			}
+			ReportLocalError(error, false);
+			attempt++;
+			return !IsStopped();
+		}
+
+		Ptr<QueryResult> QueryConnect(Ptr<SocketHttpClientApi> api)
+		{
+			windows_http::HttpRequest request;
+			request.method = L"GET";
+			request.query = urlConnect;
+			request.acceptTypes.Add(JsonContentType);
+
+			auto waiter = Ptr(new QueryWaiter);
+			api->HttpQuery(request, [waiter](QueryResult result)
+			{
+				waiter->Complete(std::move(result));
+			});
+			return waiter->Wait();
+		}
+
+		bool ValidateConnectResponse(
+			const windows_http::HttpResponse& response,
+			WString& requestUrl,
+			WString& responseUrl,
+			WString& error
+			)
+		{
+			WString body;
+			if (!DecodeSuccessfulResponse(response, L"/Connect", body, error)) return false;
+			if (body.Length() == 0)
+			{
+				error = L"/Connect returned an empty body.";
+				return false;
+			}
+
+			auto separator = body.IndexOf(L';');
+			if (separator <= 0 || separator + 1 >= body.Length() || body.Right(body.Length() - separator - 1).IndexOf(L';') != -1)
+			{
+				error = L"/Connect did not return exactly two paths.";
+				return false;
+			}
+			auto requestPath = body.Left(separator);
+			auto responsePath = body.Right(body.Length() - separator - 1);
+			if (!ValidateOriginPath(requestPath, false) || !ValidateOriginPath(responsePath, false))
+			{
+				error = L"/Connect returned an illegal path.";
+				return false;
+			}
+
+			requestUrl = baseUrl + requestPath;
+			responseUrl = baseUrl + responsePath;
+			if (!ValidateRequestTarget(requestUrl, L"POST") || !ValidateRequestTarget(responseUrl, L"POST"))
+			{
+				error = L"/Connect returned a path exceeding the HTTP request-target contract.";
+				return false;
+			}
+			return true;
+		}
+
+		bool PublishApi(Ptr<SocketHttpClientApi> api, bool receive)
+		{
+			CS_LOCK(lockState)
+			{
+				if (stopStarted || hardStopping) return false;
+				if (receive)
+				{
+					receiveApi = api;
+				}
+				else
+				{
+					sendApi = api;
+				}
+				return true;
+			}
+			return false;
+		}
+
+		void ClearApi(Ptr<SocketHttpClientApi> api, bool receive)
+		{
+			CS_LOCK(lockState)
+			{
+				if (receive)
+				{
+					if (receiveApi == api) receiveApi = nullptr;
+				}
+				else
+				{
+					if (sendApi == api) sendApi = nullptr;
+				}
+				cvState.WakeAllPendings();
+			}
+		}
+
+		void SubmitReceivePoll(Ptr<SocketHttpClientApi> api)
+		{
+			auto self = RetainSelf();
+			if (!self) return;
+			windows_http::HttpRequest request;
+			request.method = L"POST";
+			request.query = urlRequest;
+			request.acceptTypes.Add(JsonContentType);
+			request.extraHeaders.Add(L"Content-Length", L"0");
+			request.receiveTimeout = 0;
+
+			try
+			{
+				api->HttpQuery(request, [self, api](QueryResult result)
+				{
+					self->OnReceiveCompleted(api, std::move(result));
+				});
+				InvokeReceiveSubmittedForTesting();
+			}
+			catch (...)
+			{
+				HandleReceiveTransportFailure(api);
+			}
+		}
+
+		bool ReserveReceivePoll(Ptr<SocketHttpClientApi> api)
+		{
+			CS_LOCK(lockState)
+			{
+				if (!CanReceiveUnsafe() || receiveReconnecting || receivePollActive || receiveApi != api) return false;
+				receivePollActive = true;
+				return true;
+			}
+			return false;
+		}
+
+		void HandleReceiveTransportFailure(Ptr<SocketHttpClientApi> api)
+		{
+			bool schedule = false;
+			CS_LOCK(lockState)
+			{
+				if (receiveApi == api && CanReceiveUnsafe() && !receiveReconnecting)
+				{
+					receivePollActive = false;
+					receiveReconnecting = true;
+					activeWorkers++;
+					schedule = true;
+				}
+			}
+			if (!schedule) return;
+
+			auto self = RetainSelf();
+			bool queued = false;
+			try
+			{
+				auto worker = Func<void()>([self, api]()
+				{
+					WorkerFrame frame(self);
+					try
+					{
+						self->RunReceiveReplacement(api);
+					}
+					catch (...)
+					{
+						try
+						{
+							self->ReportFatalError(L"/Request replacement worker failed unexpectedly.");
+						}
+						catch (...)
+						{
+							self->Stop();
+						}
+					}
+				});
+				if (self)
+				{
+					try
+					{
+						queued = ThreadPoolLite::Queue(worker);
+					}
+					catch (...)
+					{
+					}
+					if (!queued)
+					{
+						try
+						{
+							queued = Thread::CreateAndStart(worker) != nullptr;
+						}
+						catch (...)
+						{
+						}
+					}
+				}
+			}
+			catch (...)
+			{
+			}
+			if (!queued)
+			{
+				CS_LOCK(lockState)
+				{
+					activeWorkers--;
+					receiveReconnecting = false;
+					cvState.WakeAllPendings();
+				}
+				ReportFatalError(L"/Request could not queue its replacement worker.");
+			}
+		}
+
+		void RunReceiveReplacement(Ptr<SocketHttpClientApi> deadApi)
+		{
+			StopApiNoThrow(deadApi);
+			ClearApi(deadApi, true);
+
+			while (true)
+			{
+				CS_LOCK(lockState)
+				{
+					if (!CanReceiveUnsafe() || !receiveReconnecting) return;
+				}
+
+				Ptr<SocketHttpClientApi> api;
+				try
+				{
+					api = CreateApi();
+				}
+				catch (...)
+				{
+					continue;
+				}
+				if (!PublishApi(api, true))
+				{
+					StopApiNoThrow(api);
+					return;
+				}
+
+				bool connected = false;
+				try
+				{
+					connected = WaitApiForServer(api);
+				}
+				catch (...)
+				{
+				}
+				if (!connected)
+				{
+					StopApiNoThrow(api);
+					ClearApi(api, true);
+					continue;
+				}
+
+				bool submit = false;
+				CS_LOCK(lockState)
+				{
+					if (receiveApi == api && CanReceiveUnsafe() && receiveReconnecting)
+					{
+						receiveReconnecting = false;
+						receivePollActive = true;
+						submit = true;
+					}
+				}
+				if (!submit)
+				{
+					StopApiNoThrow(api);
+					return;
+				}
+				SubmitReceivePoll(api);
+				return;
+			}
+		}
+
+		void OnReceiveCompleted(Ptr<SocketHttpClientApi> api, QueryResult result)
+		{
+			bool current = false;
+			CS_LOCK(lockState)
+			{
+				if (receiveApi == api && receivePollActive)
+				{
+					receivePollActive = false;
+					current = true;
+				}
+			}
+			if (!current) return;
+
+			if (result.TryGet<windows_http::HttpError>())
+			{
+				HandleReceiveTransportFailure(api);
+				return;
+			}
+
+			WString body;
+			WString error;
+			auto valid = DecodeSuccessfulResponse(result.Get<windows_http::HttpResponse>(), L"/Request", body, error);
+			if (ReserveReceivePoll(api))
+			{
+				// SocketHttpClientApi starts this replacement from inside its response
+				// callback before any user callback below can create a receive gap.
+				SubmitReceivePoll(api);
+			}
+			if (valid && body.Length() > 0)
+			{
+				InvokeProtocolCallback(false, [&](INetworkProtocolCallback* installed)
+				{
+					installed->OnReadString(body);
+				});
+			}
+		}
+
+		bool IsCurrentSendUnsafe(Ptr<SocketHttpClientApi> api, Ptr<SendItem> item)
+		{
+			return sendQueue.Count() > 0 && sendQueue[0] == item && sendApi == api;
+		}
+
+		void SubmitSend(Ptr<SocketHttpClientApi> api, Ptr<SendItem> item)
+		{
+			bool submit = false;
+			CS_LOCK(lockState)
+			{
+				submit = CanSendUnsafe() && sendActive && IsCurrentSendUnsafe(api, item);
+			}
+			if (!submit) return;
+
+			windows_http::HttpRequest request;
+			request.method = L"POST";
+			request.query = urlResponse;
+			request.acceptTypes.Add(JsonContentType);
+			request.contentType = JsonContentType;
+			request.SetBodyUtf8(item->body);
+
+			auto self = RetainSelf();
+			try
+			{
+				api->HttpQuery(request, [self, api, item](QueryResult result)
+				{
+					self->OnSendCompleted(api, item, std::move(result));
+				});
+			}
+			catch (...)
+			{
+				HandleSendFailure(api, item, L"/Response could not submit the HTTP exchange.", true);
+			}
+		}
+
+		void QueueSendReplacement(Ptr<SocketHttpClientApi> deadApi, Ptr<SendItem> item)
+		{
+			bool schedule = false;
+			CS_LOCK(lockState)
+			{
+				if (CanSendUnsafe() && sendReconnecting && IsCurrentSendUnsafe(deadApi, item))
+				{
+					activeWorkers++;
+					schedule = true;
+				}
+				else
+				{
+					sendReconnecting = false;
+				}
+			}
+			if (!schedule) return;
+
+			auto self = RetainSelf();
+			bool queued = false;
+			try
+			{
+				auto worker = Func<void()>([self, deadApi, item]()
+				{
+					WorkerFrame frame(self);
+					try
+					{
+						self->RunSendReplacement(deadApi, item);
+					}
+					catch (...)
+					{
+						try
+						{
+							self->ReportFatalError(L"/Response replacement worker failed unexpectedly.");
+						}
+						catch (...)
+						{
+							self->Stop();
+						}
+					}
+				});
+				if (self)
+				{
+					try
+					{
+						queued = ThreadPoolLite::Queue(worker);
+					}
+					catch (...)
+					{
+					}
+					if (!queued)
+					{
+						try
+						{
+							queued = Thread::CreateAndStart(worker) != nullptr;
+						}
+						catch (...)
+						{
+						}
+					}
+				}
+			}
+			catch (...)
+			{
+			}
+			if (!queued)
+			{
+				CS_LOCK(lockState)
+				{
+					activeWorkers--;
+					sendReconnecting = false;
+					cvState.WakeAllPendings();
+				}
+				ReportFatalError(L"/Response could not queue its replacement worker.");
+			}
+		}
+
+		bool HandleSendPreparationFailure(Ptr<SendItem> item, const WString& error)
+		{
+			bool fatal = false;
+			CS_LOCK(lockState)
+			{
+				if (!CanSendUnsafe() || !sendReconnecting || sendQueue.Count() == 0 || sendQueue[0] != item) return false;
+				fatal = item->attempt >= HttpRequestMaxAttempts;
+				if (!fatal) item->attempt++;
+			}
+			if (fatal)
+			{
+				ReportFatalError(error);
+				return false;
+			}
+			ReportLocalError(error, false);
+			CS_LOCK(lockState)
+			{
+				return CanSendUnsafe() && sendReconnecting && sendQueue.Count() > 0 && sendQueue[0] == item;
+			}
+			return false;
+		}
+
+		void RunSendReplacement(Ptr<SocketHttpClientApi> deadApi, Ptr<SendItem> item)
+		{
+			StopApiNoThrow(deadApi);
+			ClearApi(deadApi, false);
+
+			while (true)
+			{
+				CS_LOCK(lockState)
+				{
+					if (!CanSendUnsafe() || !sendReconnecting || sendQueue.Count() == 0 || sendQueue[0] != item) return;
+				}
+
+				Ptr<SocketHttpClientApi> api;
+				try
+				{
+					api = CreateApi();
+				}
+				catch (...)
+				{
+					if (!HandleSendPreparationFailure(item, L"/Response could not create a replacement HTTP client.")) return;
+					continue;
+				}
+				if (!PublishApi(api, false))
+				{
+					StopApiNoThrow(api);
+					return;
+				}
+
+				bool connected = false;
+				try
+				{
+					connected = WaitApiForServer(api);
+				}
+				catch (...)
+				{
+				}
+				if (!connected)
+				{
+					StopApiNoThrow(api);
+					ClearApi(api, false);
+					if (!HandleSendPreparationFailure(item, L"/Response replacement failed to connect.")) return;
+					continue;
+				}
+
+				bool submit = false;
+				CS_LOCK(lockState)
+				{
+					if (sendApi == api && CanSendUnsafe() && sendReconnecting && sendQueue.Count() > 0 && sendQueue[0] == item)
+					{
+						sendReconnecting = false;
+						sendActive = true;
+						submit = true;
+					}
+				}
+				if (!submit)
+				{
+					StopApiNoThrow(api);
+					return;
+				}
+				SubmitSend(api, item);
+				return;
+			}
+		}
+
+		void HandleSendFailure(Ptr<SocketHttpClientApi> api, Ptr<SendItem> item, WString error, bool transportFailure)
+		{
+			bool fatal = false;
+			bool retryHealthy = false;
+			bool replace = false;
+			CS_LOCK(lockState)
+			{
+				if (!sendActive || !CanSendUnsafe() || !IsCurrentSendUnsafe(api, item)) return;
+				sendActive = false;
+				fatal = item->attempt >= HttpRequestMaxAttempts;
+				if (!fatal)
+				{
+					item->attempt++;
+					if (transportFailure)
+					{
+						sendReconnecting = true;
+						replace = true;
+					}
+					else
+					{
+						sendActive = true;
+						retryHealthy = true;
+					}
+				}
+				cvState.WakeAllPendings();
+			}
+
+			if (fatal)
+			{
+				ReportFatalError(error);
+				return;
+			}
+
+			try
+			{
+				ReportLocalError(error, false);
+			}
+			catch (...)
+			{
+				if (replace) QueueSendReplacement(api, item);
+				if (retryHealthy) SubmitSend(api, item);
+				throw;
+			}
+			if (replace) QueueSendReplacement(api, item);
+			if (retryHealthy) SubmitSend(api, item);
+		}
+
+		void OnSendCompleted(Ptr<SocketHttpClientApi> api, Ptr<SendItem> item, QueryResult result)
+		{
+			if (auto httpError = result.TryGet<windows_http::HttpError>())
+			{
+				HandleSendFailure(api, item, DescribeHttpError(L"/Response", *httpError), true);
+				return;
+			}
+
+			WString body;
+			WString error;
+			if (!DecodeSuccessfulResponse(result.Get<windows_http::HttpResponse>(), L"/Response", body, error))
+			{
+				HandleSendFailure(api, item, error, false);
+				return;
+			}
+
+			Ptr<SendItem> next;
+			CS_LOCK(lockState)
+			{
+				if (!sendActive || !IsCurrentSendUnsafe(api, item)) return;
+				sendActive = false;
+				sendQueue.RemoveAt(0);
+				if (CanSendUnsafe() && sendQueue.Count() > 0)
+				{
+					next = sendQueue[0];
+					sendActive = true;
+				}
+				cvState.WakeAllPendings();
+			}
+
+			// Preserve FIFO ownership by submitting the next accepted send before
+			// delivering a piggybacked message to callback-reentrant application code.
+			if (next) SubmitSend(api, next);
+			if (body.Length() > 0)
+			{
+				InvokeProtocolCallback(false, [&](INetworkProtocolCallback* installed)
+				{
+					installed->OnReadString(body);
+				});
+			}
+		}
+
+	public:
+		Impl(SocketHttpClient* _owner, const WString& _baseUrl, vint _port, NativeClientFactory _clientFactory)
+			: owner(_owner)
+			, clientFactory(_clientFactory)
+			, port(_port)
+			, baseUrl(_baseUrl)
+			, authority(WString::Unmanaged(L"localhost:") + itow(_port))
+			, urlConnect(_baseUrl + HttpServerUrl_Connect)
+		{
+			CHECK_ERROR(owner, L"SocketHttpClient requires an owning adapter.");
+			CHECK_ERROR(clientFactory, L"SocketHttpClient requires a native-client factory.");
+			CHECK_ERROR(1 <= port && port <= 65535, L"SocketHttpClient requires a port in 1..65535.");
+			CHECK_ERROR(baseUrl == WString::Empty || ValidateOriginPath(baseUrl, true), L"SocketHttpClient requires an empty or legal origin-form base URL without a trailing slash.");
+			CHECK_ERROR(ValidateRequestTarget(urlConnect, L"GET"), L"SocketHttpClient base URL makes /Connect exceed the HTTP request-line limit.");
+		}
+
+		void Initialize(Ptr<Impl> self)
+		{
+			CS_LOCK(lockState)
+			{
+				selfReference = self;
+			}
+		}
+
+		void ReleaseSelf()
+		{
+			CS_LOCK(lockState)
+			{
+				owner = nullptr;
+				selfReference = nullptr;
+			}
+		}
+
+		INetworkProtocolConnection* GetConnection()
+		{
+			return owner;
+		}
+
+		void WaitForServer()
+		{
+			auto self = RetainSelf();
+			CS_LOCK(lockState)
+			{
+				CHECK_ERROR(state == State::Ready && !stopStarted, L"SocketHttpClient::WaitForServer can only be called once.");
+				state = State::WaitingForServer;
+			}
+			WaitFrame waitFrame(self);
+
+			vint attempt = 1;
+			Ptr<SocketHttpClientApi> api;
+			while (!IsStopped())
+			{
+				if (!api)
+				{
+					try
+					{
+						api = CreateApi();
+					}
+					catch (...)
+					{
+						if (!HandleConnectFailure(L"/Connect could not create its HTTP client.", attempt)) return;
+						continue;
+					}
+					if (!PublishApi(api, false))
+					{
+						StopApiNoThrow(api);
+						return;
+					}
+					bool connected = false;
+					try
+					{
+						connected = WaitApiForServer(api);
+					}
+					catch (...)
+					{
+					}
+					if (!connected)
+					{
+						StopApiNoThrow(api);
+						ClearApi(api, false);
+						api = nullptr;
+						if (!HandleConnectFailure(L"/Connect native connection failed.", attempt)) return;
+						continue;
+					}
+				}
+
+				Ptr<QueryResult> result;
+				try
+				{
+					result = QueryConnect(api);
+				}
+				catch (...)
+				{
+					StopApiNoThrow(api);
+					ClearApi(api, false);
+					api = nullptr;
+					if (!HandleConnectFailure(L"/Connect could not submit its HTTP exchange.", attempt)) return;
+					continue;
+				}
+				if (IsStopped()) return;
+
+				if (auto httpError = result->TryGet<windows_http::HttpError>())
+				{
+					auto error = DescribeHttpError(L"/Connect", *httpError);
+					StopApiNoThrow(api);
+					ClearApi(api, false);
+					api = nullptr;
+					if (!HandleConnectFailure(error, attempt)) return;
+					continue;
+				}
+
+				WString requestUrl;
+				WString responseUrl;
+				WString error;
+				if (!ValidateConnectResponse(result->Get<windows_http::HttpResponse>(), requestUrl, responseUrl, error))
+				{
+					if (!HandleConnectFailure(error, attempt)) return;
+					continue;
+				}
+
+				CS_LOCK(lockState)
+				{
+					if (stopStarted) return;
+					urlRequest = requestUrl;
+					urlResponse = responseUrl;
+				}
+				break;
+			}
+			if (IsStopped()) return;
+
+			// The logical token is already fixed. Failures in this second physical
+			// bootstrap are silent and never repeat /Connect.
+			while (!IsStopped())
+			{
+				Ptr<SocketHttpClientApi> apiReceive;
+				try
+				{
+					apiReceive = CreateApi();
+				}
+				catch (...)
+				{
+					continue;
+				}
+				if (!PublishApi(apiReceive, true))
+				{
+					StopApiNoThrow(apiReceive);
+					return;
+				}
+				bool connected = false;
+				try
+				{
+					connected = WaitApiForServer(apiReceive);
+				}
+				catch (...)
+				{
+				}
+				if (!connected)
+				{
+					StopApiNoThrow(apiReceive);
+					ClearApi(apiReceive, true);
+					continue;
+				}
+
+				bool publishConnected = false;
+				CS_LOCK(lockState)
+				{
+					if (!stopStarted && receiveApi == apiReceive)
+					{
+						state = State::Connected;
+						publishConnected = true;
+					}
+				}
+				if (!publishConnected)
+				{
+					StopApiNoThrow(apiReceive);
+					return;
+				}
+				InvokeProtocolCallback(false, [](INetworkProtocolCallback* installed)
+				{
+					installed->OnConnected();
+				});
+				return;
+			}
+		}
+
+		ClientStatus GetStatus()
+		{
+			CS_LOCK(lockState)
+			{
+				switch (state)
+				{
+				case State::Ready:
+					return ClientStatus::Ready;
+				case State::WaitingForServer:
+					return ClientStatus::WaitingForServer;
+				case State::Connected:
+					return ClientStatus::Connected;
+				default:
+					return ClientStatus::Disconnected;
+				}
+			}
+			return ClientStatus::Disconnected;
+		}
+
+		void InstallCallback(INetworkProtocolCallback* value)
+		{
+			if (!value)
+			{
+				auto callbackDepth = CurrentCallbackDepth();
+				bool uninstallOwner = false;
+				CS_LOCK(lockState)
+				{
+					uninstallOwner = callback != nullptr;
+					callback = nullptr;
+					while ((callbackDepth == 0 || uninstallOwner) && activeCallbacks > callbackDepth)
+					{
+						cvState.SleepWith(lockState);
+					}
+				}
+				return;
+			}
+
+			bool canInstall = false;
+			CS_LOCK(lockState)
+			{
+				if (!callback && !callbackInstalling && !stopStarted)
+				{
+					callback = value;
+					callbackInstalling = true;
+					activeCallbacks++;
+					canInstall = true;
+				}
+			}
+			CHECK_ERROR(canInstall, L"SocketHttpClient::InstallCallback cannot replace a callback or install one on a stopped client.");
+
+			CallbackFrame frame(RetainSelf());
+			try
+			{
+				value->OnInstalled(owner);
+			}
+			catch (...)
+			{
+				CS_LOCK(lockState)
+				{
+					if (callback == value) callback = nullptr;
+					callbackInstalling = false;
+					cvState.WakeAllPendings();
+				}
+				throw;
+			}
+			CS_LOCK(lockState)
+			{
+				callbackInstalling = false;
+				cvState.WakeAllPendings();
+			}
+		}
+
+		void BeginReadingLoopUnsafe()
+		{
+			Ptr<SocketHttpClientApi> api;
+			CS_LOCK(lockState)
+			{
+				CHECK_ERROR(state == State::Connected && !stopStarted, L"SocketHttpClient::BeginReadingLoopUnsafe requires a connected client.");
+				CHECK_ERROR(!readingStarted, L"SocketHttpClient::BeginReadingLoopUnsafe can only be called once.");
+				readingStarted = true;
+				api = receiveApi;
+				CHECK_ERROR(api, L"SocketHttpClient has no receive API after connecting.");
+				receivePollActive = true;
+			}
+			SubmitReceivePoll(api);
+		}
+
+		void SendString(const WString& str)
+		{
+			vint utf8Size = 0;
+			CHECK_ERROR(str.Length() > 0, L"SocketHttpClient::SendString does not accept an empty string.");
+			CHECK_ERROR(GetUtf8Size(str, utf8Size), L"SocketHttpClient::SendString requires valid Unicode without embedded NUL characters.");
+			CHECK_ERROR(utf8Size <= HttpBodySizeLimit, L"SocketHttpClient::SendString exceeds the HTTP body size limit.");
+
+			auto item = Ptr(new SendItem);
+			item->body = str;
+			Ptr<SocketHttpClientApi> api;
+			bool submit = false;
+			CS_LOCK(lockState)
+			{
+				CHECK_ERROR(state == State::Connected && !stopStarted, L"SocketHttpClient::SendString requires a connected client.");
+				sendQueue.Add(item);
+				if (!sendActive && !sendReconnecting)
+				{
+					api = sendApi;
+					CHECK_ERROR(api, L"SocketHttpClient has no send API after connecting.");
+					sendActive = true;
+					submit = true;
+				}
+			}
+			if (submit) SubmitSend(api, item);
+		}
+
+		void Stop(bool internalFollower = false)
+		{
+			auto self = RetainSelf();
+			auto callbackDepth = CurrentCallbackDepth();
+			auto workerDepth = CurrentWorkerDepth();
+			auto waitDepth = CurrentWaitDepth();
+			auto nested = internalFollower || callbackDepth > 0 || workerDepth > 0 || waitDepth > 0;
+			bool executeStop = false;
+			Ptr<SocketHttpClientApi> cancellingReceive;
+
+			lockState.Enter();
+			if (stopFinished)
+			{
+				while (activeCallbacks > callbackDepth || activeWorkers > workerDepth || activeWaits > waitDepth)
+				{
+					cvState.SleepWith(lockState);
+				}
+				lockState.Leave();
+				return;
+			}
+			if (!stopStarted)
+			{
+				stopStarted = true;
+				state = State::Stopping;
+				drainSends = !fatalStarted && sendQueue.Count() > 0;
+				cancellingReceive = receiveApi;
+				executeStop = true;
+			}
+			else if (nested)
+			{
+				lockState.Leave();
+				return;
+			}
+			else
+			{
+				while (!stopFinished) cvState.SleepWith(lockState);
+				while (activeCallbacks > 0 || activeWorkers > 0 || activeWaits > 0) cvState.SleepWith(lockState);
+				lockState.Leave();
+				return;
+			}
+			lockState.Leave();
+
+			if (!executeStop) return;
+			InvokeStopStartedForTesting();
+			// The infinite receive exchange is always cancelled before the bounded
+			// opportunity given to already accepted send-lane messages.
+			StopApiNoThrow(cancellingReceive);
+
+			lockState.Enter();
+			if (drainSends)
+			{
+				auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(SendDrainTimeout);
+				while (sendQueue.Count() > 0)
+				{
+					auto now = std::chrono::steady_clock::now();
+					if (now >= deadline) break;
+					auto remaining = std::chrono::ceil<std::chrono::milliseconds>(deadline - now).count();
+					cvState.SleepWithForTime(lockState, (vint)remaining);
+				}
+			}
+			drainSends = false;
+			hardStopping = true;
+			sendQueue.Clear();
+			sendActive = false;
+			receivePollActive = false;
+			auto stoppingSend = sendApi;
+			auto stoppingReceive = receiveApi;
+			lockState.Leave();
+
+			StopApiNoThrow(stoppingReceive);
+			StopApiNoThrow(stoppingSend);
+
+			lockState.Enter();
+			while (activeWorkers > workerDepth || activeWaits > waitDepth)
+			{
+				cvState.SleepWith(lockState);
+			}
+			lockState.Leave();
+
+			try
+			{
+				NotifyDisconnected();
+			}
+			catch (...)
+			{
+				CS_LOCK(lockState)
+				{
+					while (activeCallbacks > callbackDepth) cvState.SleepWith(lockState);
+					stopFinished = true;
+					cvState.WakeAllPendings();
+				}
+				throw;
+			}
+			CS_LOCK(lockState)
+			{
+				while (activeCallbacks > callbackDepth) cvState.SleepWith(lockState);
+				stopFinished = true;
+				cvState.WakeAllPendings();
+			}
+		}
+	};
+
+	thread_local SocketHttpClient::Impl::CallbackFrame* SocketHttpClient::Impl::currentCallbackFrame = nullptr;
+	thread_local SocketHttpClient::Impl::WorkerFrame* SocketHttpClient::Impl::currentWorkerFrame = nullptr;
+	thread_local SocketHttpClient::Impl::WaitFrame* SocketHttpClient::Impl::currentWaitFrame = nullptr;
+
+/***********************************************************************
+SocketHttpClient
+***********************************************************************/
+
+	SocketHttpClient::SocketHttpClient(const WString& baseUrl, vint port)
+		: SocketHttpClient(baseUrl, port, CreateDefaultClientFactory())
+	{
+	}
+
+	SocketHttpClient::SocketHttpClient(const WString& baseUrl, vint port, NativeClientFactory clientFactory)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::inter_process::async_tcp_socket::SocketHttpClient::SocketHttpClient(const WString&, vint, NativeClientFactory)#"
+		CHECK_ERROR(clientFactory, ERROR_MESSAGE_PREFIX L"A native-client factory is required on this platform.");
+		auto created = Ptr(new Impl(this, baseUrl, port, clientFactory));
+		created->Initialize(created);
+		impl = created;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	SocketHttpClient::~SocketHttpClient()
+	{
+		try
+		{
+			impl->Stop();
+		}
+		catch (...)
+		{
+		}
+		impl->ReleaseSelf();
+	}
+
+	INetworkProtocolConnection* SocketHttpClient::GetConnection()
+	{
+		return impl->GetConnection();
+	}
+
+	void SocketHttpClient::WaitForServer()
+	{
+		impl->WaitForServer();
+	}
+
+	ClientStatus SocketHttpClient::GetStatus()
+	{
+		return impl->GetStatus();
+	}
+
+	void SocketHttpClient::InstallCallback(INetworkProtocolCallback* callback)
+	{
+		impl->InstallCallback(callback);
+	}
+
+	void SocketHttpClient::BeginReadingLoopUnsafe()
+	{
+		impl->BeginReadingLoopUnsafe();
+	}
+
+	void SocketHttpClient::SendString(const WString& str)
+	{
+		impl->SendString(str);
+	}
+
+	void SocketHttpClient::Stop()
+	{
+		impl->Stop();
+	}
+}
+
+
+/***********************************************************************
+.\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPCLIENTAPI.CPP
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Interfaces:
+	SocketHttpClientApi
+
+***********************************************************************/
+
+
+namespace vl::inter_process::async_tcp_socket
+{
+	using namespace vl::collections;
+
+	namespace
+	{
+		enum class SocketHttpClientErrorCode : vuint32_t
+		{
+			InvalidRequest = 1,
+			Stopped = 2,
+			Transport = 3,
+			UnsupportedCoding = 4,
+		};
+
+		wchar_t FoldAscii(wchar_t c)
+		{
+			return L'A' <= c && c <= L'Z' ? c - L'A' + L'a' : c;
+		}
+
+		bool AsciiEqualsIgnoreCase(const WString& a, const WString& b)
+		{
+			if (a.Length() != b.Length()) return false;
+			for (vint i = 0; i < a.Length(); i++)
+			{
+				if (FoldAscii(a[i]) != FoldAscii(b[i])) return false;
+			}
+			return true;
+		}
+
+		WString FoldAsciiFieldName(const WString& name)
+		{
+			Array<wchar_t> characters(name.Length());
+			for (vint i = 0; i < name.Length(); i++)
+			{
+				characters[i] = FoldAscii(name[i]);
+			}
+			return characters.Count() == 0 ? WString() : WString::CopyFrom(&characters[0], characters.Count());
+		}
+
+		WString TrimHttpWhitespace(const WString& value)
+		{
+			vint begin = 0;
+			vint end = value.Length();
+			while (begin < end && (value[begin] == L' ' || value[begin] == L'\t')) begin++;
+			while (begin < end && (value[end - 1] == L' ' || value[end - 1] == L'\t')) end--;
+			return value.Sub(begin, end - begin);
+		}
+
+		bool ContainsOnlyIdentityCoding(const WString& value)
+		{
+			vint begin = 0;
+			bool found = false;
+			while (begin <= value.Length())
+			{
+				vint end = begin;
+				while (end < value.Length() && value[end] != L',') end++;
+				auto coding = TrimHttpWhitespace(value.Sub(begin, end - begin));
+				if (!AsciiEqualsIgnoreCase(coding, L"identity")) return false;
+				found = true;
+				if (end == value.Length()) break;
+				begin = end + 1;
+			}
+			return found;
+		}
+
+		bool ValidateAuthority(const WString& authority)
+		{
+			if (authority.Length() == 0) return false;
+			for (vint i = 0; i < authority.Length(); i++)
+			{
+				auto c = authority[i];
+				if (c <= 0x20 || c > 0x7E || c == L'/' || c == L'?' || c == L'#' || c == L'@') return false;
+			}
+
+			WString host;
+			vint portStart = -1;
+			if (authority[0] == L'[') return false;
+			vint colon = -1;
+			for (vint i = 0; i < authority.Length(); i++)
+			{
+				if (authority[i] == L':')
+				{
+					if (colon != -1) return false;
+					colon = i;
+				}
+			}
+			if (colon <= 0 || colon + 1 >= authority.Length()) return false;
+			host = authority.Sub(0, colon);
+			portStart = colon + 1;
+
+			if (
+				!AsciiEqualsIgnoreCase(host, L"localhost") &&
+				host != L"127.0.0.1"
+				)
+			{
+				return false;
+			}
+
+			vint port = 0;
+			for (vint i = portStart; i < authority.Length(); i++)
+			{
+				if (authority[i] < L'0' || authority[i] > L'9') return false;
+				port = port * 10 + authority[i] - L'0';
+				if (port > 65535) return false;
+			}
+			return 1 <= port && port <= 65535;
+		}
+
+		HttpField CreateField(const WString& name, const WString& value)
+		{
+			HttpField field;
+			field.name = FoldAsciiFieldName(name);
+			auto utf8 = wtou8(value);
+			field.value.Resize(utf8.Length());
+			if (utf8.Length() > 0)
+			{
+				memcpy(&field.value[0], utf8.Buffer(), utf8.Length());
+			}
+			return field;
+		}
+
+		WString DecodeFieldValue(const Array<vuint8_t>& value)
+		{
+			if (value.Count() == 0) return WString::Empty;
+			Array<char8_t> utf8(value.Count());
+			for (vint i = 0; i < value.Count(); i++)
+			{
+				utf8[i] = (char8_t)value[i];
+			}
+			return u8tow(U8String::CopyFrom(&utf8[0], utf8.Count()));
+		}
+
+		windows_http::HttpError MakeError(const WString& operation, const WString& message, SocketHttpClientErrorCode code)
+		{
+			windows_http::HttpError error;
+			error.operation = operation;
+			error.errorCode = (vuint32_t)code;
+			error.message = message;
+			return error;
+		}
+	}
+
+/***********************************************************************
+SocketHttpClientApi::Impl
+***********************************************************************/
+
+	class SocketHttpClientApi::Impl : public Object, public virtual IHttpRequestCallback
+	{
+		using QueryResult = Variant<windows_http::HttpResponse, windows_http::HttpError>;
+		using QueryCallback = Func<void(QueryResult)>;
+
+		class Query : public Object
+		{
+		public:
+			Ptr<HttpRequest>				request;
+			vint						responseTimeout = 0;
+			QueryCallback				callback;
+			bool						completed = false;
+		};
+
+		struct CallbackFrame
+		{
+			Impl*						owner = nullptr;
+			Ptr<Impl>					self;
+			CallbackFrame*				previous = nullptr;
+
+			CallbackFrame(Impl* _owner, Ptr<Impl> _self)
+				: owner(_owner)
+				, self(_self)
+				, previous(currentCallbackFrame)
+			{
+				currentCallbackFrame = this;
+			}
+
+			~CallbackFrame()
+			{
+				currentCallbackFrame = previous;
+				CS_LOCK(owner->lockState)
+				{
+					owner->activeCallbacks--;
+					owner->cvState.WakeAllPendings();
+				}
+			}
+		};
+
+		struct ResponseFrame
+		{
+			Impl*						owner = nullptr;
+			Ptr<Impl>					self;
+			ResponseFrame*				previous = nullptr;
+
+			ResponseFrame(Impl* _owner, Ptr<Impl> _self)
+				: owner(_owner)
+				, self(_self)
+				, previous(currentResponseFrame)
+			{
+				currentResponseFrame = this;
+			}
+
+			~ResponseFrame()
+			{
+				currentResponseFrame = previous;
+			}
+		};
+
+		static thread_local CallbackFrame*	currentCallbackFrame;
+		static thread_local ResponseFrame*	currentResponseFrame;
+
+		Ptr<HttpRequestClient>			client;
+		IHttpRequestConnection*			connection = nullptr;
+		WString						authority;
+		Ptr<Impl>					selfReference;
+
+		CriticalSection					lockState;
+		ConditionVariable				cvState;
+		Ptr<Query>					activeQuery;
+		List<Ptr<Query>>				queuedQueries;
+		List<Ptr<Query>>				pendingQueries;
+		vint						activeCallbacks = 0;
+		bool						waitStarted = false;
+		bool						readingStarted = false;
+		bool						responseDispatching = false;
+		bool						terminal = false;
+		bool						stopStarted = false;
+		bool						stopFinished = false;
+
+		Ptr<Impl> RetainSelf()
+		{
+			Ptr<Impl> self;
+			CS_LOCK(lockState)
+			{
+				self = selfReference;
+			}
+			return self;
+		}
+
+		vint CurrentCallbackDepth()
+		{
+			vint depth = 0;
+			for (auto frame = currentCallbackFrame; frame; frame = frame->previous)
+			{
+				if (frame->owner == this) depth++;
+			}
+			return depth;
+		}
+
+		bool IsInsideResponseCallback()
+		{
+			for (auto frame = currentResponseFrame; frame; frame = frame->previous)
+			{
+				if (frame->owner == this) return true;
+			}
+			return false;
+		}
+
+		Ptr<Query> TakeFirstQueuedUnsafe()
+		{
+			auto query = queuedQueries[0];
+			queuedQueries.RemoveAt(0);
+			return query;
+		}
+
+		void TakeAllQueriesUnsafe(List<Ptr<Query>>& queries)
+		{
+			if (activeQuery)
+			{
+				queries.Add(activeQuery);
+				activeQuery = nullptr;
+			}
+			for (auto query : queuedQueries)
+			{
+				queries.Add(query);
+			}
+			queuedQueries.Clear();
+			for (auto query : pendingQueries)
+			{
+				queries.Add(query);
+			}
+			pendingQueries.Clear();
+		}
+
+		void MoveAllQueriesToPendingUnsafe()
+		{
+			if (activeQuery)
+			{
+				pendingQueries.Add(activeQuery);
+				activeQuery = nullptr;
+			}
+			for (auto query : queuedQueries)
+			{
+				pendingQueries.Add(query);
+			}
+			queuedQueries.Clear();
+		}
+
+		bool ReserveCallbackUnsafe(Ptr<Query> query, QueryCallback& callback)
+		{
+			if (!query || query->completed) return false;
+			query->completed = true;
+			callback = query->callback;
+			if (callback) activeCallbacks++;
+			return true;
+		}
+
+		void InvokeReserved(QueryCallback callback, QueryResult result)
+		{
+			if (!callback) return;
+			CallbackFrame frame(this, RetainSelf());
+			try
+			{
+				callback(std::move(result));
+			}
+			catch (...)
+			{
+			}
+		}
+
+		void CompleteWithError(Ptr<Query> query, const windows_http::HttpError& error)
+		{
+			QueryCallback callback;
+			bool reserved = false;
+			CS_LOCK(lockState)
+			{
+				reserved = ReserveCallbackUnsafe(query, callback);
+			}
+			if (reserved)
+			{
+				InvokeReserved(callback, QueryResult(error));
+			}
+		}
+
+		void CompleteAllWithError(List<Ptr<Query>>& queries, const windows_http::HttpError& error)
+		{
+			for (auto query : queries)
+			{
+				CompleteWithError(query, error);
+			}
+		}
+
+		void CompletePendingWithError(const windows_http::HttpError& error)
+		{
+			while (true)
+			{
+				QueryCallback callback;
+				bool reserved = false;
+				CS_LOCK(lockState)
+				{
+					if (!stopStarted && pendingQueries.Count() > 0)
+					{
+						auto query = pendingQueries[0];
+						pendingQueries.RemoveAt(0);
+						reserved = ReserveCallbackUnsafe(query, callback);
+					}
+				}
+				if (!reserved) return;
+				InvokeReserved(callback, QueryResult(error));
+			}
+		}
+
+		void InvokeDirect(QueryCallback callback, const windows_http::HttpError& error)
+		{
+			if (!callback) return;
+			CS_LOCK(lockState)
+			{
+				activeCallbacks++;
+			}
+			InvokeReserved(callback, QueryResult(error));
+		}
+
+		Ptr<Query> CreateQuery(const windows_http::HttpRequest& request, windows_http::HttpError& error)
+		{
+			if (request.secure)
+			{
+				error = MakeError(L"SocketHttpClientApi::HttpQuery", L"TLS is not supported by SocketHttpClientApi.", SocketHttpClientErrorCode::InvalidRequest);
+				return nullptr;
+			}
+			if (request.username != WString::Empty || request.password != WString::Empty)
+			{
+				error = MakeError(L"SocketHttpClientApi::HttpQuery", L"Credentials are not supported by SocketHttpClientApi.", SocketHttpClientErrorCode::InvalidRequest);
+				return nullptr;
+			}
+			if (request.keepAliveOnStop)
+			{
+				error = MakeError(L"SocketHttpClientApi::HttpQuery", L"keepAliveOnStop is not supported by SocketHttpClientApi.", SocketHttpClientErrorCode::InvalidRequest);
+				return nullptr;
+			}
+
+			auto query = Ptr(new Query);
+			query->request = Ptr(new HttpRequest);
+			query->responseTimeout = request.receiveTimeout;
+			query->callback = {};
+			query->request->method = request.method == WString::Empty ? WString::Unmanaged(L"GET") : request.method;
+			query->request->requestTarget = request.query == WString::Empty ? WString::Unmanaged(L"/") : request.query;
+
+			query->request->headers.Add(CreateField(L"Host", authority));
+			query->request->headers.Add(CreateField(L"Accept-Encoding", L"identity"));
+			for (vint i = 0; i < request.acceptTypes.Count(); i++)
+			{
+				query->request->headers.Add(CreateField(L"Accept", request.acceptTypes.Get(i)));
+			}
+			if (request.contentType != WString::Empty)
+			{
+				query->request->headers.Add(CreateField(L"Content-Type", request.contentType));
+			}
+			if (request.cookie != WString::Empty)
+			{
+				query->request->headers.Add(CreateField(L"Cookie", request.cookie));
+			}
+
+			for (vint i = 0; i < request.extraHeaders.Count(); i++)
+			{
+				auto name = request.extraHeaders.Keys()[i];
+				auto value = request.extraHeaders.Values()[i];
+				if (AsciiEqualsIgnoreCase(name, L"Host"))
+				{
+					if (!AsciiEqualsIgnoreCase(TrimHttpWhitespace(value), authority))
+					{
+						error = MakeError(L"SocketHttpClientApi::HttpQuery", L"A caller-supplied Host field conflicts with the constructor authority.", SocketHttpClientErrorCode::InvalidRequest);
+						return nullptr;
+					}
+					continue;
+				}
+				if (AsciiEqualsIgnoreCase(name, L"Accept-Encoding"))
+				{
+					if (!ContainsOnlyIdentityCoding(value))
+					{
+						error = MakeError(L"SocketHttpClientApi::HttpQuery", L"SocketHttpClientApi only supports Accept-Encoding: identity.", SocketHttpClientErrorCode::InvalidRequest);
+						return nullptr;
+					}
+					continue;
+				}
+				query->request->headers.Add(CreateField(name, value));
+			}
+
+			if (request.body.Count() > 0)
+			{
+				HttpBodyChunk chunk;
+				chunk.data.Resize(request.body.Count());
+				memcpy(&chunk.data[0], &request.body.Get(0), request.body.Count());
+				query->request->body.chunks.Add(std::move(chunk));
+			}
+			return query;
+		}
+
+		bool ConvertResponse(Ptr<HttpResponse> response, windows_http::HttpResponse& output, windows_http::HttpError& error)
+		{
+			if (!response)
+			{
+				error = MakeError(L"SocketHttpClientApi::OnReadResponse", L"The HTTP request layer returned an empty response.", SocketHttpClientErrorCode::Transport);
+				return false;
+			}
+
+			output.statusCode = response->statusCode;
+			bool contentTypeAssigned = false;
+			bool cookieAssigned = false;
+			auto processField = [&](const HttpField& field)
+			{
+				if (AsciiEqualsIgnoreCase(field.name, L"Content-Encoding"))
+				{
+					if (!ContainsOnlyIdentityCoding(DecodeFieldValue(field.value)))
+					{
+						error = MakeError(L"SocketHttpClientApi::OnReadResponse", L"The server returned an unsupported Content-Encoding.", SocketHttpClientErrorCode::UnsupportedCoding);
+						return false;
+					}
+				}
+				else if (!contentTypeAssigned && AsciiEqualsIgnoreCase(field.name, L"Content-Type"))
+				{
+					output.contentType = DecodeFieldValue(field.value);
+					contentTypeAssigned = true;
+				}
+				else if (!cookieAssigned && AsciiEqualsIgnoreCase(field.name, L"Set-Cookie"))
+				{
+					output.cookie = DecodeFieldValue(field.value);
+					cookieAssigned = true;
+				}
+				return true;
+			};
+			for (auto&& field : response->headers)
+			{
+				if (!processField(field)) return false;
+			}
+			for (auto&& field : response->body.trailers)
+			{
+				if (!processField(field)) return false;
+			}
+
+			vint bodySize = 0;
+			for (auto&& chunk : response->body.chunks)
+			{
+				if (chunk.data.Count() < 0 || bodySize > HttpBodySizeLimit - chunk.data.Count())
+				{
+					error = MakeError(L"SocketHttpClientApi::OnReadResponse", L"The response body is too large to flatten.", SocketHttpClientErrorCode::Transport);
+					return false;
+				}
+				bodySize += chunk.data.Count();
+			}
+			output.body.Resize(bodySize);
+			vint offset = 0;
+			for (auto&& chunk : response->body.chunks)
+			{
+				if (chunk.data.Count() > 0)
+				{
+					memcpy(&output.body[offset], &chunk.data[0], chunk.data.Count());
+					offset += chunk.data.Count();
+				}
+			}
+			return true;
+		}
+
+		bool TrySend(Ptr<Query> query, windows_http::HttpError& error)
+		{
+			try
+			{
+				connection->SendRequest(query->request, query->responseTimeout);
+				return true;
+			}
+			catch (...)
+			{
+				error = MakeError(L"SocketHttpClientApi::HttpQuery", L"The HTTP request layer rejected the exchange.", SocketHttpClientErrorCode::Transport);
+				return false;
+			}
+		}
+
+		void StopConnectionNoThrow()
+		{
+			try
+			{
+				connection->Stop();
+			}
+			catch (...)
+			{
+			}
+		}
+
+		void HandleSendFailure(Ptr<Query> query, const windows_http::HttpError& error)
+		{
+			bool stopConnection = false;
+			CS_LOCK(lockState)
+			{
+				if (!query->completed && !stopStarted && !terminal)
+				{
+					terminal = true;
+					responseDispatching = false;
+					MoveAllQueriesToPendingUnsafe();
+					stopConnection = true;
+				}
+			}
+			if (stopConnection)
+			{
+				StopConnectionNoThrow();
+				CompletePendingWithError(error);
+			}
+		}
+
+		void HandleTerminalError(const windows_http::HttpError& error, bool stopConnectionImmediately)
+		{
+			bool shouldStop = false;
+			CS_LOCK(lockState)
+			{
+				if (!stopStarted && !terminal)
+				{
+					terminal = true;
+					responseDispatching = false;
+					MoveAllQueriesToPendingUnsafe();
+					shouldStop = stopConnectionImmediately;
+				}
+			}
+			if (shouldStop)
+			{
+				StopConnectionNoThrow();
+			}
+			CompletePendingWithError(error);
+		}
+
+	public:
+		Impl(Ptr<IAsyncSocketClient> socketClient, const WString& _authority)
+			: client(new HttpRequestClient(socketClient))
+			, authority(_authority)
+		{
+			connection = client->GetConnection();
+		}
+
+		void Initialize(Ptr<Impl> self)
+		{
+			CS_LOCK(lockState)
+			{
+				selfReference = self;
+			}
+			try
+			{
+				connection->InstallCallback(this);
+			}
+			catch (...)
+			{
+				CS_LOCK(lockState)
+				{
+					selfReference = nullptr;
+				}
+				throw;
+			}
+		}
+
+		void ReleaseSelf()
+		{
+			CS_LOCK(lockState)
+			{
+				selfReference = nullptr;
+			}
+		}
+
+		void WaitForServer()
+		{
+			CS_LOCK(lockState)
+			{
+				CHECK_ERROR(!waitStarted && !stopStarted && !terminal, L"SocketHttpClientApi::WaitForServer can only be called once on an active client.");
+				waitStarted = true;
+			}
+
+			try
+			{
+				client->WaitForServer();
+			}
+			catch (...)
+			{
+				CS_LOCK(lockState)
+				{
+					terminal = true;
+				}
+				throw;
+			}
+
+			bool beginReading = false;
+			CS_LOCK(lockState)
+			{
+				beginReading = !stopStarted && !terminal;
+			}
+			if (!beginReading) return;
+
+			try
+			{
+				connection->BeginReadingLoopUnsafe();
+			}
+			catch (...)
+			{
+				CS_LOCK(lockState)
+				{
+					terminal = true;
+				}
+				throw;
+			}
+			CS_LOCK(lockState)
+			{
+				readingStarted = !stopStarted && !terminal;
+			}
+		}
+
+		ClientStatus GetStatus()
+		{
+			return client->GetStatus();
+		}
+
+		void HttpQuery(const windows_http::HttpRequest& request, QueryCallback callback)
+		{
+			auto self = RetainSelf();
+			windows_http::HttpError error;
+			Ptr<Query> query;
+			try
+			{
+				query = CreateQuery(request, error);
+			}
+			catch (...)
+			{
+				error = MakeError(L"SocketHttpClientApi::HttpQuery", L"The request could not be translated to the socket HTTP representation.", SocketHttpClientErrorCode::InvalidRequest);
+			}
+			if (!query)
+			{
+				InvokeDirect(callback, error);
+				return;
+			}
+			query->callback = callback;
+
+			bool start = false;
+			bool reject = false;
+			bool notReady = false;
+			CS_LOCK(lockState)
+			{
+				if (stopStarted || terminal)
+				{
+					reject = true;
+				}
+				else if (!readingStarted)
+				{
+					notReady = true;
+				}
+				else if (!activeQuery && queuedQueries.Count() == 0 && (!responseDispatching || IsInsideResponseCallback()))
+				{
+					activeQuery = query;
+					start = true;
+				}
+				else
+				{
+					queuedQueries.Add(query);
+				}
+			}
+
+			if (reject)
+			{
+				CompleteWithError(query, MakeError(L"SocketHttpClientApi::HttpQuery", L"SocketHttpClientApi has stopped accepting work.", SocketHttpClientErrorCode::Stopped));
+			}
+			else if (notReady)
+			{
+				CompleteWithError(query, MakeError(L"SocketHttpClientApi::HttpQuery", L"WaitForServer must complete before sending an HTTP query.", SocketHttpClientErrorCode::InvalidRequest));
+			}
+			else if (start)
+			{
+				if (!TrySend(query, error))
+				{
+					HandleSendFailure(query, error);
+				}
+			}
+		}
+
+		void Stop()
+		{
+			auto self = RetainSelf();
+			List<Ptr<Query>> cancelledQueries;
+			auto callbackDepth = CurrentCallbackDepth();
+			bool executeStop = false;
+			lockState.Enter();
+			if (stopFinished)
+			{
+				while (activeCallbacks > callbackDepth) cvState.SleepWith(lockState);
+				lockState.Leave();
+				return;
+			}
+			if (!stopStarted)
+			{
+				stopStarted = true;
+				terminal = true;
+				responseDispatching = false;
+				TakeAllQueriesUnsafe(cancelledQueries);
+				executeStop = true;
+			}
+			else if (callbackDepth > 0)
+			{
+				lockState.Leave();
+				return;
+			}
+			else
+			{
+				while (!stopFinished) cvState.SleepWith(lockState);
+				while (activeCallbacks > 0) cvState.SleepWith(lockState);
+				lockState.Leave();
+				return;
+			}
+			lockState.Leave();
+
+			if (executeStop)
+			{
+				StopConnectionNoThrow();
+				CompleteAllWithError(
+					cancelledQueries,
+					MakeError(L"SocketHttpClientApi::Stop", L"The HTTP query was cancelled because the client stopped.", SocketHttpClientErrorCode::Stopped)
+					);
+			}
+
+			CS_LOCK(lockState)
+			{
+				while (activeCallbacks > callbackDepth) cvState.SleepWith(lockState);
+				stopFinished = true;
+				cvState.WakeAllPendings();
+			}
+		}
+
+		void OnReadRequest(Ptr<HttpRequest>) override
+		{
+			auto self = RetainSelf();
+			if (!self) return;
+			HandleTerminalError(
+				MakeError(L"SocketHttpClientApi::OnReadRequest", L"The client connection received a request instead of a response.", SocketHttpClientErrorCode::Transport),
+				true
+				);
+		}
+
+		void OnReadRequestFailure(HttpRequestFailure) override
+		{
+			auto self = RetainSelf();
+			if (!self) return;
+			HandleTerminalError(
+				MakeError(L"SocketHttpClientApi::OnReadRequestFailure", L"The client connection reported a request parsing failure.", SocketHttpClientErrorCode::Transport),
+				true
+				);
+		}
+
+		void OnReadResponse(Ptr<HttpResponse> response) override
+		{
+			auto self = RetainSelf();
+			if (!self) return;
+			ResponseFrame responseFrame(this, self);
+
+			windows_http::HttpResponse convertedResponse;
+			windows_http::HttpError responseError;
+			auto converted = ConvertResponse(response, convertedResponse, responseError);
+			Ptr<Query> completedQuery;
+			Ptr<Query> nextQuery;
+			QueryCallback completedCallback;
+			bool reserved = false;
+			bool stopForResponse = false;
+			windows_http::HttpError terminalError;
+			CS_LOCK(lockState)
+			{
+				if (activeQuery && !activeQuery->completed)
+				{
+					responseDispatching = true;
+					completedQuery = activeQuery;
+					activeQuery = nullptr;
+					reserved = ReserveCallbackUnsafe(completedQuery, completedCallback);
+					if (!converted)
+					{
+						terminal = true;
+						MoveAllQueriesToPendingUnsafe();
+						stopForResponse = true;
+						terminalError = responseError;
+					}
+					else if (!stopStarted && !terminal && queuedQueries.Count() > 0)
+					{
+						nextQuery = TakeFirstQueuedUnsafe();
+						activeQuery = nextQuery;
+					}
+				}
+			}
+			if (!reserved) return;
+
+			windows_http::HttpError sendError;
+			bool sendFailed = nextQuery && !TrySend(nextQuery, sendError);
+			if (sendFailed)
+			{
+				CS_LOCK(lockState)
+				{
+					if (!nextQuery->completed && !stopStarted && !terminal)
+					{
+						terminal = true;
+						MoveAllQueriesToPendingUnsafe();
+						stopForResponse = true;
+						terminalError = sendError;
+					}
+				}
+			}
+
+			if (converted)
+			{
+				InvokeReserved(completedCallback, QueryResult(std::move(convertedResponse)));
+			}
+			else
+			{
+				InvokeReserved(completedCallback, QueryResult(responseError));
+			}
+
+			Ptr<Query> lateQuery;
+			if (!stopForResponse)
+			{
+				CS_LOCK(lockState)
+				{
+					if (!stopStarted && !terminal && !activeQuery && queuedQueries.Count() > 0)
+					{
+						lateQuery = TakeFirstQueuedUnsafe();
+						activeQuery = lateQuery;
+					}
+					responseDispatching = false;
+				}
+				if (lateQuery && !TrySend(lateQuery, sendError))
+				{
+					CS_LOCK(lockState)
+					{
+						if (!lateQuery->completed && !stopStarted && !terminal)
+						{
+							terminal = true;
+							MoveAllQueriesToPendingUnsafe();
+							stopForResponse = true;
+							terminalError = sendError;
+						}
+					}
+				}
+			}
+			else
+			{
+				CS_LOCK(lockState)
+				{
+					responseDispatching = false;
+				}
+			}
+
+			if (stopForResponse)
+			{
+				StopConnectionNoThrow();
+				CompletePendingWithError(terminalError);
+			}
+		}
+
+		void OnWriteCompleted() override
+		{
+		}
+
+		void OnError(const WString& error, bool fatal) override
+		{
+			auto self = RetainSelf();
+			if (!self) return;
+			// The raw layer stops after delivering a fatal error. A nonfatal error
+			// needs an explicit stop after this wrapper terminalizes its queue.
+			auto stopConnectionImmediately = !fatal;
+			HandleTerminalError(
+				MakeError(L"SocketHttpClientApi::OnError", error, SocketHttpClientErrorCode::Transport),
+				stopConnectionImmediately
+				);
+		}
+
+		void OnConnected() override
+		{
+		}
+
+		void OnDisconnected() override
+		{
+			auto self = RetainSelf();
+			if (!self) return;
+			HandleTerminalError(
+				MakeError(L"SocketHttpClientApi::OnDisconnected", L"The HTTP connection was disconnected.", SocketHttpClientErrorCode::Transport),
+				false
+				);
+		}
+
+		void OnInstalled(IHttpRequestConnection* installedConnection) override
+		{
+			CHECK_ERROR(installedConnection == connection, L"SocketHttpClientApi was installed on an unexpected HTTP connection.");
+		}
+	};
+
+	thread_local SocketHttpClientApi::Impl::CallbackFrame* SocketHttpClientApi::Impl::currentCallbackFrame = nullptr;
+	thread_local SocketHttpClientApi::Impl::ResponseFrame* SocketHttpClientApi::Impl::currentResponseFrame = nullptr;
+
+/***********************************************************************
+SocketHttpClientApi
+***********************************************************************/
+
+	SocketHttpClientApi::SocketHttpClientApi(Ptr<IAsyncSocketClient> client, const WString& authority)
+	{
+		CHECK_ERROR(client, L"SocketHttpClientApi requires an asynchronous socket client.");
+		CHECK_ERROR(ValidateAuthority(authority), L"SocketHttpClientApi requires an explicit loopback authority and port.");
+		auto created = Ptr(new Impl(client, authority));
+		created->Initialize(created);
+		impl = created;
+	}
+
+	SocketHttpClientApi::~SocketHttpClientApi()
+	{
+		impl->Stop();
+		impl->ReleaseSelf();
+	}
+
+	void SocketHttpClientApi::WaitForServer()
+	{
+		impl->WaitForServer();
+	}
+
+	ClientStatus SocketHttpClientApi::GetStatus()
+	{
+		return impl->GetStatus();
+	}
+
+	void SocketHttpClientApi::HttpQuery(
+		const windows_http::HttpRequest& request,
+		Func<void(Variant<windows_http::HttpResponse, windows_http::HttpError>)> callback
+		)
+	{
+		impl->HttpQuery(request, callback);
+	}
+
+	void SocketHttpClientApi::Stop()
+	{
+		impl->Stop();
+	}
+
+	WString SocketHttpClientApi::UrlEncodeQuery(const WString& query)
+	{
+		return HttpUrlEncodeQuery(query);
+	}
+
+	WString SocketHttpClientApi::UrlDecodeQuery(const WString& query)
+	{
+		return HttpUrlDecodeQuery(query);
+	}
+}
+
+
+/***********************************************************************
+.\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPREQUEST.CPP
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Async Socket HTTP/1.1 Connection
+
+***********************************************************************/
+
+
+
+namespace vl::inter_process::async_tcp_socket
+{
+	using namespace collections;
+
+	namespace
+	{
+		constexpr vint HttpWireMessageSizeLimit = 128 * 1024 * 1024;
+		constexpr vint HttpChunkCountLimit = 64 * 1024;
+
+		bool IsOws(vuint8_t c)
+		{
+			return c == ' ' || c == '\t';
+		}
+
+		bool IsDigit(vuint8_t c)
+		{
+			return c >= '0' && c <= '9';
+		}
+
+		bool IsHexDigit(vuint8_t c)
+		{
+			return IsDigit(c) || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
+		}
+
+		vuint8_t HexDigitValue(vuint8_t c)
+		{
+			if (IsDigit(c)) return c - '0';
+			if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+			return c - 'a' + 10;
+		}
+
+		bool IsTokenCharacter(vuint8_t c)
+		{
+			if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+			{
+				return true;
+			}
+			switch (c)
+			{
+			case '!': case '#': case '$': case '%': case '&': case '\'': case '*': case '+':
+			case '-': case '.': case '^': case '_': case '`': case '|': case '~':
+				return true;
+			default:
+				return false;
+			}
+		}
+
+		bool IsFieldValueCharacter(vuint8_t c)
+		{
+			return c == '\t' || (c >= 0x20 && c != 0x7F);
+		}
+
+		bool IsQuotedTextCharacter(vuint8_t c)
+		{
+			return c == '\t' || c == ' ' || c == '!' || (c >= '#' && c <= '[') || (c >= ']' && c != 0x7F);
+		}
+
+		vint FindCrlf(const vuint8_t* buffer, vint begin, vint end)
+		{
+			for (vint i = begin; i + 1 < end; i++)
+			{
+				if (buffer[i] == '\r' && buffer[i + 1] == '\n')
+				{
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		WString CopyAscii(const vuint8_t* buffer, vint begin, vint end, bool lowercase)
+		{
+			if (begin == end)
+			{
+				return L"";
+			}
+			Array<wchar_t> text(end - begin);
+			for (vint i = begin; i < end; i++)
+			{
+				auto c = buffer[i];
+				if (lowercase && c >= 'A' && c <= 'Z')
+				{
+					c += 'a' - 'A';
+				}
+				text[i - begin] = (wchar_t)c;
+			}
+			return WString::CopyFrom(&text[0], text.Count());
+		}
+
+		bool IsAsciiEqual(const WString& text, const wchar_t* expected)
+		{
+			return text == expected;
+		}
+
+		bool ParseQuotedString(const vuint8_t* buffer, vint& reading, vint end)
+		{
+			if (reading >= end || buffer[reading] != '"')
+			{
+				return false;
+			}
+			reading++;
+			while (reading < end)
+			{
+				auto c = buffer[reading++];
+				if (c == '"')
+				{
+					return true;
+				}
+				if (c == '\\')
+				{
+					if (reading >= end || !IsFieldValueCharacter(buffer[reading]))
+					{
+						return false;
+					}
+					reading++;
+				}
+				else if (!IsQuotedTextCharacter(c))
+				{
+					return false;
+				}
+			}
+			return false;
+		}
+
+		bool ParseToken(const vuint8_t* buffer, vint& reading, vint end, WString* output = nullptr)
+		{
+			vint begin = reading;
+			while (reading < end && IsTokenCharacter(buffer[reading]))
+			{
+				reading++;
+			}
+			if (reading == begin)
+			{
+				return false;
+			}
+			if (output)
+			{
+				*output = CopyAscii(buffer, begin, reading, true);
+			}
+			return true;
+		}
+
+		bool ParseSemicolonParameters(const vuint8_t* buffer, vint& reading, vint end)
+		{
+			while (true)
+			{
+				while (reading < end && IsOws(buffer[reading])) reading++;
+				if (reading == end)
+				{
+					return true;
+				}
+				if (buffer[reading++] != ';')
+				{
+					return false;
+				}
+				while (reading < end && IsOws(buffer[reading])) reading++;
+				if (!ParseToken(buffer, reading, end))
+				{
+					return false;
+				}
+				while (reading < end && IsOws(buffer[reading])) reading++;
+				if (reading < end && buffer[reading] == '=')
+				{
+					reading++;
+					while (reading < end && IsOws(buffer[reading])) reading++;
+					if (reading < end && buffer[reading] == '"')
+					{
+						if (!ParseQuotedString(buffer, reading, end)) return false;
+					}
+					else if (!ParseToken(buffer, reading, end))
+					{
+						return false;
+					}
+				}
+			}
+		}
+
+		bool ValidateChunkSizeLinePrefix(const vuint8_t* buffer, vint begin, vint end)
+		{
+			vint reading = begin;
+			if (reading == end) return true;
+			if (!IsHexDigit(buffer[reading])) return false;
+			vuint64_t chunkSize = 0;
+			while (reading < end && IsHexDigit(buffer[reading]))
+			{
+				auto digit = (vuint64_t)HexDigitValue(buffer[reading++]);
+				if (chunkSize > ((std::numeric_limits<vuint64_t>::max)() - digit) / 16) return false;
+				chunkSize = chunkSize * 16 + digit;
+				if (chunkSize > (vuint64_t)HttpBodySizeLimit) return false;
+			}
+			while (true)
+			{
+				while (reading < end && IsOws(buffer[reading])) reading++;
+				if (reading == end) return true;
+				if (buffer[reading++] != ';') return false;
+				while (reading < end && IsOws(buffer[reading])) reading++;
+				if (reading == end) return true;
+				vint nameBegin = reading;
+				while (reading < end && IsTokenCharacter(buffer[reading])) reading++;
+				if (reading == nameBegin) return false;
+				while (reading < end && IsOws(buffer[reading])) reading++;
+				if (reading == end) return true;
+				if (buffer[reading] != '=') continue;
+				reading++;
+				while (reading < end && IsOws(buffer[reading])) reading++;
+				if (reading == end) return true;
+				if (buffer[reading] == '"')
+				{
+					reading++;
+					bool closed = false;
+					while (reading < end)
+					{
+						auto c = buffer[reading++];
+						if (c == '"')
+						{
+							closed = true;
+							break;
+						}
+						if (c == '\\')
+						{
+							if (reading == end) return true;
+							if (!IsFieldValueCharacter(buffer[reading++])) return false;
+						}
+						else if (!IsQuotedTextCharacter(c))
+						{
+							return false;
+						}
+					}
+					if (!closed) return true;
+				}
+				else
+				{
+					vint valueBegin = reading;
+					while (reading < end && IsTokenCharacter(buffer[reading])) reading++;
+					if (reading == valueBegin) return false;
+				}
+			}
+		}
+
+		bool ValidateCompleteChunkSizeLine(const vuint8_t* buffer, vint begin, vint end)
+		{
+			vint reading = begin;
+			vuint64_t chunkSize = 0;
+			while (reading < end && IsHexDigit(buffer[reading]))
+			{
+				auto digit = (vuint64_t)HexDigitValue(buffer[reading++]);
+				if (chunkSize > ((std::numeric_limits<vuint64_t>::max)() - digit) / 16) return false;
+				chunkSize = chunkSize * 16 + digit;
+			}
+			if (reading == begin || chunkSize > (vuint64_t)HttpBodySizeLimit) return false;
+			if (reading < end)
+			{
+				vint firstExtension = reading;
+				while (firstExtension < end && IsOws(buffer[firstExtension])) firstExtension++;
+				if (firstExtension == end || buffer[firstExtension] != ';') return false;
+			}
+			return ParseSemicolonParameters(buffer, reading, end);
+		}
+
+		bool ParseFieldLine(const vuint8_t* buffer, vint begin, vint end, HttpField& field)
+		{
+			vint colon = -1;
+			for (vint i = begin; i < end; i++)
+			{
+				if (buffer[i] == ':')
+				{
+					colon = i;
+					break;
+				}
+				if (!IsTokenCharacter(buffer[i]))
+				{
+					return false;
+				}
+			}
+			if (colon == begin || colon == -1)
+			{
+				return false;
+			}
+			for (vint i = begin; i < colon; i++)
+			{
+				if (!IsTokenCharacter(buffer[i])) return false;
+			}
+
+			vint valueBegin = colon + 1;
+			vint valueEnd = end;
+			while (valueBegin < valueEnd && IsOws(buffer[valueBegin])) valueBegin++;
+			while (valueBegin < valueEnd && IsOws(buffer[valueEnd - 1])) valueEnd--;
+			for (vint i = valueBegin; i < valueEnd; i++)
+			{
+				if (!IsFieldValueCharacter(buffer[i])) return false;
+			}
+
+			field.name = CopyAscii(buffer, begin, colon, true);
+			field.value.Resize(valueEnd - valueBegin);
+			if (valueEnd > valueBegin)
+			{
+				std::memcpy(&field.value[0], buffer + valueBegin, (size_t)(valueEnd - valueBegin));
+			}
+			return true;
+		}
+
+		bool ParseUnsignedDecimal(const Array<vuint8_t>& value, vint begin, vint end, vuint64_t& number)
+		{
+			if (begin == end) return false;
+			number = 0;
+			for (vint i = begin; i < end; i++)
+			{
+				if (!IsDigit(value[i])) return false;
+				auto digit = (vuint64_t)(value[i] - '0');
+				if (number > ((std::numeric_limits<vuint64_t>::max)() - digit) / 10)
+				{
+					return false;
+				}
+				number = number * 10 + digit;
+			}
+			return true;
+		}
+
+		bool ParseContentLength(const Array<vuint8_t>& value, bool& initialized, vuint64_t& contentLength)
+		{
+			vint reading = 0;
+			while (true)
+			{
+				while (reading < value.Count() && IsOws(value[reading])) reading++;
+				vint begin = reading;
+				while (reading < value.Count() && IsDigit(value[reading])) reading++;
+				vint end = reading;
+				while (reading < value.Count() && IsOws(value[reading])) reading++;
+				vuint64_t number = 0;
+				if (!ParseUnsignedDecimal(value, begin, end, number))
+				{
+					return false;
+				}
+				if (!initialized)
+				{
+					initialized = true;
+					contentLength = number;
+				}
+				else if (contentLength != number)
+				{
+					return false;
+				}
+				if (reading == value.Count()) return true;
+				if (value[reading++] != ',') return false;
+				if (reading == value.Count()) return false;
+			}
+		}
+
+		bool ParseTransferCodings(const Array<vuint8_t>& value, List<WString>& codings, bool& hasParameters)
+		{
+			vint reading = 0;
+			while (true)
+			{
+				while (reading < value.Count() && IsOws(value[reading])) reading++;
+				WString coding;
+				if (!ParseToken(value.Count() == 0 ? nullptr : &value[0], reading, value.Count(), &coding))
+				{
+					return false;
+				}
+				codings.Add(coding);
+				while (reading < value.Count() && IsOws(value[reading])) reading++;
+				while (reading < value.Count() && value[reading] == ';')
+				{
+					hasParameters = true;
+					reading++;
+					while (reading < value.Count() && IsOws(value[reading])) reading++;
+					if (!ParseToken(&value[0], reading, value.Count())) return false;
+					while (reading < value.Count() && IsOws(value[reading])) reading++;
+					if (reading >= value.Count() || value[reading] != '=')
+					{
+						return false;
+					}
+					else
+					{
+						reading++;
+						while (reading < value.Count() && IsOws(value[reading])) reading++;
+						if (reading < value.Count() && value[reading] == '"')
+						{
+							if (!ParseQuotedString(&value[0], reading, value.Count())) return false;
+						}
+						else if (!ParseToken(&value[0], reading, value.Count()))
+						{
+							return false;
+						}
+					}
+					while (reading < value.Count() && IsOws(value[reading])) reading++;
+				}
+				if (reading == value.Count()) return true;
+				if (value[reading++] != ',' || reading == value.Count()) return false;
+			}
+		}
+
+		bool HasConnectionClose(const Array<vuint8_t>& value)
+		{
+			vint reading = 0;
+			while (reading < value.Count())
+			{
+				while (reading < value.Count() && IsOws(value[reading])) reading++;
+				vint begin = reading;
+				while (reading < value.Count() && value[reading] != ',') reading++;
+				vint end = reading;
+				while (begin < end && IsOws(value[begin])) begin++;
+				while (begin < end && IsOws(value[end - 1])) end--;
+				if (end - begin == 5)
+				{
+					const wchar_t* close = L"close";
+					bool matched = true;
+					for (vint i = 0; i < 5; i++)
+					{
+						auto c = value[begin + i];
+						if (c >= 'A' && c <= 'Z') c += 'a' - 'A';
+						if (c != close[i]) matched = false;
+					}
+					if (matched) return true;
+				}
+				if (reading < value.Count()) reading++;
+			}
+			return false;
+		}
+
+		struct HttpFraming
+		{
+			bool							hasContentLength = false;
+			vuint64_t						contentLength = 0;
+			bool							hasTransferEncoding = false;
+			List<WString>					transferCodings;
+			bool							transferCodingParameters = false;
+			bool							connectionClose = false;
+		};
+
+		enum class HttpFramingAnalysisResult
+		{
+			Succeeded,
+			Invalid,
+			UnsupportedTransferCoding,
+		};
+
+		HttpFramingAnalysisResult AnalyzeFraming(const List<HttpField>& fields, HttpFraming& framing)
+		{
+			for (auto&& field : fields)
+			{
+				if (IsAsciiEqual(field.name, L"content-length"))
+				{
+					if (!ParseContentLength(field.value, framing.hasContentLength, framing.contentLength)) return HttpFramingAnalysisResult::Invalid;
+				}
+				else if (IsAsciiEqual(field.name, L"transfer-encoding"))
+				{
+					framing.hasTransferEncoding = true;
+					if (!ParseTransferCodings(field.value, framing.transferCodings, framing.transferCodingParameters)) return HttpFramingAnalysisResult::Invalid;
+				}
+				else if (IsAsciiEqual(field.name, L"connection"))
+				{
+					framing.connectionClose |= HasConnectionClose(field.value);
+				}
+			}
+			if (framing.hasTransferEncoding && framing.hasContentLength) return HttpFramingAnalysisResult::Invalid;
+			if (framing.hasTransferEncoding)
+			{
+				if (
+					framing.transferCodings.Count() != 1 ||
+					!IsAsciiEqual(framing.transferCodings[0], L"chunked") ||
+					framing.transferCodingParameters
+					)
+				{
+					return HttpFramingAnalysisResult::UnsupportedTransferCoding;
+				}
+			}
+			return HttpFramingAnalysisResult::Succeeded;
+		}
+
+		bool ParseHttpVersion(const vuint8_t* buffer, vint begin, vint end, HttpVersion& version)
+		{
+			const wchar_t* prefix = L"HTTP/";
+			if (end - begin < 8) return false;
+			for (vint i = 0; i < 5; i++)
+			{
+				if (buffer[begin + i] != prefix[i]) return false;
+			}
+			vint reading = begin + 5;
+			vuint64_t major = 0;
+			vuint64_t minor = 0;
+			vint majorBegin = reading;
+			while (reading < end && IsDigit(buffer[reading]))
+			{
+				auto digit = (vuint64_t)(buffer[reading++] - '0');
+				if (major > ((std::numeric_limits<vuint64_t>::max)() - digit) / 10) return false;
+				major = major * 10 + digit;
+			}
+			if (reading == majorBegin || reading >= end || buffer[reading++] != '.') return false;
+			vint minorBegin = reading;
+			while (reading < end && IsDigit(buffer[reading]))
+			{
+				auto digit = (vuint64_t)(buffer[reading++] - '0');
+				if (minor > ((std::numeric_limits<vuint64_t>::max)() - digit) / 10) return false;
+				minor = minor * 10 + digit;
+			}
+			if (reading != end || reading == minorBegin || major > (vuint64_t)(std::numeric_limits<vint>::max)() || minor > (vuint64_t)(std::numeric_limits<vint>::max)())
+			{
+				return false;
+			}
+			version.major = (vint)major;
+			version.minor = (vint)minor;
+			return true;
+		}
+
+		bool ParseRequestLine(const vuint8_t* buffer, vint end, HttpVersion& version, WString& method, WString& target)
+		{
+			vint firstSpace = -1;
+			vint secondSpace = -1;
+			for (vint i = 0; i < end; i++)
+			{
+				if (buffer[i] == ' ')
+				{
+					if (firstSpace == -1) firstSpace = i;
+					else if (secondSpace == -1) secondSpace = i;
+					else return false;
+				}
+			}
+			if (firstSpace <= 0 || secondSpace <= firstSpace + 1 || secondSpace + 1 >= end) return false;
+			for (vint i = 0; i < firstSpace; i++) if (!IsTokenCharacter(buffer[i])) return false;
+			for (vint i = firstSpace + 1; i < secondSpace; i++)
+			{
+				if (buffer[i] < 0x21 || buffer[i] > 0x7E) return false;
+			}
+			method = CopyAscii(buffer, 0, firstSpace, false);
+			target = CopyAscii(buffer, firstSpace + 1, secondSpace, false);
+			return ParseHttpVersion(buffer, secondSpace + 1, end, version);
+		}
+
+		bool ParseStatusLine(const vuint8_t* buffer, vint end, HttpVersion& version, vint& statusCode, WString& reason)
+		{
+			vint firstSpace = -1;
+			for (vint i = 0; i < end; i++)
+			{
+				if (buffer[i] == ' ')
+				{
+					firstSpace = i;
+					break;
+				}
+			}
+			if (firstSpace == -1 || !ParseHttpVersion(buffer, 0, firstSpace, version)) return false;
+			if (firstSpace + 4 >= end || !IsDigit(buffer[firstSpace + 1]) || !IsDigit(buffer[firstSpace + 2]) || !IsDigit(buffer[firstSpace + 3])) return false;
+			if (buffer[firstSpace + 4] != ' ') return false;
+			statusCode = (buffer[firstSpace + 1] - '0') * 100 + (buffer[firstSpace + 2] - '0') * 10 + buffer[firstSpace + 3] - '0';
+			if (statusCode < 200 || statusCode > 599) return false;
+			vint reasonBegin = firstSpace + 5;
+			for (vint i = reasonBegin; i < end; i++)
+			{
+				if (buffer[i] < 0x20 || buffer[i] > 0x7E) return false;
+			}
+			reason = CopyAscii(buffer, reasonBegin, end, false);
+			return true;
+		}
+
+		enum class HttpBodyDetailedParsingResult
+		{
+			Succeeded,
+			Incomplete,
+			BadRequest,
+			PayloadTooLarge,
+			TrailerFieldsTooLarge,
+		};
+
+		HttpBodyDetailedParsingResult ParseHttpRequestBodyToChunksDetailed(
+			const vuint8_t* buffer,
+			vint availableBytes,
+			HttpBody& output,
+			vint& consumedBytes
+			);
+
+		enum class HttpMessageParsingResult
+		{
+			Succeeded,
+			Incomplete,
+			BadRequest,
+			PayloadTooLarge,
+			UriTooLong,
+			ExpectationFailed,
+			RequestHeaderFieldsTooLarge,
+			NotImplemented,
+			HttpVersionNotSupported,
+		};
+
+		HttpRequestFailure GetHttpRequestFailure(HttpMessageParsingResult result)
+		{
+			switch (result)
+			{
+			case HttpMessageParsingResult::PayloadTooLarge:
+				return HttpRequestFailure::PayloadTooLarge;
+			case HttpMessageParsingResult::UriTooLong:
+				return HttpRequestFailure::UriTooLong;
+			case HttpMessageParsingResult::ExpectationFailed:
+				return HttpRequestFailure::ExpectationFailed;
+			case HttpMessageParsingResult::RequestHeaderFieldsTooLarge:
+				return HttpRequestFailure::RequestHeaderFieldsTooLarge;
+			case HttpMessageParsingResult::NotImplemented:
+				return HttpRequestFailure::NotImplemented;
+			case HttpMessageParsingResult::HttpVersionNotSupported:
+				return HttpRequestFailure::HttpVersionNotSupported;
+			default:
+				return HttpRequestFailure::BadRequest;
+			}
+		}
+
+		bool HasHeader(const List<HttpField>& fields, const wchar_t* name)
+		{
+			for (auto&& field : fields)
+			{
+				if (IsAsciiEqual(field.name, name)) return true;
+			}
+			return false;
+		}
+
+		HttpMessageParsingResult ParseHttpMessage(
+			const vuint8_t* buffer,
+			vint availableBytes,
+			bool requestMessage,
+			const WString& responseToMethod,
+			WString& parsedRequestMethod,
+			Ptr<HttpRequest>& request,
+			Ptr<HttpResponse>& response,
+			vint& consumedBytes,
+			bool& connectionClose
+			)
+		{
+			consumedBytes = 0;
+			connectionClose = false;
+			parsedRequestMethod = L"";
+			vint startLineEnd = FindCrlf(buffer, 0, availableBytes);
+			if (startLineEnd == -1)
+			{
+				auto possibleLineBytes = availableBytes > 0 && buffer[availableBytes - 1] == '\r' ? availableBytes - 1 : availableBytes;
+				return possibleLineBytes > HttpRequestLineSizeLimit
+					? (requestMessage ? HttpMessageParsingResult::UriTooLong : HttpMessageParsingResult::BadRequest)
+					: HttpMessageParsingResult::Incomplete;
+			}
+			if (startLineEnd > HttpRequestLineSizeLimit)
+			{
+				return requestMessage ? HttpMessageParsingResult::UriTooLong : HttpMessageParsingResult::BadRequest;
+			}
+
+			HttpVersion version;
+			WString method;
+			WString target;
+			vint statusCode = 0;
+			WString reason;
+			if (requestMessage)
+			{
+				if (!ParseRequestLine(buffer, startLineEnd, version, method, target)) return HttpMessageParsingResult::BadRequest;
+				parsedRequestMethod = method;
+			}
+			else
+			{
+				if (!ParseStatusLine(buffer, startLineEnd, version, statusCode, reason)) return HttpMessageParsingResult::BadRequest;
+			}
+			if (version.major != 1 || version.minor != 1)
+			{
+				return HttpMessageParsingResult::HttpVersionNotSupported;
+			}
+
+			List<HttpField> headers;
+			vint headersBegin = startLineEnd + 2;
+			vint reading = headersBegin;
+			vint bodyBegin = -1;
+			while (true)
+			{
+				vint lineEnd = FindCrlf(buffer, reading, availableBytes);
+				if (lineEnd == -1)
+				{
+					return availableBytes - headersBegin >= HttpHeaderBlockSizeLimit
+						? (requestMessage ? HttpMessageParsingResult::RequestHeaderFieldsTooLarge : HttpMessageParsingResult::BadRequest)
+						: HttpMessageParsingResult::Incomplete;
+				}
+				if (lineEnd + 2 - headersBegin > HttpHeaderBlockSizeLimit)
+				{
+					return requestMessage ? HttpMessageParsingResult::RequestHeaderFieldsTooLarge : HttpMessageParsingResult::BadRequest;
+				}
+				if (lineEnd == reading)
+				{
+					bodyBegin = lineEnd + 2;
+					break;
+				}
+				HttpField field;
+				if (!ParseFieldLine(buffer, reading, lineEnd, field)) return HttpMessageParsingResult::BadRequest;
+				headers.Add(std::move(field));
+				reading = lineEnd + 2;
+			}
+
+			HttpFraming framing;
+			auto framingResult = AnalyzeFraming(headers, framing);
+			if (framingResult == HttpFramingAnalysisResult::Invalid) return HttpMessageParsingResult::BadRequest;
+			if (framingResult == HttpFramingAnalysisResult::UnsupportedTransferCoding) return HttpMessageParsingResult::NotImplemented;
+			if (requestMessage && HasHeader(headers, L"expect")) return HttpMessageParsingResult::ExpectationFailed;
+
+			auto headResponse = !requestMessage && responseToMethod == L"HEAD";
+			auto noContentResponse = !requestMessage && statusCode == 204;
+			auto notModifiedResponse = !requestMessage && statusCode == 304;
+			auto responseWithoutBody = headResponse || noContentResponse || notModifiedResponse;
+			if (noContentResponse && (framing.hasContentLength || framing.hasTransferEncoding)) return HttpMessageParsingResult::BadRequest;
+			if (notModifiedResponse && framing.hasTransferEncoding) return HttpMessageParsingResult::BadRequest;
+			if (!requestMessage && !responseWithoutBody && !framing.hasContentLength && !framing.hasTransferEncoding) return HttpMessageParsingResult::BadRequest;
+
+			HttpBody body;
+			vint bodyBytes = 0;
+			if (!responseWithoutBody && framing.hasTransferEncoding)
+			{
+				auto result = ParseHttpRequestBodyToChunksDetailed(buffer + bodyBegin, availableBytes - bodyBegin, body, bodyBytes);
+				if (result == HttpBodyDetailedParsingResult::Incomplete) return HttpMessageParsingResult::Incomplete;
+				if (result == HttpBodyDetailedParsingResult::PayloadTooLarge) return HttpMessageParsingResult::PayloadTooLarge;
+				if (result == HttpBodyDetailedParsingResult::TrailerFieldsTooLarge) return HttpMessageParsingResult::RequestHeaderFieldsTooLarge;
+				if (result == HttpBodyDetailedParsingResult::BadRequest) return HttpMessageParsingResult::BadRequest;
+			}
+			else if (!responseWithoutBody && framing.hasContentLength)
+			{
+				if (framing.contentLength > (vuint64_t)HttpBodySizeLimit) return HttpMessageParsingResult::PayloadTooLarge;
+				bodyBytes = (vint)framing.contentLength;
+				if (availableBytes - bodyBegin < bodyBytes) return HttpMessageParsingResult::Incomplete;
+				if (bodyBytes > 0)
+				{
+					HttpBodyChunk chunk;
+					chunk.data.Resize(bodyBytes);
+					std::memcpy(&chunk.data[0], buffer + bodyBegin, (size_t)bodyBytes);
+					body.chunks.Add(std::move(chunk));
+				}
+			}
+
+			consumedBytes = bodyBegin + bodyBytes;
+			connectionClose = framing.connectionClose;
+			if (requestMessage)
+			{
+				request = Ptr(new HttpRequest);
+				request->version = version;
+				request->method = method;
+				request->requestTarget = target;
+				request->headers = std::move(headers);
+				request->body = std::move(body);
+			}
+			else
+			{
+				response = Ptr(new HttpResponse);
+				response->version = version;
+				response->statusCode = statusCode;
+				response->reason = reason;
+				response->headers = std::move(headers);
+				response->body = std::move(body);
+			}
+			return HttpMessageParsingResult::Succeeded;
+		}
+
+		bool ValidateField(const HttpField& field, bool trailer)
+		{
+			if (field.name.Length() == 0) return false;
+			for (vint i = 0; i < field.name.Length(); i++)
+			{
+				auto c = field.name[i];
+				if (c > 0x7F || !IsTokenCharacter((vuint8_t)c) || (c >= L'A' && c <= L'Z')) return false;
+			}
+			for (auto c : field.value)
+			{
+				if (!IsFieldValueCharacter(c)) return false;
+			}
+			if (trailer && (field.name == L"content-length" || field.name == L"transfer-encoding")) return false;
+			return true;
+		}
+
+		void AppendAscii(List<vuint8_t>& bytes, const wchar_t* text)
+		{
+			while (*text)
+			{
+				CHECK_ERROR(*text <= 0x7F, L"HTTP serialization requires ASCII protocol text.");
+				bytes.Add((vuint8_t)*text++);
+			}
+		}
+
+		void AppendAscii(List<vuint8_t>& bytes, const WString& text)
+		{
+			for (vint i = 0; i < text.Length(); i++)
+			{
+				CHECK_ERROR(text[i] <= 0x7F, L"HTTP serialization requires ASCII protocol text.");
+				bytes.Add((vuint8_t)text[i]);
+			}
+		}
+
+		void AppendDecimal(List<vuint8_t>& bytes, vint number)
+		{
+			CHECK_ERROR(number >= 0, L"HTTP serialization requires a non-negative decimal number.");
+			vuint8_t digits[32];
+			auto count = 0;
+			auto value = (vuint64_t)number;
+			do
+			{
+				digits[count++] = (vuint8_t)('0' + value % 10);
+				value /= 10;
+			} while (value > 0);
+			for (vint i = count - 1; i >= 0; i--) bytes.Add(digits[i]);
+		}
+
+		void AppendHexadecimal(List<vuint8_t>& bytes, vint number)
+		{
+			CHECK_ERROR(number > 0, L"HTTP chunk serialization requires a positive chunk size.");
+			vuint8_t digits[32];
+			auto count = 0;
+			auto value = (vuint64_t)number;
+			const wchar_t* hex = L"0123456789abcdef";
+			while (value > 0)
+			{
+				digits[count++] = (vuint8_t)hex[value % 16];
+				value /= 16;
+			}
+			for (vint i = count - 1; i >= 0; i--) bytes.Add(digits[i]);
+		}
+
+		void AppendCrlf(List<vuint8_t>& bytes)
+		{
+			bytes.Add('\r');
+			bytes.Add('\n');
+		}
+
+		void AppendField(List<vuint8_t>& bytes, const HttpField& field)
+		{
+			AppendAscii(bytes, field.name);
+			bytes.Add(':');
+			bytes.Add(' ');
+			for (auto c : field.value) bytes.Add(c);
+			AppendCrlf(bytes);
+		}
+
+		vint DecimalDigitCount(vint number)
+		{
+			vint count = 1;
+			while (number >= 10)
+			{
+				number /= 10;
+				count++;
+			}
+			return count;
+		}
+
+		vint HexadecimalDigitCount(vint number)
+		{
+			vint count = 1;
+			while (number >= 16)
+			{
+				number /= 16;
+				count++;
+			}
+			return count;
+		}
+
+		vint AsciiLength(const wchar_t* text)
+		{
+			vint count = 0;
+			while (text[count]) count++;
+			return count;
+		}
+
+		void AddBoundedSize(vint& total, vint adding, vint limit, const wchar_t* error)
+		{
+			CHECK_ERROR(adding >= 0 && total <= limit - adding, error);
+			total += adding;
+		}
+
+		vint ValidateBody(const HttpBody& body)
+		{
+			CHECK_ERROR(body.chunks.Count() <= HttpChunkCountLimit, L"HTTP body contains too many chunks.");
+			vint total = 0;
+			for (auto&& chunk : body.chunks)
+			{
+				CHECK_ERROR(chunk.data.Count() > 0, L"HTTP body chunks must contain at least one octet.");
+				CHECK_ERROR(total <= HttpBodySizeLimit - chunk.data.Count(), L"HTTP body exceeds the configured size limit.");
+				total += chunk.data.Count();
+			}
+			for (auto&& trailer : body.trailers)
+			{
+				CHECK_ERROR(ValidateField(trailer, true), L"HTTP body contains an invalid trailer field.");
+			}
+			return total;
+		}
+
+		Ptr<AsyncSocketBuffer> SerializeHttpMessage(HttpRequest* request, HttpResponse* response, const WString& responseToMethod, bool& connectionClose)
+		{
+			auto requestMessage = request != nullptr;
+			CHECK_ERROR(requestMessage != (response != nullptr), L"HTTP serialization requires exactly one message.");
+			auto&& version = requestMessage ? request->version : response->version;
+			auto&& headers = requestMessage ? request->headers : response->headers;
+			auto&& body = requestMessage ? request->body : response->body;
+			CHECK_ERROR(version.major == 1 && version.minor == 1, L"HTTP serialization only supports HTTP/1.1.");
+
+			vint startLineSize = 0;
+			if (requestMessage)
+			{
+				CHECK_ERROR(request->method.Length() > 0, L"HTTP request serialization requires a method.");
+				for (vint i = 0; i < request->method.Length(); i++)
+				{
+					CHECK_ERROR(request->method[i] <= 0x7F && IsTokenCharacter((vuint8_t)request->method[i]), L"HTTP request serialization received an invalid method.");
+				}
+				CHECK_ERROR(request->requestTarget.Length() > 0, L"HTTP request serialization requires a request target.");
+				for (vint i = 0; i < request->requestTarget.Length(); i++)
+				{
+					CHECK_ERROR(request->requestTarget[i] >= 0x21 && request->requestTarget[i] <= 0x7E, L"HTTP request serialization received an invalid request target.");
+				}
+				startLineSize = 10;
+				AddBoundedSize(startLineSize, request->method.Length(), HttpRequestLineSizeLimit, L"HTTP start line exceeds the configured size limit.");
+				AddBoundedSize(startLineSize, request->requestTarget.Length(), HttpRequestLineSizeLimit, L"HTTP start line exceeds the configured size limit.");
+			}
+			else
+			{
+				CHECK_ERROR(response->statusCode >= 200 && response->statusCode <= 599, L"HTTP response serialization only supports final status codes from 200 through 599.");
+				for (vint i = 0; i < response->reason.Length(); i++)
+				{
+					CHECK_ERROR(response->reason[i] >= 0x20 && response->reason[i] <= 0x7E, L"HTTP response serialization received an invalid reason phrase.");
+				}
+				startLineSize = 13;
+				AddBoundedSize(startLineSize, response->reason.Length(), HttpRequestLineSizeLimit, L"HTTP start line exceeds the configured size limit.");
+			}
+
+			vint headerBlockSize = 2;
+			for (auto&& field : headers)
+			{
+				CHECK_ERROR(ValidateField(field, false), L"HTTP serialization received an invalid header field.");
+				AddBoundedSize(headerBlockSize, field.name.Length(), HttpHeaderBlockSizeLimit, L"HTTP header block exceeds the configured size limit.");
+				AddBoundedSize(headerBlockSize, 2, HttpHeaderBlockSizeLimit, L"HTTP header block exceeds the configured size limit.");
+				AddBoundedSize(headerBlockSize, field.value.Count(), HttpHeaderBlockSizeLimit, L"HTTP header block exceeds the configured size limit.");
+				AddBoundedSize(headerBlockSize, 2, HttpHeaderBlockSizeLimit, L"HTTP header block exceeds the configured size limit.");
+			}
+
+			HttpFraming framing;
+			CHECK_ERROR(AnalyzeFraming(headers, framing) == HttpFramingAnalysisResult::Succeeded, L"HTTP serialization received invalid, ambiguous, or unsupported body framing.");
+			auto bodySize = ValidateBody(body);
+			auto headResponse = !requestMessage && responseToMethod == L"HEAD";
+			auto noContentResponse = !requestMessage && response->statusCode == 204;
+			auto notModifiedResponse = !requestMessage && response->statusCode == 304;
+			auto suppressBody = headResponse || noContentResponse || notModifiedResponse;
+			auto chunked = framing.hasTransferEncoding;
+			auto generateContentLength = false;
+			auto generateTransferEncoding = false;
+			if (noContentResponse)
+			{
+				CHECK_ERROR(body.chunks.Count() == 0 && body.trailers.Count() == 0, L"An HTTP 204 response cannot contain a body.");
+				CHECK_ERROR(!framing.hasContentLength && !framing.hasTransferEncoding, L"An HTTP 204 response cannot contain body framing.");
+				chunked = false;
+			}
+			else if (notModifiedResponse)
+			{
+				CHECK_ERROR(body.chunks.Count() == 0 && body.trailers.Count() == 0, L"An HTTP 304 response cannot contain a body.");
+				CHECK_ERROR(!framing.hasTransferEncoding, L"An HTTP 304 response cannot contain Transfer-Encoding.");
+				chunked = false;
+			}
+			else if (!framing.hasContentLength && !framing.hasTransferEncoding)
+			{
+				chunked = body.chunks.Count() > 1 || body.trailers.Count() > 0;
+				generateTransferEncoding = chunked;
+				generateContentLength = !chunked && (!requestMessage || body.chunks.Count() > 0);
+			}
+			if (!noContentResponse && !notModifiedResponse && !chunked)
+			{
+				CHECK_ERROR(body.trailers.Count() == 0 && body.chunks.Count() <= 1, L"A fixed HTTP body cannot contain multiple chunks or trailers.");
+				if (framing.hasContentLength)
+				{
+					if (!headResponse || body.chunks.Count() > 0)
+					{
+						CHECK_ERROR(framing.contentLength == (vuint64_t)bodySize, L"HTTP Content-Length does not match the supplied body.");
+					}
+				}
+				else if (!generateContentLength && !headResponse)
+				{
+					CHECK_ERROR(requestMessage && bodySize == 0, L"An HTTP response requires explicit body framing.");
+				}
+			}
+			if (generateContentLength)
+			{
+				AddBoundedSize(headerBlockSize, AsciiLength(L"content-length: ") + DecimalDigitCount(bodySize) + 2, HttpHeaderBlockSizeLimit, L"HTTP header block exceeds the configured size limit.");
+			}
+			if (generateTransferEncoding)
+			{
+				AddBoundedSize(headerBlockSize, AsciiLength(L"transfer-encoding: chunked\r\n"), HttpHeaderBlockSizeLimit, L"HTTP header block exceeds the configured size limit.");
+			}
+
+			vint trailerBlockSize = 2;
+			for (auto&& trailer : body.trailers)
+			{
+				AddBoundedSize(trailerBlockSize, trailer.name.Length(), HttpTrailerBlockSizeLimit, L"HTTP trailer block exceeds the configured size limit.");
+				AddBoundedSize(trailerBlockSize, 2, HttpTrailerBlockSizeLimit, L"HTTP trailer block exceeds the configured size limit.");
+				AddBoundedSize(trailerBlockSize, trailer.value.Count(), HttpTrailerBlockSizeLimit, L"HTTP trailer block exceeds the configured size limit.");
+				AddBoundedSize(trailerBlockSize, 2, HttpTrailerBlockSizeLimit, L"HTTP trailer block exceeds the configured size limit.");
+			}
+			vint wireSize = startLineSize;
+			AddBoundedSize(wireSize, 2, HttpWireMessageSizeLimit, L"HTTP wire message exceeds the configured size limit.");
+			AddBoundedSize(wireSize, headerBlockSize, HttpWireMessageSizeLimit, L"HTTP wire message exceeds the configured size limit.");
+			if (!suppressBody && chunked)
+			{
+				for (auto&& chunk : body.chunks)
+				{
+					AddBoundedSize(wireSize, HexadecimalDigitCount(chunk.data.Count()) + 4, HttpWireMessageSizeLimit, L"HTTP wire message exceeds the configured size limit.");
+					AddBoundedSize(wireSize, chunk.data.Count(), HttpWireMessageSizeLimit, L"HTTP wire message exceeds the configured size limit.");
+				}
+				AddBoundedSize(wireSize, 3, HttpWireMessageSizeLimit, L"HTTP wire message exceeds the configured size limit.");
+				AddBoundedSize(wireSize, trailerBlockSize, HttpWireMessageSizeLimit, L"HTTP wire message exceeds the configured size limit.");
+			}
+			else if (!suppressBody)
+			{
+				AddBoundedSize(wireSize, bodySize, HttpWireMessageSizeLimit, L"HTTP wire message exceeds the configured size limit.");
+			}
+
+			List<vuint8_t> bytes;
+			if (requestMessage)
+			{
+				AppendAscii(bytes, request->method);
+				bytes.Add(' ');
+				AppendAscii(bytes, request->requestTarget);
+				bytes.Add(' ');
+			}
+			AppendAscii(bytes, L"HTTP/");
+			AppendDecimal(bytes, version.major);
+			bytes.Add('.');
+			AppendDecimal(bytes, version.minor);
+			if (!requestMessage)
+			{
+				bytes.Add(' ');
+				AppendDecimal(bytes, response->statusCode);
+				bytes.Add(' ');
+				AppendAscii(bytes, response->reason);
+			}
+			CHECK_ERROR(bytes.Count() <= HttpRequestLineSizeLimit, L"HTTP start line exceeds the configured size limit.");
+			AppendCrlf(bytes);
+
+			for (auto&& field : headers) AppendField(bytes, field);
+			if (generateContentLength)
+			{
+				AppendAscii(bytes, L"content-length: ");
+				AppendDecimal(bytes, bodySize);
+				AppendCrlf(bytes);
+			}
+			if (generateTransferEncoding)
+			{
+				AppendAscii(bytes, L"transfer-encoding: chunked\r\n");
+			}
+			AppendCrlf(bytes);
+
+			if (!suppressBody && chunked)
+			{
+				for (auto&& chunk : body.chunks)
+				{
+					AppendHexadecimal(bytes, chunk.data.Count());
+					AppendCrlf(bytes);
+					for (auto c : chunk.data) bytes.Add(c);
+					AppendCrlf(bytes);
+				}
+				AppendAscii(bytes, L"0\r\n");
+				for (auto&& trailer : body.trailers) AppendField(bytes, trailer);
+				AppendCrlf(bytes);
+			}
+			else if (!suppressBody && body.chunks.Count() == 1)
+			{
+				for (auto c : body.chunks[0].data) bytes.Add(c);
+			}
+			CHECK_ERROR(bytes.Count() <= HttpWireMessageSizeLimit, L"HTTP wire message exceeds the configured size limit.");
+
+			auto buffer = Ptr(new AsyncSocketBuffer);
+			buffer->data.Resize(bytes.Count());
+			if (bytes.Count() > 0)
+			{
+				std::memcpy(&buffer->data[0], &bytes[0], (size_t)bytes.Count());
+			}
+			connectionClose = framing.connectionClose;
+			return buffer;
+		}
+	}
+
+/***********************************************************************
+HttpRequestBody
+***********************************************************************/
+
+	namespace
+	{
+		HttpBodyDetailedParsingResult ParseHttpRequestBodyToChunksDetailed(
+			const vuint8_t* buffer,
+			vint availableBytes,
+			HttpBody& output,
+			vint& consumedBytes
+			)
+		{
+			consumedBytes = 0;
+			if (availableBytes < 0 || (!buffer && availableBytes > 0)) return HttpBodyDetailedParsingResult::BadRequest;
+			HttpBody parsed;
+			vint reading = 0;
+			vint decodedBytes = 0;
+			while (true)
+			{
+				vint lineEnd = FindCrlf(buffer, reading, availableBytes);
+				if (lineEnd == -1)
+				{
+					auto trailingCrlfPrefix = availableBytes > reading && buffer[availableBytes - 1] == '\r';
+					vint prefixEnd = trailingCrlfPrefix ? availableBytes - 1 : availableBytes;
+					auto validPrefix = trailingCrlfPrefix
+						? ValidateCompleteChunkSizeLine(buffer, reading, prefixEnd)
+						: ValidateChunkSizeLinePrefix(buffer, reading, prefixEnd);
+					if (prefixEnd - reading > HttpChunkSizeLineLimit || !validPrefix)
+					{
+						return HttpBodyDetailedParsingResult::BadRequest;
+					}
+					return HttpBodyDetailedParsingResult::Incomplete;
+				}
+				if (lineEnd - reading > HttpChunkSizeLineLimit) return HttpBodyDetailedParsingResult::BadRequest;
+				if (lineEnd + 2 > HttpWireMessageSizeLimit) return HttpBodyDetailedParsingResult::PayloadTooLarge;
+				vint numberEnd = reading;
+				vuint64_t chunkSize = 0;
+				while (numberEnd < lineEnd && IsHexDigit(buffer[numberEnd]))
+				{
+					auto digit = (vuint64_t)HexDigitValue(buffer[numberEnd++]);
+					if (chunkSize > ((std::numeric_limits<vuint64_t>::max)() - digit) / 16) return HttpBodyDetailedParsingResult::PayloadTooLarge;
+					chunkSize = chunkSize * 16 + digit;
+				}
+				if (numberEnd == reading) return HttpBodyDetailedParsingResult::BadRequest;
+				if (chunkSize > (vuint64_t)HttpBodySizeLimit) return HttpBodyDetailedParsingResult::PayloadTooLarge;
+				if (numberEnd < lineEnd)
+				{
+					vint firstExtension = numberEnd;
+					while (firstExtension < lineEnd && IsOws(buffer[firstExtension])) firstExtension++;
+					if (firstExtension == lineEnd || buffer[firstExtension] != ';') return HttpBodyDetailedParsingResult::BadRequest;
+				}
+				vint extensionReading = numberEnd;
+				if (!ParseSemicolonParameters(buffer, extensionReading, lineEnd)) return HttpBodyDetailedParsingResult::BadRequest;
+				reading = lineEnd + 2;
+
+				if (chunkSize == 0)
+				{
+					vint trailerBegin = reading;
+					while (true)
+					{
+						vint trailerEnd = FindCrlf(buffer, reading, availableBytes);
+						if (trailerEnd == -1)
+						{
+							return availableBytes - trailerBegin >= HttpTrailerBlockSizeLimit
+								? HttpBodyDetailedParsingResult::TrailerFieldsTooLarge
+								: HttpBodyDetailedParsingResult::Incomplete;
+						}
+						if (trailerEnd + 2 - trailerBegin > HttpTrailerBlockSizeLimit) return HttpBodyDetailedParsingResult::TrailerFieldsTooLarge;
+						if (trailerEnd + 2 > HttpWireMessageSizeLimit) return HttpBodyDetailedParsingResult::PayloadTooLarge;
+						if (trailerEnd == reading)
+						{
+							consumedBytes = trailerEnd + 2;
+							output = std::move(parsed);
+							return HttpBodyDetailedParsingResult::Succeeded;
+						}
+						HttpField trailer;
+						if (!ParseFieldLine(buffer, reading, trailerEnd, trailer) || trailer.name == L"content-length" || trailer.name == L"transfer-encoding")
+						{
+							return HttpBodyDetailedParsingResult::BadRequest;
+						}
+						parsed.trailers.Add(std::move(trailer));
+						reading = trailerEnd + 2;
+					}
+				}
+
+				if (chunkSize > (vuint64_t)(HttpBodySizeLimit - decodedBytes)) return HttpBodyDetailedParsingResult::PayloadTooLarge;
+				vint chunkBytes = (vint)chunkSize;
+				if (availableBytes - reading < chunkBytes) return HttpBodyDetailedParsingResult::Incomplete;
+				auto terminatorBytes = availableBytes - reading - chunkBytes;
+				if (terminatorBytes == 0) return HttpBodyDetailedParsingResult::Incomplete;
+				if (buffer[reading + chunkBytes] != '\r') return HttpBodyDetailedParsingResult::BadRequest;
+				if (terminatorBytes == 1) return HttpBodyDetailedParsingResult::Incomplete;
+				if (buffer[reading + chunkBytes + 1] != '\n') return HttpBodyDetailedParsingResult::BadRequest;
+				if (reading > HttpWireMessageSizeLimit - chunkBytes - 2) return HttpBodyDetailedParsingResult::PayloadTooLarge;
+				if (parsed.chunks.Count() >= HttpChunkCountLimit) return HttpBodyDetailedParsingResult::PayloadTooLarge;
+				HttpBodyChunk chunk;
+				chunk.data.Resize(chunkBytes);
+				std::memcpy(&chunk.data[0], buffer + reading, (size_t)chunkBytes);
+				parsed.chunks.Add(std::move(chunk));
+				decodedBytes += chunkBytes;
+				reading += chunkBytes + 2;
+			}
+		}
+	}
+
+	HttpRequestBodyParsingResult ParseHttpRequestBodyToChunks(
+		const vuint8_t* buffer,
+		vint availableBytes,
+		HttpBody& output,
+		vint& consumedBytes
+		)
+	{
+		auto result = ParseHttpRequestBodyToChunksDetailed(buffer, availableBytes, output, consumedBytes);
+		switch (result)
+		{
+		case HttpBodyDetailedParsingResult::Succeeded:
+			return HttpRequestBodyParsingResult::Succeeded;
+		case HttpBodyDetailedParsingResult::Incomplete:
+			return HttpRequestBodyParsingResult::Incomplete;
+		default:
+			return HttpRequestBodyParsingResult::Invalid;
+		}
+	}
+
+/***********************************************************************
+IHttpRequestCallback
+***********************************************************************/
+
+	void IHttpRequestCallback::OnReadRequest(Ptr<HttpRequest>)
+	{
+	}
+
+	void IHttpRequestCallback::OnReadRequestFailure(HttpRequestFailure)
+	{
+	}
+
+	void IHttpRequestCallback::OnReadResponse(Ptr<HttpResponse>)
+	{
+	}
+
+	void IHttpRequestCallback::OnWriteCompleted()
+	{
+	}
+
+	void IHttpRequestCallback::OnError(const WString&, bool)
+	{
+	}
+
+	void IHttpRequestCallback::OnConnected()
+	{
+	}
+
+	void IHttpRequestCallback::OnDisconnected()
+	{
+	}
+
+/***********************************************************************
+HttpRequestTimeoutController
+***********************************************************************/
+
+	namespace
+	{
+		class HttpRequestTimeoutController : public Object, public virtual IHttpRequestTimeoutController
+		{
+		private:
+			class State : public Object
+			{
+			public:
+				CriticalSection					lock;
+				ConditionVariable				cv;
+				Func<void()>					callback;
+				std::chrono::steady_clock::time_point
+										deadline;
+				vint							duration = 0;
+				bool							armed = false;
+				bool							workerRunning = false;
+				vint							activeCallbacks = 0;
+			};
+
+			static thread_local State*		currentCallbackState;
+			Ptr<State>						state = Ptr(new State);
+
+			static void Run(Ptr<State> state)
+			{
+				while (true)
+				{
+					Func<void()> callback;
+					state->lock.Enter();
+					while (state->armed)
+					{
+						auto now = std::chrono::steady_clock::now();
+						if (now >= state->deadline)
+						{
+							callback = state->callback;
+							state->callback = {};
+							state->armed = false;
+							state->activeCallbacks++;
+							break;
+						}
+						auto remaining = std::chrono::ceil<std::chrono::milliseconds>(state->deadline - now).count();
+						auto wait = remaining > (std::numeric_limits<vint>::max)()
+							? (std::numeric_limits<vint>::max)()
+							: (vint)remaining;
+						state->cv.SleepWithForTime(state->lock, wait);
+					}
+					if (!callback)
+					{
+						state->workerRunning = false;
+						state->cv.WakeAllPendings();
+						state->lock.Leave();
+						return;
+					}
+					state->lock.Leave();
+
+					auto previous = currentCallbackState;
+					currentCallbackState = state.Obj();
+					try
+					{
+						callback();
+					}
+					catch (...)
+					{
+					}
+					currentCallbackState = previous;
+
+					CS_LOCK(state->lock)
+					{
+						state->activeCallbacks--;
+						state->cv.WakeAllPendings();
+					}
+				}
+			}
+
+		public:
+			~HttpRequestTimeoutController()
+			{
+				CancelAndWait();
+			}
+
+			void Arm(vint milliseconds, const Func<void()>& callback) override
+			{
+				CHECK_ERROR(milliseconds > 0, L"The HTTP timeout controller requires a positive duration.");
+				bool queueWorker = false;
+				CS_LOCK(state->lock)
+				{
+					CHECK_ERROR(!state->armed, L"The HTTP timeout controller is already armed.");
+					state->callback = callback;
+					state->duration = milliseconds;
+					state->deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(milliseconds);
+					state->armed = true;
+					if (!state->workerRunning)
+					{
+						state->workerRunning = true;
+						queueWorker = true;
+					}
+					state->cv.WakeAllPendings();
+				}
+				if (queueWorker)
+				{
+					auto captured = state;
+					auto queued = ThreadPoolLite::Queue(Func<void()>([captured]()
+					{
+						Run(captured);
+					}));
+					if (!queued)
+					{
+						CS_LOCK(state->lock)
+						{
+							state->callback = {};
+							state->armed = false;
+							state->workerRunning = false;
+							state->cv.WakeAllPendings();
+						}
+						CHECK_ERROR(false, L"The HTTP timeout controller could not queue its deadline worker.");
+					}
+				}
+			}
+
+			void Refresh() override
+			{
+				CS_LOCK(state->lock)
+				{
+					if (state->armed)
+					{
+						state->deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(state->duration);
+						state->cv.WakeAllPendings();
+					}
+				}
+			}
+
+			void CancelAndWait() override
+			{
+				auto nestedCallback = currentCallbackState == state.Obj();
+				state->lock.Enter();
+				state->armed = false;
+				state->callback = {};
+				state->cv.WakeAllPendings();
+				if (!nestedCallback)
+				{
+					while (state->workerRunning || state->activeCallbacks > 0)
+					{
+						state->cv.SleepWith(state->lock);
+					}
+				}
+				state->lock.Leave();
+			}
+		};
+
+		thread_local HttpRequestTimeoutController::State* HttpRequestTimeoutController::currentCallbackState = nullptr;
+	}
+
+	Ptr<IHttpRequestTimeoutController> CreateHttpRequestTimeoutController()
+	{
+		return Ptr(new HttpRequestTimeoutController);
+	}
+
+/***********************************************************************
+HttpRequestCallbackDomain
+***********************************************************************/
+
+	thread_local HttpRequestCallbackDomain::CallbackFrame* HttpRequestCallbackDomain::currentCallbackFrame = nullptr;
+
+	HttpRequestCallbackDomain::CallbackFrame::CallbackFrame(Ptr<HttpRequestCallbackDomain> _domain)
+		: domain(_domain)
+		, previous(currentCallbackFrame)
+	{
+		currentCallbackFrame = this;
+		CS_LOCK(domain->lockState)
+		{
+			domain->activeCallbacks++;
+		}
+	}
+
+	HttpRequestCallbackDomain::CallbackFrame::~CallbackFrame()
+	{
+		currentCallbackFrame = previous;
+		CS_LOCK(domain->lockState)
+		{
+			domain->activeCallbacks--;
+			domain->cvState.WakeAllPendings();
+		}
+	}
+
+	vint HttpRequestCallbackDomain::CurrentCallbackDepth()
+	{
+		vint depth = 0;
+		for (auto frame = currentCallbackFrame; frame; frame = frame->previous)
+		{
+			if (frame->domain.Obj() == this) depth++;
+		}
+		return depth;
+	}
+
+	void HttpRequestCallbackDomain::WaitForCallbacks(vint callbackDepth)
+	{
+		CS_LOCK(lockState)
+		{
+			while (activeCallbacks > callbackDepth)
+			{
+				cvState.SleepWith(lockState);
+			}
+		}
+	}
+
+/***********************************************************************
+HttpRequestConnectionLifecycle
+***********************************************************************/
+
+	class HttpRequestConnectionLifecycle : public Object
+	{
+	public:
+		class RetainedAdapterRelease
+		{
+		public:
+			Ptr<Object>						adapter;
+			Func<void()>						drainedCallback;
+
+			~RetainedAdapterRelease()
+			{
+				if (drainedCallback)
+				{
+					try
+					{
+						drainedCallback();
+					}
+					catch (...)
+					{
+					}
+				}
+			}
+		};
+
+		IAsyncSocketConnection*				socketConnection = nullptr;
+		HttpRequestConnectionDirection		direction = HttpRequestConnectionDirection::Server;
+		Ptr<HttpRequestCallbackDomain>		callbackDomain;
+		Ptr<IHttpRequestTimeoutController>	timeoutController;
+		Ptr<Object>						retainedAdapter;
+		Func<void()>						drainedCallback;
+
+		CriticalSection						lockState;
+		ConditionVariable					cvState;
+		IHttpRequestCallback*				callback = nullptr;
+		bool							callbackInstalling = false;
+		vint							activeCallbacks = 0;
+		vint							activeSocketCallbacks = 0;
+		vint							activeSocketCalls = 0;
+		bool							stopStarted = false;
+		bool							stopFinished = false;
+		bool							terminal = false;
+		bool							disconnectedNotified = false;
+		bool							disconnectDelivering = false;
+		bool							disconnectFinished = false;
+		bool							readingStarted = false;
+		bool							parserFailed = false;
+		bool							peerDisconnected = false;
+
+		List<vuint8_t>						receiveBuffer;
+		bool							timeoutArmed = false;
+		bool							awaitingResponse = false;
+		bool							exchangeActive = false;
+		bool							closeAfterExchange = false;
+		WString						activeRequestMethod;
+		vint							activeResponseTimeout = HttpIncompleteMessageTimeout;
+		Ptr<HttpResponse>					heldResponse;
+		bool							fatalAfterResponse = false;
+		bool							responseDelivering = false;
+		bool							responseFinalizing = false;
+		Ptr<AsyncSocketBuffer>				deferredRequestWrite;
+		bool							deferredRequestClose = false;
+		WString						deferredRequestMethod;
+		vint							deferredResponseTimeout = HttpIncompleteMessageTimeout;
+		Ptr<AsyncSocketBuffer>				pendingWrite;
+		bool							writePending = false;
+
+		void TakeRetainedAdapterIfDrained(RetainedAdapterRelease& releasing)
+		{
+			if (stopFinished && disconnectFinished && activeCallbacks == 0 && activeSocketCallbacks == 0 && activeSocketCalls == 0)
+			{
+				releasing.adapter = std::move(retainedAdapter);
+				releasing.drainedCallback = drainedCallback;
+				drainedCallback = {};
+			}
+		}
+	};
+
+/***********************************************************************
+HttpRequestConnection callback frames
+***********************************************************************/
+
+	struct HttpRequestConnection::CallbackFrame
+	{
+		Ptr<Lifecycle>						state;
+		CallbackFrame*						previous = nullptr;
+		HttpRequestCallbackDomain::CallbackFrame	domainFrame;
+
+		CallbackFrame(Ptr<Lifecycle> _state)
+			: state(_state)
+			, previous(currentCallbackFrame)
+			, domainFrame(state->callbackDomain)
+		{
+			currentCallbackFrame = this;
+		}
+
+		~CallbackFrame()
+		{
+			currentCallbackFrame = previous;
+			Lifecycle::RetainedAdapterRelease releasing;
+			CS_LOCK(state->lockState)
+			{
+				state->activeCallbacks--;
+				state->TakeRetainedAdapterIfDrained(releasing);
+				state->cvState.WakeAllPendings();
+			}
+		}
+	};
+
+	struct HttpRequestConnection::SocketCallbackFrame
+	{
+		Ptr<Lifecycle>						state;
+		SocketCallbackFrame*				previous = nullptr;
+
+		SocketCallbackFrame(Ptr<Lifecycle> _state)
+			: state(_state)
+			, previous(currentSocketCallbackFrame)
+		{
+			currentSocketCallbackFrame = this;
+			CS_LOCK(state->lockState)
+			{
+				state->activeSocketCallbacks++;
+			}
+		}
+
+		~SocketCallbackFrame()
+		{
+			currentSocketCallbackFrame = previous;
+			Lifecycle::RetainedAdapterRelease releasing;
+			CS_LOCK(state->lockState)
+			{
+				state->activeSocketCallbacks--;
+				state->TakeRetainedAdapterIfDrained(releasing);
+				state->cvState.WakeAllPendings();
+			}
+		}
+	};
+
+	struct HttpRequestConnection::TimeoutCallbackFrame
+	{
+		Ptr<Lifecycle>						state;
+		TimeoutCallbackFrame*				previous = nullptr;
+
+		TimeoutCallbackFrame(Ptr<Lifecycle> _state)
+			: state(_state)
+			, previous(currentTimeoutCallbackFrame)
+		{
+			currentTimeoutCallbackFrame = this;
+		}
+
+		~TimeoutCallbackFrame()
+		{
+			currentTimeoutCallbackFrame = previous;
+		}
+	};
+
+	thread_local HttpRequestConnection::CallbackFrame* HttpRequestConnection::currentCallbackFrame = nullptr;
+	thread_local HttpRequestConnection::SocketCallbackFrame* HttpRequestConnection::currentSocketCallbackFrame = nullptr;
+	thread_local HttpRequestConnection::TimeoutCallbackFrame* HttpRequestConnection::currentTimeoutCallbackFrame = nullptr;
+
+/***********************************************************************
+HttpRequestConnection helpers
+***********************************************************************/
+
+	vint HttpRequestConnection::CurrentCallbackDepth(Ptr<Lifecycle> state)
+	{
+		vint depth = 0;
+		for (auto frame = currentCallbackFrame; frame; frame = frame->previous)
+		{
+			if (frame->state.Obj() == state.Obj()) depth++;
+		}
+		return depth;
+	}
+
+	vint HttpRequestConnection::CurrentSocketCallbackDepth(Ptr<Lifecycle> state)
+	{
+		vint depth = 0;
+		for (auto frame = currentSocketCallbackFrame; frame; frame = frame->previous)
+		{
+			if (frame->state.Obj() == state.Obj()) depth++;
+		}
+		return depth;
+	}
+
+	vint HttpRequestConnection::CurrentTimeoutCallbackDepth(Ptr<Lifecycle> state)
+	{
+		vint depth = 0;
+		for (auto frame = currentTimeoutCallbackFrame; frame; frame = frame->previous)
+		{
+			if (frame->state.Obj() == state.Obj()) depth++;
+		}
+		return depth;
+	}
+
+	void HttpRequestConnection::FinishSocketCall(Ptr<Lifecycle> state)
+	{
+		bool completePeerStop = false;
+		CS_LOCK(state->lockState)
+		{
+			state->activeSocketCalls--;
+			completePeerStop = state->activeSocketCalls == 0 && state->peerDisconnected && !state->stopFinished;
+			state->cvState.WakeAllPendings();
+		}
+		if (completePeerStop)
+		{
+			StopConnection(state);
+		}
+
+		Lifecycle::RetainedAdapterRelease releasing;
+		CS_LOCK(state->lockState)
+		{
+			state->TakeRetainedAdapterIfDrained(releasing);
+		}
+	}
+
+	template<typename TCallback>
+	void HttpRequestConnection::InvokeHttpCallback(Ptr<Lifecycle> state, bool allowTerminal, TCallback&& invoke)
+	{
+		IHttpRequestCallback* installed = nullptr;
+		auto callbackDepth = CurrentCallbackDepth(state);
+		state->lockState.Enter();
+		while (state->callbackInstalling && callbackDepth == 0 && state->callback)
+		{
+			state->cvState.SleepWith(state->lockState);
+		}
+		if (state->callback && (allowTerminal || (!state->stopStarted && !state->terminal)))
+		{
+			installed = state->callback;
+			state->activeCallbacks++;
+		}
+		state->lockState.Leave();
+		if (installed)
+		{
+			CallbackFrame frame(state);
+			invoke(installed);
+		}
+	}
+
+	void HttpRequestConnection::SubmitWrite(Ptr<Lifecycle> state, IAsyncSocketConnection* connection, Ptr<AsyncSocketBuffer> buffer)
+	{
+		try
+		{
+			connection->WriteAsync(buffer);
+		}
+		catch (...)
+		{
+			CS_LOCK(state->lockState)
+			{
+				if (state->pendingWrite.Obj() == buffer.Obj())
+				{
+					state->pendingWrite = nullptr;
+					state->writePending = false;
+					if (state->direction == HttpRequestConnectionDirection::Client)
+					{
+						state->exchangeActive = false;
+						state->closeAfterExchange = false;
+					}
+				}
+				state->cvState.WakeAllPendings();
+			}
+			FinishSocketCall(state);
+			throw;
+		}
+		FinishSocketCall(state);
+	}
+
+	void HttpRequestConnection::ReportRequestFailure(Ptr<Lifecycle> state, HttpRequestFailure failure, bool timeoutOnly, bool reserved)
+	{
+		bool report = false;
+		bool cancelTimeout = false;
+		CS_LOCK(state->lockState)
+		{
+			if (
+				reserved &&
+				state->direction == HttpRequestConnectionDirection::Server &&
+				!state->stopStarted &&
+				!state->terminal &&
+				state->parserFailed &&
+				state->awaitingResponse
+				)
+			{
+				cancelTimeout = state->timeoutArmed;
+				state->timeoutArmed = false;
+				report = true;
+			}
+			else if (
+				state->direction == HttpRequestConnectionDirection::Server &&
+				!state->stopStarted &&
+				!state->terminal &&
+				!state->parserFailed &&
+				!state->awaitingResponse &&
+				(!timeoutOnly || state->timeoutArmed)
+				)
+			{
+				state->parserFailed = true;
+				state->awaitingResponse = true;
+				state->closeAfterExchange = true;
+				state->receiveBuffer.Clear();
+				cancelTimeout = state->timeoutArmed;
+				state->timeoutArmed = false;
+				report = true;
+				state->cvState.WakeAllPendings();
+			}
+		}
+		if (!report)
+		{
+			return;
+		}
+		if (cancelTimeout)
+		{
+			state->timeoutController->CancelAndWait();
+		}
+
+		try
+		{
+			InvokeHttpCallback(state, false, [&](IHttpRequestCallback* installed)
+			{
+				installed->OnReadRequestFailure(failure);
+			});
+		}
+		catch (...)
+		{
+			StopConnection(state);
+			throw;
+		}
+
+		bool closeWithoutResponse = false;
+		CS_LOCK(state->lockState)
+		{
+			closeWithoutResponse = !state->stopStarted && !state->terminal && !state->peerDisconnected && !state->writePending;
+		}
+		if (closeWithoutResponse)
+		{
+			StopConnection(state);
+		}
+	}
+
+	void HttpRequestConnection::InstallTimeout(Ptr<Lifecycle> state, vint milliseconds, const WString& error)
+	{
+		CHECK_ERROR(milliseconds > 0, L"HttpRequestConnection requires a positive timeout when arming a deadline.");
+		auto captured = state;
+		auto capturedError = error;
+		try
+		{
+			state->timeoutController->Arm(milliseconds, Func<void()>([captured, capturedError]()
+			{
+				TimeoutCallbackFrame timeoutCallbackFrame(captured);
+				if (captured->direction == HttpRequestConnectionDirection::Server)
+				{
+					ReportRequestFailure(captured, HttpRequestFailure::RequestTimeout, true);
+					return;
+				}
+
+				bool expired = false;
+				CS_LOCK(captured->lockState)
+				{
+					if (captured->timeoutArmed && !captured->stopStarted && !captured->terminal && !captured->parserFailed)
+					{
+						captured->timeoutArmed = false;
+						captured->parserFailed = true;
+						expired = true;
+					}
+				}
+				if (expired)
+				{
+					ReportFatalError(captured, capturedError);
+				}
+			}));
+			bool cancelStaleTimeout = false;
+			CS_LOCK(state->lockState)
+			{
+				cancelStaleTimeout = !state->timeoutArmed || state->stopStarted || state->terminal;
+			}
+			if (cancelStaleTimeout)
+			{
+				state->timeoutController->CancelAndWait();
+			}
+		}
+		catch (...)
+		{
+			CS_LOCK(state->lockState)
+			{
+				state->timeoutArmed = false;
+			}
+			ReportFatalError(state, L"The HTTP timeout controller failed while arming a message timeout.");
+		}
+	}
+
+	void HttpRequestConnection::RefreshTimeout(Ptr<Lifecycle> state)
+	{
+		try
+		{
+			state->timeoutController->Refresh();
+		}
+		catch (...)
+		{
+			CS_LOCK(state->lockState)
+			{
+				state->timeoutArmed = false;
+			}
+			ReportFatalError(state, L"The HTTP timeout controller failed while refreshing a message timeout.");
+		}
+	}
+
+	void HttpRequestConnection::DeliverResponse(Ptr<Lifecycle> state, Ptr<HttpResponse> response, bool closeAfterDelivery)
+	{
+		try
+		{
+			InvokeHttpCallback(state, false, [&](IHttpRequestCallback* installed)
+			{
+				installed->OnReadResponse(response);
+			});
+		}
+		catch (...)
+		{
+			bool notifyDisconnected = false;
+			CS_LOCK(state->lockState)
+			{
+				state->responseDelivering = false;
+				state->deferredRequestWrite = nullptr;
+				state->deferredRequestClose = false;
+				state->deferredRequestMethod = L"";
+				notifyDisconnected = state->peerDisconnected;
+				state->responseFinalizing = notifyDisconnected;
+				state->cvState.WakeAllPendings();
+			}
+			if (notifyDisconnected)
+			{
+				StopConnection(state);
+				CS_LOCK(state->lockState)
+				{
+					state->responseFinalizing = false;
+					state->cvState.WakeAllPendings();
+				}
+			}
+			throw;
+		}
+
+		bool fatalAfterDelivery = false;
+		bool notifyDisconnected = false;
+		Ptr<AsyncSocketBuffer> deferredRequestWrite;
+		IAsyncSocketConnection* deferredRequestConnection = nullptr;
+		CS_LOCK(state->lockState)
+		{
+			fatalAfterDelivery = state->fatalAfterResponse;
+			state->fatalAfterResponse = false;
+			notifyDisconnected = state->peerDisconnected;
+			state->responseDelivering = false;
+			state->responseFinalizing = fatalAfterDelivery || closeAfterDelivery || notifyDisconnected;
+			if (state->responseFinalizing)
+			{
+				state->deferredRequestWrite = nullptr;
+				state->deferredRequestClose = false;
+				state->deferredRequestMethod = L"";
+			}
+			else if (state->deferredRequestWrite && !state->stopStarted && !state->terminal && state->socketConnection)
+			{
+				deferredRequestWrite = std::move(state->deferredRequestWrite);
+				state->exchangeActive = true;
+				state->closeAfterExchange = state->deferredRequestClose;
+				state->deferredRequestClose = false;
+				state->activeRequestMethod = std::move(state->deferredRequestMethod);
+				state->activeResponseTimeout = state->deferredResponseTimeout;
+				state->pendingWrite = deferredRequestWrite;
+				state->writePending = true;
+				deferredRequestConnection = state->socketConnection;
+				state->activeSocketCalls++;
+			}
+			state->cvState.WakeAllPendings();
+		}
+
+		try
+		{
+			if (fatalAfterDelivery)
+			{
+				ReportFatalError(state, L"The HTTP client received an unsolicited response after its exchange completed.");
+			}
+			else if (notifyDisconnected)
+			{
+				StopConnection(state);
+			}
+			else if (closeAfterDelivery)
+			{
+				StopConnection(state);
+			}
+		}
+		catch (...)
+		{
+			CS_LOCK(state->lockState)
+			{
+				state->responseFinalizing = false;
+				state->cvState.WakeAllPendings();
+			}
+			throw;
+		}
+
+		CS_LOCK(state->lockState)
+		{
+			state->responseFinalizing = false;
+			state->cvState.WakeAllPendings();
+		}
+		if (!fatalAfterDelivery && !closeAfterDelivery && !notifyDisconnected)
+		{
+			if (deferredRequestWrite)
+			{
+				try
+				{
+					SubmitWrite(state, deferredRequestConnection, deferredRequestWrite);
+				}
+				catch (...)
+				{
+					ReportFatalError(state, L"The HTTP client failed to submit a deferred request write.");
+					return;
+				}
+			}
+			ProcessBufferedInput(state);
+		}
+	}
+
+	void HttpRequestConnection::ProcessBufferedInput(Ptr<Lifecycle> state)
+	{
+		Ptr<HttpRequest> request;
+		Ptr<HttpResponse> response;
+		bool cancelTimeout = false;
+		bool deliverRequest = false;
+		bool deliverResponse = false;
+		bool closeAfterDelivery = false;
+		bool requestFailure = false;
+		bool clientFailure = false;
+		HttpRequestFailure failure = HttpRequestFailure::BadRequest;
+		WString parsedRequestMethod;
+
+		state->lockState.Enter();
+		if (state->stopStarted || state->terminal || state->parserFailed || state->peerDisconnected)
+		{
+			state->lockState.Leave();
+			return;
+		}
+		auto parseEnabled = state->direction == HttpRequestConnectionDirection::Server
+			? !state->awaitingResponse
+			: state->exchangeActive && !state->heldResponse && !state->responseDelivering && !state->responseFinalizing;
+		if (!parseEnabled)
+		{
+			state->lockState.Leave();
+			return;
+		}
+		if (state->receiveBuffer.Count() == 0)
+		{
+			state->lockState.Leave();
+			return;
+		}
+
+		vint consumedBytes = 0;
+		bool messageClose = false;
+		auto result = ParseHttpMessage(
+			&state->receiveBuffer[0],
+			state->receiveBuffer.Count(),
+			state->direction == HttpRequestConnectionDirection::Server,
+			state->activeRequestMethod,
+			parsedRequestMethod,
+			request,
+			response,
+			consumedBytes,
+			messageClose
+			);
+		if (result == HttpMessageParsingResult::Incomplete)
+		{
+			bool armTimeout = false;
+			bool refreshTimeout = false;
+			auto serverSide = state->direction == HttpRequestConnectionDirection::Server;
+			if (serverSide && parsedRequestMethod.Length() > 0)
+			{
+				state->activeRequestMethod = parsedRequestMethod;
+			}
+			auto timeout = serverSide ? HttpIncompleteMessageTimeout : state->activeResponseTimeout;
+			auto canArm = timeout > 0 && (serverSide || !state->writePending);
+			if (canArm && !state->timeoutArmed)
+			{
+				state->timeoutArmed = true;
+				armTimeout = true;
+			}
+			else if (canArm && serverSide)
+			{
+				refreshTimeout = true;
+			}
+			state->lockState.Leave();
+			if (armTimeout)
+			{
+				InstallTimeout(state, timeout, L"The HTTP peer timed out while sending an incomplete message.");
+			}
+			else if (refreshTimeout)
+			{
+				RefreshTimeout(state);
+			}
+			return;
+		}
+		if (result != HttpMessageParsingResult::Succeeded)
+		{
+			if (state->direction == HttpRequestConnectionDirection::Server)
+			{
+				state->activeRequestMethod = parsedRequestMethod;
+				state->parserFailed = true;
+				state->awaitingResponse = true;
+				state->closeAfterExchange = true;
+				state->receiveBuffer.Clear();
+				failure = GetHttpRequestFailure(result);
+				requestFailure = true;
+			}
+			else
+			{
+				clientFailure = true;
+			}
+			state->lockState.Leave();
+		}
+		else
+		{
+			state->receiveBuffer.RemoveRange(0, consumedBytes);
+			if (state->timeoutArmed)
+			{
+				state->timeoutArmed = false;
+				cancelTimeout = true;
+			}
+			state->closeAfterExchange |= messageClose;
+			if (state->direction == HttpRequestConnectionDirection::Server)
+			{
+				state->activeRequestMethod = request->method;
+				state->awaitingResponse = true;
+				deliverRequest = true;
+			}
+			else if (state->writePending)
+			{
+				state->heldResponse = response;
+				if (state->receiveBuffer.Count() > 0)
+				{
+					state->fatalAfterResponse = true;
+					state->receiveBuffer.Clear();
+				}
+			}
+			else
+			{
+				state->exchangeActive = false;
+				state->responseDelivering = true;
+				deliverResponse = true;
+				closeAfterDelivery = state->closeAfterExchange;
+				if (state->receiveBuffer.Count() > 0)
+				{
+					state->fatalAfterResponse = true;
+					state->receiveBuffer.Clear();
+				}
+			}
+			state->lockState.Leave();
+		}
+
+		if (requestFailure)
+		{
+			ReportRequestFailure(state, failure, false, true);
+			return;
+		}
+		if (clientFailure)
+		{
+			ReportFatalError(state, L"The HTTP peer sent malformed or unsafe HTTP/1.1 framing.");
+			return;
+		}
+		if (cancelTimeout)
+		{
+			state->timeoutController->CancelAndWait();
+		}
+		if (deliverRequest)
+		{
+			InvokeHttpCallback(state, false, [&](IHttpRequestCallback* installed)
+			{
+				installed->OnReadRequest(request);
+			});
+		}
+		else if (deliverResponse)
+		{
+			DeliverResponse(state, response, closeAfterDelivery);
+		}
+	}
+
+	void HttpRequestConnection::NotifyDisconnected(Ptr<Lifecycle> state)
+	{
+		auto callbackDepth = CurrentCallbackDepth(state);
+		state->lockState.Enter();
+		if (!state->disconnectedNotified)
+		{
+			state->disconnectedNotified = true;
+			state->terminal = true;
+			state->pendingWrite = nullptr;
+			state->writePending = false;
+			state->heldResponse = nullptr;
+			state->fatalAfterResponse = false;
+			state->deferredRequestWrite = nullptr;
+			state->deferredRequestClose = false;
+			state->deferredRequestMethod = L"";
+			state->cvState.WakeAllPendings();
+		}
+		if (state->disconnectFinished)
+		{
+			state->lockState.Leave();
+			return;
+		}
+		if (state->disconnectDelivering)
+		{
+			if (callbackDepth == 0)
+			{
+				while (!state->disconnectFinished) state->cvState.SleepWith(state->lockState);
+			}
+			state->lockState.Leave();
+			return;
+		}
+		if (callbackDepth == 0)
+		{
+			while (state->activeCallbacks > 0 && !state->disconnectDelivering && !state->disconnectFinished)
+			{
+				state->cvState.SleepWith(state->lockState);
+			}
+			if (state->disconnectFinished)
+			{
+				state->lockState.Leave();
+				return;
+			}
+		}
+		state->disconnectDelivering = true;
+		while (state->activeCallbacks > callbackDepth)
+		{
+			state->cvState.SleepWith(state->lockState);
+		}
+		state->lockState.Leave();
+
+		try
+		{
+			InvokeHttpCallback(state, true, [](IHttpRequestCallback* installed)
+			{
+				installed->OnDisconnected();
+			});
+		}
+		catch (...)
+		{
+			Lifecycle::RetainedAdapterRelease releasing;
+			CS_LOCK(state->lockState)
+			{
+				state->callback = nullptr;
+				state->disconnectFinished = true;
+				state->TakeRetainedAdapterIfDrained(releasing);
+				state->cvState.WakeAllPendings();
+			}
+			throw;
+		}
+
+		Lifecycle::RetainedAdapterRelease releasing;
+		CS_LOCK(state->lockState)
+		{
+			state->callback = nullptr;
+			while (state->activeCallbacks > callbackDepth)
+			{
+				state->cvState.SleepWith(state->lockState);
+			}
+			state->disconnectFinished = true;
+			state->TakeRetainedAdapterIfDrained(releasing);
+			state->cvState.WakeAllPendings();
+		}
+	}
+
+	void HttpRequestConnection::StopConnection(Ptr<Lifecycle> state, Ptr<Object> retainedAdapter)
+	{
+		auto callbackDepth = CurrentCallbackDepth(state);
+		auto socketCallbackDepth = CurrentSocketCallbackDepth(state);
+		auto timeoutCallbackDepth = CurrentTimeoutCallbackDepth(state);
+		auto nestedCallback = callbackDepth > 0 || socketCallbackDepth > 0;
+		IAsyncSocketConnection* connection = nullptr;
+		bool executeStop = false;
+		bool nestedFollower = false;
+		bool timeoutFollower = false;
+		Lifecycle::RetainedAdapterRelease releasing;
+
+		state->lockState.Enter();
+		if (retainedAdapter) state->retainedAdapter = retainedAdapter;
+		if (!state->stopStarted)
+		{
+			state->stopStarted = true;
+			state->timeoutArmed = false;
+			state->pendingWrite = nullptr;
+			state->writePending = false;
+			state->heldResponse = nullptr;
+			state->fatalAfterResponse = false;
+			state->deferredRequestWrite = nullptr;
+			state->deferredRequestClose = false;
+			state->deferredRequestMethod = L"";
+			if (!nestedCallback)
+			{
+				while (state->activeSocketCalls > 0) state->cvState.SleepWith(state->lockState);
+			}
+			connection = state->peerDisconnected ? nullptr : state->socketConnection;
+			executeStop = true;
+		}
+		else if (nestedCallback)
+		{
+			connection = state->socketConnection;
+			nestedFollower = true;
+		}
+		else if (timeoutCallbackDepth > 0)
+		{
+			timeoutFollower = true;
+		}
+		else
+		{
+			while (!state->stopFinished) state->cvState.SleepWith(state->lockState);
+			while (state->activeCallbacks > 0 || state->activeSocketCallbacks > 0 || state->activeSocketCalls > 0)
+			{
+				state->cvState.SleepWith(state->lockState);
+			}
+			state->TakeRetainedAdapterIfDrained(releasing);
+			state->lockState.Leave();
+			return;
+		}
+		state->lockState.Leave();
+
+		if (nestedFollower)
+		{
+			if (connection && socketCallbackDepth > 0) connection->Stop();
+			NotifyDisconnected(state);
+			return;
+		}
+		if (timeoutFollower)
+		{
+			return;
+		}
+		state->timeoutController->CancelAndWait();
+		if (executeStop && connection) connection->Stop();
+		NotifyDisconnected(state);
+
+		CS_LOCK(state->lockState)
+		{
+			while (state->activeCallbacks > callbackDepth || state->activeSocketCallbacks > socketCallbackDepth)
+			{
+				state->cvState.SleepWith(state->lockState);
+			}
+			state->stopFinished = true;
+			state->TakeRetainedAdapterIfDrained(releasing);
+			state->cvState.WakeAllPendings();
+		}
+	}
+
+	void HttpRequestConnection::ReportFatalError(Ptr<Lifecycle> state, const WString& error)
+	{
+		bool report = false;
+		CS_LOCK(state->lockState)
+		{
+			if (!state->terminal && !state->stopStarted)
+			{
+				state->terminal = true;
+				state->parserFailed = true;
+				state->timeoutArmed = false;
+				state->pendingWrite = nullptr;
+				state->writePending = false;
+				state->heldResponse = nullptr;
+				state->fatalAfterResponse = false;
+				state->deferredRequestWrite = nullptr;
+				state->deferredRequestClose = false;
+				state->deferredRequestMethod = L"";
+				report = true;
+				state->cvState.WakeAllPendings();
+			}
+		}
+		if (report)
+		{
+			state->timeoutController->CancelAndWait();
+			try
+			{
+				InvokeHttpCallback(state, true, [&](IHttpRequestCallback* installed)
+				{
+					installed->OnError(error, true);
+				});
+			}
+			catch (...)
+			{
+				StopConnection(state);
+				throw;
+			}
+			StopConnection(state);
+		}
+	}
+
+/***********************************************************************
+HttpRequestConnection
+***********************************************************************/
+
+	HttpRequestConnection::HttpRequestConnection(
+		IAsyncSocketConnection* connection,
+		HttpRequestConnectionDirection direction,
+		Ptr<HttpRequestCallbackDomain> callbackDomain,
+		Ptr<IHttpRequestTimeoutController> timeoutController
+		)
+		: lifecycle(Ptr(new Lifecycle))
+	{
+		CHECK_ERROR(connection, L"HttpRequestConnection requires a valid async socket connection.");
+		lifecycle->socketConnection = connection;
+		lifecycle->direction = direction;
+		lifecycle->callbackDomain = callbackDomain ? callbackDomain : Ptr(new HttpRequestCallbackDomain);
+		lifecycle->timeoutController = timeoutController ? timeoutController : CreateHttpRequestTimeoutController();
+		connection->InstallCallback(this);
+	}
+
+	HttpRequestConnection::~HttpRequestConnection()
+	{
+		StopConnection(lifecycle);
+	}
+
+	void HttpRequestConnection::RetainUntilStopped(Ptr<HttpRequestConnection> retainedAdapter, const Func<void()>& drainedCallback)
+	{
+		CHECK_ERROR(retainedAdapter.Obj() == this, L"HttpRequestConnection::RetainUntilStopped requires this connection as its retained adapter.");
+		CHECK_ERROR(drainedCallback, L"HttpRequestConnection::RetainUntilStopped requires a drained callback.");
+		bool canRetain = false;
+		CS_LOCK(lifecycle->lockState)
+		{
+			if (!lifecycle->retainedAdapter && !lifecycle->drainedCallback && !lifecycle->stopStarted)
+			{
+				lifecycle->retainedAdapter = retainedAdapter;
+				lifecycle->drainedCallback = drainedCallback;
+				canRetain = true;
+			}
+		}
+		CHECK_ERROR(canRetain, L"HttpRequestConnection::RetainUntilStopped can only be called once before stopping.");
+	}
+
+	void HttpRequestConnection::StopWithRetainedAdapter(Ptr<HttpRequestConnection> retainedAdapter)
+	{
+		StopConnection(lifecycle, retainedAdapter);
+	}
+
+	bool HttpRequestConnection::IsInsideCallback()
+	{
+		return CurrentCallbackDepth(lifecycle) > 0 || CurrentSocketCallbackDepth(lifecycle) > 0;
+	}
+
+	void HttpRequestConnection::InstallCallback(IHttpRequestCallback* value)
+	{
+		auto state = lifecycle;
+		if (!value)
+		{
+			auto callbackDepth = CurrentCallbackDepth(state);
+			bool uninstallOwner = false;
+			CS_LOCK(state->lockState)
+			{
+				uninstallOwner = state->callback != nullptr;
+				state->callback = nullptr;
+				while ((callbackDepth == 0 || uninstallOwner) && state->activeCallbacks > callbackDepth)
+				{
+					state->cvState.SleepWith(state->lockState);
+				}
+			}
+			return;
+		}
+
+		bool canInstall = false;
+		CS_LOCK(state->lockState)
+		{
+			if (!state->callback && !state->callbackInstalling && !state->stopStarted && !state->terminal)
+			{
+				state->callback = value;
+				state->callbackInstalling = true;
+				state->activeCallbacks++;
+				canInstall = true;
+			}
+		}
+		CHECK_ERROR(canInstall, L"HttpRequestConnection::InstallCallback cannot replace a callback or install one on a stopped connection.");
+
+		CallbackFrame frame(state);
+		try
+		{
+			value->OnInstalled(this);
+		}
+		catch (...)
+		{
+			CS_LOCK(state->lockState)
+			{
+				if (state->callback == value) state->callback = nullptr;
+				state->callbackInstalling = false;
+				state->cvState.WakeAllPendings();
+			}
+			throw;
+		}
+		CS_LOCK(state->lockState)
+		{
+			state->callbackInstalling = false;
+			state->cvState.WakeAllPendings();
+		}
+	}
+
+	void HttpRequestConnection::BeginReadingLoopUnsafe()
+	{
+		auto state = lifecycle;
+		IAsyncSocketConnection* connection = nullptr;
+		Ptr<Object> callRetainer;
+		bool canBegin = false;
+		CS_LOCK(state->lockState)
+		{
+			if (!state->readingStarted && !state->stopStarted && !state->terminal && state->socketConnection)
+			{
+				state->readingStarted = true;
+				connection = state->socketConnection;
+				callRetainer = state->retainedAdapter;
+				state->activeSocketCalls++;
+				canBegin = true;
+			}
+		}
+		CHECK_ERROR(canBegin, L"HttpRequestConnection::BeginReadingLoopUnsafe can only be called once on an active connection.");
+		try
+		{
+			connection->BeginReadingLoopUnsafe();
+		}
+		catch (...)
+		{
+			FinishSocketCall(state);
+			throw;
+		}
+		FinishSocketCall(state);
+	}
+
+	void HttpRequestConnection::SendRequest(Ptr<HttpRequest> request, vint responseTimeout)
+	{
+		auto state = lifecycle;
+		CHECK_ERROR(state->direction == HttpRequestConnectionDirection::Client, L"HttpRequestConnection::SendRequest is only available on a client connection.");
+		CHECK_ERROR(request, L"HttpRequestConnection::SendRequest requires a request.");
+		bool requestClose = false;
+		auto buffer = SerializeHttpMessage(request.Obj(), nullptr, L"", requestClose);
+		IAsyncSocketConnection* connection = nullptr;
+		Ptr<Object> callRetainer;
+		bool canSend = false;
+		bool deferSend = false;
+		CS_LOCK(state->lockState)
+		{
+			auto commonStateAvailable = !state->stopStarted && !state->terminal && !state->peerDisconnected
+				&& !state->exchangeActive && !state->writePending && !state->deferredRequestWrite
+				&& !state->responseFinalizing && !state->fatalAfterResponse && !state->closeAfterExchange && state->socketConnection;
+			if (commonStateAvailable && state->responseDelivering)
+			{
+				state->deferredRequestWrite = buffer;
+				state->deferredRequestClose = requestClose;
+				state->deferredRequestMethod = request->method;
+				state->deferredResponseTimeout = responseTimeout;
+				deferSend = true;
+				canSend = true;
+			}
+			else if (commonStateAvailable && !state->responseDelivering)
+			{
+				state->exchangeActive = true;
+				state->closeAfterExchange = requestClose;
+				state->activeRequestMethod = request->method;
+				state->activeResponseTimeout = responseTimeout;
+				state->pendingWrite = buffer;
+				state->writePending = true;
+				connection = state->socketConnection;
+				callRetainer = state->retainedAdapter;
+				state->activeSocketCalls++;
+				canSend = true;
+			}
+		}
+		CHECK_ERROR(canSend, L"HttpRequestConnection::SendRequest requires an idle active client connection.");
+		if (deferSend) return;
+		SubmitWrite(state, connection, buffer);
+		ProcessBufferedInput(state);
+	}
+
+	void HttpRequestConnection::SendResponse(Ptr<HttpResponse> response)
+	{
+		auto state = lifecycle;
+		CHECK_ERROR(state->direction == HttpRequestConnectionDirection::Server, L"HttpRequestConnection::SendResponse is only available on a server connection.");
+		CHECK_ERROR(response, L"HttpRequestConnection::SendResponse requires a response.");
+		WString responseToMethod;
+		CS_LOCK(state->lockState)
+		{
+			responseToMethod = state->activeRequestMethod;
+		}
+		bool responseClose = false;
+		auto buffer = SerializeHttpMessage(nullptr, response.Obj(), responseToMethod, responseClose);
+		IAsyncSocketConnection* connection = nullptr;
+		Ptr<Object> callRetainer;
+		bool canSend = false;
+		CS_LOCK(state->lockState)
+		{
+			if (!state->stopStarted && !state->terminal && state->awaitingResponse && !state->writePending && state->socketConnection)
+			{
+				state->closeAfterExchange |= responseClose;
+				state->pendingWrite = buffer;
+				state->writePending = true;
+				connection = state->socketConnection;
+				callRetainer = state->retainedAdapter;
+				state->activeSocketCalls++;
+				canSend = true;
+			}
+		}
+		CHECK_ERROR(canSend, L"HttpRequestConnection::SendResponse requires one delivered request without a response in progress.");
+		SubmitWrite(state, connection, buffer);
+	}
+
+	void HttpRequestConnection::Stop()
+	{
+		StopConnection(lifecycle);
+	}
+
+	void HttpRequestConnection::OnRead(const vuint8_t* buffer, vint size)
+	{
+		auto state = lifecycle;
+		SocketCallbackFrame frame(state);
+		if (!buffer || size <= 0) return;
+		bool tooLarge = false;
+		bool requestTooLarge = false;
+		bool unsolicited = false;
+		CS_LOCK(state->lockState)
+		{
+			if (state->stopStarted || state->terminal || state->parserFailed || state->peerDisconnected) return;
+			if (state->direction == HttpRequestConnectionDirection::Client && state->heldResponse)
+			{
+				state->fatalAfterResponse = true;
+			}
+			else if (state->direction == HttpRequestConnectionDirection::Client && (state->responseDelivering || state->responseFinalizing) && !state->exchangeActive)
+			{
+				state->fatalAfterResponse = true;
+			}
+			else if (state->direction == HttpRequestConnectionDirection::Client && !state->exchangeActive)
+			{
+				state->parserFailed = true;
+				unsolicited = true;
+			}
+			else if (size > HttpWireMessageSizeLimit - state->receiveBuffer.Count())
+			{
+				if (state->direction == HttpRequestConnectionDirection::Server)
+				{
+					state->parserFailed = true;
+					state->awaitingResponse = true;
+					state->closeAfterExchange = true;
+					state->receiveBuffer.Clear();
+					requestTooLarge = true;
+				}
+				else
+				{
+					state->parserFailed = true;
+					tooLarge = true;
+				}
+			}
+			else
+			{
+				for (vint i = 0; i < size; i++) state->receiveBuffer.Add(buffer[i]);
+			}
+		}
+		if (unsolicited)
+		{
+			ReportFatalError(state, L"The HTTP client received bytes without an active request exchange.");
+			return;
+		}
+		if (tooLarge)
+		{
+			ReportFatalError(state, L"The HTTP peer exceeded the configured wire-message size limit.");
+			return;
+		}
+		if (requestTooLarge)
+		{
+			ReportRequestFailure(state, HttpRequestFailure::PayloadTooLarge, false, true);
+			return;
+		}
+		ProcessBufferedInput(state);
+	}
+
+	void HttpRequestConnection::OnWriteCompleted(Ptr<AsyncSocketBuffer> buffer)
+	{
+		auto state = lifecycle;
+		SocketCallbackFrame frame(state);
+		bool mismatched = false;
+		bool ignored = false;
+		CS_LOCK(state->lockState)
+		{
+			if (!state->writePending || state->pendingWrite.Obj() != buffer.Obj())
+			{
+				if (state->stopStarted || state->terminal || state->peerDisconnected)
+				{
+					ignored = true;
+				}
+				else
+				{
+					mismatched = true;
+				}
+			}
+			else
+			{
+				state->pendingWrite = nullptr;
+			}
+		}
+		if (ignored) return;
+		CHECK_ERROR(!mismatched, L"HttpRequestConnection received a completion for an unexpected async socket buffer.");
+
+		InvokeHttpCallback(state, false, [](IHttpRequestCallback* installed)
+		{
+			installed->OnWriteCompleted();
+		});
+
+		Ptr<HttpResponse> response;
+		bool serverSide = false;
+		bool closeAfterDelivery = false;
+		bool armTimeout = false;
+		vint responseTimeout = 0;
+		CS_LOCK(state->lockState)
+		{
+			if (state->stopStarted || state->terminal) return;
+			state->writePending = false;
+			serverSide = state->direction == HttpRequestConnectionDirection::Server;
+			if (serverSide)
+			{
+				state->awaitingResponse = false;
+				state->activeRequestMethod = L"";
+				closeAfterDelivery = state->closeAfterExchange;
+			}
+			else if (state->heldResponse)
+			{
+				response = std::move(state->heldResponse);
+				state->exchangeActive = false;
+				state->responseDelivering = true;
+				closeAfterDelivery = state->closeAfterExchange;
+			}
+			else if (!state->peerDisconnected && !state->timeoutArmed && state->activeResponseTimeout > 0)
+			{
+				state->timeoutArmed = true;
+				responseTimeout = state->activeResponseTimeout;
+				armTimeout = true;
+			}
+		}
+
+		if (response)
+		{
+			DeliverResponse(state, response, closeAfterDelivery);
+		}
+		else if (closeAfterDelivery)
+		{
+			StopConnection(state);
+		}
+		else if (serverSide)
+		{
+			ProcessBufferedInput(state);
+		}
+		else if (armTimeout)
+		{
+			InstallTimeout(state, responseTimeout, L"The HTTP peer timed out before sending a response header.");
+		}
+	}
+
+	void HttpRequestConnection::OnError(const WString& error, bool fatal)
+	{
+		auto state = lifecycle;
+		SocketCallbackFrame frame(state);
+		if (fatal)
+		{
+			ReportFatalError(state, error);
+		}
+		else
+		{
+			InvokeHttpCallback(state, false, [&](IHttpRequestCallback* installed)
+			{
+				installed->OnError(error, false);
+			});
+		}
+	}
+
+	void HttpRequestConnection::OnConnected()
+	{
+		auto state = lifecycle;
+		SocketCallbackFrame frame(state);
+		InvokeHttpCallback(state, false, [](IHttpRequestCallback* installed)
+		{
+			installed->OnConnected();
+		});
+	}
+
+	void HttpRequestConnection::OnDisconnected()
+	{
+		auto state = lifecycle;
+		SocketCallbackFrame frame(state);
+		IAsyncSocketConnection* connection = nullptr;
+		bool incomplete = false;
+		bool surplusAfterHeldResponse = false;
+		bool deferDisconnected = false;
+		bool cancelTimeout = false;
+		CS_LOCK(state->lockState)
+		{
+			state->peerDisconnected = true;
+			state->timeoutArmed = false;
+			cancelTimeout = !state->stopStarted;
+			connection = state->socketConnection;
+			if (!state->terminal && !state->stopStarted && state->direction == HttpRequestConnectionDirection::Client && state->heldResponse)
+			{
+				surplusAfterHeldResponse = state->fatalAfterResponse;
+				incomplete = !surplusAfterHeldResponse;
+				state->terminal = true;
+				state->pendingWrite = nullptr;
+				state->writePending = false;
+			}
+			else if (state->direction == HttpRequestConnectionDirection::Client && (state->responseDelivering || state->responseFinalizing))
+			{
+				deferDisconnected = true;
+			}
+			else
+			{
+				incomplete = !state->terminal && !state->stopStarted && (
+					state->direction == HttpRequestConnectionDirection::Client
+						? state->exchangeActive
+						: !state->awaitingResponse && state->receiveBuffer.Count() > 0
+					);
+				state->terminal = true;
+			}
+		}
+		if (connection)
+		{
+			connection->InstallCallback(nullptr);
+		}
+		CS_LOCK(state->lockState)
+		{
+			if (state->socketConnection == connection) state->socketConnection = nullptr;
+			state->cvState.WakeAllPendings();
+		}
+		if (cancelTimeout)
+		{
+			state->timeoutController->CancelAndWait();
+		}
+		if (deferDisconnected)
+		{
+			return;
+		}
+		if (surplusAfterHeldResponse)
+		{
+			InvokeHttpCallback(state, true, [](IHttpRequestCallback* installed)
+			{
+				installed->OnError(L"The HTTP client received an unsolicited response after its exchange completed.", true);
+			});
+		}
+		else if (incomplete)
+		{
+			InvokeHttpCallback(state, true, [](IHttpRequestCallback* installed)
+			{
+				installed->OnError(L"The HTTP peer disconnected while a message was incomplete.", true);
+			});
+		}
+		NotifyDisconnected(state);
+		StopConnection(state);
+	}
+
+	void HttpRequestConnection::OnInstalled(IAsyncSocketConnection* connection)
+	{
+		auto state = lifecycle;
+		SocketCallbackFrame frame(state);
+		CHECK_ERROR(connection == state->socketConnection, L"HttpRequestConnection was installed on an unexpected async socket connection.");
+	}
+}
+
+
+/***********************************************************************
+.\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPREQUESTCLIENT.CPP
+***********************************************************************/
+
+namespace vl::inter_process::async_tcp_socket
+{
+/***********************************************************************
+HttpRequestClient::Impl
+***********************************************************************/
+
+	class HttpRequestClient::Impl : public Object
+	{
+	private:
+		class DeferredClientRelease : public Object
+		{
+		private:
+			CriticalSection					lockState;
+			Ptr<DeferredClientRelease>		selfReference;
+			Ptr<IAsyncSocketClient>			retainedClient;
+
+		public:
+			DeferredClientRelease(Ptr<IAsyncSocketClient> client)
+				: retainedClient(client)
+			{
+			}
+
+			void InitializeSelf(Ptr<DeferredClientRelease> self)
+			{
+				CS_LOCK(lockState)
+				{
+					selfReference = self;
+				}
+			}
+
+			void Run()
+			{
+				Ptr<IAsyncSocketClient> client;
+				CS_LOCK(lockState)
+				{
+					client = retainedClient;
+				}
+				try
+				{
+					client->GetConnection()->Stop();
+				}
+				catch (...)
+				{
+				}
+				CS_LOCK(lockState)
+				{
+					retainedClient = nullptr;
+					selfReference = nullptr;
+				}
+			}
+		};
+
+		Ptr<IAsyncSocketClient>				client;
+		Ptr<HttpRequestConnection>			connection;
+
+		static void QueueDeferredRelease(Ptr<DeferredClientRelease> deferredRelease)
+		{
+			auto finalize = Func<void()>([deferredRelease]()
+			{
+				deferredRelease->Run();
+			});
+			if (!ThreadPoolLite::Queue(finalize))
+			{
+				// The holder self-reference keeps the native client alive if the
+				// operating system cannot start either asynchronous cleanup path.
+				if (!Thread::CreateAndStart(finalize)) return;
+			}
+		}
+
+	public:
+		Impl(Ptr<IAsyncSocketClient> _client)
+			: client(_client)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::inter_process::async_tcp_socket::HttpRequestClient::HttpRequestClient(Ptr<IAsyncSocketClient>)#"
+			CHECK_ERROR(client, ERROR_MESSAGE_PREFIX L"Requires a client.");
+			connection = Ptr(new HttpRequestConnection(
+				client->GetConnection(),
+				HttpRequestConnectionDirection::Client
+				));
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		~Impl()
+		{
+			auto deferFinalization = connection->IsInsideCallback();
+			Ptr<DeferredClientRelease> deferredRelease;
+			if (deferFinalization)
+			{
+				deferredRelease = Ptr(new DeferredClientRelease(client));
+				deferredRelease->InitializeSelf(deferredRelease);
+			}
+			connection->StopWithRetainedAdapter(connection);
+			if (deferFinalization)
+			{
+				QueueDeferredRelease(deferredRelease);
+			}
+		}
+
+		IHttpRequestConnection* GetConnection()
+		{
+			return connection.Obj();
+		}
+
+		void WaitForServer()
+		{
+			client->WaitForServer();
+		}
+
+		ClientStatus GetStatus()
+		{
+			return client->GetStatus();
+		}
+	};
+
+/***********************************************************************
+HttpRequestClient
+***********************************************************************/
+
+	HttpRequestClient::HttpRequestClient(Ptr<IAsyncSocketClient> client)
+		: impl(Ptr(new Impl(client)))
+	{
+	}
+
+	HttpRequestClient::~HttpRequestClient()
+	{
+	}
+
+	IHttpRequestConnection* HttpRequestClient::GetConnection()
+	{
+		return impl->GetConnection();
+	}
+
+	void HttpRequestClient::WaitForServer()
+	{
+		impl->WaitForServer();
+	}
+
+	ClientStatus HttpRequestClient::GetStatus()
+	{
+		return impl->GetStatus();
+	}
+}
+
+
+/***********************************************************************
+.\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPREQUESTSERVER.CPP
+***********************************************************************/
+
+namespace vl::inter_process::async_tcp_socket
+{
+/***********************************************************************
+HttpRequestServer::Impl
+***********************************************************************/
+
+	class HttpRequestServer::Impl : public Object
+	{
+	private:
+		class Lifecycle : public Object
+		{
+		public:
+			HttpRequestServer*					owner = nullptr;
+			Ptr<IAsyncSocketServer>				server;
+			Ptr<HttpRequestCallbackDomain>		callbackDomain = Ptr(new HttpRequestCallbackDomain);
+			Func<Ptr<IHttpRequestTimeoutController>()>
+										timeoutControllerFactory;
+
+			// covers owner, connections, and all lifecycle flags below
+			CriticalSection						lockState;
+			ConditionVariable					cvState;
+			collections::List<Ptr<HttpRequestConnection>>
+										connections;
+			bool								startCalled = false;
+			bool								stopStarted = false;
+			bool								unexpectedStopNotified = false;
+			bool								stopFinished = false;
+			bool								nativeStopCalling = false;
+			bool								destroyStarted = false;
+			bool								destroyAdaptersRetained = false;
+
+			Lifecycle(
+				HttpRequestServer* _owner,
+				Ptr<IAsyncSocketServer> _server,
+				const Func<Ptr<IHttpRequestTimeoutController>()>& _timeoutControllerFactory
+				)
+				: owner(_owner)
+				, server(_server)
+				, timeoutControllerFactory(_timeoutControllerFactory)
+			{
+			}
+		};
+
+		class SocketServerCallback
+			: public Object
+			, public virtual IAsyncSocketServerCallback
+		{
+		private:
+			Ptr<Lifecycle>						lifecycle;
+			CriticalSection						lockSelf;
+			Ptr<SocketServerCallback>			selfReference;
+
+		public:
+			SocketServerCallback(Ptr<Lifecycle> _lifecycle)
+				: lifecycle(_lifecycle)
+			{
+			}
+
+			void InitializeSelf(Ptr<SocketServerCallback> self)
+			{
+				CS_LOCK(lockSelf)
+				{
+					selfReference = self;
+				}
+			}
+
+			void ReleaseSelfReference()
+			{
+				CS_LOCK(lockSelf)
+				{
+					selfReference = nullptr;
+				}
+			}
+
+			WaitForClientResult OnClientConnected(IAsyncSocketConnection* connection) override
+			{
+				Ptr<SocketServerCallback> self;
+				CS_LOCK(lockSelf)
+				{
+					self = selfReference;
+				}
+				return self
+					? Impl::OnSocketClientConnected(lifecycle, connection)
+					: WaitForClientResult::Reject;
+			}
+
+			void OnServerStopped() override
+			{
+				Ptr<SocketServerCallback> self;
+				CS_LOCK(lockSelf)
+				{
+					self = selfReference;
+				}
+				if (self)
+				{
+					Impl::OnSocketServerStopped(lifecycle);
+				}
+			}
+		};
+
+		Ptr<Lifecycle>						lifecycle;
+		Ptr<SocketServerCallback>			callback;
+
+		static void StopConnections(Ptr<Lifecycle> state, bool retainAdapters = false)
+		{
+			collections::List<Ptr<HttpRequestConnection>> stoppingConnections;
+			CS_LOCK(state->lockState)
+			{
+				for (auto connection : state->connections)
+				{
+					stoppingConnections.Add(connection);
+				}
+			}
+			for (auto connection : stoppingConnections)
+			{
+				if (retainAdapters)
+				{
+					connection->StopWithRetainedAdapter(connection);
+				}
+				else
+				{
+					connection->Stop();
+				}
+			}
+		}
+
+		static void FinalizeDestroyedOwner(Ptr<Lifecycle> state)
+		{
+			CS_LOCK(state->lockState)
+			{
+				if (state->destroyStarted && state->destroyAdaptersRetained)
+				{
+					state->owner = nullptr;
+					state->connections.Clear();
+				}
+			}
+		}
+
+		static void QueueDeferredStop(Ptr<Lifecycle> state, Ptr<SocketServerCallback> retainedCallback)
+		{
+			auto finalize = Func<void()>([state, retainedCallback]()
+			{
+				state->lockState.Enter();
+				while (!state->stopFinished || state->nativeStopCalling)
+				{
+					state->cvState.SleepWith(state->lockState);
+				}
+				state->nativeStopCalling = true;
+				state->lockState.Leave();
+
+				try
+				{
+					state->server->Stop();
+				}
+				catch (...)
+				{
+				}
+				try
+				{
+					StopConnections(state);
+				}
+				catch (...)
+				{
+				}
+				state->callbackDomain->WaitForCallbacks(0);
+				FinalizeDestroyedOwner(state);
+
+				CS_LOCK(state->lockState)
+				{
+					state->nativeStopCalling = false;
+					state->cvState.WakeAllPendings();
+				}
+				retainedCallback->ReleaseSelfReference();
+			});
+			if (!ThreadPoolLite::Queue(finalize))
+			{
+				// The callback self-reference keeps all deferred state alive if the
+				// operating system cannot start either asynchronous cleanup path.
+				if (!Thread::CreateAndStart(finalize)) return;
+			}
+		}
+
+		static WaitForClientResult OnSocketClientConnected(Ptr<Lifecycle> state, IAsyncSocketConnection* connection)
+		{
+			HttpRequestCallbackDomain::CallbackFrame callbackFrame(state->callbackDomain);
+			HttpRequestServer* owner = nullptr;
+			CS_LOCK(state->lockState)
+			{
+				if (!state->stopStarted)
+				{
+					owner = state->owner;
+				}
+			}
+			if (!owner)
+			{
+				return WaitForClientResult::Reject;
+			}
+
+			Ptr<IHttpRequestTimeoutController> timeoutController;
+			try
+			{
+				if (state->timeoutControllerFactory)
+				{
+					timeoutController = state->timeoutControllerFactory();
+					CHECK_ERROR(timeoutController, L"The HTTP request timeout controller factory returned null.");
+				}
+			}
+			catch (...)
+			{
+				return WaitForClientResult::Reject;
+			}
+
+			auto httpConnection = Ptr(new HttpRequestConnection(
+				connection,
+				HttpRequestConnectionDirection::Server,
+				state->callbackDomain,
+				timeoutController
+				));
+			auto connectionObject = httpConnection.Obj();
+			httpConnection->RetainUntilStopped(httpConnection, Func<void()>([state, connectionObject]()
+			{
+				CS_LOCK(state->lockState)
+				{
+					state->connections.Remove(connectionObject);
+					state->cvState.WakeAllPendings();
+				}
+			}));
+			bool invoke = false;
+			CS_LOCK(state->lockState)
+			{
+				if (!state->stopStarted && state->owner == owner)
+				{
+					state->connections.Add(httpConnection);
+					invoke = true;
+				}
+			}
+			if (!invoke)
+			{
+				httpConnection->StopWithRetainedAdapter(httpConnection);
+				return WaitForClientResult::Reject;
+			}
+
+			auto result = WaitForClientResult::Reject;
+			try
+			{
+				result = owner->OnClientConnected(httpConnection.Obj());
+			}
+			catch (...)
+			{
+				result = WaitForClientResult::Reject;
+			}
+
+			bool accepted = false;
+			CS_LOCK(state->lockState)
+			{
+				accepted = result == WaitForClientResult::Accept && !state->stopStarted;
+				if (!accepted)
+				{
+					state->connections.Remove(httpConnection.Obj());
+				}
+			}
+			if (!accepted)
+			{
+				httpConnection->StopWithRetainedAdapter(httpConnection);
+			}
+			return accepted ? WaitForClientResult::Accept : WaitForClientResult::Reject;
+		}
+
+		static void OnSocketServerStopped(Ptr<Lifecycle> state)
+		{
+			HttpRequestCallbackDomain::CallbackFrame callbackFrame(state->callbackDomain);
+			HttpRequestServer* owner = nullptr;
+			CS_LOCK(state->lockState)
+			{
+				if (!state->stopStarted && !state->unexpectedStopNotified)
+				{
+					state->unexpectedStopNotified = true;
+					owner = state->owner;
+				}
+			}
+			if (owner)
+			{
+				try
+				{
+					owner->OnServerStopped();
+				}
+				catch (...)
+				{
+				}
+			}
+		}
+
+	public:
+		Impl(
+			HttpRequestServer* owner,
+			Ptr<IAsyncSocketServer> server,
+			const Func<Ptr<IHttpRequestTimeoutController>()>& timeoutControllerFactory
+			)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::inter_process::async_tcp_socket::HttpRequestServer::HttpRequestServer(Ptr<IAsyncSocketServer>)#"
+			CHECK_ERROR(server, ERROR_MESSAGE_PREFIX L"Requires a server.");
+			lifecycle = Ptr(new Lifecycle(owner, server, timeoutControllerFactory));
+			callback = Ptr(new SocketServerCallback(lifecycle));
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		~Impl()
+		{
+			Destroy();
+		}
+
+		void Start()
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::inter_process::async_tcp_socket::HttpRequestServer::Start()#"
+			auto state = lifecycle;
+			bool canStart = false;
+			CS_LOCK(state->lockState)
+			{
+				if (!state->startCalled && !state->stopStarted)
+				{
+					state->startCalled = true;
+					canStart = true;
+				}
+			}
+			CHECK_ERROR(canStart, ERROR_MESSAGE_PREFIX L"Can only be called once before stopping.");
+
+			callback->InitializeSelf(callback);
+			try
+			{
+				state->server->Start(callback.Obj());
+			}
+			catch (...)
+			{
+				try
+				{
+					Stop();
+				}
+				catch (...)
+				{
+				}
+				throw;
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void Stop()
+		{
+			auto state = lifecycle;
+			auto retainedCallback = callback;
+			auto callbackDepth = state->callbackDomain->CurrentCallbackDepth();
+			bool firstStop = false;
+			bool nestedFollower = false;
+			bool deferFinalization = false;
+			state->lockState.Enter();
+			if (!state->stopStarted)
+			{
+				state->stopStarted = true;
+				state->nativeStopCalling = true;
+				firstStop = true;
+			}
+			else if (callbackDepth > 0)
+			{
+				nestedFollower = true;
+			}
+			else
+			{
+				while (!state->stopFinished || state->nativeStopCalling)
+				{
+					state->cvState.SleepWith(state->lockState);
+				}
+				state->nativeStopCalling = true;
+			}
+			state->lockState.Leave();
+			if (nestedFollower)
+			{
+				StopConnections(state);
+				return;
+			}
+
+			try
+			{
+				state->server->Stop();
+				StopConnections(state);
+				state->callbackDomain->WaitForCallbacks(firstStop ? callbackDepth : 0);
+				deferFinalization = firstStop && callbackDepth > 0;
+				if (!deferFinalization)
+				{
+					FinalizeDestroyedOwner(state);
+					retainedCallback->ReleaseSelfReference();
+				}
+			}
+			catch (...)
+			{
+				if (!firstStop || callbackDepth == 0)
+				{
+					retainedCallback->ReleaseSelfReference();
+				}
+				CS_LOCK(state->lockState)
+				{
+					state->nativeStopCalling = false;
+					if (firstStop)
+					{
+						state->stopFinished = true;
+					}
+					state->cvState.WakeAllPendings();
+				}
+				throw;
+			}
+
+			CS_LOCK(state->lockState)
+			{
+				state->nativeStopCalling = false;
+				if (firstStop)
+				{
+					state->stopFinished = true;
+				}
+				state->cvState.WakeAllPendings();
+			}
+			if (deferFinalization)
+			{
+				QueueDeferredStop(state, retainedCallback);
+			}
+		}
+
+		void Destroy()
+		{
+			auto state = lifecycle;
+			bool execute = false;
+			CS_LOCK(state->lockState)
+			{
+				if (!state->destroyStarted)
+				{
+					state->destroyStarted = true;
+					execute = true;
+				}
+			}
+			if (!execute)
+			{
+				return;
+			}
+
+			Stop();
+			StopConnections(state, true);
+			CS_LOCK(state->lockState)
+			{
+				state->destroyAdaptersRetained = true;
+			}
+			if (state->callbackDomain->CurrentCallbackDepth() == 0)
+			{
+				state->callbackDomain->WaitForCallbacks(0);
+				FinalizeDestroyedOwner(state);
+			}
+		}
+
+		bool IsStopped()
+		{
+			return lifecycle->server->IsStopped();
+		}
+	};
+
+/***********************************************************************
+HttpRequestServer
+***********************************************************************/
+
+	HttpRequestServer::HttpRequestServer(Ptr<IAsyncSocketServer> server)
+		: HttpRequestServer(server, {})
+	{
+	}
+
+	HttpRequestServer::HttpRequestServer(
+		Ptr<IAsyncSocketServer> server,
+		const Func<Ptr<IHttpRequestTimeoutController>()>& timeoutControllerFactory
+		)
+		: impl(Ptr(new Impl(this, server, timeoutControllerFactory)))
+	{
+	}
+
+	HttpRequestServer::~HttpRequestServer()
+	{
+		impl->Destroy();
+	}
+
+	WaitForClientResult HttpRequestServer::OnClientConnected(IHttpRequestConnection*)
+	{
+		return WaitForClientResult::Accept;
+	}
+
+	void HttpRequestServer::OnServerStopped()
+	{
+		Stop();
+	}
+
+	void HttpRequestServer::Start()
+	{
+		impl->Start();
+	}
+
+	void HttpRequestServer::Stop()
+	{
+		impl->Stop();
+	}
+
+	bool HttpRequestServer::IsStopped()
+	{
+		return impl->IsStopped();
+	}
+}
+
+
+/***********************************************************************
+.\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPSERVER.CPP
+***********************************************************************/
+
+#include <random>
+
+namespace vl::inter_process::async_tcp_socket
+{
+	using namespace collections;
+
+	namespace
+	{
+		constexpr const wchar_t*				ServerJsonContentType = L"application/json; charset=utf8";
+		constexpr vint						GeneratedTokenLength = 36;
+
+		wchar_t ServerFoldAscii(wchar_t c)
+		{
+			return L'A' <= c && c <= L'Z' ? c - L'A' + L'a' : c;
+		}
+
+		bool ServerAsciiEqualsIgnoreCase(const WString& a, const WString& b)
+		{
+			if (a.Length() != b.Length()) return false;
+			for (vint i = 0; i < a.Length(); i++)
+			{
+				if (ServerFoldAscii(a[i]) != ServerFoldAscii(b[i])) return false;
+			}
+			return true;
+		}
+
+		vint ServerHexValue(wchar_t c)
+		{
+			if (L'0' <= c && c <= L'9') return c - L'0';
+			if (L'a' <= c && c <= L'f') return c - L'a' + 10;
+			if (L'A' <= c && c <= L'F') return c - L'A' + 10;
+			return -1;
+		}
+
+		bool IsLegalServerOriginPathCharacter(wchar_t c)
+		{
+			if (L'a' <= c && c <= L'z') return true;
+			if (L'A' <= c && c <= L'Z') return true;
+			if (L'0' <= c && c <= L'9') return true;
+			switch (c)
+			{
+			case L'-': case L'.': case L'_': case L'~':
+			case L'!': case L'$': case L'&': case L'\'':
+			case L'(': case L')': case L'*': case L'+':
+			case L',': case L';': case L'=': case L':':
+			case L'@': case L'/':
+				return true;
+			default:
+				return false;
+			}
+		}
+
+		bool IsValidWString(const WString& text)
+		{
+			for (vint i = 0; i < text.Length(); i++)
+			{
+				auto code = (vuint32_t)text[i];
+				if (code == 0) return false;
+				if constexpr (sizeof(wchar_t) == 2)
+				{
+					if (0xD800 <= code && code <= 0xDBFF)
+					{
+						if (++i == text.Length()) return false;
+						auto low = (vuint32_t)text[i];
+						if (low < 0xDC00 || 0xDFFF < low) return false;
+					}
+					else if (0xDC00 <= code && code <= 0xDFFF)
+					{
+						return false;
+					}
+				}
+				else if (code > 0x10FFFF || (0xD800 <= code && code <= 0xDFFF))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		bool DecodeStrictUtf8(const vuint8_t* bytes, vint count, WString& text)
+		{
+			List<wchar_t> characters;
+			for (vint i = 0; i < count;)
+			{
+				auto first = bytes[i++];
+				vuint32_t code = 0;
+				vint following = 0;
+				if (first < 0x80)
+				{
+					code = first;
+				}
+				else if (0xC2 <= first && first <= 0xDF)
+				{
+					code = first & 0x1F;
+					following = 1;
+				}
+				else if (0xE0 <= first && first <= 0xEF)
+				{
+					code = first & 0x0F;
+					following = 2;
+				}
+				else if (0xF0 <= first && first <= 0xF4)
+				{
+					code = first & 0x07;
+					following = 3;
+				}
+				else
+				{
+					return false;
+				}
+
+				if (i + following > count) return false;
+				for (vint j = 0; j < following; j++)
+				{
+					auto next = bytes[i++];
+					if ((next & 0xC0) != 0x80) return false;
+					code = (code << 6) | (next & 0x3F);
+				}
+				if (
+					(following == 1 && code < 0x80) ||
+					(following == 2 && code < 0x800) ||
+					(following == 3 && code < 0x10000) ||
+					code == 0 ||
+					code > 0x10FFFF ||
+					(0xD800 <= code && code <= 0xDFFF)
+					)
+				{
+					return false;
+				}
+
+				if constexpr (sizeof(wchar_t) == 2)
+				{
+					if (code <= 0xFFFF)
+					{
+						characters.Add((wchar_t)code);
+					}
+					else
+					{
+						code -= 0x10000;
+						characters.Add((wchar_t)(0xD800 + (code >> 10)));
+						characters.Add((wchar_t)(0xDC00 + (code & 0x3FF)));
+					}
+				}
+				else
+				{
+					characters.Add((wchar_t)code);
+				}
+			}
+
+			text = characters.Count() == 0
+				? WString::Empty
+				: WString::CopyFrom(&characters[0], characters.Count());
+			return true;
+		}
+
+		bool ValidateBasePath(const WString& baseUrl)
+		{
+			if (baseUrl == WString::Empty) return true;
+			if (baseUrl[0] != L'/' || baseUrl[baseUrl.Length() - 1] == L'/') return false;
+
+			List<vuint8_t> bytes;
+			for (vint i = 0; i < baseUrl.Length(); i++)
+			{
+				auto c = baseUrl[i];
+				if (c == L'%')
+				{
+					if (i + 2 >= baseUrl.Length()) return false;
+					auto high = ServerHexValue(baseUrl[i + 1]);
+					auto low = ServerHexValue(baseUrl[i + 2]);
+					if (high < 0 || low < 0) return false;
+					auto byte = (vuint8_t)(high * 16 + low);
+					if (byte == 0 || byte == '/' || byte == '\\') return false;
+					bytes.Add(byte);
+					i += 2;
+				}
+				else
+				{
+					if (!IsLegalServerOriginPathCharacter(c)) return false;
+					bytes.Add((vuint8_t)c);
+				}
+			}
+
+			WString decoded;
+			return DecodeStrictUtf8(&bytes[0], bytes.Count(), decoded);
+		}
+
+		bool ValidRequestTargetSize(const WString& method, const WString& target)
+		{
+			return method.Length() + target.Length() + 10 <= HttpRequestLineSizeLimit;
+		}
+
+		WString CreateServerUrlPrefix(const WString& baseUrl, vint port)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::inter_process::async_tcp_socket::SocketHttpServer::SocketHttpServer(const WString&, vint)#"
+			CHECK_ERROR(ValidateBasePath(baseUrl), ERROR_MESSAGE_PREFIX L"baseUrl must be empty or a legal ASCII origin-form path prefix without a trailing slash.");
+			CHECK_ERROR(1 <= port && port <= 65535, ERROR_MESSAGE_PREFIX L"port must be in 1..65535.");
+			CHECK_ERROR(ValidRequestTargetSize(L"GET", baseUrl + HttpServerUrl_Connect), ERROR_MESSAGE_PREFIX L"The /Connect target exceeds the HTTP request-line limit.");
+			const WString tokenPlaceholder = L"000000000000000000000000000000000000";
+			CHECK_ERROR(ValidRequestTargetSize(L"POST", baseUrl + HttpServerUrl_Request + L"/" + tokenPlaceholder), ERROR_MESSAGE_PREFIX L"The /Request target plus a generated token exceeds the HTTP request-line limit.");
+			CHECK_ERROR(ValidRequestTargetSize(L"POST", baseUrl + HttpServerUrl_Response + L"/" + tokenPlaceholder), ERROR_MESSAGE_PREFIX L"The /Response target plus a generated token exceeds the HTTP request-line limit.");
+			return L"http://localhost:" + itow(port) + baseUrl;
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void EncodeMessage(const WString& message, Array<vuint8_t>& bytes)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::inter_process::async_tcp_socket::SocketHttpServerConnection::SendString(const WString&)#"
+			CHECK_ERROR(message.Length() > 0, ERROR_MESSAGE_PREFIX L"A logical HTTP message cannot be empty.");
+			CHECK_ERROR(IsValidWString(message), ERROR_MESSAGE_PREFIX L"A logical HTTP message must contain valid Unicode without NUL.");
+			auto utf8 = wtou8(message);
+			CHECK_ERROR(utf8.Length() <= HttpBodySizeLimit, ERROR_MESSAGE_PREFIX L"The UTF-8 message exceeds HttpBodySizeLimit.");
+			bytes.Resize(utf8.Length());
+			if (bytes.Count() > 0)
+			{
+				memcpy(&bytes[0], utf8.Buffer(), bytes.Count());
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		HttpField CreateAsciiField(const WString& name, const WString& value)
+		{
+			HttpField field;
+			field.name = name;
+			field.value.Resize(value.Length());
+			for (vint i = 0; i < value.Length(); i++)
+			{
+				CHECK_ERROR(value[i] <= 0x7F, L"An HTTP field helper requires ASCII.");
+				field.value[i] = (vuint8_t)value[i];
+			}
+			return field;
+		}
+
+		Ptr<HttpResponse> CreateSuccessResponse(const WString& message)
+		{
+			auto response = Ptr(new HttpResponse);
+			response->statusCode = 200;
+			response->reason = L"OK";
+			response->headers.Add(CreateAsciiField(L"content-type", ServerJsonContentType));
+			if (message != WString::Empty)
+			{
+				HttpBodyChunk chunk;
+				EncodeMessage(message, chunk.data);
+				response->body.chunks.Add(std::move(chunk));
+			}
+			return response;
+		}
+
+		Ptr<HttpResponse> CreateErrorResponse(const WString& reason)
+		{
+			auto response = Ptr(new HttpResponse);
+			response->statusCode = 404;
+			response->reason = reason;
+			return response;
+		}
+
+		bool FieldValueEquals(const Array<vuint8_t>& value, const wchar_t* expected)
+		{
+			vint length = 0;
+			while (expected[length]) length++;
+			if (value.Count() != length) return false;
+			for (vint i = 0; i < length; i++)
+			{
+				if (value[i] != (vuint8_t)expected[i]) return false;
+			}
+			return true;
+		}
+
+		bool ParseContentLength(const Array<vuint8_t>& value, vint& length)
+		{
+			vint begin = 0;
+			vint end = value.Count();
+			while (begin < end && (value[begin] == ' ' || value[begin] == '\t')) begin++;
+			while (begin < end && (value[end - 1] == ' ' || value[end - 1] == '\t')) end--;
+			if (begin == end) return false;
+			vuint64_t number = 0;
+			for (vint i = begin; i < end; i++)
+			{
+				if (value[i] < '0' || value[i] > '9') return false;
+				auto digit = (vuint64_t)(value[i] - '0');
+				if (number > ((vuint64_t)HttpBodySizeLimit - digit) / 10) return false;
+				number = number * 10 + digit;
+			}
+			length = (vint)number;
+			return true;
+		}
+
+		bool HasEmptyBody(Ptr<HttpRequest> request)
+		{
+			if (!request || request->body.chunks.Count() != 0 || request->body.trailers.Count() != 0) return false;
+			vint contentLengths = 0;
+			for (auto&& field : request->headers)
+			{
+				if (ServerAsciiEqualsIgnoreCase(field.name, L"transfer-encoding")) return false;
+				if (ServerAsciiEqualsIgnoreCase(field.name, L"content-length"))
+				{
+					vint length = -1;
+					if (!ParseContentLength(field.value, length) || length != 0) return false;
+					contentLengths++;
+				}
+			}
+			return contentLengths <= 1;
+		}
+
+		bool DecodeSubmittedMessage(Ptr<HttpRequest> request, WString& message)
+		{
+			if (!request || request->body.trailers.Count() != 0) return false;
+			vint contentLength = -1;
+			vint contentLengths = 0;
+			vint contentTypes = 0;
+			for (auto&& field : request->headers)
+			{
+				if (ServerAsciiEqualsIgnoreCase(field.name, L"transfer-encoding")) return false;
+				if (ServerAsciiEqualsIgnoreCase(field.name, L"content-length"))
+				{
+					if (!ParseContentLength(field.value, contentLength)) return false;
+					contentLengths++;
+				}
+				else if (ServerAsciiEqualsIgnoreCase(field.name, L"content-type"))
+				{
+					if (!FieldValueEquals(field.value, ServerJsonContentType)) return false;
+					contentTypes++;
+				}
+			}
+			if (contentLengths != 1 || contentTypes != 1 || contentLength <= 0) return false;
+
+			Array<vuint8_t> bytes(contentLength);
+			vint offset = 0;
+			for (auto&& chunk : request->body.chunks)
+			{
+				if (chunk.data.Count() > contentLength - offset) return false;
+				if (chunk.data.Count() > 0)
+				{
+					memcpy(&bytes[offset], &chunk.data[0], chunk.data.Count());
+					offset += chunk.data.Count();
+				}
+			}
+			if (offset != contentLength) return false;
+			return DecodeStrictUtf8(&bytes[0], bytes.Count(), message) && message.Length() > 0;
+		}
+
+		bool ExtractToken(const WString& path, const wchar_t* route, WString& token)
+		{
+			auto prefix = WString::Unmanaged(route) + L"/";
+			if (path.Length() <= prefix.Length() || path.Left(prefix.Length()) != prefix) return false;
+			token = path.Right(path.Length() - prefix.Length());
+			return token.Length() > 0;
+		}
+
+		WString GenerateToken()
+		{
+			vuint8_t bytes[16];
+			std::random_device random;
+			for (vint i = 0; i < 16; i++) bytes[i] = (vuint8_t)random();
+			bytes[6] = (bytes[6] & 0x0F) | 0x40;
+			bytes[8] = (bytes[8] & 0x3F) | 0x80;
+
+			const wchar_t* hex = L"0123456789abcdef";
+			wchar_t text[GeneratedTokenLength];
+			vint writing = 0;
+			for (vint i = 0; i < 16; i++)
+			{
+				if (i == 4 || i == 6 || i == 8 || i == 10) text[writing++] = L'-';
+				text[writing++] = hex[bytes[i] >> 4];
+				text[writing++] = hex[bytes[i] & 0x0F];
+			}
+			return WString::CopyFrom(text, GeneratedTokenLength);
+		}
+
+		BEGIN_GLOBAL_STORAGE_CLASS(SocketHttpServerTestHooks)
+			SpinLock							lock;
+			Func<void(const WString&)>			claimed;
+			Func<void(const WString&, bool)>		completed;
+			Func<void(const WString&)>			registered;
+		INITIALIZE_GLOBAL_STORAGE_CLASS
+		FINALIZE_GLOBAL_STORAGE_CLASS
+			SPIN_LOCK(lock)
+			{
+				claimed = {};
+				completed = {};
+				registered = {};
+			}
+		END_GLOBAL_STORAGE_CLASS(SocketHttpServerTestHooks)
+
+		void InvokePollClaimed(const WString& token)
+		{
+			Func<void(const WString&)> callback;
+			auto& hooks = GetSocketHttpServerTestHooks();
+			SPIN_LOCK(hooks.lock) { callback = hooks.claimed; }
+			if (callback) try { callback(token); } catch (...) {}
+		}
+
+		void InvokePollCompleted(const WString& token, bool succeeded)
+		{
+			Func<void(const WString&, bool)> callback;
+			auto& hooks = GetSocketHttpServerTestHooks();
+			SPIN_LOCK(hooks.lock) { callback = hooks.completed; }
+			if (callback) try { callback(token, succeeded); } catch (...) {}
+		}
+
+		void InvokePollRegistered(const WString& token)
+		{
+			Func<void(const WString&)> callback;
+			auto& hooks = GetSocketHttpServerTestHooks();
+			SPIN_LOCK(hooks.lock) { callback = hooks.registered; }
+			if (callback) try { callback(token); } catch (...) {}
+		}
+
+		class SocketHttpServerConnection;
+		class SocketHttpServerLifecycle;
+
+		class SocketHttpServerConnectionLifecycle : public Object
+		{
+		public:
+			CriticalSection						lockState;
+			ConditionVariable					cvState;
+			SocketHttpServerConnection*			owner = nullptr;
+			Ptr<SocketHttpServerLifecycle>		server;
+			WString								token;
+			INetworkProtocolCallback*			callback = nullptr;
+			List<WString>						queuedInbound;
+			List<WString>						queuedOutbound;
+			List<Ptr<SocketHttpRequestContext>>
+										queuedPollRegistrations;
+			Ptr<SocketHttpRequestContext>		pendingPoll;
+			Ptr<SocketHttpRequestContext>		inFlightPoll;
+			WString								inFlightMessage;
+			vint								activeCallbacks = 0;
+			bool								callbackInstalling = false;
+			bool								pollRegistrationProcessing = false;
+			bool								accepted = false;
+			bool								stopStarted = false;
+			bool								stopCancellationFinished = false;
+			bool								stopFinished = false;
+			bool								stopAssistProcessing = false;
+			bool								disconnectDelivering = false;
+			bool								disconnectFinished = false;
+		};
+
+		class SocketHttpServerConnection
+			: public Object
+			, public virtual INetworkProtocolConnection
+		{
+			struct CallbackFrame
+			{
+				Ptr<SocketHttpServerConnectionLifecycle>	state;
+				CallbackFrame*					previous = nullptr;
+
+				CallbackFrame(Ptr<SocketHttpServerConnectionLifecycle> _state);
+				~CallbackFrame();
+			};
+
+			struct InboundFrame
+			{
+				Ptr<SocketHttpServerConnectionLifecycle>	state;
+				InboundFrame*					previous = nullptr;
+				List<WString>					generated;
+
+				InboundFrame(Ptr<SocketHttpServerConnectionLifecycle> _state);
+				~InboundFrame();
+			};
+
+			struct PollWork
+			{
+				Ptr<SocketHttpRequestContext>		context;
+				WString							message;
+
+				operator bool() const { return context != nullptr; }
+			};
+
+			static thread_local CallbackFrame*	currentCallbackFrame;
+			static thread_local InboundFrame*	currentInboundFrame;
+			Ptr<SocketHttpServerConnectionLifecycle>
+										lifecycle;
+
+			static vint CurrentCallbackDepth(Ptr<SocketHttpServerConnectionLifecycle> state);
+			static bool ClaimPollUnsafe(Ptr<SocketHttpServerConnectionLifecycle> state, PollWork& work);
+			static void StartPollResponse(Ptr<SocketHttpServerConnectionLifecycle> state, PollWork work);
+			static void FinishPollResponse(Ptr<SocketHttpServerConnectionLifecycle> state, Ptr<SocketHttpRequestContext> context, bool succeeded);
+			static void ProcessPollRegistrations(Ptr<SocketHttpServerConnectionLifecycle> state);
+			void StopCore(bool removeFromServer, bool waitForPoll);
+
+		public:
+			SocketHttpServerConnection(Ptr<SocketHttpServerLifecycle> server, const WString& token);
+
+			void DetachServer(SocketHttpServerLifecycle* server);
+			bool MarkAccepted();
+			bool IsAccepted();
+			bool HasCurrentCallback();
+			WString GetToken();
+			WaitForClientResult InvokeClientConnected(SocketHttpServer* server);
+			bool RegisterPoll(Ptr<SocketHttpRequestContext> context);
+			bool DispatchInbound(const WString& message, WString& response);
+			void StopFromServer();
+			void WaitForPollCompletion();
+
+			void InstallCallback(INetworkProtocolCallback* callback) override;
+			void BeginReadingLoopUnsafe() override;
+			void SendString(const WString& str) override;
+			void Stop() override;
+		};
+
+		class SocketHttpServerLifecycle : public Object
+		{
+		public:
+			SocketHttpServer*					owner = nullptr;
+			CriticalSection						lockState;
+			ConditionVariable					cvState;
+			Dictionary<WString, Ptr<SocketHttpServerConnection>>
+										connections;
+			List<Ptr<SocketHttpServerConnection>>
+										stoppingConnections;
+			bool								startCalled = false;
+			bool								started = false;
+			bool								stopStarted = false;
+			bool								stopProcessing = false;
+			bool								stopProcessed = false;
+			bool								stopAssistProcessing = false;
+
+			SocketHttpServerLifecycle(SocketHttpServer* _owner)
+				: owner(_owner)
+			{
+			}
+
+			void PrepareStart()
+			{
+				CS_LOCK(lockState)
+				{
+					CHECK_ERROR(!startCalled && !stopStarted, L"SocketHttpServer::Start can only be called once before stopping.");
+					startCalled = true;
+					started = true;
+				}
+			}
+
+			Ptr<SocketHttpServerConnection> CreateConnection(Ptr<SocketHttpServerLifecycle> retainedSelf)
+			{
+				while (true)
+				{
+					auto token = GenerateToken();
+					auto connection = Ptr(new SocketHttpServerConnection(retainedSelf, token));
+					CS_LOCK(lockState)
+					{
+						if (!started || stopStarted) return nullptr;
+						if (!connections.Keys().Contains(token))
+						{
+							connections.Add(token, connection);
+							return connection;
+						}
+					}
+				}
+			}
+
+			Ptr<SocketHttpServerConnection> FindConnection(const WString& token)
+			{
+				CS_LOCK(lockState)
+				{
+					if (stopStarted) return nullptr;
+					auto index = connections.Keys().IndexOf(token);
+					return index == -1 ? nullptr : connections.Values()[index];
+				}
+				return nullptr;
+			}
+
+			bool TryAccept(const WString& token, SocketHttpServerConnection* connection)
+			{
+				CS_LOCK(lockState)
+				{
+					if (stopStarted) return false;
+					auto index = connections.Keys().IndexOf(token);
+					if (index == -1 || connections.Values()[index].Obj() != connection) return false;
+					return connection->MarkAccepted();
+				}
+				return false;
+			}
+
+			bool IsStopped()
+			{
+				CS_LOCK(lockState) { return stopStarted; }
+				return true;
+			}
+
+			void RemoveConnection(const WString& token, SocketHttpServerConnection* connection)
+			{
+				bool removed = false;
+				bool retained = false;
+				CS_LOCK(lockState)
+				{
+					auto index = connections.Keys().IndexOf(token);
+					if (index != -1 && connections.Values()[index].Obj() == connection)
+					{
+						if (connection->IsAccepted())
+						{
+							stoppingConnections.Add(connections.Values()[index]);
+							retained = true;
+						}
+						connections.Remove(token);
+						removed = true;
+					}
+				}
+				if (removed && !retained) connection->DetachServer(this);
+			}
+
+			void PrepareStop(List<Ptr<SocketHttpServerConnection>>& stopping)
+			{
+				CS_LOCK(lockState)
+				{
+					if (!stopStarted)
+					{
+						stopStarted = true;
+						started = false;
+						for (auto connection : connections.Values()) stoppingConnections.Add(connection);
+						connections.Clear();
+					}
+					for (auto connection : stoppingConnections) stopping.Add(connection);
+				}
+			}
+
+			void PrepareStopProcessing(bool callbackNested, bool inheritsAssist, bool& execute, bool& assist)
+			{
+				CS_LOCK(lockState)
+				{
+					if (!stopProcessing && !stopProcessed)
+					{
+						stopProcessing = true;
+						execute = true;
+						if (callbackNested)
+						{
+							stopAssistProcessing = true;
+							assist = true;
+						}
+					}
+					else if (callbackNested && !inheritsAssist && !stopProcessed && !stopAssistProcessing)
+					{
+						stopAssistProcessing = true;
+						assist = true;
+					}
+				}
+			}
+
+			void FinishStop(bool ownsAssist)
+			{
+				lockState.Enter();
+				if (ownsAssist)
+				{
+					stopAssistProcessing = false;
+				}
+				else
+				{
+					while (stopAssistProcessing) cvState.SleepWith(lockState);
+				}
+				stopProcessing = false;
+				stopProcessed = true;
+				cvState.WakeAllPendings();
+				lockState.Leave();
+			}
+
+			void FinishStopAssist()
+			{
+				CS_LOCK(lockState)
+				{
+					stopAssistProcessing = false;
+					cvState.WakeAllPendings();
+				}
+			}
+
+			void WaitForStop()
+			{
+				CS_LOCK(lockState)
+				{
+					while (!stopProcessed) cvState.SleepWith(lockState);
+				}
+			}
+
+			Ptr<SocketHttpServerConnection> ReleaseStoppedConnection(SocketHttpServerConnection* connection)
+			{
+				Ptr<SocketHttpServerConnection> releasing;
+				CS_LOCK(lockState)
+				{
+					for (vint i = 0; i < stoppingConnections.Count(); i++)
+					{
+						if (stoppingConnections[i].Obj() == connection)
+						{
+							releasing = stoppingConnections[i];
+							stoppingConnections.RemoveAt(i);
+							break;
+						}
+					}
+				}
+				if (releasing) connection->DetachServer(this);
+				return releasing;
+			}
+		};
+
+		struct SocketHttpServerStopFrame
+		{
+			SocketHttpServerLifecycle*		lifecycle = nullptr;
+			SocketHttpServerStopFrame*		previous = nullptr;
+			bool							ownsAssist = false;
+		};
+
+		thread_local SocketHttpServerStopFrame* currentSocketHttpServerStopFrame = nullptr;
+
+		SocketHttpServerStopFrame* FindSocketHttpServerStopFrame(SocketHttpServerLifecycle* lifecycle)
+		{
+			for (auto frame = currentSocketHttpServerStopFrame; frame; frame = frame->previous)
+			{
+				if (frame->lifecycle == lifecycle) return frame;
+			}
+			return nullptr;
+		}
+
+		struct SocketHttpServerStopScope
+		{
+			SocketHttpServerStopFrame		frame;
+
+			SocketHttpServerStopScope(SocketHttpServerLifecycle* lifecycle, bool ownsAssist)
+			{
+				frame.lifecycle = lifecycle;
+				frame.previous = currentSocketHttpServerStopFrame;
+				frame.ownsAssist = ownsAssist;
+				currentSocketHttpServerStopFrame = &frame;
+			}
+
+			~SocketHttpServerStopScope()
+			{
+				currentSocketHttpServerStopFrame = frame.previous;
+			}
+		};
+
+		thread_local SocketHttpServerConnection::CallbackFrame* SocketHttpServerConnection::currentCallbackFrame = nullptr;
+		thread_local SocketHttpServerConnection::InboundFrame* SocketHttpServerConnection::currentInboundFrame = nullptr;
+
+		SocketHttpServerConnection::CallbackFrame::CallbackFrame(Ptr<SocketHttpServerConnectionLifecycle> _state)
+			: state(_state)
+			, previous(currentCallbackFrame)
+		{
+			currentCallbackFrame = this;
+		}
+
+		SocketHttpServerConnection::CallbackFrame::~CallbackFrame()
+		{
+			currentCallbackFrame = previous;
+			Ptr<SocketHttpServerLifecycle> server;
+			SocketHttpServerConnection* owner = nullptr;
+			CS_LOCK(state->lockState)
+			{
+				state->activeCallbacks--;
+				if (state->activeCallbacks == 0 && state->stopFinished && state->server)
+				{
+					server = state->server;
+					owner = state->owner;
+				}
+				state->cvState.WakeAllPendings();
+			}
+			Ptr<SocketHttpServerConnection> releasing;
+			if (server && owner) releasing = server->ReleaseStoppedConnection(owner);
+		}
+
+		SocketHttpServerConnection::InboundFrame::InboundFrame(Ptr<SocketHttpServerConnectionLifecycle> _state)
+			: state(_state)
+			, previous(currentInboundFrame)
+		{
+			currentInboundFrame = this;
+		}
+
+		SocketHttpServerConnection::InboundFrame::~InboundFrame()
+		{
+			currentInboundFrame = previous;
+		}
+
+		vint SocketHttpServerConnection::CurrentCallbackDepth(Ptr<SocketHttpServerConnectionLifecycle> state)
+		{
+			vint depth = 0;
+			for (auto frame = currentCallbackFrame; frame; frame = frame->previous)
+			{
+				if (frame->state == state) depth++;
+			}
+			return depth;
+		}
+
+		bool SocketHttpServerConnection::ClaimPollUnsafe(Ptr<SocketHttpServerConnectionLifecycle> state, PollWork& work)
+		{
+			if (
+				state->stopStarted ||
+				!state->accepted ||
+				state->inFlightPoll ||
+				!state->pendingPoll ||
+				state->queuedOutbound.Count() == 0
+				)
+			{
+				return false;
+			}
+
+			state->inFlightPoll = state->pendingPoll;
+			state->pendingPoll = nullptr;
+			state->inFlightMessage = state->queuedOutbound[0];
+			state->queuedOutbound.RemoveAt(0);
+			work.context = state->inFlightPoll;
+			work.message = state->inFlightMessage;
+			return true;
+		}
+
+		void SocketHttpServerConnection::StartPollResponse(Ptr<SocketHttpServerConnectionLifecycle> state, PollWork work)
+		{
+			if (!work) return;
+			InvokePollClaimed(state->token);
+			bool submitted = false;
+			try
+			{
+				submitted = work.context->Respond(
+					CreateSuccessResponse(work.message),
+					Func<void(bool)>([state, context = work.context](bool succeeded)
+					{
+						FinishPollResponse(state, context, succeeded);
+					})
+					);
+			}
+			catch (...)
+			{
+			}
+			if (!submitted) FinishPollResponse(state, work.context, false);
+		}
+
+		void SocketHttpServerConnection::FinishPollResponse(Ptr<SocketHttpServerConnectionLifecycle> state, Ptr<SocketHttpRequestContext> context, bool succeeded)
+		{
+			PollWork next;
+			bool completed = false;
+			CS_LOCK(state->lockState)
+			{
+				if (state->inFlightPoll == context)
+				{
+					if (!succeeded && !state->stopStarted)
+					{
+						state->queuedOutbound.Insert(0, state->inFlightMessage);
+					}
+					state->inFlightPoll = nullptr;
+					state->inFlightMessage = WString::Empty;
+					ClaimPollUnsafe(state, next);
+					state->cvState.WakeAllPendings();
+					completed = true;
+				}
+			}
+			if (!completed) return;
+			InvokePollCompleted(state->token, succeeded);
+			StartPollResponse(state, next);
+		}
+
+		void SocketHttpServerConnection::ProcessPollRegistrations(Ptr<SocketHttpServerConnectionLifecycle> state)
+		{
+			while (true)
+			{
+				Ptr<SocketHttpRequestContext> context;
+				Ptr<SocketHttpRequestContext> replaced;
+				PollWork work;
+				bool cancel = false;
+				state->lockState.Enter();
+				if (state->queuedPollRegistrations.Count() == 0)
+				{
+					auto registered = state->pendingPoll && !state->stopStarted && state->accepted;
+					state->pollRegistrationProcessing = false;
+					state->cvState.WakeAllPendings();
+					state->lockState.Leave();
+					if (registered) InvokePollRegistered(state->token);
+					return;
+				}
+				context = state->queuedPollRegistrations[0];
+				state->queuedPollRegistrations.RemoveAt(0);
+				replaced = state->pendingPoll;
+				state->pendingPoll = nullptr;
+				state->lockState.Leave();
+
+				if (replaced) replaced->Cancel();
+
+				CS_LOCK(state->lockState)
+				{
+					if (state->stopStarted || !state->accepted)
+					{
+						cancel = true;
+					}
+					else
+					{
+						state->pendingPoll = context;
+						ClaimPollUnsafe(state, work);
+					}
+				}
+				if (cancel) context->Cancel();
+				StartPollResponse(state, work);
+			}
+		}
+
+		SocketHttpServerConnection::SocketHttpServerConnection(Ptr<SocketHttpServerLifecycle> server, const WString& token)
+			: lifecycle(Ptr(new SocketHttpServerConnectionLifecycle))
+		{
+			lifecycle->owner = this;
+			lifecycle->server = server;
+			lifecycle->token = token;
+		}
+
+		void SocketHttpServerConnection::DetachServer(SocketHttpServerLifecycle* server)
+		{
+			CS_LOCK(lifecycle->lockState)
+			{
+				if (lifecycle->server.Obj() == server) lifecycle->server = nullptr;
+			}
+		}
+
+		bool SocketHttpServerConnection::MarkAccepted()
+		{
+			CS_LOCK(lifecycle->lockState)
+			{
+				if (!lifecycle->stopStarted)
+				{
+					lifecycle->accepted = true;
+					return true;
+				}
+			}
+			return false;
+		}
+
+		bool SocketHttpServerConnection::IsAccepted()
+		{
+			CS_LOCK(lifecycle->lockState) { return lifecycle->accepted; }
+			return false;
+		}
+
+		bool SocketHttpServerConnection::HasCurrentCallback()
+		{
+			return CurrentCallbackDepth(lifecycle) > 0;
+		}
+
+		WString SocketHttpServerConnection::GetToken()
+		{
+			return lifecycle->token;
+		}
+
+		WaitForClientResult SocketHttpServerConnection::InvokeClientConnected(SocketHttpServer* server)
+		{
+			auto state = lifecycle;
+			bool invoke = false;
+			CS_LOCK(state->lockState)
+			{
+				if (!state->stopStarted)
+				{
+					state->activeCallbacks++;
+					invoke = true;
+				}
+			}
+			if (!invoke) return WaitForClientResult::Reject;
+
+			WaitForClientResult result;
+			{
+				CallbackFrame frame(state);
+				result = server->OnClientConnected(this);
+			}
+			if (result != WaitForClientResult::Accept) return WaitForClientResult::Reject;
+
+			Ptr<SocketHttpServerLifecycle> retainedServer;
+			CS_LOCK(state->lockState) { retainedServer = state->server; }
+			return retainedServer && retainedServer->TryAccept(state->token, this)
+				? WaitForClientResult::Accept
+				: WaitForClientResult::Reject;
+		}
+
+		bool SocketHttpServerConnection::RegisterPoll(Ptr<SocketHttpRequestContext> context)
+		{
+			auto state = lifecycle;
+			bool process = false;
+			CS_LOCK(state->lockState)
+			{
+				if (state->stopStarted || !state->accepted) return false;
+				state->queuedPollRegistrations.Add(context);
+				if (!state->pollRegistrationProcessing)
+				{
+					state->pollRegistrationProcessing = true;
+					process = true;
+				}
+			}
+			if (process) ProcessPollRegistrations(state);
+			return true;
+		}
+
+		bool SocketHttpServerConnection::DispatchInbound(const WString& message, WString& response)
+		{
+			auto state = lifecycle;
+			INetworkProtocolCallback* installed = nullptr;
+			PollWork work;
+			CS_LOCK(state->lockState)
+			{
+				if (state->stopStarted || !state->accepted) return false;
+				if (state->callback && !state->callbackInstalling)
+				{
+					installed = state->callback;
+					state->activeCallbacks++;
+				}
+				else
+				{
+					state->queuedInbound.Add(message);
+					if (state->queuedOutbound.Count() > 0)
+					{
+						response = state->queuedOutbound[0];
+						state->queuedOutbound.RemoveAt(0);
+					}
+					ClaimPollUnsafe(state, work);
+				}
+			}
+
+			if (!installed)
+			{
+				StartPollResponse(state, work);
+				return true;
+			}
+
+			List<WString> generated;
+			{
+				CallbackFrame callbackFrame(state);
+				InboundFrame inboundFrame(state);
+				installed->OnReadString(message);
+				generated = std::move(inboundFrame.generated);
+			}
+
+			CS_LOCK(state->lockState)
+			{
+				if (state->stopStarted) return false;
+				if (generated.Count() > 0)
+				{
+					response = generated[0];
+					for (vint i = 1; i < generated.Count(); i++) state->queuedOutbound.Add(generated[i]);
+				}
+				else if (state->queuedOutbound.Count() > 0)
+				{
+					response = state->queuedOutbound[0];
+					state->queuedOutbound.RemoveAt(0);
+				}
+				ClaimPollUnsafe(state, work);
+			}
+			StartPollResponse(state, work);
+			return true;
+		}
+
+		void SocketHttpServerConnection::StopCore(bool removeFromServer, bool waitForPoll)
+		{
+			auto state = lifecycle;
+			if (removeFromServer)
+			{
+				Ptr<SocketHttpServerLifecycle> server;
+				CS_LOCK(state->lockState) { server = state->server; }
+				if (server) server->RemoveConnection(state->token, this);
+			}
+
+			auto callbackDepth = CurrentCallbackDepth(state);
+			List<Ptr<SocketHttpRequestContext>> cancelling;
+			bool first = false;
+			bool ownsAssist = false;
+			state->lockState.Enter();
+			if (!state->stopStarted)
+			{
+				first = true;
+				state->stopStarted = true;
+				if (callbackDepth > 0)
+				{
+					state->stopAssistProcessing = true;
+					ownsAssist = true;
+				}
+				if (state->pendingPoll) cancelling.Add(state->pendingPoll);
+				state->pendingPoll = nullptr;
+				for (auto context : state->queuedPollRegistrations) cancelling.Add(context);
+				state->queuedPollRegistrations.Clear();
+				state->queuedInbound.Clear();
+				state->queuedOutbound.Clear();
+			}
+			else if (callbackDepth > 0)
+			{
+				if (
+					state->stopFinished ||
+					state->disconnectDelivering ||
+					state->disconnectFinished ||
+					state->stopAssistProcessing
+					)
+				{
+					state->lockState.Leave();
+					return;
+				}
+				state->stopAssistProcessing = true;
+				ownsAssist = true;
+				state->lockState.Leave();
+			}
+			else
+			{
+				while (!state->stopFinished) state->cvState.SleepWith(state->lockState);
+				while (state->activeCallbacks > 0 || (waitForPoll && (state->inFlightPoll || state->pollRegistrationProcessing)))
+				{
+					state->cvState.SleepWith(state->lockState);
+				}
+				state->lockState.Leave();
+				return;
+			}
+			if (first) state->lockState.Leave();
+
+			if (first)
+			{
+				for (auto context : cancelling)
+				{
+					try { context->Cancel(); } catch (...) {}
+				}
+				CS_LOCK(state->lockState)
+				{
+					state->stopCancellationFinished = true;
+					state->cvState.WakeAllPendings();
+				}
+			}
+
+			INetworkProtocolCallback* disconnected = nullptr;
+			state->lockState.Enter();
+			while (!state->stopCancellationFinished || state->pollRegistrationProcessing)
+			{
+				state->cvState.SleepWith(state->lockState);
+			}
+			if (first && !ownsAssist)
+			{
+				while (state->stopAssistProcessing) state->cvState.SleepWith(state->lockState);
+			}
+			while (state->activeCallbacks > callbackDepth)
+			{
+				state->cvState.SleepWith(state->lockState);
+			}
+			if (state->accepted && state->callback && !state->disconnectDelivering && !state->disconnectFinished)
+			{
+				disconnected = state->callback;
+				state->disconnectDelivering = true;
+				state->activeCallbacks++;
+			}
+			state->lockState.Leave();
+
+			if (disconnected)
+			{
+				try
+				{
+					CallbackFrame frame(state);
+					disconnected->OnDisconnected();
+				}
+				catch (...)
+				{
+				}
+			}
+
+			Ptr<SocketHttpServerLifecycle> releasingServer;
+			CS_LOCK(state->lockState)
+			{
+				state->callback = nullptr;
+				state->callbackInstalling = false;
+				state->disconnectDelivering = false;
+				state->disconnectFinished = true;
+				if (ownsAssist) state->stopAssistProcessing = false;
+				if (first)
+				{
+					state->stopFinished = true;
+					if (state->activeCallbacks == 0) releasingServer = state->server;
+				}
+				state->cvState.WakeAllPendings();
+			}
+			Ptr<SocketHttpServerConnection> releasing;
+			if (releasingServer) releasing = releasingServer->ReleaseStoppedConnection(this);
+			if (first && waitForPoll)
+			{
+				CS_LOCK(state->lockState)
+				{
+					while (state->inFlightPoll) state->cvState.SleepWith(state->lockState);
+				}
+			}
+		}
+
+		void SocketHttpServerConnection::StopFromServer()
+		{
+			StopCore(false, false);
+		}
+
+		void SocketHttpServerConnection::WaitForPollCompletion()
+		{
+			CS_LOCK(lifecycle->lockState)
+			{
+				while (lifecycle->inFlightPoll || lifecycle->pollRegistrationProcessing)
+				{
+					lifecycle->cvState.SleepWith(lifecycle->lockState);
+				}
+			}
+		}
+
+		void SocketHttpServerConnection::InstallCallback(INetworkProtocolCallback* callback)
+		{
+			auto state = lifecycle;
+			if (!callback)
+			{
+				auto callbackDepth = CurrentCallbackDepth(state);
+				CS_LOCK(state->lockState)
+				{
+					state->callback = nullptr;
+					while (state->activeCallbacks > callbackDepth)
+					{
+						state->cvState.SleepWith(state->lockState);
+					}
+				}
+				return;
+			}
+
+			bool canInstall = false;
+			CS_LOCK(state->lockState)
+			{
+				if (!state->callback && !state->callbackInstalling && !state->stopStarted)
+				{
+					state->callback = callback;
+					state->callbackInstalling = true;
+					state->activeCallbacks++;
+					canInstall = true;
+				}
+			}
+			CHECK_ERROR(canInstall, L"SocketHttpServerConnection::InstallCallback cannot replace a callback or install one on a stopped connection.");
+
+			try
+			{
+				CallbackFrame frame(state);
+				callback->OnInstalled(this);
+				while (true)
+				{
+					WString message;
+					bool replay = false;
+					CS_LOCK(state->lockState)
+					{
+						if (!state->stopStarted && state->callback == callback && state->queuedInbound.Count() > 0)
+						{
+							message = state->queuedInbound[0];
+							state->queuedInbound.RemoveAt(0);
+							replay = true;
+						}
+						else
+						{
+							state->callbackInstalling = false;
+							state->cvState.WakeAllPendings();
+						}
+					}
+					if (!replay) break;
+					callback->OnReadString(message);
+				}
+			}
+			catch (...)
+			{
+				CS_LOCK(state->lockState)
+				{
+					if (state->callback == callback) state->callback = nullptr;
+					state->callbackInstalling = false;
+					state->cvState.WakeAllPendings();
+				}
+				throw;
+			}
+		}
+
+		void SocketHttpServerConnection::BeginReadingLoopUnsafe()
+		{
+		}
+
+		void SocketHttpServerConnection::SendString(const WString& str)
+		{
+			Array<vuint8_t> validated;
+			EncodeMessage(str, validated);
+			auto state = lifecycle;
+			PollWork work;
+			CS_LOCK(state->lockState)
+			{
+				CHECK_ERROR(!state->stopStarted, L"SocketHttpServerConnection::SendString cannot send on a stopped connection.");
+				if (currentInboundFrame && currentInboundFrame->state == state)
+				{
+					currentInboundFrame->generated.Add(str);
+					return;
+				}
+				state->queuedOutbound.Add(str);
+				ClaimPollUnsafe(state, work);
+			}
+			StartPollResponse(state, work);
+		}
+
+		void SocketHttpServerConnection::Stop()
+		{
+			StopCore(true, true);
+		}
+	}
+
+	class SocketHttpServer::Impl : public Object
+	{
+	public:
+		enum class BeginStopResult
+		{
+			Continue,
+			ReturnFollower,
+		};
+
+		Ptr<SocketHttpServerLifecycle> lifecycle;
+
+		Impl(SocketHttpServer* owner)
+			: lifecycle(Ptr(new SocketHttpServerLifecycle(owner)))
+		{
+		}
+
+		static bool HasCurrentCallback(List<Ptr<SocketHttpServerConnection>>& stopping)
+		{
+			for (auto connection : stopping)
+			{
+				if (connection->HasCurrentCallback()) return true;
+			}
+			return false;
+		}
+
+		static void DrainConnections(List<Ptr<SocketHttpServerConnection>>& stopping)
+		{
+			for (auto connection : stopping)
+			{
+				if (!connection->HasCurrentCallback()) connection->StopFromServer();
+			}
+			for (auto connection : stopping)
+			{
+				if (connection->HasCurrentCallback()) connection->StopFromServer();
+			}
+		}
+
+		void ExecuteAssistant(List<Ptr<SocketHttpServerConnection>>& stopping)
+		{
+			try
+			{
+				SocketHttpServerStopScope scope(lifecycle.Obj(), true);
+				DrainConnections(stopping);
+			}
+			catch (...)
+			{
+				lifecycle->FinishStopAssist();
+				throw;
+			}
+			lifecycle->FinishStopAssist();
+		}
+
+		BeginStopResult BeginStop(List<Ptr<SocketHttpServerConnection>>& stopping)
+		{
+			lifecycle->PrepareStop(stopping);
+			auto existingFrame = FindSocketHttpServerStopFrame(lifecycle.Obj());
+			auto callbackNested = HasCurrentCallback(stopping);
+			bool execute = false;
+			bool assist = false;
+			lifecycle->PrepareStopProcessing(
+				callbackNested,
+				existingFrame && existingFrame->ownsAssist,
+				execute,
+				assist
+				);
+
+			if (execute)
+			{
+				try
+				{
+					SocketHttpServerStopScope scope(lifecycle.Obj(), assist);
+					DrainConnections(stopping);
+				}
+				catch (...)
+				{
+					lifecycle->FinishStop(assist);
+					throw;
+				}
+				lifecycle->FinishStop(assist);
+				return BeginStopResult::Continue;
+			}
+
+			if (existingFrame)
+			{
+				if (existingFrame->ownsAssist)
+				{
+					DrainConnections(stopping);
+				}
+				else if (assist)
+				{
+					ExecuteAssistant(stopping);
+				}
+				return BeginStopResult::ReturnFollower;
+			}
+
+			if (callbackNested)
+			{
+				if (assist) ExecuteAssistant(stopping);
+				return BeginStopResult::ReturnFollower;
+			}
+
+			lifecycle->WaitForStop();
+			DrainConnections(stopping);
+			return BeginStopResult::Continue;
+		}
+
+		void OnRequest(SocketHttpServer* owner, Ptr<SocketHttpRequestContext> context)
+		{
+			auto request = context->GetRequest();
+			auto path = context->GetRelativePath();
+			if (!request || context->GetQuery() != WString::Empty)
+			{
+				context->Respond(CreateErrorResponse(L"Route not found"));
+				return;
+			}
+
+			if (request->method == L"GET" && path == HttpServerUrl_Connect && HasEmptyBody(request))
+			{
+				auto connection = lifecycle->CreateConnection(lifecycle);
+				if (!connection)
+				{
+					context->Respond(CreateErrorResponse(L"Connection rejected"));
+					return;
+				}
+
+				WaitForClientResult result = WaitForClientResult::Reject;
+				try { result = connection->InvokeClientConnected(owner); }
+				catch (...) { result = WaitForClientResult::Reject; }
+				if (result != WaitForClientResult::Accept)
+				{
+					connection->Stop();
+					context->Respond(CreateErrorResponse(L"Connection rejected"));
+					return;
+				}
+
+				auto token = connection->GetToken();
+				auto body = WString::Unmanaged(HttpServerUrl_Request) + L"/" + token + L";" + HttpServerUrl_Response + L"/" + token;
+				context->Respond(CreateSuccessResponse(body));
+				return;
+			}
+
+			WString token;
+			if (request->method == L"POST" && ExtractToken(path, HttpServerUrl_Request, token) && HasEmptyBody(request))
+			{
+				auto connection = lifecycle->FindConnection(token);
+				if (connection && connection->RegisterPoll(context)) return;
+				context->Respond(CreateErrorResponse(L"Connection not found"));
+				return;
+			}
+
+			WString message;
+			if (request->method == L"POST" && ExtractToken(path, HttpServerUrl_Response, token) && DecodeSubmittedMessage(request, message))
+			{
+				auto connection = lifecycle->FindConnection(token);
+				WString response;
+				if (connection && connection->DispatchInbound(message, response))
+				{
+					context->Respond(CreateSuccessResponse(response));
+					return;
+				}
+			}
+
+			context->Respond(CreateErrorResponse(L"Route not found"));
+		}
+	};
+
+	void SetSocketHttpServerPollCallbacksForTesting(
+		const Func<void(const WString&)>& claimed,
+		const Func<void(const WString&, bool)>& completed,
+		const Func<void(const WString&)>& registered
+		)
+	{
+		auto& hooks = GetSocketHttpServerTestHooks();
+		SPIN_LOCK(hooks.lock)
+		{
+			hooks.claimed = claimed;
+			hooks.completed = completed;
+			hooks.registered = registered;
+		}
+	}
+
+	void ResetSocketHttpServerPollCallbacksForTesting()
+	{
+		SetSocketHttpServerPollCallbacksForTesting({}, {}, {});
+	}
+
+	SocketHttpServer::SocketHttpServer(const WString& baseUrl, vint port)
+		: SocketHttpServerApi(CreateServerUrlPrefix(baseUrl, port), true)
+		, impl(Ptr(new Impl(this)))
+	{
+	}
+
+	SocketHttpServer::~SocketHttpServer()
+	{
+		try { Stop(); } catch (...) {}
+		CS_LOCK(impl->lifecycle->lockState) { impl->lifecycle->owner = nullptr; }
+	}
+
+	WaitForClientResult SocketHttpServer::OnClientConnected(INetworkProtocolConnection*)
+	{
+		return WaitForClientResult::Accept;
+	}
+
+	void SocketHttpServer::OnHttpRequestReceived(Ptr<SocketHttpRequestContext> context)
+	{
+		impl->OnRequest(this, context);
+	}
+
+	void SocketHttpServer::OnHttpServerStopping()
+	{
+		List<Ptr<SocketHttpServerConnection>> stopping;
+		impl->BeginStop(stopping);
+	}
+
+	void SocketHttpServer::Start()
+	{
+		impl->lifecycle->PrepareStart();
+		try
+		{
+			SocketHttpServerApi::Start();
+		}
+		catch (...)
+		{
+			List<Ptr<SocketHttpServerConnection>> stopping;
+			impl->BeginStop(stopping);
+			throw;
+		}
+	}
+
+	void SocketHttpServer::Stop()
+	{
+		List<Ptr<SocketHttpServerConnection>> stopping;
+		if (impl->BeginStop(stopping) == Impl::BeginStopResult::ReturnFollower) return;
+		SocketHttpServerApi::Stop();
+		for (auto connection : stopping) connection->WaitForPollCompletion();
+	}
+
+	bool SocketHttpServer::IsStopped()
+	{
+		return impl->lifecycle->IsStopped() || SocketHttpServerApi::IsStopped();
+	}
+}
+
+
+/***********************************************************************
+.\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPSERVERAPI.CPP
+***********************************************************************/
+
+#if defined VCZH_MSVC
+namespace vl::inter_process::async_tcp_socket::windows_socket
+{
+	extern Ptr<IAsyncSocketServer> CreateDefaultAsyncSocketServer(vint port);
+}
+#elif defined VCZH_GCC && defined VCZH_APPLE
+namespace vl::inter_process::async_tcp_socket::macos_socket
+{
+	extern Ptr<IAsyncSocketServer> CreateDefaultAsyncSocketServer(vint port);
+}
+#elif defined VCZH_GCC
+namespace vl::inter_process::async_tcp_socket::linux_socket
+{
+	extern Ptr<IAsyncSocketServer> CreateDefaultAsyncSocketServer(vint port);
+}
+#endif
+
+
+namespace vl::inter_process::async_tcp_socket
+{
+	using namespace collections;
+
+	namespace
+	{
+		class ApiRegistration;
+		class RegistryEntry;
+		class SharedServer;
+		class ConnectionState;
+
+		struct PrefixInfo
+		{
+			WString						normalizedUrl;
+			WString						authority;
+			WString						decodedPath;
+			vint						port = 0;
+		};
+
+		wchar_t Lower(wchar_t c)
+		{
+			return c >= L'A' && c <= L'Z' ? c - L'A' + L'a' : c;
+		}
+
+		WString Lower(const WString& text)
+		{
+			if (text.Length() == 0) return {};
+			auto buffer = new wchar_t[text.Length() + 1];
+			for (vint i = 0; i < text.Length(); i++) buffer[i] = Lower(text[i]);
+			buffer[text.Length()] = 0;
+			return WString::TakeOver(buffer, text.Length());
+		}
+
+		bool Token(wchar_t c)
+		{
+			if ((c >= L'a' && c <= L'z') || (c >= L'A' && c <= L'Z') || (c >= L'0' && c <= L'9')) return true;
+			switch (c)
+			{
+			case L'!': case L'#': case L'$': case L'%': case L'&': case L'\'': case L'*':
+			case L'+': case L'-': case L'.': case L'^': case L'_': case L'`': case L'|': case L'~':
+				return true;
+			default:
+				return false;
+			}
+		}
+
+		vint Hex(wchar_t c)
+		{
+			if (c >= L'0' && c <= L'9') return c - L'0';
+			if (c >= L'a' && c <= L'f') return c - L'a' + 10;
+			if (c >= L'A' && c <= L'F') return c - L'A' + 10;
+			return -1;
+		}
+
+		bool DecodePath(const WString& raw, WString& decoded)
+		{
+			List<vuint8_t> bytes;
+			for (vint i = 0; i < raw.Length(); i++)
+			{
+				auto c = raw[i];
+				if (c == L'%')
+				{
+					if (i + 2 >= raw.Length()) return false;
+					auto h1 = Hex(raw[i + 1]);
+					auto h2 = Hex(raw[i + 2]);
+					if (h1 < 0 || h2 < 0) return false;
+					auto b = (vuint8_t)(h1 * 16 + h2);
+					if (b == 0 || b == '/' || b == '\\') return false;
+					bytes.Add(b);
+					i += 2;
+				}
+				else
+				{
+					if (c == 0 || c == L'\\' || c > 0x7F) return false;
+					bytes.Add((vuint8_t)c);
+				}
+			}
+
+			List<wchar_t> chars;
+			for (vint i = 0; i < bytes.Count();)
+			{
+				auto first = bytes[i++];
+				vuint32_t code = 0;
+				vint following = 0;
+				if (first < 0x80) code = first;
+				else if (first >= 0xC2 && first <= 0xDF) { code = first & 0x1F; following = 1; }
+				else if (first >= 0xE0 && first <= 0xEF) { code = first & 0x0F; following = 2; }
+				else if (first >= 0xF0 && first <= 0xF4) { code = first & 0x07; following = 3; }
+				else return false;
+				if (i + following > bytes.Count()) return false;
+				for (vint j = 0; j < following; j++)
+				{
+					auto next = bytes[i++];
+					if ((next & 0xC0) != 0x80) return false;
+					code = (code << 6) | (next & 0x3F);
+				}
+				if ((following == 1 && code < 0x80) || (following == 2 && code < 0x800) || (following == 3 && code < 0x10000) || code > 0x10FFFF || (code >= 0xD800 && code <= 0xDFFF)) return false;
+				if constexpr (sizeof(wchar_t) == 2)
+				{
+					if (code <= 0xFFFF) chars.Add((wchar_t)code);
+					else
+					{
+						code -= 0x10000;
+						chars.Add((wchar_t)(0xD800 + (code >> 10)));
+						chars.Add((wchar_t)(0xDC00 + (code & 0x3FF)));
+					}
+				}
+				else chars.Add((wchar_t)code);
+			}
+			decoded = chars.Count() == 0 ? WString::Empty : WString::CopyFrom(&chars[0], chars.Count());
+			return true;
+		}
+
+		bool ParseAuthority(const WString& text, WString& authority, vint& port)
+		{
+			vint colon = -1;
+			for (vint i = 0; i < text.Length(); i++)
+			{
+				if (text[i] == L':')
+				{
+					if (colon != -1) return false;
+					colon = i;
+				}
+				else if (text[i] == L'@' || text[i] == L'/' || text[i] == L'?' || text[i] == L'#') return false;
+			}
+			if (colon <= 0 || colon + 1 >= text.Length()) return false;
+			auto host = Lower(text.Left(colon));
+			if (host != L"localhost" && host != L"127.0.0.1") return false;
+			vuint64_t number = 0;
+			for (vint i = colon + 1; i < text.Length(); i++)
+			{
+				if (text[i] < L'0' || text[i] > L'9') return false;
+				number = number * 10 + text[i] - L'0';
+				if (number > 65535) return false;
+			}
+			if (number == 0) return false;
+			port = (vint)number;
+			authority = host + L":" + itow(port);
+			return true;
+		}
+
+		PrefixInfo ParsePrefix(const WString& url)
+		{
+#define ERROR_PREFIX L"vl::inter_process::async_tcp_socket::SocketHttpServerApi::SocketHttpServerApi(const WString&, bool)#"
+			CHECK_ERROR(url.Length() >= 7 && url.Left(7) == L"http://", ERROR_PREFIX L"Requires a plain http:// prefix.");
+			auto rest = url.Right(url.Length() - 7);
+			vint slash = rest.IndexOf(L'/');
+			auto rawAuthority = slash == -1 ? rest : rest.Left(slash);
+			auto rawPath = slash == -1 ? WString::Empty : rest.Right(rest.Length() - slash);
+			CHECK_ERROR(rawAuthority.Length() > 0 && rawPath.IndexOf(L'?') == -1 && rawPath.IndexOf(L'#') == -1, ERROR_PREFIX L"Query and fragment components are not supported.");
+			PrefixInfo info;
+			CHECK_ERROR(ParseAuthority(rawAuthority, info.authority, info.port), ERROR_PREFIX L"Requires localhost or 127.0.0.1 with an explicit port in 1..65535.");
+			while (rawPath.Length() > 0 && rawPath[rawPath.Length() - 1] == L'/') rawPath = rawPath.Left(rawPath.Length() - 1);
+			CHECK_ERROR(DecodePath(rawPath, info.decodedPath), ERROR_PREFIX L"The path contains invalid escaping, UTF-8, NUL, or an encoded separator.");
+			info.normalizedUrl = L"http://" + info.authority + rawPath;
+			return info;
+#undef ERROR_PREFIX
+		}
+
+		bool ToAscii(const Array<vuint8_t>& bytes, WString& text)
+		{
+			if (bytes.Count() == 0) { text = {}; return true; }
+			auto buffer = new wchar_t[bytes.Count() + 1];
+			for (vint i = 0; i < bytes.Count(); i++)
+			{
+				if (bytes[i] > 0x7F) { delete[] buffer; return false; }
+				buffer[i] = (wchar_t)bytes[i];
+			}
+			buffer[bytes.Count()] = 0;
+			text = WString::TakeOver(buffer, bytes.Count());
+			return true;
+		}
+
+		WString TrimOws(const WString& text)
+		{
+			vint begin = 0, end = text.Length();
+			while (begin < end && (text[begin] == L' ' || text[begin] == L'\t')) begin++;
+			while (begin < end && (text[end - 1] == L' ' || text[end - 1] == L'\t')) end--;
+			return text.Sub(begin, end - begin);
+		}
+
+		bool AnalyzeCacheControl(const Array<vuint8_t>& bytes, bool& noStore)
+		{
+			WString text;
+			if (!ToAscii(bytes, text)) return false;
+			noStore = false;
+			vint begin = 0;
+			bool quoted = false, escaped = false;
+			for (vint i = 0; i <= text.Length(); i++)
+			{
+				if (i < text.Length())
+				{
+					auto c = text[i];
+					if (escaped) { escaped = false; continue; }
+					if (quoted)
+					{
+						if (c == L'\\') escaped = true;
+						else if (c == L'"') quoted = false;
+						continue;
+					}
+					if (c == L'"') { quoted = true; continue; }
+					if (c != L',') continue;
+				}
+				else if (quoted || escaped) return false;
+
+				auto item = TrimOws(text.Sub(begin, i - begin));
+				if (item.Length() == 0) return false;
+				auto equals = item.IndexOf(L'=');
+				auto name = TrimOws(equals == -1 ? item : item.Left(equals));
+				if (name.Length() == 0) return false;
+				for (vint j = 0; j < name.Length(); j++) if (!Token(name[j])) return false;
+				if (equals != -1 && TrimOws(item.Right(item.Length() - equals - 1)).Length() == 0) return false;
+				if (Lower(name) == L"no-store")
+				{
+					if (equals != -1) return false;
+					noStore = true;
+				}
+				begin = i + 1;
+			}
+			return true;
+		}
+
+		bool ValidHttpDate(const Array<vuint8_t>& bytes)
+		{
+			WString text;
+			if (!ToAscii(bytes, text)) return false;
+			text = TrimOws(text);
+			if (text.Length() != 29
+				|| text[3] != L',' || text[4] != L' ' || text[7] != L' ' || text[11] != L' '
+				|| text[16] != L' ' || text[19] != L':' || text[22] != L':' || text[25] != L' '
+				|| text.Sub(26, 3) != L"GMT") return false;
+			auto dayName = text.Sub(0, 3);
+			if (dayName != L"Sun" && dayName != L"Mon" && dayName != L"Tue" && dayName != L"Wed" && dayName != L"Thu" && dayName != L"Fri" && dayName != L"Sat") return false;
+			vint digitIndexes[] = { 5, 6, 12, 13, 14, 15, 17, 18, 20, 21, 23, 24 };
+			for (auto index : digitIndexes)
+			{
+				if (text[index] < L'0' || text[index] > L'9') return false;
+			}
+			auto monthName = text.Sub(8, 3);
+			vint month =
+				monthName == L"Jan" ? 1 : monthName == L"Feb" ? 2 : monthName == L"Mar" ? 3 :
+				monthName == L"Apr" ? 4 : monthName == L"May" ? 5 : monthName == L"Jun" ? 6 :
+				monthName == L"Jul" ? 7 : monthName == L"Aug" ? 8 : monthName == L"Sep" ? 9 :
+				monthName == L"Oct" ? 10 : monthName == L"Nov" ? 11 : monthName == L"Dec" ? 12 : 0;
+			if (month == 0) return false;
+			auto day = (text[5] - L'0') * 10 + text[6] - L'0';
+			auto year = (text[12] - L'0') * 1000 + (text[13] - L'0') * 100 + (text[14] - L'0') * 10 + text[15] - L'0';
+			auto hour = (text[17] - L'0') * 10 + text[18] - L'0';
+			auto minute = (text[20] - L'0') * 10 + text[21] - L'0';
+			auto second = (text[23] - L'0') * 10 + text[24] - L'0';
+			if (year == 0 || hour > 23 || minute > 59 || second > 60) return false;
+			vint monthDays[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+			if (month == 2 && (year % 400 == 0 || (year % 4 == 0 && year % 100 != 0))) monthDays[1] = 29;
+			return day >= 1 && day <= monthDays[month - 1];
+		}
+
+		HttpField Field(const WString& name, const WString& value)
+		{
+			HttpField field;
+			field.name = Lower(name);
+			field.value.Resize(value.Length());
+			for (vint i = 0; i < value.Length(); i++)
+			{
+				CHECK_ERROR(value[i] <= 0x7F, L"An HTTP field helper requires ASCII.");
+				field.value[i] = (vuint8_t)value[i];
+			}
+			return field;
+		}
+
+		const wchar_t* Reason(vint code)
+		{
+			switch (code)
+			{
+			case 200: return L"OK"; case 204: return L"No Content"; case 304: return L"Not Modified";
+			case 400: return L"Bad Request"; case 404: return L"Not Found"; case 405: return L"Method Not Allowed";
+			case 408: return L"Request Timeout"; case 413: return L"Payload Too Large"; case 414: return L"URI Too Long";
+			case 415: return L"Unsupported Media Type"; case 417: return L"Expectation Failed";
+			case 431: return L"Request Header Fields Too Large"; case 500: return L"Internal Server Error";
+			case 501: return L"Not Implemented"; case 505: return L"HTTP Version Not Supported";
+			default: return L"Response";
+			}
+		}
+
+		WString Two(vint value) { return value < 10 ? L"0" + itow(value) : itow(value); }
+
+		WString DateHeader()
+		{
+			const wchar_t* days[] = { L"Sun", L"Mon", L"Tue", L"Wed", L"Thu", L"Fri", L"Sat" };
+			const wchar_t* months[] = { L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun", L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec" };
+			auto now = DateTime::UtcTime();
+			return WString::Unmanaged(days[now.dayOfWeek]) + L", " + Two(now.day) + L" " + months[now.month - 1] + L" " + itow(now.year) + L" " + Two(now.hour) + L":" + Two(now.minute) + L":" + Two(now.second) + L" GMT";
+		}
+
+		bool Decimal(const Array<vuint8_t>& bytes, vint& value)
+		{
+			if (bytes.Count() == 0) return false;
+			vuint64_t number = 0;
+			for (auto c : bytes)
+			{
+				if (c < '0' || c > '9') return false;
+				number = number * 10 + c - '0';
+				if (number > (vuint64_t)(std::numeric_limits<vint>::max)()) return false;
+			}
+			value = (vint)number;
+			return true;
+		}
+
+		Ptr<HttpResponse> Normalize(Ptr<HttpResponse> input, const WString& method)
+		{
+			CHECK_ERROR(input, L"SocketHttpRequestContext::Respond requires a response.");
+			CHECK_ERROR(input->statusCode >= 200 && input->statusCode <= 599, L"Invalid HTTP response status.");
+			CHECK_ERROR(input->body.trailers.Count() == 0, L"Response trailers are not supported.");
+			vint bodySize = 0;
+			for (auto&& chunk : input->body.chunks)
+			{
+				CHECK_ERROR(chunk.data.Count() <= HttpBodySizeLimit - bodySize, L"The response body is too large.");
+				bodySize += chunk.data.Count();
+			}
+			auto bodyAllowed = method != L"HEAD" && input->statusCode != 204 && input->statusCode != 304;
+			auto length = bodyAllowed || method == L"HEAD" ? bodySize : 0;
+			auto output = Ptr(new HttpResponse);
+			output->statusCode = input->statusCode;
+			output->reason = input->reason == WString::Empty ? Reason(input->statusCode) : input->reason;
+			for (vint i = 0; i < output->reason.Length(); i++)
+			{
+				CHECK_ERROR(output->reason[i] >= 0x20 && output->reason[i] <= 0x7E, L"Invalid HTTP response reason phrase.");
+			}
+			bool date = false, noStore = false, cors = false, contentLength = false;
+			vint suppliedLength = 0;
+			for (auto&& source : input->headers)
+			{
+				auto name = Lower(source.name);
+				CHECK_ERROR(name.Length() > 0, L"Invalid empty response field name.");
+				for (vint i = 0; i < name.Length(); i++) CHECK_ERROR(name[i] <= 0x7F && Token(name[i]), L"Invalid response field name.");
+				for (auto c : source.value) CHECK_ERROR(c == '\t' || (c >= 0x20 && c != 0x7F), L"Invalid response field value.");
+				CHECK_ERROR(name != L"transfer-encoding", L"Response Transfer-Encoding is not supported.");
+				if (name == L"content-length")
+				{
+					vint parsed = 0;
+					CHECK_ERROR(Decimal(source.value, parsed) && (!contentLength || suppliedLength == parsed), L"Invalid or contradictory Content-Length.");
+					contentLength = true;
+					suppliedLength = parsed;
+					continue;
+				}
+				if (name == L"date")
+				{
+					CHECK_ERROR(!date && ValidHttpDate(source.value), L"A response requires at most one valid IMF-fixdate Date field.");
+					date = true;
+				}
+				else if (name == L"cache-control")
+				{
+					bool sourceNoStore = false;
+					CHECK_ERROR(AnalyzeCacheControl(source.value, sourceNoStore), L"Invalid Cache-Control response field.");
+					noStore |= sourceNoStore;
+				}
+				else if (name == L"access-control-allow-origin")
+				{
+					WString value;
+					CHECK_ERROR(!cors && ToAscii(source.value, value) && TrimOws(value) == L"*", L"The loopback CORS policy requires exactly one Access-Control-Allow-Origin: * field.");
+					cors = true;
+				}
+				HttpField copy;
+				copy.name = name;
+				copy.value.Resize(source.value.Count());
+				for (vint i = 0; i < source.value.Count(); i++) copy.value[i] = source.value[i];
+				output->headers.Add(std::move(copy));
+			}
+			auto outputLength = length;
+			if (contentLength && input->statusCode == 304 && method != L"HEAD") outputLength = suppliedLength;
+			else CHECK_ERROR(!contentLength || suppliedLength == length, L"Contradictory response Content-Length.");
+			if (!date) output->headers.Add(Field(L"date", DateHeader()));
+			if (!noStore) output->headers.Add(Field(L"cache-control", L"no-store"));
+			if (!cors) output->headers.Add(Field(L"access-control-allow-origin", L"*"));
+			if (input->statusCode != 204) output->headers.Add(Field(L"content-length", itow(outputLength)));
+			if (bodyAllowed && bodySize > 0)
+			{
+				HttpBodyChunk chunk;
+				chunk.data.Resize(bodySize);
+				vint offset = 0;
+				for (auto&& source : input->body.chunks) for (auto c : source.data) chunk.data[offset++] = c;
+				output->body.chunks.Add(std::move(chunk));
+			}
+			return output;
+		}
+
+		Ptr<HttpResponse> Automatic(vint code, bool close, bool preflight = false)
+		{
+			auto response = Ptr(new HttpResponse);
+			response->statusCode = code;
+			response->reason = Reason(code);
+			if (close) response->headers.Add(Field(L"connection", L"close"));
+			if (preflight)
+			{
+				response->headers.Add(Field(L"access-control-allow-methods", L"GET, HEAD, POST, OPTIONS"));
+				response->headers.Add(Field(L"access-control-allow-headers", L"Accept, Content-Type"));
+				response->headers.Add(Field(L"allow", L"GET, HEAD, POST, OPTIONS"));
+			}
+			return response;
+		}
+	}
+}
+
+namespace vl::inter_process::async_tcp_socket
+{
+	using namespace collections;
+
+	namespace
+	{
+		class ApiRegistration : public Object
+		{
+		public:
+			struct Frame
+			{
+				ApiRegistration*				registration;
+				Frame*						previous;
+				Frame(ApiRegistration* value);
+				~Frame();
+			};
+			static thread_local Frame*		currentFrame;
+
+			PrefixInfo						prefix;
+			bool							respondToOptions;
+			Ptr<RegistryEntry>				entry;
+			CriticalSection					lock;
+			ConditionVariable				cv;
+			List<Ptr<SocketHttpRequestContext>> contexts;
+			List<Func<void()>>				contextCancellations;
+			Func<void(Ptr<SocketHttpRequestContext>)> requestCallback;
+			Func<void()>						stoppingCallback;
+			vint							activeCallbacks = 0;
+			bool							stopping = false;
+			bool							stopped = false;
+
+			ApiRegistration(const PrefixInfo& _prefix, bool _respondToOptions)
+				: prefix(_prefix), respondToOptions(_respondToOptions)
+			{
+			}
+
+			static vint Depth(ApiRegistration* registration)
+			{
+				vint depth = 0;
+				for (auto frame = currentFrame; frame; frame = frame->previous) if (frame->registration == registration) depth++;
+				return depth;
+			}
+
+			bool AddContext(Ptr<SocketHttpRequestContext> context, const Func<void()>& cancellation)
+			{
+				bool added = false;
+				CS_LOCK(lock)
+				{
+					if (!stopping)
+					{
+						contexts.Add(context);
+						contextCancellations.Add(cancellation);
+						added = true;
+					}
+				}
+				return added;
+			}
+
+			void RemoveContext(SocketHttpRequestContext* context)
+			{
+				CS_LOCK(lock)
+				{
+					vint index = -1;
+					for (vint i = 0; i < contexts.Count(); i++)
+					{
+						if (contexts[i].Obj() == context) { index = i; break; }
+					}
+					if (index != -1)
+					{
+						contexts.RemoveAt(index);
+						contextCancellations.RemoveAt(index);
+					}
+					cv.WakeAllPendings();
+				}
+			}
+
+			bool InvokeRequest(Ptr<SocketHttpRequestContext> context)
+			{
+				Func<void(Ptr<SocketHttpRequestContext>)> callback;
+				CS_LOCK(lock)
+				{
+					if (!stopping && requestCallback)
+					{
+						callback = requestCallback;
+						activeCallbacks++;
+					}
+				}
+				if (!callback) return false;
+				Frame frame(this);
+				try
+				{
+					callback(context);
+				}
+				catch (...)
+				{
+					CS_LOCK(lock) { activeCallbacks--; cv.WakeAllPendings(); }
+					throw;
+				}
+				CS_LOCK(lock) { activeCallbacks--; cv.WakeAllPendings(); }
+				return true;
+			}
+
+			bool ReserveCompletion(const Func<void(bool)>& callback)
+			{
+				if (!callback) return false;
+				bool reserved = false;
+				CS_LOCK(lock)
+				{
+					if (!stopped) { activeCallbacks++; reserved = true; }
+				}
+				return reserved;
+			}
+
+			void InvokeReservedCompletion(const Func<void(bool)>& callback, bool succeeded)
+			{
+				Frame frame(this);
+				try { callback(succeeded); } catch (...) {}
+				CS_LOCK(lock) { activeCallbacks--; cv.WakeAllPendings(); }
+			}
+
+			void Stop(bool notify)
+			{
+				List<Func<void()>> cancelling;
+				Func<void()> callback;
+				auto depth = Depth(this);
+				lock.Enter();
+				if (stopped) { lock.Leave(); return; }
+				if (stopping)
+				{
+					if (depth > 0) { lock.Leave(); return; }
+					while (!stopped) cv.SleepWith(lock);
+					lock.Leave();
+					return;
+				}
+				stopping = true;
+				if (notify) callback = stoppingCallback;
+				for (auto cancellation : contextCancellations) cancelling.Add(cancellation);
+				lock.Leave();
+
+				if (callback)
+				{
+					CS_LOCK(lock) { activeCallbacks++; }
+					Frame frame(this);
+					try { callback(); } catch (...) {}
+					CS_LOCK(lock) { activeCallbacks--; cv.WakeAllPendings(); }
+				}
+				for (auto cancellation : cancelling) cancellation();
+				lock.Enter();
+				while (contexts.Count() > 0 || activeCallbacks > depth) cv.SleepWith(lock);
+				requestCallback = {};
+				stoppingCallback = {};
+				stopped = true;
+				cv.WakeAllPendings();
+				lock.Leave();
+			}
+
+			bool IsStopped()
+			{
+				bool result = false;
+				CS_LOCK(lock) { result = stopping; }
+				return result;
+			}
+		};
+
+		thread_local ApiRegistration::Frame* ApiRegistration::currentFrame = nullptr;
+		ApiRegistration::Frame::Frame(ApiRegistration* value) : registration(value), previous(currentFrame) { currentFrame = this; }
+		ApiRegistration::Frame::~Frame() { currentFrame = previous; }
+
+		class RegistryEntry : public Object
+		{
+		public:
+			vint							port;
+			vint							bindAttempt;
+			EventObject						readyEvent;
+			List<Ptr<ApiRegistration>>		registrations;
+			Ptr<HttpRequestServer>				server;
+			WString							failureMessage;
+			AsyncSocketServerStartFailure		failure = AsyncSocketServerStartFailure::Other;
+			bool ready = false, succeeded = false, terminal = false;
+
+			RegistryEntry(vint _port, vint _bindAttempt)
+				: port(_port)
+				, bindAttempt(_bindAttempt)
+			{
+				CHECK_ERROR(readyEvent.CreateManualUnsignal(false), L"Failed to create a socket HTTP registry event.");
+			}
+		};
+
+		class ConnectionState : public Object
+		{
+		public:
+			CriticalSection					lock;
+			Ptr<RegistryEntry>				entry;
+			IHttpRequestConnection*			connection = nullptr;
+			Ptr<SocketHttpRequestContext>	context;
+			bool automaticWrite = false;
+			bool closeAfterWrite = false;
+			bool terminal = false;
+
+			ConnectionState(Ptr<RegistryEntry> _entry) : entry(_entry) {}
+		};
+	}
+
+	class SocketHttpRequestContext::Impl : public Object
+	{
+	public:
+		enum class State { Pending, Sending, Completed, Cancelled };
+		CriticalSection					lock;
+		Ptr<ConnectionState>				connectionState;
+		Ptr<ApiRegistration>				registration;
+		Ptr<HttpRequest>					request;
+		WString relativePath, query;
+		SocketHttpRequestContext*			owner = nullptr;
+		Func<void(bool)>					completion;
+		State state = State::Pending;
+
+		Impl(Ptr<ConnectionState> cs, Ptr<ApiRegistration> reg, Ptr<HttpRequest> req, const WString& relative, const WString& _query)
+			: connectionState(cs), registration(reg), request(req), relativePath(relative), query(_query)
+		{
+		}
+
+		bool Finish(bool succeeded, bool includePending, bool includeSending, bool stopConnection)
+		{
+			Func<void(bool)> callback;
+			bool won = false;
+			CS_LOCK(lock)
+			{
+				if ((includeSending && state == State::Sending) || (includePending && state == State::Pending))
+				{
+					if (state == State::Sending)
+					{
+						callback = completion;
+						completion = {};
+					}
+					state = succeeded ? State::Completed : State::Cancelled;
+					won = true;
+				}
+			}
+			if (!won) return false;
+			auto completionReserved = registration->ReserveCompletion(callback);
+			IHttpRequestConnection* connection = nullptr;
+			CS_LOCK(connectionState->lock)
+			{
+				if (connectionState->context.Obj() == owner) connectionState->context = nullptr;
+				if (stopConnection) { connectionState->terminal = true; connection = connectionState->connection; }
+			}
+			registration->RemoveContext(owner);
+			if (connection) try { connection->Stop(); } catch (...) {}
+			if (completionReserved) registration->InvokeReservedCompletion(callback, succeeded);
+			return true;
+		}
+	};
+
+	class SocketHttpServerApiDispatcher : public Object, public virtual IHttpRequestCallback
+	{
+	private:
+		CriticalSection					lockSelf;
+		Ptr<SocketHttpServerApiDispatcher>	selfReference;
+		Ptr<ConnectionState>				state;
+		Ptr<SocketHttpServerApiDispatcher> Retain();
+		void SendAutomatic(vint code, bool close, bool preflight = false);
+		void Process(Ptr<HttpRequest> request);
+
+	public:
+		SocketHttpServerApiDispatcher(Ptr<RegistryEntry> entry) : state(Ptr(new ConnectionState(entry))) {}
+		void InitializeSelf(Ptr<SocketHttpServerApiDispatcher> self) { CS_LOCK(lockSelf) { selfReference = self; } }
+		void OnReadRequest(Ptr<HttpRequest> request) override;
+		void OnReadRequestFailure(HttpRequestFailure failure) override;
+		void OnWriteCompleted() override;
+		void OnError(const WString& error, bool fatal) override;
+		void OnDisconnected() override;
+		void OnInstalled(IHttpRequestConnection* connection) override;
+	};
+
+	namespace
+	{
+		void UnexpectedStop(Ptr<RegistryEntry> entry);
+
+		class SharedServer : public HttpRequestServer
+		{
+		private:
+			CriticalSection				lock;
+			Ptr<SharedServer>				selfReference;
+			Ptr<RegistryEntry>				entry;
+		protected:
+			void OnServerStopped() override;
+		public:
+			SharedServer(
+				Ptr<IAsyncSocketServer> server,
+				Ptr<RegistryEntry> _entry,
+				const Func<Ptr<IHttpRequestTimeoutController>()>& timeoutControllerFactory
+				)
+				: HttpRequestServer(server, timeoutControllerFactory)
+				, entry(_entry)
+			{
+			}
+			void InitializeSelf(Ptr<SharedServer> self) { CS_LOCK(lock) { selfReference = self; } }
+			WaitForClientResult OnClientConnected(IHttpRequestConnection* connection) override;
+			void StopAndRelease();
+		};
+
+		BEGIN_GLOBAL_STORAGE_CLASS(SocketHttpRegistry)
+			SpinLock						lock;
+			Dictionary<vint, Ptr<RegistryEntry>> entries;
+			Func<Ptr<IAsyncSocketServer>(vint)>	listenerFactory;
+			Func<Ptr<IHttpRequestTimeoutController>()>
+										timeoutControllerFactory;
+		INITIALIZE_GLOBAL_STORAGE_CLASS
+		FINALIZE_GLOBAL_STORAGE_CLASS
+			List<Ptr<HttpRequestServer>> servers;
+			List<Ptr<RegistryEntry>> retainedEntries;
+			SPIN_LOCK(lock)
+			{
+				for (auto entry : entries.Values())
+				{
+					retainedEntries.Add(entry);
+					if (entry->server) servers.Add(entry->server);
+				}
+				entries.Clear();
+				listenerFactory = {};
+				timeoutControllerFactory = {};
+			}
+			for (auto server : servers)
+			{
+				auto shared = server.Cast<SharedServer>();
+				if (shared) shared->StopAndRelease(); else server->Stop();
+			}
+		END_GLOBAL_STORAGE_CLASS(SocketHttpRegistry)
+	}
+}
+
+namespace vl::inter_process::async_tcp_socket
+{
+	using namespace collections;
+
+	namespace
+	{
+		Ptr<IAsyncSocketServer> CreateListener(vint port)
+		{
+			Func<Ptr<IAsyncSocketServer>(vint)> factory;
+			auto& registry = GetSocketHttpRegistry();
+			SPIN_LOCK(registry.lock) { factory = registry.listenerFactory; }
+			if (factory) return factory(port);
+#if defined VCZH_MSVC
+			return windows_socket::CreateDefaultAsyncSocketServer(port);
+#elif defined VCZH_GCC && defined VCZH_APPLE
+			return macos_socket::CreateDefaultAsyncSocketServer(port);
+#elif defined VCZH_GCC
+			return linux_socket::CreateDefaultAsyncSocketServer(port);
+#else
+			CHECK_FAIL(L"No async socket server is available on this platform.");
+#endif
+		}
+
+		Func<Ptr<IHttpRequestTimeoutController>()> GetTimeoutControllerFactory()
+		{
+			Func<Ptr<IHttpRequestTimeoutController>()> factory;
+			auto& registry = GetSocketHttpRegistry();
+			SPIN_LOCK(registry.lock) { factory = registry.timeoutControllerFactory; }
+			return factory;
+		}
+
+		bool CurrentEntry(SocketHttpRegistry& registry, Ptr<RegistryEntry> entry)
+		{
+			auto index = registry.entries.Keys().IndexOf(entry->port);
+			return index != -1 && registry.entries.Values()[index] == entry;
+		}
+
+		bool Duplicate(Ptr<RegistryEntry> entry, Ptr<ApiRegistration> registration)
+		{
+			for (auto existing : entry->registrations)
+			{
+				if (existing != registration && existing->prefix.authority == registration->prefix.authority && existing->prefix.decodedPath == registration->prefix.decodedPath) return true;
+			}
+			return false;
+		}
+
+		void RegisterApi(Ptr<ApiRegistration> registration)
+		{
+			auto& registry = GetSocketHttpRegistry();
+			vint observedAttempt = 0;
+			WString lastFailure = L"The listener address is already in use.";
+			while (true)
+			{
+				Ptr<RegistryEntry> entry;
+				bool creator = false;
+				SPIN_LOCK(registry.lock)
+				{
+					auto index = registry.entries.Keys().IndexOf(registration->prefix.port);
+					if (index != -1) entry = registry.entries.Values()[index];
+				}
+				if (!entry)
+				{
+					if (observedAttempt >= 5)
+					{
+						throw AsyncSocketServerStartException(AsyncSocketServerStartFailure::AddressInUse, lastFailure);
+					}
+					auto candidate = Ptr(new RegistryEntry(registration->prefix.port, observedAttempt + 1));
+					SPIN_LOCK(registry.lock)
+					{
+						auto index = registry.entries.Keys().IndexOf(registration->prefix.port);
+						if (index == -1)
+						{
+							entry = candidate;
+							entry->registrations.Add(registration);
+							registration->entry = entry;
+							registry.entries.Add(entry->port, entry);
+							creator = true;
+						}
+						else entry = registry.entries.Values()[index];
+					}
+				}
+				if (entry && entry->bindAttempt > observedAttempt) observedAttempt = entry->bindAttempt;
+
+				if (!creator)
+				{
+					CHECK_ERROR(entry->readyEvent.Wait(), L"Failed to wait for a shared socket HTTP listener.");
+					bool joined = false, duplicate = false, retry = false, replace = false, exhausted = false;
+					vint nextAttempt = 0;
+					AsyncSocketServerStartFailure failure = AsyncSocketServerStartFailure::Other;
+					WString message;
+					SPIN_LOCK(registry.lock)
+					{
+						if (entry->succeeded && !entry->terminal && CurrentEntry(registry, entry))
+						{
+							duplicate = Duplicate(entry, registration);
+							if (!duplicate)
+							{
+								entry->registrations.Add(registration);
+								registration->entry = entry;
+								joined = true;
+							}
+						}
+						else if (entry->ready && !entry->succeeded)
+						{
+							failure = entry->failure;
+							message = entry->failureMessage;
+							if (failure == AsyncSocketServerStartFailure::AddressInUse)
+							{
+								if (entry->bindAttempt >= 5)
+								{
+									exhausted = true;
+									if (CurrentEntry(registry, entry)) registry.entries.Remove(entry->port);
+								}
+								else if (CurrentEntry(registry, entry))
+								{
+									replace = true;
+									nextAttempt = entry->bindAttempt + 1;
+								}
+								else retry = true;
+							}
+						}
+						else retry = true;
+					}
+					CHECK_ERROR(!duplicate, L"A SocketHttpServerApi with the same normalized prefix has already started.");
+					if (joined) return;
+					if (message != WString::Empty) lastFailure = message;
+					if (failure != AsyncSocketServerStartFailure::AddressInUse && !retry)
+					{
+						throw AsyncSocketServerStartException(failure, message);
+					}
+					if (exhausted)
+					{
+						throw AsyncSocketServerStartException(AsyncSocketServerStartFailure::AddressInUse, lastFailure);
+					}
+					if (replace)
+					{
+						auto candidate = Ptr(new RegistryEntry(registration->prefix.port, nextAttempt));
+						SPIN_LOCK(registry.lock)
+						{
+							if (CurrentEntry(registry, entry)
+								&& entry->ready && !entry->succeeded
+								&& entry->failure == AsyncSocketServerStartFailure::AddressInUse
+								&& entry->bindAttempt + 1 == nextAttempt)
+							{
+								registry.entries.Remove(entry->port);
+								entry = candidate;
+								entry->registrations.Add(registration);
+								registration->entry = entry;
+								registry.entries.Add(entry->port, entry);
+								creator = true;
+							}
+						}
+					}
+					if (!creator) continue;
+				}
+
+				Ptr<SharedServer> server;
+				AsyncSocketServerStartFailure failure = AsyncSocketServerStartFailure::Other;
+				WString message;
+				bool started = false;
+				try
+				{
+					auto listener = CreateListener(entry->port);
+					CHECK_ERROR(listener, L"The socket HTTP listener factory returned null.");
+					server = Ptr(new SharedServer(listener, entry, GetTimeoutControllerFactory()));
+					server->InitializeSelf(server);
+					server->Start();
+					started = true;
+				}
+				catch (const AsyncSocketServerStartException& exception) { failure = exception.GetFailure(); message = exception.Message(); }
+				catch (const Exception& exception) { message = exception.Message(); }
+				catch (...) { message = L"The socket HTTP listener failed to start."; }
+
+				bool published = false;
+				SPIN_LOCK(registry.lock)
+				{
+					if (started && !entry->terminal && CurrentEntry(registry, entry))
+					{
+						entry->server = server;
+						entry->ready = true;
+						entry->succeeded = true;
+						published = true;
+					}
+					else
+					{
+						if (CurrentEntry(registry, entry) && failure != AsyncSocketServerStartFailure::AddressInUse) registry.entries.Remove(entry->port);
+						entry->registrations.Remove(registration.Obj());
+						registration->entry = nullptr;
+						entry->failure = failure;
+						entry->failureMessage = message;
+						entry->ready = true;
+						entry->terminal = true;
+					}
+				}
+				entry->readyEvent.Signal();
+				if (published) return;
+				if (server) server->StopAndRelease();
+				if (started) { failure = AsyncSocketServerStartFailure::Other; message = L"The listener stopped while starting."; }
+				if (failure != AsyncSocketServerStartFailure::AddressInUse) throw AsyncSocketServerStartException(failure, message);
+				if (message != WString::Empty) lastFailure = message;
+			}
+		}
+
+		Ptr<HttpRequestServer> UnregisterApi(Ptr<ApiRegistration> registration)
+		{
+			Ptr<HttpRequestServer> server;
+			Ptr<RegistryEntry> entry;
+			auto& registry = GetSocketHttpRegistry();
+			SPIN_LOCK(registry.lock)
+			{
+				entry = registration->entry;
+				if (entry)
+				{
+					entry->registrations.Remove(registration.Obj());
+					registration->entry = nullptr;
+					if (entry->registrations.Count() == 0)
+					{
+						if (CurrentEntry(registry, entry)) registry.entries.Remove(entry->port);
+						entry->terminal = true;
+						server = entry->server;
+						entry->server = nullptr;
+					}
+				}
+			}
+			return server;
+		}
+
+		List<Ptr<ApiRegistration>> Registrations(Ptr<RegistryEntry> entry)
+		{
+			List<Ptr<ApiRegistration>> result;
+			auto& registry = GetSocketHttpRegistry();
+			SPIN_LOCK(registry.lock)
+			{
+				if (!entry->terminal) for (auto item : entry->registrations) result.Add(item);
+			}
+			return result;
+		}
+
+		void UnexpectedStop(Ptr<RegistryEntry> entry)
+		{
+			List<Ptr<ApiRegistration>> stopping;
+			auto& registry = GetSocketHttpRegistry();
+			SPIN_LOCK(registry.lock)
+			{
+				if (!entry->terminal)
+				{
+					entry->terminal = true;
+					if (CurrentEntry(registry, entry)) registry.entries.Remove(entry->port);
+					for (auto registration : entry->registrations) { registration->entry = nullptr; stopping.Add(registration); }
+					entry->registrations.Clear();
+					entry->server = nullptr;
+				}
+			}
+			for (auto registration : stopping) registration->Stop(true);
+		}
+
+		bool Match(const WString& prefix, const WString& path)
+		{
+			return prefix.Length() == 0 || path == prefix || (path.Length() > prefix.Length() && path.Left(prefix.Length()) == prefix && path[prefix.Length()] == L'/');
+		}
+
+		bool SingleHeader(Ptr<HttpRequest> request, const WString& name, WString& value, bool& exists)
+		{
+			exists = false;
+			for (auto&& field : request->headers)
+			{
+				if (Lower(field.name) == name)
+				{
+					if (exists || !ToAscii(field.value, value)) return false;
+					exists = true;
+				}
+			}
+			return true;
+		}
+
+		WString Trim(const WString& text)
+		{
+			vint begin = 0, end = text.Length();
+			while (begin < end && (text[begin] == L' ' || text[begin] == L'\t')) begin++;
+			while (begin < end && (text[end - 1] == L' ' || text[end - 1] == L'\t')) end--;
+			return text.Sub(begin, end - begin);
+		}
+
+		bool Preflight(Ptr<HttpRequest> request, bool& present, bool& supportedMethod)
+		{
+			present = false;
+			supportedMethod = false;
+			WString method;
+			bool exists = false;
+			if (!SingleHeader(request, L"access-control-request-method", method, exists)) return false;
+			if (!exists) return true;
+			present = true;
+			method = Trim(method);
+			supportedMethod = method == L"GET" || method == L"HEAD" || method == L"POST" || method == L"OPTIONS";
+			if (method.Length() == 0) return false;
+			for (auto&& field : request->headers)
+			{
+				if (Lower(field.name) != L"access-control-request-headers") continue;
+				WString headers;
+				if (!ToAscii(field.value, headers)) return false;
+				vint reading = 0;
+				while (reading <= headers.Length())
+				{
+					vint comma = reading;
+					while (comma < headers.Length() && headers[comma] != L',') comma++;
+					auto item = Lower(Trim(headers.Sub(reading, comma - reading)));
+					if (item.Length() == 0 || (item != L"accept" && item != L"content-type")) return false;
+					if (comma == headers.Length()) break;
+					reading = comma + 1;
+				}
+			}
+			return true;
+		}
+	}
+
+	void SetSocketHttpServerListenerFactoryForTesting(const Func<Ptr<IAsyncSocketServer>(vint)>& factory)
+	{
+		auto& registry = GetSocketHttpRegistry();
+		SPIN_LOCK(registry.lock)
+		{
+			CHECK_ERROR(registry.entries.Count() == 0, L"The test listener factory can only change while no API is started.");
+			registry.listenerFactory = factory;
+		}
+	}
+
+	void ResetSocketHttpServerListenerFactoryForTesting() { SetSocketHttpServerListenerFactoryForTesting({}); }
+
+	void SetSocketHttpServerTimeoutControllerFactoryForTesting(const Func<Ptr<IHttpRequestTimeoutController>()>& factory)
+	{
+		auto& registry = GetSocketHttpRegistry();
+		SPIN_LOCK(registry.lock)
+		{
+			CHECK_ERROR(registry.entries.Count() == 0, L"The test timeout controller factory can only change while no API is started.");
+			registry.timeoutControllerFactory = factory;
+		}
+	}
+
+	void ResetSocketHttpServerTimeoutControllerFactoryForTesting() { SetSocketHttpServerTimeoutControllerFactoryForTesting({}); }
+
+	WaitForClientResult SharedServer::OnClientConnected(IHttpRequestConnection* connection)
+	{
+		Ptr<RegistryEntry> retained;
+		CS_LOCK(lock) { retained = entry; }
+		if (!retained) return WaitForClientResult::Reject;
+		try
+		{
+			auto dispatcher = Ptr(new SocketHttpServerApiDispatcher(retained));
+			dispatcher->InitializeSelf(dispatcher);
+			connection->InstallCallback(dispatcher.Obj());
+			return WaitForClientResult::Accept;
+		}
+		catch (...) { return WaitForClientResult::Reject; }
+	}
+
+	void SharedServer::StopAndRelease()
+	{
+		Ptr<SharedServer> retained;
+		CS_LOCK(lock) { retained = selfReference; }
+		try { HttpRequestServer::Stop(); } catch (...) {}
+		CS_LOCK(lock) { entry = nullptr; selfReference = nullptr; }
+	}
+
+	void SharedServer::OnServerStopped()
+	{
+		Ptr<SharedServer> retained;
+		Ptr<RegistryEntry> retainedEntry;
+		CS_LOCK(lock) { retained = selfReference; retainedEntry = entry; }
+		if (retainedEntry) UnexpectedStop(retainedEntry);
+		try { HttpRequestServer::OnServerStopped(); } catch (...) {}
+		CS_LOCK(lock) { entry = nullptr; selfReference = nullptr; }
+	}
+}
+
+namespace vl::inter_process::async_tcp_socket
+{
+	using namespace collections;
+
+	Ptr<SocketHttpServerApiDispatcher> SocketHttpServerApiDispatcher::Retain()
+	{
+		Ptr<SocketHttpServerApiDispatcher> retained;
+		CS_LOCK(lockSelf) { retained = selfReference; }
+		return retained;
+	}
+
+	void SocketHttpServerApiDispatcher::SendAutomatic(vint code, bool close, bool preflight)
+	{
+		auto response = Normalize(Automatic(code, close, preflight), L"GET");
+		IHttpRequestConnection* connection = nullptr;
+		CS_LOCK(state->lock)
+		{
+			if (state->terminal || state->automaticWrite || state->context) return;
+			state->automaticWrite = true;
+			state->closeAfterWrite = close;
+			connection = state->connection;
+		}
+		if (!connection) return;
+		try
+		{
+			connection->SendResponse(response);
+		}
+		catch (...)
+		{
+			CS_LOCK(state->lock)
+			{
+				state->automaticWrite = false;
+				state->terminal = true;
+			}
+			try { connection->Stop(); } catch (...) {}
+		}
+	}
+
+	void SocketHttpServerApiDispatcher::Process(Ptr<HttpRequest> request)
+	{
+		if (!request || request->version.major != 1 || request->version.minor != 1)
+		{
+			SendAutomatic(505, true);
+			return;
+		}
+
+		WString host;
+		bool hostExists = false;
+		if (!SingleHeader(request, L"host", host, hostExists) || !hostExists)
+		{
+			SendAutomatic(400, true);
+			return;
+		}
+		WString authority;
+		vint port = 0;
+		if (!ParseAuthority(host, authority, port))
+		{
+			SendAutomatic(400, true);
+			return;
+		}
+
+		auto supportedMethod = request->method == L"GET" || request->method == L"HEAD" || request->method == L"POST" || request->method == L"OPTIONS";
+		if (!supportedMethod)
+		{
+			SendAutomatic(501, false);
+			return;
+		}
+
+		auto registrations = Registrations(state->entry);
+		if (request->requestTarget == L"*")
+		{
+			if (request->method != L"OPTIONS")
+			{
+				SendAutomatic(400, true);
+				return;
+			}
+			bool automaticOptions = false;
+			for (auto registration : registrations)
+			{
+				if (registration->prefix.authority == authority && registration->respondToOptions)
+				{
+					automaticOptions = true;
+					break;
+				}
+			}
+			if (!automaticOptions)
+			{
+				SendAutomatic(501, false);
+				return;
+			}
+			bool present = false, methodSupported = false;
+			if (!Preflight(request, present, methodSupported))
+			{
+				SendAutomatic(400, false, true);
+				return;
+			}
+			SendAutomatic(present && !methodSupported ? 405 : 200, false, true);
+			return;
+		}
+
+		auto target = request->requestTarget;
+		if (target.Length() == 0 || target[0] != L'/' || target.IndexOf(L'#') != -1)
+		{
+			SendAutomatic(400, true);
+			return;
+		}
+		vint question = target.IndexOf(L'?');
+		auto rawPath = question == -1 ? target : target.Left(question);
+		auto query = question == -1 ? WString::Empty : target.Right(target.Length() - question - 1);
+		WString path;
+		if (!DecodePath(rawPath, path))
+		{
+			SendAutomatic(400, true);
+			return;
+		}
+
+		Ptr<ApiRegistration> selected;
+		for (auto registration : registrations)
+		{
+			if (registration->prefix.authority == authority && Match(registration->prefix.decodedPath, path))
+			{
+				if (!selected || registration->prefix.decodedPath.Length() > selected->prefix.decodedPath.Length()) selected = registration;
+			}
+		}
+		if (!selected)
+		{
+			SendAutomatic(404, false);
+			return;
+		}
+
+		if (request->method == L"OPTIONS" && selected->respondToOptions)
+		{
+			bool present = false, methodSupported = false;
+			if (!Preflight(request, present, methodSupported))
+			{
+				SendAutomatic(400, false, true);
+				return;
+			}
+			if (present)
+			{
+				SendAutomatic(methodSupported ? 200 : 405, false, true);
+				return;
+			}
+		}
+
+		WString relative;
+		if (selected->prefix.decodedPath.Length() == 0) relative = path;
+		else if (path == selected->prefix.decodedPath) relative = L"/";
+		else relative = path.Right(path.Length() - selected->prefix.decodedPath.Length());
+		if (relative.Length() == 0) relative = L"/";
+
+		auto contextImpl = Ptr(new SocketHttpRequestContext::Impl(state, selected, request, relative, query));
+		auto context = Ptr(new SocketHttpRequestContext(contextImpl));
+		contextImpl->owner = context.Obj();
+		auto cancelForStop = Func<void()>([contextImpl]()
+		{
+			contextImpl->Finish(false, true, true, true);
+		});
+		bool installed = false;
+		CS_LOCK(state->lock)
+		{
+			if (!state->terminal && !state->context && !state->automaticWrite)
+			{
+				state->context = context;
+				installed = true;
+			}
+		}
+		if (!installed || !selected->AddContext(context, cancelForStop))
+		{
+			CS_LOCK(state->lock) { if (state->context == context) state->context = nullptr; }
+			SendAutomatic(404, false);
+			return;
+		}
+
+		try
+		{
+			if (!selected->InvokeRequest(context)) context->Cancel();
+		}
+		catch (...)
+		{
+			context->Respond(Automatic(500, false));
+		}
+	}
+
+	void SocketHttpServerApiDispatcher::OnReadRequest(Ptr<HttpRequest> request)
+	{
+		auto retained = Retain();
+		if (!retained) return;
+		try { Process(request); } catch (...) { SendAutomatic(500, true); }
+	}
+
+	void SocketHttpServerApiDispatcher::OnReadRequestFailure(HttpRequestFailure failure)
+	{
+		auto retained = Retain();
+		if (!retained) return;
+		SendAutomatic((vint)failure, true);
+	}
+
+	void SocketHttpServerApiDispatcher::OnWriteCompleted()
+	{
+		auto retained = Retain();
+		if (!retained) return;
+		Ptr<SocketHttpRequestContext> context;
+		bool automatic = false, close = false;
+		CS_LOCK(state->lock)
+		{
+			context = state->context;
+			if (!context && state->automaticWrite)
+			{
+				automatic = true;
+				close = state->closeAfterWrite;
+				state->automaticWrite = false;
+				state->closeAfterWrite = false;
+			}
+		}
+		if (context) context->impl->Finish(true, false, true, false);
+		if (!context && !automatic) return;
+
+		if (close)
+		{
+			IHttpRequestConnection* stopping = nullptr;
+			CS_LOCK(state->lock)
+			{
+				state->terminal = true;
+				stopping = state->connection;
+			}
+			if (stopping) try { stopping->Stop(); } catch (...) {}
+		}
+	}
+
+	void SocketHttpServerApiDispatcher::OnError(const WString&, bool fatal)
+	{
+		auto retained = Retain();
+		if (!retained) return;
+		Ptr<SocketHttpRequestContext> context;
+		IHttpRequestConnection* connection = nullptr;
+		CS_LOCK(state->lock)
+		{
+			context = state->context;
+			if (fatal || context || state->automaticWrite)
+			{
+				state->terminal = true;
+				connection = state->connection;
+			}
+		}
+		if (context) context->impl->Finish(false, true, true, true);
+		else if (connection) try { connection->Stop(); } catch (...) {}
+	}
+
+	void SocketHttpServerApiDispatcher::OnDisconnected()
+	{
+		auto retained = Retain();
+		if (!retained) return;
+		Ptr<SocketHttpRequestContext> context;
+		CS_LOCK(state->lock)
+		{
+			state->terminal = true;
+			state->connection = nullptr;
+			state->automaticWrite = false;
+			context = state->context;
+		}
+		if (context) context->impl->Finish(false, true, true, false);
+		CS_LOCK(lockSelf) { selfReference = nullptr; }
+	}
+
+	void SocketHttpServerApiDispatcher::OnInstalled(IHttpRequestConnection* connection)
+	{
+		CS_LOCK(state->lock) { state->connection = connection; }
+		connection->BeginReadingLoopUnsafe();
+	}
+
+	SocketHttpRequestContext::SocketHttpRequestContext(Ptr<Impl> _impl) : impl(_impl) {}
+	SocketHttpRequestContext::~SocketHttpRequestContext() {}
+	Ptr<HttpRequest> SocketHttpRequestContext::GetRequest() { return impl->request; }
+	WString SocketHttpRequestContext::GetRelativePath() { return impl->relativePath; }
+	WString SocketHttpRequestContext::GetQuery() { return impl->query; }
+
+	bool SocketHttpRequestContext::Respond(Ptr<HttpResponse> response, Func<void(bool)> completion)
+	{
+		Ptr<HttpResponse> normalized;
+		IHttpRequestConnection* connection = nullptr;
+		CS_LOCK(impl->lock)
+		{
+			if (impl->state != Impl::State::Pending) return false;
+			normalized = Normalize(response, impl->request->method);
+			impl->state = Impl::State::Sending;
+			impl->completion = completion;
+		}
+		CS_LOCK(impl->connectionState->lock)
+		{
+			if (!impl->connectionState->terminal && impl->connectionState->context.Obj() == this) connection = impl->connectionState->connection;
+		}
+		if (!connection)
+		{
+			impl->Finish(false, false, true, false);
+			return true;
+		}
+		try { connection->SendResponse(normalized); }
+		catch (...) { impl->Finish(false, false, true, true); }
+		return true;
+	}
+
+	bool SocketHttpRequestContext::Cancel()
+	{
+		return impl->Finish(false, true, false, true);
+	}
+}
+
+namespace vl::inter_process::async_tcp_socket
+{
+	class SocketHttpServerApi::Impl : public Object
+	{
+	private:
+		SocketHttpServerApi*				owner;
+		Ptr<ApiRegistration>				registration;
+		CriticalSection					lock;
+		ConditionVariable				cv;
+		bool startCalled = false;
+		bool startInProgress = false;
+		bool startSucceeded = false;
+		bool stopRequested = false;
+		bool stopRequestedNotify = false;
+		bool stopStarted = false;
+		bool stopFinished = false;
+
+		void Request(Ptr<SocketHttpRequestContext> context)
+		{
+			SocketHttpServerApi* target = nullptr;
+			CS_LOCK(lock) { target = owner; }
+			if (target) target->OnHttpRequestReceived(context);
+			else context->Cancel();
+		}
+
+		void Stopping()
+		{
+			SocketHttpServerApi* target = nullptr;
+			CS_LOCK(lock) { target = owner; }
+			if (target) target->OnHttpServerStopping();
+		}
+
+		void StopInternal(bool notify)
+		{
+			bool first = false;
+			bool notifyRegistration = false;
+			auto callbackDepth = ApiRegistration::Depth(registration.Obj());
+			lock.Enter();
+			if (startInProgress && callbackDepth > 0)
+			{
+				stopRequested = true;
+				stopRequestedNotify |= notify;
+				lock.Leave();
+				return;
+			}
+			while (startInProgress) cv.SleepWith(lock);
+			if (!stopStarted)
+			{
+				stopStarted = true;
+				first = true;
+				notifyRegistration = notify && startSucceeded;
+			}
+			else if (callbackDepth > 0)
+			{
+				lock.Leave();
+				return;
+			}
+			else
+			{
+				while (!stopFinished) cv.SleepWith(lock);
+			}
+			lock.Leave();
+			if (!first) return;
+
+			auto server = UnregisterApi(registration);
+			registration->Stop(notifyRegistration);
+			if (server)
+			{
+				auto shared = server.Cast<SharedServer>();
+				if (shared) shared->StopAndRelease();
+				else server->Stop();
+			}
+			CS_LOCK(lock)
+			{
+				stopFinished = true;
+				cv.WakeAllPendings();
+			}
+		}
+
+	public:
+		Impl(SocketHttpServerApi* _owner, const WString& urlPrefix, bool respondToOptions)
+			: owner(_owner)
+			, registration(Ptr(new ApiRegistration(ParsePrefix(urlPrefix), respondToOptions)))
+		{
+			registration->requestCallback = Func<void(Ptr<SocketHttpRequestContext>)>([this](Ptr<SocketHttpRequestContext> context) { Request(context); });
+			registration->stoppingCallback = Func<void()>([this]() { Stopping(); });
+		}
+
+		void Start()
+		{
+#define ERROR_PREFIX L"vl::inter_process::async_tcp_socket::SocketHttpServerApi::Start()#"
+			CS_LOCK(lock)
+			{
+				CHECK_ERROR(!startCalled && !stopStarted, ERROR_PREFIX L"Can only be called once before stopping.");
+				startCalled = true;
+				startInProgress = true;
+			}
+			try
+			{
+				RegisterApi(registration);
+			}
+			catch (...)
+			{
+				bool stopAfterStart = false, notifyAfterStart = false;
+				CS_LOCK(lock)
+				{
+					startInProgress = false;
+					stopAfterStart = stopRequested;
+					notifyAfterStart = stopRequestedNotify;
+					stopRequested = false;
+					stopRequestedNotify = false;
+					cv.WakeAllPendings();
+				}
+				if (stopAfterStart)
+				{
+					try { StopInternal(notifyAfterStart); } catch (...) {}
+				}
+				throw;
+			}
+			bool stopAfterStart = false, notifyAfterStart = false;
+			CS_LOCK(lock)
+			{
+				startSucceeded = true;
+				startInProgress = false;
+				stopAfterStart = stopRequested;
+				notifyAfterStart = stopRequestedNotify;
+				stopRequested = false;
+				stopRequestedNotify = false;
+				cv.WakeAllPendings();
+			}
+			if (stopAfterStart) StopInternal(notifyAfterStart);
+#undef ERROR_PREFIX
+		}
+
+		void Stop() { StopInternal(true); }
+
+		void Destroy()
+		{
+			CS_LOCK(lock) { owner = nullptr; }
+			StopInternal(false);
+		}
+
+		bool IsStopped()
+		{
+			CS_LOCK(lock)
+			{
+				if (stopStarted) return true;
+			}
+			return registration->IsStopped();
+		}
+
+		WString GetUrlPrefix() { return registration->prefix.normalizedUrl; }
+	};
+
+	SocketHttpServerApi::SocketHttpServerApi(const WString& urlPrefix, bool respondToOptions)
+		: impl(Ptr(new Impl(this, urlPrefix, respondToOptions)))
+	{
+	}
+
+	SocketHttpServerApi::~SocketHttpServerApi() { impl->Destroy(); }
+	void SocketHttpServerApi::OnHttpServerStopping() {}
+	void SocketHttpServerApi::Start() { impl->Start(); }
+	void SocketHttpServerApi::Stop() { impl->Stop(); }
+	bool SocketHttpServerApi::IsStopped() { return impl->IsStopped(); }
+	WString SocketHttpServerApi::GetUrlPrefix() { return impl->GetUrlPrefix(); }
+}
+
+
+/***********************************************************************
+.\INTERPROCESS\NETWORKPROTOCOLHTTP.CPP
+***********************************************************************/
+
+namespace vl::inter_process
+{
+	using namespace vl::collections;
+
+	namespace
+	{
+		void EncodeUtf8(const WString& text, Array<char>& utf8)
+		{
+			stream::MemoryStream memoryStream;
+			{
+				stream::Utf8Encoder encoder;
+				stream::EncoderStream encoderStream(memoryStream, encoder);
+				stream::StreamWriter writer(encoderStream);
+				writer.WriteString(text);
+			}
+
+			utf8.Resize((vint)memoryStream.Size());
+			if (utf8.Count() > 0)
+			{
+				memoryStream.SeekFromBegin(0);
+				memoryStream.Read(&utf8[0], utf8.Count());
+			}
+		}
+
+		WString DecodeUtf8(const void* buffer, vint size)
+		{
+			if (size == 0)
+			{
+				return WString::Empty;
+			}
+
+			stream::MemoryWrapperStream memoryStream((void*)buffer, size);
+			stream::Utf8Decoder decoder;
+			stream::DecoderStream decoderStream(memoryStream, decoder);
+			stream::StreamReader reader(decoderStream);
+			return reader.ReadToEnd();
+		}
+
+		vint HexValue(char c)
+		{
+			if ('0' <= c && c <= '9') return c - '0';
+			if ('a' <= c && c <= 'f') return c - 'a' + 10;
+			if ('A' <= c && c <= 'F') return c - 'A' + 10;
+			return -1;
+		}
+	}
+
+	WString HttpUrlEncodeQuery(const WString& query)
+	{
+		Array<char> utf8;
+		EncodeUtf8(query, utf8);
+
+		Array<wchar_t> encoded(utf8.Count() * 3 + 1);
+		wchar_t* writing = &encoded[0];
+		for (vint i = 0; i < utf8.Count(); i++)
+		{
+			vuint8_t x = (vuint8_t)utf8[i];
+			if ((L'a' <= x && x <= L'z') || (L'A' <= x && x <= L'Z') || (L'0' <= x && x <= L'9'))
+			{
+				*writing++ = (wchar_t)x;
+			}
+			else
+			{
+				*writing++ = L'%';
+				*writing++ = L"0123456789ABCDEF"[x / 16];
+				*writing++ = L"0123456789ABCDEF"[x % 16];
+			}
+		}
+		*writing = 0;
+		return &encoded[0];
+	}
+
+	WString HttpUrlDecodeQuery(const WString& query)
+	{
+		Array<char> encoded;
+		EncodeUtf8(query, encoded);
+
+		List<char> utf8;
+		for (vint i = 0; i < encoded.Count(); i++)
+		{
+			char c = encoded[i];
+			if (c == '%' && i + 2 < encoded.Count())
+			{
+				vint high = HexValue(encoded[i + 1]);
+				vint low = HexValue(encoded[i + 2]);
+				if (high != -1 && low != -1)
+				{
+					utf8.Add((char)(high * 16 + low));
+					i += 2;
+					continue;
+				}
+			}
+
+			utf8.Add(c == '+' ? ' ' : c);
+		}
+
+		return utf8.Count() == 0
+			? WString::Empty
+			: DecodeUtf8(&utf8[0], utf8.Count());
+	}
+}
+
+namespace vl::inter_process::windows_http
+{
+	void HttpRequest::SetBodyUtf8(const WString& bodyString)
+	{
+		EncodeUtf8(bodyString, body);
+	}
+
+	WString HttpResponse::GetBodyUtf8() const
+	{
+		return body.Count() == 0
+			? WString::Empty
+			: DecodeUtf8(&body[0], body.Count());
+	}
+}
+
+

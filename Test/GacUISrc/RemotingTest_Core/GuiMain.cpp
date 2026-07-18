@@ -164,6 +164,22 @@ namespace
 		}
 	};
 
+	class MiniHttpRemotingChannelServer : public RemotingChannelServerBase<inter_process::async_tcp_socket::SocketHttpServer>
+	{
+		using Base = RemotingChannelServerBase<inter_process::async_tcp_socket::SocketHttpServer>;
+
+	public:
+		MiniHttpRemotingChannelServer(Ptr<glr::json::Parser> parser, const WString& baseUrl, vint port)
+			: Base(parser, baseUrl, port)
+		{
+		}
+
+		~MiniHttpRemotingChannelServer()
+		{
+			this->Stop();
+		}
+	};
+
 	template<typename TServerBase>
 	vint WaitForRenderer(RemotingChannelServerBase<TServerBase>& channelServer, EventObject& eventRendererConnected)
 	{
@@ -176,6 +192,7 @@ namespace
 
 IJsonLocalChannelServer* protocolServer = nullptr;
 vint mainWindowConstructorIndex = 0;
+bool useWindowsHttpAutomationService = true;
 
 void GuiMain()
 {
@@ -197,9 +214,15 @@ void GuiMain()
 		{
 			RemoteProtocolAutomationService automationService;
 			GetNativeServiceSubstitution()->Substitute(&automationService, false);
-			windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/RemotingTest_Core"), 8888);
+			if (useWindowsHttpAutomationService)
+			{
+				windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/RemotingTest_Core"), 8888);
+			}
 			GetApplication()->Run(window.Obj());
-			windows::StopWindowsHttpAutomationService();
+			if (useWindowsHttpAutomationService)
+			{
+				windows::StopWindowsHttpAutomationService();
+			}
 			GetNativeServiceSubstitution()->Unsubstitute(&automationService);
 		}
 		catch (const Exception& e)
@@ -270,6 +293,7 @@ void StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr:
 int StartNamedPipeServer(vint index)
 {
 	mainWindowConstructorIndex = index;
+	useWindowsHttpAutomationService = true;
 	Console::WriteLine(L"> Named pipe created, waiting on: " + WString::Unmanaged(GacUIRemoteProtocolNamedPipeName));
 	auto jsonParser = Ptr(new glr::json::Parser);
 	NamedPipeRemotingChannelServer channelServer(jsonParser, WString::Unmanaged(GacUIRemoteProtocolNamedPipeName));
@@ -280,9 +304,21 @@ int StartNamedPipeServer(vint index)
 int StartHttpServer(vint index)
 {
 	mainWindowConstructorIndex = index;
+	useWindowsHttpAutomationService = true;
 	Console::WriteLine(L"> HTTP server created, waiting on: http://localhost:" + itow(GacUIRemoteProtocolHttpPort) + WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl));
 	auto jsonParser = Ptr(new glr::json::Parser);
 	HttpRemotingChannelServer channelServer(jsonParser, WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl), GacUIRemoteProtocolHttpPort);
+	StartServer(channelServer, jsonParser);
+	return 0;
+}
+
+int StartMiniHttpServer(vint index)
+{
+	mainWindowConstructorIndex = index;
+	useWindowsHttpAutomationService = false;
+	Console::WriteLine(L"> Mini HTTP server created, waiting on: http://localhost:" + itow(GacUIRemoteProtocolHttpPort) + WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl));
+	auto jsonParser = Ptr(new glr::json::Parser);
+	MiniHttpRemotingChannelServer channelServer(jsonParser, WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl), GacUIRemoteProtocolHttpPort);
 	StartServer(channelServer, jsonParser);
 	return 0;
 }

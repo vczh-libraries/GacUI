@@ -7,6 +7,7 @@ using namespace vl::console;
 
 extern int StartNamedPipeServer(vint index);
 extern int StartHttpServer(vint index);
+extern int StartMiniHttpServer(vint index);
 
 int main(int argc, char* argv[])
 {
@@ -15,7 +16,7 @@ int main(int argc, char* argv[])
 #endif
 	int result = 1;
 	vint index = -1; // 0 = FullControlTest (/FCT), 1 = RemoteProtocolTest (/RPT)
-	int transport = -1; // 0 = Pipe, 1 = Http
+	int transport = -1; // 0 = Pipe, 1 = Http, 2 = MiniHttp
 
 	for (int i = 1; i < argc; i++)
 	{
@@ -41,7 +42,7 @@ int main(int argc, char* argv[])
 		{
 			if (transport != -1)
 			{
-				Console::WriteLine(L"Error: /Pipe and /Http are exclusive.");
+				Console::WriteLine(L"Error: /Pipe, /Http and /MiniHttp are exclusive.");
 				return result;
 			}
 			transport = 0;
@@ -50,10 +51,19 @@ int main(int argc, char* argv[])
 		{
 			if (transport != -1)
 			{
-				Console::WriteLine(L"Error: /Pipe and /Http are exclusive.");
+				Console::WriteLine(L"Error: /Pipe, /Http and /MiniHttp are exclusive.");
 				return result;
 			}
 			transport = 1;
+		}
+		else if (strcmp(argv[i], "/MiniHttp") == 0)
+		{
+			if (transport != -1)
+			{
+				Console::WriteLine(L"Error: /Pipe, /Http and /MiniHttp are exclusive.");
+				return result;
+			}
+			transport = 2;
 		}
 		else
 		{
@@ -69,7 +79,7 @@ int main(int argc, char* argv[])
 
 	if (transport == -1)
 	{
-		Console::WriteLine(L"Error: Either /Pipe or /Http must be provided.");
+		Console::WriteLine(L"Error: Either /Pipe, /Http or /MiniHttp must be provided.");
 		return result;
 	}
 
@@ -77,9 +87,13 @@ int main(int argc, char* argv[])
 	{
 		result = StartNamedPipeServer(index);
 	}
-	else
+	else if (transport == 1)
 	{
 		result = StartHttpServer(index);
+	}
+	else
+	{
+		result = StartMiniHttpServer(index);
 	}
 #if VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();

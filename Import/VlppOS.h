@@ -1770,8 +1770,6 @@ Interfaces:
 #define VCZH_INTERPROCESS_ASYNCSOCKET
 
 #include <concepts>
-#include <cstring>
-#include <limits>
 #include <type_traits>
 #include <utility>
 
@@ -1793,13 +1791,13 @@ namespace vl::inter_process::async_tcp_socket
 		/// <summary>Called with one positive borrowed read block.</summary>
 		virtual void							OnRead(const vuint8_t* buffer, vint size) = 0;
 		/// <summary>Called after the complete retained write buffer has been sent.</summary>
-		virtual void							OnWriteCompleted(Ptr<AsyncSocketBuffer> buffer) {}
+		virtual void							OnWriteCompleted(Ptr<AsyncSocketBuffer> buffer);
 		/// <summary>Called when an asynchronous operation fails.</summary>
-		virtual void							OnError(const WString& error, bool fatal) {}
+		virtual void							OnError(const WString& error, bool fatal);
 		/// <summary>Called for the client connection after it is established.</summary>
-		virtual void							OnConnected() {}
+		virtual void							OnConnected();
 		/// <summary>Called exactly once when the connection stops.</summary>
-		virtual void							OnDisconnected() {}
+		virtual void							OnDisconnected();
 		/// <summary>Called synchronously when this callback is installed.</summary>
 		virtual void							OnInstalled(IAsyncSocketConnection* connection) = 0;
 	};
@@ -1823,12 +1821,37 @@ namespace vl::inter_process::async_tcp_socket
 		virtual ClientStatus					GetStatus() = 0;
 	};
 
+	enum class AsyncSocketServerStartFailure
+	{
+		AddressInUse,
+		Other,
+	};
+
+	class AsyncSocketServerStartException : public Exception
+	{
+	private:
+		AsyncSocketServerStartFailure		failure;
+
+	public:
+		AsyncSocketServerStartException(AsyncSocketServerStartFailure _failure, const WString& message);
+
+		AsyncSocketServerStartFailure		GetFailure()const;
+	};
+
+	/// <summary>Callbacks for accepting asynchronous TCP connections.</summary>
+	class IAsyncSocketServerCallback : public virtual Interface
+	{
+	public:
+		virtual WaitForClientResult			OnClientConnected(IAsyncSocketConnection* connection) = 0;
+		/// <summary>Called exactly once when a started listener stops unexpectedly.</summary>
+		virtual void							OnServerStopped();
+	};
+
 	/// <summary>An asynchronous TCP server for the local machine.</summary>
 	class IAsyncSocketServer : public virtual Interface
 	{
 	public:
-		virtual WaitForClientResult			OnClientConnected(IAsyncSocketConnection* connection) = 0;
-		virtual void							Start() = 0;
+		virtual void							Start(IAsyncSocketServerCallback* callback) = 0;
 		virtual void							Stop() = 0;
 		virtual bool							IsStopped() = 0;
 	};
@@ -1848,7 +1871,7 @@ NetworkProtocolConnection
 		struct CallbackFrame;
 
 	private:
-		inline static thread_local CallbackFrame*	currentCallbackFrame = nullptr;
+		static thread_local CallbackFrame*	currentCallbackFrame;
 		CriticalSection					lockState;
 		ConditionVariable				cvState;
 		vint							activeCallbacks = 0;
@@ -1859,57 +1882,12 @@ NetworkProtocolConnection
 			Ptr<NetworkProtocolCallbackDomain>	domain;
 			CallbackFrame*					previous = nullptr;
 
-			CallbackFrame(Ptr<NetworkProtocolCallbackDomain> _domain)
-				: domain(_domain)
-			{
-				if (domain)
-				{
-					previous = currentCallbackFrame;
-					currentCallbackFrame = this;
-					CS_LOCK(domain->lockState)
-					{
-						domain->activeCallbacks++;
-					}
-				}
-			}
-
-			~CallbackFrame()
-			{
-				if (domain)
-				{
-					currentCallbackFrame = previous;
-					CS_LOCK(domain->lockState)
-					{
-						domain->activeCallbacks--;
-						domain->cvState.WakeAllPendings();
-					}
-				}
-			}
+			CallbackFrame(Ptr<NetworkProtocolCallbackDomain> _domain);
+			~CallbackFrame();
 		};
 
-		vint CurrentCallbackDepth()
-		{
-			vint depth = 0;
-			for (auto frame = currentCallbackFrame; frame; frame = frame->previous)
-			{
-				if (frame->domain.Obj() == this)
-				{
-					depth++;
-				}
-			}
-			return depth;
-		}
-
-		void WaitForCallbacks(vint callbackDepth)
-		{
-			CS_LOCK(lockState)
-			{
-				while (activeCallbacks > callbackDepth)
-				{
-					cvState.SleepWith(lockState);
-				}
-			}
-		}
+		vint							CurrentCallbackDepth();
+		void							WaitForCallbacks(vint callbackDepth);
 	};
 
 	class NetworkProtocolConnectionLifecycle : public Object
@@ -1945,13 +1923,7 @@ NetworkProtocolConnection
 		vint							characterBytesReceived = 0;
 		bool							parserFailed = false;
 
-		void TakeRetainedAdapterIfDrained(Ptr<Object>& releasing)
-		{
-			if (stopFinished && disconnectFinished && activeCallbacks == 0 && activeSocketCallbacks == 0 && activeSocketCalls == 0)
-			{
-				releasing = std::move(retainedAdapter);
-			}
-		}
+		void							TakeRetainedAdapterIfDrained(Ptr<Object>& releasing);
 	};
 
 	/// <summary>Adapts an asynchronous byte stream to framed network-protocol strings.</summary>
@@ -1966,9 +1938,9 @@ NetworkProtocolConnection
 
 		struct CallbackFrame;
 		struct SocketCallbackFrame;
-		inline static thread_local CallbackFrame*	currentCallbackFrame = nullptr;
-		inline static thread_local SocketCallbackFrame*
-										currentSocketCallbackFrame = nullptr;
+		static thread_local CallbackFrame*	currentCallbackFrame;
+		static thread_local SocketCallbackFrame*
+										currentSocketCallbackFrame;
 
 		struct CallbackFrame
 		{
@@ -1977,25 +1949,8 @@ NetworkProtocolConnection
 			NetworkProtocolCallbackDomain::CallbackFrame
 										domainFrame;
 
-			CallbackFrame(Ptr<Lifecycle> _state)
-				: state(_state)
-				, previous(currentCallbackFrame)
-				, domainFrame(state->callbackDomain)
-			{
-				currentCallbackFrame = this;
-			}
-
-			~CallbackFrame()
-			{
-				currentCallbackFrame = previous;
-				Ptr<Object> releasing;
-				CS_LOCK(state->lockState)
-				{
-					state->activeCallbacks--;
-					state->TakeRetainedAdapterIfDrained(releasing);
-					state->cvState.WakeAllPendings();
-				}
-			}
+			CallbackFrame(Ptr<Lifecycle> _state);
+			~CallbackFrame();
 		};
 
 		struct SocketCallbackFrame
@@ -2003,347 +1958,24 @@ NetworkProtocolConnection
 			Ptr<Lifecycle>					state;
 			SocketCallbackFrame*				previous = nullptr;
 
-			SocketCallbackFrame(Ptr<Lifecycle> _state)
-				: state(_state)
-				, previous(currentSocketCallbackFrame)
-			{
-				currentSocketCallbackFrame = this;
-				CS_LOCK(state->lockState)
-				{
-					state->activeSocketCallbacks++;
-				}
-			}
-
-			~SocketCallbackFrame()
-			{
-				currentSocketCallbackFrame = previous;
-				Ptr<Object> releasing;
-				CS_LOCK(state->lockState)
-				{
-					state->activeSocketCallbacks--;
-					state->TakeRetainedAdapterIfDrained(releasing);
-					state->cvState.WakeAllPendings();
-				}
-			}
+			SocketCallbackFrame(Ptr<Lifecycle> _state);
+			~SocketCallbackFrame();
 		};
 
 		Ptr<Lifecycle>					lifecycle;
 
-		static vint CurrentCallbackDepth(Ptr<Lifecycle> state)
-		{
-			vint depth = 0;
-			for (auto frame = currentCallbackFrame; frame; frame = frame->previous)
-			{
-				if (frame->state.Obj() == state.Obj())
-				{
-					depth++;
-				}
-			}
-			return depth;
-		}
-
-		static vint CurrentSocketCallbackDepth(Ptr<Lifecycle> state)
-		{
-			vint depth = 0;
-			for (auto frame = currentSocketCallbackFrame; frame; frame = frame->previous)
-			{
-				if (frame->state.Obj() == state.Obj())
-				{
-					depth++;
-				}
-			}
-			return depth;
-		}
-
-		static void FinishSocketCall(Ptr<Lifecycle> state)
-		{
-			CS_LOCK(state->lockState)
-			{
-				state->activeSocketCalls--;
-				state->cvState.WakeAllPendings();
-			}
-		}
+		static vint						CurrentCallbackDepth(Ptr<Lifecycle> state);
+		static vint						CurrentSocketCallbackDepth(Ptr<Lifecycle> state);
+		static void						FinishSocketCall(Ptr<Lifecycle> state);
 
 		template<typename TCallback>
-		static void InvokeProtocolCallback(Ptr<Lifecycle> state, bool allowTerminal, TCallback&& invoke)
-		{
-			INetworkProtocolCallback* installed = nullptr;
-			auto callbackDepth = CurrentCallbackDepth(state);
-			state->lockState.Enter();
-			while (state->callbackInstalling && callbackDepth == 0 && state->callback)
-			{
-				state->cvState.SleepWith(state->lockState);
-			}
-			if (state->callback && (allowTerminal || (!state->stopStarted && !state->terminal)))
-			{
-				installed = state->callback;
-				state->activeCallbacks++;
-			}
-			state->lockState.Leave();
+		static void						InvokeProtocolCallback(Ptr<Lifecycle> state, bool allowTerminal, TCallback&& invoke);
 
-			if (installed)
-			{
-				CallbackFrame frame(state);
-				invoke(installed);
-			}
-		}
-
-		static void SubmitWrite(Ptr<Lifecycle> state, IAsyncSocketConnection* connection, Ptr<AsyncSocketBuffer> buffer)
-		{
-			try
-			{
-				connection->WriteAsync(buffer);
-			}
-			catch (...)
-			{
-				CS_LOCK(state->lockState)
-				{
-					state->queuedWrites.Clear();
-					state->writePending = false;
-					state->cvState.WakeAllPendings();
-				}
-				FinishSocketCall(state);
-				throw;
-			}
-			FinishSocketCall(state);
-		}
-
-		static void NotifyProtocolDisconnected(Ptr<Lifecycle> state)
-		{
-			auto callbackDepth = CurrentCallbackDepth(state);
-			state->lockState.Enter();
-			if (!state->disconnectedNotified)
-			{
-				state->disconnectedNotified = true;
-				state->terminal = true;
-				state->queuedWrites.Clear();
-				state->writePending = false;
-				state->cvState.WakeAllPendings();
-			}
-			if (state->disconnectFinished)
-			{
-				state->lockState.Leave();
-				return;
-			}
-
-			if (state->disconnectDelivering)
-			{
-				if (callbackDepth == 0)
-				{
-					while (!state->disconnectFinished)
-					{
-						state->cvState.SleepWith(state->lockState);
-					}
-				}
-				state->lockState.Leave();
-				return;
-			}
-
-			if (callbackDepth == 0)
-			{
-				while (state->activeCallbacks > 0 && !state->disconnectDelivering && !state->disconnectFinished)
-				{
-					state->cvState.SleepWith(state->lockState);
-				}
-				if (state->disconnectFinished)
-				{
-					state->lockState.Leave();
-					return;
-				}
-				if (state->disconnectDelivering)
-				{
-					while (!state->disconnectFinished)
-					{
-						state->cvState.SleepWith(state->lockState);
-					}
-					state->lockState.Leave();
-					return;
-				}
-			}
-
-			state->disconnectDelivering = true;
-			while (state->activeCallbacks > callbackDepth)
-			{
-				state->cvState.SleepWith(state->lockState);
-			}
-			state->lockState.Leave();
-
-			try
-			{
-				InvokeProtocolCallback(state, true, [](INetworkProtocolCallback* installed)
-				{
-					installed->OnDisconnected();
-				});
-			}
-			catch (...)
-			{
-				Ptr<Object> releasing;
-				CS_LOCK(state->lockState)
-				{
-					state->callback = nullptr;
-					while (state->activeCallbacks > callbackDepth)
-					{
-						state->cvState.SleepWith(state->lockState);
-					}
-					state->disconnectFinished = true;
-					state->TakeRetainedAdapterIfDrained(releasing);
-					state->cvState.WakeAllPendings();
-				}
-				throw;
-			}
-
-			Ptr<Object> releasing;
-			CS_LOCK(state->lockState)
-			{
-				state->callback = nullptr;
-				while (state->activeCallbacks > callbackDepth)
-				{
-					state->cvState.SleepWith(state->lockState);
-				}
-				state->disconnectFinished = true;
-				state->TakeRetainedAdapterIfDrained(releasing);
-				state->cvState.WakeAllPendings();
-			}
-		}
-
-		static void DetachSocketCallback(Ptr<Lifecycle> state, IAsyncSocketConnection* connection)
-		{
-			if (connection)
-			{
-				connection->InstallCallback(nullptr);
-			}
-			CS_LOCK(state->lockState)
-			{
-				if (state->socketConnection == connection)
-				{
-					state->socketConnection = nullptr;
-				}
-				state->cvState.WakeAllPendings();
-			}
-		}
-
-		static void StopConnection(Ptr<Lifecycle> state, Ptr<Object> retainedAdapter = nullptr)
-		{
-			auto callbackDepth = CurrentCallbackDepth(state);
-			auto socketCallbackDepth = CurrentSocketCallbackDepth(state);
-			auto nestedCallback = callbackDepth > 0 || socketCallbackDepth > 0;
-			IAsyncSocketConnection* connection = nullptr;
-			bool executeStop = false;
-			bool nestedFollower = false;
-			Ptr<Object> releasing;
-
-			state->lockState.Enter();
-			if (retainedAdapter)
-			{
-				state->retainedAdapter = retainedAdapter;
-			}
-			if (!state->stopStarted)
-			{
-				state->stopStarted = true;
-				if (!nestedCallback && !state->terminal && state->queuedWrites.Count() > 0)
-				{
-					state->drainWrites = true;
-					auto deadline = DateTime::LocalTime().osMilliseconds + WriteDrainTimeout;
-					while (state->queuedWrites.Count() > 0 && !state->terminal)
-					{
-						auto now = DateTime::LocalTime().osMilliseconds;
-						if (now >= deadline)
-						{
-							break;
-						}
-						state->cvState.SleepWithForTime(state->lockState, (vint)(deadline - now));
-					}
-					state->drainWrites = false;
-				}
-				state->queuedWrites.Clear();
-				state->writePending = false;
-				while (state->activeSocketCalls > 0)
-				{
-					state->cvState.SleepWith(state->lockState);
-				}
-				connection = state->socketConnection;
-				executeStop = true;
-			}
-			else if (nestedCallback)
-			{
-				connection = state->socketConnection;
-				nestedFollower = true;
-			}
-			else
-			{
-				while (!state->stopFinished)
-				{
-					state->cvState.SleepWith(state->lockState);
-				}
-				while (state->activeCallbacks > 0 || state->activeSocketCallbacks > 0 || state->activeSocketCalls > 0)
-				{
-					state->cvState.SleepWith(state->lockState);
-				}
-				state->TakeRetainedAdapterIfDrained(releasing);
-				state->lockState.Leave();
-				return;
-			}
-			state->lockState.Leave();
-
-			if (nestedFollower)
-			{
-				if (connection && socketCallbackDepth > 0)
-				{
-					connection->Stop();
-				}
-				NotifyProtocolDisconnected(state);
-				return;
-			}
-
-			if (executeStop && connection)
-			{
-				connection->Stop();
-			}
-			NotifyProtocolDisconnected(state);
-
-			CS_LOCK(state->lockState)
-			{
-				while (state->activeCallbacks > callbackDepth || state->activeSocketCallbacks > socketCallbackDepth)
-				{
-					state->cvState.SleepWith(state->lockState);
-				}
-				state->stopFinished = true;
-				state->TakeRetainedAdapterIfDrained(releasing);
-				state->cvState.WakeAllPendings();
-			}
-		}
-
-		static void ReportFatalError(Ptr<Lifecycle> state, const WString& error)
-		{
-			bool report = false;
-			CS_LOCK(state->lockState)
-			{
-				if (!state->terminal && !state->stopStarted)
-				{
-					state->terminal = true;
-					state->queuedWrites.Clear();
-					state->writePending = false;
-					state->cvState.WakeAllPendings();
-					report = true;
-				}
-			}
-			if (report)
-			{
-				try
-				{
-					InvokeProtocolCallback(state, true, [&](INetworkProtocolCallback* installed)
-					{
-						installed->OnLocalError(error, true);
-					});
-				}
-				catch (...)
-				{
-					StopConnection(state);
-					throw;
-				}
-				StopConnection(state);
-			}
-		}
+		static void						SubmitWrite(Ptr<Lifecycle> state, IAsyncSocketConnection* connection, Ptr<AsyncSocketBuffer> buffer);
+		static void						NotifyProtocolDisconnected(Ptr<Lifecycle> state);
+		static void						DetachSocketCallback(Ptr<Lifecycle> state, IAsyncSocketConnection* connection);
+		static void						StopConnection(Ptr<Lifecycle> state, Ptr<Object> retainedAdapter = nullptr);
+		static void						ReportFatalError(Ptr<Lifecycle> state, const WString& error);
 
 		template<typename TAsyncSocketServer>
 		friend class NetworkProtocolServer;
@@ -2351,354 +1983,22 @@ NetworkProtocolConnection
 		template<typename TAsyncSocketClient>
 		friend class NetworkProtocolClient;
 
-		void StopWithRetainedAdapter(Ptr<NetworkProtocolConnection> retainedAdapter)
-		{
-			StopConnection(lifecycle, retainedAdapter);
-		}
+		void							StopWithRetainedAdapter(Ptr<NetworkProtocolConnection> retainedAdapter);
 
 	public:
-		explicit NetworkProtocolConnection(IAsyncSocketConnection* connection, Ptr<NetworkProtocolCallbackDomain> callbackDomain = nullptr)
-			: lifecycle(Ptr(new Lifecycle))
-		{
-			CHECK_ERROR(connection, L"NetworkProtocolConnection requires a valid async socket connection.");
-			lifecycle->socketConnection = connection;
-			lifecycle->callbackDomain = callbackDomain;
-			connection->InstallCallback(this);
-		}
+		explicit NetworkProtocolConnection(IAsyncSocketConnection* connection, Ptr<NetworkProtocolCallbackDomain> callbackDomain = nullptr);
+		~NetworkProtocolConnection();
 
-		~NetworkProtocolConnection()
-		{
-			StopConnection(lifecycle);
-		}
-
-		void InstallCallback(INetworkProtocolCallback* value) override
-		{
-			auto state = lifecycle;
-			if (!value)
-			{
-				auto callbackDepth = CurrentCallbackDepth(state);
-				bool uninstallOwner = false;
-				CS_LOCK(state->lockState)
-				{
-					uninstallOwner = state->callback != nullptr;
-					state->callback = nullptr;
-					while ((callbackDepth == 0 || uninstallOwner) && state->activeCallbacks > callbackDepth)
-					{
-						state->cvState.SleepWith(state->lockState);
-					}
-				}
-				return;
-			}
-
-			bool canInstall = false;
-			CS_LOCK(state->lockState)
-			{
-				if (!state->callback && !state->callbackInstalling && !state->stopStarted && !state->terminal)
-				{
-					state->callback = value;
-					state->callbackInstalling = true;
-					state->activeCallbacks++;
-					canInstall = true;
-				}
-			}
-			CHECK_ERROR(canInstall, L"NetworkProtocolConnection::InstallCallback cannot replace a callback or install one on a stopped connection.");
-
-			CallbackFrame frame(state);
-			try
-			{
-				value->OnInstalled(this);
-			}
-			catch (...)
-			{
-				CS_LOCK(state->lockState)
-				{
-					if (state->callback == value)
-					{
-						state->callback = nullptr;
-					}
-					state->callbackInstalling = false;
-					state->cvState.WakeAllPendings();
-				}
-				throw;
-			}
-
-			CS_LOCK(state->lockState)
-			{
-				state->callbackInstalling = false;
-				state->cvState.WakeAllPendings();
-			}
-		}
-
-		void BeginReadingLoopUnsafe() override
-		{
-			auto state = lifecycle;
-			IAsyncSocketConnection* connection = nullptr;
-			CS_LOCK(state->lockState)
-			{
-				if (!state->stopStarted && !state->terminal && state->socketConnection)
-				{
-					connection = state->socketConnection;
-					state->activeSocketCalls++;
-				}
-			}
-			if (!connection)
-			{
-				return;
-			}
-
-			try
-			{
-				connection->BeginReadingLoopUnsafe();
-			}
-			catch (...)
-			{
-				FinishSocketCall(state);
-				throw;
-			}
-			FinishSocketCall(state);
-		}
-
-		void SendString(const WString& str) override
-		{
-			auto state = lifecycle;
-			auto length = str.Length();
-			CHECK_ERROR(length >= 0 && length <= (std::numeric_limits<vint32_t>::max)(), L"NetworkProtocolConnection::SendString cannot encode a string longer than vint32_t.");
-			CHECK_ERROR((size_t)length <= ((size_t)(std::numeric_limits<vint>::max)() - sizeof(vint32_t)) / sizeof(wchar_t), L"NetworkProtocolConnection::SendString frame size overflow.");
-
-			auto buffer = Ptr(new AsyncSocketBuffer);
-			auto characterBytes = (size_t)length * sizeof(wchar_t);
-			auto frameBytes = sizeof(vint32_t) + characterBytes;
-			buffer->data.Resize((vint)frameBytes);
-			auto encodedLength = (vint32_t)length;
-			std::memcpy(&buffer->data[0], &encodedLength, sizeof(encodedLength));
-			if (characterBytes > 0)
-			{
-				std::memcpy(&buffer->data[sizeof(encodedLength)], str.Buffer(), characterBytes);
-			}
-
-			IAsyncSocketConnection* connection = nullptr;
-			Ptr<AsyncSocketBuffer> submitting;
-			CS_LOCK(state->lockState)
-			{
-				if (!state->stopStarted && !state->terminal && state->socketConnection)
-				{
-					state->queuedWrites.Add(buffer);
-					if (!state->writePending)
-					{
-						state->writePending = true;
-						connection = state->socketConnection;
-						submitting = state->queuedWrites[0];
-						state->activeSocketCalls++;
-					}
-				}
-			}
-			if (submitting)
-			{
-				SubmitWrite(state, connection, submitting);
-			}
-		}
-
-		void Stop() override
-		{
-			StopConnection(lifecycle);
-		}
-
-		void OnRead(const vuint8_t* buffer, vint size) override
-		{
-			auto state = lifecycle;
-			SocketCallbackFrame socketCallbackFrame(state);
-			if (!buffer || size <= 0)
-			{
-				return;
-			}
-
-			collections::List<WString> completedStrings;
-			bool malformed = false;
-			CS_LOCK(state->lockParser)
-			{
-				if (state->parserFailed)
-				{
-					return;
-				}
-
-				auto reading = buffer;
-				auto available = size;
-				while (available > 0)
-				{
-					if (state->expectedCharacters == -1)
-					{
-						auto required = (vint)sizeof(vint32_t) - state->lengthBytesReceived;
-						auto copied = required < available ? required : available;
-						std::memcpy(state->lengthBytes + state->lengthBytesReceived, reading, (size_t)copied);
-						state->lengthBytesReceived += copied;
-						reading += copied;
-						available -= copied;
-						if (state->lengthBytesReceived < (vint)sizeof(vint32_t))
-						{
-							continue;
-						}
-
-						std::memcpy(&state->expectedCharacters, state->lengthBytes, sizeof(state->expectedCharacters));
-						state->lengthBytesReceived = 0;
-						if (state->expectedCharacters < 0 || (size_t)state->expectedCharacters > ((size_t)(std::numeric_limits<vint>::max)() - sizeof(vint32_t)) / sizeof(wchar_t))
-						{
-							state->parserFailed = true;
-							malformed = true;
-							break;
-						}
-
-						state->characterBuffer.Resize((vint)state->expectedCharacters);
-						state->characterBytesReceived = 0;
-						if (state->expectedCharacters == 0)
-						{
-							completedStrings.Add(WString());
-							state->expectedCharacters = -1;
-						}
-					}
-
-					if (state->expectedCharacters >= 0)
-					{
-						auto characterBytes = (vint)((size_t)state->expectedCharacters * sizeof(wchar_t));
-						auto required = characterBytes - state->characterBytesReceived;
-						auto copied = required < available ? required : available;
-						std::memcpy((vuint8_t*)&state->characterBuffer[0] + state->characterBytesReceived, reading, (size_t)copied);
-						state->characterBytesReceived += copied;
-						reading += copied;
-						available -= copied;
-						if (state->characterBytesReceived == characterBytes)
-						{
-							completedStrings.Add(WString::CopyFrom(&state->characterBuffer[0], state->expectedCharacters));
-							state->characterBuffer.Resize(0);
-							state->characterBytesReceived = 0;
-							state->expectedCharacters = -1;
-						}
-					}
-				}
-			}
-
-			for (auto&& str : completedStrings)
-			{
-				InvokeProtocolCallback(state, false, [&](INetworkProtocolCallback* installed)
-				{
-					installed->OnReadString(str);
-				});
-			}
-			if (malformed)
-			{
-				ReportFatalError(state, L"The async socket protocol received an invalid string length.");
-			}
-		}
-
-		void OnWriteCompleted(Ptr<AsyncSocketBuffer> buffer) override
-		{
-			auto state = lifecycle;
-			SocketCallbackFrame socketCallbackFrame(state);
-			IAsyncSocketConnection* connection = nullptr;
-			Ptr<AsyncSocketBuffer> submitting;
-			bool mismatched = false;
-			CS_LOCK(state->lockState)
-			{
-				if (state->queuedWrites.Count() == 0)
-				{
-					return;
-				}
-				if (state->queuedWrites[0].Obj() != buffer.Obj())
-				{
-					state->queuedWrites.Clear();
-					state->writePending = false;
-					mismatched = true;
-					state->cvState.WakeAllPendings();
-				}
-				else
-				{
-					state->queuedWrites.RemoveAt(0);
-					if ((!state->stopStarted || state->drainWrites) && !state->terminal && state->socketConnection && state->queuedWrites.Count() > 0)
-					{
-						connection = state->socketConnection;
-						submitting = state->queuedWrites[0];
-						state->activeSocketCalls++;
-					}
-					else
-					{
-						state->writePending = false;
-					}
-					state->cvState.WakeAllPendings();
-				}
-			}
-			CHECK_ERROR(!mismatched, L"NetworkProtocolConnection received a completion for an unexpected async socket buffer.");
-			if (submitting)
-			{
-				SubmitWrite(state, connection, submitting);
-			}
-		}
-
-		void OnError(const WString& error, bool fatal) override
-		{
-			auto state = lifecycle;
-			SocketCallbackFrame socketCallbackFrame(state);
-			if (fatal)
-			{
-				ReportFatalError(state, error);
-			}
-			else
-			{
-				InvokeProtocolCallback(state, false, [&](INetworkProtocolCallback* installed)
-				{
-					installed->OnLocalError(error, false);
-				});
-			}
-		}
-
-		void OnConnected() override
-		{
-			auto state = lifecycle;
-			SocketCallbackFrame socketCallbackFrame(state);
-			InvokeProtocolCallback(state, false, [](INetworkProtocolCallback* installed)
-			{
-				installed->OnConnected();
-			});
-		}
-
-		void OnDisconnected() override
-		{
-			auto state = lifecycle;
-			SocketCallbackFrame socketCallbackFrame(state);
-			IAsyncSocketConnection* connection = nullptr;
-			CS_LOCK(state->lockState)
-			{
-				while (state->activeSocketCalls > 0)
-				{
-					state->cvState.SleepWith(state->lockState);
-				}
-				connection = state->socketConnection;
-			}
-
-			try
-			{
-				DetachSocketCallback(state, connection);
-			}
-			catch (...)
-			{
-				CS_LOCK(state->lockState)
-				{
-					if (state->socketConnection == connection)
-					{
-						state->socketConnection = nullptr;
-					}
-					state->cvState.WakeAllPendings();
-				}
-				NotifyProtocolDisconnected(state);
-				throw;
-			}
-			NotifyProtocolDisconnected(state);
-		}
-
-		void OnInstalled(IAsyncSocketConnection* connection) override
-		{
-			auto state = lifecycle;
-			SocketCallbackFrame socketCallbackFrame(state);
-			CHECK_ERROR(connection == state->socketConnection, L"NetworkProtocolConnection was installed on an unexpected async socket connection.");
-		}
+		void							InstallCallback(INetworkProtocolCallback* value) override;
+		void							BeginReadingLoopUnsafe() override;
+		void							SendString(const WString& str) override;
+		void							Stop() override;
+		void							OnRead(const vuint8_t* buffer, vint size) override;
+		void							OnWriteCompleted(Ptr<AsyncSocketBuffer> buffer) override;
+		void							OnError(const WString& error, bool fatal) override;
+		void							OnConnected() override;
+		void							OnDisconnected() override;
+		void							OnInstalled(IAsyncSocketConnection* connection) override;
 	};
 
 /***********************************************************************
@@ -2733,7 +2033,9 @@ NetworkProtocolServer
 			}
 		};
 
-		class SocketServerBridge : public TAsyncSocketServer
+		class SocketServerBridge
+			: public TAsyncSocketServer
+			, public virtual IAsyncSocketServerCallback
 		{
 		private:
 			Ptr<Lifecycle>					lifecycle;
@@ -2889,7 +2191,7 @@ NetworkProtocolServer
 
 		void Start() override
 		{
-			asyncSocketServer->Start();
+			asyncSocketServer->Start(asyncSocketServer.Obj());
 		}
 
 		void Stop() override
@@ -7062,4 +6364,703 @@ Serialization (macros)
 }
 
 #endif
+
+
+/***********************************************************************
+.\INTERPROCESS\ASYNCSOCKET\HTTPREQUEST.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Interfaces:
+  IHttpRequest(Connection|Callback)
+
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_ASYNCSOCKET_HTTPREQUEST
+#define VCZH_INTERPROCESS_ASYNCSOCKET_HTTPREQUEST
+
+
+namespace vl::inter_process::async_tcp_socket
+{
+	constexpr vint HttpIncompleteMessageTimeout = 30 * 1000;
+
+	struct HttpVersion
+	{
+		vint							major = 1;
+		vint							minor = 1;
+	};
+
+	struct HttpField
+	{
+		WString							name;
+		collections::Array<vuint8_t>		value;
+	};
+
+	struct HttpBodyChunk
+	{
+		collections::Array<vuint8_t>		data;
+	};
+
+	struct HttpBody
+	{
+		collections::List<HttpBodyChunk>	chunks;
+		collections::List<HttpField>		trailers;
+	};
+
+	class HttpRequest : public Object
+	{
+	public:
+		HttpVersion						version;
+		WString							method;
+		WString							requestTarget;
+		collections::List<HttpField>		headers;
+		HttpBody						body;
+	};
+
+	class HttpResponse : public Object
+	{
+	public:
+		HttpVersion						version;
+		vint							statusCode = 200;
+		WString							reason;
+		collections::List<HttpField>		headers;
+		HttpBody						body;
+	};
+
+	enum class HttpRequestBodyParsingResult
+	{
+		Succeeded,
+		Incomplete,
+		Invalid,
+	};
+
+	enum class HttpRequestFailure
+	{
+		BadRequest = 400,
+		RequestTimeout = 408,
+		PayloadTooLarge = 413,
+		UriTooLong = 414,
+		ExpectationFailed = 417,
+		RequestHeaderFieldsTooLarge = 431,
+		NotImplemented = 501,
+		HttpVersionNotSupported = 505,
+	};
+
+	extern HttpRequestBodyParsingResult		ParseHttpRequestBodyToChunks(
+		const vuint8_t*						buffer,
+		vint							availableBytes,
+		HttpBody&						output,
+		vint&							consumedBytes
+		);
+
+	class IHttpRequestConnection;
+
+	class IHttpRequestCallback : public virtual Interface
+	{
+	public:
+		virtual void						OnReadRequest(Ptr<HttpRequest> request);
+		virtual void						OnReadRequestFailure(HttpRequestFailure failure);
+		virtual void						OnReadResponse(Ptr<HttpResponse> response);
+		virtual void						OnWriteCompleted();
+		virtual void						OnError(const WString& error, bool fatal);
+		virtual void						OnConnected();
+		virtual void						OnDisconnected();
+		virtual void						OnInstalled(IHttpRequestConnection* connection) = 0;
+	};
+
+	class IHttpRequestConnection : public virtual Interface
+	{
+	public:
+		virtual void						InstallCallback(IHttpRequestCallback* callback) = 0;
+		virtual void						BeginReadingLoopUnsafe() = 0;
+		virtual void						SendRequest(Ptr<HttpRequest> request, vint responseTimeout = HttpIncompleteMessageTimeout) = 0;
+		virtual void						SendResponse(Ptr<HttpResponse> response) = 0;
+		virtual void						Stop() = 0;
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPREQUEST.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Async Socket HTTP/1.1 Connection
+
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_ASYNCSOCKET_HTTPREQUESTIMPL
+#define VCZH_INTERPROCESS_ASYNCSOCKET_HTTPREQUESTIMPL
+
+
+namespace vl::inter_process::async_tcp_socket
+{
+	constexpr vint HttpRequestLineSizeLimit = 8 * 1024;
+	constexpr vint HttpHeaderBlockSizeLimit = 64 * 1024;
+	constexpr vint HttpBodySizeLimit = 16 * 1024 * 1024;
+	constexpr vint HttpChunkSizeLineLimit = 4 * 1024;
+	constexpr vint HttpTrailerBlockSizeLimit = 64 * 1024;
+
+	enum class HttpRequestConnectionDirection
+	{
+		Server,
+		Client,
+	};
+
+	class IHttpRequestTimeoutController : public virtual Interface
+	{
+	public:
+		virtual void						Arm(vint milliseconds, const Func<void()>& callback) = 0;
+		virtual void						Refresh() = 0;
+		virtual void						CancelAndWait() = 0;
+	};
+
+	extern Ptr<IHttpRequestTimeoutController>	CreateHttpRequestTimeoutController();
+
+	class HttpRequestCallbackDomain : public Object
+	{
+	public:
+		struct CallbackFrame;
+
+	private:
+		static thread_local CallbackFrame*	currentCallbackFrame;
+		CriticalSection						lockState;
+		ConditionVariable					cvState;
+		vint							activeCallbacks = 0;
+
+	public:
+		struct CallbackFrame
+		{
+			Ptr<HttpRequestCallbackDomain>		domain;
+			CallbackFrame*					previous = nullptr;
+
+			CallbackFrame(Ptr<HttpRequestCallbackDomain> _domain);
+			~CallbackFrame();
+		};
+
+		vint							CurrentCallbackDepth();
+		void							WaitForCallbacks(vint callbackDepth);
+	};
+
+	class HttpRequestConnectionLifecycle;
+
+	class HttpRequestConnection final
+		: public Object
+		, public virtual IHttpRequestConnection
+		, public virtual IAsyncSocketCallback
+	{
+	private:
+		using Lifecycle = HttpRequestConnectionLifecycle;
+		struct CallbackFrame;
+		struct SocketCallbackFrame;
+		struct TimeoutCallbackFrame;
+		static thread_local CallbackFrame*	currentCallbackFrame;
+		static thread_local SocketCallbackFrame*
+										currentSocketCallbackFrame;
+		static thread_local TimeoutCallbackFrame*
+										currentTimeoutCallbackFrame;
+
+		Ptr<Lifecycle>						lifecycle;
+
+		static vint						CurrentCallbackDepth(Ptr<Lifecycle> state);
+		static vint						CurrentSocketCallbackDepth(Ptr<Lifecycle> state);
+		static vint						CurrentTimeoutCallbackDepth(Ptr<Lifecycle> state);
+		static void						FinishSocketCall(Ptr<Lifecycle> state);
+
+		template<typename TCallback>
+		static void						InvokeHttpCallback(Ptr<Lifecycle> state, bool allowTerminal, TCallback&& invoke);
+
+		static void						SubmitWrite(Ptr<Lifecycle> state, IAsyncSocketConnection* connection, Ptr<AsyncSocketBuffer> buffer);
+		static void						InstallTimeout(Ptr<Lifecycle> state, vint milliseconds, const WString& error);
+		static void						RefreshTimeout(Ptr<Lifecycle> state);
+		static void						ReportRequestFailure(Ptr<Lifecycle> state, HttpRequestFailure failure, bool timeoutOnly = false, bool reserved = false);
+		static void						DeliverResponse(Ptr<Lifecycle> state, Ptr<HttpResponse> response, bool closeAfterDelivery);
+		static void						ProcessBufferedInput(Ptr<Lifecycle> state);
+		static void						NotifyDisconnected(Ptr<Lifecycle> state);
+		static void						StopConnection(Ptr<Lifecycle> state, Ptr<Object> retainedAdapter = nullptr);
+		static void						ReportFatalError(Ptr<Lifecycle> state, const WString& error);
+
+	public:
+		HttpRequestConnection(
+			IAsyncSocketConnection* connection,
+			HttpRequestConnectionDirection direction,
+			Ptr<HttpRequestCallbackDomain> callbackDomain = nullptr,
+			Ptr<IHttpRequestTimeoutController> timeoutController = nullptr
+			);
+		~HttpRequestConnection();
+
+		void							RetainUntilStopped(Ptr<HttpRequestConnection> retainedAdapter, const Func<void()>& drainedCallback);
+		void							StopWithRetainedAdapter(Ptr<HttpRequestConnection> retainedAdapter);
+		bool							IsInsideCallback();
+
+		void							InstallCallback(IHttpRequestCallback* callback) override;
+		void							BeginReadingLoopUnsafe() override;
+		void							SendRequest(Ptr<HttpRequest> request, vint responseTimeout = HttpIncompleteMessageTimeout) override;
+		void							SendResponse(Ptr<HttpResponse> response) override;
+		void							Stop() override;
+
+		void							OnRead(const vuint8_t* buffer, vint size) override;
+		void							OnWriteCompleted(Ptr<AsyncSocketBuffer> buffer) override;
+		void							OnError(const WString& error, bool fatal) override;
+		void							OnConnected() override;
+		void							OnDisconnected() override;
+		void							OnInstalled(IAsyncSocketConnection* connection) override;
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPREQUESTCLIENT.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Interfaces:
+	HttpRequestClient
+
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_ASYNCSOCKET_HTTPREQUESTCLIENT
+#define VCZH_INTERPROCESS_ASYNCSOCKET_HTTPREQUESTCLIENT
+
+
+namespace vl::inter_process::async_tcp_socket
+{
+	/// <summary>Adapts an asynchronous TCP client to one HTTP/1.1 request connection.</summary>
+	class HttpRequestClient : public Object
+	{
+	private:
+		class Impl;
+		Ptr<Impl>							impl;
+
+	public:
+		explicit HttpRequestClient(Ptr<IAsyncSocketClient> client);
+		virtual ~HttpRequestClient();
+
+		virtual IHttpRequestConnection*		GetConnection();
+		virtual void							WaitForServer();
+		virtual ClientStatus					GetStatus();
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPREQUESTSERVER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Interfaces:
+	HttpRequestServer
+
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_ASYNCSOCKET_HTTPREQUESTSERVER
+#define VCZH_INTERPROCESS_ASYNCSOCKET_HTTPREQUESTSERVER
+
+
+namespace vl::inter_process::async_tcp_socket
+{
+	/// <summary>Adapts an asynchronous TCP server to HTTP/1.1 request connections.</summary>
+	class HttpRequestServer : public Object
+	{
+	private:
+		class Impl;
+		Ptr<Impl>							impl;
+
+	protected:
+		virtual void							OnServerStopped();
+		HttpRequestServer(
+			Ptr<IAsyncSocketServer> server,
+			const Func<Ptr<IHttpRequestTimeoutController>()>& timeoutControllerFactory
+			);
+
+	public:
+		explicit HttpRequestServer(Ptr<IAsyncSocketServer> server);
+		/// <remarks>A derived destructor must call <see cref="Stop"/> before destroying any state accessed by <see cref="OnClientConnected"/>.</remarks>
+		virtual ~HttpRequestServer();
+
+		virtual WaitForClientResult			OnClientConnected(IHttpRequestConnection* connection);
+		void							Start();
+		void							Stop();
+		bool							IsStopped();
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPSERVERAPI.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Interfaces:
+	SocketHttp(ServerApi|RequestContext)
+
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_ASYNCSOCKET_HTTPSERVERAPI
+#define VCZH_INTERPROCESS_ASYNCSOCKET_HTTPSERVERAPI
+
+
+namespace vl::inter_process::async_tcp_socket
+{
+	class SocketHttpServerApi;
+	class SocketHttpServerApiDispatcher;
+
+	class SocketHttpRequestContext : public Object
+	{
+		friend class SocketHttpServerApiDispatcher;
+
+		class Impl;
+		Ptr<Impl>							impl;
+
+		SocketHttpRequestContext(Ptr<Impl> _impl);
+
+	public:
+		~SocketHttpRequestContext();
+
+		SocketHttpRequestContext(const SocketHttpRequestContext&) = delete;
+		SocketHttpRequestContext(SocketHttpRequestContext&&) = delete;
+		SocketHttpRequestContext& operator=(const SocketHttpRequestContext&) = delete;
+		SocketHttpRequestContext& operator=(SocketHttpRequestContext&&) = delete;
+
+		Ptr<HttpRequest>					GetRequest();
+		WString								GetRelativePath();
+		WString								GetQuery();
+
+		bool								Respond(
+			Ptr<HttpResponse> response,
+			Func<void(bool)> completion = {}
+			);
+		bool								Cancel();
+	};
+
+	class SocketHttpServerApi : public Object
+	{
+		friend class SocketHttpServerApiDispatcher;
+
+		class Impl;
+		Ptr<Impl>							impl;
+
+	protected:
+		virtual void						OnHttpRequestReceived(
+			Ptr<SocketHttpRequestContext> context
+			) = 0;
+		virtual void						OnHttpServerStopping();
+
+	public:
+		SocketHttpServerApi(
+			const WString& urlPrefix,
+			bool respondToOptions
+			);
+		virtual ~SocketHttpServerApi();
+
+		SocketHttpServerApi(const SocketHttpServerApi&) = delete;
+		SocketHttpServerApi(SocketHttpServerApi&&) = delete;
+		SocketHttpServerApi& operator=(const SocketHttpServerApi&) = delete;
+		SocketHttpServerApi& operator=(SocketHttpServerApi&&) = delete;
+
+		void								Start();
+		void								Stop();
+		bool								IsStopped();
+		WString								GetUrlPrefix();
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPSERVER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Interfaces:
+	SocketHttpServer
+
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_ASYNCSOCKET_HTTPSERVER
+#define VCZH_INTERPROCESS_ASYNCSOCKET_HTTPSERVER
+
+
+namespace vl::inter_process::async_tcp_socket
+{
+	class SocketHttpServer
+		: public SocketHttpServerApi
+		, public virtual INetworkProtocolServer
+	{
+		class Impl;
+		Ptr<Impl>							impl;
+
+	protected:
+		void								OnHttpRequestReceived(Ptr<SocketHttpRequestContext> context) override;
+		void								OnHttpServerStopping() override;
+
+	public:
+		SocketHttpServer(const WString& baseUrl, vint port);
+		~SocketHttpServer();
+
+		SocketHttpServer(const SocketHttpServer&) = delete;
+		SocketHttpServer(SocketHttpServer&&) = delete;
+		SocketHttpServer& operator=(const SocketHttpServer&) = delete;
+		SocketHttpServer& operator=(SocketHttpServer&&) = delete;
+
+		virtual WaitForClientResult			OnClientConnected(INetworkProtocolConnection* connection) override;
+		void								Start() override;
+		void								Stop() override;
+		bool								IsStopped() override;
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\INTERPROCESS\NETWORKPROTOCOLHTTP.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Interfaces:
+	HttpRequest
+	HttpResponse
+	HttpError
+
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_NETWORKPROTOCOLHTTP
+#define VCZH_INTERPROCESS_NETWORKPROTOCOLHTTP
+
+
+namespace vl::inter_process
+{
+	/*
+	* GET: /Connect
+	* Creates a new logical connection and returns its request and response URLs.
+	* Repeated calls create separate logical connections.
+	*/
+	constexpr const wchar_t* HttpServerUrl_Connect = L"/VlppInterProcess/Connect";
+
+	/*
+	* POST: /Request/GUID
+	* Client should always maintain a living request on the server.
+	*
+	* Returns only when a request is issued.
+	* It will be pending or timeout if no request is issued.
+	* If a request is issued but no living request available, it waits.
+	*/
+	constexpr const wchar_t* HttpServerUrl_Request = L"/VlppInterProcess/Request";
+
+	/*
+	* POST: /Response/GUID
+	* To send responses or events to the server.
+	* May return one queued server message in the same HTTP response.
+	*/
+	constexpr const wchar_t* HttpServerUrl_Response = L"/VlppInterProcess/Response";
+
+	extern WString HttpUrlEncodeQuery(const WString& query);
+	extern WString HttpUrlDecodeQuery(const WString& query);
+}
+
+namespace vl::inter_process::windows_http
+{
+	/// <summary>An http request.</summary>
+	class HttpRequest
+	{
+		typedef collections::Array<char>					BodyBuffer;
+		typedef collections::List<WString>					StringList;
+		typedef collections::Dictionary<WString, WString>	HeaderMap;
+	public:
+		/// <summary>Query of the request, like "/index.html".</summary>
+		WString												query;
+		/// <summary>Set to true if the request uses SSL, or https.</summary>
+		bool												secure = false;
+		/// <summary>User name to authorize. Set to empty if authorization is not needed.</summary>
+		WString												username;
+		/// <summary>Password to authorize. Set to empty if authorization is not needed.</summary>
+		WString												password;
+		/// <summary>HTTP method, like "GET", "POST", "PUT", "DELETE", etc.</summary>
+		WString												method;
+		/// <summary>Cookie. Set to empty if cookie is not needed.</summary>
+		WString												cookie;
+		/// <summary>Request body. This is a byte array.</summary>
+		BodyBuffer											body;
+		/// <summary>Content type, like "text/xml".</summary>
+		WString												contentType;
+		/// <summary>Accept type list, elements like "text/xml".</summary>
+		StringList											acceptTypes;
+		/// <summary>A dictionary to contain extra headers.</summary>
+		HeaderMap											extraHeaders;
+		/// <summary>Set to true to let this request finish when <see cref="HttpClientApi.Stop"/> is called.</summary>
+		bool												keepAliveOnStop = false;
+		/// <summary>Timeout for resolving the host name. 0 or -1 means infinite.</summary>
+		vint												resolveTimeout = 0;
+		/// <summary>Timeout for connecting to the server. 0 or -1 means infinite.</summary>
+		vint												connectTimeout = 60000;
+		/// <summary>Timeout for sending the request. 0 or -1 means infinite.</summary>
+		vint												sendTimeout = 30000;
+		/// <summary>Timeout for receiving the response. 0 or -1 means infinite.</summary>
+		vint												receiveTimeout = 30000;
+
+		HttpRequest() = default;
+		void												SetBodyUtf8(const WString& bodyString);
+	};
+
+	/// <summary>A type representing an http response.</summary>
+	class HttpResponse
+	{
+		typedef collections::Array<char>					BodyBuffer;
+	public:
+		/// <summary>Status code, like 200.</summary>
+		vint												statusCode = 0;
+		/// <summary>Response body. This is a byte array.</summary>
+		BodyBuffer											body;
+		/// <summary>Returned cookie from the server.</summary>
+		WString												cookie;
+		/// <summary>Returned content type from the server.</summary>
+		WString												contentType;
+
+		HttpResponse() = default;
+		WString												GetBodyUtf8() const;
+	};
+
+	/// <summary>A transport error reported by the underlying HTTP implementation.</summary>
+	class HttpError
+	{
+	public:
+		vuint32_t											errorCode = 0;
+		WString												operation;
+		WString												message;
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPCLIENTAPI.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Interfaces:
+	SocketHttpClientApi
+
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_ASYNCSOCKET_HTTPCLIENTAPI
+#define VCZH_INTERPROCESS_ASYNCSOCKET_HTTPCLIENTAPI
+
+
+namespace vl::inter_process::async_tcp_socket
+{
+	class SocketHttpClientApi : public Object
+	{
+		class Impl;
+		Ptr<Impl>							impl;
+
+	public:
+		SocketHttpClientApi(
+			Ptr<IAsyncSocketClient> client,
+			const WString& authority
+			);
+		~SocketHttpClientApi();
+
+		SocketHttpClientApi(const SocketHttpClientApi&) = delete;
+		SocketHttpClientApi(SocketHttpClientApi&&) = delete;
+		SocketHttpClientApi& operator=(const SocketHttpClientApi&) = delete;
+		SocketHttpClientApi& operator=(SocketHttpClientApi&&) = delete;
+
+		void								WaitForServer();
+		ClientStatus						GetStatus();
+		/// <summary>Send an HTTP request on the injected socket connection.</summary>
+		/// <remarks>The injected socket owns name-resolution, connection, and send-phase timing. Only <see cref="windows_http::HttpRequest.receiveTimeout"/> controls the response deadline for this exchange.</remarks>
+		void								HttpQuery(
+			const windows_http::HttpRequest& request,
+			Func<void(Variant<
+				windows_http::HttpResponse,
+				windows_http::HttpError
+				>)> callback
+			);
+		void								Stop();
+
+		static WString						UrlEncodeQuery(const WString& query);
+		static WString						UrlDecodeQuery(const WString& query);
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPCLIENT.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+
+Interfaces:
+	SocketHttpClient
+
+***********************************************************************/
+
+#ifndef VCZH_INTERPROCESS_ASYNCSOCKET_HTTPCLIENT
+#define VCZH_INTERPROCESS_ASYNCSOCKET_HTTPCLIENT
+
+
+namespace vl::inter_process::async_tcp_socket
+{
+	class SocketHttpClient
+		: public Object
+		, public virtual INetworkProtocolClient
+		, public virtual INetworkProtocolConnection
+	{
+		class Impl;
+		Ptr<Impl>						impl;
+
+	public:
+		using NativeClientFactory = Func<Ptr<IAsyncSocketClient>(vint)>;
+
+		SocketHttpClient(const WString& baseUrl, vint port);
+		SocketHttpClient(const WString& baseUrl, vint port, NativeClientFactory clientFactory);
+		~SocketHttpClient();
+
+		SocketHttpClient(const SocketHttpClient&) = delete;
+		SocketHttpClient(SocketHttpClient&&) = delete;
+		SocketHttpClient& operator=(const SocketHttpClient&) = delete;
+		SocketHttpClient& operator=(SocketHttpClient&&) = delete;
+
+		INetworkProtocolConnection*		GetConnection() override;
+		void							WaitForServer() override;
+		ClientStatus					GetStatus() override;
+		void							InstallCallback(INetworkProtocolCallback* callback) override;
+		void							BeginReadingLoopUnsafe() override;
+		void							SendString(const WString& str) override;
+		void							Stop() override;
+	};
+}
+
+#endif
+
 

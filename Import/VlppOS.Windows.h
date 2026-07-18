@@ -41,8 +41,7 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 		AsyncSocketServer(vint port);
 		~AsyncSocketServer();
 
-		WaitForClientResult					OnClientConnected(IAsyncSocketConnection* connection) override;
-		void								Start() override;
+		void								Start(IAsyncSocketServerCallback* callback) override;
 		void								Stop() override;
 		bool								IsStopped() override;
 	};
@@ -90,35 +89,6 @@ Interfaces:
 #include <winhttp.h>
 
 
-namespace vl::inter_process
-{
-	/*
-	* GET: /Request
-	* To connect and initialize the server.
-	* Returns available URLs.
-	*
-	* It can only be called once, all subsequence calls will be rejected.
-	*/
-	constexpr const wchar_t* HttpServerUrl_Connect = L"/VlppInterProcess/Connect";
-
-	/*
-	* POST: /Request/GUID
-	* Client should always maintain a living request on the server.
-	*
-	* Returns only when a request is issued.
-	* It will be pending or timeout if no request is issued.
-	* If a request is issued but no living request available, it waits.
-	*/
-	constexpr const wchar_t* HttpServerUrl_Request = L"/VlppInterProcess/Request";
-
-	/*
-	* POST: /Response/GUID
-	* To send responses or events to the server.
-	* Returns nothing.
-	*/
-	constexpr const wchar_t* HttpServerUrl_Response = L"/VlppInterProcess/Response";
-}
-
 #endif
 
 
@@ -140,75 +110,6 @@ Interfaces:
 
 namespace vl::inter_process::windows_http
 {
-
-/// <summary>An http request.</summary>
-class HttpRequest
-{
-	typedef collections::Array<char>					BodyBuffer;
-	typedef collections::List<WString>					StringList;
-	typedef collections::Dictionary<WString, WString>	HeaderMap;
-public:
-	/// <summary>Query of the request, like "/index.html".</summary>
-	WString												query;
-	/// <summary>Set to true if the request uses SSL, or https.</summary>
-	bool												secure = false;
-	/// <summary>User name to authorize. Set to empty if authorization is not needed.</summary>
-	WString												username;
-	/// <summary>Password to authorize. Set to empty if authorization is not needed.</summary>
-	WString												password;
-	/// <summary>HTTP method, like "GET", "POST", "PUT", "DELETE", etc.</summary>
-	WString												method;
-	/// <summary>Cookie. Set to empty if cookie is not needed.</summary>
-	WString												cookie;
-	/// <summary>Request body. This is a byte array.</summary>
-	BodyBuffer											body;
-	/// <summary>Content type, like "text/xml".</summary>
-	WString												contentType;
-	/// <summary>Accept type list, elements like "text/xml".</summary>
-	StringList											acceptTypes;
-	/// <summary>A dictionary to contain extra headers.</summary>
-	HeaderMap											extraHeaders;
-	/// <summary>Set to true to let this request finish when <see cref="HttpClientApi.Stop"/> is called.</summary>
-	bool												keepAliveOnStop = false;
-	/// <summary>Timeout for resolving the host name. 0 or -1 means infinite.</summary>
-	vint												resolveTimeout = 0;
-	/// <summary>Timeout for connecting to the server. 0 or -1 means infinite.</summary>
-	vint												connectTimeout = 60000;
-	/// <summary>Timeout for sending the request. 0 or -1 means infinite.</summary>
-	vint												sendTimeout = 30000;
-	/// <summary>Timeout for receiving the response. 0 or -1 means infinite.</summary>
-	vint												receiveTimeout = 30000;
-
-	HttpRequest() = default;
-	void												SetBodyUtf8(const WString& bodyString);
-};
-
-/// <summary>A type representing an http response.</summary>
-class HttpResponse
-{
-	typedef collections::Array<char>					BodyBuffer;
-public:
-	/// <summary>Status code, like 200.</summary>
-	vint												statusCode = 0;
-	/// <summary>Response body. This is a byte array.</summary>
-	BodyBuffer											body;
-	/// <summary>Returned cookie from the server.</summary>
-	WString												cookie;
-	/// <summary>Returned content type from the server.</summary>
-	WString												contentType;
-
-	HttpResponse() = default;
-	WString												GetBodyUtf8() const;
-};
-
-/// <summary>A transport error reported by the underlying Windows HTTP API.</summary>
-class HttpError
-{
-public:
-	DWORD												errorCode = 0;
-	WString												operation;
-	WString												message;
-};
 
 /// <summary>A Windows-only async HTTP client for a single host and port.</summary>
 class HttpClientApi : public Object
@@ -244,7 +145,6 @@ class HttpClientApi : public Object
 
 	static void CALLBACK								HttpStatusCallback(HINTERNET httpRequest, DWORD_PTR context, DWORD status, LPVOID statusInformation, DWORD statusInformationLength);
 	static HttpError									MakeError(const WString& operation, DWORD errorCode);
-	static vint											HexValue(wchar_t c);
 
 	bool												IsStopping();
 	void												BeginPendingCallback();

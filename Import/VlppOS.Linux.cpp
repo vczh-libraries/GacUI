@@ -1482,6 +1482,10 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		}
 	}
 
+/***********************************************************************
+OwnedFileDescriptor
+***********************************************************************/
+
 	class OwnedFileDescriptor
 	{
 	private:
@@ -1513,6 +1517,10 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 			return result;
 		}
 	};
+
+/***********************************************************************
+OperationDrain
+***********************************************************************/
 
 	class OperationDrain : public Object
 	{
@@ -1560,6 +1568,10 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		}
 	};
 
+/***********************************************************************
+RingOperationOwner
+***********************************************************************/
+
 	class RingOperationOwner : public Object
 	{
 		friend class RingRuntime;
@@ -1574,6 +1586,10 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		virtual void EndTargetOperation() = 0;
 		virtual void HandleOperationFailure(Ptr<RingOperationOwner> retainedOwner) = 0;
 	};
+
+/***********************************************************************
+RingOperation
+***********************************************************************/
 
 	class RingOperation
 	{
@@ -1596,6 +1612,32 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		virtual void Prepare(io_uring_sqe* sqe) noexcept = 0;
 		virtual void Handle(vint result) = 0;
 	};
+
+/***********************************************************************
+RuntimeWakeOperation
+***********************************************************************/
+
+	class RuntimeWakeOperation : public RingOperation
+	{
+	public:
+		RuntimeWakeOperation(vuint64_t id)
+			: RingOperation(id)
+		{
+		}
+
+		void Prepare(io_uring_sqe* sqe) noexcept override
+		{
+			io_uring_prep_nop(sqe);
+		}
+
+		void Handle(vint) override
+		{
+		}
+	};
+
+/***********************************************************************
+RingRuntime
+***********************************************************************/
 
 	class RingRuntime : public Object
 	{
@@ -1918,24 +1960,6 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		void Stop();
 	};
 
-	class RuntimeWakeOperation : public RingOperation
-	{
-	public:
-		RuntimeWakeOperation(vuint64_t id)
-			: RingOperation(id)
-		{
-		}
-
-		void Prepare(io_uring_sqe* sqe) noexcept override
-		{
-			io_uring_prep_nop(sqe);
-		}
-
-		void Handle(vint) override
-		{
-		}
-	};
-
 	void RingRuntime::Stop()
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::inter_process::async_tcp_socket::linux_socket::RingRuntime::Stop()#"
@@ -1998,6 +2022,10 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+/***********************************************************************
+ConnectionState
+***********************************************************************/
+
 	class ConnectionState : public RingOperationOwner
 	{
 		friend class AsyncSocketConnection;
@@ -2009,7 +2037,7 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		class CancelOperation;
 
 		Ptr<RingRuntime>					runtime;
-		AsyncSocketConnection*			owner = nullptr;
+		IAsyncSocketConnection*			owner = nullptr;
 
 		// covers all fields below, callback counts, and target operation counts
 		CriticalSection					lockState;
@@ -2193,44 +2221,9 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		ClientStatus GetStatus();
 	};
 
-	class AsyncSocketConnection : public Object, public virtual IAsyncSocketConnection
-	{
-	private:
-		Ptr<ConnectionState>					state;
-
-	public:
-		AsyncSocketConnection(Ptr<ConnectionState> _state)
-			: state(_state)
-		{
-			state->owner = this;
-		}
-
-		~AsyncSocketConnection()
-		{
-			state->Stop(state);
-			state->owner = nullptr;
-		}
-
-		void InstallCallback(IAsyncSocketCallback* callback) override
-		{
-			state->InstallCallback(state, callback);
-		}
-
-		void BeginReadingLoopUnsafe() override
-		{
-			state->BeginReading(state);
-		}
-
-		void WriteAsync(Ptr<AsyncSocketBuffer> buffer) override
-		{
-			state->Write(state, buffer);
-		}
-
-		void Stop() override
-		{
-			state->Stop(state);
-		}
-	};
+/***********************************************************************
+ConnectionState::CancelOperation
+***********************************************************************/
 
 	class ConnectionState::CancelOperation : public RingOperation
 	{
@@ -2257,6 +2250,10 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 			}
 		}
 	};
+
+/***********************************************************************
+ConnectionState::ReceiveOperation
+***********************************************************************/
 
 	class ConnectionState::ReceiveOperation : public RingOperation
 	{
@@ -2317,6 +2314,10 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 			}
 		}
 	};
+
+/***********************************************************************
+ConnectionState::WriteOperation
+***********************************************************************/
 
 	class ConnectionState::WriteOperation : public RingOperation
 	{
@@ -2471,6 +2472,10 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		}
 	};
 
+/***********************************************************************
+ConnectionState::ConnectOperation
+***********************************************************************/
+
 	class ConnectionState::ConnectOperation : public RingOperation
 	{
 	public:
@@ -2545,6 +2550,10 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		}
 	};
 
+/***********************************************************************
+ConnectionState::RetryOperation
+***********************************************************************/
+
 	class ConnectionState::RetryOperation : public RingOperation
 	{
 	public:
@@ -2591,6 +2600,10 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 			}
 		}
 	};
+
+/***********************************************************************
+ConnectionState
+***********************************************************************/
 
 	void ConnectionState::InstallCallback(Ptr<ConnectionState>, IAsyncSocketCallback* value)
 	{
@@ -3009,6 +3022,53 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		return result;
 	}
 
+/***********************************************************************
+AsyncSocketConnection
+***********************************************************************/
+
+	class AsyncSocketConnection : public Object, public virtual IAsyncSocketConnection
+	{
+	private:
+		Ptr<ConnectionState>					state;
+
+	public:
+		AsyncSocketConnection(Ptr<ConnectionState> _state)
+			: state(_state)
+		{
+			state->owner = this;
+		}
+
+		~AsyncSocketConnection()
+		{
+			state->Stop(state);
+			state->owner = nullptr;
+		}
+
+		void InstallCallback(IAsyncSocketCallback* callback) override
+		{
+			state->InstallCallback(state, callback);
+		}
+
+		void BeginReadingLoopUnsafe() override
+		{
+			state->BeginReading(state);
+		}
+
+		void WriteAsync(Ptr<AsyncSocketBuffer> buffer) override
+		{
+			state->Write(state, buffer);
+		}
+
+		void Stop() override
+		{
+			state->Stop(state);
+		}
+	};
+
+/***********************************************************************
+ServerState
+***********************************************************************/
+
 	class ServerState : public RingOperationOwner
 	{
 	private:
@@ -3016,18 +3076,19 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		class CancelOperation;
 
 		Ptr<RingRuntime>					runtime;
-		AsyncSocketServer*					owner = nullptr;
 		vint								port = 0;
 
 		// covers all fields below, callback counts, and target operation counts
 		CriticalSection					lockState;
 		ConditionVariable				cvCallbacks;
+		IAsyncSocketServerCallback*		callback = nullptr;
 		vint								listener = -1;
 		bool								startCalled = false;
 		bool								starting = false;
 		bool								started = false;
 		bool								stopping = false;
 		bool								stopped = false;
+		bool								unexpectedStopNotified = false;
 		EventObject						eventStartFinished;
 		vuint64_t						acceptOperationId = 0;
 		bool								acceptCancelRequested = false;
@@ -3110,6 +3171,38 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 			{
 				std::abort();
 			}
+			HandleUnexpectedStop(retainedState);
+		}
+
+		void HandleUnexpectedStop(Ptr<ServerState> retainedState)
+		{
+			IAsyncSocketServerCallback* installedCallback = nullptr;
+			CS_LOCK(lockState)
+			{
+				if (started && !stopping && !unexpectedStopNotified)
+				{
+					unexpectedStopNotified = true;
+					installedCallback = callback;
+					if (installedCallback)
+					{
+						activeCallbacks++;
+					}
+				}
+			}
+			if (installedCallback)
+			{
+				ServerCallbackFrame frame{ this, currentServerCallbackFrame };
+				currentServerCallbackFrame = &frame;
+				try
+				{
+					installedCallback->OnServerStopped();
+				}
+				catch (...)
+				{
+				}
+				currentServerCallbackFrame = frame.previous;
+				EndCallback();
+			}
 			Stop(retainedState);
 		}
 
@@ -3138,20 +3231,23 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		bool PostAccept(Ptr<ServerState> retainedState);
 
 	public:
-		ServerState(Ptr<RingRuntime> _runtime, AsyncSocketServer* _owner, vint _port)
+		ServerState(Ptr<RingRuntime> _runtime, vint _port)
 			: runtime(_runtime)
-			, owner(_owner)
 			, port(_port)
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::inter_process::async_tcp_socket::linux_socket::ServerState::ServerState(Ptr<RingRuntime>, AsyncSocketServer*, vint)#"
+#define ERROR_MESSAGE_PREFIX L"vl::inter_process::async_tcp_socket::linux_socket::ServerState::ServerState(Ptr<RingRuntime>, vint)#"
 			CHECK_ERROR(eventStartFinished.CreateManualUnsignal(true), ERROR_MESSAGE_PREFIX L"Failed to create the server startup drain event.");
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void Start(Ptr<ServerState> retainedState);
+		void Start(Ptr<ServerState> retainedState, IAsyncSocketServerCallback* value);
 		void Stop(Ptr<ServerState> retainedState);
 		bool IsStopped();
 	};
+
+/***********************************************************************
+ServerState::CancelOperation
+***********************************************************************/
 
 	class ServerState::CancelOperation : public RingOperation
 	{
@@ -3178,6 +3274,10 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 			}
 		}
 	};
+
+/***********************************************************************
+ServerState::AcceptOperation
+***********************************************************************/
 
 	class ServerState::AcceptOperation : public RingOperation
 	{
@@ -3234,12 +3334,12 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 				{
 					if (!server->PostAccept(server))
 					{
-						server->Stop(server);
+						server->HandleUnexpectedStop(server);
 					}
 				}
 				else if (running && result != -ECANCELED)
 				{
-					server->Stop(server);
+					server->HandleUnexpectedStop(server);
 				}
 				return;
 			}
@@ -3253,23 +3353,23 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 			// Keep exactly one accept pending, and rearm before invoking user code.
 			if (!server->PostAccept(server))
 			{
-				server->Stop(server);
+				server->HandleUnexpectedStop(server);
 				return;
 			}
 			auto connectionState = Ptr(new ConnectionState(server->runtime, acceptedSocket.Get()));
 			auto connection = Ptr(new AsyncSocketConnection(connectionState));
 			acceptedSocket.Detach();
-			bool invoke = false;
+			IAsyncSocketServerCallback* installedCallback = nullptr;
 			CS_LOCK(server->lockState)
 			{
-				if (server->started && !server->stopping && server->owner)
+				if (server->started && !server->stopping && server->callback)
 				{
 					server->connections.Add(connection);
+					installedCallback = server->callback;
 					server->activeCallbacks++;
-					invoke = true;
 				}
 			}
-			if (!invoke)
+			if (!installedCallback)
 			{
 				connection->Stop();
 				return;
@@ -3280,25 +3380,32 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 			currentServerCallbackFrame = &frame;
 			try
 			{
-				acceptResult = server->owner->OnClientConnected(connection.Obj());
+				acceptResult = installedCallback->OnClientConnected(connection.Obj());
 			}
 			catch (...)
 			{
 			}
 			currentServerCallbackFrame = frame.previous;
-			server->EndCallback();
-
-			bool stillRunning = false;
+			bool accepted = false;
 			CS_LOCK(server->lockState)
 			{
-				stillRunning = server->started && !server->stopping;
+				accepted = acceptResult == WaitForClientResult::Accept && server->started && !server->stopping;
+				if (!accepted)
+				{
+					server->connections.Remove(connection.Obj());
+				}
 			}
-			if (acceptResult == WaitForClientResult::Reject || !stillRunning)
+			server->EndCallback();
+			if (!accepted)
 			{
 				connection->Stop();
 			}
 		}
 	};
+
+/***********************************************************************
+ServerState
+***********************************************************************/
 
 	bool ServerState::PostAccept(Ptr<ServerState> retainedState)
 	{
@@ -3330,14 +3437,16 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		return !submissionFailed;
 	}
 
-	void ServerState::Start(Ptr<ServerState> retainedState)
+	void ServerState::Start(Ptr<ServerState> retainedState, IAsyncSocketServerCallback* value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::inter_process::async_tcp_socket::linux_socket::ServerState::Start(Ptr<ServerState>)#"
+#define ERROR_MESSAGE_PREFIX L"vl::inter_process::async_tcp_socket::linux_socket::ServerState::Start(Ptr<ServerState>, IAsyncSocketServerCallback*)#"
+		CHECK_ERROR(value != nullptr, ERROR_MESSAGE_PREFIX L"Requires a callback.");
 		CS_LOCK(lockState)
 		{
 			CHECK_ERROR(!startCalled && !stopping, ERROR_MESSAGE_PREFIX L"Can only be called once before stopping.");
 			startCalled = true;
 			starting = true;
+			callback = value;
 			eventStartFinished.Unsignal();
 		}
 		StartScope startScope(this);
@@ -3371,9 +3480,11 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 			{
 				stopping = true;
 				stopped = true;
+				callback = nullptr;
 			}
 			runtime->Stop();
-			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Failed to create the loopback listener.");
+			auto failure = setupError == EADDRINUSE ? AsyncSocketServerStartFailure::AddressInUse : AsyncSocketServerStartFailure::Other;
+			throw AsyncSocketServerStartException(failure, LinuxSocketErrorMessage(L"AsyncSocketServer listener setup", setupError));
 		}
 
 		bool committed = false;
@@ -3397,25 +3508,35 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 				started = false;
 				stopping = true;
 				stopped = true;
+				callback = nullptr;
 			}
 			runtime->Stop();
-			throw;
+			throw AsyncSocketServerStartException(AsyncSocketServerStartFailure::Other, ERROR_MESSAGE_PREFIX L"Failed to start the listener runtime.");
 		}
-		if (committed)
+		if (!committed)
 		{
-			if (!PostAccept(retainedState))
+			throw AsyncSocketServerStartException(AsyncSocketServerStartFailure::Other, ERROR_MESSAGE_PREFIX L"The listener was stopped during startup.");
+		}
+		if (!PostAccept(retainedState))
+		{
+			CS_LOCK(lockState)
 			{
-				CS_LOCK(lockState)
+				started = false;
+				stopping = true;
+				stopped = true;
+				callback = nullptr;
+				if (listener >= 0)
 				{
-					started = false;
-					stopping = true;
-					stopped = true;
-					CloseFileDescriptor(listener);
-					listener = -1;
+					shutdown((int)listener, SHUT_RDWR);
+					if (targetOperations == 0)
+					{
+						CloseFileDescriptor(listener);
+						listener = -1;
+					}
 				}
-				runtime->Stop();
-				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Failed to submit the first accept operation.");
 			}
+			runtime->Stop();
+			throw AsyncSocketServerStartException(AsyncSocketServerStartFailure::Other, ERROR_MESSAGE_PREFIX L"Failed to submit the first accept operation.");
 		}
 #undef ERROR_MESSAGE_PREFIX
 	}
@@ -3498,6 +3619,13 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 			connection->Stop();
 		}
 		runtime->Stop();
+		if (callbackDepth == 0)
+		{
+			CS_LOCK(lockState)
+			{
+				callback = nullptr;
+			}
+		}
 	}
 
 	bool ServerState::IsStopped()
@@ -3510,6 +3638,10 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		return result;
 	}
 
+/***********************************************************************
+AsyncSocketServer::Impl
+***********************************************************************/
+
 	class AsyncSocketServer::Impl : public Object
 	{
 	private:
@@ -3517,9 +3649,9 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		Ptr<ServerState>					state;
 
 	public:
-		Impl(AsyncSocketServer* owner, vint port)
+		Impl(vint port)
 			: runtime(RingRuntime::Create(false))
-			, state(Ptr(new ServerState(runtime, owner, port)))
+			, state(Ptr(new ServerState(runtime, port)))
 		{
 		}
 
@@ -3528,9 +3660,9 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 			Stop();
 		}
 
-		void Start()
+		void Start(IAsyncSocketServerCallback* callback)
 		{
-			state->Start(state);
+			state->Start(state, callback);
 		}
 
 		void Stop()
@@ -3544,12 +3676,16 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		}
 	};
 
+/***********************************************************************
+AsyncSocketServer
+***********************************************************************/
+
 	AsyncSocketServer::AsyncSocketServer(vint port)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::inter_process::async_tcp_socket::linux_socket::AsyncSocketServer::AsyncSocketServer(vint)#"
 		CHECK_ERROR(1 <= port && port <= 65535, ERROR_MESSAGE_PREFIX L"The port must be in 1..65535.");
 #undef ERROR_MESSAGE_PREFIX
-		impl = new Impl(this, port);
+		impl = new Impl(port);
 	}
 
 	AsyncSocketServer::~AsyncSocketServer()
@@ -3557,14 +3693,9 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		delete impl;
 	}
 
-	WaitForClientResult AsyncSocketServer::OnClientConnected(IAsyncSocketConnection*)
+	void AsyncSocketServer::Start(IAsyncSocketServerCallback* callback)
 	{
-		return WaitForClientResult::Accept;
-	}
-
-	void AsyncSocketServer::Start()
-	{
-		impl->Start();
+		impl->Start(callback);
 	}
 
 	void AsyncSocketServer::Stop()
@@ -3576,6 +3707,10 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 	{
 		return impl->IsStopped();
 	}
+
+/***********************************************************************
+AsyncSocketClient::Impl
+***********************************************************************/
 
 	class AsyncSocketClient::Impl : public Object
 	{
@@ -3619,6 +3754,10 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		}
 	};
 
+/***********************************************************************
+AsyncSocketClient
+***********************************************************************/
+
 	AsyncSocketClient::AsyncSocketClient(vint port)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::inter_process::async_tcp_socket::linux_socket::AsyncSocketClient::AsyncSocketClient(vint)#"
@@ -3646,9 +3785,20 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 	{
 		return impl->GetStatus();
 	}
+
+	Ptr<IAsyncSocketServer> CreateDefaultAsyncSocketServer(vint port)
+	{
+		return Ptr(new AsyncSocketServer(port));
+	}
+
+	Ptr<IAsyncSocketClient> CreateDefaultAsyncSocketClient(vint port)
+	{
+		return Ptr(new AsyncSocketClient(port));
+	}
 }
 
 #endif
+
 
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET.MACOS.CPP
@@ -3679,6 +3829,10 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 	static char connectionQueueKey;
 	static char serverQueueKey;
 
+/***********************************************************************
+NativeConnectionContext
+***********************************************************************/
+
 	class NativeConnectionContext : public Object
 	{
 		friend class ConnectionState;
@@ -3695,6 +3849,24 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 		NativeConnectionContext(Ptr<ConnectionState> _state, nw_connection_t _connection);
 		~NativeConnectionContext();
 	};
+
+	NativeConnectionContext::NativeConnectionContext(Ptr<ConnectionState> _state, nw_connection_t _connection)
+		: state(_state)
+		, connection(_connection)
+	{
+	}
+
+	NativeConnectionContext::~NativeConnectionContext()
+	{
+		if (connection)
+		{
+			nw_release(connection);
+		}
+	}
+
+/***********************************************************************
+ConnectionState
+***********************************************************************/
 
 	class ConnectionState : public Object
 	{
@@ -4819,19 +4991,9 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 		}
 	};
 
-	NativeConnectionContext::NativeConnectionContext(Ptr<ConnectionState> _state, nw_connection_t _connection)
-		: state(_state)
-		, connection(_connection)
-	{
-	}
-
-	NativeConnectionContext::~NativeConnectionContext()
-	{
-		if (connection)
-		{
-			nw_release(connection);
-		}
-	}
+/***********************************************************************
+AsyncSocketConnection
+***********************************************************************/
 
 	class AsyncSocketConnection : public Object, public virtual IAsyncSocketConnection
 	{
@@ -4887,6 +5049,10 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 		}
 	};
 
+/***********************************************************************
+ServerState
+***********************************************************************/
+
 	class ServerState : public Object
 	{
 	private:
@@ -4894,12 +5060,18 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 		CriticalSection					lockState;
 		ConditionVariable				cvState;
 		dispatch_queue_t				queue = nullptr;
-		AsyncSocketServer*				owner = nullptr;
+		IAsyncSocketServerCallback*		callback = nullptr;
 		vint							port = 0;
 		bool							startCalled = false;
+		bool							starting = false;
+		bool							startupResolved = false;
+		bool							startupReady = false;
+		AsyncSocketServerStartFailure	startupFailure = AsyncSocketServerStartFailure::Other;
+		vint							startupError = 0;
 		bool							started = false;
 		bool							stopping = false;
 		bool							stopped = false;
+		bool							unexpectedStopNotified = false;
 		bool							stopFinalizing = false;
 		bool							stopCompleted = false;
 		nw_listener_t					listener = nullptr;
@@ -4958,14 +5130,94 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 			}
 		}
 
-		void OnListenerState(Ptr<ServerState> retainedState, nw_listener_state_t state)
+		void OnListenerState(Ptr<ServerState> retainedState, nw_listener_state_t state, nw_error_t error)
 		{
 			switch (state)
 			{
+			case nw_listener_state_waiting:
+				{
+					bool startupFailed = false;
+					CS_LOCK(lockState)
+					{
+						if (starting && !startupResolved)
+						{
+							starting = false;
+							startupResolved = true;
+							startupReady = false;
+							startupError = error ? (vint)nw_error_get_error_code(error) : 0;
+							startupFailure = error && nw_error_get_error_domain(error) == nw_error_domain_posix && startupError == EADDRINUSE
+								? AsyncSocketServerStartFailure::AddressInUse
+								: AsyncSocketServerStartFailure::Other;
+							startupFailed = true;
+							cvState.WakeAllPendings();
+						}
+					}
+					if (startupFailed)
+					{
+						Stop();
+					}
+				}
+				break;
+			case nw_listener_state_ready:
+				CS_LOCK(lockState)
+				{
+					if (starting && !startupResolved && !stopping)
+					{
+						starting = false;
+						startupResolved = true;
+						startupReady = true;
+						started = true;
+						cvState.WakeAllPendings();
+					}
+				}
+				break;
 			case nw_listener_state_failed:
+				{
+					IAsyncSocketServerCallback* installedCallback = nullptr;
+					lockState.Enter();
+					if (starting && !startupResolved)
+					{
+						starting = false;
+						startupResolved = true;
+						startupReady = false;
+						startupError = error ? (vint)nw_error_get_error_code(error) : 0;
+						startupFailure = error && nw_error_get_error_domain(error) == nw_error_domain_posix && startupError == EADDRINUSE
+							? AsyncSocketServerStartFailure::AddressInUse
+							: AsyncSocketServerStartFailure::Other;
+						cvState.WakeAllPendings();
+					}
+					else if (started && !stopping && !unexpectedStopNotified)
+					{
+						unexpectedStopNotified = true;
+						installedCallback = callback;
+					}
+					lockState.Leave();
+
+					if (installedCallback)
+					{
+						try
+						{
+							installedCallback->OnServerStopped();
+						}
+						catch (...)
+						{
+						}
+					}
+				}
 				Stop();
 				break;
 			case nw_listener_state_cancelled:
+				CS_LOCK(lockState)
+				{
+					if (starting && !startupResolved)
+					{
+						starting = false;
+						startupResolved = true;
+						startupReady = false;
+						startupFailure = AsyncSocketServerStartFailure::Other;
+						cvState.WakeAllPendings();
+					}
+				}
 				OnListenerCancelled(retainedState);
 				break;
 			default:
@@ -4985,20 +5237,21 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 		void OnNewConnection(nw_connection_t connection)
 		{
 			auto wrapper = CreateConnection(connection);
-			bool offer = false;
-			AsyncSocketServer* installedOwner = nullptr;
+			IAsyncSocketServerCallback* installedCallback = nullptr;
 			CS_LOCK(lockState)
 			{
-				offer = started && !stopping && owner;
-				installedOwner = owner;
+				if (started && !stopping)
+				{
+					installedCallback = callback;
+				}
 			}
 
 			WaitForClientResult result = WaitForClientResult::Reject;
-			if (offer)
+			if (installedCallback)
 			{
 				try
 				{
-					result = installedOwner->OnClientConnected(wrapper.Obj());
+					result = installedCallback->OnClientConnected(wrapper.Obj());
 				}
 				catch (...)
 				{
@@ -5025,9 +5278,8 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 		}
 
 	public:
-		ServerState(AsyncSocketServer* _owner, vint _port)
-			: owner(_owner)
-			, port(_port)
+		ServerState(vint _port)
+			: port(_port)
 		{
 			queue = dispatch_queue_create("vlppos.async-socket.listener", DISPATCH_QUEUE_SERIAL);
 			CHECK_ERROR(queue != nullptr, L"AsyncSocketServer failed to create its dispatch queue.");
@@ -5040,26 +5292,21 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 			dispatch_release(queue);
 		}
 
-		void DetachOwner()
+		void Start(Ptr<ServerState> retainedState, IAsyncSocketServerCallback* value)
 		{
-			CS_LOCK(lockState)
-			{
-				owner = nullptr;
-			}
-		}
-
-		void Start(Ptr<ServerState> retainedState)
-		{
+#define ERROR_MESSAGE_PREFIX L"vl::inter_process::async_tcp_socket::macos_socket::ServerState::Start(Ptr<ServerState>, IAsyncSocketServerCallback*)#"
+			CHECK_ERROR(value != nullptr, ERROR_MESSAGE_PREFIX L"Requires a callback.");
 			bool begin = false;
 			CS_LOCK(lockState)
 			{
 				if (!startCalled && !stopping)
 				{
 					startCalled = true;
+					callback = value;
 					begin = true;
 				}
 			}
-			CHECK_ERROR(begin, L"AsyncSocketServer::Start can only be called once.");
+			CHECK_ERROR(begin, ERROR_MESSAGE_PREFIX L"Can only be called once before stopping.");
 
 			auto portText = itoa(port);
 			auto endpoint = nw_endpoint_create_host("127.0.0.1", portText.Buffer());
@@ -5088,8 +5335,9 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 				{
 					stopping = true;
 					stopped = true;
+					callback = nullptr;
 				}
-				CHECK_ERROR(false, L"AsyncSocketServer failed to create its Network.framework listener.");
+				throw AsyncSocketServerStartException(AsyncSocketServerStartFailure::Other, ERROR_MESSAGE_PREFIX L"Failed to create the Network.framework listener.");
 			}
 
 			bool installed = false;
@@ -5098,13 +5346,13 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 			{
 				listener = createdListener;
 				pendingListener = 1;
-				started = true;
+				starting = true;
 				nw_listener_set_queue(listener, queue);
 
 				auto retainedForState = retainedState;
-				nw_listener_set_state_changed_handler(listener, ^(nw_listener_state_t state, nw_error_t)
+				nw_listener_set_state_changed_handler(listener, ^(nw_listener_state_t state, nw_error_t error)
 				{
-					retainedForState->OnListenerState(retainedForState, state);
+					retainedForState->OnListenerState(retainedForState, state, error);
 				});
 
 				auto retainedForConnection = retainedState;
@@ -5119,7 +5367,27 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 			if (!installed)
 			{
 				nw_release(createdListener);
+				throw AsyncSocketServerStartException(AsyncSocketServerStartFailure::Other, ERROR_MESSAGE_PREFIX L"The listener was stopped during startup.");
 			}
+
+			AsyncSocketServerStartFailure failure = AsyncSocketServerStartFailure::Other;
+			vint error = 0;
+			bool ready = false;
+			lockState.Enter();
+			while (!startupResolved)
+			{
+				cvState.SleepWith(lockState);
+			}
+			ready = startupReady;
+			failure = startupFailure;
+			error = startupError;
+			lockState.Leave();
+			if (!ready)
+			{
+				Stop();
+				throw AsyncSocketServerStartException(failure, ERROR_MESSAGE_PREFIX L"Network.framework listener startup failed with error " + itow(error) + L".");
+			}
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 		void Stop()
@@ -5132,6 +5400,14 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 				stopping = true;
 				started = false;
 				stopped = true;
+				if (starting && !startupResolved)
+				{
+					starting = false;
+					startupResolved = true;
+					startupReady = false;
+					startupFailure = AsyncSocketServerStartFailure::Other;
+					cvState.WakeAllPendings();
+				}
 			}
 			RequestListenerCancelLocked();
 			for (auto connection : connections)
@@ -5193,6 +5469,7 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 			CS_LOCK(lockState)
 			{
 				connections.Clear();
+				callback = nullptr;
 				stopFinalizing = false;
 				stopCompleted = true;
 				cvState.WakeAllPendings();
@@ -5210,26 +5487,29 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 		}
 	};
 
+/***********************************************************************
+AsyncSocketServer::Impl
+***********************************************************************/
+
 	class AsyncSocketServer::Impl : public Object
 	{
 	private:
 		Ptr<ServerState>					state;
 
 	public:
-		Impl(AsyncSocketServer* owner, vint port)
-			: state(Ptr(new ServerState(owner, port)))
+		Impl(vint port)
+			: state(Ptr(new ServerState(port)))
 		{
 		}
 
 		~Impl()
 		{
 			state->Stop();
-			state->DetachOwner();
 		}
 
-		void Start()
+		void Start(IAsyncSocketServerCallback* callback)
 		{
-			state->Start(state);
+			state->Start(state, callback);
 		}
 
 		void Stop()
@@ -5243,10 +5523,14 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 		}
 	};
 
+/***********************************************************************
+AsyncSocketServer
+***********************************************************************/
+
 	AsyncSocketServer::AsyncSocketServer(vint port)
 	{
 		CHECK_ERROR(1 <= port && port <= 65535, L"AsyncSocketServer requires a port in 1..65535.");
-		impl = new Impl(this, port);
+		impl = new Impl(port);
 	}
 
 	AsyncSocketServer::~AsyncSocketServer()
@@ -5254,14 +5538,9 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 		delete impl;
 	}
 
-	WaitForClientResult AsyncSocketServer::OnClientConnected(IAsyncSocketConnection*)
+	void AsyncSocketServer::Start(IAsyncSocketServerCallback* callback)
 	{
-		return WaitForClientResult::Accept;
-	}
-
-	void AsyncSocketServer::Start()
-	{
-		impl->Start();
+		impl->Start(callback);
 	}
 
 	void AsyncSocketServer::Stop()
@@ -5273,6 +5552,10 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 	{
 		return impl->IsStopped();
 	}
+
+/***********************************************************************
+AsyncSocketClient::Impl
+***********************************************************************/
 
 	class AsyncSocketClient::Impl : public Object
 	{
@@ -5308,6 +5591,10 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 		}
 	};
 
+/***********************************************************************
+AsyncSocketClient
+***********************************************************************/
+
 	AsyncSocketClient::AsyncSocketClient(vint port)
 	{
 		CHECK_ERROR(1 <= port && port <= 65535, L"AsyncSocketClient requires a port in 1..65535.");
@@ -5333,5 +5620,16 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 	{
 		return impl->GetStatus();
 	}
+
+	Ptr<IAsyncSocketServer> CreateDefaultAsyncSocketServer(vint port)
+	{
+		return Ptr(new AsyncSocketServer(port));
+	}
+
+	Ptr<IAsyncSocketClient> CreateDefaultAsyncSocketClient(vint port)
+	{
+		return Ptr(new AsyncSocketClient(port));
+	}
 }
 #endif
+

@@ -34,8 +34,7 @@ namespace vl::inter_process::async_tcp_socket::linux_socket
 		AsyncSocketServer(vint port);
 		~AsyncSocketServer();
 
-		WaitForClientResult					OnClientConnected(IAsyncSocketConnection* connection) override;
-		void								Start() override;
+		void								Start(IAsyncSocketServerCallback* callback) override;
 		void								Stop() override;
 		bool								IsStopped() override;
 	};
@@ -90,8 +89,7 @@ namespace vl::inter_process::async_tcp_socket::macos_socket
 		AsyncSocketServer(vint port);
 		~AsyncSocketServer();
 
-		WaitForClientResult					OnClientConnected(IAsyncSocketConnection* connection) override;
-		void								Start() override;
+		void								Start(IAsyncSocketServerCallback* callback) override;
 		void								Stop() override;
 		bool								IsStopped() override;
 	};
