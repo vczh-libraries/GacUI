@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 #endif
 	int result = 1;
 	vint index = -1; // 0 = FullControlTest (/FCT), 1 = RemoteProtocolTest (/RPT)
-	int transport = -1; // 0 = Pipe, 1 = Http, 2 = MiniHttp
+	int transport = -1; // 0 = Pipe, 1 = Http, 2 = MiniHTTP
 
 	for (int i = 1; i < argc; i++)
 	{
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 		{
 			if (transport != -1)
 			{
-				Console::WriteLine(L"Error: /Pipe, /Http and /MiniHttp are exclusive.");
+				Console::WriteLine(L"Error: /Pipe, /Http and /MiniHTTP are exclusive.");
 				return result;
 			}
 			transport = 0;
@@ -51,16 +51,16 @@ int main(int argc, char* argv[])
 		{
 			if (transport != -1)
 			{
-				Console::WriteLine(L"Error: /Pipe, /Http and /MiniHttp are exclusive.");
+				Console::WriteLine(L"Error: /Pipe, /Http and /MiniHTTP are exclusive.");
 				return result;
 			}
 			transport = 1;
 		}
-		else if (strcmp(argv[i], "/MiniHttp") == 0)
+		else if (strcmp(argv[i], "/MiniHTTP") == 0 || strcmp(argv[i], "/MiniHttp") == 0)
 		{
 			if (transport != -1)
 			{
-				Console::WriteLine(L"Error: /Pipe, /Http and /MiniHttp are exclusive.");
+				Console::WriteLine(L"Error: /Pipe, /Http and /MiniHTTP are exclusive.");
 				return result;
 			}
 			transport = 2;
@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
 
 	if (transport == -1)
 	{
-		Console::WriteLine(L"Error: Either /Pipe, /Http or /MiniHttp must be provided.");
+		Console::WriteLine(L"Error: Either /Pipe, /Http or /MiniHTTP must be provided.");
 		return result;
 	}
 
