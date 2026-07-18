@@ -127,15 +127,25 @@ Cross-process synchronization objects that support waiting operations with timeo
 
 #### Inter-Process Network Protocols and Channels
 
-Inter-process text transport and typed named-channel communication for applications that need client/server messaging, local server-side channel participants, batched package delivery, and optional Windows-only NamedPipe or HTTP transports.
+Production-usable asynchronous text-protocol and typed named-channel abstractions. Every concrete network-protocol implementation supplied by this repository, including the async-socket-based Mini HTTP transport, is testing-only; production applications should provide their own `INetworkProtocol*` implementation.
 
-- Use `INetworkProtocolServer`, `INetworkProtocolClient`, `INetworkProtocolConnection` and `INetworkProtocolCallback` for raw asynchronous text-message transport.
+- Use `INetworkProtocolServer`, `INetworkProtocolClient`, `INetworkProtocolConnection` and `INetworkProtocolCallback` for asynchronous `WString` messages.
 - Use `IChannelServer<TPackage>`, `IChannelClient<TPackage>`, `IChannel<TPackage>` and `IChannelReader<TPackage>` for typed named channels with client ids, direct sends, broadcasts and batched writes.
-- Use `NetworkProtocolChannelServer<TPackage, TSerialization, TServerBase>`, `NetworkProtocolChannelClient<TPackage, TSerialization>` and `NetworkProtocolLocalChannelClient<TPackage, TSerialization>` for the default channel implementation over an `INetworkProtocol*` transport.
-- Use `vl::inter_process::named_pipe::NamedPipeServer` / `vl::inter_process::named_pipe::NamedPipeClient` and `vl::inter_process::windows_http::HttpServer` / `vl::inter_process::windows_http::HttpClient` only when targeting Windows, because the current built-in NamedPipe and HTTP implementations are Windows-only.
-- Use `vl::inter_process::windows_http::HttpClientApi` and `vl::inter_process::windows_http::HttpServerApi` when implementing or maintaining the Windows HTTP transport layer directly.
+- Use `NetworkProtocolChannelServer<TPackage, TSerialization, TServerBase>`, `NetworkProtocolChannelClient<TPackage, TSerialization>` and `NetworkProtocolLocalChannelClient<TPackage, TSerialization>` to run the channel implementation over a production-ready custom protocol.
+- Use `vl::inter_process::async_tcp_socket::SocketHttpServer` and `vl::inter_process::async_tcp_socket::SocketHttpClient` only for testing as the portable Mini HTTP implementation of the raw network-protocol interfaces.
 
 [API Explanation](./KB_VlppOS_InterProcessNetworkProtocolsAndChannels.md)
+
+#### Async-Socket-Based Mini HTTP API
+
+Testing-only layered loopback TCP and HTTP/1.1 APIs for asynchronous binary streams, parsed request/response connections and prefix-dispatched Mini HTTP services. Do not use these APIs in production code.
+
+- Use `vl::inter_process::async_tcp_socket::IAsyncSocketServer`, `vl::inter_process::async_tcp_socket::IAsyncSocketClient`, `vl::inter_process::async_tcp_socket::IAsyncSocketConnection`, `vl::inter_process::async_tcp_socket::IAsyncSocketCallback` and `vl::inter_process::async_tcp_socket::AsyncSocketBuffer` for asynchronous loopback byte streams.
+- Use `vl::inter_process::async_tcp_socket::windows_socket::AsyncSocketServer` / `vl::inter_process::async_tcp_socket::windows_socket::AsyncSocketClient`, `vl::inter_process::async_tcp_socket::linux_socket::AsyncSocketServer` / `vl::inter_process::async_tcp_socket::linux_socket::AsyncSocketClient`, or `vl::inter_process::async_tcp_socket::macos_socket::AsyncSocketServer` / `vl::inter_process::async_tcp_socket::macos_socket::AsyncSocketClient` for the current platform.
+- Use `vl::inter_process::async_tcp_socket::HttpRequest`, `vl::inter_process::async_tcp_socket::HttpResponse`, `vl::inter_process::async_tcp_socket::HttpRequestServer`, `vl::inter_process::async_tcp_socket::HttpRequestClient`, `vl::inter_process::async_tcp_socket::IHttpRequestConnection` and `vl::inter_process::async_tcp_socket::IHttpRequestCallback` for binary-safe sequential HTTP/1.1 exchanges.
+- Use `vl::inter_process::async_tcp_socket::SocketHttpServerApi`, `vl::inter_process::async_tcp_socket::SocketHttpRequestContext` and `vl::inter_process::async_tcp_socket::SocketHttpClientApi` for prefix-dispatched Mini HTTP request/response work.
+
+[API Explanation](./KB_VlppOS_InterProcessAsyncSocketBasedMiniHttpApi.md)
 
 ### Design Explanation
 

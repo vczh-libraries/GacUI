@@ -41,6 +41,7 @@ I am starting a fresh new request.
 
 - Before replacing `Copilot_Investigate.md`, read its current content.
   - If it contains anything beyond the `# !!!INVESTIGATE!!!` title, run `copilotRemember.ps1` without arguments to archive the old investigation first.
+  - For non-Windows platform where `copilotRemember.ps1` can't be executed, you need to follow the script manually, which is move `Copilot_Investigate.md` to `REPO-ROOT/.github/Learning/YYYY-MM-DD-hh-mm-ss/` folder, using the current time.
 - You should override `Copilot_Investigate.md` with only one title `# !!!INVESTIGATE!!!`.
   - At the moment, `Copilot_Investigate.md` may contain the last investigation. Even if it may look like the document is already finished for the current investigation, always clean it up.
 - After overriding, copy precisely my problem description in `# Repro` from the LATEST chat message under `# PROBLEM DESCRIPTION`.

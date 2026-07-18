@@ -3,35 +3,36 @@
 # Orders
 
 - Process staged tasks one by one with verification [19]
-- Verify generated artifacts with downstream consumer checks [14]
-- Port fixes from imports to source repositories [12]
-- Crash early instead of adding error-tolerance fallbacks [8]
-- Keep design documentation aligned with code after refactoring [7]
-- Proactively remove code made redundant by refactoring [6]
+- Verify generated artifacts with downstream consumer checks [15]
+- Port fixes from imports to source repositories [13]
+- Crash early instead of adding error-tolerance fallbacks [9]
+- Keep design documentation aligned with code after refactoring [8]
+- Proactively remove code made redundant by refactoring [8]
 - Make `Stop()` drain asynchronous work before returning [6]
+- Validate expectations against implementation and existing tests [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
-- Validate expectations against implementation and existing tests [4]
+- Fix behavior at the owning state instead of patching symptoms [4]
+- Verify and localize portability on every target OS [3]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [3]
 - Extract abstractions only for real shared behavior [3]
-- Fix behavior at the owning state instead of patching symptoms [3]
+- Do not assume async callback owners are heap allocated [3]
 - Capture dependent lambdas explicitly [2]
 - Don't assume observable changes are batched [2]
-- Do not assume async callback owners are heap allocated [2]
 - Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages [2]
 - Prefer simple calls before interface casts [2]
 - Treat Debug memory leak dumps as required failures [2]
 - Prefer well-defined tests over ambiguous edge cases [2]
+- Prefer raw pointers unless shared ownership is required [2]
+- Start async callbacks after most-derived construction [2]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
 - Use named sentinel constants instead of raw values [1]
 - Use `Variant<T...>::Index()` to check active alternative [1]
 - Avoid references into containers when mutating them [1]
 - Prefer designated initializers for aggregate-like structs [1]
-- Prefer raw pointers unless shared ownership is required [1]
 - Construct `Nullable<WString>` explicitly in function calls [1]
 - Sort serialization metadata by deterministic keys, not pointer addresses [1]
-- Start async callbacks after most-derived construction [1]
 - Do not rely on `Event<T>` handler invocation order [1]
 - Use RAII scope cleanup instead of manual catch cleanup [1]
 - `collections::Dictionary` copy assignment is deleted (use move/swap) [1]
@@ -43,6 +44,7 @@
 - Parse and validate before queuing asynchronous work [1]
 - Use Win32 messages for native dialogs when UIA is unavailable [1]
 - Keep generated makefiles platform-invariant [1]
+- Group non-template C++ implementations by class in `.cpp` files [1]
 
 # Refinements
 
@@ -132,7 +134,7 @@ This also applies to enums and API surface: verify that enum values and method n
 
 For regression tests, verify that the proposed case actually distinguishes broken and fixed behavior. A positive control can pass under both implementations, so retain a root-cause-sensitive reproduction and assert the relevant observable boundary, such as callback count and range, rather than only a coarse aggregate result.
 
-For performance regressions, establish a same-machine baseline and instrument construction, connection, exchange, draining, and shutdown separately. Rule out each plausible hypothesis with direct state and timing evidence before changing production code; a plausible platform theory or a nearby commit is not a substitute for measuring the actual slow boundary.
+For performance regressions, establish a same-machine baseline and instrument construction, connection, exchange, draining, and shutdown separately. Before diagnosing a deadlock, identify the exact test that appears stuck and measure how long it runs. Rule out each plausible hypothesis with direct state and timing evidence before changing production code; a plausible platform theory or a nearby commit is not a substitute for measuring the actual slow boundary.
 
 ## Prefer `operator<=> = default` for lexicographic key structs
 
@@ -189,6 +191,8 @@ When serializing metadata into stable binary output, do not let pointer-address 
 ## Start async callbacks after most-derived construction
 
 Objects that dispatch asynchronous callbacks should not begin listening or queue callbacks from base constructors. Initialize state in constructors, then expose an explicit `Start()` boundary that callers invoke after the most-derived object is fully constructed, so callbacks can safely dispatch to final overrides.
+
+When a listener requires a non-owning callback, supply it as part of `Start()` and store it before enabling listener delivery. Do not require subclassing a concrete native server or add a separate callback-installation step that leaves a window where work can arrive without the callback.
 
 ## Do not rely on `Event<T>` handler invocation order
 
@@ -288,8 +292,18 @@ When an incremental API receives encoded code units but downstream logic consume
 
 When a lifecycle guarantee applies to every subclass, publish completion and final state in the common native entry/exit path. Do not patch one derived class with a private completion event or duplicate the guarantee only in factory-created wrappers.
 
+When shared code and tests pass on other platforms but fail on one target, fix the failing platform-specific implementation instead of weakening shared behavior or changing already-correct tests.
+
+## Verify and localize portability on every target OS
+
+Run the relevant tests on every target operating system whose behavior is being claimed, and report only the platforms actually exercised. Use contrasts between passing and failing platforms to narrow investigation toward the failing platform's implementation before changing shared code, while retaining cross-platform regression verification.
+
 ## Keep generated makefiles platform-invariant
 
 Tracked `makefile` and `vmake.txt` output should remain identical across Linux and macOS. Keep every platform-guarded translation unit in the stable source list; the inactive translation unit should compile harmlessly through its preprocessor guards. Put monorepo-wide platform policy in the canonical shared `makefile-cpp` and select it at make execution time—for example, Darwin compile/framework options and Linux `-luring`—with libraries placed after object prerequisites.
 
-Do not embed host-preprocessed `clang++ -MM` dependency output in tracked makefiles. Continue running the dependency probe as fail-fast validation, discard its host-specific output, and emit stable source-only object rules that depend on the shared make fragment. Generate ignored `Obj/*.d` files during actual compilation with `-MMD -MP` and include them for correct host-local incremental dependency tracking.
+Do not embed host-preprocessed `clang++ -MM` dependency output in tracked makefiles. Continue running the dependency probe as fail-fast validation, discard its host-specific output, and emit stable source-only object rules. Generate ignored `Obj/*.d` files during actual compilation with `-MMD -MP` and include them for correct host-local incremental dependency tracking. Do not make object files depend on the shared `makefile-cpp`: its environment-dependent settings, such as `VCPROOT`, can vary without requiring a rebuild, and `build.sh -f` is the explicit full-rebuild mechanism.
+
+## Group non-template C++ implementations by class in `.cpp` files
+
+Move non-template method bodies out of headers into the matching `.cpp` file while leaving template definitions in headers. In each implementation file, keep a complete class definition and all methods belonging to that class together, and separate class groups with the repository's block-comment pattern. Place namespace-level forward declarations, variables, helper structs and other non-class items before the class groups. Apply the same organization consistently to platform-specific implementation files.
