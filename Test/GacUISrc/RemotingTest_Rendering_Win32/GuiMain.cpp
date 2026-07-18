@@ -21,6 +21,7 @@ namespace
 GuiRemoteRendererSingle* renderer = nullptr;
 GuiRemoteProtocolAsyncJsonChannelRenderer* asyncChannel = nullptr;
 AutomationServiceRenderer* rendererAutomationService = nullptr;
+bool useWindowsHttpAutomationService = true;
 
 class RemotingTestChannelClient : public GuiRemoteProtocolChannelClient
 {
@@ -187,10 +188,16 @@ void GuiMain()
 		windows::WindowsAutomationServiceRenderer automationService(renderer);
 		rendererAutomationService = &automationService;
 		GetNativeServiceSubstitution()->Substitute(&automationService, false);
-		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/RemotingTest_Rendering_Win32"), 8888);
+		if (useWindowsHttpAutomationService)
+		{
+			windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/RemotingTest_Rendering_Win32"), 8888);
+		}
 		GetCurrentController()->WindowService()->Run(mainWindow);
 		GetCurrentController()->AutomationService()->Stop();
-		windows::StopWindowsHttpAutomationService();
+		if (useWindowsHttpAutomationService)
+		{
+			windows::StopWindowsHttpAutomationService();
+		}
 		GetNativeServiceSubstitution()->Unsubstitute(&automationService);
 		rendererAutomationService = nullptr;
 	}
@@ -224,10 +231,18 @@ int StartClient(Ptr<inter_process::INetworkProtocolClient> networkClient)
 
 int StartNamedPipeClient()
 {
+	useWindowsHttpAutomationService = true;
 	return StartClient(Ptr(new inter_process::named_pipe::NamedPipeClient(WString::Unmanaged(GacUIRemoteProtocolNamedPipeName))));
 }
 
 int StartHttpClient()
 {
+	useWindowsHttpAutomationService = true;
 	return StartClient(Ptr(new inter_process::windows_http::HttpClient(WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl), GacUIRemoteProtocolHttpPort)));
+}
+
+int StartMiniHttpClient()
+{
+	useWindowsHttpAutomationService = false;
+	return StartClient(Ptr(new inter_process::async_tcp_socket::SocketHttpClient(WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl), GacUIRemoteProtocolHttpPort)));
 }
