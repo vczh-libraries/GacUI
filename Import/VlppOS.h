@@ -6385,6 +6385,11 @@ Interfaces:
 namespace vl::inter_process::async_tcp_socket
 {
 	constexpr vint HttpIncompleteMessageTimeout = 30 * 1000;
+	constexpr vint HttpRequestLineSizeLimit = 8 * 1024;
+	constexpr vint HttpHeaderBlockSizeLimit = 64 * 1024;
+	constexpr vint HttpBodySizeLimit = 16 * 1024 * 1024;
+	constexpr vint HttpChunkSizeLineLimit = 4 * 1024;
+	constexpr vint HttpTrailerBlockSizeLimit = 64 * 1024;
 
 	struct HttpVersion
 	{
@@ -6398,6 +6403,30 @@ namespace vl::inter_process::async_tcp_socket
 		collections::Array<vuint8_t>		value;
 	};
 
+	enum class HttpFramingKind
+	{
+		None,
+		ContentLength,
+		Chunked,
+	};
+
+	enum class HttpFramingAnalysisResult
+	{
+		Succeeded,
+		Invalid,
+		UnsupportedTransferCoding,
+	};
+
+	struct HttpFraming
+	{
+		HttpFramingKind					kind = HttpFramingKind::None;
+		vuint64_t						contentLength = 0;
+		vint							contentLengthFieldCount = 0;
+		vint							contentLengthValueCount = 0;
+		bool							contentLengthValuesPlainDecimal = true;
+		bool							connectionClose = false;
+	};
+
 	struct HttpBodyChunk
 	{
 		collections::Array<vuint8_t>		data;
@@ -6408,6 +6437,28 @@ namespace vl::inter_process::async_tcp_socket
 		collections::List<HttpBodyChunk>	chunks;
 		collections::List<HttpField>		trailers;
 	};
+
+	extern HttpFramingAnalysisResult	AnalyzeHttpFraming(const collections::List<HttpField>& fields, HttpFraming& framing);
+	extern const HttpField*				FindHttpField(const collections::List<HttpField>& fields, const WString& normalizedName);
+	extern vint							CountHttpFields(const collections::List<HttpField>& fields, const WString& normalizedName);
+	extern HttpField						CreateAsciiHttpField(const WString& name, const WString& value);
+	extern bool							DecodeAsciiHttpFieldValue(const collections::Array<vuint8_t>& value, WString& text);
+	extern bool							HttpFieldValueEqualsAscii(const collections::Array<vuint8_t>& value, const WString& expected);
+	extern bool							TryGetHttpBodySize(const HttpBody& body, vint& size);
+	extern bool							FlattenHttpBody(const HttpBody& body, collections::Array<vuint8_t>& bytes);
+	extern void							SetHttpBodyBytes(HttpBody& body, collections::Array<vuint8_t>&& bytes);
+	extern bool							EncodeStrictUtf8(const WString& text, collections::Array<vuint8_t>& bytes);
+	extern bool							DecodeStrictUtf8(const vuint8_t* bytes, vint count, WString& text);
+
+	enum class HttpRequestLineValidationResult
+	{
+		Succeeded,
+		InvalidMethod,
+		InvalidRequestTarget,
+		TooLong,
+	};
+
+	extern HttpRequestLineValidationResult	ValidateHttpRequestLine(const WString& method, const WString& requestTarget);
 
 	class HttpRequest : public Object
 	{
@@ -6501,12 +6552,6 @@ Async Socket HTTP/1.1 Connection
 
 namespace vl::inter_process::async_tcp_socket
 {
-	constexpr vint HttpRequestLineSizeLimit = 8 * 1024;
-	constexpr vint HttpHeaderBlockSizeLimit = 64 * 1024;
-	constexpr vint HttpBodySizeLimit = 16 * 1024 * 1024;
-	constexpr vint HttpChunkSizeLineLimit = 4 * 1024;
-	constexpr vint HttpTrailerBlockSizeLimit = 64 * 1024;
-
 	enum class HttpRequestConnectionDirection
 	{
 		Server,
@@ -6743,9 +6788,29 @@ namespace vl::inter_process::async_tcp_socket
 		Ptr<HttpRequest>					GetRequest();
 		WString								GetRelativePath();
 		WString								GetQuery();
+		bool								TryGetBodyUtf8(WString& body);
 
 		bool								Respond(
 			Ptr<HttpResponse> response,
+			Func<void(bool)> completion = {}
+			);
+		bool								RespondStatus(
+			vint statusCode,
+			const WString& reason,
+			Func<void(bool)> completion = {}
+			);
+		bool								RespondBytes(
+			vint statusCode,
+			const WString& reason,
+			const WString& contentType,
+			const collections::Array<vuint8_t>& body,
+			Func<void(bool)> completion = {}
+			);
+		bool								RespondUtf8(
+			vint statusCode,
+			const WString& reason,
+			const WString& contentType,
+			const WString& body,
 			Func<void(bool)> completion = {}
 			);
 		bool								Cancel();
@@ -6878,8 +6943,15 @@ namespace vl::inter_process
 	*/
 	constexpr const wchar_t* HttpServerUrl_Response = L"/VlppInterProcess/Response";
 
+	constexpr const wchar_t* HttpNetworkProtocolContentType = L"application/json; charset=utf8";
+
 	extern WString HttpUrlEncodeQuery(const WString& query);
 	extern WString HttpUrlDecodeQuery(const WString& query);
+	extern WString CreateHttpNetworkProtocolConnectBody(const WString& requestPath, const WString& responsePath);
+	extern bool ParseHttpNetworkProtocolConnectBody(const WString& body, WString& requestPath, WString& responsePath);
+	extern bool ValidateHttpNetworkProtocolBaseUrl(const WString& baseUrl);
+	extern bool ValidateHttpNetworkProtocolEndpointPath(const WString& path);
+	extern bool IsValidHttpNetworkProtocolMessage(const WString& message);
 }
 
 namespace vl::inter_process::windows_http
@@ -6941,6 +7013,7 @@ namespace vl::inter_process::windows_http
 		WString												contentType;
 
 		HttpResponse() = default;
+		bool												TryGetBodyUtf8(WString& bodyString) const;
 		WString												GetBodyUtf8() const;
 	};
 
@@ -6952,6 +7025,13 @@ namespace vl::inter_process::windows_http
 		WString												operation;
 		WString												message;
 	};
+}
+
+namespace vl::inter_process
+{
+	extern windows_http::HttpRequest CreateHttpNetworkProtocolConnectRequest(const WString& target);
+	extern windows_http::HttpRequest CreateHttpNetworkProtocolReceiveRequest(const WString& target);
+	extern windows_http::HttpRequest CreateHttpNetworkProtocolSendRequest(const WString& target, const collections::Array<char>& body);
 }
 
 #endif

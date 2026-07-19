@@ -167,7 +167,8 @@ public:
 	HttpClientApi& operator=(HttpClientApi&&) = delete;
 
 	void												HttpQuery(const HttpRequest& request, Func<void(Variant<HttpResponse, HttpError>)> callback);
-	void												Stop();
+	void												AbortRequests();
+	void												Stop(bool keepAliveRequests = true);
 
 	static WString										UrlEncodeQuery(const WString& query);
 	static WString										UrlDecodeQuery(const WString& query);
@@ -210,6 +211,30 @@ protected:
 		Stopping,
 	};
 
+	class StopState : public Object
+	{
+	public:
+		SpinLock									lock;
+		EventObject								eventWaitForServer;
+		EventObject								eventSchedulingFinished;
+		EventObject								eventCallbacksFinished;
+		EventObject								eventCallbackChanged;
+		EventObject								eventFinished;
+		Ptr<HttpClientApi>							stoppingApi;
+		INetworkProtocolCallback*					disconnectedCallback = nullptr;
+		vint									activeCallbacks = 0;
+		bool									started = false;
+		bool									scheduling = false;
+		bool									executorClaimed = false;
+		bool									abortRequests = false;
+		bool									callbacksClosed = false;
+		bool									suppressDisconnected = false;
+		bool									disconnectDelivering = false;
+		bool									finished = false;
+
+		StopState();
+	};
+
 	State											state = State::Ready;
 	INetworkProtocolCallback*						callback = nullptr;
 	WString											baseUrl;
@@ -218,16 +243,21 @@ protected:
 	WString											urlRequest;
 	WString											urlResponse;
 	SpinLock										lockState;
+	Ptr<StopState>									stopState;
 
 /***********************************************************************
 HttpClient (Reading)
 ***********************************************************************/
 
 protected:
-	static constexpr const wchar_t*					JsonContentType = L"application/json; charset=utf8";
-
 	void											RaiseLocalError(WString errorMessage, bool fatal);
 	bool											IsStopping();
+	void											StopCore(bool callbackReentrant);
+	void											StopFromCallback();
+	static void									CompleteStop(Ptr<StopState> state);
+	static bool									BeginHttpCallback(Ptr<StopState> state);
+	static void									EndHttpCallback(Ptr<StopState> state);
+	vint											CurrentHttpCallbackDepth();
 public:
 
 	void											BeginReadingLoopUnsafe() override;
@@ -238,7 +268,6 @@ HttpClient (WaitForServer)
 
 protected:
 
-	EventObject										eventWaitForServer;
 	SpinLock										lockConnectResult;
 	bool											connectCompleted = false;
 	WString											connectResponse;
@@ -263,9 +292,9 @@ protected:
 		Response,
 	};
 
-	bool											SendHttpRequest(HttpRequestType requestType, const wchar_t* method, const WString& url, const WString& body, vint attempt = 1);
+	bool											SendHttpRequest(HttpRequestType requestType, const WString& url, const WString& body, vint attempt = 1);
 	void											OnHttpRequestCompleted(HttpRequestType requestType, WString body, vint attempt, Variant<HttpResponse, HttpError> result);
-	void											OnHttpRequestFailed(HttpRequestType requestType, const WString& body, vint attempt, const WString& errorMessage);
+	void											OnHttpRequestFailed(HttpRequestType requestType, const WString& body, vint attempt, const WString& errorMessage, bool remoteUnavailable = false);
 
 public:
 

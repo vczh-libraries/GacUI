@@ -3608,6 +3608,42 @@ AsyncSocketClient
 
 namespace vl::inter_process::windows_http
 {
+	namespace
+	{
+		struct HttpClientCallbackFrame
+		{
+			HttpClient*						client;
+			HttpClientCallbackFrame*		previous;
+		};
+
+		thread_local HttpClientCallbackFrame*	currentHttpClientCallback = nullptr;
+		thread_local void*					currentHttpClientDisconnectState = nullptr;
+
+		bool IsRemoteUnavailable(const HttpError& error)
+		{
+			switch (error.errorCode)
+			{
+			case ERROR_WINHTTP_TIMEOUT:
+			case ERROR_WINHTTP_NAME_NOT_RESOLVED:
+			case ERROR_WINHTTP_CANNOT_CONNECT:
+			case ERROR_WINHTTP_CONNECTION_ERROR:
+			case ERROR_WINHTTP_OPERATION_CANCELLED:
+			case ERROR_WINHTTP_INVALID_SERVER_RESPONSE:
+				return true;
+			default:
+				return false;
+			}
+		}
+	}
+
+HttpClient::StopState::StopState()
+{
+	CHECK_ERROR(eventWaitForServer.CreateAutoUnsignal(false), L"HttpClient initialization failed on eventWaitForServer.CreateAutoUnsignal.");
+	CHECK_ERROR(eventSchedulingFinished.CreateManualUnsignal(false), L"HttpClient initialization failed on eventSchedulingFinished.CreateManualUnsignal.");
+	CHECK_ERROR(eventCallbacksFinished.CreateManualUnsignal(true), L"HttpClient initialization failed on eventCallbacksFinished.CreateManualUnsignal.");
+	CHECK_ERROR(eventCallbackChanged.CreateAutoUnsignal(false), L"HttpClient initialization failed on eventCallbackChanged.CreateAutoUnsignal.");
+	CHECK_ERROR(eventFinished.CreateManualUnsignal(false), L"HttpClient initialization failed on eventFinished.CreateManualUnsignal.");
+}
 
 /***********************************************************************
 HttpClient (Reading)
@@ -3615,13 +3651,13 @@ HttpClient (Reading)
 
 void HttpClient::RaiseLocalError(WString errorMessage, bool fatal)
 {
+	if (fatal)
+	{
+		StopFromCallback();
+	}
 	if (callback)
 	{
 		callback->OnLocalError(errorMessage, fatal);
-	}
-	if (fatal)
-	{
-		Stop();
 	}
 }
 
@@ -3635,9 +3671,38 @@ bool HttpClient::IsStopping()
 	return result;
 }
 
+bool HttpClient::BeginHttpCallback(Ptr<StopState> state)
+{
+	SPIN_LOCK(state->lock)
+	{
+		if (state->callbacksClosed) return false;
+		if (state->activeCallbacks++ == 0) state->eventCallbacksFinished.Unsignal();
+	}
+	return true;
+}
+
+void HttpClient::EndHttpCallback(Ptr<StopState> state)
+{
+	SPIN_LOCK(state->lock)
+	{
+		if (--state->activeCallbacks == 0) state->eventCallbacksFinished.Signal();
+	}
+	state->eventCallbackChanged.Signal();
+}
+
+vint HttpClient::CurrentHttpCallbackDepth()
+{
+	vint depth = 0;
+	for (auto frame = currentHttpClientCallback; frame; frame = frame->previous)
+	{
+		if (frame->client == this) depth++;
+	}
+	return depth;
+}
+
 void HttpClient::BeginReadingLoopUnsafe()
 {
-	SendHttpRequest(HttpRequestType::Request, L"POST", urlRequest, WString::Empty);
+	SendHttpRequest(HttpRequestType::Request, urlRequest, WString::Empty);
 }
 
 /***********************************************************************
@@ -3657,11 +3722,12 @@ void HttpClient::CompleteConnectRequest(const WString& response, const WString& 
 		connectError = error;
 		connectCompleted = true;
 	}
-	eventWaitForServer.Signal();
+	stopState->eventWaitForServer.Signal();
 }
 
 void HttpClient::WaitForServer()
 {
+	auto waitingState = stopState;
 	{
 		SPIN_LOCK(lockState)
 		{
@@ -3680,14 +3746,19 @@ void HttpClient::WaitForServer()
 		}
 	}
 
-	eventWaitForServer.Unsignal();
-	if (!SendHttpRequest(HttpRequestType::Connect, L"GET", urlConnect, WString::Empty))
+	waitingState->eventWaitForServer.Unsignal();
+	if (!SendHttpRequest(HttpRequestType::Connect, urlConnect, WString::Empty))
 	{
 		return;
 	}
 
-	eventWaitForServer.Wait();
-	if (IsStopping()) return;
+	waitingState->eventWaitForServer.Wait();
+	{
+		SPIN_LOCK(waitingState->lock)
+		{
+			if (waitingState->started) return;
+		}
+	}
 
 	WString body;
 	WString error;
@@ -3750,7 +3821,7 @@ ClientStatus HttpClient::GetStatus()
 HttpClient (Writing)
 ***********************************************************************/
 
-bool HttpClient::SendHttpRequest(HttpRequestType requestType, const wchar_t* method, const WString& url, const WString& body, vint attempt)
+bool HttpClient::SendHttpRequest(HttpRequestType requestType, const WString& url, const WString& body, vint attempt)
 {
 	Ptr<HttpClientApi> api;
 	{
@@ -3775,33 +3846,51 @@ bool HttpClient::SendHttpRequest(HttpRequestType requestType, const wchar_t* met
 
 	if (!api) return false;
 
-	HttpRequest request;
-	request.method = method;
-	request.query = url;
-	request.acceptTypes.Add(JsonContentType);
+	HttpRequest encodedBody;
 	if (requestType == HttpRequestType::Response)
 	{
-		request.contentType = JsonContentType;
-		request.keepAliveOnStop = true;
-	}
-	else if (requestType == HttpRequestType::Request)
-	{
-		request.receiveTimeout = 0;
-	}
-	if (body.Length() > 0)
-	{
-		request.contentType = JsonContentType;
-		request.SetBodyUtf8(body);
+		encodedBody.SetBodyUtf8(body);
 	}
 
-	api->HttpQuery(request, [this, requestType, body, attempt](Variant<HttpResponse, HttpError> result)
+	HttpRequest request;
+	switch (requestType)
 	{
-		OnHttpRequestCompleted(requestType, body, attempt, std::move(result));
+	case HttpRequestType::Connect:
+		request = CreateHttpNetworkProtocolConnectRequest(url);
+		break;
+	case HttpRequestType::Request:
+		request = CreateHttpNetworkProtocolReceiveRequest(url);
+		request.receiveTimeout = 0;
+		break;
+	case HttpRequestType::Response:
+		request = CreateHttpNetworkProtocolSendRequest(url, encodedBody.body);
+		request.keepAliveOnStop = true;
+		break;
+	}
+
+	auto callbackState = stopState;
+	api->HttpQuery(request, [this, callbackState, requestType, body, attempt](Variant<HttpResponse, HttpError> result)
+	{
+		if (!BeginHttpCallback(callbackState)) return;
+		HttpClientCallbackFrame frame{ this, currentHttpClientCallback };
+		currentHttpClientCallback = &frame;
+		try
+		{
+			OnHttpRequestCompleted(requestType, body, attempt, std::move(result));
+		}
+		catch (...)
+		{
+			currentHttpClientCallback = frame.previous;
+			EndHttpCallback(callbackState);
+			throw;
+		}
+		currentHttpClientCallback = frame.previous;
+		EndHttpCallback(callbackState);
 	});
 	return true;
 }
 
-void HttpClient::OnHttpRequestFailed(HttpRequestType requestType, const WString& body, vint attempt, const WString& errorMessage)
+void HttpClient::OnHttpRequestFailed(HttpRequestType requestType, const WString& body, vint attempt, const WString& errorMessage, bool remoteUnavailable)
 {
 	if (IsStopping()) return;
 
@@ -3810,23 +3899,50 @@ void HttpClient::OnHttpRequestFailed(HttpRequestType requestType, const WString&
 	case HttpRequestType::Connect:
 		{
 			bool fatal = attempt >= HttpRequestMaxAttempts;
-			RaiseLocalError(errorMessage, fatal);
-			if (!fatal && !IsStopping())
+			if (fatal)
 			{
-				SendHttpRequest(HttpRequestType::Connect, L"GET", urlConnect, WString::Empty, attempt + 1);
+				RaiseLocalError(errorMessage, true);
+			}
+			else if (!IsStopping())
+			{
+				SendHttpRequest(HttpRequestType::Connect, urlConnect, WString::Empty, attempt + 1);
 			}
 		}
 		break;
 	case HttpRequestType::Request:
-		SendHttpRequest(HttpRequestType::Request, L"POST", urlRequest, WString::Empty, attempt + 1);
+		if (attempt >= HttpRequestMaxAttempts)
+		{
+			if (remoteUnavailable)
+			{
+				StopFromCallback();
+			}
+			else
+			{
+				RaiseLocalError(errorMessage, true);
+			}
+		}
+		else
+		{
+			SendHttpRequest(HttpRequestType::Request, urlRequest, WString::Empty, attempt + 1);
+		}
 		break;
 	case HttpRequestType::Response:
 		{
 			bool fatal = attempt >= HttpRequestMaxAttempts;
-			RaiseLocalError(errorMessage, fatal);
-			if (!fatal && !IsStopping())
+			if (fatal && remoteUnavailable)
 			{
-				SendHttpRequest(HttpRequestType::Response, L"POST", urlResponse, body, attempt + 1);
+				StopFromCallback();
+			}
+			else
+			{
+				if (fatal)
+				{
+					RaiseLocalError(errorMessage, true);
+				}
+				else if (!IsStopping())
+				{
+					SendHttpRequest(HttpRequestType::Response, urlResponse, body, attempt + 1);
+				}
 			}
 		}
 		break;
@@ -3837,22 +3953,28 @@ void HttpClient::OnHttpRequestCompleted(HttpRequestType requestType, WString bod
 {
 	if (auto error = result.TryGet<HttpError>())
 	{
+		auto remoteUnavailable = IsRemoteUnavailable(*error);
 		switch (requestType)
 		{
 		case HttpRequestType::Connect:
 			OnHttpRequestFailed(requestType, body, attempt, L"/Connect failed: " + error->message);
 			break;
 		case HttpRequestType::Request:
-			OnHttpRequestFailed(requestType, body, attempt, L"/Request failed: " + error->message);
+			OnHttpRequestFailed(requestType, body, attempt, L"/Request failed: " + error->message, remoteUnavailable);
 			break;
 		case HttpRequestType::Response:
-			OnHttpRequestFailed(requestType, body, attempt, L"/Response failed: " + error->message);
+			OnHttpRequestFailed(requestType, body, attempt, L"/Response failed: " + error->message, remoteUnavailable);
 			break;
 		}
 		return;
 	}
 
 	auto&& response = result.Get<HttpResponse>();
+	if (response.statusCode == 404 && requestType != HttpRequestType::Connect)
+	{
+		StopFromCallback();
+		return;
+	}
 	if (response.statusCode != 200)
 	{
 		switch (requestType)
@@ -3870,7 +3992,7 @@ void HttpClient::OnHttpRequestCompleted(HttpRequestType requestType, WString bod
 		return;
 	}
 
-	if (response.contentType != JsonContentType)
+	if (response.contentType != HttpNetworkProtocolContentType)
 	{
 		switch (requestType)
 		{
@@ -3896,10 +4018,17 @@ void HttpClient::OnHttpRequestCompleted(HttpRequestType requestType, WString bod
 	case HttpRequestType::Request:
 		if (!IsStopping())
 		{
+			auto completionState = stopState;
+			auto installedCallback = callback;
 			BeginReadingLoopUnsafe();
-			if (responseBody.Length() > 0 && callback)
+			bool stopping = false;
+			SPIN_LOCK(completionState->lock)
 			{
-				callback->OnReadString(responseBody);
+				stopping = completionState->started;
+			}
+			if (!stopping && responseBody.Length() > 0 && installedCallback)
+			{
+				installedCallback->OnReadString(responseBody);
 			}
 		}
 		break;
@@ -3914,7 +4043,7 @@ void HttpClient::OnHttpRequestCompleted(HttpRequestType requestType, WString bod
 
 void HttpClient::SendString(const WString& str)
 {
-	SendHttpRequest(HttpRequestType::Response, L"POST", urlResponse, str);
+	SendHttpRequest(HttpRequestType::Response, urlResponse, str);
 }
 
 /***********************************************************************
@@ -3924,56 +4053,256 @@ HttpClient
 HttpClient::HttpClient(const WString _baseUrl, vint port)
 	: baseUrl(_baseUrl)
 {
-	CHECK_ERROR(eventWaitForServer.CreateAutoUnsignal(false), L"HttpClient initialization failed on eventWaitForServer.CreateAutoUnsignal.");
-
+	stopState = Ptr(new StopState);
 	httpClientApi = Ptr(new HttpClientApi(L"localhost", port));
 	urlConnect = baseUrl + HttpServerUrl_Connect;
 }
 
 HttpClient::~HttpClient()
 {
-	Stop();
+	auto stoppingState = stopState;
+	auto callbackDepth = CurrentHttpCallbackDepth();
+	auto callbackReentrant = callbackDepth > 0;
+	if (callbackReentrant)
+	{
+		SPIN_LOCK(stoppingState->lock)
+		{
+			stoppingState->suppressDisconnected = true;
+		}
+	}
+	StopCore(callbackReentrant);
+	while (true)
+	{
+		bool callbacksDrained = false;
+		SPIN_LOCK(stoppingState->lock)
+		{
+			callbacksDrained = stoppingState->activeCallbacks <= callbackDepth;
+		}
+		if (callbacksDrained) break;
+		stoppingState->eventCallbackChanged.Wait();
+	}
 }
 
 void HttpClient::InstallCallback(INetworkProtocolCallback* _callback)
 {
-	CHECK_ERROR(!callback || !_callback, L"HttpClient::InstallCallback only accepts one callback at a time.");
-	callback = _callback;
-	if (!callback) return;
-	callback->OnInstalled(this);
-}
-
-void HttpClient::Stop()
-{
-	Ptr<HttpClientApi> stoppingApi;
-	bool notifyDisconnected = false;
+	auto callbackState = stopState;
+	bool waitForDisconnect = false;
 	{
 		SPIN_LOCK(lockState)
 		{
-			if (httpClientApi)
+			SPIN_LOCK(callbackState->lock)
 			{
-				state = State::Stopping;
-				stoppingApi = httpClientApi;
-				httpClientApi = nullptr;
-				notifyDisconnected = true;
+				CHECK_ERROR(!callback || !_callback, L"HttpClient::InstallCallback only accepts one callback at a time.");
+				auto previousCallback = callback;
+				callback = _callback;
+				if (!_callback && callbackState->disconnectedCallback == previousCallback)
+				{
+					callbackState->disconnectedCallback = nullptr;
+				}
+				waitForDisconnect =
+					!_callback &&
+					callbackState->disconnectDelivering &&
+					currentHttpClientDisconnectState != callbackState.Obj();
 			}
-			else
+		}
+	}
+	if (waitForDisconnect) callbackState->eventFinished.Wait();
+	if (!_callback) return;
+	_callback->OnInstalled(this);
+}
+
+void HttpClient::CompleteStop(Ptr<StopState> state)
+{
+	bool keepAliveRequests = true;
+	Ptr<HttpClientApi> stoppingApi;
+	{
+		SPIN_LOCK(state->lock)
+		{
+			keepAliveRequests = !state->abortRequests;
+			stoppingApi = state->stoppingApi;
+		}
+	}
+	try
+	{
+		if (stoppingApi) stoppingApi->Stop(keepAliveRequests);
+	}
+	catch (...)
+	{
+	}
+
+	{
+		SPIN_LOCK(state->lock)
+		{
+			state->callbacksClosed = true;
+		}
+	}
+	state->eventCallbacksFinished.Wait();
+
+	INetworkProtocolCallback* disconnectedCallback = nullptr;
+	{
+		SPIN_LOCK(state->lock)
+		{
+			if (!state->suppressDisconnected && state->disconnectedCallback)
 			{
-				state = State::Stopping;
+				disconnectedCallback = state->disconnectedCallback;
+				state->disconnectDelivering = true;
 			}
 		}
 	}
 
-	eventWaitForServer.Signal();
-	if (stoppingApi)
+	auto previousDisconnectState = currentHttpClientDisconnectState;
+	currentHttpClientDisconnectState = state.Obj();
+	try
 	{
-		stoppingApi->Stop();
+		if (disconnectedCallback) disconnectedCallback->OnDisconnected();
+	}
+	catch (...)
+	{
+	}
+	currentHttpClientDisconnectState = previousDisconnectState;
+
+	{
+		SPIN_LOCK(state->lock)
+		{
+			state->disconnectDelivering = false;
+			state->disconnectedCallback = nullptr;
+			state->stoppingApi = nullptr;
+			state->finished = true;
+		}
+	}
+	state->eventFinished.Signal();
+}
+
+void HttpClient::StopCore(bool callbackReentrant)
+{
+	auto stoppingState = stopState;
+	if (currentHttpClientDisconnectState == stoppingState.Obj()) return;
+
+	bool first = false;
+	bool schedule = false;
+	bool execute = false;
+	bool abort = false;
+	Ptr<HttpClientApi> abortingApi;
+
+	while (true)
+	{
+		bool waitForScheduling = false;
+		bool waitForStop = false;
+		{
+			SPIN_LOCK(lockState)
+			{
+				SPIN_LOCK(stoppingState->lock)
+				{
+					if (stoppingState->finished) return;
+					if (!stoppingState->started)
+					{
+						state = State::Stopping;
+						stoppingState->stoppingApi = httpClientApi;
+						httpClientApi = nullptr;
+						stoppingState->disconnectedCallback = callback;
+						stoppingState->callbacksClosed = true;
+						stoppingState->started = true;
+						stoppingState->executorClaimed = true;
+						stoppingState->abortRequests = callbackReentrant;
+						first = true;
+						if (callbackReentrant)
+						{
+							stoppingState->scheduling = true;
+							schedule = true;
+						}
+						else
+						{
+							execute = true;
+						}
+					}
+					else if (callbackReentrant)
+					{
+						stoppingState->abortRequests = true;
+						abortingApi = stoppingState->stoppingApi;
+						abort = true;
+					}
+					else if (stoppingState->scheduling)
+					{
+						waitForScheduling = true;
+					}
+					else if (stoppingState->executorClaimed)
+					{
+						waitForStop = true;
+					}
+					else
+					{
+						stoppingState->executorClaimed = true;
+						execute = true;
+					}
+				}
+			}
+		}
+
+		if (first) stoppingState->eventWaitForServer.Signal();
+		if (abort)
+		{
+			if (abortingApi) abortingApi->AbortRequests();
+			return;
+		}
+		if (waitForScheduling)
+		{
+			stoppingState->eventSchedulingFinished.Wait();
+			continue;
+		}
+		if (waitForStop)
+		{
+			stoppingState->eventFinished.Wait();
+			return;
+		}
+		break;
 	}
 
-	if (notifyDisconnected && callback)
+	if (schedule)
 	{
-		callback->OnDisconnected();
+		auto finalize = Func<void()>([stoppingState]()
+		{
+			CompleteStop(stoppingState);
+		});
+		bool queued = false;
+		try
+		{
+			queued = ThreadPoolLite::Queue(finalize);
+		}
+		catch (...)
+		{
+		}
+		if (!queued)
+		{
+			try
+			{
+				queued = Thread::CreateAndStart(finalize) != nullptr;
+			}
+			catch (...)
+			{
+			}
+		}
+		{
+			SPIN_LOCK(stoppingState->lock)
+			{
+				stoppingState->scheduling = false;
+				if (!queued) stoppingState->executorClaimed = false;
+			}
+		}
+		stoppingState->eventSchedulingFinished.Signal();
+		return;
 	}
+
+	if (execute) CompleteStop(stoppingState);
+}
+
+void HttpClient::StopFromCallback()
+{
+	StopCore(true);
+}
+
+void HttpClient::Stop()
+{
+	StopCore(CurrentHttpCallbackDepth() > 0);
 }
 
 }
@@ -4588,7 +4917,35 @@ void HttpClientApi::HttpQuery(const HttpRequest& request, Func<void(Variant<Http
 	}
 }
 
-void HttpClientApi::Stop()
+void HttpClientApi::AbortRequests()
+{
+	List<HINTERNET> stoppingRequests;
+	SPIN_LOCK(lockActiveRequests)
+	{
+		for (auto&& context : activeRequests)
+		{
+			HINTERNET httpRequest = NULL;
+			SPIN_LOCK(context->lockContext)
+			{
+				if (!context->closing)
+				{
+					context->closing = true;
+					httpRequest = context->httpRequest;
+				}
+			}
+			if (httpRequest)
+			{
+				stoppingRequests.Add(httpRequest);
+			}
+		}
+	}
+	for (auto httpRequest : stoppingRequests)
+	{
+		WinHttpCloseHandle(httpRequest);
+	}
+}
+
+void HttpClientApi::Stop(bool keepAliveRequests)
 {
 	if (httpSession == NULL) return;
 
@@ -4601,7 +4958,7 @@ void HttpClientApi::Stop()
 			HINTERNET httpRequest = NULL;
 			SPIN_LOCK(context->lockContext)
 			{
-				if (!context->keepAliveOnStop && !context->closing)
+				if ((!keepAliveRequests || !context->keepAliveOnStop) && !context->closing)
 				{
 					context->closing = true;
 					httpRequest = context->httpRequest;
@@ -4788,7 +5145,7 @@ void HttpServerConnection::SendString(const WString& str)
 		}
 		else if (httpPendingRequestId != HTTP_NULL_ID)
 		{
-			ULONG result = HttpServerApi::SendResponse(server->GetHttpRequestQueue(), httpPendingRequestId, { 200, L"OK", str, L"application/json; charset=utf8" });
+			ULONG result = HttpServerApi::SendResponse(server->GetHttpRequestQueue(), httpPendingRequestId, { 200, L"OK", str, HttpNetworkProtocolContentType });
 			if (result == NO_ERROR)
 			{
 				httpPendingRequestId = HTTP_NULL_ID;
@@ -4812,13 +5169,19 @@ void HttpServerConnection::SendString(const WString& str)
 
 void HttpServerConnection::Stop()
 {
-	auto holding = Ptr(this);
+	Ptr<HttpServerConnection> holding;
 	if (server)
 	{
 		SPIN_LOCK(server->lockConnections)
 		{
-			server->connections.Remove(guid);
+			auto index = server->connections.Keys().IndexOf(guid);
+			if (index != -1)
+			{
+				holding = server->connections.Values()[index];
+				server->connections.Remove(guid);
+			}
 		}
+		if (!holding) return;
 		SPIN_LOCK(pendingRequestLock)
 		{
 			OnCancelCurrentHttpRequestForPendingRequest();
@@ -4897,7 +5260,7 @@ void HttpServer::OnHttpRequestReceived(PHTTP_REQUEST pRequest)
 		{
 			auto completeUrlRequest = WString::Unmanaged(HttpServerUrl_Request) + L"/" + newGuid;
 			auto completeUrlResponse = WString::Unmanaged(HttpServerUrl_Response) + L"/" + newGuid;
-			HttpServerApi::SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, completeUrlRequest + L";" + completeUrlResponse);
+			HttpServerApi::SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, CreateHttpNetworkProtocolConnectBody(completeUrlRequest, completeUrlResponse));
 		}
 	}
 	else if (pRequest->Verb == HttpVerbPOST && isValidRequest)
@@ -4917,7 +5280,7 @@ void HttpServer::OnHttpRequestReceived(PHTTP_REQUEST pRequest)
 		if (auto connection = FindExistingConnection(guid))
 		{
 			auto responseToClient = connection->SubmitResponse(pRequest);
-			auto result = HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 200, L"OK", responseToClient, L"application/json; charset=utf8" });
+			auto result = HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 200, L"OK", responseToClient, HttpNetworkProtocolContentType });
 			CHECK_ERROR(
 				result == NO_ERROR || result == ERROR_CONNECTION_INVALID || result == ERROR_OPERATION_ABORTED,
 				L"HttpSendHttpResponse failed for responding /Response."
@@ -5410,7 +5773,7 @@ ULONG HttpServerApi::SendResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID reque
 
 void HttpServerApi::SendResponseUtf8(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, WString body)
 {
-	auto result = SendResponse(httpRequestQueue, requestId, { 200, WString::Unmanaged(L"OK"), body, L"application/json; charset=utf8" });
+	auto result = SendResponse(httpRequestQueue, requestId, { 200, WString::Unmanaged(L"OK"), body, HttpNetworkProtocolContentType });
 	CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for responding UTF-8 body.");
 }
 
