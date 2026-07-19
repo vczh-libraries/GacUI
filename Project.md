@@ -1,5 +1,13 @@
 # Project Specific Instruction
 
+## Remote Protocol HTTP Disconnection Contract
+
+- The HTTP remote protocol consists of `/Connect`, `/Request`, and `/Response`. Do not add a reverse `/Disconnect` endpoint or require a renderer-to-core shutdown handshake.
+- A renderer can close independently while the core remains available, and another renderer can connect later. If a new renderer connects while an old renderer is still active, accepting the new renderer drops the old connection and token.
+- HTTP 404 on an old renderer request after replacement means that renderer's connection is no longer active. It is a normal disconnection outcome: the old renderer should stop emitting new requests and transition to disconnected without presenting a fatal transport error.
+- If the core has exited, an error from an outstanding or subsequent renderer request, including 404 or another transport failure, is also a normal disconnection outcome and should stop further renderer requests without a fatal transport error.
+- Core shutdown does not wait for a renderer acknowledgement. Requests that reach the core while it is still serving should receive their normal protocol response when possible; errors after the core has stopped are expected.
+
 ## Solution to Work On
 
 You are working on the solution `REPO-ROOT/Test/GacUISrc/GacUISrc.sln`,
