@@ -49,3 +49,17 @@ Success requires the baseline probe to reproduce the missing endpoint, the final
 The baseline was confirmed on 2026-07-20 with the unmodified Debug x64 executables. `copilotBuild.ps1` completed with 0 warnings and 0 errors, and `copilotExecute.ps1` reported 85/85 passed test files and 1690/1690 passed test cases with no memory-leak dump. `RemotingTest_Core /MiniHTTP /RPT` listened on port 8888, GacJS rendered the Remote Protocol Test, and the core logged `Renderer connected: 2`. While that renderer was connected, `GET http://localhost:8888/Automation/RemotingTest_Core/Controls` returned HTTP 404 `NotFound` with body `{}`, confirming that the shared MiniHTTP listener had no automation prefix.
 
 # PROPOSALS
+
+- No.1 REGISTER AUTOMATION PREFIXES WITH THE MINIHTTP DISPATCHER
+
+## No.1 REGISTER AUTOMATION PREFIXES WITH THE MINIHTTP DISPATCHER
+
+Implement the automation endpoint as `MiniHttpAutomationService`, derived from VlppOS `SocketHttpServerApi`, in the required `Test/GacUISrc/RemotingTest_Core/Shared.cpp`. Its public startup entry point will keep the required one-argument signature and inspect the currently substituted automation service: a controls-only service selects `/Automation/RemotingTest_Core`, while a DOM-only service selects `/Automation/RemotingTest_Rendering_Win32`. Requiring exactly one capability preserves the existing endpoint names without coupling the shared source file to project macros, executable names, or port numbers.
+
+The MiniHTTP handler will mirror the Windows automation layer: `GET /Controls` and `GET /Dom` invoke tree dumps synchronously on the UI thread, while `POST /IO` and `POST /IO/<window-id>` decode the UTF-8 command and call `RunIOCommand`. Successful responses use the remote protocol JSON content type, and unsupported methods, paths, capabilities, or invalid bodies receive HTTP 404. A matching `StopMiniHttpAutomationService` will explicitly stop and drain the API before the substituted automation service is destroyed; the derived destructor will also call the idempotent `Stop` method to satisfy the MiniHTTP callback-lifetime contract.
+
+For Core `/MiniHTTP`, retain the exact `Ptr<IAsyncSocketServer>` used to construct `MiniHttpRemotingChannelServer` and pass that same object to the automation service. VlppOS will therefore register both `/GacUIRemoteProtocolHttp` and `/Automation/RemotingTest_Core` in one process-local dispatcher on port 8888. For the native renderer `/MiniHTTP`, retain the protocol client on port 8888 but create a distinct `IAsyncSocketServer` on port 8889 for `/Automation/RemotingTest_Rendering_Win32`, because listeners cannot be shared across processes. Move the renderer's Windows HTTP automation endpoint to port 8889 as well, making the renderer automation port independent of transport.
+
+Compile the dedicated shared source into both remoting projects through their `.vcxproj` and `.filters` files, with no header or solution change. Update `GacUI/Project.md`, `Tools/DebugGacUIWithRemoteProtocol.md`, and the related MiniHTTP note in `Tools/DebugGacUIWithBrowser.md` so the documented topology and automation availability match the implementation.
+
+### CODE CHANGE
