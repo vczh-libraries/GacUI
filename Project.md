@@ -164,7 +164,7 @@ Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in
 - Actual theme type and main window type is specified in `OpenMainWindow`.
 - All candidate resource files to load are supposed to put in the same folder, and add to the same solution explorer folder in `Playground` project.
 
-## Linux Specific
+## Linux/macOS Specific
 
 `REPO-ROOT/Test/Linux` stores linux configurations for:
 - `Metadata_Generate`: `Metadata_Generate.vcxproj`.

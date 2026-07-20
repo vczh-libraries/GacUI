@@ -83,6 +83,12 @@ This GUI library provides the following features:
 https://gankra.github.io/blah/text-hates-you/  
 https://lord.io/text-editing-hates-you-too/
 
+### Automation Support for Coding Agent
+
+Since UI Automation is not working when the screen is locked, GacUI prepares facilities to expose UIA features by a http server brought up with the app. This service should be explicitly activated in the source code for security reason.
+
+When doing this on Windows, Call `(Start|Stop)WindowsHttpAutomationService` around `GuiApplication::Run`. `(Start|Stop)MiniHttpAutomationService` is offered in `RemotingTest_(Core|Rendering_Win32)` but not moved in GacUI officially yet, it works for all platforms.
+
 ### Remote Protocol Support
 
 GacUI Remote Protocol enables Core and Renderer to run in different process in any programming language. It is current under development, but if you are interested in it, there are demos to try.
@@ -98,18 +104,31 @@ In **GacUISrc.sln** there are two projects:
 You must offer the same command line argument to `Core` and then `Rendering_Win32` to play with the demo.
 - `Core` starts a GacUI process but delegates all rendering work to a remote process.
 - `Rendering_Win32` starts a renderer-only process handles `Core`'s requests.
-- One of `/Pipe` or `/Http` should be offered to both projects so that they can connect to each other.
+- One of `/Pipe` or `/Http` or `/MiniHttp` should be offered to both projects so that they can connect to each other.
+  - Non-Windows platform only enabled `/MiniHttp`.
 - Offer `/FCT` (default) or `/RPT` to host different test application.
+
+Network Protocol Implementation Details:
+- `/Pipe` is built on top of Named Pipe API for Windows.
+- `/Http` is built on top of http.sys and WinHttp API for Windows.
+- `/MiniHttp` is built on top of TCP/IP Socket API for all platforms.
+They are for the remote protocol demo only, no security is considered in the source code. If you are going to start your own remote protocol application, I strongly recommended you to use your own network protocol stack. The interface is flexible enough to use any possible way for data transmission, including but not limited to, stdio redirection, DLL interface, any actual network protocol, but no official default implementation is offered.
 
 ![Run GacUI Remotely](GacUIRemote.gif)
 
 #### HTML
 
-By running `Core` with `/Http`, you can even [run GacUI in a browser](https://github.com/vczh-libraries/GacJS)!
+By running `Core` with `/Http` or `/MiniHttp`, you can even [run GacUI in a browser](https://github.com/vczh-libraries/GacJS)!
 
 ![Run GacUI in a Broswer](GacUIHtml1.gif)
 
 #### Unit Test
+
+Checkout [Project.md](./Project.md) for details about compiling and running each test projects.
+
+On Windows, use MSBuild or Visual Studio to build.
+
+On Linux/macOS, run `REPO-ROOT/.github/Ubuntu/build.sh` in a project folder to update the makefile from vcxproj and build the project.
 
 With the power from Remote Protocol, you could make GacUI running and writing down snapshots as a trace of all UI activities.
 Check out [UnitTest.vcxproj](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/UnitTest)!
