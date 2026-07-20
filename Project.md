@@ -144,17 +144,19 @@ Automation HTTP service for GUI applications are available for Windows:
 FullControlTest means `Generated_FullControlTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/FullControlTest/Resource.xml`.
 RemoteProtocolTest means `Generated_RemoteProtocolTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/RemoteProtocolTest/Resource.xml`.
 When `FakeDialogService` is used, all system dialogs are replaced by `REPO-ROOT/Source/Utilities/FakeServices/Dialogs/Resource.xml`.
-Each project responds to `http://localhost:8888/Automation/<PROJECT-NAME>/...` using `StartWindowsHttpAutomationService`.
+For the non-remoting projects above, the automation endpoint is `http://localhost:8888/Automation/<PROJECT-NAME>/...` and is hosted by `StartWindowsHttpAutomationService`.
 - Checkout `REPO-ROOT/.github/Guidelines/Running-GacUI.md` for details.
 
-Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` offser such service:
-- `RemotingTest_Core` exposes UI in window-control tree concept.
-- `RemotingTest_Rendering_Win32` exposes UI in DOM tree concept.
-- Both supports IO operations:
-  - When performing IO via renderer, remote protocol events are used to pass IO operations to core.
-  - When performing IO via core, renderer only receives UI updates and redraw.
-  - Core and renderer should sync in the same UI state afterwards.
-  - Performaning IO **only** via no matter renderer or core should result in the same UI state.
+Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in `/Http`, `/Pipe`, and `/MiniHTTP` modes:
+- `RemotingTest_Core` exposes the UI as a window-control tree at `http://localhost:8888/Automation/RemotingTest_Core/...`.
+- `RemotingTest_Rendering_Win32` exposes the UI as a DOM tree at `http://localhost:8889/Automation/RemotingTest_Rendering_Win32/...`.
+- `/Http` and `/Pipe` use `StartWindowsHttpAutomationService`.
+- In `/MiniHTTP` mode, the core registers its automation prefix with the exact same `IAsyncSocketServer` that hosts the remote protocol on port `8888`. The renderer is a separate process, so it hosts its automation prefix with a separate MiniHTTP socket server on port `8889`.
+- Both support IO operations:
+  - When performing IO via the renderer, remote protocol events pass the IO operations to the core.
+  - When performing IO via the core, the renderer only receives UI updates and redraws.
+  - Core and renderer should synchronize to the same UI state afterwards.
+  - Performing IO through either the renderer or the core should result in the same UI state.
 
 `Playground` is for adhoc testing:
 - The UI in resource file, including `GuiMain` and `OpenMainWindow`, could be modified freely without any concern, it is not part of the release. DO NOT revert `Playground` change as I can also use it for manual verification.

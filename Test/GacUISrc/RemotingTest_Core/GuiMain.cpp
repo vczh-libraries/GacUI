@@ -15,6 +15,9 @@ using namespace vl::presentation::remoteprotocol;
 using namespace vl::presentation::remoteprotocol::channeling;
 using namespace vl::presentation::remoteprotocol::repeatfiltering;
 
+extern void StartMiniHttpAutomationService(Ptr<inter_process::async_tcp_socket::IAsyncSocketServer> socketServer);
+extern void StopMiniHttpAutomationService();
+
 namespace
 {
 	constexpr const wchar_t* GacUIRemoteProtocolNamedPipeName = L"GacUIRemoteProtocolNamedPipe";
@@ -197,6 +200,7 @@ namespace
 IJsonLocalChannelServer* protocolServer = nullptr;
 vint mainWindowConstructorIndex = 0;
 bool useWindowsHttpAutomationService = true;
+Ptr<inter_process::async_tcp_socket::IAsyncSocketServer>* miniHttpAutomationSocketServer = nullptr;
 
 void GuiMain()
 {
@@ -218,16 +222,36 @@ void GuiMain()
 		{
 			RemoteProtocolAutomationService automationService;
 			GetNativeServiceSubstitution()->Substitute(&automationService, false);
-			if (useWindowsHttpAutomationService)
+			auto cleanup = [&]()
 			{
-				windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/RemotingTest_Core"), 8888);
-			}
-			GetApplication()->Run(window.Obj());
-			if (useWindowsHttpAutomationService)
+				if (useWindowsHttpAutomationService)
+				{
+					windows::StopWindowsHttpAutomationService();
+				}
+				else
+				{
+					StopMiniHttpAutomationService();
+				}
+				GetNativeServiceSubstitution()->Unsubstitute(&automationService);
+			};
+			try
 			{
-				windows::StopWindowsHttpAutomationService();
+				if (useWindowsHttpAutomationService)
+				{
+					windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/RemotingTest_Core"), 8888);
+				}
+				else
+				{
+					StartMiniHttpAutomationService(*miniHttpAutomationSocketServer);
+				}
+				GetApplication()->Run(window.Obj());
 			}
-			GetNativeServiceSubstitution()->Unsubstitute(&automationService);
+			catch (...)
+			{
+				cleanup();
+				throw;
+			}
+			cleanup();
 		}
 		catch (const Exception& e)
 		{
@@ -324,6 +348,16 @@ int StartMiniHttpServer(vint index)
 	auto jsonParser = Ptr(new glr::json::Parser);
 	auto socketServer = inter_process::async_tcp_socket::CreateDefaultAsyncSocketServer(GacUIRemoteProtocolHttpPort);
 	MiniHttpRemotingChannelServer channelServer(jsonParser, socketServer, WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl));
-	StartServer(channelServer, jsonParser);
+	miniHttpAutomationSocketServer = &socketServer;
+	try
+	{
+		StartServer(channelServer, jsonParser);
+	}
+	catch (...)
+	{
+		miniHttpAutomationSocketServer = nullptr;
+		throw;
+	}
+	miniHttpAutomationSocketServer = nullptr;
 	return 0;
 }

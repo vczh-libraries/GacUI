@@ -11,17 +11,22 @@ using namespace vl::presentation::remoteprotocol;
 using namespace vl::presentation::remoteprotocol::channeling;
 using namespace vl::presentation::remote_renderer;
 
+extern void StartMiniHttpAutomationService(Ptr<inter_process::async_tcp_socket::IAsyncSocketServer> socketServer);
+extern void StopMiniHttpAutomationService();
+
 namespace
 {
 	constexpr const wchar_t* GacUIRemoteProtocolNamedPipeName = L"GacUIRemoteProtocolNamedPipe";
 	constexpr const wchar_t* GacUIRemoteProtocolHttpBaseUrl = L"/GacUIRemoteProtocolHttp";
 	constexpr vint GacUIRemoteProtocolHttpPort = 8888;
+	constexpr vint GacUIAutomationHttpPort = 8889;
 }
 
 GuiRemoteRendererSingle* renderer = nullptr;
 GuiRemoteProtocolAsyncJsonChannelRenderer* asyncChannel = nullptr;
 AutomationServiceRenderer* rendererAutomationService = nullptr;
 bool useWindowsHttpAutomationService = true;
+Ptr<inter_process::async_tcp_socket::IAsyncSocketServer>* miniHttpAutomationSocketServer = nullptr;
 
 class RemotingTestChannelClient : public GuiRemoteProtocolChannelClient
 {
@@ -188,18 +193,38 @@ void GuiMain()
 		windows::WindowsAutomationServiceRenderer automationService(renderer);
 		rendererAutomationService = &automationService;
 		GetNativeServiceSubstitution()->Substitute(&automationService, false);
-		if (useWindowsHttpAutomationService)
+		auto cleanup = [&]()
 		{
-			windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/RemotingTest_Rendering_Win32"), 8888);
-		}
-		GetCurrentController()->WindowService()->Run(mainWindow);
-		GetCurrentController()->AutomationService()->Stop();
-		if (useWindowsHttpAutomationService)
+			if (!useWindowsHttpAutomationService)
+			{
+				StopMiniHttpAutomationService();
+			}
+			GetCurrentController()->AutomationService()->Stop();
+			if (useWindowsHttpAutomationService)
+			{
+				windows::StopWindowsHttpAutomationService();
+			}
+			GetNativeServiceSubstitution()->Unsubstitute(&automationService);
+			rendererAutomationService = nullptr;
+		};
+		try
 		{
-			windows::StopWindowsHttpAutomationService();
+			if (useWindowsHttpAutomationService)
+			{
+				windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/RemotingTest_Rendering_Win32"), GacUIAutomationHttpPort);
+			}
+			else
+			{
+				StartMiniHttpAutomationService(*miniHttpAutomationSocketServer);
+			}
+			GetCurrentController()->WindowService()->Run(mainWindow);
 		}
-		GetNativeServiceSubstitution()->Unsubstitute(&automationService);
-		rendererAutomationService = nullptr;
+		catch (...)
+		{
+			cleanup();
+			throw;
+		}
+		cleanup();
 	}
 
 	asyncChannel->SetInvokeInMainThread(nullptr);
@@ -244,10 +269,22 @@ int StartHttpClient()
 int StartMiniHttpClient()
 {
 	useWindowsHttpAutomationService = false;
+	auto socketServer = inter_process::async_tcp_socket::CreateDefaultAsyncSocketServer(GacUIAutomationHttpPort);
 	auto socketClient = inter_process::async_tcp_socket::CreateDefaultAsyncSocketClient(GacUIRemoteProtocolHttpPort);
-	return StartClient(Ptr(new inter_process::async_tcp_socket::SocketHttpClient(
-		socketClient,
-		WString::Unmanaged(L"localhost"),
-		WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl)
-		)));
+	miniHttpAutomationSocketServer = &socketServer;
+	try
+	{
+		auto result = StartClient(Ptr(new inter_process::async_tcp_socket::SocketHttpClient(
+			socketClient,
+			WString::Unmanaged(L"localhost"),
+			WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl)
+			)));
+		miniHttpAutomationSocketServer = nullptr;
+		return result;
+	}
+	catch (...)
+	{
+		miniHttpAutomationSocketServer = nullptr;
+		throw;
+	}
 }

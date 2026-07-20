@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClCompile Include="GuiMain.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Shared.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lib_GacUI\Lib_GacUI.vcxproj">

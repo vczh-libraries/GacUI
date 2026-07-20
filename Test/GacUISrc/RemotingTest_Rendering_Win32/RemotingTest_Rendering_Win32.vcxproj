@@ -156,6 +156,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\RemotingTest_Core\Shared.cpp" />
     <ClCompile Include="GuiMain.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
