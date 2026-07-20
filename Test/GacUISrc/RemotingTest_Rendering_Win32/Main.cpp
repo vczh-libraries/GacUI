@@ -21,7 +21,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	{
 		result = StartHttpClient();
 	}
-	else if (strcmp(lpCmdLine, "/MiniHTTP") == 0)
+	else if (strcmp(lpCmdLine, "/MiniHttp") == 0)
 	{
 		result = StartMiniHttpClient();
 	}

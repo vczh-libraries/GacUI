@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 			}
 			transport = 1;
 		}
-		else if (strcmp(argv[i], "/MiniHTTP") == 0 || strcmp(argv[i], "/MiniHttp") == 0)
+		else if (strcmp(argv[i], "/MiniHttp") == 0)
 		{
 			if (transport != -1)
 			{

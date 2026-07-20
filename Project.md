@@ -151,7 +151,7 @@ Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in
 - `RemotingTest_Core` exposes the UI as a window-control tree at `http://localhost:8888/Automation/RemotingTest_Core/...`.
 - `RemotingTest_Rendering_Win32` exposes the UI as a DOM tree at `http://localhost:8889/Automation/RemotingTest_Rendering_Win32/...`.
 - `/Http` and `/Pipe` use `StartWindowsHttpAutomationService`.
-- In `/MiniHTTP` mode, the core registers its automation prefix with the exact same `IAsyncSocketServer` that hosts the remote protocol on port `8888`. The renderer is a separate process, so it hosts its automation prefix with a separate MiniHTTP socket server on port `8889`.
+- In `/MiniHttp` mode, the core registers its automation prefix with the exact same `IAsyncSocketServer` that hosts the remote protocol on port `8888`. The renderer is a separate process, so it hosts its automation prefix with a separate MiniHTTP socket server on port `8889`.
 - Both support IO operations:
   - When performing IO via the renderer, remote protocol events pass the IO operations to the core.
   - When performing IO via the core, the renderer only receives UI updates and redraws.
