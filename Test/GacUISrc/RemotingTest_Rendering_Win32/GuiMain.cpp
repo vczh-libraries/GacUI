@@ -244,5 +244,10 @@ int StartHttpClient()
 int StartMiniHttpClient()
 {
 	useWindowsHttpAutomationService = false;
-	return StartClient(Ptr(new inter_process::async_tcp_socket::SocketHttpClient(WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl), GacUIRemoteProtocolHttpPort)));
+	auto socketClient = inter_process::async_tcp_socket::CreateDefaultAsyncSocketClient(GacUIRemoteProtocolHttpPort);
+	return StartClient(Ptr(new inter_process::async_tcp_socket::SocketHttpClient(
+		socketClient,
+		WString::Unmanaged(L"localhost"),
+		WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl)
+		)));
 }

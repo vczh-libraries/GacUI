@@ -169,8 +169,12 @@ namespace
 		using Base = RemotingChannelServerBase<inter_process::async_tcp_socket::SocketHttpServer>;
 
 	public:
-		MiniHttpRemotingChannelServer(Ptr<glr::json::Parser> parser, const WString& baseUrl, vint port)
-			: Base(parser, baseUrl, port)
+		MiniHttpRemotingChannelServer(
+			Ptr<glr::json::Parser> parser,
+			Ptr<inter_process::async_tcp_socket::IAsyncSocketServer> socketServer,
+			const WString& baseUrl
+			)
+			: Base(parser, socketServer, baseUrl)
 		{
 		}
 
@@ -318,7 +322,8 @@ int StartMiniHttpServer(vint index)
 	useWindowsHttpAutomationService = false;
 	Console::WriteLine(L"> Mini HTTP server created, waiting on: http://localhost:" + itow(GacUIRemoteProtocolHttpPort) + WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl));
 	auto jsonParser = Ptr(new glr::json::Parser);
-	MiniHttpRemotingChannelServer channelServer(jsonParser, WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl), GacUIRemoteProtocolHttpPort);
+	auto socketServer = inter_process::async_tcp_socket::CreateDefaultAsyncSocketServer(GacUIRemoteProtocolHttpPort);
+	MiniHttpRemotingChannelServer channelServer(jsonParser, socketServer, WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl));
 	StartServer(channelServer, jsonParser);
 	return 0;
 }

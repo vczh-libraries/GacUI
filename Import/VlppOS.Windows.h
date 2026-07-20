@@ -41,6 +41,7 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 		AsyncSocketServer(vint port);
 		~AsyncSocketServer();
 
+		vint								GetPort() override;
 		void								Start(IAsyncSocketServerCallback* callback) override;
 		void								Stop() override;
 		bool								IsStopped() override;
@@ -56,6 +57,8 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 		AsyncSocketClient(vint port);
 		~AsyncSocketClient();
 
+		vint								GetPort() override;
+		Ptr<IAsyncSocketClient>				CreateSameEndpointClient() override;
 		IAsyncSocketConnection*				GetConnection() override;
 		void								WaitForServer() override;
 		ClientStatus						GetStatus() override;
@@ -224,8 +227,6 @@ HttpClient (Reading)
 ***********************************************************************/
 
 protected:
-	static constexpr const wchar_t*					JsonContentType = L"application/json; charset=utf8";
-
 	void											RaiseLocalError(WString errorMessage, bool fatal);
 	bool											IsStopping();
 public:
@@ -263,7 +264,7 @@ protected:
 		Response,
 	};
 
-	bool											SendHttpRequest(HttpRequestType requestType, const wchar_t* method, const WString& url, const WString& body, vint attempt = 1);
+	bool											SendHttpRequest(HttpRequestType requestType, const WString& url, const WString& body, vint attempt = 1);
 	void											OnHttpRequestCompleted(HttpRequestType requestType, WString body, vint attempt, Variant<HttpResponse, HttpError> result);
 	void											OnHttpRequestFailed(HttpRequestType requestType, const WString& body, vint attempt, const WString& errorMessage);
 

@@ -3284,6 +3284,11 @@ AsyncSocketServer::Impl
 			Stop();
 		}
 
+		vint GetPort()
+		{
+			return port;
+		}
+
 		void Start(IAsyncSocketServerCallback* _callback)
 		{
 			CHECK_ERROR(_callback != nullptr, L"AsyncSocketServer::Start requires a callback.");
@@ -3484,6 +3489,11 @@ AsyncSocketServer
 		delete impl;
 	}
 
+	vint AsyncSocketServer::GetPort()
+	{
+		return impl->GetPort();
+	}
+
 	void AsyncSocketServer::Start(IAsyncSocketServerCallback* callback)
 	{
 		impl->Start(callback);
@@ -3506,6 +3516,7 @@ AsyncSocketClient::Impl
 	class AsyncSocketClient::Impl : public Object
 	{
 	private:
+		vint								port = 0;
 		Ptr<IocpRuntime>						runtime;
 		Ptr<ConnectionState>				state;
 		Ptr<AsyncSocketConnection>			connection;
@@ -3513,9 +3524,10 @@ AsyncSocketClient::Impl
 		bool							stopped = false;
 
 	public:
-		Impl(vint port)
-			: runtime(Ptr(new IocpRuntime))
-			, state(Ptr(new ConnectionState(runtime.Obj(), true, port)))
+		Impl(vint _port)
+			: port(_port)
+			, runtime(Ptr(new IocpRuntime))
+			, state(Ptr(new ConnectionState(runtime.Obj(), true, _port)))
 			, connection(Ptr(new AsyncSocketConnection(state)))
 		{
 		}
@@ -3523,6 +3535,11 @@ AsyncSocketClient::Impl
 		~Impl()
 		{
 			Stop();
+		}
+
+		vint GetPort()
+		{
+			return port;
 		}
 
 		void Stop()
@@ -3575,6 +3592,16 @@ AsyncSocketClient
 		delete impl;
 	}
 
+	vint AsyncSocketClient::GetPort()
+	{
+		return impl->GetPort();
+	}
+
+	Ptr<IAsyncSocketClient> AsyncSocketClient::CreateSameEndpointClient()
+	{
+		return Ptr(new AsyncSocketClient(GetPort()));
+	}
+
 	IAsyncSocketConnection* AsyncSocketClient::GetConnection()
 	{
 		return impl->GetConnection();
@@ -3590,14 +3617,18 @@ AsyncSocketClient
 		return impl->GetStatus();
 	}
 
+}
+
+namespace vl::inter_process::async_tcp_socket
+{
 	Ptr<IAsyncSocketServer> CreateDefaultAsyncSocketServer(vint port)
 	{
-		return Ptr(new AsyncSocketServer(port));
+		return Ptr(new windows_socket::AsyncSocketServer(port));
 	}
 
 	Ptr<IAsyncSocketClient> CreateDefaultAsyncSocketClient(vint port)
 	{
-		return Ptr(new AsyncSocketClient(port));
+		return Ptr(new windows_socket::AsyncSocketClient(port));
 	}
 }
 
@@ -3637,7 +3668,7 @@ bool HttpClient::IsStopping()
 
 void HttpClient::BeginReadingLoopUnsafe()
 {
-	SendHttpRequest(HttpRequestType::Request, L"POST", urlRequest, WString::Empty);
+	SendHttpRequest(HttpRequestType::Request, urlRequest, WString::Empty);
 }
 
 /***********************************************************************
@@ -3681,7 +3712,7 @@ void HttpClient::WaitForServer()
 	}
 
 	eventWaitForServer.Unsignal();
-	if (!SendHttpRequest(HttpRequestType::Connect, L"GET", urlConnect, WString::Empty))
+	if (!SendHttpRequest(HttpRequestType::Connect, urlConnect, WString::Empty))
 	{
 		return;
 	}
@@ -3750,7 +3781,7 @@ ClientStatus HttpClient::GetStatus()
 HttpClient (Writing)
 ***********************************************************************/
 
-bool HttpClient::SendHttpRequest(HttpRequestType requestType, const wchar_t* method, const WString& url, const WString& body, vint attempt)
+bool HttpClient::SendHttpRequest(HttpRequestType requestType, const WString& url, const WString& body, vint attempt)
 {
 	Ptr<HttpClientApi> api;
 	{
@@ -3775,23 +3806,26 @@ bool HttpClient::SendHttpRequest(HttpRequestType requestType, const wchar_t* met
 
 	if (!api) return false;
 
-	HttpRequest request;
-	request.method = method;
-	request.query = url;
-	request.acceptTypes.Add(JsonContentType);
+	HttpRequest encodedBody;
 	if (requestType == HttpRequestType::Response)
 	{
-		request.contentType = JsonContentType;
-		request.keepAliveOnStop = true;
+		encodedBody.SetBodyUtf8(body);
 	}
-	else if (requestType == HttpRequestType::Request)
+
+	HttpRequest request;
+	switch (requestType)
 	{
+	case HttpRequestType::Connect:
+		request = CreateHttpNetworkProtocolConnectRequest(url);
+		break;
+	case HttpRequestType::Request:
+		request = CreateHttpNetworkProtocolReceiveRequest(url);
 		request.receiveTimeout = 0;
-	}
-	if (body.Length() > 0)
-	{
-		request.contentType = JsonContentType;
-		request.SetBodyUtf8(body);
+		break;
+	case HttpRequestType::Response:
+		request = CreateHttpNetworkProtocolSendRequest(url, encodedBody.body);
+		request.keepAliveOnStop = true;
+		break;
 	}
 
 	api->HttpQuery(request, [this, requestType, body, attempt](Variant<HttpResponse, HttpError> result)
@@ -3813,12 +3847,12 @@ void HttpClient::OnHttpRequestFailed(HttpRequestType requestType, const WString&
 			RaiseLocalError(errorMessage, fatal);
 			if (!fatal && !IsStopping())
 			{
-				SendHttpRequest(HttpRequestType::Connect, L"GET", urlConnect, WString::Empty, attempt + 1);
+				SendHttpRequest(HttpRequestType::Connect, urlConnect, WString::Empty, attempt + 1);
 			}
 		}
 		break;
 	case HttpRequestType::Request:
-		SendHttpRequest(HttpRequestType::Request, L"POST", urlRequest, WString::Empty, attempt + 1);
+		SendHttpRequest(HttpRequestType::Request, urlRequest, WString::Empty, attempt + 1);
 		break;
 	case HttpRequestType::Response:
 		{
@@ -3826,7 +3860,7 @@ void HttpClient::OnHttpRequestFailed(HttpRequestType requestType, const WString&
 			RaiseLocalError(errorMessage, fatal);
 			if (!fatal && !IsStopping())
 			{
-				SendHttpRequest(HttpRequestType::Response, L"POST", urlResponse, body, attempt + 1);
+				SendHttpRequest(HttpRequestType::Response, urlResponse, body, attempt + 1);
 			}
 		}
 		break;
@@ -3870,7 +3904,7 @@ void HttpClient::OnHttpRequestCompleted(HttpRequestType requestType, WString bod
 		return;
 	}
 
-	if (response.contentType != JsonContentType)
+	if (response.contentType != HttpNetworkProtocolContentType)
 	{
 		switch (requestType)
 		{
@@ -3914,7 +3948,7 @@ void HttpClient::OnHttpRequestCompleted(HttpRequestType requestType, WString bod
 
 void HttpClient::SendString(const WString& str)
 {
-	SendHttpRequest(HttpRequestType::Response, L"POST", urlResponse, str);
+	SendHttpRequest(HttpRequestType::Response, urlResponse, str);
 }
 
 /***********************************************************************
@@ -4788,7 +4822,7 @@ void HttpServerConnection::SendString(const WString& str)
 		}
 		else if (httpPendingRequestId != HTTP_NULL_ID)
 		{
-			ULONG result = HttpServerApi::SendResponse(server->GetHttpRequestQueue(), httpPendingRequestId, { 200, L"OK", str, L"application/json; charset=utf8" });
+			ULONG result = HttpServerApi::SendResponse(server->GetHttpRequestQueue(), httpPendingRequestId, { 200, L"OK", str, HttpNetworkProtocolContentType });
 			if (result == NO_ERROR)
 			{
 				httpPendingRequestId = HTTP_NULL_ID;
@@ -4897,7 +4931,7 @@ void HttpServer::OnHttpRequestReceived(PHTTP_REQUEST pRequest)
 		{
 			auto completeUrlRequest = WString::Unmanaged(HttpServerUrl_Request) + L"/" + newGuid;
 			auto completeUrlResponse = WString::Unmanaged(HttpServerUrl_Response) + L"/" + newGuid;
-			HttpServerApi::SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, completeUrlRequest + L";" + completeUrlResponse);
+			HttpServerApi::SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, CreateHttpNetworkProtocolConnectBody(completeUrlRequest, completeUrlResponse));
 		}
 	}
 	else if (pRequest->Verb == HttpVerbPOST && isValidRequest)
@@ -4917,7 +4951,7 @@ void HttpServer::OnHttpRequestReceived(PHTTP_REQUEST pRequest)
 		if (auto connection = FindExistingConnection(guid))
 		{
 			auto responseToClient = connection->SubmitResponse(pRequest);
-			auto result = HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 200, L"OK", responseToClient, L"application/json; charset=utf8" });
+			auto result = HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 200, L"OK", responseToClient, HttpNetworkProtocolContentType });
 			CHECK_ERROR(
 				result == NO_ERROR || result == ERROR_CONNECTION_INVALID || result == ERROR_OPERATION_ABORTED,
 				L"HttpSendHttpResponse failed for responding /Response."
@@ -5410,7 +5444,7 @@ ULONG HttpServerApi::SendResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID reque
 
 void HttpServerApi::SendResponseUtf8(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, WString body)
 {
-	auto result = SendResponse(httpRequestQueue, requestId, { 200, WString::Unmanaged(L"OK"), body, L"application/json; charset=utf8" });
+	auto result = SendResponse(httpRequestQueue, requestId, { 200, WString::Unmanaged(L"OK"), body, HttpNetworkProtocolContentType });
 	CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for responding UTF-8 body.");
 }
 
