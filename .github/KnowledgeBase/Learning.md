@@ -10,9 +10,9 @@
 - Proactively remove code made redundant by refactoring [8]
 - Make `Stop()` drain asynchronous work before returning [6]
 - Validate expectations against implementation and existing tests [5]
+- Fix behavior at the owning state instead of patching symptoms [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
-- Fix behavior at the owning state instead of patching symptoms [4]
 - Verify and localize portability on every target OS [3]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [3]
 - Extract abstractions only for real shared behavior [3]
@@ -293,6 +293,8 @@ When an incremental API receives encoded code units but downstream logic consume
 When a lifecycle guarantee applies to every subclass, publish completion and final state in the common native entry/exit path. Do not patch one derived class with a private completion event or duplicate the guarantee only in factory-created wrappers.
 
 When shared code and tests pass on other platforms but fail on one target, fix the failing platform-specific implementation instead of weakening shared behavior or changing already-correct tests.
+
+When a layered transport needs a stricter response policy than its general parser, enforce that policy in the object that owns the physical connection. Keep the lower parser reusable, and let the connection owner classify the response, report a structured failure, and stop or retry the transport as appropriate.
 
 ## Verify and localize portability on every target OS
 

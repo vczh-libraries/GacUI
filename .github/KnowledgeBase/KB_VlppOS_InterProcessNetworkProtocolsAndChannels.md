@@ -44,8 +44,13 @@ The most-derived server destructor must call `Stop` before destroying fields tha
 using namespace vl;
 using namespace vl::inter_process;
 
+auto socketClient = async_tcp_socket::CreateDefaultAsyncSocketClient(8888);
 auto client = Ptr<INetworkProtocolClient>(
-    new async_tcp_socket::SocketHttpClient(L"/example", 8888)
+    new async_tcp_socket::SocketHttpClient(
+        socketClient,
+        L"localhost",
+        L"/example"
+        )
     );
 auto connection = client->GetConnection();
 
@@ -99,10 +104,10 @@ public:
 
     ChannelServer(
         const SerializationContext& serializationContext,
-        const WString& baseUrl,
-        vint port
+        Ptr<async_tcp_socket::IAsyncSocketServer> socketServer,
+        const WString& urlPrefix
         )
-        : Base(serializationContext, baseUrl, port)
+        : Base(serializationContext, socketServer, urlPrefix)
     {
     }
 
@@ -153,8 +158,13 @@ public:
     }
 };
 
+auto socketClient = async_tcp_socket::CreateDefaultAsyncSocketClient(8888);
 auto protocolClient = Ptr<INetworkProtocolClient>(
-    new async_tcp_socket::SocketHttpClient(L"/example", 8888)
+    new async_tcp_socket::SocketHttpClient(
+        socketClient,
+        L"localhost",
+        L"/example"
+        )
     );
 auto channelClient = Ptr(
     new ChannelClient<TPackage, TSerialization>(
@@ -180,13 +190,25 @@ The derived client can also handle `OnConnected`, `OnDisconnected`, `OnReadError
 
 `async_tcp_socket::SocketHttpServer`, defined in `Source/InterProcess/AsyncSocket/AsyncSocket_HttpServer.h`, derives from `async_tcp_socket::SocketHttpServerApi` and implements `INetworkProtocolServer`. `async_tcp_socket::SocketHttpClient`, defined in `Source/InterProcess/AsyncSocket/AsyncSocket_HttpClient.h`, implements both `INetworkProtocolClient` and its single logical `INetworkProtocolConnection`.
 
-The transport keeps a logical connection above short-lived or replaceable physical HTTP connections. These routes are relative to the configured `baseUrl`:
+The transport keeps a logical connection above short-lived or replaceable physical HTTP connections. These routes are relative to the configured `urlPrefix`:
 
 - `GET /VlppInterProcess/Connect` creates one logical connection token.
 - `POST /VlppInterProcess/Request/{token}` is the client-maintained long poll for server-to-client messages.
 - `POST /VlppInterProcess/Response/{token}` sends one client-to-server message and may return one server message in the same response.
 
 Each normal body is the direct UTF-8 encoding of one `WString`. The media type is `application/json; charset=utf8`, but the body is not JSON syntax.
+
+### Shared Wire-Contract Helpers
+
+`Source/InterProcess/NetworkProtocolHttp.h` exposes the common, platform-neutral pieces of this wire contract in `vl::inter_process`:
+
+- `HttpNetworkProtocolContentType` is the canonical media-type value used by all three routes.
+- `CreateHttpNetworkProtocolConnectBody` and `ParseHttpNetworkProtocolConnectBody` construct and split the `requestPath;responsePath` Connect payload. Construction rejects empty paths and semicolons; parsing requires exactly one semicolon with a nonempty value on each side. Parsing does not validate either endpoint path.
+- `ValidateHttpNetworkProtocolBaseUrl` and `ValidateHttpNetworkProtocolEndpointPath` apply the protocol's origin-path grammar. Base URLs may be empty and reject a trailing slash; endpoint paths must be nonempty. Use the endpoint validator separately after parsing a Connect payload.
+- `IsValidHttpNetworkProtocolMessage` checks only the logical-message requirements that the value is nonempty and contains no NUL. It does not validate Unicode or encoded size; the protocol adapters additionally use strict UTF-8 conversion and enforce `async_tcp_socket::HttpBodySizeLimit` before accepting an outbound message.
+- `CreateHttpNetworkProtocolConnectRequest`, `CreateHttpNetworkProtocolReceiveRequest` and `CreateHttpNetworkProtocolSendRequest` build the shared method, target, Accept, content-type, explicit empty-poll length and body shape in the portable `windows_http::HttpRequest` value. They do not validate the supplied target or select operation-specific timeout and stop-lifecycle options. The protocol client validates its targets and applies those options, including the infinite receive-poll timeout, after construction.
+
+These helpers let another implementation reproduce the established wire facts without depending on either Socket HTTP state machine. They do not define retry, polling, FIFO, callback or shutdown policy.
 
 The client uses two physical `async_tcp_socket::SocketHttpClientApi` lanes for one logical token. One lane keeps the receive poll alive; the other serializes connection control and client sends. Replacing a failed physical lane does not replace the logical `INetworkProtocolConnection` unless the transport reports final disconnection.
 
@@ -198,16 +220,22 @@ High-level Socket HTTP construction and startup are identical on all supported p
 
 ```C++
 typename TSerialization::ContextType serializationContext{};
+auto socketServer = async_tcp_socket::CreateDefaultAsyncSocketServer(8888);
 ChannelServer<TPackage, TSerialization> server(
     serializationContext,
-    L"/example",
-    8888
+    socketServer,
+    L"/example"
     );
 server.Start();
 
 {
+    auto socketClient = async_tcp_socket::CreateDefaultAsyncSocketClient(8888);
     auto protocolClient = Ptr<INetworkProtocolClient>(
-        new async_tcp_socket::SocketHttpClient(L"/example", 8888)
+        new async_tcp_socket::SocketHttpClient(
+            socketClient,
+            L"localhost",
+            L"/example"
+            )
         );
     auto channelClient = Ptr(
         new ChannelClient<TPackage, TSerialization>(
@@ -226,7 +254,7 @@ server.Start();
 server.Stop();
 ```
 
-The common implementation selects the native loopback backend at build time:
+The common `CreateDefaultAsyncSocketServer` and `CreateDefaultAsyncSocketClient` factories select the compiled native loopback backend:
 
 | Platform guard | Native server | Native client |
 | --- | --- | --- |
@@ -236,10 +264,12 @@ The common implementation selects the native loopback backend at build time:
 
 Use `VlppOS.Windows.h` on Windows; Winsock initialization and `Ws2_32.lib` linkage are internal. Use `VlppOS.Linux.h` on Linux and link `liburing`. Use the same `VlppOS.Linux.h` umbrella on macOS; custom builds must enable Clang Blocks and link CoreFoundation and Network.framework. The repository projects and build scripts already supply these platform settings.
 
-`SocketHttpServer::Start` creates the platform listener internally. The default `SocketHttpClient` constructor creates platform clients internally. `WaitForServer` blocks while establishing the logical connection and returns after connection or after the client reaches a terminal stopped state, so call it on a thread that may block. Both sides use IPv4 loopback; they do not expose a remote-host option.
+`SocketHttpServer` reads its port from and starts only the injected listener; it never selects or creates another server. `SocketHttpClient` takes only the injected client, reads its port, uses that exact object for the first physical lane, and obtains additional lanes through `client->CreateSameEndpointClient()`. `WaitForServer` blocks while establishing the logical connection and returns after connection or after the client reaches a terminal stopped state, so call it on a thread that may block. Both sides use IPv4 loopback; the explicit client server name is `localhost` (case-insensitive) or `127.0.0.1`.
 
-Use the `SocketHttpClient(const WString&, vint, NativeClientFactory)` overload only when the composition root must select the native client explicitly. The factory receives the port and must return a fresh non-null `IAsyncSocketClient` for every initial or replacement physical connection.
+`IAsyncSocketClient::CreateSameEndpointClient()` must return a distinct fresh non-null client in `ClientStatus::Ready` with the same immutable endpoint and `GetPort()` value, even while the source client is active or stopped. This capability keeps transport creation behind the injected abstraction while preserving the simultaneous receive long-poll lane, control/send lane, and terminal-lane recovery.
 
-`baseUrl` is empty for the origin root or an ASCII origin-form prefix such as `/example`. A nonempty `baseUrl` must start with `/`, must not end with `/`, and must not contain a query, fragment, backslash, NUL, malformed escape, or encoded path separator. Server and client must use the same `baseUrl` and port.
+`urlPrefix` is empty for the origin root or an ASCII origin-form prefix such as `/example`. Both adapters remove trailing slashes, so `/` becomes the origin root. A nonempty normalized prefix must start with `/` and must not contain a query, fragment, backslash, NUL, malformed escape, or encoded path separator. Server and client must use the same normalized prefix, and their injected sockets must report the same port.
+
+The portable `HttpRequestClient` treats a 404 response as `HttpResponseFailure::NotFound`, reports a fatal error, and stops its socket. `SocketHttpClientApi` exposes this as `SocketHttpClientErrorCode::ResponseNotFound`; the logical `SocketHttpClient` reports one fatal local error immediately instead of retrying `/Connect`, `/Request`, or `/Response`.
 
 For the lower socket, HTTP request and Mini HTTP API startup rules on each platform, see [Inter-Process Async-Socket-Based Mini HTTP API](./KB_VlppOS_InterProcessAsyncSocketBasedMiniHttpApi.md).

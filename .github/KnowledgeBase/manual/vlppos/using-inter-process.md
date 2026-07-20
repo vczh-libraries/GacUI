@@ -214,19 +214,24 @@ Use **async_tcp_socket::NetworkProtocolServer\<TAsyncSocketServer\>** and **asyn
 
 Use **async_tcp_socket::SocketHttpServer** and **async_tcp_socket::SocketHttpClient** when the transport must use the legacy VlppOS HTTP wire protocol or interoperate with the Windows HTTP implementation.
 
-The public construction surface is:
+The public construction surface keeps native socket composition explicit:
 
 ```C++
-SocketHttpServer(const WString& baseUrl, vint port);
+SocketHttpServer(
+    Ptr<IAsyncSocketServer> socketServer,
+    const WString& urlPrefix
+    );
 
-using NativeClientFactory = Func<Ptr<IAsyncSocketClient>(vint)>;
-SocketHttpClient(const WString& baseUrl, vint port);
-SocketHttpClient(const WString& baseUrl, vint port, NativeClientFactory clientFactory);
+SocketHttpClient(
+    Ptr<IAsyncSocketClient> socketClient,
+    const WString& server,
+    const WString& urlPrefix
+    );
 ```
 
-The default client factory selects the current platform's native async-socket client. The factory overload is per logical client and must return a fresh non-null native client for every initial or replacement physical connection.
+Create the injected dependency at the application boundary with **CreateDefaultAsyncSocketServer(port)** or **CreateDefaultAsyncSocketClient(port)**. Each socket exposes that immutable construction port through **GetPort()**, so no HTTP constructor accepts a duplicate port. The server adapter never creates another listener. The client constructor takes only one socket client, uses that exact object for its first lane, and obtains the additional physical lanes required for full duplex and recovery through **IAsyncSocketClient::CreateSameEndpointClient()**. That method must return a distinct fresh **Ready** client with the same transport configuration and port.
 
-The base URL is empty for the origin root or an ASCII origin-form prefix beginning with **/** and having no trailing slash, query, fragment, backslash, NUL, malformed escape, or encoded separator. The server listens at **http://localhost:PORT{baseUrl}** and the client sends the exact **localhost:PORT** HTTP authority.
+The URL prefix is empty for the origin root or an ASCII origin-form prefix beginning with **/**. Both adapters remove trailing slashes, so **/** becomes the origin root. Prefixes cannot contain a query, fragment, backslash, NUL, malformed escape, or encoded separator. The server listens at **http://localhost:PORT{urlPrefix}** and the client combines the explicit loopback server with its injected socket port for the HTTP authority.
 
 The HTTP adapter has one logical token and two physical client lanes:
 
@@ -238,7 +243,7 @@ logical connection {token}
 
 **/Connect** creates one server logical connection and returns the two token-bearing paths. The receive lane submits a replacement poll before delivering a nonempty response to **OnReadString**. The send lane accepts one nonempty NUL-free **WString** per request, encodes it as direct UTF-8 bytes, and keeps one active FIFO head so retries cannot be overtaken. A server message generated synchronously while handling the same **/Response** can be piggybacked in that HTTP response; otherwise server messages complete the pending long poll in FIFO order.
 
-HTTP status, exact content type, body size, UTF-8, NUL, and returned-path validation belong to the adapter. A non-200 or malformed response retries on the healthy physical API. A terminal transport failure replaces only the affected physical lane through **NativeClientFactory**, retaining the logical token. **/Connect** and **/Response** stop after three failed attempts with two nonfatal local errors followed by one fatal local error; **/Request** retries silently while running.
+HTTP status, exact content type, body size, UTF-8, NUL, and returned-path validation belong to the adapter. A non-200 response other than 404 or a malformed response retries on the healthy physical API. A terminal transport failure replaces only the affected physical lane through **CreateSameEndpointClient()**, retaining the logical token. **HttpRequestClient** classifies 404 as **HttpResponseFailure::NotFound** and stops the physical socket; **SocketHttpClient** reports it immediately as one fatal local error without retrying. Other **/Connect** and **/Response** failures stop after three failed attempts with two nonfatal local errors followed by one fatal local error; **/Request** retries silently while running.
 
 **Stop** rejects new sends, gives accepted sends a bounded drain opportunity, cancels the infinite poll, drains replacement workers and lower callbacks, and reports **OnDisconnected** once. It can be called repeatedly or from an adapter callback; a reentrant call waits for other callback frames but not the current frame.
 
@@ -246,7 +251,7 @@ The protocol has no acknowledgement, deduplication, heartbeat, or disconnect rou
 
 ### Portable HTTP Request Helpers
 
-**async_tcp_socket::SocketHttpServerApi** and **async_tcp_socket::SocketHttpClientApi** are lower request/response helpers, not raw protocol transports. The server API owns prefix dispatch, response framing, CORS and callback draining. **SocketHttpRequestContext::Respond** is one-shot and reports whether its physical response completed; **Cancel** abandons a pending context. One client API serializes HTTP exchanges on one physical connection and becomes terminal after transport/framing/timeout failure. **HttpRequestServer**, **HttpRequestClient**, and **HttpRequestConnection** are the still-lower HTTP/1.1 layer.
+**async_tcp_socket::SocketHttpServerApi** and **async_tcp_socket::SocketHttpClientApi** are lower request/response helpers, not raw protocol transports. Construct a server API with **(socketServer, urlPrefix)**; APIs share a listener only when given the same server pointer, and a prefix matches only itself or slash-delimited descendants. Construct a client API with **(socketClient, server)**. Both derive the port from the injected socket, and neither chooses a platform socket internally. The server API owns prefix dispatch, response framing, CORS and callback draining. **SocketHttpRequestContext::Respond** is one-shot and reports whether its physical response completed; **Cancel** abandons a pending context. One client API serializes HTTP exchanges on one physical connection and becomes terminal after 404, transport, framing or timeout failure; 404 is reported as **SocketHttpClientErrorCode::ResponseNotFound**. **HttpRequestServer**, **HttpRequestClient**, and **HttpRequestConnection** are the still-lower HTTP/1.1 layer.
 
 ## Windows Implementations
 
