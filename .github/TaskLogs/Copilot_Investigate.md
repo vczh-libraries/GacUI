@@ -25,3 +25,18 @@ The baseline was confirmed on 2026-07-21 with a fresh Debug x64 build. The manda
 The non-remote composition path renders an owned element before pushing the composition itself as a clipper, so `Gui3DSplitterElementRenderer` is called even for the intentional zero-width vertical splitter bounds. Its native renderer draws two lines centered around that coordinate. This difference confirms why local rendering works and why the unit-test protocol recorder, which records rendering commands without executing the real remote DOM renderer, does not reproduce the missing pixels.
 
 # PROPOSALS
+
+- No.1 TRANSMIT THE SPLITTER'S ACTUAL TWO-PIXEL FOOTPRINT
+
+## No.1 TRANSMIT THE SPLITTER'S ACTUAL TWO-PIXEL FOOTPRINT
+
+Override rendering only for the remote-protocol `Gui3DSplitterElementRenderer`. Native `Gui3DSplitterElementRenderer` implementations draw two one-pixel lines centered on the supplied bounds. When a vertical splitter receives a width below two pixels, calculate the same first-line coordinate used by the native renderer and transmit a two-pixel-wide rectangle beginning at that coordinate. Apply the symmetric transformation to a horizontal splitter whose height is below two pixels. Delegate all other behavior to the existing generic remote element renderer.
+
+This makes the remote DOM bounds describe the splitter's real graphical footprint instead of the zero-width or zero-height layout anchor. The DOM builder then produces a positive valid area, `GuiRemoteRendererSingle` no longer discards the node, and GacJS no longer clips the two-pixel child inside a zero-sized `overflow:hidden` element. Because only the transmitted rendering rectangle changes, control-template measurement, toolbar spacing, hit testing, local rendering, element descriptions, and the protocol schema remain unchanged. Splitters already receiving at least two pixels in the perpendicular direction retain their exact bounds.
+
+Add focused coverage to the existing remote graphics-host unit tests. Create vertical and horizontal `Gui3DSplitterElement` instances with zero-width and zero-height composition bounds and assert that the protocol still records their element descriptions but transmits two-pixel rendering bounds at the same line coordinates as native rendering. This tests the root cause at the layer available to the unit-test protocol recorder even though that recorder cannot reproduce the final missing pixels visually.
+
+### CODE CHANGE
+
+- Override `Gui3DSplitterElementRenderer::Render` in `Source/PlatformProviders/Remote/GuiRemoteGraphics_BasicElements.h` and `.cpp`. Expand only a sub-two-pixel perpendicular dimension to the two-pixel footprint that preserves the native renderer's original line coordinates, then call the generic remote-protocol rendering implementation.
+- Extend `Test/GacUISrc/UnitTest/TestRemote_GraphicsHost_HitTest.cpp` with vertical zero-width and horizontal zero-height splitter cases whose expected rendering logs contain the normalized two-pixel bounds.
