@@ -130,6 +130,17 @@ To make a change:
   - Sometimes reordering could happen in generated C++ code even when correlated resource is not changed.
 - Rebuild before running any test project.
 
+## Debugging Remote Protocol Issues
+
+Remote protocol is involved in three ways:
+- Core with native renderer: `REPO-ROOT/../Tools/DebugGacUIWithRemoteProtocol.md`.
+- Core with `GacJS`: `REPO-ROOT/../Tools/DebugGacUIWithGacJS.md`.
+- `UnitTest`.
+
+Running core always uses network protocols.
+Three ways are calling three different renderer implementations.
+By careful tell if a bug repro in some or all three ways, you can easily narrow down the scope of the possible cause.
+
 ## Windows Specific
 
 Automation HTTP service for GUI applications are available for Windows:
