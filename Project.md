@@ -135,10 +135,10 @@ To make a change:
 Remote protocol is involved in three ways:
 - Core with native renderer: `REPO-ROOT/../Tools/DebugGacUIWithRemoteProtocol.md`.
 - Core with `GacJS`: `REPO-ROOT/../Tools/DebugGacUIWithGacJS.md`.
-- `UnitTest`, some e2e test cases are running on top of a unit test only remote protocol implementation, snapshots of UI between frames could be found at `REPO-ROOT/Test/Resources/UnitTestSnapshots`.
+- `UnitTest`, some e2e test cases are running on top of a unit test only remote protocol renderer, which is designed to save snapshots of UI between frames at `REPO-ROOT/Test/Resources/UnitTestSnapshots`.
 
 Running core always uses network protocols.
-Three ways are calling three different renderer implementations.
+Three ways are calling three different renderer implementations, but with the same core implementation.
 By careful tell if a bug repro in some or all three ways, you can easily narrow down the scope of the possible cause.
 
 ## Windows Specific
