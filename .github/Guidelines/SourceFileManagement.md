@@ -37,16 +37,30 @@
   - You can skip the test, as adding new project should not affect test cases, unless existing projects are modified as part of the refactoring.
 - Only add the `/bigobj` compiler option to a `*.cpp` file when needed.
 
-## Working on Linux
+## Cross Platform Naming Convention
+
+- Windows specific source file in `Source` folder should be named after `*.Windows.(h|cpp)`.
+- When a source file could be shared between Linux and macOS, use `*.Linux.(h|cpp)`.
+- Otherwise macOS specific file should use `*.macOS.(h|cpp)`.
+
+Platform guard macros should be used even when in platform specific source files:
+- `#ifdef VCZH_MSVC` for Windows.
+- `#ifdef VCZH_GCC` for Linux and macOS shared source.
+- `#if defined VCZH_MSVC && !defined VCZH_APPLE` for Linuc only.
+- `#if defined VCZH_MSVC && defined VCZH_APPLE` for macOS only.
+
+Be awared that during releasing a repo, Linux and macOS source files will be CodePack-ed into a single source file, which is the reason for the above rule.
+
+## Working on Linux/macOS
 
 `makefile` for each project is generated from MSBuild project files during the build.
 When the file list needs to be modified, update MSBuild project files directly.
 After building, `vmake` file generates both `vmake.txt` and `makefile`.
 If you doubt whether the file is built or not, check out `vmake.txt`, which simply lists all used `cpp` files in `makefile`.
 
-Linux specific C++ source files also need to be added to MSBuild project files, and they are excluded from the build.
+Linux/macOS specific C++ source files also need to be added to MSBuild project files, and they are excluded from the build.
 In `vmake`, Windows specific C++ source files need to be excluded.
-When the `Main.cpp` from MSBuild projects or similar files does not work on Linux, you are recommended to create one for Linux.
+When the `Main.cpp` from MSBuild projects or similar files does not work on Linux, you are recommended to create one for Linux/macOS.
 
 In `vmake`, these variables are available for configuration, most of them are optional:
 - `CPP_VCXPROJS`: Use MSBuild project files, they are typically `*.vcxitems` or `*.vcxproj`.
@@ -55,7 +69,3 @@ In `vmake`, these variables are available for configuration, most of them are op
 - `CPP_COMPILE_OPTIONS`: Extra compiler options for `clang++` or `g++`.
 - `FOLDERS`: Folders that contain generated files. These folders will be completely removed during a full build.
 - `CPP_TARGET`: The compiled binary.
-
-## Working on Mac
-
-(to be editing...)
