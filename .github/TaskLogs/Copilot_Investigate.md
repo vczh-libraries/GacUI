@@ -2,54 +2,37 @@
 
 # PROBLEM DESCRIPTION
 
-You are going to investigate a bug which could repro by `RemotingTest_Renderer_Win32`:
-  - With `/FCT` and any network protocol, first clicking into `Controls` tab, followed by `Document Editor (Ribbon)` or `Document Editor (Toolstrip)` tabs, you will find some icons are missing.
-    - The layout is wrong as those icon does not exist or has size 0x0 which probably means the renderer either received but did not process those images or did not receive at all.
-    - Selecting text in document box would change toolbar button enability causing it to refresh, affected buttons become normal, unaffected buttons remain. I didn't confirm if this observation is strict or not.
-    - `GacJS` is just fine, which probably means the issue is not in the core side.
-- Unit Test snapshots also look good.
-The interesting part is that, this bug cannot repro in a slower PC.
-find the root cause and fix the bug.
+When `RemotingTest_Renderer_Win32` is connecting `RemotingTest_Core` using `/MiniHttp`, and during a normal exiting process, when core is gone it might result in `/Response` returning 404. This is normal, but 404 will also become a local fatal error injecting into the native renderer.
+
+The current behavior is that, if a local fatal error happens, it will prompt an error message and then exit or render the error according to user selection. But if core is exiting normally, it should send the `ControllerConnectionStopped` message to the native renderer. Once 404 happens after receiving `ControllerConnectionStopped`, it should be ignored, and the native renderer should just close itself.
+
+This behavior doesn't always repro because such 404 is not stably generated, it depends on whether a `/Response` is pending or not. In order to increase the probability, you could use `/FCT`, because it is big, exiting takes time, meanwhile `/RPT` is small and everything is happening too fast, lowering the repro rate.
+
+You are going to repro this and fix the issue, I think you can always ignore any fatal error after receiving `ControllerConnectionStopped`, as errors after core exiting doesn't really matter anyway. And run `/MiniHttp`, `/Http`, `/Pipe` multiple times (reasonably amount of time that could trigger the issue, you will have a sense during repro-ing), goes to `Exit` tab to click a button to trigger the normal exit process, or send `/Exit` through automation service, make sure the fix is stable.
 
 # UPDATES
 
-## UPDATE
-
-By saying slower I mean the machine not the running performance as Release configuration in this machine also repros. Maybe speed is not the key factor, but just want you to know it doesn't repro everywhere, which concerns me.
-
 # TEST [CONFIRMED]
 
-Add a focused remote graphics-host regression that creates a non-stretched `GuiImageFrameElement` before the first full rendering frame. Its fake image payload declares a `16x24` frame, and the mock renderer returns that image metadata from `ElementMeasurings::createdImages` without returning any font-height measurements. After the first frame completes, assert that the core-side image renderer has adopted the `16x24` minimum size. This isolates the response shape that is environment-dependent in the full application: image metadata arriving in a frame that has no `fontHeights` payload.
+Build the complete Debug x64 solution, then repeatedly launch `RemotingTest_Core /MiniHttp /FCT` and `RemotingTest_Rendering_Win32 /MiniHttp` through the repository wrappers. After the renderer has connected, post exact `!Exit` to the core automation `/IO` endpoint. Confirm that the core exits normally and inspect the renderer process, native windows, renderer `/Dom` endpoint, TCP state, and debugger breakpoints around `GuiRemoteRendererSingle::RequestControllerConnectionStopped`, `RemotingTestChannelClient::OnLocalError`, and the MiniHTTP API shutdown boundary.
 
-Before the fix, the focused test must fail with a retained `0x0` minimum size even though the protocol returned valid image metadata. After the fix, it must pass without changing or re-enabling the image element. Build the complete Debug x64 solution and run the full `UnitTest` project through the repository wrappers; success requires all test files/cases to pass and no memory-leak dump.
+The pre-fix Debug x64 solution built with 0 warnings and 0 errors. Live FullControlTest runs confirmed the reported timing dependency: after `!Exit` returned `Queued` and the core exited, the renderer's next connection to port 8888 varied between an absent request and a new `/Response` connection attempt. Debugger pauses around `SocketHttpServerApi::Impl::StopInternal` showed that the core first stops its automation API, finalizes the remote controller (which submits `ControllerConnectionStopped`), and then unregisters the remoting API; whether another renderer poll is already accepted during the very small unregister/listener-stop window determines whether the renderer sees 404. Runs without that accepted poll naturally cannot display the reported prompt, which is the negative half of the intermittent reproduction described in the problem.
 
-Also reproduce the reported FullControlTest sequence with `RemotingTest_Core /FCT` and `RemotingTest_Rendering_Win32` over a network protocol. Inspect renderer DOM/image-frame state after Controls > Document Editor (Ribbon) and Controls > Document Editor (Toolstrip), and confirm affected icon bounds are positive after the fix without relying on a selection/enabled-state refresh. Check both Debug and Release behavior where practical so the result does not depend on execution speed, and treat the other PC only as an environment contrast rather than a timing proof.
+The policy defect itself is deterministic once that transport outcome occurs. `GuiRemoteRendererSingle::RequestControllerConnectionStopped` calls `DisconnectFromCore`, setting the renderer's terminal `disconnectingFromCore` state. `RemotingTestChannelClient::OnLocalError` nevertheless treats every fatal local error as claimable: `ClaimFatalError` only checks `triggeredFatalError`, then `OnLocalError` requests a core force-exit and queues the native Yes/No prompt. There is no check for the already-received normal-stop state, so a 404 delivered after `ControllerConnectionStopped` necessarily enters the fatal UI path.
 
-The focused regression was confirmed on 2026-07-21 against the unfixed Debug x64 implementation. The complete solution built through `copilotBuild.ps1` with 0 warnings and 0 errors. The full `UnitTest` run passed every earlier file it reached and then stopped in `TestRemote_GraphicsHost_Startup.cpp` at `Update image min size when only image metadata is returned`: after frame 0 returned a valid `16x24` `createdImages` entry without `fontHeights`, frame 1 observed `GuiImageFrameElementRenderer::GetMinSize() == Size(0, 0)` instead of `Size(16, 24)`.
-
-Source history confirms the response-shape distinction. The `renderersAskingForCache` refresh loop was originally introduced for font-height responses in February 2024. Image metadata handling was added later, but only updates `GuiRemoteGraphicsImage`; it does not run the waiting-renderer refresh loop. Therefore image renderers are refreshed accidentally only when the same frame also contains a `fontHeights` list. The confirmed test supplies no label or font measurement, so it deterministically exposes the missing image-cache handoff that ordinary snapshots can mask.
+After the fix, the same normal-exit runs must close the renderer without a fatal prompt whenever `ControllerConnectionStopped` has been processed, regardless of any later read/local/disconnection callback. Genuine fatal errors before the normal-stop message must retain the existing prompt and Yes/No behavior. Verification must cover `/MiniHttp`, `/Http`, and `/Pipe` with `/FCT` repeatedly, plus the complete unit-test project and a clean Debug x64 build.
 
 # PROPOSALS
 
-- No.1 [CONFIRMED] REFRESH WAITING RENDERERS AFTER ALL CACHE RESPONSES
+- No.1 IGNORE FATAL CHANNEL ERRORS AFTER RENDERER DISCONNECTION
 
-## No.1 [CONFIRMED] REFRESH WAITING RENDERERS AFTER ALL CACHE RESPONSES
+## No.1 IGNORE FATAL CHANNEL ERRORS AFTER RENDERER DISCONNECTION
 
-In `GuiRemoteGraphicsRenderTarget::StopRenderingOnNativeWindow`, keep response ingestion ordered by cache dependency: first add all returned font heights to `fontHeights`, then apply all returned image metadata to `GuiRemoteGraphicsImage`, and only then iterate `renderersAskingForCache`. Move the existing generic waiting-renderer loop out of the `if (measuring.fontHeights)` block and place it after both response-cache blocks.
+Expose `GuiRemoteRendererSingle`'s existing `disconnectingFromCore` terminal state through an `IsDisconnectedFromCore()` query and make the state atomic because transport error callbacks and protocol message dispatch run on different threads. Keep the state owned by `GuiRemoteRendererSingle`: it already controls suppression of core-bound events and local closing after `ControllerConnectionStopped`.
 
-Each waiting renderer already owns the correct type-specific lookup through `TryFetchMinSizeFromCache()`: solid-label renderers query `fontHeights`, while image-frame renderers query their `GuiRemoteGraphicsImage` metadata. Running the loop after a response containing either cache makes each renderer consume whichever cache became available in that frame, without coupling image progress to an unrelated font response. Renderers whose dependencies are still unavailable remain in `renderersAskingForCache`; renderers that resolve are removed, and a changed minimum size on an element rendered in the last batch requests the existing hosted-layout refresh.
-
-This changes no protocol schema, renderer-side image creation, Direct2D behavior, image ownership, or document-editor templates. It fixes the owning state transition: response caches become visible first, then all consumers waiting on those caches are retried. The focused `16x24` image-only regression must pass without an element property change, and the existing label-measurement paths must remain covered by the full unit-test suite.
+In `RemotingTestChannelClient::ClaimFatalError`, reject the claim when its renderer exists and reports that it is disconnected from the core. This single gate applies equally to fatal packages from the core and local transport failures, so any error arriving after normal controller shutdown is ignored before it can request another core exit or queue the native fatal prompt. Errors arriving before disconnection preserve the current first-error-wins behavior and application-specific Yes/No policy.
 
 ### CODE CHANGE
 
-- Move the `renderersAskingForCache` retry/removal loop in `Source/PlatformProviders/Remote/GuiRemoteGraphics.cpp` from inside the `measuring.fontHeights` branch to immediately after `measuring.createdImages` is processed. Run it when either `fontHeights` or `createdImages` is present, so ordinary frames without new cache data do not retry outstanding measurements. Preserve the existing minimum-size comparison and `minSizeChanged` refresh behavior.
-- Keep the focused first-full-frame image regression in `Test/GacUISrc/UnitTest/TestRemote_GraphicsHost_Startup.cpp`; it requires a `16x24` image minimum size to become available when `createdImages` is the only cache response.
-
-### CONFIRMED
-
-The root cause is the cache-consumer handoff in `GuiRemoteGraphicsRenderTarget::StopRenderingOnNativeWindow`. The response first updated `GuiRemoteGraphicsImage`, but the generic `renderersAskingForCache` retry loop was guarded by `measuring.fontHeights`. An image-only response therefore left `GuiImageFrameElementRenderer` at `0x0` until an unrelated property change caused another element update. Whether a full application frame also carried font measurements depended on the active renderer/cache mix, which explains why machine-to-machine behavior differed without requiring machine speed to be causal. GacJS and existing snapshots could avoid the image-only response shape and therefore did not disprove the core-side omission.
-
-The focused regression failed before the fix with `Size(0, 0)` after valid `16x24` image metadata, and passes after the fix without changing the image element. The final Debug x64 solution build completed with 0 warnings and 0 errors. The complete final `UnitTest` run passed 85/85 files and 1698/1698 cases with no `.memoryleaks` or `.unfinished` marker. Relevant Ribbon, Toolstrip, and single-image snapshots now converge one frame earlier because image minimum sizes are consumed in the frame that returns their metadata; unrelated file-dialog snapshot drift was discarded.
-
-The reported `/Http /FCT` navigation was also exercised against the live Win32 renderer. In Debug, Document Editor (Ribbon) exposed 26 active image frames and Document Editor (Toolstrip) exposed 16; every image had positive bounds and positive valid area immediately after navigation. In Release, the same normal wrapper launch produced the same 26 and 16 active images with zero invalid bounds or valid areas. The complete Release x64 solution also built with 0 warnings and 0 errors. This confirms the fix in both configurations on the machine that reproduces the original bug and does not rely on a text-selection/enabled-state refresh.
+- Change `GuiRemoteRendererSingle::disconnectingFromCore` to `atomic_vint` and add `GuiRemoteRendererSingle::IsDisconnectedFromCore()` as a public read-only query.
+- Update `RemotingTestChannelClient::ClaimFatalError` to claim only when no fatal error has already been triggered and the renderer has not disconnected from the core.
