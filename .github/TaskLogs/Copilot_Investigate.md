@@ -31,14 +31,25 @@ Source history confirms the response-shape distinction. The `renderersAskingForC
 
 # PROPOSALS
 
-- No.1 REFRESH WAITING RENDERERS AFTER ALL CACHE RESPONSES
+- No.1 [CONFIRMED] REFRESH WAITING RENDERERS AFTER ALL CACHE RESPONSES
 
-## No.1 REFRESH WAITING RENDERERS AFTER ALL CACHE RESPONSES
+## No.1 [CONFIRMED] REFRESH WAITING RENDERERS AFTER ALL CACHE RESPONSES
 
 In `GuiRemoteGraphicsRenderTarget::StopRenderingOnNativeWindow`, keep response ingestion ordered by cache dependency: first add all returned font heights to `fontHeights`, then apply all returned image metadata to `GuiRemoteGraphicsImage`, and only then iterate `renderersAskingForCache`. Move the existing generic waiting-renderer loop out of the `if (measuring.fontHeights)` block and place it after both response-cache blocks.
 
-Each waiting renderer already owns the correct type-specific lookup through `TryFetchMinSizeFromCache()`: solid-label renderers query `fontHeights`, while image-frame renderers query their `GuiRemoteGraphicsImage` metadata. Running the loop after every completed response makes each renderer consume whichever cache became available in that frame, without coupling image progress to an unrelated font response. Renderers whose dependencies are still unavailable remain in `renderersAskingForCache`; renderers that resolve are removed, and a changed minimum size on an element rendered in the last batch requests the existing hosted-layout refresh.
+Each waiting renderer already owns the correct type-specific lookup through `TryFetchMinSizeFromCache()`: solid-label renderers query `fontHeights`, while image-frame renderers query their `GuiRemoteGraphicsImage` metadata. Running the loop after a response containing either cache makes each renderer consume whichever cache became available in that frame, without coupling image progress to an unrelated font response. Renderers whose dependencies are still unavailable remain in `renderersAskingForCache`; renderers that resolve are removed, and a changed minimum size on an element rendered in the last batch requests the existing hosted-layout refresh.
 
 This changes no protocol schema, renderer-side image creation, Direct2D behavior, image ownership, or document-editor templates. It fixes the owning state transition: response caches become visible first, then all consumers waiting on those caches are retried. The focused `16x24` image-only regression must pass without an element property change, and the existing label-measurement paths must remain covered by the full unit-test suite.
 
 ### CODE CHANGE
+
+- Move the `renderersAskingForCache` retry/removal loop in `Source/PlatformProviders/Remote/GuiRemoteGraphics.cpp` from inside the `measuring.fontHeights` branch to immediately after `measuring.createdImages` is processed. Run it when either `fontHeights` or `createdImages` is present, so ordinary frames without new cache data do not retry outstanding measurements. Preserve the existing minimum-size comparison and `minSizeChanged` refresh behavior.
+- Keep the focused first-full-frame image regression in `Test/GacUISrc/UnitTest/TestRemote_GraphicsHost_Startup.cpp`; it requires a `16x24` image minimum size to become available when `createdImages` is the only cache response.
+
+### CONFIRMED
+
+The root cause is the cache-consumer handoff in `GuiRemoteGraphicsRenderTarget::StopRenderingOnNativeWindow`. The response first updated `GuiRemoteGraphicsImage`, but the generic `renderersAskingForCache` retry loop was guarded by `measuring.fontHeights`. An image-only response therefore left `GuiImageFrameElementRenderer` at `0x0` until an unrelated property change caused another element update. Whether a full application frame also carried font measurements depended on the active renderer/cache mix, which explains why machine-to-machine behavior differed without requiring machine speed to be causal. GacJS and existing snapshots could avoid the image-only response shape and therefore did not disprove the core-side omission.
+
+The focused regression failed before the fix with `Size(0, 0)` after valid `16x24` image metadata, and passes after the fix without changing the image element. The final Debug x64 solution build completed with 0 warnings and 0 errors. The complete final `UnitTest` run passed 85/85 files and 1698/1698 cases with no `.memoryleaks` or `.unfinished` marker. Relevant Ribbon, Toolstrip, and single-image snapshots now converge one frame earlier because image minimum sizes are consumed in the frame that returns their metadata; unrelated file-dialog snapshot drift was discarded.
+
+The reported `/Http /FCT` navigation was also exercised against the live Win32 renderer. In Debug, Document Editor (Ribbon) exposed 26 active image frames and Document Editor (Toolstrip) exposed 16; every image had positive bounds and positive valid area immediately after navigation. In Release, the same normal wrapper launch produced the same 26 and 16 active images with zero invalid bounds or valid areas. The complete Release x64 solution also built with 0 warnings and 0 errors. This confirms the fix in both configurations on the machine that reproduces the original bug and does not rely on a text-selection/enabled-state refresh.
