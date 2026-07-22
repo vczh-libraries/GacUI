@@ -45,6 +45,53 @@ TEST_FILE
 		StartRemoteControllerTest(protocol);
 	});
 
+	TEST_CATEGORY(L"Render zero-width vertical splitter with its two-pixel footprint")
+	{
+		List<WString> eventLogs;
+		GraphicsHostRenderingProtocol protocol(eventLogs);
+		GuiWindow* controlHost = nullptr;
+
+		protocol.OnNextFrame([&]()
+		{
+			auto bounds = new GuiBoundsComposition;
+			bounds->SetExpectedBounds(Rect({ 100,100 }, { 0,20 }));
+
+			auto element = Ptr(Gui3DSplitterElement::Create());
+			element->SetColors(Color(0x11, 0x22, 0x33), Color(0x44, 0x55, 0x66));
+			element->SetDirection(Gui3DSplitterElement::Vertical);
+			bounds->SetOwnedElement(element);
+
+			controlHost->GetContainerComposition()->AddChild(bounds);
+			controlHost->ForceCalculateSizeImmediately();
+			TEST_ASSERT(bounds->GetCachedBounds() == Rect({ 100,100 }, { 0,20 }));
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			AssertEventLogs(
+				eventLogs,
+				L"Created(<1:SinkSplitter>)",
+				L"Updated(1, #112233, #445566, Vertical)",
+				L"Begin()",
+				L"Render(1, {99,100:2,20}, {0,0:640,480})",
+				L"End()"
+				);
+		});
+
+		AssertRenderingEventLogs(
+			protocol,
+			eventLogs,
+			[&]()
+			{
+				controlHost->Hide();
+			},
+			L"Render(1, {99,100:2,20}, {0,0:640,480})"
+			);
+
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
 	TEST_CATEGORY(L"Cursor in composition with element")
 	{
 		List<WString> eventLogs;

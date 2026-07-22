@@ -243,6 +243,31 @@ Gui3DSplitterElementRenderer
 	{
 	}
 
+	void Gui3DSplitterElementRenderer::Render(Rect bounds)
+	{
+		switch (element->GetDirection())
+		{
+		case Gui3DSplitterElement::Horizontal:
+			if (bounds.Height() < 2)
+			{
+				auto y = bounds.y1 + bounds.Height() / 2 - 1;
+				bounds.y1 = y;
+				bounds.y2 = y + 2;
+			}
+			break;
+		case Gui3DSplitterElement::Vertical:
+			if (bounds.Width() < 2)
+			{
+				auto x = bounds.x1 + bounds.Width() / 2 - 1;
+				bounds.x1 = x;
+				bounds.x2 = x + 2;
+			}
+			break;
+		}
+
+		GuiRemoteProtocolElementRenderer<Gui3DSplitterElement, Gui3DSplitterElementRenderer, remoteprotocol::RendererType::SinkSplitter>::Render(bounds);
+	}
+
 	void Gui3DSplitterElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
 		ElementDesc_SinkSplitter arguments;

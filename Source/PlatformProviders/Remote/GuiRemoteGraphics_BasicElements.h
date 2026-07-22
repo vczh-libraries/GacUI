@@ -125,6 +125,7 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		Gui3DSplitterElementRenderer();
 
+		void							Render(Rect bounds) override;
 		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
 	};
 

@@ -1908,8 +1908,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 132,
-                                          "bounds": {"x1": 109, "y1": 82, "x2": 109, "y2": 104},
-                                          "validArea": {"x1": 109, "y1": 82, "x2": 109, "y2": 104}
+                                          "bounds": {"x1": 108, "y1": 82, "x2": 110, "y2": 104},
+                                          "validArea": {"x1": 108, "y1": 82, "x2": 110, "y2": 104}
                                         },
                                         "children": null
                                       }
@@ -2082,8 +2082,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 134,
-                                          "bounds": {"x1": 207, "y1": 82, "x2": 207, "y2": 104},
-                                          "validArea": {"x1": 207, "y1": 82, "x2": 207, "y2": 104}
+                                          "bounds": {"x1": 206, "y1": 82, "x2": 208, "y2": 104},
+                                          "validArea": {"x1": 206, "y1": 82, "x2": 208, "y2": 104}
                                         },
                                         "children": null
                                       }
@@ -2419,8 +2419,8 @@
                                           "hitTestResult": null,
                                           "cursor": null,
                                           "element": 136,
-                                          "bounds": {"x1": 109, "y1": 118, "x2": 109, "y2": 140},
-                                          "validArea": {"x1": 109, "y1": 118, "x2": 109, "y2": 140}
+                                          "bounds": {"x1": 108, "y1": 118, "x2": 110, "y2": 140},
+                                          "validArea": {"x1": 108, "y1": 118, "x2": 110, "y2": 140}
                                         },
                                         "children": null
                                       }

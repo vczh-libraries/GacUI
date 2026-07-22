@@ -2807,8 +2807,8 @@
                                       "hitTestResult": null,
                                       "cursor": null,
                                       "element": 153,
-                                      "bounds": {"x1": 57, "y1": 72, "x2": 57, "y2": 151},
-                                      "validArea": {"x1": 57, "y1": 72, "x2": 57, "y2": 151}
+                                      "bounds": {"x1": 56, "y1": 72, "x2": 58, "y2": 151},
+                                      "validArea": {"x1": 56, "y1": 72, "x2": 58, "y2": 151}
                                     },
                                     "children": null
                                   }
@@ -3014,8 +3014,8 @@
                                       "hitTestResult": null,
                                       "cursor": null,
                                       "element": 171,
-                                      "bounds": {"x1": 187, "y1": 72, "x2": 187, "y2": 151},
-                                      "validArea": {"x1": 187, "y1": 72, "x2": 187, "y2": 151}
+                                      "bounds": {"x1": 186, "y1": 72, "x2": 188, "y2": 151},
+                                      "validArea": {"x1": 186, "y1": 72, "x2": 188, "y2": 151}
                                     },
                                     "children": null
                                   }
