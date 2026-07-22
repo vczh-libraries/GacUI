@@ -144,7 +144,19 @@ GuiRemoteGraphicsRenderTarget
 					fontHeights.Add(key, fontHeight.height);
 				}
 			}
+		}
 
+		if (measuring.createdImages)
+		{
+			for (auto&& imageMetadata : *measuring.createdImages.Obj())
+			{
+				auto image = remote->imageService.GetImage(imageMetadata.id);
+				image->UpdateFromImageMetadata(imageMetadata);
+			}
+		}
+
+		if (measuring.fontHeights || measuring.createdImages)
+		{
 			// TODO: (enumerable) foreach:indexed(alterable(reversed))
 			for (vint i = renderersAskingForCache.Count() - 1; i >= 0; i--)
 			{
@@ -159,15 +171,6 @@ GuiRemoteGraphicsRenderTarget
 				{
 					renderersAskingForCache.RemoveAt(i);
 				}
-			}
-		}
-
-		if (measuring.createdImages)
-		{
-			for (auto&& imageMetadata : *measuring.createdImages.Obj())
-			{
-				auto image = remote->imageService.GetImage(imageMetadata.id);
-				image->UpdateFromImageMetadata(imageMetadata);
 			}
 		}
 

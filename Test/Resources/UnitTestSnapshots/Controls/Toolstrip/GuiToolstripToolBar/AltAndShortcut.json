@@ -346,7 +346,7 @@
   ],
   "frames": [
     {
-      "frameId": 5,
+      "frameId": 4,
       "frameName": "Ready",
       "windowSize": {
         "bounds": {
@@ -373,7 +373,7 @@
       "root": null
     },
     {
-      "frameId": 10,
+      "frameId": 9,
       "frameName": "[ALT]",
       "windowSize": {
         "bounds": {
@@ -400,7 +400,7 @@
       "root": null
     },
     {
-      "frameId": 12,
+      "frameId": 11,
       "frameName": "[U]",
       "windowSize": {
         "bounds": {
@@ -427,7 +427,7 @@
       "root": null
     },
     {
-      "frameId": 17,
+      "frameId": 16,
       "frameName": "[ALT]",
       "windowSize": {
         "bounds": {
@@ -454,7 +454,7 @@
       "root": null
     },
     {
-      "frameId": 19,
+      "frameId": 18,
       "frameName": "[R]",
       "windowSize": {
         "bounds": {
@@ -481,7 +481,7 @@
       "root": null
     },
     {
-      "frameId": 24,
+      "frameId": 23,
       "frameName": "[ALT]",
       "windowSize": {
         "bounds": {
@@ -508,7 +508,7 @@
       "root": null
     },
     {
-      "frameId": 29,
+      "frameId": 28,
       "frameName": "[L]",
       "windowSize": {
         "bounds": {
@@ -535,7 +535,7 @@
       "root": null
     },
     {
-      "frameId": 34,
+      "frameId": 33,
       "frameName": "[ESC]",
       "windowSize": {
         "bounds": {
@@ -562,7 +562,7 @@
       "root": null
     },
     {
-      "frameId": 36,
+      "frameId": 35,
       "frameName": "[ESC]",
       "windowSize": {
         "bounds": {
@@ -589,7 +589,7 @@
       "root": null
     },
     {
-      "frameId": 41,
+      "frameId": 40,
       "frameName": "[ALT]",
       "windowSize": {
         "bounds": {
@@ -616,7 +616,7 @@
       "root": null
     },
     {
-      "frameId": 46,
+      "frameId": 45,
       "frameName": "[L]",
       "windowSize": {
         "bounds": {
@@ -643,7 +643,7 @@
       "root": null
     },
     {
-      "frameId": 51,
+      "frameId": 50,
       "frameName": "[ESC]",
       "windowSize": {
         "bounds": {
@@ -670,7 +670,7 @@
       "root": null
     },
     {
-      "frameId": 56,
+      "frameId": 55,
       "frameName": "[L]",
       "windowSize": {
         "bounds": {
@@ -697,7 +697,7 @@
       "root": null
     },
     {
-      "frameId": 58,
+      "frameId": 57,
       "frameName": "[R]",
       "windowSize": {
         "bounds": {
@@ -724,7 +724,7 @@
       "root": null
     },
     {
-      "frameId": 63,
+      "frameId": 62,
       "frameName": "[ALT]",
       "windowSize": {
         "bounds": {
@@ -751,7 +751,7 @@
       "root": null
     },
     {
-      "frameId": 68,
+      "frameId": 67,
       "frameName": "[A]",
       "windowSize": {
         "bounds": {
@@ -778,7 +778,7 @@
       "root": null
     },
     {
-      "frameId": 70,
+      "frameId": 69,
       "frameName": "[C]",
       "windowSize": {
         "bounds": {
@@ -805,7 +805,7 @@
       "root": null
     },
     {
-      "frameId": 72,
+      "frameId": 71,
       "frameName": "[CTRL]+[L]",
       "windowSize": {
         "bounds": {
@@ -832,7 +832,7 @@
       "root": null
     },
     {
-      "frameId": 74,
+      "frameId": 73,
       "frameName": "[CTRL]+[R]",
       "windowSize": {
         "bounds": {

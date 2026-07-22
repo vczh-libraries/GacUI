@@ -226,7 +226,7 @@
   ],
   "frames": [
     {
-      "frameId": 5,
+      "frameId": 4,
       "frameName": "Ready",
       "windowSize": {
         "bounds": {
@@ -253,7 +253,7 @@
       "root": null
     },
     {
-      "frameId": 7,
+      "frameId": 6,
       "frameName": "Hover on Undo",
       "windowSize": {
         "bounds": {
@@ -280,7 +280,7 @@
       "root": null
     },
     {
-      "frameId": 9,
+      "frameId": 8,
       "frameName": "Left Mouse Down",
       "windowSize": {
         "bounds": {
@@ -307,7 +307,7 @@
       "root": null
     },
     {
-      "frameId": 11,
+      "frameId": 10,
       "frameName": "Left Mouse Up",
       "windowSize": {
         "bounds": {
@@ -334,7 +334,7 @@
       "root": null
     },
     {
-      "frameId": 13,
+      "frameId": 12,
       "frameName": "Middle Click on Redo",
       "windowSize": {
         "bounds": {
@@ -361,7 +361,7 @@
       "root": null
     },
     {
-      "frameId": 15,
+      "frameId": 14,
       "frameName": "Right Click on Delete",
       "windowSize": {
         "bounds": {
