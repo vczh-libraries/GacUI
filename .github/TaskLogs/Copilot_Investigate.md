@@ -30,3 +30,15 @@ The focused regression was confirmed on 2026-07-21 against the unfixed Debug x64
 Source history confirms the response-shape distinction. The `renderersAskingForCache` refresh loop was originally introduced for font-height responses in February 2024. Image metadata handling was added later, but only updates `GuiRemoteGraphicsImage`; it does not run the waiting-renderer refresh loop. Therefore image renderers are refreshed accidentally only when the same frame also contains a `fontHeights` list. The confirmed test supplies no label or font measurement, so it deterministically exposes the missing image-cache handoff that ordinary snapshots can mask.
 
 # PROPOSALS
+
+- No.1 REFRESH WAITING RENDERERS AFTER ALL CACHE RESPONSES
+
+## No.1 REFRESH WAITING RENDERERS AFTER ALL CACHE RESPONSES
+
+In `GuiRemoteGraphicsRenderTarget::StopRenderingOnNativeWindow`, keep response ingestion ordered by cache dependency: first add all returned font heights to `fontHeights`, then apply all returned image metadata to `GuiRemoteGraphicsImage`, and only then iterate `renderersAskingForCache`. Move the existing generic waiting-renderer loop out of the `if (measuring.fontHeights)` block and place it after both response-cache blocks.
+
+Each waiting renderer already owns the correct type-specific lookup through `TryFetchMinSizeFromCache()`: solid-label renderers query `fontHeights`, while image-frame renderers query their `GuiRemoteGraphicsImage` metadata. Running the loop after every completed response makes each renderer consume whichever cache became available in that frame, without coupling image progress to an unrelated font response. Renderers whose dependencies are still unavailable remain in `renderersAskingForCache`; renderers that resolve are removed, and a changed minimum size on an element rendered in the last batch requests the existing hosted-layout refresh.
+
+This changes no protocol schema, renderer-side image creation, Direct2D behavior, image ownership, or document-editor templates. It fixes the owning state transition: response caches become visible first, then all consumers waiting on those caches are retried. The focused `16x24` image-only regression must pass without an element property change, and the existing label-measurement paths must remain covered by the full unit-test suite.
+
+### CODE CHANGE
