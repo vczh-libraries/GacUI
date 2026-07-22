@@ -44,7 +44,7 @@ private:
 		bool claimed = false;
 		SPIN_LOCK(lockFatalError)
 		{
-			if (!triggeredFatalError)
+			if (!triggeredFatalError && (!renderer || !renderer->IsDisconnectedFromCore()))
 			{
 				triggeredFatalError = true;
 				fatalTitle = title;

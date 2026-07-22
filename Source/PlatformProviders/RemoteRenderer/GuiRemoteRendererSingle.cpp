@@ -216,6 +216,11 @@ namespace vl::presentation::remote_renderer
 		GetCurrentController()->CallbackService()->UninstallListener(this);
 	}
 
+	bool GuiRemoteRendererSingle::IsDisconnectedFromCore()
+	{
+		return disconnectingFromCore;
+	}
+
 	void GuiRemoteRendererSingle::ForceExitByFatelError()
 	{
 		if (window)

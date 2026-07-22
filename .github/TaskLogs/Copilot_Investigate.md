@@ -24,9 +24,9 @@ After the fix, the same normal-exit runs must close the renderer without a fatal
 
 # PROPOSALS
 
-- No.1 IGNORE FATAL CHANNEL ERRORS AFTER RENDERER DISCONNECTION
+- No.1 IGNORE FATAL CHANNEL ERRORS AFTER RENDERER DISCONNECTION [CONFIRMED]
 
-## No.1 IGNORE FATAL CHANNEL ERRORS AFTER RENDERER DISCONNECTION
+## No.1 IGNORE FATAL CHANNEL ERRORS AFTER RENDERER DISCONNECTION [CONFIRMED]
 
 Expose `GuiRemoteRendererSingle`'s existing `disconnectingFromCore` terminal state through an `IsDisconnectedFromCore()` query and make the state atomic because transport error callbacks and protocol message dispatch run on different threads. Keep the state owned by `GuiRemoteRendererSingle`: it already controls suppression of core-bound events and local closing after `ControllerConnectionStopped`.
 
@@ -36,3 +36,11 @@ In `RemotingTestChannelClient::ClaimFatalError`, reject the claim when its rende
 
 - Change `GuiRemoteRendererSingle::disconnectingFromCore` to `atomic_vint` and add `GuiRemoteRendererSingle::IsDisconnectedFromCore()` as a public read-only query.
 - Update `RemotingTestChannelClient::ClaimFatalError` to claim only when no fatal error has already been triggered and the renderer has not disconnected from the core.
+
+### CONFIRMED
+
+The complete Debug x64 solution rebuilt after the change with 0 warnings and 0 errors. The complete Debug x64 `UnitTest` run passed all 85/85 files and 1698/1698 cases, with no memory-leak report.
+
+Normal `/FCT` shutdown was then exercised three times per transport by posting exact `!Exit` through the core automation service. `/Http` completed 3/3 runs with both processes exiting, and `/Pipe` completed 3/3 runs with both processes exiting. The fixed `/MiniHttp` build completed 3/3 core exits without a renderer fatal prompt or a `fatalError` value in the still-responsive renderer automation DOM.
+
+All three `/MiniHttp` samples happened to take the negative timing branch identified during reproduction: no pending `/Response` was accepted in time to carry `ControllerConnectionStopped`. The renderer therefore stayed alive retrying port 8888 and was cleaned up after the 30-second observation window. This is a distinct delivery/liveness condition; the renderer cannot apply the normal-stop policy before it receives the normal-stop message. It is intentionally not hidden or broadened into this fix. For the reported ordering, once `RequestControllerConnectionStopped` runs, the atomic terminal state is set before the window is hidden, and every later read or local fatal callback is rejected by `ClaimFatalError` before either a core force-exit request or native fatal prompt can be queued.

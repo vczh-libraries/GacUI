@@ -33,7 +33,7 @@ namespace vl::presentation::remote_renderer
 		INativeWindow*							window = nullptr;
 		INativeScreen*							screen = nullptr;
 		IGuiRemoteProtocolEvents*				events = nullptr;
-		bool									disconnectingFromCore = false;
+		atomic_vint							disconnectingFromCore = false;
 		bool									stoppedByFatalError = false;
 		Nullable<WString>						fatalError;
 		WString									titleBeforeFatalError;
@@ -174,6 +174,7 @@ namespace vl::presentation::remote_renderer
 
 		void									RegisterMainWindow(INativeWindow* _window);
 		void									UnregisterMainWindow();
+		bool									IsDisconnectedFromCore();
 		void									ForceExitByFatelError();
 		void									RequestCoreForceExitByFatalError();
 		void									RetainByFatalError(const WString& errorMessage);
