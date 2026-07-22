@@ -32,6 +32,53 @@ TEST_FILE
 		StartRemoteControllerTest(protocol);
 	});
 
+	TEST_CATEGORY(L"Update image min size when only image metadata is returned")
+	{
+		List<WString> eventLogs;
+		GraphicsHostRenderingProtocol protocol(eventLogs);
+		GuiWindow* controlHost = nullptr;
+		Ptr<GuiImageFrameElement> imageElement;
+
+		protocol.OnNextFrame([&]()
+		{
+			TEST_ASSERT(imageElement->GetRenderer()->GetMinSize() == Size(0, 0));
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			TEST_ASSERT(imageElement->GetRenderer()->GetMinSize() == Size(16, 24));
+			controlHost->Hide();
+		});
+
+		SetGuiMainProxy([&]()
+		{
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
+			auto theme = Ptr(new EmptyControlTheme);
+			theme::RegisterTheme(theme);
+
+			GuiWindow window(theme::ThemeName::Window);
+			window.SetClientSize({ 100,200 });
+			controlHost = &window;
+
+			char8_t imageData[] = u8"16x24";
+			auto image = GetCurrentController()->ImageService()->CreateImageFromMemory(imageData, sizeof(imageData) - 1);
+			imageElement = Ptr(GuiImageFrameElement::Create());
+			imageElement->SetImage(image, 0);
+
+			auto bounds = new GuiBoundsComposition;
+			bounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
+			bounds->SetOwnedElement(imageElement);
+			window.GetContainerComposition()->AddChild(bounds);
+
+			GetApplication()->Run(&window);
+			imageElement = nullptr;
+			controlHost = nullptr;
+
+			theme::UnregisterTheme(theme->Name);
+		});
+		StartRemoteControllerTest(protocol);
+	});
+
 	TEST_CATEGORY(L"Test nested <Bounds> associated resources")
 	{
 		GraphicsHostProtocol protocol;
