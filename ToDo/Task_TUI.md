@@ -1,629 +1,368 @@
-# GacUI on CLI
+# GacUI on TUI
 
-# Goal
+## Authority and plan composition
 
-GacUI rendered on CLI should be able to:
-- Adapt Windows CMD/Powershell, Linux, macOS.
-  - Win32API should be enough for Windows.
-  - Before introducing third-party libraries for Linux or macOS, its license should be considered, it should be compatible with Apache 2.0, no GPL family license is allowed.
-- When the CLI window resizes, the UI should know and automatically adjust its rendering.
-  - Part of it could be done with Hosted Mode, in this mode the main window always follow the size of the native window, all other windows are rendered in the same native window as well.
-  - GacUI on CLI will offer an `INativeController` implemention to the Hosted Mode implementation, just like how GDI/Direct2D/RemoteProtocol is working with Hosted Mode today.
-- Background and foreground colors should be supported. If 24bit true color is not supported, the renderer should automatically find the nearest color.
-  - When alpha byte is zero for any element, it is not rendered. Any positive renders with the color, just like how GDI renderer is currently implemented.
-- ASCII Art should be used to render elements. For example, when a rectangle is rendered, user should actually see a rectangle consist with precisely selected ASCII characters.
-  - The source file should be compatible to UTF-7 so ASCII art characters should use its byte code instead of directly writing it in any char/string literal.
-  - Consecutive drawing on the same position should be handled correctly:
-    - Drawing a vertical line followed by a horizontal line crossing a certain position, a cross character should be used.
-      - Unless two different color is used, then overriding always happen, a horizontal line is rendered at the position.
-      - If 24bit true color is not supported, "different colors" here means two converted colors are different, not the original color.
-    - Drawing anything followed by text, or drawing text followed by line, will override each other.
-    - Drawing a line is different from drawling a text but happen to use a ASCII art character. So extra information should be stored instead of just looking at the current character in the buffer.
-- Size of a character matters.
-  - Font size will always be 1.
-  - One letter might not always occupy one position:
-    - Some Chinese characters will always take the space of two letters, measuring is necessary.
-    - No LTR/RTL rendering is supported, but code point combination might need to be considered like emoji.
-    - Try not to implement this by GacUI, it should always leverage OS functionality or third-party libraries.
-- `GuiImageFrameElement` is not supported, by not registering a renderer for it, creating such element crashes.
-- Typing should not actually type strings to the CLI window, keyboard input should be completely handled by GacUI itself, even when it is using a text box.
-- Mouse input should support.
-- An abstration layer should be designed, because many logic mentioned above are cross-platform.
-  - For example, always prepare a character buffer before rendering, since rendering is platform independent, and handle the buffer to platform-specific implementation later.
-  - Measuring text might be platform-specific, it is fine therefore the abstraction layer should support injecting such differences, e.g. using virtual functions or anything.
+The GacUI TUI plan has two parts:
 
-## ToDo
+1. Implement the cross-platform terminal, buffer, drawing, and input foundation in [`../../VlppOS/TODO_Task.md`](../../VlppOS/TODO_Task.md), using the verified platform details in [`../../VlppOS/Task_TUI.md`](../../VlppOS/Task_TUI.md).
+2. Implement the GacUI native-controller and renderer adapter described in this file.
 
-- Need a class to handle TUI interaction.
-- Need a class to draw elements, like lines, texts, blocks, etc.
-- Above two could be in Vlpp, and when it starts, Console::Read/Write will be redirected to callbacks.
-  - On Windows, CLI/GUI share the same key code.
-  - Move keycode definition and naming to Vlpp/TUI.
-  - Offer linux/macos TUI implementation.
-- Need a class to convert them to OS provider.
+The two VlppOS files are therefore Phase 1 of this GacUI plan, not an unrelated task. Read all three files before execution. If this file conflicts with `VlppOS/TODO_Task.md`, the VlppOS file has priority.
 
-## References
+Do not reimplement a platform abstraction, terminal buffer, box-drawing lookup, color quantizer, character-width table, input parser, or resize loop in GacUI. Those are owned by `vl::console::TUI`.
 
-https://en.wikipedia.org/wiki/Box-drawing_characters
+## Goal
 
-## Instructions
+GacUI rendered in a terminal should:
 
-You goal is to make a detailed plan to implement `# Goal`.
-When API or third-party libraries is introduced, the plan must be detailed enough to mention how to use those functions, with supported materials in links.
-Think througly as CLI handling is complex, especially when talking to the OS.
-In `## Plan`, list each item in bullet-point list, with supported materials in links if applicable.
-In `## Details`, each bullet-point item would be an `### Item`, providing detailed explanation.
-When involving API or third-party libraries, it should be detailed enough so that even one without knowledge with them could implement the work immediately.
-In the end, call `CheckLinks.ps1` to verify all linkes are available.
+- Run in Windows console hosts launched from cmd.exe or PowerShell, and in supported xterm-compatible terminals on Linux and macOS.
+- Use Hosted Mode so one real terminal-backed native window contains all supported GacUI windows, popups, menus, and dialogs. Supply a compact cell-scale, image-free TUI theme and matching dialog resources; the pixel-scaled DarkSkin and current image-creating fake-dialog resources cannot be reused unchanged.
+- Follow terminal resizing and reflow the UI to the new cell dimensions.
+- Render foreground and background colors. A GacUI color with `a == 0` is skipped; any positive alpha is treated as opaque. `vl::console::TUI` selects truecolor, 256-color, or 16-color output and performs fallback quantization.
+- Render with Unicode box-drawing and block characters, not ASCII art. Use ASCII-only C++ source spelling such as `U'\u2500'` where a literal code point is needed.
+- Draw into the `TuiPixel` buffer supplied by VlppOS and submit it through `TUI::RenderBuffer`.
+- Follow the VlppOS merge rule: merge representable `TuiMergeablePixel` geometry regardless of color, let the later foreground color win, and replace with the later cell when the combined arm state has no Unicode glyph.
+- Treat one terminal cell as one GacUI coordinate unit. The actual terminal font is controlled by the terminal; “1” is a logical cell size, not a physical font size.
+- Measure and print independent Unicode scalar values through TUI. Combining sequences, variation sequences, emoji ZWJ sequences, bidirectional layout, and grapheme shaping are deferred because Phase 1 stores one `char32_t` per leading cell.
+- Route character and mouse input to GacUI without terminal echo. Keyboard events remain placeholders until a future VlppOS keyboard-translation phase.
+- Keep all TUI, native-window, rendering, input, resize, and global-timer callbacks on the thread that calls `TUI::Start`, normally the thread running `main`.
+- Leave `GuiImageFrameElement` unsupported. Because the renderer factory is intentionally absent, creating it fails through GacUI's existing `CHECK_ERROR` for an unsupported renderer; this is not described as an uncontrolled crash.
 
 ## Plan
 
-- Design the cross-platform abstraction layer (`ICliController`, character buffer, render target)
-- Implement the character buffer and cell model (including box-drawing state for line merging)
-- Implement the box-drawing character lookup table and line merge algorithm
-- Implement color handling: 24-bit true color with automatic fallback to nearest terminal-supported color
-- Implement character width measurement via platform abstraction (https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-getstringtypew)
-- Implement `INativeController` for CLI (`CliNativeController`) providing all 9 required services
-- Implement platform-specific terminal I/O for Windows using Win32 Console API (https://learn.microsoft.com/en-us/windows/console/writeconsoleoutput, https://learn.microsoft.com/en-us/windows/console/readconsoleinput, https://learn.microsoft.com/en-us/windows/console/setconsolemode)
-- Implement platform-specific terminal I/O for Linux/macOS using ANSI escape sequences and POSIX termios
-- Implement keyboard input handling: raw mode, escape sequence parsing, key event translation
-- Implement mouse input handling: Win32 `MOUSE_EVENT_RECORD` on Windows, SGR extended mouse mode on Linux/macOS (https://learn.microsoft.com/en-us/windows/console/mouse-event-record-str)
-- Implement terminal resize detection: `WINDOW_BUFFER_SIZE_EVENT` on Windows, `SIGWINCH` on Linux/macOS (https://learn.microsoft.com/en-us/windows/console/window-buffer-size-record-str)
-- Implement element renderers for CLI (SolidBorder, SolidBackground, GradientBackground, SolidLabel, FocusRectangle, 3DBorder, 3DSplitter, InnerShadow, Polygon, RichDocument)
-- Implement `CliGraphicsResourceManager` and `CliGraphicsRenderTarget`
-- Implement the setup entry point `SetupCliRenderer()` following the existing `SetupRemoteNativeController` pattern
-- Integration testing: rendering, input, resize, color fallback
-
-## Details
-
-### Design the cross-platform abstraction layer
-
-The central design principle is separating platform-independent rendering logic from platform-specific terminal I/O. This mirrors how GacUI already separates `INativeController` (OS abstraction) from element renderers (drawing logic).
-
-The abstraction consists of three layers:
-
-**Layer 1: `ICliPlatform` interface** (platform-specific, `*.Windows.cpp` / `*.Linux.cpp`):
-```
-class ICliPlatform : public virtual Interface
-{
-    // Terminal output
-    virtual void FlushBuffer(const CliCell* buffer, vint rows, vint cols) = 0;
-
-    // Terminal input
-    virtual bool PollInputEvents(List<CliInputEvent>& events, vint timeoutMs) = 0;
-
-    // Terminal size
-    virtual void GetTerminalSize(vint& outRows, vint& outCols) = 0;
-
-    // Character width
-    virtual vint MeasureCharWidth(char32_t codepoint) = 0;
-
-    // Color capability
-    virtual CliColorCapability GetColorCapability() = 0;
-
-    // Lifecycle
-    virtual void Initialize() = 0;
-    virtual void Finalize() = 0;
-};
-```
-
-**Layer 2: `CliCharacterBuffer`** (platform-independent):
-A 2D grid of `CliCell` structs that all element renderers draw into. After all elements are rendered, the buffer is handed to `ICliPlatform::FlushBuffer()`.
-
-**Layer 3: Element renderers** (platform-independent):
-Each GacUI element type has a CLI renderer that draws into the `CliCharacterBuffer`. These renderers follow the same `GuiElementRendererBase<TElement, TRenderer, TRenderTarget>` pattern used by GDI, Direct2D, and Remote renderers.
-
-The `ICliPlatform` interface is injected into the `CliNativeController` at construction. Two implementations are provided: `WindowsCliPlatform` using Win32 Console API, and `PosixCliPlatform` using ANSI escape sequences with POSIX termios. Each lives in its own `*.Windows.cpp` / `*.Linux.cpp` file per the project convention.
-
-### Implement the character buffer and cell model
-
-The character buffer is a 2D array of `CliCell` that represents the terminal screen. Each cell stores enough information to support line merging, color handling, and text/line distinction.
-
-Cell structure:
-```
-struct CliBoxDrawingState
-{
-    vuint8_t up    : 2;  // 0=None, 1=Light, 2=Heavy, 3=Double
-    vuint8_t down  : 2;
-    vuint8_t left  : 2;
-    vuint8_t right : 2;
-};
-
-struct CliColor
-{
-    vuint8_t r;
-    vuint8_t g;
-    vuint8_t b;
-    vuint8_t a;  // 0 = transparent (not rendered)
-};
-
-enum class CliCellKind : vuint8_t
-{
-    Empty,
-    Text,
-    Line,
-    WideCharTrailing,  // second cell occupied by a wide character
-};
-
-struct CliCell
-{
-    wchar_t              character;
-    CliColor             foreground;
-    CliColor             background;
-    CliCellKind          kind;
-    CliBoxDrawingState   lineState;  // only meaningful when kind == Line
-};
-```
-
-The buffer is allocated as `CliCell* buffer = new CliCell[rows * cols]` and reallocated when the terminal resizes. A helper class `CliCharacterBuffer` manages the allocation, provides `SetCell(row, col, ...)` and `GetCell(row, col)` methods, and handles bounds checking.
-
-For wide characters (CJK ideographs that occupy 2 columns), the first cell stores the character and `kind = Text`, while the second cell stores `kind = WideCharTrailing` to indicate it is the continuation of the previous cell. This prevents subsequent rendering from corrupting the wide character by only overwriting one of its cells.
-
-Before each render pass, the buffer is cleared to `Empty` cells with space character and transparent colors.
-
-### Implement the box-drawing character lookup table and line merge algorithm
-
-Unicode box-drawing characters (U+2500 through U+257F) are decomposed into four directional arms: Up, Down, Left, Right. Each arm has a style: None (0), Light (1), Heavy (2), or Double (3). This 4x2-bit state packs into a single `vuint8_t` key:
-
-```
-vuint8_t key = (up << 6) | (down << 4) | (left << 2) | right;
-```
-
-A 256-entry lookup table maps each key to a `wchar_t` code point. Invalid combinations map to `L' '` (space). All codepoints are written as hex literals `L'\x2500'` to keep source files UTF-7 compatible.
+- Complete Phase 1 in VlppOS and update the generated release/import boundary.
+- Add a TUI-backed `INativeController` and the ten current native services.
+- Bridge `ITuiCallback` to GacUI's native-window, timer, character, and mouse callbacks.
+- Add a TUI graphics render target and resource manager without creating another character buffer.
+- Add the supported GacUI element renderers and document every coarse-cell approximation.
+- Add a compact, cell-scale, image-free TUI theme and TUI-safe fake-dialog resources.
+- Add `SetupTuiRenderer()` through the existing Hosted Mode initialization pattern.
+- Add unit and integration coverage for lifecycle, rendering, input, resize, and color fallback.
+- Run `ToDo/CheckLinks.ps1 Task_TUI.md` and all builds/tests required by the files changed during implementation.
 
-Key entries in the lookup table:
+## Phase 1: VlppOS foundation
 
-| State (U,D,L,R) | Key   | Codepoint | Character |
-|--|--|--|--|
-| (0,0,1,1) | 0x05 | 0x2500 | Light horizontal |
-| (1,1,0,0) | 0x50 | 0x2502 | Light vertical |
-| (0,1,0,1) | 0x15 | 0x250C | Down-right light corner |
-| (0,1,1,0) | 0x14 | 0x2510 | Down-left light corner |
-| (1,0,0,1) | 0x41 | 0x2514 | Up-right light corner |
-| (1,0,1,0) | 0x44 | 0x2518 | Up-left light corner |
-| (1,1,0,1) | 0x51 | 0x251C | Vertical-right T-junction |
-| (1,1,1,0) | 0x54 | 0x2524 | Vertical-left T-junction |
-| (0,1,1,1) | 0x15 | 0x252C | Horizontal-down T-junction |
-| (1,0,1,1) | 0x45 | 0x2534 | Horizontal-up T-junction |
-| (1,1,1,1) | 0x55 | 0x253C | Cross (all four light) |
-| (0,0,2,2) | 0x0A | 0x2501 | Heavy horizontal |
-| (2,2,0,0) | 0xA0 | 0x2503 | Heavy vertical |
-| (2,2,2,2) | 0xAA | 0x254B | Heavy cross |
-| (0,0,3,3) | 0x0F | 0x2550 | Double horizontal |
-| (3,3,0,0) | 0xF0 | 0x2551 | Double vertical |
-| (3,3,3,3) | 0xFF | 0x256C | Double cross |
+Phase 1 is exactly the work in:
 
-The full table includes all light-heavy mixed combinations (U+250D through U+254A) and all light-double mixed combinations (U+2552 through U+256B). Half-line stubs (U+2574 through U+257B) are included for line termination aesthetics.
+- [`VlppOS/TODO_Task.md`](../../VlppOS/TODO_Task.md): public API, ownership, single-threaded lifecycle, buffer model, drawing semantics, tests, and playground.
+- [`VlppOS/Task_TUI.md`](../../VlppOS/Task_TUI.md): Windows, Linux, and macOS terminal implementation details.
 
-**Merge algorithm**: When a renderer draws a line at cell (r, c):
-1. Check the existing cell's `kind`.
-2. If `kind == Line` and the existing cell's foreground color matches the new line's color (after quantization if 24-bit is not supported), merge the `CliBoxDrawingState` by taking `max(existing, incoming)` per direction.
-3. If `kind == Line` but colors differ, override the cell entirely (new line replaces old).
-4. If `kind == Text` or `Empty`, override the cell entirely.
-5. After merging, look up the resulting character from the lookup table.
+Important consequences for GacUI:
 
-Text always overrides lines and lines always override text. Merging only happens for line-on-line with the same color.
+- TUI belongs to VlppOS, not Vlpp or GacUI.
+- `TUI::Start` calls `Console::Disable()` and cleanup calls `Console::Enable()`. Disabled Console `Read`, `Write`, and `SetColor` calls fail through `CHECK_ERROR`; they are not redirected to GacUI callbacks.
+- GacUI receives `TuiPixel*` from `TUI::GetBuffer()` and uses TUI drawing helpers.
+- `TUI::Start` is the real native event loop and blocks until a same-thread callback requests `TUI::Stop`.
+- `TUI::RunOneCycle` supplies the reentrant owner-thread pump required by GacUI modal dialogs.
+- `TUI::IsStopRequested` lets the bridge suppress later higher-level callbacks that it controls within the current TUI callback.
+- `TUI::TryGetConsoleSize` is available before `Start`.
+- `TUI::Timer` supplies a periodic owner-thread callback even when no input arrives.
+- `TUI::Char` supplies a decoded `TuiCharInfo`.
+- Keyboard event structures exist only as placeholders in this phase.
 
-### Implement color handling
+## TUI native controller
 
-GacUI elements specify colors as RGBA. The CLI renderer must handle three scenarios:
+Keep the native/graphics provider in the Core layer under `Source/PlatformProviders/TUI`. Suggested Core files:
 
-**24-bit true color** (modern terminals): Use colors directly. On Windows, this requires Virtual Terminal Processing (`ENABLE_VIRTUAL_TERMINAL_PROCESSING` via `SetConsoleMode`). On Linux/macOS, emit SGR sequences `\x1b[38;2;r;g;bm` for foreground, `\x1b[48;2;r;g;bm` for background. Detect capability on Windows by checking if `SetConsoleMode` succeeds with the VT flag. On Linux/macOS, check the `COLORTERM` environment variable for values `truecolor` or `24bit`.
+- `GuiTuiController.h` / `GuiTuiController.cpp`
+- `GuiTuiWindow.h` / `GuiTuiWindow.cpp`
+- `GuiTuiGraphics.h` / `GuiTuiGraphics.cpp`
+- `GuiTuiGraphicsRenderers.h` / `GuiTuiGraphicsRenderers.cpp`
+- `GuiTuiGraphicsLayoutProvider.h` / `GuiTuiGraphicsLayoutProvider.cpp`
 
-**256-color** (common on Linux): Convert RGB to the nearest color in the xterm 256-color palette. The palette consists of:
-- Indices 0-15: standard 16 ANSI colors.
-- Indices 16-231: a 6x6x6 color cube where index = 16 + 36*r_idx + 6*g_idx + b_idx (r_idx, g_idx, b_idx each 0-5, mapped from 0-255 via `round(val / 255.0 * 5.0)`).
-- Indices 232-255: a 24-step grayscale ramp from rgb(8,8,8) to rgb(238,238,238).
+Do not introduce an upward dependency from `Source_GacUI_Core` to controls or `FakeDialogServiceBase`. Put `GuiTuiDialogService` and its generated image-free dialog resources in the controls-capable utilities layer beside the existing fake-dialog implementation. Put the TUI `ThemeTemplates` and generated theme resources in a controls-capable full-GacUI/generated-resource layer. Compile the higher-level `GuiTuiControllerSetup.cpp` where it can instantiate both the Core provider and `GuiTuiDialogService`.
 
-Conversion algorithm: compute the nearest cube color and the nearest grayscale color, then pick the one with the smallest Euclidean distance in RGB space.
+Terminal acquisition, input, output, color, resize, and restoration remain entirely in VlppOS. The only GacUI-side OS branch is the executable-path query required by `INativeController`; keep it in a small guarded helper or matching `.Windows.cpp`, `.Linux.cpp`, and `.macOS.cpp` files.
 
-**16-color** (Windows legacy): Map RGB to the nearest of 16 console colors using `FOREGROUND_RED|GREEN|BLUE|INTENSITY` and `BACKGROUND_RED|GREEN|BLUE|INTENSITY` attributes. Build a predefined table of the 16 console RGB values and find the nearest match by Euclidean distance.
+### Controller services
 
-**Alpha handling**: The GDI renderer convention is followed: alpha = 0 means the element is not rendered (transparent). Any alpha > 0 means the color is rendered as-is (no blending). The CLI renderer should skip rendering for cells where both foreground and background alpha are zero.
+The current `INativeController` in `Source/NativeWindow/GuiNativeWindow.h` exposes ten services, plus `GetExecutablePath`. Implement them as follows:
 
-The `CliColorConverter` class encapsulates color mapping:
-```
-class CliColorConverter
-{
-    CliColorCapability  capability;
-    // Convert CliColor (RGBA) to the terminal representation
-    // Returns a terminal-native color index or RGB triplet
-    CliTermColor Convert(CliColor color);
-    // Compare two colors post-conversion (for line merge decision)
-    bool ColorsMatch(CliColor a, CliColor b);
-};
-```
+- `INativeCallbackService`: reuse `SharedCallbackService`.
+- `INativeResourceService`: provide one logical monospace font with cell size 1. `EnumerateFonts` returns that family and `SetDefaultFont` accepts/coerces requests to it. Cache a non-null no-op `INativeCursor` for every `INativeCursor::SystemCursorType` from zero through `INativeCursor::SystemCursorCount - 1`, and return the arrow cursor as default; the objects do not change the terminal cursor.
+- `INativeAsyncService`: reuse `SharedAsyncService`, and construct the controller/service on the same thread that later calls `TUI::Start` so its recorded main-thread id is correct. Its queued main-thread work is drained from the TUI timer callback. `InvokeAsync` and non-main-thread delayed work retain their existing thread-pool semantics when requested by application/framework code; they are not used to implement TUI input or rendering.
+- `INativeClipboardService`: return null and let `GuiInitializeUtilities` install `FakeClipboardService`.
+- `INativeImageService`: provide a non-null stub because image service is not substitutable. All three `CreateImageFromFile`, `CreateImageFromMemory`, and `CreateImageFromStream` operations return null; it exposes no loadable frames for this renderer.
+- `INativeScreenService`: expose one named primary screen whose bounds and client bounds equal the terminal's current cell rectangle and whose scaling is 1.0. Return it for the terminal window and index zero; return null for every other index or window.
+- `INativeWindowService`: expose one real terminal-backed native window. Hosted Mode creates all other windows virtually.
+- `INativeInputService`: implement the global timer bridge described below. `IsKeyPressing` and `IsKeyToggled` return false until key translation exists; `GetKeyName` returns empty; `GetKey` returns `(VKEY)-1`; global-shortcut registration returns `NativeGlobalShortcutKeyResult::NotSupported`; unregistration returns false.
+- `INativeDialogService`: the Core `GuiTuiController` returns null, as does the current `GuiHostedController` wrapper. The higher-level setup installs a TUI dialog service derived from `FakeDialogServiceBase` as a non-optional service substitution. Its generated cell-scale resources never construct `GuiImageFrameElement`. The existing `FakeDialogService` is not suitable because its current resources create image elements.
+- `INativeAutomationService`: return null and let `GuiInitializeUtilities` install `INativeAutomationService::UnavailableService()`.
+- `GetExecutablePath`: there is no existing cross-platform provider helper. Use [`GetModuleFileNameW`](https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulefilenamew) on Windows, `readlink("/proc/self/exe", ...)` as described by [`proc_pid_exe(5)`](https://man7.org/linux/man-pages/man5/proc_pid_exe.5.html) on Linux, and [`_NSGetExecutablePath`](https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man3/dyld.3.html) on macOS. Handle growable buffers, missing termination, and UTF-8/UTF-16 conversion explicitly.
 
-The "different colors" check for line merging uses the **converted** colors, not the original RGBA values, as specified in the Goal section.
+Clipboard, Dialog, and Automation are the substitutable service categories listed by `GUI_SUBSTITUTABLE_SERVICES`. The setup-installed non-optional Dialog substitution wins over the later optional `FakeDialogService` installed by `GuiInitializeUtilities`; it must be uninstalled during setup cleanup. Callback, Resource, Async, Image, Screen, Window, and Input must be non-null on the Core provider.
 
-### Implement character width measurement
+### Size before `TUI::Start`
 
-Terminal cells are fixed-width. Most characters occupy 1 cell, but CJK ideographs and fullwidth forms occupy 2 cells. The renderer must know each character's display width for correct layout.
+`GuiHostedController::Run` calls `SettingHostedWindowsBeforeRunning` before it enters the underlying `INativeWindowService::Run`. Screen/window bounds must therefore be valid before `TUI::Start`.
 
-**Windows**: Use `GetStringTypeW` with `CT_CTYPE3` (https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-getstringtypew):
-```
-WORD charType = 0;
-GetStringTypeW(CT_CTYPE3, &ch, 1, &charType);
-if (charType & C3_NONSPACING) return 0;     // combining mark
-if (charType & (C3_FULLWIDTH | C3_IDEOGRAPH)) return 2; // wide character
-return 1; // normal width
-```
-The flags `C3_FULLWIDTH` (0x0080) and `C3_IDEOGRAPH` (0x0100) indicate 2-column characters. `C3_NONSPACING` (0x0001) indicates zero-width combining marks.
+Use `TUI::TryGetConsoleSize` when the screen or terminal window is created. If the size cannot be queried, fail setup cleanly rather than inventing permanent bounds. Once TUI starts, its initial and subsequent `BufferSizeChanged` callbacks update the window bounds and notify listeners.
 
-**Linux/macOS**: Use `wcwidth()` from `<wchar.h>`:
-```
-#include <wchar.h>
-#include <locale.h>
-setlocale(LC_ALL, "");
-int width = wcwidth((wchar_t)codepoint);
-// Returns -1 (non-printable), 0, 1, or 2
-```
+The one terminal native window has a fixed origin `(0, 0)`, scaling `1.0`, and a client size owned by the terminal. `SetBounds` and `SetClientSize` must not replace the queried cell size with an application's pixel-oriented requested size during `SettingHostedWindowsBeforeRunning`; retain the terminal size and let the initial `Moved` notification resize the Hosted Mode main window. Size changes come only from `BufferSizeChanged`.
 
-macOS's `wcwidth()` implementation may return incorrect values for some emoji. If more accuracy is needed, a custom `wcwidth` implementation using Unicode East Asian Width property tables can be bundled. The implementation uses a binary search on a sorted array of `{lo, hi}` codepoint ranges:
-- Characters in Wide (W) and Fullwidth (F) ranges return 2.
-- Characters with `UCHAR_EMOJI_PRESENTATION` property return 2.
-- All others return 1 (or 0 for combining marks).
+### Window-service run loop
 
-This is exposed through `ICliPlatform::MeasureCharWidth(char32_t codepoint)` so the platform-specific implementation is injected, and the renderers remain platform-independent.
+The underlying TUI window service owns exactly one terminal window:
 
-### Implement INativeController for CLI
-
-`CliNativeController` implements `INativeController` (defined in `Source/NativeWindow/GuiNativeWindow.h:1700`) and provides 9 services. Since GacUI on CLI uses Hosted Mode, many services can be simplified:
-
-**`INativeCallbackService`**: Manages `INativeControllerListener` objects. Straightforward implementation with a `List<INativeControllerListener*>`.
-
-**`INativeResourceService`**: Returns a default monospace font descriptor with size 1. Cursor types can be no-ops or minimal implementations since CLI cursors are limited.
+1. Install the `ITuiCallback` bridge before running.
+2. Call `window->Show()` to record the visible/pending-open state expected by Hosted Mode, but defer the listener's `Opened` notification until `Starting`.
+3. Call the blocking `TUI::Start` from `INativeWindowService::Run`.
+4. Implement `INativeWindowService::RunOneCycle` by delegating to reentrant `TUI::RunOneCycle`; this is required by `FakeDialogServiceBase` modal loops and stays on the owner thread.
+5. Let `INativeWindow::Hide(true)` synchronously invoke `BeforeClosing`. If it directly requested TUI stop, return and let the forced-close path finish regardless of the cancel flag; otherwise honor cancellation and remain open, or invoke `AfterClosing` and request `TUI::Stop`.
+6. After `TUI::Start` returns, emit `Closed` once and uninstall the bridge. Later `DestroyNativeWindow` emits `Destroying`, `INativeControllerListener::NativeWindowDestroying`, and `Destroyed` in that order.
 
-**`INativeAsyncService`**: Delegates to the existing async infrastructure. Uses `ThreadPoolLite::QueueLambda` for background work and maintains a queue of callbacks to execute on the main thread, pumped during the event loop.
-
-**`INativeClipboardService`**: Platform-specific. On Windows, use Win32 clipboard API (`OpenClipboard`, `GetClipboardData`, `SetClipboardData`). On Linux, integrate with `xclip` or `xsel` via process spawning, or use OSC 52 escape sequence for terminal clipboard access: `\x1b]52;c;BASE64DATA\x07`.
-
-**`INativeImageService`**: Returns a stub implementation since `GuiImageFrameElement` is not supported. Attempting to use it should indicate unsupported operation.
-
-**`INativeScreenService`**: Reports a single screen with dimensions matching the terminal size.
+Do not call `TUI::Start` from `SetupTuiRenderer`, controller initialization, or a background thread. It replaces the normal platform message loop specifically inside `INativeWindowService::Run`.
 
-**`INativeWindowService`**: Creates a single `INativeWindow` that represents the terminal. In Hosted Mode, `GuiHostedController` manages all virtual windows on top of this single native window.
-
-**`INativeInputService`**: Reports keyboard state. Timer functionality is critical for GacUI's animation and event system. The timer can be implemented using a high-resolution clock polled during the event loop, firing callbacks at the requested interval.
-
-**`INativeDialogService`**: Since Hosted Mode replaces OS dialogs with GacUI-rendered dialogs, this can return stub implementations.
-
-The setup follows the pattern from `SetupRemoteNativeController` (`Source/PlatformProviders/Remote/GuiRemoteControllerSetup.cpp:14`):
-```
-CliNativeController cliController(platform);
-GuiHostedController hostedController(&cliController);
-// ... resource managers, initialization, GuiApplicationMain(), finalization
-```
-
-### Implement platform-specific terminal I/O for Windows
-
-The Windows implementation `WindowsCliPlatform` uses the Win32 Console API.
-
-**Initialization** (https://learn.microsoft.com/en-us/windows/console/setconsolemode):
-```
-HANDLE hIn  = GetStdHandle(STD_INPUT_HANDLE);
-HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-
-// Input: enable window resize events, mouse, disable quick-edit and line input
-DWORD inMode = ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS;
-SetConsoleMode(hIn, inMode);
-
-// Output: attempt VT processing for 24-bit color
-DWORD outMode = ENABLE_PROCESSED_OUTPUT
-    | ENABLE_WRAP_AT_EOL_OUTPUT
-    | ENABLE_VIRTUAL_TERMINAL_PROCESSING
-    | DISABLE_NEWLINE_AUTO_RETURN
-    | ENABLE_LVB_GRID_WORLDWIDE;
-if (!SetConsoleMode(hOut, outMode)) {
-    // Fallback: no VT, use classic 16-color CHAR_INFO attributes
-    outMode = ENABLE_PROCESSED_OUTPUT | ENABLE_WRAP_AT_EOL_OUTPUT;
-    SetConsoleMode(hOut, outMode);
-}
-```
-
-**Screen output** (https://learn.microsoft.com/en-us/windows/console/writeconsoleoutput): Use `WriteConsoleOutputW` to write the entire screen buffer atomically. Build a `CHAR_INFO` array from the `CliCharacterBuffer`:
-```
-CHAR_INFO ci;
-ci.Char.UnicodeChar = cell.character;
-ci.Attributes = foregroundAttr | backgroundAttr;
-// For wide characters: first cell gets COMMON_LVB_LEADING_BYTE (0x0100)
-// second cell gets COMMON_LVB_TRAILING_BYTE (0x0200)
-```
-Call `WriteConsoleOutputW(hOut, buffer, bufferSize, {0,0}, &writeRegion)`.
-
-If VT processing is enabled and 24-bit color is needed, use `WriteConsoleW` with embedded SGR sequences instead. Position the cursor with `\x1b[row;colH`, set colors with `\x1b[38;2;r;g;bm` and `\x1b[48;2;r;g;bm`. Write entire screen content as one large string in a single `WriteConsoleW` call for flicker-free rendering.
-
-**Double buffering**: Use `CreateConsoleScreenBuffer` (https://learn.microsoft.com/en-us/windows/console/createconsolescreenbuffer) and `SetConsoleActiveScreenBuffer` (https://learn.microsoft.com/en-us/windows/console/setconsoleactivescreenbuffer) to create two screen buffers and alternate between them. Write to the back buffer, then swap it to front. This eliminates flicker entirely for the classic `CHAR_INFO` approach.
-
-**Terminal size** (https://learn.microsoft.com/en-us/windows/console/getconsolescreenbufferinfo):
-```
-CONSOLE_SCREEN_BUFFER_INFO csbi;
-GetConsoleScreenBufferInfo(hOut, &csbi);
-vint cols = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-vint rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
-```
-
-### Implement platform-specific terminal I/O for Linux/macOS
-
-The POSIX implementation `PosixCliPlatform` uses ANSI escape sequences and POSIX APIs.
-
-**Initialization**: Enter alternative screen buffer, raw mode, enable mouse:
-```
-// Alternative screen buffer (preserves user's terminal content)
-write(STDOUT_FILENO, "\x1b[?1049h", 8);
-
-// Hide cursor
-write(STDOUT_FILENO, "\x1b[?25l", 6);
-
-// Enable mouse button tracking + SGR extended mode
-write(STDOUT_FILENO, "\x1b[?1002h\x1b[?1006h", 18);
-
-// Raw mode via termios
-struct termios raw;
-tcgetattr(STDIN_FILENO, &orig_termios);
-raw = orig_termios;
-raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
-raw.c_oflag &= ~(OPOST);
-raw.c_cflag |= CS8;
-raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
-raw.c_cc[VMIN]  = 0;
-raw.c_cc[VTIME] = 1;
-tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
-```
-
-**Finalization**: Reverse all initialization in reverse order (disable mouse, show cursor, leave alt screen, restore termios).
-
-**Screen output**: Buffer all escape sequences into a single memory buffer, then flush with one `write(STDOUT_FILENO, buf, len)` call per frame. For each cell:
-- Position: `\x1b[row;colH` (1-based coordinates)
-- Foreground color: `\x1b[38;2;r;g;bm` (24-bit) or `\x1b[38;5;nm` (256-color)
-- Background color: `\x1b[48;2;r;g;bm` or `\x1b[48;5;nm`
-- Character: UTF-8 encoded bytes
-
-Optimize by skipping unchanged cells between frames (dirty tracking). Use `setvbuf(stdout, NULL, _IOFBF, 65536)` for full buffering if using `fprintf` instead of raw `write`.
-
-**Color capability detection**:
-```
-const char* colorterm = getenv("COLORTERM");
-if (colorterm && (strcmp(colorterm, "truecolor") == 0 || strcmp(colorterm, "24bit") == 0))
-    return TrueColor;
-const char* term = getenv("TERM");
-if (term && strstr(term, "256color"))
-    return Color256;
-return Color16;
-```
+`Stopping` is too late for a cancelable close. It only marks the bridge as shutting down and must not repeat `BeforeClosing` or `AfterClosing`. A direct Phase-1 `TUI::Stop` that was not initiated by `Hide(true)` is a forced terminal shutdown: skip the cancelable pair and still deliver `Closed` after `Start` returns.
 
-**Terminal size**: Use `ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws)` to read `struct winsize { unsigned short ws_row, ws_col, ws_xpixel, ws_ypixel; }`.
+### Callback bridge
 
-### Implement keyboard input handling
+Implement one `ITuiCallback` owned by the native controller/window service:
 
-**Windows** (https://learn.microsoft.com/en-us/windows/console/readconsoleinput): Use `ReadConsoleInputW` to receive `INPUT_RECORD` events. For `KEY_EVENT`:
-```
-KEY_EVENT_RECORD ke;
-// ke.bKeyDown - true for press, false for release
-// ke.wVirtualKeyCode - VK_LEFT, VK_RETURN, VK_ESCAPE, etc.
-// ke.uChar.UnicodeChar - the translated character (0 for non-character keys)
-// ke.dwControlKeyState - LEFT_CTRL_PRESSED, SHIFT_PRESSED, LEFT_ALT_PRESSED, etc.
-```
-Map (https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes) virtual key codes to GacUI's `VKEY` constants. The `dwControlKeyState` flags map to GacUI's `ctrl`, `shift`, `alt` modifiers.
+- `Starting`: synchronize the initial size internally, start one 16 ms TUI timer for the whole native run, and emit `Moved` if needed. If `TUI::IsStopRequested()` is still false, complete the pending show by emitting `Opened` exactly once. Starting the timer before any native callback lets a `Moved` or `Opened` handler enter a modal `RunOneCycle` loop safely.
+- If `TUI::IsStopRequested()` is still false after `Opened`, mark the sole terminal window activated and emit `GotFocus` exactly once. Treat it as permanently focused while active; terminal focus-in/focus-out tracking is outside this phase.
+- `Stopping`: prevent new rendering/input work, emit `LostFocus` once if the window is active, and stop the TUI timer. Do not emit the cancelable close pair here.
+- `BufferSizeChanged`: update screen/window bounds, invalidate any render-target frame binding, and invoke `Moved` only when the bounds actually changed. If `TUI::IsStopRequested()` is still false, request the paint/full Hosted Mode refresh even when the dimensions were unchanged. The initial callback must not duplicate a `Moved` already emitted by `Starting` for the same dimensions.
+- Mouse callbacks: copy zero-based cell coordinates into `NativeCoordinate`, set `nonClient = false`, copy known modifier/button state, normalize wheel deltas to 120 units per detent without collapsing multi-detent values, and invoke the matching `INativeWindowListener` method.
+- `Char(const TuiCharInfo&)`: convert `code` to native `wchar_t` units and copy its best-effort `ctrl`, `shift`, `alt`, and `capslock` fields. On Windows, a supplementary scalar becomes up to two `NativeWindowCharInfo` callbacks because GacUI's current character event stores one UTF-16 code unit; after the high-surrogate callback, check `TUI::IsStopRequested()` and suppress the low-surrogate callback if shutdown was requested. On Linux/macOS it normally becomes one callback. Phase 1 sets unobservable POSIX modifiers deterministically false.
+- Keyboard callbacks: leave unraised in this task. Key-state queries return the placeholder values listed above.
+- `Timer`: drain `SharedAsyncService::ExecuteAsyncTasks`, then check `TUI::IsStopRequested()` before allowing Hosted Mode to perform requested refreshes, and check again before invoking `SharedCallbackService::InvokeGlobalTimer` while the input service's global-timer flag is enabled.
 
-Keyboard events are not echoed to the terminal because `ENABLE_ECHO_INPUT` and `ENABLE_LINE_INPUT` are not set during initialization. All text input is routed through GacUI's own input system.
+`INativeInputService::StartTimer` and `StopTimer` only set the global-timer flag; `IsTimerEnabled` returns it. The underlying 16 ms TUI timer stays active for the entire `Run`, even when that flag is false, because `SharedAsyncService` has no separate event-loop wake primitive and delayed/main-thread work must continue to make progress.
 
-**Linux/macOS**: In raw terminal mode, `read(STDIN_FILENO, buf, ...)` returns raw bytes. Regular ASCII characters produce a single byte. Special keys produce escape sequences starting with `\x1b`:
+Every callback above, every native-window/render callback, and every main-thread completion drained by `ExecuteAsyncTasks` runs on the `TUI::Start` thread. No GacUI-side input, rendering, or timer thread is added. `SharedAsyncService::InvokeAsync` remains an explicit background-work API: application code and the existing `FakeDialogServiceBase` file enumeration can use the existing thread pool, then marshal UI completion back through `InvokeInMainThread`. That unrelated framework facility does not move any TUI callback or platform event-loop work off the owner thread.
 
-| Key | Sequence |
-|--|--|
-| Arrow Up/Down/Left/Right | `\x1b[A`, `\x1b[B`, `\x1b[D`, `\x1b[C` |
-| Home/End | `\x1b[H`, `\x1b[F` |
-| Insert/Delete | `\x1b[2~`, `\x1b[3~` |
-| Page Up/Down | `\x1b[5~`, `\x1b[6~` |
-| F1-F4 | `\x1bOP`, `\x1bOQ`, `\x1bOR`, `\x1bOS` |
-| F5-F12 | `\x1b[15~` through `\x1b[24~` |
-| Ctrl+Arrow | `\x1b[1;5A` etc. (modifier in `1;{m}` where m-1 is bitmask: 1=Shift, 2=Alt, 4=Ctrl) |
+When one TUI-triggered native event fans out to multiple `INativeWindowListener` calls, check `TUI::IsStopRequested()` after each call and suppress the remaining calls for that event. `Stopping` is the deliberate exception: it may emit the one required `LostFocus` during shutdown.
 
-A standalone `\x1b` with no following bytes within a short timeout (e.g. 50ms) is treated as the Escape key. Use `poll()` with a timeout to distinguish Escape from escape sequences.
+## Graphics resource manager and render target
 
-### Implement mouse input handling
+### Resource manager
 
-**Windows** (https://learn.microsoft.com/en-us/windows/console/mouse-event-record-str): The `MOUSE_EVENT_RECORD` from `ReadConsoleInputW` provides:
-```
-COORD dwMousePosition;  // cell coordinates (column, row)
-DWORD dwButtonState;    // FROM_LEFT_1ST_BUTTON_PRESSED, RIGHTMOST_BUTTON_PRESSED, etc.
-DWORD dwEventFlags;     // 0 (press/release), MOUSE_MOVED, DOUBLE_CLICK, MOUSE_WHEELED
-DWORD dwControlKeyState; // modifier keys
-```
-Mouse wheel direction is in the high word of `dwButtonState`: positive = scroll up, negative = scroll down.
+Derive `GuiTuiGraphicsResourceManager` from `GuiGraphicsResourceManager` and implement every remaining `IGuiGraphicsResourceManager` operation:
 
-Mouse must be enabled by setting `ENABLE_MOUSE_INPUT` and clearing `ENABLE_QUICK_EDIT_MODE` (done in initialization). Mouse coordinates are in character cells relative to the screen buffer, which directly maps to the `CliCharacterBuffer` coordinates.
+- `GetRenderTarget`
+- `RecreateRenderTarget`
+- `ResizeRenderTarget`
+- `GetLayoutProvider`
+- `CreateRawElement`
 
-**Linux/macOS**: SGR extended mouse mode (`\x1b[?1006h`) reports mouse events as:
-- Press: `\x1b[<btn;x;yM` (capital M)
-- Release: `\x1b[<btn;x;ym` (lowercase m)
+There is only one native render target because Hosted Mode renders all virtual windows into the one terminal. `ResizeRenderTarget` invalidates any per-frame binding and requests a full redraw; it must not retain the old `TUI::GetBuffer()` pointer. `RecreateRenderTarget` rebuilds only GacUI-side state; TUI owns terminal recovery.
 
-Where `btn` encodes the button (0=left, 1=middle, 2=right) plus modifiers (4=Shift, 8=Alt, 16=Ctrl) and motion flag (32=motion). `x` and `y` are 1-based cell coordinates. Wheel events use `btn` values 64 (up) and 65 (down).
+`GetLayoutProvider` returns the TUI paragraph/layout provider required below so text editors and rich documents are usable. `CreateRawElement` still needs a valid TUI raw-element implementation or an explicit supported no-op element; it cannot be omitted from the class.
 
-SGR mode is preferred over legacy X10 mode because it has no column limit (legacy breaks above column 223) and distinguishes press from release.
+### Render target lifecycle
 
-### Implement terminal resize detection
+Derive `GuiTuiGraphicsRenderTarget` from the existing `GuiGraphicsRenderTarget` rather than reimplementing `IGuiGraphicsRenderTarget`. The base class already:
 
-**Windows** (https://learn.microsoft.com/en-us/windows/console/window-buffer-size-record-str): The `WINDOW_BUFFER_SIZE_EVENT` appears in the input record stream when `ENABLE_WINDOW_INPUT` is set:
-```
-WINDOW_BUFFER_SIZE_RECORD wbs;
-// wbs.dwSize.X = new columns, wbs.dwSize.Y = new rows
-```
-On receiving this event, call `GetConsoleScreenBufferInfo` (https://learn.microsoft.com/en-us/windows/console/getconsolescreenbufferinfo) to get the precise visible window dimensions from `srWindow`, then reallocate the `CliCharacterBuffer` and notify GacUI by invoking `INativeWindowListener::Moved()` and `INativeWindowListener::Paint()` on the hosted window.
+- Ensures `StartRenderingOnNativeWindow` and `StopRenderingOnNativeWindow` wrap a complete Hosted Mode frame.
+- Allows multiple per-window `StartRendering`/`StopRendering` pairs inside that frame.
+- Maintains hosted-rendering state and the clipper stack.
+- Implements `HostedRenderingIdle` and `IsClipperCoverWholeTarget`.
 
-**Linux/macOS**: Install a `SIGWINCH` signal handler that sets a flag:
-```
-volatile sig_atomic_t g_resize_pending = 0;
-void sigwinch_handler(int sig) { g_resize_pending = 1; }
+Override the protected backend hooks:
 
-struct sigaction sa;
-sa.sa_handler = sigwinch_handler;
-sa.sa_flags = SA_RESTART;
-sigemptyset(&sa.sa_mask);
-sigaction(SIGWINCH, &sa, NULL);
-```
-In the main event loop, check `g_resize_pending`. When set, query the new size with `ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws)`, reallocate the buffer, and notify GacUI.
+- `StartRenderingOnNativeWindow`: reacquire `TUI::GetBuffer()` and the current dimensions, bind them only for this frame, and clear the buffer once for the entire hosted frame.
+- `StopRenderingOnNativeWindow`: validate and submit the final frame through `TUI::RenderBuffer` once.
+- `GetCanvasSize`: return current TUI width/height.
+- The four clipper-transition hooks: update any cached valid drawing rectangle required by the TUI renderers.
 
-### Implement element renderers for CLI
+Never clear in each `StartRendering` or flush in each `StopRendering`; doing so erases or submits partial virtual-window frames. `BufferSizeChanged` occurs on the same thread between callbacks, invalidates the frame binding through the resource manager, and requests refresh. A renderer must not cache the raw `TuiPixel*`; every write goes through a render-target accessor that verifies the bound pointer/dimensions/generation before dereferencing it. If a nested cycle resizes during rendering, mark the frame invalid, skip all later writes from that frame, and return `RenderTargetFailure::ResizeWhileRendering` so Hosted Mode retries with the new target size.
 
-Each GacUI element type gets a CLI renderer following the `GuiElementRendererBase<TElement, TRenderer, TRenderTarget>` template pattern. The renderer draws into the `CliCharacterBuffer` accessed via the `CliGraphicsRenderTarget`.
+GacUI rectangles use an exclusive `x2/y2` boundary, while the Phase 1 drawing helpers use inclusive endpoints. Convert a nonempty GacUI rectangle to `[x1, y1, x2 - 1, y2 - 1]` after applying the current clipper.
 
-**`GuiSolidBorderElementRenderer`**: Draws a rectangle outline using box-drawing characters. For a rectangle from (left,top) to (right,bottom):
-- Top edge: `HorizontalLight` (0x2500)
-- Bottom edge: `HorizontalLight` (0x2500)
-- Left edge: `VerticalLight` (0x2502)
-- Right edge: `VerticalLight` (0x2502)
-- Corners: `DownRightLight` (0x250C), `DownLeftLight` (0x2510), `UpRightLight` (0x2514), `UpLeftLight` (0x2518)
+## Element renderers
 
-Each cell is drawn with `kind = Line` and appropriate `CliBoxDrawingState`, so intersecting borders merge correctly.
+Each supported renderer follows the existing `GuiElementRendererBase<TElement, TRenderer, TRenderTarget>` pattern and writes only through `GuiTuiGraphicsRenderTarget`/TUI helpers.
 
-**`GuiSolidBackgroundElementRenderer`**: Fills the rectangle with space characters using the element's color as the background color. Cells are drawn with `kind = Text`. Alpha = 0 means skip rendering.
+### Focus rectangle
 
-**`GuiGradientBackgroundElementRenderer`**: Fills the rectangle with shade characters (`LightShade` 0x2591, `MediumShade` 0x2592, `DarkShade` 0x2593, `FullBlock` 0x2588) to simulate a gradient. Interpolate between the two gradient colors along the gradient direction, and select the shade character based on the interpolation position. Use the interpolated color as foreground on one of the gradient endpoint colors as background.
+Approximate the focus rectangle with alternating thin one-cell segments or explicit box-drawing characters. Phase 1 has no dashed merge style, so do not pretend dashed Unicode arms participate in its merge table.
 
-**`GuiSolidLabelElementRenderer`**: Renders text. Uses `ICliPlatform::MeasureCharWidth()` to determine how many cells each character occupies. Wide characters (CJK) occupy 2 cells. The first cell gets the character; the second cell gets `kind = WideCharTrailing`. Handles text alignment (left, center, right) and word wrapping based on the element's properties.
+### Solid border
 
-`GetMinSize()` returns the measured text size in cell units. This is critical for GacUI's layout system to work correctly with the fixed cell grid.
+- `Rectangle`: draw a thin TUI rectangle when both dimensions exceed one; use a horizontal line, vertical line, or deterministic one-cell point glyph for 1xN, Nx1, or 1x1 bounds.
+- `RoundRect`: map positive `ElementShape::radiusX/radiusY` to a thin one-cell rounded-corner rectangle; zero/degenerate radii fall back to `Rectangle`. For bounds too small to contain four distinct corners, fall back deterministically to the rectangle/line/point representation that fits.
+- `Ellipse`: approximate the outline on the cell grid with an ellipse midpoint/implicit-equation mask, falling back to a rounded rectangle only for dimensions too small to distinguish.
 
-**`GuiFocusRectangleElementRenderer`**: Draws a dotted rectangle. Uses dashed box-drawing characters (e.g., `LightTripleDashHorizontal` 0x2504, `LightTripleDashVertical` 0x2506) or alternates between line and space characters to create a dashed effect.
+Alpha zero skips the operation. The border foreground uses the element RGB value.
 
-**`Gui3DBorderElementRenderer`**: Draws a double-line border using the 3D border's two colors (`color1` for the top-left edges, `color2` for the bottom-right edges) to simulate a raised or sunken effect.
+### Solid and gradient backgrounds
 
-**`Gui3DSplitterElementRenderer`**: Draws horizontal or vertical lines using the splitter direction, with two colors for the 3D effect.
+Fill selected cells with spaces whose background is the requested color:
 
-**`GuiInnerShadowElementRenderer`**: Draws shade characters along the inner edges of the rectangle to simulate an inner shadow effect. Uses `LightShade` (0x2591) or `MediumShade` (0x2592) characters with the shadow color.
+- Rectangle uses the clipped bounds.
+- RoundRect and Ellipse use a cell-center mask so corners outside the shape are not filled.
+- Gradient computes the element's interpolation at each selected cell and writes that RGB as the background. TUI performs terminal palette fallback.
 
-**`GuiPolygonElementRenderer`**: Simplified: since CLI cells are coarse, polygon rendering approximates the shape. For simple polygons, render them as a filled rectangle or outlined rectangle. For complex shapes, use a simple scanline fill with block characters.
+Do not use shade characters merely to simulate a gradient when a per-cell background color already represents it.
 
-**`GuiDocumentElementRenderer`**: Reuses the existing `GuiDocumentElementRenderer::Register()` mechanism. The document element has its own rendering pipeline that ultimately calls SolidLabel and SolidBorder renderers internally.
+### Solid label
 
-**`GuiImageFrameElement`**: Not registered. Per the Goal specification, not registering a renderer for it means creating such an element crashes, which is the intended behavior.
+Decode `WString` into Unicode scalar values with the existing Vlpp conversion utilities. Use `TUI::MeasureChar` for minimum size, alignment, trimming, and wrapping, and `TUI::PrintChar` for output.
 
-### Implement CliGraphicsResourceManager and CliGraphicsRenderTarget
+Respect width-two continuation cells. Do not split a scalar at the right clip edge. Scalar width zero, combining sequences, and grapheme shaping follow the Phase 1 limitations rather than receiving a second inconsistent implementation in GacUI.
 
-**`CliGraphicsRenderTarget`** implements `IGuiGraphicsRenderTarget` (defined in `Source/GraphicsElement/GuiGraphicsElementInterfaces.h:124`):
+Define every coarse-cell property:
 
-```
-class CliGraphicsRenderTarget : public IGuiGraphicsRenderTarget
-{
-    CliCharacterBuffer*  buffer;
-    List<Rect>           clipperStack;
+- Normalize CRLF/CR to LF. When `multiline` is false, treat line breaks as spaces; otherwise they create one-cell-high logical lines.
+- `wrapLine` wraps at scalar boundaries without splitting a width-two scalar. `wrapLineHeightCalculation` includes the resulting line count in minimum height only when enabled.
+- Horizontal and vertical alignment operate on measured cell extents. When `ellipse` is enabled and clipping is required, reserve the last fitting cell for U+2026 (or a documented ASCII fallback if it is unavailable).
+- Font family, pixel size, bold, italic, underline, strikeline, antialias, and vertical-antialias properties cannot be represented by `TuiPixel`; coerce them to the one logical terminal font instead of pretending they affect metrics.
+- One rendered line has height one. Minimum-size precedence is explicit: `ellipse = true` forces minimum width to zero so clipping can occur; otherwise a non-wrapping label uses the maximum measured explicit-line width. A wrapping label reports width zero and includes wrapped-content height only when `wrapLineHeightCalculation` is true; when it is false, wrapped content contributes no minimum height. Preserve a one-cell font height for an empty non-wrapping label and while height-calculating wrap has no usable width yet.
 
-    // Hosted rendering support
-    bool IsInHostedRendering() override;
-    void StartHostedRendering() override;
-    RenderTargetFailure StopHostedRendering() override;
+### 3D border and splitter
 
-    // Per-window rendering
-    void StartRendering() override;
-    RenderTargetFailure StopRendering() override;
+`Gui3DBorderElement` is not a Unicode double-line rectangle. Match the existing visual meaning:
 
-    // Clipping
-    void PushClipper(Rect clipper, ...) override;
-    void PopClipper(...) override;
-    Rect GetClipper() override;
+- Draw top/left edges with `color1`.
+- Draw bottom/right edges with `color2`.
+- Use adjacent thin lines where the two-cell thickness is visible.
 
-    // CLI-specific: access to the character buffer for renderers
-    CliCharacterBuffer* GetBuffer();
-};
-```
+Draw `Gui3DSplitterElement` as two adjacent horizontal or vertical thin lines using `color1` and `color2`.
 
-`StartRendering()` clears the buffer. `StopRendering()` calls `ICliPlatform::FlushBuffer()` to output the buffer to the terminal. The clipper stack constrains rendering to rectangular regions, which renderers must respect when writing to the buffer.
+### Inner shadow
 
-**`CliGraphicsResourceManager`** extends `GuiGraphicsResourceManager` (defined in `Source/GraphicsElement/GuiGraphicsResourceManager.h:35`):
+Approximate the inner shadow with one or more clipped cell bands along the required edges. Use the shadow RGB as the affected foreground/background according to the selected block character. Document that sub-cell blur and alpha blending are unavailable.
 
-```
-class CliGraphicsResourceManager : public GuiGraphicsResourceManager
-{
-    CliGraphicsRenderTarget  renderTarget;
+### Polygon
 
-    void Initialize();   // Register all CLI element renderers
-    void Finalize();
+Use `GuiPolygonElement::GetSize()` as the renderer minimum size. Keep its local point set unscaled and center it in `bounds` with offsets `(bounds.Width() - element->GetSize().x) / 2` and `(bounds.Height() - element->GetSize().y) / 2`, matching the existing renderers. Rasterize the interior with a scanline or cell-center inclusion test and rasterize every edge—including diagonals—with a deterministic cell-line algorithm; use mergeable TUI lines where an axis-aligned edge is exact. Apply `element->GetBackgroundColor().a` and `element->GetBorderColor().a` independently, using each positive-alpha RGB value for its own fill/outline. Do not replace every polygon with its bounding rectangle.
 
-    IGuiGraphicsRenderTarget* GetRenderTarget(INativeWindow* window) override;
-    void RecreateRenderTarget(INativeWindow* window) override;
-    void ResizeRenderTarget(INativeWindow* window) override;
-    IGuiGraphicsLayoutProvider* GetLayoutProvider() override;
-};
-```
+### Rich document and image
 
-`Initialize()` calls `Register()` for each CLI renderer, following the same pattern as `GuiRemoteGraphicsResourceManager::Initialize()` (`Source/PlatformProviders/Remote/GuiRemoteGraphics.cpp:456`).
+`GuiDocumentElementRenderer` does not delegate to solid-label and solid-border renderers. It requires a real `IGuiGraphicsLayoutProvider` and `IGuiGraphicsParagraph` implementation for runs, caret positions, wrapping, inline objects, and rendering.
 
-### Implement the setup entry point
+Implement `GuiTuiGraphicsLayoutProvider::CreateParagraph` and a `GuiTuiGraphicsParagraph` that covers every `IGuiGraphicsParagraph` operation:
 
-Following the pattern from `SetupRemoteNativeController` (`Source/PlatformProviders/Remote/GuiRemoteControllerSetup.cpp:14`):
+- Return the creating provider and associated render target from `GetProvider` and `GetRenderTarget`.
+- Decode `WString` to scalars while retaining a map to native `wchar_t` offsets. Every offset from zero through `WString::Length()` is a valid text position, including the interior UTF-16 offset of a Windows surrogate pair. Valid carets are scalar boundaries only; `GetNearestCaretFromTextPos(textPos, frontSide)` maps an interior text position to the requested boundary and never leaves a caret inside a surrogate pair.
+- Use `TUI::MeasureChar`, one-cell line height, scalar-boundary wrapping, max width, and paragraph alignment to build deterministic line/caret tables.
+- Validate every `(start, length)` range and implement font, size, style, foreground, background, `SetInlineObject`, and `ResetInlineObject` mutations. Accept font family/size/style runs for API compatibility but use the same fixed terminal metrics. Apply foreground/background run colors; document that bold, italic, underline, and strikeline have no cell-style representation.
+- Implement `IsValidTextPos`, `IsValidCaret`, `GetNearestCaretFromTextPos`, first/last, line-first/last, left/right/up/down caret movement, point hit testing, `GetInlineObjectFromPoint`, logical zero-width caret bounds, enable/disable/blink, and rendering from the same line table.
+- Render the coarse-cell caret by inverting the nearest character cell on the requested front/back side while retaining logical zero-width caret bounds; invert both cells of a width-two scalar and select the only valid side at a line edge.
+- Reserve rectangular cell ranges for inline objects; honor their `baseline`, break condition, background color, and optional background element. Invoke `IGuiGraphicsParagraphCallback::OnRenderInlineObject` for valid callback ids and store/use the returned `Size` for subsequent layout. An inline background element is rendered only when its element renderer is supported.
+- Rebuild cached layout when text, runs, wrapping, max width, inline objects, or target dimensions change.
 
-```
+Only after this provider passes paragraph/caret tests, register the existing generic `GuiDocumentElementRenderer`. This is required for GacUI text editors; it is not implemented by reusing the solid-label renderer.
+
+Do not register `GuiImageFrameElement`. Creating one directly, or from an incompatible application/theme resource, fails through the existing unsupported-renderer `CHECK_ERROR`.
+
+## Cell-scale theme and dialogs
+
+The current DarkSkin is not a usable TUI default: its pixel-sized fonts, title-bar buttons, margins, and other preferred sizes become huge when one GacUI unit is one terminal cell, and several templates construct `GuiImageFrameElement` even when an icon value is null.
+
+Create and register a compact TUI theme whose control templates:
+
+- Express fonts, padding, borders, title bars, scroll bars, menu rows, and buttons in cell-scale values.
+- Use supported labels, borders, backgrounds, polygons, and document elements only.
+- Represent optional icons, menu checks, submenu arrows, and window buttons with text/box-drawing glyphs; never instantiate `GuiImageFrameElement`.
+- Keep focus, hover, pressed, disabled, popup, and modal-owner states visibly distinct using the selected terminal palette.
+- Set `ThemeTemplates::PreferCustomFrameWindow` to true and provide a complete compact `CustomFrameWindow` template. The TUI window service's main `NativeWindowFrameConfig` forces `CustomFrameEnabled = BoolOption::AlwaysTrue` (and disables unsupported maximize/minimize boxes), while the terminal native window reports zero custom-frame padding.
+
+Create matching generated resources for the TUI dialog service's message box, color, font, open-file, and save-file windows. They may coarsen previews and swatches to cells, but must not reuse the existing image-creating fake-dialog resources. Their modal wait delegates through Hosted Mode to `TUI::RunOneCycle`, so input, painting, timers, and async main-thread work continue on the `Start` thread.
+
+`theme::InitializeTheme()` runs inside `GuiApplicationMain` before `GuiMain`, so setup cannot register the theme earlier. Expose `bool RegisterTuiTheme()` and return the result of registering the generated TUI `ThemeTemplates`. A TUI application's `GuiMain` must call it successfully to register the complete TUI theme as its last/highest-priority theme, before constructing any control, window, or dialog, and must not register an incompatible pixel/image theme such as the current DarkSkin.
+
+## Setup entry point
+
+Follow the verified structure of `Source/PlatformProviders/Remote/GuiRemoteControllerSetup.cpp`:
+
+```C++
 extern void GuiApplicationMain();
 
-int SetupCliRenderer()
+int SetupTuiRenderer()
 {
-    // Create platform-specific implementation
-    #ifdef _WIN32
-    WindowsCliPlatform platform;
-    #else
-    PosixCliPlatform platform;
-    #endif
+	GuiTuiController tuiController;
+	GuiHostedController hostedController(&tuiController);
+	GuiTuiDialogService tuiDialogService;
 
-    // Create CLI native controller
-    CliNativeController cliController(&platform);
-    // Wrap with hosted mode (all windows rendered in one terminal)
-    GuiHostedController hostedController(&cliController);
+	GuiTuiGraphicsResourceManager tuiResourceManager(&tuiController, &hostedController);
+	GuiHostedGraphicsResourceManager hostedResourceManager(&hostedController, &tuiResourceManager);
 
-    // Create resource managers
-    CliGraphicsResourceManager cliResourceManager(&cliController, &hostedController);
-    GuiHostedGraphicsResourceManager hostedResourceManager(&hostedController, &cliResourceManager);
+	SetNativeController(&hostedController);
+	auto serviceSubstitution = GetNativeServiceSubstitution();
+	serviceSubstitution->Substitute(&tuiDialogService, false);
+	SetGuiGraphicsResourceManager(&hostedResourceManager);
+	SetHostedApplication(hostedController.GetHostedApplication());
 
-    // Register globally
-    SetNativeController(&hostedController);
-    SetGuiGraphicsResourceManager(&hostedResourceManager);
-    SetHostedApplication(hostedController.GetHostedApplication());
+	tuiController.Initialize();
+	tuiResourceManager.Initialize();
+	hostedController.Initialize();
+	GuiApplicationMain();
+	hostedController.Finalize();
+	tuiResourceManager.Finalize();
+	tuiController.Finalize();
 
-    // Initialize in order
-    cliController.Initialize();
-    cliResourceManager.Initialize();
-    hostedController.Initialize();
-
-    // Run the application
-    GuiApplicationMain();
-
-    // Finalize in reverse order
-    hostedController.Finalize();
-    cliResourceManager.Finalize();
-    cliController.Finalize();
-
-    // Cleanup globals
-    SetHostedApplication(nullptr);
-    SetGuiGraphicsResourceManager(nullptr);
-    SetNativeController(nullptr);
-    return 0;
+	SetHostedApplication(nullptr);
+	SetGuiGraphicsResourceManager(nullptr);
+	serviceSubstitution->Unsubstitute(&tuiDialogService);
+	SetNativeController(nullptr);
+	return 0;
 }
 ```
 
-The platform-specific files are:
-- `CliNativeController.h` (shared interface and controller)
-- `CliNativeController.cpp` (shared logic)
-- `CliPlatform.Windows.cpp` (`WindowsCliPlatform` using Win32 Console API)
-- `CliPlatform.Linux.cpp` (`PosixCliPlatform` using ANSI/termios)
-- `CliRenderers.h` (CLI element renderer declarations)
-- `CliRenderers.cpp` (CLI element renderer implementations)
-- `CliCharacterBuffer.h` / `CliCharacterBuffer.cpp` (buffer and box-drawing logic)
-- `CliSetup.cpp` (the `SetupCliRenderer` entry point)
+`GuiApplicationMain` eventually enters the underlying TUI window service's `Run`, which is where `TUI::Start` blocks. `GuiHostedController::DialogService()` currently returns null, so the explicit non-optional substitution above is required; `GuiInitializeUtilities`' later optional fake-dialog substitution cannot replace it. Use scope-based cleanup around setup so the dialog substitution and controller/resource/global state are reset in reverse order if initialization or user code throws.
 
-### Integration testing
+## Project and release integration
 
-Testing should cover:
+- Enumerate every Core TUI provider/header explicitly in `Test/GacUISrc/Source_GacUI_Core/Source_GacUI_Core.vcxitems`.
+- Enumerate the controls-dependent TUI dialog/setup files in the appropriate utilities-controls item group, and enumerate theme/generated-resource files in their controls-capable project/item groups. Do not put these dependencies in `Source_GacUI_Core` and do not use wildcards.
+- Declare the public `SetupTuiRenderer()` and `RegisterTuiTheme()` entry points in `Source/GacUI.h` beside the existing platform setup declarations.
+- Add all tests and resource-generation inputs to their `.vcxproj`, `.vcxitems`, and `.filters` files. Regenerate resource C++ with the established GacGen workflow instead of hand-editing generated output.
+- Complete VlppOS Phase 1 and copy its regenerated release sources, excluding `IncludeOnly`, into `GacUI/Import` before compiling Phase 2; never fix imported source in place.
+- After implementation and tests, regenerate `GacUI/Release` from `Release/CodegenConfig.xml` and run every build/test required by `Project.md`.
 
-**Rendering correctness**: Use GacUI's existing unit test framework with the Remote Protocol test infrastructure. The CLI renderer can be tested by capturing the `CliCharacterBuffer` output after rendering and comparing it against expected character grids. Test cases should include:
-- Simple rectangles with borders and backgrounds
-- Overlapping borders that should produce merged intersections
-- Text rendering with CJK characters (verifying 2-cell width handling)
-- Color fallback behavior (force 16-color mode and verify nearest-color selection)
-- Nested compositions with clipping
+## Verification
 
-**Input correctness**: Verify that keyboard events are correctly translated to GacUI `VKEY` constants. Verify mouse coordinates map correctly to the character grid. Verify that text input goes through GacUI's input system and not directly to the terminal.
+### VlppOS phase
 
-**Resize handling**: Programmatically change the terminal size (or simulate `WINDOW_BUFFER_SIZE_EVENT` / `SIGWINCH`) and verify the UI reflows correctly.
+Complete all helper, lifecycle, Windows integration, and playground coverage required by `VlppOS/TODO_Task.md`. Verify Windows during the initial delivery; run Linux and macOS runtime verification later on their target environments.
 
-**Platform-specific testing**: Test on Windows CMD, Windows Terminal, PowerShell, common Linux terminals (GNOME Terminal, Konsole, xterm), and macOS Terminal.app and iTerm2. Verify color capability detection and fallback behavior on each.
+### GacUI unit coverage
+
+Add deterministic tests that do not require a physical terminal:
+
+- Render into an explicit in-memory `TuiPixel` buffer.
+- Verify rectangle (including 1xN, Nx1, and 1x1 fallbacks), rounded rectangle, ellipse approximation, fills, gradients, labels, width-two text, 3D edges, splitter, clipping, polygon, and unsupported-element behavior.
+- Verify every solid-label property and all paragraph layout, wrapping, range validation, provider/target access, style/color runs, `SetInlineObject`/`ResetInlineObject`, baseline and callback-size updates, `GetInlineObjectFromPoint`, text-position-to-caret conversion, hit testing, and caret operations/visuals.
+- Compile representative TUI theme and dialog resources and assert that none constructs `GuiImageFrameElement`.
+- Verify GacUI exclusive rectangles are converted correctly to TUI inclusive endpoints.
+- Verify one clear and one `RenderBuffer` submission per complete Hosted Mode frame containing multiple virtual windows.
+- Verify a resize between frames never reuses the invalidated old TUI buffer pointer.
+- Verify resize during rendering produces `ResizeWhileRendering` and a full retry.
+- Verify alpha-zero skip and positive-alpha opaque behavior.
+- Verify TUI merge geometry and latest-foreground behavior without reintroducing color-dependent merge logic.
+
+### Controller and event coverage
+
+Use the test-only backend hook exported in the codepacked VlppOS Release under `vl::console::unittest` to install a scoped injectable/fake TUI backend and verify:
+
+- Pre-`Start` terminal size populates screen/window bounds.
+- Pixel-oriented `SetBounds`/`SetClientSize` requests do not replace the fixed terminal cell bounds, and screen scaling remains 1.0.
+- Initial and resized buffer notifications update Hosted Mode bounds.
+- Mouse and `TuiCharInfo` events, modifiers, coordinates, `nonClient`, and normalized wheel deltas map correctly.
+- Supplementary scalar conversion produces native `wchar_t` event units correctly on each platform.
+- A stop request from the first Windows UTF-16 unit suppresses the second unit, and stop requests during other fanned-out native events suppress their remaining listeners/work.
+- The always-on TUI timer drains `SharedAsyncService` while the input timer is disabled; `GlobalTimer` fires only while it is enabled.
+- Startup emits `Opened` then `GotFocus` once. A canceled `Hide(true)` stops after `BeforeClosing` and remains visible/focused. An accepted close continues with `AfterClosing`, `LostFocus`, `Closed`, `Destroying`, controller `NativeWindowDestroying`, and `Destroyed`, in that order and without duplicates.
+- A direct `TUI::Stop` follows the documented forced-close path and returns from `Run`.
+- A TUI-safe message box enters nested `INativeWindowService::RunOneCycle`, remains responsive, exits, and leaves every native/UI callback on the `Start` thread.
+- Every TUI/native-window/render/timer callback and every main-thread async completion executes on the thread that called `TUI::Start`; explicitly requested `InvokeAsync` work may execute in the existing thread pool.
+- Every placeholder `INativeInputService` operation returns its documented value, and keyboard callbacks remain explicitly absent.
+- `GetExecutablePath` handles long paths and returns the current executable on Windows, Linux, and macOS.
+
+### Interactive coverage
+
+After unit tests pass, run a small TUI GacUI application on:
+
+- Windows conhost and Windows Terminal, launched from cmd.exe and PowerShell.
+- Common xterm-compatible Linux terminals.
+- macOS Terminal and iTerm2.
+
+Check the compact TUI theme, resize, mouse hover/buttons/double-click/wheels, character insertion, mouse/programmatic caret placement and blinking, color fallback, Hosted Mode popups/dialogs, clean exit, and restoration of the previous terminal screen. Keyboard-driven navigation, Backspace/Delete, Enter, and menu-key behavior wait for the future key-translation phase. Also verify that supplying an incompatible image-creating theme fails with the documented unsupported-renderer assertion.
+
+Finally run:
+
+```PowerShell
+& "<absolute-repo-path>\ToDo\CheckLinks.ps1" Task_TUI.md
+```
