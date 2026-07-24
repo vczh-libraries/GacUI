@@ -12,10 +12,10 @@
 - Stop remoting transports before stack channel wrappers destruct [2]
 - Do not call `IChannel::Initialize(nullptr)` to uninstall readers [2]
 - Automation `/IO` parses synchronously and queues parsed commands [2]
+- Keep reusable renderer terminal state separate from host policy [2]
 - Remote core accepts replacement renderers by detaching stale renderer [1]
 - Parameterize remoting channel servers by concrete protocol server bases [1]
 - Use channel `localClient` callbacks for remoting local-client detection [1]
-- Keep reusable renderer terminal state separate from host policy [1]
 - Use `EventObject` for renderer-connection waits after channel server start [1]
 - `TreeViewItemBindableRootProvider::UpdateBindingProperties` is root-scoped [1]
 - Validate `tree::NodeItemProvider::RequestNode` indices [1]
@@ -54,6 +54,8 @@
 - `GuiDocumentCommonInterface` cursor belongs to the document mouse area [1]
 - Automation composition dumps omit default cursor [1]
 - Clear `GacUI_Compiler` preloaded generated resources once at entry [1]
+- Remote splitter bounds describe the actual two-pixel footprint [1]
+- Retry remote renderers after every relevant cache response [1]
 
 # Refinements
 
@@ -164,6 +166,8 @@ Treat `IChannel::Initialize(...)` as an install-only boundary. To detach a rende
 ## Keep reusable renderer terminal state separate from host policy
 
 Put reusable disconnected-but-visible behavior in `GuiRemoteRendererSingle`: it owns renderer-local stopped state, suppression of core-bound events, preserved DOM/rendering state, and permission for local close. Keep application-specific interaction, such as the native Yes/No policy and error titles, in the renderer host application (`RemotingTest_Rendering_Win32`). Renderer-only automation state such as a retained fatal error belongs in `AutomationServiceRenderer`, not in the platform-wide `INativeAutomationService` interface.
+
+Expose the renderer's terminal `disconnectingFromCore` state through a thread-safe read-only query. Once `ControllerConnectionStopped` has set that state, host channel code must reject all later fatal packages and local transport errors before requesting another core exit or queuing a fatal prompt. Errors claimed before the normal-stop transition retain the existing first-error-wins host policy.
 
 ## Use `EventObject` for renderer-connection waits after channel server start
 
@@ -295,3 +299,15 @@ When exposing composition cursor state through the Playground/automation `/Contr
 ## Clear `GacUI_Compiler` preloaded generated resources once at entry
 
 `GacUI_Compiler.vcxproj` can link generated resource loader plugins that preload generated resource names before `GuiMain()` begins. If `LoadResource(CompileResources(...))` then reports a duplicate generated resource name, clear the compiler-owned generated resources once at `GuiMain()` entry instead of replacing every load with `ReloadResource`. Preserve `GuiResourceManager::SetResource` duplicate-name checks as fail-fast invariants during the actual compile/load sequence.
+
+## Remote splitter bounds describe the actual two-pixel footprint
+
+The local `Gui3DSplitterElementRenderer` can draw two one-pixel lines around a zero-width or zero-height layout anchor, but remote DOM renderers discard or clip elements with non-positive valid areas. In the remote-protocol splitter renderer, expand only a sub-two-pixel perpendicular dimension to the same centered two-pixel footprint used by native drawing, and leave layout bounds, measurement, hit testing, and protocol schema unchanged.
+
+Apply the transformation symmetrically to vertical and horizontal splitters. Splitters already at least two pixels thick retain their exact transmitted bounds.
+
+## Retry remote renderers after every relevant cache response
+
+In `GuiRemoteGraphicsRenderTarget::StopRenderingOnNativeWindow`, ingest all returned measurement caches before retrying `renderersAskingForCache`: add font heights, apply created-image metadata, and then let each waiting renderer call its type-specific `TryFetchMinSizeFromCache()`.
+
+Do not guard the generic retry loop only on `fontHeights`. Image-frame renderers must consume image-only responses in the same frame; otherwise they remain at `0x0` until an unrelated font response or property refresh happens to retry them. Run the loop when either relevant cache response is present and leave unresolved renderers queued.

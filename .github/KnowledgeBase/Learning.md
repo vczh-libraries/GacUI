@@ -8,9 +8,9 @@
 - Crash early instead of adding error-tolerance fallbacks [9]
 - Keep design documentation aligned with code after refactoring [8]
 - Proactively remove code made redundant by refactoring [8]
+- Fix behavior at the owning state instead of patching symptoms [7]
 - Make `Stop()` drain asynchronous work before returning [6]
 - Validate expectations against implementation and existing tests [5]
-- Fix behavior at the owning state instead of patching symptoms [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
 - Verify and localize portability on every target OS [3]
@@ -45,6 +45,7 @@
 - Use Win32 messages for native dialogs when UIA is unavailable [1]
 - Keep generated makefiles platform-invariant [1]
 - Group non-template C++ implementations by class in `.cpp` files [1]
+- Treat environment correlation as evidence, not a cause [1]
 
 # Refinements
 
@@ -295,6 +296,10 @@ When a lifecycle guarantee applies to every subclass, publish completion and fin
 When shared code and tests pass on other platforms but fail on one target, fix the failing platform-specific implementation instead of weakening shared behavior or changing already-correct tests.
 
 When a layered transport needs a stricter response policy than its general parser, enforce that policy in the object that owns the physical connection. Keep the lower parser reusable, and let the connection owner classify the response, report a structured failure, and stop or retry the transport as appropriate.
+
+## Treat environment correlation as evidence, not a cause
+
+When a bug reproduces on one machine but not another, do not assume hardware speed or timing is causal merely because the machines differ. Reproduce the smallest differing state or response shape deterministically, then identify the missing transition or dependency that the other environment happens to mask.
 
 ## Verify and localize portability on every target OS
 

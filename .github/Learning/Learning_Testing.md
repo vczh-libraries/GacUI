@@ -5,9 +5,9 @@
 - Keep test log paths stable during refactors [13]
 - Remote protocol frames: actions must change UI; organize frames carefully [9]
 - Don’t schedule redundant idle frames [7]
+- Debug remote core/renderer stress runs instead of plain launching [6]
 - Preserve existing idle-frame titles when requested [6]
 - Seed key-behavior tests via `protocol->TypeString` [6]
-- Debug remote core/renderer stress runs instead of plain launching [5]
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
 - Caret navigation tests: type markers to expose caret [3]
 - Avoid duplicate tests across related categories [3]
@@ -66,6 +66,8 @@
 - Prefer single cohesive smoke tests when setup-heavy [1]
 - Inline-object caret tests: cover every valid caret position one frame at a time [1]
 - Verify DarkSkin cursor ownership through regression and Playground automation [1]
+- Verify remote visual footprints at protocol and executable boundaries [1]
+- Isolate remote cache handoffs with single-response-shape tests [1]
 
 # Refinements
 
@@ -362,6 +364,8 @@ For the HTTP FullControlTest remoting pair, pass `/Http /FCT` to `RemotingTest_C
 
 For retained-fatal RemoteProtocolTest behavior, start `RemotingTest_Core` first with `/RPT /Pipe` or `/RPT /Http`, then start `RemotingTest_Rendering_Win32` with the matching transport, with both processes under the debugger. Verify the default Yes path preserves the old exit behavior. Verify No keeps the renderer locally closeable with its frozen DOM and fatal error, rejects ordinary `/IO` synchronously, and still accepts exact `!Exit`; also cover title-bar close, resize/minimize/restore, repeated fresh sessions, and absence of stale processes.
 
+For normal `/FCT` shutdown, repeat exact `!Exit` runs across MiniHTTP, HTTP, and named pipe. Break on `RequestControllerConnectionStopped` and later local-error callbacks to verify the ordering policy: after the normal-stop message, no transport failure may produce a fatal prompt. Distinguish that policy check from delivery/liveness—if MiniHTTP never delivers the stop message before the core disappears, the renderer cannot apply a state transition it did not receive.
+
 ## Verify GacJS HTTP fatal errors through browser UI
 
 For the HTTP browser remoting path, verify fatal core errors by running `RemotingTest_Core /RPT /Http`, opening GacJS in the browser, triggering the fatal-error UI path, and checking that the browser receives the `!Error` package and displays the error mask/alert. Seeing only a fetch failure or closed transport is not sufficient.
@@ -411,3 +415,15 @@ For the renderer fatal-error Yes/No prompt, inspect and operate the `#32770` win
 For DarkSkin cursor bugs in text/document controls, add a focused regression with `GuiMultilineTextBox` and `GuiDocumentViewer` using forced horizontal and vertical scrollbars. Assert that the editable text content resolves to `IBeam`, while the control bounds, horizontal scrollbar, vertical scrollbar, scrollbar buttons, and scroll corner omit explicit cursor metadata (`nullptr` / default). Use `GuiDocumentViewer` as a guard for existing correct scope, including view-only cases where the content should not resolve to `IBeam`.
 
 Also verify the scenario through Playground automation by loading a resource with both controls and reading `http://localhost:8888/Automation/Playground/Controls`. Run Playground from `Test/GacUISrc/Playground` so relative resource paths such as `ResourceDocument.xml` resolve correctly. If DarkSkin XML changes are involved, run `GacUI_Compiler`, inspect generated output, then run the required unit test.
+
+## Verify remote visual footprints at protocol and executable boundaries
+
+When a visual bug reproduces in native and browser remote renderers but not locally or in the unit-test recorder, use both layers. Add a focused protocol test that distinguishes cached layout bounds from transmitted rendering bounds, then run the real remote renderer and inspect its active DOM bounds or pixels.
+
+The protocol recorder proves the corrected data contract, while executable-boundary verification proves that positive valid areas reach the renderer instead of being discarded or clipped. A passing general unit suite alone does not cover that final remote rendering behavior.
+
+## Isolate remote cache handoffs with single-response-shape tests
+
+When remote rendering progress depends on multiple cache types, construct a focused first-frame response that contains only the cache under test. For image measurement, return valid `createdImages` metadata with no `fontHeights`, then require the waiting image renderer to adopt its minimum size without a property change or unrelated refresh.
+
+This avoids full-application frames masking a missing handoff by coincidentally returning another cache type, and turns machine-dependent cache mixes into a deterministic regression.
