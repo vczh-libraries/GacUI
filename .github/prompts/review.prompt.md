@@ -11,6 +11,7 @@
   - You are going to change this file and put additional review comments in it.
 - You are not allowed to modify any source code, unless directly instructed in answers to review comments.
 - You are not going to execute the task, you are just reviewing it.
+- If everything just looks good, you do not have to make any change to the task file.
 
 ## Identify the Task File
 
@@ -26,9 +27,13 @@
 
 **review comment**: the first round of the review comment
 
+**suggested solution**: the first round of the suggested solution
+
 I will put my reply here
 
 **review comment**: the second round of the review comment
+
+**suggested solution**: the second round of the suggested solution
 
 I will put my reply here
 
@@ -71,6 +76,9 @@ I will put my reply here
     - Potential performance issues.
   - You should de-ambiguous proactively, if there is an obvious best answer to the review comment, you should also propose your solution:
     - You can find my preference in `REPO-ROOT/.github/Guidelines/Coding.md`.
+  - Review comments should only be created when you can't find any reasonable solution to the issue, or can't make any reasonable decision because of the ambiguity.
+    - If anything in the the task is incorrect, just make change directly instead of putting a review comment.
+    - If there are ambiguity or missing details, but you are able to figure it out, just add them to `## DETAILS` or `## VERIFICATION` section of the task file, instead of putting a review comment.
 - Take into accounts of my replies to all review comments.
 - Expand missing details:
   - Verification would be the most important part of the task. If the original task do not have, or only has a simple verification step, you need to add detailes to the `## VERIFICATION` before `## REVIEW COMMENTS`.

@@ -148,6 +148,22 @@ Testing-only layered loopback TCP and HTTP/1.1 APIs for asynchronous binary stre
 
 [API Explanation](./KB_VlppOS_InterProcessAsyncSocketBasedMiniHttpApi.md)
 
+#### Terminal User Interface
+
+Cross-platform owner-thread terminal takeover with input, resize and timer callbacks, a validated cell buffer, Unicode-aware character placement, box-drawing primitives and deterministic backend injection for tests.
+
+- Use `TUI::TryGetConsoleSize` to query the visible terminal before startup.
+- Use `TUI::InstallListener`, `TUI::Start`, `TUI::RunOneCycle`, `TUI::Stop`, `TUI::IsInUse`, `TUI::IsStopRequested` and `TUI::UninstallListener` for lifecycle and owner-thread event processing.
+- Use `TuiStartOptions`, `TuiColorMode` and `TUI::GetColorMode` to request and inspect terminal color emission.
+- Use `ITuiCallback` with `TuiMouseInfo`, `TuiKeyInfo` and `TuiCharInfo` for startup, shutdown, resize, input and timer callbacks.
+- Use `TUI::StartTimer` and `TUI::StopTimer` for deadline-driven callbacks on the TUI owner thread.
+- Use `TUI::GetBuffer`, `TUI::GetBufferWidth`, `TUI::GetBufferHeight` and `TUI::RenderBuffer` for retained cell-buffer rendering.
+- Use `TuiPixel`, `TuiPixelGlyph`, `TuiColor` and `TUI::MeasureChar` to represent and validate terminal cells and scalar widths.
+- Use `TUI::PrintChar`, `TUI::DrawLineV`, `TUI::DrawLineH`, `TUI::DrawRect` and `TUI::Clear` for clipped drawing on the active buffer or a caller-owned buffer.
+- Use `vl::console::unittest::ScopedTuiBackend` with `vl::console::unittest::ITuiBackend` for deterministic TUI tests.
+
+[API Explanation](./KB_VlppOS_TerminalUserInterface.md)
+
 ### Design Explanation
 
 #### Implementing an Injectable Feature

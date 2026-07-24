@@ -12,6 +12,7 @@ In general, here is my preference for any languages:
     - But if building an AST requires significantly more lines of code, extracting functions for the work is preferred.
   - DRY requires finding if a feature has already been implemented somewhere else before implementing it. avoiding massive duplication.
     - If the existing implementation is not sharable, refactoring is preferred.
+- Unless explicitly instructed, do not invent your own code generator as part of the committed solution. It adds more technical debt in maintenance.
 
 ## Be Brave Enough to Fix Upstream Code and Make Breaking Change
 
@@ -160,7 +161,14 @@ object, causing missing of a complete picture.
 ## Keep C++ Code Cross Platform
 
 - All source files must aim for cross platform unless the file name has `.Windows` or `.Linux.`.
+  - `.macOS.` will be used only when the macOS version can't share the Linux implementation.
+  - It is acceptable to add macro guard to fix `.Linux.` for macOS, when the macOS version has only very few differences to the Linux version.
 - Use FilePath to normalize file path, for file path operations and delimiter access.
+- If platform specific API could be used, avoid hard-coding a table.
+- If not all OS provides enough platform specific API for a requirement:
+  - Use platform specific API when the quality and performance would be better for that platform.
+    - Except that the calulation is so tiny and simple, then it is fine to do a cross-platform solution instead.
+  - Implement the solution for the rest of the platform.
 
 ## Workflow Script Coding Convention
 

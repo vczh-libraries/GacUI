@@ -13,7 +13,7 @@
 - Validate expectations against implementation and existing tests [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
-- Verify and localize portability on every target OS [3]
+- Verify and localize portability on every target OS [4]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [3]
 - Extract abstractions only for real shared behavior [3]
 - Do not assume async callback owners are heap allocated [3]
@@ -45,6 +45,7 @@
 - Use Win32 messages for native dialogs when UIA is unavailable [1]
 - Keep generated makefiles platform-invariant [1]
 - Group non-template C++ implementations by class in `.cpp` files [1]
+- Use reentrant POSIX date-time conversions [1]
 - Treat environment correlation as evidence, not a cause [1]
 
 # Refinements
@@ -304,6 +305,10 @@ When a bug reproduces on one machine but not another, do not assume hardware spe
 ## Verify and localize portability on every target OS
 
 Run the relevant tests on every target operating system whose behavior is being claimed, and report only the platforms actually exercised. Use contrasts between passing and failing platforms to narrow investigation toward the failing platform's implementation before changing shared code, while retaining cross-platform regression verification.
+
+## Use reentrant POSIX date-time conversions
+
+On POSIX platforms, never retain pointers returned by `localtime()` or `gmtime()` across calls or threads because both may share process-wide `tm` storage. Use caller-owned stack values populated by `localtime_r()` and `gmtime_r()` instead, with separate values for simultaneous local and UTC conversions.
 
 ## Keep generated makefiles platform-invariant
 
