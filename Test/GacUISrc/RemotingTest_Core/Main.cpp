@@ -1,12 +1,16 @@
 #include <Vlpp.h>
 #include <VlppOS.h>
+#ifdef VCZH_MSVC
 #include <crtdbg.h>
+#endif
 
 using namespace vl;
 using namespace vl::console;
 
+#ifdef VCZH_MSVC
 extern int StartNamedPipeServer(vint index);
 extern int StartHttpServer(vint index);
+#endif
 extern int StartMiniHttpServer(vint index);
 
 int main(int argc, char* argv[])
@@ -42,7 +46,7 @@ int main(int argc, char* argv[])
 		{
 			if (transport != -1)
 			{
-				Console::WriteLine(L"Error: /Pipe, /Http and /MiniHTTP are exclusive.");
+				Console::WriteLine(L"Error: /Pipe, /Http and /MiniHttp are exclusive.");
 				return result;
 			}
 			transport = 0;
@@ -51,7 +55,7 @@ int main(int argc, char* argv[])
 		{
 			if (transport != -1)
 			{
-				Console::WriteLine(L"Error: /Pipe, /Http and /MiniHTTP are exclusive.");
+				Console::WriteLine(L"Error: /Pipe, /Http and /MiniHttp are exclusive.");
 				return result;
 			}
 			transport = 1;
@@ -60,7 +64,7 @@ int main(int argc, char* argv[])
 		{
 			if (transport != -1)
 			{
-				Console::WriteLine(L"Error: /Pipe, /Http and /MiniHTTP are exclusive.");
+				Console::WriteLine(L"Error: /Pipe, /Http and /MiniHttp are exclusive.");
 				return result;
 			}
 			transport = 2;
@@ -79,23 +83,31 @@ int main(int argc, char* argv[])
 
 	if (transport == -1)
 	{
-		Console::WriteLine(L"Error: Either /Pipe, /Http or /MiniHTTP must be provided.");
+		Console::WriteLine(L"Error: Either /Pipe, /Http or /MiniHttp must be provided.");
 		return result;
 	}
 
 	if (transport == 0)
 	{
+#ifdef VCZH_MSVC
 		result = StartNamedPipeServer(index);
+#else
+		Console::WriteLine(L"Error: /Pipe is only supported on Windows.");
+#endif
 	}
 	else if (transport == 1)
 	{
+#ifdef VCZH_MSVC
 		result = StartHttpServer(index);
+#else
+		Console::WriteLine(L"Error: /Http is only supported on Windows.");
+#endif
 	}
 	else
 	{
 		result = StartMiniHttpServer(index);
 	}
-#if VCZH_CHECK_MEMORY_LEAKS
+#if defined VCZH_MSVC && VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
 	return result;

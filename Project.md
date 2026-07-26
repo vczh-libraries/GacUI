@@ -158,7 +158,7 @@ When `FakeDialogService` is used, all system dialogs are replaced by `REPO-ROOT/
 For the non-remoting projects above, the automation endpoint is `http://localhost:8888/Automation/<PROJECT-NAME>/...` and is hosted by `StartWindowsHttpAutomationService`.
 - Checkout `REPO-ROOT/.github/Guidelines/Running-GacUI.md` for details.
 
-Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in `/Http`, `/Pipe`, and `/MiniHTTP` modes:
+Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in `/Http`, `/Pipe`, and `/MiniHttp` modes:
 - `RemotingTest_Core` exposes the UI as a window-control tree at `http://localhost:8888/Automation/RemotingTest_Core/...`.
 - `RemotingTest_Rendering_Win32` exposes the UI as a DOM tree at `http://localhost:8889/Automation/RemotingTest_Rendering_Win32/...`.
 - `/Http` and `/Pipe` use `StartWindowsHttpAutomationService`.
@@ -184,6 +184,7 @@ Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in
 - `CppTest_Metaonly`: `CppTest_Metaonly.vcxproj`.
 - `CppTest_Reflection`: `CppTest_Reflection.vcxproj`.
 - `GacUI_Compiler`: `GacUI_Compiler.vcxproj`.
+- `RemotingTest_Core`: `RemotingTest_Core.vcxproj`.
 - `UnitTest`: `UnitTest.vcxproj`.
 
 `Metadata_UpdateProtocol` is not included. If it is needed, create it and remove this line.

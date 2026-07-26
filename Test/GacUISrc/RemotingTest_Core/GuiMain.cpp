@@ -2,8 +2,11 @@
 #include "RpMainWindow.h"
 #include "MainWindow.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
+#include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
+#ifdef VCZH_MSVC
 #include <VlppOS.Windows.h>
 #include "../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
+#endif
 #include <type_traits>
 
 using namespace vl;
@@ -20,7 +23,9 @@ extern void StopMiniHttpAutomationService();
 
 namespace
 {
+#ifdef VCZH_MSVC
 	constexpr const wchar_t* GacUIRemoteProtocolNamedPipeName = L"GacUIRemoteProtocolNamedPipe";
+#endif
 	constexpr const wchar_t* GacUIRemoteProtocolHttpBaseUrl = L"/GacUIRemoteProtocolHttp";
 	constexpr vint GacUIRemoteProtocolHttpPort = 8888;
 
@@ -145,6 +150,7 @@ namespace
 		}
 	};
 
+#ifdef VCZH_MSVC
 	class NamedPipeRemotingChannelServer : public RemotingChannelServerBase<inter_process::named_pipe::NamedPipeServer>
 	{
 		using Base = RemotingChannelServerBase<inter_process::named_pipe::NamedPipeServer>;
@@ -166,6 +172,7 @@ namespace
 		{
 		}
 	};
+#endif
 
 	class MiniHttpRemotingChannelServer : public RemotingChannelServerBase<inter_process::async_tcp_socket::SocketHttpServer>
 	{
@@ -199,7 +206,9 @@ namespace
 
 IJsonLocalChannelServer* protocolServer = nullptr;
 vint mainWindowConstructorIndex = 0;
+#ifdef VCZH_MSVC
 bool useWindowsHttpAutomationService = true;
+#endif
 Ptr<inter_process::async_tcp_socket::IAsyncSocketServer>* miniHttpAutomationSocketServer = nullptr;
 
 void GuiMain()
@@ -224,11 +233,13 @@ void GuiMain()
 			GetNativeServiceSubstitution()->Substitute(&automationService, false);
 			auto cleanup = [&]()
 			{
+#ifdef VCZH_MSVC
 				if (useWindowsHttpAutomationService)
 				{
 					windows::StopWindowsHttpAutomationService();
 				}
 				else
+#endif
 				{
 					StopMiniHttpAutomationService();
 				}
@@ -236,11 +247,13 @@ void GuiMain()
 			};
 			try
 			{
+#ifdef VCZH_MSVC
 				if (useWindowsHttpAutomationService)
 				{
 					windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/RemotingTest_Core"), 8888);
 				}
 				else
+#endif
 				{
 					StartMiniHttpAutomationService(*miniHttpAutomationSocketServer);
 				}
@@ -303,6 +316,7 @@ void StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr:
 	channelServer.SetCoreProtocolChannel(&channelSender);
 	protocolServer = &channelServer;
 	SetupRemoteNativeController(&diffConverterProtocol);
+#ifdef VCZH_MSVC
 	if constexpr (std::is_same_v<TServerBase, inter_process::named_pipe::NamedPipeServer>)
 	{
 		if (rendererClientId != -1)
@@ -310,6 +324,7 @@ void StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr:
 			channelServer.DisconnectClient(rendererClientId);
 		}
 	}
+#endif
 	protocolServer = nullptr;
 	channelServer.SetCoreProtocolChannel(nullptr);
 	channelServer.SetCoreJsonChannel(nullptr);
@@ -318,6 +333,7 @@ void StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr:
 	channelServer.Stop();
 }
 
+#ifdef VCZH_MSVC
 int StartNamedPipeServer(vint index)
 {
 	mainWindowConstructorIndex = index;
@@ -339,11 +355,14 @@ int StartHttpServer(vint index)
 	StartServer(channelServer, jsonParser);
 	return 0;
 }
+#endif
 
 int StartMiniHttpServer(vint index)
 {
 	mainWindowConstructorIndex = index;
+#ifdef VCZH_MSVC
 	useWindowsHttpAutomationService = false;
+#endif
 	Console::WriteLine(L"> Mini HTTP server created, waiting on: http://localhost:" + itow(GacUIRemoteProtocolHttpPort) + WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl));
 	auto jsonParser = Ptr(new glr::json::Parser);
 	auto socketServer = inter_process::async_tcp_socket::CreateDefaultAsyncSocketServer(GacUIRemoteProtocolHttpPort);
