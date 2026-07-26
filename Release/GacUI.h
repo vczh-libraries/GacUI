@@ -22019,10 +22019,21 @@ GuiRemoteGraphicsParagraph
 	class GuiRemoteGraphicsResourceManager;
 	class GuiRemoteGraphicsRenderTarget;
 
+	class GuiRemoteCaretCache : public Object
+	{
+	public:
+		collections::Array<vint>									nativeToRemote;
+		collections::Array<vint>									remoteToNative;
+
+		GuiRemoteCaretCache(const WString& text, remoteprotocol::CharacterEncoding encoding);
+	};
+
 	class GuiRemoteGraphicsParagraph : public Object, public IGuiGraphicsParagraph
 	{
 	protected:
 		WString															text;
+		collections::Dictionary<remoteprotocol::CharacterEncoding, Ptr<GuiRemoteCaretCache>>
+																		caretCaches;
 		GuiRemoteController*											remote = nullptr;
 		GuiRemoteGraphicsResourceManager*								resourceManager = nullptr;
 		GuiRemoteGraphicsRenderTarget*									renderTarget = nullptr;
@@ -22054,6 +22065,7 @@ GuiRemoteGraphicsParagraph
 		vint											GetParagraphId() const;
 
 	protected:
+		GuiRemoteCaretCache*							GetCaretCache();
 		vint											NativeTextPosToRemoteTextPos(vint textPos);
 		vint											RemoteTextPosToNativeTextPos(vint textPos);
 		bool											TryBuildCaretRange(vint start, vint length, CaretRange& range);

@@ -37174,6 +37174,80 @@ namespace vl::presentation::elements
 	using namespace collections;
 
 /***********************************************************************
+GuiRemoteCaretCache
+***********************************************************************/
+
+	GuiRemoteCaretCache::GuiRemoteCaretCache(const WString& text, remoteprotocol::CharacterEncoding encoding)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GuiRemoteCaretCache::GuiRemoteCaretCache(const WString&, remoteprotocol::CharacterEncoding)#"
+		CHECK_ERROR(
+			encoding == remoteprotocol::CharacterEncoding::UTF8 ||
+			encoding == remoteprotocol::CharacterEncoding::UTF16 ||
+			encoding == remoteprotocol::CharacterEncoding::UTF32,
+			ERROR_MESSAGE_PREFIX L"Unknown character encoding.");
+
+		List<vint> nativeMapping;
+		List<vint> remoteMapping;
+		vint nativePos = 0;
+		vint remotePos = 0;
+		while (nativePos < text.Length())
+		{
+			char32_t scalar = 0;
+			auto nativeLength = vl::encoding::UtfConversion<wchar_t>::To32(
+				text.Buffer() + nativePos,
+				text.Length() - nativePos,
+				scalar);
+
+			vint remoteLength = 1;
+			if (nativeLength == -1)
+			{
+				nativeLength = 1;
+			}
+			else
+			{
+				switch (encoding)
+				{
+				case remoteprotocol::CharacterEncoding::UTF8:
+					{
+						char8_t buffer[vl::encoding::UtfConversion<char8_t>::BufferLength];
+						remoteLength = vl::encoding::UtfConversion<char8_t>::From32(scalar, buffer);
+					}
+					break;
+				case remoteprotocol::CharacterEncoding::UTF16:
+					{
+						char16_t buffer[vl::encoding::UtfConversion<char16_t>::BufferLength];
+						remoteLength = vl::encoding::UtfConversion<char16_t>::From32(scalar, buffer);
+					}
+					break;
+				case remoteprotocol::CharacterEncoding::UTF32:
+					remoteLength = 1;
+					break;
+				}
+				if (remoteLength == -1)
+				{
+					remoteLength = 1;
+				}
+			}
+
+			for (vint i = 0; i < nativeLength; i++)
+			{
+				nativeMapping.Add(remotePos);
+			}
+			for (vint i = 0; i < remoteLength; i++)
+			{
+				remoteMapping.Add(nativePos);
+			}
+			nativePos += nativeLength;
+			remotePos += remoteLength;
+		}
+		nativeMapping.Add(remotePos);
+		remoteMapping.Add(nativePos);
+		CopyFrom(nativeToRemote, nativeMapping);
+		CopyFrom(remoteToNative, remoteMapping);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+/***********************************************************************
 GuiRemoteGraphicsParagraph
 ***********************************************************************/
 
@@ -37245,6 +37319,12 @@ GuiRemoteGraphicsParagraph
 		desc.maxWidth = maxWidth;
 		desc.id = id;
 		DiffRuns(committedRuns, stagedRuns, desc);
+		for (vint i = 0; i < desc.runsDiff->Count(); i++)
+		{
+			auto&& run = (*desc.runsDiff.Obj())[i];
+			run.caretBegin = NativeTextPosToRemoteTextPos(run.caretBegin);
+			run.caretEnd = NativeTextPosToRemoteTextPos(run.caretEnd);
+		}
 
 		auto& messages = renderTarget->GetRemoteMessages();
 		vint requestId = messages.RequestRendererUpdateElement_DocumentParagraph(desc);
@@ -37294,8 +37374,8 @@ GuiRemoteGraphicsParagraph
 		{
 			return false;
 		}
-		range.caretBegin = NativeTextPosToRemoteTextPos(start);
-		range.caretEnd = NativeTextPosToRemoteTextPos(start + length);
+		range.caretBegin = start;
+		range.caretEnd = start + length;
 		return true;
 	}
 
@@ -37317,14 +37397,39 @@ GuiRemoteGraphicsParagraph
 		cachedInlineObjectBounds.Set(callbackId, bounds);
 	}
 
+	GuiRemoteCaretCache* GuiRemoteGraphicsParagraph::GetCaretCache()
+	{
+		auto encoding = remote->GetGlobalConfig().documentCaretFromEncoding;
+#if defined VCZH_WCHAR_UTF16
+		constexpr auto nativeEncoding = remoteprotocol::CharacterEncoding::UTF16;
+#elif defined VCZH_WCHAR_UTF32
+		constexpr auto nativeEncoding = remoteprotocol::CharacterEncoding::UTF32;
+#endif
+		if (encoding == nativeEncoding)
+		{
+			return nullptr;
+		}
+
+		auto index = caretCaches.Keys().IndexOf(encoding);
+		if (index == -1)
+		{
+			auto cache = Ptr(new GuiRemoteCaretCache(text, encoding));
+			caretCaches.Add(encoding, cache);
+			return cache.Obj();
+		}
+		return caretCaches.Values()[index].Obj();
+	}
+
 	vint GuiRemoteGraphicsParagraph::NativeTextPosToRemoteTextPos(vint textPos)
 	{
-		return textPos;
+		auto cache = GetCaretCache();
+		return cache ? cache->nativeToRemote[textPos] : textPos;
 	}
 
 	vint GuiRemoteGraphicsParagraph::RemoteTextPosToNativeTextPos(vint textPos)
 	{
-		return textPos;
+		auto cache = GetCaretCache();
+		return cache ? cache->remoteToNative[textPos] : textPos;
 	}
 
 	IGuiGraphicsLayoutProvider* GuiRemoteGraphicsParagraph::GetProvider()
@@ -37635,13 +37740,14 @@ GuiRemoteGraphicsParagraph
 			cachedCaretBounds = messages.RetrieveDocumentParagraph_GetCaretBounds(requestId);
 		}
 
+		auto remoteCaret = NativeTextPosToRemoteTextPos(caret);
 		if (frontSide)
 		{
-			bounds = cachedCaretBounds.frontSideBounds->Get(caret);
+			bounds = cachedCaretBounds.frontSideBounds->Get(remoteCaret);
 		}
 		else
 		{
-			bounds = cachedCaretBounds.backSideBounds->Get(caret);
+			bounds = cachedCaretBounds.backSideBounds->Get(remoteCaret);
 		}
 		return true;
 	}
@@ -37731,8 +37837,8 @@ GuiRemoteGraphicsParagraph
 		}
 
 		CaretRange range;
-		range.caretBegin = response.Value().caretBegin;
-		range.caretEnd = response.Value().caretEnd;
+		range.caretBegin = RemoteTextPosToNativeTextPos(response.Value().caretBegin);
+		range.caretEnd = RemoteTextPosToNativeTextPos(response.Value().caretEnd);
 
 		vint index = inlineObjectProperties.Keys().IndexOf(range);
 		if (index == -1)
@@ -37740,8 +37846,8 @@ GuiRemoteGraphicsParagraph
 			return {};
 		}
 
-		start = RemoteTextPosToNativeTextPos(range.caretBegin);
-		length = RemoteTextPosToNativeTextPos(range.caretEnd) - start;
+		start = range.caretBegin;
+		length = range.caretEnd - start;
 		return inlineObjectProperties.Values()[index];
 	}
 
