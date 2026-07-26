@@ -115,7 +115,7 @@ The Debug|x64 build reached `TestRemote_Caret.cpp` and failed with `error C2065:
 
 # PROPOSALS
 
-- No.1 Cache Unicode-scalar caret mappings and translate only at protocol boundaries
+- No.1 Cache Unicode-scalar caret mappings and translate only at protocol boundaries [CONFIRMED]
 
 ## No.1 Cache Unicode-scalar caret mappings and translate only at protocol boundaries
 
@@ -128,3 +128,20 @@ Keep `textRuns`, `inlineObjectRuns`, `inlineObjectProperties`, `stagedRuns`, and
 Preserve the existing controller-connect behavior because the full global configuration is already accepted and assigned before paragraphs resynchronize. Do not alter the protocol schema, generated/reflection files, native renderer selection, or unit-test renderer configuration.
 
 ### CODE CHANGE
+
+- Added public non-reflectable `GuiRemoteCaretCache` with hard-fail validation for undefined encodings and immutable mapping arrays built from explicit-length Unicode-scalar cluster traversal. Invalid native/renderer conversions fall back to width-one opaque clusters.
+- Added a `CharacterEncoding`-keyed cache dictionary to `GuiRemoteGraphicsParagraph`; every position conversion selects the current controller configuration and lazily creates or reuses the matching cache.
+- Included `GuiRemoteController.h` directly in the paragraph implementation because selecting the active encoding calls `GuiRemoteController::GetGlobalConfig()`.
+- Kept run and inline-object maps native by making `TryBuildCaretRange` construct native ranges. `DiffRuns` still compares native state, then every outgoing run endpoint is translated immediately before submission.
+- Corrected the remaining paragraph protocol boundaries: outgoing caret/text requests use native-to-remote conversion, incoming caret/text results use remote-to-native conversion, caret-bounds arrays are indexed with renderer coordinates, and inline-object response endpoints are converted before native-keyed lookup.
+- Preserved the existing controller-connect path, renderer configurations, generated/reflection files, and protocol schema.
+
+### CONFIRMED
+
+The public cache tests pass for empty text, ASCII, `A¢中𦁚B`, and malformed/incomplete UTF-16 sequences across every renderer encoding. The hard-coded mappings confirm UTF-8/UTF-16/UTF-32 code-unit widths, cluster-front mapping for both directions, and both end sentinels. `TestRemote_Caret.cpp` ran from the registered project item with its first three bytes verified as `EF BB BF`.
+
+The final Debug|x64 solution build ended with `Build succeeded.`, `0 Warning(s)`, and `0 Error(s)`. The repository unit-test wrapper ran `TestRemote_Caret.cpp` and the complete selected suite, ending with `Passed test files: 86/86` and `Passed test cases: 1701/1701`; no memory-leak dump followed the summaries.
+
+The source audit confirmed every required boundary. `TryBuildCaretRange`, all run maps, and inline-object property keys remain native. `DiffRuns` compares native committed/staged state and its outgoing endpoints are translated immediately before submission. Open-caret, get-caret, nearest-text-position, validity, and caret-bounds indices convert native to renderer coordinates. Get-caret, nearest-text-position, and both inline-object endpoints convert renderer results to native before use. Reconnection clears paragraph synchronization state but selects the active encoding on every conversion, while immutable caches remain safely reusable by encoding.
+
+The existing controller connection path already stores the complete incoming configuration before paragraph resynchronization, so no handler/schema/generated/reflection change was necessary. The full suite rewrote unrelated file-dialog snapshots due to different frame scheduling; those test-run artifacts were inspected and restored because ASCII-only dialog behavior cannot be affected by this caret-coordinate change.
