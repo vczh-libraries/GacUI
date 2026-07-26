@@ -114,3 +114,17 @@ Add `Test/GacUISrc/UnitTest/TestRemote_Caret.cpp` as a direct unit test of the r
 The Debug|x64 build reached `TestRemote_Caret.cpp` and failed with `error C2065: 'GuiRemoteCaretCache': undeclared identifier`. This confirms the current implementation has no public cache helper capable of expressing the required UTF-8, UTF-16, and UTF-32 mappings. The test source BOM was independently verified as `EF BB BF`.
 
 # PROPOSALS
+
+- No.1 Cache Unicode-scalar caret mappings and translate only at protocol boundaries
+
+## No.1 Cache Unicode-scalar caret mappings and translate only at protocol boundaries
+
+Add a public, non-reflectable `GuiRemoteCaretCache` that builds complete native-to-renderer and renderer-to-native position arrays from immutable paragraph text. Walk the explicit `WString::Length()` as Unicode-scalar clusters with `encoding::UtfConversion<wchar_t>::To32`; obtain renderer cluster widths with `UtfConversion<char8_t>::From32`, `UtfConversion<char16_t>::From32`, or one UTF-32 unit. Map every interior source position to the target cluster front and append both end sentinels. Treat an invalid native code unit or failed renderer encoding as a standalone width-one opaque cluster, while rejecting undefined `CharacterEncoding` values immediately.
+
+Store caches in `GuiRemoteGraphicsParagraph` by `CharacterEncoding`. Each conversion reads the current `remote->GetGlobalConfig().documentCaretFromEncoding` and lazily finds or creates that encoding's immutable cache, so renderer replacement can switch encodings without stale state and can reuse previously built mappings when switching back.
+
+Keep `textRuns`, `inlineObjectRuns`, `inlineObjectProperties`, `stagedRuns`, and `committedRuns` entirely in native coordinates. Translate diff-run endpoints immediately before sending a paragraph update. Translate native caret/text positions at all outgoing protocol boundaries and renderer positions at all incoming boundaries, including the caret-bounds array index and inline-object range lookup.
+
+Preserve the existing controller-connect behavior because the full global configuration is already accepted and assigned before paragraphs resynchronize. Do not alter the protocol schema, generated/reflection files, native renderer selection, or unit-test renderer configuration.
+
+### CODE CHANGE
