@@ -99,6 +99,13 @@ Unfortunately it is no way to test `GuiRemoteGraphicsParagraph` without involvin
 
 # UPDATES
 
+## UPDATE
+
+The implementation is generally good, but I would like to make a small refactoring. In:
+- `NativeTextPosToRemoteTextPos`
+- `RemoteTextPosToNativeTextPos`
+If `VCZH_WCHAR_UTF(16 or 32)` matches the current requirement, just return `textPos` directly. You can implement this in `GetCaretCache`, when it matches it returns nullptr. Since these two functions are the only caller to `GetCaretCache` so there will be no backward compatibility issue. So they can just return `textPos` when getting a `nullptr`, and nothing should change semantically by doing this.
+
 # TEST [CONFIRMED]
 
 Add `Test/GacUISrc/UnitTest/TestRemote_Caret.cpp` as a direct unit test of the requested public `GuiRemoteCaretCache` helper, without starting the remote protocol or a renderer.
@@ -116,6 +123,7 @@ The Debug|x64 build reached `TestRemote_Caret.cpp` and failed with `error C2065:
 # PROPOSALS
 
 - No.1 Cache Unicode-scalar caret mappings and translate only at protocol boundaries [CONFIRMED]
+- No.2 Bypass cache construction for matching native and remote encodings [CONFIRMED]
 
 ## No.1 Cache Unicode-scalar caret mappings and translate only at protocol boundaries
 
@@ -145,3 +153,23 @@ The final Debug|x64 solution build ended with `Build succeeded.`, `0 Warning(s)`
 The source audit confirmed every required boundary. `TryBuildCaretRange`, all run maps, and inline-object property keys remain native. `DiffRuns` compares native committed/staged state and its outgoing endpoints are translated immediately before submission. Open-caret, get-caret, nearest-text-position, validity, and caret-bounds indices convert native to renderer coordinates. Get-caret, nearest-text-position, and both inline-object endpoints convert renderer results to native before use. Reconnection clears paragraph synchronization state but selects the active encoding on every conversion, while immutable caches remain safely reusable by encoding.
 
 The existing controller connection path already stores the complete incoming configuration before paragraph resynchronization, so no handler/schema/generated/reflection change was necessary. The full suite rewrote unrelated file-dialog snapshots due to different frame scheduling; those test-run artifacts were inspected and restored because ASCII-only dialog behavior cannot be affected by this caret-coordinate change.
+
+## No.2 Bypass cache construction for matching native and remote encodings
+
+When `VCZH_WCHAR_UTF16` is defined and the active renderer encoding is UTF-16, or when `VCZH_WCHAR_UTF32` is defined and the active renderer encoding is UTF-32, make `GuiRemoteGraphicsParagraph::GetCaretCache()` return `nullptr` before looking up or constructing a cache. Update its two callers to return `textPos` directly when no cache is required. Keep `GuiRemoteCaretCache` unchanged for mismatched encodings and direct cache testing.
+
+Add a focused paragraph test that exposes the protected cache/conversion functions through a test subclass. Constructing `GuiRemoteController` with its platform default encoding requires no live protocol, resource manager, render target, or renderer. Verify that the matching platform encoding produces no cache and that both conversion directions preserve the supplied position.
+
+### CODE CHANGE
+
+- Update `GuiRemoteGraphicsParagraph::GetCaretCache()` to return `nullptr` for the platform's matching UTF encoding.
+- Update `NativeTextPosToRemoteTextPos` and `RemoteTextPosToNativeTextPos` to return `textPos` when `GetCaretCache()` returns `nullptr`.
+- Extend `TestRemote_Caret.cpp` with a direct matching-encoding bypass test while preserving its UTF-8 BOM.
+
+### CONFIRMED
+
+The targeted paragraph test constructed the controller with its platform-default encoding and confirmed that `GetCaretCache()` returned `nullptr`. It then checked every position from zero through the mixed text's end sentinel in both conversion directions, confirming that `NativeTextPosToRemoteTextPos` and `RemoteTextPosToNativeTextPos` returned the supplied position unchanged. The existing direct `GuiRemoteCaretCache` cases continued to pass for all mismatched and matching encodings, so cache construction behavior itself remains available and unchanged.
+
+The source audit found no production caller of `GetCaretCache()` beyond the two conversion functions. The matching-encoding check executes before dictionary lookup or cache construction, while every mismatched encoding still uses the existing keyed cache.
+
+The final Debug|x64 solution build ended with `Build succeeded.`, `0 Warning(s)`, and `0 Error(s)`. The repository unit-test wrapper ran `TestRemote_Caret.cpp` and the complete suite, ending with `Passed test files: 86/86` and `Passed test cases: 1702/1702`; no memory-leak dump followed the summaries. `TestRemote_Caret.cpp` still begins with the UTF-8 BOM bytes `EF BB BF`. Unrelated file-dialog snapshots rewritten by frame scheduling were inspected and restored.

@@ -234,6 +234,16 @@ GuiRemoteGraphicsParagraph
 	GuiRemoteCaretCache* GuiRemoteGraphicsParagraph::GetCaretCache()
 	{
 		auto encoding = remote->GetGlobalConfig().documentCaretFromEncoding;
+#if defined VCZH_WCHAR_UTF16
+		constexpr auto nativeEncoding = remoteprotocol::CharacterEncoding::UTF16;
+#elif defined VCZH_WCHAR_UTF32
+		constexpr auto nativeEncoding = remoteprotocol::CharacterEncoding::UTF32;
+#endif
+		if (encoding == nativeEncoding)
+		{
+			return nullptr;
+		}
+
 		auto index = caretCaches.Keys().IndexOf(encoding);
 		if (index == -1)
 		{
@@ -246,12 +256,14 @@ GuiRemoteGraphicsParagraph
 
 	vint GuiRemoteGraphicsParagraph::NativeTextPosToRemoteTextPos(vint textPos)
 	{
-		return GetCaretCache()->nativeToRemote[textPos];
+		auto cache = GetCaretCache();
+		return cache ? cache->nativeToRemote[textPos] : textPos;
 	}
 
 	vint GuiRemoteGraphicsParagraph::RemoteTextPosToNativeTextPos(vint textPos)
 	{
-		return GetCaretCache()->remoteToNative[textPos];
+		auto cache = GetCaretCache();
+		return cache ? cache->remoteToNative[textPos] : textPos;
 	}
 
 	IGuiGraphicsLayoutProvider* GuiRemoteGraphicsParagraph::GetProvider()

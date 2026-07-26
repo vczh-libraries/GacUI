@@ -1,10 +1,35 @@
 ﻿#include "../../../Source/PlatformProviders/Remote/GuiRemoteGraphics_Document.h"
+#include "../../../Source/PlatformProviders/Remote/GuiRemoteController.h"
 
 using namespace vl;
 using namespace vl::unittest;
 using namespace vl::collections;
 using namespace vl::presentation::elements;
 using namespace vl::presentation::remoteprotocol;
+
+class TestGuiRemoteGraphicsParagraph : public GuiRemoteGraphicsParagraph
+{
+public:
+	TestGuiRemoteGraphicsParagraph(const WString& text, vl::presentation::GuiRemoteController* remote)
+		: GuiRemoteGraphicsParagraph(text, remote, nullptr, nullptr, nullptr)
+	{
+	}
+
+	GuiRemoteCaretCache* GetCaretCacheForTest()
+	{
+		return GetCaretCache();
+	}
+
+	vint NativeTextPosToRemoteTextPosForTest(vint textPos)
+	{
+		return NativeTextPosToRemoteTextPos(textPos);
+	}
+
+	vint RemoteTextPosToNativeTextPosForTest(vint textPos)
+	{
+		return RemoteTextPosToNativeTextPos(textPos);
+	}
+};
 
 template<vint Size>
 void AssertCaretMapping(const Array<vint>& actual, const vint(&expected)[Size])
@@ -32,6 +57,20 @@ TEST_FILE
 {
 	TEST_CATEGORY(L"GuiRemoteCaretCache")
 	{
+		TEST_CASE(L"Matching native encoding bypasses cache")
+		{
+			vl::presentation::GuiRemoteController remote(nullptr);
+			auto text = WString::Unmanaged(L"A¢中𦁚B");
+			TestGuiRemoteGraphicsParagraph paragraph(text, &remote);
+
+			TEST_ASSERT(paragraph.GetCaretCacheForTest() == nullptr);
+			for (vint textPos = 0; textPos <= text.Length(); textPos++)
+			{
+				TEST_ASSERT(paragraph.NativeTextPosToRemoteTextPosForTest(textPos) == textPos);
+				TEST_ASSERT(paragraph.RemoteTextPosToNativeTextPosForTest(textPos) == textPos);
+			}
+		});
+
 		TEST_CASE(L"Empty and ASCII text")
 		{
 			const vint empty[] = { 0 };
