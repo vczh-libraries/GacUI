@@ -126,6 +126,9 @@
     <ClCompile Include="TestRemote_EmptyWindow.cpp">
       <Filter>Source Files\Remote</Filter>
     </ClCompile>
+    <ClCompile Include="TestRemote_Caret.cpp">
+      <Filter>Source Files\Remote</Filter>
+    </ClCompile>
     <ClCompile Include="TestRemote_DocumentRunManagement.cpp">
       <Filter>Source Files\Remote</Filter>
     </ClCompile>
