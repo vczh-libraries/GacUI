@@ -8716,6 +8716,15 @@ namespace vl
 		class Console abstract
 		{
 		public:
+			/// <summary>Enable Console operations. This operation is idempotent.</summary>
+			static void Enable();
+
+			/// <summary>Disable Console operations. This operation is idempotent.</summary>
+			static void Disable();
+
+			/// <summary>Test whether Console operations are enabled.</summary>
+			static bool IsEnabled();
+
 			/// <summary>Write a string to the command-line window.</summary>
 			/// <param name="string">Content to write.</param>
 			/// <param name="length">Size of the content in wchar_t, not including the zero terminator.</param>

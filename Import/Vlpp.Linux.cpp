@@ -30,12 +30,14 @@ Console
 
 		void Console::Write(const wchar_t* string, vint length)
 		{
+			CHECK_ERROR(IsEnabled(), L"vl::console::Console::Write(const wchar_t*, vint)#Console operations are disabled.");
 			std::wstring s(string, string + length);
 			std::wcout << s << std::flush;
 		}
 
 		Nullable<WString> Console::TryRead()
 		{
+			CHECK_ERROR(IsEnabled(), L"vl::console::Console::TryRead()#Console operations are disabled.");
 			std::wstring s;
 			if (!std::getline(std::wcin, s, L'\n'))
 			{
@@ -59,6 +61,7 @@ Console
 
 		void Console::SetColor(bool red, bool green, bool blue, bool light)
 		{
+			CHECK_ERROR(IsEnabled(), L"vl::console::Console::SetColor(bool, bool, bool, bool)#Console operations are disabled.");
 			int color = (blue ? 1 : 0) * 4 + (green ? 1 : 0) * 2 + (red ? 1 : 0);
 			if (light)
 				wprintf(L"\x1B[00;3%dm", color);
@@ -68,6 +71,7 @@ Console
 
 		void Console::SetTitle(const WString& string)
 		{
+			CHECK_ERROR(IsEnabled(), L"vl::console::Console::SetTitle(const WString&)#Console operations are disabled.");
 		}
 	}
 }
@@ -158,24 +162,27 @@ DateTime
 			vint milliseconds;
 			OSInternalToTime(osInternal, timer, milliseconds);
 
-			tm* timeinfo = localtime(&timer);
-			return ConvertTMToDateTime(timeinfo, milliseconds);
+			tm timeinfo;
+			localtime_r(&timer, &timeinfo);
+			return ConvertTMToDateTime(&timeinfo, milliseconds);
 		}
 
 		vuint64_t LocalTime() override
 		{
 			struct timeval tv;
 			gettimeofday(&tv, nullptr);
-			tm* timeinfo = localtime(&tv.tv_sec);
-			return ConvertTMTToOSInternal(timeinfo, tv.tv_usec / 1000);
+			tm timeinfo;
+			localtime_r(&tv.tv_sec, &timeinfo);
+			return ConvertTMTToOSInternal(&timeinfo, tv.tv_usec / 1000);
 		}
 
 		vuint64_t UtcTime() override
 		{
 			struct timeval tv;
 			gettimeofday(&tv, nullptr);
-			tm* timeinfo = gmtime(&tv.tv_sec);
-			return ConvertTMTToOSInternal(timeinfo, tv.tv_usec / 1000);
+			tm timeinfo;
+			gmtime_r(&tv.tv_sec, &timeinfo);
+			return ConvertTMTToOSInternal(&timeinfo, tv.tv_usec / 1000);
 		}
 
 		vuint64_t LocalToUtcTime(vuint64_t osInternal) override
@@ -184,8 +191,9 @@ DateTime
 			vint milliseconds;
 			OSInternalToTime(osInternal, timer, milliseconds);
 
-			tm* timeinfo = gmtime(&timer);
-			return ConvertTMTToOSInternal(timeinfo, milliseconds);
+			tm timeinfo;
+			gmtime_r(&timer, &timeinfo);
+			return ConvertTMTToOSInternal(&timeinfo, milliseconds);
 		}
 
 		vuint64_t UtcToLocalTime(vuint64_t osInternal) override
@@ -194,8 +202,11 @@ DateTime
 			vint milliseconds;
 			OSInternalToTime(osInternal, timer, milliseconds);
 
-			time_t localTimer = mktime(localtime(&timer));
-			time_t utcTimer = mktime(gmtime(&timer));
+			tm localTimeInfo, utcTimeInfo;
+			localtime_r(&timer, &localTimeInfo);
+			gmtime_r(&timer, &utcTimeInfo);
+			time_t localTimer = mktime(&localTimeInfo);
+			time_t utcTimer = mktime(&utcTimeInfo);
 			timer += localTimer - utcTimer;
 
 			TimeToOSInternal(timer, milliseconds, osInternal);

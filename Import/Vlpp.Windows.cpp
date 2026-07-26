@@ -30,6 +30,7 @@ Console
 
 		void Console::Write(const wchar_t* string, vint length)
 		{
+			CHECK_ERROR(IsEnabled(), L"vl::console::Console::Write(const wchar_t*, vint)#Console operations are disabled.");
 			HANDLE outHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 			DWORD fileMode = 0;
 			DWORD written = 0;
@@ -50,6 +51,7 @@ Console
 
 		Nullable<WString> Console::TryRead()
 		{
+			CHECK_ERROR(IsEnabled(), L"vl::console::Console::TryRead()#Console operations are disabled.");
 			auto inHandle = GetStdHandle(STD_INPUT_HANDLE);
 			if (inHandle == INVALID_HANDLE_VALUE || inHandle == NULL)
 			{
@@ -139,6 +141,7 @@ Console
 
 		void Console::SetColor(bool red, bool green, bool blue, bool light)
 		{
+			CHECK_ERROR(IsEnabled(), L"vl::console::Console::SetColor(bool, bool, bool, bool)#Console operations are disabled.");
 			WORD attribute = 0;
 			if (red)attribute |= FOREGROUND_RED;
 			if (green)attribute |= FOREGROUND_GREEN;
@@ -150,6 +153,7 @@ Console
 
 		void Console::SetTitle(const WString& string)
 		{
+			CHECK_ERROR(IsEnabled(), L"vl::console::Console::SetTitle(const WString&)#Console operations are disabled.");
 			SetConsoleTitle(string.Buffer());
 		}
 	}

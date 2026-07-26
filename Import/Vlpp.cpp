@@ -45,10 +45,30 @@ namespace vl
 {
 	namespace console
 	{
+		bool& GetConsoleEnabled()
+		{
+			static bool enabled = true;
+			return enabled;
+		}
 		
 /***********************************************************************
 Console
 ***********************************************************************/
+
+		void Console::Enable()
+		{
+			GetConsoleEnabled() = true;
+		}
+
+		void Console::Disable()
+		{
+			GetConsoleEnabled() = false;
+		}
+
+		bool Console::IsEnabled()
+		{
+			return GetConsoleEnabled();
+		}
 
 		void Console::Write(const wchar_t* string)
 		{
