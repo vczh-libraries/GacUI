@@ -12,7 +12,7 @@ You are going to test `GacJS` with `GacUI` on macOS:
   - Run `GacJS` with playwright+chrome(chromium) first, make sure the core side is working.
   - Run `GacJS` with playwright+safari(webkit), make sure `GacJS` is compatible.
   - Do not try to run the actual safari since there might be permission issue, I will test with it manually later.
-- Update `Tools/DebugGacUIWithGacJS.md`:
+- Update `GacUI/DebugRemoteProtocolWithGacUI.md`:
   - Write down macOS specific instructions.
 - Unlike on Windows, building `GacJS` doesn't host the website automatically, you need to figure out how to host it. Probably `Linux` is going to do the same thing, prepare instructions for Linux too but no need to actually test Linux instructions since you are currently on macOS.
   - If any instruction is shared, reorganize this file instead of duplicating contents.
@@ -50,7 +50,7 @@ Condition the GacJS website-entry package test so it launches Vitest only on Win
 
 Quote the `assets/**/*` argument in the website entry build script so the glob reaches `copyfiles` unchanged. On macOS, the unquoted glob is expanded by the shell before `copyfiles` runs and matches only nested files, producing a `lib/dist` with the JavaScript bundle and snapshot JSON but no `index.html`, CSS, or favicon. The quoted glob lets `copyfiles` copy both top-level and nested assets on every platform.
 
-Rename the existing GacJS browser-debugging guide to the requested `Tools/DebugGacUIWithGacJS.md`, update references, and reorganize shared build/serve/browser instructions ahead of concise platform sections. Document the tested macOS MiniHTTP, Python static hosting, Chromium/WebKit commands, manual Safari handoff, cleanup, and the equivalent untested Linux build/hosting flow. Update the remote-protocol verification job so GacJS is supported on macOS and planned on Linux without changing the native-renderer support matrix.
+Rename the existing GacJS browser-debugging guide (now located at `GacUI/DebugRemoteProtocolWithGacUI.md`), update references, and reorganize shared build/serve/browser instructions ahead of concise platform sections. Document the tested macOS MiniHTTP, Python static hosting, Chromium/WebKit commands, manual Safari handoff, cleanup, and the equivalent untested Linux build/hosting flow. Update the remote-protocol verification job so GacJS is supported on macOS and planned on Linux without changing the native-renderer support matrix.
 
 ### CODE CHANGE
 
@@ -60,7 +60,7 @@ Rename the existing GacJS browser-debugging guide to the requested `Tools/DebugG
 - Made the GacJS website-entry test launch Vitest only on Windows. On other platforms it exits successfully with the explicit `Skipping Windows-only protocol E2E tests.` message while Lerna continues to run portable packages.
 - Quoted the website asset glob so macOS copies `index.html`, CSS, the favicon, and nested snapshot assets into `lib/dist`.
 - Documented portable `/MiniHttp` core startup and explicit Python static hosting in GacJS, including the Windows-only scope of the checked-in protocol E2E harness.
-- Renamed the Tools browser guide to `DebugGacUIWithGacJS.md`, moved shared Linux/macOS build, hosting, browser, and cleanup instructions into one section, and added the verified Chromium/WebKit order plus the separate manual Safari handoff. Updated the verification job, SOP link, monorepo guide, and synchronized root `AGENTS.md`.
+- Renamed the browser guide (now located at `GacUI/DebugRemoteProtocolWithGacUI.md`), moved shared Linux/macOS build, hosting, browser, and cleanup instructions into one section, and added the verified Chromium/WebKit order plus the separate manual Safari handoff. Updated the verification job, SOP link, monorepo guide, and synchronized root `AGENTS.md`.
 
 ### CONFIRMED
 
