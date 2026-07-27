@@ -1,8 +1,9 @@
 # Operating GacUI Through GacJS
 
 This guide explains how to build and start `RemotingTest_Core`, serve GacJS,
-and operate the browser renderer. The required verification matrix and scenarios
-are in
+and operate the browser renderer. The renderer-independent UI actions and
+observable results are in [`DebugGacUISop.md`](DebugGacUISop.md). The required
+verification matrix and scenarios are in
 [`../Tools/Jobs/job.verifyRemoteProtocol.prompt.md`](../Tools/Jobs/job.verifyRemoteProtocol.prompt.md).
 Use that job to decide what must be tested and this guide to start and drive
 each browser session.

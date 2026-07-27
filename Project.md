@@ -132,6 +132,9 @@ To make a change:
 
 ## Debugging Remote Protocol Issues
 
+Use `REPO-ROOT/DebugGacUISop.md` for the shared end-to-end UI operations and
+observable results.
+
 Remote protocol is involved in three ways:
 - Core with native renderer: `REPO-ROOT/DebugRemoteProtocolWithNativeRenderer.md`.
 - Core with `GacJS`: `REPO-ROOT/DebugRemoteProtocolWithGacUI.md`.
