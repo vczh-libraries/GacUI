@@ -1,8 +1,18 @@
+#if defined __APPLE__ && __has_include(<GacUI.h>)
+#include <GacUI.h>
+#include "../Mac/NativeWindow/CocoaAutomationService.h"
+#include "../Mac/NativeWindow/OSX/CoreGraphics/CoreGraphicsApp.h"
+#include <dispatch/dispatch.h>
+#else
 #include "../../../Source/GacUI.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
+#endif
+#include <VlppOS.h>
+#if defined VCZH_MSVC
 #include <VlppOS.Windows.h>
 #include "../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
+#endif
 
 using namespace vl;
 using namespace vl::presentation;
@@ -12,20 +22,34 @@ using namespace vl::presentation::remoteprotocol::channeling;
 using namespace vl::presentation::remote_renderer;
 
 extern void StartMiniHttpAutomationService(Ptr<inter_process::async_tcp_socket::IAsyncSocketServer> socketServer);
+extern void StartMiniHttpAutomationService(Ptr<inter_process::async_tcp_socket::IAsyncSocketServer> socketServer, const WString& applicationName);
 extern void StopMiniHttpAutomationService();
 
 namespace
 {
+#if defined VCZH_MSVC
 	constexpr const wchar_t* GacUIRemoteProtocolNamedPipeName = L"GacUIRemoteProtocolNamedPipe";
+#endif
 	constexpr const wchar_t* GacUIRemoteProtocolHttpBaseUrl = L"/GacUIRemoteProtocolHttp";
 	constexpr vint GacUIRemoteProtocolHttpPort = 8888;
 	constexpr vint GacUIAutomationHttpPort = 8889;
+#if defined VCZH_MSVC
+	constexpr const wchar_t* GacUIAutomationApplicationName = L"RemotingTest_Rendering_Win32";
+#endif
+#if defined VCZH_GCC && !defined VCZH_APPLE
+	constexpr const wchar_t* GacUIAutomationApplicationName = L"RemotingTest_Renderer_Linux";
+#endif
+#if defined VCZH_GCC && defined VCZH_APPLE
+	constexpr const wchar_t* GacUIAutomationApplicationName = L"RemotingTest_Renderer_macOS";
+#endif
 }
 
 GuiRemoteRendererSingle* renderer = nullptr;
 GuiRemoteProtocolAsyncJsonChannelRenderer* asyncChannel = nullptr;
 AutomationServiceRenderer* rendererAutomationService = nullptr;
+#if defined VCZH_MSVC
 bool useWindowsHttpAutomationService = true;
+#endif
 Ptr<inter_process::async_tcp_socket::IAsyncSocketServer>* miniHttpAutomationSocketServer = nullptr;
 
 class RemotingTestChannelClient : public GuiRemoteProtocolChannelClient
@@ -159,7 +183,28 @@ public:
 		}
 		if (renderer && !HasFatalError())
 		{
-			renderer->ForceExitByFatelError();
+			auto targetRenderer = renderer;
+#if defined VCZH_MSVC
+			targetRenderer->ForceExitByFatelError();
+#endif
+#if defined VCZH_GCC && !defined VCZH_APPLE
+			auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
+			GetCurrentController()->AsyncService()->InvokeInMainThread(
+				mainWindow,
+				[targetRenderer]()
+				{
+					targetRenderer->ForceExitByFatelError();
+				});
+#endif
+#if defined VCZH_GCC && defined VCZH_APPLE
+			dispatch_async_f(
+				dispatch_get_main_queue(),
+				targetRenderer,
+				[](void* context)
+				{
+					static_cast<GuiRemoteRendererSingle*>(context)->ForceExitByFatelError();
+				});
+#endif
 		}
 	}
 };
@@ -169,7 +214,24 @@ class GuiMainAsyncRendererInvoker : public Object, public virtual IGuiRemoteProt
 public:
 	void InvokeInMainThread(const Func<void()>& proc) override
 	{
+#if defined VCZH_MSVC
 		GetApplication()->InvokeInMainThread(nullptr, proc);
+#endif
+#if defined VCZH_GCC && !defined VCZH_APPLE
+		GetCurrentController()->AsyncService()->InvokeInMainThread(nullptr, proc);
+#endif
+#if defined VCZH_GCC && defined VCZH_APPLE
+		auto queuedProc = new Func<void()>(proc);
+		dispatch_async_f(
+			dispatch_get_main_queue(),
+			queuedProc,
+			[](void* context)
+			{
+				auto callback = static_cast<Func<void()>*>(context);
+				(*callback)();
+				delete callback;
+			});
+#endif
 	}
 };
 
@@ -190,32 +252,51 @@ void GuiMain()
 	asyncChannel->SetInvokeInMainThread(&invoker);
 
 	{
+#if defined VCZH_MSVC
 		windows::WindowsAutomationServiceRenderer automationService(renderer);
+#endif
+#if defined VCZH_GCC && !defined VCZH_APPLE
+		wayland::WGacAutomationServiceRenderer automationService(renderer);
+#endif
+#if defined VCZH_GCC && defined VCZH_APPLE
+		osx::CocoaAutomationServiceRenderer automationService(renderer);
+#endif
 		rendererAutomationService = &automationService;
 		GetNativeServiceSubstitution()->Substitute(&automationService, false);
 		auto cleanup = [&]()
 		{
+#if defined VCZH_MSVC
 			if (!useWindowsHttpAutomationService)
 			{
 				StopMiniHttpAutomationService();
 			}
+#else
+			StopMiniHttpAutomationService();
+#endif
 			GetCurrentController()->AutomationService()->Stop();
+#if defined VCZH_MSVC
 			if (useWindowsHttpAutomationService)
 			{
 				windows::StopWindowsHttpAutomationService();
 			}
+#endif
 			GetNativeServiceSubstitution()->Unsubstitute(&automationService);
 			rendererAutomationService = nullptr;
 		};
 		try
 		{
+#if defined VCZH_MSVC
 			if (useWindowsHttpAutomationService)
 			{
 				windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/RemotingTest_Rendering_Win32"), GacUIAutomationHttpPort);
 			}
 			else
+#endif
 			{
-				StartMiniHttpAutomationService(*miniHttpAutomationSocketServer);
+				StartMiniHttpAutomationService(
+					*miniHttpAutomationSocketServer,
+					WString::Unmanaged(GacUIAutomationApplicationName)
+					);
 			}
 			GetCurrentController()->WindowService()->Run(mainWindow);
 		}
@@ -244,7 +325,15 @@ int StartClient(Ptr<inter_process::INetworkProtocolClient> networkClient)
 
 	asyncChannel = &asyncRendererChannel;
 	renderer = &remoteRenderer;
+#if defined VCZH_MSVC
 	int result = SetupRawWindowsDirect2DRenderer();
+#endif
+#if defined VCZH_GCC && !defined VCZH_APPLE
+	int result = elements::wgac::SetupWGacRenderer();
+#endif
+#if defined VCZH_GCC && defined VCZH_APPLE
+	int result = SetupRawOSXCoreGraphicsRenderer();
+#endif
 	networkClient->GetConnection()->Stop();
 	renderer = nullptr;
 	asyncChannel = nullptr;
@@ -254,6 +343,7 @@ int StartClient(Ptr<inter_process::INetworkProtocolClient> networkClient)
 	return result;
 }
 
+#if defined VCZH_MSVC
 int StartNamedPipeClient()
 {
 	useWindowsHttpAutomationService = true;
@@ -265,10 +355,13 @@ int StartHttpClient()
 	useWindowsHttpAutomationService = true;
 	return StartClient(Ptr(new inter_process::windows_http::HttpClient(WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl), GacUIRemoteProtocolHttpPort)));
 }
+#endif
 
 int StartMiniHttpClient()
 {
+#if defined VCZH_MSVC
 	useWindowsHttpAutomationService = false;
+#endif
 	auto socketServer = inter_process::async_tcp_socket::CreateDefaultAsyncSocketServer(GacUIAutomationHttpPort);
 	auto socketClient = inter_process::async_tcp_socket::CreateDefaultAsyncSocketClient(GacUIRemoteProtocolHttpPort);
 	miniHttpAutomationSocketServer = &socketServer;

@@ -19,11 +19,7 @@ The native-renderer transport contract is:
 | --- | --- | --- |
 | Windows | `/MiniHttp`, `/Http`, `/Pipe` | Available |
 | Linux | `/MiniHttp` | Native renderer not implemented yet |
-| macOS | `/MiniHttp` | Native renderer not implemented yet |
-
-This guide reports current implementation status honestly. The verification job
-is deliberately forward-looking and keeps the Linux and macOS `/MiniHttp` rows
-in its required matrix even though their native renderers are not available yet.
+| macOS | `/MiniHttp` | Available in the sibling `iGac` repository |
 
 ## Windows
 
@@ -161,8 +157,71 @@ can run. Do not attempt to run `RemotingTest_Rendering_Win32` on Linux.
 
 ## macOS Specific
 
-The planned native-renderer transport for macOS is `/MiniHttp`; `/Http` and
-`/Pipe` are not part of the planned platform contract. Native remote rendering is
-not implemented yet, so the equivalent renderer and its concrete
-start/inspection procedure must be provided by another repository before the job
-can run. Do not attempt to run `RemotingTest_Rendering_Win32` on macOS.
+The macOS native renderer is `RemotingTest_Renderer_macOS` in the sibling
+`iGac` repository. It uses `/MiniHttp` only; `/Http` and `/Pipe` are
+Windows-only.
+
+From the monorepo root, build the portable core and the iGac renderer:
+
+```bash
+(
+  cd GacUI/Test/Linux/RemotingTest_Core
+  ../../../.github/Ubuntu/build.sh
+)
+(
+  cd iGac
+  ./build.sh
+)
+```
+
+Run the core in the first terminal. Use `/RPT` for Remote Protocol Test, or
+replace it with `/FCT` for Full Control Test:
+
+```bash
+GacUI/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core /MiniHttp /RPT
+```
+
+Wait for `Waiting for a renderer ...`, then run the renderer in a second
+terminal:
+
+```bash
+iGac/build/RemotingTest_Renderer_macOS/bin/RemotingTest_Renderer_macOS.app/Contents/MacOS/RemotingTest_Renderer_macOS /MiniHttp
+```
+
+The corresponding automation endpoints are:
+
+```text
+GET  http://localhost:8888/Automation/RemotingTest_Core/Controls
+POST http://localhost:8888/Automation/RemotingTest_Core/IO
+GET  http://localhost:8889/Automation/RemotingTest_Renderer_macOS/Dom
+POST http://localhost:8889/Automation/RemotingTest_Renderer_macOS/IO
+```
+
+Post renderer commands with `curl`, for example:
+
+```bash
+curl \
+  -X POST \
+  -H 'Content-Type: application/json; charset=utf8' \
+  --data-binary '!LeftClick:<integer-x>,<integer-y>' \
+  http://localhost:8889/Automation/RemotingTest_Renderer_macOS/IO
+```
+
+Use renderer `/IO` for the shared SOP so both input and rendering cross the
+remote protocol. Re-read core `Controls` and renderer `Dom` after every state
+change.
+
+AppKit window and input coordinates are logical points. The native protocol
+screen configuration therefore reports scaling `1.0` on macOS; CoreGraphics
+applies the Retina backing scale separately while drawing. Do not multiply
+remote bounds or input coordinates by the backing scale. If the complete UI
+appears in only the top-left quarter of a window and pointer coordinates behave
+as if divided by two, inspect the remote screen scaling rather than changing the
+ordinary Cocoa rendering path.
+
+To replace the renderer, stop only the renderer process and start it again
+while keeping the core alive. To test takeover, start another renderer without
+first stopping the active one. The new renderer must retain the application
+state and the previous renderer must exit cleanly. Closing the application
+through its UI must also close the active renderer without a fatal prompt or
+retry loop.

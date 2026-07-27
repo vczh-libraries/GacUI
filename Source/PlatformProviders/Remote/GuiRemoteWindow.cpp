@@ -84,10 +84,6 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::SubmitStateAfterControllerConnect()
 	{
-		if (suggestedMinClientSize != NativeSize{ {0},{0} })
-		{
-			remoteMessages.RequestWindowNotifyMinSize(suggestedMinClientSize);
-		}
 		remoteMessages.RequestWindowNotifySetTitle(styleTitle);
 		remoteMessages.RequestWindowNotifySetEnabled(styleEnabled);
 		remoteMessages.RequestWindowNotifySetTopMost(styleTopMost);
@@ -99,6 +95,13 @@ GuiRemoteWindow
 		remoteMessages.RequestWindowNotifySetSizeBox(styleSizeBox);
 		remoteMessages.RequestWindowNotifySetIconVisible(styleIconVisible);
 		remoteMessages.RequestWindowNotifySetTitleBar(styleTitleBar);
+		if (suggestedMinClientSize != NativeSize{ {0},{0} })
+		{
+			// The renderer calculates its outer minimum from the current
+			// native frame. Apply frame styles first so reconnecting from a
+			// platform-default window does not include stale decorations.
+			remoteMessages.RequestWindowNotifyMinSize(suggestedMinClientSize);
+		}
 		if (statusCapturing)
 		{
 			remoteMessages.RequestIORequireCapture();
@@ -126,8 +129,19 @@ GuiRemoteWindow (events)
 		scalingX = remote->remoteScreenConfig.scalingX;
 		scalingY = remote->remoteScreenConfig.scalingY;
 
+		auto bounds = remoteWindowSizingConfig.bounds;
+		if (remote->applicationRunning)
+		{
+			// A replacement renderer creates its native window with platform
+			// defaults. Restore the application frame style before applying
+			// the saved bounds so client-size calculations use the right frame.
+			// Style changes report the renderer's temporary bounds back to the
+			// core, so keep the saved bounds in a local variable.
+			SubmitStateAfterControllerConnect();
+		}
+
 		sizingConfigInvalidated = true;
-		remoteMessages.RequestWindowNotifySetBounds(remoteWindowSizingConfig.bounds);
+		remoteMessages.RequestWindowNotifySetBounds(bounds);
 		RequestGetBounds();
 
 		// TODO:
@@ -135,11 +149,6 @@ GuiRemoteWindow (events)
 		//   Refactor to make it more elegant.
 		for (auto l : listeners) l->DpiChanged(true);
 		for (auto l : listeners) l->DpiChanged(false);
-
-		if (remote->applicationRunning)
-		{
-			SubmitStateAfterControllerConnect();
-		}
 	}
 
 	void GuiRemoteWindow::OnControllerDisconnect()

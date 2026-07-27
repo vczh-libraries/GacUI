@@ -1,4 +1,8 @@
+#if defined __APPLE__ && __has_include(<GacUI.h>)
+#include <GacUI.h>
+#else
 #include "../../../Source/GacUI.h"
+#endif
 #include <VlppOS.h>
 
 using namespace vl;
@@ -122,7 +126,7 @@ namespace
 	MiniHttpAutomationService* miniHttpAutomationService = nullptr;
 }
 
-void StartMiniHttpAutomationService(Ptr<IAsyncSocketServer> socketServer)
+void StartMiniHttpAutomationService(Ptr<IAsyncSocketServer> socketServer, const WString& applicationName)
 {
 	auto automationService = GetCurrentController()->AutomationService();
 	if (!automationService->Available())
@@ -135,14 +139,10 @@ void StartMiniHttpAutomationService(Ptr<IAsyncSocketServer> socketServer)
 		bool canDumpDomTree = automationService->CanDumpDomTree();
 		CHECK_ERROR(
 			canDumpControlTree != canDumpDomTree,
-			L"StartMiniHttpAutomationService(Ptr<IAsyncSocketServer>)#The automation service should provide either the control tree or the DOM tree."
+			L"StartMiniHttpAutomationService(Ptr<IAsyncSocketServer>, const WString&)#The automation service should provide either the control tree or the DOM tree."
 			);
 
-		auto urlPrefix = WString::Unmanaged(
-			canDumpControlTree
-			? L"/Automation/RemotingTest_Core"
-			: L"/Automation/RemotingTest_Rendering_Win32"
-			);
+		auto urlPrefix = WString::Unmanaged(L"/Automation/") + applicationName;
 		auto service = new MiniHttpAutomationService(socketServer, urlPrefix);
 		try
 		{
@@ -155,6 +155,19 @@ void StartMiniHttpAutomationService(Ptr<IAsyncSocketServer> socketServer)
 		}
 		miniHttpAutomationService = service;
 	}
+}
+
+void StartMiniHttpAutomationService(Ptr<IAsyncSocketServer> socketServer)
+{
+	auto automationService = GetCurrentController()->AutomationService();
+	StartMiniHttpAutomationService(
+		socketServer,
+		WString::Unmanaged(
+			automationService->CanDumpControlTree()
+			? L"RemotingTest_Core"
+			: L"RemotingTest_Rendering_Win32"
+			)
+		);
 }
 
 void StopMiniHttpAutomationService()

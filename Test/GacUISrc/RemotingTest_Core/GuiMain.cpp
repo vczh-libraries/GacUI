@@ -205,6 +205,7 @@ namespace
 }
 
 IJsonLocalChannelServer* protocolServer = nullptr;
+IGuiRemoteProtocol* rendererProtocol = nullptr;
 vint mainWindowConstructorIndex = 0;
 #ifdef VCZH_MSVC
 bool useWindowsHttpAutomationService = true;
@@ -258,6 +259,12 @@ void GuiMain()
 					StartMiniHttpAutomationService(*miniHttpAutomationSocketServer);
 				}
 				GetApplication()->Run(window.Obj());
+				if (rendererProtocol)
+				{
+					rendererProtocol->RequestControllerConnectionStopped();
+					bool disconnected = false;
+					rendererProtocol->Submit(disconnected);
+				}
 			}
 			catch (...)
 			{
@@ -315,7 +322,17 @@ void StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr:
 
 	channelServer.SetCoreProtocolChannel(&channelSender);
 	protocolServer = &channelServer;
-	SetupRemoteNativeController(&diffConverterProtocol);
+	rendererProtocol = &diffConverterProtocol;
+	try
+	{
+		SetupRemoteNativeController(&diffConverterProtocol);
+	}
+	catch (...)
+	{
+		rendererProtocol = nullptr;
+		throw;
+	}
+	rendererProtocol = nullptr;
 #ifdef VCZH_MSVC
 	if constexpr (std::is_same_v<TServerBase, inter_process::named_pipe::NamedPipeServer>)
 	{

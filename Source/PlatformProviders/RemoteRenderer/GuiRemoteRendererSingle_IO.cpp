@@ -80,7 +80,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::LeftButtonDown(const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
-		pendingMouseMove.Reset();
+		SendAccumulatedMessages();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Left;
 		arguments.info = info;
@@ -90,7 +90,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::LeftButtonUp(const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
-		pendingMouseMove.Reset();
+		SendAccumulatedMessages();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Left;
 		arguments.info = info;
@@ -100,7 +100,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::LeftButtonDoubleClick(const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
-		pendingMouseMove.Reset();
+		SendAccumulatedMessages();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Left;
 		arguments.info = info;
@@ -110,7 +110,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::RightButtonDown(const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
-		pendingMouseMove.Reset();
+		SendAccumulatedMessages();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Right;
 		arguments.info = info;
@@ -120,7 +120,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::RightButtonUp(const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
-		pendingMouseMove.Reset();
+		SendAccumulatedMessages();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Right;
 		arguments.info = info;
@@ -130,7 +130,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::RightButtonDoubleClick(const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
-		pendingMouseMove.Reset();
+		SendAccumulatedMessages();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Right;
 		arguments.info = info;
@@ -140,7 +140,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::MiddleButtonDown(const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
-		pendingMouseMove.Reset();
+		SendAccumulatedMessages();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Middle;
 		arguments.info = info;
@@ -150,7 +150,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::MiddleButtonUp(const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
-		pendingMouseMove.Reset();
+		SendAccumulatedMessages();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Middle;
 		arguments.info = info;
@@ -160,7 +160,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::MiddleButtonDoubleClick(const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
-		pendingMouseMove.Reset();
+		SendAccumulatedMessages();
 		IOMouseInfoWithButton arguments;
 		arguments.button = IOMouseButton::Middle;
 		arguments.info = info;
