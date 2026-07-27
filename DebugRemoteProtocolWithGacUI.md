@@ -203,51 +203,48 @@ wait "$core_pid" 2>/dev/null || true
 
 ### Linux
 
-Use the Linux build, hosting, and cleanup commands above. Install the desired
-Playwright browser runtime from `<GacJS>/Gaclib` and verify through a browser
-page, not by relying on the non-Windows E2E skip:
+Use the Linux build, hosting, and cleanup commands above. Firefox is the
+required Playwright browser for this platform. Install it from
+`<GacJS>/Gaclib` and verify through a browser page, not by relying on the
+non-Windows E2E skip:
 
 ```bash
-yarn playwright install chromium
-yarn playwright open --browser=chromium http://localhost:8896/index.html
+yarn playwright install firefox
+yarn playwright open --browser=firefox http://localhost:8896/index.html
 ```
 
+Do not substitute Chromium or WebKit in the Linux verification matrix.
 These Linux instructions share the portable macOS path but were not executed
 during the macOS investigation that introduced the build entry.
 
 ### macOS
 
-Install Playwright's Chromium and WebKit runtimes:
+WebKit is the required Playwright browser for this platform because it is
+Playwright's Safari-family target. Install it from `<GacJS>/Gaclib`:
 
 ```bash
 cd <GacJS>/Gaclib
-yarn playwright install chromium webkit
+yarn playwright install webkit
 ```
 
-Verify Chromium first:
-
-```bash
-yarn playwright open --browser=chromium http://localhost:8896/index.html
-```
-
-The `playwright open` commands are interactive sessions. When automating the
-scenario in a Playwright script, use the programmatic idle, blink, and error
-handling rules above.
-
-Close it, stop the core, and start a fresh `/MiniHttp` core before verifying
-Playwright WebKit:
+Run each required application scenario in Playwright WebKit with a fresh
+`/MiniHttp` core:
 
 ```bash
 yarn playwright open --browser=webkit http://localhost:8896/index.html
 ```
 
-For both engines, require live GacUI content, focus an editor, type through the
-browser keyboard, and require the exact text to render with no dialog, page
-error, or console error.
+The command opens an interactive session. When automating the
+scenario in a Playwright script, use the programmatic idle, blink, and error
+handling rules above. Require live GacUI content, focus an editor, type through
+the browser keyboard, and require the exact text to render with no dialog, page
+error, or console error. Do not add Chromium or Firefox to the macOS
+verification matrix.
 
-Playwright WebKit provides WebKit compatibility coverage but is not actual
-Safari. Real Safari remains a separate manual check. Keep or restart the static
-server, stop the WebKit core, and start a fresh `/MiniHttp` core before running:
+Playwright WebKit is the Safari-family automated target, but it is not the
+installed Safari application. Real Safari remains a separate manual check after
+the required Playwright run. Keep or restart the static server, stop the WebKit
+core, and start a fresh `/MiniHttp` core before running:
 
 ```bash
 open -a Safari http://localhost:8896/index.html
