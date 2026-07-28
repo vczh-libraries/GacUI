@@ -2,7 +2,7 @@
 
 This guide explains how to start a native renderer, inspect its remote UI, and
 send real renderer-side input. The shared UI operations and observable results
-are defined in [`DebugGacUISop.md`](DebugGacUISop.md). The required transport
+are defined in [`DebugRemoteProtocolSop.md`](DebugRemoteProtocolSop.md). The required transport
 matrix and pass/fail criteria are defined in
 [`../Tools/Jobs/job.verifyRemoteProtocol.prompt.md`](../Tools/Jobs/job.verifyRemoteProtocol.prompt.md).
 Use this document as the native-renderer operation entry point on every

@@ -6,6 +6,27 @@ results used to catch end-to-end regressions. Use
 [`DebugRemoteProtocolWithNativeRenderer.md`](DebugRemoteProtocolWithNativeRenderer.md) to
 establish, drive, inspect, replace, and close the renderer session.
 
+## Expected Behavior of Remote Protocol
+
+- Test Apps:
+  - `RemotingTest_Core` in `GacUI` repo is a test app for remote protocol.
+  - `RemotingTest_Rendering_Win32` in `GacUI` repo is a test app for remote protocol client using Windows native renderer.
+  - `RemotingTest_Rendering_macOS` in `iGac` repo is a test app for remote protocol client using macOS native renderer.
+  - `RemotingTest_Rendering_Wayland` in `wGac` repo is a test app for remote protocol client using Linux/Wayland native renderer.
+  - `Gaclib/website/entry` npmjs package in `GacJS` repo is a http service, hosting a website as a remoting protocol client running in a Browser.
+  - Core and client test apps are expected to run in the same computer.
+- Expected Behavior:
+  - Core is supposed to run with one or without renderer connected. When using the automation service from core to perform UI operation, anything should just work, don't assume there must be a renderer to handle any request/message.
+  - At most one renderer can connect to core.
+    - The first event from a renderer is expected to be `ControllerConnect`.
+    - No matter there was an active renderer or not, after core receiving `ControllerConnect`, the renderer sent this take over the rendering.
+    - The `ControllerConnectionEstablished` message will be sent from core to acknowledge the new renderer.
+    - Core allows switching between any renderer, even between `GacJS` and a native renderer.
+    - If the rendering is already taken over, any events from the old renderer will be ignored.
+  - When any user operation on renderer causing core to exit normally (at the user's will), a message `ControllerConnectionStopped` will be sent from core to distinguish from a fatal error stopping core from running.
+  - Upon core sending a fatal error, any event sending from the renderer will be ignored.
+  - Once a renderer receiving `ControllerConnectionStopped`, any fatal error from core or from local should be ignored, as that might due to unstability of network connection after core initiating the finalization.
+
 ## Rules for Every Operation
 
 1. Read the current visible UI before acting. Use the active enclosing control,

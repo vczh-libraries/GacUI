@@ -2,7 +2,7 @@
 
 This guide explains how to build and start `RemotingTest_Core`, serve GacJS,
 and operate the browser renderer. The renderer-independent UI actions and
-observable results are in [`DebugGacUISop.md`](DebugGacUISop.md). The required
+observable results are in [`DebugRemoteProtocolSop.md`](DebugRemoteProtocolSop.md). The required
 verification matrix and scenarios are in
 [`../Tools/Jobs/job.verifyRemoteProtocol.prompt.md`](../Tools/Jobs/job.verifyRemoteProtocol.prompt.md).
 Use that job to decide what must be tested and this guide to start and drive
