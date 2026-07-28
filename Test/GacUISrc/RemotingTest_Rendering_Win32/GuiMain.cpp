@@ -120,6 +120,18 @@ private:
 			mainWindow,
 			[=]()
 			{
+#if defined VCZH_GCC && !defined VCZH_APPLE
+				// Raw Wayland rendering has no GuiApplication, so there is no
+				// FakeDialogService window in which to display this prompt.
+				if (targetRenderer)
+				{
+					targetRenderer->RetainByFatalError(message);
+				}
+				if (targetAutomationService)
+				{
+					targetAutomationService->SetFatalError(Nullable<WString>(message));
+				}
+#else
 				auto result = GetCurrentController()->DialogService()->ShowMessageBox(
 					mainWindow,
 					message + WString::Unmanaged(L"\r\n\r\nDo you want to close the renderer?"),
@@ -146,6 +158,7 @@ private:
 						targetAutomationService->SetFatalError(Nullable<WString>(message));
 					}
 				}
+#endif
 			});
 	}
 
