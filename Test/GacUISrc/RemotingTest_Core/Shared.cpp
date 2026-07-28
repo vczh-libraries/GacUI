@@ -1,4 +1,6 @@
-#if defined __APPLE__ && __has_include(<GacUI.h>)
+#if defined __linux__ && __has_include(<GacUI.h>) && __has_include("../WGac/Services/WGacAutomationService.h")
+#include <GacUI.h>
+#elif defined __APPLE__ && __has_include(<GacUI.h>)
 #include <GacUI.h>
 #else
 #include "../../../Source/GacUI.h"
@@ -15,6 +17,39 @@ namespace
 	class MiniHttpAutomationService : public SocketHttpServerApi
 	{
 	private:
+		void DumpTreeAsync(
+			Ptr<SocketHttpRequestContext> context,
+			INativeWindow* mainWindow,
+			INativeAsyncService* asyncService,
+			INativeAutomationService* automationService,
+			bool dumpControlTree
+			)
+		{
+			asyncService->InvokeInMainThread(mainWindow, [context, automationService, dumpControlTree]()
+			{
+				try
+				{
+					auto response = dumpControlTree
+						? automationService->DumpControlTree()
+						: automationService->DumpDomTree();
+					context->RespondUtf8(
+						200,
+						WString::Unmanaged(L"OK"),
+						WString::Unmanaged(HttpNetworkProtocolContentType),
+						response
+						);
+					return;
+				}
+				catch (const Error&)
+				{
+				}
+				catch (const Exception&)
+				{
+				}
+				context->RespondStatus(404, WString::Unmanaged(L"Not Found"));
+			});
+		}
+
 		bool TryGetBodyUtf8(Ptr<SocketHttpRequestContext> context, WString& body)
 		{
 			auto request = context->GetRequest();
@@ -48,20 +83,16 @@ namespace
 					{
 						if (automationService->CanDumpControlTree())
 						{
-							asyncService->InvokeInMainThreadAndWait(mainWindow, [&]()
-							{
-								respondString = automationService->DumpControlTree();
-							});
+							DumpTreeAsync(context, mainWindow, asyncService, automationService, true);
+							return;
 						}
 					}
 					else if (relativePath == L"/Dom")
 					{
 						if (automationService->CanDumpDomTree())
 						{
-							asyncService->InvokeInMainThreadAndWait(mainWindow, [&]()
-							{
-								respondString = automationService->DumpDomTree();
-							});
+							DumpTreeAsync(context, mainWindow, asyncService, automationService, false);
+							return;
 						}
 					}
 				}

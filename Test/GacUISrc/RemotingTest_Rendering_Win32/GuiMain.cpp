@@ -1,4 +1,8 @@
-#if defined __APPLE__ && __has_include(<GacUI.h>)
+#if defined __linux__ && __has_include(<GacUI.h>) && __has_include("../WGac/Services/WGacAutomationService.h") && __has_include("../WGac/Renderers/WGacRenderer.h")
+#include <GacUI.h>
+#include "../WGac/Services/WGacAutomationService.h"
+#include "../WGac/Renderers/WGacRenderer.h"
+#elif defined __APPLE__ && __has_include(<GacUI.h>)
 #include <GacUI.h>
 #include "../Mac/NativeWindow/CocoaAutomationService.h"
 #include "../Mac/NativeWindow/OSX/CoreGraphics/CoreGraphicsApp.h"
@@ -37,7 +41,7 @@ namespace
 	constexpr const wchar_t* GacUIAutomationApplicationName = L"RemotingTest_Rendering_Win32";
 #endif
 #if defined VCZH_GCC && !defined VCZH_APPLE
-	constexpr const wchar_t* GacUIAutomationApplicationName = L"RemotingTest_Renderer_Linux";
+	constexpr const wchar_t* GacUIAutomationApplicationName = L"RemotingTest_Renderer_Wayland";
 #endif
 #if defined VCZH_GCC && defined VCZH_APPLE
 	constexpr const wchar_t* GacUIAutomationApplicationName = L"RemotingTest_Renderer_macOS";
@@ -46,7 +50,6 @@ namespace
 
 GuiRemoteRendererSingle* renderer = nullptr;
 GuiRemoteProtocolAsyncJsonChannelRenderer* asyncChannel = nullptr;
-AutomationServiceRenderer* rendererAutomationService = nullptr;
 #if defined VCZH_MSVC
 bool useWindowsHttpAutomationService = true;
 #endif
@@ -56,19 +59,21 @@ class RemotingTestChannelClient : public GuiRemoteProtocolChannelClient
 {
 	using Base = GuiRemoteProtocolChannelClient;
 private:
-	SpinLock									lockFatalError; // covers triggeredFatalError, fatalTitle, fatalMessage
+	SpinLock									lockState;
 	bool										triggeredFatalError = false;
+	bool										stopping = false;
 	WString										fatalTitle;
 	WString										fatalMessage;
 	GuiRemoteRendererSingle*					renderer = nullptr;
 	GuiRemoteProtocolAsyncJsonChannelRenderer*	asyncRendererChannel = nullptr;
+	AutomationServiceRenderer*					rendererAutomationService = nullptr;
 
 	bool ClaimFatalError(const WString& title, const WString& errorMessage)
 	{
 		bool claimed = false;
-		SPIN_LOCK(lockFatalError)
+		SPIN_LOCK(lockState)
 		{
-			if (!triggeredFatalError && (!renderer || !renderer->IsDisconnectedFromCore()))
+			if (!stopping && !triggeredFatalError && (!renderer || !renderer->IsDisconnectedFromCore()))
 			{
 				triggeredFatalError = true;
 				fatalTitle = title;
@@ -79,29 +84,38 @@ private:
 		return claimed;
 	}
 
-	bool HasFatalError()
+	GuiRemoteRendererSingle* GetRendererUnlessStopping()
 	{
-		bool hasFatalError = false;
-		SPIN_LOCK(lockFatalError)
+		GuiRemoteRendererSingle* targetRenderer = nullptr;
+		SPIN_LOCK(lockState)
 		{
-			hasFatalError = triggeredFatalError;
+			if (!stopping)
+			{
+				targetRenderer = renderer;
+			}
 		}
-		return hasFatalError;
+		return targetRenderer;
 	}
 
 	void QueueFatalPrompt()
 	{
 		WString title;
 		WString message;
-		SPIN_LOCK(lockFatalError)
+		GuiRemoteRendererSingle* targetRenderer = nullptr;
+		AutomationServiceRenderer* targetAutomationService = nullptr;
+		SPIN_LOCK(lockState)
 		{
+			if (stopping)
+			{
+				return;
+			}
 			title = fatalTitle;
 			message = fatalMessage;
+			targetRenderer = renderer;
+			targetAutomationService = rendererAutomationService;
 		}
 
 		auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
-		auto targetRenderer = renderer;
-		auto targetAutomationService = rendererAutomationService;
 		GetCurrentController()->AsyncService()->InvokeInMainThread(
 			mainWindow,
 			[=]()
@@ -143,12 +157,34 @@ public:
 
 	void SetRenderer(GuiRemoteRendererSingle* _renderer)
 	{
-		renderer = _renderer;
+		SPIN_LOCK(lockState)
+		{
+			renderer = _renderer;
+		}
 	}
 
 	void SetAsyncRendererChannel(GuiRemoteProtocolAsyncJsonChannelRenderer* _asyncRendererChannel)
 	{
-		asyncRendererChannel = _asyncRendererChannel;
+		SPIN_LOCK(lockState)
+		{
+			asyncRendererChannel = _asyncRendererChannel;
+		}
+	}
+
+	void SetRendererAutomationService(AutomationServiceRenderer* _rendererAutomationService)
+	{
+		SPIN_LOCK(lockState)
+		{
+			rendererAutomationService = _rendererAutomationService;
+		}
+	}
+
+	void BeginStopping()
+	{
+		SPIN_LOCK(lockState)
+		{
+			stopping = true;
+		}
 	}
 
 	void OnReadError(const WString& errorMessage) override
@@ -165,9 +201,9 @@ public:
 		{
 			if (ClaimFatalError(L"ERROR from Renderer Transport", errorMessage))
 			{
-				if (renderer)
+				if (auto targetRenderer = GetRendererUnlessStopping())
 				{
-					renderer->RequestCoreForceExitByFatalError();
+					targetRenderer->RequestCoreForceExitByFatalError();
 				}
 				QueueFatalPrompt();
 			}
@@ -177,13 +213,23 @@ public:
 	void OnDisconnected() override
 	{
 		Base::OnDisconnected();
-		if (asyncRendererChannel)
+
+		GuiRemoteProtocolAsyncJsonChannelRenderer* targetAsyncRendererChannel = nullptr;
+		GuiRemoteRendererSingle* targetRenderer = nullptr;
+		SPIN_LOCK(lockState)
 		{
-			asyncRendererChannel->Detach();
+			targetAsyncRendererChannel = asyncRendererChannel;
+			if (!stopping && !triggeredFatalError)
+			{
+				targetRenderer = renderer;
+			}
 		}
-		if (renderer && !HasFatalError())
+		if (targetAsyncRendererChannel)
 		{
-			auto targetRenderer = renderer;
+			targetAsyncRendererChannel->Detach();
+		}
+		if (targetRenderer)
+		{
 #if defined VCZH_MSVC
 			targetRenderer->ForceExitByFatelError();
 #endif
@@ -208,6 +254,8 @@ public:
 		}
 	}
 };
+
+RemotingTestChannelClient* currentChannelClient = nullptr;
 
 class GuiMainAsyncRendererInvoker : public Object, public virtual IGuiRemoteProtocolAsyncRendererInvoker
 {
@@ -250,6 +298,9 @@ void GuiMain()
 	GuiMainAsyncRendererInvoker invoker;
 	renderer->RegisterMainWindow(mainWindow);
 	asyncChannel->SetInvokeInMainThread(&invoker);
+#if defined VCZH_GCC && !defined VCZH_APPLE
+	currentChannelClient->WaitForServer();
+#endif
 
 	{
 #if defined VCZH_MSVC
@@ -261,7 +312,7 @@ void GuiMain()
 #if defined VCZH_GCC && defined VCZH_APPLE
 		osx::CocoaAutomationServiceRenderer automationService(renderer);
 #endif
-		rendererAutomationService = &automationService;
+		currentChannelClient->SetRendererAutomationService(&automationService);
 		GetNativeServiceSubstitution()->Substitute(&automationService, false);
 		auto cleanup = [&]()
 		{
@@ -281,7 +332,7 @@ void GuiMain()
 			}
 #endif
 			GetNativeServiceSubstitution()->Unsubstitute(&automationService);
-			rendererAutomationService = nullptr;
+			currentChannelClient->SetRendererAutomationService(nullptr);
 		};
 		try
 		{
@@ -308,6 +359,7 @@ void GuiMain()
 		cleanup();
 	}
 
+	currentChannelClient->BeginStopping();
 	asyncChannel->SetInvokeInMainThread(nullptr);
 	renderer->UnregisterMainWindow();
 }
@@ -321,24 +373,63 @@ int StartClient(Ptr<inter_process::INetworkProtocolClient> networkClient)
 	GuiRemoteProtocolRendererChannel rendererChannel(&asyncRendererChannel, &remoteRenderer);
 	channelClient.SetRenderer(&remoteRenderer);
 	channelClient.SetAsyncRendererChannel(&asyncRendererChannel);
+#if defined VCZH_MSVC || (defined VCZH_GCC && defined VCZH_APPLE)
 	channelClient.WaitForServer();
+#endif
 
+	currentChannelClient = &channelClient;
 	asyncChannel = &asyncRendererChannel;
 	renderer = &remoteRenderer;
+	auto stopClient = [&]()
+	{
+		// Stop() is the transport barrier. Suppress controller callbacks first,
+		// but keep callback targets alive until all network callbacks have ended.
+		channelClient.BeginStopping();
+		try
+		{
+			networkClient->GetConnection()->Stop();
+		}
+		catch (...)
+		{
+			channelClient.SetAsyncRendererChannel(nullptr);
+			channelClient.SetRenderer(nullptr);
+			currentChannelClient = nullptr;
+			renderer = nullptr;
+			asyncChannel = nullptr;
+			throw;
+		}
+		channelClient.SetAsyncRendererChannel(nullptr);
+		channelClient.SetRenderer(nullptr);
+		currentChannelClient = nullptr;
+		renderer = nullptr;
+		asyncChannel = nullptr;
+	};
+
+	int result = 0;
+	try
+	{
 #if defined VCZH_MSVC
-	int result = SetupRawWindowsDirect2DRenderer();
+		result = SetupRawWindowsDirect2DRenderer();
 #endif
 #if defined VCZH_GCC && !defined VCZH_APPLE
-	int result = elements::wgac::SetupWGacRenderer();
+		result = elements::wgac::SetupRawWGacRenderer();
 #endif
 #if defined VCZH_GCC && defined VCZH_APPLE
-	int result = SetupRawOSXCoreGraphicsRenderer();
+		result = SetupRawOSXCoreGraphicsRenderer();
 #endif
-	networkClient->GetConnection()->Stop();
-	renderer = nullptr;
-	asyncChannel = nullptr;
-	channelClient.SetAsyncRendererChannel(nullptr);
-	channelClient.SetRenderer(nullptr);
+	}
+	catch (...)
+	{
+		try
+		{
+			stopClient();
+		}
+		catch (...)
+		{
+		}
+		throw;
+	}
+	stopClient();
 
 	return result;
 }

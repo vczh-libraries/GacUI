@@ -35,9 +35,8 @@ namespace
 		using Base = GuiRemoteProtocolNetworkChannelServer<TServerBase>;
 
 	protected:
-		// covers eventRendererConnected, rendererClientId, coreJsonChannel and coreProtocolChannel
+		// covers rendererClientId, coreJsonChannel and coreProtocolChannel
 		SpinLock						lockConnection;
-		EventObject*					eventRendererConnected = nullptr;
 		IJsonChannel*					coreJsonChannel = nullptr;
 		GuiRemoteProtocolCoreChannel*	coreProtocolChannel = nullptr;
 		vint							rendererClientId = -1;
@@ -49,14 +48,6 @@ namespace
 		RemotingChannelServerBase(Ptr<glr::json::Parser> parser, TArgs&&... args)
 			: Base(parser, std::forward<TArgs>(args)...)
 		{
-		}
-
-		void SetRendererConnectedEvent(EventObject* eventObject)
-		{
-			SPIN_LOCK(lockConnection)
-			{
-				eventRendererConnected = eventObject;
-			}
 		}
 
 		void SetCoreJsonChannel(IJsonChannel* channel)
@@ -92,10 +83,9 @@ namespace
 				L"RemotingChannelServerBase::OnClientConnected(vint, const ChannelNameList&, IJsonChannelClient*)#The client does not have the GacUI remote protocol channel."
 				);
 
-			EventObject* eventToSignal = nullptr;
 			IJsonChannel* jsonChannelToOldRenderer = nullptr;
-			GuiRemoteProtocolCoreChannel* channelToOldRenderer = nullptr;
 			vint oldRendererClientId = -1;
+			bool rendererConnected = false;
 			SPIN_LOCK(lockConnection)
 			{
 				if (!localClient)
@@ -104,20 +94,19 @@ namespace
 					{
 						oldRendererClientId = rendererClientId;
 						jsonChannelToOldRenderer = coreJsonChannel;
-						channelToOldRenderer = coreProtocolChannel;
+						if (coreProtocolChannel)
+						{
+							coreProtocolChannel->DetachRenderer(oldRendererClientId);
+						}
 					}
 					rendererClientId = clientId;
-					eventToSignal = eventRendererConnected;
+					rendererConnected = true;
 				}
 			}
 
 			if (oldRendererClientId != -1)
 			{
 				bool rendererNotifiedToStop = false;
-				if (channelToOldRenderer)
-				{
-					channelToOldRenderer->DetachRenderer(oldRendererClientId);
-				}
 				if (jsonChannelToOldRenderer)
 				{
 					try
@@ -142,11 +131,73 @@ namespace
 					this->DisconnectClient(oldRendererClientId);
 				}
 			}
-			if (eventToSignal)
+			if (rendererConnected)
 			{
-				eventToSignal->Signal();
+				Console::WriteLine(L"> Renderer transport connected: " + itow(clientId));
 			}
 			return inter_process::WaitForClientResult::Accept;
+		}
+
+		void OnClientDisconnected(vint clientId) override
+		{
+			bool rendererDisconnected = false;
+			SPIN_LOCK(lockConnection)
+			{
+				if (rendererClientId == clientId)
+				{
+					rendererClientId = -1;
+					if (coreProtocolChannel)
+					{
+						coreProtocolChannel->DetachRenderer(clientId);
+					}
+					rendererDisconnected = true;
+				}
+			}
+			if (rendererDisconnected)
+			{
+				Console::WriteLine(L"> Renderer transport disconnected: " + itow(clientId));
+			}
+		}
+	};
+
+	class RemotingTestCoreChannel : public GuiRemoteProtocolCoreChannel
+	{
+		using Base = GuiRemoteProtocolCoreChannel;
+		Func<vint()> getTransportRendererClientId;
+
+	public:
+		RemotingTestCoreChannel(
+			IJsonChannelClient* client,
+			IJsonChannel* channel,
+			const WString& executablePath,
+			IGuiRemoteEventProcessor* eventProcessor,
+			const Func<vint()>& _getTransportRendererClientId
+			)
+			: Base(client, channel, executablePath, eventProcessor)
+			, getTransportRendererClientId(_getTransportRendererClientId)
+		{
+		}
+
+		void Submit(bool& disconnected) override
+		{
+			auto receiverClientId = GetRendererClientId();
+			collections::List<JsonPackage> packages;
+			SPIN_LOCK(lockPackagesBeforeRenderer)
+			{
+				packages = std::move(packagesBeforeRenderer);
+			}
+
+			if (receiverClientId == -1 || receiverClientId != getTransportRendererClientId())
+			{
+				disconnected = true;
+				return;
+			}
+
+			for (auto&& package : packages)
+			{
+				channel->SendToClient(receiverClientId, package);
+			}
+			channel->BatchWrite(disconnected);
 		}
 	};
 
@@ -194,14 +245,6 @@ namespace
 		}
 	};
 
-	template<typename TServerBase>
-	vint WaitForRenderer(RemotingChannelServerBase<TServerBase>& channelServer, EventObject& eventRendererConnected)
-	{
-		eventRendererConnected.Wait();
-		auto rendererClientId = channelServer.GetRendererClientId();
-		CHECK_ERROR(rendererClientId != -1, L"WaitForRenderer(RemotingChannelServerBase&, EventObject&)#The renderer client has not been recorded.");
-		return rendererClientId;
-	}
 }
 
 IJsonLocalChannelServer* protocolServer = nullptr;
@@ -227,7 +270,6 @@ void GuiMain()
 			window = Ptr(new demo::MainWindow);
 		}
 		window->ForceCalculateSizeImmediately();
-		window->MoveToScreenCenter();
 		try
 		{
 			RemoteProtocolAutomationService automationService;
@@ -296,9 +338,6 @@ void GuiMain()
 template<typename TServerBase>
 void StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr::json::Parser> jsonParser)
 {
-	EventObject eventRendererConnected;
-	CHECK_ERROR(eventRendererConnected.CreateManualUnsignal(false), L"StartServer(RemotingChannelServerBase&, Ptr<Parser>)#Failed to create eventRendererConnected.");
-	channelServer.SetRendererConnectedEvent(&eventRendererConnected);
 	channelServer.Start();
 
 	auto coreClient = Ptr(new GuiRemoteProtocolLocalChannelClient(jsonParser));
@@ -306,16 +345,16 @@ void StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr:
 	CHECK_ERROR(coreClientId == GacUIRemoteProtocolCoreClientId, L"StartServer(RemotingChannelServerBase&, Ptr<Parser>)#Failed to register the core channel client.");
 	channelServer.SetCoreJsonChannel(coreClient->GetProtocolChannel());
 
-	Console::WriteLine(L"> Waiting for a renderer ...");
-	auto rendererClientId = WaitForRenderer(channelServer, eventRendererConnected);
-	Console::WriteLine(L"> Renderer connected: " + itow(rendererClientId));
-
 	GuiRemoteProtocolAsyncJsonChannel asyncChannelSender(coreClient->GetProtocolChannel());
-	GuiRemoteProtocolCoreChannel channelSender(
+	RemotingTestCoreChannel channelSender(
 		coreClient.Obj(),
 		&asyncChannelSender,
 		WString::Unmanaged(L"RemotingTest_Core.vcxproj"),
-		asyncChannelSender.GetRemoteEventProcessor()
+		asyncChannelSender.GetRemoteEventProcessor(),
+		[&channelServer]()
+		{
+			return channelServer.GetRendererClientId();
+		}
 		);
 	GuiRemoteProtocolFilter filteredProtocol(&channelSender);
 	GuiRemoteProtocolDomDiffConverter diffConverterProtocol(&filteredProtocol);
@@ -336,6 +375,7 @@ void StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr:
 #ifdef VCZH_MSVC
 	if constexpr (std::is_same_v<TServerBase, inter_process::named_pipe::NamedPipeServer>)
 	{
+		auto rendererClientId = channelServer.GetRendererClientId();
 		if (rendererClientId != -1)
 		{
 			channelServer.DisconnectClient(rendererClientId);
@@ -346,7 +386,6 @@ void StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr:
 	channelServer.SetCoreProtocolChannel(nullptr);
 	channelServer.SetCoreJsonChannel(nullptr);
 
-	channelServer.SetRendererConnectedEvent(nullptr);
 	channelServer.Stop();
 }
 
