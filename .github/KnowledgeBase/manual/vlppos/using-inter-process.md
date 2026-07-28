@@ -2,7 +2,9 @@
 
 The **vl::inter_process** namespace is organized in layers. Feature code normally uses the channel interfaces, because they describe typed named message delivery between connected participants. Transport code implements the raw network protocol interfaces, because they describe how one server and many clients exchange asynchronous **WString** messages. Portable async-socket transports and Windows-specific transports are composition choices that connect these two layers.
 
-The transport-agnostic raw-protocol and channel interfaces, together with the default channel bridge, can be used in production. Every concrete raw-protocol implementation supplied by VlppOS is testing, validation and demonstration infrastructure and should not be used as a production transport. A production application should implement its own **INetworkProtocolServer**, **INetworkProtocolClient** and **INetworkProtocolConnection** for its security, deployment, performance, reconnection and delivery requirements, then reuse the channel layer over that implementation.
+VlppOS provides the **INetworkProtocol** and **IChannel** interface families only for test-purpose local cross-process communication. Applications may use these public interfaces as integration contracts, but product code is strongly recommended to provide its own implementations instead of treating the bundled transports and channel stack as production networking.
+
+Despite the names, these contracts are not tied to TCP/IP. Any mechanism that provides the required asynchronous message and lifecycle behavior can fit behind them, including stdio, DLL calls, shared memory, WebAssembly host calls, pipes, sockets, HTTP or a custom network protocol.
 
 Keep this boundary in application code:
 - Use **IChannelServer\<TPackage\>**, **IChannelClient\<TPackage\>**, **IChannel\<TPackage\>** and **IChannelReader\<TPackage\>** when the feature sends and receives packages.
@@ -120,7 +122,7 @@ public:
 
 ## Network Protocol Interfaces for Transports
 
-The raw protocol layer is the extension point for a new underlying implementation. It intentionally knows nothing about channel names or package types. One **INetworkProtocolConnection** exchanges asynchronous **WString** messages with the other side.
+The raw protocol layer is the extension point for a new underlying implementation. It intentionally knows nothing about channel names or package types. One **INetworkProtocolConnection** exchanges asynchronous **WString** messages with the other side. This message contract can be implemented by a local pipe or socket, stdio, DLL calls, shared memory, a WebAssembly host bridge or another mechanism; the name **INetworkProtocol** does not require an IP network.
 
 Implement these interfaces for a new transport:
 - **INetworkProtocolConnection**: install or uninstall one callback, start the asynchronous read loop, send one string message and stop the connection.
@@ -130,7 +132,7 @@ Implement these interfaces for a new transport:
 
 **InstallCallback** should call **OnInstalled** with the connection. Passing **nullptr** uninstalls the callback. **BeginReadingLoopUnsafe** starts receiving messages asynchronously, but callers must tolerate implementations that have already received data after the callback was installed. **Stop** is the shutdown boundary; after it returns, pending transport callbacks should no longer touch the stopped object.
 
-A raw client must return a connection object from **GetConnection**, but using that connection before **WaitForServer** finishes is outside the contract. A raw server should not report client-connected callbacks before **Start** or after **Stop**. Once a logical connection reports disconnection, that object does not reconnect. A transport may replace internal physical connections before logical disconnection; the portable Socket HTTP client uses this distinction for its two physical lanes.
+A raw client must return a connection object from **GetConnection**, but using that connection before **WaitForServer** finishes is outside the contract. A raw server should not report client-connected callbacks before **Start** or after **Stop**. If a connection is lost, the same connection object does not reconnect; a reconnecting transport should create a new connection object.
 
 After a raw transport exists, reuse the channel bridge instead of reimplementing channel routing:
 ```C++
@@ -204,18 +206,21 @@ server->Start();
 
 ## Portable Async-Socket Implementations
 
-VlppOS offers two portable raw protocol choices over native async sockets. Both bind to **windows_socket::AsyncSocketServer/Client**, **linux_socket::AsyncSocketServer/Client**, or **macos_socket::AsyncSocketServer/Client** at the application composition boundary.
+The types in **vl::inter_process::async_tcp_socket** form a portable, loopback-only stack for asynchronous TCP bytes, HTTP/1.1 requests and Mini HTTP services. Platform-neutral factories select **windows_socket::AsyncSocketServer** and **AsyncSocketClient**, **linux_socket::AsyncSocketServer** and **AsyncSocketClient**, or **macos_socket::AsyncSocketServer** and **AsyncSocketClient** at the application composition boundary.
 
 ### Direct Length-Framed Transport
 
-Use **async_tcp_socket::NetworkProtocolServer\<TAsyncSocketServer\>** and **async_tcp_socket::NetworkProtocolClient\<TAsyncSocketClient\>** when both peers use VlppOS and HTTP compatibility is unnecessary. One logical connection is one physical socket. Each **WString** is framed with its character count and native **wchar_t** bytes. The implementation owns callback and write draining; **Stop** is a hard boundary and supports reentrant calls from a current callback.
+Use **async_tcp_socket::NetworkProtocolServer\<TAsyncSocketServer\>** and **async_tcp_socket::NetworkProtocolClient\<TAsyncSocketClient\>** when both peers use VlppOS and HTTP compatibility is unnecessary. One logical connection is one physical TCP socket. Each **WString** is framed with its character count and native **wchar_t** bytes, so this is not a portable wire encoding between peers with different **wchar_t** representations.
+
+These templates construct their socket backend from forwarded constructor arguments, so choose the concrete type for the target: **windows_socket::AsyncSocketServer** and **AsyncSocketClient**, **linux_socket::AsyncSocketServer** and **AsyncSocketClient**, or **macos_socket::AsyncSocketServer** and **AsyncSocketClient**, and pass the port to the protocol adapter. They do not accept an injected **Ptr\<IAsyncSocketServer\>** or **Ptr\<IAsyncSocketClient\>**.
+
+**IAsyncSocketServer**, **IAsyncSocketClient**, **IAsyncSocketConnection** and **IAsyncSocketCallback** expose the underlying ordered full-duplex byte streams. The interface-returning **CreateDefaultAsyncSocketServer(port)** and **CreateDefaultAsyncSocketClient(port)** factories are for code that consumes these socket interfaces, including the injected **SocketHttpServer** and **SocketHttpClient** dependencies below. Each socket exposes its immutable loopback port through **GetPort**, and **IAsyncSocketClient::CreateSameEndpointClient** creates a fresh client for another physical lane on the same endpoint.
 
 ### HTTP-Compatible Socket Transport
 
-Use **async_tcp_socket::SocketHttpServer** and **async_tcp_socket::SocketHttpClient** when the transport must use the legacy VlppOS HTTP wire protocol or interoperate with the Windows HTTP implementation.
+Use **async_tcp_socket::SocketHttpServer** and **async_tcp_socket::SocketHttpClient** when the transport must use the VlppOS HTTP wire protocol or interoperate with the Windows HTTP implementation. They implement **INetworkProtocolServer**, **INetworkProtocolClient** and **INetworkProtocolConnection** over the portable Mini HTTP stack.
 
 The public construction surface keeps native socket composition explicit:
-
 ```C++
 SocketHttpServer(
     Ptr<IAsyncSocketServer> socketServer,
@@ -229,33 +234,21 @@ SocketHttpClient(
     );
 ```
 
-Create the injected dependency at the application boundary with **CreateDefaultAsyncSocketServer(port)** or **CreateDefaultAsyncSocketClient(port)**. Each socket exposes that immutable construction port through **GetPort()**, so no HTTP constructor accepts a duplicate port. The server adapter never creates another listener. The client constructor takes only one socket client, uses that exact object for its first lane, and obtains the additional physical lanes required for full duplex and recovery through **IAsyncSocketClient::CreateSameEndpointClient()**. That method must return a distinct fresh **Ready** client with the same transport configuration and port.
+The server adapter uses the injected listener and never creates another one. The client uses the injected client for its first physical lane and calls **CreateSameEndpointClient** for the additional lanes required by full-duplex polling and recovery. The server name must select loopback, and the URL prefix is empty for the origin root or begins with **/**.
 
-The URL prefix is empty for the origin root or an ASCII origin-form prefix beginning with **/**. Both adapters remove trailing slashes, so **/** becomes the origin root. Prefixes cannot contain a query, fragment, backslash, NUL, malformed escape, or encoded separator. The server listens at **http://localhost:PORT{urlPrefix}** and the client combines the explicit loopback server with its injected socket port for the HTTP authority.
+The adapter uses the same **/VlppInterProcess/Connect**, **/VlppInterProcess/Request/{token}** and **/VlppInterProcess/Response/{token}** routes as **windows_http::HttpServer** and **windows_http::HttpClient**. The protocol has no message-level delivery acknowledgement, deduplication, heartbeat or disconnect route, so it must not be treated as exactly-once delivery.
 
-The HTTP adapter has one logical token and two physical client lanes:
+### Portable Mini HTTP Request Helpers
 
-```text
-logical connection {token}
-|- receive lane: one infinite POST /VlppInterProcess/Request/{token}
-`- send lane: GET /VlppInterProcess/Connect, then FIFO POST /VlppInterProcess/Response/{token}
-```
+**async_tcp_socket::HttpRequest**, **HttpResponse**, **HttpRequestServer**, **HttpRequestClient** and **HttpRequestConnection** provide the lower HTTP/1.1 message layer. Use them when code needs complete binary-safe request and response objects and controls each connection directly.
 
-**/Connect** creates one server logical connection and returns the two token-bearing paths. The receive lane submits a replacement poll before delivering a nonempty response to **OnReadString**. The send lane accepts one nonempty NUL-free **WString** per request, encodes it as direct UTF-8 bytes, and keeps one active FIFO head so retries cannot be overtaken. A server message generated synchronously while handling the same **/Response** can be piggybacked in that HTTP response; otherwise server messages complete the pending long poll in FIFO order.
+**async_tcp_socket::SocketHttpServerApi**, **SocketHttpRequestContext** and **SocketHttpClientApi** add prefix dispatch and request/response conveniences. A server API receives **(socketServer, urlPrefix)**, and multiple APIs share one listener only when they receive the exact same server object. Override **OnHttpRequestReceived**, inspect the relative path, query or UTF-8 body, and complete the one-shot context with **Respond**, **RespondStatus**, **RespondBytes**, **RespondUtf8** or **Cancel**. A client API receives **(socketClient, server)** and queues asynchronous **HttpQuery** calls.
 
-HTTP status, exact content type, body size, UTF-8, NUL, and returned-path validation belong to the adapter. A non-200 response other than 404 or a malformed response retries on the healthy physical API. A terminal transport failure replaces only the affected physical lane through **CreateSameEndpointClient()**, retaining the logical token. **HttpRequestClient** classifies 404 as **HttpResponseFailure::NotFound** and stops the physical socket; **SocketHttpClient** reports it immediately as one fatal local error without retrying. Other **/Connect** and **/Response** failures stop after three failed attempts with two nonfatal local errors followed by one fatal local error; **/Request** retries silently while running.
-
-**Stop** rejects new sends, gives accepted sends a bounded drain opportunity, cancels the infinite poll, drains replacement workers and lower callbacks, and reports **OnDisconnected** once. It can be called repeatedly or from an adapter callback; a reentrant call waits for other callback frames but not the current frame.
-
-The protocol has no acknowledgement, deduplication, heartbeat, or disconnect route. A response lost after the server processes **/Response** can cause the client message to be delivered twice. Do not treat this transport as exactly-once.
-
-### Portable HTTP Request Helpers
-
-**async_tcp_socket::SocketHttpServerApi** and **async_tcp_socket::SocketHttpClientApi** are lower request/response helpers, not raw protocol transports. Construct a server API with **(socketServer, urlPrefix)**; APIs share a listener only when given the same server pointer, and a prefix matches only itself or slash-delimited descendants. Construct a client API with **(socketClient, server)**. Both derive the port from the injected socket, and neither chooses a platform socket internally. The server API owns prefix dispatch, response framing, CORS and callback draining. **SocketHttpRequestContext::Respond** is one-shot and reports whether its physical response completed; **Cancel** abandons a pending context. One client API serializes HTTP exchanges on one physical connection and becomes terminal after 404, transport, framing or timeout failure; 404 is reported as **SocketHttpClientErrorCode::ResponseNotFound**. **HttpRequestServer**, **HttpRequestClient**, and **HttpRequestConnection** are the still-lower HTTP/1.1 layer.
+**SocketHttpClientApi** uses the **windows_http::HttpRequest**, **HttpResponse** and **HttpError** value types, but those types are platform-neutral and using them here does not invoke WinHTTP. The TCP, HTTP and Mini HTTP implementations in this section are local test, validation and demonstration infrastructure rather than a production web stack.
 
 ## Windows Implementations
 
-Named pipes and the legacy HTTP.sys/WinHTTP transport are Windows-only. Treat them as ready-to-use Windows transports and reference implementations, but keep portable feature code on interfaces or the portable async-socket choices.
+Named pipes and the legacy HTTP.sys/WinHTTP transport are Windows-only. They are available for local tests and as reference implementations for the raw protocol contract, but do not make portable feature code depend on them or treat them as production communication stacks.
 
 ### Named Pipe Transport
 

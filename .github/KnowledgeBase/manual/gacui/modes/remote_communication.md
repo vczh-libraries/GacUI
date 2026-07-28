@@ -6,7 +6,11 @@ The layers are:
 - IGuiRemoteProtocol and IGuiRemoteEventProcessor: the strongly typed GacUI remote protocol.
 - GuiRemoteProtocolCoreChannel and GuiRemoteProtocolRendererChannel: conversion between the strongly typed protocol and JSON channel packages.
 - GuiRemoteProtocolNetworkChannelServer, GuiRemoteProtocolLocalChannelClient and GuiRemoteProtocolChannelClient: the vl::inter_process JSON channel bridge.
-- **vl::inter_process::named_pipe::NamedPipeServer**, **vl::inter_process::named_pipe::NamedPipeClient**, **vl::inter_process::windows_http::HttpServer**, **vl::inter_process::windows_http::HttpClient**, or custom implementations of the INetworkProtocolConnection, INetworkProtocolCallback, INetworkProtocolClient and INetworkProtocolServer interfaces: the underlying data-transmission implementation.
+- **vl::inter_process::async_tcp_socket::NetworkProtocolServer\<TAsyncSocketServer\>** and **NetworkProtocolClient\<TAsyncSocketClient\>**, **vl::inter_process::async_tcp_socket::SocketHttpServer** and **SocketHttpClient**, the Windows-only named-pipe and **windows_http** implementations, or a custom **INetworkProtocol** implementation: the underlying data-transmission mechanism.
+
+The **INetworkProtocol** and **IChannel** interface families and channel bridge can be reused directly, but VlppOS provides them only for test-purpose local cross-process communication. Product code is strongly recommended to supply its own implementation instead of treating the bundled transports and channel stack as production networking. The GacUI JSON channel layer remains unchanged above that implementation.
+
+The GacUI **/MiniHttp** tests create platform-default async TCP sockets and wrap them in **SocketHttpServer** and **SocketHttpClient**. The core can register its remote-protocol prefix and automation prefix on the exact same **IAsyncSocketServer**, while each prefix remains independently stoppable.
 
 The JSON channel package type is Ptr\<glr::json::JsonNode\>. The remote protocol channel name is GacUIRemoteProtocolChannelName, whose value is GacUIRemoteProtocol. The in-process core client should be assigned GacUIRemoteProtocolCoreClientId. Renderer-side packages are sent to that core client id, and core-side packages are sent to the renderer client id learned from ControllerConnect.
 
@@ -30,7 +34,7 @@ GuiRemoteProtocolCoreChannel exposes BeforeWrite and BeforeOnRead. GuiRemoteProt
 
 ## Adding a Transport
 
-Add a new underlying data-transmission implementation below GacUI by implementing the vl::inter_process INetworkProtocolConnection, INetworkProtocolCallback, INetworkProtocolClient and INetworkProtocolServer interfaces. The names say network protocol, but the contract is only asynchronous WString message exchange. The implementation can be a pipe, socket, stdio stream, shared memory, DLL function calls, or any other mechanism that can satisfy INetworkProtocolConnection, INetworkProtocolCallback, INetworkProtocolClient and INetworkProtocolServer. Then reuse the GacUI JSON channel classes.
+Add a new underlying data-transmission implementation below GacUI by implementing the vl::inter_process INetworkProtocolConnection, INetworkProtocolCallback, INetworkProtocolClient and INetworkProtocolServer interfaces. The names say network protocol, but the contract is only asynchronous WString message exchange. The implementation can be a pipe, socket, stdio stream, shared memory, DLL function calls, a WebAssembly/JavaScript bridge, or any other mechanism that can satisfy INetworkProtocolConnection, INetworkProtocolCallback, INetworkProtocolClient and INetworkProtocolServer. Then reuse the GacUI JSON channel classes.
 
 The core side selects the INetworkProtocolServer implementation as the template argument:
 ```c++

@@ -64,5 +64,7 @@ int StartNamedPipeRemoteRenderer()
 
 GuiRemoteProtocolAsyncJsonChannelRenderer queues messages from the channel and runs them on the UI thread through IGuiRemoteProtocolAsyncRendererInvoker. GuiRemoteProtocolRendererChannel converts JSON channel packages to calls on GuiRemoteRendererSingle, and converts renderer events back to JSON packages for the core client id.
 
-Override GuiRemoteProtocolChannelClient::OnReadError, OnLocalError, or OnDisconnected when the renderer should show a fatal error dialog or call GuiRemoteRendererSingle::ForceExitByFatelError. See [RemotingTest_Rendering_Win32](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_Rendering_Win32) for the complete named pipe and HTTP implementation.
+The portable **/MiniHttp** path creates a default loopback TCP client with **vl::inter_process::async_tcp_socket::CreateDefaultAsyncSocketClient(port)**, wraps it in **vl::inter_process::async_tcp_socket::SocketHttpClient(socketClient, L"localhost", urlPrefix)**, and passes that object to **GuiRemoteProtocolChannelClient**. The renderer application shown by the linked test remains Win32 even though the VlppOS transport itself is available on Windows, Linux and macOS.
+
+Override GuiRemoteProtocolChannelClient::OnReadError, OnLocalError, or OnDisconnected when the renderer should show a fatal error dialog or call GuiRemoteRendererSingle::ForceExitByFatelError. See [RemotingTest_Rendering_Win32](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_Rendering_Win32) for the complete named-pipe (**/Pipe**), Windows HTTP.sys/WinHTTP (**/Http**) and portable Mini HTTP (**/MiniHttp**) implementations.
 

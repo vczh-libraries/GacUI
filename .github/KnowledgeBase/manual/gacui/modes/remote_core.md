@@ -3,10 +3,12 @@
 A remote protocol core application is a normal GacUI application that calls SetupRemoteNativeController. It becomes headless and is forced into hosted mode. The core does not draw to an OS native window; it sends JSON remote protocol packages through a vl::inter_process channel.
 
 The standard C++ path is small:
-- Start a GuiRemoteProtocolNetworkChannelServer\<TServerBase\> over an INetworkProtocolServer implementation such as **vl::inter_process::named_pipe::NamedPipeServer** or **vl::inter_process::windows_http::HttpServer**.
+- Start a GuiRemoteProtocolNetworkChannelServer\<TServerBase\> over an INetworkProtocolServer implementation such as the cross-platform **vl::inter_process::async_tcp_socket::SocketHttpServer**, the Windows-only **vl::inter_process::named_pipe::NamedPipeServer**, or the Windows-only **vl::inter_process::windows_http::HttpServer**.
 - Connect the core to that server with GuiRemoteProtocolLocalChannelClient.
 - Wrap the core channel with GuiRemoteProtocolAsyncJsonChannel and GuiRemoteProtocolCoreChannel.
 - Pass the protocol, usually after GuiRemoteProtocolFilter and GuiRemoteProtocolDomDiffConverter, to SetupRemoteNativeController.
+
+The portable **/MiniHttp** test path creates an **IAsyncSocketServer** with **CreateDefaultAsyncSocketServer(port)** and injects it into a **GuiRemoteProtocolNetworkChannelServer\<async_tcp_socket::SocketHttpServer\>** specialization. The same listener can also host a separate **SocketHttpServerApi** automation prefix.
 
 The core client is expected to be registered as GacUIRemoteProtocolCoreClientId. A renderer created by GuiRemoteProtocolChannelClient advertises GacUIRemoteProtocolChannelName. GuiRemoteProtocolCoreChannel learns the renderer client id from the renderer's ControllerConnect event, so user code does not need to route individual remote protocol messages.
 
@@ -86,5 +88,5 @@ void StartNamedPipeRemoteCore()
 
 GuiMain still creates and runs GacUI windows. If the UI throws while the remote server is alive, send the error through IJsonLocalChannelServer::BroadcastError so the renderer stops instead of waiting for more packages. A production server can also reject clients that do not offer GacUIRemoteProtocolChannelName, disconnect previous renderers, or call GuiRemoteProtocolCoreChannel::DetachRenderer when replacing a renderer.
 
-See [RemotingTest_Core](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_Core) for the complete named pipe and HTTP implementation.
+See [RemotingTest_Core](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_Core) for the complete named-pipe (**/Pipe**), Windows HTTP.sys/WinHTTP (**/Http**) and portable Mini HTTP (**/MiniHttp**) implementations.
 
