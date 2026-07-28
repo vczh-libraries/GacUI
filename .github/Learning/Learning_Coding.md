@@ -47,6 +47,7 @@
 - Document paragraph layouts are keyed by valid caret positions [1]
 - `text.Length()` is a caret but not a drawable layout entry [1]
 - `Impl_DocumentParagraph_GetNearestCaretFromTextPos` honors `frontSide` [1]
+- `GuiRemoteGraphicsParagraph` bypasses caret caches when encodings match [1]
 - Null-check graphics resource manager before paragraph creation [1]
 - Encapsulate remote inline-object run properties behind query helpers [1]
 - Use Parser2 JSON node list serialization in remote channels [1]
@@ -265,6 +266,10 @@ In document paragraph geometry and navigation, `text.Length()` remains a valid c
 ## `Impl_DocumentParagraph_GetNearestCaretFromTextPos` honors `frontSide`
 
 `Impl_DocumentParagraph_GetNearestCaretFromTextPos` should prefer the nearest caret on the requested side: `frontSide == true` prefers a caret `<= textPos`, while `frontSide == false` prefers a caret `> textPos`. If the preferred side is unavailable, fall back to the other side and handle empty paragraphs explicitly.
+
+## `GuiRemoteGraphicsParagraph` bypasses caret caches when encodings match
+
+When the active renderer encoding matches the platform's native `wchar_t` encoding (`VCZH_WCHAR_UTF16` with UTF-16 or `VCZH_WCHAR_UTF32` with UTF-32), `GuiRemoteGraphicsParagraph::GetCaretCache()` returns `nullptr`, and `NativeTextPosToRemoteTextPos` and `RemoteTextPosToNativeTextPos` return `textPos` unchanged. Construct and use `GuiRemoteCaretCache` only when the native and renderer coordinate systems differ.
 
 ## Null-check graphics resource manager before paragraph creation
 

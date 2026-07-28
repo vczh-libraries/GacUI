@@ -11,9 +11,9 @@
 - Fix behavior at the owning state instead of patching symptoms [7]
 - Make `Stop()` drain asynchronous work before returning [6]
 - Validate expectations against implementation and existing tests [5]
+- Verify and localize portability on every target OS [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
-- Verify and localize portability on every target OS [4]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [3]
 - Extract abstractions only for real shared behavior [3]
 - Do not assume async callback owners are heap allocated [3]
@@ -304,7 +304,7 @@ When a bug reproduces on one machine but not another, do not assume hardware spe
 
 ## Verify and localize portability on every target OS
 
-Run the relevant tests on every target operating system whose behavior is being claimed, and report only the platforms actually exercised. Use contrasts between passing and failing platforms to narrow investigation toward the failing platform's implementation before changing shared code, while retaining cross-platform regression verification.
+Run the relevant tests on every target operating system whose behavior is being claimed, and report only the platforms actually exercised. Use contrasts between passing and failing platforms to narrow investigation toward the failing platform's implementation before changing shared code, while retaining cross-platform regression verification. Instructions may be prepared for an untested operating system only when they are clearly labeled untested; never report that platform as verified.
 
 ## Use reentrant POSIX date-time conversions
 

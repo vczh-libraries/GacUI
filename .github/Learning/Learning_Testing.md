@@ -9,9 +9,9 @@
 - Preserve existing idle-frame titles when requested [6]
 - Seed key-behavior tests via `protocol->TypeString` [6]
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
+- Validate GacJS through browser UI interactions [4]
 - Caret navigation tests: type markers to expose caret [3]
 - Avoid duplicate tests across related categories [3]
-- Validate GacJS RPT through browser UI interactions [3]
 - Validate imported dependency APIs with GacUI build and unit test [3]
 - Account for eager child preparation in item-provider tests [2]
 - Isolate callbacks per test case (fresh log + callback) [2]
@@ -372,11 +372,15 @@ For the HTTP browser remoting path, verify fatal core errors by running `Remotin
 
 For renderer shutdown cases, verify that the browser UI renders the expected controller-connection-stopped message instead of only checking process exit or network status.
 
-## Validate GacJS RPT through browser UI interactions
+## Validate GacJS through browser UI interactions
 
 For `RemotingTest_Core /RPT /Http`, validate the GacJS path with real browser interactions before relying on process startup alone. Exercise representative commands such as clicking buttons, adding DataGrid rows, and exiting through the UI, then check that the renderer stops and the core exits cleanly.
 
 After importing remoting protocol dependencies, run the GacJS build and test package, then open the browser target against the live remoting core and verify the UI path end-to-end.
+
+For macOS MiniHTTP verification, run the portable core and a statically hosted GacJS site. Use Chromium first as a diagnostic smoke check, then start a fresh core and repeat with Playwright WebKit for Safari-family automated compatibility. Require rendered GacUI content, browser-input round trips, and no browser dialog, page error, or console error.
+
+Playwright WebKit is not the installed Safari application. Actual Safari remains a separate manual check and must not be reported as verified from a WebKit run.
 
 ## Browser E2E tests must handle localized dialogs and host fixtures
 
