@@ -26,6 +26,13 @@ establish, drive, inspect, replace, and close the renderer session.
   - When any user operation on renderer causing core to exit normally (at the user's will), a message `ControllerConnectionStopped` will be sent from core to distinguish from a fatal error stopping core from running.
   - Upon core sending a fatal error, any event sending from the renderer will be ignored.
   - Once a renderer receiving `ControllerConnectionStopped`, any fatal error from core or from local should be ignored, as that might due to unstability of network connection after core initiating the finalization.
+- Disconnection:
+  - We should assume that connection is unreliable, core can't really know if the renderer is suddenly gone or not. So the remote protocol design also respect such assumption, core should not expect `ControllerDisconnect` event will always sent from a renderer.
+    - Core should always assume the renderer could suddenly gone without saying anything.
+    - Core will be remain running if an explicit signal of exiting doesn't happen.
+  - `ControllerRequestExit` event asks core to close the window, but the actual app could reject the request. That's similar to clicking the "X" button don't guarantee the app is going to close.
+  - `ControllerForceExit` event asks core to exit the app and don't give the actual app any chance to reject the request. That's similar to killing the process.
+  - Core app requesting exiting, `ControllerRequestExit` and `ControllerForceExit` result in `ControllerConnectionEstablished` being sent to the renderer because it is deterministic, and it is the only scenario of deterministic disconnection.
 
 ## Rules for Every Operation
 
