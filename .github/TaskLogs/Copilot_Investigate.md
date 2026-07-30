@@ -522,3 +522,99 @@ dialog snapshots during this run; those mechanical test artifacts were
 restored and are not part of the reproducer.
 
 # PROPOSALS
+
+- No.1 Centralize requester lifetime and serialize renderer terminal delivery
+
+## No.1 Centralize requester lifetime and serialize renderer terminal delivery
+
+Implement one application-owned lifetime protocol rather than adding a
+transport-specific workaround or changing Workflow's blocking RPC API. The
+proposal has four coordinated parts.
+
+First, make `RemoteViewModelTestRuntime.{h,cpp}` the owner of the RVM requester
+session. A new `RemoteViewModelRequesterSession` owns the role state, exact
+terminal result, task queue and its thread, broadcasting/ready/requester local
+clients, broker and requester dispatchers, acquired proxy, liveness worker,
+and ordered shutdown. Cpp and Core channel servers retain only their
+transport-specific admission work and delegate every RVM admission,
+registration, disconnect, phase, and cleanup operation to this session. Core
+continues to own renderer IDs, replacement, and detach because those concerns
+do not exist in Cpp. This removes the duplicate application interfaces and the
+two copies of startup/finalization code without generalizing unrelated
+renderer behavior.
+
+The session has one first-terminal-wins state protected by its state lock.
+Physical host loss, lease expiry, and RPC task-queue failure all claim that
+same state with the exact error text. Claiming only signals an owned worker;
+the transport callback never throws, manipulates a window, broadcasts, or
+terminates directly. The worker runs the process-specific action outside every
+session/server lock:
+
+- Cpp logs the exact error and exits nonzero.
+- Core calls `BroadcastError(error)` while the renderer transport is still
+  alive, tolerates a delivery failure, and then unconditionally exits nonzero.
+
+This fail-fast action is deliberate. It terminates startup waits, an idle task
+loop, and a GUI thread blocked in a synchronous RPC without needing a new
+Workflow cancellation primitive. A normal `BeginStopping` transition wins
+against later callbacks, disables liveness expiry, and sends a requester-stop
+control message before transport teardown. The host treats that message as a
+successful terminal outcome; every disconnect/read/fatal-local error that
+precedes it remains a one-shot failure.
+
+Second, use only the host-specific `ViewModelReadyChannel` for an acknowledged
+lease that works identically over Pipe, HTTP, and MiniHTTP. The shared header
+defines the control-message names, canonical error, heartbeat interval, lease
+timeout, startup grace, and terminal-delivery delay. The host begins sequenced
+heartbeats as soon as the physical channel is connected, before broker login.
+The requester binds the accepted host ID, validates increasing sequences,
+renews its lease, and returns a targeted acknowledgement. The host validates
+the acknowledgement sender and sequence and renews its requester lease.
+Startup grace begins only after host admission, renderer traffic never touches
+either lease, and stopping invalidates the lease before callbacks can classify
+local teardown as remote failure. The state machine accepts a supplied
+millisecond timestamp so expiry, renewal, stale packets, and stopping races can
+be tested deterministically.
+
+Third, put renderer transport terminal work into the same versioned FIFO as
+remote JSON packages. `GuiRemoteProtocolAsyncJsonChannelRenderer` queues
+either a package or a main-thread action and processes both in exact order.
+The native renderer client translates Core `!Error` and transport disconnect
+callbacks into these actions. Fatal claiming occurs only when the action is
+executed, so an earlier queued `ControllerConnectionStopped` wins; disconnect
+detaches only after all earlier work has been classified. Local transport
+errors do not fabricate a Core fatal. Renderer, automation substitution,
+automation target, and invoker are installed before cached work is drained
+synchronously. Queued actions capture copied values and a stable client only;
+they re-read guarded target pointers on the UI thread, and explicit stopping
+invalidates/detaches the queue before stack-owned automation objects disappear.
+
+Finally, apply the direct correctness cleanups discovered by the reproducer:
+
+- reject a second requester without changing the first ID;
+- remove Core's explicit normal-stop submission and leave
+  `GuiRemoteController::Finalize` as the sole owner;
+- remove the redundant Cpp/Core MiniHTTP derived destructors;
+- correct `ControllerConnectionEstablished` to
+  `ControllerConnectionStopped` and `/RVMP` to `/RVMT` in the SOP.
+
+No `Import`, `Release`, generated source, VlppOS, or Workflow change is part of
+this proposal.
+
+### CODE CHANGE
+
+- Add shared terminal, lease/control-message, background-worker,
+  requester-session, and hosting-client implementation to
+  `RemoteViewModelTestRuntime.{h,cpp}`, with constants in
+  `RemoteViewModelTestShared.h`.
+- Reduce the Cpp and Core channel-server/application code to delegation around
+  the shared session; preserve Core-only renderer replacement and non-RVM
+  behavior.
+- Extend the async renderer channel with a versioned package/action FIFO and a
+  synchronous pending-work drain; update the native renderer to use ordered,
+  guarded terminal actions and startup-safe installation/cleanup.
+- Fix requester admission, remove the duplicate Core stop and MiniHTTP
+  destructors, and correct the two SOP terms.
+- Extend unit coverage for second-requester preservation, terminal/lease state,
+  and async package/action ordering, then run the complete build and lifecycle
+  matrix recorded in `# TEST`.
