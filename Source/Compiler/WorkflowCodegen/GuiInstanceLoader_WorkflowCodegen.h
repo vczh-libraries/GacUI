@@ -171,6 +171,10 @@ WorkflowCompiler (ScriptPosition)
 		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfStatement> node, glr::ParsingTextPos availableAfter = { 0,0 });
 		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfDeclaration> node, glr::ParsingTextPos availableAfter = { 0,0 });
 		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfModule> node, glr::ParsingTextPos availableAfter = { 0,0 });
+		extern void												Workflow_RecordScriptPositionOverwrite(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfExpression> node, glr::ParsingTextPos availableAfter = { 0,0 });
+		extern void												Workflow_RecordScriptPositionOverwrite(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfStatement> node, glr::ParsingTextPos availableAfter = { 0,0 });
+		extern void												Workflow_RecordScriptPositionOverwrite(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfDeclaration> node, glr::ParsingTextPos availableAfter = { 0,0 });
+		extern Ptr<types::ScriptPosition>						Workflow_EnsureScriptPosition(GuiResourcePrecompileContext& context);
 		extern Ptr<types::ScriptPosition>						Workflow_GetScriptPosition(GuiResourcePrecompileContext& context);
 		extern void												Workflow_ClearScriptPosition(GuiResourcePrecompileContext& context);
 

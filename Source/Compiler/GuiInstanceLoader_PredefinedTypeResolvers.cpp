@@ -23,6 +23,10 @@ namespace vl
 
 		using namespace controls;
 
+#define Path_Shared				L"Workflow/Shared"
+#define Path_TemporaryClass		L"Workflow/TemporaryClass"
+#define Path_InstanceClass		L"Workflow/InstanceClass"
+
 		class WorkflowVirtualScriptPositionVisitor : public workflow::traverse_visitor::AstVisitor
 		{
 			using BaseVisitor = workflow::traverse_visitor::AstVisitor;
@@ -33,7 +37,7 @@ namespace vl
 			WorkflowVirtualScriptPositionVisitor(GuiResourcePrecompileContext& _context)
 				:context(_context)
 			{
-				sp = Workflow_GetScriptPosition(context);
+				sp = Workflow_EnsureScriptPosition(context);
 			}
 
 			void Visit(WfVirtualCfeExpression* node)override
@@ -43,7 +47,7 @@ namespace vl
 				if (index != -1)
 				{
 					auto record = sp->nodePositions.Values()[index];
-					Workflow_RecordScriptPosition(context, record.position, node->expandedExpression, record.availableAfter);
+					Workflow_RecordScriptPositionOverwrite(context, record.position, node->expandedExpression, record.availableAfter);
 				}
 			}
 
@@ -54,7 +58,7 @@ namespace vl
 				if (index != -1)
 				{
 					auto record = sp->nodePositions.Values()[index];
-					Workflow_RecordScriptPosition(context, record.position, node->expandedExpression, record.availableAfter);
+					Workflow_RecordScriptPositionOverwrite(context, record.position, node->expandedExpression, record.availableAfter);
 				}
 			}
 
@@ -65,7 +69,7 @@ namespace vl
 				if (index != -1)
 				{
 					auto record = sp->nodePositions.Values()[index];
-					Workflow_RecordScriptPosition(context, record.position, node->expandedStatement, record.availableAfter);
+					Workflow_RecordScriptPositionOverwrite(context, record.position, node->expandedStatement, record.availableAfter);
 				}
 			}
 
@@ -78,7 +82,7 @@ namespace vl
 					auto record = sp->nodePositions.Values()[index];
 					for (auto decl : node->expandedDeclarations)
 					{
-						Workflow_RecordScriptPosition(context, record.position, decl, record.availableAfter);
+						Workflow_RecordScriptPositionOverwrite(context, record.position, decl, record.availableAfter);
 					}
 				}
 			}
@@ -92,11 +96,42 @@ namespace vl
 					auto record = sp->nodePositions.Values()[index];
 					for (auto decl : node->expandedDeclarations)
 					{
-						Workflow_RecordScriptPosition(context, record.position, decl, record.availableAfter);
+						Workflow_RecordScriptPositionOverwrite(context, record.position, decl, record.availableAfter);
 					}
 				}
 			}
 		};
+
+		void Workflow_RecordModuleScriptPositions(GuiResourcePrecompileContext& context, Ptr<GuiInstanceCompiledWorkflow> compiled)
+		{
+			Workflow_EnsureScriptPosition(context);
+			for (auto module : compiled->modules)
+			{
+				Workflow_RecordScriptPosition(context, module.position, module.module);
+			}
+			for (auto module : compiled->modules)
+			{
+				WorkflowVirtualScriptPositionVisitor visitor(context);
+				visitor.InspectInto(module.module.Obj());
+			}
+		}
+
+		void Workflow_TranslateErrors(GuiResourcePrecompileContext& context, WfLexicalScopeManager* manager, GuiResourceError::List& errors)
+		{
+			auto sp = Workflow_GetScriptPosition(context);
+			for (auto error : manager->errors)
+			{
+				vint index = sp ? sp->nodePositions.Keys().IndexOf(error.node) : -1;
+				if (index == -1)
+				{
+					errors.Add(GuiResourceError({ Ptr(context.rootResource) }, error.message));
+				}
+				else
+				{
+					errors.Add({ sp->nodePositions.Values()[index].computedPosition, error.message });
+				}
+			}
+		}
 
 		Ptr<GuiInstanceCompiledWorkflow> Workflow_GetModule(GuiResourcePrecompileContext& context, const WString& path, Nullable<GuiInstanceCompiledWorkflow::AssemblyType> assemblyType)
 		{
@@ -160,7 +195,7 @@ namespace vl
 
 				if (manager->errors.Count() == 0)
 				{
-					manager->Rebuild(true, compilerCallback);
+					manager->Rebuild(true, compilerCallback, false);
 				}
 
 				if (manager->errors.Count() == 0)
@@ -176,22 +211,8 @@ namespace vl
 				}
 				else
 				{
-					// TODO: (enumerable) foreach
-					for (vint i = 0; i < compiled->modules.Count(); i++)
-					{
-						auto module = compiled->modules[i];
-						WorkflowVirtualScriptPositionVisitor visitor(context);
-						visitor.InspectInto(module.module.Obj());
-						Workflow_RecordScriptPosition(context, module.position, module.module);
-					}
-
-					auto sp = Workflow_GetScriptPosition(context);
-					// TODO: (enumerable) foreach
-					for (vint i = 0; i < manager->errors.Count(); i++)
-					{
-						auto error = manager->errors[i];
-						errors.Add({ sp->nodePositions[error.node].computedPosition, error.message });
-					}
+					Workflow_RecordModuleScriptPositions(context, compiled);
+					Workflow_TranslateErrors(context, manager, errors);
 				}
 
 				if (keepMetadata)
@@ -205,13 +226,56 @@ namespace vl
 			}
 		}
 
+		void Workflow_GenerateRpcMetadata(GuiResourcePrecompileContext& context, GuiResourceError::List& errors)
+		{
+			auto compiled = Workflow_GetModule(context, Path_InstanceClass, {});
+			if (!compiled || compiled->modules.Count() == 0 || !compiled->metadata)
+			{
+				if (compiled && compiled->metadata)
+				{
+					compiled->metadata->rpcMetadata = nullptr;
+				}
+				Workflow_ClearScriptPosition(context);
+				return;
+			}
+
+			auto manager = compiled->metadata;
+			manager->rpcMetadata = nullptr;
+			Workflow_RecordModuleScriptPositions(context, compiled);
+
+			auto aggregate = Ptr(new WfModule);
+			bool initialized = false;
+			for (auto moduleRecord : compiled->modules)
+			{
+				if (!moduleRecord.module)
+				{
+					continue;
+				}
+
+				if (!initialized)
+				{
+					aggregate->moduleType = moduleRecord.module->moduleType;
+					aggregate->name = moduleRecord.module->name;
+					initialized = true;
+				}
+				CopyFrom(aggregate->paths, moduleRecord.module->paths, true);
+				CopyFrom(aggregate->declarations, moduleRecord.module->declarations, true);
+			}
+
+			if (initialized)
+			{
+				ValidateModuleRPC(manager.Obj(), aggregate);
+				if (manager->errors.Count() > 0)
+				{
+					Workflow_TranslateErrors(context, manager.Obj(), errors);
+				}
+			}
+			Workflow_ClearScriptPosition(context);
+		}
+
 /***********************************************************************
 Shared Script Type Resolver (Script)
 ***********************************************************************/
-
-#define Path_Shared				L"Workflow/Shared"
-#define Path_TemporaryClass		L"Workflow/TemporaryClass"
-#define Path_InstanceClass		L"Workflow/InstanceClass"
 
 		class GuiResourceSharedScriptTypeResolver
 			: public Object
@@ -379,6 +443,7 @@ Instance Type Resolver (Instance)
 				case Instance_CompileInstanceTypes:
 				case Instance_CompileEventHandlers:
 				case Instance_CompileInstanceClass:
+				case Instance_GenerateRpcMetadata:
 					return PerPass;
 				default:
 					return NotSupported;
@@ -504,6 +569,13 @@ Instance Type Resolver (Instance)
 
 			void PerPassPrecompile(GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
 			{
+				if (context.passIndex == Instance_GenerateRpcMetadata)
+				{
+					Workflow_GenerateRpcMetadata(context, errors);
+					GetInstanceLoaderManager()->ClearReflectionCache();
+					return;
+				}
+
 				WString path;
 				GuiInstanceCompiledWorkflow::AssemblyType assemblyType;
 				switch (context.passIndex)
@@ -552,11 +624,21 @@ Instance Type Resolver (Instance)
 					Workflow_GenerateAssembly(context, path, errors, false, context.compilerCallback);
 					break;
 				case Instance_CompileInstanceClass:
-					Workflow_GenerateAssembly(context, path, errors, true, context.compilerCallback);
+					{
+						vint previousErrorCount = errors.Count();
+						Workflow_GenerateAssembly(context, path, errors, true, context.compilerCallback);
+						if (errors.Count() > previousErrorCount)
+						{
+							Workflow_ClearScriptPosition(context);
+						}
+					}
 					break;
 				default:;
 				}
-				Workflow_ClearScriptPosition(context);
+				if (context.passIndex != Instance_CompileInstanceClass)
+				{
+					Workflow_ClearScriptPosition(context);
+				}
 				GetInstanceLoaderManager()->ClearReflectionCache();
 			}
 

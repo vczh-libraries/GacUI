@@ -42,7 +42,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Generated_DarkSkin", "Gener
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Generated_FullControlTest", "Generated_FullControlTest\Generated_FullControlTest.vcxitems", "{8EAE77C4-0DB8-4E7D-9A5E-5CAF495D263B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Generated_RemoteViewModelTest", "Generated_RemoteViewModelTest\Generated_RemoteViewModelTest.vcxitems", "{7F9E2FE1-2F30-4F7C-AC7A-0D3E73671189}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppTest", "CppTest\CppTest.vcxproj", "{8F628494-942F-40D4-84B0-306FCBC2C43C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppTest_Rvm", "CppTest_Rvm\CppTest_Rvm.vcxproj", "{A3ECF99E-6583-4E25-B1FE-91331C4A4107}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppTest_Metaonly", "CppTest_Metaonly\CppTest_Metaonly.vcxproj", "{1F147133-FC29-4AC4-818F-A5C48A7C4173}"
 EndProject
@@ -107,6 +111,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RemotingTest_Core", "RemotingTest_Core\RemotingTest_Core.vcxproj", "{337E0972-C4CE-4863-916E-C1CD395DA085}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RemotingTest_Rendering_Win32", "RemotingTest_Rendering_Win32\RemotingTest_Rendering_Win32.vcxproj", "{E016B58A-A7A7-4EF5-A64E-B6F86AF159BE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RemotingTest_RvmHost", "RemotingTest_RvmHost\RemotingTest_RvmHost.vcxproj", "{3C1C26F1-0A18-4751-B984-EE28EEA11359}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -284,6 +290,22 @@ Global
 		{E016B58A-A7A7-4EF5-A64E-B6F86AF159BE}.Release|Win32.Build.0 = Release|Win32
 		{E016B58A-A7A7-4EF5-A64E-B6F86AF159BE}.Release|x64.ActiveCfg = Release|x64
 		{E016B58A-A7A7-4EF5-A64E-B6F86AF159BE}.Release|x64.Build.0 = Release|x64
+		{A3ECF99E-6583-4E25-B1FE-91331C4A4107}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A3ECF99E-6583-4E25-B1FE-91331C4A4107}.Debug|Win32.Build.0 = Debug|Win32
+		{A3ECF99E-6583-4E25-B1FE-91331C4A4107}.Debug|x64.ActiveCfg = Debug|x64
+		{A3ECF99E-6583-4E25-B1FE-91331C4A4107}.Debug|x64.Build.0 = Debug|x64
+		{A3ECF99E-6583-4E25-B1FE-91331C4A4107}.Release|Win32.ActiveCfg = Release|Win32
+		{A3ECF99E-6583-4E25-B1FE-91331C4A4107}.Release|Win32.Build.0 = Release|Win32
+		{A3ECF99E-6583-4E25-B1FE-91331C4A4107}.Release|x64.ActiveCfg = Release|x64
+		{A3ECF99E-6583-4E25-B1FE-91331C4A4107}.Release|x64.Build.0 = Release|x64
+		{3C1C26F1-0A18-4751-B984-EE28EEA11359}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3C1C26F1-0A18-4751-B984-EE28EEA11359}.Debug|Win32.Build.0 = Debug|Win32
+		{3C1C26F1-0A18-4751-B984-EE28EEA11359}.Debug|x64.ActiveCfg = Debug|x64
+		{3C1C26F1-0A18-4751-B984-EE28EEA11359}.Debug|x64.Build.0 = Debug|x64
+		{3C1C26F1-0A18-4751-B984-EE28EEA11359}.Release|Win32.ActiveCfg = Release|Win32
+		{3C1C26F1-0A18-4751-B984-EE28EEA11359}.Release|Win32.Build.0 = Release|Win32
+		{3C1C26F1-0A18-4751-B984-EE28EEA11359}.Release|x64.ActiveCfg = Release|x64
+		{3C1C26F1-0A18-4751-B984-EE28EEA11359}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -331,6 +353,9 @@ Global
 		{9E9FF655-8AF4-4FD2-A709-2F2B84F2CC63} = {1A152782-BECB-4D33-AD39-F54D3B234262}
 		{337E0972-C4CE-4863-916E-C1CD395DA085} = {1F207079-CD21-4802-8331-B391E27F6C0A}
 		{E016B58A-A7A7-4EF5-A64E-B6F86AF159BE} = {1F207079-CD21-4802-8331-B391E27F6C0A}
+		{7F9E2FE1-2F30-4F7C-AC7A-0D3E73671189} = {1A152782-BECB-4D33-AD39-F54D3B234262}
+		{A3ECF99E-6583-4E25-B1FE-91331C4A4107} = {F5C3C996-E0C1-41AB-BAB4-22D1AC513EA4}
+		{3C1C26F1-0A18-4751-B984-EE28EEA11359} = {1F207079-CD21-4802-8331-B391E27F6C0A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23701A6D-5A6A-4396-9B46-EC3D6DD7B20F}
@@ -373,6 +398,7 @@ Global
 		Source_Import_Reflection\Source_Import_Reflection.vcxitems*{543b32d9-e229-472a-9d11-9bf12c7982bd}*SharedItemsImports = 4
 		Source_GacUI_Compiler\Source_GacUI_Compiler.vcxitems*{66d0edd1-2747-47a6-abda-49ab8f30f7bc}*SharedItemsImports = 4
 		Source_Import\Source_Import.vcxitems*{6c3c0b7c-2f16-43df-a18a-4cab7a0cd715}*SharedItemsImports = 9
+		Source_Import\Source_Import.vcxitems*{3c1c26f1-0a18-4751-b984-ee28eea11359}*SharedItemsImports = 4
 		Source_GacUI_ProtocolCompiler\Source_GacUI_ProtocolCompiler.vcxitems*{75ead373-2bae-4f55-9cd7-cf7ae0f8f140}*SharedItemsImports = 4
 		Source_Import\Source_Import.vcxitems*{75ead373-2bae-4f55-9cd7-cf7ae0f8f140}*SharedItemsImports = 4
 		Source_GacUI_ProtocolCompiler\Source_GacUI_ProtocolCompiler.vcxitems*{7b88ddaf-109d-4c56-9eae-f09bbe0af9bf}*SharedItemsImports = 9
@@ -380,6 +406,9 @@ Global
 		Generated_FullControlTest\Generated_FullControlTest.vcxitems*{8eae77c4-0db8-4e7d-9a5e-5caf495d263b}*SharedItemsImports = 9
 		Generated_FullControlTest\Generated_FullControlTest.vcxitems*{8f628494-942f-40d4-84b0-306fcbc2c43c}*SharedItemsImports = 4
 		Generated_RemoteProtocolTest\Generated_RemoteProtocolTest.vcxitems*{9e9ff655-8af4-4fd2-a709-2f2b84f2cc63}*SharedItemsImports = 9
+		Generated_RemoteViewModelTest\Generated_RemoteViewModelTest.vcxitems*{7f9e2fe1-2f30-4f7c-ac7a-0d3e73671189}*SharedItemsImports = 9
+		Generated_RemoteViewModelTest\Generated_RemoteViewModelTest.vcxitems*{a3ecf99e-6583-4e25-b1fe-91331c4a4107}*SharedItemsImports = 4
+		Generated_RemoteViewModelTest\Generated_RemoteViewModelTest.vcxitems*{337e0972-c4ce-4863-916e-c1cd395da085}*SharedItemsImports = 4
 		Source_GacUI_Reflection\Source_GacUI_Reflection.vcxitems*{a2a0d66d-5528-4a86-b0ff-8acc908e7de4}*SharedItemsImports = 9
 		Source_GacUI_UnitTest_Reflection\Source_GacUI_UnitTest_Reflection.vcxitems*{a360296d-671b-4a05-8f67-4ebc441ceca8}*SharedItemsImports = 9
 		Source_GacUI_UnitTest_Controls\Source_GacUI_UnitTest_Controls.vcxitems*{aaa74c8d-87aa-4a24-85af-25c0a2bf8afb}*SharedItemsImports = 9

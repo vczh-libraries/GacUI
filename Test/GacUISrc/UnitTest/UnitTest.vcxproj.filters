@@ -72,6 +72,9 @@
     <ClCompile Include="TestResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestResource_Rpc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="TestReflectionTypeList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -130,6 +133,9 @@
       <Filter>Source Files\Remote</Filter>
     </ClCompile>
     <ClCompile Include="TestRemote_DocumentRunManagement.cpp">
+      <Filter>Source Files\Remote</Filter>
+    </ClCompile>
+    <ClCompile Include="TestRemoteViewModelRuntime.cpp">
       <Filter>Source Files\Remote</Filter>
     </ClCompile>
     <ClCompile Include="TestRemote_GraphicsHost_Startup.cpp">

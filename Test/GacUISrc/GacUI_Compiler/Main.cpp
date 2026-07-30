@@ -87,6 +87,26 @@ const wchar_t* REMOTEPROTOCOLTEST_SOURCE_FOLDER()
 	}
 }
 
+const wchar_t* REMOTEVIEWMODELTEST_BINARY_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_RemoteViewModelTest/Resource_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_RemoteViewModelTest/Resource_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
+const wchar_t* REMOTEVIEWMODELTEST_SOURCE_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_RemoteViewModelTest/Source_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_RemoteViewModelTest/Source_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
 const wchar_t* DIALOGS_BINARY_FOLDER()
 {
 	switch (targetCpuArchitecture)
@@ -172,6 +192,7 @@ Compiler
 #define BUILD_DARKSKIN
 #define BUILD_FULLCONTROLTEST
 #define BUILD_REMOTEPROTOCOL_TEST
+#define BUILD_REMOTEVIEWMODELTEST
 
 void GuiMain()
 {
@@ -180,6 +201,7 @@ void GuiMain()
 	GetResourceManager()->UnloadResource(L"DarkSkin");
 	GetResourceManager()->UnloadResource(L"FullControlTest");
 	GetResourceManager()->UnloadResource(L"RemoteProtocolTest");
+	GetResourceManager()->UnloadResource(L"RemoteViewModelTest");
 
 	List<WString> dependencies;
 
@@ -254,6 +276,21 @@ void GuiMain()
 		(GetResourcePath() / L"App/RemoteProtocolTest/Resource.xml"),
 		(GetResourcePath() / REMOTEPROTOCOLTEST_BINARY_FOLDER()),
 		(GetResourcePath() / REMOTEPROTOCOLTEST_SOURCE_FOLDER()),
+		false
+	));
+#endif
+
+#ifdef BUILD_REMOTEVIEWMODELTEST
+	LoadResource(CompileResources(
+		targetCpuArchitecture,
+		L"RemoteViewModelTest",
+		L"Source: Generated_RemoteViewModelTest",
+		L"../../../../Source/GacUI.h",
+		L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h",
+		dependencies,
+		(GetResourcePath() / L"App/RemoteViewModelTest/Resource.xml"),
+		(GetResourcePath() / REMOTEVIEWMODELTEST_BINARY_FOLDER()),
+		(GetResourcePath() / REMOTEVIEWMODELTEST_SOURCE_FOLDER()),
 		false
 	));
 #endif

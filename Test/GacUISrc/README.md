@@ -11,16 +11,25 @@
 - `Metadata_UpdateProtocol`: Parse protocol and generate C++ code for GuiRemoteController.
 - `Metadata_Generate`: Run both Win32 and X64 to generate metaonly reflection binary files.
 - `Metadata_Test`: Test the generated binary files, both Win32 and X64 at the same time.
-- `GacUI_Compiler`: Compile `FakeDialogServiceUI` (with merging), `DarkSkin` and `FullControlTest`, both Win32 and X64 at the same time.
+- `GacUI_Compiler`: Compile `FakeDialogServiceUI` (with merging), `DarkSkin`, `FullControlTest`, `RemoteProtocolTest` and `RemoteViewModelTest`, both Win32 and X64 at the same time.
   - `CppTest`: Compile and run generated C++ files in `hosted mode` with `VCZH_DEBUG_NO_REFLECTION`.
+  - `CppTest_Rvm`: Run `Generated_RemoteViewModelTest` locally with a view-model service supplied by `RemotingTest_RvmHost` (`/Pipe`, `/Http`, `/MiniHttp`).
   - `CppTest_Metaonly`: Compile and run generated C++ files with `VCZH_DEBUG_METAONLY_REFLECTION`.
   - `CppTest_Reflection`: Compile and run generated C++ files.
   - `GacUI_Host`: Load the compiled binary file and run.
   - `Playground`: Compile and load XML with generated DarkSkin.
   - `RemotingTest_Core`: GacUI running in remote protocol (`/Pipe`, `/Http`, `/MiniHttp`)
-  - `RemotingTest_Rendering_Win32`: Renderer connects to `RemotingTest_Core` using NamedPipe or HTTP (`/Pipe`, `/Http`, `/MiniHttp`)
+  - `RemotingTest_Rendering_Win32`: Renderer connects to `RemotingTest_Core` using the selected transport (`/Pipe`, `/Http`, `/MiniHttp`)
+  - `RemotingTest_RvmHost`: Provide the `ViewModelChannel` service and internal `ViewModelReadyChannel` startup signal used by `CppTest_Rvm` and `RemotingTest_Core /RVMT` (`/Pipe`, `/Http`, `/MiniHttp`).
 - `UnitTest`: Test cases for GacUI.
 - `UnitTestViewer`: Render snapshots generated in `UnitTest`.
+
+RemoteViewModel demo startup is ordered, and every participating process must use the same transport argument:
+
+- For `/RVMT`, start `RemotingTest_Core /RVMT` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. Start `RemotingTest_Rendering_Win32` only after Core prints `rvmt::IViewModel acquired; renderer admission is open.`
+- For the local variant, start `CppTest_Rvm` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. This variant does not use a renderer.
+- A requester exits with an error if `RemotingTest_RvmHost` disconnects while it is running.
+- On Linux, `CppTest_Rvm` is build-only; use `RemotingTest_Core /RVMT` with `/MiniHttp` for the runnable RVM demo.
 
 ## Shared
 
@@ -70,3 +79,4 @@
     - `Test\Resources\App\DarkSkin`             -> `Generated_DarkSkin`
     - `Test\Resources\App\FullControlTest`      -> `Generated_FullControlTest`
     - `Test\Resources\App\RemoteProtocolTest`   -> `Generated_RemoteProtocolTest`
+    - `Test\Resources\App\RemoteViewModelTest`  -> `Generated_RemoteViewModelTest`

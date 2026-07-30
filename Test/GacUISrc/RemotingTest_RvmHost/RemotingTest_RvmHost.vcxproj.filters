@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{45A7B54D-E88C-4163-9ED2-75D42386B953}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{C95A46BA-48C9-469D-AF80-91537E90FBA8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{8A5162BA-5E3A-4EEB-AF8B-C17F4F2A71F4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated x86">
+      <UniqueIdentifier>{AAB41C8C-6BD9-44BC-B1C3-1163C3D49F70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated x64">
+      <UniqueIdentifier>{4104FA09-2155-4641-B780-2E0C1960E4B3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RemoteViewModelTestRuntime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Generated_RemoteViewModelTest\Source_x86\RemoteViewModelTestRpc.cpp">
+      <Filter>Generated x86</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Generated_RemoteViewModelTest\Source_x64\RemoteViewModelTestRpc.cpp">
+      <Filter>Generated x64</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="RemoteViewModelTestRuntime.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RemoteViewModelTestShared.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Generated_RemoteViewModelTest\Source_x86\RemoteViewModelTestRpc.h">
+      <Filter>Generated x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Generated_RemoteViewModelTest\Source_x64\RemoteViewModelTestRpc.h">
+      <Filter>Generated x64</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

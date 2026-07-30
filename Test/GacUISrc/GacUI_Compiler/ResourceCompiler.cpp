@@ -65,6 +65,7 @@ void DebugCallback::PrintPassName(vint passIndex)
 			PRINT_PASS(Instance_CompileEventHandlers)
 			PRINT_PASS(Instance_GenerateInstanceClass)
 			PRINT_PASS(Instance_CompileInstanceClass)
+			PRINT_PASS(Instance_GenerateRpcMetadata)
 		}
 	}
 }
@@ -101,6 +102,7 @@ FilePath CompileResources(
 	FilePath workflowPath1 = outputBinaryFolder / (name + L".Shared.UI.txt");
 	FilePath workflowPath2 = outputBinaryFolder / (name + L".TemporaryClass.UI.txt");
 	FilePath workflowPath3 = outputBinaryFolder / (name + L".InstanceClass.UI.txt");
+	FilePath workflowRpcPath = outputBinaryFolder / (name + L".Rpc.txt");
 	FilePath binaryPath = outputBinaryFolder / (name + L".UI.bin");
 	FilePath assemblyPath32 = outputBinaryFolder / (name + L".UI.x86.bin");
 	FilePath assemblyPath64 = outputBinaryFolder / (name + L".UI.x64.bin");
@@ -134,6 +136,7 @@ FilePath CompileResources(
 	File(workflowPath1).Delete();
 	File(workflowPath2).Delete();
 	File(workflowPath3).Delete();
+	File(workflowRpcPath).Delete();
 	File(binaryPath).Delete();
 	File(assemblyPath32).Delete();
 	File(assemblyPath64).Delete();
@@ -144,6 +147,10 @@ FilePath CompileResources(
 	auto compiled = WriteWorkflowScript(precompiledFolder, L"Workflow/InstanceClass", workflowPath3);
 	if (errors.Count() > 0)
 	{
+		if (outputCppFolder != L"")
+		{
+			CleanRpcCppFiles(outputCppFolder, name + L"Rpc");
+		}
 		WriteErrors(errors, errorPath);
 		CHECK_FAIL(L"Compile error occurs, please check the log for details.");
 	}
@@ -159,10 +166,44 @@ FilePath CompileResources(
 
 		FilePath cppFolder = outputCppFolder;
 		auto output = WriteCppCodesToFile(resource, compiled, input, cppFolder, errors);
-		if (errors.Count() > 0)
+		if (!output || errors.Count() > 0)
 		{
+			CleanRpcCppFiles(cppFolder, name + L"Rpc");
 			WriteErrors(errors, errorPath);
 			CHECK_FAIL(L"Compile error occurs, please check the log for details.");
+		}
+
+		auto rpcAssemblyName = name + L"Rpc";
+		if (HasRpcMetadata(compiled))
+		{
+			auto rpcOutput = GenerateRpcCppOutput(
+				resource,
+				compiled,
+				output,
+				rpcAssemblyName,
+				cppComment + L" (RPC)",
+				debugCallback.GetCompilerCallback(),
+				errors
+				);
+			if (!rpcOutput
+				|| !WriteRpcWorkflowScript(resource, rpcOutput, workflowRpcPath, errors)
+				|| !WriteRpcCppCodesToFile(resource, rpcOutput, rpcAssemblyName, cppFolder, errors))
+			{
+				File(workflowRpcPath).Delete();
+				CleanRpcCppFiles(cppFolder, rpcAssemblyName);
+				WriteErrors(errors, errorPath);
+				CHECK_FAIL(L"RPC compile error occurs, please check the log for details.");
+			}
+		}
+		else
+		{
+			File(workflowRpcPath).Delete();
+			if (!CleanRpcCppFiles(cppFolder, rpcAssemblyName))
+			{
+				errors.Add(GuiResourceError({ resource }, L"Unable to clean stale RPC C++ output in: " + cppFolder.GetFullPath()));
+				WriteErrors(errors, errorPath);
+				CHECK_FAIL(L"RPC output cleanup error occurs, please check the log for details.");
+			}
 		}
 		WriteEmbeddedResource(resource, input, output, compressResource, cppFolder / (name + L"Resource.cpp"));
 	}

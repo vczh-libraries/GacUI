@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 	_set_abort_behavior(0, _WRITE_ABORT_MSG);
 #endif
 	int result = 1;
-	vint index = -1; // 0 = FullControlTest (/FCT), 1 = RemoteProtocolTest (/RPT)
+	vint index = -1; // 0 = FullControlTest (/FCT), 1 = RemoteProtocolTest (/RPT), 2 = RemoteViewModelTest (/RVMT)
 	int transport = -1; // 0 = Pipe, 1 = Http, 2 = MiniHTTP
 
 	for (int i = 1; i < argc; i++)
@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 		{
 			if (index != -1)
 			{
-				Console::WriteLine(L"Error: /FCT and /RPT are exclusive.");
+				Console::WriteLine(L"Error: /FCT, /RPT and /RVMT are exclusive.");
 				return result;
 			}
 			index = 0;
@@ -37,10 +37,19 @@ int main(int argc, char* argv[])
 		{
 			if (index != -1)
 			{
-				Console::WriteLine(L"Error: /FCT and /RPT are exclusive.");
+				Console::WriteLine(L"Error: /FCT, /RPT and /RVMT are exclusive.");
 				return result;
 			}
 			index = 1;
+		}
+		else if (strcmp(argv[i], "/RVMT") == 0)
+		{
+			if (index != -1)
+			{
+				Console::WriteLine(L"Error: /FCT, /RPT and /RVMT are exclusive.");
+				return result;
+			}
+			index = 2;
 		}
 		else if (strcmp(argv[i], "/Pipe") == 0)
 		{

@@ -18,23 +18,20 @@ WorkflowScriptPositionVisitor
 			GuiResourceTextPos								position;
 			glr::ParsingTextPos								availableAfter;
 			Ptr<types::ScriptPosition>						sp;
+			bool											overwriteExisting;
 
-			WorkflowScriptPositionVisitor(GuiResourcePrecompileContext& _context, GuiResourceTextPos _position, glr::ParsingTextPos _availableAfter)
+			WorkflowScriptPositionVisitor(GuiResourcePrecompileContext& _context, GuiResourceTextPos _position, glr::ParsingTextPos _availableAfter, bool _overwriteExisting)
 				:context(_context)
 				, position(_position)
 				, availableAfter(_availableAfter)
+				, overwriteExisting(_overwriteExisting)
 			{
-				vint index = context.additionalProperties.Keys().IndexOf(nullptr);
-				if (index == -1)
-				{
-					context.additionalProperties.Add(nullptr, Ptr(new types::ScriptPosition));
-				}
-				sp = context.additionalProperties[nullptr].Cast<types::ScriptPosition>();
+				sp = Workflow_EnsureScriptPosition(context);
 			}
 
 			void Traverse(glr::ParsingAstBase* node) override
 			{
-				if (!sp->nodePositions.Keys().Contains(node))
+				if (overwriteExisting || !sp->nodePositions.Keys().Contains(node))
 				{
 					auto pos = node->codeRange.start;
 					if (pos.row == availableAfter.row && pos.column > availableAfter.column)
@@ -62,7 +59,14 @@ WorkflowScriptPositionVisitor
 						record.computedPosition = { position.originalLocation,{ position.row + pos.row,pos.column } };
 					}
 
-					sp->nodePositions.Add(Ptr(node), record);
+					if (overwriteExisting)
+					{
+						sp->nodePositions.Set(Ptr(node), record);
+					}
+					else
+					{
+						sp->nodePositions.Add(Ptr(node), record);
+					}
 				}
 			}
 		};
@@ -73,27 +77,54 @@ WorkflowCompiler_ScriptPosition
 
 		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfType> node, glr::ParsingTextPos availableAfter)
 		{
-			WorkflowScriptPositionVisitor(context, position, availableAfter).InspectInto(node.Obj());
+			WorkflowScriptPositionVisitor(context, position, availableAfter, false).InspectInto(node.Obj());
 		}
 
 		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfExpression> node, glr::ParsingTextPos availableAfter)
 		{
-			WorkflowScriptPositionVisitor(context, position, availableAfter).InspectInto(node.Obj());
+			WorkflowScriptPositionVisitor(context, position, availableAfter, false).InspectInto(node.Obj());
 		}
 
 		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfStatement> node, glr::ParsingTextPos availableAfter)
 		{
-			WorkflowScriptPositionVisitor(context, position, availableAfter).InspectInto(node.Obj());
+			WorkflowScriptPositionVisitor(context, position, availableAfter, false).InspectInto(node.Obj());
 		}
 
 		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfDeclaration> node, glr::ParsingTextPos availableAfter)
 		{
-			WorkflowScriptPositionVisitor(context, position, availableAfter).InspectInto(node.Obj());
+			WorkflowScriptPositionVisitor(context, position, availableAfter, false).InspectInto(node.Obj());
 		}
 
 		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfModule> node, glr::ParsingTextPos availableAfter)
 		{
-			WorkflowScriptPositionVisitor(context, position, availableAfter).InspectInto(node.Obj());
+			WorkflowScriptPositionVisitor(context, position, availableAfter, false).InspectInto(node.Obj());
+		}
+
+		void Workflow_RecordScriptPositionOverwrite(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfExpression> node, glr::ParsingTextPos availableAfter)
+		{
+			WorkflowScriptPositionVisitor(context, position, availableAfter, true).InspectInto(node.Obj());
+		}
+
+		void Workflow_RecordScriptPositionOverwrite(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfStatement> node, glr::ParsingTextPos availableAfter)
+		{
+			WorkflowScriptPositionVisitor(context, position, availableAfter, true).InspectInto(node.Obj());
+		}
+
+		void Workflow_RecordScriptPositionOverwrite(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfDeclaration> node, glr::ParsingTextPos availableAfter)
+		{
+			WorkflowScriptPositionVisitor(context, position, availableAfter, true).InspectInto(node.Obj());
+		}
+
+		Ptr<types::ScriptPosition> Workflow_EnsureScriptPosition(GuiResourcePrecompileContext& context)
+		{
+			vint index = context.additionalProperties.Keys().IndexOf(nullptr);
+			if (index == -1)
+			{
+				auto sp = Ptr(new types::ScriptPosition);
+				context.additionalProperties.Add(nullptr, sp);
+				return sp;
+			}
+			return context.additionalProperties.Values()[index].Cast<types::ScriptPosition>();
 		}
 
 		Ptr<types::ScriptPosition> Workflow_GetScriptPosition(GuiResourcePrecompileContext& context)

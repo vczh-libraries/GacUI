@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{31214cfd-f243-439c-baf7-25a7e718264b}</ProjectGuid>
-    <RootNamespace>GacUICompiler</RootNamespace>
+    <ProjectGuid>{3C1C26F1-0A18-4751-B984-EE28EEA11359}</ProjectGuid>
+    <RootNamespace>RemotingTestRvmHost</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -31,7 +31,6 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -39,14 +38,12 @@
     <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -54,14 +51,12 @@
     <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
-    <Import Project="..\Source_GacUI_Compiler\Source_GacUI_Compiler.vcxitems" Label="Shared" />
-    <Import Project="..\Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems" Label="Shared" />
+    <Import Project="..\Source_Import\Source_Import.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -78,25 +73,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\..\..\Import;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\Generated_RemoteViewModelTest\Source_x86\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\..\..\Import;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\Generated_RemoteViewModelTest\Source_x86\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\..\..\Import;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\Generated_RemoteViewModelTest\Source_x64\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\..\..\Import;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\Generated_RemoteViewModelTest\Source_x64\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>VCZH_CHECK_MEMORY_LEAKS;VCZH_DEBUG_METAONLY_REFLECTION;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>VCZH_CHECK_MEMORY_LEAKS;VCZH_DEBUG_NO_REFLECTION;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -114,7 +109,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>VCZH_DEBUG_METAONLY_REFLECTION;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>VCZH_DEBUG_NO_REFLECTION;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -132,7 +127,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>VCZH_CHECK_MEMORY_LEAKS;VCZH_DEBUG_METAONLY_REFLECTION;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>VCZH_CHECK_MEMORY_LEAKS;VCZH_DEBUG_NO_REFLECTION;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -150,7 +145,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>VCZH_DEBUG_METAONLY_REFLECTION;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>VCZH_DEBUG_NO_REFLECTION;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -165,73 +160,28 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Lib_GacUI_Metaonly\Lib_GacUI_Metaonly.vcxproj">
-      <Project>{bf177697-a8b5-4580-87e7-de77c0a29c9f}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="ResourceCompiler.cpp" />
+    <ClCompile Include="RemoteViewModelTestRuntime.cpp" />
+    <ClCompile Include="..\Generated_RemoteViewModelTest\Source_x86\RemoteViewModelTestRpc.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\Generated_RemoteViewModelTest\Source_x64\RemoteViewModelTestRpc.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ResourceCompiler.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\..\Resources\App\Gaclib.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\ColorDialog.xml" />
-    <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\FileDialog.xml" />
-    <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\FontDialog.xml" />
-    <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\MessageBox.xml" />
-    <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\Resource.xml" />
-    <Xml Include="..\..\Resources\App\DarkSkin\BaselineDocuments.xml" />
-    <Xml Include="..\..\Resources\App\DarkSkin\DarkSkin.xml" />
-    <Xml Include="..\..\Resources\App\DarkSkin\Index.xml" />
-    <Xml Include="..\..\Resources\App\DarkSkin\Resource.xml" />
-    <Xml Include="..\..\Resources\App\DarkSkin\Style.xml" />
-    <Xml Include="..\..\Resources\App\DarkSkin\Template_Button.xml" />
-    <Xml Include="..\..\Resources\App\DarkSkin\Template_Document.xml" />
-    <Xml Include="..\..\Resources\App\DarkSkin\Template_List.xml" />
-    <Xml Include="..\..\Resources\App\DarkSkin\Template_Misc.xml" />
-    <Xml Include="..\..\Resources\App\DarkSkin\Template_Ribbon.xml" />
-    <Xml Include="..\..\Resources\App\DarkSkin\Template_Scroll.xml" />
-    <Xml Include="..\..\Resources\App\DarkSkin\Template_Tab.xml" />
-    <Xml Include="..\..\Resources\App\DarkSkin\Template_Toolstrip.xml" />
-    <Xml Include="..\..\Resources\App\DarkSkin\Template_Window.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\AnimationTabPage.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\DataGridComponents.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\DataGridTabPage.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\DatePickerTabPage.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\DocumentComponents.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\DocumentEditorBase.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\DocumentEditorRibbon.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\DocumentEditorToolstrip.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\ElementTabPage.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\EmbeddedControlsSubTabPage.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\Images\ImageLoader.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\Images\LargeImages.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\Images\MiscImages.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\Images\SmallImages.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\ListViewTabPage.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\LocalizedComponents.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\LocalizedDialogsTabPage.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\LocalizedStringsTabPage.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\RefreshListTabPages.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\RepeatComponents.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\RepeatTabPage.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\Resource.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\ResponsiveTabPage.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\SideDocuments.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\TextBoxTabPage.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\TextListTabPage.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\ToolbarImages\Images.xml" />
-    <Xml Include="..\..\Resources\App\FullControlTest\TreeViewTabPage.xml" />
-    <Xml Include="..\..\Resources\App\RemoteProtocolTest\Resource.xml" />
-    <Xml Include="..\..\Resources\App\RemoteProtocolTest\SideDocuments.xml" />
-    <Xml Include="..\..\Resources\App\RemoteProtocolTest\ToolbarImages\Images.xml" />
-    <Xml Include="..\..\Resources\App\RemoteViewModelTest\Resource.xml" />
-    <Xml Include="..\..\Resources\App\UI1_StyleTemplate.xml" />
+    <ClInclude Include="RemoteViewModelTestRuntime.h" />
+    <ClInclude Include="RemoteViewModelTestShared.h" />
+    <ClInclude Include="..\Generated_RemoteViewModelTest\Source_x86\RemoteViewModelTestRpc.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\Generated_RemoteViewModelTest\Source_x64\RemoteViewModelTestRpc.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

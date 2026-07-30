@@ -615,6 +615,7 @@ Resource Type Resolver
 		///			Pass  5: Compile
 		///			Pass  6: Generate instance types with everything to InstanceCtor				/ Compile animation types / Compile localized strings injection
 		///			Pass  7: Compile
+		///			Pass  8: Generate RPC metadata
 		/// </summary>
 		class IGuiResourceTypeResolver_Precompile : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Precompile>
 		{
@@ -631,7 +632,8 @@ Resource Type Resolver
 				Instance_CompileEventHandlers		= 5,
 				Instance_GenerateInstanceClass		= 6,
 				Instance_CompileInstanceClass		= 7,
-				Instance_Max						= Instance_CompileInstanceClass,
+				Instance_GenerateRpcMetadata		= 8,
+				Instance_Max						= Instance_GenerateRpcMetadata,
 
 				Everything_Max						= Instance_Max,
 			};
