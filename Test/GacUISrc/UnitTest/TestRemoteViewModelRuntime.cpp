@@ -85,6 +85,15 @@ TEST_FILE
 			TEST_ASSERT(!state.TryAcceptViewModelHost(21));
 		});
 
+		TEST_CASE(L"A second requester is rejected without replacing the first requester")
+		{
+			RemoteViewModelRoleState state;
+			TEST_ASSERT(state.EnableRemoteViewModel());
+			TEST_ASSERT(state.RegisterRequester(10));
+			TEST_ASSERT(!state.RegisterRequester(11));
+			TEST_ASSERT(state.GetRequesterClientId() == 10);
+		});
+
 		TEST_CASE(L"Host loss before window startup is fatal")
 		{
 			RemoteViewModelRoleState state;
