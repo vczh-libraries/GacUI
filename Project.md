@@ -24,6 +24,7 @@ always fix the root cause.
 - `REPO-ROOT/Test/GacUISrc/Generated_Dialogs`
 - `REPO-ROOT/Test/GacUISrc/Generated_FullControlTest`
 - `REPO-ROOT/Test/GacUISrc/Generated_RemoteProtocolTest`
+- `REPO-ROOT/Test/GacUISrc/Generated_RemoteViewModelTest`
 - `REPO-ROOT/Test/GacUISrc/Generated_UnitTestViewer`
 - `REPO-ROOT/Source/Utilities/FakeServices/Dialogs/Source`
 - `REPO-ROOT/Source/UnitTestUtilities/SnapshotViewer/Source`
@@ -114,6 +115,7 @@ This project need to run if any of the following XML file is updated:
   - **IMPORTANT**: `REPO-ROOT/Source/Skins/DarkSkin` has another copy, this is used by the CI and is not involved in this solution, ignore it.
 - `REPO-ROOT/Test/Resources/App/FullControlTest/*.xml` -> generates `REPO-ROOT/Test/GacUISrc/Generated_FullControlTest/Source_(x86|x64)/*`.
 - `REPO-ROOT/Test/Resources/App/RemoteProtocolTest/*.xml` -> generates `REPO-ROOT/Test/GacUISrc/Generated_RemoteProtocolTest/Source_(x86|x64)/*`.
+- `REPO-ROOT/Test/Resources/App/RemoteViewModelTest/*.xml` -> generates ordinary and RPC C++ in `REPO-ROOT/Test/GacUISrc/Generated_RemoteViewModelTest/Source_(x86|x64)/*`.
 
 After running `GacUI_Compiler`, you should always `git status` to find if there is any untracked `*.UI.errors.txt`.
 - Such file means there are compile errors in some xml files, read it to find the detail.
@@ -144,19 +146,29 @@ Running core always uses network protocols.
 Three ways are calling three different renderer implementations, but with the same core implementation.
 By careful tell if a bug repro in some or all three ways, you can easily narrow down the scope of the possible cause.
 
+## Maintaining Test Apps
+
+Test apps means `CppTest*` and `RemotingTest*`, they are demos and do not require production level quality.
+No need to gracefully handle any exception, actually we need them to just crash when anything unexpected thing happens, that's how we know anything in `REPO-ROOT/Source` is going wrong.
+`REPO-ROOT/DebugRemoteProtocolSop.md` defines the expected behavior of these test apps apon connection/disconnection.
+Keep test apps simple without introducing unnecessary "gracefully recovering".
+
 ## Windows Specific
 
 Automation HTTP service for GUI applications are available for Windows:
 - `CppTest`                       : Run FullControlTest in hosted mode, built without reflection (`VCZH_DEBUG_NO_REFLECTION`).
+- `CppTest_Rvm`                   : Run RemoteViewModelTest in hosted mode after acquiring its service from `RemotingTest_RvmHost`.
 - `CppTest_Metaonly`              : Run FullControlTest, built with metaonly reflection (`VCZH_DEBUG_METAONLY_REFLECTION`).
 - `CppTest_Reflection`            : Run FullControlTest, built with full reflection.
 - `GacUI_Host`                    : Run FullControlTest, by loading Workflow binary assembly instead of generated C++ code.
 - `Playground`                    : Run `REPO-ROOT/Test/GacUISrc/Playground/Resources/Resource*.xml`, resource file to load specified, main window specified in `OpenMainWindow` function.
-- `RemotingTest_Core`             : Run FullControlTest or RemoteProtocolTest with remote protocol hosted by HTTP or NamedPipe.
+- `RemotingTest_Core`             : Run FullControlTest, RemoteProtocolTest, or RemoteViewModelTest with remote protocol hosted by HTTP, MiniHTTP, or NamedPipe.
 - `RemotingTest_Rendering_Win32`  : Renderer of `RemotingTest_Core`.
+- `RemotingTest_RvmHost`          : Provide the remote view-model service used by `CppTest_Rvm` and `RemotingTest_Core /RVMT`.
 
 FullControlTest means `Generated_FullControlTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/FullControlTest/Resource.xml`.
 RemoteProtocolTest means `Generated_RemoteProtocolTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/RemoteProtocolTest/Resource.xml`.
+RemoteViewModelTest means `Generated_RemoteViewModelTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/RemoteViewModelTest/Resource.xml`.
 When `FakeDialogService` is used, all system dialogs are replaced by `REPO-ROOT/Source/Utilities/FakeServices/Dialogs/Resource.xml`.
 For the non-remoting projects above, the automation endpoint is `http://localhost:8888/Automation/<PROJECT-NAME>/...` and is hosted by `StartWindowsHttpAutomationService`.
 - Checkout `REPO-ROOT/.github/Guidelines/Running-GacUI.md` for details.
@@ -172,6 +184,13 @@ Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in
   - Core and renderer should synchronize to the same UI state afterwards.
   - Performing IO through either the renderer or the core should result in the same UI state.
 
+`CppTest_Rvm`, `RemotingTest_Core /RVMT`, and `RemotingTest_RvmHost` share the same physical transport endpoint. RPC endpoints use the exact logical channel `ViewModelChannel`, the host also uses the internal `ViewModelReadyChannel` startup signal, and renderers use the exact logical channel `GacUIRemoteProtocol`. Use the same transport argument throughout one run.
+
+- For `/RVMT`, start `RemotingTest_Core /RVMT` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. Start the renderer only after Core prints `rvmt::IViewModel acquired; renderer admission is open.`
+- For the local variant, start `CppTest_Rvm` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. This variant does not use a renderer.
+- A requester terminates with an error if `RemotingTest_RvmHost` disconnects while the application is running.
+- `CppTest_Rvm` exposes automation at `http://localhost:8888/Automation/CppTest_Rvm/...`.
+
 `Playground` is for adhoc testing:
 - The UI in resource file, including `GuiMain` and `OpenMainWindow`, could be modified freely without any concern, it is not part of the release. DO NOT revert `Playground` change as I can also use it for manual verification.
 - Actual resource files to load is specified in `GuiMain`.
@@ -184,10 +203,12 @@ Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in
 - `Metadata_Generate`: `Metadata_Generate.vcxproj`.
 - `Metadata_Test`: `Metadata_Test.vcxproj`.
 - `CppTest`: `CppTest.vcxproj`.
+- `CppTest_Rvm`: `CppTest_Rvm/vmake` (build-only on Linux; use `RemotingTest_Core /RVMT` with `/MiniHttp` for the runnable RVM demo).
 - `CppTest_Metaonly`: `CppTest_Metaonly.vcxproj`.
 - `CppTest_Reflection`: `CppTest_Reflection.vcxproj`.
 - `GacUI_Compiler`: `GacUI_Compiler.vcxproj`.
 - `RemotingTest_Core`: `RemotingTest_Core.vcxproj`.
+- `RemotingTest_RvmHost`: `RemotingTest_RvmHost/vmake`.
 - `UnitTest`: `UnitTest.vcxproj`.
 
 `Metadata_UpdateProtocol` is not included. If it is needed, create it and remove this line.

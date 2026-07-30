@@ -34,6 +34,16 @@ establish, drive, inspect, replace, and close the renderer session.
   - `ControllerForceExit` event asks core to exit the app and don't give the actual app any chance to reject the request. That's similar to killing the process.
   - Core app requesting exiting, `ControllerRequestExit` and `ControllerForceExit` result in `ControllerConnectionEstablished` being sent to the renderer because it is deterministic, and it is the only scenario of deterministic disconnection.
 
+## Expected Behavior of Workflow RPC
+
+- Test Apps:
+  - `RemotingTest_Core /RVMP` and `CppTest_Rvm` running the `RemoteViewModelTest` app requesting a remote `IViewModel` to be implemented.
+  - `RemotingTest_RvmHost` implemented that `IViewModel` and connect to above test apps via the Workflow RPC feature, they are blocked until `RemotingTest_RvmHost` successfully connected.
+- Expected Behavior:
+  - Only one `RemotingTest_RvmHost` is allowed to connect.
+  - If it disconnects before the main window is closed in any reason, this is considered a fatal error inside `RemotingTest_Core` and `CppTest_Rvm`, terminating them directly.
+  - Terminating `RemotingTest_Core` in this way also causing such fatal error to be sent to `RemotingTest_Renderer` so it could render the error information.
+
 ## Rules for Every Operation
 
 1. Read the current visible UI before acting. Use the active enclosing control,

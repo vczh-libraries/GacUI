@@ -95,18 +95,27 @@ GacUI Remote Protocol enables Core and Renderer to run in different process in a
 
 All text box related controls are not supported yet, but they are on the way!
 
-#### NamedPipe and Http
+#### Named Pipe, HTTP, and MiniHTTP
 
-In **GacUISrc.sln** there are two projects:
+In **GacUISrc.sln** the remoting and remote-view-model demos use these projects:
 - [RemotingTest_Core.vcxproj](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_Core)
 - [RemotingTest_Rendering_Win32.vcxproj](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_Rendering_Win32)
+- [RemotingTest_RvmHost.vcxproj](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_RvmHost)
+- [CppTest_Rvm.vcxproj](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/CppTest_Rvm)
 
-You must offer the same command line argument to `Core` and then `Rendering_Win32` to play with the demo.
+You must offer the same transport argument to every process in one run.
 - `Core` starts a GacUI process but delegates all rendering work to a remote process.
 - `Rendering_Win32` starts a renderer-only process handles `Core`'s requests.
-- One of `/Pipe` or `/Http` or `/MiniHttp` should be offered to both projects so that they can connect to each other.
+- `RemotingTest_RvmHost` provides the service required by `/RVMT`. It advertises `ViewModelChannel` for RPC and the internal `ViewModelReadyChannel` startup signal; renderers advertise only `GacUIRemoteProtocol`.
+- `CppTest_Rvm` runs the generated application locally and uses `RemotingTest_RvmHost`, without a renderer process.
+- Exactly one of `/Pipe`, `/Http` or `/MiniHttp` should be offered to each participating project.
   - Non-Windows platform only enabled `/MiniHttp`.
-- Offer `/FCT` (default) or `/RPT` to host different test application.
+- Offer `/FCT` (default), `/RPT` or `/RVMT` to `Core`.
+- For `/FCT` and `/RPT`, start `Core` and then the renderer.
+- For `/RVMT`, start `Core` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. After `Core` prints `rvmt::IViewModel acquired; renderer admission is open.`, start the renderer.
+- For the local variant, start `CppTest_Rvm` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. This variant does not use a renderer.
+- The RVM demos intentionally use a simple ordered-start contract. If `RemotingTest_RvmHost` disconnects while a requester is running, the requester terminates with an error and the process set must be restarted.
+- On Linux, `CppTest_Rvm` is a build-only stub; the runnable RVM path is `RemotingTest_Core /RVMT` with `/MiniHttp`.
 
 Network Protocol Implementation Details:
 - `/Pipe` is built on top of Named Pipe API for Windows.
