@@ -1,0 +1,68 @@
+<Resource>
+  <Folder name="GacGenConfig">
+    <Folder name="Cpp">
+      <Text name="SourceFolder">Source</Text>
+      <Text name="Resource">..\..\..\UIRes\RemoteViewModelTest.bin</Text>
+      <Text name="NormalInclude">GacUI.h</Text>
+      <Text name="Name">RemoteViewModelTest</Text>
+    </Folder>
+  </Folder>
+
+  <Script name="ViewModelResource">
+    <Workflow>
+      <![CDATA[
+        module remote_view_model_test;
+
+        using system::*;
+
+        namespace rvmt
+        {
+          @rpc:Interface
+          @rpc:Ctor
+          interface IViewModel
+          {
+            func Translate(name : string) : string;
+          }
+        }
+      ]]>
+    </Workflow>
+  </Script>
+
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="rvmt::MainWindow" xmlns:rvmt="rvmt::*">
+      <ref.Parameter Name="ViewModel" Class="rvmt::IViewModel"/>
+      <ref.Ctor><![CDATA[
+        {
+          labelGreeting.Text = ViewModel.Translate("");
+        }
+      ]]></ref.Ctor>
+      <Window ref.Name="self" Text="Remote View Model Test" ClientSize="x:320 y:120">
+        <Table AlignmentToParent="left:10 top:10 right:10 bottom:10" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <SinglelineTextBox ref.Name="textName">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.TextChanged-eval><![CDATA[
+                {
+                  labelGreeting.Text = ViewModel.Translate(textName.Text);
+                }
+              ]]></ev.TextChanged-eval>
+            </SinglelineTextBox>
+          </Cell>
+          <Cell Site="row:1 column:0">
+            <Label ref.Name="labelGreeting">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </Label>
+          </Cell>
+        </Table>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
