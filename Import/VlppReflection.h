@@ -2440,7 +2440,28 @@ ITypeManager
 			extern ITypeDescriptor*				GetTypeDescriptor(const WString& name);
 			extern bool							IsInterfaceType(ITypeDescriptor* typeDescriptor, bool& acceptProxy);
 			extern void							LogTypeManager(stream::TextWriter& writer);
-			extern void							GenerateMetaonlyTypes(stream::IStream& outputStream);
+
+			/// <summary>Collect all registered type descriptors from a loaded global type manager.</summary>
+			/// <param name="types">The output list. Existing items are removed before collecting.</param>
+			/// <remarks>
+			/// The global type manager must already be loaded.
+			/// Do not register or reset types while the returned snapshot is in use.
+			/// </remarks>
+			extern void							CollectRegisteredTypes(collections::List<ITypeDescriptor*>& types);
+
+			/// <summary>Generate a binary metadata layer.</summary>
+			/// <param name="excludedTypes">
+			/// Registered descriptors supplied by previously loaded layers.
+			/// They are identified by registered reflection names, serialized in ascending name order,
+			/// and may still be referenced by metadata in the generated layer.
+			/// </param>
+			/// <param name="outputStream">The stream receiving the binary metadata layer.</param>
+			/// <remarks>
+			/// Every excluded descriptor must be a unique descriptor from the currently loaded global type manager.
+			/// Pass an empty list to generate an independently loadable layer.
+			/// Load every dependency layer before calling <see cref="LoadMetaonlyTypes"/> for this layer.
+			/// </remarks>
+			extern void							GenerateMetaonlyTypes(const collections::List<ITypeDescriptor*>& excludedTypes, stream::IStream& outputStream);
 			extern Ptr<ITypeLoader>				LoadMetaonlyTypes(stream::IStream& inputStream, const collections::Dictionary<WString, Ptr<ISerializableType>>& serializableTypes);
 
 /***********************************************************************
@@ -2578,6 +2599,7 @@ Exceptions
 }
 
 #endif
+
 
 /***********************************************************************
 .\PREDEFINED\OBSERVABLELIST.H

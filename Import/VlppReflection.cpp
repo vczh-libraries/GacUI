@@ -844,6 +844,7 @@ Context
 				List<Ptr<IMethodInfo>>					mis;
 				List<Ptr<IPropertyInfo>>				pis;
 				List<Ptr<IEventInfo>>					eis;
+				vint									firstLocalTypeDescriptor = 0;
 				ITypeDescriptor*						itdTd = nullptr;
 			};
 
@@ -2041,7 +2042,7 @@ GenerateMetaonlyTypes
 
 			void GenerateMetaonlyPropertyInfo(Writer& writer, IPropertyInfo* pi)
 			{
-				auto metadata = Ptr(new PropertyInfoMetadata);;
+				auto metadata = Ptr(new PropertyInfoMetadata);
 				if (auto cpp = pi->GetCpp())
 				{
 					metadata->referenceTemplate = cpp->GetReferenceTemplate();
@@ -2087,25 +2088,64 @@ GenerateMetaonlyTypes
 				writer << metadata;
 			}
 
-			void GenerateMetaonlyTypes(stream::IStream& outputStream)
+			void CollectRegisteredTypes(collections::List<ITypeDescriptor*>& types)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::reflection::description::CollectRegisteredTypes(collections::List<ITypeDescriptor*>&)#"
+				auto tm = GetGlobalTypeManager();
+				CHECK_ERROR(tm->IsLoaded(), ERROR_MESSAGE_PREFIX L"The global type manager must be loaded.");
+
+				types.Clear();
+				vint count = tm->GetTypeDescriptorCount();
+				for (vint i = 0; i < count; i++)
+				{
+					types.Add(tm->GetTypeDescriptor(i));
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			void GenerateMetaonlyTypes(const collections::List<ITypeDescriptor*>& excludedTypes, stream::IStream& outputStream)
 			{
 				Writer writer(outputStream);
 				writer.context = Ptr(new MetaonlyWriterContext);
 
+				List<WString> foreignNames;
 				Dictionary<WString, ITypeDescriptor*> tds;
 				List<IMethodInfo*> mis;
 				List<IPropertyInfo*> pis;
 				List<IEventInfo*> eis;
 
 				{
+#define ERROR_MESSAGE_PREFIX L"vl::reflection::description::GenerateMetaonlyTypes(const collections::List<ITypeDescriptor*>&, stream::IStream&)#"
 					auto tm = GetGlobalTypeManager();
-					vint count = tm->GetTypeDescriptorCount();
+					CHECK_ERROR(tm->IsLoaded(), ERROR_MESSAGE_PREFIX L"The global type manager must be loaded.");
 
+					SortedList<WString> sortedForeignNames;
+					for (vint i = 0; i < excludedTypes.Count(); i++)
+					{
+						auto td = excludedTypes[i];
+						CHECK_ERROR(td != nullptr, ERROR_MESSAGE_PREFIX L"An excluded type descriptor cannot be null.");
+						auto&& name = td->GetTypeName();
+						CHECK_ERROR(!sortedForeignNames.Contains(name), ERROR_MESSAGE_PREFIX L"An excluded type descriptor cannot appear more than once.");
+						CHECK_ERROR(tm->GetTypeDescriptor(name) == td, ERROR_MESSAGE_PREFIX L"An excluded type descriptor must be the exact descriptor currently registered under its name.");
+						sortedForeignNames.Add(name);
+					}
+					CopyFrom(foreignNames, sortedForeignNames);
+					for (vint i = 0; i < foreignNames.Count(); i++)
+					{
+						auto td = tm->GetTypeDescriptor(foreignNames[i]);
+						writer.context->tdIndex.Add(td, writer.context->tdIndex.Count());
+					}
+
+					vint count = tm->GetTypeDescriptorCount();
 					for (vint i = 0; i < count; i++)
 					{
 						auto td = tm->GetTypeDescriptor(i);
-						tds.Add(td->GetTypeName(), td);
+						if (!sortedForeignNames.Contains(td->GetTypeName()))
+						{
+							tds.Add(td->GetTypeName(), td);
+						}
 					}
+#undef ERROR_MESSAGE_PREFIX
 				}
 				{
 					vint count = tds.Count();
@@ -2160,7 +2200,7 @@ GenerateMetaonlyTypes
 					vint miCount = mis.Count();
 					vint piCount = pis.Count();
 					vint eiCount = eis.Count();
-					writer << tdCount << miCount << piCount << eiCount;
+					writer << foreignNames << tdCount << miCount << piCount << eiCount;
 
 					for (vint i = 0; i < tdCount; i++)
 					{
@@ -2193,7 +2233,7 @@ LoadMetaonlyTypes
 				void Load(ITypeManager* manager) override
 				{
 					// TODO: (enumerable) foreach
-					for (vint i = 0; i < context->tds.Count(); i++)
+					for (vint i = context->firstLocalTypeDescriptor; i < context->tds.Count(); i++)
 					{
 						auto td = context->tds[i];
 						manager->SetTypeDescriptor(td->GetTypeName(), td);
@@ -2215,10 +2255,34 @@ LoadMetaonlyTypes
 				reader.context = context;
 
 				{
+					List<WString> foreignNames;
 					vint tdCount = 0;
 					vint miCount = 0;
 					vint piCount = 0;
 					vint eiCount = 0;
+					reader << foreignNames;
+
+#define ERROR_MESSAGE_PREFIX L"vl::reflection::description::LoadMetaonlyTypes(stream::IStream&, const collections::Dictionary<WString, Ptr<ISerializableType>>&)#"
+					if (foreignNames.Count() > 0)
+					{
+						auto tm = GetGlobalTypeManager();
+						auto itdTypeName = WString::Unmanaged(TypeInfo<ITypeDescriptor>::content.typeName);
+						for (vint i = 0; i < foreignNames.Count(); i++)
+						{
+							auto&& name = foreignNames[i];
+							auto td = tm->GetTypeDescriptor(name);
+							auto errorMessage = ERROR_MESSAGE_PREFIX L"Cannot find the foreign type \"" + name + L"\".";
+							CHECK_ERROR(td != nullptr, errorMessage.Buffer());
+							context->tds.Add(Ptr<ITypeDescriptor>(td));
+							if (name == itdTypeName)
+							{
+								context->itdTd = td;
+							}
+						}
+					}
+					context->firstLocalTypeDescriptor = context->tds.Count();
+#undef ERROR_MESSAGE_PREFIX
+
 					reader << tdCount << miCount << piCount << eiCount;
 
 					{
@@ -2256,7 +2320,7 @@ LoadMetaonlyTypes
 				}
 
 #define ERROR_MESSAGE_PREFIX L"vl::reflection::description::LoadMetaonlyTypes(stream::IStream&, const collections::Dictionary<WString, Ptr<ISerializableType>>&)#"
-				for (vint i = 0; i < context->tds.Count(); i++)
+				for (vint i = context->firstLocalTypeDescriptor; i < context->tds.Count(); i++)
 				{
 					auto td = context->tds[i].Obj();
 					auto source = dynamic_cast<AttributeBagSource*>(td);

@@ -104,10 +104,11 @@ int main(int argc, char* argv[])
 	LoadGuiTemplateTypes();
 	LoadGuiControlTypes();
 	GetGlobalTypeManager()->Load();
+	collections::List<ITypeDescriptor*> excludedTypes;
 
 	{
 		FileStream fileStream(GetTestOutputPath() + REFLECTION_CORE_BIN, FileStream::WriteOnly);
-		GenerateMetaonlyTypes(fileStream);
+		GenerateMetaonlyTypes(excludedTypes, fileStream);
 	}
 	{
 		FileStream fileStream(GetTestOutputPath() + REFLECTION_CORE_OUTPUT, FileStream::WriteOnly);
@@ -123,7 +124,7 @@ int main(int argc, char* argv[])
 
 	{
 		FileStream fileStream(GetTestOutputPath() + REFLECTION_BIN, FileStream::WriteOnly);
-		GenerateMetaonlyTypes(fileStream);
+		GenerateMetaonlyTypes(excludedTypes, fileStream);
 	}
 	{
 		FileStream fileStream(GetTestOutputPath() + REFLECTION_OUTPUT, FileStream::WriteOnly);
