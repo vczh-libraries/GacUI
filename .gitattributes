@@ -61,3 +61,8 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+###############################################################################
+# Generated resource diagnostics end with a separator blank line.
+###############################################################################
+Test/GacUISrc/Generated_*/Resource_*/*.txt whitespace=-blank-at-eof

@@ -1,0 +1,331 @@
+﻿================================(1/2: RPC Wrapper)================================
+module RpcMetadata;
+
+var rpctype_rvmt__IViewModel : int = 0;
+
+var rpcmethod_rvmt__IViewModel_Translate : int = 1;
+
+func rpc_GetIds() : (int[string])
+{
+    var result : int[string] = {};
+    result.Set("rvmt::IViewModel", 0);
+    result.Set("rvmt::IViewModel.Translate", 1);
+    return result;
+}
+
+func rpcwrapper_IsInterfaceTypeId(typeId : int) : (bool)
+{
+    if (((typeId >= -7) and (typeId <= -1)))
+    return true;
+    switch (typeId)
+    {
+        case rpctype_rvmt__IViewModel:
+        return true;
+        default:
+        return false;
+    }
+}
+
+func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
+{
+    switch (typeId)
+    {
+        case rpctype_rvmt__IViewModel:
+        return true;
+        default:
+        return false;
+    }
+}
+
+interface rpcops_IOps_RemoteViewModelTestRpc
+{
+    func InvokeMethod_rvmt__IViewModel_Translate(ref : system::RpcObjectReference, arg_name : ::system::String) : (::system::String);
+}
+
+func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
+{
+    return new (system::IRpcObjectOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _slot : int = 0;
+
+        var _byvalReturnValues : object[int] = {};
+
+        override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+        {
+            var unknownId : bool = false;
+            try
+            switch (methodId)
+            {
+                case rpcmethod_rvmt__IViewModel_Translate:
+                {
+                    var target = (cast (rvmt::IViewModel^) _lc.RefToPtr(ref));
+                    return target.Translate((cast (::system::String) arguments[0]));
+                }
+                default:
+                (unknownId = true);
+            }
+            catch (ex)
+            {
+                return {message : ex.Message;} of (system::RpcException);
+            }
+            if (unknownId)
+            {
+                raise "Unknown RPC method id.";
+            }
+            return null;
+        }
+
+        override func EndInvokeMethod(slot : int) : (void)
+        {
+            _byvalReturnValues.Remove(slot);
+        }
+
+        override func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+        {
+            if (hold)
+            {
+                _lc.LocalObjectHold(ref, remoteClientId);
+            }
+            else
+            {
+                _lc.LocalObjectUnhold(ref, remoteClientId);
+            }
+        }
+    };
+}
+
+func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
+{
+    return new (system::IRpcObjectEventOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (object)
+        {
+            raise "Unknown RPC event id.";
+        }
+    };
+}
+
+func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_RemoteViewModelTestRpc^)
+{
+    return new (rpcops_IOps_RemoteViewModelTestRpc^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_rvmt__IViewModel_Translate(ref : system::RpcObjectReference, arg_name : ::system::String) : (::system::String)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, arg_name);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_rvmt__IViewModel_Translate, arguments);
+            system::IRpcLifecycle::ReadMethodException(invokeResult);
+            return (cast (::system::String) invokeResult);
+        }
+    };
+}
+
+namespace rvmt
+{
+    interface IRpcWrapper_IViewModel : rvmt::IViewModel, system::IRpcWrapperBase
+    {
+    }
+}
+
+func rpcwrapper_rvmt__IViewModel(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_RemoteViewModelTestRpc^) : (rvmt::IRpcWrapper_IViewModel^)
+{
+    var proxy = new (rvmt::IRpcWrapper_IViewModel^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        var _ops : rpcops_IOps_RemoteViewModelTestRpc^ = ops;
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+            (_ops = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
+            }
+        }
+
+        override func Translate(name : ::system::String) : (::system::String)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            return _ops.InvokeMethod_rvmt__IViewModel_Translate(_ref, name);
+        }
+    };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
+    return proxy;
+}
+
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*, ops : rpcops_IOps_RemoteViewModelTestRpc^) : (system::IRpcWrapperBase^)
+{
+    switch (ref.typeId)
+    {
+        case rpctype_rvmt__IViewModel:
+        {
+            return rpcwrapper_rvmt__IViewModel(lc, ref, ops);
+        }
+        default:
+        raise "Unknown RPC type id for wrapper creation.";
+    }
+}
+
+func rpcwrapper_GetTypeId(obj : object) : (int)
+{
+    if (obj is (rvmt::IViewModel*))
+    return rpctype_rvmt__IViewModel;
+    return -100;
+}
+
+================================(2/2: JSON RPC Wrapper)===========================
+module RpcMetadataJson;
+
+func rpcjson_Serialize(value : object) : (system::JsonNode^)
+{
+    return system::IRpcLifecycle::JsonSerializePredefinedTypes(value, rpcjson_Serialize);
+}
+
+func rpcjson_Deserialize(node : system::JsonNode^) : (object)
+{
+    var object = (node as (system::JsonObject^));
+    if (object is not null)
+    {
+        var jsonFieldValue0 : system::JsonNode^ = null;
+        for (jsonField1 in object.fields)
+        {
+            if ((jsonField1.name.value == "$"))
+            (jsonFieldValue0 = jsonField1.value);
+        }
+        if (jsonFieldValue0 is not null)
+        {
+            var keyword = (cast (system::JsonString^) jsonFieldValue0).content.value;
+            switch (keyword)
+            {
+            }
+        }
+    }
+    return system::IRpcLifecycle::JsonDeserializePredefinedTypes(node, rpcjson_Deserialize);
+}
+
+func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
+{
+    return new (system::IRpcSerializer^)
+    {
+        override func Serialize(value : object) : (object)
+        {
+            var result = rpcjson_Serialize(value);
+            return result;
+        }
+
+        override func Deserialize(value : object) : (object)
+        {
+            return rpcjson_Deserialize((cast (system::JsonNode^) value));
+        }
+    };
+}
+
+func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
+{
+    return new (system::IRpcObjectOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _slot : int = 0;
+
+        var _byvalReturnValues : object[int] = {};
+
+        override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+        {
+            var unknownId : bool = false;
+            try
+            switch (methodId)
+            {
+                case rpcmethod_rvmt__IViewModel_Translate:
+                {
+                    var target = (cast (rvmt::IViewModel^) _lc.RefToPtr(ref));
+                    var jsonValue0 = (cast (::system::String) rpcjson_Deserialize((cast (system::JsonNode^) arguments[0])));
+                    var jsonString1 = new (system::JsonString^)();
+                    (jsonString1.content = {value : (cast (string) target.Translate(jsonValue0));});
+                    return jsonString1;
+                }
+                default:
+                (unknownId = true);
+            }
+            catch (ex)
+            {
+                return rpcjson_Serialize({message : ex.Message;} of (system::RpcException));
+            }
+            if (unknownId)
+            {
+                raise "Unknown RPC method id.";
+            }
+            return rpcjson_Serialize(null);
+        }
+
+        override func EndInvokeMethod(slot : int) : (void)
+        {
+            _byvalReturnValues.Remove(slot);
+        }
+
+        override func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+        {
+            if (hold)
+            {
+                _lc.LocalObjectHold(ref, remoteClientId);
+            }
+            else
+            {
+                _lc.LocalObjectUnhold(ref, remoteClientId);
+            }
+        }
+    };
+}
+
+func rpcops_IRpcObjectEventOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
+{
+    return new (system::IRpcObjectEventOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (object)
+        {
+            raise "Unknown RPC event id.";
+        }
+    };
+}
+
+func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_RemoteViewModelTestRpc^)
+{
+    return new (rpcops_IOps_RemoteViewModelTestRpc^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_rvmt__IViewModel_Translate(ref : system::RpcObjectReference, arg_name : ::system::String) : (::system::String)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            var jsonString0 = new (system::JsonString^)();
+            (jsonString0.content = {value : (cast (string) arg_name);});
+            arguments.Set(0, jsonString0);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_rvmt__IViewModel_Translate, arguments);
+            var jsonResult = (cast (system::JsonNode^) invokeResult);
+            var methodResult = rpcjson_Deserialize(jsonResult);
+            system::IRpcLifecycle::ReadMethodException(methodResult);
+            var jsonValue1 = (cast (::system::String) rpcjson_Deserialize(jsonResult));
+            return jsonValue1;
+        }
+    };
+}
+
