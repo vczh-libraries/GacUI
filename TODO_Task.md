@@ -9,6 +9,7 @@
     - `IViewModel` will be implemented and offered in `RemoteTest_RvmHost`, using generated `RemoteViewModelTestRpc.(h|cpp)` only to run the rpc client.
     - `CppTest_Rvm` will host `RemoteViewModelTest` run the rpc server, wait for `CppTest_Rvm` to connect, and then create the main window which has a parameter of `Ptr<IViewModel>` and start.
     - `CppTest_Rvm` and `RemoteTest_RvmHost` supports `/Http`, `/Pipe` and `/MiniHttp` just like `RemotingTest_(Core|Renderer_Win32)`.
+    - `RemotingTest_RvmHost` disconnection will be treated as a fatal error, but such error will be ignored after the window is closed, aka after `GetApplication()->Run`.
 - GacUI compiler processes Workflow RPC interfaces.
   - Checkout how `Workflow` knowledge base and learn how to know if RPC is used in any referenced workflow scripts.
   - When RPC is used:
@@ -20,6 +21,7 @@
   - Add `/RVMT` to `RemotingTest_Core`
     - Only when `/RVMT` is used, it requests the view model from `RemotingTest_RvmHost` first before creating the window, working like `CppTest_Rvm` but this is a remote protocol enabled version.
     - After the window is created, it begins to accept renderers.
+    - `RemotingTest_RvmHost` disconnection will be treated as a fatal error, unlike we can accept multiple renderers, but such error will be ignored after the window is closed, aka after `GetApplication()->Run`.
 - Create `CppTest_Rvm` and `RemotingTest_RvmHost` linux projects with only vmake file.
 - `DebugRemoteProtocol*.md` untouched as they will only be updated after a real `RemoteViewModelTest` is created.
-- Update `README.md`, `Project.md` and `Test\GacUISrc\README.md` properly.
+- Update `README.md`, `Project.md` and `Test\GacUISrc\README.md` properly. Not to mention any actual details about `RemoteViewModelTest` but you can still points out `/RMVT` needs `RemotingTest_RvmHost` to connect first.
