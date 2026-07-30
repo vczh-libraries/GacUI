@@ -119,32 +119,41 @@ public:
 		if (lastPass != passIndex)
 		{
 			lastPass = passIndex;
+			WString action;
 			switch (passIndex)
 			{
 			case IGuiResourceTypeResolver_Precompile::Workflow_Collect:
-				PrintInformationMessage(L"Pass: (1/8) Collect workflow scripts");
+				action = L"Collect workflow scripts";
 				break;
 			case IGuiResourceTypeResolver_Precompile::Workflow_Compile:
-				PrintInformationMessage(L"Pass: (2/8) Compile view model scripts");
+				action = L"Compile view model scripts";
 				break;
 			case IGuiResourceTypeResolver_Precompile::Instance_CollectInstanceTypes:
-				PrintInformationMessage(L"Pass: (3/8) Collect instances");
+				action = L"Collect instances";
 				break;
 			case IGuiResourceTypeResolver_Precompile::Instance_CompileInstanceTypes:
-				PrintInformationMessage(L"Pass: (4/8) Validate instances");
+				action = L"Validate instances";
 				break;
 			case IGuiResourceTypeResolver_Precompile::Instance_CollectEventHandlers:
-				PrintInformationMessage(L"Pass: (5/8) Generate instance type stubs");
+				action = L"Generate instance type stubs";
 				break;
 			case IGuiResourceTypeResolver_Precompile::Instance_CompileEventHandlers:
-				PrintInformationMessage(L"Pass: (6/8) Compile instance type stubs");
+				action = L"Compile instance type stubs";
 				break;
 			case IGuiResourceTypeResolver_Precompile::Instance_GenerateInstanceClass:
-				PrintInformationMessage(L"Pass: (7/8) Generate instance types");
+				action = L"Generate instance types";
 				break;
 			case IGuiResourceTypeResolver_Precompile::Instance_CompileInstanceClass:
-				PrintInformationMessage(L"Pass: (8/8) Compile instance types");
+				action = L"Compile instance types";
 				break;
+			case IGuiResourceTypeResolver_Precompile::Instance_GenerateRpcMetadata:
+				action = L"Generate RPC metadata";
+				break;
+			}
+			if (action != L"")
+			{
+				auto passCount = IGuiResourceTypeResolver_Precompile::Everything_Max + 1;
+				PrintInformationMessage(L"Pass: (" + itow(passIndex + 1) + L"/" + itow(passCount) + L") " + action);
 			}
 		}
 	}
@@ -305,6 +314,94 @@ bool LoadDependencies(Ptr<CodegenConfig> config, Dictionary<WString, FilePath>& 
 	return true;
 }
 
+FilePath GetRpcCppPlatformContractPath(const FilePath& folder, const WString& assemblyName)
+{
+	return folder / (assemblyName + L".gacui.rpc.contract");
+}
+
+bool CleanRpcCppPlatformStage(const FilePath& folder, const WString& assemblyName)
+{
+	bool pairSucceeded = CleanRpcCppFiles(folder, assemblyName);
+	auto contractPath = GetRpcCppPlatformContractPath(folder, assemblyName);
+	File contractFile(contractPath);
+	bool contractSucceeded = !contractFile.Exists() || contractFile.Delete();
+	return pairSucceeded && contractSucceeded;
+}
+
+WString CreateRpcCppPlatformContract(
+	const FilePath& inputPath,
+	Ptr<CodegenConfig::CppOutput> cppOutput,
+	Ptr<WfCppOutput> normalOutput,
+	Ptr<GuiResourceRpcCppOutput> rpcOutput)
+{
+	return GenerateToStream([&](StreamWriter& writer)
+	{
+		writer.WriteLine(L"GacGen RPC C++ platform contract v1");
+		writer.WriteLine(L"Input: " + inputPath.GetFullPath());
+		writer.WriteLine(L"Name: " + cppOutput->name);
+		writer.WriteLine(L"SourceFolder: " + cppOutput->sourceFolder);
+		writer.WriteLine(L"Resource: " + cppOutput->resource);
+		writer.WriteLine(L"Compressed: " + cppOutput->compressed);
+		writer.WriteLine(L"CppResource: " + cppOutput->cppResource);
+		writer.WriteLine(L"CppCompressed: " + cppOutput->cppCompressed);
+		writer.WriteLine(L"EntryFileName: " + normalOutput->entryFileName);
+		writer.WriteLine(L"NormalIncludes: " + itow(cppOutput->normalIncludes.Count()));
+		for (auto include : cppOutput->normalIncludes)
+		{
+			writer.WriteLine(include);
+		}
+		writer.WriteLine(L"ReflectionIncludes: " + itow(cppOutput->reflectionIncludes.Count()));
+		for (auto include : cppOutput->reflectionIncludes)
+		{
+			writer.WriteLine(include);
+		}
+		writer.WriteLine(L"WorkflowRpc:");
+		writer.WriteLine(rpcOutput->workflowCode);
+	});
+}
+
+bool WriteRpcCppPlatformContract(
+	Ptr<GuiResource> resource,
+	const FilePath& folder,
+	const WString& assemblyName,
+	const WString& contract,
+	List<GuiResourceError>& errors)
+{
+	auto contractPath = GetRpcCppPlatformContractPath(folder, assemblyName);
+	if (!File(contractPath).WriteAllText(contract, true, BomEncoder::Utf8))
+	{
+		errors.Add(GuiResourceError({ resource }, L"Unable to write RPC C++ platform contract: " + contractPath.GetFullPath()));
+		return false;
+	}
+	return true;
+}
+
+Ptr<GuiResourceRpcCppOutput> LoadRpcCppOutputFromFolder(
+	const FilePath& folder,
+	const WString& assemblyName,
+	const WString& expectedContract)
+{
+	auto headerName = assemblyName + L".h";
+	auto cppName = assemblyName + L".cpp";
+	File headerFile(folder / headerName);
+	File cppFile(folder / cppName);
+	File contractFile(GetRpcCppPlatformContractPath(folder, assemblyName));
+	if (!headerFile.Exists()
+		|| !cppFile.Exists()
+		|| !contractFile.Exists()
+		|| contractFile.ReadAllTextByBom() != expectedContract)
+	{
+		return nullptr;
+	}
+
+	auto result = Ptr(new GuiResourceRpcCppOutput);
+	result->cppOutput = Ptr(new WfCppOutput);
+	result->cppOutput->entryFileName = assemblyName;
+	result->cppOutput->cppFiles.Add(headerName, headerFile.ReadAllTextByBom());
+	result->cppOutput->cppFiles.Add(cppName, cppFile.ReadAllTextByBom());
+	return result;
+}
+
 void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> mappingPath)
 {
 	PrintSuccessMessage(L"gacgen> Clearning logs ... : " + inputPath.GetFullPath());
@@ -323,12 +420,50 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 
 	FilePath logFolderPath = inputPath.GetFullPath() + logFolderPostfix;
 	FilePath scriptFilePath = logFolderPath / L"Workflow.txt";
+	FilePath rpcScriptFilePath = logFolderPath / L"WorkflowRpc.txt";
 	FilePath errorFilePath = logFolderPath / L"Errors.txt";
 	FilePath workingDir = inputPath.GetFolder();
+	Ptr<CodegenConfig::CppOutput> knownCppOutput;
+	auto cleanKnownRpcOutputs = [&]()
+	{
+		bool succeeded = true;
+		File rpcScriptFile(rpcScriptFilePath);
+		if (rpcScriptFile.Exists() && !rpcScriptFile.Delete())
+		{
+			succeeded = false;
+		}
+		if (knownCppOutput)
+		{
+			auto rpcAssemblyName = knownCppOutput->name + L"Rpc";
+			auto platformFolder = logFolderPath / L"Source";
+			if (!CleanRpcCppPlatformStage(platformFolder, rpcAssemblyName))
+			{
+				succeeded = false;
+			}
+			if (!partialMode)
+			{
+				auto productionFolder = workingDir / knownCppOutput->sourceFolder;
+				if (!CleanRpcCppFiles(productionFolder, rpcAssemblyName))
+				{
+					succeeded = false;
+				}
+			}
+		}
+		if (!succeeded)
+		{
+			PrintErrorMessage(L"error> Unable to clean known RPC outputs for: " + inputPath.GetFullPath());
+		}
+		return succeeded;
+	};
 
 	{
 		auto loadConfigResult = LoadConfig(inputPath);
-		if (!loadConfigResult.resource) return;
+		if (!loadConfigResult.resource)
+		{
+			cleanKnownRpcOutputs();
+			return;
+		}
+		knownCppOutput = loadConfigResult.config->cppOutput;
 
 		Dictionary<WString, FilePath> resourceMappings;
 		if (mappingPath)
@@ -337,6 +472,7 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 			if (!fileStream.IsAvailable())
 			{
 				PrintErrorMessage(L"error> Failed to load mapping file: " + mappingPath.Value().GetFullPath());
+				cleanKnownRpcOutputs();
 				return;
 			}
 			BomDecoder decoder;
@@ -351,6 +487,7 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 					if (arrow.key == -1)
 					{
 						PrintErrorMessage(L"warning> Unable to parse mapping information: " + line);
+						cleanKnownRpcOutputs();
 						return;
 					}
 					auto name = line.Left(arrow.key);
@@ -358,6 +495,7 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 					if (resourceMappings.Keys().Contains(name))
 					{
 						PrintErrorMessage(L"warning> Find duplicate mapping information: " + line);
+						cleanKnownRpcOutputs();
 						return;
 					}
 					resourceMappings.Add(name, value);
@@ -367,6 +505,7 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 
 		if (!LoadDependencies(loadConfigResult.config, resourceMappings, logFolderPostfix, errorFilePath))
 		{
+			cleanKnownRpcOutputs();
 			return;
 		}
 	}
@@ -383,6 +522,7 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 			if (!logFolder.Delete(true))
 			{
 				PrintErrorMessage(L"gacgen> Unable to delete file in the log folder : " + logFolderPath.GetFullPath());
+				cleanKnownRpcOutputs();
 				return;
 			}
 		}
@@ -392,6 +532,7 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 			if (!logFolder.Create(true))
 			{
 				PrintErrorMessage(L"gacgen> Unable to create log folder : " + logFolderPath.GetFullPath());
+				cleanKnownRpcOutputs();
 				return;
 			}
 		}
@@ -406,6 +547,7 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 		{
 			PrintErrorMessage(L"error> Failed to load resource.");
 			SaveErrors(errorFilePath, errors);
+			cleanKnownRpcOutputs();
 			return;
 		}
 	}
@@ -425,12 +567,14 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 			if (!config)
 			{
 				PrintErrorMessage(L"error> Failed to load config.");
+				cleanKnownRpcOutputs();
 				return;
 			}
 			if (errors.Count() > 0)
 			{
 				PrintErrorMessage(L"error> Failed to load resource metadata.");
 				SaveErrors(errorFilePath, errors);
+				cleanKnownRpcOutputs();
 				return;
 			}
 		}
@@ -443,6 +587,7 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 		}
 
 		cppOutput = config->cppOutput;
+		knownCppOutput = cppOutput;
 		switch (targetCpuArchitecture)
 		{
 		case GuiResourceCpuArchitecture::x86:
@@ -475,12 +620,20 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 	auto precompiledFolder = PrecompileResource(resource, targetCpuArchitecture, &callback, errors);
 	if (errors.Count() > 0)
 	{
+		cleanKnownRpcOutputs();
 		SaveErrors(errorFilePath, errors);
 		return;
 	}
 
 	if (auto compiled = WriteWorkflowScript(precompiledFolder, L"Workflow/InstanceClass", scriptFilePath))
 	{
+		if (!ValidateRpcCppGenerationConfiguration(resource, compiled, cppOutput != nullptr, errors))
+		{
+			cleanKnownRpcOutputs();
+			SaveErrors(errorFilePath, errors);
+			return;
+		}
+
 		if (cppOutput)
 		{
 			PrintSuccessMessage(L"gacgen> Generating C++ source code ...");
@@ -506,10 +659,105 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 			}
 
 			auto output = WriteCppCodesToFile(resource, compiled, input, cppFolder, errors);
-			if (errors.Count() > 0)
+			if (!output || errors.Count() > 0)
 			{
+				cleanKnownRpcOutputs();
 				SaveErrors(errorFilePath, errors);
 				return;
+			}
+
+			auto rpcAssemblyName = cppOutput->name + L"Rpc";
+			if (HasRpcMetadata(compiled))
+			{
+				PrintSuccessMessage(L"gacgen> Generating RPC C++ source code ...");
+				auto rpcOutput = GenerateRpcCppOutput(
+					resource,
+					compiled,
+					output,
+					rpcAssemblyName,
+					L"GacGen.exe " + FilePath(inputPath).GetName() + L" (RPC)",
+					callback.GetCompilerCallback(),
+					errors
+					);
+				bool rpcGenerationSucceeded = false;
+				if (rpcOutput && WriteRpcWorkflowScript(resource, rpcOutput, rpcScriptFilePath, errors))
+				{
+					if (partialMode)
+					{
+						rpcGenerationSucceeded = WriteRpcCppCodesToFile(resource, rpcOutput, rpcAssemblyName, cppFolder, errors);
+					}
+					else
+					{
+						auto platformFolder = logFolderPath / L"Source";
+						auto platformContract = CreateRpcCppPlatformContract(inputPath, cppOutput, output, rpcOutput);
+						if (!Folder(platformFolder).Create(true))
+						{
+							errors.Add(GuiResourceError({ resource }, L"Unable to create RPC platform staging folder: " + platformFolder.GetFullPath()));
+						}
+						else if (WriteRpcCppCodesToFile(resource, rpcOutput, rpcAssemblyName, platformFolder, errors)
+							&& WriteRpcCppPlatformContract(resource, platformFolder, rpcAssemblyName, platformContract, errors))
+						{
+							WString otherPostfix = targetCpuArchitecture == GuiResourceCpuArchitecture::x86
+								? L".log/x64"
+								: L".log/x32";
+							auto otherPlatformFolder = FilePath(inputPath.GetFullPath() + otherPostfix) / L"Source";
+							auto otherOutput = LoadRpcCppOutputFromFolder(otherPlatformFolder, rpcAssemblyName, platformContract);
+							if (otherOutput)
+							{
+								auto output32 = targetCpuArchitecture == GuiResourceCpuArchitecture::x86 ? rpcOutput : otherOutput;
+								auto output64 = targetCpuArchitecture == GuiResourceCpuArchitecture::x64 ? rpcOutput : otherOutput;
+								rpcGenerationSucceeded = WriteRpcCppCodesToFileMultiPlatform(
+									resource,
+									output32,
+									output64,
+									rpcAssemblyName,
+									cppFolder,
+									errors
+									);
+								if (!rpcGenerationSucceeded && !CleanRpcCppPlatformStage(otherPlatformFolder, rpcAssemblyName))
+								{
+									errors.Add(GuiResourceError({ resource }, L"Unable to invalidate incompatible RPC platform staging output in: " + otherPlatformFolder.GetFullPath()));
+								}
+							}
+							else if (!CleanRpcCppPlatformStage(otherPlatformFolder, rpcAssemblyName))
+							{
+								errors.Add(GuiResourceError({ resource }, L"Unable to invalidate stale RPC platform staging output in: " + otherPlatformFolder.GetFullPath()));
+							}
+							else
+							{
+								auto otherSwitch = targetCpuArchitecture == GuiResourceCpuArchitecture::x86 ? L"/C64" : L"/C32";
+								PrintInformationMessage(
+									L"gacgen> RPC C++ output is staged for this architecture. Run GacGen.exe "
+									+ WString(otherSwitch)
+									+ L" with the same input and configuration to publish the merged pair."
+									);
+								rpcGenerationSucceeded = true;
+							}
+						}
+						else
+						{
+							if (!CleanRpcCppPlatformStage(platformFolder, rpcAssemblyName))
+							{
+								errors.Add(GuiResourceError({ resource }, L"Unable to clean incomplete RPC platform staging output in: " + platformFolder.GetFullPath()));
+							}
+						}
+					}
+				}
+				if (!rpcGenerationSucceeded)
+				{
+					cleanKnownRpcOutputs();
+					SaveErrors(errorFilePath, errors);
+					return;
+				}
+			}
+			else
+			{
+				if (!cleanKnownRpcOutputs())
+				{
+					errors.Add(GuiResourceError({ resource }, L"Unable to clean stale RPC C++ output in: " + cppFolder.GetFullPath()));
+					SaveErrors(errorFilePath, errors);
+					return;
+				}
 			}
 
 			if (cppOutput->cppResource != L"")
@@ -574,6 +822,10 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 				File(logFolderPath / L"Deploy.bat").WriteAllLines(lines, false, BomEncoder::Mbcs);
 			}
 		}
+	}
+	else
+	{
+		cleanKnownRpcOutputs();
 	}
 }
 

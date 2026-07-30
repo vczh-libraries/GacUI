@@ -159,6 +159,7 @@
 ../../GacUISrc/RemotingTest_Core/GuiMain.cpp
 ../../GacUISrc/RemotingTest_Core/Main.cpp
 ../../GacUISrc/RemotingTest_Core/Shared.cpp
+../../GacUISrc/RemotingTest_RvmHost/RemoteViewModelTestRuntime.cpp
 ../../GacUISrc/Generated_DarkSkin/Source_x64/DarkSkin.cpp
 ../../GacUISrc/Generated_DarkSkin/Source_x64/DarkSkinReflection.cpp
 ../../GacUISrc/Generated_DarkSkin/Source_x64/DarkSkinResource.cpp
@@ -174,3 +175,7 @@
 ../../GacUISrc/Generated_FullControlTest/Source_x64/FullControlTestReflection.cpp
 ../../GacUISrc/Generated_FullControlTest/Source_x64/FullControlTestResource.cpp
 ../../GacUISrc/Generated_FullControlTest/Source_x64/MainWindow.cpp
+../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTest.cpp
+../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTestReflection.cpp
+../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTestResource.cpp
+../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTestRpc.cpp

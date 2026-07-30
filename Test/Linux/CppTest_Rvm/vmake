@@ -1,5 +1,5 @@
 <#
-CPP_TARGET=./Bin/RemotingTest_Core
+CPP_TARGET=./Bin/CppTest_Rvm
 CPP_VCXPROJS=(
     "../../GacUISrc/Source_Import/Source_Import.vcxitems"
     "../../GacUISrc/Source_GacUI_Core/Source_GacUI_Core.vcxitems"
@@ -7,19 +7,20 @@ CPP_VCXPROJS=(
     "../../GacUISrc/Source_GacUI/Source_GacUI.vcxitems"
     "../../GacUISrc/Source_GacUI_Utilities/Source_GacUI_Utilities.vcxitems"
     "../../GacUISrc/Source_GacUI_Utilities_Controls/Source_GacUI_Utilities_Controls.vcxitems"
-    "../../GacUISrc/RemotingTest_Core/RemotingTest_Core.vcxproj"
+    "../../GacUISrc/CppTest_Rvm/CppTest_Rvm.vcxproj"
     )
 CPP_ADDS=(
     "../../GacUISrc/Generated_DarkSkin/Source_x64/*.cpp"
-    "../../GacUISrc/Generated_RemoteProtocolTest/Source_x64/*.cpp"
-    "../../GacUISrc/Generated_FullControlTest/Source_x64/*.cpp"
     "../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/*.cpp"
+    "../../GacUISrc/CppTest_Rvm/Main.Linux.cpp"
     )
 CPP_REMOVES=(
     "../../../Import/Vlpp.Windows.cpp"
     "../../../Import/VlppOS.Windows.cpp"
+    "../../GacUISrc/CppTest_Rvm/Main.Windows.cpp"
+    "../../GacUISrc/CppTest_Rvm/Main.Linux.cpp"
     )
 TARGETS=("${CPP_TARGET}")
-CPP_COMPILE_OPTIONS="-I ../../../Import -I ../../GacUISrc/Generated_DarkSkin/Source_x64 -I ../../GacUISrc/Generated_RemoteProtocolTest/Source_x64 -I ../../GacUISrc/Generated_FullControlTest/Source_x64 -I ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64 -I ../../GacUISrc/RemotingTest_RvmHost -DVCZH_DEBUG_NO_REFLECTION"
+CPP_COMPILE_OPTIONS="-I ../../../Import -I ../../GacUISrc/Generated_DarkSkin/Source_x64 -I ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64 -I ../../GacUISrc/RemotingTest_RvmHost -DVCZH_DEBUG_NO_REFLECTION"
 #>
 <#@ include "${VCPROOT}/vl/vmake-cpp" #>

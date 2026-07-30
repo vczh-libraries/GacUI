@@ -1,0 +1,19 @@
+<#
+CPP_TARGET=./Bin/RemotingTest_RvmHost
+CPP_VCXPROJS=(
+    "../../GacUISrc/Source_Import/Source_Import.vcxitems"
+    "../../GacUISrc/RemotingTest_RvmHost/RemotingTest_RvmHost.vcxproj"
+    )
+CPP_ADDS=(
+    "../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTestRpc.cpp"
+    )
+CPP_REMOVES=(
+    "../../../Import/Vlpp.Windows.cpp"
+    "../../../Import/VlppOS.Windows.cpp"
+    "../../GacUISrc/Generated_RemoteViewModelTest/Source_x86/RemoteViewModelTestRpc.cpp"
+    "../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTestRpc.cpp"
+    )
+TARGETS=("${CPP_TARGET}")
+CPP_COMPILE_OPTIONS="-I ../../../Import -I ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64 -I ../../GacUISrc/RemotingTest_RvmHost -DVCZH_DEBUG_NO_REFLECTION"
+#>
+<#@ include "${VCPROOT}/vl/vmake-cpp" #>

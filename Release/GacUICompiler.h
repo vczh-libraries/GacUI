@@ -32,6 +32,15 @@ namespace vl
 {
 	namespace presentation
 	{
+		class GuiResourceRpcCppOutput : public Object
+		{
+		public:
+			Ptr<workflow::WfModule>						wrapperModule;
+			Ptr<workflow::WfModule>						wrapperJsonModule;
+			Ptr<workflow::cppcodegen::WfCppOutput>		cppOutput;
+			WString										workflowCode;
+		};
+
 		extern bool										WriteErrors(
 															collections::List<GuiResourceError>& errors,
 															const filesystem::FilePath& errorPath
@@ -54,6 +63,49 @@ namespace vl
 															Ptr<workflow::cppcodegen::WfCppInput> cppInput,
 															const filesystem::FilePath& cppFolder,
 															collections::List<GuiResourceError>& errors);
+
+		extern bool										HasRpcMetadata(
+															Ptr<GuiInstanceCompiledWorkflow> compiled);
+
+		extern bool										ValidateRpcCppGenerationConfiguration(
+															Ptr<GuiResource> resource,
+															Ptr<GuiInstanceCompiledWorkflow> compiled,
+															bool hasCppConfiguration,
+															collections::List<GuiResourceError>& errors);
+
+		extern Ptr<GuiResourceRpcCppOutput>				GenerateRpcCppOutput(
+															Ptr<GuiResource> resource,
+															Ptr<GuiInstanceCompiledWorkflow> compiled,
+															Ptr<workflow::cppcodegen::WfCppOutput> normalOutput,
+															const WString& assemblyName,
+															const WString& cppComment,
+															workflow::IWfCompilerCallback* compilerCallback,
+															collections::List<GuiResourceError>& errors);
+
+		extern bool										WriteRpcWorkflowScript(
+															Ptr<GuiResource> resource,
+															Ptr<GuiResourceRpcCppOutput> rpcOutput,
+															const filesystem::FilePath& workflowPath,
+															collections::List<GuiResourceError>& errors);
+
+		extern bool										WriteRpcCppCodesToFile(
+															Ptr<GuiResource> resource,
+															Ptr<GuiResourceRpcCppOutput> rpcOutput,
+															const WString& assemblyName,
+															const filesystem::FilePath& cppFolder,
+															collections::List<GuiResourceError>& errors);
+
+		extern bool										WriteRpcCppCodesToFileMultiPlatform(
+															Ptr<GuiResource> resource,
+															Ptr<GuiResourceRpcCppOutput> rpcOutput32,
+															Ptr<GuiResourceRpcCppOutput> rpcOutput64,
+															const WString& assemblyName,
+															const filesystem::FilePath& cppFolder,
+															collections::List<GuiResourceError>& errors);
+
+		extern bool										CleanRpcCppFiles(
+															const filesystem::FilePath& cppFolder,
+															const WString& assemblyName);
 
 		extern bool										WriteBinaryResource(
 															Ptr<GuiResource> resource,
@@ -1900,6 +1952,10 @@ WorkflowCompiler (ScriptPosition)
 		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfStatement> node, glr::ParsingTextPos availableAfter = { 0,0 });
 		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfDeclaration> node, glr::ParsingTextPos availableAfter = { 0,0 });
 		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfModule> node, glr::ParsingTextPos availableAfter = { 0,0 });
+		extern void												Workflow_RecordScriptPositionOverwrite(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfExpression> node, glr::ParsingTextPos availableAfter = { 0,0 });
+		extern void												Workflow_RecordScriptPositionOverwrite(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfStatement> node, glr::ParsingTextPos availableAfter = { 0,0 });
+		extern void												Workflow_RecordScriptPositionOverwrite(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfDeclaration> node, glr::ParsingTextPos availableAfter = { 0,0 });
+		extern Ptr<types::ScriptPosition>						Workflow_EnsureScriptPosition(GuiResourcePrecompileContext& context);
 		extern Ptr<types::ScriptPosition>						Workflow_GetScriptPosition(GuiResourcePrecompileContext& context);
 		extern void												Workflow_ClearScriptPosition(GuiResourcePrecompileContext& context);
 
