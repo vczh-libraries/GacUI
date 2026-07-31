@@ -908,3 +908,69 @@ The pre-extraction baseline is confirmed:
   not exist.
 
 # PROPOSALS
+
+- No.1 Extract generated-neutral remoting composition with scoped automation ownership
+
+## No.1 Extract generated-neutral remoting composition with scoped automation ownership
+
+Create `Source/RemotingHelpers` as a test-support layer with the requested
+`AutomationService`, `RemotingServer`, and `RemotingClient` ownership
+boundaries. Keep neutral files free of Windows and generated-application
+dependencies, and put Windows provider/HTTP code only in nested `Windows`
+folders.
+
+Move Windows automation implementations and the Windows HTTP endpoint out of
+`WinNativeWindow`. Leave one low-level Windows provider bridge that executes a
+parsed IO command against a validated native window while the provider still
+owns access to its listener list. Resolve window IDs through the public
+created-window enumeration, preserve the existing pointer encoding, and remove
+automation-specific friendship/private controller access. Remove automatic
+automation substitution from GDI and Direct2D startup.
+
+Move MiniHTTP automation into the neutral helper layer. Both HTTP endpoints
+will classify unsupported verbs/routes, malformed IO suffixes, invalid content
+types, and disabled operations as 404, but will terminate at async/OS callback
+boundaries for unexpected parser, automation, or invariant failures. The
+MiniHTTP service destructor will no longer duplicate explicit `Stop`.
+
+Add scoped substitution and endpoint owners plus
+`RemotingAutomationService::{WindowsHttp,MiniHttp}`. Every GUI app will start
+its selected service after the native controller exists. Cpp/Core/renderer
+transport entry points will pass the enum and a strong MiniHTTP socket through
+one stack-owned context into `GuiMain`, replacing selector booleans and
+pointers to stack-owned `Ptr` objects.
+
+Merge the two server families into
+`RemotingChannelServer<TServerBase>`. Inject non-renderer local/remote
+admission, renderer-readiness, disconnection, and status callbacks. Keep
+optional renderer admission, the current renderer ID, stale-renderer detach,
+replacement notification/fallback disconnect, and only the core JSON/protocol
+binding in the helper. Keep transport construction directly in each app.
+
+Move the renderer channel client under `RemotingClient` and configure its fatal
+title, main-thread scheduling, renderer/automation bindings, and retain/exit
+policy. Preserve first-error-wins Core-authored fatal handling, prompt-free
+fatal local disconnects, idempotent `OnDisconnected`, pending startup state,
+and explicit transport stop before stack callback targets disappear.
+
+Split the current RVM runtime into a generated-neutral RPC/channel runtime and
+a thin test adapter. Configure channel/service/control names, one-way
+`Ready`/heartbeat/stopping values, lease timings, and the generated module
+factory. The generic helper will own channel maps, broker/requester local
+clients, task scheduling, RPC lifecycle initialization, requester lease, and
+host control client without naming `RemoteViewModelTestRpc` or
+`rvmt::IViewModel`. The remaining Test runtime will select the generated module
+and cast the requested service.
+
+Replace application catch/cleanup ladders with scoped owners and straight-line
+lifetime ordering. Keep only SOP-required catches: renderer replacement
+delivery fallback, the Core one-shot fatal delivery attempt, and non-returning
+async callback/thread firewalls. Remove all `Console` use from `CppTest_Rvm`.
+
+Update every affected Windows project/filter explicitly, split CodePack into
+the two exact neutral/Windows helper pairs, regenerate Release through
+CodePack, and update automation documentation whose old provider-ownership
+description becomes false. Do not modify `Test/Linux`, generated resource
+sources, Import, or upstream Workflow/VlppOS.
+
+### CODE CHANGE
