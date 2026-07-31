@@ -22,10 +22,11 @@ investigation and remains the regression contract for this refinement:
   reclassified as fatal.
 - Core retains ownership of renderer admission/replacement and of the one-shot
   fatal `!Error` delivery. Renderer loss and replacement remain nonfatal.
-- The host sends `Ready` only after its RPC service is registered and its
-  dispatcher is initialized, then sends periodic one-way `Heartbeat`
-  messages. Exact `RequesterStopping` terminates it normally; asynchronous
-  transport failure terminates it abnormally.
+- The host registers its RPC service, sends the post-route `Ready` barrier,
+  initializes its dispatcher after the broker ID arrives, and only then
+  starts periodic one-way `Heartbeat` messages. Exact `RequesterStopping`
+  terminates it normally; asynchronous transport failure terminates it
+  abnormally.
 
 The untouched implementation confirms the refinement target statically:
 
@@ -63,7 +64,7 @@ client surface, and all source edits remain under `Test`.
 
 # PROPOSALS
 
-- No.1 Replace recoverable supervision with the minimal one-way control protocol
+- No.1 Replace recoverable supervision with the minimal one-way control protocol [CONFIRMED]
 
 ## No.1 Replace recoverable supervision with the minimal one-way control protocol
 
@@ -93,13 +94,22 @@ send. There is no acknowledgement, sequence, terminal-delivery wait, cleanup
 error aggregation, or renderer state.
 
 The host explicitly initializes RpcJson and its control reader after
-connection. After the caller registers `rvmt::IViewModel` and initializes the
-dispatcher, the host sends `Ready` and starts a one-purpose heartbeat thread.
-Exact requester stopping calls `std::_Exit(0)`. Post-connection disconnect,
-read error, fatal local error, a failed heartbeat flush, or an exception at
-the heartbeat thread boundary calls `std::_Exit(1)`. Nonfatal pre-connection
-local retry notifications remain ignored. Synchronous startup/RPC failures
-are uncaught.
+connection. After the caller registers `rvmt::IViewModel`, the host sends
+`Ready`, initializes the dispatcher, and starts a one-purpose heartbeat
+thread. Exact requester stopping calls `std::_Exit(0)`. Post-connection
+disconnect, read error, fatal local error, a failed heartbeat flush, or an
+exception at the heartbeat thread boundary calls `std::_Exit(1)`. Nonfatal
+pre-connection local retry notifications remain ignored. Synchronous
+startup/RPC failures are uncaught.
+
+The order differs deliberately from the static P1 wording. Workflow
+`RpcJsonDispatcherClient::Initialize()` sends cached service declarations and
+waits for the broker client ID. The requester cannot send that broker ID until
+it receives the post-route `Ready` proof and registers the host. Initializing
+before `Ready` therefore deadlocks. Registering the service caches its
+declaration, so the working order is connect/lifecycle setup, local service
+registration, `Ready`, dispatcher initialization, heartbeat start, and task
+queue run.
 
 The requester task-queue thread runs the queue once. An exception at that
 thread boundary terminates the test process instead of restarting the queue or
@@ -132,3 +142,50 @@ RPC, or requester-owned objects.
 - Replace obsolete state-machine unit tests with exact host-channel
   classification coverage, then run the required build, unit, source, and live
   process verification.
+
+### CONFIRMED
+
+The Test-scoped implementation applies the proposal:
+
+- `RemoteViewModelTestShared.h` now contains only the exact `Ready`,
+  `Heartbeat`, and `RequesterStopping` control strings plus requester-owned
+  liveness timings and exact two-channel host classification.
+- The broker local participant owns both the RPC and control channels. The
+  separate ready local client, acknowledgement protocol, heartbeat sequence,
+  reverse lease, terminal state machine, cleanup error aggregation, and
+  retrying task-queue worker are gone.
+- `RemoteViewModelRoleState.h` and its project entries are deleted. Minimal
+  requester state is private to `RemoteViewModelTestRuntime.cpp`; renderer
+  classification and replacement state remain exclusively in Core.
+- RpcJson and control readers are initialized explicitly in connection paths.
+  Broker registration is claimed while holding the state lock and performed
+  after releasing it.
+- The host and requester queue boundaries are fail-fast, requester stopping is
+  claimed before the one-way stop send, and shutdown keeps callback targets
+  alive until the channel server stops.
+- The public runtime header exposes only the requester session and small
+  hosting client surface. The final diff removes 1,913 lines and adds 648
+  lines across 12 `Test` files, a net reduction of 1,265 lines.
+
+Verification succeeded:
+
+- Debug x64 `GacUISrc.sln`: build succeeded with 0 warnings and 0 errors.
+- Complete Debug x64 `UnitTest`: 89/89 test files and 1,714/1,714 test cases
+  passed; no memory-leak dump followed the summary.
+- `/Pipe`, `/Http`, and `/MiniHttp` live requester/host runs each acquired the
+  service and exposed `Hello, !`, proving a successful `Translate` call.
+- Normal automation `!Exit` returned `Queued` and both requester and host
+  wrappers exited with code 0 for all three transports.
+- For each transport, forcibly terminating an idle host caused
+  `CppTest_Rvm` to report `RemotingTest_RvmHost disconnected.` and terminate
+  nonzero; no requester or host process remained.
+- `git diff --check` passed. A focused source/project audit found no remaining
+  role-state header reference, acknowledgement constant, reverse-lease state,
+  terminal-state helper, heartbeat sequence, or recovery callback.
+
+All product source edits are under `Test`. The investigation log itself is the
+workflow-required exception. The upstream P4 Workflow/VlppOS work was not
+attempted because it is outside the requested scope. The larger P0/P5 matrix
+for pre-`Ready` and mid-call kills, an active Core renderer's exact fatal
+package ordering/replacement behavior, Linux, and GacJS remains outside this
+confirmed Windows requester/host refinement run.

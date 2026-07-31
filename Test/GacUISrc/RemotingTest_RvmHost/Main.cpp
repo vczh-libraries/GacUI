@@ -1,6 +1,4 @@
 #include "RemoteViewModelTestRuntime.h"
-#include <cstdlib>
-
 #ifdef VCZH_MSVC
 #include <VlppOS.Windows.h>
 #include <crtdbg.h>
@@ -32,79 +30,23 @@ namespace
 		auto channelClient = Ptr(new RemoteViewModelHostingClient(
 			networkClient,
 			parser,
-			taskQueue,
-			Func<void(const WString&, bool)>([](const WString& message, bool normal)
-			{
-				if (normal)
-				{
-					Console::WriteLine(L"> RVM requester stopped normally.");
-				}
-				else
-				{
-					Console::WriteLine(L"Error: " + message);
-				}
-				std::_Exit(normal ? 0 : 1);
-			})
+			taskQueue
 			));
 		auto service = Ptr(new ViewModel);
 		auto dispatcher = channelClient->GetDispatcher();
-		int result = 0;
 
-		try
-		{
-			channelClient->Connect();
+		channelClient->Connect();
+		auto lifecycle = dispatcher->GetRpcLifecycle();
+		auto typeId = lifecycle->GetTypeIdFromName(WString::Unmanaged(ViewModelServiceName));
+		CHECK_ERROR(typeId != RpcTypeId_NotFound, L"RunHost(Ptr<INetworkProtocolClient>)#Failed to find the rvmt::IViewModel type ID.");
+		lifecycle->RegisterLocalService(typeId, service);
+		channelClient->SendReady();
+		dispatcher->Initialize();
+		channelClient->StartHeartbeat();
 
-			auto lifecycle = dispatcher->GetRpcLifecycle();
-			auto typeId = lifecycle->GetTypeIdFromName(WString::Unmanaged(ViewModelServiceName));
-			CHECK_ERROR(typeId != RpcTypeId_NotFound, L"RunHost(Ptr<INetworkProtocolClient>)#Failed to find the rvmt::IViewModel type ID.");
-			lifecycle->RegisterLocalService(typeId, service);
-			dispatcher->Initialize();
-
-			Console::WriteLine(L"> RemotingTest_RvmHost declared rvmt::IViewModel.");
-			taskQueue->RunTaskQueue();
-		}
-		catch (const Exception& e)
-		{
-			Console::WriteLine(L"Error: " + e.Message());
-			result = 1;
-		}
-		catch (const Error& e)
-		{
-			Console::WriteLine(L"Error: " + WString::Unmanaged(e.Description()));
-			result = 1;
-		}
-
-		channelClient->BeginStopping();
-		try
-		{
-			dispatcher->FinalizeRpc();
-		}
-		catch (const Exception& e)
-		{
-			Console::WriteLine(L"Error during RPC cleanup: " + e.Message());
-			result = 1;
-		}
-		catch (const Error& e)
-		{
-			Console::WriteLine(L"Error during RPC cleanup: " + WString::Unmanaged(e.Description()));
-			result = 1;
-		}
-
-		try
-		{
-			networkClient->GetConnection()->Stop();
-		}
-		catch (const Exception& e)
-		{
-			Console::WriteLine(L"Error during transport cleanup: " + e.Message());
-			result = 1;
-		}
-		catch (const Error& e)
-		{
-			Console::WriteLine(L"Error during transport cleanup: " + WString::Unmanaged(e.Description()));
-			result = 1;
-		}
-		return result;
+		Console::WriteLine(L"> RemotingTest_RvmHost declared rvmt::IViewModel.");
+		taskQueue->RunTaskQueue();
+		return 0;
 	}
 
 	enum class Transport

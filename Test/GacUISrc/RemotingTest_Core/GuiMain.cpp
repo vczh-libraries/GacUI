@@ -27,6 +27,13 @@ extern void StopMiniHttpAutomationService();
 
 namespace
 {
+	bool IsRendererChannel(const IJsonChannelClient::ChannelNameList& availableChannels)
+	{
+		return
+			availableChannels.Count() == 1 &&
+			availableChannels[0] == WString::Unmanaged(GacUIRemoteProtocolChannelName);
+	}
+
 	template<typename TServerBase>
 	class RemotingChannelServerBase
 		: public GuiRemoteProtocolNetworkChannelServer<TServerBase>
@@ -110,7 +117,8 @@ namespace
 			IJsonChannelClient* localClient
 			) override
 		{
-			auto role = ClassifyRemoteViewModelChannel(availableChannels);
+			auto rendererChannel = IsRendererChannel(availableChannels);
+			auto viewModelHostChannel = IsRemoteViewModelHostChannel(availableChannels);
 			RemoteViewModelRequesterSession* requesterSession = nullptr;
 			bool requesterSessionRequired = false;
 			SPIN_LOCK(lockConnection)
@@ -125,7 +133,7 @@ namespace
 					return WaitForClientResult::Accept;
 				}
 				if (
-					role == RemoteViewModelChannelRole::Renderer &&
+					rendererChannel &&
 					dynamic_cast<GuiRemoteProtocolLocalChannelClient*>(localClient)
 					)
 				{
@@ -134,7 +142,7 @@ namespace
 				return WaitForClientResult::Reject;
 			}
 
-			if (role == RemoteViewModelChannelRole::Renderer)
+			if (rendererChannel)
 			{
 				if (
 					requesterSessionRequired &&
@@ -194,7 +202,7 @@ namespace
 				Console::WriteLine(L"> Renderer transport connected: " + itow(clientId));
 				return WaitForClientResult::Accept;
 			}
-			else if (role == RemoteViewModelChannelRole::ViewModelHost)
+			else if (viewModelHostChannel)
 			{
 				if (
 					!requesterSession ||
@@ -555,6 +563,7 @@ int StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr::
 	}
 
 	bool channelServerStarted = false;
+	bool requesterSessionStarted = false;
 	int result = 1;
 
 	channelServer.Start();
@@ -589,6 +598,7 @@ int StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr::
 		{
 			channelServer.SetRemoteViewModelSession(requesterSession.Obj());
 			requesterSession->Start(&channelServer);
+			requesterSessionStarted = true;
 			Console::WriteLine(L"> Waiting for RemotingTest_RvmHost on ViewModelChannel.");
 			remoteViewModel = requesterSession->RequestViewModel();
 			remoteViewModelSession = requesterSession.Obj();
@@ -636,21 +646,12 @@ int StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr::
 	channelServer.SetCoreProtocolChannel(nullptr);
 	channelServer.SetCoreJsonChannel(nullptr);
 
-	if (requesterSession)
+	if (requesterSessionStarted)
 	{
-		Func<void()> stopServer;
-		if (channelServerStarted)
-		{
-			stopServer = Func<void()>([&channelServer]()
+		requesterSession->Stop(Func<void()>([&channelServer]()
 			{
 				channelServer.Stop();
-			});
-		}
-		if (auto failure = requesterSession->Stop(stopServer))
-		{
-			Console::WriteLine(L"Error during RVM cleanup: " + failure.Value());
-			result = 1;
-		}
+			}));
 		channelServer.ClearRemoteViewModelSession();
 	}
 	else if (channelServerStarted)

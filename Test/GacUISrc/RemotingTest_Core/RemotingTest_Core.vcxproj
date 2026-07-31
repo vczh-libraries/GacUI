@@ -164,7 +164,6 @@
     <ClCompile Include="..\RemotingTest_RvmHost\RemoteViewModelTestRuntime.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\RemotingTest_RvmHost\RemoteViewModelRoleState.h" />
     <ClInclude Include="..\RemotingTest_RvmHost\RemoteViewModelTestRuntime.h" />
     <ClInclude Include="..\RemotingTest_RvmHost\RemoteViewModelTestShared.h" />
   </ItemGroup>

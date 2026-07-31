@@ -32,9 +32,6 @@
     <ClInclude Include="resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\RemotingTest_RvmHost\RemoteViewModelRoleState.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\RemotingTest_RvmHost\RemoteViewModelTestRuntime.h">
       <Filter>Source Files</Filter>
     </ClInclude>

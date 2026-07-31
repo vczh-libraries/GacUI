@@ -68,7 +68,7 @@ namespace
 
 			if (
 				!session ||
-				ClassifyRemoteViewModelChannel(availableChannels) != RemoteViewModelChannelRole::ViewModelHost ||
+				!IsRemoteViewModelHostChannel(availableChannels) ||
 				!session->TryAcceptViewModelHost(clientId)
 				)
 			{
@@ -153,6 +153,7 @@ namespace
 			})
 			);
 		bool serverStarted = false;
+		bool sessionStarted = false;
 		int result = 1;
 
 		(void)useWindowsAutomation;
@@ -162,6 +163,7 @@ namespace
 			channelServer.Start();
 			serverStarted = true;
 			session.Start(&channelServer);
+			sessionStarted = true;
 
 			Console::WriteLine(L"> Waiting for RemotingTest_RvmHost on ViewModelChannel.");
 			auto viewModel = session.RequestViewModel();
@@ -196,18 +198,16 @@ namespace
 		currentViewModel = nullptr;
 		currentSession = nullptr;
 
-		Func<void()> stopServer;
-		if (serverStarted)
+		if (sessionStarted)
 		{
-			stopServer = Func<void()>([&channelServer]()
+			session.Stop(Func<void()>([&channelServer]()
 			{
 				channelServer.Stop();
-			});
+			}));
 		}
-		if (auto failure = session.Stop(stopServer))
+		else if (serverStarted)
 		{
-			Console::WriteLine(L"Error during RVM cleanup: " + failure.Value());
-			result = 1;
+			channelServer.Stop();
 		}
 		channelServer.ClearSession();
 		return result;
