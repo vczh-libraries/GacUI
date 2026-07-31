@@ -15,7 +15,16 @@
   - Unless explicitly instructed to do so.
   - Because crashing it is how we know there is something wrong.
 - None of the test apps is going to be published, unnecessary error recovery will just cover mistakes up, preventing us from finding the root cause of the problem, making it harder to fix issues in libraries.
+- Defensive cleanup should always be avoided when affected errors and exceptions crash the app. Since the app is going to be killed, cleaning up just make the code more complex and gain no benefit.
 - Any `REPO-ROOT/Tools/<TOOL-NAME>` only allow very limited error recovery just to print error messages and exit.
+
+### For Multi-Process Communication
+
+- Unless explicitly instructed to do so:
+  - Shutdown acknlowledgement is not required.
+  - In a group of communicating processes, no recover is needed when any process is gone for any reason.
+  - Crashing is welcome as it exposes the problem and makes it easier to debug and fix.
+- In any test apps, all necessary error recovery will be defined in `REPO-ROOT/Project.md`. When not said, just let the app crash.
 
 ## (Windows Specific) External Tools Environment and Context
 
