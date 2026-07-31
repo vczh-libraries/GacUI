@@ -22,6 +22,128 @@ namespace vl::presentation::remote_view_model_test
 		Stopping,
 	};
 
+	class RemoteViewModelLeaseState
+	{
+	private:
+		bool											active = false;
+		vint64_t										expiration = -1;
+		vint64_t										lastSequence = -1;
+
+	public:
+		void											Start(vint64_t now, vint timeout)
+		{
+			active = true;
+			expiration = now + timeout;
+			lastSequence = -1;
+		}
+
+		bool											Renew(vint64_t sequence, vint64_t now, vint timeout)
+		{
+			if (
+				!active ||
+				now >= expiration ||
+				sequence <= lastSequence
+				)
+			{
+				return false;
+			}
+			lastSequence = sequence;
+			expiration = now + timeout;
+			return true;
+		}
+
+		bool											IsExpired(vint64_t now)
+		{
+			return active && now >= expiration;
+		}
+
+		void											Stop()
+		{
+			active = false;
+		}
+
+		bool											IsActive()
+		{
+			return active;
+		}
+
+		vint64_t										GetLastSequence()
+		{
+			return lastSequence;
+		}
+	};
+
+	class RemoteViewModelTerminalState
+	{
+	private:
+		bool											stopping = false;
+		bool											claimed = false;
+		bool											normal = false;
+		bool											taken = false;
+		WString											message;
+
+	public:
+		bool											TryClaimFailure(const WString& errorMessage)
+		{
+			if (stopping || claimed)
+			{
+				return false;
+			}
+			claimed = true;
+			normal = false;
+			message = errorMessage;
+			return true;
+		}
+
+		bool											TryClaimNormal()
+		{
+			if (stopping || claimed)
+			{
+				return false;
+			}
+			claimed = true;
+			normal = true;
+			return true;
+		}
+
+		bool											BeginStopping()
+		{
+			if (stopping || claimed)
+			{
+				return false;
+			}
+			stopping = true;
+			return true;
+		}
+
+		bool											TryTake(bool& isNormal, WString& terminalMessage)
+		{
+			if (!claimed || taken)
+			{
+				return false;
+			}
+			taken = true;
+			isNormal = normal;
+			terminalMessage = message;
+			return true;
+		}
+
+		bool											IsStopping()
+		{
+			return stopping;
+		}
+
+		bool											HasFailure()
+		{
+			return claimed && !normal;
+		}
+
+		const WString&									GetMessage()
+		{
+			return message;
+		}
+	};
+
 	template<typename TChannelNameList>
 	RemoteViewModelChannelRole ClassifyRemoteViewModelChannel(const TChannelNameList& availableChannels)
 	{
@@ -177,6 +299,7 @@ namespace vl::presentation::remote_view_model_test
 			if (
 				!remoteViewModelEnabled ||
 				phase != RemoteViewModelApplicationPhase::Starting ||
+				requesterClientId != InvalidRemoteViewModelClientId ||
 				!IsDistinctClientId(clientId)
 				)
 			{

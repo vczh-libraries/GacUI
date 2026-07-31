@@ -36,26 +36,35 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 		, protected virtual IJsonChannelReader
 	{
 	protected:
-		struct ReceivedPackage
+		class CallbackState : public Object
+		{
+		public:
+			SpinLock										lockOwner;
+			GuiRemoteProtocolAsyncJsonChannelRenderer*		owner = nullptr;
+		};
+
+		struct PendingMessage
 		{
 			vint											senderClientId = -1;
 			vint											messageVersion = -1;
 			JsonPackage										package;
+			Func<void()>									mainThreadTask;
 		};
 
 		IJsonChannel*										channel = nullptr;
 		IJsonChannelReader*									reader = nullptr;
 
-		// Covers invokeInMainThread, queuedMessages and uiTaskQueued.
+		// Covers reader, invokeInMainThread, queuedMessages, messageVersion, channelInitialized and uiTaskQueued.
 		SpinLock											lockMessages;
-		IGuiRemoteProtocolAsyncRendererInvoker*				invokeInMainThread = nullptr;
-		collections::List<ReceivedPackage>					queuedMessages;
+		Ptr<IGuiRemoteProtocolAsyncRendererInvoker>			invokeInMainThread;
+		Ptr<CallbackState>									callbackState;
+		collections::List<PendingMessage>					queuedMessages;
 		vint												messageVersion = 0;
 		bool												channelInitialized = false;
 		bool												uiTaskQueued = false;
+		bool												processingMessages = false;
 
-		void												ScheduleProcessRemoteMessages();
-		void												ProcessRemoteMessages();
+		void												ScheduleProcessPendingMessages();
 
 		void												OnRead(vint senderClientId, const JsonPackage& package) override;
 
@@ -71,7 +80,9 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 		void												BroadcastFromClient(const JsonPackage& package, const collections::List<vint>& blockedReceivers) override;
 		void												BatchWrite(bool& disconnected) override;
 
-		void												SetInvokeInMainThread(IGuiRemoteProtocolAsyncRendererInvoker* _invokeInMainThread);
+		void												SetInvokeInMainThread(Ptr<IGuiRemoteProtocolAsyncRendererInvoker> _invokeInMainThread);
+		void												QueueMainThreadTask(const Func<void()>& task);
+		void												ProcessPendingMessages();
 		void												Detach();
 	};
 }

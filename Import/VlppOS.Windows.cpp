@@ -3648,11 +3648,18 @@ void HttpClient::RaiseLocalError(WString errorMessage, bool fatal)
 {
 	if (callback)
 	{
-		callback->OnLocalError(errorMessage, fatal);
+		fatal = callback->OnLocalError(errorMessage, fatal) || fatal;
 	}
 	if (fatal)
 	{
-		Stop();
+		// HttpClientApi::Stop waits for WinHTTP callbacks and cannot run from
+		// this completion callback. Publishing Stopping suppresses every retry;
+		// an explicit or owning Stop drains the physical API after unwinding.
+		SPIN_LOCK(lockState)
+		{
+			state = State::Stopping;
+		}
+		eventWaitForServer.Signal();
 	}
 }
 
@@ -3852,7 +3859,11 @@ void HttpClient::OnHttpRequestFailed(HttpRequestType requestType, const WString&
 		}
 		break;
 	case HttpRequestType::Request:
-		SendHttpRequest(HttpRequestType::Request, urlRequest, WString::Empty, attempt + 1);
+		RaiseLocalError(errorMessage, false);
+		if (!IsStopping())
+		{
+			SendHttpRequest(HttpRequestType::Request, urlRequest, WString::Empty, attempt + 1);
+		}
 		break;
 	case HttpRequestType::Response:
 		{

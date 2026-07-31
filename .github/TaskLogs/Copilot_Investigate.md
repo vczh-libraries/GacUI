@@ -618,3 +618,52 @@ this proposal.
 - Extend unit coverage for second-requester preservation, terminal/lease state,
   and async package/action ordering, then run the complete build and lifecycle
   matrix recorded in `# TEST`.
+
+## User clarifications and final transport ownership
+
+- A fatal local error is independently terminal because the connection is no
+  longer reliable. Callers must act on `OnLocalError(..., true)` immediately;
+  correctness must not depend on a later `OnDisconnected`.
+- The historical test-application behavior in which a post-connection HTTP 404
+  is fatal at the channel boundary must be retained. This is a channel-lifetime
+  decision, not a request made by the raw HTTP protocol.
+- Ownership of promoting a post-connection 404, or any other local protocol
+  error after connection, belongs to VlppOS's `IChannelClient`
+  implementation. Raw VlppOS HTTP reports the failed exchange as nonfatal and
+  keeps its transport retry policy; the channel client promotes the callback
+  before retry because its logical delivery guarantee has already failed.
+
+These clarifications supersede the earlier statements in this log that Core
+transport loss must remain nonfatal at the channel boundary, that no VlppOS
+change is required, that generated `Import` files are outside the change, and
+that local transport errors remain nonfatal. GacUI imports the regenerated
+VlppOS release. The native renderer consumes the promoted fatal callback
+directly, queues its ordinary disconnected transition in protocol order, and
+does not synthesize Core's fatal UI; only a Core-authored `!Error` package shows
+that prompt or overlay.
+
+## Verification
+
+- VlppOS Debug x64 passed all 16 test files and 273 test cases with no
+  memory-leak report. Debug/Release x64 and Win32 all built with zero warnings
+  and zero errors. `CodePack` regenerated the release, and all six imported
+  `VlppOS*` files in GacUI byte-match that release.
+- GacUI Debug/Release x64 and Win32 all built with zero warnings and zero
+  errors. The first post-import Debug x64 build had one diagnostic-free
+  `CL.exe` process exit; the immediate incremental retry passed cleanly.
+- The complete GacUI Debug x64 `UnitTest` run passed 89/89 test files and
+  1728/1728 test cases with no memory-leak artifact.
+- A live `/Http /RPT` native-renderer run changed `Click Me!` to
+  `You have clicked!` through renderer `/IO`. A second live renderer took over
+  and retained that state; the old renderer exited with code 0 after its stale
+  HTTP exchange while Core remained alive. Forcibly terminating Core then made
+  the active renderer exit with code 0. Neither channel-fatal transition opened
+  a fatal dialog or entered a retry loop.
+- A live `/Http /RVMT` Core/host/native-renderer run showed the exact
+  `ERROR from GacUI Core` prompt with
+  `RemotingTest_RvmHost disconnected.` after the host was killed. Choosing the
+  retain option exposed the same `fatalError` in renderer DOM, ordinary IO
+  returned `!Application stopped responding.`, Core exited with code 1, and
+  exact `!Exit` closed the renderer with code 0.
+- Linux verification was unavailable because WSL is not installed. The
+  browser/GacJS acceptance path was not rerun in this Windows-native pass.

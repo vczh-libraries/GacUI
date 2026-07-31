@@ -2,7 +2,6 @@
 #include "RpMainWindow.h"
 #include "MainWindow.h"
 #include "RemoteViewModelTestIncludes.h"
-#include "../RemotingTest_RvmHost/RemoteViewModelRoleState.h"
 #include "../RemotingTest_RvmHost/RemoteViewModelTestRuntime.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 #include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
@@ -23,40 +22,24 @@ using namespace vl::presentation::remoteprotocol;
 using namespace vl::presentation::remoteprotocol::channeling;
 using namespace vl::presentation::remoteprotocol::repeatfiltering;
 
-namespace rpc_channeling = vl::rpc_controller::channeling;
-
 extern void StartMiniHttpAutomationService(Ptr<async_tcp_socket::IAsyncSocketServer> socketServer);
 extern void StopMiniHttpAutomationService();
 
 namespace
 {
-	class IRemoteViewModelCoreState
-	{
-	public:
-		virtual bool					BeginRunning(const Func<void()>& callback) = 0;
-		virtual void					BeginStopping() = 0;
-		virtual Nullable<WString>		GetFatalError() = 0;
-	};
-
 	template<typename TServerBase>
 	class RemotingChannelServerBase
 		: public GuiRemoteProtocolNetworkChannelServer<TServerBase>
-		, public IRemoteViewModelCoreState
 	{
 		using Base = GuiRemoteProtocolNetworkChannelServer<TServerBase>;
 
 	protected:
-		// Covers all role IDs, channel pointers, phase, and fatal state.
 		SpinLock								lockConnection;
 		IJsonChannel*							coreJsonChannel = nullptr;
 		GuiRemoteProtocolCoreChannel*			coreProtocolChannel = nullptr;
-
-		RemoteViewModelRoleState				roleState;
-		WString									fatalError;
-		Func<void()>							fatalCallback;
-		rpc_channeling::RpcJsonDispatcherServer*
-												brokerDispatcher = nullptr;
-		vint									brokerViewModelHostId = InvalidRemoteViewModelClientId;
+		RemoteViewModelRequesterSession*			remoteViewModelSession = nullptr;
+		bool									remoteViewModelRequired = false;
+		vint									rendererClientId = InvalidRemoteViewModelClientId;
 
 	public:
 		using Base::OnClientConnected;
@@ -67,11 +50,31 @@ namespace
 		{
 		}
 
-		void EnableRemoteViewModel()
+		void RequireRemoteViewModel()
 		{
 			SPIN_LOCK(lockConnection)
 			{
-				CHECK_ERROR(roleState.EnableRemoteViewModel(), L"RemotingChannelServerBase::EnableRemoteViewModel()#Remote view model mode has already been enabled.");
+				CHECK_ERROR(!remoteViewModelRequired, L"RemotingChannelServerBase::RequireRemoteViewModel()#Remote view model mode has already been enabled.");
+				remoteViewModelRequired = true;
+			}
+		}
+
+		void SetRemoteViewModelSession(RemoteViewModelRequesterSession* session)
+		{
+			CHECK_ERROR(session, L"RemotingChannelServerBase::SetRemoteViewModelSession(...)#The requester session is null.");
+			SPIN_LOCK(lockConnection)
+			{
+				CHECK_ERROR(remoteViewModelRequired, L"RemotingChannelServerBase::SetRemoteViewModelSession(...)#Remote view model mode is not enabled.");
+				CHECK_ERROR(!remoteViewModelSession, L"RemotingChannelServerBase::SetRemoteViewModelSession(...)#Remote view model mode has already been enabled.");
+				remoteViewModelSession = session;
+			}
+		}
+
+		void ClearRemoteViewModelSession()
+		{
+			SPIN_LOCK(lockConnection)
+			{
+				remoteViewModelSession = nullptr;
 			}
 		}
 
@@ -96,7 +99,7 @@ namespace
 			vint clientId = -1;
 			SPIN_LOCK(lockConnection)
 			{
-				clientId = roleState.GetRendererClientId();
+				clientId = rendererClientId;
 			}
 			return clientId;
 		}
@@ -108,25 +111,18 @@ namespace
 			) override
 		{
 			auto role = ClassifyRemoteViewModelChannel(availableChannels);
+			RemoteViewModelRequesterSession* requesterSession = nullptr;
+			bool requesterSessionRequired = false;
+			SPIN_LOCK(lockConnection)
+			{
+				requesterSession = remoteViewModelSession;
+				requesterSessionRequired = remoteViewModelRequired;
+			}
 			if (localClient)
 			{
-				if (
-					dynamic_cast<RemoteViewModelBroadcastingLocalClient*>(localClient) ||
-					dynamic_cast<RemoteViewModelReadyLocalClient*>(localClient)
-					)
+				if (requesterSession && requesterSession->CanAcceptLocalClient(localClient))
 				{
 					return WaitForClientResult::Accept;
-				}
-				if (dynamic_cast<RemoteViewModelRequesterLocalClient*>(localClient))
-				{
-					SPIN_LOCK(lockConnection)
-					{
-						return
-							brokerDispatcher &&
-							brokerDispatcher->HasServerClientId()
-							? WaitForClientResult::Accept
-							: WaitForClientResult::Reject;
-					}
 				}
 				if (
 					role == RemoteViewModelChannelRole::Renderer &&
@@ -140,14 +136,24 @@ namespace
 
 			if (role == RemoteViewModelChannelRole::Renderer)
 			{
+				if (
+					requesterSessionRequired &&
+					(!requesterSession || !requesterSession->CanAdmitRenderer())
+					)
+				{
+					return WaitForClientResult::Reject;
+				}
+
 				IJsonChannel* jsonChannelToOldRenderer = nullptr;
 				vint oldRendererClientId = InvalidRemoteViewModelClientId;
 				SPIN_LOCK(lockConnection)
 				{
-					if (!roleState.TryAcceptRenderer(clientId, oldRendererClientId))
+					if (clientId == rendererClientId)
 					{
 						return WaitForClientResult::Reject;
 					}
+					oldRendererClientId = rendererClientId;
+					rendererClientId = clientId;
 					if (oldRendererClientId != InvalidRemoteViewModelClientId)
 					{
 						jsonChannelToOldRenderer = coreJsonChannel;
@@ -190,20 +196,12 @@ namespace
 			}
 			else if (role == RemoteViewModelChannelRole::ViewModelHost)
 			{
-				SPIN_LOCK(lockConnection)
+				if (
+					!requesterSession ||
+					!requesterSession->TryAcceptViewModelHost(clientId)
+					)
 				{
-					if (!roleState.IsRemoteViewModelEnabled())
-					{
-						return WaitForClientResult::Reject;
-					}
-					if (
-						!brokerDispatcher ||
-						!brokerDispatcher->HasServerClientId() ||
-						!roleState.TryAcceptViewModelHost(clientId)
-						)
-					{
-						return WaitForClientResult::Reject;
-					}
+					return WaitForClientResult::Reject;
 				}
 				Console::WriteLine(L"> RemotingTest_RvmHost transport connected: " + itow(clientId));
 				return WaitForClientResult::Accept;
@@ -217,154 +215,29 @@ namespace
 		void OnClientDisconnected(vint clientId) override
 		{
 			bool rendererDisconnected = false;
-			bool brokerClient = false;
-			bool fatalViewModelHost = false;
-			rpc_channeling::RpcJsonDispatcherServer* targetBroker = nullptr;
+			RemoteViewModelRequesterSession* requesterSession = nullptr;
 			SPIN_LOCK(lockConnection)
 			{
-				targetBroker = brokerDispatcher;
-				brokerClient = roleState.GetViewModelHostId() == clientId;
-				fatalViewModelHost = roleState.FailViewModelHost(clientId);
-				if (brokerViewModelHostId == clientId)
+				requesterSession = remoteViewModelSession;
+				if (rendererClientId == clientId)
 				{
-					brokerViewModelHostId = InvalidRemoteViewModelClientId;
-				}
-				if (roleState.DisconnectRenderer(clientId))
-				{
+					rendererClientId = InvalidRemoteViewModelClientId;
 					if (coreProtocolChannel)
 					{
 						coreProtocolChannel->DetachRenderer(clientId);
 					}
 					rendererDisconnected = true;
 				}
-				if (roleState.DisconnectRequester(clientId))
-				{
-					brokerClient = true;
-				}
 			}
 
-			if (fatalViewModelHost)
+			if (requesterSession)
 			{
-				Console::WriteLine(L"Fatal error: RemotingTest_RvmHost disconnected.");
-				std::_Exit(1);
-			}
-			if (brokerClient && targetBroker)
-			{
-				targetBroker->DisconnectClient(clientId);
+				requesterSession->OnClientDisconnected(clientId);
 			}
 			if (rendererDisconnected)
 			{
 				Console::WriteLine(L"> Renderer transport disconnected: " + itow(clientId));
 			}
-		}
-
-		void SetBrokerDispatcher(rpc_channeling::RpcJsonDispatcherServer* dispatcher)
-		{
-			SPIN_LOCK(lockConnection)
-			{
-				brokerDispatcher = dispatcher;
-			}
-		}
-
-		void RegisterViewModelHost(vint clientId)
-		{
-			rpc_channeling::RpcJsonDispatcherServer* targetBroker = nullptr;
-			SPIN_LOCK(lockConnection)
-			{
-				CHECK_ERROR(
-					roleState.GetViewModelHostId() == clientId,
-					L"RemotingChannelServerBase::RegisterViewModelHost(...)#The ready client is not the accepted view-model host."
-					);
-				CHECK_ERROR(
-					brokerViewModelHostId == InvalidRemoteViewModelClientId,
-					L"RemotingChannelServerBase::RegisterViewModelHost(...)#The view-model host is already registered."
-					);
-				targetBroker = brokerDispatcher;
-				brokerViewModelHostId = clientId;
-			}
-			CHECK_ERROR(targetBroker, L"RemotingChannelServerBase::RegisterViewModelHost(...)#The broker dispatcher is null.");
-			targetBroker->RegisterClient(clientId);
-		}
-
-		void RegisterRequester(vint clientId)
-		{
-			rpc_channeling::RpcJsonDispatcherServer* targetBroker = nullptr;
-			SPIN_LOCK(lockConnection)
-			{
-				CHECK_ERROR(roleState.RegisterRequester(clientId), L"RemotingChannelServerBase::RegisterRequester(...)#A requester has already been registered.");
-				targetBroker = brokerDispatcher;
-			}
-			CHECK_ERROR(targetBroker, L"RemotingChannelServerBase::RegisterRequester(...)#The broker dispatcher is null.");
-			targetBroker->RegisterClient(clientId);
-		}
-
-		void FailRpcTaskQueue(const WString& message)
-		{
-			bool claimed = false;
-			Func<void()> targetCallback;
-			SPIN_LOCK(lockConnection)
-			{
-				if (
-					fatalError == L"" &&
-					roleState.FailRemoteViewModel()
-					)
-				{
-					fatalError = message;
-					targetCallback = fatalCallback;
-					claimed = true;
-				}
-			}
-			if (claimed && targetCallback)
-			{
-				targetCallback();
-			}
-			else if (claimed)
-			{
-				Console::WriteLine(L"Fatal error: " + message);
-				std::_Exit(1);
-			}
-		}
-
-		bool BeginRunning(const Func<void()>& callback) override
-		{
-			bool succeeded = false;
-			SPIN_LOCK(lockConnection)
-			{
-				if (
-					fatalError == L"" &&
-					roleState.BeginRunning()
-					)
-				{
-					fatalCallback = callback;
-					succeeded = true;
-				}
-			}
-			return succeeded;
-		}
-
-		void BeginStopping() override
-		{
-			SPIN_LOCK(lockConnection)
-			{
-				if (roleState.IsRemoteViewModelEnabled())
-				{
-					roleState.BeginStopping();
-					fatalCallback = {};
-				}
-			}
-		}
-
-		Nullable<WString> GetFatalError() override
-		{
-			Nullable<WString> result;
-			SPIN_LOCK(lockConnection)
-			{
-				if (fatalError != L"")
-				{
-					result = fatalError;
-				}
-			}
-			return result;
 		}
 	};
 
@@ -446,17 +319,11 @@ namespace
 			: Base(parser, socketServer, baseUrl)
 		{
 		}
-
-		~MiniHttpRemotingChannelServer()
-		{
-			this->Stop();
-		}
 	};
 }
 
 IJsonLocalChannelServer* protocolServer = nullptr;
-IGuiRemoteProtocol* rendererProtocol = nullptr;
-IRemoteViewModelCoreState* remoteViewModelCoreState = nullptr;
+RemoteViewModelRequesterSession* remoteViewModelSession = nullptr;
 Ptr<rvmt::IViewModel> remoteViewModel;
 vint mainWindowConstructorIndex = 0;
 int mainProcessResult = 0;
@@ -464,6 +331,85 @@ int mainProcessResult = 0;
 bool useWindowsHttpAutomationService = true;
 #endif
 Ptr<async_tcp_socket::IAsyncSocketServer>* miniHttpAutomationSocketServer = nullptr;
+
+namespace
+{
+	class CoreFatalState
+	{
+	private:
+		SpinLock					lockState;
+		EventObject					delivered;
+		bool						initialized = false;
+		bool						claimed = false;
+		bool						deliveryFinished = false;
+		WString						message;
+
+	public:
+		void Initialize()
+		{
+			SPIN_LOCK(lockState)
+			{
+				if (!initialized)
+				{
+					CHECK_ERROR(delivered.CreateManualUnsignal(false), L"CoreFatalState::Initialize()#Failed to create the fatal-delivery event.");
+					initialized = true;
+				}
+			}
+		}
+
+		WString Deliver(IJsonLocalChannelServer* server, const WString& errorMessage)
+		{
+			bool deliver = false;
+			bool wait = false;
+			SPIN_LOCK(lockState)
+			{
+				CHECK_ERROR(initialized, L"CoreFatalState::Deliver(...)#The fatal state has not been initialized.");
+				if (!claimed)
+				{
+					claimed = true;
+					message = errorMessage;
+					deliver = true;
+				}
+				else
+				{
+					wait = !deliveryFinished;
+				}
+			}
+
+			if (deliver)
+			{
+				if (server)
+				{
+					try
+					{
+						server->BroadcastError(message);
+					}
+					catch (...)
+					{
+					}
+				}
+				SPIN_LOCK(lockState)
+				{
+					deliveryFinished = true;
+				}
+				delivered.Signal();
+			}
+			else if (wait)
+			{
+				delivered.Wait();
+			}
+
+			WString result;
+			SPIN_LOCK(lockState)
+			{
+				result = message;
+			}
+			return result;
+		}
+	};
+
+	CoreFatalState* coreFatalState = nullptr;
+}
 
 void GuiMain()
 {
@@ -477,7 +423,7 @@ void GuiMain()
 			window = Ptr(new rptest::RpMainWindow);
 			break;
 		case 2:
-			CHECK_ERROR(remoteViewModelCoreState, L"GuiMain()#The RVM Core state is null.");
+			CHECK_ERROR(remoteViewModelSession, L"GuiMain()#The RVM requester session is null.");
 			CHECK_ERROR(remoteViewModel, L"GuiMain()#The rvmt::IViewModel proxy is null.");
 			window = Ptr(new rvmt::MainWindow(remoteViewModel));
 			break;
@@ -518,15 +464,9 @@ void GuiMain()
 
 			if (mainWindowConstructorIndex == 2)
 			{
-				if (!remoteViewModelCoreState->BeginRunning(Func<void()>([window]()
+				if (!remoteViewModelSession->BeginRunning())
 				{
-					GetApplication()->InvokeInMainThread(window.Obj(), [window]()
-					{
-						window->Close();
-					});
-				})))
-				{
-					auto failure = remoteViewModelCoreState->GetFatalError();
+					auto failure = remoteViewModelSession->GetFatalError();
 					throw Exception(failure ? failure.Value() : WString::Unmanaged(L"RemotingTest_RvmHost was not available before window startup."));
 				}
 				Console::WriteLine(L"> rvmt::IViewModel acquired; renderer admission is open.");
@@ -540,25 +480,18 @@ void GuiMain()
 			{
 				if (mainWindowConstructorIndex == 2)
 				{
-					remoteViewModelCoreState->BeginStopping();
+					remoteViewModelSession->BeginStopping();
 				}
 				throw;
 			}
 
 			if (mainWindowConstructorIndex == 2)
 			{
-				remoteViewModelCoreState->BeginStopping();
-				if (auto failure = remoteViewModelCoreState->GetFatalError())
+				remoteViewModelSession->BeginStopping();
+				if (auto failure = remoteViewModelSession->GetFatalError())
 				{
 					throw Exception(failure.Value());
 				}
-			}
-
-			if (rendererProtocol)
-			{
-				rendererProtocol->RequestControllerConnectionStopped();
-				bool disconnected = false;
-				rendererProtocol->Submit(disconnected);
 			}
 		}
 		catch (...)
@@ -571,40 +504,31 @@ void GuiMain()
 	catch (const Exception& e)
 	{
 		mainProcessResult = 1;
-		if (mainWindowConstructorIndex == 2 && remoteViewModelCoreState)
+		auto message = e.Message();
+		if (mainWindowConstructorIndex == 2 && remoteViewModelSession)
 		{
-			remoteViewModelCoreState->BeginStopping();
-		}
-		if (protocolServer)
-		{
-			try
+			remoteViewModelSession->BeginStopping();
+			if (auto failure = remoteViewModelSession->GetFatalError())
 			{
-				protocolServer->BroadcastError(e.Message());
-			}
-			catch (...)
-			{
+				message = failure.Value();
 			}
 		}
-		Console::WriteLine(L"Error: " + e.Message());
+		message = coreFatalState->Deliver(protocolServer, message);
+		Console::WriteLine(L"Error: " + message);
 	}
 	catch (const Error& e)
 	{
 		mainProcessResult = 1;
-		if (mainWindowConstructorIndex == 2 && remoteViewModelCoreState)
-		{
-			remoteViewModelCoreState->BeginStopping();
-		}
 		auto message = WString::Unmanaged(e.Description());
-		if (protocolServer)
+		if (mainWindowConstructorIndex == 2 && remoteViewModelSession)
 		{
-			try
+			remoteViewModelSession->BeginStopping();
+			if (auto failure = remoteViewModelSession->GetFatalError())
 			{
-				protocolServer->BroadcastError(message);
-			}
-			catch (...)
-			{
+				message = failure.Value();
 			}
 		}
+		message = coreFatalState->Deliver(protocolServer, message);
 		Console::WriteLine(L"Error: " + message);
 	}
 }
@@ -613,19 +537,24 @@ template<typename TServerBase>
 int StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr::json::Parser> jsonParser)
 {
 	const bool useRemoteViewModel = mainWindowConstructorIndex == 2;
+	CoreFatalState fatalState;
+	fatalState.Initialize();
+	Ptr<RemoteViewModelRequesterSession> requesterSession;
 	if (useRemoteViewModel)
 	{
-		channelServer.EnableRemoteViewModel();
+		requesterSession = Ptr(new RemoteViewModelRequesterSession(
+			jsonParser,
+			Func<void(const WString&)>([&channelServer, &fatalState](const WString& message)
+			{
+				auto deliveredMessage = fatalState.Deliver(&channelServer, message);
+				Console::WriteLine(L"Error: " + deliveredMessage);
+				std::_Exit(1);
+			})
+			));
+		channelServer.RequireRemoteViewModel();
 	}
 
 	bool channelServerStarted = false;
-	Ptr<rpc_channeling::TaskQueue> taskQueue;
-	Ptr<RemoteViewModelTaskQueueThread> taskQueueThread;
-	Ptr<RemoteViewModelBroadcastingLocalClient> broadcastingClient;
-	Ptr<RemoteViewModelReadyLocalClient> readyClient;
-	Ptr<RemoteViewModelRequesterLocalClient> requesterClient;
-	RemoteViewModelJsonDispatcherClient* requesterDispatcher = nullptr;
-	bool taskQueueStarted = false;
 	int result = 1;
 
 	channelServer.Start();
@@ -652,58 +581,30 @@ int StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr::
 
 	channelServer.SetCoreProtocolChannel(&channelSender);
 	protocolServer = &channelServer;
-	rendererProtocol = &diffConverterProtocol;
 	mainProcessResult = 0;
 
 	try
 	{
 		if (useRemoteViewModel)
 		{
-			taskQueue = Ptr(new rpc_channeling::TaskQueue);
-			taskQueueThread = Ptr(new RemoteViewModelTaskQueueThread(taskQueue));
-			broadcastingClient = Ptr(new RemoteViewModelBroadcastingLocalClient(jsonParser));
-			requesterClient = Ptr(new RemoteViewModelRequesterLocalClient(jsonParser));
-
-			broadcastingClient->Connect(&channelServer, broadcastingClient, taskQueue);
-			auto brokerDispatcher = broadcastingClient->GetDispatcher();
-
-			readyClient = Ptr(new RemoteViewModelReadyLocalClient(
-				jsonParser,
-				Func<void(vint)>([&channelServer](vint clientId)
-				{
-					channelServer.RegisterViewModelHost(clientId);
-				})
-				));
-			readyClient->Connect(&channelServer, readyClient);
-			channelServer.SetBrokerDispatcher(brokerDispatcher);
-
-			auto requesterClientId = requesterClient->Connect(
-				&channelServer,
-				requesterClient,
-				taskQueue,
-				brokerDispatcher->GetServerClientId()
-			);
-			requesterDispatcher = requesterClient->GetDispatcher();
-			channelServer.RegisterRequester(requesterClientId);
-			taskQueueThread->SetFailureCallback(Func<void(const WString&)>([&channelServer](const WString& message)
-			{
-				channelServer.FailRpcTaskQueue(WString::Unmanaged(L"RPC task queue failed: ") + message);
-			}));
-
-			CHECK_ERROR(taskQueueThread->Start(), L"StartServer(...)#Failed to start the RPC task queue thread.");
-			taskQueueStarted = true;
-
+			channelServer.SetRemoteViewModelSession(requesterSession.Obj());
+			requesterSession->Start(&channelServer);
 			Console::WriteLine(L"> Waiting for RemotingTest_RvmHost on ViewModelChannel.");
-			requesterDispatcher->Initialize();
-			remoteViewModel = requesterDispatcher
-				->GetRpcLifecycle()
-				->RequestService(WString::Unmanaged(ViewModelServiceName))
-				.Cast<rvmt::IViewModel>();
-			CHECK_ERROR(remoteViewModel, L"StartServer(...)#Failed to request rvmt::IViewModel.");
-			remoteViewModelCoreState = &channelServer;
+			remoteViewModel = requesterSession->RequestViewModel();
+			remoteViewModelSession = requesterSession.Obj();
 		}
 
-		SetupRemoteNativeController(&diffConverterProtocol);
+		coreFatalState = &fatalState;
+		try
+		{
+			SetupRemoteNativeController(&diffConverterProtocol);
+		}
+		catch (...)
+		{
+			coreFatalState = nullptr;
+			throw;
+		}
+		coreFatalState = nullptr;
 		result = mainProcessResult;
 	}
 	catch (const Exception& e)
@@ -717,13 +618,8 @@ int StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr::
 		result = 1;
 	}
 
-	if (useRemoteViewModel)
-	{
-		channelServer.BeginStopping();
-	}
-	remoteViewModelCoreState = nullptr;
+	remoteViewModelSession = nullptr;
 	remoteViewModel = nullptr;
-	rendererProtocol = nullptr;
 
 #ifdef VCZH_MSVC
 	if constexpr (std::is_same_v<TServerBase, named_pipe::NamedPipeServer>)
@@ -736,36 +632,28 @@ int StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr::
 	}
 #endif
 
-	if (requesterDispatcher)
-	{
-		try
-		{
-			if (taskQueueStarted)
-			{
-				FinalizeRpcOnTaskQueue(taskQueue, requesterDispatcher);
-			}
-			else
-			{
-				requesterDispatcher->FinalizeRpc();
-			}
-		}
-		catch (const Exception& e)
-		{
-			Console::WriteLine(L"Error during RPC cleanup: " + e.Message());
-			result = 1;
-		}
-		catch (const Error& e)
-		{
-			Console::WriteLine(L"Error during RPC cleanup: " + WString::Unmanaged(e.Description()));
-			result = 1;
-		}
-	}
-
 	protocolServer = nullptr;
 	channelServer.SetCoreProtocolChannel(nullptr);
 	channelServer.SetCoreJsonChannel(nullptr);
 
-	if (channelServerStarted)
+	if (requesterSession)
+	{
+		Func<void()> stopServer;
+		if (channelServerStarted)
+		{
+			stopServer = Func<void()>([&channelServer]()
+			{
+				channelServer.Stop();
+			});
+		}
+		if (auto failure = requesterSession->Stop(stopServer))
+		{
+			Console::WriteLine(L"Error during RVM cleanup: " + failure.Value());
+			result = 1;
+		}
+		channelServer.ClearRemoteViewModelSession();
+	}
+	else if (channelServerStarted)
 	{
 		try
 		{
@@ -779,17 +667,6 @@ int StartServer(RemotingChannelServerBase<TServerBase>& channelServer, Ptr<glr::
 		catch (const Error& e)
 		{
 			Console::WriteLine(L"Error during channel cleanup: " + WString::Unmanaged(e.Description()));
-			result = 1;
-		}
-	}
-	if (taskQueueStarted)
-	{
-		if (auto failure = StopRpcTaskQueue(taskQueue, taskQueueThread.Obj()))
-		{
-			if (result == 0)
-			{
-				Console::WriteLine(L"Error during RPC task queue cleanup: " + failure.Value());
-			}
 			result = 1;
 		}
 	}

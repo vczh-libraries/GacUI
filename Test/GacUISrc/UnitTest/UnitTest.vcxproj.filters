@@ -270,6 +270,9 @@
     <ClCompile Include="TestControls_List_DataGrid_Properties.cpp">
       <Filter>Source Files\Controls\List\DataGrid</Filter>
     </ClCompile>
+    <ClCompile Include="TestRemote_AsyncRendererChannel.cpp">
+      <Filter>Source Files\Remote</Filter>
+    </ClCompile>
     <ClCompile Include="TestRemote_RenderingDom.cpp">
       <Filter>Source Files\Remote</Filter>
     </ClCompile>

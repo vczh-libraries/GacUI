@@ -30,14 +30,19 @@ establish, drive, inspect, replace, and close the renderer session.
   - We should assume that connection is unreliable, core can't really know if the renderer is suddenly gone or not. So the remote protocol design also respect such assumption, core should not expect `ControllerDisconnect` event will always sent from a renderer.
     - Core should always assume the renderer could suddenly gone without saying anything.
     - Core will be remain running if an explicit signal of exiting doesn't happen.
+  - For HTTP renderer channel clients, a failed active `/Request` or `/Response`, including HTTP 404 after renderer replacement or Core termination, is a fatal local channel error.
+    - The raw VlppOS network protocol reports each failed HTTP exchange as a nonfatal local error and retains its transport-specific retry policy.
+    - The VlppOS `IChannelClient` implementation promotes every local error received after the channel connection is established to fatal, because channel delivery is no longer reliable, and stops the network connection before it retries.
+    - The renderer acts on the fatal local-error callback directly and enters its normal disconnected state without waiting for a later `OnDisconnected` callback.
+    - A fatal local channel error does not display a fatal prompt or overlay. Only a Core-authored `!Error` package does.
   - `ControllerRequestExit` event asks core to close the window, but the actual app could reject the request. That's similar to clicking the "X" button don't guarantee the app is going to close.
   - `ControllerForceExit` event asks core to exit the app and don't give the actual app any chance to reject the request. That's similar to killing the process.
-  - Core app requesting exiting, `ControllerRequestExit` and `ControllerForceExit` result in `ControllerConnectionEstablished` being sent to the renderer because it is deterministic, and it is the only scenario of deterministic disconnection.
+  - Core app requesting exiting, `ControllerRequestExit` and `ControllerForceExit` result in `ControllerConnectionStopped` being sent to the renderer because it is deterministic, and it is the only scenario of deterministic disconnection.
 
 ## Expected Behavior of Workflow RPC
 
 - Test Apps:
-  - `RemotingTest_Core /RVMP` and `CppTest_Rvm` running the `RemoteViewModelTest` app requesting a remote `IViewModel` to be implemented.
+  - `RemotingTest_Core /RVMT` and `CppTest_Rvm` running the `RemoteViewModelTest` app requesting a remote `IViewModel` to be implemented.
   - `RemotingTest_RvmHost` implemented that `IViewModel` and connect to above test apps via the Workflow RPC feature, they are blocked until `RemotingTest_RvmHost` successfully connected.
 - Expected Behavior:
   - Only one `RemotingTest_RvmHost` is allowed to connect.

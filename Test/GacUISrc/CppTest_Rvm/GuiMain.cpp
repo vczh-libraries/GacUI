@@ -1,6 +1,5 @@
 #include "DarkSkin.h"
 #include "RemoteViewModelTestIncludes.h"
-#include "../RemotingTest_RvmHost/RemoteViewModelRoleState.h"
 #include "../RemotingTest_RvmHost/RemoteViewModelTestRuntime.h"
 #include <cstdlib>
 
@@ -23,28 +22,14 @@ extern void StopMiniHttpAutomationService();
 
 namespace
 {
-	class IRemoteViewModelUiServer
-	{
-	public:
-		virtual bool					BeginRunning(const Func<void()>& callback) = 0;
-		virtual void					BeginStopping() = 0;
-		virtual Nullable<WString>		GetFatalError() = 0;
-	};
-
 	template<typename TServerBase>
 	class RemoteViewModelUiServer
 		: public JsonNetworkChannelServer<TServerBase>
-		, public IRemoteViewModelUiServer
 	{
 		using Base = JsonNetworkChannelServer<TServerBase>;
 
 	private:
-		SpinLock								lockState;
-		RemoteViewModelRoleState				roleState;
-		WString									fatalError;
-		Func<void()>							fatalCallback;
-		RpcJsonDispatcherServer*				brokerDispatcher = nullptr;
-		vint									brokerViewModelHostId = InvalidRemoteViewModelClientId;
+		RemoteViewModelRequesterSession*			session = nullptr;
 
 	public:
 		using Base::OnClientConnected;
@@ -53,7 +38,18 @@ namespace
 		RemoteViewModelUiServer(Ptr<glr::json::Parser> parser, TArgs&&... args)
 			: Base(parser, std::forward<TArgs>(args)...)
 		{
-			CHECK_ERROR(roleState.EnableRemoteViewModel(), L"RemoteViewModelUiServer::RemoteViewModelUiServer(...)#Failed to enable remote view model mode.");
+		}
+
+		void SetSession(RemoteViewModelRequesterSession* _session)
+		{
+			CHECK_ERROR(_session, L"RemoteViewModelUiServer::SetSession(...)#The requester session is null.");
+			CHECK_ERROR(!session, L"RemoteViewModelUiServer::SetSession(...)#The requester session has already been set.");
+			session = _session;
+		}
+
+		void ClearSession()
+		{
+			session = nullptr;
 		}
 
 		WaitForClientResult OnClientConnected(
@@ -64,176 +60,31 @@ namespace
 		{
 			if (localClient)
 			{
-				if (
-					dynamic_cast<RemoteViewModelBroadcastingLocalClient*>(localClient) ||
-					dynamic_cast<RemoteViewModelReadyLocalClient*>(localClient)
-					)
-				{
-					return WaitForClientResult::Accept;
-				}
-				if (dynamic_cast<RemoteViewModelRequesterLocalClient*>(localClient))
-				{
-					SPIN_LOCK(lockState)
-					{
-						return
-							brokerDispatcher &&
-							brokerDispatcher->HasServerClientId()
-							? WaitForClientResult::Accept
-							: WaitForClientResult::Reject;
-					}
-				}
-				return WaitForClientResult::Reject;
+				return
+					session && session->CanAcceptLocalClient(localClient)
+					? WaitForClientResult::Accept
+					: WaitForClientResult::Reject;
 			}
 
-			if (ClassifyRemoteViewModelChannel(availableChannels) != RemoteViewModelChannelRole::ViewModelHost)
+			if (
+				!session ||
+				ClassifyRemoteViewModelChannel(availableChannels) != RemoteViewModelChannelRole::ViewModelHost ||
+				!session->TryAcceptViewModelHost(clientId)
+				)
 			{
 				return WaitForClientResult::Reject;
 			}
 
-			SPIN_LOCK(lockState)
-			{
-				if (
-					!brokerDispatcher ||
-					!brokerDispatcher->HasServerClientId() ||
-					!roleState.TryAcceptViewModelHost(clientId)
-					)
-				{
-					return WaitForClientResult::Reject;
-				}
-			}
 			Console::WriteLine(L"> RemotingTest_RvmHost transport connected: " + itow(clientId));
 			return WaitForClientResult::Accept;
 		}
 
 		void OnClientDisconnected(vint clientId) override
 		{
-			RpcJsonDispatcherServer* targetBroker = nullptr;
-			bool brokerClient = false;
-			bool fatalViewModelHost = false;
-			SPIN_LOCK(lockState)
+			if (session)
 			{
-				targetBroker = brokerDispatcher;
-				brokerClient = roleState.GetViewModelHostId() == clientId;
-				fatalViewModelHost = roleState.FailViewModelHost(clientId);
-				if (brokerViewModelHostId == clientId)
-				{
-					brokerViewModelHostId = InvalidRemoteViewModelClientId;
-				}
-				if (roleState.DisconnectRequester(clientId))
-				{
-					brokerClient = true;
-				}
+				session->OnClientDisconnected(clientId);
 			}
-
-			if (fatalViewModelHost)
-			{
-				Console::WriteLine(L"Fatal error: RemotingTest_RvmHost disconnected.");
-				std::_Exit(1);
-			}
-			if (brokerClient && targetBroker)
-			{
-				targetBroker->DisconnectClient(clientId);
-			}
-		}
-
-		void SetBrokerDispatcher(RpcJsonDispatcherServer* dispatcher)
-		{
-			SPIN_LOCK(lockState)
-			{
-				brokerDispatcher = dispatcher;
-			}
-		}
-
-		void RegisterViewModelHost(vint clientId)
-		{
-			RpcJsonDispatcherServer* targetBroker = nullptr;
-			SPIN_LOCK(lockState)
-			{
-				CHECK_ERROR(
-					roleState.GetViewModelHostId() == clientId,
-					L"RemoteViewModelUiServer::RegisterViewModelHost(...)#The ready client is not the accepted view-model host."
-					);
-				CHECK_ERROR(
-					brokerViewModelHostId == InvalidRemoteViewModelClientId,
-					L"RemoteViewModelUiServer::RegisterViewModelHost(...)#The view-model host is already registered."
-					);
-				targetBroker = brokerDispatcher;
-				brokerViewModelHostId = clientId;
-			}
-			CHECK_ERROR(targetBroker, L"RemoteViewModelUiServer::RegisterViewModelHost(...)#The broker dispatcher is null.");
-			targetBroker->RegisterClient(clientId);
-		}
-
-		void RegisterRequester(vint clientId)
-		{
-			RpcJsonDispatcherServer* targetBroker = nullptr;
-			SPIN_LOCK(lockState)
-			{
-				CHECK_ERROR(roleState.RegisterRequester(clientId), L"RemoteViewModelUiServer::RegisterRequester(...)#A requester has already been registered.");
-				targetBroker = brokerDispatcher;
-			}
-			CHECK_ERROR(targetBroker, L"RemoteViewModelUiServer::RegisterRequester(...)#The broker dispatcher is null.");
-			targetBroker->RegisterClient(clientId);
-		}
-
-		void FailRpcTaskQueue(const WString& message)
-		{
-			bool claimed = false;
-			Func<void()> targetCallback;
-			SPIN_LOCK(lockState)
-			{
-				if (fatalError == L"" && roleState.FailRemoteViewModel())
-				{
-					fatalError = message;
-					targetCallback = fatalCallback;
-					claimed = true;
-				}
-			}
-			if (claimed && targetCallback)
-			{
-				targetCallback();
-			}
-			else if (claimed)
-			{
-				Console::WriteLine(L"Fatal error: " + message);
-				std::_Exit(1);
-			}
-		}
-
-		bool BeginRunning(const Func<void()>& callback) override
-		{
-			bool succeeded = false;
-			SPIN_LOCK(lockState)
-			{
-				if (fatalError == L"" && roleState.BeginRunning())
-				{
-					fatalCallback = callback;
-					succeeded = true;
-				}
-			}
-			return succeeded;
-		}
-
-		void BeginStopping() override
-		{
-			SPIN_LOCK(lockState)
-			{
-				roleState.BeginStopping();
-				fatalCallback = {};
-			}
-		}
-
-		Nullable<WString> GetFatalError() override
-		{
-			Nullable<WString> result;
-			SPIN_LOCK(lockState)
-			{
-				if (fatalError != L"")
-				{
-					result = fatalError;
-				}
-			}
-			return result;
 		}
 	};
 
@@ -276,14 +127,9 @@ namespace
 			: Base(parser, socketServer, WString::Unmanaged(RemotingHttpBaseUrl))
 		{
 		}
-
-		~MiniHttpRemoteViewModelUiServer()
-		{
-			this->Stop();
-		}
 	};
 
-	IRemoteViewModelUiServer* currentServer = nullptr;
+	RemoteViewModelRequesterSession* currentSession = nullptr;
 	Ptr<rvmt::IViewModel> currentViewModel;
 	int guiProcessResult = 0;
 #ifdef VCZH_MSVC
@@ -298,58 +144,29 @@ namespace
 		bool useWindowsAutomation
 		)
 	{
-		auto taskQueue = Ptr(new TaskQueue);
-		auto taskQueueThread = Ptr(new RemoteViewModelTaskQueueThread(taskQueue));
-		auto broadcastingClient = Ptr(new RemoteViewModelBroadcastingLocalClient(parser));
-		auto readyClient = Ptr(new RemoteViewModelReadyLocalClient(
+		RemoteViewModelRequesterSession session(
 			parser,
-			Func<void(vint)>([&channelServer](vint clientId)
+			Func<void(const WString&)>([](const WString& message)
 			{
-				channelServer.RegisterViewModelHost(clientId);
+				Console::WriteLine(L"Error: " + message);
+				std::_Exit(1);
 			})
-			));
-		auto requesterClient = Ptr(new RemoteViewModelRequesterLocalClient(parser));
-		RemoteViewModelJsonDispatcherClient* requesterDispatcher = nullptr;
+			);
 		bool serverStarted = false;
-		bool taskQueueStarted = false;
 		int result = 1;
 
 		(void)useWindowsAutomation;
+		channelServer.SetSession(&session);
 		try
 		{
 			channelServer.Start();
 			serverStarted = true;
-
-			broadcastingClient->Connect(&channelServer, broadcastingClient, taskQueue);
-			auto brokerDispatcher = broadcastingClient->GetDispatcher();
-			readyClient->Connect(&channelServer, readyClient);
-			channelServer.SetBrokerDispatcher(brokerDispatcher);
-
-			auto requesterClientId = requesterClient->Connect(
-				&channelServer,
-				requesterClient,
-				taskQueue,
-				brokerDispatcher->GetServerClientId()
-			);
-			requesterDispatcher = requesterClient->GetDispatcher();
-			channelServer.RegisterRequester(requesterClientId);
-			taskQueueThread->SetFailureCallback(Func<void(const WString&)>([&channelServer](const WString& message)
-			{
-				channelServer.FailRpcTaskQueue(WString::Unmanaged(L"RPC task queue failed: ") + message);
-			}));
-
-			CHECK_ERROR(taskQueueThread->Start(), L"StartServer(...)#Failed to start the RPC task queue thread.");
-			taskQueueStarted = true;
+			session.Start(&channelServer);
 
 			Console::WriteLine(L"> Waiting for RemotingTest_RvmHost on ViewModelChannel.");
-			requesterDispatcher->Initialize();
-			auto viewModel = requesterDispatcher
-				->GetRpcLifecycle()
-				->RequestService(WString::Unmanaged(ViewModelServiceName))
-				.Cast<rvmt::IViewModel>();
-			CHECK_ERROR(viewModel, L"StartServer(...)#Failed to request rvmt::IViewModel.");
+			auto viewModel = session.RequestViewModel();
 
-			currentServer = &channelServer;
+			currentSession = &session;
 			currentViewModel = viewModel;
 			guiProcessResult = 0;
 #ifdef VCZH_MSVC
@@ -363,7 +180,7 @@ namespace
 				result = guiProcessResult;
 			}
 			currentViewModel = nullptr;
-			currentServer = nullptr;
+			currentSession = nullptr;
 		}
 		catch (const Exception& e)
 		{
@@ -376,62 +193,23 @@ namespace
 			result = 1;
 		}
 
-		channelServer.BeginStopping();
 		currentViewModel = nullptr;
-		currentServer = nullptr;
+		currentSession = nullptr;
 
-		if (requesterDispatcher)
-		{
-			try
-			{
-				if (taskQueueStarted)
-				{
-					FinalizeRpcOnTaskQueue(taskQueue, requesterDispatcher);
-				}
-				else
-				{
-					requesterDispatcher->FinalizeRpc();
-				}
-			}
-			catch (const Exception& e)
-			{
-				Console::WriteLine(L"Error during RPC cleanup: " + e.Message());
-				result = 1;
-			}
-			catch (const Error& e)
-			{
-				Console::WriteLine(L"Error during RPC cleanup: " + WString::Unmanaged(e.Description()));
-				result = 1;
-			}
-		}
+		Func<void()> stopServer;
 		if (serverStarted)
 		{
-			try
+			stopServer = Func<void()>([&channelServer]()
 			{
 				channelServer.Stop();
-			}
-			catch (const Exception& e)
-			{
-				Console::WriteLine(L"Error during channel cleanup: " + e.Message());
-				result = 1;
-			}
-			catch (const Error& e)
-			{
-				Console::WriteLine(L"Error during channel cleanup: " + WString::Unmanaged(e.Description()));
-				result = 1;
-			}
+			});
 		}
-		if (taskQueueStarted)
+		if (auto failure = session.Stop(stopServer))
 		{
-			if (auto failure = StopRpcTaskQueue(taskQueue, taskQueueThread.Obj()))
-			{
-				if (result == 0)
-				{
-					Console::WriteLine(L"Error during RPC task queue cleanup: " + failure.Value());
-				}
-				result = 1;
-			}
+			Console::WriteLine(L"Error during RVM cleanup: " + failure.Value());
+			result = 1;
 		}
+		channelServer.ClearSession();
 		return result;
 	}
 }
@@ -440,7 +218,7 @@ void GuiMain()
 {
 	try
 	{
-		CHECK_ERROR(currentServer, L"GuiMain()#The RVM channel server is null.");
+		CHECK_ERROR(currentSession, L"GuiMain()#The RVM requester session is null.");
 		CHECK_ERROR(currentViewModel, L"GuiMain()#The rvmt::IViewModel proxy is null.");
 
 		theme::RegisterTheme(Ptr(new darkskin::Theme));
@@ -451,15 +229,9 @@ void GuiMain()
 		windows::SetWindowDefaultIcon(MAINICON);
 #endif
 
-		if (!currentServer->BeginRunning(Func<void()>([window]()
+		if (!currentSession->BeginRunning())
 		{
-			GetApplication()->InvokeInMainThread(window.Obj(), [window]()
-			{
-				window->Close();
-			});
-		})))
-		{
-			auto failure = currentServer->GetFatalError();
+			auto failure = currentSession->GetFatalError();
 			throw Exception(failure ? failure.Value() : WString::Unmanaged(L"RemotingTest_RvmHost was not available before window startup."));
 		}
 		Console::WriteLine(L"> rvmt::IViewModel acquired; local window is ready.");
@@ -485,7 +257,7 @@ void GuiMain()
 		}
 		catch (...)
 		{
-			currentServer->BeginStopping();
+			currentSession->BeginStopping();
 			if (automationStarted)
 			{
 #ifdef VCZH_MSVC
@@ -502,7 +274,7 @@ void GuiMain()
 			throw;
 		}
 
-		currentServer->BeginStopping();
+		currentSession->BeginStopping();
 #ifdef VCZH_MSVC
 		if (useWindowsHttpAutomationService)
 		{
@@ -514,25 +286,25 @@ void GuiMain()
 			StopMiniHttpAutomationService();
 		}
 
-		if (auto failure = currentServer->GetFatalError())
+		if (auto failure = currentSession->GetFatalError())
 		{
 			throw Exception(failure.Value());
 		}
 	}
 	catch (const Exception& e)
 	{
-		if (currentServer)
+		if (currentSession)
 		{
-			currentServer->BeginStopping();
+			currentSession->BeginStopping();
 		}
 		Console::WriteLine(L"Error: " + e.Message());
 		guiProcessResult = 1;
 	}
 	catch (const Error& e)
 	{
-		if (currentServer)
+		if (currentSession)
 		{
-			currentServer->BeginStopping();
+			currentSession->BeginStopping();
 		}
 		Console::WriteLine(L"Error: " + WString::Unmanaged(e.Description()));
 		guiProcessResult = 1;

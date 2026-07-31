@@ -61,105 +61,117 @@ class RemotingTestChannelClient : public GuiRemoteProtocolChannelClient
 private:
 	SpinLock									lockState;
 	bool										triggeredFatalError = false;
+	bool										retainedFatalError = false;
 	bool										stopping = false;
-	WString										fatalTitle;
-	WString										fatalMessage;
 	GuiRemoteRendererSingle*					renderer = nullptr;
 	GuiRemoteProtocolAsyncJsonChannelRenderer*	asyncRendererChannel = nullptr;
 	AutomationServiceRenderer*					rendererAutomationService = nullptr;
 
-	bool ClaimFatalError(const WString& title, const WString& errorMessage)
+	void QueueMainThreadTask(const Func<void()>& task)
 	{
-		bool claimed = false;
-		SPIN_LOCK(lockState)
-		{
-			if (!stopping && !triggeredFatalError && (!renderer || !renderer->IsDisconnectedFromCore()))
-			{
-				triggeredFatalError = true;
-				fatalTitle = title;
-				fatalMessage = errorMessage;
-				claimed = true;
-			}
-		}
-		return claimed;
-	}
-
-	GuiRemoteRendererSingle* GetRendererUnlessStopping()
-	{
-		GuiRemoteRendererSingle* targetRenderer = nullptr;
+		GuiRemoteProtocolAsyncJsonChannelRenderer* targetAsyncRendererChannel = nullptr;
 		SPIN_LOCK(lockState)
 		{
 			if (!stopping)
 			{
-				targetRenderer = renderer;
+				targetAsyncRendererChannel = asyncRendererChannel;
 			}
 		}
-		return targetRenderer;
+		if (targetAsyncRendererChannel)
+		{
+			targetAsyncRendererChannel->QueueMainThreadTask(task);
+		}
 	}
 
-	void QueueFatalPrompt()
+	void ProcessFatalError(const WString& title, const WString& errorMessage)
 	{
-		WString title;
-		WString message;
 		GuiRemoteRendererSingle* targetRenderer = nullptr;
 		AutomationServiceRenderer* targetAutomationService = nullptr;
+		SPIN_LOCK(lockState)
+		{
+			if (
+				!stopping &&
+				!triggeredFatalError &&
+				renderer &&
+				rendererAutomationService &&
+				!renderer->IsDisconnectedFromCore()
+				)
+			{
+				triggeredFatalError = true;
+				targetRenderer = renderer;
+				targetAutomationService = rendererAutomationService;
+			}
+		}
+		if (!targetRenderer)
+		{
+			return;
+		}
+
+		auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
+		bool retainRenderer = false;
+#if defined VCZH_GCC && !defined VCZH_APPLE
+		// Raw Wayland rendering has no GuiApplication, so there is no
+		// FakeDialogService window in which to display this prompt.
+		retainRenderer = true;
+#else
+		auto result = GetCurrentController()->DialogService()->ShowMessageBox(
+			mainWindow,
+			errorMessage + WString::Unmanaged(L"\r\n\r\nDo you want to close the renderer?"),
+			title,
+			INativeDialogService::DisplayYesNo,
+			INativeDialogService::DefaultFirst,
+			INativeDialogService::IconError
+			);
+		retainRenderer = result != INativeDialogService::SelectYes;
+#endif
+		if (retainRenderer)
+		{
+			SPIN_LOCK(lockState)
+			{
+				if (
+					!stopping &&
+					renderer == targetRenderer &&
+					rendererAutomationService == targetAutomationService
+					)
+				{
+					retainedFatalError = true;
+				}
+			}
+			targetRenderer->RetainByFatalError(errorMessage);
+			targetAutomationService->SetFatalError(Nullable<WString>(errorMessage));
+		}
+		else
+		{
+			targetRenderer->ForceExitByFatelError();
+		}
+	}
+
+	void ProcessDisconnected()
+	{
+		GuiRemoteProtocolAsyncJsonChannelRenderer* targetAsyncRendererChannel = nullptr;
+		GuiRemoteRendererSingle* targetRenderer = nullptr;
+		bool forceRendererToExit = false;
 		SPIN_LOCK(lockState)
 		{
 			if (stopping)
 			{
 				return;
 			}
-			title = fatalTitle;
-			message = fatalMessage;
+			targetAsyncRendererChannel = asyncRendererChannel;
 			targetRenderer = renderer;
-			targetAutomationService = rendererAutomationService;
+			forceRendererToExit =
+				!triggeredFatalError &&
+				targetRenderer &&
+				!targetRenderer->IsDisconnectedFromCore();
 		}
-
-		auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
-		GetCurrentController()->AsyncService()->InvokeInMainThread(
-			mainWindow,
-			[=]()
-			{
-#if defined VCZH_GCC && !defined VCZH_APPLE
-				// Raw Wayland rendering has no GuiApplication, so there is no
-				// FakeDialogService window in which to display this prompt.
-				if (targetRenderer)
-				{
-					targetRenderer->RetainByFatalError(message);
-				}
-				if (targetAutomationService)
-				{
-					targetAutomationService->SetFatalError(Nullable<WString>(message));
-				}
-#else
-				auto result = GetCurrentController()->DialogService()->ShowMessageBox(
-					mainWindow,
-					message + WString::Unmanaged(L"\r\n\r\nDo you want to close the renderer?"),
-					title,
-					INativeDialogService::DisplayYesNo,
-					INativeDialogService::DefaultFirst,
-					INativeDialogService::IconError
-				);
-				if (result == INativeDialogService::SelectYes)
-				{
-					if (targetRenderer)
-					{
-						targetRenderer->ForceExitByFatelError();
-					}
-				}
-				else
-				{
-					if (targetRenderer)
-					{
-						targetRenderer->RetainByFatalError(message);
-					}
-					if (targetAutomationService)
-					{
-						targetAutomationService->SetFatalError(Nullable<WString>(message));
-					}
-				}
-#endif
-			});
+		if (targetAsyncRendererChannel)
+		{
+			targetAsyncRendererChannel->Detach();
+		}
+		if (forceRendererToExit)
+		{
+			targetRenderer->ForceExitByFatelError();
+		}
 	}
 
 public:
@@ -194,77 +206,57 @@ public:
 
 	void BeginStopping()
 	{
-		SPIN_LOCK(lockState)
-		{
-			stopping = true;
-		}
-	}
-
-	void OnReadError(const WString& errorMessage) override
-	{
-		if (ClaimFatalError(L"ERROR from GacUI Core", errorMessage))
-		{
-			QueueFatalPrompt();
-		}
-	}
-
-	void OnLocalError(const WString& errorMessage, bool fatal) override
-	{
-		if (fatal)
-		{
-			if (ClaimFatalError(L"ERROR from Renderer Transport", errorMessage))
-			{
-				if (auto targetRenderer = GetRendererUnlessStopping())
-				{
-					targetRenderer->RequestCoreForceExitByFatalError();
-				}
-				QueueFatalPrompt();
-			}
-		}
-	}
-
-	void OnDisconnected() override
-	{
-		Base::OnDisconnected();
-
 		GuiRemoteProtocolAsyncJsonChannelRenderer* targetAsyncRendererChannel = nullptr;
-		GuiRemoteRendererSingle* targetRenderer = nullptr;
 		SPIN_LOCK(lockState)
 		{
-			targetAsyncRendererChannel = asyncRendererChannel;
-			if (!stopping && !triggeredFatalError)
+			if (!stopping)
 			{
-				targetRenderer = renderer;
+				stopping = true;
+				targetAsyncRendererChannel = asyncRendererChannel;
 			}
 		}
 		if (targetAsyncRendererChannel)
 		{
 			targetAsyncRendererChannel->Detach();
 		}
-		if (targetRenderer)
+	}
+
+	bool IsFatalErrorRetained()
+	{
+		bool retained = false;
+		SPIN_LOCK(lockState)
 		{
-#if defined VCZH_MSVC
-			targetRenderer->ForceExitByFatelError();
-#endif
-#if defined VCZH_GCC && !defined VCZH_APPLE
-			auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
-			GetCurrentController()->AsyncService()->InvokeInMainThread(
-				mainWindow,
-				[targetRenderer]()
-				{
-					targetRenderer->ForceExitByFatelError();
-				});
-#endif
-#if defined VCZH_GCC && defined VCZH_APPLE
-			dispatch_async_f(
-				dispatch_get_main_queue(),
-				targetRenderer,
-				[](void* context)
-				{
-					static_cast<GuiRemoteRendererSingle*>(context)->ForceExitByFatelError();
-				});
-#endif
+			retained = retainedFatalError;
 		}
+		return retained;
+	}
+
+	void OnReadError(const WString& errorMessage) override
+	{
+		QueueMainThreadTask([this, errorMessage]()
+		{
+			ProcessFatalError(WString::Unmanaged(L"ERROR from GacUI Core"), errorMessage);
+		});
+	}
+
+	void OnLocalError(const WString&, bool fatal) override
+	{
+		if (fatal)
+		{
+			QueueMainThreadTask([this]()
+			{
+				ProcessDisconnected();
+			});
+		}
+	}
+
+	void OnDisconnected() override
+	{
+		Base::OnDisconnected();
+		QueueMainThreadTask([this]()
+		{
+			ProcessDisconnected();
+		});
 	}
 };
 
@@ -308,12 +300,8 @@ void GuiMain()
 		auto y = client.Top() + (client.Height() - size.y) / 2;
 		mainWindow->SetBounds({ {x,y},size });
 	}
-	GuiMainAsyncRendererInvoker invoker;
+	auto invoker = Ptr(new GuiMainAsyncRendererInvoker);
 	renderer->RegisterMainWindow(mainWindow);
-	asyncChannel->SetInvokeInMainThread(&invoker);
-#if defined VCZH_GCC && !defined VCZH_APPLE
-	currentChannelClient->WaitForServer();
-#endif
 
 	{
 #if defined VCZH_MSVC
@@ -329,6 +317,9 @@ void GuiMain()
 		GetNativeServiceSubstitution()->Substitute(&automationService, false);
 		auto cleanup = [&]()
 		{
+			currentChannelClient->BeginStopping();
+			asyncChannel->SetInvokeInMainThread(nullptr);
+			currentChannelClient->SetRendererAutomationService(nullptr);
 #if defined VCZH_MSVC
 			if (!useWindowsHttpAutomationService)
 			{
@@ -345,7 +336,6 @@ void GuiMain()
 			}
 #endif
 			GetNativeServiceSubstitution()->Unsubstitute(&automationService);
-			currentChannelClient->SetRendererAutomationService(nullptr);
 		};
 		try
 		{
@@ -362,7 +352,15 @@ void GuiMain()
 					WString::Unmanaged(GacUIAutomationApplicationName)
 					);
 			}
-			GetCurrentController()->WindowService()->Run(mainWindow);
+#if defined VCZH_GCC && !defined VCZH_APPLE
+			currentChannelClient->WaitForServer();
+#endif
+			asyncChannel->SetInvokeInMainThread(invoker);
+			asyncChannel->ProcessPendingMessages();
+			if (!renderer->IsDisconnectedFromCore() || currentChannelClient->IsFatalErrorRetained())
+			{
+				GetCurrentController()->WindowService()->Run(mainWindow);
+			}
 		}
 		catch (...)
 		{
@@ -372,8 +370,6 @@ void GuiMain()
 		cleanup();
 	}
 
-	currentChannelClient->BeginStopping();
-	asyncChannel->SetInvokeInMainThread(nullptr);
 	renderer->UnregisterMainWindow();
 }
 

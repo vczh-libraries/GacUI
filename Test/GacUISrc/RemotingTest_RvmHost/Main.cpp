@@ -1,4 +1,5 @@
 #include "RemoteViewModelTestRuntime.h"
+#include <cstdlib>
 
 #ifdef VCZH_MSVC
 #include <VlppOS.Windows.h>
@@ -24,63 +25,27 @@ namespace
 		}
 	};
 
-	class RemoteViewModelHostingClient : public JsonNetworkChannelClient
-	{
-	private:
-		JsonChannelClient::ChannelMap				channelNames;
-		Ptr<RemoteViewModelJsonDispatcherClient>	dispatcher;
-
-	public:
-		RemoteViewModelHostingClient(
-			Ptr<INetworkProtocolClient> networkClient,
-			Ptr<glr::json::Parser> parser,
-			Ptr<TaskQueue> _taskQueue
-			)
-			: JsonNetworkChannelClient(networkClient, parser)
-		{
-			channelNames.Add(WString::Unmanaged(ViewModelChannelName), nullptr);
-			channelNames.Add(WString::Unmanaged(ViewModelReadyChannelName), nullptr);
-			dispatcher = Ptr(new RemoteViewModelJsonDispatcherClient(_taskQueue));
-		}
-
-		const JsonChannelClient::ChannelNameList& OnGetChannelNames() override
-		{
-			return channelNames.Keys();
-		}
-
-		void OnConnected(vint clientId) override
-		{
-			CHECK_ERROR(dispatcher, L"RemoteViewModelHostingClient::OnConnected(vint)#The dispatcher is null.");
-			dispatcher->InitializeRpc(clientId);
-		}
-
-		void Connect()
-		{
-			List<WString> waitingForServices;
-			dispatcher->WaitForServer(this, GetChannels()[WString::Unmanaged(ViewModelChannelName)], waitingForServices);
-
-			auto readyPackage = Ptr(new glr::json::JsonString);
-			readyPackage->content.value = WString::Unmanaged(L"Ready");
-			auto readyChannel = GetChannels()[WString::Unmanaged(ViewModelReadyChannelName)];
-			CHECK_ERROR(readyChannel, L"RemoteViewModelHostingClient::Connect()#The ready channel is null.");
-			readyChannel->BroadcastFromClient(readyPackage);
-			bool disconnected = false;
-			readyChannel->BatchWrite(disconnected);
-			CHECK_ERROR(!disconnected, L"RemoteViewModelHostingClient::Connect()#The ready channel disconnected.");
-		}
-
-		RemoteViewModelJsonDispatcherClient* GetDispatcher()
-		{
-			CHECK_ERROR(dispatcher, L"RemoteViewModelHostingClient::GetDispatcher()#The dispatcher is null.");
-			return dispatcher.Obj();
-		}
-	};
-
 	int RunHost(Ptr<INetworkProtocolClient> networkClient)
 	{
 		auto parser = Ptr(new glr::json::Parser);
 		auto taskQueue = Ptr(new TaskQueue);
-		auto channelClient = Ptr(new RemoteViewModelHostingClient(networkClient, parser, taskQueue));
+		auto channelClient = Ptr(new RemoteViewModelHostingClient(
+			networkClient,
+			parser,
+			taskQueue,
+			Func<void(const WString&, bool)>([](const WString& message, bool normal)
+			{
+				if (normal)
+				{
+					Console::WriteLine(L"> RVM requester stopped normally.");
+				}
+				else
+				{
+					Console::WriteLine(L"Error: " + message);
+				}
+				std::_Exit(normal ? 0 : 1);
+			})
+			));
 		auto service = Ptr(new ViewModel);
 		auto dispatcher = channelClient->GetDispatcher();
 		int result = 0;
@@ -109,6 +74,7 @@ namespace
 			result = 1;
 		}
 
+		channelClient->BeginStopping();
 		try
 		{
 			dispatcher->FinalizeRpc();

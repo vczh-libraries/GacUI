@@ -9,6 +9,7 @@
 - Renderer channel dispatch belongs in async renderer layer [2]
 - Cache renderer packages until main-thread invoker exists [2]
 - Deliver fatal remote-channel errors before transport shutdown [2]
+- Treat a fatal local channel error as a complete disconnect signal [2]
 - Stop remoting transports before stack channel wrappers destruct [2]
 - Do not call `IChannel::Initialize(nullptr)` to uninstall readers [2]
 - Automation `/IO` parses synchronously and queues parsed commands [2]
@@ -140,6 +141,12 @@ When `RemotingTest_Core` broadcasts a fatal error, deliver the `!Error` package 
 
 When replacing a renderer, detach the old renderer from the core channel before disconnecting it. Send a raw `ControllerConnectionStopped` package to the old renderer when possible, and use transport disconnect only as the fallback.
 
+## Treat a fatal local channel error as a complete disconnect signal
+
+Once a VlppOS channel has connected, its `IChannelClient` implementation owns promotion of every local protocol error, including HTTP 404, to fatal because logical delivery is no longer reliable. Raw HTTP remains responsible only for reporting the failed exchange and its transport retry policy.
+
+Act on `OnLocalError(..., true)` immediately; do not require a later `OnDisconnected` callback. In a renderer host, this channel-level fatal means an ordinary prompt-free disconnected transition. Reserve the fatal prompt, retained overlay, and automation `fatalError` for a Core-authored `!Error` package.
+
 ## Remote core accepts replacement renderers by detaching stale renderer
 
 `RemotingTest_Core::StartServer` should accept a new renderer even when a previous renderer is still connected: make the new renderer current, detach/mark the old renderer stale, and ignore stale renderer messages. If there is no current renderer, submit batches should be discarded rather than buffered indefinitely; an atomic renderer id is enough for this ownership boundary.
@@ -168,7 +175,7 @@ Treat `IChannel::Initialize(...)` as an install-only boundary. To detach a rende
 
 Put reusable disconnected-but-visible behavior in `GuiRemoteRendererSingle`: it owns renderer-local stopped state, suppression of core-bound events, preserved DOM/rendering state, and permission for local close. Keep application-specific interaction, such as the native Yes/No policy and error titles, in the renderer host application (`RemotingTest_Rendering_Win32`). Renderer-only automation state such as a retained fatal error belongs in `AutomationServiceRenderer`, not in the platform-wide `INativeAutomationService` interface.
 
-Expose the renderer's terminal `disconnectingFromCore` state through a thread-safe read-only query. Once `ControllerConnectionStopped` has set that state, host channel code must reject all later fatal packages and local transport errors before requesting another core exit or queuing a fatal prompt. Errors claimed before the normal-stop transition retain the existing first-error-wins host policy.
+Expose the renderer's terminal `disconnectingFromCore` state through a thread-safe read-only query. Once `ControllerConnectionStopped` has set that state, host channel code must reject all later fatal packages and local transport errors. A Core-authored `!Error` claimed before the normal-stop transition retains the first-error-wins prompt policy; a fatal local channel error always takes the ordinary disconnected path.
 
 ## Use `EventObject` for renderer-connection waits after channel server start
 

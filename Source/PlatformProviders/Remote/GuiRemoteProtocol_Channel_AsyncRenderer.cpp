@@ -8,93 +8,137 @@ namespace vl::presentation::remoteprotocol::channeling
 GuiRemoteProtocolAsyncJsonChannelRenderer
 ***********************************************************************/
 
-	void GuiRemoteProtocolAsyncJsonChannelRenderer::ScheduleProcessRemoteMessages()
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::ScheduleProcessPendingMessages()
 	{
-		IGuiRemoteProtocolAsyncRendererInvoker* invoker = nullptr;
+		Ptr<IGuiRemoteProtocolAsyncRendererInvoker> invoker;
+		Ptr<CallbackState> state;
 		SPIN_LOCK(lockMessages)
 		{
 			if (invokeInMainThread && !uiTaskQueued && queuedMessages.Count() > 0)
 			{
 				uiTaskQueued = true;
 				invoker = invokeInMainThread;
+				state = callbackState;
 			}
 		}
 
 		if (invoker)
 		{
-			invoker->InvokeInMainThread([this]()
+			invoker->InvokeInMainThread([state]()
 			{
-				ProcessRemoteMessages();
+				SPIN_LOCK(state->lockOwner)
+				{
+					if (state->owner)
+					{
+						state->owner->ProcessPendingMessages();
+					}
+				}
 			});
 		}
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelRenderer::ProcessRemoteMessages()
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::ProcessPendingMessages()
 	{
-		while (true)
+		SPIN_LOCK(lockMessages)
 		{
-			IJsonChannelReader* currentReader = nullptr;
-			vint currentMessageVersion = -1;
-			List<ReceivedPackage> messages;
-			SPIN_LOCK(lockMessages)
+			if (processingMessages)
 			{
-				currentReader = reader;
-				currentMessageVersion = messageVersion;
-				if (!currentReader)
-				{
-					queuedMessages.Clear();
-					uiTaskQueued = false;
-					return;
-				}
-
-				messages = std::move(queuedMessages);
-				if (messages.Count() == 0)
-				{
-					uiTaskQueued = false;
-					return;
-				}
+				return;
 			}
+			processingMessages = true;
+		}
 
-			for (auto&& message : messages)
+		try
+		{
+			while (true)
 			{
-				bool shouldProcess = false;
+				IJsonChannelReader* currentReader = nullptr;
+				vint currentMessageVersion = -1;
+				List<PendingMessage> messages;
 				SPIN_LOCK(lockMessages)
 				{
-					shouldProcess = reader == currentReader && message.messageVersion == currentMessageVersion;
+					currentReader = reader;
+					currentMessageVersion = messageVersion;
+					if (!currentReader)
+					{
+						queuedMessages.Clear();
+						uiTaskQueued = false;
+						processingMessages = false;
+						return;
+					}
+
+					messages = std::move(queuedMessages);
+					if (messages.Count() == 0)
+					{
+						uiTaskQueued = false;
+						processingMessages = false;
+						return;
+					}
 				}
 
-				if (shouldProcess)
+				for (auto&& message : messages)
 				{
-					currentReader->OnRead(message.senderClientId, message.package);
+					bool shouldProcess = false;
+					SPIN_LOCK(lockMessages)
+					{
+						shouldProcess = reader == currentReader && message.messageVersion == currentMessageVersion;
+					}
+
+					if (shouldProcess)
+					{
+						if (message.mainThreadTask)
+						{
+							message.mainThreadTask();
+						}
+						else
+						{
+							currentReader->OnRead(message.senderClientId, message.package);
+						}
+					}
 				}
 			}
+		}
+		catch (...)
+		{
+			SPIN_LOCK(lockMessages)
+			{
+				uiTaskQueued = false;
+				processingMessages = false;
+			}
+			throw;
 		}
 	}
 
 	void GuiRemoteProtocolAsyncJsonChannelRenderer::OnRead(vint senderClientId, const JsonPackage& package)
 	{
-		ReceivedPackage receivedPackage;
-		receivedPackage.senderClientId = senderClientId;
-		receivedPackage.package = package;
+		PendingMessage pendingMessage;
+		pendingMessage.senderClientId = senderClientId;
+		pendingMessage.package = package;
 		SPIN_LOCK(lockMessages)
 		{
 			if (!reader)
 			{
 				return;
 			}
-			receivedPackage.messageVersion = messageVersion;
-			queuedMessages.Add(std::move(receivedPackage));
+			pendingMessage.messageVersion = messageVersion;
+			queuedMessages.Add(std::move(pendingMessage));
 		}
-		ScheduleProcessRemoteMessages();
+		ScheduleProcessPendingMessages();
 	}
 
 	GuiRemoteProtocolAsyncJsonChannelRenderer::GuiRemoteProtocolAsyncJsonChannelRenderer(IJsonChannel* _channel)
 		: channel(_channel)
 	{
+		callbackState = Ptr(new CallbackState);
+		callbackState->owner = this;
 	}
 
 	GuiRemoteProtocolAsyncJsonChannelRenderer::~GuiRemoteProtocolAsyncJsonChannelRenderer()
 	{
+		SPIN_LOCK(callbackState->lockOwner)
+		{
+			callbackState->owner = nullptr;
+		}
 		SPIN_LOCK(lockMessages)
 		{
 			invokeInMainThread = nullptr;
@@ -110,7 +154,12 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 
 	IJsonChannelReader* GuiRemoteProtocolAsyncJsonChannelRenderer::GetReader()
 	{
-		return reader;
+		IJsonChannelReader* currentReader = nullptr;
+		SPIN_LOCK(lockMessages)
+		{
+			currentReader = reader;
+		}
+		return currentReader;
 	}
 
 	void GuiRemoteProtocolAsyncJsonChannelRenderer::Initialize(IJsonChannelReader* _reader)
@@ -154,13 +203,32 @@ GuiRemoteProtocolAsyncJsonChannelRenderer
 		channel->BatchWrite(disconnected);
 	}
 
-	void GuiRemoteProtocolAsyncJsonChannelRenderer::SetInvokeInMainThread(IGuiRemoteProtocolAsyncRendererInvoker* _invokeInMainThread)
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::SetInvokeInMainThread(Ptr<IGuiRemoteProtocolAsyncRendererInvoker> _invokeInMainThread)
 	{
 		SPIN_LOCK(lockMessages)
 		{
 			invokeInMainThread = _invokeInMainThread;
 		}
-		ScheduleProcessRemoteMessages();
+		ScheduleProcessPendingMessages();
+	}
+
+	void GuiRemoteProtocolAsyncJsonChannelRenderer::QueueMainThreadTask(const Func<void()>& task)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelRenderer::QueueMainThreadTask(const Func<void()>&)#"
+		CHECK_ERROR(task, ERROR_MESSAGE_PREFIX L"The task must not be empty.");
+		PendingMessage pendingMessage;
+		pendingMessage.mainThreadTask = task;
+		SPIN_LOCK(lockMessages)
+		{
+			if (!reader)
+			{
+				return;
+			}
+			pendingMessage.messageVersion = messageVersion;
+			queuedMessages.Add(std::move(pendingMessage));
+		}
+		ScheduleProcessPendingMessages();
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	void GuiRemoteProtocolAsyncJsonChannelRenderer::Detach()

@@ -133,9 +133,11 @@ Keep both consoles available when investigating connection or shutdown errors.
 If a debugger is needed, use the scripts in `GacUI/.github/Scripts` as directed
 by `GacUI/.github/Guidelines/Debugging.md`.
 
-After a normal close, `/Pipe` can show an `ERROR from GacUI Core` dialog saying
-that `ReadFile` failed because the named pipe was closed. Dismiss it and confirm
-the renderer exits. Do not treat any earlier disconnect or dialog as success.
+After a normal close, the renderer must settle without an `ERROR from GacUI
+Core` dialog. A fatal local channel error, such as a pipe closure or an HTTP 404
+after connection, is itself terminal: the renderer enters its ordinary
+disconnected state directly and does not wait for `OnDisconnected`. Only a
+Core-authored `!Error` package presents the fatal prompt or overlay.
 
 Clean up only the processes retained for the run:
 

@@ -200,4 +200,96 @@ TEST_FILE
 			TEST_ASSERT(state.GetViewModelHostId() == InvalidRemoteViewModelClientId);
 		});
 	});
+
+	TEST_CATEGORY(L"RemoteViewModelLeaseState")
+	{
+		TEST_CASE(L"Startup grace expires at its exact deadline")
+		{
+			RemoteViewModelLeaseState state;
+			state.Start(100, 1000);
+			TEST_ASSERT(state.IsActive());
+			TEST_ASSERT(!state.IsExpired(1099));
+			TEST_ASSERT(state.IsExpired(1100));
+		});
+
+		TEST_CASE(L"Only increasing heartbeat sequences renew the lease")
+		{
+			RemoteViewModelLeaseState state;
+			state.Start(100, 1000);
+			TEST_ASSERT(state.Renew(1, 500, 1000));
+			TEST_ASSERT(state.GetLastSequence() == 1);
+			TEST_ASSERT(!state.Renew(1, 1200, 1000));
+			TEST_ASSERT(!state.Renew(0, 1200, 1000));
+			TEST_ASSERT(!state.IsExpired(1499));
+			TEST_ASSERT(state.IsExpired(1500));
+		});
+
+		TEST_CASE(L"A delayed heartbeat cannot revive an expired lease")
+		{
+			RemoteViewModelLeaseState state;
+			state.Start(100, 1000);
+			TEST_ASSERT(!state.Renew(1, 1100, 1000));
+			TEST_ASSERT(state.GetLastSequence() == -1);
+			TEST_ASSERT(state.IsExpired(1100));
+			TEST_ASSERT(!state.Renew(2, 1101, 1000));
+		});
+
+		TEST_CASE(L"Stopping disables lease expiry")
+		{
+			RemoteViewModelLeaseState state;
+			state.Start(100, 1000);
+			state.Stop();
+			TEST_ASSERT(!state.IsActive());
+			TEST_ASSERT(!state.IsExpired(100000));
+			TEST_ASSERT(!state.Renew(1, 100000, 1000));
+		});
+	});
+
+	TEST_CATEGORY(L"RemoteViewModelTerminalState")
+	{
+		TEST_CASE(L"The first failure and exact message win")
+		{
+			RemoteViewModelTerminalState state;
+			TEST_ASSERT(state.TryClaimFailure(L"first"));
+			TEST_ASSERT(!state.TryClaimFailure(L"second"));
+			TEST_ASSERT(!state.TryClaimNormal());
+			TEST_ASSERT(!state.BeginStopping());
+			TEST_ASSERT(state.HasFailure());
+			TEST_ASSERT(state.GetMessage() == L"first");
+
+			bool normal = true;
+			WString message;
+			TEST_ASSERT(state.TryTake(normal, message));
+			TEST_ASSERT(!normal);
+			TEST_ASSERT(message == L"first");
+			TEST_ASSERT(!state.TryTake(normal, message));
+		});
+
+		TEST_CASE(L"Normal requester stopping is a one-shot terminal outcome")
+		{
+			RemoteViewModelTerminalState state;
+			TEST_ASSERT(state.TryClaimNormal());
+			TEST_ASSERT(!state.TryClaimFailure(L"late"));
+
+			bool normal = false;
+			WString message;
+			TEST_ASSERT(state.TryTake(normal, message));
+			TEST_ASSERT(normal);
+			TEST_ASSERT(message == L"");
+		});
+
+		TEST_CASE(L"Local stopping suppresses later terminal callbacks")
+		{
+			RemoteViewModelTerminalState state;
+			TEST_ASSERT(state.BeginStopping());
+			TEST_ASSERT(!state.BeginStopping());
+			TEST_ASSERT(state.IsStopping());
+			TEST_ASSERT(!state.TryClaimFailure(L"late"));
+			TEST_ASSERT(!state.TryClaimNormal());
+
+			bool normal = false;
+			WString message;
+			TEST_ASSERT(!state.TryTake(normal, message));
+		});
+	});
 }
