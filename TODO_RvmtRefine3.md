@@ -70,6 +70,22 @@ The owner's implementation intent is also part of the requirement:
 - Extend the scope only where a better extraction requires a small donor,
   project, CodePack, or documentation change.
 
+# Execution Environment and Deferred Platform Work
+
+This task will be implemented and verified on Windows. It must not claim that
+the resulting changes build or run on Linux or macOS because neither platform
+is available in this execution environment.
+
+The recorded review requirement to fix `Test/Linux/(Cpp|Remoting)Test*` for
+Linux and macOS is deferred to a separate task. That follow-up owns
+`Test/Linux/**`, `vmake`, Linux builds, and builds on an actual macOS
+environment. Those deferred results are not completion criteria for this
+Windows task.
+
+Portable layering remains a design goal for the neutral
+`GacUI.RemotingHelpers` pair. Windows-only validation can enforce dependency
+boundaries, but it is not evidence of Linux or macOS compatibility.
+
 # Continuity with the Previous Work
 
 This work follows `TODO_Task.md`, `TODO_RvmtRefine.md`, and
@@ -159,6 +175,8 @@ recovery:
   test application's generated header.
 - CodePack combines these sources for distribution. This does not make the
   helpers part of the ordinary `GacUI` or `GacUI.Windows` library code pairs.
+- All implementation and verification in this task is Windows-only. Linux and
+  macOS project fixes and platform builds are separate follow-up work.
 
 # Scope
 
@@ -166,8 +184,6 @@ recovery:
 
 - `Source/RemotingHelpers/**`
 - `Test/GacUISrc/**`
-- `Test/Linux/CppTest*/**`
-- `Test/Linux/RemotingTest*/**`
 
 ## Narrow required exceptions
 
@@ -201,6 +217,10 @@ the Workflow/GacUI compiler for this refinement.
   reverse direction, or shutdown acknowledgements.
 - Do not reopen the completed RPC resource/code-generation work from
   `TODO_Task.md`.
+- Do not modify `Test/Linux/**`, regenerate its build files, or perform Linux
+  or macOS compatibility work in this task.
+- Do not report a successful Windows build as proof that the helpers build or
+  run on Linux or macOS.
 
 # Current-State Findings
 
@@ -218,8 +238,6 @@ the Workflow/GacUI compiler for this refinement.
 | Startup selection | Cpp/Core/renderer use process globals such as `useWindowsHttpAutomationService` and a pointer to a stack-owned MiniHTTP socket pointer. | Transport wrappers communicate with `GuiMain` through fragile ambient state. |
 | Error handling | Start/stop paths contain nested catches, cleanup-result handling, and duplicate stop calls. HTTP automation converts unexpected exceptions into 404 responses. | Bugs can be hidden and the same ownership policy is repeated. |
 | `CppTest_Rvm` UI | `GuiMain.cpp`, `Main.Windows.cpp`, and `Main.Linux.cpp` use `vl::console::Console`. | A GUI application depends on a console for diagnostics and control flow. |
-| Unix entry point | `CppTest_Rvm/Main.Linux.cpp` is guarded by `VCZH_GCC && !VCZH_APPLE`. | The macOS build has no shared Unix entry point. |
-| Linux vmake targets | `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` currently set `CPP_TARGET=./Bin/UnitTest`. | They do not produce binaries with their own application names. |
 | CodePack | The broad `gacui` category currently captures all new files under `Source`. | The helper folder needs separate neutral and Windows categories. |
 
 # Target Source and CodePack Layout
@@ -298,8 +316,9 @@ pattern accidentally collecting unrelated files.
   and channel helper files it needs.
 - Add new shared-items projects to `GacUISrc.sln` only if they materially reduce
   project wiring.
-- Update each `vmake` from the MSBuild source lists and explicit helper
-  additions/removals. Never edit generated `vmake.txt` or `makefile`.
+- Limit project wiring in this task to the Windows solution and MSBuild
+  projects. The separate platform follow-up owns `vmake` changes and generated
+  Unix build files.
 
 # Target Design
 
@@ -542,9 +561,9 @@ minimal and one-shot; it is protocol delivery, not recovery.
 - Do not catch errors merely to write them to a console.
 - Return a nonzero code for invalid command-line arguments without requiring
   a console.
-- Merge `Main.Windows.cpp` and `Main.Linux.cpp` into one guarded `Main.cpp`.
-  Use the Windows `WinMain` path under `VCZH_MSVC` and a shared Linux/macOS
-  `main` path under `VCZH_GCC`; do not exclude `VCZH_APPLE`.
+- Do not otherwise consolidate or redesign the platform entry points in this
+  task. The separate Linux/macOS follow-up owns any shared Unix entry-point
+  work.
 
 # Fail-Fast Audit
 
@@ -582,9 +601,13 @@ transition, event, acknowledgement, and stop call in
 - Shutdown waits whose only purpose is graceful acknowledgement.
 - Recovery state that is not named by `DebugRemoteProtocolSop.md`.
 
-# Linux and macOS Work
+# Deferred Linux and macOS Follow-up
 
-The affected inventory is:
+Do not perform the items in this section as part of this task. Do not modify
+`Test/Linux/**`, run its `build.sh` flows, or claim Linux/macOS compatibility
+from Windows-only results.
+
+The affected inventory for the separate follow-up is:
 
 - `Test/Linux/CppTest`
 - `Test/Linux/CppTest_Metaonly`
@@ -593,7 +616,7 @@ The affected inventory is:
 - `Test/Linux/RemotingTest_Core`
 - `Test/Linux/RemotingTest_RvmHost`
 
-Action items:
+Handoff observations for that task:
 
 - Correct `CPP_TARGET` for `CppTest`, `CppTest_Metaonly`, and
   `CppTest_Reflection`; they currently produce `./Bin/UnitTest`.
@@ -612,6 +635,9 @@ Action items:
   build flow.
 - Treat a Linux build as Linux evidence only. Run an actual macOS build/CI job
   before claiming macOS verification.
+
+These observations are neither action items nor blockers for the current
+Windows task.
 
 # Phased Actionable TODO
 
@@ -636,7 +662,7 @@ Action items:
   `GacUI.RemotingHelpers.Windows.(h|cpp)`.
 - [ ] Verify ordinary `GacUI` and `GacUI.Windows` no longer contain moved
   test-helper declarations or implementations.
-- [ ] Add explicit project/filter/vmake wiring without wildcards.
+- [ ] Add explicit Windows project/filter wiring without wildcards.
 
 ## P2: Extract automation services
 
@@ -691,7 +717,6 @@ Action items:
   one owned host context.
 - [ ] Replace cleanup ladders with RAII scopes.
 - [ ] Remove all `Console` references from `CppTest_Rvm`.
-- [ ] Merge `CppTest_Rvm` Windows and Unix entry points.
 - [ ] Keep Core-specific window choice, fatal delivery, and renderer state in
   Core.
 - [ ] Keep app-specific service registration/request and generated window
@@ -709,13 +734,9 @@ Action items:
 - [ ] Verify an unexpected helper invariant immediately terminates the test
   process.
 
-## P7: Cross-platform and project cleanup
+## P7: Finish Windows project cleanup
 
-- [ ] Fix all six listed Linux/macOS configurations.
-- [ ] Correct the three misnamed `CPP_TARGET` values.
-- [ ] Update moved source/include paths in MSBuild and vmake.
-- [ ] Regenerate build files through the prescribed scripts.
-- [ ] Build on Linux and on a real macOS environment.
+- [ ] Update moved source and include paths in affected MSBuild projects.
 - [ ] Confirm no Windows helper source enters the neutral CodePack pair.
 
 # Verification
@@ -732,8 +753,9 @@ Action items:
 - Search helper code for `catch`; justify each match against the explicit SOP
   allowlist.
 - Run CodePack and inspect the four requested outputs.
-- Compile the neutral pair without `VlppOS.Windows`, `<Windows.h>`, or any
-  Windows GacUI provider.
+- On Windows, compile the neutral pair without `VlppOS.Windows`, `<Windows.h>`,
+  or any Windows GacUI provider. This validates layering only; it does not
+  establish Linux or macOS compatibility.
 - Confirm helper symbols do not appear in ordinary `GacUI` or
   `GacUI.Windows`.
 - Confirm generated folders and `Import` have no direct edits.
@@ -759,18 +781,16 @@ wrappers.
 - Verify each migrated automation endpoint starts on its documented port and
   returns the same Controls/DOM/IO behavior.
 
-## Linux and macOS builds
+## Deferred cross-platform verification
 
-- Build each affected `Test/Linux/<project>` directory with the documented
-  `build.sh` flow on Linux.
-- Repeat the supported build matrix on an actual macOS runner.
-- Verify the corrected output binary name for each `CppTest*`.
-- Run the portable Core `/RVMT` plus RVM host `/MiniHttp` path where the
-  platform renderer/harness is available.
+Linux and macOS builds are not performed or required by this task. The
+separate platform follow-up must run the affected `Test/Linux` build flows on
+Linux and on an actual macOS environment. The outcome of this Windows task
+must be reported as cross-platform compatibility unverified.
 
 ## Multi-process acceptance
 
-For `/Pipe`, `/Http`, and `/MiniHttp` where supported:
+On Windows, for `/Pipe`, `/Http`, and `/MiniHttp`:
 
 1. Start requester/Core first, then the RVM host.
 2. Prove service acquisition and a successful `Translate`.
@@ -805,7 +825,9 @@ The refinement is complete when:
   resource composition;
 - no helper includes generated application code;
 - `CppTest_Rvm` has no console dependency;
-- Linux and macOS project configurations both build;
+- the affected Windows configurations build;
+- Linux and macOS compatibility is explicitly reported as unverified and
+  deferred;
 - all non-SOP recovery and shutdown acknowledgements are gone; and
-- the complete fatal, normal-stop, renderer-replacement, and automation
-  acceptance matrix passes.
+- the complete Windows fatal, normal-stop, renderer-replacement, and
+  automation acceptance matrix passes.
