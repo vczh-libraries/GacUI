@@ -9,6 +9,14 @@
 - **DO NOT ASK ANY QUESTION** if you are not explicitly instructed to ask questions. Run the user's task to the end.
   - The only exception is when there is seriously conflicting information in the user's task. This is rare; try your best to resolve the ambiguity by yourself, and only ask when you are totally stuck.
 
+## Quality Control
+
+- In these repos we are going to let exceptions blow any libraries, unit tests or test apps up without the needing to recover:
+  - Unless explicitly instructed to do so.
+  - Because crashing it is how we know there is something wrong.
+- None of the test apps is going to be published, unnecessary error recovery will just cover mistakes up, preventing us from finding the root cause of the problem, making it harder to fix issues in libraries.
+- Any `REPO-ROOT/Tools/<TOOL-NAME>` only allow very limited error recovery just to print error messages and exit.
+
 ## (Windows Specific) External Tools Environment and Context
 
 - Always prefer the offered script files instead of direct CLI commands.
