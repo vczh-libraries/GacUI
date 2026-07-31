@@ -18,9 +18,6 @@ namespace vl
 {
 	namespace presentation
 	{
-		class AutomationService;
-		class AutomationServiceHosted;
-
 		namespace windows
 		{
 
@@ -51,58 +48,9 @@ Windows Platform Native Controller
 			extern IWindowsForm*							GetWindowsFormFromHandle(HWND hwnd);
 			extern IWindowsForm*							GetWindowsForm(INativeWindow* window);
 			extern void										GetAllCreatedWindows(collections::List<IWindowsForm*>& windows, bool rootWindowOnly);
+			extern WString									RunIOCommandOnWindowsNativeWindow(IoCommandState* state, INativeWindow* window, const WString& ioCommand);
 			extern void										StopWindowsNativeController();
 			extern void										EnableCrossKernelCrashing();
-
-			template<typename TBase>
-			class WindowsAutomationServiceBase : public TBase
-			{
-			protected:
-
-				WString										RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) override;
-
-			public:
-				template<typename ...TArgs>
-				WindowsAutomationServiceBase(TArgs&& ...args)
-					:TBase(std::forward<TArgs>(args)...)
-				{
-				}
-
-				void										Stop() override;
-				INativeAutomationService::IOCommandAvailability
-															CanRunIOCommands() override;
-			};
-
-			class WindowsAutomationService : public WindowsAutomationServiceBase<AutomationService>
-			{
-			protected:
-				Nullable<WString>							GetNativeWindowId(INativeWindow* window) override;
-				INativeWindow*								GetNativeWindow(Nullable<WString> windowId) override;
-
-			public:
-				WindowsAutomationService();
-				~WindowsAutomationService();
-			};
-
-			class WindowsAutomationServiceHosted : public WindowsAutomationServiceBase<AutomationServiceHosted>
-			{
-			public:
-				WindowsAutomationServiceHosted();
-				~WindowsAutomationServiceHosted();
-			};
-
-			class WindowsAutomationServiceRenderer : public WindowsAutomationServiceBase<AutomationServiceRenderer>
-			{
-			public:
-				WindowsAutomationServiceRenderer(remote_renderer::GuiRemoteRendererSingle* _renderer);
-				~WindowsAutomationServiceRenderer();
-
-				INativeAutomationService::IOCommandAvailability
-															CanRunIOCommands() override;
-			};
-
-			extern void										StartWindowsHttpAutomationService(const WString& applicationName, vint port);
-			extern void										StopWindowsHttpAutomationService();
 		}
 	}
 }

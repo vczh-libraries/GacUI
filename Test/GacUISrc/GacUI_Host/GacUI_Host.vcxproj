@@ -162,6 +162,9 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\AutomationService\AutomationServiceHost.cpp" />
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp" />
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.cpp" />
     <ClCompile Include="AutoComplete_Grammar.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -171,6 +174,11 @@
     <ClCompile Include="CompositionDumper.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="TsfTestWindow.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\AutomationService\AutomationServiceHost.h" />
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.h" />
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lib_GacUI_Compiler_Reflection\Lib_GacUI_Compiler_Reflection.vcxproj">

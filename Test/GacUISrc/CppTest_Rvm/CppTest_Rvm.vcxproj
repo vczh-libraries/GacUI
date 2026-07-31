@@ -164,6 +164,10 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\AutomationService\AutomationServiceHost.cpp" />
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp" />
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.cpp" />
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\RemotingClient\RemotingClient.cpp" />
     <ClCompile Include="GuiMain.cpp" />
     <ClCompile Include="Main.Windows.cpp" />
     <ClCompile Include="Main.Linux.cpp">
@@ -172,10 +176,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\RemotingTest_Core\Shared.cpp" />
     <ClCompile Include="..\RemotingTest_RvmHost\RemoteViewModelTestRuntime.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\AutomationService\AutomationServiceHost.h" />
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.h" />
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.h" />
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\RemotingServer\RemotingChannelServer.h" />
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\RemotingClient\RemotingClient.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="..\RemotingTest_RvmHost\RemoteViewModelTestRuntime.h" />
     <ClInclude Include="..\RemotingTest_RvmHost\RemoteViewModelTestShared.h" />

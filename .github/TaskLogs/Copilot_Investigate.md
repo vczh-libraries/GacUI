@@ -909,9 +909,9 @@ The pre-extraction baseline is confirmed:
 
 # PROPOSALS
 
-- No.1 Extract generated-neutral remoting composition with scoped automation ownership
+- No.1 [CONFIRMED] Extract generated-neutral remoting composition with scoped automation ownership
 
-## No.1 Extract generated-neutral remoting composition with scoped automation ownership
+## No.1 [CONFIRMED] Extract generated-neutral remoting composition with scoped automation ownership
 
 Create `Source/RemotingHelpers` as a test-support layer with the requested
 `AutomationService`, `RemotingServer`, and `RemotingClient` ownership
@@ -974,3 +974,90 @@ description becomes false. Do not modify `Test/Linux`, generated resource
 sources, Import, or upstream Workflow/VlppOS.
 
 ### CODE CHANGE
+
+Implemented the extraction and confirmed the proposal.
+
+- Added the neutral `Source/RemotingHelpers` ownership areas:
+  - `AutomationService` now owns the automation host configuration, the
+    portable MiniHTTP endpoint, and scoped service lifetimes.
+  - `RemotingServer` now owns the generated-neutral configurable
+    `RemotingChannelServer<TServerBase>` plus the reusable RPC requester/host
+    runtime.
+  - `RemotingClient` now owns the configurable renderer channel client and its
+    terminal-state ordering.
+- Added the nested Windows automation implementation. It owns native, hosted,
+  and renderer automation substitutions plus the Windows HTTP endpoint.
+  `WinNativeWindow` retains only the narrow exported IO-command provider seam.
+  GDI and Direct2D no longer create a test automation service automatically.
+- Moved MiniHTTP automation out of the deleted
+  `Test/GacUISrc/RemotingTest_Core/Shared.cpp`. Both HTTP implementations
+  reject malformed `/IO/<id>` routes with 404 before parsing while unexpected
+  callback failures reach a non-returning process boundary. MiniHTTP returns
+  the exact `application/json; charset=utf8` content type.
+- Merged the requester-only and Core server families into the single generic
+  server. Renderer admission remains optional; renderer replacement,
+  notification fallback, stale-renderer detach, and Core bindings preserve the
+  SOP contract.
+- Split the RVM runtime into a generated-neutral helper and the thin
+  `RemoteViewModelTestRuntime` adapter. The helper retains distinct broker and
+  requester local endpoints, post-route `Ready`, one-way heartbeat lease,
+  one-way `RequesterStopping`, and pre-teardown stopping classification. It
+  does not name `RemoteViewModelTestRpc`, `rvmt::`, or `IViewModel`.
+- Migrated `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`,
+  `CppTest_Rvm`, `GacUI_Host`, `Playground`, `RemotingTest_Core`,
+  `RemotingTest_Rendering_Win32`, and `RemotingTest_RvmHost` to explicit
+  scoped setup. `CppTest_Rvm` has no console dependency.
+- Added every helper source/header explicitly to the affected MSBuild
+  projects and filters. All 24 project filter files parse as XML and no project
+  references the removed `Shared.cpp`.
+- Updated `Release/CodegenConfig.xml` and regenerated CodePack. The exact new
+  root and IncludeOnly outputs are:
+  `GacUI.RemotingHelpers.{h,cpp}` and
+  `GacUI.RemotingHelpers.Windows.{h,cpp}`. The neutral pair contains no
+  Windows provider or `VlppOS.Windows` dependency; the ordinary
+  `GacUI`/`GacUI.Windows` pairs contain no extracted helper symbols.
+- Updated the automation-service knowledge-base page to describe explicit
+  test-helper ownership and lifetime.
+
+Verification passed:
+
+- Final Debug x64, Debug Win32, Release x64, and Release Win32 solution builds
+  completed with 0 warnings and 0 errors. The cold Release x64 wrapper reached
+  its one-hour timeout while its child build processes continued to successful
+  links; a subsequent wrapper run completed cleanly with 0 warnings and
+  0 errors.
+- The complete Debug x64 `UnitTest` run passed 89/89 test files and
+  1,714/1,714 test cases, with no memory-leak sidecar or dump.
+- The post-extraction `/Pipe`, `/Http`, and `/MiniHttp` requester/host matrix
+  acquired `rvmt::IViewModel`, exposed `Hello, !`, returned exact `Queued` for
+  `!Exit`, and exited normally.
+- Idle RVM-host loss terminated requesters for all three transports, including
+  the heartbeat-timeout path for `/Http` and `/MiniHttp`.
+- Native renderer checks for all three transports confirmed: renderer loss is
+  nonfatal to Core, a replacement renderer disconnects the previous renderer,
+  normal Core loss is an ordinary renderer disconnection, and RVM-host loss
+  makes Core terminate after retaining the Core-authored fatal UI in the
+  renderer.
+- The Windows HTTP and MiniHTTP endpoints returned 404 for malformed
+  `/IO/bad/id`, remained healthy, then accepted a valid `!Exit`.
+- Real GacJS browser checks for `/Http` and `/MiniHttp` confirmed the exact
+  distinction:
+  - RVM-host loss shows the visible fatal mask with
+    `RemotingTest_RvmHost disconnected.` and no JavaScript dialog.
+  - ordinary Core loss shows only the success mask with
+    `HTTP remote protocol disconnected.` and no JavaScript dialog.
+- Migrated Cpp/Metaonly/Reflection/GacUI_Host automation endpoints exposed
+  healthy control trees and normal queued exit; Playground completed normally.
+- Source whitespace, generated-neutral dependency searches,
+  ordinary-CodePack leakage searches, stale-donor searches, project XML
+  validation, and the fail-fast catch audit are clean. Plain
+  `git diff --check` reports only CodePack's established extra-blank-line-at-EOF
+  convention on the four newly added root CodePack outputs; those generated
+  files are retained byte-for-byte as emitted instead of being hand-edited.
+  Remaining catches are limited to the SOP-required Core/renderer delivery
+  fallback and non-returning callback or thread firewalls.
+- `Import` and generated GacUI resource sources were not edited.
+
+All implementation and verification above is Windows-only. `Test/Linux/**`,
+Linux builds, and actual macOS builds remain explicitly deferred and
+unverified, as required by the task boundary.

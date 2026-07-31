@@ -4,7 +4,7 @@
 #include "DarkSkinReflection.h"
 #include "../GacUI_Compiler/ResourceCompiler.h"
 #include "../../../Source/GacUI.h"
-#include "../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
+#include "../../../Source/RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
 
 using namespace vl;
 using namespace vl::collections;
@@ -94,9 +94,13 @@ void OpenMainWindow()
 		window->ForceCalculateSizeImmediately();
 		window->MoveToScreenCenter();
 
-		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/Playground"), 8888);
+		windows::WindowsAutomationServiceScope automation(
+			windows::WindowsAutomationServiceType::Normal,
+			remoting::RemotingAutomationService::WindowsHttp,
+			WString::Unmanaged(L"Playground"),
+			8888
+			);
 		GetApplication()->Run(window);
-		windows::StopWindowsHttpAutomationService();
 		delete window;
 	}
 }

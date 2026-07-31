@@ -15,6 +15,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\AutomationService\AutomationServiceHost.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.cpp"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -25,6 +28,9 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\AutomationService\AutomationServiceHost.h"><Filter>Header Files</Filter></ClInclude>
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.h"><Filter>Header Files</Filter></ClInclude>
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.h"><Filter>Header Files</Filter></ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>

@@ -160,6 +160,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\RemotingClient\RemotingClient.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="RemoteViewModelTestRuntime.cpp" />
     <ClCompile Include="..\Generated_RemoteViewModelTest\Source_x86\RemoteViewModelTestRpc.cpp">
@@ -172,6 +173,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\RemotingClient\RemotingClient.h" />
     <ClInclude Include="RemoteViewModelTestRuntime.h" />
     <ClInclude Include="RemoteViewModelTestShared.h" />
     <ClInclude Include="..\Generated_RemoteViewModelTest\Source_x86\RemoteViewModelTestRpc.h">

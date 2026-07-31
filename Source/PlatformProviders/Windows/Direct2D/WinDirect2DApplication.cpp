@@ -644,17 +644,6 @@ int SetupWindowsDirect2DRendererInternal(bool hosted, bool raw)
 		SetNativeController(nativeController);
 	}
 
-	Ptr<INativeAutomationService> automationService;
-	if (hosted)
-	{
-		automationService = Ptr(new WindowsAutomationServiceHosted);
-	}
-	else
-	{
-		automationService = Ptr(new WindowsAutomationService);
-	}
-	GetNativeServiceSubstitution()->Substitute(automationService.Obj(), false);
-
 	{
 		// install listener
 		Direct2DWindowsNativeControllerListener listener;
@@ -666,9 +655,6 @@ int SetupWindowsDirect2DRendererInternal(bool hosted, bool raw)
 		direct2DListener = nullptr;
 		nativeController->CallbackService()->UninstallListener(&listener);
 	}
-
-	GetNativeServiceSubstitution()->Unsubstitute(automationService.Obj());
-	automationService = nullptr;
 
 	// destroy controller
 	SetNativeController(nullptr);

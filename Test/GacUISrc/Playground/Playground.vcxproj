@@ -176,11 +176,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\AutomationService\AutomationServiceHost.cpp" />
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp" />
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.cpp" />
     <ClCompile Include="..\GacUI_Compiler\ResourceCompiler.cpp" />
     <ClCompile Include="..\GacUI_Host\CompositionDumper.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\AutomationService\AutomationServiceHost.h" />
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.h" />
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.h" />
     <ClInclude Include="..\GacUI_Compiler\ResourceCompiler.h" />
   </ItemGroup>
   <ItemGroup>

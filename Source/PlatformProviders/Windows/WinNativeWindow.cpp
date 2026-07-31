@@ -102,8 +102,7 @@ WindowsForm
 
 			class WindowsForm : public Object, public INativeWindow, public IWindowsForm
 			{
-				template<typename TBase>
-				friend class WindowsAutomationServiceBase;
+				friend WString RunIOCommandOnWindowsNativeWindow(IoCommandState* state, INativeWindow* window, const WString& ioCommand);
 			protected:
 				
 				LONG_PTR InternalGetExStyle()
@@ -1758,7 +1757,6 @@ WindowsController
 
 			class WindowsController : public Object, public virtual INativeController, public virtual INativeWindowService
 			{
-				friend class WindowsAutomationService;
 			protected:
 				WinClass							windowClass;
 				WinClass							godClass;
@@ -2130,6 +2128,13 @@ Windows Platform Native Controller
 				}
 			}
 
+			WString RunIOCommandOnWindowsNativeWindow(IoCommandState* state, INativeWindow* window, const WString& ioCommand)
+			{
+				auto windowsForm = dynamic_cast<WindowsForm*>(window);
+				CHECK_ERROR(windowsForm, L"vl::presentation::windows::RunIOCommandOnWindowsNativeWindow(...)#The specified INativeWindow instance should be native.");
+				return RunIOCommandOnNativeWindow(state, GetWindowsNativeController(), windowsForm, windowsForm->listeners, ioCommand);
+			}
+
 			void StopWindowsNativeController()
 			{
 				CHECK_ERROR(windowsController, L"vl::presentation::windows::StopWindowsNativeController()#The Windows native controller has been stopped.");
@@ -2164,221 +2169,6 @@ Windows Platform Native Controller
 				} 
 			}
 
-/***********************************************************************
-WindowsAutomationServiceBase
-***********************************************************************/
-
-			template<typename TBase>
-			WString WindowsAutomationServiceBase<TBase>::RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand)
-			{
-				WindowsForm* windowsForm = dynamic_cast<WindowsForm*>(this->GetNativeWindow(windowId));
-				if (!windowsForm)
-				{
-					return L"!Invalid window.";
-				}
-
-				return RunIOCommandOnNativeWindow(&this->ioCommandState, GetWindowsNativeController(), windowsForm, windowsForm->listeners, ioCommand);
-			}
-
-			template<typename TBase>
-			void WindowsAutomationServiceBase<TBase>::Stop()
-			{
-				TBase::Stop();
-				StopWindowsHttpAutomationService();
-			}
-
-			template<typename TBase>
-			INativeAutomationService::IOCommandAvailability WindowsAutomationServiceBase<TBase>::CanRunIOCommands()
-			{
-				return INativeAutomationService::IOCommandAvailability::Enabled;
-			}
-
-/***********************************************************************
-WindowsAutomationService
-***********************************************************************/
-
-			Nullable<WString> WindowsAutomationService::GetNativeWindowId(INativeWindow* window)
-			{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::windows::WindowsAutomationService::GetNativeWindowId(INativeWindow*)#"
-				auto controller = dynamic_cast<WindowsController*>(GetWindowsNativeController());
-				CHECK_ERROR(controller->windows.Values().Contains(dynamic_cast<WindowsForm*>(window)), ERROR_MESSAGE_PREFIX L"The specified INativeWindow instance should be native.");
-				return utow(static_cast<vuint>(reinterpret_cast<intptr_t>(window)));
-#undef ERROR_MESSAGE_PREFIX
-			}
-
-			INativeWindow* WindowsAutomationService::GetNativeWindow(Nullable<WString> windowId)
-			{
-				auto controller = dynamic_cast<WindowsController*>(GetWindowsNativeController());
-				if (windowId)
-				{
-					WindowsForm* windowsForm = reinterpret_cast<WindowsForm*>(static_cast<intptr_t>(wtou(windowId.Value())));
-					if (!controller->windows.Values().Contains(windowsForm))
-					{
-						return nullptr;
-					}
-					return windowsForm;
-				}
-				else
-				{
-					return controller->mainWindow;
-				}
-			}
-
-			WindowsAutomationService::WindowsAutomationService()
-			{
-			}
-
-			WindowsAutomationService::~WindowsAutomationService()
-			{
-			}
-
-/***********************************************************************
-WindowsAutomationServiceHosted
-***********************************************************************/
-
-			WindowsAutomationServiceHosted::WindowsAutomationServiceHosted()
-			{
-			}
-
-			WindowsAutomationServiceHosted::~WindowsAutomationServiceHosted()
-			{
-			}
-
-/***********************************************************************
-WindowsAutomationServiceRenderer
-***********************************************************************/
-
-			WindowsAutomationServiceRenderer::WindowsAutomationServiceRenderer(remote_renderer::GuiRemoteRendererSingle* _renderer)
-				: WindowsAutomationServiceBase<AutomationServiceRenderer>(_renderer)
-			{
-			}
-
-			WindowsAutomationServiceRenderer::~WindowsAutomationServiceRenderer()
-			{
-			}
-
-			INativeAutomationService::IOCommandAvailability WindowsAutomationServiceRenderer::CanRunIOCommands()
-			{
-				return AutomationServiceRenderer::CanRunIOCommands();
-			}
-
-/***********************************************************************
-HttpAutomationService
-***********************************************************************/
-
-			class HttpAutomationService : public inter_process::windows_http::HttpServerApi
-			{
-			protected:
-				WString			urlControls;
-				WString			urlDom;
-				WString			urlIO;
-
-				void OnHttpRequestReceived(PHTTP_REQUEST pRequest)
-				{
-					auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
-					auto asyncService = GetCurrentController()->AsyncService();
-					auto automationService = GetCurrentController()->AutomationService();
-
-					try
-					{
-						Nullable<WString> respondString;
-						if (pRequest->Verb == HttpVerbGET)
-						{
-							if (pRequest->CookedUrl.pAbsPath == urlControls)
-							{
-								if (automationService->CanDumpControlTree())
-								{
-									asyncService->InvokeInMainThreadAndWait(mainWindow, [&]()
-									{
-										respondString = automationService->DumpControlTree();
-									});
-								}
-							}
-							else if (pRequest->CookedUrl.pAbsPath == urlDom)
-							{
-								if (automationService->CanDumpDomTree())
-								{
-									asyncService->InvokeInMainThreadAndWait(mainWindow, [&]()
-									{
-										respondString = automationService->DumpDomTree();
-									});
-								}
-							}
-						}
-						else if (pRequest->Verb == HttpVerbPOST)
-						{
-							if (wcsncmp(pRequest->CookedUrl.pAbsPath, urlIO.Buffer(), (size_t)urlIO.Length()) == 0)
-							{
-								Nullable<WString> windowId;
-								auto pId = pRequest->CookedUrl.pAbsPath + urlIO.Length();
-								if (*pId == L'/')
-								{
-									windowId = ++pId;
-								}
-								else if (*pId)
-								{
-									SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 404, L"URL not supported." });
-									return;
-								}
-
-								if (automationService->CanRunIOCommands() != INativeAutomationService::IOCommandAvailability::Disabled)
-								{
-									WString body = GetUtf8Body(pRequest).Value();
-									respondString = automationService->RunIOCommand(windowId, body);
-								}
-							}
-						}
-
-						if (respondString)
-						{
-							return SendResponseUtf8(GetHttpRequestQueue(), pRequest->RequestId, respondString.Value());
-						}
-					}
-					catch (const Error& error)
-					{
-						return (void)SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 404, WString::Unmanaged(error.Description()) });
-					}
-					catch (const Exception& ex)
-					{
-						return (void)SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 404, ex.Message() });
-					}
-					SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 404, L"URL not supported." });
-				}
-
-			public:
-				HttpAutomationService(const WString& applicationName, vint port)
-					: HttpServerApi(WString::Unmanaged(L"http://localhost:") + itow(port) + WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/"), false)
-					, urlControls			(WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/Controls"))
-					, urlDom				(WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/Dom"))
-					, urlIO					(WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/IO"))
-				{
-				}
-			};
-
-			HttpAutomationService* httpAutomationService = nullptr;
-
-			void StartWindowsHttpAutomationService(const WString& applicationName, vint port)
-			{
-				if (!GetCurrentController()->AutomationService()->Available())
-				{
-					return;
-				}
-				if (!httpAutomationService)
-				{
-					httpAutomationService = new HttpAutomationService(applicationName, port);
-					httpAutomationService->Start();
-				}
-			}
-
-			void StopWindowsHttpAutomationService()
-			{
-				if (httpAutomationService)
-				{
-					httpAutomationService->Stop();
-					delete httpAutomationService;
-					httpAutomationService = nullptr;
-				}
-			}
 		}
 	}
 }

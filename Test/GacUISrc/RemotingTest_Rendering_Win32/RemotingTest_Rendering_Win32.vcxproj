@@ -156,9 +156,18 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\RemotingTest_Core\Shared.cpp" />
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\AutomationService\AutomationServiceHost.cpp" />
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp" />
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.cpp" />
+    <ClCompile Include="..\..\..\Source\RemotingHelpers\RemotingClient\RemotingChannelClient.cpp" />
     <ClCompile Include="GuiMain.cpp" />
     <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\AutomationService\AutomationServiceHost.h" />
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.h" />
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.h" />
+    <ClInclude Include="..\..\..\Source\RemotingHelpers\RemotingClient\RemotingChannelClient.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lib_GacUI\Lib_GacUI.vcxproj">

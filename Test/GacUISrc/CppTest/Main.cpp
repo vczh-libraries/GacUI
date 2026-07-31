@@ -2,7 +2,7 @@
 
 #include "DarkSkin.h"
 #include "MainWindow.h"
-#include "../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
+#include "../../../Source/RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #include "resource.h"
 
 using namespace vl;
@@ -24,9 +24,13 @@ void GuiMain()
 		window.ForceCalculateSizeImmediately();
 		window.MoveToScreenCenter();
 
-		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/CppTest"), 8888);
+		windows::WindowsAutomationServiceScope automation(
+			windows::WindowsAutomationServiceType::Hosted,
+			remoting::RemotingAutomationService::WindowsHttp,
+			WString::Unmanaged(L"CppTest"),
+			8888
+			);
 		GetApplication()->Run(&window);
-		windows::StopWindowsHttpAutomationService();
 	}
 }
 

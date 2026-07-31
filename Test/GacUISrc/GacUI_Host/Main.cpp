@@ -4,7 +4,7 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
 #include "../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h"
-#include "../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
+#include "../../../Source/RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
 
 using namespace vl;
 using namespace vl::collections;
@@ -58,9 +58,13 @@ void GuiMain()
 		window->ForceCalculateSizeImmediately();
 		window->MoveToScreenCenter();
 
-		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/GacUI_Host"), 8888);
+		windows::WindowsAutomationServiceScope automation(
+			windows::WindowsAutomationServiceType::Normal,
+			remoting::RemotingAutomationService::WindowsHttp,
+			WString::Unmanaged(L"GacUI_Host"),
+			8888
+			);
 		GetApplication()->Run(window);
-		windows::StopWindowsHttpAutomationService();
 		delete window;
 	}
 }
