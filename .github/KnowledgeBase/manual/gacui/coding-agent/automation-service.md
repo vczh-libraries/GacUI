@@ -22,7 +22,7 @@ Feature availability is checked separately. A real service returns true from `Av
 
 ## Windows HTTP Layer
 
-`StartWindowsHttpAutomationService` creates a localhost HTTP wrapper around the current `INativeAutomationService`. The test-support implementation and its lifecycle scopes live in `Source/RemotingHelpers/AutomationService/Windows`, outside the ordinary `GacUI.Windows` library pair. Applications compile or consume the remoting-helper pair explicitly.
+`StartWindowsHttpAutomationService` creates a localhost HTTP wrapper around the current `INativeAutomationService`. The test-support implementation lives in `Source/RemotingHelpers/AutomationService/Windows`, outside the ordinary `GacUI.Windows` library pair. Test applications consume it through the shared `Source_RemotingHelpers` project.
 
 The function takes `applicationName` as a URL path fragment and `port` as the localhost port. Given `applicationName == L"Automation/MyApp"` and `port == 8888`, the listener prefix is `http://localhost:8888/Automation/MyApp/`. The service offers exactly these HTTP URLs:
 - `GET http://localhost:8888/Automation/MyApp/Controls`: calls `DumpControlTree` on the UI thread when `CanDumpControlTree` is true.
@@ -34,7 +34,7 @@ The window id is a path segment after `IO`, not a query parameter. All other met
 
 ## Starting The Service
 
-Create a `WindowsAutomationServiceScope` from `GuiMain`, after the setup function has installed the current native controller and before entering the application event loop. The scope substitutes the selected service, starts the chosen HTTP endpoint, and reverses those operations in dependency order.
+Each application owns the automation service and endpoint directly. After the setup function has installed the current native controller, construct the concrete service matching that controller, substitute it, start an endpoint, and enter the application event loop. On exit, reverse the dependency order: stop the endpoint, stop the service, and finally unsubstitute it.
 
 A normal Windows application can start the service before `GetApplication()->Run`:
 ```c++
@@ -50,12 +50,15 @@ void GuiMain()
     window.ForceCalculateSizeImmediately();
     window.MoveToScreenCenter();
 
-    windows::WindowsAutomationServiceScope automation(
-        windows::WindowsAutomationServiceType::Hosted,
-        remoting::RemotingAutomationService::WindowsHttp,
-        WString::Unmanaged(L"MyApp"),
+    windows::WindowsAutomationServiceHosted automationService;
+    GetNativeServiceSubstitution()->Substitute(&automationService, false);
+    windows::StartWindowsHttpAutomationService(
+        WString::Unmanaged(L"Automation/MyApp"),
         8888);
     GetApplication()->Run(&window);
+    windows::StopWindowsHttpAutomationService();
+    automationService.Stop();
+    GetNativeServiceSubstitution()->Unsubstitute(&automationService);
 }
 
 int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
@@ -64,42 +67,42 @@ int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 }
 ```
 
-Only one substituted Windows automation service and one endpoint may be active in a process. Duplicate starts fail immediately.
+Only one substituted automation service and one endpoint may be active in a process. Duplicate starts fail immediately. `StartMiniHttpAutomationService(socketServer, applicationName)` follows the same lifecycle and URL contract, but requires the application to pass the exact `IAsyncSocketServer` that should host its automation prefix.
 
 ## Setup Function Cases
 
 The setup function decides which controller is active while `GuiMain` runs; it no longer installs test automation implicitly. Select the matching helper service explicitly:
-- `SetupWindowsGDIRenderer` and `SetupWindowsDirect2DRenderer`: use `WindowsAutomationServiceType::Normal` for multi-window control tree and IO. The DOM route is normally unavailable.
-- `SetupHostedWindowsGDIRenderer` and `SetupHostedWindowsDirect2DRenderer`: use `WindowsAutomationServiceType::Hosted`. IO should use `/IO` without a window id because hosted sub windows and popups are represented under the main window.
-- `SetupRawWindowsGDIRenderer` and `SetupRawWindowsDirect2DRenderer`: use `WindowsAutomationServiceType::Normal` for an ordinary raw native controller. A remote protocol renderer that owns a `GuiRemoteRendererSingle` uses `WindowsAutomationServiceType::Renderer` and passes the renderer pointer to expose renderer DOM and renderer-side IO.
+- `SetupWindowsGDIRenderer` and `SetupWindowsDirect2DRenderer`: construct `WindowsAutomationService` for multi-window control tree and IO. The DOM route is normally unavailable.
+- `SetupHostedWindowsGDIRenderer` and `SetupHostedWindowsDirect2DRenderer`: construct `WindowsAutomationServiceHosted`. IO should use `/IO` without a window id because hosted sub windows and popups are represented under the main window.
+- `SetupRawWindowsGDIRenderer` and `SetupRawWindowsDirect2DRenderer`: construct `WindowsAutomationService` for an ordinary raw native controller. A remote protocol renderer that owns a `GuiRemoteRendererSingle` constructs `WindowsAutomationServiceRenderer` with the renderer pointer to expose renderer DOM and renderer-side IO.
 - `SetupRemoteNativeController`: the remote controller itself does not return an automation service. Substitute `RemoteProtocolAutomationService` around `GetApplication()->Run` when the remote core should expose the hosted control tree and core-side IO.
 - `SetupGacGenNativeController`: this setup is for generation-time resource processing, not an interactive UI session. It does not provide an automation service for HTTP control.
 - `SetupGtkRenderer`: do not call the Windows HTTP helper. A Gtk port must provide its own endpoint layer and automation service implementation if it needs coding-agent automation.
-- `SetupWGacRenderer`: do not call the Windows HTTP helper. A Wayland port must provide its own endpoint layer and automation service implementation if it needs coding-agent automation.
-- `SetupWGacHostedRenderer`: same requirement as `SetupWGacRenderer`, but the service should follow hosted-mode window-id behavior if it exposes hosted windows.
+- `SetupWGacRenderer`: construct the Wayland platform service such as `WGacAutomationServiceRenderer` and expose it through MiniHTTP.
+- `SetupWGacHostedRenderer`: use the corresponding hosted Wayland service and hosted-mode window-id behavior.
+- A macOS remote renderer constructs `CocoaAutomationServiceRenderer` and exposes it through MiniHTTP.
 
 ## Substituting a Service
 
-Use `GetNativeServiceSubstitution()->Substitute(service, false)` before the automation service is first requested. The substitution layer rejects a late substitution after a service has already been used. Keep the substituted object alive until it is unsubstituted.
+Use `GetNativeServiceSubstitution()->Substitute(service, false)` before the automation service is first requested. The substitution layer rejects a late substitution after a service has already been used. Keep the concrete service alive until the endpoint has stopped, `service.Stop()` has completed, and the service is unsubstituted.
 
-A remote protocol core substitutes its neutral service and owns the endpoint in a nested scope:
+A remote protocol core owns its neutral service and endpoint directly:
 ```c++
 void GuiMain()
 {
     RemoteProtocolAutomationService automationService;
-    remoting::NativeAutomationServiceScope substitution(&automationService);
-
-    {
-        windows::AutomationServiceEndpointScope endpoint(
-            remoting::RemotingAutomationService::WindowsHttp,
-            WString::Unmanaged(L"RemoteCore"),
-            8888);
-        GetApplication()->Run(mainWindow);
-    }
+    GetNativeServiceSubstitution()->Substitute(&automationService, false);
+    windows::StartWindowsHttpAutomationService(
+        WString::Unmanaged(L"Automation/RemoteCore"),
+        8888);
+    GetApplication()->Run(mainWindow);
+    windows::StopWindowsHttpAutomationService();
+    automationService.Stop();
+    GetNativeServiceSubstitution()->Unsubstitute(&automationService);
 }
 ```
 
-A remote protocol renderer uses `WindowsAutomationServiceScope` with `WindowsAutomationServiceType::Renderer`. This is the case where `GET /Dom` becomes meaningful.
+A Windows remote protocol renderer constructs `WindowsAutomationServiceRenderer` with its `GuiRemoteRendererSingle`, substitutes it, and owns either the Windows HTTP or MiniHTTP endpoint directly. Linux uses `WGacAutomationServiceRenderer`; macOS uses `CocoaAutomationServiceRenderer`; both use MiniHTTP. These renderer cases are where `GET /Dom` becomes meaningful.
 
 When a remote renderer is retained after a fatal remote-protocol error, renderer automation keeps `GET /Dom` available. The DOM response is still an HTTP success containing the frozen renderer DOM, and it adds a lowercase top-level `fatalError` string with the original error. Renderer IO switches to `ExitOnly`: ordinary IO returns exactly `!Application stopped responding.`, while exact `!Exit` is still accepted so automation can close the retained renderer.
 

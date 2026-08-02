@@ -89,11 +89,10 @@ namespace vl::presentation::remoting
 		bool forceRendererToExit = false;
 		SPIN_LOCK(lockState)
 		{
-			if (stopping || disconnectedProcessed)
+			if (stopping || (renderer && renderer->IsDisconnectedFromCore()))
 			{
 				return;
 			}
-			disconnectedProcessed = true;
 			targetChannel = asyncRendererChannel;
 			targetRenderer = renderer;
 			forceRendererToExit =

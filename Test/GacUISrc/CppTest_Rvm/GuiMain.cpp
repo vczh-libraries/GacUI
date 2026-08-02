@@ -2,14 +2,11 @@
 #include "RemoteViewModelTestIncludes.h"
 #include "../RemotingTest_RvmHost/RemoteViewModelTestRuntime.h"
 #include "../../../Source/RemotingHelpers/AutomationService/MiniHttpAutomationService.h"
-#include "../../../Source/RemotingHelpers/RemotingServer/RemotingChannelServer.h"
-#include <cstdlib>
-
-#ifdef VCZH_MSVC
 #include "../../../Source/RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
+#include "../../../Source/RemotingHelpers/RemotingServer/RemotingChannelServer.h"
 #include <VlppOS.Windows.h>
+#include <cstdlib>
 #include "resource.h"
-#endif
 
 using namespace vl;
 using namespace vl::inter_process;
@@ -25,35 +22,10 @@ namespace
 	{
 		RemoteViewModelRequesterSession*						session = nullptr;
 		Ptr<rvmt::IViewModel>									viewModel;
-		RemotingHostContext									host;
+		Ptr<async_tcp_socket::IAsyncSocketServer>			miniHttpSocketServer;
 	};
 
 	RvmGuiContext* currentGuiContext = nullptr;
-
-	template<typename TServer>
-	class RequesterServerScope
-	{
-	private:
-		TServer&												server;
-		RemoteViewModelRequesterSession&						session;
-
-	public:
-		RequesterServerScope(TServer& _server, RemoteViewModelRequesterSession& _session)
-			: server(_server)
-			, session(_session)
-		{
-			server.Start();
-			session.Start(&server);
-		}
-
-		~RequesterServerScope()
-		{
-			session.Stop(Func<void()>([this]()
-			{
-				server.Stop();
-			}));
-		}
-	};
 
 	RemotingChannelServerCallbacks CreateCallbacks(RemoteViewModelRequesterSession& session)
 	{
@@ -77,7 +49,38 @@ namespace
 		});
 		return callbacks;
 	}
-
+	template<typename TServer, typename ...TArgs>
+	int StartServer(
+		Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer,
+		TArgs&& ...args
+		)
+	{
+		auto parser = Ptr(new glr::json::Parser);
+		RemoteViewModelRequesterSession session(
+			parser,
+			Func<void(const WString&)>([](const WString&) { std::_Exit(1); })
+			);
+		auto callbacks = CreateCallbacks(session);
+		RemotingChannelServer<TServer> server(
+			parser,
+			false,
+			callbacks,
+			std::forward<TArgs>(args)...
+			);
+		server.Start();
+		session.Start(&server);
+		auto viewModel = session.RequestViewModel();
+		RvmGuiContext context{ &session, viewModel, miniHttpSocketServer };
+		CHECK_ERROR(!currentGuiContext, L"StartServer(...)#The GUI context has already been bound.");
+		currentGuiContext = &context;
+		auto result = SetupHostedWindowsDirect2DRenderer();
+		currentGuiContext = nullptr;
+		session.Stop(Func<void()>([&server]()
+		{
+			server.Stop();
+		}));
+		return result;
+	}
 }
 
 void GuiMain()
@@ -90,108 +93,61 @@ void GuiMain()
 	auto window = Ptr(new rvmt::MainWindow(currentGuiContext->viewModel));
 	window->ForceCalculateSizeImmediately();
 	window->MoveToScreenCenter();
-#ifdef VCZH_MSVC
 	windows::SetWindowDefaultIcon(MAINICON);
-	windows::WindowsAutomationServiceScope automation(
-		windows::WindowsAutomationServiceType::Hosted,
-		currentGuiContext->host.automationService,
-		WString::Unmanaged(L"CppTest_Rvm"),
-		RemotingHttpPort,
-		currentGuiContext->host.miniHttpSocketServer
-		);
-#else
-	MiniHttpAutomationServiceScope automation(
-		currentGuiContext->host.miniHttpSocketServer,
-		WString::Unmanaged(L"CppTest_Rvm")
-		);
-#endif
+	windows::WindowsAutomationServiceHosted automationService;
+	GetNativeServiceSubstitution()->Substitute(&automationService, false);
+	if (currentGuiContext->miniHttpSocketServer)
+	{
+		StartMiniHttpAutomationService(
+			currentGuiContext->miniHttpSocketServer,
+			WString::Unmanaged(L"CppTest_Rvm")
+			);
+	}
+	else
+	{
+		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/CppTest_Rvm"), RemotingHttpPort);
+	}
 
 	CHECK_ERROR(
 		currentGuiContext->session->BeginRunning(),
 		L"GuiMain()#RemotingTest_RvmHost was not available before window startup."
 		);
 	GetApplication()->Run(window.Obj());
-	currentGuiContext->session->BeginStopping();
-	CHECK_ERROR(
-		!currentGuiContext->session->GetFatalError(),
-		L"GuiMain()#RemotingTest_RvmHost disconnected while the window was running."
-		);
+	if (currentGuiContext->miniHttpSocketServer)
+	{
+		StopMiniHttpAutomationService();
+	}
+	else
+	{
+		windows::StopWindowsHttpAutomationService();
+	}
+	automationService.Stop();
+	GetNativeServiceSubstitution()->Unsubstitute(&automationService);
 }
 
-#ifdef VCZH_MSVC
 int StartNamedPipeServer()
 {
-	auto parser = Ptr(new glr::json::Parser);
-	RemoteViewModelRequesterSession session(
-		parser,
-		Func<void(const WString&)>([](const WString&) { std::_Exit(1); })
-		);
-	auto boundCallbacks = CreateCallbacks(session);
-	RemotingChannelServer<named_pipe::NamedPipeServer> boundServer(
-		parser,
-		false,
-		boundCallbacks,
+	return StartServer<named_pipe::NamedPipeServer>(
+		nullptr,
 		WString::Unmanaged(RemotingNamedPipeName)
 		);
-	RequesterServerScope scope(boundServer, session);
-	auto viewModel = session.RequestViewModel();
-	RvmGuiContext context{ &session, viewModel, { RemotingAutomationService::WindowsHttp, nullptr } };
-	currentGuiContext = &context;
-	auto result = SetupHostedWindowsDirect2DRenderer();
-	currentGuiContext = nullptr;
-	return result;
 }
 
 int StartHttpServer()
 {
-	auto parser = Ptr(new glr::json::Parser);
-	RemoteViewModelRequesterSession session(
-		parser,
-		Func<void(const WString&)>([](const WString&) { std::_Exit(1); })
-		);
-	auto callbacks = CreateCallbacks(session);
-	RemotingChannelServer<windows_http::HttpServer> server(
-		parser,
-		false,
-		callbacks,
+	return StartServer<windows_http::HttpServer>(
+		nullptr,
 		WString::Unmanaged(RemotingHttpBaseUrl),
 		RemotingHttpPort
 		);
-	RequesterServerScope scope(server, session);
-	auto viewModel = session.RequestViewModel();
-	RvmGuiContext context{ &session, viewModel, { RemotingAutomationService::WindowsHttp, nullptr } };
-	currentGuiContext = &context;
-	auto result = SetupHostedWindowsDirect2DRenderer();
-	currentGuiContext = nullptr;
-	return result;
 }
-#endif
 
 int StartMiniHttpServer()
 {
-	auto parser = Ptr(new glr::json::Parser);
 	auto socketServer = async_tcp_socket::CreateDefaultAsyncSocketServer(RemotingHttpPort);
-	RemoteViewModelRequesterSession session(
-		parser,
-		Func<void(const WString&)>([](const WString&) { std::_Exit(1); })
-		);
-	auto callbacks = CreateCallbacks(session);
-	RemotingChannelServer<async_tcp_socket::SocketHttpServer> server(
-		parser,
-		false,
-		callbacks,
+	return StartServer<async_tcp_socket::SocketHttpServer>(
+		socketServer,
 		socketServer,
 		WString::Unmanaged(RemotingHttpBaseUrl)
 		);
-	RequesterServerScope scope(server, session);
-	auto viewModel = session.RequestViewModel();
-	RvmGuiContext context{ &session, viewModel, { RemotingAutomationService::MiniHttp, socketServer } };
-	currentGuiContext = &context;
-#ifdef VCZH_MSVC
-	auto result = SetupHostedWindowsDirect2DRenderer();
-#else
-	auto result = 0;
-#endif
-	currentGuiContext = nullptr;
-	return result;
 }

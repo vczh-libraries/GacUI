@@ -42,48 +42,16 @@ namespace
 		lifecycle->RegisterLocalService(typeId, service);
 		channelClient->SendReady();
 		dispatcher->Initialize();
-		channelClient->StartHeartbeat();
 
 		Console::WriteLine(L"> RemotingTest_RvmHost declared rvmt::IViewModel.");
 		taskQueue->RunTaskQueue();
 		return 0;
 	}
 
-	enum class Transport
-	{
-		None,
-		Pipe,
-		Http,
-		MiniHttp,
-	};
+}
 
-	bool ParseTransport(int argc, char* argv[], Transport& transport)
-	{
-		if (argc != 2)
-		{
-			Console::WriteLine(L"Error: exactly one of /Pipe, /Http or /MiniHttp must be provided.");
-			return false;
-		}
-
-		if (strcmp(argv[1], "/Pipe") == 0)
-		{
-			transport = Transport::Pipe;
-		}
-		else if (strcmp(argv[1], "/Http") == 0)
-		{
-			transport = Transport::Http;
-		}
-		else if (strcmp(argv[1], "/MiniHttp") == 0)
-		{
-			transport = Transport::MiniHttp;
-		}
-		else
-		{
-			Console::WriteLine(L"Error: unknown command line argument.");
-			return false;
-		}
-		return true;
-	}
+void GuiMain()
+{
 }
 
 int main(int argc, char* argv[])
@@ -91,41 +59,32 @@ int main(int argc, char* argv[])
 #ifdef VCZH_MSVC
 	_set_abort_behavior(0, _WRITE_ABORT_MSG);
 #endif
-	Transport transport = Transport::None;
-	if (!ParseTransport(argc, argv, transport))
+	if (argc != 2)
 	{
 		return 1;
 	}
 
 	int result = 1;
-	switch (transport)
+
+#ifdef VCZH_MSVC
+	if (strcmp(argv[1], "/Pipe") == 0)
 	{
-	case Transport::Pipe:
-#ifdef VCZH_MSVC
 		result = RunHost(Ptr(new named_pipe::NamedPipeClient(WString::Unmanaged(RemotingNamedPipeName))));
-#else
-		Console::WriteLine(L"Error: /Pipe is only supported on Windows.");
-#endif
-		break;
-	case Transport::Http:
-#ifdef VCZH_MSVC
+	}
+	else if (strcmp(argv[1], "/Http") == 0)
+	{
 		result = RunHost(Ptr(new windows_http::HttpClient(WString::Unmanaged(RemotingHttpBaseUrl), RemotingHttpPort)));
-#else
-		Console::WriteLine(L"Error: /Http is only supported on Windows.");
+	}
+	else
 #endif
-		break;
-	case Transport::MiniHttp:
-		{
-			auto socketClient = async_tcp_socket::CreateDefaultAsyncSocketClient(RemotingHttpPort);
-			result = RunHost(Ptr(new async_tcp_socket::SocketHttpClient(
-				socketClient,
-				WString::Unmanaged(L"localhost"),
-				WString::Unmanaged(RemotingHttpBaseUrl)
-				)));
-		}
-		break;
-	default:
-		break;
+	if (strcmp(argv[1], "/MiniHttp") == 0)
+	{
+		auto socketClient = async_tcp_socket::CreateDefaultAsyncSocketClient(RemotingHttpPort);
+		result = RunHost(Ptr(new async_tcp_socket::SocketHttpClient(
+			socketClient,
+			WString::Unmanaged(L"localhost"),
+			WString::Unmanaged(RemotingHttpBaseUrl)
+			)));
 	}
 
 #if defined VCZH_MSVC && VCZH_CHECK_MEMORY_LEAKS

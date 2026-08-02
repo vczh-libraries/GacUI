@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{41962197-3d8b-42cb-a680-b3a950c2b1b6}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingClient\RemotingClient.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingClient\RemotingChannelClient.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingClient\RemotingClient.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingClient\RemotingChannelClient.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingServer\RemotingChannelServer.h" />
+  </ItemGroup>
+</Project>

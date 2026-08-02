@@ -22,7 +22,6 @@ namespace vl::presentation::remoting
 		RemotingChannelClientConfiguration					configuration;
 		bool												triggeredFatalError = false;
 		bool												retainedFatalError = false;
-		bool												disconnectedProcessed = false;
 		bool												stopping = false;
 		remote_renderer::GuiRemoteRendererSingle*			renderer = nullptr;
 		remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelRenderer*

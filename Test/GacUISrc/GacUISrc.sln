@@ -22,6 +22,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Source_GacUI_Compiler", "So
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Source_Import", "Source_Import\Source_Import.vcxitems", "{6C3C0B7C-2F16-43DF-A18A-4CAB7A0CD715}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Source_RemotingHelpers", "Source_RemotingHelpers\Source_RemotingHelpers.vcxitems", "{41962197-3D8B-42CB-A680-B3A950C2B1B6}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Metadata", "Metadata", "{C91D9551-E755-4835-B3AF-18E77ED0FA61}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Metadata_Generate", "Metadata_Generate\Metadata_Generate.vcxproj", "{400867B1-1935-41D1-B06F-F832EADF1330}"
@@ -316,6 +318,7 @@ Global
 		{A2A0D66D-5528-4A86-B0FF-8ACC908E7DE4} = {A88BF65F-88CD-425B-9BA0-CA78D3540972}
 		{16240420-5988-4669-AFEE-FFA3665DE80F} = {A88BF65F-88CD-425B-9BA0-CA78D3540972}
 		{6C3C0B7C-2F16-43DF-A18A-4CAB7A0CD715} = {1A152782-BECB-4D33-AD39-F54D3B234262}
+		{41962197-3D8B-42CB-A680-B3A950C2B1B6} = {1A152782-BECB-4D33-AD39-F54D3B234262}
 		{400867B1-1935-41D1-B06F-F832EADF1330} = {C91D9551-E755-4835-B3AF-18E77ED0FA61}
 		{C3349B3B-054E-4268-9FF8-796E72DC6214} = {C91D9551-E755-4835-B3AF-18E77ED0FA61}
 		{31B9787F-5739-4812-84CF-4C542BBDF7FB} = {A923A9DE-6A51-45D0-A01C-AB4FB0C06875}
@@ -361,6 +364,16 @@ Global
 		SolutionGuid = {23701A6D-5A6A-4396-9B46-EC3D6DD7B20F}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{1f147133-fc29-4ac4-818f-a5c48a7c4173}*SharedItemsImports = 4
+		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{337e0972-c4ce-4863-916e-c1cd395da085}*SharedItemsImports = 4
+		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{3c1c26f1-0a18-4751-b984-ee28eea11359}*SharedItemsImports = 4
+		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{41962197-3d8b-42cb-a680-b3a950c2b1b6}*SharedItemsImports = 9
+		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{41f61ea9-e8b4-47c4-9946-36dca7e8272a}*SharedItemsImports = 4
+		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{83bf486e-c4ac-4eeb-80e7-e9f63a3bd4cb}*SharedItemsImports = 4
+		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{8f628494-942f-40d4-84b0-306fcbc2c43c}*SharedItemsImports = 4
+		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{9c7d4071-6a78-48bf-906f-6d131fe07a4d}*SharedItemsImports = 4
+		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{a3ecf99e-6583-4e25-b1fe-91331c4a4107}*SharedItemsImports = 4
+		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{e016b58a-a7a7-4ef5-a64e-b6f86af159be}*SharedItemsImports = 4
 		Generated_DarkSkin\Generated_DarkSkin.vcxitems*{04d56a3c-3a31-4cbd-b1f1-955fa5848057}*SharedItemsImports = 4
 		Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems*{04d56a3c-3a31-4cbd-b1f1-955fa5848057}*SharedItemsImports = 4
 		Source_GacUI_UnitTest_Controls\Source_GacUI_UnitTest_Controls.vcxitems*{07ce9594-f378-4175-b287-6deb74f16c1c}*SharedItemsImports = 4
@@ -398,7 +411,6 @@ Global
 		Source_Import_Reflection\Source_Import_Reflection.vcxitems*{543b32d9-e229-472a-9d11-9bf12c7982bd}*SharedItemsImports = 4
 		Source_GacUI_Compiler\Source_GacUI_Compiler.vcxitems*{66d0edd1-2747-47a6-abda-49ab8f30f7bc}*SharedItemsImports = 4
 		Source_Import\Source_Import.vcxitems*{6c3c0b7c-2f16-43df-a18a-4cab7a0cd715}*SharedItemsImports = 9
-		Source_Import\Source_Import.vcxitems*{3c1c26f1-0a18-4751-b984-ee28eea11359}*SharedItemsImports = 4
 		Source_GacUI_ProtocolCompiler\Source_GacUI_ProtocolCompiler.vcxitems*{75ead373-2bae-4f55-9cd7-cf7ae0f8f140}*SharedItemsImports = 4
 		Source_Import\Source_Import.vcxitems*{75ead373-2bae-4f55-9cd7-cf7ae0f8f140}*SharedItemsImports = 4
 		Source_GacUI_ProtocolCompiler\Source_GacUI_ProtocolCompiler.vcxitems*{7b88ddaf-109d-4c56-9eae-f09bbe0af9bf}*SharedItemsImports = 9

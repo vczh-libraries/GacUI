@@ -24,13 +24,13 @@ void GuiMain()
 		window.ForceCalculateSizeImmediately();
 		window.MoveToScreenCenter();
 
-		windows::WindowsAutomationServiceScope automation(
-			windows::WindowsAutomationServiceType::Hosted,
-			remoting::RemotingAutomationService::WindowsHttp,
-			WString::Unmanaged(L"CppTest"),
-			8888
-			);
+		windows::WindowsAutomationServiceHosted automationService;
+		GetNativeServiceSubstitution()->Substitute(&automationService, false);
+		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/CppTest"), 8888);
 		GetApplication()->Run(&window);
+		windows::StopWindowsHttpAutomationService();
+		automationService.Stop();
+		GetNativeServiceSubstitution()->Unsubstitute(&automationService);
 	}
 }
 

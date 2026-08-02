@@ -87,7 +87,7 @@ https://lord.io/text-editing-hates-you-too/
 
 Since UI Automation is not working when the screen is locked, GacUI prepares facilities to expose UIA features by a http server brought up with the app. This service should be explicitly activated in the source code for security reason.
 
-When doing this on Windows, Call `(Start|Stop)WindowsHttpAutomationService` around `GuiApplication::Run`. `(Start|Stop)MiniHttpAutomationService` is offered in `RemotingTest_(Core|Rendering_Win32)` but not moved in GacUI officially yet, it works for all platforms.
+Applications compose automation directly: construct the concrete service matching the active normal, hosted, core, or renderer controller; substitute it; start either the Windows HTTP or MiniHTTP endpoint; run `GuiApplication`; then stop the endpoint and service before unsubstituting it. Windows HTTP and cross-platform MiniHTTP expose the same `Controls`, `Dom`, and `IO` contract. MiniHTTP is used by the remoting demos and is not part of GacUI's public API yet.
 
 ### Remote Protocol Support
 
@@ -107,15 +107,15 @@ You must offer the same transport argument to every process in one run.
 - `Core` starts a GacUI process but delegates all rendering work to a remote process.
 - `Rendering_Win32` starts a renderer-only process handles `Core`'s requests.
 - `RemotingTest_RvmHost` provides the service required by `/RVMT`. It advertises `ViewModelChannel` for RPC and the internal `ViewModelReadyChannel` startup signal; renderers advertise only `GacUIRemoteProtocol`.
-- `CppTest_Rvm` runs the generated application locally and uses `RemotingTest_RvmHost`, without a renderer process.
+- `CppTest_Rvm` is the Windows-only local variant. It runs the generated application with `RemotingTest_RvmHost`, without a renderer process.
 - Exactly one of `/Pipe`, `/Http` or `/MiniHttp` should be offered to each participating project.
   - Non-Windows platform only enabled `/MiniHttp`.
 - Offer `/FCT` (default), `/RPT` or `/RVMT` to `Core`.
 - For `/FCT` and `/RPT`, start `Core` and then the renderer.
 - For `/RVMT`, start `Core` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. After `Core` prints `rvmt::IViewModel acquired; renderer admission is open.`, start the renderer.
-- For the local variant, start `CppTest_Rvm` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. This variant does not use a renderer.
+- For the Windows-only local variant, start `CppTest_Rvm` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. This variant does not use a renderer. `/Pipe` and `/Http` expose automation through Windows HTTP; `/MiniHttp` registers automation on the same port-8888 MiniHTTP socket server used for RVM traffic.
 - The RVM demos intentionally use a simple ordered-start contract. If `RemotingTest_RvmHost` disconnects while a requester is running, the requester terminates with an error and the process set must be restarted.
-- On Linux, `CppTest_Rvm` is a build-only stub; the runnable RVM path is `RemotingTest_Core /RVMT` with `/MiniHttp`.
+- On Linux and macOS, the portable RVM path is `RemotingTest_Core /RVMT` with `RemotingTest_RvmHost`, both using `/MiniHttp`.
 
 Network Protocol Implementation Details:
 - `/Pipe` is built on top of Named Pipe API for Windows.

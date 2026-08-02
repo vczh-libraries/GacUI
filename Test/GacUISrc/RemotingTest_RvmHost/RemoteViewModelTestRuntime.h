@@ -11,6 +11,7 @@ namespace vl::presentation::remote_view_model_test
 	{
 	private:
 		Ptr<remoting::RemotingRequesterSession>				session;
+		Func<void(const WString&)>							terminalAction;
 
 	public:
 		RemoteViewModelRequesterSession(
@@ -25,8 +26,6 @@ namespace vl::presentation::remote_view_model_test
 		Ptr<rvmt::IViewModel>								RequestViewModel();
 		bool												BeginRunning();
 		bool												CanAdmitRenderer();
-		void												BeginStopping();
-		Nullable<WString>									GetFatalError();
 		void												Stop(const Func<void()>& stopServer);
 	};
 

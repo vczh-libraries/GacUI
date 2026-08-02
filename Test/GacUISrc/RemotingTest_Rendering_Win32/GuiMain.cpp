@@ -49,7 +49,8 @@ namespace
 		RemotingChannelClient*								channelClient = nullptr;
 		GuiRemoteProtocolAsyncJsonChannelRenderer*			asyncChannel = nullptr;
 		GuiRemoteRendererSingle*							renderer = nullptr;
-		RemotingHostContext									host;
+		Ptr<inter_process::async_tcp_socket::IAsyncSocketServer>
+														miniHttpSocketServer;
 	};
 
 	RendererGuiContext* currentGuiContext = nullptr;
@@ -119,28 +120,36 @@ void GuiMain()
 	currentGuiContext->renderer->RegisterMainWindow(mainWindow);
 
 #if defined VCZH_MSVC
-	windows::WindowsAutomationServiceScope automation(
-		windows::WindowsAutomationServiceType::Renderer,
-		currentGuiContext->host.automationService,
-		WString::Unmanaged(GacUIAutomationApplicationName),
-		GacUIAutomationHttpPort,
-		currentGuiContext->host.miniHttpSocketServer,
-		currentGuiContext->renderer
-		);
-	auto rendererAutomationService = automation.GetRendererAutomationService();
+	windows::WindowsAutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
+	GetNativeServiceSubstitution()->Substitute(&rendererAutomationServiceObject, false);
+	if (currentGuiContext->miniHttpSocketServer)
+	{
+		StartMiniHttpAutomationService(
+			currentGuiContext->miniHttpSocketServer,
+			WString::Unmanaged(GacUIAutomationApplicationName)
+			);
+	}
+	else
+	{
+		windows::StartWindowsHttpAutomationService(
+			WString::Unmanaged(L"Automation/") + WString::Unmanaged(GacUIAutomationApplicationName),
+			GacUIAutomationHttpPort
+			);
+	}
+	auto rendererAutomationService = &rendererAutomationServiceObject;
 #elif defined VCZH_GCC && !defined VCZH_APPLE
 	wayland::WGacAutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
-	NativeAutomationServiceScope substitution(&rendererAutomationServiceObject);
-	MiniHttpAutomationServiceScope endpoint(
-		currentGuiContext->host.miniHttpSocketServer,
+	GetNativeServiceSubstitution()->Substitute(&rendererAutomationServiceObject, false);
+	StartMiniHttpAutomationService(
+		currentGuiContext->miniHttpSocketServer,
 		WString::Unmanaged(GacUIAutomationApplicationName)
 		);
 	auto rendererAutomationService = &rendererAutomationServiceObject;
 #else
 	osx::CocoaAutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
-	NativeAutomationServiceScope substitution(&rendererAutomationServiceObject);
-	MiniHttpAutomationServiceScope endpoint(
-		currentGuiContext->host.miniHttpSocketServer,
+	GetNativeServiceSubstitution()->Substitute(&rendererAutomationServiceObject, false);
+	StartMiniHttpAutomationService(
+		currentGuiContext->miniHttpSocketServer,
 		WString::Unmanaged(GacUIAutomationApplicationName)
 		);
 	auto rendererAutomationService = &rendererAutomationServiceObject;
@@ -160,15 +169,28 @@ void GuiMain()
 		GetCurrentController()->WindowService()->Run(mainWindow);
 	}
 
-	currentGuiContext->channelClient->BeginStopping();
-	currentGuiContext->asyncChannel->SetInvokeInMainThread(nullptr);
+#if defined VCZH_MSVC
+	if (currentGuiContext->miniHttpSocketServer)
+	{
+		StopMiniHttpAutomationService();
+	}
+	else
+	{
+		windows::StopWindowsHttpAutomationService();
+	}
+#else
+	StopMiniHttpAutomationService();
+#endif
 	currentGuiContext->channelClient->SetRendererAutomationService(nullptr);
+	rendererAutomationServiceObject.Stop();
+	GetNativeServiceSubstitution()->Unsubstitute(&rendererAutomationServiceObject);
+	currentGuiContext->asyncChannel->SetInvokeInMainThread(nullptr);
 	currentGuiContext->renderer->UnregisterMainWindow();
 }
 
 int StartClient(
 	Ptr<inter_process::INetworkProtocolClient> networkClient,
-	RemotingHostContext host
+	Ptr<inter_process::async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer
 	)
 {
 	auto jsonParser = Ptr(new glr::json::Parser);
@@ -182,7 +204,7 @@ int StartClient(
 	channelClient.WaitForServer();
 #endif
 
-	RendererGuiContext context{ &channelClient, &asyncRendererChannel, &remoteRenderer, host };
+	RendererGuiContext context{ &channelClient, &asyncRendererChannel, &remoteRenderer, miniHttpSocketServer };
 	CHECK_ERROR(!currentGuiContext, L"StartClient(...)#The GUI context has already been bound.");
 	currentGuiContext = &context;
 #if defined VCZH_MSVC
@@ -206,7 +228,7 @@ int StartNamedPipeClient()
 {
 	return StartClient(
 		Ptr(new inter_process::named_pipe::NamedPipeClient(WString::Unmanaged(GacUIRemoteProtocolNamedPipeName))),
-		{ RemotingAutomationService::WindowsHttp, nullptr }
+		nullptr
 		);
 }
 
@@ -217,7 +239,7 @@ int StartHttpClient()
 			WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl),
 			GacUIRemoteProtocolHttpPort
 			)),
-		{ RemotingAutomationService::WindowsHttp, nullptr }
+		nullptr
 		);
 }
 #endif
@@ -232,6 +254,6 @@ int StartMiniHttpClient()
 			WString::Unmanaged(L"localhost"),
 			WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl)
 			)),
-		{ RemotingAutomationService::MiniHttp, socketServer }
+		socketServer
 		);
 }

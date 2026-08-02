@@ -1,4 +1,5 @@
 #include "RemoteViewModelTestRuntime.h"
+#include <cstdlib>
 
 namespace vl::presentation::remote_view_model_test
 {
@@ -10,6 +11,74 @@ namespace vl::presentation::remote_view_model_test
 
 	namespace
 	{
+		constexpr vint RemoteViewModelCallTimeoutMilliseconds = 10000;
+
+		class RemoteViewModelCall : public Object
+		{
+		public:
+			EventObject									completed;
+			WString										result;
+			bool										failed = false;
+
+			RemoteViewModelCall()
+			{
+				CHECK_ERROR(completed.CreateAutoUnsignal(false), L"RemoteViewModelCall::RemoteViewModelCall()#Failed to create the completion event.");
+			}
+		};
+
+		class RemoteViewModelFailFastProxy : public Object, public virtual rvmt::IViewModel
+		{
+		private:
+			Ptr<rvmt::IViewModel>							viewModel;
+			Func<void(const WString&)>						terminalAction;
+
+			[[noreturn]] void Fail()
+			{
+				terminalAction(WString::Unmanaged(RemoteViewModelHostDisconnectedError));
+				std::_Exit(1);
+			}
+
+		public:
+			RemoteViewModelFailFastProxy(
+				Ptr<rvmt::IViewModel> _viewModel,
+				const Func<void(const WString&)>& _terminalAction
+				)
+				: viewModel(_viewModel)
+				, terminalAction(_terminalAction)
+			{
+			}
+
+			WString Translate(const WString& name) override
+			{
+				auto call = Ptr(new RemoteViewModelCall);
+				auto worker = Thread::CreateAndStart(Func<void()>([call, viewModel = viewModel, name]()
+				{
+					try
+					{
+						call->result = viewModel->Translate(name);
+					}
+					catch (...)
+					{
+						call->failed = true;
+					}
+					call->completed.Signal();
+				}), false);
+				CHECK_ERROR(worker, L"RemoteViewModelFailFastProxy::Translate(...)#Failed to start the RPC worker thread.");
+
+				if (!call->completed.WaitForTime(RemoteViewModelCallTimeoutMilliseconds))
+				{
+					Fail();
+				}
+				worker->Wait();
+				delete worker;
+				if (call->failed)
+				{
+					Fail();
+				}
+				return call->result;
+			}
+		};
+
 		class RemoteViewModelJsonDispatcherClient
 			: public remoting::RemotingJsonDispatcherClient
 		{
@@ -60,13 +129,8 @@ namespace vl::presentation::remote_view_model_test
 			configuration.controlChannelName = WString::Unmanaged(ViewModelReadyChannelName);
 			configuration.serviceName = WString::Unmanaged(ViewModelServiceName);
 			configuration.readyMessage = WString::Unmanaged(ViewModelReadyMessage);
-			configuration.heartbeatMessage = WString::Unmanaged(ViewModelHeartbeatMessage);
-			configuration.requesterStoppingMessage = WString::Unmanaged(ViewModelRequesterStoppingMessage);
 			configuration.hostDisconnectedError = WString::Unmanaged(RemoteViewModelHostDisconnectedError);
 			configuration.invalidClientId = InvalidRemoteViewModelClientId;
-			configuration.heartbeatIntervalMilliseconds = RemoteViewModelHeartbeatIntervalMilliseconds;
-			configuration.startupGraceMilliseconds = RemoteViewModelStartupGraceMilliseconds;
-			configuration.leaseTimeoutMilliseconds = RemoteViewModelLeaseTimeoutMilliseconds;
 			return configuration;
 		}
 
@@ -83,14 +147,15 @@ namespace vl::presentation::remote_view_model_test
 
 	RemoteViewModelRequesterSession::RemoteViewModelRequesterSession(
 		Ptr<glr::json::Parser> parser,
-		const Func<void(const WString&)>& terminalAction
+		const Func<void(const WString&)>& _terminalAction
 		)
 		: session(Ptr(new remoting::RemotingRequesterSession(
 			CreateConfiguration(),
 			CreateDispatcherFactory(),
 			parser,
-			terminalAction
+			_terminalAction
 			)))
+		, terminalAction(_terminalAction)
 	{
 	}
 
@@ -118,7 +183,7 @@ namespace vl::presentation::remote_view_model_test
 	{
 		auto viewModel = session->RequestService().Cast<rvmt::IViewModel>();
 		CHECK_ERROR(viewModel, L"RemoteViewModelRequesterSession::RequestViewModel()#Failed to request rvmt::IViewModel.");
-		return viewModel;
+		return Ptr(new RemoteViewModelFailFastProxy(viewModel, terminalAction));
 	}
 
 	bool RemoteViewModelRequesterSession::BeginRunning()
@@ -129,16 +194,6 @@ namespace vl::presentation::remote_view_model_test
 	bool RemoteViewModelRequesterSession::CanAdmitRenderer()
 	{
 		return session->CanAdmitRenderer();
-	}
-
-	void RemoteViewModelRequesterSession::BeginStopping()
-	{
-		session->BeginStopping();
-	}
-
-	Nullable<WString> RemoteViewModelRequesterSession::GetFatalError()
-	{
-		return session->GetFatalError();
 	}
 
 	void RemoteViewModelRequesterSession::Stop(const Func<void()>& stopServer)

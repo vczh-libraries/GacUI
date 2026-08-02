@@ -1,5 +1,4 @@
 #include "RemotingClient.h"
-#include <chrono>
 #include <cstdlib>
 
 namespace vl::presentation::remoting
@@ -19,13 +18,6 @@ namespace vl::presentation::remoting
 			Stopping,
 		};
 
-		vint64_t GetMonotonicTime()
-		{
-			return (vint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(
-				std::chrono::steady_clock::now().time_since_epoch()
-				).count();
-		}
-
 		[[noreturn]] void ExitProcess(vint exitCode)
 		{
 			std::_Exit((int)exitCode);
@@ -43,67 +35,6 @@ namespace vl::presentation::remoting
 			auto jsonString = package.Cast<glr::json::JsonString>();
 			return jsonString && jsonString->content.value == message;
 		}
-
-		class RepeatingThread : public Thread
-		{
-		private:
-			SpinLock											lockState;
-			EventObject											eventWake;
-			Func<void()>										callback;
-			vint												interval;
-			bool												stopping = false;
-
-		protected:
-			void Run() override
-			{
-				try
-				{
-					while (true)
-					{
-						eventWake.WaitForTime(interval);
-						bool shouldStop = false;
-						SPIN_LOCK(lockState)
-						{
-							shouldStop = stopping;
-						}
-						if (shouldStop)
-						{
-							return;
-						}
-						callback();
-					}
-				}
-				catch (...)
-				{
-					ExitProcess(1);
-				}
-			}
-
-		public:
-			RepeatingThread(vint _interval, const Func<void()>& _callback)
-				: callback(_callback)
-				, interval(_interval)
-			{
-				CHECK_ERROR(interval > 0, L"RepeatingThread::RepeatingThread(...)#The interval should be positive.");
-				CHECK_ERROR(callback, L"RepeatingThread::RepeatingThread(...)#The callback is null.");
-				CHECK_ERROR(eventWake.CreateAutoUnsignal(false), L"RepeatingThread::RepeatingThread(...)#Failed to create the wake event.");
-			}
-
-			void Notify()
-			{
-				eventWake.Signal();
-			}
-
-			void StopAndWait()
-			{
-				SPIN_LOCK(lockState)
-				{
-					stopping = true;
-				}
-				eventWake.Signal();
-				Wait();
-			}
-		};
 
 		class TaskQueueThread : public Thread
 		{
@@ -193,13 +124,6 @@ namespace vl::presentation::remoting
 				return dispatcher.Obj();
 			}
 
-			void SendToClient(vint clientId, const JsonPackage& package)
-			{
-				CHECK_ERROR(controlChannel, L"BroadcastingLocalClient::SendToClient(...)#The control channel is null.");
-				controlChannel->SendToClient(clientId, package);
-				bool disconnected = false;
-				controlChannel->BatchWrite(disconnected);
-			}
 		};
 
 		class RequesterLocalClient : public JsonLocalChannelClient
@@ -292,11 +216,6 @@ namespace vl::presentation::remoting
 		vint												hostId;
 		bool												hostEverAccepted = false;
 		bool												brokerRegistrationClaimed = false;
-		bool												hostLeaseActive = false;
-		vint64_t											hostLeaseExpiration = -1;
-		bool												fatalClaimed = false;
-		bool												fatalTaken = false;
-		WString												fatalMessage;
 		bool												admissionReady = false;
 		bool												rpcInitialized = false;
 
@@ -307,7 +226,6 @@ namespace vl::presentation::remoting
 		Ptr<RequesterLocalClient>							requesterClient;
 		RemotingJsonDispatcherClient*						requesterDispatcher = nullptr;
 		Ptr<IDescriptable>									service;
-		Ptr<RepeatingThread>								stateThread;
 
 		Impl(
 			const RemotingRpcConfiguration& _configuration,
@@ -336,10 +254,6 @@ namespace vl::presentation::remoting
 				})
 				));
 			requesterClient = Ptr(new RequesterLocalClient(parser, configuration, dispatcherFactory));
-			stateThread = Ptr(new RepeatingThread(
-				configuration.heartbeatIntervalMilliseconds,
-				Func<void()>([this]() { ProcessState(); })
-				));
 		}
 
 		bool TryAcceptHost(vint clientId)
@@ -351,20 +265,13 @@ namespace vl::presentation::remoting
 					admissionReady &&
 					phase == RequesterPhase::Starting &&
 					!hostEverAccepted &&
-					!fatalClaimed &&
 					clientId != configuration.invalidClientId
 					)
 				{
 					hostId = clientId;
 					hostEverAccepted = true;
-					hostLeaseActive = true;
-					hostLeaseExpiration = GetMonotonicTime() + configuration.startupGraceMilliseconds;
 					accepted = true;
 				}
-			}
-			if (accepted)
-			{
-				stateThread->Notify();
 			}
 			return accepted;
 		}
@@ -401,37 +308,7 @@ namespace vl::presentation::remoting
 				RegisterHost(senderClientId);
 				return;
 			}
-			CHECK_ERROR(
-				IsControlMessage(package, configuration.heartbeatMessage),
-				L"RemotingRequesterSession received an unexpected control message."
-				);
-			SPIN_LOCK(lockState)
-			{
-				CHECK_ERROR(hostId == senderClientId, L"RemotingRequesterSession received a heartbeat from an unexpected client.");
-				if (hostLeaseActive)
-				{
-					hostLeaseExpiration = GetMonotonicTime() + configuration.leaseTimeoutMilliseconds;
-				}
-			}
-		}
-
-		void ClaimHostLoss()
-		{
-			bool notify = false;
-			SPIN_LOCK(lockState)
-			{
-				if (phase != RequesterPhase::Stopping && !fatalClaimed)
-				{
-					fatalClaimed = true;
-					fatalMessage = configuration.hostDisconnectedError;
-					hostLeaseActive = false;
-					notify = true;
-				}
-			}
-			if (notify)
-			{
-				stateThread->Notify();
-			}
+			CHECK_ERROR(false, L"RemotingRequesterSession received an unexpected control message.");
 		}
 
 		void OnClientDisconnected(vint clientId)
@@ -443,7 +320,6 @@ namespace vl::presentation::remoting
 				if (hostId == clientId)
 				{
 					hostId = configuration.invalidClientId;
-					hostLeaseActive = false;
 					hostDisconnected = phase != RequesterPhase::Stopping;
 					disconnectBroker = brokerRegistrationClaimed;
 				}
@@ -457,58 +333,19 @@ namespace vl::presentation::remoting
 			}
 			if (hostDisconnected)
 			{
-				ClaimHostLoss();
-			}
-		}
-
-		void ProcessState()
-		{
-			bool invokeTerminal = false;
-			WString message;
-			SPIN_LOCK(lockState)
-			{
-				if (hostLeaseActive && GetMonotonicTime() >= hostLeaseExpiration)
-				{
-					hostId = configuration.invalidClientId;
-					hostLeaseActive = false;
-					if (phase != RequesterPhase::Stopping && !fatalClaimed)
-					{
-						fatalClaimed = true;
-						fatalMessage = configuration.hostDisconnectedError;
-					}
-				}
-				if (fatalClaimed && !fatalTaken)
-				{
-					fatalTaken = true;
-					message = fatalMessage;
-					invokeTerminal = true;
-				}
-			}
-			if (invokeTerminal)
-			{
-				terminalAction(message);
+				terminalAction(configuration.hostDisconnectedError);
 			}
 		}
 
 		void BeginStopping()
 		{
-			vint currentHostId = configuration.invalidClientId;
 			SPIN_LOCK(lockState)
 			{
-				if (phase == RequesterPhase::Stopping || fatalClaimed)
+				if (phase == RequesterPhase::Stopping)
 				{
 					return;
 				}
 				phase = RequesterPhase::Stopping;
-				hostLeaseActive = false;
-				currentHostId = hostId;
-			}
-			if (currentHostId != configuration.invalidClientId)
-			{
-				broadcastingClient->SendToClient(
-					currentHostId,
-					CreateControlMessage(configuration.requesterStoppingMessage)
-					);
 			}
 		}
 	};
@@ -520,10 +357,6 @@ namespace vl::presentation::remoting
 		const Func<void(const WString&)>& terminalAction
 		)
 		: impl(Ptr(new Impl(configuration, dispatcherFactory, parser, terminalAction)))
-	{
-	}
-
-	RemotingRequesterSession::~RemotingRequesterSession()
 	{
 	}
 
@@ -570,7 +403,6 @@ namespace vl::presentation::remoting
 			);
 		impl->requesterDispatcher = impl->requesterClient->GetDispatcher();
 		impl->brokerDispatcher->RegisterClient(requesterClientId);
-		CHECK_ERROR(impl->stateThread->Start(), L"RemotingRequesterSession::Start(...)#Failed to start the state thread.");
 		CHECK_ERROR(impl->taskQueueThread->Start(), L"RemotingRequesterSession::Start(...)#Failed to start the task queue thread.");
 		SPIN_LOCK(impl->lockState)
 		{
@@ -597,7 +429,6 @@ namespace vl::presentation::remoting
 		{
 			if (
 				impl->phase == RequesterPhase::Starting &&
-				!impl->fatalClaimed &&
 				impl->hostId != impl->configuration.invalidClientId
 				)
 			{
@@ -613,7 +444,7 @@ namespace vl::presentation::remoting
 		bool result = false;
 		SPIN_LOCK(impl->lockState)
 		{
-			result = impl->phase == RequesterPhase::Running && !impl->fatalClaimed;
+		result = impl->phase == RequesterPhase::Running;
 		}
 		return result;
 	}
@@ -621,18 +452,6 @@ namespace vl::presentation::remoting
 	void RemotingRequesterSession::BeginStopping()
 	{
 		impl->BeginStopping();
-	}
-
-	Nullable<WString> RemotingRequesterSession::GetFatalError()
-	{
-		SPIN_LOCK(impl->lockState)
-		{
-			if (impl->fatalClaimed)
-			{
-				return impl->fatalMessage;
-			}
-		}
-		return {};
 	}
 
 	void RemotingRequesterSession::Stop(const Func<void()>& stopServer)
@@ -646,7 +465,6 @@ namespace vl::presentation::remoting
 		{
 			stopServer();
 		}
-		impl->stateThread->StopAndWait();
 		impl->taskQueue->QueueExitTask();
 		impl->taskQueueThread->Wait();
 		impl->service = nullptr;
@@ -659,7 +477,6 @@ namespace vl::presentation::remoting
 		JsonChannelClient::ChannelMap						channelNames;
 		Ptr<RemotingJsonDispatcherClient>					dispatcher;
 		JsonChannel*										controlChannel = nullptr;
-		Ptr<RepeatingThread>								heartbeatThread;
 
 		Impl(
 			const RemotingRpcConfiguration& _configuration,
@@ -672,13 +489,9 @@ namespace vl::presentation::remoting
 			channelNames.Add(configuration.controlChannelName, nullptr);
 			dispatcher = dispatcherFactory(taskQueue);
 			CHECK_ERROR(dispatcher, L"RemotingHostingClient::Impl::Impl(...)#The dispatcher factory returned null.");
-			heartbeatThread = Ptr(new RepeatingThread(
-				configuration.heartbeatIntervalMilliseconds,
-				Func<void()>([this]() { SendHeartbeat(); })
-				));
 		}
 
-		void Connect(JsonChannelClient* channelClient, inter_process::IChannelReader<JsonPackage>* controlReader)
+		void Connect(JsonChannelClient* channelClient)
 		{
 			List<WString> waitingForServices;
 			dispatcher->WaitForServer(
@@ -689,7 +502,6 @@ namespace vl::presentation::remoting
 			dispatcher->InitializeRpc(channelClient->GetClientId());
 			controlChannel = channelClient->GetChannels()[configuration.controlChannelName];
 			CHECK_ERROR(controlChannel, L"RemotingHostingClient::Impl::Connect(...)#The control channel is null.");
-			controlChannel->Initialize(controlReader);
 		}
 
 		void FlushControlMessage(const WString& message)
@@ -704,21 +516,9 @@ namespace vl::presentation::remoting
 			}
 		}
 
-		void SendHeartbeat()
-		{
-			FlushControlMessage(configuration.heartbeatMessage);
-		}
-
 		void SendReady()
 		{
-			CHECK_ERROR(heartbeatThread->GetState() == Thread::NotStarted, L"RemotingHostingClient::SendReady()#The heartbeat has already started.");
 			FlushControlMessage(configuration.readyMessage);
-		}
-
-		void StartHeartbeat()
-		{
-			CHECK_ERROR(heartbeatThread->GetState() == Thread::NotStarted, L"RemotingHostingClient::StartHeartbeat()#The heartbeat has already started.");
-			CHECK_ERROR(heartbeatThread->Start(), L"RemotingHostingClient::StartHeartbeat()#Failed to start the heartbeat thread.");
 		}
 	};
 
@@ -731,10 +531,6 @@ namespace vl::presentation::remoting
 		)
 		: JsonNetworkChannelClient(networkClient, parser)
 		, impl(Ptr(new Impl(configuration, dispatcherFactory, taskQueue)))
-	{
-	}
-
-	RemotingHostingClient::~RemotingHostingClient()
 	{
 	}
 
@@ -765,23 +561,9 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	void RemotingHostingClient::OnRead(vint, const JsonPackage& package)
-	{
-		if (IsControlMessage(package, impl->configuration.requesterStoppingMessage))
-		{
-			ExitProcess(0);
-		}
-		ExitProcess(1);
-	}
-
 	void RemotingHostingClient::Connect()
 	{
-		impl->Connect(this, this);
-	}
-
-	void RemotingHostingClient::StartHeartbeat()
-	{
-		impl->StartHeartbeat();
+		impl->Connect(this);
 	}
 
 	void RemotingHostingClient::SendReady()

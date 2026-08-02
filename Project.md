@@ -182,6 +182,8 @@ When `FakeDialogService` is used, all system dialogs are replaced by `REPO-ROOT/
 For the non-remoting projects above, the automation endpoint is `http://localhost:8888/Automation/<PROJECT-NAME>/...` and is hosted by `StartWindowsHttpAutomationService`.
 - Checkout `REPO-ROOT/.github/Guidelines/Running-GacUI.md` for details.
 
+Each application owns its automation stack directly. It constructs the concrete service matching its setup (`WindowsAutomationService`, `WindowsAutomationServiceHosted`, `WindowsAutomationServiceRenderer`, `RemoteProtocolAutomationService`, or a platform renderer service), substitutes it, starts the selected Windows HTTP or MiniHTTP endpoint, runs the application, then stops the endpoint and service before unsubstituting it. Both endpoint implementations expose the same `Controls`, `Dom`, and `IO` contract.
+
 Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in `/Http`, `/Pipe`, and `/MiniHttp` modes:
 - `RemotingTest_Core` exposes the UI as a window-control tree at `http://localhost:8888/Automation/RemotingTest_Core/...`.
 - `RemotingTest_Rendering_Win32` exposes the UI as a DOM tree at `http://localhost:8889/Automation/RemotingTest_Rendering_Win32/...`.
@@ -196,9 +198,9 @@ Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in
 `CppTest_Rvm`, `RemotingTest_Core /RVMT`, and `RemotingTest_RvmHost` share the same physical transport endpoint. RPC endpoints use the exact logical channel `ViewModelChannel`, the host also uses the internal `ViewModelReadyChannel` startup signal, and renderers use the exact logical channel `GacUIRemoteProtocol`. Use the same transport argument throughout one run.
 
 - For `/RVMT`, start `RemotingTest_Core /RVMT` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. Start the renderer only after Core prints `rvmt::IViewModel acquired; renderer admission is open.`
-- For the local variant, start `CppTest_Rvm` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. This variant does not use a renderer.
+- For the Windows-only local variant, start `CppTest_Rvm` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. This variant does not use a renderer.
 - A requester terminates with an error if `RemotingTest_RvmHost` disconnects while the application is running.
-- `CppTest_Rvm` exposes automation at `http://localhost:8888/Automation/CppTest_Rvm/...`.
+- `CppTest_Rvm` exposes automation at `http://localhost:8888/Automation/CppTest_Rvm/...`. `/Pipe` and `/Http` use the Windows HTTP endpoint; `/MiniHttp` registers MiniHTTP automation on the same port-8888 socket server that carries its RVM traffic.
 
 `Playground` is for adhoc testing:
 - The UI in resource file, including `GuiMain` and `OpenMainWindow`, could be modified freely without any concern, it is not part of the release. DO NOT revert `Playground` change as I can also use it for manual verification.
@@ -212,7 +214,6 @@ Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in
 - `Metadata_Generate`: `Metadata_Generate.vcxproj`.
 - `Metadata_Test`: `Metadata_Test.vcxproj`.
 - `CppTest`: `CppTest.vcxproj`.
-- `CppTest_Rvm`: `CppTest_Rvm/vmake` (build-only on Linux; use `RemotingTest_Core /RVMT` with `/MiniHttp` for the runnable RVM demo).
 - `CppTest_Metaonly`: `CppTest_Metaonly.vcxproj`.
 - `CppTest_Reflection`: `CppTest_Reflection.vcxproj`.
 - `GacUI_Compiler`: `GacUI_Compiler.vcxproj`.
@@ -225,3 +226,5 @@ Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in
 You need to build, test and debug in that specific folder, otherwise the unit test will not function properly.
 On Linux, only configuration "debug x64" is available, no need to build or run projects with other configurations.
 Unlike Windows, building have to be done in each folder separately.
+
+`CppTest_Rvm` is Windows-only. The portable RVM demo is `RemotingTest_Core /RVMT` together with `RemotingTest_RvmHost`, using `/MiniHttp` on Linux or macOS.

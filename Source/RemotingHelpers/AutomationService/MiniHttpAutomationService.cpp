@@ -157,10 +157,7 @@ namespace vl::presentation::remoting
 	void StartMiniHttpAutomationService(Ptr<IAsyncSocketServer> socketServer, const WString& applicationName)
 	{
 		auto automationService = GetCurrentController()->AutomationService();
-		if (!automationService->Available())
-		{
-			return;
-		}
+		CHECK_ERROR(automationService->Available(), L"vl::presentation::remoting::StartMiniHttpAutomationService(...)#The automation service is unavailable.");
 		CHECK_ERROR(!miniHttpAutomationService, L"vl::presentation::remoting::StartMiniHttpAutomationService(...)#The MiniHTTP automation service has already been started.");
 
 		auto canDumpControlTree = automationService->CanDumpControlTree();
@@ -176,37 +173,11 @@ namespace vl::presentation::remoting
 		miniHttpAutomationService = service;
 	}
 
-	void StartMiniHttpAutomationService(Ptr<IAsyncSocketServer> socketServer)
-	{
-		auto automationService = GetCurrentController()->AutomationService();
-		StartMiniHttpAutomationService(
-			socketServer,
-			WString::Unmanaged(
-				automationService->CanDumpControlTree()
-					? L"RemotingTest_Core"
-					: L"RemotingTest_Rendering_Win32"
-				)
-			);
-	}
-
 	void StopMiniHttpAutomationService()
 	{
 		CHECK_ERROR(miniHttpAutomationService, L"vl::presentation::remoting::StopMiniHttpAutomationService()#The MiniHTTP automation service has not been started.");
 		miniHttpAutomationService->Stop();
 		delete miniHttpAutomationService;
 		miniHttpAutomationService = nullptr;
-	}
-
-	MiniHttpAutomationServiceScope::MiniHttpAutomationServiceScope(
-		Ptr<IAsyncSocketServer> socketServer,
-		const WString& applicationName
-		)
-	{
-		StartMiniHttpAutomationService(socketServer, applicationName);
-	}
-
-	MiniHttpAutomationServiceScope::~MiniHttpAutomationServiceScope()
-	{
-		StopMiniHttpAutomationService();
 	}
 }

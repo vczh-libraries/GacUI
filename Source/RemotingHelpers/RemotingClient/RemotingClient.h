@@ -19,13 +19,8 @@ namespace vl::presentation::remoting
 		WString												controlChannelName;
 		WString												serviceName;
 		WString												readyMessage;
-		WString												heartbeatMessage;
-		WString												requesterStoppingMessage;
 		WString												hostDisconnectedError;
 		vint												invalidClientId = -1;
-		vint												heartbeatIntervalMilliseconds = 1000;
-		vint												startupGraceMilliseconds = 10000;
-		vint												leaseTimeoutMilliseconds = 5000;
 	};
 
 	class RemotingJsonDispatcherClient
@@ -51,8 +46,6 @@ namespace vl::presentation::remoting
 			Ptr<glr::json::Parser> parser,
 			const Func<void(const WString&)>& terminalAction
 			);
-		~RemotingRequesterSession();
-
 		bool												CanAcceptLocalClient(JsonChannelClient* localClient);
 		bool												TryAcceptHost(vint clientId);
 		void												OnClientDisconnected(vint clientId);
@@ -61,19 +54,15 @@ namespace vl::presentation::remoting
 		bool												BeginRunning();
 		bool												CanAdmitRenderer();
 		void												BeginStopping();
-		Nullable<WString>									GetFatalError();
 		void												Stop(const Func<void()>& stopServer);
 	};
 
 	class RemotingHostingClient
 		: public rpc_controller::channeling::JsonNetworkChannelClient
-		, protected inter_process::IChannelReader<JsonPackage>
 	{
 	private:
 		class Impl;
 		Ptr<Impl>											impl;
-
-		void												OnRead(vint senderClientId, const JsonPackage& package) override;
 
 	public:
 		RemotingHostingClient(
@@ -83,8 +72,6 @@ namespace vl::presentation::remoting
 			Ptr<glr::json::Parser> parser,
 			Ptr<TaskQueue> taskQueue
 			);
-		~RemotingHostingClient();
-
 		const JsonChannelClient::ChannelNameList&			OnGetChannelNames() override;
 		void												OnConnected(vint clientId) override;
 		void												OnDisconnected() override;
@@ -93,7 +80,6 @@ namespace vl::presentation::remoting
 
 		void												Connect();
 		void												SendReady();
-		void												StartHeartbeat();
 		RpcDispatcherClient*								GetDispatcher();
 	};
 }

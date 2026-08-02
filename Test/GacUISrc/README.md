@@ -13,7 +13,7 @@
 - `Metadata_Test`: Test the generated binary files, both Win32 and X64 at the same time.
 - `GacUI_Compiler`: Compile `FakeDialogServiceUI` (with merging), `DarkSkin`, `FullControlTest`, `RemoteProtocolTest` and `RemoteViewModelTest`, both Win32 and X64 at the same time.
   - `CppTest`: Compile and run generated C++ files in `hosted mode` with `VCZH_DEBUG_NO_REFLECTION`.
-  - `CppTest_Rvm`: Run `Generated_RemoteViewModelTest` locally with a view-model service supplied by `RemotingTest_RvmHost` (`/Pipe`, `/Http`, `/MiniHttp`).
+  - `CppTest_Rvm`: Windows-only. Run `Generated_RemoteViewModelTest` locally with a view-model service supplied by `RemotingTest_RvmHost` (`/Pipe`, `/Http`, `/MiniHttp`).
   - `CppTest_Metaonly`: Compile and run generated C++ files with `VCZH_DEBUG_METAONLY_REFLECTION`.
   - `CppTest_Reflection`: Compile and run generated C++ files.
   - `GacUI_Host`: Load the compiled binary file and run.
@@ -27,9 +27,9 @@
 RemoteViewModel demo startup is ordered, and every participating process must use the same transport argument:
 
 - For `/RVMT`, start `RemotingTest_Core /RVMT` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. Start `RemotingTest_Rendering_Win32` only after Core prints `rvmt::IViewModel acquired; renderer admission is open.`
-- For the local variant, start `CppTest_Rvm` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. This variant does not use a renderer.
+- For the Windows-only local variant, start `CppTest_Rvm` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. This variant does not use a renderer. `/Pipe` and `/Http` use Windows HTTP for automation; `/MiniHttp` shares its port-8888 MiniHTTP socket server between RVM and automation traffic.
 - A requester exits with an error if `RemotingTest_RvmHost` disconnects while it is running.
-- On Linux, `CppTest_Rvm` is build-only; use `RemotingTest_Core /RVMT` with `/MiniHttp` for the runnable RVM demo.
+- On Linux and macOS, use the portable `RemotingTest_Core /RVMT` plus `RemotingTest_RvmHost` path with `/MiniHttp`.
 
 ## Shared
 
