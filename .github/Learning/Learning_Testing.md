@@ -5,11 +5,13 @@
 - Keep test log paths stable during refactors [13]
 - Remote protocol frames: actions must change UI; organize frames carefully [9]
 - Don’t schedule redundant idle frames [7]
-- Debug remote core/renderer stress runs instead of plain launching [6]
+- Stress remote core/renderer transport and terminal flows [6]
 - Preserve existing idle-frame titles when requested [6]
 - Seed key-behavior tests via `protocol->TypeString` [6]
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
 - Validate GacJS through browser UI interactions [4]
+- Verify GacJS HTTP fatal errors through browser UI [4]
+- Verify `/IO` synchronous errors and queued success separately [4]
 - Caret navigation tests: type markers to expose caret [3]
 - Avoid duplicate tests across related categories [3]
 - Validate imported dependency APIs with GacUI build and unit test [3]
@@ -24,10 +26,9 @@
 - GuiDocumentLabel paragraphs: use `\\r\\n\\r\\n` between paragraphs in `LoadTextAndClearUndoRedo` [2]
 - Use `AssertItems`/`AssertCallbacks` for visible item lists [2]
 - Unit-test renderer `CaretLineLast` should treat CRLF as newline [2]
-- Verify GacJS HTTP fatal errors through browser UI [2]
-- Verify `/IO` synchronous errors and queued success separately [2]
 - Native modal dialogs block GacUI HTTP automation [2]
 - Verify remoting imports with both HTTP and named-pipe flows [2]
+- Verify RVM requester/host lifetimes across every transport [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
 - Skip callback plumbing when not asserting callbacks [1]
@@ -68,6 +69,7 @@
 - Verify DarkSkin cursor ownership through regression and Playground automation [1]
 - Verify remote visual footprints at protocol and executable boundaries [1]
 - Isolate remote cache handoffs with single-response-shape tests [1]
+- MiniHTTP automation probes use IPv4 loopback [1]
 
 # Refinements
 
@@ -354,17 +356,17 @@ Keep paragraphs short to avoid line wrapping, so tests validate navigation rules
 
 In unit-test rendering stubs, line-end caret movement (e.g. END via `CaretLineLast`) must treat CRLF as a single newline terminator. If line-end trimming is needed, strip both `L'\r'` and `L'\n'` so END never lands between `\r` and `\n` (which would make typed markers insert inside the CRLF sequence).
 
-## Debug remote core/renderer stress runs instead of plain launching
+## Stress remote core/renderer transport and terminal flows
 
-For `RemotingTest_Core` and `RemotingTest_Rendering_Win32` pipe/HTTP remoting checks, attach or launch under the debugger when stressing input paths. Win32 callback paths can otherwise swallow exceptions and exit silently. A useful stress target is five consecutive pipe runs and five consecutive HTTP runs typing about 1000 characters into the remote document editor, confirming core input events and renderer DOM updates continue without debugger stops.
+For `RemotingTest_Core` and `RemotingTest_Rendering_Win32` pipe/HTTP remoting checks, stress input paths through the repository execution wrappers and automation endpoints. A useful target is five consecutive pipe runs and five consecutive HTTP runs typing about 1000 characters into the remote document editor, confirming core input events, renderer DOM updates, process results, and absence of stale processes.
 
-For `/Http /FCT` or renderer-communication validation, launch both core and renderer under the debugger and use a renderer-side breakpoint such as `GuiRemoteRendererSingle::RenderDom` to confirm commands are actually flowing. When testing renderer shutdown, close the renderer gently and verify the core observes the disconnect and exits.
+For `/Http /FCT` or renderer-communication validation, observe `/Controls`, `/Dom`, `/IO`, and process state to confirm commands are flowing. When testing renderer shutdown, close the renderer gently and verify the core observes the disconnect and exits.
 
 For the HTTP FullControlTest remoting pair, pass `/Http /FCT` to `RemotingTest_Core` and only `/Http` to `RemotingTest_Rendering_Win32`; `/FCT` is core-side scenario selection. Closing the visible renderer window gently should make the renderer exit first and then the core exit after observing the disconnect.
 
-For retained-fatal RemoteProtocolTest behavior, start `RemotingTest_Core` first with `/RPT /Pipe` or `/RPT /Http`, then start `RemotingTest_Rendering_Win32` with the matching transport, with both processes under the debugger. Verify the default Yes path preserves the old exit behavior. Verify No keeps the renderer locally closeable with its frozen DOM and fatal error, rejects ordinary `/IO` synchronously, and still accepts exact `!Exit`; also cover title-bar close, resize/minimize/restore, repeated fresh sessions, and absence of stale processes.
+For retained-fatal RemoteProtocolTest behavior, start `RemotingTest_Core` first with `/RPT /Pipe` or `/RPT /Http`, then start `RemotingTest_Rendering_Win32` with the matching transport. Verify the default Yes path preserves the old exit behavior. Verify No keeps the renderer locally closeable with its frozen DOM and fatal error, rejects ordinary `/IO` synchronously, and still accepts exact `!Exit`; also cover title-bar close, resize/minimize/restore, repeated fresh sessions, and absence of stale processes.
 
-For normal `/FCT` shutdown, repeat exact `!Exit` runs across MiniHTTP, HTTP, and named pipe. Break on `RequestControllerConnectionStopped` and later local-error callbacks to verify the ordering policy: after the normal-stop message, no transport failure may produce a fatal prompt. Distinguish that policy check from delivery/liveness—if MiniHTTP never delivers the stop message before the core disappears, the renderer cannot apply a state transition it did not receive.
+For normal `/FCT` shutdown, repeat exact `!Exit` runs across MiniHTTP, HTTP, and named pipe. Observe renderer automation and process state to verify the ordering policy: after the normal-stop message, no transport failure may produce a fatal prompt. Distinguish that policy check from delivery/liveness—if MiniHTTP never delivers the stop message before the core disappears, the renderer cannot apply a state transition it did not receive.
 
 ## Verify GacJS HTTP fatal errors through browser UI
 
@@ -406,7 +408,7 @@ After importing remoting-related dependency releases, verify `RemotingTest_Core`
 
 ## Verify `/IO` synchronous errors and queued success separately
 
-When changing GacUI HTTP automation `/IO`, verify synchronous error paths separately from queued success under a debugger-attached app. Send a malformed command such as an invalid mouse coordinate and confirm the response contains the syntax error immediately. For restricted modes such as `ExitOnly`, confirm ordinary commands return the exact contract error without queuing work while exact `!Exit` still returns `Queued`. Then send a healthy valid command and confirm the response is `Queued` and the UI changes afterward. For modal workflows, avoid treating `Queued` as completion and inspect `/Controls` or `/Dom` only after the dialog/action has actually finished.
+When changing GacUI HTTP automation `/IO`, verify synchronous error paths separately from queued success through the documented application execution and automation workflow. Send a malformed command such as an invalid mouse coordinate and confirm the response contains the syntax error immediately. For restricted modes such as `ExitOnly`, confirm ordinary commands return the exact contract error without queuing work while exact `!Exit` still returns `Queued`. Then send a healthy valid command and confirm the response is `Queued` and the UI changes afterward. For modal workflows, avoid treating `Queued` as completion and inspect `/Controls` or `/Dom` only after the dialog/action has actually finished.
 
 ## Native modal dialogs block GacUI HTTP automation
 
@@ -431,3 +433,11 @@ The protocol recorder proves the corrected data contract, while executable-bound
 When remote rendering progress depends on multiple cache types, construct a focused first-frame response that contains only the cache under test. For image measurement, return valid `createdImages` metadata with no `fontHeights`, then require the waiting image renderer to adopt its minimum size without a property change or unrelated refresh.
 
 This avoids full-application frames masking a missing handoff by coincidentally returning another cache type, and turns machine-dependent cache mixes into a deterministic regression.
+
+## Verify RVM requester/host lifetimes across every transport
+
+Across `/Pipe`, `/Http`, and `/MiniHttp`, verify successful startup and `Translate`, fatal host loss when it is observed during startup or a later real RPC operation, and normal requester stopping. Idle `/Http` and `/MiniHttp` sessions do not need proactive peer-loss detection. Core must deliver one Core-authored `!Error` before a nonzero fatal exit, while renderer loss and replacement remain nonfatal. Repeated runs must leave no orphan process or stale endpoint.
+
+## MiniHTTP automation probes use IPv4 loopback
+
+When a MiniHTTP test listener binds IPv4 loopback, probe it through `127.0.0.1`. `localhost` may resolve to IPv6 and miss an otherwise healthy listener, producing a misleading endpoint failure.

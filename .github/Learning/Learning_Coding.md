@@ -2,20 +2,25 @@
 
 # Orders
 
+- Stop remoting transports before stack channel wrappers destruct [6]
+- Keep reusable renderer terminal state separate from host policy [6]
+- Cache renderer packages until main-thread invoker exists [5]
+- Deliver fatal remote-channel errors before transport shutdown [5]
+- `ViewModelReadyChannel` is the post-route RPC registration barrier [4]
+- Renderer channel dispatch belongs in async renderer layer [4]
+- Treat a fatal local channel error as a complete disconnect signal [4]
+- Remote core accepts replacement renderers by detaching stale renderer [4]
+- Automation `/IO` parses synchronously and queues parsed commands [3]
 - `vl::collections::ObservableList<T>` element access and replacement [2]
 - Extract helpers to remove duplicated conversion blocks [2]
 - Place helpers in the primary-responsibility namespace [2]
 - Keep remote JSON channel code pure data processing [2]
-- Renderer channel dispatch belongs in async renderer layer [2]
-- Cache renderer packages until main-thread invoker exists [2]
-- Deliver fatal remote-channel errors before transport shutdown [2]
-- Treat a fatal local channel error as a complete disconnect signal [2]
-- Stop remoting transports before stack channel wrappers destruct [2]
 - Do not call `IChannel::Initialize(nullptr)` to uninstall readers [2]
-- Automation `/IO` parses synchronously and queues parsed commands [2]
-- Keep reusable renderer terminal state separate from host policy [2]
-- Remote core accepts replacement renderers by detaching stale renderer [1]
-- Parameterize remoting channel servers by concrete protocol server bases [1]
+- `RemotingTest_Core /RVMT` gates singleton channels by startup phase [2]
+- Parameterize remoting channel servers by concrete protocol server bases [2]
+- `Source/RemotingHelpers` stays test-only and generated-neutral [2]
+- `CppTest_Rvm` is a GUI app and stays console-free [2]
+- Automation HTTP returns 404 only for protocol-level rejection [2]
 - Use channel `localClient` callbacks for remoting local-client detection [1]
 - Use `EventObject` for renderer-connection waits after channel server start [1]
 - `TreeViewItemBindableRootProvider::UpdateBindingProperties` is root-scoped [1]
@@ -58,6 +63,9 @@
 - Clear `GacUI_Compiler` preloaded generated resources once at entry [1]
 - Remote splitter bounds describe the actual two-pixel footprint [1]
 - Retry remote renderers after every relevant cache response [1]
+- `Instance_GenerateRpcMetadata` validates one aggregate of all Workflow modules [1]
+- `RemoteViewModelTest` control messages are business-only [1]
+- GacUI test apps own concrete automation service composition [1]
 
 # Refinements
 
@@ -134,6 +142,8 @@ Keep the async renderer wrapper when it owns queued scheduling, connection waits
 During renderer startup, network/channel packages can arrive before `GetApplication()` and the main-window registration are ready. The renderer async channel should cache all incoming packages until `SetInvokeInMainThread` installs the invoker, then drain them through `InvokeInMainThread` so startup commands are not lost.
 
 Protect delayed renderer callbacks with a generation stamp (or equivalent detach signal) so callbacks captured by an old reader cannot run against a newly installed reader. Queue packages before the application object exists and drain them only after the invoker is installed.
+
+Queue protocol packages and transport-terminal notifications through the same ordered main-thread path. Classify the terminal state only after earlier packages have run, and detach only after that ordering decision so a queued `ControllerConnectionStopped` or Core-authored fatal package is not discarded.
 
 ## Deliver fatal remote-channel errors before transport shutdown
 
@@ -300,6 +310,8 @@ For Windows HTTP automation `/IO`, keep syntax parsing inside `INativeAutomation
 
 Enforce partial IO availability at the shared service boundary on every call, not only in an endpoint capability check. For `IOCommandAvailability::ExitOnly`, `AutomationServiceBase::RunIOCommand` forwards only exact `!Exit`; every other command returns the specified synchronous error without queuing work. Endpoint layers should treat only `Disabled` as unsupported and still call `RunIOCommand` for `ExitOnly`.
 
+Endpoint layers may return 404 for unsupported verbs or routes, malformed IO suffixes, invalid content types, and disabled operations. Unexpected parser, automation, or callback failures are test-app failures and must reach a process-terminating boundary rather than being translated into 404.
+
 ## `GuiDocumentCommonInterface` cursor belongs to the document mouse area
 
 For document/text editing controls, the edit cursor should be owned by the current document mouse/content area, not by the control bounds, the scroll-view container, or DarkSkin scrollbar parts. `GuiDocumentCommonInterface::ReplaceMouseArea` should move the remembered cursor from the old temporary mouse area to the new template-provided mouse area, and `UpdateCursor` should update both the remembered cursor and the current mouse area. Avoid fixing inherited `IBeam` leaks by duplicating `darkskin::DocumentViewerTemplate` or by forcing `Arrow` onto scrollbar containers/corners; those are symptom patches when the real issue is cursor ownership.
@@ -323,3 +335,37 @@ Apply the transformation symmetrically to vertical and horizontal splitters. Spl
 In `GuiRemoteGraphicsRenderTarget::StopRenderingOnNativeWindow`, ingest all returned measurement caches before retrying `renderersAskingForCache`: add font heights, apply created-image metadata, and then let each waiting renderer call its type-specific `TryFetchMinSizeFromCache()`.
 
 Do not guard the generic retry loop only on `fontHeights`. Image-frame renderers must consume image-only responses in the same frame; otherwise they remain at `0x0` until an unrelated font response or property refresh happens to retry them. Run the loop when either relevant cache response is present and leave unresolved renderers queued.
+
+## `Instance_GenerateRpcMetadata` validates one aggregate of all Workflow modules
+
+Retain the final InstanceClass manager's analyzed modules, merge their original AST paths and declarations into one transient `WfModule`, and call `workflow::analyzer::ValidateModuleRPC(manager, aggregate)` once. Do not infer comprehensive RPC metadata from the final per-module result or by scanning source text. Keep the original nodes so diagnostics preserve their resource and script locations, and leave ordinary Workflow output unchanged.
+
+## `RemotingTest_Core /RVMT` gates singleton channels by startup phase
+
+Before the RVM host is reserved, accept only a remote client advertising exactly `{ViewModelChannel}`. Reserve that host once. Only after service acquisition and window construction should Core accept a client advertising exactly `{GacUIRemoteProtocol}` through the renderer replacement path. Reject empty, duplicate, mixed, unknown, or other multi-channel lists.
+
+## `ViewModelReadyChannel` is the post-route RPC registration barrier
+
+Channel admission runs before the accepted network route is committed, so do not register the RVM host with the RPC broker from the admission callback. The host sends `Ready` through `ViewModelReadyChannel` after its route exists; the requester then registers that exact host and supplies the broker ID. Preserve this ordering to avoid a startup deadlock or a lost broker login.
+
+## `RemoteViewModelTest` control messages are business-only
+
+Keep only exact `Ready` as the post-route startup signal after the host registers its service. Do not add heartbeat, polling, lease, retry, keep-alive, disconnect acknowledgement, requester-stopping message, or reverse shutdown handshake. Idle `/Http` and `/MiniHttp` peers need not be detected proactively; the next real transport or RPC operation may expose the loss, and the test app then terminates instead of recovering.
+
+## `Source/RemotingHelpers` stays test-only and generated-neutral
+
+CodePack distribution does not make `Source/RemotingHelpers` part of the ordinary GacUI library API. Keep the neutral pair free of `Test`, generated-application RPC types, and Windows dependencies; keep Windows implementation in its separate pair; and do not make ordinary `GacUI` or `GacUI.Windows` depend on either helper pair. Test applications retain their generated-module and concrete service composition.
+
+Compile the remaining helper implementation through one explicit shared-items inventory in the GacUISrc test solution. Individual consumers should import that inventory instead of maintaining divergent direct source lists, even when a particular app does not exercise every portable helper.
+
+## GacUI test apps own concrete automation service composition
+
+Start automation only after the native controller exists. Each test app constructs the platform- and mode-specific service as a stack value, substitutes it directly, starts Windows HTTP or MiniHTTP, runs the app, then performs endpoint stop, service stop, and unsubstitution in straight-line normal shutdown order. Do not add a generic service enum, host abstraction, scope wrapper, global service pointer, or cleanup-only catch; the platform provider must not automatically install test automation.
+
+## `CppTest_Rvm` is a GUI app and stays console-free
+
+Keep `CppTest_Rvm` independent of `vl::console::Console`. Invalid arguments can produce a nonzero process result without console logging, while ordinary diagnostics and interaction use the GUI and automation surfaces.
+
+## Automation HTTP returns 404 only for protocol-level rejection
+
+Returning 404 for an unsupported verb or route, malformed IO suffix, invalid content type, or disabled operation is endpoint behavior. An unexpected parser, automation implementation, callback, or invariant failure must terminate the test app at the appropriate async or OS boundary instead of being hidden behind 404.

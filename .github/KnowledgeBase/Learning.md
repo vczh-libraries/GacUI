@@ -3,20 +3,20 @@
 # Orders
 
 - Process staged tasks one by one with verification [19]
-- Verify generated artifacts with downstream consumer checks [15]
+- Verify generated artifacts with downstream consumer checks [16]
+- Crash early instead of adding error-tolerance fallbacks [14]
 - Port fixes from imports to source repositories [13]
-- Crash early instead of adding error-tolerance fallbacks [9]
-- Keep design documentation aligned with code after refactoring [8]
-- Proactively remove code made redundant by refactoring [8]
-- Fix behavior at the owning state instead of patching symptoms [7]
+- Proactively remove code made redundant by refactoring [12]
+- Keep design documentation aligned with code after refactoring [10]
+- Fix behavior at the owning state instead of patching symptoms [10]
+- Verify and localize portability on every target OS [7]
+- Extract abstractions only for real shared behavior [7]
 - Make `Stop()` drain asynchronous work before returning [6]
 - Validate expectations against implementation and existing tests [5]
-- Verify and localize portability on every target OS [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
+- Do not assume async callback owners are heap allocated [4]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [3]
-- Extract abstractions only for real shared behavior [3]
-- Do not assume async callback owners are heap allocated [3]
 - Capture dependent lambdas explicitly [2]
 - Don't assume observable changes are batched [2]
 - Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages [2]
@@ -25,6 +25,8 @@
 - Prefer well-defined tests over ambiguous edge cases [2]
 - Prefer raw pointers unless shared ownership is required [2]
 - Start async callbacks after most-derived construction [2]
+- Use RAII scope cleanup instead of manual catch cleanup [2]
+- Treat environment correlation as evidence, not a cause [2]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
 - Use named sentinel constants instead of raw values [1]
@@ -34,7 +36,6 @@
 - Construct `Nullable<WString>` explicitly in function calls [1]
 - Sort serialization metadata by deterministic keys, not pointer addresses [1]
 - Do not rely on `Event<T>` handler invocation order [1]
-- Use RAII scope cleanup instead of manual catch cleanup [1]
 - `collections::Dictionary` copy assignment is deleted (use move/swap) [1]
 - Dereference `Ptr<T>` via `.Obj()` (not `*ptr`) [1]
 - `vl::regex` separator regex: `L"[\\/\\\\]+"` [1]
@@ -46,7 +47,6 @@
 - Keep generated makefiles platform-invariant [1]
 - Group non-template C++ implementations by class in `.cpp` files [1]
 - Use reentrant POSIX date-time conversions [1]
-- Treat environment correlation as evidence, not a cause [1]
 
 # Refinements
 
@@ -65,6 +65,8 @@ For public API arguments that callers can validate with query methods, fail with
 When an invariant says a value must exist or a conversion must succeed, prefer using it directly or using a strong cast so a violation crashes or throws immediately. Do not add speculative null checks, weak casts, or silent fallbacks that hide protocol or ownership bugs. Fix the real cause instead of making the code tolerant of states that should be impossible.
 
 Build-generation scripts must also preserve failures from compiler or dependency probes across command substitutions and formatting pipelines. Stop before emitting tracked output when a required header or package is missing, and declare the dependency in the canonical environment bootstrap so the original diagnostic is reported instead of a malformed generated rule.
+
+For HTTP automation endpoints, return protocol errors such as 404 only for recognized request rejection. Unexpected parser, automation, callback, or invariant failures should reach a process-terminating boundary instead of being translated into a healthy-looking endpoint response.
 
 ## Process staged tasks one by one with verification
 
@@ -204,6 +206,8 @@ When multiple handlers attached to the same `Event<T>` can both observe, mutate,
 
 When a helper temporarily suppresses callbacks, changes ownership flags, or otherwise establishes scoped state, use a small scope object whose destructor restores state during normal return and exception unwinding. Avoid manual `try`/`catch` blocks that only restore state and rethrow; C++ stack unwinding should own that cleanup.
 
+Do not add a scope wrapper solely to run normal-path finalization after an exception in a fail-fast test app. When the exception is intended to terminate the process and the OS releases the endpoint, keep ordinary shutdown calls straight-line at the end. Retain scoped ownership where destruction order prevents callbacks from reaching expired stack objects.
+
 ## `collections::Dictionary` copy assignment is deleted (use move/swap)
 
 `collections::Dictionary` does not support copy assignment. When you need to replace one dictionary with another, use move semantics (when appropriate), or rebuild/swap explicitly instead of `a = b`.
@@ -231,6 +235,8 @@ For generated build files, compare the selected source list with the owning proj
 When generated build metadata must be platform-invariant, generate it with native and simulated host selection and compare tracked `makefile` and `vmake.txt` output byte for byte. Then perform clean and no-op incremental builds and inspect host-local dependency files, ensuring stable tracked output does not break platform-specific includes or incremental rebuilds.
 
 When a generator produces runnable sample applications, verify the generated output through the actual app workflow too. For example, generated ChatBot RPC code should be checked by running the server and multiple clients through joins, chat messages, client exit, and server shutdown, not only by confirming generation succeeds.
+
+When CodePack ownership is split, inspect the exact generated code pairs and their dependency boundaries. Confirm neutral output excludes platform-only dependencies, ordinary library pairs do not absorb the helper layer, and generated formatting is preserved rather than hand-edited.
 
 When a shared dispatcher schema such as `Rpc.d.ts` changes, type-check the shared schema itself as well as generated fixtures so envelope changes are caught even before concrete generated values instantiate every request shape.
 
@@ -301,6 +307,8 @@ When a layered transport needs a stricter response policy than its general parse
 ## Treat environment correlation as evidence, not a cause
 
 When a bug reproduces on one machine but not another, do not assume hardware speed or timing is causal merely because the machines differ. Reproduce the smallest differing state or response shape deterministically, then identify the missing transition or dependency that the other environment happens to mask.
+
+The same standard applies when severe CPU usage coincides with a debugger or terminal session: treat the tool/output feedback path as a hypothesis until resource evidence identifies the consuming process or thread. Do not turn an unobserved incident into a durable application-thread-leak diagnosis.
 
 ## Verify and localize portability on every target OS
 
