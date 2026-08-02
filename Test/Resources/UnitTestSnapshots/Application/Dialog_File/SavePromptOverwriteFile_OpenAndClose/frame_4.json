@@ -1514,83 +1514,24 @@
       ]
     ],
     [
-      163,
+      168,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 163,
+          "id": 168,
           "backgroundColor": "#2D2D30",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      164,
-      [
-        "ElementDesc_SolidBorder",
-        {
-          "id": 164,
-          "borderColor": "#434346",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      165,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 165,
-          "backgroundColor": "#252526",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      166,
-      [
-        "ElementDesc_SolidBorder",
-        {
-          "id": 166,
-          "borderColor": "#434346",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      168,
-      [
-        "ElementDesc_SolidLabel",
-        {
-          "id": 168,
-          "textColor": "#6D6D6D",
-          "horizontalAlignment": "Center",
-          "verticalAlignment": "Center",
-          "wrapLine": false,
-          "wrapLineHeightCalculation": false,
-          "ellipse": false,
-          "multiline": false,
-          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "",
-          "measuringRequest": "TotalSize"
-        }
-      ]
-    ],
-    [
       169,
       [
-        "ElementDesc_Polygon",
+        "ElementDesc_SolidBorder",
         {
           "id": 169,
-          "size": {"x": 24, "y": 16},
-          "borderColor": "#F1F1F1",
-          "backgroundColor": "#F1F1F1",
-          "points": [
-            {"x": 8, "y": 12},
-            {"x": 15, "y": 12},
-            {"x": 15, "y": 13},
-            {"x": 8, "y": 13}
-          ]
+          "borderColor": "#434346",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
@@ -1645,6 +1586,65 @@
           "borderColor": "#F1F1F1",
           "backgroundColor": "#F1F1F1",
           "points": [
+            {"x": 8, "y": 12},
+            {"x": 15, "y": 12},
+            {"x": 15, "y": 13},
+            {"x": 8, "y": 13}
+          ]
+        }
+      ]
+    ],
+    [
+      175,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 175,
+          "backgroundColor": "#252526",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      176,
+      [
+        "ElementDesc_SolidBorder",
+        {
+          "id": 176,
+          "borderColor": "#434346",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      178,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 178,
+          "textColor": "#6D6D6D",
+          "horizontalAlignment": "Center",
+          "verticalAlignment": "Center",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "",
+          "measuringRequest": "TotalSize"
+        }
+      ]
+    ],
+    [
+      179,
+      [
+        "ElementDesc_Polygon",
+        {
+          "id": 179,
+          "size": {"x": 24, "y": 16},
+          "borderColor": "#F1F1F1",
+          "backgroundColor": "#F1F1F1",
+          "points": [
             {"x": 6, "y": 2},
             {"x": 17, "y": 2},
             {"x": 17, "y": 13},
@@ -1660,11 +1660,11 @@
       ]
     ],
     [
-      175,
+      180,
       [
         "ElementDesc_Polygon",
         {
-          "id": 175,
+          "id": 180,
           "size": {"x": 24, "y": 16},
           "borderColor": "#F1F1F1",
           "backgroundColor": "#F1F1F1",
@@ -1694,33 +1694,33 @@
       ]
     ],
     [
-      176,
+      181,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 176,
+          "id": 181,
           "backgroundColor": "#3F3F46",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      177,
+      182,
       [
         "ElementDesc_SolidBorder",
         {
-          "id": 177,
+          "id": 182,
           "borderColor": "#54545C",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      179,
+      184,
       [
         "ElementDesc_SolidLabel",
         {
-          "id": 179,
+          "id": 184,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Center",
           "verticalAlignment": "Center",
@@ -1735,11 +1735,11 @@
       ]
     ],
     [
-      180,
+      185,
       [
         "ElementDesc_Polygon",
         {
-          "id": 180,
+          "id": 185,
           "size": {"x": 24, "y": 16},
           "borderColor": "#F1F1F1",
           "backgroundColor": "#F1F1F1",
@@ -1765,18 +1765,18 @@
       ]
     ],
     [
-      181,
+      186,
       [
         "ElementDesc_ImageFrame",
-        {"id": 181, "imageId": null, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+        {"id": 186, "imageId": null, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
       ]
     ],
     [
-      182,
+      187,
       [
         "ElementDesc_SolidLabel",
         {
-          "id": 182,
+          "id": 187,
           "textColor": "#6D6D6D",
           "horizontalAlignment": "Left",
           "verticalAlignment": "Top",
@@ -1791,29 +1791,29 @@
       ]
     ],
     [
-      183,
+      188,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 183,
+          "id": 188,
           "backgroundColor": "#FFFFFF",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      184,
+      189,
       [
         "ElementDesc_ImageFrame",
-        {"id": 184, "imageId": 6, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+        {"id": 189, "imageId": 6, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
       ]
     ],
     [
-      185,
+      190,
       [
         "ElementDesc_SolidLabel",
         {
-          "id": 185,
+          "id": 190,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Left",
           "verticalAlignment": "Top",
@@ -1828,33 +1828,33 @@
       ]
     ],
     [
-      186,
+      191,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 186,
+          "id": 191,
           "backgroundColor": "#54545C",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      187,
+      192,
       [
         "ElementDesc_SolidBorder",
         {
-          "id": 187,
+          "id": 192,
           "borderColor": "#6A6A75",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      189,
+      194,
       [
         "ElementDesc_SolidLabel",
         {
-          "id": 189,
+          "id": 194,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Center",
           "verticalAlignment": "Center",
@@ -1869,33 +1869,33 @@
       ]
     ],
     [
-      190,
+      195,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 190,
+          "id": 195,
           "backgroundColor": "#3F3F46",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      191,
+      196,
       [
         "ElementDesc_SolidBorder",
         {
-          "id": 191,
+          "id": 196,
           "borderColor": "#54545C",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      193,
+      198,
       [
         "ElementDesc_SolidLabel",
         {
-          "id": 193,
+          "id": 198,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Center",
           "verticalAlignment": "Center",

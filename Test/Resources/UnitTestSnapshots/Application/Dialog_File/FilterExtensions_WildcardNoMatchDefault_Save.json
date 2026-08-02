@@ -127,26 +127,26 @@
     [135, "ImageFrame"],
     [136, "SolidLabel"],
     [137, "SolidBackground"],
-    [138, "Polygon"],
-    [139, "Polygon"],
-    [140, "ImageFrame"],
-    [141, "SolidLabel"],
-    [142, "SolidBackground"],
-    [143, "ImageFrame"],
-    [144, "SolidLabel"],
-    [145, "SolidBackground"],
-    [146, "ImageFrame"],
-    [147, "SolidLabel"],
-    [148, "SolidBackground"],
-    [149, "ImageFrame"],
-    [150, "SolidLabel"],
-    [151, "SolidBackground"],
-    [152, "ImageFrame"],
-    [153, "SolidLabel"],
-    [154, "SolidBackground"],
-    [155, "ImageFrame"],
-    [156, "SolidLabel"],
-    [157, "SolidBackground"],
+    [138, "ImageFrame"],
+    [139, "SolidLabel"],
+    [140, "SolidBackground"],
+    [141, "ImageFrame"],
+    [142, "SolidLabel"],
+    [143, "SolidBackground"],
+    [144, "ImageFrame"],
+    [145, "SolidLabel"],
+    [146, "SolidBackground"],
+    [147, "ImageFrame"],
+    [148, "SolidLabel"],
+    [149, "SolidBackground"],
+    [150, "ImageFrame"],
+    [151, "SolidLabel"],
+    [152, "SolidBackground"],
+    [153, "ImageFrame"],
+    [154, "SolidLabel"],
+    [155, "SolidBackground"],
+    [156, "Polygon"],
+    [157, "Polygon"],
     [158, "ImageFrame"],
     [159, "SolidLabel"],
     [160, "SolidBackground"],
@@ -210,7 +210,7 @@
       "root": null
     },
     {
-      "frameId": 11,
+      "frameId": 13,
       "frameName": "Show Dialog",
       "windowSize": {
         "bounds": {
@@ -237,7 +237,7 @@
       "root": null
     },
     {
-      "frameId": 15,
+      "frameId": 17,
       "frameName": "Filter: Wildcard *yt+*zt",
       "windowSize": {
         "bounds": {
@@ -264,7 +264,7 @@
       "root": null
     },
     {
-      "frameId": 18,
+      "frameId": 20,
       "frameName": "Confirmed",
       "windowSize": {
         "bounds": {

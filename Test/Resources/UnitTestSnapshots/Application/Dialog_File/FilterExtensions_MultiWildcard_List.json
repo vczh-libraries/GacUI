@@ -124,11 +124,11 @@
     [132, "ImageFrame"],
     [133, "SolidLabel"],
     [134, "SolidBackground"],
-    [135, "ImageFrame"],
-    [136, "SolidLabel"],
-    [137, "SolidBackground"],
-    [138, "Polygon"],
-    [139, "Polygon"],
+    [135, "Polygon"],
+    [136, "Polygon"],
+    [137, "ImageFrame"],
+    [138, "SolidLabel"],
+    [139, "SolidBackground"],
     [140, "ImageFrame"],
     [141, "SolidLabel"],
     [142, "SolidBackground"],
@@ -218,7 +218,7 @@
       "root": null
     },
     {
-      "frameId": 11,
+      "frameId": 13,
       "frameName": "Show Dialog",
       "windowSize": {
         "bounds": {
@@ -245,7 +245,7 @@
       "root": null
     },
     {
-      "frameId": 15,
+      "frameId": 17,
       "frameName": "Filter: Image Files",
       "windowSize": {
         "bounds": {
@@ -272,7 +272,7 @@
       "root": null
     },
     {
-      "frameId": 17,
+      "frameId": 19,
       "frameName": "Cancel",
       "windowSize": {
         "bounds": {

@@ -132,11 +132,11 @@
     [140, "ImageFrame"],
     [141, "SolidLabel"],
     [142, "SolidBackground"],
-    [143, "ImageFrame"],
-    [144, "SolidLabel"],
-    [145, "SolidBackground"],
-    [146, "Polygon"],
-    [147, "Polygon"],
+    [143, "Polygon"],
+    [144, "Polygon"],
+    [145, "ImageFrame"],
+    [146, "SolidLabel"],
+    [147, "SolidBackground"],
     [148, "ImageFrame"],
     [149, "SolidLabel"],
     [150, "SolidBackground"],
@@ -219,7 +219,7 @@
       "root": null
     },
     {
-      "frameId": 11,
+      "frameId": 12,
       "frameName": "Clicked: Open MultipleSelection",
       "windowSize": {
         "bounds": {
@@ -246,7 +246,7 @@
       "root": null
     },
     {
-      "frameId": 15,
+      "frameId": 16,
       "frameName": "Selected Filter: Text Files",
       "windowSize": {
         "bounds": {
@@ -273,7 +273,7 @@
       "root": null
     },
     {
-      "frameId": 18,
+      "frameId": 19,
       "frameName": "Selected: root.txt",
       "windowSize": {
         "bounds": {
@@ -300,7 +300,7 @@
       "root": null
     },
     {
-      "frameId": 21,
+      "frameId": 22,
       "frameName": "Ctrl-Selected: root2.txt",
       "windowSize": {
         "bounds": {
@@ -327,7 +327,7 @@
       "root": null
     },
     {
-      "frameId": 23,
+      "frameId": 24,
       "frameName": "Pressed: Open",
       "windowSize": {
         "bounds": {

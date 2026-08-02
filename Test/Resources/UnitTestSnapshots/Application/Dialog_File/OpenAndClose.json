@@ -152,6 +152,9 @@
     [160, "ImageFrame"],
     [161, "SolidLabel"],
     [162, "DocumentParagraph"],
+    [163, "SolidBackground"],
+    [164, "ImageFrame"],
+    [165, "SolidLabel"],
     [166, "SolidBackground"],
     [167, "ImageFrame"],
     [168, "SolidLabel"],
@@ -248,7 +251,7 @@
       "root": null
     },
     {
-      "frameId": 17,
+      "frameId": 19,
       "frameName": "Open: A",
       "windowSize": {
         "bounds": {
@@ -275,7 +278,7 @@
       "root": null
     },
     {
-      "frameId": 21,
+      "frameId": 23,
       "frameName": "Filter: Text Files",
       "windowSize": {
         "bounds": {
@@ -302,7 +305,7 @@
       "root": null
     },
     {
-      "frameId": 23,
+      "frameId": 25,
       "frameName": "Cancel",
       "windowSize": {
         "bounds": {

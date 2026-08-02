@@ -154,6 +154,9 @@
     [162, "DocumentParagraph"],
     [163, "DocumentParagraph"],
     [164, "DocumentParagraph"],
+    [165, "SolidBackground"],
+    [166, "ImageFrame"],
+    [167, "SolidLabel"],
     [168, "SolidBackground"],
     [169, "ImageFrame"],
     [170, "SolidLabel"],
@@ -245,7 +248,7 @@
       "root": null
     },
     {
-      "frameId": 17,
+      "frameId": 19,
       "frameName": "DbClick: A",
       "windowSize": {
         "bounds": {
@@ -272,7 +275,7 @@
       "root": null
     },
     {
-      "frameId": 20,
+      "frameId": 22,
       "frameName": "Click: a.txt",
       "windowSize": {
         "bounds": {
@@ -299,7 +302,7 @@
       "root": null
     },
     {
-      "frameId": 22,
+      "frameId": 24,
       "frameName": "Open",
       "windowSize": {
         "bounds": {

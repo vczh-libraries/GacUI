@@ -132,11 +132,11 @@
     [140, "ImageFrame"],
     [141, "SolidLabel"],
     [142, "SolidBackground"],
-    [143, "ImageFrame"],
-    [144, "SolidLabel"],
-    [145, "SolidBackground"],
-    [146, "Polygon"],
-    [147, "Polygon"],
+    [143, "Polygon"],
+    [144, "Polygon"],
+    [145, "ImageFrame"],
+    [146, "SolidLabel"],
+    [147, "SolidBackground"],
     [148, "ImageFrame"],
     [149, "SolidLabel"],
     [150, "SolidBackground"],
@@ -278,7 +278,7 @@
       "root": null
     },
     {
-      "frameId": 11,
+      "frameId": 13,
       "frameName": "Clicked: Open PromptCreateFile",
       "windowSize": {
         "bounds": {
@@ -305,7 +305,7 @@
       "root": null
     },
     {
-      "frameId": 14,
+      "frameId": 16,
       "frameName": "Typed: new-created.txt",
       "windowSize": {
         "bounds": {
@@ -332,7 +332,7 @@
       "root": null
     },
     {
-      "frameId": 19,
+      "frameId": 21,
       "frameName": "Pressed: Open",
       "windowSize": {
         "bounds": {
@@ -359,7 +359,7 @@
       "root": null
     },
     {
-      "frameId": 21,
+      "frameId": 23,
       "frameName": "Clicked: Message Cancel",
       "windowSize": {
         "bounds": {
@@ -386,7 +386,7 @@
       "root": null
     },
     {
-      "frameId": 26,
+      "frameId": 28,
       "frameName": "Pressed: Open again",
       "windowSize": {
         "bounds": {
@@ -413,7 +413,7 @@
       "root": null
     },
     {
-      "frameId": 28,
+      "frameId": 30,
       "frameName": "Clicked: Message OK",
       "windowSize": {
         "bounds": {
