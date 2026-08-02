@@ -29,8 +29,9 @@
 
 ## (Windows Specific) External Tools Environment and Context
 
-- Always prefer the offered script files instead of direct CLI commands.
-- DO NOT call `msbuild` or other executable files directly.
+- Always prefer the offered script files for building and running projects.
+- DO NOT call `msbuild` directly.
+- Run CDB directly following `REPO-ROOT/.github/Guidelines/Debugging.md`.
 - DO NOT create or delete any file unless explicitly directed.
 - MUST run any PowerShell script in this format: `& absolute-path.ps1 parameters...`.
 - Multiple PowerShell commands are concatenated with `;` to be executed in one line.
@@ -105,8 +106,6 @@ If you need to find any document for the current working task, they are in the `
 If you need to find any script or support files, they are in the `REPO-ROOT/.github/Scripts` folder:
 - `copilotBuild.ps1`
 - `copilotExecute.ps1`
-- `copilotDebug_Start.ps1`
-- `copilotDebug_RunCommand.ps1`
 - `copilotRemember.ps1`
 - `Build.log`
 - `Execute.log`

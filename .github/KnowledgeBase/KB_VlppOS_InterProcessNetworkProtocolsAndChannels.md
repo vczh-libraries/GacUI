@@ -36,7 +36,7 @@ For an accepted connection:
 3. Return `WaitForClientResult::Accept`, or return `Reject` without using the connection.
 4. Exchange nonempty `WString` messages with `SendString`.
 
-The most-derived server destructor must call `Stop` before destroying fields that connection callbacks can access. From outside callbacks, `Stop` is the callback-draining shutdown boundary. A callback-reentrant `Stop` prevents further work but does not unwind the current callback, whose visible state must survive until it returns.
+The most-derived server destructor must call `Stop` before destroying fields that connection callbacks can access and must suppress any shutdown exception. From outside callbacks, `Stop` is the callback-draining shutdown boundary and reports a recorded completion exception at most once. A callback-reentrant `Stop` prevents further work but does not unwind the current callback, whose visible state must survive until it returns.
 
 `INetworkProtocolClient` owns one logical connection. The normal client sequence is:
 
@@ -113,7 +113,13 @@ public:
 
     ~ChannelServer()
     {
-        Stop();
+        try
+        {
+            Stop();
+        }
+        catch (...)
+        {
+        }
     }
 
     WaitForClientResult OnClientConnected(
@@ -182,9 +188,13 @@ channels[L"Events"]->BroadcastFromClient(package);
 channels[L"Events"]->BatchWrite(disconnected);
 ```
 
-The derived client can also handle `OnConnected`, `OnDisconnected`, `OnReadError` and `OnLocalError`.
+The derived client can also handle `OnConnected`, `OnDisconnected`, `OnReadError` and `OnLocalError`. A raw protocol callback returns `true` from `INetworkProtocolCallback::OnLocalError` when it needs to promote a recoverable transport error to fatal; the protocol then stops only after the callback returns. `NetworkProtocolChannelClient` uses this hook after its channel reaches `Connected`: it reports every local error to its `IChannelClient` user with `fatal == true`, transitions the channel to disconnected, and asks the raw transport to stop. Before the channel is connected, raw retry policy remains in control.
 
 `IChannelServer<TPackage>` routes messages but is not itself a channel participant. When server-side code must send ordinary channel messages, connect a `NetworkProtocolLocalChannelClient<TPackage, TSerialization>` with `ConnectLocalClient`; this gives the local participant a normal positive client id.
+
+`BroadcastError` is an idempotent terminal admission boundary: the first error wins, it snapshots existing recipients, and it rejects new admissions. A client whose application admission callback was already in flight cannot commit after that snapshot; if the application accepted it, the server delivers the retained first terminal error before disconnecting it. A committed client becomes eligible for the snapshot only after its network client-id response or local `OnConnected` callback completes, so retained delivery preserves `connected -> fatal -> disconnected` ordering.
+
+The server keeps its underlying transport alive until raw protocol callbacks, admission callbacks and fatal-delivery work have left a shared stop barrier. Concurrent `Stop` calls wait for the same physical shutdown and cannot overtake retained delivery. If an admission, fatal, or disconnection callback itself calls `BroadcastError` or `Stop`, terminal state is published synchronously and physical stop is deferred until the protected callback unwinds so it cannot wait on itself. When the last barrier is a raw protocol callback, completion runs on a separate thread so the underlying transport's `Stop` can drain that callback. Recipient exceptions are recorded without bypassing best-effort terminal delivery and shutdown; a later non-reentrant `Stop` reports the recorded completion exception once.
 
 ## How Socket HTTP Implements the Protocol
 
@@ -270,6 +280,6 @@ Use `VlppOS.Windows.h` on Windows; Winsock initialization and `Ws2_32.lib` linka
 
 `urlPrefix` is empty for the origin root or an ASCII origin-form prefix such as `/example`. Both adapters remove trailing slashes, so `/` becomes the origin root. A nonempty normalized prefix must start with `/` and must not contain a query, fragment, backslash, NUL, malformed escape, or encoded path separator. Server and client must use the same normalized prefix, and their injected sockets must report the same port.
 
-The portable `HttpRequestClient` treats a 404 response as `HttpResponseFailure::NotFound`, reports a fatal error, and stops its socket. `SocketHttpClientApi` exposes this as `SocketHttpClientErrorCode::ResponseNotFound`; the logical `SocketHttpClient` reports one fatal local error immediately instead of retrying `/Connect`, `/Request`, or `/Response`.
+The portable `HttpRequestClient` treats a 404 response as `HttpResponseFailure::NotFound`, reports a terminal physical-lane error, and stops that socket. `SocketHttpClientApi` exposes this as `SocketHttpClientErrorCode::ResponseNotFound`. The logical `SocketHttpClient` does not inherit that physical fatal classification: it reports the endpoint failure as nonfatal and applies the endpoint's normal retry policy. `/Connect` and `/Response` retry up to their normal attempt limit, replacing a failed physical lane when needed; `/Request` replaces its receive lane and continues polling. If a connected `NetworkProtocolChannelClient` owns the callback, its promotion response stops the logical client after the first reported failure instead.
 
 For the lower socket, HTTP request and Mini HTTP API startup rules on each platform, see [Inter-Process Async-Socket-Based Mini HTTP API](./KB_VlppOS_InterProcessAsyncSocketBasedMiniHttpApi.md).

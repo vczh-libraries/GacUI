@@ -28,6 +28,17 @@ Runtime type information retrieval and manipulation through the reflection syste
 
 [API Explanation](./KB_VlppReflection_TypeMetadata.md)
 
+#### Metaonly Metadata Generation and Loading
+
+Generate binary reflection metadata as either an independently loadable file or a layer that depends on types registered from previous files.
+
+- Use `CollectRegisteredTypes` after loading a base type manager to capture descriptors supplied by previous layers
+- Pass an empty exclusion list to `GenerateMetaonlyTypes` for a self-contained file
+- Pass a captured descriptor list to omit foreign metadata records while preserving references to those types
+- Load and activate every dependency before reading a dependent file with `LoadMetaonlyTypes`
+
+[API Explanation](./KB_VlppReflection_GenerateMetaonlyTypes.md)
+
 #### Type Registration Structure
 
 Organized approach for registering types with proper file organization and macro usage.

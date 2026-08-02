@@ -69,6 +69,8 @@ Use `IAttributeInfo` to inspect an attribute:
 Attributes are serialized into metaonly binary metadata by `GenerateMetaonlyTypes` and deserialized by `LoadMetaonlyTypes`.
 Ordinary attribute values are serialized through `ISerializableType::Serialize` and deserialized through `ISerializableType::Deserialize`.
 `ITypeDescriptor*` attribute values are encoded separately as referenced type-descriptor indices with empty serialized data.
+For general metadata generation, dependency layers, and loading order, see [GenerateMetaonlyTypes](./KB_VlppReflection_GenerateMetaonlyTypes.md).
+
 Attributes appear in the logged text output (`.txt` baseline files) in the format:
 ```
 @Attribute:<AttributeTypeName>(<ArgTypeName>:<SerializedData>, ...)

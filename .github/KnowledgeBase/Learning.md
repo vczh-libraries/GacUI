@@ -3,9 +3,9 @@
 # Orders
 
 - Process staged tasks one by one with verification [19]
-- Verify generated artifacts with downstream consumer checks [16]
+- Verify generated artifacts with downstream consumer checks [17]
 - Crash early instead of adding error-tolerance fallbacks [14]
-- Port fixes from imports to source repositories [13]
+- Port fixes from imports to source repositories [14]
 - Proactively remove code made redundant by refactoring [12]
 - Keep design documentation aligned with code after refactoring [10]
 - Fix behavior at the owning state instead of patching symptoms [10]
@@ -25,6 +25,7 @@
 - Prefer well-defined tests over ambiguous edge cases [2]
 - Prefer raw pointers unless shared ownership is required [2]
 - Start async callbacks after most-derived construction [2]
+- Sort serialization metadata by deterministic keys, not pointer addresses [2]
 - Use RAII scope cleanup instead of manual catch cleanup [2]
 - Treat environment correlation as evidence, not a cause [2]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
@@ -34,7 +35,6 @@
 - Avoid references into containers when mutating them [1]
 - Prefer designated initializers for aggregate-like structs [1]
 - Construct `Nullable<WString>` explicitly in function calls [1]
-- Sort serialization metadata by deterministic keys, not pointer addresses [1]
 - Do not rely on `Event<T>` handler invocation order [1]
 - `collections::Dictionary` copy assignment is deleted (use move/swap) [1]
 - Dereference `Ptr<T>` via `.Obj()` (not `*ptr`) [1]

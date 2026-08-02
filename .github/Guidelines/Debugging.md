@@ -7,43 +7,42 @@
 ## Windows Specific
 
 Debugging can be useful when you lack necessary information.
-This section offers a set of PowerShell scripts that work with CDB (Microsoft's Console Debugger).
 CDB accepts exactly the same commands as WinDBG.
 
 ### Start a Debugger
 
 Read `REPO-ROOT/Project.md` to understand the solution folder and the unit test project name you are working with.
 Additional information can be found in the first line of `REPO-ROOT/.github/Scripts/Execute.log`.
-Execute the following PowerShell commands:
+Choose the executable for the intended configuration and read its arguments from the matching `*.vcxproj.user` file.
 
-```
+Run CDB directly from `SOLUTION-ROOT` in a PTY-backed tool session:
+
+```powershell
 cd SOLUTION-ROOT
-start powershell {& REPO-ROOT\.github\Scripts\copilotDebug_Start.ps1 -Executable PROJECT-NAME}
+& $env:CDBPATH -lines "ABSOLUTE-PATH-TO-EXECUTABLE" ARGUMENTS
 ```
 
-If the debugger is already started, this script will fail because the pipe name is occupied. That probably means the last time you forgot to stop the debugger. You can kill `cdb` and the process being debugged, before starting a new debugger.
+Keep the session ID returned by the tool. The process is paused at the initial breakpoint, giving you a chance to configure source mode and set breakpoints. Send these commands as newline-terminated stdin, one round at a time, and wait for output between rounds:
 
-The `start powershell {}` is necessary; otherwise the script will block the execution forever, causing you to wait infinitely.
-The script will finish immediately, leaving a debugger running in the background. You can send commands to the debugger.
-The process being debugged is paused at the beginning; you are given a chance to set breakpoints.
-After you are ready, send the `g` command to start running.
+```text
+l+s;l+t
+g
+```
+
+Do not leave unbounded debugger output flowing through the terminal. If output repeats continuously, interrupt execution immediately and configure the relevant exception or output filter before continuing.
 
 ### Stop a Debugger
 
-- Kill `cdb` process first, if any.
-  - The cdb path is stored in `$env:CDBPATH`.
-- Kill the binary process that is blocked.
+- If the debugged process is running or stuck, send Ctrl-C (`\u0003`).
+- Send `q` to terminate the debugged process and CDB.
+- If CDB does not respond, terminate the exact CDB process first and then the exact debugged process.
 
-### Sending Commands to Debugger
+### Sending Commands to CDB
 
-```
-& REPO-ROOT\.github\Scripts\copilotDebug_RunCommand.ps1 -Command "Commands"
-```
-
-The effect of commands lasts across multiple `copilotDebug_RunCommand.ps1` calls. For example, after you execute `.frame X`, you do not need to repeat it to use `dx` under the same call stack frame in later calls, as `.frame X` is already effective.
+Send commands to the same PTY-backed session. The effect of commands lasts for the whole session. For example, after you execute `.frame X`, you do not need to repeat it to use `dx` under the same call stack frame later.
 
 Multiple commands can be executed in sequence, separated by ";".
-The debugger is configured to use source mode, which means you can see source files and line numbers in the call stack, and step in/out/over work line by line.
+The `-lines` option and the `l+s;l+t` commands enable source mode, which means you can see source files and line numbers in the call stack, and step in/out/over work line by line.
 CDB accepts exactly the same commands as WinDBG, and here are some recommended commands:
 - **g**: continue until hitting a breakpoint or crashing.
 - **k**n: print current call stack.
@@ -57,8 +56,8 @@ CDB accepts exactly the same commands as WinDBG, and here are some recommended c
 - **t**: step in, aka execute the current line, if any function is called, goes into the function.
 - **pt**: step out, aka run until the end of the current function.
 
-An `.natvis` file is automatically provided with the debugger,
-it formats some primitive types defined in the `Vlpp` project,
+Load the installed `vlpp.natvis` file with `.nvload` when structured visualization is needed.
+It formats some primitive types defined in the `Vlpp` project,
 including `WString` and other string types, `Nullable`, `Variant`, container types, etc.
 The formatting applies to the **dx** command,
 when you want to see raw data instead of formatted printing,
@@ -70,7 +69,6 @@ You can also use `dv -rX` to expand "X" levels of fields. The default option is 
 
 - Only use **dv** without any parameters.
 - DO NOT use **dt**.
-- DO NOT use **q**, **qd**, **qq**, **qqd** etc. to stop the debugger.
 
 ## Linux/macOS Specific
 

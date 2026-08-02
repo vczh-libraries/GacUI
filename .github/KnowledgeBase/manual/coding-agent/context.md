@@ -10,7 +10,7 @@ The copied `.github` folder contains several kinds of files:
 - `copilot-instructions.md`: the main instruction file. It tells the agent to read `Project.md`, use the knowledge base, and prefer provided scripts.
 - `Guidelines`: build, run, debug, source-file, coding, and GacUI resource instructions.
 - `prompts`: job prompts such as `ask.prompt.md`, `investigate.prompt.md`, `refine.prompt.md`, and `kb.prompt.md`.
-- `Scripts`: Windows PowerShell wrappers for building, executing, debugging, and archiving task logs.
+- `Scripts`: Windows PowerShell wrappers for building, executing, and archiving task logs.
 - `Ubuntu`: Linux build wrapper and helper commands.
 - `KnowledgeBase`: copied API, design, manual, and learning documents that the agent can read without network access.
 - `Learning`: project-local lessons that refine future agent behavior.

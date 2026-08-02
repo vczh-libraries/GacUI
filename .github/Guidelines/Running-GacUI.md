@@ -13,8 +13,6 @@ When the model `gpt-5.3-codex-spark` is available:
 
 ## Windows Specific
 
-- You are strongly recommended to attach a debugger when running any GacUI application.
-- Because some runtime exceptions are silently consumed by Windows causing the application not to crash, covering issues if no debugger is attached.
 - GacUI applications could end up in dead loop or dead locks, so DO NOT JUST wait for the process to exit.
   - When it is crashed, sometimes (but not always) a native dialog would show and block the process.
   - Native dialogs could be proactivately called from a GacUI application, even when `FakeDialogService` is not used.
