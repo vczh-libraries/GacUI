@@ -17,6 +17,7 @@
 - None of the test apps is going to be published, unnecessary error recovery will just cover mistakes up, preventing us from finding the root cause of the problem, making it harder to fix issues in libraries.
 - Defensive cleanup should always be avoided when affected errors and exceptions crash the app. Since the app is going to be killed, cleaning up just make the code more complex and gain no benefit.
 - Any `REPO-ROOT/Tools/<TOOL-NAME>` only allow very limited error recovery just to print error messages and exit.
+- No heart beats or similar construction is needed, as all test apps are supposed to be running in the same computer, where the network quality is not an issue.
 
 ### For Multi-Process Communication
 

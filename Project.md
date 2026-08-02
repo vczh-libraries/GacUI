@@ -1,13 +1,5 @@
 # Project Specific Instruction
 
-## Remote Protocol HTTP Disconnection Contract
-
-- The HTTP remote protocol consists of `/Connect`, `/Request`, and `/Response`. Do not add a reverse `/Disconnect` endpoint or require a renderer-to-core shutdown handshake.
-- A renderer can close independently while the core remains available, and another renderer can connect later. If a new renderer connects while an old renderer is still active, accepting the new renderer drops the old connection and token.
-- HTTP 404 on an old renderer request after replacement means that renderer's connection is no longer active. After a VlppOS channel has connected, its `IChannelClient` implementation promotes this and every other local protocol error to a fatal local channel error because delivery is no longer reliable.
-- If the core has exited, an error from an outstanding or subsequent renderer request, including 404 or another transport failure, is handled by the same channel-level fatal transition. The renderer acts on that callback directly, without requiring `OnDisconnected`, stops emitting requests, and presents its ordinary disconnected state rather than a fatal transport prompt.
-- Core shutdown does not wait for a renderer acknowledgement. Requests that reach the core while it is still serving should receive their normal protocol response when possible; errors after the core has stopped are expected.
-
 ## Solution to Work On
 
 You are working on the solution `REPO-ROOT/Test/GacUISrc/GacUISrc.sln`,
@@ -33,6 +25,15 @@ always fix the root cause.
 
 Files in `REPO-ROOT/Import` and `REPO-ROOT/Release` (recursively) are also not allowed to modify.
 These files are prepared for foreign dependencies.
+
+### Source/RemotingHelpers
+
+Files in this folder are for test apps only:
+- Only test apps could use these source files.
+- No need to create unit test for them.
+- Other source files in `Source` folder cannot use anything in `Source/RemotingHelpers`.
+- They are put in `Source` because they need to be `CodePack` into `GacUI.RemotingHelpers*` and share to other platforms.
+- No production quality required, these files are only for building test apps quickly.
 
 ## Reflectable Types
 
@@ -145,6 +146,14 @@ Remote protocol is involved in three ways:
 Running core always uses network protocols.
 Three ways are calling three different renderer implementations, but with the same core implementation.
 By careful tell if a bug repro in some or all three ways, you can easily narrow down the scope of the possible cause.
+
+### Remote Protocol HTTP Disconnection Contract
+
+- The HTTP remote protocol consists of `/Connect`, `/Request`, and `/Response`. Do not add a reverse `/Disconnect` endpoint or require a renderer-to-core shutdown handshake.
+- A renderer can close independently while the core remains available, and another renderer can connect later. If a new renderer connects while an old renderer is still active, accepting the new renderer drops the old connection and token.
+- HTTP 404 on an old renderer request after replacement means that renderer's connection is no longer active. After a VlppOS channel has connected, its `IChannelClient` implementation promotes this and every other local protocol error to a fatal local channel error because delivery is no longer reliable.
+- If the core has exited, an error from an outstanding or subsequent renderer request, including 404 or another transport failure, is handled by the same channel-level fatal transition. The renderer acts on that callback directly, without requiring `OnDisconnected`, stops emitting requests, and presents its ordinary disconnected state rather than a fatal transport prompt.
+- Core shutdown does not wait for a renderer acknowledgement. Requests that reach the core while it is still serving should receive their normal protocol response when possible; errors after the core has stopped are expected.
 
 ## Maintaining Test Apps
 

@@ -157,6 +157,10 @@ object, causing missing of a complete picture.
   - Such finalization includes but not limited to:
     - Free an object or memory (`Ptr<T>` is a good example).
     - Release a lock (`SPIN_LOCK` and other similar macros are good examples).
+- If an exception is surely going to crash the app and nothing will recover from it:
+  - It usually means that under the situation, ensuring finalization to execute might bring no benefits.
+  - In this case, just call finalization as if there will be no exception, no RAII or try-catch is needed here.
+  - Such scenario is very usual in test apps. In shared library it is less likely to happen.
 
 ## Keep C++ Code Cross Platform
 
