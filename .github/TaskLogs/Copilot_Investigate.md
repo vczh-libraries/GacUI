@@ -2,1062 +2,258 @@
 
 # PROBLEM DESCRIPTION
 
-# Extract Shared Remoting Test Helpers
+Perform the following refactoring inside `Source/RemotingHelpers` and fix test apps accordingly:
+- Add `Test/GacUISrc/Source_RemotingHelpers/Source_RemotingHelpers.vcxitems` to index the whole `Source/RemotingHelpers`:
+  - Use them in all test apps under `GacUISrc` that need them, instead of adding actual source files to each project file.
+  - No need to care if any source file is not used in any specific test app.
+  - If `UnitTest` has any test cases testing against `Source/RemotingHelpers`, just delete them.
+- Keep automation service API simple:
+  - In `WindowsAutomationService.Windows.(h|cpp)` remove `WindowsAutomationServiceType` and `*Scope`.
+  - In `MiniHttpAutomationService.(h|cpp)` remove `*Scope`.
+  - In `RemotingTest_Core`, remove `NativeAutomationServiceScope`, we can just call `Unsubstitute` directly. Because when `GuiMain` crashes, nothing is going to recover so ensuring such `Unsubstitute` call is just making the code complex without gaining any benefit.
+    - The same rule applies to all test apps under `GacUISrc` solution.
+    - Just like `Unsubstitute`, `Stop(Windows|Mini)HttpAutomationService` does not need protection, as the HTTP service will automatically stop after the app has crashed.
+  - Everything in `AutomationServiceHost` is not useful either; delete it.
+  - The reason is that, only the test app knows what actual service to create. For example, for a trivial GacUI application, there are:
+    - `WindowsAutomationService` for Windows
+    - `WGacAutomationService` for Linux, and the source code is not in this repo.
+    - `CocoaAutomationService` for macOS, and the source code is not in this repo.
+    - And there is a `RemoteProtocolAutomationService` for GacUI remote protocol core application.
+    - So every test app is going to create its own automation service as a value type, perform substitution, and then start either WindowsHttp or MiniHttp to expose the automation service via HTTP.
+    - Since every test app is going to decide which automation service to substitute and which HTTP service to start, any "guiding code" in `Source/RemotingHelpers` is not useful. Just call specific functions in test apps directly.
+  - `../Tools/Copilot/Guidelines/Running-GacUI.md` needs to be updated to say, different test apps under each mode/platform need to start different `*AutomationService` with different Start/Stop functions, but all of them work in the same way.
+- Fix `Test/Linux` test apps' `vmake` accordingly, but there is no way to test them on Windows; the testing part will be done separately.
+- `CppTest_Rvm`:
+  - Remove `Main.Linux.cpp` and `Test/Linux/CppTest_Rvm`, as this cannot be done in the `GacUI` repo.
+  - In `GuiMain`, when `/MiniHttp` is used, it should call `StartMiniHttpAutomationService`:
+    - `StartMiniHttpAutomationService` is not Linux/macOS specific, it is designed to pair with `/MiniHttp` in Windows/Linux/macOS.
+    - The `Start(NamedPipe|Http|MiniHttp)Server` functions are too similar; just extract most of the code into a template function, and keep very simple `Start(NamedPipe|Http|MiniHttp)Server` functions that call it, such as `StartServer<named_pipe::NamedPipeServer>`:
+      - Use `SetupHostedWindowsDirect2DRenderer` directly in `StartServer` first, this part will be fixed when Linux/macOS starts to run it.
+- `RemotingTest_RvmHost`:
+  - No need to split `main` into `Transport` and `ParseTransport`, we can inline `ParseTransport` in `main`. And when it is not Windows, just don't try to see if the argument is `/Http` or `/Pipe`, no need to create error messages to tell that they are Windows only -- as this is a test app, such information is expected to be read from the source code.
+- `RemotingTest_Core` and `RemotingTest_Rendering_Win32`:
+  - Similar issues as in `CppTest_Rvm` and `RemotingTest_RvmHost` apply here.
+- Fix `Project.md` if anything is affected.
+- One more code review on `Source/RemotingHelpers` and affected test apps:
+  - Theoretically, we prefer those `*Scope` classes over try-catch, but if finalization just does not need to be done because the exception will crash the app directly, the `*Scope` pattern itself could be omitted, and the finalization function could be called directly at the very end, pretending the exception is not going to happen.
+  - No need to detect if the network connection is alive, because if any connection actually breaks, the underlying API (http.sys/WinHttp/TCP socket) will tell you at the next call. Knowing ahead the status of the network doesn't bring any benefit.
+    - Remove all constructs around heartbeats. Heartbeats are unnecessary in the whole test-app organization, as all test apps are supposed to be running on the same computer, where network quality is not an issue.
+    - Remove all other such mechanisms as well, not only heartbeats.
+    - Some messages seem to be no longer used or useful, clean up the code in configuration and constants.
+  - In test apps, all messages are for business purposes only, which means that if a construct is invented only to increase network reliability, it is not needed either.
+  - Something might happen during multiple apps tearing down:
+    - The library and test app logic already offer enough signals. For example, when a remote protocol core sends `ControllerConnectionStopped`, the renderer knows everything is starting to tear down. In this case, there is no need to care whether other processes are still alive, no need to care about response messages, and no need to care about network protocol issues after this point. The renderer can just ignore all negative signals and make sure it can exit directly.
+    - The idea applies to all other test apps.
+  - I would like to see a significant amount of code deleted without introducing too much other code.
 
-This document records the third round of review comments for the remote
-view-model and remote-protocol test applications. It is an implementation plan
-for extracting reusable, test-only code into `Source/RemotingHelpers`.
+## DETAILS
 
-The intended result is that a future remoting test application can provide its
-generated XML/RPC artifacts, a few application-specific callbacks, and a small
-`Main`/`GuiMain` composition layer without copying transport, channel,
-automation, renderer-terminal, or lifetime boilerplate.
+### Scope and preserved behavior
 
-This is a planning document. No implementation or verification described below
-has been performed while preparing it.
+- This is a deletion-oriented refactoring of test support. Keep application-specific composition in the test apps and keep `Source/RemotingHelpers` limited to reusable implementations.
+- Preserve business behavior that is still observable and required:
+  - `ViewModelReadyChannel` and the `Ready` message remain the post-admission signal that the RVM host has registered its service. They are startup ordering, not liveness detection.
+  - Losing `RemotingTest_RvmHost` before requester shutdown remains fatal once the loss is observed. Do not recover, reconnect, or reuse the old proxy.
+  - A Core-authored `!Error`, renderer replacement, stale-renderer detachment, and `ControllerConnectionStopped` retain the behavior required by `DebugRemoteProtocolSop.md`.
+  - Keep explicit async-channel detachment and transport stopping where they prevent callbacks from accessing stack objects after those objects are destroyed. These are real lifetime boundaries, not graceful peer acknowledgements.
+- Do not preserve proactive idle-disconnection detection as a requirement. With no business traffic, `/Http` and `/MiniHttp` do not need to discover that a peer disappeared. The next real transport or RPC operation may report the failure; at that point the affected test app terminates instead of retrying or recovering.
+- Do not add a replacement heartbeat, polling loop, lease, retry, keep-alive, disconnect acknowledgement, or reverse shutdown handshake under another name.
 
-# Recorded Review Requirements
+### Shared `Source_RemotingHelpers` project
 
-The following block is preserved as the review input for this refinement:
+- Delete `Source/RemotingHelpers/AutomationService/AutomationServiceHost.h` and `.cpp` before constructing the shared-item inventory.
+- Add `Test/GacUISrc/Source_RemotingHelpers/Source_RemotingHelpers.vcxitems` and explicitly enumerate every remaining file, without wildcards:
+  - `AutomationService/MiniHttpAutomationService.h` and `.cpp`.
+  - `AutomationService/Windows/WindowsAutomationService.Windows.h` and `.cpp`.
+  - `RemotingClient/RemotingClient.h` and `.cpp`.
+  - `RemotingClient/RemotingChannelClient.h` and `.cpp`.
+  - `RemotingServer/RemotingChannelServer.h`.
+- Add the shared project to `GacUISrc.sln`, nest it under the existing `Source Files` solution folder, and add the normal shared-item mappings. A separate `.vcxitems.filters` file is unnecessary.
+- Import the complete shared project into exactly these current consumers:
+  - `CppTest`.
+  - `CppTest_Metaonly`.
+  - `CppTest_Reflection`.
+  - `CppTest_Rvm`.
+  - `GacUI_Host`.
+  - `Playground`.
+  - `RemotingTest_Core`.
+  - `RemotingTest_Rendering_Win32`.
+  - `RemotingTest_RvmHost`.
+- Remove every direct `Source/RemotingHelpers` `ClCompile`/`ClInclude` entry and its matching `.vcxproj.filters` entry from those projects. Do not add project-specific exclusions merely because a portable helper is unused.
+- Because `RemotingTest_RvmHost` will now compile the complete helper set, add the existing `Lib_GacUI` and `Lib_GacUI_App` dependencies needed to resolve it. Apply the same principle to the Unix source-item lists: include the no-reflection GacUI stack needed by all portable helper implementations, and exclude only the Windows-specific translation unit on non-Windows platforms.
+- The current `UnitTest` sources do not test `Source/RemotingHelpers` directly, so no unit test is deleted under this rule. Keep `TestRemoteViewModelRuntime.cpp`; it tests the test-app business rule that only the exact RPC and `Ready` channel pair identifies an RVM host. Delete a unit test only if the implementation audit finds another test that directly targets a helper being removed.
 
-```text
-- Multiple files moved to `Source/RemotingHelpers`
-  - Sub folders: `AutomationService`, `RemotingServer`, `RemotingClient`.
-  - "Move here" below means move to `Source/RemotingHelpers`
-  - Fix `CodegenConfig.xml`
-- Move `(Start|Stop)WindowsAutomationService` here, including:
-  - `vl::presentation::windows::WindowsAutomationService*`
-  - `vl::presentation::windows::HttpAutomationService`
-  - `(Start|Stop)WindowsHttpAutomationService`
-- Move `(Start|Stop)MiniHttpAutomationService` here, including:
-  - `MiniHttpAutomationService`
-  - `(Start|Stop)MiniHttpAutomationService`
-- `Test/GacUISrc/(CppTest_Rvm|RemotingTest_Core).GuiMain.cpp`:
-  - Merge `*Remote(ViewModelUi|Channel)Server` and move here.
-  - Simplify error handling code with RAII.
-  - `CppTest_Rvm` is a GUI app, remove all `Console` reference.
-  - Refactor `RemotingChannelServerBase` to make it generalized and move here. No need to refactor if it doesn't depend on any test apps generated code.
-  - Refactor `RemoteViewModelUiServer` to make it generalized and move here. No need to refactor if it doesn't depend on any test apps generated code.
-  - The above two might be able to merge into one, just configuring the need of accepting renderers.
-- `Test/GacUISrc/RemotingTest_Renderer_Win32/Main.cpp`:
-  - Refactor `RemotingTestChannelClient` to make it generalized and move herer. No need to refactor if it doesn't depend on any test apps generated code.
-- `Test/GacUISrc/(CppTest_Rvm|RemotingTest_(Core|Renderer_Win32))/(Gui)?Main.cpp`:
-  - `Start*(Server|Client)()` with an new enum to pass to the `Start(Server|Client)` callback so that the host knows which automation service to start, instead of using variables.
-- Helper functions/classes to make remoting easier based on `IChannel(Server|Client)`.
-- Fix `Test/Linux/(Cpp|Remoting)Test*` to make sure they work on both Linux and macOS
-- After moving, perform another round to review `Source/RemotingHelpers`:
-  - We are going to let any test apps and files in `Source/RemotingHelpers` to crash when exceptions, errors or unexpected things happen.
-  - Necessary error recovery or shotdown acknowledgements should just be removed.
-  - Limited error recovery is only allowed when `DebugRemoteProtocolSop.md` explicitly requires.
-- The point is to let bugs immediately crash apps so that they are known without covering any root cause.
-```
+### Direct automation-service ownership
 
-The editing scope should remain in `Source/RemotingHelpers` and `Test` as much
-as possible. The helpers are test support; they are not part of the GacUI
-library API.
+- In `WindowsAutomationService.Windows.h` and `.cpp`:
+  - Keep `WindowsAutomationService`, `WindowsAutomationServiceHosted`, and `WindowsAutomationServiceRenderer` as concrete value types.
+  - Keep `StartWindowsHttpAutomationService` and `StopWindowsHttpAutomationService`.
+  - Delete `WindowsAutomationServiceType`, `StartWindowsAutomationService`, `StopWindowsAutomationService`, `GetWindowsAutomationService`, their process-global service pointer, and all automation `*Scope` classes.
+  - Delete `WindowsAutomationServiceBase::Stop()` if it still only forwards to `TBase::Stop()`.
+  - Remove the scope-only dependency on `MiniHttpAutomationService.h`.
+- In `MiniHttpAutomationService.h` and `.cpp`:
+  - Keep the explicit `StartMiniHttpAutomationService(socketServer, applicationName)` and `StopMiniHttpAutomationService` functions.
+  - Delete `MiniHttpAutomationServiceScope`.
+  - Delete the overload that infers an application name from the service's available feature. Choosing Core versus renderer policy belongs to the app.
+  - Fail fast when the substituted automation service is unavailable; do not silently return from `StartMiniHttpAutomationService` and leave a later `StopMiniHttpAutomationService` unmatched.
+- Each app performs one straight-line sequence on the normal path: construct the concrete service as a stack value, call `Substitute(&service, false)`, start the selected endpoint, run the application, stop the endpoint, call `service.Stop()`, and call `Unsubstitute(&service)`. Do not surround this sequence with cleanup-only try-catch or a new scope wrapper.
+- Use these explicit compositions:
 
-The required CodePack outputs are exactly:
-
-- `GacUI.RemotingHelpers.h`
-- `GacUI.RemotingHelpers.cpp`
-- `GacUI.RemotingHelpers.Windows.h`
-- `GacUI.RemotingHelpers.Windows.cpp`
-
-The owner's implementation intent is also part of the requirement:
-
-- Prefer changes in `Source/RemotingHelpers` and `Test`.
-- Extract shareable code so future test apps need only a few lines of C++ plus
-  their XML resources.
-- Keep the helpers test-purpose even though CodePack distributes them.
-- Treat the supplied bullets as review comments on the three earlier task
-  documents.
-- Extend the scope only where a better extraction requires a small donor,
-  project, CodePack, or documentation change.
-
-# Execution Environment and Deferred Platform Work
-
-This task will be implemented and verified on Windows. It must not claim that
-the resulting changes build or run on Linux or macOS because neither platform
-is available in this execution environment.
-
-The recorded review requirement to fix `Test/Linux/(Cpp|Remoting)Test*` for
-Linux and macOS is deferred to a separate task. That follow-up owns
-`Test/Linux/**`, `vmake`, Linux builds, and builds on an actual macOS
-environment. Those deferred results are not completion criteria for this
-Windows task.
-
-Portable layering remains a design goal for the neutral
-`GacUI.RemotingHelpers` pair. Windows-only validation can enforce dependency
-boundaries, but it is not evidence of Linux or macOS compatibility.
-
-# Continuity with the Previous Work
-
-This work follows `TODO_Task.md`, `TODO_RvmtRefine.md`, and
-`TODO_RvmtRefine2.md`. Their implementation history matters because this
-refinement must extract and simplify the current design, not restore machinery
-that the previous refinement intentionally deleted.
-
-## Stable baseline from `TODO_Task.md`
-
-Commit `96d3f3a08cc0eef8d401d582ccd70a35843f0c7c` introduced the generated
-Workflow RPC resource, `/RVMT`, `CppTest_Rvm`, `RemotingTest_RvmHost`, and the
-shared physical transport with distinct logical channels.
-
-Keep these baseline decisions:
-
-- `CppTest_Rvm` and `RemotingTest_Core /RVMT` are requesters.
-- `RemotingTest_RvmHost` provides `rvmt::IViewModel`.
-- The broker and requester are separate local RPC endpoints.
-- RVM and renderer traffic share one physical transport while using different
-  logical channels.
-- Generated resource/compiler behavior is already established and is not part
-  of this refinement.
-
-## Stable contract from `TODO_RvmtRefine.md`
-
-Commit `4c28cc12b` implemented the clarified lifetime and renderer behavior.
-Keep the contract:
-
-- Renderer loss and renderer replacement are nonfatal to Core.
-- Core loss is an ordinary renderer disconnection, not a renderer-generated
-  fatal error.
-- RVM-host loss is fatal to `CppTest_Rvm` and Core.
-- When an active renderer exists, Core sends one Core-authored `!Error` for
-  RVM-host loss before Core terminates with an error.
-- There is no reverse HTTP `/Disconnect`, renderer-to-Core shutdown handshake,
-  or renderer heartbeat.
-
-## Fail-fast simplification from `TODO_RvmtRefine2.md`
-
-Commit `f69211457` removed the recovery-heavy implementation and must remain
-the starting point. It already removed:
-
-- the third local RVM client;
-- heartbeat and stopping acknowledgements;
-- the reverse requester lease;
-- heartbeat sequence state;
-- the general role/terminal state machine;
-- the retrying task queue;
-- recovery callbacks and cleanup-error aggregation;
-- renderer state from the RVM runtime; and
-- `RemoteViewModelRoleState.h`.
-
-Do not reintroduce these features while extracting helpers.
-
-The following retained mechanisms are required behavior rather than optional
-recovery:
-
-- separate broker and requester local RPC endpoints;
-- a post-route `Ready` proof before broker registration can be used safely;
-- one-way host heartbeat plus a requester-side timeout for silent `/Http` and
-  `/MiniHttp` host loss;
-- one-way `RequesterStopping`;
-- requester `stopping` classification before transport teardown;
-- Core's ordered `!Error` delivery before fatal exit; and
-- renderer startup and terminal-event ordering.
-
-# Normalized Interpretation
-
-- The canonical project name is `RemotingTest_Rendering_Win32`, not
-  `RemotingTest_Renderer_Win32`.
-- `RemotingTestChannelClient` is currently in
-  `Test/GacUISrc/RemotingTest_Rendering_Win32/GuiMain.cpp`, not `Main.cpp`.
-- The two server classes are currently in
-  `Test/GacUISrc/CppTest_Rvm/GuiMain.cpp` and
-  `Test/GacUISrc/RemotingTest_Core/GuiMain.cpp`.
-- "herer" means "here", "with an new" means "with a new", and "shotdown"
-  means "shutdown".
-- "Necessary error recovery ... should be removed" is interpreted as
-  "unnecessary error recovery ... should be removed", consistent with
-  `Project.md` and the surrounding fail-fast requirements.
-- There are no `StartWindowsAutomationService` or
-  `StopWindowsAutomationService` functions on current `master`. They are an
-  intentional new test-helper lifecycle facade, not existing symbols that can
-  merely be moved.
-- `Source/RemotingHelpers` may use GacUI and VlppOS interfaces, but it must not
-  include anything under `Test`, any `Generated_*` folder, or a particular
-  test application's generated header.
-- CodePack combines these sources for distribution. This does not make the
-  helpers part of the ordinary `GacUI` or `GacUI.Windows` library code pairs.
-- All implementation and verification in this task is Windows-only. Linux and
-  macOS project fixes and platform builds are separate follow-up work.
-
-# Scope
-
-## Primary implementation scope
-
-- `Source/RemotingHelpers/**`
-- `Test/GacUISrc/**`
-
-## Narrow required exceptions
-
-A true move requires small edits outside the preferred scope:
-
-- Remove the moved declarations and implementations from
-  `Source/PlatformProviders/Windows/WinNativeWindow.h` and
-  `Source/PlatformProviders/Windows/WinNativeWindow.cpp`.
-- Remove automatic construction/substitution of the test automation service
-  from `Source/PlatformProviders/Windows/GDI/WinGDIApplication.cpp` and
-  `Source/PlatformProviders/Windows/Direct2D/WinDirect2DApplication.cpp`.
-- Retain or add only the minimal low-level Windows native-window bridge needed
-  by the moved test helper.
-- Update `Release/CodegenConfig.xml` to produce the four explicitly requested
-  CodePack files. This requested configuration and its generated CodePack
-  outputs are the only intended `Release` changes; generated files must never
-  be hand-edited.
-- Update repository documentation only where moving the automation service
-  makes an existing statement false.
-
-No changes should be made to `Import`, generated GacUI resource folders, or
-the Workflow/GacUI compiler for this refinement.
-
-## Non-goals
-
-- Do not move the helpers into the normal GacUI library code pairs or umbrella
-  headers.
-- Do not turn the test transport stack into a production networking API.
-- Do not change remote-protocol wire semantics.
-- Do not add graceful RPC cancellation, reconnection, retries, leases in the
-  reverse direction, or shutdown acknowledgements.
-- Do not reopen the completed RPC resource/code-generation work from
-  `TODO_Task.md`.
-- Do not modify `Test/Linux/**`, regenerate its build files, or perform Linux
-  or macOS compatibility work in this task.
-- Do not report a successful Windows build as proof that the helpers build or
-  run on Linux or macOS.
-
-# Current-State Findings
-
-| Concern | Current location/state | Consequence |
+| Application/mode | Concrete automation service | HTTP endpoint |
 | --- | --- | --- |
-| Helper folder | `Source/RemotingHelpers` does not exist. | All shared test code is still embedded in library/provider or application files. |
-| Windows automation | `WindowsAutomationServiceBase`, `WindowsAutomationService`, `WindowsAutomationServiceHosted`, `WindowsAutomationServiceRenderer`, private `HttpAutomationService`, and the Windows HTTP start/stop functions are in `WinNativeWindow.{h,cpp}`. | Test-only automation is compiled into `GacUI.Windows`. |
-| Windows setup | GDI and Direct2D setup functions construct and substitute the automation service automatically. | Moving the classes without removing this dependency would make `GacUI.Windows` depend on test helpers. |
-| MiniHTTP automation | `MiniHttpAutomationService` and its start/stop functions are in `RemotingTest_Core/Shared.cpp`, which is compiled by three projects. | Reuse is expressed through cross-project source inclusion and `extern` declarations. |
-| Local RVM server | `RemoteViewModelUiServer<TServerBase>` plus three transport subclasses are in `CppTest_Rvm/GuiMain.cpp`. | It depends directly on `RemoteViewModelRequesterSession`. |
-| Core server | `RemotingChannelServerBase<TServerBase>` plus three transport subclasses are in `RemotingTest_Core/GuiMain.cpp`. | It repeats transport/server composition and mixes renderer policy with the RVM session. |
-| Server base types | Workflow's `JsonNetworkChannelServer<TServerBase>` and GacUI's `GuiRemoteProtocolNetworkChannelServer<TServerBase>` resolve to the same JSON `NetworkProtocolChannelServer` specialization. | The two server families can be one class with optional renderer support. |
-| Renderer client | `RemotingTestChannelClient` is in the renderer `GuiMain.cpp` and has no generated-application dependency. | It can move mostly unchanged after hard-coded names/policy are configured. |
-| RVM runtime | `RemoteViewModelTestRuntime.h` includes generated `RemoteViewModelTestRpc.h` and exposes `rvmt::IViewModel`. | It cannot move wholesale into `Source/RemotingHelpers`. |
-| Startup selection | Cpp/Core/renderer use process globals such as `useWindowsHttpAutomationService` and a pointer to a stack-owned MiniHTTP socket pointer. | Transport wrappers communicate with `GuiMain` through fragile ambient state. |
-| Error handling | Start/stop paths contain nested catches, cleanup-result handling, and duplicate stop calls. HTTP automation converts unexpected exceptions into 404 responses. | Bugs can be hidden and the same ownership policy is repeated. |
-| `CppTest_Rvm` UI | `GuiMain.cpp`, `Main.Windows.cpp`, and `Main.Linux.cpp` use `vl::console::Console`. | A GUI application depends on a console for diagnostics and control flow. |
-| CodePack | The broad `gacui` category currently captures all new files under `Source`. | The helper folder needs separate neutral and Windows categories. |
-
-# Target Source and CodePack Layout
-
-Use the three required top-level areas. Windows-only implementation files
-should live in nested `Windows` folders and follow the `*.Windows.h` /
-`*.Windows.cpp` naming convention so CodePack categorization is unambiguous.
-
-```text
-Source/RemotingHelpers/
-  AutomationService/
-    MiniHttpAutomationService.h
-    MiniHttpAutomationService.cpp
-    AutomationServiceHost.h
-    AutomationServiceHost.cpp
-    Windows/
-      WindowsAutomationService.Windows.h
-      WindowsAutomationService.Windows.cpp
-  RemotingServer/
-    RemotingChannelServer.h
-    RemotingServer.h
-    RemotingServer.cpp
-    Windows/
-      RemotingServer.Windows.h
-      RemotingServer.Windows.cpp
-  RemotingClient/
-    RemotingChannelClient.h
-    RemotingChannelClient.cpp
-    Windows/
-      RemotingClient.Windows.h
-      RemotingClient.Windows.cpp
-```
-
-The final filenames may be reduced when a `.cpp` or Windows-specific transport
-file is unnecessary, but the ownership boundaries must remain:
-
-- `AutomationService`: service implementations, endpoint hosts, and
-  start/stop/RAII ownership.
-- `RemotingServer`: channel-server admission, optional renderer policy, server
-  composition, and reusable RPC-side server helpers.
-- `RemotingClient`: renderer channel client, client composition, and reusable
-  RPC-side client helpers.
-
-Do not create a root umbrella that unconditionally pulls Windows-only
-dependencies into the neutral pair. Each Windows header should include its
-neutral prerequisite explicitly.
-
-## `Release/CodegenConfig.xml`
-
-Update the configuration in this shape:
-
-1. Exclude `\Source\RemotingHelpers\` from the existing `gacui` category.
-2. Add a neutral helper category covering `Source/RemotingHelpers` while
-   excluding the nested Windows folders.
-3. Add a Windows helper category covering the nested Windows folders.
-4. Add code pairs named exactly:
-   - `GacUI.RemotingHelpers`
-   - `GacUI.RemotingHelpers.Windows`
-5. Keep the dependency one-way:
-   - `GacUI.RemotingHelpers` may depend on `GacUI` and portable VlppOS.
-   - `GacUI.RemotingHelpers.Windows` may depend on
-     `GacUI.RemotingHelpers`, `GacUI.Windows`, and `VlppOS.Windows`.
-   - `GacUI` and `GacUI.Windows` must not depend on either helper pair.
-
-CodePack's category matching is substring-based rather than a general boolean
-expression. Using explicit nested Windows paths avoids a broad `.Windows.`
-pattern accidentally collecting unrelated files.
-
-## Test solution wiring
-
-- Enumerate every new source/header explicitly in affected `*.vcxproj` and
-  `*.vcxproj.filters` files; do not use wildcards.
-- A shared-items project is optional. Do not make every test target compile the
-  entire helper group merely because CodePack combines it for distribution.
-  `RemotingTest_RvmHost`, in particular, should compile only the neutral RPC
-  and channel helper files it needs.
-- Add new shared-items projects to `GacUISrc.sln` only if they materially reduce
-  project wiring.
-- Limit project wiring in this task to the Windows solution and MSBuild
-  projects. The separate platform follow-up owns `vmake` changes and generated
-  Unix build files.
-
-# Target Design
-
-## 1. Automation service ownership
-
-Create a small lifecycle facade in `AutomationService`:
-
-- `StartWindowsAutomationService` / `StopWindowsAutomationService` own
-  substitution of the appropriate Windows automation service.
-- `StartWindowsHttpAutomationService` /
-  `StopWindowsHttpAutomationService` own the Windows HTTP endpoint.
-- `StartMiniHttpAutomationService` /
-  `StopMiniHttpAutomationService` own the portable MiniHTTP endpoint.
-- A non-copyable RAII owner composes the appropriate start/stop calls for one
-  GUI run.
-
-The lifecycle facade needs explicit configuration for:
-
-- ordinary native windows;
-- hosted windows;
-- a remote renderer and its `GuiRemoteRendererSingle`;
-- application name;
-- HTTP port; and
-- the shared `IAsyncSocketServer` required by MiniHTTP.
-
-RAII here is ownership, not recovery. Constructors start resources,
-destructors stop resources, and neither catches nor suppresses failures. A
-stop failure on normal exit is a test failure. A failure while unwinding is
-allowed to terminate the process.
-
-### Minimal Windows provider seam
-
-`WindowsAutomationServiceBase::RunIOCommandInternal` currently accesses the
-private `WindowsForm::listeners`, and window lookup accesses private
-`WindowsController` state. Moving that code verbatim is therefore impossible.
-
-Use a narrow provider bridge:
-
-- Keep or add an exported low-level function in `WinNativeWindow.{h,cpp}` that
-  runs one IO command for a validated `INativeWindow` while the provider owns
-  access to its listener list.
-- Resolve opaque window IDs by enumerating the public
-  `GetAllCreatedWindows` result and using safe RTTI cross-casts, with
-  `IWindowsForm::GetWindowHandle` / `GetWindowsFormFromHandle` available where
-  needed. Preserve the existing externally observable window-ID encoding.
-- Remove the friendship and private-state knowledge that existed only for
-  `WindowsAutomationService*`.
-- Do not leave HTTP hosting, automation-service policy, or test-app lifecycle
-  in `GacUI.Windows`.
-
-Remove automatic automation substitution from the GDI/Direct2D setup
-functions. Each test application starts its helper-owned service from
-`GuiMain`, after the native controller exists and before the automation service
-is first requested.
-
-### HTTP request behavior
-
-Returning 404 for an unsupported verb, route, malformed IO suffix, invalid
-content type, or disabled operation is normal endpoint behavior. It is not
-error recovery.
-
-Unexpected `Error`, `Exception`, parser failures, automation implementation
-failures, or callback invariant failures must not be translated into 404.
-They must reach a process-terminating boundary. If an OS, thread, or async
-transport callback would swallow a thrown exception, terminate explicitly at
-that boundary instead of attempting to unwind across it.
-
-Remove the MiniHTTP destructor/explicit-stop duplication. One owner performs
-one stop. Likewise, `INativeAutomationService::Stop` should disable the
-service; the endpoint owner should stop its HTTP listener instead of making
-the service and the caller both stop the same process-global endpoint.
-
-## 2. One generated-neutral server
-
-Merge `RemoteViewModelUiServer<TServerBase>` and
-`RemotingChannelServerBase<TServerBase>` into one generated-neutral
-`RemotingChannelServer<TServerBase>`.
-
-The merged type should:
-
-- derive from the common JSON network channel-server specialization;
-- accept local-client admission through an injected callback/policy;
-- accept non-renderer remote channel roles through an injected
-  callback/policy;
-- notify an injected owner of disconnection;
-- optionally enable `GacUIRemoteProtocol` renderer admission;
-- keep the accepted renderer client ID when renderer support is enabled;
-- perform the SOP-required renderer replacement/detach behavior; and
-- expose only the core JSON/protocol binding needed for renderer delivery.
-
-Configuration should express whether renderers are accepted. The local
-`CppTest_Rvm` server disables renderer support; Core enables it after its own
-RVM readiness callback permits admission.
-
-The helper must not know:
-
-- `rvmt::IViewModel`;
-- `RemoteViewModelRequesterSession`;
-- `ViewModelChannelName`;
-- a generated header;
-- which main window class Core constructs; or
-- Core's fatal-state/UI globals.
-
-`CppTest_Rvm` and Core adapt `RemoteViewModelRequesterSession` to the generic
-admission/disconnection callbacks in a few lines.
-
-Transport-specific constructors should remain thin. Use a helper only when it
-removes repeated policy or lifetime code; do not hide a one-line
-`NamedPipeServer`, `HttpServer`, or `SocketHttpServer` construction behind
-several trivial wrappers.
-
-## 3. Generalized renderer channel client
-
-Move and rename `RemotingTestChannelClient` under `RemotingClient`. It already
-has no generated-application dependency.
-
-Parameterize only application-specific inputs:
-
-- fatal dialog title;
-- renderer/automation-service binding;
-- main-thread task scheduling where platform setup differs; and
-- the callback or action used for the final renderer transition.
-
-Preserve the SOP-required distinction:
-
-- Core-authored `!Error` enters fatal UI and may retain the renderer.
-- Fatal local channel error after connection enters the ordinary disconnected
-  state without a fatal prompt.
-- `OnDisconnected` is an idempotent fallback.
-- Pending terminal state is retained until the renderer, automation service,
-  and main-thread invoker are ready.
-- Renderer replacement settles the old renderer without killing Core.
-
-These rules are the limited terminal handling explicitly required by
-`DebugRemoteProtocolSop.md`; they must not be deleted by the fail-fast audit.
-
-## 4. Helpers based on `IChannelServer` and `IChannelClient`
-
-Build reusable composition at the channel layer, not around a particular
-transport or generated application:
-
-- helper to advertise and resolve named channels without repeating dummy
-  channel maps;
-- helper/local client for the RPC broker plus a separate requester endpoint;
-- helper for explicit connect, assigned-client-ID validation, channel-reader
-  initialization, and dispatcher initialization;
-- generated-neutral JSON RPC lifecycle factory/template;
-- optional one-way host liveness/control channel for the single mandatory
-  service host; and
-- small server/client context objects that keep callback targets alive until
-  transport stop has completed.
-
-The generated-neutral RPC helper should be parameterized by the generated
-module object or factory. It may call the common generated method shape
-(`rpc_GetIds`, JSON serializer/object operations, and wrapper factory) through
-a template, but no helper source may name
-`vl_workflow_global::RemoteViewModelTestRpc` or `rvmt::IViewModel`.
-
-Application-specific code remains responsible for:
-
-- selecting its generated RPC module;
-- defining logical channel and service names;
-- registering its concrete service implementation;
-- requesting and casting its typed service proxy; and
-- constructing its generated main window.
-
-After the split, `RemoteViewModelTestRuntime.*` should contain only this thin
-RVM adapter and policy constants. If a type remains generated-neutral after
-the split, move it; do not retain it under `RemotingTest_RvmHost` merely
-because that is its current location.
-
-## 5. Explicit automation backend selection
-
-Add an enum, for example:
-
-```cpp
-enum class RemotingAutomationService
-{
-    WindowsHttp,
-    MiniHttp,
-};
-```
-
-Pass it from every `StartNamedPipeServer`, `StartHttpServer`,
-`StartMiniHttpServer`, `StartNamedPipeClient`, `StartHttpClient`, and
-`StartMiniHttpClient` path into the generic `StartServer` / `StartClient`
-composition callback.
-
-Replace:
-
-- `useWindowsHttpAutomationService`;
-- `miniHttpAutomationSocketServer` as a pointer to a stack-owned `Ptr`; and
-- equivalent ambient selector state.
-
-Use one stack-owned host context containing the enum and, for MiniHTTP, a
-strong `Ptr<IAsyncSocketServer>`. Bind that context for the exact duration of
-the native-controller/`GuiMain` callback. The enum is the selection; the
-socket pointer is an owned dependency, not another selection flag.
-
-On non-Windows platforms, only `MiniHttp` is valid. Reject or compile out
-`WindowsHttp` at the transport selection boundary rather than branching
-throughout `GuiMain`.
-
-## 6. Straight-line application lifetime
-
-Replace nested `try`/`catch` cleanup ladders in Cpp/Core/renderer with scoped
-owners for:
-
-- channel server/client start and stop;
-- requester session start and stop;
-- current `GuiMain` context binding;
-- native-service substitution;
-- automation endpoint lifetime; and
-- renderer/channel binding.
-
-The normal shape should be:
-
-1. Construct dependencies.
-2. Start the transport/channel.
-3. Establish RPC/channel roles.
-4. Bind the stack-owned GUI context.
-5. Run the native controller/application.
-6. Leave the scope in reverse ownership order.
-
-Do not catch `Exception` or `Error` merely to print, select an exit code,
-attempt more cleanup, or translate one failure into another. Let synchronous
-failures escape to the process boundary. At callback/thread boundaries where
-escape cannot work, terminate immediately.
-
-Core's RVM-host fatal path is the one important ordering exception: it must
-attempt the Core-authored `!Error` while the renderer channel is alive and
-then terminate nonzero even if delivery itself fails. Keep that operation
-minimal and one-shot; it is protocol delivery, not recovery.
-
-## 7. `CppTest_Rvm` is a GUI application
-
-- Remove `using namespace vl::console`.
-- Remove every `Console::WriteLine` from `GuiMain.cpp` and all entry-point
-  files.
-- Do not catch errors merely to write them to a console.
-- Return a nonzero code for invalid command-line arguments without requiring
-  a console.
-- Do not otherwise consolidate or redesign the platform entry points in this
-  task. The separate Linux/macOS follow-up owns any shared Unix entry-point
-  work.
-
-# Fail-Fast Audit
-
-After all code is in its target folder, review every catch, retry, state
-transition, event, acknowledgement, and stop call in
-`Source/RemotingHelpers`.
-
-## Allowed because the SOP requires the behavior
-
-- Core's one-shot fatal `!Error` delivery before exit on RVM-host loss.
-- The post-route `Ready` proof until the channel API offers a real
-  post-admission callback.
-- One-way host heartbeat and requester-side lease for silent HTTP host loss.
-- Setting requester stopping state before sending one-way
-  `RequesterStopping`.
-- Renderer replacement and stale-renderer detachment.
-- Ordered renderer handling of Core-authored fatal packages, local fatal
-  channel errors, and disconnection.
-- Retaining renderer fatal state until UI/automation initialization is ready.
-- Protocol-level 404 responses for unsupported or malformed automation HTTP
-  requests.
-- A non-returning exception firewall at an OS/thread callback boundary where
-  exception propagation is impossible or swallowed.
-
-## Remove
-
-- Any heartbeat acknowledgement or stopping acknowledgement.
-- Reverse liveness/lease state.
-- Cleanup-error aggregation or "first error" tracking.
-- Catch/log/continue and catch/return-success behavior.
-- Converting unexpected automation exceptions to 404.
-- Retrying task queues or reconnect policies.
-- Defensive partial-start booleans made unnecessary by RAII ownership.
-- Duplicate `Stop` in destructors and explicit cleanup.
-- Shutdown waits whose only purpose is graceful acknowledgement.
-- Recovery state that is not named by `DebugRemoteProtocolSop.md`.
-
-# Deferred Linux and macOS Follow-up
-
-Do not perform the items in this section as part of this task. Do not modify
-`Test/Linux/**`, run its `build.sh` flows, or claim Linux/macOS compatibility
-from Windows-only results.
-
-The affected inventory for the separate follow-up is:
-
-- `Test/Linux/CppTest`
-- `Test/Linux/CppTest_Metaonly`
-- `Test/Linux/CppTest_Reflection`
-- `Test/Linux/CppTest_Rvm`
-- `Test/Linux/RemotingTest_Core`
-- `Test/Linux/RemotingTest_RvmHost`
-
-Handoff observations for that task:
-
-- Correct `CPP_TARGET` for `CppTest`, `CppTest_Metaonly`, and
-  `CppTest_Reflection`; they currently produce `./Bin/UnitTest`.
-- Use shared `*.Linux.cpp` source for Linux and macOS under `VCZH_GCC`,
-  following the repository naming convention.
-- Merge the `CppTest_Rvm` entry points and make the Unix path include macOS.
-- Update `CPP_ADDS`, `CPP_REMOVES`, and include paths after moving runtime and
-  helper files.
-- Keep Windows-only helper files and `VlppOS.Windows` excluded.
-- Ensure the neutral helper pair has no Windows headers, symbols, or link
-  dependencies.
-- Keep `CppTest_Rvm` build-only where the local platform UI is unavailable;
-  use Core `/RVMT` plus `RemotingTest_RvmHost` `/MiniHttp` for the runnable
-  portable demo.
-- Do not edit `vmake.txt` or `makefile`; regenerate them through the documented
-  build flow.
-- Treat a Linux build as Linux evidence only. Run an actual macOS build/CI job
-  before claiming macOS verification.
-
-These observations are neither action items nor blockers for the current
-Windows task.
-
-# Phased Actionable TODO
-
-## P0: Freeze boundaries and required behavior
-
-- [ ] Record the current successful `/Pipe`, `/Http`, and `/MiniHttp`
-  startup/normal-stop behavior before moving files.
-- [ ] Add or identify focused coverage for post-route `Ready`, one-way
-  heartbeat timeout, normal `RequesterStopping`, Core `!Error` ordering, and
-  renderer replacement.
-- [ ] Confirm there is no dependency from the future helper folder to `Test`
-  or generated code.
-- [ ] Confirm no upstream Workflow/VlppOS change is required for this
-  test-helper extraction.
-
-## P1: Create helper and CodePack structure
-
-- [ ] Create the three required helper areas and nested Windows locations.
-- [ ] Add neutral and Windows CodePack categories.
-- [ ] Exclude the helper folder from the ordinary `gacui` category.
-- [ ] Generate `GacUI.RemotingHelpers.(h|cpp)` and
-  `GacUI.RemotingHelpers.Windows.(h|cpp)`.
-- [ ] Verify ordinary `GacUI` and `GacUI.Windows` no longer contain moved
-  test-helper declarations or implementations.
-- [ ] Add explicit Windows project/filter wiring without wildcards.
-
-## P2: Extract automation services
-
-- [ ] Add the minimal native Windows IO-command bridge.
-- [ ] Move `WindowsAutomationServiceBase` and all concrete Windows automation
-  service types.
-- [ ] Move `HttpAutomationService` and Windows HTTP start/stop.
-- [ ] Add the new Windows automation substitution start/stop facade.
-- [ ] Remove automatic test-service substitution from GDI and Direct2D setup.
-- [ ] Move `MiniHttpAutomationService` and its start/stop functions.
-- [ ] Replace cross-project `Shared.cpp` inclusion and `extern`
-  declarations with helper headers.
-- [ ] Add scoped owners and remove duplicate stop/destructor cleanup.
-- [ ] Remove exception-to-404 translation for unexpected failures.
-- [ ] Migrate every test app currently using
-  `StartWindowsHttpAutomationService`, including `CppTest*`, `GacUI_Host`,
-  `Playground`, Core, and the native renderer.
-
-## P3: Extract server and client composition
-
-- [ ] Implement one generated-neutral configurable remoting channel server.
-- [ ] Inject local/remote admission and disconnect policy.
-- [ ] Make renderer admission optional and preserve replacement behavior.
-- [ ] Replace Cpp's `RemoteViewModelUiServer` family.
-- [ ] Replace Core's `RemotingChannelServerBase` family.
-- [ ] Move/generalize `RemotingTestChannelClient`.
-- [ ] Preserve renderer fatal/disconnected/startup ordering with focused
-  coverage.
-- [ ] Remove the old classes and transport subclasses from application
-  `GuiMain.cpp` files.
-
-## P4: Extract reusable RPC/channel helpers
-
-- [ ] Split generated-neutral channel maps, local broker/requester clients,
-  task scheduling, control messages, and liveness from
-  `RemoteViewModelTestRuntime.*`.
-- [ ] Add a generated-module template/factory for JSON RPC lifecycle setup.
-- [ ] Keep separate broker and requester local endpoints.
-- [ ] Keep one-way heartbeat, post-route `Ready`, and one-way stopping.
-- [ ] Keep only generated `RemoteViewModelTestRpc` and typed
-  `rvmt::IViewModel` adaptation under `Test`.
-- [ ] Reduce `RemoteViewModelTestRuntime.*` to the application-specific
-  adapter, or remove the pair if the remaining code is clearer inline.
-- [ ] Do not move RVM-specific channel/service names into a supposedly
-  application-neutral API unless they become explicit configuration.
-
-## P5: Simplify test hosts
-
-- [ ] Add and pass the automation backend enum through all server/client start
-  paths.
-- [ ] Replace global selector booleans and pointer-to-stack-pointer state with
-  one owned host context.
-- [ ] Replace cleanup ladders with RAII scopes.
-- [ ] Remove all `Console` references from `CppTest_Rvm`.
-- [ ] Keep Core-specific window choice, fatal delivery, and renderer state in
-  Core.
-- [ ] Keep app-specific service registration/request and generated window
-  creation in the app.
-- [ ] Review the resulting app files against the goal that new apps need only
-  a few lines of C++ plus XML resources.
-
-## P6: Complete the fail-fast review
-
-- [ ] Classify every nontrivial catch against the allowed SOP list.
-- [ ] Delete every unclassified catch/retry/acknowledgement/recovery state.
-- [ ] Verify async exception boundaries terminate rather than swallow.
-- [ ] Verify normal stop still releases listeners/ports without a peer
-  acknowledgement.
-- [ ] Verify an unexpected helper invariant immediately terminates the test
-  process.
-
-## P7: Finish Windows project cleanup
-
-- [ ] Update moved source and include paths in affected MSBuild projects.
-- [ ] Confirm no Windows helper source enters the neutral CodePack pair.
-
-# Verification
-
-## Static and CodePack checks
+| `CppTest` | `WindowsAutomationServiceHosted` | Windows HTTP |
+| `CppTest_Metaonly`, `CppTest_Reflection`, `GacUI_Host`, `Playground` | `WindowsAutomationService` | Windows HTTP |
+| `CppTest_Rvm /Pipe` and `/Http` | `WindowsAutomationServiceHosted` | Windows HTTP on port 8888 |
+| `CppTest_Rvm /MiniHttp` | `WindowsAutomationServiceHosted` | MiniHTTP on the RVM socket on port 8888 |
+| `RemotingTest_Core /Pipe` and `/Http` | `RemoteProtocolAutomationService` | Windows HTTP on port 8888 |
+| `RemotingTest_Core /MiniHttp` | `RemoteProtocolAutomationService` | MiniHTTP on the Core protocol socket on port 8888 |
+| Win32 renderer `/Pipe` and `/Http` | `WindowsAutomationServiceRenderer` | Windows HTTP on port 8889 |
+| Win32 renderer `/MiniHttp` | `WindowsAutomationServiceRenderer` | MiniHTTP on its port-8889 socket |
+| Wayland/macOS renderer composition in the shared renderer source | Its platform renderer automation-service value | MiniHTTP on its port-8889 socket |
+
+- Remove `RemotingAutomationService`, `RemotingHostContext`, and the corresponding fields and parameters from `RvmGuiContext`, `CoreGuiContext`, `RendererGuiContext`, and start/run helpers. A MiniHTTP socket pointer in an app-owned context is sufficient where `GuiMain` must select the portable endpoint.
+
+### Remote-view-model liveness and shutdown cleanup
+
+- Reduce `RemotingRpcConfiguration` to business configuration. Remove `heartbeatMessage`, `requesterStoppingMessage`, `heartbeatIntervalMilliseconds`, `startupGraceMilliseconds`, and `leaseTimeoutMilliseconds`.
+- In `RemotingClient.cpp`, remove:
+  - `GetMonotonicTime` and the generic `RepeatingThread` created only for leases/heartbeats.
+  - `hostLeaseActive`, `hostLeaseExpiration`, the requester state thread, lease renewal/expiry, `ClaimHostLoss`, `ProcessState`, and their wake/stop calls.
+  - The hosting heartbeat thread, `SendHeartbeat`, `StartHeartbeat`, and the public `RemotingHostingClient::StartHeartbeat` API.
+  - The `RequesterStopping` send/receive path. `BeginStopping` only records normal requester shutdown; stopping the real server/transport supplies the terminal signal.
+  - `BroadcastingLocalClient::SendToClient`, the hosting client's control reader, and other helpers that become unused after the teardown-only message is deleted.
+- Keep only the `Ready` control message. `RemotingHostingClient::SendReady` remains after the local service is registered, and requester-side registration still validates the exact accepted host ID.
+- On an unexpected host disconnect before `Stopping`, invoke the configured terminal action directly. Remove the fatal lease-thread handoff, saved/taken fatal state, `GetFatalError`, and post-`Run` checks that become unreachable once the terminal action does not return. Keep the requester phase and one-host admission state because they enforce business startup/shutdown rules.
+- `RemotingRequesterSession::Stop` still finalizes RPC on its task queue, stops the actual channel server, queues task-loop exit, joins the task-queue thread, and releases the acquired service. Remove only liveness and acknowledgement machinery, not required local lifetime cleanup.
+- In `RemoteViewModelTestShared.h`, remove `ViewModelHeartbeatMessage`, `ViewModelRequesterStoppingMessage`, and all heartbeat/lease/grace constants. Remove the matching configuration assignments and the `StartHeartbeat()` call from `RemotingTest_RvmHost`.
+- Treat a hosting-client `OnDisconnected`, read error, or fatal local error as a terminal process signal. Do not add an in-band message merely to distinguish normal requester teardown; normal requester shutdown should still leave no surviving host process.
+- Remove empty destructors and one-line wrappers made redundant by the refactoring.
+
+### Core, renderer, and transport composition
+
+- `CppTest_Rvm`:
+  - Delete `RequesterServerScope<TServer>` and use direct `Start`, session start, session stop, and server stop calls.
+  - Add one variadic `StartServer<TServer>(...)` that owns parser/session/callback/server construction, requests the view model, binds the GUI context, calls `SetupHostedWindowsDirect2DRenderer`, and then performs normal straight-line shutdown.
+  - Reduce `StartNamedPipeServer`, `StartHttpServer`, and `StartMiniHttpServer` to concrete calls to the template. The MiniHTTP wrapper creates and passes the one socket shared by RPC and automation.
+  - Delete `Main.Linux.cpp`, remove it from the Windows project/filter, and delete `Test/Linux/CppTest_Rvm`.
+- `RemotingTest_RvmHost`:
+  - Keep `RunHost(networkClient)`, but inline transport parsing in `main`.
+  - Put `/Pipe` and `/Http` comparisons inside the MSVC branch, keep `/MiniHttp` common, and return failure for all other input without a `Transport` enum, `ParseTransport`, a switch, or non-Windows explanatory messages.
+- `RemotingTest_Core`:
+  - Replace `StartConfiguredServer<TServer>` and its factory lambdas with one variadic `StartServer<TServer>(...)`, while preserving the optional RVM session and renderer-admission business rules.
+  - Delete the synchronization/event machinery in `CoreFatalState`. On an RVM-host fatal error, make one best-effort `BroadcastError` call when the server is available, catch only a delivery failure at that non-returning callback boundary, and then unconditionally terminate outside the catch. This preserves the Core-authored business error without allowing a transport exception to prevent process termination.
+  - Keep `RemotingChannelServer::ClearCoreChannels()` after GUI finalization and before the stack-local JSON/protocol channel objects are destroyed. `SetCoreChannels` stores pointers to those objects, so clearing them is a required lifetime boundary rather than peer-shutdown coordination.
+  - After the remote controller has sent `ControllerConnectionStopped`, do not explicitly inspect and disconnect the renderer before stopping the channel server. The server stop is the terminal transport operation.
+- `RemotingTest_Rendering_Win32` and `RemotingChannelClient`:
+  - Keep one common client-composition function and reduce transport wrappers to concrete client construction.
+  - Once `GuiRemoteRendererSingle::IsDisconnectedFromCore()` is true because `ControllerConnectionStopped` was processed, ignore later Core/local errors and disconnect callbacks.
+  - Remove `disconnectedProcessed` and duplicate `BeginStopping()` calls if the renderer's existing terminal state and the one normal shutdown path make them redundant.
+  - Keep first-error/fatal-retention UI state, main-thread queueing, explicit async-channel detachment, and the final transport `Stop`; they own observable business behavior or stack-callback lifetime.
+- In `RemotingChannelServer::OnClientConnected`, retain renderer takeover behavior: detach the stale renderer, try to send it `ControllerConnectionStopped`, and use transport disconnection as the fallback if notification fails. Renderer replacement happens while Core remains live and is required by the SOP; it is not a heartbeat or shutdown acknowledgement.
+- Audit every remaining `try`/`catch`, connection-state flag, callback, and helper in `Source/RemotingHelpers` and the affected apps. Each survivor must own required business behavior, an asynchronous non-returning exception boundary, or a concrete object-lifetime guarantee.
+
+### Platform metadata and documentation
+
+- Update only the hand-authored `Test/Linux/RemotingTest_Core/vmake` and `Test/Linux/RemotingTest_RvmHost/vmake` files:
+  - Add `Source_RemotingHelpers.vcxitems` to `CPP_VCXPROJS`.
+  - Add the no-reflection GacUI source-item dependencies needed to compile the complete portable helper set in `RemotingTest_RvmHost`.
+  - Exclude the Windows helper translation unit on non-Windows platforms.
+  - Do not edit generated `vmake.txt` or `makefile` files.
+- Update `Project.md`, the root `README.md`, and `Test/GacUISrc/README.md` to remove the Linux `CppTest_Rvm` build-only target and to document the Windows-only local RVM app plus the portable Core/RVM-host `/MiniHttp` path.
+- Update `Project.md` and the README automation description so `CppTest_Rvm /MiniHttp` is not incorrectly described as using Windows HTTP.
+- Update the source-of-truth `../Tools/Copilot/Guidelines/Running-GacUI.md` first, then propagate it to `.github/Guidelines/Running-GacUI.md`. Explain that each mode/platform selects its concrete automation service and Windows HTTP or MiniHTTP start/stop functions, while the `Controls`, `Dom`, and `IO` contract is common.
+- Update `.github/KnowledgeBase/manual/gacui/coding-agent/automation-service.md` to remove the deleted scope/enum examples and document direct value construction, substitution, endpoint start/stop, service stop, and unsubstitution.
+- Do not modify `Import`, `Release`, generated GacUI resources, metadata binaries, or protocol schemas for this task. `Source/RemotingHelpers` remains an input to the existing remoting-helper CodePack configuration, but preparing foreign-dependency outputs is outside this repository task.
+
+## VERIFICATION
+
+### Static, project, and documentation checks
 
 - Run `git diff --check`.
-- Search `Source/RemotingHelpers` for `Test/`, `Generated_`,
-  `RemoteViewModelTestRpc`, and `rvmt::`; require no application-generated
-  dependency.
-- Search `CppTest_Rvm` for `Console`; require no match.
-- Search the old files for every moved class/function; require no duplicate
-  definition.
-- Search helper code for `catch`; justify each match against the explicit SOP
-  allowlist.
-- Run CodePack and inspect the four requested outputs.
-- On Windows, compile the neutral pair without `VlppOS.Windows`, `<Windows.h>`,
-  or any Windows GacUI provider. This validates layering only; it does not
-  establish Linux or macOS compatibility.
-- Confirm helper symbols do not appear in ordinary `GacUI` or
-  `GacUI.Windows`.
-- Confirm generated folders and `Import` have no direct edits.
+- Confirm `Source_RemotingHelpers.vcxitems` explicitly lists every remaining helper file exactly once, is present in `GacUISrc.sln`, and has shared-item mappings to all nine consumers listed in `DETAILS`.
+- Confirm none of those consumers or their `.vcxproj.filters` files directly lists a file under `Source/RemotingHelpers`. Parse every modified `.vcxproj`, `.vcxitems`, and `.filters` file as XML.
+- Confirm `AutomationServiceHost.{h,cpp}`, `CppTest_Rvm/Main.Linux.cpp`, and `Test/Linux/CppTest_Rvm` are gone with no stale project, filter, solution, `vmake`, or current documentation reference. Confirm `UnitTest/TestRemoteViewModelRuntime.cpp` remains and still verifies the exact business-channel pair.
+- Search implementation and current documentation and require no remaining `WindowsAutomationServiceType`, automation-service `*Scope`, `AutomationServiceHost`, `RemotingAutomationService`, `RemotingHostContext`, `StartWindowsAutomationService`, `StopWindowsAutomationService`, `GetWindowsAutomationService`, heartbeat/lease/grace symbols, or `RequesterStopping` protocol. Historical task logs, archived learning records, `Import`, and `Release` are excluded from this search.
+- Confirm every app constructs the intended concrete automation service, substitutes it directly, starts the selected endpoint, and performs endpoint stop, service stop, and unsubstitution in straight-line normal shutdown order.
+- Audit all remaining catches and connection-state checks against `DebugRemoteProtocolSop.md`. Require no cleanup-only catch, heartbeat, poll, lease, retry, or teardown acknowledgement, while retaining renderer replacement, Core-authored fatal delivery, and real async lifetime boundaries. Confirm Core clears its stored channel pointers before the stack channels are destroyed, and that its RVM-host fatal callback unconditionally terminates even when `BroadcastError` fails.
+- Confirm the Tools source guideline, propagated repository guideline, knowledge-base page, `Project.md`, and both README files agree on service selection, ports, `/MiniHttp`, and the removal of Linux `CppTest_Rvm`.
 
-## Windows builds and unit tests
+### Windows builds and unit tests
 
-Follow the repository build/run guidelines and use the supplied PowerShell
-wrappers.
+- From `Test/GacUISrc`, use the repository's absolute `.github/Scripts/copilotBuild.ps1` path to build all four configurations:
+  - `Debug|x64`.
+  - `Debug|Win32`.
+  - `Release|x64`.
+  - `Release|Win32`.
+- After every build, require `Build.log` to end with `0 Warning(s)` and `0 Error(s)`.
+- Run the complete `Debug|x64` `UnitTest` project through `copilotExecute.ps1`. Require every test file and case to pass and no memory-leak dump after the summary.
+- No reflection, XML resource, protocol schema, or generated GacUI source changes are requested; do not run unrelated code-generation projects unless an implementation change expands into one of their documented trigger paths.
 
-- Build affected Debug/Release and Win32/x64 configurations.
-- Build at least:
-  - `CppTest`
-  - `CppTest_Metaonly`
-  - `CppTest_Reflection`
-  - `CppTest_Rvm`
-  - `GacUI_Host`
-  - `Playground`
-  - `RemotingTest_Core`
-  - `RemotingTest_Rendering_Win32`
-  - `RemotingTest_RvmHost`
-  - `UnitTest`
-- Run `UnitTest` after all C++ changes.
-- Verify each migrated automation endpoint starts on its documented port and
-  returns the same Controls/DOM/IO behavior.
+### Windows application verification
 
-## Deferred cross-platform verification
+- Run GacUI applications through the documented repository execution/debugging workflow, with a debugger attached where required by `Running-GacUI.md`.
+- Start `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`, `GacUI_Host`, and `Playground` separately. For each app:
+  - require `GET http://localhost:8888/Automation/<PROJECT-NAME>/Controls` to return a nonempty valid control tree;
+  - post exact `!Exit` to `/IO` and require exact `Queued`;
+  - require normal process exit, then repeat immediately to prove the listener was released by straight-line teardown.
+- For each of `/Pipe`, `/Http`, and `/MiniHttp`, start `CppTest_Rvm` first and then `RemotingTest_RvmHost` with the same transport:
+  - require `CppTest_Rvm/Controls` to expose the running UI;
+  - enter a marker and require exactly `Hello, <marker>!`, proving a live `Translate` RPC;
+  - remain idle longer than the removed five-second lease, then perform another translation successfully without heartbeat traffic;
+  - send exact `!Exit` and require both processes to terminate with no surviving listener or process.
+- Repeat the requester/host matrix with the host terminated before the UI closes. Do not require heartbeat-based idle detection; perform the next real `Translate` operation and require the requester to terminate with an error instead of hanging, retrying, or recovering.
+- For each transport, run `RemotingTest_Core /RPT` with `RemotingTest_Rendering_Win32` and perform the relevant `DebugRemoteProtocolSop.md` flow:
+  - require Core `Controls` on port 8888 and renderer `Dom` on port 8889;
+  - drive representative IO once through Core and once through the renderer and require both views to converge;
+  - replace the renderer and require the old renderer to settle without a fatal prompt while Core remains usable;
+  - close Core normally and require later renderer transport errors to be ignored after `ControllerConnectionStopped`.
+- For each transport, run `RemotingTest_Core /RVMT`, `RemotingTest_RvmHost`, and the native renderer in the documented order. Verify live translation and normal shutdown. Then terminate the host, perform the next business RPC if necessary to expose the failure, and require one Core-authored fatal error to reach the renderer before Core terminates.
+- Exercise both choices of the existing renderer fatal-error policy for a Core-authored `!Error`: the default close path and the retained frozen-DOM/`ExitOnly` path. Later local disconnect signals must not replace or duplicate that business error.
+- In `/MiniHttp` runs, confirm Core protocol and automation share the port-8888 socket, while renderer automation owns its separate port-8889 socket. Repeat the runs to detect stale ports, callbacks, or processes.
 
-Linux and macOS builds are not performed or required by this task. The
-separate platform follow-up must run the affected `Test/Linux` build flows on
-Linux and on an actual macOS environment. The outcome of this Windows task
-must be reported as cross-platform compatibility unverified.
+### Separate Linux/macOS verification
 
-## Multi-process acceptance
+- Windows results do not verify Unix platforms. Perform this section later on the claimed target OS and report Linux and macOS independently.
+- On Linux, use only `.github/Ubuntu/build.sh` from each folder containing `vmake`:
+  - full-build `Test/Linux/RemotingTest_Core`;
+  - full-build `Test/Linux/RemotingTest_RvmHost`;
+  - full-build and run `Test/Linux/UnitTest` with `/C`.
+- Inspect generated `vmake.txt` files without editing them. Require every portable remoting-helper source exactly once, no `*.Windows.cpp`, and no reference to deleted `AutomationServiceHost` or `CppTest_Rvm/Main.Linux.cpp`. Run a second incremental build and require no unintended rebuild.
+- Run `RemotingTest_Core /FCT /MiniHttp` asynchronously, exercise Core `Controls` and representative IO, then send exact `!Exit` and require normal termination.
+- Run `RemotingTest_Core /RVMT /MiniHttp` first and then `RemotingTest_RvmHost /MiniHttp`. Require a live `Translate` result and normal queued exit. Repeat after terminating the host, perform the next translation, and require fail-fast termination without heartbeat-based polling.
+- Do not build or run `CppTest_Rvm` on Linux or macOS; its Unix entry point and `vmake` target are intentionally removed.
+- Repeat the applicable Core, RVM-host, and UnitTest builds on an actual macOS host before claiming macOS compatibility. If they are not run, explicitly report macOS as unverified.
 
-On Windows, for `/Pipe`, `/Http`, and `/MiniHttp`:
+## REVIEW COMMENTS
 
-1. Start requester/Core first, then the RVM host.
-2. Prove service acquisition and a successful `Translate`.
-3. Stop normally and require no fatal classification.
-4. Kill the host before `Ready`, while idle, and during `Translate`.
-5. Require `CppTest_Rvm` to terminate nonzero.
-6. With Core and a renderer active, require exactly one Core-authored `!Error`
-   before Core exits nonzero and require no earlier
-   `ControllerConnectionStopped`.
-7. Kill/replace the renderer and require Core and the RVM host to remain live.
-8. Kill Core and require the renderer's ordinary disconnected state, not a
-   fabricated fatal prompt.
-9. Repeat enough times to expose stale callbacks, occupied ports, duplicate
-   stops, or use-after-scope state.
-
-For GacJS:
-
-- Run Core `/RVMT` plus the host plus GacJS for `/Http` and `/MiniHttp`.
-- Kill the RVM host and require the exact Core-authored fatal error in GacJS.
-- Require normal Core loss or browser disappearance to retain the existing
-  nonfatal contract.
-
-# Completion Criteria
-
-The refinement is complete when:
-
-- all reusable test-only automation/remoting code is owned by
-  `Source/RemotingHelpers`;
-- the four exact CodePack files are generated;
-- ordinary GacUI library code pairs do not contain or depend on the helpers;
-- current test apps contain only application/transport selection and generated
-  resource composition;
-- no helper includes generated application code;
-- `CppTest_Rvm` has no console dependency;
-- the affected Windows configurations build;
-- Linux and macOS compatibility is explicitly reported as unverified and
-  deferred;
-- all non-SOP recovery and shutdown acknowledgements are gone; and
-- the complete Windows fatal, normal-stop, renderer-replacement, and
-  automation acceptance matrix passes.
+No unresolved review comments.
 
 # UPDATES
 
 # TEST [CONFIRMED]
 
-The problem is a test-support ownership and composition problem. Confirm the
-current behavior before moving code, then use the same checks as the regression
-contract:
+Confirm the current architectural problem and preserve its required business behavior with the following checks.
 
-- Static donor inventory:
-  - `WindowsAutomationService*`, the Windows HTTP endpoint, and setup-time
-    substitution currently live in the Windows platform provider.
-  - MiniHTTP automation currently lives in
-    `RemotingTest_Core/Shared.cpp` and is shared by compiling that source into
-    multiple projects.
-  - the local RVM server, Core server, renderer channel client, transport
-    selection globals, and cleanup ladders currently live in application
-    `GuiMain.cpp` files;
-  - `Source/RemotingHelpers` and the requested CodePack pairs do not exist.
-- Existing focused unit coverage in `TestRemoteViewModelRuntime.cpp` must pass
-  before and after extraction. It proves that only the exact RPC/control
-  channel pair is classified as an RVM host. Add focused helper tests if a
-  newly extracted policy can be tested without a concrete transport.
-- Build the Debug x64 solution and run the complete Debug x64 `UnitTest`
-  suite. Success requires all test files and cases to pass and no memory-leak
-  dump after the summary.
-- For `/Pipe`, `/Http`, and `/MiniHttp`, start `CppTest_Rvm` first and then
-  `RemotingTest_RvmHost`. Require the requester to acquire
-  `rvmt::IViewModel`, expose a healthy automation endpoint, and return
-  `Hello, !` from the generated `Translate` binding. Send exact `!Exit` and
-  require normal requester and host exit without fatal classification.
-- Repeat the three transports after extraction and additionally terminate the
-  host while the requester is idle. Require the requester to terminate
-  nonzero. Exercise Core/native-renderer admission, renderer replacement,
-  Core-authored RVM-host fatal delivery, and normal Core loss according to
-  `DebugRemoteProtocolSop.md`.
-- Exercise every migrated Windows and MiniHTTP automation endpoint through its
-  documented `Controls`, `Dom`, and representative synchronous-error/queued-IO
-  behavior. A protocol-level unsupported or malformed request may return 404;
-  an unexpected implementation failure must remain fail-fast.
-- Run CodePack from `Release/CodegenConfig.xml` and inspect exactly
-  `GacUI.RemotingHelpers.{h,cpp}` and
-  `GacUI.RemotingHelpers.Windows.{h,cpp}`. The neutral pair must contain no
-  Windows provider or `VlppOS.Windows` dependency, and neither helper pair may
-  leak into ordinary `GacUI`/`GacUI.Windows`.
-- Run the requested affected Debug/Release Win32/x64 builds and static audits:
-  no helper dependency on `Test`, `Generated_*`,
-  `RemoteViewModelTestRpc`, or `rvmt::`; no `Console` in `CppTest_Rvm`; no
-  duplicate moved definitions; every remaining helper `catch` justified by
-  the SOP; no direct generated/Import edits; and `git diff --check` clean.
+- Static baseline inventory:
+  - `Source/RemotingHelpers` currently contains `AutomationServiceHost.{h,cpp}`, the automation service scope classes and enum, heartbeat/lease/requester-stopping state, and the redundant wrappers named in the problem description.
+  - The nine target applications directly enumerate different subsets of helper sources in their `*.vcxproj` and `*.vcxproj.filters` files; `GacUISrc.sln` has no `Source_RemotingHelpers` shared project.
+  - `CppTest_Rvm/Main.Linux.cpp` and `Test/Linux/CppTest_Rvm` exist, while the two portable remoting `vmake` files do not consume a shared helper project.
+  - Current documentation still describes scope/enum ownership and the Linux `CppTest_Rvm` build-only target.
+- Keep `UnitTest/TestRemoteViewModelRuntime.cpp`. It verifies that only the exact RPC and `Ready` channel pair identifies an RVM host. Build Debug x64 and run the complete Debug x64 unit-test project; success requires every file and case to pass with no memory-leak dump.
+- Preserve the runtime contract while deleting liveness machinery:
+  - For `/Pipe`, `/Http`, and `/MiniHttp`, `CppTest_Rvm` plus `RemotingTest_RvmHost` must acquire the view model, translate a marker to exact `Hello, <marker>!`, remain usable after more than five idle seconds without heartbeat traffic, accept exact `!Exit`, and leave no process or listener behind.
+  - After terminating the host, the next real RPC operation must terminate the requester instead of hanging, retrying, or recovering. Idle `/Http` and `/MiniHttp` sessions are not required to detect loss proactively.
+  - For `/RPT` and `/RVMT`, preserve renderer replacement, stale-renderer detachment, the first Core-authored fatal error, the retained fatal DOM/`ExitOnly` choice, normal `ControllerConnectionStopped`, and the required explicit callback-detachment/transport-stop lifetime boundaries from `DebugRemoteProtocolSop.md`.
+- After implementation, require the exact static/project/documentation checks from the problem description, XML-parse every modified project file, run `git diff --check`, build Debug/Release for x64/Win32 with zero warnings and errors, and run the complete Debug x64 unit suite without leaks.
+- Exercise each migrated automation endpoint twice. Require nonempty valid `Controls` or `Dom`, exact `Queued` for `!Exit`, normal process exit, and immediate listener reuse. In `/MiniHttp`, Core/RPC and Core automation share port 8888 while renderer automation owns port 8889.
+- Linux and macOS cannot be verified in this Windows environment. Only hand-authored `vmake` files are changed here; report both platforms unverified and reserve their build/run matrix for the separate target-OS verification requested by the task.
 
-Windows-only results are the success criterion for this investigation.
-Linux/macOS compatibility remains explicitly unverified and deferred.
+The problem is confirmed against commit `96de4c597`:
 
-The pre-extraction baseline is confirmed:
-
-- Debug x64 `GacUISrc.sln` built successfully with 0 warnings and 0 errors.
-- The complete Debug x64 `UnitTest` run passed 89/89 test files and
-  1,714/1,714 test cases, with no memory-leak dump after the summary.
-- `/Pipe`, `/Http`, and `/MiniHttp` each exposed the `CppTest_Rvm` control
-  tree with the generated value `Hello, !`, proving successful service
-  acquisition and `Translate`.
-- Exact `!Exit` returned `Queued` for all three transports. Both requester and
-  host processes exited after each run, with no fatal UI or surviving process.
-- The MiniHTTP listener binds IPv4 loopback. Its automation check therefore
-  uses `127.0.0.1`; the first `localhost` probe resolved to IPv6 and did not
-  reach the healthy IPv4 listener.
-- Static inventory confirms the architectural problem: all donor symbols and
-  ambient startup state remain in the locations listed above,
-  `Source/RemotingHelpers` is absent, and the two requested CodePack pairs do
-  not exist.
+- The helper inventory contains exactly the eleven current files, including the two obsolete `AutomationServiceHost` files. `GacUISrc.sln` has no `Source_RemotingHelpers` project, and the nine target consumers directly enumerate inconsistent helper subsets in both project and filter files.
+- The current implementation contains `WindowsAutomationServiceType`, all three automation scope layers, global Windows service ownership, the inferred MiniHTTP application-name overload, `RemotingHostContext`, heartbeat/lease/grace state, `RequesterStopping`, `RequesterServerScope`, `StartConfiguredServer`, synchronized `CoreFatalState`, and duplicate renderer stopping state.
+- `CppTest_Rvm/Main.Linux.cpp` and `Test/Linux/CppTest_Rvm/vmake` exist. The portable Core and host `vmake` files do not import a shared helper inventory, and the documented Linux build-only target and scope/enum examples remain.
+- Debug x64 `GacUISrc.sln` built successfully with `0 Warning(s)` and `0 Error(s)`.
+- The complete Debug x64 `UnitTest` run passed 89/89 test files and 1,714/1,714 test cases. There was no memory-leak sidecar or appended leak dump. `TestRemoteViewModelRuntime.cpp` passed and remains the correct business-channel admission regression.
 
 # PROPOSALS
-
-- No.1 [CONFIRMED] Extract generated-neutral remoting composition with scoped automation ownership
-
-## No.1 [CONFIRMED] Extract generated-neutral remoting composition with scoped automation ownership
-
-Create `Source/RemotingHelpers` as a test-support layer with the requested
-`AutomationService`, `RemotingServer`, and `RemotingClient` ownership
-boundaries. Keep neutral files free of Windows and generated-application
-dependencies, and put Windows provider/HTTP code only in nested `Windows`
-folders.
-
-Move Windows automation implementations and the Windows HTTP endpoint out of
-`WinNativeWindow`. Leave one low-level Windows provider bridge that executes a
-parsed IO command against a validated native window while the provider still
-owns access to its listener list. Resolve window IDs through the public
-created-window enumeration, preserve the existing pointer encoding, and remove
-automation-specific friendship/private controller access. Remove automatic
-automation substitution from GDI and Direct2D startup.
-
-Move MiniHTTP automation into the neutral helper layer. Both HTTP endpoints
-will classify unsupported verbs/routes, malformed IO suffixes, invalid content
-types, and disabled operations as 404, but will terminate at async/OS callback
-boundaries for unexpected parser, automation, or invariant failures. The
-MiniHTTP service destructor will no longer duplicate explicit `Stop`.
-
-Add scoped substitution and endpoint owners plus
-`RemotingAutomationService::{WindowsHttp,MiniHttp}`. Every GUI app will start
-its selected service after the native controller exists. Cpp/Core/renderer
-transport entry points will pass the enum and a strong MiniHTTP socket through
-one stack-owned context into `GuiMain`, replacing selector booleans and
-pointers to stack-owned `Ptr` objects.
-
-Merge the two server families into
-`RemotingChannelServer<TServerBase>`. Inject non-renderer local/remote
-admission, renderer-readiness, disconnection, and status callbacks. Keep
-optional renderer admission, the current renderer ID, stale-renderer detach,
-replacement notification/fallback disconnect, and only the core JSON/protocol
-binding in the helper. Keep transport construction directly in each app.
-
-Move the renderer channel client under `RemotingClient` and configure its fatal
-title, main-thread scheduling, renderer/automation bindings, and retain/exit
-policy. Preserve first-error-wins Core-authored fatal handling, prompt-free
-fatal local disconnects, idempotent `OnDisconnected`, pending startup state,
-and explicit transport stop before stack callback targets disappear.
-
-Split the current RVM runtime into a generated-neutral RPC/channel runtime and
-a thin test adapter. Configure channel/service/control names, one-way
-`Ready`/heartbeat/stopping values, lease timings, and the generated module
-factory. The generic helper will own channel maps, broker/requester local
-clients, task scheduling, RPC lifecycle initialization, requester lease, and
-host control client without naming `RemoteViewModelTestRpc` or
-`rvmt::IViewModel`. The remaining Test runtime will select the generated module
-and cast the requested service.
-
-Replace application catch/cleanup ladders with scoped owners and straight-line
-lifetime ordering. Keep only SOP-required catches: renderer replacement
-delivery fallback, the Core one-shot fatal delivery attempt, and non-returning
-async callback/thread firewalls. Remove all `Console` use from `CppTest_Rvm`.
-
-Update every affected Windows project/filter explicitly, split CodePack into
-the two exact neutral/Windows helper pairs, regenerate Release through
-CodePack, and update automation documentation whose old provider-ownership
-description becomes false. Do not modify `Test/Linux`, generated resource
-sources, Import, or upstream Workflow/VlppOS.
-
-### CODE CHANGE
-
-Implemented the extraction and confirmed the proposal.
-
-- Added the neutral `Source/RemotingHelpers` ownership areas:
-  - `AutomationService` now owns the automation host configuration, the
-    portable MiniHTTP endpoint, and scoped service lifetimes.
-  - `RemotingServer` now owns the generated-neutral configurable
-    `RemotingChannelServer<TServerBase>` plus the reusable RPC requester/host
-    runtime.
-  - `RemotingClient` now owns the configurable renderer channel client and its
-    terminal-state ordering.
-- Added the nested Windows automation implementation. It owns native, hosted,
-  and renderer automation substitutions plus the Windows HTTP endpoint.
-  `WinNativeWindow` retains only the narrow exported IO-command provider seam.
-  GDI and Direct2D no longer create a test automation service automatically.
-- Moved MiniHTTP automation out of the deleted
-  `Test/GacUISrc/RemotingTest_Core/Shared.cpp`. Both HTTP implementations
-  reject malformed `/IO/<id>` routes with 404 before parsing while unexpected
-  callback failures reach a non-returning process boundary. MiniHTTP returns
-  the exact `application/json; charset=utf8` content type.
-- Merged the requester-only and Core server families into the single generic
-  server. Renderer admission remains optional; renderer replacement,
-  notification fallback, stale-renderer detach, and Core bindings preserve the
-  SOP contract.
-- Split the RVM runtime into a generated-neutral helper and the thin
-  `RemoteViewModelTestRuntime` adapter. The helper retains distinct broker and
-  requester local endpoints, post-route `Ready`, one-way heartbeat lease,
-  one-way `RequesterStopping`, and pre-teardown stopping classification. It
-  does not name `RemoteViewModelTestRpc`, `rvmt::`, or `IViewModel`.
-- Migrated `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`,
-  `CppTest_Rvm`, `GacUI_Host`, `Playground`, `RemotingTest_Core`,
-  `RemotingTest_Rendering_Win32`, and `RemotingTest_RvmHost` to explicit
-  scoped setup. `CppTest_Rvm` has no console dependency.
-- Added every helper source/header explicitly to the affected MSBuild
-  projects and filters. All 24 project filter files parse as XML and no project
-  references the removed `Shared.cpp`.
-- Updated `Release/CodegenConfig.xml` and regenerated CodePack. The exact new
-  root and IncludeOnly outputs are:
-  `GacUI.RemotingHelpers.{h,cpp}` and
-  `GacUI.RemotingHelpers.Windows.{h,cpp}`. The neutral pair contains no
-  Windows provider or `VlppOS.Windows` dependency; the ordinary
-  `GacUI`/`GacUI.Windows` pairs contain no extracted helper symbols.
-- Updated the automation-service knowledge-base page to describe explicit
-  test-helper ownership and lifetime.
-
-Verification passed:
-
-- Final Debug x64, Debug Win32, Release x64, and Release Win32 solution builds
-  completed with 0 warnings and 0 errors. The cold Release x64 wrapper reached
-  its one-hour timeout while its child build processes continued to successful
-  links; a subsequent wrapper run completed cleanly with 0 warnings and
-  0 errors.
-- The complete Debug x64 `UnitTest` run passed 89/89 test files and
-  1,714/1,714 test cases, with no memory-leak sidecar or dump.
-- The post-extraction `/Pipe`, `/Http`, and `/MiniHttp` requester/host matrix
-  acquired `rvmt::IViewModel`, exposed `Hello, !`, returned exact `Queued` for
-  `!Exit`, and exited normally.
-- Idle RVM-host loss terminated requesters for all three transports, including
-  the heartbeat-timeout path for `/Http` and `/MiniHttp`.
-- Native renderer checks for all three transports confirmed: renderer loss is
-  nonfatal to Core, a replacement renderer disconnects the previous renderer,
-  normal Core loss is an ordinary renderer disconnection, and RVM-host loss
-  makes Core terminate after retaining the Core-authored fatal UI in the
-  renderer.
-- The Windows HTTP and MiniHTTP endpoints returned 404 for malformed
-  `/IO/bad/id`, remained healthy, then accepted a valid `!Exit`.
-- Real GacJS browser checks for `/Http` and `/MiniHttp` confirmed the exact
-  distinction:
-  - RVM-host loss shows the visible fatal mask with
-    `RemotingTest_RvmHost disconnected.` and no JavaScript dialog.
-  - ordinary Core loss shows only the success mask with
-    `HTTP remote protocol disconnected.` and no JavaScript dialog.
-- Migrated Cpp/Metaonly/Reflection/GacUI_Host automation endpoints exposed
-  healthy control trees and normal queued exit; Playground completed normally.
-- Source whitespace, generated-neutral dependency searches,
-  ordinary-CodePack leakage searches, stale-donor searches, project XML
-  validation, and the fail-fast catch audit are clean. Plain
-  `git diff --check` reports only CodePack's established extra-blank-line-at-EOF
-  convention on the four newly added root CodePack outputs; those generated
-  files are retained byte-for-byte as emitted instead of being hand-edited.
-  Remaining catches are limited to the SOP-required Core/renderer delivery
-  fallback and non-returning callback or thread firewalls.
-- `Import` and generated GacUI resource sources were not edited.
-
-All implementation and verification above is Windows-only. `Test/Linux/**`,
-Linux builds, and actual macOS builds remain explicitly deferred and
-unverified, as required by the task boundary.
