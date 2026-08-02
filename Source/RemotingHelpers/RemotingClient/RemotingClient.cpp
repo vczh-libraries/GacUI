@@ -444,7 +444,7 @@ namespace vl::presentation::remoting
 		bool result = false;
 		SPIN_LOCK(impl->lockState)
 		{
-		result = impl->phase == RequesterPhase::Running;
+			result = impl->phase == RequesterPhase::Running;
 		}
 		return result;
 	}

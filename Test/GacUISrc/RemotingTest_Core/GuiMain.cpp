@@ -211,6 +211,10 @@ void GuiMain()
 			);
 	}
 	GetApplication()->Run(window.Obj());
+	if (currentGuiContext->session)
+	{
+		currentGuiContext->session->BeginStopping();
+	}
 
 #ifdef VCZH_MSVC
 	if (currentGuiContext->miniHttpSocketServer)

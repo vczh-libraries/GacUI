@@ -113,6 +113,7 @@ void GuiMain()
 		L"GuiMain()#RemotingTest_RvmHost was not available before window startup."
 		);
 	GetApplication()->Run(window.Obj());
+	currentGuiContext->session->BeginStopping();
 	if (currentGuiContext->miniHttpSocketServer)
 	{
 		StopMiniHttpAutomationService();
