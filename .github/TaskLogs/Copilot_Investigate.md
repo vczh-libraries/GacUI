@@ -257,3 +257,15 @@ The problem is confirmed against commit `96de4c597`:
 - The complete Debug x64 `UnitTest` run passed 89/89 test files and 1,714/1,714 test cases. There was no memory-leak sidecar or appended leak dump. `TestRemoteViewModelRuntime.cpp` passed and remains the correct business-channel admission regression.
 
 # PROPOSALS
+
+- No.1 Delete reliability/lifecycle scaffolding and centralize helper compilation.
+
+  Replace the duplicated per-application helper source lists with one explicit `Source_RemotingHelpers.vcxitems` inventory, imported by the nine current consumers and by the two hand-authored portable `vmake` descriptions. Delete the obsolete host abstraction and Unix-local `CppTest_Rvm` target. Each test application will own its concrete automation service as a stack value and perform the normal-path sequence directly: substitute, start the selected endpoint, run, stop the endpoint, stop the service, and unsubstitute.
+
+  Reduce remote-view-model control traffic to the business-significant `Ready` signal. Remove heartbeat, lease, requester-stopping, saved-fatal, and polling machinery; retain exact host admission, task-queue finalization, channel detachment, renderer replacement, Core-authored fatal delivery, and stored-channel clearing where they enforce observable behavior or object lifetime. Consolidate the duplicated transport wrappers in `CppTest_Rvm`, Core, renderer, and RVM host without adding replacement reliability layers.
+
+  Update the project metadata and current documentation to describe the concrete platform/mode compositions and the portable `/MiniHttp` path. Validate exact shared-project mappings and stale-symbol removal, XML-parse modified project files, build all four Windows configurations, run the full Debug x64 unit suite, and exercise the available Windows endpoint/process matrices. Linux and macOS runtime results remain explicitly unverified in this Windows environment.
+
+  ### CODE CHANGE
+
+  Implementation will delete the obsolete abstractions and liveness protocol first, then simplify each application around direct ownership, centralize the remaining helper files in the shared project, and finally align Linux metadata and documentation. No protocol schema, generated resource, `Import`, or `Release` output will be changed.
