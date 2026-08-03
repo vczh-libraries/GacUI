@@ -55,3 +55,19 @@ The refactor succeeds when all of the following are true:
 The pre-change behavioral baseline does not need to be rerun: the user confirms that the remote-protocol verification passed before this refactor, so any post-change breakage is attributable to this work.
 
 # PROPOSALS
+
+- No.1 Replace callback bundles with server inheritance and move the renderer guard to the protocol channel
+
+## No.1 Replace callback bundles with server inheritance and move the renderer guard to the protocol channel
+
+Delete `RemotingChannelServerCallbacks`. Make `RemotingChannelServer<TServerBase>` accept every local client because only the owning process can call `ConnectLocalClient`. Give it one protected virtual remote-admission operation whose default implementation owns the existing renderer acceptance/replacement behavior. A generated-app-specific `RemoteViewModelChannelServer<TServerBase>` will override that operation to admit the exact RVM-host channel and consult the concrete requester session phase before delegating renderer channels to the base. It will override the already-virtual disconnect notification to update the requester session after the base has handled renderer detachment. No virtual `canAcceptLocalClient`, channel-recognition predicate, renderer-admission state query, or renderer-change notification will be introduced.
+
+Make `RemoteViewModelRequesterSession` directly inherit `RemotingRequesterSession` and retain only generated-module construction plus the typed `rvmt::IViewModel` result. `RemoteViewModelChannelServer<TServerBase>` will own that session, so both `CppTest_Rvm` and `RemotingTest_Core /RVMT` use the same server class; the existing `acceptRenderer` constructor argument remains their only server-policy difference. Its terminal action will broadcast the RVM-host failure only when renderer support is enabled, then fail fast. This removes the callback-to-wrapper-to-session redirection while preserving the post-`Ready` renderer admission barrier.
+
+Construct each named-pipe, Windows HTTP, or MiniHTTP concrete channel server in its corresponding `Start*Server` function. Pass the constructed server and JSON parser into the shared run function instead of forwarding a variadic transport-constructor argument pack through `StartServer<TServerBase>`.
+
+Add protected virtual `GuiRemoteProtocolCoreChannel::IsCorrectRendererClientId(vint)`, returning `true` by default, and have `Submit` use it alongside the existing `-1` check. Delete `RemotingCoreChannel`. Define `SwitchableRenderersCoreChannel<TServerBase>` in `RemotingTest_Core`; it will override the guard and compare the protocol channel's selected renderer with `RemotingChannelServer<TServerBase>::GetRendererClientId()`.
+
+Update the remote-protocol renderer/serialization design document so its demo composition, server naming, renderer replacement, transport modes, and shutdown description match the resulting implementation.
+
+### CODE CHANGE
