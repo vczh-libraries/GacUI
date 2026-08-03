@@ -59,8 +59,8 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-	<ImportGroup Label="Shared">
-		<Import Project="..\Source_RemotingHelpers\Source_RemotingHelpers.vcxitems" Label="Shared" />
+  <ImportGroup Label="Shared">
+    <Import Project="..\Source_RemotingHelpers\Source_RemotingHelpers.vcxitems" Label="Shared" />
     <Import Project="..\Generated_RemoteViewModelTest\Generated_RemoteViewModelTest.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -166,7 +166,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GuiMain.cpp" />
-    <ClCompile Include="Main.Windows.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="..\RemotingTest_RvmHost\RemoteViewModelTestRuntime.cpp" />
   </ItemGroup>
   <ItemGroup>

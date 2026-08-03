@@ -47,18 +47,16 @@ namespace
 		taskQueue->RunTaskQueue();
 		return 0;
 	}
-
 }
 
 void GuiMain()
 {
+	// This function would not be needed if GacUI source files are not included in this project.
+	// Doing this reduces complexity of project dependencies in this solution.
 }
 
 int main(int argc, char* argv[])
 {
-#ifdef VCZH_MSVC
-	_set_abort_behavior(0, _WRITE_ABORT_MSG);
-#endif
 	if (argc != 2)
 	{
 		return 1;

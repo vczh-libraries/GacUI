@@ -90,9 +90,9 @@ void GuiMain()
 	CHECK_ERROR(currentGuiContext->viewModel, L"GuiMain()#The rvmt::IViewModel proxy is null.");
 
 	theme::RegisterTheme(Ptr(new darkskin::Theme));
-	auto window = Ptr(new rvmt::MainWindow(currentGuiContext->viewModel));
-	window->ForceCalculateSizeImmediately();
-	window->MoveToScreenCenter();
+	rvmt::MainWindow window(currentGuiContext->viewModel);
+	window.ForceCalculateSizeImmediately();
+	window.MoveToScreenCenter();
 	windows::SetWindowDefaultIcon(MAINICON);
 	windows::WindowsAutomationServiceHosted automationService;
 	GetNativeServiceSubstitution()->Substitute(&automationService, false);
@@ -112,7 +112,7 @@ void GuiMain()
 		currentGuiContext->session->BeginRunning(),
 		L"GuiMain()#RemotingTest_RvmHost was not available before window startup."
 		);
-	GetApplication()->Run(window.Obj());
+	GetApplication()->Run(&window);
 	currentGuiContext->session->BeginStopping();
 	if (currentGuiContext->miniHttpSocketServer)
 	{

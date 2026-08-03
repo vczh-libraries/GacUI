@@ -36,13 +36,7 @@ namespace
 	constexpr const wchar_t* GacUIRemoteProtocolHttpBaseUrl = L"/GacUIRemoteProtocolHttp";
 	constexpr vint GacUIRemoteProtocolHttpPort = 8888;
 	constexpr vint GacUIAutomationHttpPort = 8889;
-#if defined VCZH_MSVC
-	constexpr const wchar_t* GacUIAutomationApplicationName = L"RemotingTest_Rendering_Win32";
-#elif defined VCZH_GCC && !defined VCZH_APPLE
-	constexpr const wchar_t* GacUIAutomationApplicationName = L"RemotingTest_Renderer_Wayland";
-#else
-	constexpr const wchar_t* GacUIAutomationApplicationName = L"RemotingTest_Renderer_macOS";
-#endif
+	constexpr const wchar_t* GacUIAutomationApplicationName = L"RemotingTest_Rendering_Native";
 
 	struct RendererGuiContext
 	{
