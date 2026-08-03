@@ -16,71 +16,68 @@ using namespace vl::presentation::remoting;
 using namespace vl::presentation::remote_view_model_test;
 using namespace vl::rpc_controller::channeling;
 
-namespace
+struct RvmGuiContext
 {
-	struct RvmGuiContext
-	{
-		RemoteViewModelRequesterSession*						session = nullptr;
-		Ptr<rvmt::IViewModel>									viewModel;
-		Ptr<async_tcp_socket::IAsyncSocketServer>			miniHttpSocketServer;
-	};
+	RemoteViewModelRequesterSession*						session = nullptr;
+	Ptr<rvmt::IViewModel>									viewModel;
+	Ptr<async_tcp_socket::IAsyncSocketServer>			miniHttpSocketServer;
+};
 
-	RvmGuiContext* currentGuiContext = nullptr;
+RvmGuiContext* currentGuiContext = nullptr;
 
-	RemotingChannelServerCallbacks CreateCallbacks(RemoteViewModelRequesterSession& session)
+RemotingChannelServerCallbacks CreateCallbacks(RemoteViewModelRequesterSession& session)
+{
+	RemotingChannelServerCallbacks callbacks;
+	callbacks.canAcceptLocalClient = Func<bool(JsonChannelClient*)>([&session](JsonChannelClient* client)
 	{
-		RemotingChannelServerCallbacks callbacks;
-		callbacks.canAcceptLocalClient = Func<bool(JsonChannelClient*)>([&session](JsonChannelClient* client)
+		return session.CanAcceptLocalClient(client);
+	});
+	callbacks.isRemoteClient = Func<bool(const JsonChannelClient::ChannelNameList&)>(
+		[](const JsonChannelClient::ChannelNameList& channels)
 		{
-			return session.CanAcceptLocalClient(client);
+			return IsRemoteViewModelHostChannel(channels);
 		});
-		callbacks.isRemoteClient = Func<bool(const JsonChannelClient::ChannelNameList&)>(
-			[](const JsonChannelClient::ChannelNameList& channels)
-			{
-				return IsRemoteViewModelHostChannel(channels);
-			});
-		callbacks.tryAcceptRemoteClient = Func<bool(vint)>([&session](vint clientId)
-		{
-			return session.TryAcceptViewModelHost(clientId);
-		});
-		callbacks.clientDisconnected = Func<void(vint)>([&session](vint clientId)
-		{
-			session.OnClientDisconnected(clientId);
-		});
-		return callbacks;
-	}
-	template<typename TServer, typename ...TArgs>
-	int StartServer(
-		Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer,
-		TArgs&& ...args
-		)
+	callbacks.tryAcceptRemoteClient = Func<bool(vint)>([&session](vint clientId)
 	{
-		auto parser = Ptr(new glr::json::Parser);
-		RemoteViewModelRequesterSession session(
-			parser,
-			Func<void(const WString&)>([](const WString&) { std::_Exit(1); })
-			);
-		auto callbacks = CreateCallbacks(session);
-		RemotingChannelServer<TServer> server(
-			parser,
-			false,
-			callbacks,
-			std::forward<TArgs>(args)...
-			);
-		server.Start();
-		session.Start(&server);
-		auto viewModel = session.RequestViewModel();
-		RvmGuiContext context{ &session, viewModel, miniHttpSocketServer };
-		CHECK_ERROR(!currentGuiContext, L"StartServer(...)#The GUI context has already been bound.");
-		currentGuiContext = &context;
-		auto result = SetupHostedWindowsDirect2DRenderer();
-		currentGuiContext = nullptr;
-		session.Stop(Func<void()>([&server]()
-		{
-			server.Stop();
-		}));
-		return result;
-	}
+		return session.TryAcceptViewModelHost(clientId);
+	});
+	callbacks.clientDisconnected = Func<void(vint)>([&session](vint clientId)
+	{
+		session.OnClientDisconnected(clientId);
+	});
+	return callbacks;
+}
+template<typename TServer, typename ...TArgs>
+int StartServer(
+	Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer,
+	TArgs&& ...args
+	)
+{
+	auto parser = Ptr(new glr::json::Parser);
+	RemoteViewModelRequesterSession session(
+		parser,
+		Func<void(const WString&)>([](const WString&) { std::_Exit(1); })
+		);
+	auto callbacks = CreateCallbacks(session);
+	RemotingChannelServer<TServer> server(
+		parser,
+		false,
+		callbacks,
+		std::forward<TArgs>(args)...
+		);
+	server.Start();
+	session.Start(&server);
+	auto viewModel = session.RequestViewModel();
+	RvmGuiContext context{ &session, viewModel, miniHttpSocketServer };
+	CHECK_ERROR(!currentGuiContext, L"StartServer(...)#The GUI context has already been bound.");
+	currentGuiContext = &context;
+	auto result = SetupHostedWindowsDirect2DRenderer();
+	currentGuiContext = nullptr;
+	session.Stop(Func<void()>([&server]()
+	{
+		server.Stop();
+	}));
+	return result;
 }
 
 void GuiMain()

@@ -16,13 +16,23 @@ In general, here is my preference for any languages:
 
 ## Be Brave Enough to Fix Upstream Code and Make Breaking Change
 
+This section is a high level philosophy of trade-offs during making decision of where to fix the code.
+It looks amgibuous, that actually means you are expected to consider the context of each issues you are facing to.
+
 - Always fix the bug at its root cause.
   - If you find any API that doesn't work, fix instead of making a replacement. Even when the API is in an upstream repo, prefer fixing in the upstream repo and releasing it to the current repo.
 - DO NOT concern about making breaking change.
   - The project is well covered by unit test, any unexpecting breaking change is highly possibly to be cought.
   - If such breaking change is intented, unit test could help you perform complete refactoring.
   - If an API design does not fit the requirement or contract, just change it.
-- Interface design could have been wrong, DO NOT implement twisted logic just to finish the current task while fitting the wrong design. 
+- Interface design could have been wrong, DO NOT implement twisted logic just to finish the current task while fitting the wrong design.
+- But DO NOT leaks information from downstream to upstream repos.
+  - Each upstream repo has its own scope, contract, policy, strategy, etc.
+  - Each upstream repo releases libraries that is supposed to serve broader purposes.
+  - Keep interfaces between repos clean.
+  - If downstream repos need to need to do something depending on upstream repos' non-public information:
+    - If the issue is the upstream repo itself, fix the upstream repo.
+    - Otherwise, expose informations elegantly so that downstream repos could process and react to them properly.
 
 ## C++ Thread Safety and Multi-Threading Synchronization
 
@@ -30,6 +40,13 @@ Check out [Coding_MultiThreading.md](./Coding_MultiThreading.md).
 
 ## C++ Coding Convention
 
+- Anonymouse namespace `namespace{}` is not welcomed:
+  - DO NOT generate such construction.
+  - When you edit any existing code and see this, remove that anonymouse namespace and fix the indentation of the content.
+  - The reason is that, moust of cpp files will be merged into one single file apon release, all benefits are gone meanwhile the code looks messy.
+- Impl classes like `class Something { class Impl; Ptr<Impl> impl; }` is not always welcomed:
+  - Hiding information or improve building performance with this pattern is considered incorrect here.
+  - The only exception is forcing to hide platform dependend constructions, like `vl::Mutex`.
 - Although C++ does not require this but we want to have `extern` on all function forward declarations.
   - In general we don't use `inline` in header files unless such function is performance critical, e.g. very simple comparison operators.
 - Rules for C++ header files:
