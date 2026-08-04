@@ -19,7 +19,7 @@
   - `GacUI_Host`: Load the compiled binary file and run.
   - `Playground`: Compile and load XML with generated DarkSkin.
   - `RemotingTest_Core`: GacUI running in remote protocol (`/Pipe`, `/Http`, `/MiniHttp`)
-  - `RemotingTest_Rendering_Win32`: Renderer connects to `RemotingTest_Core` using the selected transport (`/Pipe`, `/Http`, `/MiniHttp`)
+  - `RemotingTest_Rendering_Win32`: Renderer connects to `RemotingTest_Core` using the selected transport (`/Pipe`, `/Http`, `/MiniHttp`); `/port:<port>` optionally selects its automation port (default `8889`).
   - `RemotingTest_RvmHost`: Provide the `ViewModelChannel` service and internal `ViewModelReadyChannel` startup signal used by `CppTest_Rvm` and `RemotingTest_Core /RVMT` (`/Pipe`, `/Http`, `/MiniHttp`).
 - `UnitTest`: Test cases for GacUI.
 - `UnitTestViewer`: Render snapshots generated in `UnitTest`.

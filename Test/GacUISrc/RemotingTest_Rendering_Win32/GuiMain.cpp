@@ -12,12 +12,12 @@
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
 #endif
-#include "../../RemotingHelpers/AutomationService/MiniHttpAutomationService.h"
+#include "../../../Source/Utilities/AutomationService/MiniHttpAutomationService.h"
 #include "../../RemotingHelpers/RendererClient/RemoteProtocolRendererClient.h"
 #include <VlppOS.h>
 #if defined VCZH_MSVC
 #include <VlppOS.Windows.h>
-#include "../../RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
+#include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #endif
 
 using namespace vl;
@@ -31,7 +31,6 @@ using namespace vl::presentation::remote_renderer;
 constexpr const wchar_t* GacUIRemoteProtocolNamedPipeName = L"GacUIRemoteProtocolNamedPipe";
 constexpr const wchar_t* GacUIRemoteProtocolHttpBaseUrl = L"/GacUIRemoteProtocolHttp";
 constexpr vint GacUIRemoteProtocolHttpPort = 8888;
-constexpr vint GacUIAutomationHttpPort = 8889;
 constexpr const wchar_t* GacUIAutomationApplicationName = L"RemotingTest_Rendering_Native";
 
 struct RendererGuiContext
@@ -40,7 +39,8 @@ struct RendererGuiContext
 	GuiRemoteProtocolAsyncJsonChannelRenderer*			asyncChannel = nullptr;
 	GuiRemoteRendererSingle*							renderer = nullptr;
 	Ptr<inter_process::async_tcp_socket::IAsyncSocketServer>
-													miniHttpSocketServer;
+											miniHttpSocketServer;
+	vint												automationHttpPort = 0;
 };
 
 RendererGuiContext* currentGuiContext = nullptr;
@@ -99,7 +99,7 @@ void GuiMain()
 	{
 		windows::StartWindowsHttpAutomationService(
 			WString::Unmanaged(L"Automation/") + WString::Unmanaged(GacUIAutomationApplicationName),
-			GacUIAutomationHttpPort
+			currentGuiContext->automationHttpPort
 			);
 	}
 	auto rendererAutomationService = &rendererAutomationServiceObject;
@@ -152,7 +152,8 @@ void GuiMain()
 
 int StartClient(
 	Ptr<inter_process::INetworkProtocolClient> networkClient,
-	Ptr<inter_process::async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer
+	Ptr<inter_process::async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer,
+	vint automationHttpPort
 	)
 {
 	auto jsonParser = Ptr(new glr::json::Parser);
@@ -170,7 +171,7 @@ int StartClient(
 	channelClient.WaitForServer();
 #endif
 
-	RendererGuiContext context{ &channelClient, &asyncRendererChannel, &remoteRenderer, miniHttpSocketServer };
+	RendererGuiContext context{ &channelClient, &asyncRendererChannel, &remoteRenderer, miniHttpSocketServer, automationHttpPort };
 	CHECK_ERROR(!currentGuiContext, L"StartClient(...)#The GUI context has already been bound.");
 	currentGuiContext = &context;
 #if defined VCZH_MSVC
@@ -190,36 +191,39 @@ int StartClient(
 }
 
 #if defined VCZH_MSVC
-int StartNamedPipeClient()
+int StartNamedPipeClient(vint automationHttpPort)
 {
 	return StartClient(
 		Ptr(new inter_process::named_pipe::NamedPipeClient(WString::Unmanaged(GacUIRemoteProtocolNamedPipeName))),
-		nullptr
+		nullptr,
+		automationHttpPort
 		);
 }
 
-int StartHttpClient()
+int StartHttpClient(vint automationHttpPort)
 {
 	return StartClient(
 		Ptr(new inter_process::windows_http::HttpClient(
 			WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl),
 			GacUIRemoteProtocolHttpPort
 			)),
-		nullptr
+		nullptr,
+		automationHttpPort
 		);
 }
 #endif
 
-int StartMiniHttpClient()
+int StartMiniHttpClient(vint automationHttpPort)
 {
-	auto socketServer = inter_process::async_tcp_socket::CreateDefaultAsyncSocketServer(GacUIAutomationHttpPort);
+	auto socketServer = inter_process::async_tcp_socket::CreateDefaultAsyncSocketServer(automationHttpPort);
 	auto socketClient = inter_process::async_tcp_socket::CreateDefaultAsyncSocketClient(GacUIRemoteProtocolHttpPort);
 	return StartClient(
 		Ptr(new inter_process::async_tcp_socket::SocketHttpClient(
 			socketClient,
 			WString::Unmanaged(L"localhost"),
 			WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl)
-			)),
-		socketServer
+		)),
+		socketServer,
+		automationHttpPort
 		);
 }

@@ -12,7 +12,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppOS.Windows.h"
 
 /***********************************************************************
-.\WINNATIVEDPIAWARENESS.H
+.\PLATFORMPROVIDERS\WINDOWS\WINNATIVEDPIAWARENESS.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -50,7 +50,7 @@ DPI Awareness Functions
 #endif
 
 /***********************************************************************
-.\WINNATIVEWINDOW.H
+.\PLATFORMPROVIDERS\WINDOWS\WINNATIVEWINDOW.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -109,7 +109,7 @@ Windows Platform Native Controller
 
 
 /***********************************************************************
-.\DIRECT2D\WINDIRECT2DAPPLICATION.H
+.\PLATFORMPROVIDERS\WINDOWS\DIRECT2D\WINDIRECT2DAPPLICATION.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -144,7 +144,7 @@ extern int WinMainDirect2D(HINSTANCE hInstance, void(*RendererMain)());
 #endif
 
 /***********************************************************************
-.\DIRECT2D\RENDERERS\GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D.H
+.\PLATFORMPROVIDERS\WINDOWS\DIRECT2D\RENDERERS\GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -176,7 +176,7 @@ namespace vl
 #endif
 
 /***********************************************************************
-.\DIRECT2D\RENDERERS\GUIGRAPHICSWINDOWSDIRECT2D.H
+.\PLATFORMPROVIDERS\WINDOWS\DIRECT2D\RENDERERS\GUIGRAPHICSWINDOWSDIRECT2D.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -326,7 +326,7 @@ extern void RendererMainDirect2D(vl::presentation::GuiHostedController* hostedCo
 #endif
 
 /***********************************************************************
-.\DIRECT2D\RENDERERS\GUIGRAPHICSRENDERERSWINDOWSDIRECT2D.H
+.\PLATFORMPROVIDERS\WINDOWS\DIRECT2D\RENDERERS\GUIGRAPHICSRENDERERSWINDOWSDIRECT2D.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -596,7 +596,7 @@ Renderers
 #endif
 
 /***********************************************************************
-.\GDI\WINGDI.H
+.\PLATFORMPROVIDERS\WINDOWS\GDI\WINGDI.H
 ***********************************************************************/
 /*******************************************************************************
 Vczh Library++ 3.0
@@ -1071,7 +1071,7 @@ Device Context
 #endif
 
 /***********************************************************************
-.\GDI\WINGDIAPPLICATION.H
+.\PLATFORMPROVIDERS\WINDOWS\GDI\WINGDIAPPLICATION.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -1101,7 +1101,7 @@ extern int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)());
 #endif
 
 /***********************************************************************
-.\GDI\RENDERERS\GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI.H
+.\PLATFORMPROVIDERS\WINDOWS\GDI\RENDERERS\GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -1133,7 +1133,7 @@ namespace vl
 #endif
 
 /***********************************************************************
-.\GDI\RENDERERS\GUIGRAPHICSUNISCRIBE.H
+.\PLATFORMPROVIDERS\WINDOWS\GDI\RENDERERS\GUIGRAPHICSUNISCRIBE.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -1482,7 +1482,7 @@ UniscribeParagraph
 #endif
 
 /***********************************************************************
-.\GDI\RENDERERS\GUIGRAPHICSWINDOWSGDI.H
+.\PLATFORMPROVIDERS\WINDOWS\GDI\RENDERERS\GUIGRAPHICSWINDOWSGDI.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -1603,7 +1603,7 @@ extern void RendererMainGDI(vl::presentation::GuiHostedController* hostedControl
 #endif
 
 /***********************************************************************
-.\GDI\RENDERERS\GUIGRAPHICSRENDERERSWINDOWSGDI.H
+.\PLATFORMPROVIDERS\WINDOWS\GDI\RENDERERS\GUIGRAPHICSRENDERERSWINDOWSGDI.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -1819,7 +1819,7 @@ Renderers
 #endif
 
 /***********************************************************************
-.\SERVICESIMPL\WINDOWSCLIPBOARDSERVICE.H
+.\PLATFORMPROVIDERS\WINDOWS\SERVICESIMPL\WINDOWSCLIPBOARDSERVICE.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -1909,7 +1909,7 @@ namespace vl
 #endif
 
 /***********************************************************************
-.\SERVICESIMPL\WINDOWSDIALOGSERVICE.H
+.\PLATFORMPROVIDERS\WINDOWS\SERVICESIMPL\WINDOWSDIALOGSERVICE.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -1953,7 +1953,7 @@ namespace vl
 
 
 /***********************************************************************
-.\SERVICESIMPL\WINDOWSIMAGESERVICE.H
+.\PLATFORMPROVIDERS\WINDOWS\SERVICESIMPL\WINDOWSIMAGESERVICE.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -2053,7 +2053,7 @@ namespace vl
 #endif
 
 /***********************************************************************
-.\SERVICESIMPL\WINDOWSINPUTSERVICE.H
+.\PLATFORMPROVIDERS\WINDOWS\SERVICESIMPL\WINDOWSINPUTSERVICE.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -2110,7 +2110,7 @@ namespace vl
 #endif
 
 /***********************************************************************
-.\SERVICESIMPL\WINDOWSRESOURCESERVICE.H
+.\PLATFORMPROVIDERS\WINDOWS\SERVICESIMPL\WINDOWSRESOURCESERVICE.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -2166,7 +2166,7 @@ namespace vl
 #endif
 
 /***********************************************************************
-.\SERVICESIMPL\WINDOWSSCREENSERVICE.H
+.\PLATFORMPROVIDERS\WINDOWS\SERVICESIMPL\WINDOWSSCREENSERVICE.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -2231,3 +2231,46 @@ namespace vl
 }
 
 #endif
+
+/***********************************************************************
+.\UTILITIES\AUTOMATIONSERVICE\WINDOWS\WINDOWSAUTOMATIONSERVICE.WINDOWS.H
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_REMOTING_WINDOWSAUTOMATIONSERVICE
+#define VCZH_PRESENTATION_REMOTING_WINDOWSAUTOMATIONSERVICE
+
+
+namespace vl::presentation::windows
+{
+	template<typename TBase>
+	class WindowsAutomationServiceBase : public TBase
+	{
+	protected:
+		WString RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) override;
+
+	public:
+		template<typename ...TArgs>
+		WindowsAutomationServiceBase(TArgs&& ...args)
+			: TBase(std::forward<TArgs>(args)...)
+		{
+		}
+
+		INativeAutomationService::IOCommandAvailability CanRunIOCommands() override;
+	};
+
+	class WindowsAutomationService : public WindowsAutomationServiceBase<AutomationService>
+	{
+	protected:
+		Nullable<WString> GetNativeWindowId(INativeWindow* window) override;
+		INativeWindow* GetNativeWindow(Nullable<WString> windowId) override;
+	};
+
+	class WindowsAutomationServiceHosted : public WindowsAutomationServiceBase<AutomationServiceHosted>
+	{
+	};
+
+	extern void StartWindowsHttpAutomationService(const WString& applicationName, vint port);
+	extern void StopWindowsHttpAutomationService();
+}
+
+#endif
+

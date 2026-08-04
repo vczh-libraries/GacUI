@@ -3,11 +3,11 @@
 #include "MainWindow.h"
 #include "RemoteViewModelTestIncludes.h"
 #include "../../RemotingHelpers/Rvmt/ViewModelHostServer.h"
-#include "../../RemotingHelpers/AutomationService/MiniHttpAutomationService.h"
+#include "../../../Source/Utilities/AutomationService/MiniHttpAutomationService.h"
 #include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
 #ifdef VCZH_MSVC
 #include <VlppOS.Windows.h>
-#include "../../RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
+#include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #endif
 
 using namespace vl;

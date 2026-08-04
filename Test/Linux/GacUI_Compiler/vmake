@@ -21,6 +21,7 @@ CPP_ADDS=(
 CPP_REMOVES=(
     "../../../Import/Vlpp.Windows.cpp"
     "../../../Import/VlppOS.Windows.cpp"
+    "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.cpp"
     )
 TARGETS=("${CPP_TARGET}")
 CPP_COMPILE_OPTIONS="-I ../../../Import -I ../../../Source -DVCZH_DEBUG_METAONLY_REFLECTION"

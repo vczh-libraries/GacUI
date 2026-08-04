@@ -2,7 +2,7 @@
 
 #include "DarkSkin.h"
 #include "FullControlTestReflection.h"
-#include "../../RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
+#include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #include "resource.h"
 
 using namespace vl;

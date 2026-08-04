@@ -369,7 +369,6 @@ Global
 		Source_GacUI_UnitTest_Controls\Source_GacUI_UnitTest_Controls.vcxitems*{07ce9594-f378-4175-b287-6deb74f16c1c}*SharedItemsImports = 4
 		Source_GacUI_Compiler\Source_GacUI_Compiler.vcxitems*{16240420-5988-4669-afee-ffa3665de80f}*SharedItemsImports = 9
 		Generated_FullControlTest\Generated_FullControlTest.vcxitems*{1f147133-fc29-4ac4-818f-a5c48a7c4173}*SharedItemsImports = 4
-		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{1f147133-fc29-4ac4-818f-a5c48a7c4173}*SharedItemsImports = 4
 		Generated_DarkSkin\Generated_DarkSkin.vcxitems*{27391973-5f0e-41f1-8b01-5164b5f94dbf}*SharedItemsImports = 9
 		Source_GacUI_Compiler\Source_GacUI_Compiler.vcxitems*{31214cfd-f243-439c-baf7-25a7e718264b}*SharedItemsImports = 4
 		Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems*{31214cfd-f243-439c-baf7-25a7e718264b}*SharedItemsImports = 4
@@ -382,11 +381,6 @@ Global
 		Generated_FullControlTest\Generated_FullControlTest.vcxitems*{337e0972-c4ce-4863-916e-c1cd395da085}*SharedItemsImports = 4
 		Generated_RemoteProtocolTest\Generated_RemoteProtocolTest.vcxitems*{337e0972-c4ce-4863-916e-c1cd395da085}*SharedItemsImports = 4
 		Generated_RemoteViewModelTest\Generated_RemoteViewModelTest.vcxitems*{337e0972-c4ce-4863-916e-c1cd395da085}*SharedItemsImports = 4
-		Generated_RemoteViewModelTest\Generated_RemoteViewModelTest.vcxitems*{1f147133-fc29-4ac4-818f-a5c48a7c4173}*SharedItemsImports = 4
-		Generated_RemoteViewModelTest\Generated_RemoteViewModelTest.vcxitems*{41f61ea9-e8b4-47c4-9946-36dca7e8272a}*SharedItemsImports = 4
-		Generated_RemoteViewModelTest\Generated_RemoteViewModelTest.vcxitems*{83bf486e-c4ac-4eeb-80e7-e9f63a3bd4cb}*SharedItemsImports = 4
-		Generated_RemoteViewModelTest\Generated_RemoteViewModelTest.vcxitems*{8f628494-942f-40d4-84b0-306fcbc2c43c}*SharedItemsImports = 4
-		Generated_RemoteViewModelTest\Generated_RemoteViewModelTest.vcxitems*{9c7d4071-6a78-48bf-906f-6d131fe07a4d}*SharedItemsImports = 4
 		Generated_RemoteViewModelTest\Generated_RemoteViewModelTest.vcxitems*{e016b58a-a7a7-4ef5-a64e-b6f86af159be}*SharedItemsImports = 4
 		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{337e0972-c4ce-4863-916e-c1cd395da085}*SharedItemsImports = 4
 		Generated_DarkSkin\Generated_DarkSkin.vcxitems*{338e42de-9928-40b7-9f76-ea990f15d248}*SharedItemsImports = 4
@@ -396,7 +390,6 @@ Global
 		Source_GacUI_UnitTest_Controls\Source_GacUI_UnitTest_Controls.vcxitems*{400867b1-1935-41d1-b06f-f832eadf1330}*SharedItemsImports = 4
 		Source_GacUI_UnitTest_Reflection\Source_GacUI_UnitTest_Reflection.vcxitems*{400867b1-1935-41d1-b06f-f832eadf1330}*SharedItemsImports = 4
 		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{41962197-3d8b-42cb-a680-b3a950c2b1b6}*SharedItemsImports = 9
-		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{41f61ea9-e8b4-47c4-9946-36dca7e8272a}*SharedItemsImports = 4
 		Source_GacUI_UnitTest\Source_GacUI_UnitTest.vcxitems*{456fdc57-9687-4607-86a6-d43b7e72e740}*SharedItemsImports = 4
 		Source_GacUI_Windows\Source_GacUI_Windows.vcxitems*{4a3faa16-fd8e-4de4-804a-95f0f45cbd82}*SharedItemsImports = 9
 		Generated_DarkSkin\Generated_DarkSkin.vcxitems*{4c523741-6f2c-49cc-a9e8-719ae6892db8}*SharedItemsImports = 4
@@ -418,11 +411,8 @@ Global
 		Source_GacUI_ProtocolCompiler\Source_GacUI_ProtocolCompiler.vcxitems*{7b88ddaf-109d-4c56-9eae-f09bbe0af9bf}*SharedItemsImports = 9
 		Generated_RemoteViewModelTest\Generated_RemoteViewModelTest.vcxitems*{7f9e2fe1-2f30-4f7c-ac7a-0d3e73671189}*SharedItemsImports = 9
 		Generated_FullControlTest\Generated_FullControlTest.vcxitems*{83bf486e-c4ac-4eeb-80e7-e9f63a3bd4cb}*SharedItemsImports = 4
-		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{83bf486e-c4ac-4eeb-80e7-e9f63a3bd4cb}*SharedItemsImports = 4
 		Generated_FullControlTest\Generated_FullControlTest.vcxitems*{8eae77c4-0db8-4e7d-9a5e-5caf495d263b}*SharedItemsImports = 9
 		Generated_FullControlTest\Generated_FullControlTest.vcxitems*{8f628494-942f-40d4-84b0-306fcbc2c43c}*SharedItemsImports = 4
-		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{8f628494-942f-40d4-84b0-306fcbc2c43c}*SharedItemsImports = 4
-		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{9c7d4071-6a78-48bf-906f-6d131fe07a4d}*SharedItemsImports = 4
 		Generated_RemoteProtocolTest\Generated_RemoteProtocolTest.vcxitems*{9e9ff655-8af4-4fd2-a709-2f2b84f2cc63}*SharedItemsImports = 9
 		Source_GacUI_Reflection\Source_GacUI_Reflection.vcxitems*{a2a0d66d-5528-4a86-b0ff-8acc908e7de4}*SharedItemsImports = 9
 		Source_GacUI_UnitTest_Reflection\Source_GacUI_UnitTest_Reflection.vcxitems*{a360296d-671b-4a05-8f67-4ebc441ceca8}*SharedItemsImports = 9

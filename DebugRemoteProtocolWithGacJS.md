@@ -158,8 +158,9 @@ hosting the website; check the URL directly. The checked-in automated protocol
 harness uses the Windows Debug x64 core and Playwright Chromium.
 
 Core automation is available at
-`http://localhost:8888/Automation/RemotingTest_Core/...`. Port `8889` is for
-native-renderer automation and is not used by GacJS.
+`http://localhost:8888/Automation/RemotingTest_Core/...`. The native renderer's
+automation port is selected by its optional `/port:<port>` argument and defaults
+to `8889`; it is not used by GacJS.
 
 Close the browser and stop only the retained core:
 

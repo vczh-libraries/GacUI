@@ -26,6 +26,13 @@ always fix the root cause.
 Files in `REPO-ROOT/Import` and `REPO-ROOT/Release` (recursively) are also not allowed to modify.
 These files are prepared for foreign dependencies.
 
+### Source/Utilities/AutomationService
+
+The reusable MiniHTTP and Windows HTTP automation endpoints live in this folder and are compiled through `Test/GacUISrc/Source_GacUI_Core/Source_GacUI_Core.vcxitems`.
+- `MiniHttpAutomationService.*` is CodePacked into `Release/GacUI.h` and `Release/GacUI.cpp`.
+- `Windows/WindowsAutomationService.Windows.*` is CodePacked into `Release/GacUI.Windows.h` and `Release/GacUI.Windows.cpp`.
+- Standalone test applications receive these implementations through their GacUI library dependency; they do not import `Source_RemotingHelpers` for automation.
+
 ### Test/RemotingHelpers
 
 Files in this folder are for test apps only:
@@ -193,9 +200,9 @@ Each application owns its automation stack directly. It constructs the concrete 
 
 Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in `/Http`, `/Pipe`, and `/MiniHttp` modes:
 - `RemotingTest_Core` exposes the UI as a window-control tree at `http://localhost:8888/Automation/RemotingTest_Core/...`.
-- `RemotingTest_Rendering_Win32` exposes the UI as a DOM tree at `http://localhost:8889/Automation/RemotingTest_Rendering_Native/...`.
+- `RemotingTest_Rendering_Win32` exposes the UI as a DOM tree at `http://localhost:<renderer-port>/Automation/RemotingTest_Rendering_Native/...`. Pass `/port:<renderer-port>` to select the automation port; omitting it keeps the default port `8889`.
 - `/Http` and `/Pipe` use `StartWindowsHttpAutomationService`.
-- In `/MiniHttp` mode, the core registers its automation prefix with the exact same `IAsyncSocketServer` that hosts the remote protocol on port `8888`. The renderer is a separate process, so it hosts its automation prefix with a separate MiniHTTP socket server on port `8889`.
+- In `/MiniHttp` mode, the core registers its automation prefix with the exact same `IAsyncSocketServer` that hosts the remote protocol on port `8888`. The renderer is a separate process, so it hosts its automation prefix with a separate MiniHTTP socket server on the selected renderer automation port (default `8889`).
 - Both support IO operations:
   - When performing IO via the renderer, remote protocol events pass the IO operations to the core.
   - When performing IO via the core, the renderer only receives UI updates and redraws.

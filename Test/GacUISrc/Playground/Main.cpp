@@ -4,7 +4,7 @@
 #include "DarkSkinReflection.h"
 #include "../GacUI_Compiler/ResourceCompiler.h"
 #include "../../../Source/GacUI.h"
-#include "../../RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
+#include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 
 using namespace vl;
 using namespace vl::collections;
@@ -12,17 +12,22 @@ using namespace vl::stream;
 using namespace vl::filesystem;
 using namespace vl::reflection::description;
 
+FilePath GetPlaygroundResourceFolder()
+{
+	auto exePath = FilePath(GetApplication()->GetExecutablePath()).GetFolder();
+#ifdef VCZH_64
+	return exePath / L"../../Playground/Resources";
+#else
+	return exePath / L"../Playground/Resources";
+#endif
+}
+
 class Playground : public Object, public Description<Playground>
 {
 public:
 	WString LoadBigJson()
 	{
-		auto exePath = FilePath(GetApplication()->GetExecutablePath()).GetFolder();
-#ifdef VCZH_64
-		auto jsonPath = exePath / L"../../Playground/Resources/BigJson.json";
-#else
-		auto jsonPath = exePath / L"../Playground/Resources/BigJson.json";
-#endif
+		auto jsonPath = GetPlaygroundResourceFolder() / L"BigJson.json";
 		return File(jsonPath).ReadAllTextByBom();
 	}
 };
@@ -129,7 +134,7 @@ void GuiMain()
 			name,
 			L"",L"",L"", // Ignore arguments since skipped C++ codegen
 			dependencies,
-			L"Resources/" + name + L".xml",
+			GetPlaygroundResourceFolder() / (name + L".xml"),
 			L"./",
 			L"",
 			false));

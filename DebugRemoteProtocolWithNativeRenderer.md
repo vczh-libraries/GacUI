@@ -10,8 +10,9 @@ platform; its platform section states the currently available implementation.
 
 The core must start before the renderer. The application selector (`/FCT` or
 `/RPT`) belongs only to the core, while the renderer receives the matching
-transport selector. Run one core/renderer pair at a time and retain both process
-identifiers for cleanup.
+transport selector. On Windows, the renderer also accepts `/port:<port>` for its
+automation listener; omission keeps the default port `8889`. Run one
+core/renderer pair at a time and retain both process identifiers for cleanup.
 
 The native-renderer transport contract is:
 
@@ -52,15 +53,15 @@ $bin = (Resolve-Path GacUI\Test\GacUISrc\x64\Debug).Path
 
 # Full Windows HTTP implementation
 $core = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Core.exe') -ArgumentList '/Http','/RPT' -PassThru
-$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Http' -PassThru
+$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Http','/port:8890' -PassThru
 
 # Async-socket MiniHTTP implementation
 $core = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Core.exe') -ArgumentList '/MiniHttp','/RPT' -PassThru
-$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/MiniHttp' -PassThru
+$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/MiniHttp','/port:8890' -PassThru
 
 # Named pipe implementation
 $core = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Core.exe') -ArgumentList '/Pipe','/RPT' -PassThru
-$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Pipe' -PassThru
+$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Pipe','/port:8890' -PassThru
 ```
 
 The examples are separate runs, not one script. Start the selected core, wait
@@ -84,8 +85,8 @@ Automation endpoints are available in every Windows transport mode:
 ```text
 GET  http://localhost:8888/Automation/RemotingTest_Core/Controls
 POST http://localhost:8888/Automation/RemotingTest_Core/IO
-GET  http://localhost:8889/Automation/RemotingTest_Rendering_Native/Dom
-POST http://localhost:8889/Automation/RemotingTest_Rendering_Native/IO
+GET  http://localhost:8890/Automation/RemotingTest_Rendering_Native/Dom
+POST http://localhost:8890/Automation/RemotingTest_Rendering_Native/IO
 ```
 
 During `/Http` and `/Pipe` runs, the projects use the Windows HTTP automation
@@ -93,7 +94,8 @@ service. During a `/MiniHttp` run, `RemotingTest_Core` registers its automation
 prefix with the exact same `IAsyncSocketServer` that hosts the remote protocol
 on port `8888`; it does not create another listener. The renderer is a separate
 process and cannot share that server instance, so it starts a separate MiniHTTP
-automation server on port `8889`.
+automation server on the port selected by `/port:<port>`. The examples select
+`8890`; without `/port:`, the renderer uses `8889`.
 
 `Controls` describes logical GacUI controls; `Dom` describes what the native
 renderer received. Search the latest JSON for the visible text, walk upward to
@@ -111,7 +113,7 @@ Post commands as `application/json; charset=utf8`:
 Invoke-WebRequest `
   -UseBasicParsing `
   -Method Post `
-  -Uri http://localhost:8889/Automation/RemotingTest_Rendering_Native/IO `
+  -Uri http://localhost:8890/Automation/RemotingTest_Rendering_Native/IO `
   -ContentType 'application/json; charset=utf8' `
   -SkipHeaderValidation `
   -Body '!LeftClick:<integer-x>,<integer-y>'
@@ -160,8 +162,8 @@ can run. Do not attempt to run `RemotingTest_Rendering_Win32` on Linux.
 ## macOS Specific
 
 The macOS native renderer is `RemotingTest_Renderer_macOS` in the sibling
-`iGac` repository. It uses `/MiniHttp` only; `/Http` and `/Pipe` are
-Windows-only.
+`iGac` repository. It uses `/MiniHttp` only; `/Http`, `/Pipe`, and the Windows
+renderer's `/port:` option are Windows-only. Its automation port remains `8889`.
 
 From the monorepo root, build the portable core and the iGac renderer:
 

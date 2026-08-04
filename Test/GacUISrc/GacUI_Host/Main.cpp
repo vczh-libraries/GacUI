@@ -4,7 +4,7 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
 #include "../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h"
-#include "../../RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
+#include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 
 using namespace vl;
 using namespace vl::collections;

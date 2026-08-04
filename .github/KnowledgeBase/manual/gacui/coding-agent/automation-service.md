@@ -22,7 +22,7 @@ Feature availability is checked separately. A real service returns true from `Av
 
 ## Windows HTTP Layer
 
-`StartWindowsHttpAutomationService` creates a localhost HTTP wrapper around the current `INativeAutomationService`. The test-support implementation lives in `Test/RemotingHelpers/AutomationService/Windows`, outside the ordinary `GacUI.Windows` library pair. Test applications consume it through the shared `Source_RemotingHelpers` project.
+`StartWindowsHttpAutomationService` creates a localhost HTTP wrapper around the current `INativeAutomationService`. The reusable implementation lives in `Source/Utilities/AutomationService/Windows`, is compiled through `Source_GacUI_Core`, and is CodePacked into the ordinary `GacUI.Windows.h` and `GacUI.Windows.cpp` pair. The transport-neutral MiniHTTP endpoint beside it is CodePacked into `GacUI.h` and `GacUI.cpp`.
 
 The function takes `applicationName` as a URL path fragment and `port` as the localhost port. Given `applicationName == L"Automation/MyApp"` and `port == 8888`, the listener prefix is `http://localhost:8888/Automation/MyApp/`. The service offers exactly these HTTP URLs:
 - `GET http://localhost:8888/Automation/MyApp/Controls`: calls `DumpControlTree` on the UI thread when `CanDumpControlTree` is true.
@@ -38,7 +38,7 @@ Each application owns the automation service and endpoint directly. After the se
 
 A normal Windows application can start the service before `GetApplication()->Run`:
 ```c++
-#include "../../RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
+#include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 
 using namespace vl;
 using namespace vl::presentation;
@@ -123,4 +123,3 @@ The Windows HTTP wrapper is only one endpoint layer. Other platforms may expose 
 Application-level automation depends on the GacUI UI thread. A native crash dialog, file dialog, or other modal native window can block the UI thread and keep the HTTP endpoint from answering. In that situation, inspect and operate native windows from another process using Win32 APIs, then return to the automation endpoint after the modal window is closed.
 
 Do not use operating-system UI Automation as the fallback for GacUI automation on Windows. It can fail when the screen is locked, and it is not the contract implemented by `AutomationService`.
-

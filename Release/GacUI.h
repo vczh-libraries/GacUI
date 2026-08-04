@@ -22954,6 +22954,7 @@ GuiRemoteProtocolCoreChannel
 		void						Write(Ptr<glr::json::JsonObject> package);
 		void						SetRendererClientId(vint clientId);
 		vint						GetRendererClientId();
+		virtual bool				IsCorrectRendererClientId(vint clientId);
 		void						OnRead(vint senderClientId, const JsonPackage& package) override;
 
 	public:
@@ -29367,6 +29368,25 @@ GuiRemoteController
 		INativeScreenService*			ScreenService() override;
 		INativeWindowService*			WindowService() override;
 	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\UTILITIES\AUTOMATIONSERVICE\MINIHTTPAUTOMATIONSERVICE.H
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_REMOTING_MINIHTTPAUTOMATIONSERVICE
+#define VCZH_PRESENTATION_REMOTING_MINIHTTPAUTOMATIONSERVICE
+
+
+namespace vl::presentation::remoting
+{
+	extern void StartMiniHttpAutomationService(
+		Ptr<inter_process::async_tcp_socket::IAsyncSocketServer> socketServer,
+		const WString& applicationName
+		);
+	extern void StopMiniHttpAutomationService();
 }
 
 #endif

@@ -127,3 +127,4 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteEvents.h"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteWindow.h"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteController.h"
+#include "..\..\Source\Utilities\AutomationService\MiniHttpAutomationService.h"

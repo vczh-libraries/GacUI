@@ -25,6 +25,12 @@
     <Filter Include="Utilities">
       <UniqueIdentifier>{3c027ba9-3010-43d5-b011-d663581d1b48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utilities\AutomationService">
+      <UniqueIdentifier>{dc9f9c7a-8a3d-4720-98a5-1d2aa760fa27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\AutomationService\Windows">
+      <UniqueIdentifier>{985417f1-a2b3-4dbe-8116-456e0863c3b1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Utilities\SharedServices">
       <UniqueIdentifier>{f290caa9-2684-4617-b82c-2bd460eb4fa5}</UniqueIdentifier>
     </Filter>
@@ -170,6 +176,12 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\GacGen\GacGenController.cpp">
       <Filter>PlatformProviders\GacGen</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\AutomationService\MiniHttpAutomationService.cpp">
+      <Filter>Utilities\AutomationService</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\AutomationService\Windows\WindowsAutomationService.Windows.cpp">
+      <Filter>Utilities\AutomationService\Windows</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAsyncService.cpp">
       <Filter>Utilities\SharedServices</Filter>
@@ -407,6 +419,12 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAutomationService.h">
       <Filter>Utilities\SharedServices</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\AutomationService\MiniHttpAutomationService.h">
+      <Filter>Utilities\AutomationService</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\AutomationService\Windows\WindowsAutomationService.Windows.h">
+      <Filter>Utilities\AutomationService\Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

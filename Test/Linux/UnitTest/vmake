@@ -19,6 +19,7 @@ CPP_VCXPROJS=(
 CPP_REMOVES=(
     "../../../Import/Vlpp.Windows.cpp"
     "../../../Import/VlppOS.Windows.cpp"
+    "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.cpp"
     "../../GacUISrc/Generated_DarkSkin/Source_x86/DarkSkin.cpp"
     "../../GacUISrc/Generated_DarkSkin/Source_x86/DarkSkinResource.cpp"
     "../../GacUISrc/Generated_DarkSkin/Source_x86/DarkSkinReflection.cpp"

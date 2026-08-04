@@ -20,6 +20,7 @@
     <category name="wfcompiler" pattern="\Import\VlppWorkflowCompiler."/>
     <category name="gacui" pattern="\Source\">
       <except pattern="\PlatformProviders\Windows\" />
+      <except pattern="\Utilities\AutomationService\Windows\" />
       <except pattern="\UnitTestUtilities\" />
       <except pattern="\Reflection\" />
       <except pattern="\Compiler\" />
@@ -27,6 +28,7 @@
       <except pattern="GuiFakeDialogServiceUIReflection" />
     </category>
     <category name="windows" pattern="\Source\PlatformProviders\Windows\"/>
+    <category name="windows" pattern="\Source\Utilities\AutomationService\Windows\"/>
     <category name="unittest" pattern="\Source\UnitTestUtilities\">
       <except pattern="SnapshotViewer"/>
     </category>

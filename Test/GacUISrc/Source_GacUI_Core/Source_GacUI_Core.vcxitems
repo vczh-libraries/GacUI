@@ -53,6 +53,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiPluginManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResource.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\AutomationService\MiniHttpAutomationService.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\AutomationService\Windows\WindowsAutomationService.Windows.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAsyncService.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAutomationService.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedCallbackService.h" />
@@ -128,6 +130,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResource.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceTypeResolvers.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\AutomationService\MiniHttpAutomationService.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\AutomationService\Windows\WindowsAutomationService.Windows.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAsyncService.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAutomationService.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedCallbackService.cpp" />

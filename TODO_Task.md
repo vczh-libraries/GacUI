@@ -91,7 +91,7 @@ This is an ownership refactor. Preserve the following behavior exactly so that t
 
 - Update `Project.md`, `.github/Learning/Learning_Coding.md`, and `.github/KnowledgeBase/KB_GacUI_Design_RemoteProtocolRendererAndSerialization.md` where the old paths or the old “constants beside `ViewModelHostClient`” ownership are documented. Do not rewrite unrelated guidance.
 - `Project.md`, `README.md`, and `Test/GacUISrc/README.md` currently tell verification to wait for a Core readiness line that the application does not emit. Replace that instruction with the exact observable readiness signal: Core's `/Automation/RemotingTest_Core/Controls` response contains the `Remote View Model Test` window.
-- The renderer source exposes automation as `RemotingTest_Rendering_Native`, while `Project.md` and `DebugRemoteProtocolWithNativeRenderer.md` document `RemotingTest_Rendering_Win32`. Make those documents use the actual `http://localhost:8889/Automation/RemotingTest_Rendering_Native/...` route.
+- The renderer source exposes automation as `RemotingTest_Rendering_Native`, while `Project.md` and `DebugRemoteProtocolWithNativeRenderer.md` document `RemotingTest_Rendering_Win32`. Make those documents use the actual `http://localhost:<renderer-port>/Automation/RemotingTest_Rendering_Native/...` route; the Windows renderer accepts `/port:<renderer-port>` and defaults to `8889` when omitted.
 - Do not change the generated `RemoteViewModelTestRpc.*` files, Workflow/XML resources, reflection registration, protocol schemas, production `Source`, `Import`, or `Release`.
 - Moving `ViewModelHostClient.*` out of `Test/RemotingHelpers` makes the currently generated `Release/RemotingHelpers.*` and `Release/IncludeOnly/RemotingHelpers.*` artifacts stale because `Release/CodegenConfig.xml` scans the old tree. `Project.md` forbids changing `Release` in this task, so record an authorized future CodePack regeneration/removal action explicitly; do not claim that the existing release artifacts are current.
 - No metadata, parser, protocol, or `GacUI_Compiler` code generation is triggered by this task. The Release CodePack refresh is deliberately deferred as described above.
@@ -191,7 +191,7 @@ For each transport:
 
 1. Start Core first. Prove that a renderer cannot acquire the UI before the host/service is ready.
 2. Start the host, wait for actual service acquisition and UI readiness, then start the renderer.
-3. Require Core `Controls` on port 8888 and renderer `Dom` on port 8889. Before renderer connection, use Core `Controls` once to prove Core remains usable without a renderer.
+3. Require Core `Controls` on port 8888 and renderer `Dom` on the renderer automation port selected with `/port:<renderer-port>` (default `8889`). Before renderer connection, use Core `Controls` once to prove Core remains usable without a renderer.
 4. Enter different unique markers through Core IO and renderer IO. Require both views to converge on exactly `Hello, <marker>!`.
 5. Close the renderer unexpectedly. Require Core and host to remain alive; connect a replacement renderer and require the current marker to survive.
 6. While the replacement is active, connect another renderer. Require the newcomer to take over and the stale renderer to detach without a fatal prompt or retry loop.

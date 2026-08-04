@@ -1,7 +1,7 @@
 #ifndef VCZH_PRESENTATION_REMOTING_MINIHTTPAUTOMATIONSERVICE
 #define VCZH_PRESENTATION_REMOTING_MINIHTTPAUTOMATIONSERVICE
 
-#include "../../../Source/GacUI.h"
+#include "../../GacUI.h"
 #include <VlppOS.h>
 
 namespace vl::presentation::remoting

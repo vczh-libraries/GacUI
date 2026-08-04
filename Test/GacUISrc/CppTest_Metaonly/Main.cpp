@@ -2,7 +2,7 @@
 
 #include "DarkSkin.h"
 #include "MainWindow.h"
-#include "../../RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
+#include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #include "resource.h"
 
 using namespace vl;

@@ -60,8 +60,6 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
 	<ImportGroup Label="Shared">
-		<Import Project="..\Source_RemotingHelpers\Source_RemotingHelpers.vcxitems" Label="Shared" />
-    <Import Project="..\Generated_RemoteViewModelTest\Generated_RemoteViewModelTest.vcxitems" Label="Shared" />
     <Import Project="..\Generated_FullControlTest\Generated_FullControlTest.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

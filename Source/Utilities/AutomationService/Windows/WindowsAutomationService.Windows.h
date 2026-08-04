@@ -1,8 +1,8 @@
 #ifndef VCZH_PRESENTATION_REMOTING_WINDOWSAUTOMATIONSERVICE
 #define VCZH_PRESENTATION_REMOTING_WINDOWSAUTOMATIONSERVICE
 
-#include "../../../../Source/GacUI.h"
-#include "../../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
+#include "../../../GacUI.h"
+#include "../../../PlatformProviders/Windows/WinNativeWindow.h"
 #include <VlppOS.h>
 
 namespace vl::presentation::windows

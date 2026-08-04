@@ -22,3 +22,4 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsInputService.cpp"
 #include "..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsResourceService.cpp"
 #include "..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsScreenService.cpp"
+#include "..\..\Source\Utilities\AutomationService\Windows\WindowsAutomationService.Windows.cpp"

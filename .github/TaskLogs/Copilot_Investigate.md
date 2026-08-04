@@ -2,46 +2,63 @@
 
 # PROBLEM DESCRIPTION
 
-One small changes, merge Test/Rvmt/ViewModel to Test/RemotingHelpers/Rvmt, and merge Source_Rvmt_ViewModel into Rouce_RemotingHelpers to become one single vcxitems. In Source_RemotingHelpers add a `Rvmt` solution explorer folder for the files in `Test/RemotingHelpers/Rvmt`.
+Move files from `Test\RemotingHelpers\AutomationService` to `Source\Utilities`, from `Source_RemotingHelpers` to `Source_GacUI_Core`, so that the following test apps:
+- CppTest
+- CppTest_Metaonly
+- CppTest_Reflection
+- GacUI_Host
+- Playground
+No more need to use reference `Source_RemotingHelpers` and `Generated_RemoteViewModelHost`. That should be more reasonable.
 
-In Release/CodegenConfig.xml, instead of code-packing Test/RemotingHelpers to GacUI.RemotingHelpers.*, just remove this entry and generated files, including files in Release and Release/IncludeOnly.
+For RemotingTest_Rendering_Win32, add `/port:xxxx` so that 8889 for automation service will not be hardcoded anymore ---- meanwhile when `/port:` is not specified we still use 8889 as a default value. Update any markdown files that saying the 8889 port for automation service for `RemotingTest_Rendering_*`.
 
-Build, commit and push. No testing is required.
+Run all 9 test apps, just to make sure their automation service is working. No unit test running is needed.
+
+commit and push all local changes.
 
 # UPDATES
 
-## UPDATE
-
-I don't think `ExcludedFromBuild` is needed in Source_RemotingHelpers.vcxitems
-
 # TEST [CONFIRMED]
 
-No unit or runtime testing is required by the task. The current tree confirms the requested structural change is needed: the six RVM helper files are under `Test/Rvmt/ViewModel`, a separate `Source_Rvmt_ViewModel.vcxitems` is imported by the three RVM consumers, and `Release/CodegenConfig.xml` still CodePacks `Test/RemotingHelpers` into `RemotingHelpers*` artifacts in both `Release` and `Release/IncludeOnly`.
-
-Success requires the six files under `Test/RemotingHelpers/Rvmt`, one `Source_RemotingHelpers.vcxitems` inventory with an `Rvmt` Solution Explorer filter, no `Source_Rvmt_ViewModel` project/import/reference, no RemotingHelpers CodePack source/category/codepair configuration, and no generated `RemotingHelpers*` files in either Release output directory. All changed project XML must parse, `git diff --check` must pass, and the requested full solution build must finish with zero warnings and zero errors.
+- Build `Test/GacUISrc/GacUISrc.sln` in the default Debug x64 configuration through `copilotBuild.ps1`; require zero build errors.
+- Confirm the automation sources are owned by `Source_GacUI_Core`, no longer by `Source_RemotingHelpers`, and all include paths resolve to `Source/Utilities/AutomationService`.
+- Confirm `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`, `GacUI_Host`, and `Playground` no longer import `Source_RemotingHelpers` or `Generated_RemoteViewModelTest` (the existing project name corresponding to the requested `Generated_RemoteViewModelHost`).
+- Run all nine Windows test applications in Debug x64 through `copilotExecute.ps1`, without running `UnitTest`:
+  - Require a nonempty automation response for `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`, `CppTest_Rvm`, `GacUI_Host`, and `Playground`, then exit each application through its automation endpoint.
+  - Run `RemotingTest_Core` with `RemotingTest_Rendering_Win32`; require a nonempty Core `Controls` response on port 8888 and a nonempty renderer `Dom` response on an explicitly selected non-default port, then exit cleanly through automation.
+  - Run `RemotingTest_RvmHost` as the companion service for `CppTest_Rvm` and confirm the RVM application becomes automation-ready. The host itself has no UI automation endpoint.
+- Run `RemotingTest_Rendering_Win32` once without `/port:` and require the renderer automation endpoint to remain available on the default port 8889.
+- Do not run unit tests, as explicitly requested.
 
 # PROPOSALS
 
-- No.1 Consolidate RVM helpers and remove their Release packaging [CONFIRMED]
+- No.1 Promote automation endpoint utilities into GacUI Core and parameterize renderer automation [CONFIRMED]
 
-## No.1 Consolidate RVM helpers and remove their Release packaging
+## No.1 Promote automation endpoint utilities into GacUI Core and parameterize renderer automation
 
-Move `Test/Rvmt/ViewModel/ViewModel*` to `Test/RemotingHelpers/Rvmt`, adjust their relative includes and the three application includes, and enumerate all six files in `Source_RemotingHelpers.vcxitems`. Keep the files visible under a new `Rvmt` filter and compile the complete inventory in every importing project without `ExcludedFromBuild` metadata.
+Move the MiniHTTP and Windows HTTP automation endpoint implementations to `Source/Utilities/AutomationService`, list them in `Source_GacUI_Core` under matching `Utilities/AutomationService` filters, and remove them from `Source_RemotingHelpers`. Update all consumers and platform build inventories to use the production source path. Route the Windows-specific automation source to the Windows CodePack category while leaving MiniHTTP in the cross-platform GacUI category.
 
-Remove the separate shared-items project from the three projects, the solution, and the two hand-authored Linux `vmake` files. Remove the `Test/RemotingHelpers` CodePack scan, categories, and output pairs from `Release/CodegenConfig.xml`, delete all eight generated `RemotingHelpers*` files from `Release` and `Release/IncludeOnly`, and align the active project/learning documentation with the new ownership and packaging boundary.
+Remove the obsolete `Source_RemotingHelpers` and `Generated_RemoteViewModelTest` imports, plus their solution shared-item mappings, from the five named standalone test applications. Those applications already receive Core source through their linked GacUI libraries, and they do not use remote-view-model generated code.
+
+Parse an optional `/port:<number>` argument in `RemotingTest_Rendering_Win32`, retain 8889 as the default, validate the supplied TCP port, and pass the selected port into both Windows HTTP and MiniHTTP automation startup. Document the optional port everywhere the renderer's 8889 automation port is described.
 
 ### CODE CHANGE
 
-- Moved `ViewModelHostClient.*`, `ViewModelHostServer.*`, and `ViewModelShared.*` from `Test/Rvmt/ViewModel` to `Test/RemotingHelpers/Rvmt`, fixed the server helper's relative remoting-server include, and updated the three application includes.
-- Added the six RVM files exactly once to `Source_RemotingHelpers.vcxitems` and its filters under `Rvmt`, with no `ExcludedFromBuild` metadata. Removed `Source_Rvmt_ViewModel.vcxitems`, its filters, all three imports, its solution project/mappings, and both Linux `vmake` references.
-- The first unconditional build proved that the other six shared-helper consumers lacked `RemoteViewModelTestRpc.h`. Kept the helper inventory unconditional, added architecture-specific generated include directories to it, and imported the existing `Generated_RemoteViewModelTest.vcxitems` from those six consumers. Updated the solution shared-items mappings accordingly.
-- Removed the `Test/RemotingHelpers` scan, both helper categories, and both helper codepairs from `Release/CodegenConfig.xml`. Deleted `RemotingHelpers.*` and `RemotingHelpers.Windows.*` from both `Release` and `Release/IncludeOnly`.
-- Updated `Project.md` and the active coding learning to describe the consolidated helper inventory and removal of Release CodePack output. Archived the completed prior investigation before recording this request.
+- Moved `MiniHttpAutomationService.*` and `WindowsAutomationService.Windows.*` to `Source/Utilities/AutomationService`, corrected their source-relative includes, added them to `Source_GacUI_Core` under `Utilities/AutomationService` filters, and removed their former `Source_RemotingHelpers` inventory/filter entries.
+- Updated all Windows and portable test consumers, and excluded the Windows-only implementation in every Linux `vmake` that imports `Source_GacUI_Core`.
+- Removed `Source_RemotingHelpers` and `Generated_RemoteViewModelTest` imports and solution shared-item mappings from `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`, `GacUI_Host`, and `Playground`.
+- Added validated `/port:<port>` parsing to `RemotingTest_Rendering_Win32`, retained 8889 as the default, and passed the selected value to both Windows HTTP and MiniHTTP renderer automation startup.
+- Updated the renderer port documentation, automation-service knowledge, project ownership notes, and Linux/source inventories. Made Playground resolve its XML input from the executable location so the supported execution wrapper can run it from the solution directory.
+- Updated `Release/CodegenConfig.xml` so MiniHTTP is part of the `gacui` category and the Windows endpoint is part of the `windows` category. Regenerated the tracked combined outputs: MiniHTTP declarations/implementation appear in `Release/GacUI.h` and `Release/GacUI.cpp`; Windows declarations/implementation appear in `Release/GacUI.Windows.h` and `Release/GacUI.Windows.cpp`. No separate automation-service CodePack pair was created.
 
 ### CONFIRMED
 
-The consolidation and packaging removal are confirmed. `Source_RemotingHelpers.vcxitems` contains all six RVM files exactly once, its filters assign all six to `Rvmt`, and it contains zero `ExcludedFromBuild` entries. Nine projects import the one helper inventory, the eight projects that need the full generated module import the existing generated shared inventory, and `RemotingTest_RvmHost` retains its targeted generated RPC source configuration. There are no active `Source_Rvmt_ViewModel` references in Windows or hand-authored Linux project metadata.
+The final Debug x64 solution build completed through `copilotBuild.ps1` with 0 warnings and 0 errors. The shared-item and CodePack XML files parse successfully, stale automation source paths are absent, and the five named applications have neither obsolete import.
 
-All changed MSBuild and CodePack XML parses successfully. The old six-file directory, separate shared inventory, eight generated Release files, and all RemotingHelpers references in `Release/CodegenConfig.xml` are absent. `git diff --check` passes.
+All nine requested applications were run through `copilotExecute.ps1` without running `UnitTest`:
+- `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`, `GacUI_Host`, and `Playground` returned nonempty `Controls` payloads (84,955 to 163,359 bytes), accepted `!Exit`, and terminated with exit code 0.
+- `CppTest_Rvm` returned a 16,511-byte `Controls` payload after `RemotingTest_RvmHost` supplied its service, accepted `!Exit`, and terminated with exit code 0. The host then took its intentional exit-code-1 requester-disconnect path.
+- `RemotingTest_Core /MiniHttp /FCT` and `RemotingTest_Rendering_Win32 /MiniHttp /port:8890` returned nonempty Core `Controls` and renderer `Dom` payloads (163,124 and 1,490,872 bytes) on ports 8888 and 8890.
+- A second `/MiniHttp` pair omitted `/port:` and returned nonempty Core `Controls` and renderer `Dom` payloads (162,998 and 1,490,872 bytes) on ports 8888 and the default 8889. Core automation accepted `!Exit`; both wrappers terminated with exit code 0.
 
-The final default Debug x64 full-solution build through `copilotBuild.ps1` succeeded with `0 Warning(s)` and `0 Error(s)`. Per the explicit request, no unit or runtime tests were run.
+The combined generated release files were inspected after CodePack regeneration. MiniHTTP symbols occur in `GacUI.h`/`GacUI.cpp`, Windows automation symbols occur in `GacUI.Windows.h`/`GacUI.Windows.cpp`, and neither implementation leaked into the opposite pair.

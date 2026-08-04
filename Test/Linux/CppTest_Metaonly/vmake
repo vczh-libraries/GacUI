@@ -19,6 +19,7 @@ CPP_ADDS=(
 CPP_REMOVES=(
     "../../../Import/Vlpp.Windows.cpp"
     "../../../Import/VlppOS.Windows.cpp"
+    "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.cpp"
     )
 TARGETS=("${CPP_TARGET}")
 CPP_COMPILE_OPTIONS="-I ../../../Import -I ../../GacUISrc/Generated_DarkSkin/Source_x64 -I ../../GacUISrc/Generated_FullControlTest/Source_x64 -DVCZH_DEBUG_METAONLY_REFLECTION"

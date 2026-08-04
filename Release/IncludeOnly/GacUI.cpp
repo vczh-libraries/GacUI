@@ -157,3 +157,4 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Utilities\SharedServices\GuiSharedAutomationService.cpp"
 #include "..\..\Source\Utilities\SharedServices\GuiSharedAutomationService_Controls.cpp"
 #include "..\..\Source\Utilities\SharedServices\GuiSharedCallbackService.cpp"
+#include "..\..\Source\Utilities\AutomationService\MiniHttpAutomationService.cpp"
