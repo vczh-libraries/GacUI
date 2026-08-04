@@ -12,12 +12,12 @@
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
 #endif
-#include "../../../Source/RemotingHelpers/AutomationService/MiniHttpAutomationService.h"
-#include "../../../Source/RemotingHelpers/RemotingClient/RemotingChannelClient.h"
+#include "../../RemotingHelpers/AutomationService/MiniHttpAutomationService.h"
+#include "../../RemotingHelpers/RemotingClient/RemotingChannelClient.h"
 #include <VlppOS.h>
 #if defined VCZH_MSVC
 #include <VlppOS.Windows.h>
-#include "../../../Source/RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
+#include "../../RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #endif
 
 using namespace vl;

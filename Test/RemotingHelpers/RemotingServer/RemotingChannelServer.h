@@ -1,7 +1,7 @@
 #ifndef VCZH_PRESENTATION_REMOTING_REMOTINGCHANNELSERVER
 #define VCZH_PRESENTATION_REMOTING_REMOTINGCHANNELSERVER
 
-#include "../../PlatformProviders/Remote/GuiRemoteProtocol.h"
+#include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 
 namespace vl::presentation::remoting
 {

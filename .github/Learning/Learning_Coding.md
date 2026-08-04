@@ -18,7 +18,7 @@
 - Do not call `IChannel::Initialize(nullptr)` to uninstall readers [2]
 - `RemotingTest_Core /RVMT` gates singleton channels by startup phase [2]
 - Parameterize remoting channel servers by concrete protocol server bases [2]
-- `Source/RemotingHelpers` stays test-only and generated-neutral [2]
+- `Test/RemotingHelpers` stays test-only and generated-neutral [2]
 - `CppTest_Rvm` is a GUI app and stays console-free [2]
 - Automation HTTP returns 404 only for protocol-level rejection [2]
 - Use channel `localClient` callbacks for remoting local-client detection [1]
@@ -352,9 +352,9 @@ Channel admission runs before the accepted network route is committed, so do not
 
 Keep only exact `Ready` as the post-route startup signal after the host registers its service. Do not add heartbeat, polling, lease, retry, keep-alive, disconnect acknowledgement, requester-stopping message, or reverse shutdown handshake. Idle `/Http` and `/MiniHttp` peers need not be detected proactively; the next real transport or RPC operation may expose the loss, and the test app then terminates instead of recovering.
 
-## `Source/RemotingHelpers` stays test-only and generated-neutral
+## `Test/RemotingHelpers` stays test-only and generated-neutral
 
-CodePack distribution does not make `Source/RemotingHelpers` part of the ordinary GacUI library API. Keep the neutral pair free of `Test`, generated-application RPC types, and Windows dependencies; keep Windows implementation in its separate pair; and do not make ordinary `GacUI` or `GacUI.Windows` depend on either helper pair. Test applications retain their generated-module and concrete service composition.
+CodePack distribution does not make `Test/RemotingHelpers` part of the ordinary GacUI library API. Keep the neutral pair free of generated-application RPC types and Windows dependencies; keep Windows implementation in its separate pair; and do not make ordinary `GacUI` or `GacUI.Windows` depend on either helper pair. Test applications retain their generated-module and concrete service composition.
 
 Compile the remaining helper implementation through one explicit shared-items inventory in the GacUISrc test solution. Individual consumers should import that inventory instead of maintaining divergent direct source lists, even when a particular app does not exercise every portable helper.
 

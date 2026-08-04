@@ -16,7 +16,7 @@ CPP_ADDS=(
 CPP_REMOVES=(
     "../../../Import/Vlpp.Windows.cpp"
 	"../../../Import/VlppOS.Windows.cpp"
-	"../../../Source/RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.cpp"
+	"../../RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.cpp"
     "../../GacUISrc/Generated_RemoteViewModelTest/Source_x86/RemoteViewModelTestRpc.cpp"
     "../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTestRpc.cpp"
     )

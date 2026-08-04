@@ -2,7 +2,7 @@
 #define VCZH_PRESENTATION_REMOTEVIEWMODELTEST_RUNTIME
 
 #include "RemoteViewModelTestShared.h"
-#include "../../../Source/RemotingHelpers/RemotingServer/RemotingChannelServer.h"
+#include "../../RemotingHelpers/RemotingServer/RemotingChannelServer.h"
 #include <cstdlib>
 
 namespace vl::presentation::remote_view_model_test

@@ -4,7 +4,7 @@
 #include "DarkSkinReflection.h"
 #include "../GacUI_Compiler/ResourceCompiler.h"
 #include "../../../Source/GacUI.h"
-#include "../../../Source/RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
+#include "../../RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
 
 using namespace vl;
 using namespace vl::collections;

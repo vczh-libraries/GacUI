@@ -2,7 +2,7 @@
 #define VCZH_PRESENTATION_REMOTEVIEWMODELTEST_SHARED
 
 #include "../../../Source/GacUI.h"
-#include "../../../Source/RemotingHelpers/RemotingClient/RemotingClient.h"
+#include "../../RemotingHelpers/RemotingClient/RemotingClient.h"
 #include "RemoteViewModelTestRpc.h"
 
 namespace vl::presentation::remote_view_model_test

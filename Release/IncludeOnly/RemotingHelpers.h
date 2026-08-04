@@ -10,8 +10,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppRegex.h"
 #include "VlppWorkflowLibrary.h"
 
-#include "..\..\Source\RemotingHelpers\AutomationService\AutomationServiceHost.h"
-#include "..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.h"
-#include "..\..\Source\RemotingHelpers\RemotingClient\RemotingChannelClient.h"
-#include "..\..\Source\RemotingHelpers\RemotingClient\RemotingClient.h"
-#include "..\..\Source\RemotingHelpers\RemotingServer\RemotingChannelServer.h"
+#include "..\..\Test\RemotingHelpers\AutomationService\MiniHttpAutomationService.h"
+#include "..\..\Test\RemotingHelpers\RemotingClient\RemotingChannelClient.h"
+#include "..\..\Test\RemotingHelpers\RemotingClient\RemotingClient.h"
+#include "..\..\Test\RemotingHelpers\RemotingServer\RemotingChannelServer.h"

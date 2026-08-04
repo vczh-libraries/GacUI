@@ -1,4 +1,4 @@
-Perform the following refactor on the design in `Source/RemotingHelpers` and test apps.
+Perform the following refactor on the design in `Test/RemotingHelpers` and test apps.
 
 1) Interface re-organization
 

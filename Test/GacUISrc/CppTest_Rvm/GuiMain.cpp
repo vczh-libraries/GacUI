@@ -1,8 +1,8 @@
 #include "DarkSkin.h"
 #include "RemoteViewModelTestIncludes.h"
 #include "../RemotingTest_RvmHost/RemoteViewModelTestRuntime.h"
-#include "../../../Source/RemotingHelpers/AutomationService/MiniHttpAutomationService.h"
-#include "../../../Source/RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
+#include "../../RemotingHelpers/AutomationService/MiniHttpAutomationService.h"
+#include "../../RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #include <VlppOS.Windows.h>
 #include "resource.h"
 

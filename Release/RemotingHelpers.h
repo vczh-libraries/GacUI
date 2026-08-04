@@ -11,44 +11,6 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppWorkflowLibrary.h"
 
 /***********************************************************************
-.\AUTOMATIONSERVICE\AUTOMATIONSERVICEHOST.H
-***********************************************************************/
-#ifndef VCZH_PRESENTATION_REMOTING_AUTOMATIONSERVICEHOST
-#define VCZH_PRESENTATION_REMOTING_AUTOMATIONSERVICEHOST
-
-
-namespace vl::presentation::remoting
-{
-	enum class RemotingAutomationService
-	{
-		WindowsHttp,
-		MiniHttp,
-	};
-
-	struct RemotingHostContext
-	{
-		RemotingAutomationService								automationService;
-		Ptr<inter_process::async_tcp_socket::IAsyncSocketServer>	miniHttpSocketServer;
-	};
-
-	class NativeAutomationServiceScope
-	{
-	private:
-		INativeAutomationService*								automationService = nullptr;
-
-	public:
-		NativeAutomationServiceScope(INativeAutomationService* service);
-		~NativeAutomationServiceScope();
-
-		NativeAutomationServiceScope(const NativeAutomationServiceScope&) = delete;
-		NativeAutomationServiceScope& operator=(const NativeAutomationServiceScope&) = delete;
-	};
-}
-
-#endif
-
-
-/***********************************************************************
 .\AUTOMATIONSERVICE\MINIHTTPAUTOMATIONSERVICE.H
 ***********************************************************************/
 #ifndef VCZH_PRESENTATION_REMOTING_MINIHTTPAUTOMATIONSERVICE
@@ -61,23 +23,7 @@ namespace vl::presentation::remoting
 		Ptr<inter_process::async_tcp_socket::IAsyncSocketServer> socketServer,
 		const WString& applicationName
 		);
-	extern void StartMiniHttpAutomationService(
-		Ptr<inter_process::async_tcp_socket::IAsyncSocketServer> socketServer
-		);
 	extern void StopMiniHttpAutomationService();
-
-	class MiniHttpAutomationServiceScope
-	{
-	public:
-		MiniHttpAutomationServiceScope(
-			Ptr<inter_process::async_tcp_socket::IAsyncSocketServer> socketServer,
-			const WString& applicationName
-			);
-		~MiniHttpAutomationServiceScope();
-
-		MiniHttpAutomationServiceScope(const MiniHttpAutomationServiceScope&) = delete;
-		MiniHttpAutomationServiceScope& operator=(const MiniHttpAutomationServiceScope&) = delete;
-	};
 }
 
 #endif
@@ -107,7 +53,6 @@ namespace vl::presentation::remoting
 		RemotingChannelClientConfiguration					configuration;
 		bool												triggeredFatalError = false;
 		bool												retainedFatalError = false;
-		bool												disconnectedProcessed = false;
 		bool												stopping = false;
 		remote_renderer::GuiRemoteRendererSingle*			renderer = nullptr;
 		remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelRenderer*
@@ -163,13 +108,8 @@ namespace vl::presentation::remoting
 		WString												controlChannelName;
 		WString												serviceName;
 		WString												readyMessage;
-		WString												heartbeatMessage;
-		WString												requesterStoppingMessage;
 		WString												hostDisconnectedError;
 		vint												invalidClientId = -1;
-		vint												heartbeatIntervalMilliseconds = 1000;
-		vint												startupGraceMilliseconds = 10000;
-		vint												leaseTimeoutMilliseconds = 5000;
 	};
 
 	class RemotingJsonDispatcherClient
@@ -195,9 +135,6 @@ namespace vl::presentation::remoting
 			Ptr<glr::json::Parser> parser,
 			const Func<void(const WString&)>& terminalAction
 			);
-		~RemotingRequesterSession();
-
-		bool												CanAcceptLocalClient(JsonChannelClient* localClient);
 		bool												TryAcceptHost(vint clientId);
 		void												OnClientDisconnected(vint clientId);
 		void												Start(JsonChannelServer* channelServer);
@@ -205,19 +142,15 @@ namespace vl::presentation::remoting
 		bool												BeginRunning();
 		bool												CanAdmitRenderer();
 		void												BeginStopping();
-		Nullable<WString>									GetFatalError();
 		void												Stop(const Func<void()>& stopServer);
 	};
 
 	class RemotingHostingClient
 		: public rpc_controller::channeling::JsonNetworkChannelClient
-		, protected inter_process::IChannelReader<JsonPackage>
 	{
 	private:
 		class Impl;
 		Ptr<Impl>											impl;
-
-		void												OnRead(vint senderClientId, const JsonPackage& package) override;
 
 	public:
 		RemotingHostingClient(
@@ -227,8 +160,6 @@ namespace vl::presentation::remoting
 			Ptr<glr::json::Parser> parser,
 			Ptr<TaskQueue> taskQueue
 			);
-		~RemotingHostingClient();
-
 		const JsonChannelClient::ChannelNameList&			OnGetChannelNames() override;
 		void												OnConnected(vint clientId) override;
 		void												OnDisconnected() override;
@@ -237,7 +168,6 @@ namespace vl::presentation::remoting
 
 		void												Connect();
 		void												SendReady();
-		void												StartHeartbeat();
 		RpcDispatcherClient*								GetDispatcher();
 	};
 }
@@ -257,17 +187,6 @@ namespace vl::presentation::remoting
 	using JsonChannelClient = remoteprotocol::channeling::IJsonChannelClient;
 	using JsonChannel = remoteprotocol::channeling::IJsonChannel;
 	using JsonChannelServer = remoteprotocol::channeling::IJsonChannelServer;
-	using JsonChannelPackage = remoteprotocol::channeling::JsonPackage;
-
-	struct RemotingChannelServerCallbacks
-	{
-		Func<bool(JsonChannelClient*)>						canAcceptLocalClient;
-		Func<bool(const JsonChannelClient::ChannelNameList&)>	isRemoteClient;
-		Func<bool(vint)>									tryAcceptRemoteClient;
-		Func<void(vint)>									clientDisconnected;
-		Func<bool()>										canAdmitRenderer;
-		Func<void(vint, bool)>								rendererConnectionChanged;
-	};
 
 	inline bool IsRendererChannel(const JsonChannelClient::ChannelNameList& availableChannels)
 	{
@@ -281,94 +200,25 @@ namespace vl::presentation::remoting
 		: public remoteprotocol::channeling::GuiRemoteProtocolNetworkChannelServer<TServerBase>
 	{
 		using Base = remoteprotocol::channeling::GuiRemoteProtocolNetworkChannelServer<TServerBase>;
+		using CoreChannel = remoteprotocol::channeling::GuiRemoteProtocolCoreChannel;
 
 	private:
-		SpinLock											lockConnection;
-		JsonChannel*										coreJsonChannel = nullptr;
-		remoteprotocol::channeling::GuiRemoteProtocolCoreChannel* coreProtocolChannel = nullptr;
-		RemotingChannelServerCallbacks						callbacks;
-		bool												acceptRenderer = false;
-		vint												rendererClientId = -1;
+		SpinLock			lockConnection;
+		JsonChannel*		coreJsonChannel = nullptr;
+		CoreChannel*		coreProtocolChannel = nullptr;
+		bool				acceptRenderer = false;
+		vint				rendererClientId = -1;
 
-	public:
-		using Base::OnClientConnected;
-
-		template<typename... TArgs>
-		RemotingChannelServer(
-			Ptr<glr::json::Parser> parser,
-			bool _acceptRenderer,
-			const RemotingChannelServerCallbacks& _callbacks,
-			TArgs&&... args
-			)
-			: Base(parser, std::forward<TArgs>(args)...)
-			, callbacks(_callbacks)
-			, acceptRenderer(_acceptRenderer)
-		{
-		}
-
-		void SetCoreChannels(
-			JsonChannel* jsonChannel,
-			remoteprotocol::channeling::GuiRemoteProtocolCoreChannel* protocolChannel
-			)
-		{
-			SPIN_LOCK(lockConnection)
-			{
-				coreJsonChannel = jsonChannel;
-				coreProtocolChannel = protocolChannel;
-			}
-		}
-
-		void ClearCoreChannels()
-		{
-			SPIN_LOCK(lockConnection)
-			{
-				coreProtocolChannel = nullptr;
-				coreJsonChannel = nullptr;
-			}
-		}
-
-		vint GetRendererClientId()
-		{
-			vint clientId = -1;
-			SPIN_LOCK(lockConnection)
-			{
-				clientId = rendererClientId;
-			}
-			return clientId;
-		}
-
-		inter_process::WaitForClientResult OnClientConnected(
+	protected:
+		virtual inter_process::WaitForClientResult OnRemoteClientConnected(
 			vint clientId,
-			const JsonChannelClient::ChannelNameList& availableChannels,
-			JsonChannelClient* localClient
-			) override
+			const JsonChannelClient::ChannelNameList& availableChannels
+			)
 		{
 			using WaitForClientResult = inter_process::WaitForClientResult;
 			auto rendererChannel = IsRendererChannel(availableChannels);
-			if (localClient)
-			{
-				if (callbacks.canAcceptLocalClient && callbacks.canAcceptLocalClient(localClient))
-				{
-					return WaitForClientResult::Accept;
-				}
-				if (
-					acceptRenderer &&
-					rendererChannel &&
-					dynamic_cast<remoteprotocol::channeling::GuiRemoteProtocolLocalChannelClient*>(localClient)
-					)
-				{
-					return WaitForClientResult::Accept;
-				}
-				return WaitForClientResult::Reject;
-			}
-
 			if (acceptRenderer && rendererChannel)
 			{
-				if (callbacks.canAdmitRenderer && !callbacks.canAdmitRenderer())
-				{
-					return WaitForClientResult::Reject;
-				}
-
 				JsonChannel* jsonChannelToOldRenderer = nullptr;
 				vint oldRendererClientId = -1;
 				SPIN_LOCK(lockConnection)
@@ -421,28 +271,71 @@ namespace vl::presentation::remoting
 						this->DisconnectClient(oldRendererClientId);
 					}
 				}
-				if (callbacks.rendererConnectionChanged)
-				{
-					callbacks.rendererConnectionChanged(clientId, true);
-				}
-				return WaitForClientResult::Accept;
-			}
-
-			if (
-				callbacks.isRemoteClient &&
-				callbacks.isRemoteClient(availableChannels) &&
-				callbacks.tryAcceptRemoteClient &&
-				callbacks.tryAcceptRemoteClient(clientId)
-				)
-			{
 				return WaitForClientResult::Accept;
 			}
 			return WaitForClientResult::Reject;
 		}
 
+	public:
+		using Base::OnClientConnected;
+
+		template<typename... TArgs>
+		RemotingChannelServer(
+			Ptr<glr::json::Parser> parser,
+			bool _acceptRenderer,
+			TArgs&&... args
+			)
+			: Base(parser, std::forward<TArgs>(args)...)
+			, acceptRenderer(_acceptRenderer)
+		{
+		}
+
+		void SetCoreChannels(
+			JsonChannel* jsonChannel,
+			CoreChannel* protocolChannel
+			)
+		{
+			SPIN_LOCK(lockConnection)
+			{
+				coreJsonChannel = jsonChannel;
+				coreProtocolChannel = protocolChannel;
+			}
+		}
+
+		void ClearCoreChannels()
+		{
+			SPIN_LOCK(lockConnection)
+			{
+				coreProtocolChannel = nullptr;
+				coreJsonChannel = nullptr;
+			}
+		}
+
+		vint GetRendererClientId()
+		{
+			vint clientId = -1;
+			SPIN_LOCK(lockConnection)
+			{
+				clientId = rendererClientId;
+			}
+			return clientId;
+		}
+
+		inter_process::WaitForClientResult OnClientConnected(
+			vint clientId,
+			const JsonChannelClient::ChannelNameList& availableChannels,
+			JsonChannelClient* localClient
+			) override
+		{
+			if (localClient)
+			{
+				return inter_process::WaitForClientResult::Accept;
+			}
+			return OnRemoteClientConnected(clientId, availableChannels);
+		}
+
 		void OnClientDisconnected(vint clientId) override
 		{
-			bool rendererDisconnected = false;
 			SPIN_LOCK(lockConnection)
 			{
 				if (rendererClientId == clientId)
@@ -452,59 +345,8 @@ namespace vl::presentation::remoting
 					{
 						coreProtocolChannel->DetachRenderer(clientId);
 					}
-					rendererDisconnected = true;
 				}
 			}
-
-			if (callbacks.clientDisconnected)
-			{
-				callbacks.clientDisconnected(clientId);
-			}
-			if (rendererDisconnected && callbacks.rendererConnectionChanged)
-			{
-				callbacks.rendererConnectionChanged(clientId, false);
-			}
-		}
-	};
-
-	class RemotingCoreChannel : public remoteprotocol::channeling::GuiRemoteProtocolCoreChannel
-	{
-		using Base = remoteprotocol::channeling::GuiRemoteProtocolCoreChannel;
-		Func<vint()>										getTransportRendererClientId;
-
-	public:
-		RemotingCoreChannel(
-			JsonChannelClient* client,
-			JsonChannel* channel,
-			const WString& executablePath,
-			IGuiRemoteEventProcessor* eventProcessor,
-			const Func<vint()>& _getTransportRendererClientId
-			)
-			: Base(client, channel, executablePath, eventProcessor)
-			, getTransportRendererClientId(_getTransportRendererClientId)
-		{
-		}
-
-		void Submit(bool& disconnected) override
-		{
-			auto receiverClientId = GetRendererClientId();
-			collections::List<JsonChannelPackage> packages;
-			SPIN_LOCK(lockPackagesBeforeRenderer)
-			{
-				packages = std::move(packagesBeforeRenderer);
-			}
-
-			if (receiverClientId == -1 || receiverClientId != getTransportRendererClientId())
-			{
-				disconnected = true;
-				return;
-			}
-
-			for (auto&& package : packages)
-			{
-				channel->SendToClient(receiverClientId, package);
-			}
-			channel->BatchWrite(disconnected);
 		}
 	};
 }

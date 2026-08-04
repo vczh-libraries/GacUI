@@ -1,9 +1,9 @@
 #ifndef VCZH_PRESENTATION_REMOTING_REMOTINGCHANNELCLIENT
 #define VCZH_PRESENTATION_REMOTING_REMOTINGCHANNELCLIENT
 
-#include "../../PlatformProviders/Remote/GuiRemoteProtocol.h"
-#include "../../PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
-#include "../../Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
+#include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
+#include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
+#include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
 
 namespace vl::presentation::remoting
 {

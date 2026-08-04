@@ -1,33 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingClient\RemotingChannelClient.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemotingChannelClient.cpp">
       <Filter>RemotingClient</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingClient\RemotingClient.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemotingClient.cpp">
       <Filter>RemotingClient</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp">
       <Filter>AutomationService</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.cpp">
       <Filter>AutomationService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingServer\RemotingChannelServer.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingServer\RemotingChannelServer.h">
       <Filter>RemotingServer</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingClient\RemotingChannelClient.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemotingChannelClient.h">
       <Filter>RemotingClient</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingClient\RemotingClient.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemotingClient.h">
       <Filter>RemotingClient</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\MiniHttpAutomationService.h">
       <Filter>AutomationService</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.h">
       <Filter>AutomationService</Filter>
     </ClInclude>
   </ItemGroup>

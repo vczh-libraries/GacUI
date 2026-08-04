@@ -22,7 +22,7 @@ Feature availability is checked separately. A real service returns true from `Av
 
 ## Windows HTTP Layer
 
-`StartWindowsHttpAutomationService` creates a localhost HTTP wrapper around the current `INativeAutomationService`. The test-support implementation lives in `Source/RemotingHelpers/AutomationService/Windows`, outside the ordinary `GacUI.Windows` library pair. Test applications consume it through the shared `Source_RemotingHelpers` project.
+`StartWindowsHttpAutomationService` creates a localhost HTTP wrapper around the current `INativeAutomationService`. The test-support implementation lives in `Test/RemotingHelpers/AutomationService/Windows`, outside the ordinary `GacUI.Windows` library pair. Test applications consume it through the shared `Source_RemotingHelpers` project.
 
 The function takes `applicationName` as a URL path fragment and `port` as the localhost port. Given `applicationName == L"Automation/MyApp"` and `port == 8888`, the listener prefix is `http://localhost:8888/Automation/MyApp/`. The service offers exactly these HTTP URLs:
 - `GET http://localhost:8888/Automation/MyApp/Controls`: calls `DumpControlTree` on the UI thread when `CanDumpControlTree` is true.
@@ -38,7 +38,7 @@ Each application owns the automation service and endpoint directly. After the se
 
 A normal Windows application can start the service before `GetApplication()->Run`:
 ```c++
-#include "../../../Source/RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
+#include "../../RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
 
 using namespace vl;
 using namespace vl::presentation;

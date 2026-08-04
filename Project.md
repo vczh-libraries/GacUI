@@ -26,13 +26,13 @@ always fix the root cause.
 Files in `REPO-ROOT/Import` and `REPO-ROOT/Release` (recursively) are also not allowed to modify.
 These files are prepared for foreign dependencies.
 
-### Source/RemotingHelpers
+### Test/RemotingHelpers
 
 Files in this folder are for test apps only:
 - Only test apps could use these source files.
 - No need to create unit test for them.
-- Other source files in `Source` folder cannot use anything in `Source/RemotingHelpers`.
-- They are put in `Source` because they need to be `CodePack` into `GacUI.RemotingHelpers*` and share to other platforms.
+- Source files in `Source` cannot use anything in `Test/RemotingHelpers`.
+- They need to be `CodePack` into `RemotingHelpers*` and shared with other platforms.
 - No production quality required, these files are only for building test apps quickly.
 
 ## Reflectable Types

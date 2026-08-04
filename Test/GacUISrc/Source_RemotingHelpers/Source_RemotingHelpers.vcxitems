@@ -14,16 +14,16 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingClient\RemotingClient.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingClient\RemotingChannelClient.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemotingClient.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemotingChannelClient.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingClient\RemotingClient.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingClient\RemotingChannelClient.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingServer\RemotingChannelServer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\MiniHttpAutomationService.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemotingClient.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemotingChannelClient.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingServer\RemotingChannelServer.h" />
   </ItemGroup>
 </Project>

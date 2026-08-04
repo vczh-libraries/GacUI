@@ -1,7 +1,7 @@
 #ifndef VCZH_PRESENTATION_REMOTING_REMOTINGCLIENT
 #define VCZH_PRESENTATION_REMOTING_REMOTINGCLIENT
 
-#include "../../GacUI.h"
+#include "../../../Source/GacUI.h"
 #include <VlppOS.h>
 #include <VlppWorkflowLibrary.h>
 
