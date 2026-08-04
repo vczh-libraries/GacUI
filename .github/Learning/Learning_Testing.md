@@ -5,7 +5,7 @@
 - Keep test log paths stable during refactors [13]
 - Remote protocol frames: actions must change UI; organize frames carefully [9]
 - Don’t schedule redundant idle frames [7]
-- Stress remote core/renderer transport and terminal flows [6]
+- Stress remote core/renderer transport and terminal flows [7]
 - Preserve existing idle-frame titles when requested [6]
 - Seed key-behavior tests via `protocol->TypeString` [6]
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
@@ -15,6 +15,8 @@
 - Caret navigation tests: type markers to expose caret [3]
 - Avoid duplicate tests across related categories [3]
 - Validate imported dependency APIs with GacUI build and unit test [3]
+- Native modal dialogs block GacUI HTTP automation [3]
+- Verify RVM requester/host lifetimes across every transport [3]
 - Account for eager child preparation in item-provider tests [2]
 - Isolate callbacks per test case (fresh log + callback) [2]
 - Prefer comments that name the exercised interface [2]
@@ -26,9 +28,7 @@
 - GuiDocumentLabel paragraphs: use `\\r\\n\\r\\n` between paragraphs in `LoadTextAndClearUndoRedo` [2]
 - Use `AssertItems`/`AssertCallbacks` for visible item lists [2]
 - Unit-test renderer `CaretLineLast` should treat CRLF as newline [2]
-- Native modal dialogs block GacUI HTTP automation [2]
 - Verify remoting imports with both HTTP and named-pipe flows [2]
-- Verify RVM requester/host lifetimes across every transport [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
 - Skip callback plumbing when not asserting callbacks [1]
@@ -368,6 +368,8 @@ For retained-fatal RemoteProtocolTest behavior, start `RemotingTest_Core` first 
 
 For normal `/FCT` shutdown, repeat exact `!Exit` runs across MiniHTTP, HTTP, and named pipe. Observe renderer automation and process state to verify the ordering policy: after the normal-stop message, no transport failure may produce a fatal prompt. Distinguish that policy check from delivery/liveness—if MiniHTTP never delivers the stop message before the core disappears, the renderer cannot apply a state transition it did not receive.
 
+After refactoring remoting composition or admission logic, run the real `/RPT` core and native renderer over `/Pipe`, `/Http`, and `/MiniHttp`; compilation and unit tests do not cover the executable boundary. Exercise representative IO, renderer replacement with state continuity, clean shutdown, and absence of surviving processes.
+
 ## Verify GacJS HTTP fatal errors through browser UI
 
 For the HTTP browser remoting path, verify fatal core errors by running `RemotingTest_Core /RPT /Http`, opening GacJS in the browser, triggering the fatal-error UI path, and checking that the browser receives the `!Error` package and displays the error mask/alert. Seeing only a fetch failure or closed transport is not sufficient.
@@ -416,6 +418,8 @@ When a native dialog is open from a GacUI test application, the app's HTTP autom
 
 For the renderer fatal-error Yes/No prompt, inspect and operate the `#32770` window from the helper process and confirm Yes is the default. Do not issue renderer HTTP automation while the native prompt is open; dismiss it first, then verify the selected retained or exit policy through `/Dom`, `/IO`, and process state.
 
+During long executable verification loops, repeatedly enumerate top-level windows for the exact title `Microsoft Visual C++ Runtime Library`; the application can otherwise appear hung while a native runtime dialog blocks it. Automation POST probes must use the endpoint's required JSON content type so a probe error is not mistaken for an application regression.
+
 ## Verify DarkSkin cursor ownership through regression and Playground automation
 
 For DarkSkin cursor bugs in text/document controls, add a focused regression with `GuiMultilineTextBox` and `GuiDocumentViewer` using forced horizontal and vertical scrollbars. Assert that the editable text content resolves to `IBeam`, while the control bounds, horizontal scrollbar, vertical scrollbar, scrollbar buttons, and scroll corner omit explicit cursor metadata (`nullptr` / default). Use `GuiDocumentViewer` as a guard for existing correct scope, including view-only cases where the content should not resolve to `IBeam`.
@@ -437,6 +441,8 @@ This avoids full-application frames masking a missing handoff by coincidentally 
 ## Verify RVM requester/host lifetimes across every transport
 
 Across `/Pipe`, `/Http`, and `/MiniHttp`, verify successful startup and `Translate`, fatal host loss when it is observed during startup or a later real RPC operation, and normal requester stopping. Idle `/Http` and `/MiniHttp` sessions do not need proactive peer-loss detection. Core must deliver one Core-authored `!Error` before a nonzero fatal exit, while renderer loss and replacement remain nonfatal. Repeated runs must leave no orphan process or stale endpoint.
+
+When requester/session or channel-server inheritance changes, exercise both RVM application shapes on every transport: `CppTest_Rvm` with `RemotingTest_RvmHost`, and `RemotingTest_Core /RVMT` with the host and native renderer. Require service acquisition, a live `Translate`, and clean application-controlled shutdown.
 
 ## MiniHTTP automation probes use IPv4 loopback
 

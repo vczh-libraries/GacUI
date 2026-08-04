@@ -9,8 +9,8 @@
 - Proactively remove code made redundant by refactoring [12]
 - Keep design documentation aligned with code after refactoring [10]
 - Fix behavior at the owning state instead of patching symptoms [10]
+- Extract abstractions only for real shared behavior [8]
 - Verify and localize portability on every target OS [7]
-- Extract abstractions only for real shared behavior [7]
 - Make `Stop()` drain asynchronous work before returning [6]
 - Validate expectations against implementation and existing tests [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
@@ -101,6 +101,8 @@ When refactoring client/server or similar paired implementations, extract common
 For role-specific implementations, extract a base that contains only truly shared state and operations. Keep transport-only or role-only members in the concrete subtype so no implementation inherits fields that do not apply to it.
 
 When several platform implementations must satisfy the same behavioral contract, define and register each scenario once in a platform-neutral runner and parameterize only the concrete types and genuine platform seams. Duplicating test registrations per platform invites feature drift.
+
+Do not turn fixed owner decisions or concrete state observations into callbacks or virtual policy. If the owning process controls whether an operation is called, enforce that choice at the call site; if a predicate only reports internal state, keep it nonvirtual. Reserve virtual functions for behavior that derived implementations genuinely need to change.
 
 ## Make `Stop()` drain asynchronous work before returning
 
