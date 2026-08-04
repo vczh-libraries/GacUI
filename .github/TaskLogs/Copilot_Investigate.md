@@ -234,3 +234,17 @@ The current tree confirms the structural problem:
 Success requires every static ownership/inventory criterion in the problem description, XML parsing of all changed project files, `git diff --check`, clean Debug/Release x Win32/x64 solution builds with zero warnings and errors, and the complete prescribed Windows application matrix. The refactor must preserve the exact Ready barrier, singleton host admission, requester/broker separation, renderer admission phase, fatal host-loss behavior, and shutdown ordering. Linux and macOS remain explicitly unverified until their target-platform build and runtime steps are executed.
 
 # PROPOSALS
+
+- No.1 Split the RVM-specific helper inventory and flatten requester ownership
+
+## No.1 Split the RVM-specific helper inventory and flatten requester ownership
+
+Move the six RVM-specific view-model files into `Test/Rvmt/ViewModel` and compile them through a dedicated `Source_Rvmt_ViewModel.vcxitems` imported only by `CppTest_Rvm`, `RemotingTest_Core`, and `RemotingTest_RvmHost`. Keep the generated-RPC-independent helper inventory in `Source_RemotingHelpers.vcxitems` for its existing nine consumers.
+
+Make `ViewModelShared.*` the single owner of fixed RVM constants and generated RPC dispatcher initialization. Replace the abstract dispatcher/factory pair with the concrete `RemoteViewModelJsonDispatcherClient`, whose narrowly friended ordinary `InitializeRpc` function can call protected `SetRpcObjects`.
+
+Make `ViewModelHostClient.*` network-host-only. Move `RemotingRequesterSession`, both server-side local clients, task-queue/broker helpers, Ready processing, admission state, and shutdown logic to `ViewModelHostServer.*`. Flatten only `RemotingRequesterSession::Impl`: store the session state directly in `RemotingRequesterSession`, keep synchronization-heavy method bodies out of line, and preserve the public lifecycle and `RemoteViewModelChannelServer<TServerBase>::GetSession()` boundary.
+
+Update all Windows project/solution inventory, the two hand-authored Unix `vmake` files, application includes, and the narrowly affected documentation. Preserve every behavioral invariant and defer Release CodePack regeneration because `Release` is forbidden in this task.
+
+### CODE CHANGE
