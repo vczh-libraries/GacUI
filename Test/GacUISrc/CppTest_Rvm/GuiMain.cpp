@@ -92,7 +92,6 @@ int StartNamedPipeServer()
 	auto parser = Ptr(new glr::json::Parser);
 	RemoteViewModelChannelServer<named_pipe::NamedPipeServer> server(
 		parser,
-		true,
 		false,
 		WString::Unmanaged(RemotingNamedPipeName)
 		);
@@ -104,7 +103,6 @@ int StartHttpServer()
 	auto parser = Ptr(new glr::json::Parser);
 	RemoteViewModelChannelServer<windows_http::HttpServer> server(
 		parser,
-		true,
 		false,
 		WString::Unmanaged(RemotingHttpBaseUrl),
 		RemotingHttpPort
@@ -118,7 +116,6 @@ int StartMiniHttpServer()
 	auto socketServer = async_tcp_socket::CreateDefaultAsyncSocketServer(RemotingHttpPort);
 	RemoteViewModelChannelServer<async_tcp_socket::SocketHttpServer> server(
 		parser,
-		true,
 		false,
 		socketServer,
 		WString::Unmanaged(RemotingHttpBaseUrl)

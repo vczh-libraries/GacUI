@@ -21,19 +21,16 @@ namespace vl::presentation::remote_view_model_test
 			const remoting::JsonChannelClient::ChannelNameList& availableChannels
 			) override
 		{
-			if (session)
+			using WaitForClientResult = inter_process::WaitForClientResult;
+			if (IsRemoteViewModelHostChannel(availableChannels))
 			{
-				using WaitForClientResult = inter_process::WaitForClientResult;
-				if (IsRemoteViewModelHostChannel(availableChannels))
-				{
-					return session->TryAcceptHost(clientId)
-						? WaitForClientResult::Accept
-						: WaitForClientResult::Reject;
-				}
-				if (remoting::IsRendererChannel(availableChannels) && !session->CanAdmitRenderer())
-				{
-					return WaitForClientResult::Reject;
-				}
+				return session->TryAcceptHost(clientId)
+					? WaitForClientResult::Accept
+					: WaitForClientResult::Reject;
+			}
+			if (remoting::IsRendererChannel(availableChannels) && !session->CanAdmitRenderer())
+			{
+				return WaitForClientResult::Reject;
 			}
 			return Base::OnRemoteClientConnected(clientId, availableChannels);
 		}
@@ -42,33 +39,29 @@ namespace vl::presentation::remote_view_model_test
 		template<typename... TArgs>
 		RemoteViewModelChannelServer(
 			Ptr<glr::json::Parser> parser,
-			bool _acceptViewModel,
 			bool _acceptRenderer,
 			TArgs&&... args
 			)
 			: Base(parser, _acceptRenderer, std::forward<TArgs>(args)...)
 		{
-			if (_acceptViewModel)
-			{
-				session = Ptr(new remoting::RemotingRequesterSession(
-					CreateDispatcherFactory(),
-					parser,
-					Func<void(const WString&)>([this, _acceptRenderer](const WString& message)
+			session = Ptr(new remoting::RemotingRequesterSession(
+				CreateDispatcherFactory(),
+				parser,
+				Func<void(const WString&)>([this, _acceptRenderer](const WString& message)
+					{
+						if (_acceptRenderer)
 						{
-							if (_acceptRenderer)
+							try
 							{
-								try
-								{
-									this->BroadcastError(message);
-								}
-								catch (...)
-								{
-								}
+								this->BroadcastError(message);
 							}
-							std::_Exit(1);
-						})
-				));
-			}
+							catch (...)
+							{
+							}
+						}
+						std::_Exit(1);
+					})
+			));
 		}
 
 		remoting::RemotingRequesterSession* GetSession()
