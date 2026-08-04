@@ -11,14 +11,12 @@ When the model `gpt-5.3-codex-spark` is available:
   - If the target application has bugs, it is normal that steps can't be performed to the end. The sub agent should summarize what is going wrong to prevent steps to be done.
   - This model is fast, it significantly improves the performance of operating the GUI.
 
-## Windows Specific
-
 - GacUI applications could end up in dead loop or dead locks, so DO NOT JUST wait for the process to exit.
   - When it is crashed, sometimes (but not always) a native dialog would show and block the process.
   - Native dialogs could be proactivately called from a GacUI application, even when `FakeDialogService` is not used.
   - If you believe the processing is blocked or is running too long, you are going to check out `Running-ComputerUse.md` and deal with it.
 
-### Automation Service via HTTP
+## Automation Service via HTTP
 
 This is a very useful way for coding agent to debug GacUI applications.
 Computer use via UI Automation may not work when the computer screen is locked.
@@ -36,6 +34,7 @@ When `StartWindowsHttpAutomationService` is used during startup up a GacUI appli
 - GET `.../Dom`, for remote protocol renderer, exposing the DOM tree.
   - Read comment for DumpRemoteProtocolRenderingDom` for the schema.
 - POST `.../IO` or `IO/<WINDOW-ID>`
+  - Set `Content-Type` to exactly `application/json; charset=utf8`. The Windows HTTP implementation validates this value before reading the UTF-8 command body.
   - IRead comment for `RunIOCommandOnNativeWindow` for the schema.
   - `<WINDOW-ID>` is the window id returning from `.../Controls`.
   - The window ID can be comitted for the main window.
@@ -58,10 +57,21 @@ GacUI does not support UI Automation so far, but this situation will be changed 
 
 UI Automation does not work when the screen is locked. Calling any UIA tools in this case will just fail.
 
+## Windows Specific
+
+- While polling automation endpoints or waiting for application processes, repeatedly inspect the target processes for a top-level window titled exactly `Microsoft Visual C++ Runtime Library`.
+  - Treat this window as a blocking crash signal immediately. Do not keep retrying the application-level endpoint, because the modal dialog can block the UI thread and make a crash look like an ordinary timeout.
+  - Capture the dialog text and buttons with the Win32 procedure in `Running-ComputerUse.md`, dismiss it deliberately, and record the process exit code.
+  - Check again after every automation timeout and before declaring a run successful.
+
 ## Linux Specific
 
-(to be editing...)
+When maintaining the `vczh-libraries` github organization:
+- Only `wGac` repo runs actual GacUI application on Linux.
+- `GacUI` test apps only work when they are unit test, CLI or GacUI remote protocol core application (which is also CLI but with automation service enabled).
 
 ## macOS Specific
 
-(to be editing...)
+When maintaining the `vczh-libraries` github organization:
+- Only `iGac` repo runs actual GacUI application on macOS.
+- `GacUI` test apps only work when they are unit test, CLI or GacUI remote protocol core application (which is also CLI but with automation service enabled).
