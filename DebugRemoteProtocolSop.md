@@ -2,7 +2,7 @@
 
 This document contains only the renderer-independent UI actions and observable
 results used to catch end-to-end regressions. Use
-[`DebugRemoteProtocolWithGacUI.md`](DebugRemoteProtocolWithGacUI.md) or
+[`DebugRemoteProtocolWithGacJS.md`](DebugRemoteProtocolWithGacJS.md) or
 [`DebugRemoteProtocolWithNativeRenderer.md`](DebugRemoteProtocolWithNativeRenderer.md) to
 establish, drive, inspect, replace, and close the renderer session.
 
@@ -183,3 +183,29 @@ Use a fresh application state.
    require both markers to remain unchanged without retyping them.
 9. Require the application to remain connected and responsive throughout the
    typing and tab changes.
+
+## Remote View Model Test (`/RVMT`)
+
+Use a fresh application state. Follow
+`DebugRemoteProtocolWithGacJS.md` or
+`DebugRemoteProtocolWithNativeRenderer.md` to establish the renderer session:
+- When working with `CppTest_Rvm`, start `RemotingTest_RvmHost` after it, followed by verification steps. This is Windows only, no native renderer or GacJS is needed.
+- When working with `RemotingTest_Core`, start `RemotingTest_RvmHost` before the native renderer or GacJS.
+
+### 1. Verify the Initial UI
+
+1. Require the exact window title `Remote View Model Test`.
+2. Require one single-line text box and the exact initial greeting `Hello, !`.
+3. Require no startup mask, error, fatal overlay, or disconnect.
+
+### 2. Verify Workflow RPC
+
+1. Focus the text box and type a unique, short, printable marker.
+2. Require the greeting to become exactly
+   `Hello, <marker>!`.
+3. Require the application to remain connected and responsive.
+
+### 3. Close the Application
+
+1. Close the application through the active UI surface.
+2. Require the application session to end without a fatal error or retry loop.

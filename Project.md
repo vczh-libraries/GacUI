@@ -140,7 +140,7 @@ observable results.
 
 Remote protocol is involved in three ways:
 - Core with native renderer: `REPO-ROOT/DebugRemoteProtocolWithNativeRenderer.md`.
-- Core with `GacJS`: `REPO-ROOT/DebugRemoteProtocolWithGacUI.md`.
+- Core with `GacJS`: `REPO-ROOT/DebugRemoteProtocolWithGacJS.md`.
 - `UnitTest`, some e2e test cases are running on top of a unit test only remote protocol renderer, which is designed to save snapshots of UI between frames at `REPO-ROOT/Test/Resources/UnitTestSnapshots`.
 
 Running core always uses network protocols.
