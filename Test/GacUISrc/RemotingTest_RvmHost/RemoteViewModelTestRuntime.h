@@ -51,7 +51,6 @@ namespace vl::presentation::remote_view_model_test
 			if (_acceptViewModel)
 			{
 				session = Ptr(new remoting::RemotingRequesterSession(
-					CreateConfiguration(),
 					CreateDispatcherFactory(),
 					parser,
 					Func<void(const WString&)>([this, _acceptRenderer](const WString& message)

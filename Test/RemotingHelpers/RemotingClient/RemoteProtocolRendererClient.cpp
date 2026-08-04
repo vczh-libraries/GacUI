@@ -1,22 +1,22 @@
-#include "RemotingChannelClient.h"
+#include "RemoteProtocolRendererClient.h"
 
 namespace vl::presentation::remoting
 {
 	using namespace remoteprotocol::channeling;
 	using namespace remote_renderer;
 
-	RemotingChannelClient::RemotingChannelClient(
+	RemoteProtocolRendererClient::RemoteProtocolRendererClient(
 		Ptr<inter_process::INetworkProtocolClient> client,
 		Ptr<glr::json::Parser> parser,
-		const RemotingChannelClientConfiguration& _configuration
+		const WString& _fatalTitle
 		)
 		: Base(client, parser)
-		, configuration(_configuration)
+		, fatalTitle(_fatalTitle)
 	{
-		CHECK_ERROR(configuration.fatalTitle != L"", L"RemotingChannelClient::RemotingChannelClient(...)#The fatal title is empty.");
+		CHECK_ERROR(fatalTitle != L"", L"RemoteProtocolRendererClient::RemoteProtocolRendererClient(...)#The fatal title is empty.");
 	}
 
-	void RemotingChannelClient::QueueMainThreadTask(const Func<void()>& task)
+	void RemoteProtocolRendererClient::QueueMainThreadTask(const Func<void()>& task)
 	{
 		GuiRemoteProtocolAsyncJsonChannelRenderer* targetChannel = nullptr;
 		SPIN_LOCK(lockState)
@@ -32,7 +32,7 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	void RemotingChannelClient::ProcessFatalError(const WString& errorMessage)
+	void RemoteProtocolRendererClient::ProcessFatalError(const WString& errorMessage)
 	{
 		GuiRemoteRendererSingle* targetRenderer = nullptr;
 		AutomationServiceRenderer* targetAutomationService = nullptr;
@@ -56,10 +56,19 @@ namespace vl::presentation::remoting
 			return;
 		}
 
-		auto retainRenderer =
-			configuration.retainFatalError
-			? configuration.retainFatalError(configuration.fatalTitle, errorMessage)
-			: true;
+		bool retainRenderer = true;
+#if !defined VCZH_GCC || defined VCZH_APPLE
+		auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
+		auto result = GetCurrentController()->DialogService()->ShowMessageBox(
+			mainWindow,
+			errorMessage + WString::Unmanaged(L"\r\n\r\nDo you want to close the renderer?"),
+			fatalTitle,
+			INativeDialogService::DisplayYesNo,
+			INativeDialogService::DefaultFirst,
+			INativeDialogService::IconError
+			);
+		retainRenderer = result != INativeDialogService::SelectYes;
+#endif
 		if (retainRenderer)
 		{
 			SPIN_LOCK(lockState)
@@ -82,7 +91,7 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	void RemotingChannelClient::ProcessDisconnected()
+	void RemoteProtocolRendererClient::ProcessDisconnected()
 	{
 		GuiRemoteProtocolAsyncJsonChannelRenderer* targetChannel = nullptr;
 		GuiRemoteRendererSingle* targetRenderer = nullptr;
@@ -110,7 +119,7 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	void RemotingChannelClient::SetRenderer(GuiRemoteRendererSingle* value)
+	void RemoteProtocolRendererClient::SetRenderer(GuiRemoteRendererSingle* value)
 	{
 		SPIN_LOCK(lockState)
 		{
@@ -118,7 +127,7 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	void RemotingChannelClient::SetAsyncRendererChannel(GuiRemoteProtocolAsyncJsonChannelRenderer* value)
+	void RemoteProtocolRendererClient::SetAsyncRendererChannel(GuiRemoteProtocolAsyncJsonChannelRenderer* value)
 	{
 		SPIN_LOCK(lockState)
 		{
@@ -126,7 +135,7 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	void RemotingChannelClient::SetRendererAutomationService(AutomationServiceRenderer* value)
+	void RemoteProtocolRendererClient::SetRendererAutomationService(AutomationServiceRenderer* value)
 	{
 		SPIN_LOCK(lockState)
 		{
@@ -134,7 +143,7 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	void RemotingChannelClient::BeginStopping()
+	void RemoteProtocolRendererClient::BeginStopping()
 	{
 		GuiRemoteProtocolAsyncJsonChannelRenderer* targetChannel = nullptr;
 		SPIN_LOCK(lockState)
@@ -151,7 +160,7 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	bool RemotingChannelClient::IsFatalErrorRetained()
+	bool RemoteProtocolRendererClient::IsFatalErrorRetained()
 	{
 		bool retained = false;
 		SPIN_LOCK(lockState)
@@ -161,7 +170,7 @@ namespace vl::presentation::remoting
 		return retained;
 	}
 
-	void RemotingChannelClient::OnReadError(const WString& errorMessage)
+	void RemoteProtocolRendererClient::OnReadError(const WString& errorMessage)
 	{
 		QueueMainThreadTask(Func<void()>([this, errorMessage]()
 		{
@@ -169,7 +178,7 @@ namespace vl::presentation::remoting
 		}));
 	}
 
-	void RemotingChannelClient::OnLocalError(const WString&, bool fatal)
+	void RemoteProtocolRendererClient::OnLocalError(const WString&, bool fatal)
 	{
 		if (fatal)
 		{
@@ -180,7 +189,7 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	void RemotingChannelClient::OnDisconnected()
+	void RemoteProtocolRendererClient::OnDisconnected()
 	{
 		Base::OnDisconnected();
 		QueueMainThreadTask(Func<void()>([this]()

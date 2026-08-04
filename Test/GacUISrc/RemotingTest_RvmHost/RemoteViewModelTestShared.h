@@ -2,25 +2,18 @@
 #define VCZH_PRESENTATION_REMOTEVIEWMODELTEST_SHARED
 
 #include "../../../Source/GacUI.h"
-#include "../../RemotingHelpers/RemotingClient/RemotingClient.h"
+#include "../../RemotingHelpers/RemotingClient/ViewModelHostClient.h"
 #include "RemoteViewModelTestRpc.h"
 
 namespace vl::presentation::remote_view_model_test
 {
-	inline constexpr const wchar_t* ViewModelChannelName = L"ViewModelChannel";
-	inline constexpr const wchar_t* ViewModelReadyChannelName = L"ViewModelReadyChannel";
-	inline constexpr const wchar_t* ViewModelServiceName = L"rvmt::IViewModel";
-	inline constexpr const wchar_t* ViewModelReadyMessage = L"Ready";
-	inline constexpr const wchar_t* RemoteViewModelHostDisconnectedError = L"RemotingTest_RvmHost disconnected.";
-	inline constexpr vint InvalidRemoteViewModelClientId = -1;
-
 	template<typename TChannelNameList>
 	bool IsRemoteViewModelHostChannel(const TChannelNameList& availableChannels)
 	{
 		return
 			availableChannels.Count() == 2 &&
-			availableChannels.IndexOf(WString::Unmanaged(ViewModelChannelName)) != -1 &&
-			availableChannels.IndexOf(WString::Unmanaged(ViewModelReadyChannelName)) != -1;
+			availableChannels.IndexOf(WString::Unmanaged(remoting::ViewModelChannelName)) != -1 &&
+			availableChannels.IndexOf(WString::Unmanaged(remoting::ViewModelReadyChannelName)) != -1;
 	}
 
 #ifdef VCZH_MSVC
@@ -29,7 +22,6 @@ namespace vl::presentation::remote_view_model_test
 	inline constexpr const wchar_t* RemotingHttpBaseUrl = L"/GacUIRemoteProtocolHttp";
 	inline constexpr vint RemotingHttpPort = 8888;
 
-	extern remoting::RemotingRpcConfiguration CreateConfiguration();
 	extern remoting::RemotingDispatcherFactory CreateDispatcherFactory();
 }
 

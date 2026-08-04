@@ -192,7 +192,7 @@ namespace vl::presentation::remoting
 
 
 /***********************************************************************
-.\REMOTINGCLIENT\REMOTINGCHANNELCLIENT.CPP
+.\REMOTINGCLIENT\REMOTEPROTOCOLRENDERERCLIENT.CPP
 ***********************************************************************/
 
 namespace vl::presentation::remoting
@@ -200,18 +200,18 @@ namespace vl::presentation::remoting
 	using namespace remoteprotocol::channeling;
 	using namespace remote_renderer;
 
-	RemotingChannelClient::RemotingChannelClient(
+	RemoteProtocolRendererClient::RemoteProtocolRendererClient(
 		Ptr<inter_process::INetworkProtocolClient> client,
 		Ptr<glr::json::Parser> parser,
-		const RemotingChannelClientConfiguration& _configuration
+		const WString& _fatalTitle
 		)
 		: Base(client, parser)
-		, configuration(_configuration)
+		, fatalTitle(_fatalTitle)
 	{
-		CHECK_ERROR(configuration.fatalTitle != L"", L"RemotingChannelClient::RemotingChannelClient(...)#The fatal title is empty.");
+		CHECK_ERROR(fatalTitle != L"", L"RemoteProtocolRendererClient::RemoteProtocolRendererClient(...)#The fatal title is empty.");
 	}
 
-	void RemotingChannelClient::QueueMainThreadTask(const Func<void()>& task)
+	void RemoteProtocolRendererClient::QueueMainThreadTask(const Func<void()>& task)
 	{
 		GuiRemoteProtocolAsyncJsonChannelRenderer* targetChannel = nullptr;
 		SPIN_LOCK(lockState)
@@ -227,7 +227,7 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	void RemotingChannelClient::ProcessFatalError(const WString& errorMessage)
+	void RemoteProtocolRendererClient::ProcessFatalError(const WString& errorMessage)
 	{
 		GuiRemoteRendererSingle* targetRenderer = nullptr;
 		AutomationServiceRenderer* targetAutomationService = nullptr;
@@ -251,10 +251,19 @@ namespace vl::presentation::remoting
 			return;
 		}
 
-		auto retainRenderer =
-			configuration.retainFatalError
-			? configuration.retainFatalError(configuration.fatalTitle, errorMessage)
-			: true;
+		bool retainRenderer = true;
+#if !defined VCZH_GCC || defined VCZH_APPLE
+		auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
+		auto result = GetCurrentController()->DialogService()->ShowMessageBox(
+			mainWindow,
+			errorMessage + WString::Unmanaged(L"\r\n\r\nDo you want to close the renderer?"),
+			fatalTitle,
+			INativeDialogService::DisplayYesNo,
+			INativeDialogService::DefaultFirst,
+			INativeDialogService::IconError
+			);
+		retainRenderer = result != INativeDialogService::SelectYes;
+#endif
 		if (retainRenderer)
 		{
 			SPIN_LOCK(lockState)
@@ -277,7 +286,7 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	void RemotingChannelClient::ProcessDisconnected()
+	void RemoteProtocolRendererClient::ProcessDisconnected()
 	{
 		GuiRemoteProtocolAsyncJsonChannelRenderer* targetChannel = nullptr;
 		GuiRemoteRendererSingle* targetRenderer = nullptr;
@@ -305,7 +314,7 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	void RemotingChannelClient::SetRenderer(GuiRemoteRendererSingle* value)
+	void RemoteProtocolRendererClient::SetRenderer(GuiRemoteRendererSingle* value)
 	{
 		SPIN_LOCK(lockState)
 		{
@@ -313,7 +322,7 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	void RemotingChannelClient::SetAsyncRendererChannel(GuiRemoteProtocolAsyncJsonChannelRenderer* value)
+	void RemoteProtocolRendererClient::SetAsyncRendererChannel(GuiRemoteProtocolAsyncJsonChannelRenderer* value)
 	{
 		SPIN_LOCK(lockState)
 		{
@@ -321,7 +330,7 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	void RemotingChannelClient::SetRendererAutomationService(AutomationServiceRenderer* value)
+	void RemoteProtocolRendererClient::SetRendererAutomationService(AutomationServiceRenderer* value)
 	{
 		SPIN_LOCK(lockState)
 		{
@@ -329,7 +338,7 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	void RemotingChannelClient::BeginStopping()
+	void RemoteProtocolRendererClient::BeginStopping()
 	{
 		GuiRemoteProtocolAsyncJsonChannelRenderer* targetChannel = nullptr;
 		SPIN_LOCK(lockState)
@@ -346,7 +355,7 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	bool RemotingChannelClient::IsFatalErrorRetained()
+	bool RemoteProtocolRendererClient::IsFatalErrorRetained()
 	{
 		bool retained = false;
 		SPIN_LOCK(lockState)
@@ -356,7 +365,7 @@ namespace vl::presentation::remoting
 		return retained;
 	}
 
-	void RemotingChannelClient::OnReadError(const WString& errorMessage)
+	void RemoteProtocolRendererClient::OnReadError(const WString& errorMessage)
 	{
 		QueueMainThreadTask(Func<void()>([this, errorMessage]()
 		{
@@ -364,7 +373,7 @@ namespace vl::presentation::remoting
 		}));
 	}
 
-	void RemotingChannelClient::OnLocalError(const WString&, bool fatal)
+	void RemoteProtocolRendererClient::OnLocalError(const WString&, bool fatal)
 	{
 		if (fatal)
 		{
@@ -375,7 +384,7 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	void RemotingChannelClient::OnDisconnected()
+	void RemoteProtocolRendererClient::OnDisconnected()
 	{
 		Base::OnDisconnected();
 		QueueMainThreadTask(Func<void()>([this]()
@@ -387,7 +396,7 @@ namespace vl::presentation::remoting
 
 
 /***********************************************************************
-.\REMOTINGCLIENT\REMOTINGCLIENT.CPP
+.\REMOTINGCLIENT\VIEWMODELHOSTCLIENT.CPP
 ***********************************************************************/
 #include <cstdlib>
 
@@ -458,8 +467,6 @@ namespace vl::presentation::remoting
 		{
 		private:
 			JsonChannelClient::ChannelMap						channelNames;
-			WString												rpcChannelName;
-			WString												controlChannelName;
 			Ptr<RpcJsonDispatcherServerForTaskQueue>			dispatcher;
 			Func<void(vint, const JsonPackage&)>				controlCallback;
 			JsonChannel*										controlChannel = nullptr;
@@ -473,17 +480,14 @@ namespace vl::presentation::remoting
 		public:
 			BroadcastingLocalClient(
 				Ptr<glr::json::Parser> parser,
-				const RemotingRpcConfiguration& configuration,
 				const Func<void(vint, const JsonPackage&)>& _controlCallback
 				)
 				: JsonLocalChannelClient(parser)
-				, rpcChannelName(configuration.rpcChannelName)
-				, controlChannelName(configuration.controlChannelName)
 				, controlCallback(_controlCallback)
 			{
 				CHECK_ERROR(controlCallback, L"BroadcastingLocalClient::BroadcastingLocalClient(...)#The control callback is null.");
-				channelNames.Add(rpcChannelName, nullptr);
-				channelNames.Add(controlChannelName, nullptr);
+				channelNames.Add(ViewModelChannelName, nullptr);
+				channelNames.Add(ViewModelReadyChannelName, nullptr);
 			}
 
 			const JsonChannelClient::ChannelNameList& OnGetChannelNames() override
@@ -497,12 +501,12 @@ namespace vl::presentation::remoting
 				CHECK_ERROR(self, L"BroadcastingLocalClient::Connect(...)#The shared local client is null.");
 				auto clientId = channelServer->ConnectLocalClient(self);
 				CHECK_ERROR(clientId != -1, L"BroadcastingLocalClient::Connect(...)#Failed to connect the broadcasting client.");
-				controlChannel = GetChannels()[controlChannelName];
+				controlChannel = GetChannels()[ViewModelReadyChannelName];
 				CHECK_ERROR(controlChannel, L"BroadcastingLocalClient::Connect(...)#The control channel is null.");
 				controlChannel->Initialize(this);
 				dispatcher = Ptr(new RpcJsonDispatcherServerForTaskQueue(
 					this,
-					GetChannels()[rpcChannelName],
+					GetChannels()[ViewModelChannelName],
 					taskQueue
 					));
 				return clientId;
@@ -520,24 +524,19 @@ namespace vl::presentation::remoting
 		{
 		private:
 			JsonChannelClient::ChannelMap						channelNames;
-			WString												rpcChannelName;
-			WString												serviceName;
 			RemotingDispatcherFactory							dispatcherFactory;
 			Ptr<RemotingJsonDispatcherClient>					dispatcher;
 
 		public:
 			RequesterLocalClient(
 				Ptr<glr::json::Parser> parser,
-				const RemotingRpcConfiguration& configuration,
 				const RemotingDispatcherFactory& _dispatcherFactory
 				)
 				: JsonLocalChannelClient(parser)
-				, rpcChannelName(configuration.rpcChannelName)
-				, serviceName(configuration.serviceName)
 				, dispatcherFactory(_dispatcherFactory)
 			{
 				CHECK_ERROR(dispatcherFactory, L"RequesterLocalClient::RequesterLocalClient(...)#The dispatcher factory is null.");
-				channelNames.Add(rpcChannelName, nullptr);
+				channelNames.Add(ViewModelChannelName, nullptr);
 			}
 
 			const JsonChannelClient::ChannelNameList& OnGetChannelNames() override
@@ -553,13 +552,13 @@ namespace vl::presentation::remoting
 				)
 			{
 				List<WString> waitingForServices;
-				waitingForServices.Add(serviceName);
+				waitingForServices.Add(ViewModelServiceName);
 				dispatcher = dispatcherFactory(taskQueue);
 				CHECK_ERROR(dispatcher, L"RequesterLocalClient::Connect(...)#The dispatcher factory returned null.");
 				auto clientId = dispatcher->ConnectLocalServer(
 					channelServer,
 					self,
-					GetChannels()[rpcChannelName],
+					GetChannels()[ViewModelChannelName],
 					waitingForServices
 					);
 				CHECK_ERROR(clientId != -1, L"RequesterLocalClient::Connect(...)#Failed to connect the requester client.");
@@ -598,12 +597,11 @@ namespace vl::presentation::remoting
 	class RemotingRequesterSession::Impl : public Object
 	{
 	public:
-		RemotingRpcConfiguration							configuration;
 		SpinLock											lockState;
 		CriticalSection										lockBroker;
 		Func<void(const WString&)>							terminalAction;
 		RequesterPhase										phase = RequesterPhase::Starting;
-		vint												hostId;
+		vint												hostId = InvalidRemoteViewModelClientId;
 		bool												hostEverAccepted = false;
 		bool												brokerRegistrationClaimed = false;
 		bool												admissionReady = false;
@@ -618,32 +616,25 @@ namespace vl::presentation::remoting
 		Ptr<IDescriptable>									service;
 
 		Impl(
-			const RemotingRpcConfiguration& _configuration,
 			const RemotingDispatcherFactory& dispatcherFactory,
 			Ptr<glr::json::Parser> parser,
 			const Func<void(const WString&)>& _terminalAction
 			)
-			: configuration(_configuration)
-			, terminalAction(_terminalAction)
-			, hostId(_configuration.invalidClientId)
+			: terminalAction(_terminalAction)
 		{
 			CHECK_ERROR(parser, L"RemotingRequesterSession::Impl::Impl(...)#The JSON parser is null.");
 			CHECK_ERROR(terminalAction, L"RemotingRequesterSession::Impl::Impl(...)#The terminal action is null.");
-			CHECK_ERROR(configuration.rpcChannelName != L"", L"RemotingRequesterSession::Impl::Impl(...)#The RPC channel name is empty.");
-			CHECK_ERROR(configuration.controlChannelName != L"", L"RemotingRequesterSession::Impl::Impl(...)#The control channel name is empty.");
-			CHECK_ERROR(configuration.serviceName != L"", L"RemotingRequesterSession::Impl::Impl(...)#The service name is empty.");
 
 			taskQueue = Ptr(new TaskQueue);
 			taskQueueThread = Ptr(new TaskQueueThread(taskQueue));
 			broadcastingClient = Ptr(new BroadcastingLocalClient(
 				parser,
-				configuration,
 				Func<void(vint, const JsonPackage&)>([this](vint senderClientId, const JsonPackage& package)
 				{
 					OnControlMessage(senderClientId, package);
 				})
 				));
-			requesterClient = Ptr(new RequesterLocalClient(parser, configuration, dispatcherFactory));
+			requesterClient = Ptr(new RequesterLocalClient(parser, dispatcherFactory));
 		}
 
 		bool TryAcceptHost(vint clientId)
@@ -655,7 +646,7 @@ namespace vl::presentation::remoting
 					admissionReady &&
 					phase == RequesterPhase::Starting &&
 					!hostEverAccepted &&
-					clientId != configuration.invalidClientId
+					clientId != InvalidRemoteViewModelClientId
 					)
 				{
 					hostId = clientId;
@@ -693,7 +684,7 @@ namespace vl::presentation::remoting
 
 		void OnControlMessage(vint senderClientId, const JsonPackage& package)
 		{
-			if (IsControlMessage(package, configuration.readyMessage))
+			if (IsControlMessage(package, ViewModelReadyMessage))
 			{
 				RegisterHost(senderClientId);
 				return;
@@ -709,7 +700,7 @@ namespace vl::presentation::remoting
 			{
 				if (hostId == clientId)
 				{
-					hostId = configuration.invalidClientId;
+					hostId = InvalidRemoteViewModelClientId;
 					hostDisconnected = phase != RequesterPhase::Stopping;
 					disconnectBroker = brokerRegistrationClaimed;
 				}
@@ -723,7 +714,7 @@ namespace vl::presentation::remoting
 			}
 			if (hostDisconnected)
 			{
-				terminalAction(configuration.hostDisconnectedError);
+				terminalAction(RemoteViewModelHostDisconnectedError);
 			}
 		}
 
@@ -741,12 +732,11 @@ namespace vl::presentation::remoting
 	};
 
 	RemotingRequesterSession::RemotingRequesterSession(
-		const RemotingRpcConfiguration& configuration,
 		const RemotingDispatcherFactory& dispatcherFactory,
 		Ptr<glr::json::Parser> parser,
 		const Func<void(const WString&)>& terminalAction
 		)
-		: impl(Ptr(new Impl(configuration, dispatcherFactory, parser, terminalAction)))
+		: impl(Ptr(new Impl(dispatcherFactory, parser, terminalAction)))
 	{
 	}
 
@@ -792,7 +782,7 @@ namespace vl::presentation::remoting
 		impl->requesterDispatcher->Initialize();
 		impl->service = impl->requesterDispatcher
 			->GetRpcLifecycle()
-			->RequestService(impl->configuration.serviceName);
+			->RequestService(ViewModelServiceName);
 		CHECK_ERROR(impl->service, L"RemotingRequesterSession::RequestService()#Failed to request the service.");
 		return impl->service;
 	}
@@ -803,7 +793,7 @@ namespace vl::presentation::remoting
 		{
 			if (
 				impl->phase == RequesterPhase::Starting &&
-				impl->hostId != impl->configuration.invalidClientId
+				impl->hostId != InvalidRemoteViewModelClientId
 				)
 			{
 				impl->phase = RequesterPhase::Running;
@@ -844,25 +834,22 @@ namespace vl::presentation::remoting
 		impl->service = nullptr;
 	}
 
-	class RemotingHostingClient::Impl : public Object
+	class ViewModelHostClient::Impl : public Object
 	{
 	public:
-		RemotingRpcConfiguration							configuration;
 		JsonChannelClient::ChannelMap						channelNames;
 		Ptr<RemotingJsonDispatcherClient>					dispatcher;
 		JsonChannel*										controlChannel = nullptr;
 
 		Impl(
-			const RemotingRpcConfiguration& _configuration,
 			const RemotingDispatcherFactory& dispatcherFactory,
 			Ptr<TaskQueue> taskQueue
 			)
-			: configuration(_configuration)
 		{
-			channelNames.Add(configuration.rpcChannelName, nullptr);
-			channelNames.Add(configuration.controlChannelName, nullptr);
+			channelNames.Add(ViewModelChannelName, nullptr);
+			channelNames.Add(ViewModelReadyChannelName, nullptr);
 			dispatcher = dispatcherFactory(taskQueue);
-			CHECK_ERROR(dispatcher, L"RemotingHostingClient::Impl::Impl(...)#The dispatcher factory returned null.");
+			CHECK_ERROR(dispatcher, L"ViewModelHostClient::Impl::Impl(...)#The dispatcher factory returned null.");
 		}
 
 		void Connect(JsonChannelClient* channelClient)
@@ -870,17 +857,17 @@ namespace vl::presentation::remoting
 			List<WString> waitingForServices;
 			dispatcher->WaitForServer(
 				channelClient,
-				channelClient->GetChannels()[configuration.rpcChannelName],
+				channelClient->GetChannels()[ViewModelChannelName],
 				waitingForServices
 				);
 			dispatcher->InitializeRpc(channelClient->GetClientId());
-			controlChannel = channelClient->GetChannels()[configuration.controlChannelName];
-			CHECK_ERROR(controlChannel, L"RemotingHostingClient::Impl::Connect(...)#The control channel is null.");
+			controlChannel = channelClient->GetChannels()[ViewModelReadyChannelName];
+			CHECK_ERROR(controlChannel, L"ViewModelHostClient::Impl::Connect(...)#The control channel is null.");
 		}
 
 		void FlushControlMessage(const WString& message)
 		{
-			CHECK_ERROR(controlChannel, L"RemotingHostingClient::Impl::FlushControlMessage(...)#The control channel is null.");
+			CHECK_ERROR(controlChannel, L"ViewModelHostClient::Impl::FlushControlMessage(...)#The control channel is null.");
 			controlChannel->BroadcastFromClient(CreateControlMessage(message));
 			bool disconnected = false;
 			controlChannel->BatchWrite(disconnected);
@@ -892,42 +879,41 @@ namespace vl::presentation::remoting
 
 		void SendReady()
 		{
-			FlushControlMessage(configuration.readyMessage);
+			FlushControlMessage(ViewModelReadyMessage);
 		}
 	};
 
-	RemotingHostingClient::RemotingHostingClient(
+	ViewModelHostClient::ViewModelHostClient(
 		Ptr<inter_process::INetworkProtocolClient> networkClient,
-		const RemotingRpcConfiguration& configuration,
 		const RemotingDispatcherFactory& dispatcherFactory,
 		Ptr<glr::json::Parser> parser,
 		Ptr<TaskQueue> taskQueue
 		)
 		: JsonNetworkChannelClient(networkClient, parser)
-		, impl(Ptr(new Impl(configuration, dispatcherFactory, taskQueue)))
+		, impl(Ptr(new Impl(dispatcherFactory, taskQueue)))
 	{
 	}
 
-	const JsonChannelClient::ChannelNameList& RemotingHostingClient::OnGetChannelNames()
+	const JsonChannelClient::ChannelNameList& ViewModelHostClient::OnGetChannelNames()
 	{
 		return impl->channelNames.Keys();
 	}
 
-	void RemotingHostingClient::OnConnected(vint)
+	void ViewModelHostClient::OnConnected(vint)
 	{
 	}
 
-	void RemotingHostingClient::OnDisconnected()
-	{
-		ExitProcess(1);
-	}
-
-	void RemotingHostingClient::OnReadError(const WString&)
+	void ViewModelHostClient::OnDisconnected()
 	{
 		ExitProcess(1);
 	}
 
-	void RemotingHostingClient::OnLocalError(const WString&, bool fatal)
+	void ViewModelHostClient::OnReadError(const WString&)
+	{
+		ExitProcess(1);
+	}
+
+	void ViewModelHostClient::OnLocalError(const WString&, bool fatal)
 	{
 		if (fatal)
 		{
@@ -935,17 +921,17 @@ namespace vl::presentation::remoting
 		}
 	}
 
-	void RemotingHostingClient::Connect()
+	void ViewModelHostClient::Connect()
 	{
 		impl->Connect(this);
 	}
 
-	void RemotingHostingClient::SendReady()
+	void ViewModelHostClient::SendReady()
 	{
 		impl->SendReady();
 	}
 
-	RpcDispatcherClient* RemotingHostingClient::GetDispatcher()
+	RpcDispatcherClient* ViewModelHostClient::GetDispatcher()
 	{
 		return impl->dispatcher.Obj();
 	}

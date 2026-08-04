@@ -1,5 +1,5 @@
-#ifndef VCZH_PRESENTATION_REMOTING_REMOTINGCHANNELCLIENT
-#define VCZH_PRESENTATION_REMOTING_REMOTINGCHANNELCLIENT
+#ifndef VCZH_PRESENTATION_REMOTING_REMOTEPROTOCOLRENDERERCLIENT
+#define VCZH_PRESENTATION_REMOTING_REMOTEPROTOCOLRENDERERCLIENT
 
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
@@ -7,19 +7,13 @@
 
 namespace vl::presentation::remoting
 {
-	struct RemotingChannelClientConfiguration
-	{
-		WString												fatalTitle;
-		Func<bool(const WString&, const WString&)>			retainFatalError;
-	};
-
-	class RemotingChannelClient : public remoteprotocol::channeling::GuiRemoteProtocolChannelClient
+	class RemoteProtocolRendererClient : public remoteprotocol::channeling::GuiRemoteProtocolChannelClient
 	{
 		using Base = remoteprotocol::channeling::GuiRemoteProtocolChannelClient;
 
 	private:
 		SpinLock											lockState;
-		RemotingChannelClientConfiguration					configuration;
+		WString												fatalTitle;
 		bool												triggeredFatalError = false;
 		bool												retainedFatalError = false;
 		bool												stopping = false;
@@ -33,10 +27,10 @@ namespace vl::presentation::remoting
 		void												ProcessDisconnected();
 
 	public:
-		RemotingChannelClient(
+		RemoteProtocolRendererClient(
 			Ptr<inter_process::INetworkProtocolClient> client,
 			Ptr<glr::json::Parser> parser,
-			const RemotingChannelClientConfiguration& configuration
+			const WString& fatalTitle
 			);
 
 		void												SetRenderer(remote_renderer::GuiRemoteRendererSingle* renderer);

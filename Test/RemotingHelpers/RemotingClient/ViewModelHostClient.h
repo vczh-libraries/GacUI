@@ -1,5 +1,5 @@
-#ifndef VCZH_PRESENTATION_REMOTING_REMOTINGCLIENT
-#define VCZH_PRESENTATION_REMOTING_REMOTINGCLIENT
+#ifndef VCZH_PRESENTATION_REMOTING_VIEWMODELHOSTCLIENT
+#define VCZH_PRESENTATION_REMOTING_VIEWMODELHOSTCLIENT
 
 #include "../../../Source/GacUI.h"
 #include <VlppOS.h>
@@ -13,15 +13,12 @@ namespace vl::presentation::remoting
 	using TaskQueue = rpc_controller::channeling::TaskQueue;
 	using RpcDispatcherClient = rpc_controller::channeling::RpcJsonDispatcherClient;
 
-	struct RemotingRpcConfiguration
-	{
-		WString												rpcChannelName;
-		WString												controlChannelName;
-		WString												serviceName;
-		WString												readyMessage;
-		WString												hostDisconnectedError;
-		vint												invalidClientId = -1;
-	};
+	inline constexpr const wchar_t*						ViewModelChannelName = L"ViewModelChannel";
+	inline constexpr const wchar_t*						ViewModelReadyChannelName = L"ViewModelReadyChannel";
+	inline constexpr const wchar_t*						ViewModelServiceName = L"rvmt::IViewModel";
+	inline constexpr const wchar_t*						ViewModelReadyMessage = L"Ready";
+	inline constexpr const wchar_t*						RemoteViewModelHostDisconnectedError = L"RemotingTest_RvmHost disconnected.";
+	inline constexpr vint								InvalidRemoteViewModelClientId = -1;
 
 	class RemotingJsonDispatcherClient
 		: public rpc_controller::channeling::RpcJsonDispatcherClientForTaskQueue
@@ -41,7 +38,6 @@ namespace vl::presentation::remoting
 
 	public:
 		RemotingRequesterSession(
-			const RemotingRpcConfiguration& configuration,
 			const RemotingDispatcherFactory& dispatcherFactory,
 			Ptr<glr::json::Parser> parser,
 			const Func<void(const WString&)>& terminalAction
@@ -56,7 +52,7 @@ namespace vl::presentation::remoting
 		void												Stop(const Func<void()>& stopServer);
 	};
 
-	class RemotingHostingClient
+	class ViewModelHostClient
 		: public rpc_controller::channeling::JsonNetworkChannelClient
 	{
 	private:
@@ -64,9 +60,8 @@ namespace vl::presentation::remoting
 		Ptr<Impl>											impl;
 
 	public:
-		RemotingHostingClient(
+		ViewModelHostClient(
 			Ptr<inter_process::INetworkProtocolClient> networkClient,
-			const RemotingRpcConfiguration& configuration,
 			const RemotingDispatcherFactory& dispatcherFactory,
 			Ptr<glr::json::Parser> parser,
 			Ptr<TaskQueue> taskQueue

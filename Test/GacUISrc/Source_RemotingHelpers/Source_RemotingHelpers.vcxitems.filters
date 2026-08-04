@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemotingChannelClient.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemoteProtocolRendererClient.cpp">
       <Filter>RemotingClient</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemotingClient.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\ViewModelHostClient.cpp">
       <Filter>RemotingClient</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp">
@@ -18,10 +18,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingServer\RemotingChannelServer.h">
       <Filter>RemotingServer</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemotingChannelClient.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemoteProtocolRendererClient.h">
       <Filter>RemotingClient</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemotingClient.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\ViewModelHostClient.h">
       <Filter>RemotingClient</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\MiniHttpAutomationService.h">

@@ -5,5 +5,5 @@ DEVELOPER: Zihan Chen(vczh)
 #include "RemotingHelpers.h"
 
 #include "..\..\Test\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp"
-#include "..\..\Test\RemotingHelpers\RemotingClient\RemotingChannelClient.cpp"
-#include "..\..\Test\RemotingHelpers\RemotingClient\RemotingClient.cpp"
+#include "..\..\Test\RemotingHelpers\RemotingClient\RemoteProtocolRendererClient.cpp"
+#include "..\..\Test\RemotingHelpers\RemotingClient\ViewModelHostClient.cpp"

@@ -13,7 +13,7 @@
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
 #endif
 #include "../../RemotingHelpers/AutomationService/MiniHttpAutomationService.h"
-#include "../../RemotingHelpers/RemotingClient/RemotingChannelClient.h"
+#include "../../RemotingHelpers/RemotingClient/RemoteProtocolRendererClient.h"
 #include <VlppOS.h>
 #if defined VCZH_MSVC
 #include <VlppOS.Windows.h>
@@ -40,7 +40,7 @@ namespace
 
 	struct RendererGuiContext
 	{
-		RemotingChannelClient*								channelClient = nullptr;
+		RemoteProtocolRendererClient*						channelClient = nullptr;
 		GuiRemoteProtocolAsyncJsonChannelRenderer*			asyncChannel = nullptr;
 		GuiRemoteRendererSingle*							renderer = nullptr;
 		Ptr<inter_process::async_tcp_socket::IAsyncSocketServer>
@@ -73,28 +73,6 @@ namespace
 		}
 	};
 
-	RemotingChannelClientConfiguration CreateClientConfiguration()
-	{
-		RemotingChannelClientConfiguration configuration;
-		configuration.fatalTitle = WString::Unmanaged(L"ERROR from GacUI Core");
-#if !defined VCZH_GCC || defined VCZH_APPLE
-		configuration.retainFatalError = Func<bool(const WString&, const WString&)>(
-			[](const WString& title, const WString& errorMessage)
-			{
-				auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
-				auto result = GetCurrentController()->DialogService()->ShowMessageBox(
-					mainWindow,
-					errorMessage + WString::Unmanaged(L"\r\n\r\nDo you want to close the renderer?"),
-					title,
-					INativeDialogService::DisplayYesNo,
-					INativeDialogService::DefaultFirst,
-					INativeDialogService::IconError
-					);
-				return result != INativeDialogService::SelectYes;
-			});
-#endif
-		return configuration;
-	}
 }
 
 void GuiMain()
@@ -188,7 +166,11 @@ int StartClient(
 	)
 {
 	auto jsonParser = Ptr(new glr::json::Parser);
-	RemotingChannelClient channelClient(networkClient, jsonParser, CreateClientConfiguration());
+	RemoteProtocolRendererClient channelClient(
+		networkClient,
+		jsonParser,
+		WString::Unmanaged(L"ERROR from GacUI Core")
+		);
 	GuiRemoteProtocolAsyncJsonChannelRenderer asyncRendererChannel(channelClient.GetProtocolChannel());
 	GuiRemoteRendererSingle remoteRenderer(true);
 	GuiRemoteProtocolRendererChannel rendererChannel(&asyncRendererChannel, &remoteRenderer);

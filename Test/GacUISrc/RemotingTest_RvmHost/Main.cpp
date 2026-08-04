@@ -21,16 +21,15 @@ public:
 	}
 };
 
-class RemoteViewModelHostingClient : public presentation::remoting::RemotingHostingClient
+class RemoteViewModelHostClient : public presentation::remoting::ViewModelHostClient
 {
 public:
-	RemoteViewModelHostingClient(
+	RemoteViewModelHostClient(
 		Ptr<inter_process::INetworkProtocolClient> networkClient,
 		Ptr<glr::json::Parser> parser,
 		Ptr<rpc_controller::channeling::TaskQueue> taskQueue
-	) : presentation::remoting::RemotingHostingClient(
+	) : presentation::remoting::ViewModelHostClient(
 		networkClient,
-		CreateConfiguration(),
 		CreateDispatcherFactory(),
 		parser,
 		taskQueue
@@ -42,7 +41,7 @@ int RunHost(Ptr<INetworkProtocolClient> networkClient)
 {
 	auto parser = Ptr(new glr::json::Parser);
 	auto taskQueue = Ptr(new TaskQueue);
-	auto channelClient = Ptr(new RemoteViewModelHostingClient(
+	auto channelClient = Ptr(new RemoteViewModelHostClient(
 		networkClient,
 		parser,
 		taskQueue
@@ -52,7 +51,7 @@ int RunHost(Ptr<INetworkProtocolClient> networkClient)
 
 	channelClient->Connect();
 	auto lifecycle = dispatcher->GetRpcLifecycle();
-	auto typeId = lifecycle->GetTypeIdFromName(WString::Unmanaged(ViewModelServiceName));
+	auto typeId = lifecycle->GetTypeIdFromName(WString::Unmanaged(presentation::remoting::ViewModelServiceName));
 	CHECK_ERROR(typeId != RpcTypeId_NotFound, L"RunHost(Ptr<INetworkProtocolClient>)#Failed to find the rvmt::IViewModel type ID.");
 	lifecycle->RegisterLocalService(typeId, service);
 	channelClient->SendReady();

@@ -51,18 +51,6 @@ namespace vl::presentation::remote_view_model_test
 		}
 	};
 
-	remoting::RemotingRpcConfiguration CreateConfiguration()
-	{
-		remoting::RemotingRpcConfiguration configuration;
-		configuration.rpcChannelName = WString::Unmanaged(ViewModelChannelName);
-		configuration.controlChannelName = WString::Unmanaged(ViewModelReadyChannelName);
-		configuration.serviceName = WString::Unmanaged(ViewModelServiceName);
-		configuration.readyMessage = WString::Unmanaged(ViewModelReadyMessage);
-		configuration.hostDisconnectedError = WString::Unmanaged(RemoteViewModelHostDisconnectedError);
-		configuration.invalidClientId = InvalidRemoteViewModelClientId;
-		return configuration;
-	}
-
 	remoting::RemotingDispatcherFactory CreateDispatcherFactory()
 	{
 		return remoting::RemotingDispatcherFactory([](Ptr<TaskQueue> taskQueue)

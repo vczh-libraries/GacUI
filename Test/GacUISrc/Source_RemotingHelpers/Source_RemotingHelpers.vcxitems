@@ -16,14 +16,14 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemotingClient.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemotingChannelClient.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\ViewModelHostClient.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemoteProtocolRendererClient.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\MiniHttpAutomationService.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemotingClient.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemotingChannelClient.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\ViewModelHostClient.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemoteProtocolRendererClient.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingServer\RemotingChannelServer.h" />
   </ItemGroup>
 </Project>

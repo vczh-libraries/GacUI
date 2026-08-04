@@ -11,6 +11,6 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppWorkflowLibrary.h"
 
 #include "..\..\Test\RemotingHelpers\AutomationService\MiniHttpAutomationService.h"
-#include "..\..\Test\RemotingHelpers\RemotingClient\RemotingChannelClient.h"
-#include "..\..\Test\RemotingHelpers\RemotingClient\RemotingClient.h"
 #include "..\..\Test\RemotingHelpers\RemotingServer\RemotingChannelServer.h"
+#include "..\..\Test\RemotingHelpers\RemotingClient\RemoteProtocolRendererClient.h"
+#include "..\..\Test\RemotingHelpers\RemotingClient\ViewModelHostClient.h"

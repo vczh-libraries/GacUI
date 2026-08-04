@@ -142,14 +142,14 @@ Located at `Test/GacUISrc/RemotingTest_Core/`. Accepts `/Pipe` or `/Http` argume
 Located at `Test/GacUISrc/RemotingTest_Rendering_Win32/`. Accepts `/Pipe` or `/Http` arguments to start as a named-pipe or HTTP client.
 
 **Protocol stack setup** (`StartClient` in `GuiMain.cpp`; this function is not a template):
-1. Receives a named-pipe, Windows HTTP, or MiniHTTP `INetworkProtocolClient` and creates the shared `RemotingChannelClient`, derived from `GuiRemoteProtocolChannelClient`, over it.
+1. Receives a named-pipe, Windows HTTP, or MiniHTTP `INetworkProtocolClient` and creates the shared `RemoteProtocolRendererClient`, derived from `GuiRemoteProtocolChannelClient`, over it.
 2. Creates `GuiRemoteProtocolAsyncJsonChannelRenderer` over the client's protocol channel.
 3. Creates `GuiRemoteRendererSingle` and `GuiRemoteProtocolRendererChannel(&asyncRendererChannel, &remoteRenderer)`.
 4. Waits for the server, then calls `SetupRawWindowsDirect2DRenderer()` to run the native window event loop.
 5. In `GuiMain()`, creates the native window, registers it with `GuiRemoteRendererSingle`, creates a retained `Ptr<GuiMainAsyncRendererInvoker>`, installs it through `asyncChannel->SetInvokeInMainThread(invoker)`, drains startup work with `ProcessPendingMessages()`, and runs the window service.
 6. On exit, clears the invoker, unregisters the main window, stops the network connection, and clears stack-owned renderer/channel pointers.
 
-`RemotingChannelClient` queues both protocol packages and terminal actions through the async renderer's ordered main-thread FIFO. A Core-authored `!Error` arrives through `OnReadError`, claims the first fatal error, and opens the native Yes/No prompt. Choosing Yes calls `ForceExitByFatelError()`; choosing No calls `RetainByFatalError(message)`, keeps the native renderer window open with a `[STOPPED]` title and fatal overlay, and exposes the error through renderer automation. A fatal local channel error has different UI semantics: after VlppOS's `IChannelClient` promotes a post-connection protocol error, `OnLocalError(..., true)` queues the ordinary disconnected transition directly, without showing a fatal prompt and without waiting for `OnDisconnected`. `OnDisconnected` queues the same idempotent transition when it is delivered. FIFO ordering lets an earlier `ControllerConnectionStopped` or Core `!Error` win before detach.
+`RemoteProtocolRendererClient` queues both protocol packages and terminal actions through the async renderer's ordered main-thread FIFO. A Core-authored `!Error` arrives through `OnReadError`, claims the first fatal error, and opens the native Yes/No prompt. Choosing Yes calls `ForceExitByFatelError()`; choosing No calls `RetainByFatalError(message)`, keeps the native renderer window open with a `[STOPPED]` title and fatal overlay, and exposes the error through renderer automation. A fatal local channel error has different UI semantics: after VlppOS's `IChannelClient` promotes a post-connection protocol error, `OnLocalError(..., true)` queues the ordinary disconnected transition directly, without showing a fatal prompt and without waiting for `OnDisconnected`. `OnDisconnected` queues the same idempotent transition when it is delivered. FIFO ordering lets an earlier `ControllerConnectionStopped` or Core `!Error` win before detach.
 
 ### Protocol Stack Direction
 
