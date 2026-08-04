@@ -16,6 +16,17 @@ namespace vl::presentation::remote_view_model_test
 		Ptr<remoting::RemotingRequesterSession>				session;
 
 	protected:
+
+		bool IsRemoteViewModelHostChannel(
+			const remoting::JsonChannelClient::ChannelNameList& availableChannels
+		)
+		{
+			return
+				availableChannels.Count() == 2 &&
+				availableChannels.IndexOf(WString::Unmanaged(remoting::ViewModelChannelName)) != -1 &&
+				availableChannels.IndexOf(WString::Unmanaged(remoting::ViewModelReadyChannelName)) != -1;
+		}
+
 		inter_process::WaitForClientResult OnRemoteClientConnected(
 			vint clientId,
 			const remoting::JsonChannelClient::ChannelNameList& availableChannels

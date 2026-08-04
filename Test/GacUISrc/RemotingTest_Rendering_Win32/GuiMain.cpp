@@ -28,52 +28,46 @@ using namespace vl::presentation::remoteprotocol;
 using namespace vl::presentation::remoteprotocol::channeling;
 using namespace vl::presentation::remote_renderer;
 
-namespace
+constexpr const wchar_t* GacUIRemoteProtocolNamedPipeName = L"GacUIRemoteProtocolNamedPipe";
+constexpr const wchar_t* GacUIRemoteProtocolHttpBaseUrl = L"/GacUIRemoteProtocolHttp";
+constexpr vint GacUIRemoteProtocolHttpPort = 8888;
+constexpr vint GacUIAutomationHttpPort = 8889;
+constexpr const wchar_t* GacUIAutomationApplicationName = L"RemotingTest_Rendering_Native";
+
+struct RendererGuiContext
 {
-#if defined VCZH_MSVC
-	constexpr const wchar_t* GacUIRemoteProtocolNamedPipeName = L"GacUIRemoteProtocolNamedPipe";
-#endif
-	constexpr const wchar_t* GacUIRemoteProtocolHttpBaseUrl = L"/GacUIRemoteProtocolHttp";
-	constexpr vint GacUIRemoteProtocolHttpPort = 8888;
-	constexpr vint GacUIAutomationHttpPort = 8889;
-	constexpr const wchar_t* GacUIAutomationApplicationName = L"RemotingTest_Rendering_Native";
+	RemoteProtocolRendererClient*						channelClient = nullptr;
+	GuiRemoteProtocolAsyncJsonChannelRenderer*			asyncChannel = nullptr;
+	GuiRemoteRendererSingle*							renderer = nullptr;
+	Ptr<inter_process::async_tcp_socket::IAsyncSocketServer>
+													miniHttpSocketServer;
+};
 
-	struct RendererGuiContext
+RendererGuiContext* currentGuiContext = nullptr;
+
+class GuiMainAsyncRendererInvoker : public Object, public virtual IGuiRemoteProtocolAsyncRendererInvoker
+{
+public:
+	void InvokeInMainThread(const Func<void()>& proc) override
 	{
-		RemoteProtocolRendererClient*						channelClient = nullptr;
-		GuiRemoteProtocolAsyncJsonChannelRenderer*			asyncChannel = nullptr;
-		GuiRemoteRendererSingle*							renderer = nullptr;
-		Ptr<inter_process::async_tcp_socket::IAsyncSocketServer>
-														miniHttpSocketServer;
-	};
-
-	RendererGuiContext* currentGuiContext = nullptr;
-
-	class GuiMainAsyncRendererInvoker : public Object, public virtual IGuiRemoteProtocolAsyncRendererInvoker
-	{
-	public:
-		void InvokeInMainThread(const Func<void()>& proc) override
-		{
 #if defined VCZH_MSVC
-			GetApplication()->InvokeInMainThread(nullptr, proc);
+		GetApplication()->InvokeInMainThread(nullptr, proc);
 #elif defined VCZH_GCC && !defined VCZH_APPLE
-			GetCurrentController()->AsyncService()->InvokeInMainThread(nullptr, proc);
+		GetCurrentController()->AsyncService()->InvokeInMainThread(nullptr, proc);
 #else
-			auto queuedProc = new Func<void()>(proc);
-			dispatch_async_f(
-				dispatch_get_main_queue(),
-				queuedProc,
-				[](void* context)
-				{
-					auto callback = static_cast<Func<void()>*>(context);
-					(*callback)();
-					delete callback;
-				});
+		auto queuedProc = new Func<void()>(proc);
+		dispatch_async_f(
+			dispatch_get_main_queue(),
+			queuedProc,
+			[](void* context)
+			{
+				auto callback = static_cast<Func<void()>*>(context);
+				(*callback)();
+				delete callback;
+			});
 #endif
-		}
-	};
-
-}
+	}
+};
 
 void GuiMain()
 {

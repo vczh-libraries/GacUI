@@ -13,6 +13,10 @@ using namespace vl::presentation::controls;
 using namespace vl::presentation::remoting;
 using namespace vl::presentation::remote_view_model_test;
 
+constexpr const wchar_t* RemotingNamedPipeName = L"GacUIRemoteProtocolNamedPipe";
+constexpr const wchar_t* RemotingHttpBaseUrl = L"/GacUIRemoteProtocolHttp";
+constexpr vint RemotingHttpPort = 8888;
+
 struct RvmGuiContext
 {
 	remoting::RemotingRequesterSession*				session = nullptr;

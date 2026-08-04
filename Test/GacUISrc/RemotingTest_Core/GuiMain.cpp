@@ -20,6 +20,11 @@ using namespace vl::presentation::remoteprotocol;
 using namespace vl::presentation::remoteprotocol::channeling;
 using namespace vl::presentation::remoteprotocol::repeatfiltering;
 
+constexpr const wchar_t* RemotingNamedPipeName = L"GacUIRemoteProtocolNamedPipe";
+constexpr const wchar_t* RemotingHttpBaseUrl = L"/GacUIRemoteProtocolHttp";
+constexpr vint RemotingHttpPort = 8888;
+constexpr vint GacUIAutomationHttpPort = 8888;
+
 struct CoreGuiContext
 {
 	vint												mainWindowConstructorIndex = 0;
@@ -65,7 +70,7 @@ void GuiMain()
 	{
 		windows::StartWindowsHttpAutomationService(
 			WString::Unmanaged(L"Automation/RemotingTest_Core"),
-			RemotingHttpPort
+			GacUIAutomationHttpPort
 			);
 	}
 #else

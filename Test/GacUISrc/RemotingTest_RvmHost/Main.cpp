@@ -12,6 +12,10 @@ using namespace vl::rpc_controller;
 using namespace vl::rpc_controller::channeling;
 using namespace vl::presentation::remote_view_model_test;
 
+constexpr const wchar_t* RemotingNamedPipeName = L"GacUIRemoteProtocolNamedPipe";
+constexpr const wchar_t* RemotingHttpBaseUrl = L"/GacUIRemoteProtocolHttp";
+constexpr vint RemotingHttpPort = 8888;
+
 class ViewModel : public Object, public virtual rvmt::IViewModel
 {
 public:
