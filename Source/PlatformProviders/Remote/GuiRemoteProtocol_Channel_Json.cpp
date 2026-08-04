@@ -406,6 +406,11 @@ GuiRemoteProtocolCoreChannel
 	{
 		return executablePath;
 	}
+
+	bool GuiRemoteProtocolCoreChannel::IsCorrectRendererClientId(vint)
+	{
+		return true;
+	}
 	
 	void GuiRemoteProtocolCoreChannel::Submit(bool& disconnected)
 	{
@@ -416,6 +421,11 @@ GuiRemoteProtocolCoreChannel
 			packages = std::move(packagesBeforeRenderer);
 		}
 
+		if (!IsCorrectRendererClientId(receiverClientId))
+		{
+			disconnected = true;
+			return;
+		}
 		if (receiverClientId == -1)
 		{
 			disconnected = false;

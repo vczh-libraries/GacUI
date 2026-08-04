@@ -4,13 +4,11 @@
 #include "RemoteViewModelTestIncludes.h"
 #include "../RemotingTest_RvmHost/RemoteViewModelTestRuntime.h"
 #include "../../../Source/RemotingHelpers/AutomationService/MiniHttpAutomationService.h"
-#include "../../../Source/RemotingHelpers/RemotingServer/RemotingChannelServer.h"
 #include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
 #ifdef VCZH_MSVC
 #include <VlppOS.Windows.h>
 #include "../../../Source/RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #endif
-#include <cstdlib>
 
 using namespace vl;
 using namespace vl::inter_process;
@@ -22,140 +20,102 @@ using namespace vl::presentation::remoteprotocol;
 using namespace vl::presentation::remoteprotocol::channeling;
 using namespace vl::presentation::remoteprotocol::repeatfiltering;
 
-namespace
+struct CoreGuiContext
 {
-	struct CoreGuiContext
-	{
-		vint												mainWindowConstructorIndex = 0;
-		RemoteViewModelRequesterSession*					session = nullptr;
-		Ptr<rvmt::IViewModel>								viewModel;
-		Ptr<async_tcp_socket::IAsyncSocketServer>			miniHttpSocketServer;
-	};
+	vint												mainWindowConstructorIndex = 0;
+	RemoteViewModelRequesterSession*					session = nullptr;
+	Ptr<rvmt::IViewModel>								viewModel;
+	Ptr<async_tcp_socket::IAsyncSocketServer>			miniHttpSocketServer;
+};
 
-	CoreGuiContext* currentGuiContext = nullptr;
+CoreGuiContext* currentGuiContext = nullptr;
 
-	RemotingChannelServerCallbacks CreateCallbacks(RemoteViewModelRequesterSession* session)
+template<typename TServerBase>
+class SwitchableRenderersCoreChannel : public GuiRemoteProtocolCoreChannel
+{
+	using Base = GuiRemoteProtocolCoreChannel;
+
+private:
+	RemotingChannelServer<TServerBase>*					channelServer = nullptr;
+
+protected:
+	bool IsCorrectRendererClientId(vint clientId) override
 	{
-		RemotingChannelServerCallbacks callbacks;
-		if (session)
-		{
-			callbacks.canAcceptLocalClient = Func<bool(JsonChannelClient*)>([session](JsonChannelClient* client)
-			{
-				return session->CanAcceptLocalClient(client);
-			});
-			callbacks.isRemoteClient = Func<bool(const JsonChannelClient::ChannelNameList&)>(
-				[](const JsonChannelClient::ChannelNameList& channels)
-				{
-					return IsRemoteViewModelHostChannel(channels);
-				});
-			callbacks.tryAcceptRemoteClient = Func<bool(vint)>([session](vint clientId)
-			{
-				return session->TryAcceptViewModelHost(clientId);
-			});
-			callbacks.clientDisconnected = Func<void(vint)>([session](vint clientId)
-			{
-				session->OnClientDisconnected(clientId);
-			});
-			callbacks.canAdmitRenderer = Func<bool()>([session]()
-			{
-				return session->CanAdmitRenderer();
-			});
-		}
-		return callbacks;
+		return clientId != -1 && clientId == channelServer->GetRendererClientId();
 	}
 
-	template<typename TServer, typename ...TArgs>
-	int StartServer(
-		vint mainWindowConstructorIndex,
-		Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer,
-		TArgs&& ...args
+public:
+	SwitchableRenderersCoreChannel(
+		JsonChannelClient* client,
+		JsonChannel* channel,
+		const WString& executablePath,
+		IGuiRemoteEventProcessor* eventProcessor,
+		RemotingChannelServer<TServerBase>* _channelServer
 		)
+		: Base(client, channel, executablePath, eventProcessor)
+		, channelServer(_channelServer)
 	{
-		auto jsonParser = Ptr(new glr::json::Parser);
-		Ptr<RemoteViewModelRequesterSession> requesterSession;
-		RemotingChannelServer<TServer>* serverForTerminal = nullptr;
-		if (mainWindowConstructorIndex == 2)
-		{
-			requesterSession = Ptr(new RemoteViewModelRequesterSession(
-				jsonParser,
-				Func<void(const WString&)>([&serverForTerminal](const WString& message)
-				{
-					if (serverForTerminal)
-					{
-						try
-						{
-							serverForTerminal->BroadcastError(message);
-						}
-						catch (...)
-						{
-						}
-					}
-					std::_Exit(1);
-				})
-				));
-		}
+	}
+};
 
-		auto callbacks = CreateCallbacks(requesterSession.Obj());
-		RemotingChannelServer<TServer> channelServer(
-			jsonParser,
-			true,
-			callbacks,
-			std::forward<TArgs>(args)...
-			);
-		serverForTerminal = &channelServer;
-		channelServer.Start();
+template<typename TServerBase>
+int StartServer(
+	vint mainWindowConstructorIndex,
+	Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer,
+	Ptr<glr::json::Parser> jsonParser,
+	RemotingChannelServer<TServerBase>& channelServer,
+	RemoteViewModelRequesterSession* requesterSession
+	)
+{
+	channelServer.Start();
 
-		auto coreClient = Ptr(new GuiRemoteProtocolLocalChannelClient(jsonParser));
-		auto coreClientId = channelServer.ConnectLocalClient(coreClient);
-		CHECK_ERROR(coreClientId == GacUIRemoteProtocolCoreClientId, L"StartServer(...)#Failed to register the core channel client.");
+	auto coreClient = Ptr(new GuiRemoteProtocolLocalChannelClient(jsonParser));
+	auto coreClientId = channelServer.ConnectLocalClient(coreClient);
+	CHECK_ERROR(coreClientId == GacUIRemoteProtocolCoreClientId, L"StartServer(...)#Failed to register the core channel client.");
 
-		GuiRemoteProtocolAsyncJsonChannel asyncChannelSender(coreClient->GetProtocolChannel());
-		RemotingCoreChannel channelSender(
-			coreClient.Obj(),
-			&asyncChannelSender,
-			WString::Unmanaged(L"RemotingTest_Core.vcxproj"),
-			asyncChannelSender.GetRemoteEventProcessor(),
-			Func<vint()>([&channelServer]()
-			{
-				return channelServer.GetRendererClientId();
-			})
-			);
-		GuiRemoteProtocolFilter filteredProtocol(&channelSender);
-		GuiRemoteProtocolDomDiffConverter diffConverterProtocol(&filteredProtocol);
-		channelServer.SetCoreChannels(coreClient->GetProtocolChannel(), &channelSender);
+	GuiRemoteProtocolAsyncJsonChannel asyncChannelSender(coreClient->GetProtocolChannel());
+	SwitchableRenderersCoreChannel<TServerBase> channelSender(
+		coreClient.Obj(),
+		&asyncChannelSender,
+		WString::Unmanaged(L"RemotingTest_Core.vcxproj"),
+		asyncChannelSender.GetRemoteEventProcessor(),
+		&channelServer
+		);
+	GuiRemoteProtocolFilter filteredProtocol(&channelSender);
+	GuiRemoteProtocolDomDiffConverter diffConverterProtocol(&filteredProtocol);
+	channelServer.SetCoreChannels(coreClient->GetProtocolChannel(), &channelSender);
 
-		Ptr<rvmt::IViewModel> viewModel;
-		if (requesterSession)
-		{
-			requesterSession->Start(&channelServer);
-			viewModel = requesterSession->RequestViewModel();
-		}
+	Ptr<rvmt::IViewModel> viewModel;
+	if (requesterSession)
+	{
+		requesterSession->Start(&channelServer);
+		viewModel = requesterSession->RequestViewModel();
+	}
 
-		CoreGuiContext context{
-			mainWindowConstructorIndex,
-			requesterSession.Obj(),
-			viewModel,
-			miniHttpSocketServer
-			};
-		CHECK_ERROR(!currentGuiContext, L"StartServer(...)#The GUI context has already been bound.");
-		currentGuiContext = &context;
-		SetupRemoteNativeController(&diffConverterProtocol);
-		currentGuiContext = nullptr;
+	CoreGuiContext context{
+		mainWindowConstructorIndex,
+		requesterSession,
+		viewModel,
+		miniHttpSocketServer
+		};
+	CHECK_ERROR(!currentGuiContext, L"StartServer(...)#The GUI context has already been bound.");
+	currentGuiContext = &context;
+	SetupRemoteNativeController(&diffConverterProtocol);
+	currentGuiContext = nullptr;
 
-		channelServer.ClearCoreChannels();
-		if (requesterSession)
-		{
-			requesterSession->Stop(Func<void()>([&channelServer]()
-			{
-				channelServer.Stop();
-			}));
-		}
-		else
+	channelServer.ClearCoreChannels();
+	if (requesterSession)
+	{
+		requesterSession->Stop(Func<void()>([&channelServer]()
 		{
 			channelServer.Stop();
-		}
-		return 0;
+		}));
 	}
+	else
+	{
+		channelServer.Stop();
+	}
+	return 0;
 }
 
 void GuiMain()
@@ -235,31 +195,66 @@ void GuiMain()
 #ifdef VCZH_MSVC
 int StartNamedPipeServer(vint index)
 {
-	return StartServer<named_pipe::NamedPipeServer>(
-		index,
-		nullptr,
+	auto jsonParser = Ptr(new glr::json::Parser);
+	if (index == 2)
+	{
+		RemoteViewModelChannelServer<named_pipe::NamedPipeServer> channelServer(
+			jsonParser,
+			true,
+			WString::Unmanaged(RemotingNamedPipeName)
+			);
+		return StartServer<named_pipe::NamedPipeServer>(index, nullptr, jsonParser, channelServer, channelServer.GetSession());
+	}
+	RemotingChannelServer<named_pipe::NamedPipeServer> channelServer(
+		jsonParser,
+		true,
 		WString::Unmanaged(RemotingNamedPipeName)
 		);
+	return StartServer<named_pipe::NamedPipeServer>(index, nullptr, jsonParser, channelServer, nullptr);
 }
 
 int StartHttpServer(vint index)
 {
-	return StartServer<windows_http::HttpServer>(
-		index,
-		nullptr,
+	auto jsonParser = Ptr(new glr::json::Parser);
+	if (index == 2)
+	{
+		RemoteViewModelChannelServer<windows_http::HttpServer> channelServer(
+			jsonParser,
+			true,
+			WString::Unmanaged(RemotingHttpBaseUrl),
+			RemotingHttpPort
+			);
+		return StartServer<windows_http::HttpServer>(index, nullptr, jsonParser, channelServer, channelServer.GetSession());
+	}
+	RemotingChannelServer<windows_http::HttpServer> channelServer(
+		jsonParser,
+		true,
 		WString::Unmanaged(RemotingHttpBaseUrl),
 		RemotingHttpPort
 		);
+	return StartServer<windows_http::HttpServer>(index, nullptr, jsonParser, channelServer, nullptr);
 }
 #endif
 
 int StartMiniHttpServer(vint index)
 {
+	auto jsonParser = Ptr(new glr::json::Parser);
 	auto socketServer = async_tcp_socket::CreateDefaultAsyncSocketServer(RemotingHttpPort);
-	return StartServer<async_tcp_socket::SocketHttpServer>(
-		index,
-		socketServer,
+	if (index == 2)
+	{
+		RemoteViewModelChannelServer<async_tcp_socket::SocketHttpServer> channelServer(
+			jsonParser,
+			true,
+			socketServer,
+			WString::Unmanaged(RemotingHttpBaseUrl)
+			);
+		return StartServer<async_tcp_socket::SocketHttpServer>(index, socketServer, jsonParser, channelServer, channelServer.GetSession());
+	}
+	RemotingChannelServer<async_tcp_socket::SocketHttpServer> channelServer(
+		jsonParser,
+		true,
 		socketServer,
 		WString::Unmanaged(RemotingHttpBaseUrl)
 		);
+	return StartServer<async_tcp_socket::SocketHttpServer>(index, socketServer, jsonParser, channelServer, nullptr);
 }

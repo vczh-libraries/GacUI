@@ -127,29 +127,29 @@ Two projects in `Test/GacUISrc/` demonstrate a full remote protocol deployment. 
 
 Located at `Test/GacUISrc/RemotingTest_Core/`. Accepts `/Pipe` or `/Http` arguments to start either a named-pipe server or HTTP server.
 
-**Protocol stack setup** (`StartServer<TServer>` in `GuiMain.cpp`):
-1. Creates `NamedPipeRemotingChannelServer` or `HttpRemotingChannelServer`, both derived from `RemotingChannelServerBase<TServerBase>` and ultimately `GuiRemoteProtocolNetworkChannelServer<TServerBase>`.
-2. Starts the server, creates a local core client with `GuiRemoteProtocolLocalChannelClient`, and connects it to the server.
-3. Waits for the first non-local renderer client with a manual-reset `EventObject` signaled from `OnClientConnected`.
-4. Wraps the core client's protocol channel in `GuiRemoteProtocolAsyncJsonChannel`.
-5. Creates `GuiRemoteProtocolCoreChannel`, then builds `GuiRemoteProtocolFilter` -> `GuiRemoteProtocolDomDiffConverter` -> `SetupRemoteNativeController`.
-6. On shutdown, disconnects the named-pipe renderer client when needed, clears core channel/server pointers, and stops the channel server before stack-owned wrappers are destroyed.
+**Protocol stack setup** (`StartServer<TServerBase>` in `GuiMain.cpp`):
+1. `StartNamedPipeServer`, `StartHttpServer`, or `StartMiniHttpServer` constructs the matching `RemotingChannelServer<TServerBase>`. `/RVMT` constructs `RemoteViewModelChannelServer<TServerBase>`, which adds exact RVM-host admission while preserving the base renderer behavior.
+2. The shared run function starts the server, creates a local core client with `GuiRemoteProtocolLocalChannelClient`, and connects it to the server. Local clients are accepted directly because only the owning process can call `ConnectLocalClient`.
+3. It wraps the core client's protocol channel in `GuiRemoteProtocolAsyncJsonChannel` and creates `SwitchableRenderersCoreChannel<TServerBase>`. This `GuiRemoteProtocolCoreChannel` subclass verifies at submission time that its protocol renderer is still the transport server's current renderer. `Submit` evaluates this virtual guard before applying the base channel's default no-renderer behavior, so the switchable channel can report disconnection for both a stale renderer and renderer id `-1` while the default channel still treats `-1` as an idle state.
+4. It builds `GuiRemoteProtocolFilter` -> `GuiRemoteProtocolDomDiffConverter` -> `SetupRemoteNativeController`. The Core remains usable before a renderer connects.
+5. In `/RVMT`, the shared server owns the requester session. The exact RVM host is admitted before service acquisition, while renderer admission remains closed until the requester enters its running phase after the window is constructed.
+6. On shutdown, Core clears the server's stored JSON/protocol channel pointers, finalizes the optional requester session, and stops the channel server before stack-owned wrappers are destroyed.
 
-`RemotingChannelServerBase::OnClientConnected` accepts replacement renderers. If a different renderer is already current, it calls `GuiRemoteProtocolCoreChannel::DetachRenderer(oldClientId)`, tries to send a raw `ControllerConnectionStopped` package to the old renderer, and disconnects the old transport only when notification fails. Fatal exceptions from `GuiMain()` are sent to connected clients via `BroadcastError(...)` before the error is printed.
+`RemotingChannelServer<TServerBase>::OnRemoteClientConnected` accepts replacement renderers. If a different renderer is already current, it calls `GuiRemoteProtocolCoreChannel::DetachRenderer(oldClientId)`, tries to send a raw `ControllerConnectionStopped` package to the old renderer, and disconnects the old transport only when notification fails. `RemoteViewModelChannelServer<TServerBase>` overrides this single remote-admission operation to accept the RVM host and to check the concrete requester phase before delegating renderer admission. If the RVM host disconnects, it broadcasts the business error when renderers are enabled and then terminates the requester.
 
 ### RemotingTest_Rendering_Win32 (Windows Application)
 
 Located at `Test/GacUISrc/RemotingTest_Rendering_Win32/`. Accepts `/Pipe` or `/Http` arguments to start as a named-pipe or HTTP client.
 
 **Protocol stack setup** (`StartClient` in `GuiMain.cpp`; this function is not a template):
-1. Receives a named-pipe or HTTP `INetworkProtocolClient` and creates `RemotingTestChannelClient`, derived from `GuiRemoteProtocolChannelClient`, over it.
+1. Receives a named-pipe, Windows HTTP, or MiniHTTP `INetworkProtocolClient` and creates the shared `RemotingChannelClient`, derived from `GuiRemoteProtocolChannelClient`, over it.
 2. Creates `GuiRemoteProtocolAsyncJsonChannelRenderer` over the client's protocol channel.
 3. Creates `GuiRemoteRendererSingle` and `GuiRemoteProtocolRendererChannel(&asyncRendererChannel, &remoteRenderer)`.
 4. Waits for the server, then calls `SetupRawWindowsDirect2DRenderer()` to run the native window event loop.
 5. In `GuiMain()`, creates the native window, registers it with `GuiRemoteRendererSingle`, creates a retained `Ptr<GuiMainAsyncRendererInvoker>`, installs it through `asyncChannel->SetInvokeInMainThread(invoker)`, drains startup work with `ProcessPendingMessages()`, and runs the window service.
 6. On exit, clears the invoker, unregisters the main window, stops the network connection, and clears stack-owned renderer/channel pointers.
 
-`RemotingTestChannelClient` queues both protocol packages and terminal actions through the async renderer's ordered main-thread FIFO. A Core-authored `!Error` arrives through `OnReadError`, claims the first fatal error, and opens the native Yes/No prompt. Choosing Yes calls `ForceExitByFatelError()`; choosing No calls `RetainByFatalError(message)`, keeps the native renderer window open with a `[STOPPED]` title and fatal overlay, and exposes the error through renderer automation. A fatal local channel error has different UI semantics: after VlppOS's `IChannelClient` promotes a post-connection protocol error, `OnLocalError(..., true)` queues the ordinary disconnected transition directly, without showing a fatal prompt and without waiting for `OnDisconnected`. `OnDisconnected` queues the same idempotent transition when it is delivered. FIFO ordering lets an earlier `ControllerConnectionStopped` or Core `!Error` win before detach.
+`RemotingChannelClient` queues both protocol packages and terminal actions through the async renderer's ordered main-thread FIFO. A Core-authored `!Error` arrives through `OnReadError`, claims the first fatal error, and opens the native Yes/No prompt. Choosing Yes calls `ForceExitByFatelError()`; choosing No calls `RetainByFatalError(message)`, keeps the native renderer window open with a `[STOPPED]` title and fatal overlay, and exposes the error through renderer automation. A fatal local channel error has different UI semantics: after VlppOS's `IChannelClient` promotes a post-connection protocol error, `OnLocalError(..., true)` queues the ordinary disconnected transition directly, without showing a fatal prompt and without waiting for `OnDisconnected`. `OnDisconnected` queues the same idempotent transition when it is delivered. FIFO ordering lets an earlier `ControllerConnectionStopped` or Core `!Error` win before detach.
 
 ### Protocol Stack Direction
 

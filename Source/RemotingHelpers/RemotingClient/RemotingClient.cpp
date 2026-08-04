@@ -360,22 +360,6 @@ namespace vl::presentation::remoting
 	{
 	}
 
-	bool RemotingRequesterSession::CanAcceptLocalClient(JsonChannelClient* localClient)
-	{
-		if (dynamic_cast<BroadcastingLocalClient*>(localClient))
-		{
-			return true;
-		}
-		if (dynamic_cast<RequesterLocalClient*>(localClient))
-		{
-			SPIN_LOCK(impl->lockState)
-			{
-				return impl->brokerDispatcher && impl->brokerDispatcher->HasServerClientId();
-			}
-		}
-		return false;
-	}
-
 	bool RemotingRequesterSession::TryAcceptHost(vint clientId)
 	{
 		return impl->TryAcceptHost(clientId);

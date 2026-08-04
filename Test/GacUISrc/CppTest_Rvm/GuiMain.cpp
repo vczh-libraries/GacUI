@@ -3,9 +3,7 @@
 #include "../RemotingTest_RvmHost/RemoteViewModelTestRuntime.h"
 #include "../../../Source/RemotingHelpers/AutomationService/MiniHttpAutomationService.h"
 #include "../../../Source/RemotingHelpers/AutomationService/Windows/WindowsAutomationService.Windows.h"
-#include "../../../Source/RemotingHelpers/RemotingServer/RemotingChannelServer.h"
 #include <VlppOS.Windows.h>
-#include <cstdlib>
 #include "resource.h"
 
 using namespace vl;
@@ -14,7 +12,6 @@ using namespace vl::presentation;
 using namespace vl::presentation::controls;
 using namespace vl::presentation::remoting;
 using namespace vl::presentation::remote_view_model_test;
-using namespace vl::rpc_controller::channeling;
 
 struct RvmGuiContext
 {
@@ -25,55 +22,22 @@ struct RvmGuiContext
 
 RvmGuiContext* currentGuiContext = nullptr;
 
-RemotingChannelServerCallbacks CreateCallbacks(RemoteViewModelRequesterSession& session)
-{
-	RemotingChannelServerCallbacks callbacks;
-	callbacks.canAcceptLocalClient = Func<bool(JsonChannelClient*)>([&session](JsonChannelClient* client)
-	{
-		return session.CanAcceptLocalClient(client);
-	});
-	callbacks.isRemoteClient = Func<bool(const JsonChannelClient::ChannelNameList&)>(
-		[](const JsonChannelClient::ChannelNameList& channels)
-		{
-			return IsRemoteViewModelHostChannel(channels);
-		});
-	callbacks.tryAcceptRemoteClient = Func<bool(vint)>([&session](vint clientId)
-	{
-		return session.TryAcceptViewModelHost(clientId);
-	});
-	callbacks.clientDisconnected = Func<void(vint)>([&session](vint clientId)
-	{
-		session.OnClientDisconnected(clientId);
-	});
-	return callbacks;
-}
-template<typename TServer, typename ...TArgs>
+template<typename TServerBase>
 int StartServer(
-	Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer,
-	TArgs&& ...args
+	RemoteViewModelChannelServer<TServerBase>& server,
+	Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer
 	)
 {
-	auto parser = Ptr(new glr::json::Parser);
-	RemoteViewModelRequesterSession session(
-		parser,
-		Func<void(const WString&)>([](const WString&) { std::_Exit(1); })
-		);
-	auto callbacks = CreateCallbacks(session);
-	RemotingChannelServer<TServer> server(
-		parser,
-		false,
-		callbacks,
-		std::forward<TArgs>(args)...
-		);
+	auto session = server.GetSession();
 	server.Start();
-	session.Start(&server);
-	auto viewModel = session.RequestViewModel();
-	RvmGuiContext context{ &session, viewModel, miniHttpSocketServer };
+	session->Start(&server);
+	auto viewModel = session->RequestViewModel();
+	RvmGuiContext context{ session, viewModel, miniHttpSocketServer };
 	CHECK_ERROR(!currentGuiContext, L"StartServer(...)#The GUI context has already been bound.");
 	currentGuiContext = &context;
 	auto result = SetupHostedWindowsDirect2DRenderer();
 	currentGuiContext = nullptr;
-	session.Stop(Func<void()>([&server]()
+	session->Stop(Func<void()>([&server]()
 	{
 		server.Stop();
 	}));
@@ -125,27 +89,36 @@ void GuiMain()
 
 int StartNamedPipeServer()
 {
-	return StartServer<named_pipe::NamedPipeServer>(
-		nullptr,
+	auto parser = Ptr(new glr::json::Parser);
+	RemoteViewModelChannelServer<named_pipe::NamedPipeServer> server(
+		parser,
+		false,
 		WString::Unmanaged(RemotingNamedPipeName)
 		);
+	return StartServer(server, nullptr);
 }
 
 int StartHttpServer()
 {
-	return StartServer<windows_http::HttpServer>(
-		nullptr,
+	auto parser = Ptr(new glr::json::Parser);
+	RemoteViewModelChannelServer<windows_http::HttpServer> server(
+		parser,
+		false,
 		WString::Unmanaged(RemotingHttpBaseUrl),
 		RemotingHttpPort
 		);
+	return StartServer(server, nullptr);
 }
 
 int StartMiniHttpServer()
 {
+	auto parser = Ptr(new glr::json::Parser);
 	auto socketServer = async_tcp_socket::CreateDefaultAsyncSocketServer(RemotingHttpPort);
-	return StartServer<async_tcp_socket::SocketHttpServer>(
-		socketServer,
+	RemoteViewModelChannelServer<async_tcp_socket::SocketHttpServer> server(
+		parser,
+		false,
 		socketServer,
 		WString::Unmanaged(RemotingHttpBaseUrl)
 		);
+	return StartServer(server, socketServer);
 }

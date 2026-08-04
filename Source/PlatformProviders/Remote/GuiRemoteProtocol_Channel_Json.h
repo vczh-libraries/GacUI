@@ -128,6 +128,7 @@ GuiRemoteProtocolCoreChannel
 		void						Write(Ptr<glr::json::JsonObject> package);
 		void						SetRendererClientId(vint clientId);
 		vint						GetRendererClientId();
+		virtual bool				IsCorrectRendererClientId(vint clientId);
 		void						OnRead(vint senderClientId, const JsonPackage& package) override;
 
 	public:

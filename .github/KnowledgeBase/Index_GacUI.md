@@ -147,6 +147,6 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 - Layered channel architecture for protocol serialization: `IGuiRemoteProtocol` is bridged by `GuiRemoteProtocolCoreChannel`/`GuiRemoteProtocolRendererChannel` over `IJsonChannel` packages, with network clients/servers using `glr::json::JsonNodeListSerializer`.
 - JSON envelope format with `semantic`, `id`, `name`, `arguments` fields; protocol types code-generated from `Protocol/*.txt` with `JsonHelper<T>` specializations.
 - `GuiRemoteProtocolAsyncJsonChannel` and `GuiRemoteProtocolAsyncJsonChannelRenderer` provide async channel separation with queued events/responses, connection-safe request matching, renderer main-thread dispatch, and startup message caching.
-- Demo project pair (`RemotingTest_Core` and `RemotingTest_Rendering_Win32`) demonstrates full protocol stack assembly for both core and renderer sides with named-pipe/HTTP transport.
+- Demo project pair (`RemotingTest_Core` and `RemotingTest_Rendering_Win32`) demonstrates full protocol stack assembly for both core and renderer sides with named-pipe, Windows HTTP, and portable MiniHTTP transport.
 
 [Design Explanation](./KB_GacUI_Design_RemoteProtocolRendererAndSerialization.md)

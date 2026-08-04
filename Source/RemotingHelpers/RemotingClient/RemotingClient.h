@@ -46,7 +46,6 @@ namespace vl::presentation::remoting
 			Ptr<glr::json::Parser> parser,
 			const Func<void(const WString&)>& terminalAction
 			);
-		bool												CanAcceptLocalClient(JsonChannelClient* localClient);
 		bool												TryAcceptHost(vint clientId);
 		void												OnClientDisconnected(vint clientId);
 		void												Start(JsonChannelServer* channelServer);
