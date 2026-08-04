@@ -1,4 +1,4 @@
-#include "../../Rvmt/ViewModel/ViewModelHostClient.h"
+#include "../../RemotingHelpers/Rvmt/ViewModelHostClient.h"
 #ifdef VCZH_MSVC
 #include <VlppOS.Windows.h>
 #include <crtdbg.h>

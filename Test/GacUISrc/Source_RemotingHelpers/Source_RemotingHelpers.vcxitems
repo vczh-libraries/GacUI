@@ -7,7 +7,8 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Platform)'=='Win32'">%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)..\Generated_RemoteViewModelTest\Source_x86</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Platform)'=='x64'">%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)..\Generated_RemoteViewModelTest\Source_x64</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -17,11 +18,17 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RendererClient\RemoteProtocolRendererClient.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelHostClient.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelHostServer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelShared.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\MiniHttpAutomationService.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingServer\RemotingChannelServer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RendererClient\RemoteProtocolRendererClient.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelHostClient.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelHostServer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelShared.h" />
   </ItemGroup>
 </Project>

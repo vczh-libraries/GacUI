@@ -2,7 +2,6 @@
 <codegen>
   <folders>
     <folder path="..\Source" />
-    <folder path="..\Test\RemotingHelpers" />
     <folder path="..\Import" />
     <except pattern="\Resource.xml.log\" />
   </folders>
@@ -28,10 +27,6 @@
       <except pattern="GuiFakeDialogServiceUIReflection" />
     </category>
     <category name="windows" pattern="\Source\PlatformProviders\Windows\"/>
-    <category name="remoting_helpers" pattern="\Test\RemotingHelpers\">
-      <except pattern="\Windows\" />
-    </category>
-    <category name="remoting_helpers_windows" pattern="\Test\RemotingHelpers\AutomationService\Windows\"/>
     <category name="unittest" pattern="\Source\UnitTestUtilities\">
       <except pattern="SnapshotViewer"/>
     </category>
@@ -60,8 +55,6 @@
     <codepair category="wfcompiler" filename="VlppWorkflowCompiler" generate="false"/>
     <codepair category="gacui" filename="GacUI" generate="true"/>
     <codepair category="windows" filename="GacUI.Windows" generate="true"/>
-    <codepair category="remoting_helpers" filename="RemotingHelpers" generate="true"/>
-    <codepair category="remoting_helpers_windows" filename="RemotingHelpers.Windows" generate="true"/>
     <codepair category="unittest" filename="GacUI.UnitTest" generate="true"/>
     <codepair category="unittest_ui" filename="GacUI.UnitTest.UI" generate="true"/>
     <codepair category="unittest_r" filename="GacUI.UnitTest.UIReflection" generate="true"/>

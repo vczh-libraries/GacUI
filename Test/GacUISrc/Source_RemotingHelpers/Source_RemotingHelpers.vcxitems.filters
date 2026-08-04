@@ -10,6 +10,15 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RendererClient\RemoteProtocolRendererClient.cpp">
       <Filter>RendererClient</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelHostClient.cpp">
+      <Filter>Rvmt</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelHostServer.cpp">
+      <Filter>Rvmt</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelShared.cpp">
+      <Filter>Rvmt</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingServer\RemotingChannelServer.h">
@@ -24,6 +33,15 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RendererClient\RemoteProtocolRendererClient.h">
       <Filter>RendererClient</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelHostClient.h">
+      <Filter>Rvmt</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelHostServer.h">
+      <Filter>Rvmt</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelShared.h">
+      <Filter>Rvmt</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="RemotingServer">
@@ -34,6 +52,9 @@
     </Filter>
     <Filter Include="RendererClient">
       <UniqueIdentifier>{3f815005-1cb7-43e3-81ff-c66727cb6cf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rvmt">
+      <UniqueIdentifier>{968E1406-3C7A-42A9-AC6A-3A63AEC0F82D}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

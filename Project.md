@@ -32,15 +32,15 @@ Files in this folder are for test apps only:
 - Only test apps could use these source files.
 - No need to create unit test for them.
 - Source files in `Source` cannot use anything in `Test/RemotingHelpers`.
-- They need to be `CodePack` into `RemotingHelpers*` and shared with other platforms.
+- They are not CodePacked or published in `Release`.
 - No production quality required, these files are only for building test apps quickly.
 
-### Test/Rvmt/ViewModel
+### Test/RemotingHelpers/Rvmt
 
 Files in this folder are the generated-RemoteViewModelTest-specific client and requester helpers used only by `CppTest_Rvm`, `RemotingTest_Core`, and `RemotingTest_RvmHost`.
-- They are compiled through `Test/GacUISrc/Source_RemotingHelpers/Source_Rvmt_ViewModel.vcxitems`; do not add them back to the generated-neutral `Source_RemotingHelpers.vcxitems` inventory.
+- They are enumerated and compiled through the single `Test/GacUISrc/Source_RemotingHelpers/Source_RemotingHelpers.vcxitems` inventory shared by all helper consumers.
 - `ViewModelShared.*` owns the fixed RVM channel/service/control constants and generated RPC initialization, `ViewModelHostClient.*` owns the network-side host client, and `ViewModelHostServer.*` owns requester/session and server-side local-client behavior.
-- `Release/RemotingHelpers.*` and `Release/IncludeOnly/RemotingHelpers.*` still contain the previously CodePacked `Test/RemotingHelpers/ViewModelHostClient` implementation because `Release/CodegenConfig.xml` scans the old tree. They are intentionally stale after this source refactor. A future authorized Release maintenance task must regenerate or remove those obsolete artifacts and decide the RVM-specific CodePack boundary; do not treat the current Release copies as up to date.
+- `Release/CodegenConfig.xml` does not scan `Test/RemotingHelpers`, and no generated RemotingHelpers pairs exist in `Release` or `Release/IncludeOnly`.
 
 ## Reflectable Types
 

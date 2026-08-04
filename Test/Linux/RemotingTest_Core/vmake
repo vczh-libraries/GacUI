@@ -8,7 +8,6 @@ CPP_VCXPROJS=(
     "../../GacUISrc/Source_GacUI_Utilities/Source_GacUI_Utilities.vcxitems"
 	"../../GacUISrc/Source_GacUI_Utilities_Controls/Source_GacUI_Utilities_Controls.vcxitems"
 	"../../GacUISrc/Source_RemotingHelpers/Source_RemotingHelpers.vcxitems"
-	"../../GacUISrc/Source_RemotingHelpers/Source_Rvmt_ViewModel.vcxitems"
 	"../../GacUISrc/RemotingTest_Core/RemotingTest_Core.vcxproj"
     )
 CPP_ADDS=(

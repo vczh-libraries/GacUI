@@ -2,7 +2,7 @@
 #define VCZH_PRESENTATION_RVMT_VIEWMODEL_HOST_SERVER
 
 #include "ViewModelShared.h"
-#include "../../RemotingHelpers/RemotingServer/RemotingChannelServer.h"
+#include "../RemotingServer/RemotingChannelServer.h"
 #include <cstdlib>
 
 namespace vl::presentation::remoting

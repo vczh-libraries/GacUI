@@ -2,7 +2,7 @@
 #include "RpMainWindow.h"
 #include "MainWindow.h"
 #include "RemoteViewModelTestIncludes.h"
-#include "../../Rvmt/ViewModel/ViewModelHostServer.h"
+#include "../../RemotingHelpers/Rvmt/ViewModelHostServer.h"
 #include "../../RemotingHelpers/AutomationService/MiniHttpAutomationService.h"
 #include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
 #ifdef VCZH_MSVC
