@@ -216,7 +216,6 @@ int StartServerHelper(
 #ifdef VCZH_MSVC
 int StartNamedPipeServer(vint index)
 {
-	auto jsonParser = Ptr(new glr::json::Parser);
 	if (index == 2)
 	{
 		return StartServerHelper<RemoteViewModelChannelServer, named_pipe::NamedPipeServer>(
@@ -237,7 +236,6 @@ int StartNamedPipeServer(vint index)
 
 int StartHttpServer(vint index)
 {
-	auto jsonParser = Ptr(new glr::json::Parser);
 	if (index == 2)
 	{
 		return StartServerHelper<RemoteViewModelChannelServer, windows_http::HttpServer>(
@@ -261,7 +259,6 @@ int StartHttpServer(vint index)
 
 int StartMiniHttpServer(vint index)
 {
-	auto jsonParser = Ptr(new glr::json::Parser);
 	auto socketServer = async_tcp_socket::CreateDefaultAsyncSocketServer(RemotingHttpPort);
 	if (index == 2)
 	{
