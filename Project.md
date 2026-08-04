@@ -35,6 +35,13 @@ Files in this folder are for test apps only:
 - They need to be `CodePack` into `RemotingHelpers*` and shared with other platforms.
 - No production quality required, these files are only for building test apps quickly.
 
+### Test/Rvmt/ViewModel
+
+Files in this folder are the generated-RemoteViewModelTest-specific client and requester helpers used only by `CppTest_Rvm`, `RemotingTest_Core`, and `RemotingTest_RvmHost`.
+- They are compiled through `Test/GacUISrc/Source_RemotingHelpers/Source_Rvmt_ViewModel.vcxitems`; do not add them back to the generated-neutral `Source_RemotingHelpers.vcxitems` inventory.
+- `ViewModelShared.*` owns the fixed RVM channel/service/control constants and generated RPC initialization, `ViewModelHostClient.*` owns the network-side host client, and `ViewModelHostServer.*` owns requester/session and server-side local-client behavior.
+- `Release/RemotingHelpers.*` and `Release/IncludeOnly/RemotingHelpers.*` still contain the previously CodePacked `Test/RemotingHelpers/ViewModelHostClient` implementation because `Release/CodegenConfig.xml` scans the old tree. They are intentionally stale after this source refactor. A future authorized Release maintenance task must regenerate or remove those obsolete artifacts and decide the RVM-specific CodePack boundary; do not treat the current Release copies as up to date.
+
 ## Reflectable Types
 
 - You must be really careful when changing any interface, especially structs, classes, unions and a few functions.
@@ -186,7 +193,7 @@ Each application owns its automation stack directly. It constructs the concrete 
 
 Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in `/Http`, `/Pipe`, and `/MiniHttp` modes:
 - `RemotingTest_Core` exposes the UI as a window-control tree at `http://localhost:8888/Automation/RemotingTest_Core/...`.
-- `RemotingTest_Rendering_Win32` exposes the UI as a DOM tree at `http://localhost:8889/Automation/RemotingTest_Rendering_Win32/...`.
+- `RemotingTest_Rendering_Win32` exposes the UI as a DOM tree at `http://localhost:8889/Automation/RemotingTest_Rendering_Native/...`.
 - `/Http` and `/Pipe` use `StartWindowsHttpAutomationService`.
 - In `/MiniHttp` mode, the core registers its automation prefix with the exact same `IAsyncSocketServer` that hosts the remote protocol on port `8888`. The renderer is a separate process, so it hosts its automation prefix with a separate MiniHTTP socket server on port `8889`.
 - Both support IO operations:
@@ -197,7 +204,7 @@ Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in
 
 `CppTest_Rvm`, `RemotingTest_Core /RVMT`, and `RemotingTest_RvmHost` share the same physical transport endpoint. RPC endpoints use the exact logical channel `ViewModelChannel`, the host also uses the internal `ViewModelReadyChannel` startup signal, and renderers use the exact logical channel `GacUIRemoteProtocol`. Use the same transport argument throughout one run.
 
-- For `/RVMT`, start `RemotingTest_Core /RVMT` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. Start the renderer only after Core prints `rvmt::IViewModel acquired; renderer admission is open.`
+- For `/RVMT`, start `RemotingTest_Core /RVMT` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. Start the renderer only after `http://localhost:8888/Automation/RemotingTest_Core/Controls` contains the `Remote View Model Test` window.
 - For the Windows-only local variant, start `CppTest_Rvm` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. This variant does not use a renderer.
 - A requester terminates with an error if `RemotingTest_RvmHost` disconnects while the application is running.
 - `CppTest_Rvm` exposes automation at `http://localhost:8888/Automation/CppTest_Rvm/...`. `/Pipe` and `/Http` use the Windows HTTP endpoint; `/MiniHttp` registers MiniHTTP automation on the same port-8888 socket server that carries its RVM traffic.

@@ -84,8 +84,8 @@ Automation endpoints are available in every Windows transport mode:
 ```text
 GET  http://localhost:8888/Automation/RemotingTest_Core/Controls
 POST http://localhost:8888/Automation/RemotingTest_Core/IO
-GET  http://localhost:8889/Automation/RemotingTest_Rendering_Win32/Dom
-POST http://localhost:8889/Automation/RemotingTest_Rendering_Win32/IO
+GET  http://localhost:8889/Automation/RemotingTest_Rendering_Native/Dom
+POST http://localhost:8889/Automation/RemotingTest_Rendering_Native/IO
 ```
 
 During `/Http` and `/Pipe` runs, the projects use the Windows HTTP automation
@@ -111,7 +111,7 @@ Post commands as `application/json; charset=utf8`:
 Invoke-WebRequest `
   -UseBasicParsing `
   -Method Post `
-  -Uri http://localhost:8889/Automation/RemotingTest_Rendering_Win32/IO `
+  -Uri http://localhost:8889/Automation/RemotingTest_Rendering_Native/IO `
   -ContentType 'application/json; charset=utf8' `
   -SkipHeaderValidation `
   -Body '!LeftClick:<integer-x>,<integer-y>'

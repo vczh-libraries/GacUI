@@ -17,13 +17,11 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RendererClient\RemoteProtocolRendererClient.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\ViewModelHostClient\ViewModelHostClient.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\MiniHttpAutomationService.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingServer\RemotingChannelServer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RendererClient\RemoteProtocolRendererClient.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\ViewModelHostClient\ViewModelHostClient.h" />
   </ItemGroup>
 </Project>

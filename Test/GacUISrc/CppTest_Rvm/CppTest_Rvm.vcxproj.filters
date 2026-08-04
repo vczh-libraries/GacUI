@@ -18,19 +18,10 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\RemotingTest_RvmHost\RemoteViewModelTestShared.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
       <Filter>Resource Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\RemotingTest_RvmHost\RemoteViewModelTestRuntime.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\RemotingTest_RvmHost\RemoteViewModelTestShared.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

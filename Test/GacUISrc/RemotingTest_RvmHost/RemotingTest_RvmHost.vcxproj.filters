@@ -21,9 +21,6 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RemoteViewModelTestShared.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Generated_RemoteViewModelTest\Source_x86\RemoteViewModelTestRpc.cpp">
       <Filter>Generated x86</Filter>
     </ClCompile>
@@ -32,9 +29,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RemoteViewModelTestShared.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Generated_RemoteViewModelTest\Source_x86\RemoteViewModelTestRpc.h">
       <Filter>Generated x86</Filter>
     </ClInclude>

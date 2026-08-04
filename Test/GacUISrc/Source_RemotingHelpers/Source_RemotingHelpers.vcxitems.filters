@@ -7,9 +7,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.cpp">
       <Filter>AutomationService</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\ViewModelHostClient\ViewModelHostClient.cpp">
-      <Filter>ViewModelHostClient</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RendererClient\RemoteProtocolRendererClient.cpp">
       <Filter>RendererClient</Filter>
     </ClCompile>
@@ -24,9 +21,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.h">
       <Filter>AutomationService</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\ViewModelHostClient\ViewModelHostClient.h">
-      <Filter>ViewModelHostClient</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RendererClient\RemoteProtocolRendererClient.h">
       <Filter>RendererClient</Filter>
     </ClInclude>
@@ -40,9 +34,6 @@
     </Filter>
     <Filter Include="RendererClient">
       <UniqueIdentifier>{3f815005-1cb7-43e3-81ff-c66727cb6cf0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ViewModelHostClient">
-      <UniqueIdentifier>{5c53891f-dbc8-49dc-80aa-7b0fd3ff7484}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

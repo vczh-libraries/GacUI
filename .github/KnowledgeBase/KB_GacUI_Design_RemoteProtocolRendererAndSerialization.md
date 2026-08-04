@@ -123,6 +123,8 @@ Protocol types are code-generated from `Protocol/*.txt` files into `GuiRemotePro
 
 Two projects in `Test/GacUISrc/` demonstrate a full remote protocol deployment. They are paired: one is the core side (console application) and the other is the renderer side (Windows application).
 
+RemoteViewModelTest-specific remoting support is organized in `Test/Rvmt/ViewModel/`. `ViewModelShared.*` owns the fixed RVM constants and concrete generated-RPC dispatcher initialization, `ViewModelHostClient.*` owns only the network host client, and `ViewModelHostServer.*` owns `RemotingRequesterSession`, its broker/requester local clients, Ready registration barrier, task queue, and shutdown ordering. `Test/GacUISrc/Source_RemotingHelpers/Source_Rvmt_ViewModel.vcxitems` imports these files only into the three generated-RPC consumers, leaving the general `Source_RemotingHelpers.vcxitems` inventory generated-neutral.
+
 ### RemotingTest_Core (Console Application)
 
 Located at `Test/GacUISrc/RemotingTest_Core/`. Accepts `/Pipe` or `/Http` arguments to start either a named-pipe server or HTTP server.

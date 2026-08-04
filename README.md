@@ -112,7 +112,7 @@ You must offer the same transport argument to every process in one run.
   - Non-Windows platform only enabled `/MiniHttp`.
 - Offer `/FCT` (default), `/RPT` or `/RVMT` to `Core`.
 - For `/FCT` and `/RPT`, start `Core` and then the renderer.
-- For `/RVMT`, start `Core` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. After `Core` prints `rvmt::IViewModel acquired; renderer admission is open.`, start the renderer.
+- For `/RVMT`, start `Core` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. After Core's `http://localhost:8888/Automation/RemotingTest_Core/Controls` response contains the `Remote View Model Test` window, start the renderer.
 - For the Windows-only local variant, start `CppTest_Rvm` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. This variant does not use a renderer. `/Pipe` and `/Http` expose automation through Windows HTTP; `/MiniHttp` registers automation on the same port-8888 MiniHTTP socket server used for RVM traffic.
 - The RVM demos intentionally use a simple ordered-start contract. If `RemotingTest_RvmHost` disconnects while a requester is running, the requester terminates with an error and the process set must be restarted.
 - On Linux and macOS, the portable RVM path is `RemotingTest_Core /RVMT` with `RemotingTest_RvmHost`, both using `/MiniHttp`.

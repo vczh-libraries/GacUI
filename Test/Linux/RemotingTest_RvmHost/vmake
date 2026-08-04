@@ -8,6 +8,7 @@ CPP_VCXPROJS=(
 	"../../GacUISrc/Source_GacUI_Utilities/Source_GacUI_Utilities.vcxitems"
 	"../../GacUISrc/Source_GacUI_Utilities_Controls/Source_GacUI_Utilities_Controls.vcxitems"
 	"../../GacUISrc/Source_RemotingHelpers/Source_RemotingHelpers.vcxitems"
+	"../../GacUISrc/Source_RemotingHelpers/Source_Rvmt_ViewModel.vcxitems"
 	"../../GacUISrc/RemotingTest_RvmHost/RemotingTest_RvmHost.vcxproj"
     )
 CPP_ADDS=(
@@ -21,6 +22,6 @@ CPP_REMOVES=(
     "../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTestRpc.cpp"
     )
 TARGETS=("${CPP_TARGET}")
-CPP_COMPILE_OPTIONS="-I ../../../Import -I ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64 -I ../../GacUISrc/RemotingTest_RvmHost -DVCZH_DEBUG_NO_REFLECTION"
+CPP_COMPILE_OPTIONS="-I ../../../Import -I ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64 -DVCZH_DEBUG_NO_REFLECTION"
 #>
 <#@ include "${VCPROOT}/vl/vmake-cpp" #>

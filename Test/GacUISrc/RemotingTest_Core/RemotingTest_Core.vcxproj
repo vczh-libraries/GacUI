@@ -57,6 +57,7 @@
   </ImportGroup>
   <ImportGroup Label="Shared">
     <Import Project="..\Source_RemotingHelpers\Source_RemotingHelpers.vcxitems" Label="Shared" />
+    <Import Project="..\Source_RemotingHelpers\Source_Rvmt_ViewModel.vcxitems" Label="Shared" />
     <Import Project="..\Generated_RemoteViewModelTest\Generated_RemoteViewModelTest.vcxitems" Label="Shared" />
     <Import Project="..\Generated_RemoteProtocolTest\Generated_RemoteProtocolTest.vcxitems" Label="Shared" />
     <Import Project="..\Generated_FullControlTest\Generated_FullControlTest.vcxitems" Label="Shared" />
@@ -159,13 +160,10 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\RemotingTest_RvmHost\RemoteViewModelTestShared.cpp" />
     <ClCompile Include="GuiMain.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\RemotingTest_RvmHost\RemoteViewModelTestRuntime.h" />
-    <ClInclude Include="..\RemotingTest_RvmHost\RemoteViewModelTestShared.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lib_GacUI\Lib_GacUI.vcxproj">

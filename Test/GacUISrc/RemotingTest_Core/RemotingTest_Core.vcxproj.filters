@@ -21,16 +21,7 @@
     <ClCompile Include="GuiMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\RemotingTest_RvmHost\RemoteViewModelTestShared.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\RemotingTest_RvmHost\RemoteViewModelTestRuntime.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\RemotingTest_RvmHost\RemoteViewModelTestShared.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

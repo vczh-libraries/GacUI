@@ -235,7 +235,7 @@ Success requires every static ownership/inventory criterion in the problem descr
 
 # PROPOSALS
 
-- No.1 Split the RVM-specific helper inventory and flatten requester ownership
+- No.1 Split the RVM-specific helper inventory and flatten requester ownership [CONFIRMED]
 
 ## No.1 Split the RVM-specific helper inventory and flatten requester ownership
 
@@ -248,3 +248,29 @@ Make `ViewModelHostClient.*` network-host-only. Move `RemotingRequesterSession`,
 Update all Windows project/solution inventory, the two hand-authored Unix `vmake` files, application includes, and the narrowly affected documentation. Preserve every behavioral invariant and defer Release CodePack regeneration because `Release` is forbidden in this task.
 
 ### CODE CHANGE
+
+- Added `Test/Rvmt/ViewModel/ViewModelShared.*`, `ViewModelHostClient.*`, and `ViewModelHostServer.*`, and removed the five old physical files from `Test/RemotingHelpers/ViewModelHostClient` and `Test/GacUISrc/RemotingTest_RvmHost`.
+- Centralized the six fixed RVM constants, exact `Ready` package helpers, the minimal concrete `RemoteViewModelJsonDispatcherClient`, and the ordinary friended `InitializeRpc` function in `ViewModelShared.*`.
+- Reduced `ViewModelHostClient.*` to the network-side host client and direct dispatcher initialization. Removed `RemotingJsonDispatcherClient`, `RemotingDispatcherFactory`, `CreateDispatcherFactory()`, and the app-local `RemoteViewModelHostClient` subclass.
+- Moved `RemotingRequesterSession`, its distinct broker/requester local clients, task queue, Ready registration barrier, renderer admission state, service acquisition, fatal host-loss action, and ordered shutdown into `ViewModelHostServer.*`. Removed only `RemotingRequesterSession::Impl`; kept the session boundary and `GetSession()` API.
+- Added the exact six-file `Source_Rvmt_ViewModel.vcxitems` inventory, imported it only from `CppTest_Rvm`, `RemotingTest_Core`, and `RemotingTest_RvmHost`, and updated the solution nesting and shared-project mappings. Removed the old direct inventories and the RVM dependency from the general nine-consumer helper inventory.
+- Updated both hand-authored Linux `vmake` inputs without touching generated `vmake.txt` or `makefile` files. Updated application includes and the narrowly affected ownership/readiness/renderer-route documentation. Recorded the explicitly deferred Release CodePack regeneration/removal action in `Project.md`.
+
+### CONFIRMED
+
+The ownership proposal is implemented and its source/build criteria are confirmed:
+
+- `git diff --check` passes. Every changed/new `.vcxproj`, `.vcxitems`, and `.filters` file parses as XML. The old files are gone; the six new files occur once in the dedicated inventory; exactly the three generated-RPC consumers import it; the other six general-helper consumers have no RVM inventory or generated-RPC dependency.
+- Static searches confirm one flattened `RemotingRequesterSession` under `ViewModelHostServer.*`, server-only helpers only in `ViewModelHostServer.cpp`, all six constants only in `ViewModelShared.h`, one ordinary `InitializeRpc` with direct requester/host calls, and no old dispatcher/factory/subclass symbols or stale active paths. The exact two-channel host predicate, post-route exact-`Ready` registration, renderer gate, and requested shutdown order remain present.
+- `GacUISrc.sln` builds through `copilotBuild.ps1` with `0 Warning(s)` and `0 Error(s)` in Debug x64, Debug Win32, Release x64, and Release Win32. Release builds were clean rebuilds after stale incremental debug-information warnings. Per the task exception, `UnitTest` was not executed.
+- Debug x64 `/Pipe` and `/MiniHttp` RVM happy paths produced exact live RPC results from both Core and renderer IO. Renderer replacement, state continuity, active takeover, stale-renderer detachment, and normal renderer-driven shutdown passed for Core `/RVMT` in both transports. `/Pipe` and `/MiniHttp` completed the `/RPT` mutation/dialog/replacement/takeover/intentional-close flow and the `/FCT` list/editor-persistence flow. Debug Win32 `/MiniHttp` produced exact `Hello, MINI-X86!` and `Hello, RVMT-X86!` results in the two required RVM topologies and shut down cleanly.
+- `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`, and `GacUI_Host` each returned a nonempty `Controls` tree, accepted exact `!Exit`, terminated normally, and passed an immediate restart.
+
+The exhaustive application job is not completely green because it exposes unchanged runtime/tooling defects outside this forbidden production scope; these are recorded rather than hidden:
+
+- Rejecting a second `/Pipe` or `/Http` network client can leave the unchanged generic `NetworkProtocolChannelServer` transport stop path waiting on a connection callback. CDB showed the `/Pipe` worker inside `Import/VlppOS.Windows.cpp` `NamedPipeConnection::Stop` while the main thread waited in `NetworkProtocolChannelServer::Stop`; `/MiniHttp` rejected the second host immediately and remained clean. `Import` changes are expressly forbidden here.
+- Abrupt `/Http` renderer loss reproduced an unchanged HTTP transport spin in `HttpServerConnection::SubmitResponse`, blocking the prescribed replacement continuation. Passive `/Http` and `/MiniHttp` host termination was not detected within the bounded wait in the no-heartbeat protocol, whereas `/Pipe` terminated the requester immediately and Core delivered the exact `RemotingTest_RvmHost disconnected.` fatal message. Heartbeats, polling, retry, and recovery are expressly forbidden by this task.
+- `Playground` exits before exposing `Controls` when launched by `copilotExecute.ps1` from the solution directory because it resolves `Resources/ResourceDocument.xml` relative to the project directory, while the wrapper cannot select a different child working directory. The other four shared-helper consumers passed twice.
+- The Windows environment cannot verify Linux or macOS. Their prescribed regenerated-source and runtime checks remain explicitly unverified. Release CodePack artifacts also remain intentionally stale pending the authorized future Release maintenance action.
+
+These failures are in unchanged generic transport/execution code and were reproduced outside the moved ownership implementation. The refactor itself is confirmed by the complete static inventory checks, all four clean builds, the passing RVM RPC paths on x64/x86, and the passing remote-renderer lifecycle scenarios above.

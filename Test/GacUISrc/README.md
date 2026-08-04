@@ -26,7 +26,7 @@
 
 RemoteViewModel demo startup is ordered, and every participating process must use the same transport argument:
 
-- For `/RVMT`, start `RemotingTest_Core /RVMT` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. Start `RemotingTest_Rendering_Win32` only after Core prints `rvmt::IViewModel acquired; renderer admission is open.`
+- For `/RVMT`, start `RemotingTest_Core /RVMT` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. Start `RemotingTest_Rendering_Win32` only after Core's `http://localhost:8888/Automation/RemotingTest_Core/Controls` response contains the `Remote View Model Test` window.
 - For the Windows-only local variant, start `CppTest_Rvm` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. This variant does not use a renderer. `/Pipe` and `/Http` use Windows HTTP for automation; `/MiniHttp` shares its port-8888 MiniHTTP socket server between RVM and automation traffic.
 - A requester exits with an error if `RemotingTest_RvmHost` disconnects while it is running.
 - On Linux and macOS, use the portable `RemotingTest_Core /RVMT` plus `RemotingTest_RvmHost` path with `/MiniHttp`.

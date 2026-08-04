@@ -1,9 +1,58 @@
-#ifndef VCZH_PRESENTATION_REMOTEVIEWMODELTEST_RUNTIME
-#define VCZH_PRESENTATION_REMOTEVIEWMODELTEST_RUNTIME
+#ifndef VCZH_PRESENTATION_RVMT_VIEWMODEL_HOST_SERVER
+#define VCZH_PRESENTATION_RVMT_VIEWMODEL_HOST_SERVER
 
-#include "RemoteViewModelTestShared.h"
+#include "ViewModelShared.h"
 #include "../../RemotingHelpers/RemotingServer/RemotingChannelServer.h"
 #include <cstdlib>
+
+namespace vl::presentation::remoting
+{
+	class RemotingRequesterSession : public Object
+	{
+	private:
+		enum class RequesterPhase;
+		class TaskQueueThread;
+		class BroadcastingLocalClient;
+		class RequesterLocalClient;
+
+		SpinLock										lockState;
+		CriticalSection								lockBroker;
+		Func<void(const WString&)>					terminalAction;
+		RequesterPhase								phase;
+		vint										hostId = InvalidRemoteViewModelClientId;
+		bool										hostEverAccepted = false;
+		bool										brokerRegistrationClaimed = false;
+		bool										admissionReady = false;
+		bool										rpcInitialized = false;
+
+		rpc_controller::channeling::RpcJsonDispatcherServer*	brokerDispatcher = nullptr;
+		Ptr<TaskQueue>								taskQueue;
+		Ptr<TaskQueueThread>						taskQueueThread;
+		Ptr<BroadcastingLocalClient>					broadcastingClient;
+		Ptr<RequesterLocalClient>					requesterClient;
+		remote_view_model_test::RemoteViewModelJsonDispatcherClient* requesterDispatcher = nullptr;
+		Ptr<IDescriptable>							service;
+
+		void										RegisterHost(vint clientId);
+		void										OnControlMessage(vint senderClientId, const JsonPackage& package);
+
+	public:
+		RemotingRequesterSession(
+			Ptr<glr::json::Parser> parser,
+			const Func<void(const WString&)>& terminalAction
+			);
+		~RemotingRequesterSession();
+
+		bool										TryAcceptHost(vint clientId);
+		void										OnClientDisconnected(vint clientId);
+		void										Start(JsonChannelServer* channelServer);
+		Ptr<IDescriptable>							RequestService();
+		bool										BeginRunning();
+		bool										CanAdmitRenderer();
+		void										BeginStopping();
+		void										Stop(const Func<void()>& stopServer);
+	};
+}
 
 namespace vl::presentation::remote_view_model_test
 {
@@ -16,10 +65,9 @@ namespace vl::presentation::remote_view_model_test
 		Ptr<remoting::RemotingRequesterSession>				session;
 
 	protected:
-
 		bool IsRemoteViewModelHostChannel(
 			const remoting::JsonChannelClient::ChannelNameList& availableChannels
-		)
+			)
 		{
 			return
 				availableChannels.Count() == 2 &&
@@ -56,23 +104,22 @@ namespace vl::presentation::remote_view_model_test
 			: Base(parser, _acceptRenderer, std::forward<TArgs>(args)...)
 		{
 			session = Ptr(new remoting::RemotingRequesterSession(
-				CreateDispatcherFactory(),
 				parser,
 				Func<void(const WString&)>([this, _acceptRenderer](const WString& message)
+				{
+					if (_acceptRenderer)
 					{
-						if (_acceptRenderer)
+						try
 						{
-							try
-							{
-								this->BroadcastError(message);
-							}
-							catch (...)
-							{
-							}
+							this->BroadcastError(message);
 						}
-						std::_Exit(1);
-					})
-			));
+						catch (...)
+						{
+						}
+					}
+					std::_Exit(1);
+				})
+				));
 		}
 
 		remoting::RemotingRequesterSession* GetSession()

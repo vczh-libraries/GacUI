@@ -1,4 +1,4 @@
-#include "RemoteViewModelTestShared.h"
+#include "../../Rvmt/ViewModel/ViewModelHostClient.h"
 #ifdef VCZH_MSVC
 #include <VlppOS.Windows.h>
 #include <crtdbg.h>
@@ -25,27 +25,11 @@ public:
 	}
 };
 
-class RemoteViewModelHostClient : public presentation::remoting::ViewModelHostClient
-{
-public:
-	RemoteViewModelHostClient(
-		Ptr<inter_process::INetworkProtocolClient> networkClient,
-		Ptr<glr::json::Parser> parser,
-		Ptr<rpc_controller::channeling::TaskQueue> taskQueue
-	) : presentation::remoting::ViewModelHostClient(
-		networkClient,
-		CreateDispatcherFactory(),
-		parser,
-		taskQueue
-	)
-	{}
-};
-
 int RunHost(Ptr<INetworkProtocolClient> networkClient)
 {
 	auto parser = Ptr(new glr::json::Parser);
 	auto taskQueue = Ptr(new TaskQueue);
-	auto channelClient = Ptr(new RemoteViewModelHostClient(
+	auto channelClient = Ptr(new presentation::remoting::ViewModelHostClient(
 		networkClient,
 		parser,
 		taskQueue

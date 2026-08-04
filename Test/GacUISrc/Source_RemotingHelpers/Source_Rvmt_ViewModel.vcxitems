@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{B46B72D2-61D1-4D1B-8429-4F7B896B1F6E}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Rvmt\ViewModel\ViewModelHostClient.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Rvmt\ViewModel\ViewModelHostServer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Rvmt\ViewModel\ViewModelShared.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\Rvmt\ViewModel\ViewModelHostClient.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\Rvmt\ViewModel\ViewModelHostServer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\Rvmt\ViewModel\ViewModelShared.h" />
+  </ItemGroup>
+</Project>
