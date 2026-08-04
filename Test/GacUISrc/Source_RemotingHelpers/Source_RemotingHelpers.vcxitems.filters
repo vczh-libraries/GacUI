@@ -1,28 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemoteProtocolRendererClient.cpp">
-      <Filter>RemotingClient</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\ViewModelHostClient.cpp">
-      <Filter>RemotingClient</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp">
       <Filter>AutomationService</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.cpp">
       <Filter>AutomationService</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\ViewModelHostClient\ViewModelHostClient.cpp">
+      <Filter>ViewModelHostClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RendererClient\RemoteProtocolRendererClient.cpp">
+      <Filter>RendererClient</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingServer\RemotingChannelServer.h">
       <Filter>RemotingServer</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemoteProtocolRendererClient.h">
-      <Filter>RemotingClient</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\ViewModelHostClient.h">
-      <Filter>RemotingClient</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\MiniHttpAutomationService.h">
       <Filter>AutomationService</Filter>
@@ -30,16 +24,25 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.h">
       <Filter>AutomationService</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\ViewModelHostClient\ViewModelHostClient.h">
+      <Filter>ViewModelHostClient</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RendererClient\RemoteProtocolRendererClient.h">
+      <Filter>RendererClient</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="RemotingServer">
       <UniqueIdentifier>{9591baa2-3ee5-4bbf-ae31-fbb55b5f6586}</UniqueIdentifier>
     </Filter>
-    <Filter Include="RemotingClient">
-      <UniqueIdentifier>{3f815005-1cb7-43e3-81ff-c66727cb6cf0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="AutomationService">
       <UniqueIdentifier>{dc9f9c7a-8a3d-4720-98a5-1d2aa760fa27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RendererClient">
+      <UniqueIdentifier>{3f815005-1cb7-43e3-81ff-c66727cb6cf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ViewModelHostClient">
+      <UniqueIdentifier>{5c53891f-dbc8-49dc-80aa-7b0fd3ff7484}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -16,14 +16,14 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\ViewModelHostClient.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemoteProtocolRendererClient.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RendererClient\RemoteProtocolRendererClient.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\ViewModelHostClient\ViewModelHostClient.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\MiniHttpAutomationService.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\ViewModelHostClient.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingClient\RemoteProtocolRendererClient.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingServer\RemotingChannelServer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RendererClient\RemoteProtocolRendererClient.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\ViewModelHostClient\ViewModelHostClient.h" />
   </ItemGroup>
 </Project>

@@ -13,7 +13,7 @@
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
 #endif
 #include "../../RemotingHelpers/AutomationService/MiniHttpAutomationService.h"
-#include "../../RemotingHelpers/RemotingClient/RemoteProtocolRendererClient.h"
+#include "../../RemotingHelpers/RendererClient/RemoteProtocolRendererClient.h"
 #include <VlppOS.h>
 #if defined VCZH_MSVC
 #include <VlppOS.Windows.h>
