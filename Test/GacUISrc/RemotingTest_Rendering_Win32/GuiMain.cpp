@@ -85,8 +85,8 @@ void GuiMain()
 	auto invoker = Ptr(new GuiMainAsyncRendererInvoker);
 	currentGuiContext->renderer->RegisterMainWindow(mainWindow);
 
+	AutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
 #if defined VCZH_MSVC
-	windows::WindowsAutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
 	GetNativeServiceSubstitution()->Substitute(&rendererAutomationServiceObject, false);
 	if (currentGuiContext->miniHttpSocketServer)
 	{
@@ -104,23 +104,19 @@ void GuiMain()
 	}
 	auto rendererAutomationService = &rendererAutomationServiceObject;
 #elif defined VCZH_GCC && !defined VCZH_APPLE
-	wayland::WGacAutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
 	GetNativeServiceSubstitution()->Substitute(&rendererAutomationServiceObject, false);
 	StartMiniHttpAutomationService(
 		currentGuiContext->miniHttpSocketServer,
 		WString::Unmanaged(GacUIAutomationApplicationName)
 		);
-	auto rendererAutomationService = &rendererAutomationServiceObject;
 #else
-	osx::CocoaAutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
 	GetNativeServiceSubstitution()->Substitute(&rendererAutomationServiceObject, false);
 	StartMiniHttpAutomationService(
 		currentGuiContext->miniHttpSocketServer,
 		WString::Unmanaged(GacUIAutomationApplicationName)
 		);
-	auto rendererAutomationService = &rendererAutomationServiceObject;
 #endif
-	currentGuiContext->channelClient->SetRendererAutomationService(rendererAutomationService);
+	currentGuiContext->channelClient->SetRendererAutomationService(&rendererAutomationServiceObject);
 
 #if defined VCZH_GCC && !defined VCZH_APPLE
 	currentGuiContext->channelClient->WaitForServer();

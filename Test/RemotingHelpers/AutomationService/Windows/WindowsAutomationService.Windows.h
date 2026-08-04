@@ -34,14 +34,6 @@ namespace vl::presentation::windows
 	{
 	};
 
-	class WindowsAutomationServiceRenderer : public WindowsAutomationServiceBase<AutomationServiceRenderer>
-	{
-	public:
-		WindowsAutomationServiceRenderer(remote_renderer::GuiRemoteRendererSingle* renderer);
-
-		INativeAutomationService::IOCommandAvailability CanRunIOCommands() override;
-	};
-
 	extern void StartWindowsHttpAutomationService(const WString& applicationName, vint port);
 	extern void StopWindowsHttpAutomationService();
 }
