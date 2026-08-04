@@ -13,6 +13,18 @@ In general, here is my preference for any languages:
   - DRY requires finding if a feature has already been implemented somewhere else before implementing it. avoiding massive duplication.
     - If the existing implementation is not sharable, refactoring is preferred.
 - Unless explicitly instructed, do not invent your own code generator as part of the committed solution. It adds more technical debt in maintenance.
+- When it is not explicltly instructed, be conservative on creating new layers of abstractions:
+  - It should bring actual benefits, including better separation of ownership and dependencies, allowing needed extensibility.
+  - Extraction of common code would also be a good reason, when it doesn't fragmentize the code. I am not a fan of big amounts of small functions.
+  - Extractin of functions/classes are welcome, when there are large pieces of duplicated code, or when the same logic is duplicated >= 3 times.
+  - Extraction of common interfaces (aka abstract classes in C++) are welcome, when the details of implementation does not really affect how algorithms and tools are built around the concept.
+- Unless explicitly instructed:
+  - Prefer static analyzing (including ultilizing the type system, or static assertions, etc) over dynamic/runtime assertion.
+  - Prefer correctness over stability.
+    - Prefer crashing early over recovery.
+    - Crashing expose issues immediately, if something can be fixed and made correctly, there is no need to care about what to do when it fails unexpectedly.
+    - Expected failures should be part of the signature, when the type system cannot represents expected failures, comments are needed.
+  - Handle exceptions only when recovery is practical. DO NOT consume exceptions silently.
 
 ## Be Brave Enough to Fix Upstream Code and Make Breaking Change
 
