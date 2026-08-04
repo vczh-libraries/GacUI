@@ -15,34 +15,12 @@ using namespace vl::presentation::remote_view_model_test;
 
 struct RvmGuiContext
 {
-	RemoteViewModelRequesterSession*						session = nullptr;
-	Ptr<rvmt::IViewModel>									viewModel;
-	Ptr<async_tcp_socket::IAsyncSocketServer>			miniHttpSocketServer;
+	remoting::RemotingRequesterSession*				session = nullptr;
+	Ptr<rvmt::IViewModel>							viewModel;
+	Ptr<async_tcp_socket::IAsyncSocketServer>		miniHttpSocketServer;
 };
 
 RvmGuiContext* currentGuiContext = nullptr;
-
-template<typename TServerBase>
-int StartServer(
-	RemoteViewModelChannelServer<TServerBase>& server,
-	Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer
-	)
-{
-	auto session = server.GetSession();
-	server.Start();
-	session->Start(&server);
-	auto viewModel = session->RequestViewModel();
-	RvmGuiContext context{ session, viewModel, miniHttpSocketServer };
-	CHECK_ERROR(!currentGuiContext, L"StartServer(...)#The GUI context has already been bound.");
-	currentGuiContext = &context;
-	auto result = SetupHostedWindowsDirect2DRenderer();
-	currentGuiContext = nullptr;
-	session->Stop(Func<void()>([&server]()
-	{
-		server.Stop();
-	}));
-	return result;
-}
 
 void GuiMain()
 {
@@ -87,11 +65,34 @@ void GuiMain()
 	GetNativeServiceSubstitution()->Unsubstitute(&automationService);
 }
 
+template<typename TServerBase>
+int StartServer(
+	RemoteViewModelChannelServer<TServerBase>& server,
+	Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer
+	)
+{
+	auto session = server.GetSession();
+	server.Start();
+	session->Start(&server);
+	auto viewModel = session->RequestService().Cast<rvmt::IViewModel>();
+	RvmGuiContext context{ session, viewModel, miniHttpSocketServer };
+	CHECK_ERROR(!currentGuiContext, L"StartServer(...)#The GUI context has already been bound.");
+	currentGuiContext = &context;
+	auto result = SetupHostedWindowsDirect2DRenderer();
+	currentGuiContext = nullptr;
+	session->Stop(Func<void()>([&server]()
+	{
+		server.Stop();
+	}));
+	return result;
+}
+
 int StartNamedPipeServer()
 {
 	auto parser = Ptr(new glr::json::Parser);
 	RemoteViewModelChannelServer<named_pipe::NamedPipeServer> server(
 		parser,
+		true,
 		false,
 		WString::Unmanaged(RemotingNamedPipeName)
 		);
@@ -103,6 +104,7 @@ int StartHttpServer()
 	auto parser = Ptr(new glr::json::Parser);
 	RemoteViewModelChannelServer<windows_http::HttpServer> server(
 		parser,
+		true,
 		false,
 		WString::Unmanaged(RemotingHttpBaseUrl),
 		RemotingHttpPort
@@ -116,6 +118,7 @@ int StartMiniHttpServer()
 	auto socketServer = async_tcp_socket::CreateDefaultAsyncSocketServer(RemotingHttpPort);
 	RemoteViewModelChannelServer<async_tcp_socket::SocketHttpServer> server(
 		parser,
+		true,
 		false,
 		socketServer,
 		WString::Unmanaged(RemotingHttpBaseUrl)

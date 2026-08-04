@@ -21,7 +21,7 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RemoteViewModelTestRuntime.cpp">
+    <ClCompile Include="RemoteViewModelTestShared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Generated_RemoteViewModelTest\Source_x86\RemoteViewModelTestRpc.cpp">
@@ -32,9 +32,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RemoteViewModelTestRuntime.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="RemoteViewModelTestShared.h">
       <Filter>Source Files</Filter>
     </ClInclude>

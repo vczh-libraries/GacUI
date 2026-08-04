@@ -1,4 +1,4 @@
-#include "RemoteViewModelTestRuntime.h"
+#include "RemoteViewModelTestShared.h"
 #ifdef VCZH_MSVC
 #include <VlppOS.Windows.h>
 #include <crtdbg.h>
@@ -12,41 +12,55 @@ using namespace vl::rpc_controller;
 using namespace vl::rpc_controller::channeling;
 using namespace vl::presentation::remote_view_model_test;
 
-namespace
+class ViewModel : public Object, public virtual rvmt::IViewModel
 {
-	class ViewModel : public Object, public virtual rvmt::IViewModel
+public:
+	WString Translate(const WString& name) override
 	{
-	public:
-		WString Translate(const WString& name) override
-		{
-			return WString::Unmanaged(L"Hello, ") + name + WString::Unmanaged(L"!");
-		}
-	};
-
-	int RunHost(Ptr<INetworkProtocolClient> networkClient)
-	{
-		auto parser = Ptr(new glr::json::Parser);
-		auto taskQueue = Ptr(new TaskQueue);
-		auto channelClient = Ptr(new RemoteViewModelHostingClient(
-			networkClient,
-			parser,
-			taskQueue
-			));
-		auto service = Ptr(new ViewModel);
-		auto dispatcher = channelClient->GetDispatcher();
-
-		channelClient->Connect();
-		auto lifecycle = dispatcher->GetRpcLifecycle();
-		auto typeId = lifecycle->GetTypeIdFromName(WString::Unmanaged(ViewModelServiceName));
-		CHECK_ERROR(typeId != RpcTypeId_NotFound, L"RunHost(Ptr<INetworkProtocolClient>)#Failed to find the rvmt::IViewModel type ID.");
-		lifecycle->RegisterLocalService(typeId, service);
-		channelClient->SendReady();
-		dispatcher->Initialize();
-
-		Console::WriteLine(L"> RemotingTest_RvmHost declared rvmt::IViewModel.");
-		taskQueue->RunTaskQueue();
-		return 0;
+		return WString::Unmanaged(L"Hello, ") + name + WString::Unmanaged(L"!");
 	}
+};
+
+class RemoteViewModelHostingClient : public presentation::remoting::RemotingHostingClient
+{
+public:
+	RemoteViewModelHostingClient(
+		Ptr<inter_process::INetworkProtocolClient> networkClient,
+		Ptr<glr::json::Parser> parser,
+		Ptr<rpc_controller::channeling::TaskQueue> taskQueue
+	) : presentation::remoting::RemotingHostingClient(
+		networkClient,
+		CreateConfiguration(),
+		CreateDispatcherFactory(),
+		parser,
+		taskQueue
+	)
+	{}
+};
+
+int RunHost(Ptr<INetworkProtocolClient> networkClient)
+{
+	auto parser = Ptr(new glr::json::Parser);
+	auto taskQueue = Ptr(new TaskQueue);
+	auto channelClient = Ptr(new RemoteViewModelHostingClient(
+		networkClient,
+		parser,
+		taskQueue
+		));
+	auto service = Ptr(new ViewModel);
+	auto dispatcher = channelClient->GetDispatcher();
+
+	channelClient->Connect();
+	auto lifecycle = dispatcher->GetRpcLifecycle();
+	auto typeId = lifecycle->GetTypeIdFromName(WString::Unmanaged(ViewModelServiceName));
+	CHECK_ERROR(typeId != RpcTypeId_NotFound, L"RunHost(Ptr<INetworkProtocolClient>)#Failed to find the rvmt::IViewModel type ID.");
+	lifecycle->RegisterLocalService(typeId, service);
+	channelClient->SendReady();
+	dispatcher->Initialize();
+
+	Console::WriteLine(L"> RemotingTest_RvmHost declared rvmt::IViewModel.");
+	taskQueue->RunTaskQueue();
+	return 0;
 }
 
 void GuiMain()

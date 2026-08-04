@@ -2,6 +2,8 @@
 #define VCZH_PRESENTATION_REMOTEVIEWMODELTEST_SHARED
 
 #include "../../../Source/GacUI.h"
+#include "../../../Source/RemotingHelpers/RemotingClient/RemotingClient.h"
+#include "RemoteViewModelTestRpc.h"
 
 namespace vl::presentation::remote_view_model_test
 {
@@ -26,6 +28,9 @@ namespace vl::presentation::remote_view_model_test
 #endif
 	inline constexpr const wchar_t* RemotingHttpBaseUrl = L"/GacUIRemoteProtocolHttp";
 	inline constexpr vint RemotingHttpPort = 8888;
+
+	extern remoting::RemotingRpcConfiguration CreateConfiguration();
+	extern remoting::RemotingDispatcherFactory CreateDispatcherFactory();
 }
 
 #endif

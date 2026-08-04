@@ -23,7 +23,7 @@ using namespace vl::presentation::remoteprotocol::repeatfiltering;
 struct CoreGuiContext
 {
 	vint												mainWindowConstructorIndex = 0;
-	RemoteViewModelRequesterSession*					session = nullptr;
+	remoting::RemotingRequesterSession*					session = nullptr;
 	Ptr<rvmt::IViewModel>								viewModel;
 	Ptr<async_tcp_socket::IAsyncSocketServer>			miniHttpSocketServer;
 };
@@ -63,8 +63,8 @@ int StartServer(
 	vint mainWindowConstructorIndex,
 	Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer,
 	Ptr<glr::json::Parser> jsonParser,
-	RemotingChannelServer<TServerBase>& channelServer,
-	RemoteViewModelRequesterSession* requesterSession
+	RemoteViewModelChannelServer<TServerBase>& channelServer,
+	remoting::RemotingRequesterSession* requesterSession
 	)
 {
 	channelServer.Start();
@@ -89,7 +89,7 @@ int StartServer(
 	if (requesterSession)
 	{
 		requesterSession->Start(&channelServer);
-		viewModel = requesterSession->RequestViewModel();
+		viewModel = requesterSession->RequestService().Cast<rvmt::IViewModel>();
 	}
 
 	CoreGuiContext context{
@@ -196,43 +196,26 @@ void GuiMain()
 int StartNamedPipeServer(vint index)
 {
 	auto jsonParser = Ptr(new glr::json::Parser);
-	if (index == 2)
-	{
-		RemoteViewModelChannelServer<named_pipe::NamedPipeServer> channelServer(
-			jsonParser,
-			true,
-			WString::Unmanaged(RemotingNamedPipeName)
-			);
-		return StartServer<named_pipe::NamedPipeServer>(index, nullptr, jsonParser, channelServer, channelServer.GetSession());
-	}
-	RemotingChannelServer<named_pipe::NamedPipeServer> channelServer(
+	RemoteViewModelChannelServer<named_pipe::NamedPipeServer> channelServer(
 		jsonParser,
+		index == 2,
 		true,
 		WString::Unmanaged(RemotingNamedPipeName)
 		);
-	return StartServer<named_pipe::NamedPipeServer>(index, nullptr, jsonParser, channelServer, nullptr);
+	return StartServer<named_pipe::NamedPipeServer>(index, nullptr, jsonParser, channelServer, channelServer.GetSession());
 }
 
 int StartHttpServer(vint index)
 {
 	auto jsonParser = Ptr(new glr::json::Parser);
-	if (index == 2)
-	{
-		RemoteViewModelChannelServer<windows_http::HttpServer> channelServer(
-			jsonParser,
-			true,
-			WString::Unmanaged(RemotingHttpBaseUrl),
-			RemotingHttpPort
-			);
-		return StartServer<windows_http::HttpServer>(index, nullptr, jsonParser, channelServer, channelServer.GetSession());
-	}
-	RemotingChannelServer<windows_http::HttpServer> channelServer(
+	RemoteViewModelChannelServer<windows_http::HttpServer> channelServer(
 		jsonParser,
+		index == 2,
 		true,
 		WString::Unmanaged(RemotingHttpBaseUrl),
 		RemotingHttpPort
 		);
-	return StartServer<windows_http::HttpServer>(index, nullptr, jsonParser, channelServer, nullptr);
+	return StartServer<windows_http::HttpServer>(index, nullptr, jsonParser, channelServer, channelServer.GetSession());
 }
 #endif
 
@@ -240,21 +223,12 @@ int StartMiniHttpServer(vint index)
 {
 	auto jsonParser = Ptr(new glr::json::Parser);
 	auto socketServer = async_tcp_socket::CreateDefaultAsyncSocketServer(RemotingHttpPort);
-	if (index == 2)
-	{
-		RemoteViewModelChannelServer<async_tcp_socket::SocketHttpServer> channelServer(
-			jsonParser,
-			true,
-			socketServer,
-			WString::Unmanaged(RemotingHttpBaseUrl)
-			);
-		return StartServer<async_tcp_socket::SocketHttpServer>(index, socketServer, jsonParser, channelServer, channelServer.GetSession());
-	}
-	RemotingChannelServer<async_tcp_socket::SocketHttpServer> channelServer(
+	RemoteViewModelChannelServer<async_tcp_socket::SocketHttpServer> channelServer(
 		jsonParser,
+		index == 2,
 		true,
 		socketServer,
 		WString::Unmanaged(RemotingHttpBaseUrl)
 		);
-	return StartServer<async_tcp_socket::SocketHttpServer>(index, socketServer, jsonParser, channelServer, nullptr);
+	return StartServer<async_tcp_socket::SocketHttpServer>(index, socketServer, jsonParser, channelServer, channelServer.GetSession());
 }

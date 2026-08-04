@@ -55,8 +55,8 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-	<ImportGroup Label="Shared">
-		<Import Project="..\Source_RemotingHelpers\Source_RemotingHelpers.vcxitems" Label="Shared" />
+  <ImportGroup Label="Shared">
+    <Import Project="..\Source_RemotingHelpers\Source_RemotingHelpers.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -161,7 +161,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="RemoteViewModelTestRuntime.cpp" />
+    <ClCompile Include="RemoteViewModelTestShared.cpp" />
     <ClCompile Include="..\Generated_RemoteViewModelTest\Source_x86\RemoteViewModelTestRpc.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -172,7 +172,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RemoteViewModelTestRuntime.h" />
     <ClInclude Include="RemoteViewModelTestShared.h" />
     <ClInclude Include="..\Generated_RemoteViewModelTest\Source_x86\RemoteViewModelTestRpc.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -182,18 +181,18 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\Lib_GacUI\Lib_GacUI.vcxproj">
-			<Project>{31b9787f-5739-4812-84cf-4c542bbdf7fb}</Project>
-			<UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-		</ProjectReference>
-		<ProjectReference Include="..\Lib_GacUI_App\Lib_GacUI_App.vcxproj">
-			<Project>{04d56a3c-3a31-4cbd-b1f1-955fa5848057}</Project>
-			<UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-		</ProjectReference>
-	</ItemGroup>
-	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Lib_GacUI\Lib_GacUI.vcxproj">
+      <Project>{31b9787f-5739-4812-84cf-4c542bbdf7fb}</Project>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\Lib_GacUI_App\Lib_GacUI_App.vcxproj">
+      <Project>{04d56a3c-3a31-4cbd-b1f1-955fa5848057}</Project>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

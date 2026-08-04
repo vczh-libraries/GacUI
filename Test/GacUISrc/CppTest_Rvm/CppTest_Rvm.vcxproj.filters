@@ -18,7 +18,7 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\RemotingTest_RvmHost\RemoteViewModelTestRuntime.cpp">
+    <ClCompile Include="..\RemotingTest_RvmHost\RemoteViewModelTestShared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

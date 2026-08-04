@@ -21,13 +21,14 @@ namespace vl::presentation::remoting
 		: public remoteprotocol::channeling::GuiRemoteProtocolNetworkChannelServer<TServerBase>
 	{
 		using Base = remoteprotocol::channeling::GuiRemoteProtocolNetworkChannelServer<TServerBase>;
+		using CoreChannel = remoteprotocol::channeling::GuiRemoteProtocolCoreChannel;
 
 	private:
-		SpinLock											lockConnection;
-		JsonChannel*										coreJsonChannel = nullptr;
-		remoteprotocol::channeling::GuiRemoteProtocolCoreChannel* coreProtocolChannel = nullptr;
-		bool												acceptRenderer = false;
-		vint												rendererClientId = -1;
+		SpinLock			lockConnection;
+		JsonChannel*		coreJsonChannel = nullptr;
+		CoreChannel*		coreProtocolChannel = nullptr;
+		bool				acceptRenderer = false;
+		vint				rendererClientId = -1;
 
 	protected:
 		virtual inter_process::WaitForClientResult OnRemoteClientConnected(
@@ -112,7 +113,7 @@ namespace vl::presentation::remoting
 
 		void SetCoreChannels(
 			JsonChannel* jsonChannel,
-			remoteprotocol::channeling::GuiRemoteProtocolCoreChannel* protocolChannel
+			CoreChannel* protocolChannel
 			)
 		{
 			SPIN_LOCK(lockConnection)

@@ -1,4 +1,4 @@
-#include "RemoteViewModelTestRuntime.h"
+#include "RemoteViewModelTestShared.h"
 
 namespace vl::presentation::remote_view_model_test
 {
@@ -71,40 +71,5 @@ namespace vl::presentation::remote_view_model_test
 				new RemoteViewModelJsonDispatcherClient(taskQueue)
 				);
 		});
-	}
-
-	RemoteViewModelRequesterSession::RemoteViewModelRequesterSession(
-		Ptr<glr::json::Parser> parser,
-		const Func<void(const WString&)>& terminalAction
-		)
-		: remoting::RemotingRequesterSession(
-			CreateConfiguration(),
-			CreateDispatcherFactory(),
-			parser,
-			terminalAction
-			)
-	{
-	}
-
-	Ptr<rvmt::IViewModel> RemoteViewModelRequesterSession::RequestViewModel()
-	{
-		auto viewModel = RequestService().Cast<rvmt::IViewModel>();
-		CHECK_ERROR(viewModel, L"RemoteViewModelRequesterSession::RequestViewModel()#Failed to request rvmt::IViewModel.");
-		return viewModel;
-	}
-
-	RemoteViewModelHostingClient::RemoteViewModelHostingClient(
-		Ptr<inter_process::INetworkProtocolClient> networkClient,
-		Ptr<glr::json::Parser> parser,
-		Ptr<TaskQueue> taskQueue
-		)
-		: RemotingHostingClient(
-			networkClient,
-			CreateConfiguration(),
-			CreateDispatcherFactory(),
-			parser,
-			taskQueue
-			)
-	{
 	}
 }
