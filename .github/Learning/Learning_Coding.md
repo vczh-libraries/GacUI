@@ -7,6 +7,7 @@
 - Cache renderer packages until main-thread invoker exists [5]
 - Deliver fatal remote-channel errors before transport shutdown [5]
 - `ViewModelReadyChannel` is the post-route RPC registration barrier [4]
+- `Test/RemotingHelpers` stays test-only and generated-neutral [4]
 - Renderer channel dispatch belongs in async renderer layer [4]
 - Treat a fatal local channel error as a complete disconnect signal [4]
 - Remote core accepts replacement renderers by detaching stale renderer [4]
@@ -18,7 +19,6 @@
 - Do not call `IChannel::Initialize(nullptr)` to uninstall readers [2]
 - `RemotingTest_Core /RVMT` gates singleton channels by startup phase [2]
 - Parameterize remoting channel servers by concrete protocol server bases [2]
-- `Test/RemotingHelpers` stays test-only and generated-neutral [2]
 - `CppTest_Rvm` is a GUI app and stays console-free [2]
 - Automation HTTP returns 404 only for protocol-level rejection [2]
 - Use channel `localClient` callbacks for remoting local-client detection [1]
@@ -356,7 +356,11 @@ Keep only exact `Ready` as the post-route startup signal after the host register
 
 CodePack distribution does not make `Test/RemotingHelpers` part of the ordinary GacUI library API. Keep the neutral pair free of generated-application RPC types and Windows dependencies; keep Windows implementation in its separate pair; and do not make ordinary `GacUI` or `GacUI.Windows` depend on either helper pair. Test applications retain their generated-module and concrete service composition.
 
+Keep every tracked build, include, Linux configuration, release CodePack, and Markdown path rooted at `Test/RemotingHelpers`. Release packaging emits the portable and Windows pairs as `RemotingHelpers*` and `RemotingHelpers.Windows*`; the physical relocation and generated pair names must not leave stale `Source/RemotingHelpers` or `GacUI.RemotingHelpers*` references.
+
 Compile the remaining helper implementation through one explicit shared-items inventory in the GacUISrc test solution. Individual consumers should import that inventory instead of maintaining divergent direct source lists, even when a particular app does not exercise every portable helper.
+
+These helpers build test applications, so prefer concrete roles and fixed test contracts over library-style flexibility. Pass a genuinely variable value such as a renderer fatal title directly to `RemoteProtocolRendererClient`; keep the fixed prompt policy in its implementation. Declare fixed RVM channel, service, ready-message, disconnect-error, and invalid-client constants beside `ViewModelHostClient`, and consume them directly instead of retaining configuration structs or factory functions. Names should expose the specific renderer-client or view-model-host responsibility.
 
 ## GacUI test apps own concrete automation service composition
 
