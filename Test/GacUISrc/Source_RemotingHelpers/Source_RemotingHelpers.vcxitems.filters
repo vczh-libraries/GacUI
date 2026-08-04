@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingClient\RemotingChannelClient.cpp">
+      <Filter>RemotingClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingClient\RemotingClient.cpp">
+      <Filter>RemotingClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.cpp">
+      <Filter>AutomationService</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.cpp">
+      <Filter>AutomationService</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingServer\RemotingChannelServer.h">
+      <Filter>RemotingServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingClient\RemotingChannelClient.h">
+      <Filter>RemotingClient</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\RemotingClient\RemotingClient.h">
+      <Filter>RemotingClient</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\AutomationService\MiniHttpAutomationService.h">
+      <Filter>AutomationService</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\RemotingHelpers\AutomationService\Windows\WindowsAutomationService.Windows.h">
+      <Filter>AutomationService</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="RemotingServer">
+      <UniqueIdentifier>{9591baa2-3ee5-4bbf-ae31-fbb55b5f6586}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RemotingClient">
+      <UniqueIdentifier>{3f815005-1cb7-43e3-81ff-c66727cb6cf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AutomationService">
+      <UniqueIdentifier>{dc9f9c7a-8a3d-4720-98a5-1d2aa760fa27}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
