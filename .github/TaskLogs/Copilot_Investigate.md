@@ -2,63 +2,43 @@
 
 # PROBLEM DESCRIPTION
 
-Move files from `Test\RemotingHelpers\AutomationService` to `Source\Utilities`, from `Source_RemotingHelpers` to `Source_GacUI_Core`, so that the following test apps:
-- CppTest
-- CppTest_Metaonly
-- CppTest_Reflection
-- GacUI_Host
-- Playground
-No more need to use reference `Source_RemotingHelpers` and `Generated_RemoteViewModelHost`. That should be more reasonable.
+Perform the following refactor on the design in `Test/RemotingHelpers/Rvmt` and affected test apps.
 
-For RemotingTest_Rendering_Win32, add `/port:xxxx` so that 8889 for automation service will not be hardcoded anymore ---- meanwhile when `/port:` is not specified we still use 8889 as a default value. Update any markdown files that saying the 8889 port for automation service for `RemotingTest_Rendering_*`.
+- Move `RequesterPhrase` to header.
+- `RemotingRequesterSession::TaskQueueThread|BroadcastingLocalClient|RequesterLocalClient` could be moved to parallel level types.
+- `RemoteViewModelChannelServer` inherits from `RemotingRequesterSession` protectedly, to keep more functions in cpp files:
+  - Delete `GetSession` method.
+    - `RemotingTest_Core` and `CppTest_Rvm` only needs `Start`, `Stop` and `RequestService`.
+    - `Start` and `Stop` are virtual functions, they could be overrided in `RemoteViewModelChannelServer`. Therefore no need to call `Start` and `Stop` for eachclass separately.
+    - `RequestService` is an extra function, `RemotingTest_Core` could cast from `RemotingChannelServer` to `RemoteViewModelChannelServer` to use it.
+  - `RequestService` will be moved to `RemoteViewModelChannelServer` so nothing from `RemotingRequesterSession` needs to expose for users.
+    - Delete `ViewModelServiceName` constant.
+    - A type name `WString` argument will be added to `RequestService`.
+    - Both `RemotingTest_Core` and `CppTest_Rvm` will call `RequestService` with a string literal directly.
+  - `FinalizeRpcOnTaskQueue` moved into `RemotingRequesterSession` as trivial method.
+- Rename:
+  - `RemotingRequesterSession` -> `RpcServerHelpers`
+  - `BroadcastingLocalClient` -> `RpcBroadcastingLocalClient`
+  - `RequesterLocalClient` -> `RpcServiceAccessLocalClient`
 
-Run all 9 test apps, just to make sure their automation service is working. No unit test running is needed.
-
-commit and push all local changes.
+To verify, follow `DebugRemoteProtocolWithNativeRenderer.md` to cover `CppTest_Rvm`, and `RemotingTest_(Core|Renderer_Win32)`, with only `/Http` and `/RVMT` only.
+No need to run unit test and other test apps.
 
 # UPDATES
 
 # TEST [CONFIRMED]
 
+- Confirm the current design problem structurally in `Test/RemotingHelpers/Rvmt` and its callers:
+  - `RequesterPhase` is only forward-declared in the header and defined in the implementation file.
+  - `TaskQueueThread`, `BroadcastingLocalClient`, and `RequesterLocalClient` are nested implementation types of `RemotingRequesterSession`.
+  - `RemoteViewModelChannelServer` owns a separate `RemotingRequesterSession`, exposes it through `GetSession`, and makes both test applications coordinate the server and session lifecycle separately.
+  - `ViewModelServiceName` is a shared fixed constant rather than a type-name argument supplied at the service-access boundary.
+- After the refactor, use source inspection to require the requested type names, protected helper inheritance, single public server lifecycle, direct service type-name arguments, and absence of `GetSession`, `RemotingRequesterSession`, and `ViewModelServiceName` references.
 - Build `Test/GacUISrc/GacUISrc.sln` in the default Debug x64 configuration through `copilotBuild.ps1`; require zero build errors.
-- Confirm the automation sources are owned by `Source_GacUI_Core`, no longer by `Source_RemotingHelpers`, and all include paths resolve to `Source/Utilities/AutomationService`.
-- Confirm `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`, `GacUI_Host`, and `Playground` no longer import `Source_RemotingHelpers` or `Generated_RemoteViewModelTest` (the existing project name corresponding to the requested `Generated_RemoteViewModelHost`).
-- Run all nine Windows test applications in Debug x64 through `copilotExecute.ps1`, without running `UnitTest`:
-  - Require a nonempty automation response for `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`, `CppTest_Rvm`, `GacUI_Host`, and `Playground`, then exit each application through its automation endpoint.
-  - Run `RemotingTest_Core` with `RemotingTest_Rendering_Win32`; require a nonempty Core `Controls` response on port 8888 and a nonempty renderer `Dom` response on an explicitly selected non-default port, then exit cleanly through automation.
-  - Run `RemotingTest_RvmHost` as the companion service for `CppTest_Rvm` and confirm the RVM application becomes automation-ready. The host itself has no UI automation endpoint.
-- Run `RemotingTest_Rendering_Win32` once without `/port:` and require the renderer automation endpoint to remain available on the default port 8889.
-- Do not run unit tests, as explicitly requested.
+- Run only the requested `/Http` and `/RVMT` application flows; do not run the unit test or unrelated test applications:
+  - Start `CppTest_Rvm /Http`, then `RemotingTest_RvmHost /Http`. Require the `Remote View Model Test` window, type a unique marker into its single-line editor, and require the greeting to become exactly `Hello, <marker>!` before clean application-controlled shutdown.
+  - Start `RemotingTest_Core /Http /RVMT`, then `RemotingTest_RvmHost /Http`, and start `RemotingTest_Rendering_Win32 /Http` only after Core exposes the `Remote View Model Test` window. Require nonempty Core `Controls` and renderer `Dom`, drive the editor through renderer-side `IO`, require the exact translated greeting in both surfaces, and close through renderer-side `IO` without a fatal prompt or surviving process.
+
+The structural reproduction is confirmed: the current sources contain every coupling and symbol listed in the first group, so the acceptance checks distinguish the requested refactor from the existing design.
 
 # PROPOSALS
-
-- No.1 Promote automation endpoint utilities into GacUI Core and parameterize renderer automation [CONFIRMED]
-
-## No.1 Promote automation endpoint utilities into GacUI Core and parameterize renderer automation
-
-Move the MiniHTTP and Windows HTTP automation endpoint implementations to `Source/Utilities/AutomationService`, list them in `Source_GacUI_Core` under matching `Utilities/AutomationService` filters, and remove them from `Source_RemotingHelpers`. Update all consumers and platform build inventories to use the production source path. Route the Windows-specific automation source to the Windows CodePack category while leaving MiniHTTP in the cross-platform GacUI category.
-
-Remove the obsolete `Source_RemotingHelpers` and `Generated_RemoteViewModelTest` imports, plus their solution shared-item mappings, from the five named standalone test applications. Those applications already receive Core source through their linked GacUI libraries, and they do not use remote-view-model generated code.
-
-Parse an optional `/port:<number>` argument in `RemotingTest_Rendering_Win32`, retain 8889 as the default, validate the supplied TCP port, and pass the selected port into both Windows HTTP and MiniHTTP automation startup. Document the optional port everywhere the renderer's 8889 automation port is described.
-
-### CODE CHANGE
-
-- Moved `MiniHttpAutomationService.*` and `WindowsAutomationService.Windows.*` to `Source/Utilities/AutomationService`, corrected their source-relative includes, added them to `Source_GacUI_Core` under `Utilities/AutomationService` filters, and removed their former `Source_RemotingHelpers` inventory/filter entries.
-- Updated all Windows and portable test consumers, and excluded the Windows-only implementation in every Linux `vmake` that imports `Source_GacUI_Core`.
-- Removed `Source_RemotingHelpers` and `Generated_RemoteViewModelTest` imports and solution shared-item mappings from `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`, `GacUI_Host`, and `Playground`.
-- Added validated `/port:<port>` parsing to `RemotingTest_Rendering_Win32`, retained 8889 as the default, and passed the selected value to both Windows HTTP and MiniHTTP renderer automation startup.
-- Updated the renderer port documentation, automation-service knowledge, project ownership notes, and Linux/source inventories. Made Playground resolve its XML input from the executable location so the supported execution wrapper can run it from the solution directory.
-- Updated `Release/CodegenConfig.xml` so MiniHTTP is part of the `gacui` category and the Windows endpoint is part of the `windows` category. Regenerated the tracked combined outputs: MiniHTTP declarations/implementation appear in `Release/GacUI.h` and `Release/GacUI.cpp`; Windows declarations/implementation appear in `Release/GacUI.Windows.h` and `Release/GacUI.Windows.cpp`. No separate automation-service CodePack pair was created.
-
-### CONFIRMED
-
-The final Debug x64 solution build completed through `copilotBuild.ps1` with 0 warnings and 0 errors. The shared-item and CodePack XML files parse successfully, stale automation source paths are absent, and the five named applications have neither obsolete import.
-
-All nine requested applications were run through `copilotExecute.ps1` without running `UnitTest`:
-- `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`, `GacUI_Host`, and `Playground` returned nonempty `Controls` payloads (84,955 to 163,359 bytes), accepted `!Exit`, and terminated with exit code 0.
-- `CppTest_Rvm` returned a 16,511-byte `Controls` payload after `RemotingTest_RvmHost` supplied its service, accepted `!Exit`, and terminated with exit code 0. The host then took its intentional exit-code-1 requester-disconnect path.
-- `RemotingTest_Core /MiniHttp /FCT` and `RemotingTest_Rendering_Win32 /MiniHttp /port:8890` returned nonempty Core `Controls` and renderer `Dom` payloads (163,124 and 1,490,872 bytes) on ports 8888 and 8890.
-- A second `/MiniHttp` pair omitted `/port:` and returned nonempty Core `Controls` and renderer `Dom` payloads (162,998 and 1,490,872 bytes) on ports 8888 and the default 8889. Core automation accepted `!Exit`; both wrappers terminated with exit code 0.
-
-The combined generated release files were inspected after CodePack regeneration. MiniHTTP symbols occur in `GacUI.h`/`GacUI.cpp`, Windows automation symbols occur in `GacUI.Windows.h`/`GacUI.Windows.cpp`, and neither implementation leaked into the opposite pair.
