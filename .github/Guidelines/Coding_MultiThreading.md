@@ -45,3 +45,14 @@
 - `QueueExitTask` does not cancel any pending `QueueTask`, all queued task will be executed.
 
 `ThreadVariable<T>` can be used on global variables, different threads see different copy even when using the same `ThreadVariable<T>` global variables.
+
+## Working with GacUI
+
+`GetCurrentController()->AsyncService()` and `GetApplicat5ion()` could communicate between UI threads and other threads:
+- `InvokeInMainThread`: Push a task and it will be executed later in a UI thread.
+- `InvokeInMainThreadAndWait`: Same as above but it blocks until the task is executed. DO NOT call this in a UI thread.
+- `InvokeAsync`: Execute a task in a random non-UI thread.
+
+Non-UI thread could use `InvokeInMainThread` to run something that is required to be in a UI thread, e.g., access any GacUI objects. The whole GacUI is no thread-safe and everything should be touched in a UI thread, unless explicitly marked as thread-safe in the comment around the declaration.
+
+`InvokeInMainThread` could be used to raise an exception in a UI thread. DO NOT use `InvokeInMainThreadAndWait` for doing this. When running GacUI with remote protocol, this is an efficient way to create a fatal error.
