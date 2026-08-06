@@ -42,3 +42,17 @@ No need to run unit test and other test apps.
 The structural reproduction is confirmed: the current sources contain every coupling and symbol listed in the first group, so the acceptance checks distinguish the requested refactor from the existing design.
 
 # PROPOSALS
+
+- No.1 Fold the requester runtime into the specialized RVM channel server
+
+## No.1 Fold the requester runtime into the specialized RVM channel server
+
+Rename `RemotingRequesterSession` to `RpcServerHelpers` and use it as a protected implementation base of `RemoteViewModelChannelServer<TServerBase>`. Keep the state machine, RPC participants, task queue, and shutdown sequencing implemented in `ViewModelHostServer.cpp`, while making the specialized server the only public application-facing object. Move the `RequesterPhase` definition into the header and make `TaskQueueThread`, `RpcBroadcastingLocalClient`, and `RpcServiceAccessLocalClient` namespace-level implementation types instead of nested classes.
+
+Override the channel server's virtual `Start()` and `Stop()` methods in `RemoteViewModelChannelServer<TServerBase>`. `Start()` will start the transport and initialize the RPC helper participants in order; `Stop()` will let `RpcServerHelpers` finalize RPC on its task queue, stop the transport at the existing shutdown boundary, exit the task queue, and join its thread. Move `FinalizeRpcOnTaskQueue` into `RpcServerHelpers` as a private trivial method. This preserves the established transport/RPC shutdown order without making callers start or stop two coupled objects.
+
+Expose `RemoteViewModelChannelServer<TServerBase>::RequestService(const WString& typeName)` as the additional RVM-specific operation, forwarding into the protected helper implementation. Service acquisition will complete the requester startup phase so renderer admission becomes available, while `Stop()` owns the stopping transition. Remove `GetSession()` and all session pointers from the GUI contexts. `CppTest_Rvm` will call the specialized server directly; generic `RemotingTest_Core` code will cast its `RemotingChannelServer<TServerBase>&` to the specialized server only in `/RVMT` mode.
+
+Delete `ViewModelServiceName`. Pass `L"rvmt::IViewModel"` directly to `RequestService` in `CppTest_Rvm` and `RemotingTest_Core`, and directly to `GetTypeIdFromName` in `RemotingTest_RvmHost`. Reconcile the RVM ownership description in `Project.md` with the new API boundary.
+
+### CODE CHANGE
