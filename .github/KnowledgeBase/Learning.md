@@ -6,7 +6,7 @@
 - Verify generated artifacts with downstream consumer checks [19]
 - Crash early instead of adding error-tolerance fallbacks [14]
 - Port fixes from imports to source repositories [14]
-- Proactively remove code made redundant by refactoring [13]
+- Proactively remove code made redundant by refactoring [14]
 - Keep design documentation aligned with code after refactoring [12]
 - Fix behavior at the owning state instead of patching symptoms [10]
 - Extract abstractions only for real shared behavior [9]
@@ -47,6 +47,7 @@
 - Keep generated makefiles platform-invariant [1]
 - Group non-template C++ implementations by class in `.cpp` files [1]
 - Use reentrant POSIX date-time conversions [1]
+- `IRpcJsonMessageDispatcher::InjectException` is persistent and last-write-wins [1]
 
 # Refinements
 
@@ -329,3 +330,7 @@ Do not embed host-preprocessed `clang++ -MM` dependency output in tracked makefi
 ## Group non-template C++ implementations by class in `.cpp` files
 
 Move non-template method bodies out of headers into the matching `.cpp` file while leaving template definitions in headers. In each implementation file, keep a complete class definition and all methods belonging to that class together, and separate class groups with the repository's block-comment pattern. Place namespace-level forward declarations, variables, helper structs and other non-class items before the class groups. Apply the same organization consistently to platform-specific implementation files.
+
+## `IRpcJsonMessageDispatcher::InjectException` is persistent and last-write-wins
+
+Treat an injected RPC dispatcher exception as durable terminal state, separate from ordinary response messages. Serialize injection with response commitment, let the newest injected message replace the previous one, wake response and startup waits, and throw `RpcInjectedException` on the original caller thread at every dispatcher-controlled checkpoint. Do not consume or clear the failure after one request.

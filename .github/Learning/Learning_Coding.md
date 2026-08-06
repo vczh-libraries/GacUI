@@ -2,25 +2,26 @@
 
 # Orders
 
+- `Test/RemotingHelpers` stays test-only and outside Release CodePack [9]
 - Stop remoting transports before stack channel wrappers destruct [6]
 - Keep reusable renderer terminal state separate from host policy [6]
+- Deliver fatal remote-channel errors before transport shutdown [6]
 - Cache renderer packages until main-thread invoker exists [5]
-- Deliver fatal remote-channel errors before transport shutdown [5]
-- `ViewModelReadyChannel` is the post-route RPC registration barrier [4]
-- `Test/RemotingHelpers` stays test-only and outside Release CodePack [4]
+- `ViewModelReadyChannel` is the post-route RPC registration barrier [5]
 - Renderer channel dispatch belongs in async renderer layer [4]
 - Treat a fatal local channel error as a complete disconnect signal [4]
 - Remote core accepts replacement renderers by detaching stale renderer [4]
 - Automation `/IO` parses synchronously and queues parsed commands [3]
+- `RemotingTest_Core /RVMT` gates singleton channels by startup phase [3]
 - `vl::collections::ObservableList<T>` element access and replacement [2]
 - Extract helpers to remove duplicated conversion blocks [2]
 - Place helpers in the primary-responsibility namespace [2]
 - Keep remote JSON channel code pure data processing [2]
 - Do not call `IChannel::Initialize(nullptr)` to uninstall readers [2]
-- `RemotingTest_Core /RVMT` gates singleton channels by startup phase [2]
 - Parameterize remoting channel servers by concrete protocol server bases [2]
 - `CppTest_Rvm` is a GUI app and stays console-free [2]
 - Automation HTTP returns 404 only for protocol-level rejection [2]
+- Keep renderer automation port configurable with default 8889 [1]
 - Use channel `localClient` callbacks for remoting local-client detection [1]
 - Use `EventObject` for renderer-connection waits after channel server start [1]
 - `TreeViewItemBindableRootProvider::UpdateBindingProperties` is root-scoped [1]
@@ -66,6 +67,7 @@
 - `Instance_GenerateRpcMetadata` validates one aggregate of all Workflow modules [1]
 - `RemoteViewModelTest` control messages are business-only [1]
 - GacUI test apps own concrete automation service composition [1]
+- RVM accepted-host loss poisons the requester dispatcher outside locks [1]
 
 # Refinements
 
@@ -360,11 +362,25 @@ Keep test-only renderer and RVM helper build, include, Linux configuration, and 
 
 Compile all remaining test-helper implementation through one explicit `Source_RemotingHelpers.vcxitems` inventory in the GacUISrc test solution. Individual remoting consumers should import and compile that complete inventory instead of maintaining divergent direct source lists. Keep the RVM source items visible in its `Rvmt` Solution Explorer folder. Standalone applications that need only automation receive it through their GacUI library and should not import `Source_RemotingHelpers` or generated remote-view-model items.
 
+Keep that shared inventory unconditional; do not use `ExcludedFromBuild` to make its source list vary by importer. Give each actual importer the generated-module dependencies needed by the complete inventory.
+
 These helpers build test applications, so prefer concrete roles and fixed test contracts over library-style flexibility. Pass a genuinely variable value such as a renderer fatal title directly to `RemoteProtocolRendererClient`; keep the fixed prompt policy in its implementation. Keep generated-RemoteViewModelTest-specific client/requester code in `Test/RemotingHelpers/Rvmt`. Declare fixed RVM channel, ready-message, disconnect-error, and invalid-client constants in `ViewModelShared.h`, pass service type names directly at each `RequestService` or `GetTypeIdFromName` composition boundary, and avoid configuration structs or factory functions. Names should expose the specific renderer-client or view-model-host responsibility.
+
+Make `RemoteViewModelChannelServer<TServerBase>` the single application-facing RVM lifetime. Keep `RpcServerHelpers` as a protected implementation base, override `Start()` and `Stop()` at the specialized server boundary, expose only `RequestService(typeName)`, and do not leak a separate helper/session through `GetSession()`.
+
+Keep `ViewModelHostClient` state directly in the owner: channel-name map, dispatcher, and ready channel do not need a nested `Impl`. Flattening this storage must preserve connection, RPC initialization, Ready-barrier, and shutdown ordering.
 
 ## GacUI test apps own concrete automation service composition
 
 Start automation only after the native controller exists. Each test app constructs the platform- and mode-specific service as a stack value, substitutes it directly, starts Windows HTTP or MiniHTTP, runs the app, then performs endpoint stop, service stop, and unsubstitution in straight-line normal shutdown order. Do not add a generic service enum, host abstraction, scope wrapper, global service pointer, or cleanup-only catch; the platform provider must not automatically install test automation.
+
+## Keep renderer automation port configurable with default 8889
+
+`RemotingTest_Rendering_Win32` should accept a validated `/port:<port>` argument and use the selected port for either Windows HTTP or MiniHTTP automation. Preserve 8889 when the argument is omitted, and keep documentation explicit about both the configurable port and its default.
+
+## RVM accepted-host loss poisons the requester dispatcher outside locks
+
+After claiming the accepted RVM host exactly once, finish broker bookkeeping and inject `RemotingTest_RvmHost disconnected.` into the requester dispatcher outside server locks. If loss happens before the dispatcher exists, latch the message and inject it during installation. Keep normal stopping and renderer loss nonfatal; once host loss has poisoned the dispatcher, skip graceful RPC finalization that would wait forever on that terminal dispatcher.
 
 ## `CppTest_Rvm` is a GUI app and stays console-free
 

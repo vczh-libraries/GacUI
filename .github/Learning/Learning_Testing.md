@@ -4,11 +4,11 @@
 
 - Keep test log paths stable during refactors [13]
 - Remote protocol frames: actions must change UI; organize frames carefully [9]
+- Stress remote core/renderer transport and terminal flows [8]
+- Verify RVM requester/host lifetimes across every transport [8]
 - Don’t schedule redundant idle frames [7]
-- Stress remote core/renderer transport and terminal flows [7]
 - Preserve existing idle-frame titles when requested [6]
 - Seed key-behavior tests via `protocol->TypeString` [6]
-- Verify RVM requester/host lifetimes across every transport [5]
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
 - Validate GacJS through browser UI interactions [4]
 - Verify GacJS HTTP fatal errors through browser UI [4]
@@ -70,6 +70,7 @@
 - Verify remote visual footprints at protocol and executable boundaries [1]
 - Isolate remote cache handoffs with single-response-shape tests [1]
 - MiniHTTP automation probes use IPv4 loopback [1]
+- Verify automation-service ownership changes in every consumer app [1]
 
 # Refinements
 
@@ -447,3 +448,7 @@ When requester/session or channel-server inheritance changes, exercise both RVM 
 ## MiniHTTP automation probes use IPv4 loopback
 
 When a MiniHTTP test listener binds IPv4 loopback, probe it through `127.0.0.1`. `localhost` may resolve to IPv6 and miss an otherwise healthy listener, producing a misleading endpoint failure.
+
+## Verify automation-service ownership changes in every consumer app
+
+After moving reusable automation endpoint code or changing its shared-project ownership, build the complete GacUISrc solution and run every affected test application through the repository execution wrapper. Require a nonempty `Controls` or `Dom` response, exit through automation, and cover both an explicitly selected native-renderer port and the default 8889 port. This executable matrix replaces unit tests only when the task explicitly grants that exception.
