@@ -6,9 +6,12 @@ Use this page when wiring a JSON RPC endpoint to a transport. Implement IRpcJson
 
 ## IRpcJsonMessageDispatcher Contract
 
-IRpcJsonMessageDispatcher has two runtime responsibilities:
+IRpcJsonMessageDispatcher has three runtime responsibilities:
 - AllocateRequestId returns a unique request id for outgoing JSON RPC messages from this endpoint.
+- InjectException persistently stores a last-write-wins failure and wakes dispatcher-owned waits. An empty message is valid. Every later OnJsonRequest throws RpcInjectedException before sending until the dispatcher is destroyed.
 - OnJsonRequest sends one JSON request according to the RequestType and returns the response JSON node when a response is expected.
+
+InjectException must be safe to call concurrently with OnJsonRequest. A custom transport must guard the injected presence flag, message, response selection and response commitment with the same lock. Its response and startup waits must include injection in their wait predicate and be notified when the message changes. If injection commits before a matching response is committed, that call throws on its original caller thread. If the response commits first, that call may return normally, but the persistent injection still poisons every remaining and future call. Injection is observed only at dispatcher-controlled checkpoints; it cannot asynchronously throw through a blocking transport send or arbitrary service code.
 
 RequestType describes the routing behavior:
 - Direct sends a request to the target client and waits for the matching response.
@@ -31,6 +34,18 @@ private:
 	IRpcObjectEventOps* objectEventOps = nullptr;
 	IRpcDispatcher* rpcDispatcher = nullptr;
 	IRpcLifecycle* lifecycle = nullptr;
+	CriticalSection lockState;
+	ConditionVariable cvState;
+	bool hasInjectedException = false;
+	WString injectedException;
+
+	void ThrowInjectedExceptionLocked()
+	{
+		if (hasInjectedException)
+		{
+			throw RpcInjectedException(injectedException);
+		}
+	}
 
 public:
 	vint AllocateRequestId() override
@@ -38,8 +53,24 @@ public:
 		return ++nextRequestId;
 	}
 
+	void InjectException(const WString& message) override
+	{
+		CS_LOCK(lockState)
+		{
+			hasInjectedException = true;
+			injectedException = message;
+		}
+		cvState.WakeAllPendings();
+	}
+
 	Ptr<JsonNode> OnJsonRequest(Ptr<JsonNode> message, RequestType requestType) override
 	{
+		CS_LOCK(lockState)
+		{
+			ThrowInjectedExceptionLocked();
+		}
+		// The transport-specific wait must use cvState and recheck
+		// ThrowInjectedExceptionLocked before committing a response.
 		switch (requestType)
 		{
 		case RequestType::Direct:

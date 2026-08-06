@@ -39,7 +39,7 @@ Endpoint startup then happens through the reusable dispatcher client. A network 
 
 ### Implementation
 
-`IRpcJsonMessageDispatcher` is the transport boundary. `AllocateRequestId()` provides request ids for JSON envelopes, and `OnJsonRequest(message, requestType)` sends a direct, broadcast, or broadcast-and-drop request through the transport. `IRpcJsonMessageDispatcher::DefaultTranslate` is the receiver-side helper that routes JSON envelopes to local object ops, object event ops, or lifecycle service declaration handling.
+`IRpcJsonMessageDispatcher` is the transport boundary. `AllocateRequestId()` provides request ids for JSON envelopes, `OnJsonRequest(message, requestType)` sends a direct, broadcast, or broadcast-and-drop request through the transport, and `InjectException(message)` persistently poisons dispatcher-controlled request execution. Injection is last-write-wins, an empty message is valid, and every later `OnJsonRequest` throws `RpcInjectedException` before sending. A transport-owned response wait must wake when injection occurs and linearize injection against response commitment under the same lock. `IRpcJsonMessageDispatcher::DefaultTranslate` is the receiver-side helper that routes JSON envelopes to local object ops, object event ops, or lifecycle service declaration handling.
 
 `RpcJsonObjectOps` and `RpcJsonObjectEventOps` adapt generated JSON ops to the shared envelopes declared by `Release/Rpc.d.ts`. They build request objects on the caller side, validate matching responses, and translate received requests back to `IRpcObjectOps` or `IRpcObjectEventOps`.
 
@@ -48,6 +48,8 @@ Endpoint startup then happens through the reusable dispatcher client. A network 
 `RpcJsonLifecycle` derives from `RpcLifecycleBase` and installs the generated JSON serializer, object ops, event ops, type-id callback, and event-attacher callback. It also wraps predefined byref collection operations through the reusable list/object ops adapters.
 
 `WfLibraryRpcJsonDispatcherClient` owns endpoint-side channel details that are not part of the generic RPC lifecycle: nested request processing while waiting for a response, response buffering by request id, pre-initialization service declaration caching, required-service waiting, and server-coordinator login/logout messages.
+
+The channel client stores injected failure state with its received messages and buffered responses under one `CriticalSection`. Its `ConditionVariable` wakes response and startup waits. Waiters always test injection before messages or successful startup predicates; a matching response is committed under the same lock, so an earlier injection wins while an earlier response commitment may return normally. Injection does not asynchronously throw through a transport send or arbitrary service code; implementations check it at request entry and every dispatcher-controlled checkpoint.
 
 `WfLibraryRpcJsonDispatcherServer` owns coordinator-side channel details: connected client tracking, broadcast request redirection, expected response tracking, response consolidation, service declaration replay to future clients, and client disconnect cleanup. The task-queue subclasses keep scheduling policy outside the core translation helpers.
 
@@ -204,3 +206,5 @@ A request kind mismatch is an error: object ops are direct, object events are br
 Only `Request:IRpcDispatcher_DeclareRemoteService` may be accepted before lifecycle initialization. Other RPC messages before initialization indicate a startup-order violation.
 
 Broadcast-and-drop requests must not produce responses. A client waiting for a response to this request will deadlock a correct implementation.
+
+`InjectException` is persistent rather than consumable. Custom dispatchers must keep a separate presence flag so an empty message remains distinguishable from no injection, replace the stored message on later injections, wake all dispatcher-owned waits, and throw `RpcInjectedException` on the original `OnJsonRequest` caller thread. A synchronous bridge that does not own a wait checks before dispatch and again before committing its result; it is not required to interrupt arbitrary code already executing.

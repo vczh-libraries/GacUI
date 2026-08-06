@@ -106,7 +106,7 @@ Dispatchers should schedule user callbacks through the host task queue or event 
 
 ## JSON RPC Channel Layer
 
-The JSON implementation uses RpcJsonDispatcher, RpcJsonLifecycle, RpcJsonObjectOps, and RpcJsonObjectEventOps. IRpcJsonMessageDispatcher accepts JSON requests and classifies them as direct, broadcast, or broadcast-and-drop messages.
+The JSON implementation uses RpcJsonDispatcher, RpcJsonLifecycle, RpcJsonObjectOps, and RpcJsonObjectEventOps. IRpcJsonMessageDispatcher accepts JSON requests, classifies them as direct, broadcast, or broadcast-and-drop messages, and supports persistent exception injection for waking dispatcher-owned waits.
 
 The shared channel implementation connects the JSON dispatcher to [vl::inter_process](.././vlppos/using-inter-process.md) channels:
 - JsonPackage is a JSON node package.
