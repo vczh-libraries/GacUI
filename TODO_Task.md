@@ -4,16 +4,6 @@ Perform the following refactor on the design in `Test/RemotingHelpers/Rvmt` and 
   - The current behavior is the UI hangs when `RemotingTest_RvmHost` is forced terminated.
   - This should generates a disconnection signal in `CppTest_Rvm` or `RemotingTest_Core`, where is a good place to trigger.
   - A task to throw an exception could be injected using `InvokeInMainThread`, to make it thrown in UI thread, to make fatal error generating much easier. In `CppTest_Rvm` the exception doesn't need to catch, it just crashes the app as expected.
-- Remove the dependency to `TaskQueue`:
-  - Do not use `RpcJsonDispatcherClientForTaskQueue`, use `RpcJsonDispatcherClient` instead, as `RemoteViewModelJsonDispatcherClient`'s base class.
-  - For `CppTest_Rvm` and `RemotingTest_Core`:
-    - DO not use `TaskQueue`, delete `TaskQueueThread`.
-    - The `ScheduleTask` function will be override in `GuiMain.cpp` files, twice.
-    - `GetCurrentController()->AsyncService()->InvokeInMainThread` could be modeled as a task queue, just inherit from `RpcJsonDispatcherClient` and use this function instead, therefore no `TaskQueue` will be needed.
-  - For `RemotingTest_RvmHost`:
-    - The `ScheduleTask` function will be override in `Main.cpp` to use `TaskQueue`.
-    - Unfortunately the `RpcJsonDispatcherClientForTaskQueue` class cannot be used here.
-  - Since new sub classes of `RemoteViewModelJsonDispatcherClient` is created in each test app, they need to be passed to `RemoteViewModelChannelServer` and `ViewModelHostClient`, instead of being created in these two classes internally.
 - No `ViewModelHostClient::Impl` is needed, just merge the class into `ViewModelHostClient` directly.
 
 ## DETAILS
@@ -98,6 +88,8 @@ For each topology and transport, run one normal session and one forced-host-loss
 **review comment**: `RpcJsonDispatcherClient::OnJsonRequest` waits synchronously for a matching response. If host loss is discovered while `Translate` is blocked, an exception queued through `InvokeInMainThread` cannot execute because the same UI thread is waiting. Idle `/Http` and `/MiniHttp` loss is intentionally not detected through heartbeat or polling, so the next real RPC operation is also the most likely place to expose the loss. The proposed queued exception alone therefore does not guarantee the requested no-hang behavior.
 
 **suggested solution**: Decide whether the requirement covers only a host-loss callback observed while the UI loop is free. If host loss during an in-flight RPC must terminate reliably, add an upstream `RpcJsonDispatcherClient` terminal/cancellation notification that records the failure, wakes pending message waits, and makes the blocked `OnJsonRequest` throw; implement and release that change from the owning Workflow repository before importing it here. Preserve the immediate callback-side terminal action until an equivalent unblock mechanism exists.
+
+Good catch, is it possible to just crash the blocking `OnJsonRequest` in this case?
 
 ### BROKER SCHEDULING AND UI SCHEDULING HAVE DIFFERENT LIFETIMES
 
