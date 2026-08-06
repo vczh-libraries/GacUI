@@ -18,7 +18,7 @@ namespace vl::presentation::remoting
 			Ptr<glr::json::Parser> parser,
 			Ptr<TaskQueue> taskQueue
 			);
-		const JsonChannelClient::ChannelNameList&			OnGetChannelNames() override;
+		const JsonChannelClient::ChannelNameList&		OnGetChannelNames() override;
 		void											OnConnected(vint clientId) override;
 		void											OnDisconnected() override;
 		void											OnReadError(const WString& errorMessage) override;

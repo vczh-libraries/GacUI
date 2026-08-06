@@ -15,7 +15,7 @@ namespace vl::presentation::remoting
 		class BroadcastingLocalClient;
 		class RequesterLocalClient;
 
-		SpinLock										lockState;
+		SpinLock									lockState;
 		CriticalSection								lockBroker;
 		Func<void(const WString&)>					terminalAction;
 		RequesterPhase								phase;
@@ -25,13 +25,13 @@ namespace vl::presentation::remoting
 		bool										admissionReady = false;
 		bool										rpcInitialized = false;
 
-		rpc_controller::channeling::RpcJsonDispatcherServer*	brokerDispatcher = nullptr;
-		Ptr<TaskQueue>								taskQueue;
-		Ptr<TaskQueueThread>						taskQueueThread;
-		Ptr<BroadcastingLocalClient>					broadcastingClient;
-		Ptr<RequesterLocalClient>					requesterClient;
-		remote_view_model_test::RemoteViewModelJsonDispatcherClient* requesterDispatcher = nullptr;
-		Ptr<IDescriptable>							service;
+		rpc_controller::channeling::RpcJsonDispatcherServer*			brokerDispatcher = nullptr;
+		Ptr<TaskQueue>													taskQueue;
+		Ptr<TaskQueueThread>											taskQueueThread;
+		Ptr<BroadcastingLocalClient>									broadcastingClient;
+		Ptr<RequesterLocalClient>										requesterClient;
+		remote_view_model_test::RemoteViewModelJsonDispatcherClient*	requesterDispatcher = nullptr;
+		Ptr<IDescriptable>												service;
 
 		void										RegisterHost(vint clientId);
 		void										OnControlMessage(vint senderClientId, const JsonPackage& package);

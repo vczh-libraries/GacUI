@@ -10,6 +10,7 @@ namespace vl::presentation::remoting
 	class RemoteProtocolRendererClient : public remoteprotocol::channeling::GuiRemoteProtocolChannelClient
 	{
 		using Base = remoteprotocol::channeling::GuiRemoteProtocolChannelClient;
+		using AsyncJsonChannelRenderer = remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelRenderer;
 
 	private:
 		SpinLock											lockState;
@@ -18,8 +19,7 @@ namespace vl::presentation::remoting
 		bool												retainedFatalError = false;
 		bool												stopping = false;
 		remote_renderer::GuiRemoteRendererSingle*			renderer = nullptr;
-		remoteprotocol::channeling::GuiRemoteProtocolAsyncJsonChannelRenderer*
-															asyncRendererChannel = nullptr;
+		AsyncJsonChannelRenderer*							asyncRendererChannel = nullptr;
 		AutomationServiceRenderer*							rendererAutomationService = nullptr;
 
 		void												QueueMainThreadTask(const Func<void()>& task);

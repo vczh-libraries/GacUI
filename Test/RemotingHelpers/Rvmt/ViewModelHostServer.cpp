@@ -131,7 +131,7 @@ namespace vl::presentation::remoting
 				waitingForServices
 				);
 			CHECK_ERROR(clientId != -1, L"RequesterLocalClient::Connect(...)#Failed to connect the requester client.");
-			remote_view_model_test::InitializeRpc(dispatcher.Obj(), clientId);
+			dispatcher->InitializeRpc(clientId);
 			dispatcher->SetServerLocalClientId(serverClientId);
 			return clientId;
 		}

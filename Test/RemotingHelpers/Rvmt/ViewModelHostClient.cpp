@@ -33,7 +33,7 @@ namespace vl::presentation::remoting
 				channelClient->GetChannels()[ViewModelChannelName],
 				waitingForServices
 				);
-			remote_view_model_test::InitializeRpc(dispatcher.Obj(), channelClient->GetClientId());
+			dispatcher->InitializeRpc(channelClient->GetClientId());
 			controlChannel = channelClient->GetChannels()[ViewModelReadyChannelName];
 			CHECK_ERROR(controlChannel, L"ViewModelHostClient::Impl::Connect(...)#The control channel is null.");
 		}

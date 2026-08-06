@@ -14,7 +14,7 @@ namespace vl::presentation::remoting
 	using JsonChannelServer = rpc_controller::channeling::JsonChannelServer;
 	using JsonLocalChannelClient = rpc_controller::channeling::JsonLocalChannelClient;
 	using TaskQueue = rpc_controller::channeling::TaskQueue;
-	using RpcDispatcherClient = rpc_controller::channeling::RpcJsonDispatcherClient;
+	using RpcDispatcherClient = rpc_controller::channeling::RpcJsonDispatcherClientForTaskQueue;
 
 	inline constexpr const wchar_t*						ViewModelChannelName = L"ViewModelChannel";
 	inline constexpr const wchar_t*						ViewModelReadyChannelName = L"ViewModelReadyChannel";
@@ -32,13 +32,12 @@ namespace vl::presentation::remote_view_model_test
 	class RemoteViewModelJsonDispatcherClient
 		: public rpc_controller::channeling::RpcJsonDispatcherClientForTaskQueue
 	{
-		friend void InitializeRpc(RemoteViewModelJsonDispatcherClient* dispatcher, vint clientId);
-
 	public:
 		RemoteViewModelJsonDispatcherClient(Ptr<remoting::TaskQueue> taskQueue);
+
+		void InitializeRpc(vint clientId);
 	};
 
-	extern void InitializeRpc(RemoteViewModelJsonDispatcherClient* dispatcher, vint clientId);
 }
 
 #endif

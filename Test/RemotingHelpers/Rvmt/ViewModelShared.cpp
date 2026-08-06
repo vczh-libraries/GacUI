@@ -29,12 +29,12 @@ namespace vl::presentation::remote_view_model_test
 	{
 	}
 
-	void InitializeRpc(RemoteViewModelJsonDispatcherClient* dispatcher, vint clientId)
+	void RemoteViewModelJsonDispatcherClient::InitializeRpc(vint clientId)
 	{
 		auto& app = vl_workflow_global::RemoteViewModelTestRpc::Instance();
-		auto rpcDispatcher = Ptr(new RpcJsonDispatcher(clientId, dispatcher));
+		auto rpcDispatcher = Ptr(new RpcJsonDispatcher(clientId, this));
 		auto lifecycle = Ptr(new RpcJsonLifecycle(clientId, rpcDispatcher.Obj()));
-		dispatcher->SetRpcObjects(rpcDispatcher, lifecycle);
+		this->SetRpcObjects(rpcDispatcher, lifecycle);
 
 		auto idMap = UnboxParameter<Dictionary<WString, vint>>(BoxParameter(app.rpc_GetIds()));
 		lifecycle->SetIdMap(idMap.Ref());
