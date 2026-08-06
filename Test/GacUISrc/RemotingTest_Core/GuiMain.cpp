@@ -28,7 +28,6 @@ constexpr vint GacUIAutomationHttpPort = 8888;
 struct CoreGuiContext
 {
 	vint												mainWindowConstructorIndex = 0;
-	remoting::RemotingRequesterSession*					session = nullptr;
 	Ptr<rvmt::IViewModel>								viewModel;
 	Ptr<async_tcp_socket::IAsyncSocketServer>			miniHttpSocketServer;
 };
@@ -46,7 +45,6 @@ void GuiMain()
 		window = Ptr(new rptest::RpMainWindow);
 		break;
 	case 2:
-		CHECK_ERROR(currentGuiContext->session, L"GuiMain()#The RVM requester session is null.");
 		CHECK_ERROR(currentGuiContext->viewModel, L"GuiMain()#The rvmt::IViewModel proxy is null.");
 		window = Ptr(new rvmt::MainWindow(currentGuiContext->viewModel));
 		break;
@@ -80,18 +78,7 @@ void GuiMain()
 		);
 #endif
 
-	if (currentGuiContext->mainWindowConstructorIndex == 2)
-	{
-		CHECK_ERROR(
-			currentGuiContext->session->BeginRunning(),
-			L"GuiMain()#RemotingTest_RvmHost was not available before window startup."
-			);
-	}
 	GetApplication()->Run(window.Obj());
-	if (currentGuiContext->session)
-	{
-		currentGuiContext->session->BeginStopping();
-	}
 
 #ifdef VCZH_MSVC
 	if (currentGuiContext->miniHttpSocketServer)
@@ -142,8 +129,7 @@ int StartServer(
 	vint mainWindowConstructorIndex,
 	Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer,
 	Ptr<glr::json::Parser> jsonParser,
-	remoting::RemotingChannelServer<TServerBase>& channelServer,
-	remoting::RemotingRequesterSession* requesterSession
+	remoting::RemotingChannelServer<TServerBase>& channelServer
 	)
 {
 	channelServer.Start();
@@ -165,15 +151,14 @@ int StartServer(
 	channelServer.SetCoreChannels(coreClient->GetProtocolChannel(), &channelSender);
 
 	Ptr<rvmt::IViewModel> viewModel;
-	if (requesterSession)
+	if (mainWindowConstructorIndex == 2)
 	{
-		requesterSession->Start(&channelServer);
-		viewModel = requesterSession->RequestService().Cast<rvmt::IViewModel>();
+		auto& rvmChannelServer = dynamic_cast<RemoteViewModelChannelServer<TServerBase>&>(channelServer);
+		viewModel = rvmChannelServer.RequestService(L"rvmt::IViewModel").Cast<rvmt::IViewModel>();
 	}
 
 	CoreGuiContext context{
 		mainWindowConstructorIndex,
-		requesterSession,
 		viewModel,
 		miniHttpSocketServer
 		};
@@ -183,17 +168,7 @@ int StartServer(
 	currentGuiContext = nullptr;
 
 	channelServer.ClearCoreChannels();
-	if (requesterSession)
-	{
-		requesterSession->Stop(Func<void()>([&channelServer]()
-		{
-			channelServer.Stop();
-		}));
-	}
-	else
-	{
-		channelServer.Stop();
-	}
+	channelServer.Stop();
 	return 0;
 }
 
@@ -211,7 +186,7 @@ int StartServerHelper(
 			true,
 			std::forward<TArgs&&>(args)...
 		);
-		return StartServer<TServerBase>(index, miniHttpSocketServer, jsonParser, channelServer, channelServer.GetSession());
+		return StartServer<TServerBase>(index, miniHttpSocketServer, jsonParser, channelServer);
 	}
 	else
 	{
@@ -220,7 +195,7 @@ int StartServerHelper(
 			true,
 			std::forward<TArgs&&>(args)...
 		);
-		return StartServer<TServerBase>(index, miniHttpSocketServer, jsonParser, channelServer, nullptr);
+		return StartServer<TServerBase>(index, miniHttpSocketServer, jsonParser, channelServer);
 	}
 }
 

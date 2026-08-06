@@ -5,18 +5,11 @@ namespace vl::presentation::remoting
 	using namespace collections;
 	using namespace rpc_controller::channeling;
 
-	enum class RemotingRequesterSession::RequesterPhase
-	{
-		Starting,
-		Running,
-		Stopping,
-	};
-
 /***********************************************************************
 TaskQueueThread
 ***********************************************************************/
 
-	class RemotingRequesterSession::TaskQueueThread : public Thread
+	class TaskQueueThread : public Thread
 	{
 	private:
 		Ptr<TaskQueue>										taskQueue;
@@ -43,10 +36,10 @@ TaskQueueThread
 	};
 
 /***********************************************************************
-BroadcastingLocalClient
+RpcBroadcastingLocalClient
 ***********************************************************************/
 
-	class RemotingRequesterSession::BroadcastingLocalClient
+	class RpcBroadcastingLocalClient
 		: public JsonLocalChannelClient
 		, protected inter_process::IChannelReader<JsonPackage>
 	{
@@ -63,14 +56,14 @@ BroadcastingLocalClient
 		}
 
 	public:
-		BroadcastingLocalClient(
+		RpcBroadcastingLocalClient(
 			Ptr<glr::json::Parser> parser,
 			const Func<void(vint, const JsonPackage&)>& _controlCallback
 			)
 			: JsonLocalChannelClient(parser)
 			, controlCallback(_controlCallback)
 		{
-			CHECK_ERROR(controlCallback, L"BroadcastingLocalClient::BroadcastingLocalClient(...)#The control callback is null.");
+			CHECK_ERROR(controlCallback, L"RpcBroadcastingLocalClient::RpcBroadcastingLocalClient(...)#The control callback is null.");
 			channelNames.Add(ViewModelChannelName, nullptr);
 			channelNames.Add(ViewModelReadyChannelName, nullptr);
 		}
@@ -82,12 +75,12 @@ BroadcastingLocalClient
 
 		vint Connect(JsonChannelServer* channelServer, Ptr<JsonChannelClient> self, Ptr<TaskQueue> taskQueue)
 		{
-			CHECK_ERROR(channelServer, L"BroadcastingLocalClient::Connect(...)#The channel server is null.");
-			CHECK_ERROR(self, L"BroadcastingLocalClient::Connect(...)#The shared local client is null.");
+			CHECK_ERROR(channelServer, L"RpcBroadcastingLocalClient::Connect(...)#The channel server is null.");
+			CHECK_ERROR(self, L"RpcBroadcastingLocalClient::Connect(...)#The shared local client is null.");
 			auto clientId = channelServer->ConnectLocalClient(self);
-			CHECK_ERROR(clientId != -1, L"BroadcastingLocalClient::Connect(...)#Failed to connect the broadcasting client.");
+			CHECK_ERROR(clientId != -1, L"RpcBroadcastingLocalClient::Connect(...)#Failed to connect the broadcasting client.");
 			controlChannel = GetChannels()[ViewModelReadyChannelName];
-			CHECK_ERROR(controlChannel, L"BroadcastingLocalClient::Connect(...)#The control channel is null.");
+			CHECK_ERROR(controlChannel, L"RpcBroadcastingLocalClient::Connect(...)#The control channel is null.");
 			controlChannel->Initialize(this);
 			dispatcher = Ptr(new RpcJsonDispatcherServerForTaskQueue(
 				this,
@@ -99,23 +92,23 @@ BroadcastingLocalClient
 
 		RpcJsonDispatcherServer* GetDispatcher()
 		{
-			CHECK_ERROR(dispatcher, L"BroadcastingLocalClient::GetDispatcher()#The client is not connected.");
+			CHECK_ERROR(dispatcher, L"RpcBroadcastingLocalClient::GetDispatcher()#The client is not connected.");
 			return dispatcher.Obj();
 		}
 	};
 
 /***********************************************************************
-RequesterLocalClient
+RpcServiceAccessLocalClient
 ***********************************************************************/
 
-	class RemotingRequesterSession::RequesterLocalClient : public JsonLocalChannelClient
+	class RpcServiceAccessLocalClient : public JsonLocalChannelClient
 	{
 	private:
 		JsonChannelClient::ChannelMap						channelNames;
 		Ptr<remote_view_model_test::RemoteViewModelJsonDispatcherClient> dispatcher;
 
 	public:
-		RequesterLocalClient(Ptr<glr::json::Parser> parser)
+		RpcServiceAccessLocalClient(Ptr<glr::json::Parser> parser)
 			: JsonLocalChannelClient(parser)
 		{
 			channelNames.Add(ViewModelChannelName, nullptr);
@@ -130,11 +123,12 @@ RequesterLocalClient
 			JsonChannelServer* channelServer,
 			Ptr<JsonChannelClient> self,
 			Ptr<TaskQueue> taskQueue,
-			vint serverClientId
+			vint serverClientId,
+			const WString& typeName
 			)
 		{
 			List<WString> waitingForServices;
-			waitingForServices.Add(ViewModelServiceName);
+			waitingForServices.Add(typeName);
 			dispatcher = Ptr(new remote_view_model_test::RemoteViewModelJsonDispatcherClient(taskQueue));
 			auto clientId = dispatcher->ConnectLocalServer(
 				channelServer,
@@ -142,7 +136,7 @@ RequesterLocalClient
 				GetChannels()[ViewModelChannelName],
 				waitingForServices
 				);
-			CHECK_ERROR(clientId != -1, L"RequesterLocalClient::Connect(...)#Failed to connect the requester client.");
+			CHECK_ERROR(clientId != -1, L"RpcServiceAccessLocalClient::Connect(...)#Failed to connect the requester client.");
 			dispatcher->InitializeRpc(clientId);
 			dispatcher->SetServerLocalClientId(serverClientId);
 			return clientId;
@@ -150,33 +144,28 @@ RequesterLocalClient
 
 		remote_view_model_test::RemoteViewModelJsonDispatcherClient* GetDispatcher()
 		{
-			CHECK_ERROR(dispatcher, L"RequesterLocalClient::GetDispatcher()#The client is not connected.");
+			CHECK_ERROR(dispatcher, L"RpcServiceAccessLocalClient::GetDispatcher()#The client is not connected.");
 			return dispatcher.Obj();
 		}
 	};
 
 /***********************************************************************
-RemotingRequesterSession
+RpcServerHelpers
 ***********************************************************************/
 
-	void FinalizeRpcOnTaskQueue(
-		Ptr<TaskQueue> taskQueue,
-		remote_view_model_test::RemoteViewModelJsonDispatcherClient* dispatcher
-		)
+	void RpcServerHelpers::FinalizeRpcOnTaskQueue()
 	{
-		CHECK_ERROR(taskQueue, L"FinalizeRpcOnTaskQueue(...)#The task queue is null.");
-		CHECK_ERROR(dispatcher, L"FinalizeRpcOnTaskQueue(...)#The dispatcher is null.");
 		EventObject finalized;
-		CHECK_ERROR(finalized.CreateAutoUnsignal(false), L"FinalizeRpcOnTaskQueue(...)#Failed to create the finalization event.");
+		CHECK_ERROR(finalized.CreateAutoUnsignal(false), L"RpcServerHelpers::FinalizeRpcOnTaskQueue()#Failed to create the finalization event.");
 		taskQueue->QueueTask(Func<void()>([&]()
 		{
-			dispatcher->FinalizeRpc();
+			requesterDispatcher->FinalizeRpc();
 			finalized.Signal();
 		}));
 		finalized.Wait();
 	}
 
-	RemotingRequesterSession::RemotingRequesterSession(
+	RpcServerHelpers::RpcServerHelpers(
 		Ptr<glr::json::Parser> parser,
 		const Func<void(const WString&)>& _terminalAction
 		)
@@ -184,23 +173,23 @@ RemotingRequesterSession
 		, phase(RequesterPhase::Starting)
 		, taskQueue(Ptr(new TaskQueue))
 	{
-		CHECK_ERROR(parser, L"RemotingRequesterSession::RemotingRequesterSession(...)#The JSON parser is null.");
-		CHECK_ERROR(terminalAction, L"RemotingRequesterSession::RemotingRequesterSession(...)#The terminal action is null.");
+		CHECK_ERROR(parser, L"RpcServerHelpers::RpcServerHelpers(...)#The JSON parser is null.");
+		CHECK_ERROR(terminalAction, L"RpcServerHelpers::RpcServerHelpers(...)#The terminal action is null.");
 
 		taskQueueThread = Ptr(new TaskQueueThread(taskQueue));
-		broadcastingClient = Ptr(new BroadcastingLocalClient(
+		broadcastingClient = Ptr(new RpcBroadcastingLocalClient(
 			parser,
 			Func<void(vint, const JsonPackage&)>([this](vint senderClientId, const JsonPackage& package)
 			{
 				OnControlMessage(senderClientId, package);
 			})
 			));
-		requesterClient = Ptr(new RequesterLocalClient(parser));
+		requesterClient = Ptr(new RpcServiceAccessLocalClient(parser));
 	}
 
-	RemotingRequesterSession::~RemotingRequesterSession() = default;
+	RpcServerHelpers::~RpcServerHelpers() = default;
 
-	bool RemotingRequesterSession::TryAcceptHost(vint clientId)
+	bool RpcServerHelpers::TryAcceptHost(vint clientId)
 	{
 		bool accepted = false;
 		SPIN_LOCK(lockState)
@@ -220,13 +209,13 @@ RemotingRequesterSession
 		return accepted;
 	}
 
-	void RemotingRequesterSession::RegisterHost(vint clientId)
+	void RpcServerHelpers::RegisterHost(vint clientId)
 	{
 		SPIN_LOCK(lockState)
 		{
 			CHECK_ERROR(
 				hostId == clientId && !brokerRegistrationClaimed,
-				L"RemotingRequesterSession received Ready from an unexpected client."
+				L"RpcServerHelpers received Ready from an unexpected client."
 				);
 			brokerRegistrationClaimed = true;
 		}
@@ -245,17 +234,17 @@ RemotingRequesterSession
 		}
 	}
 
-	void RemotingRequesterSession::OnControlMessage(vint senderClientId, const JsonPackage& package)
+	void RpcServerHelpers::OnControlMessage(vint senderClientId, const JsonPackage& package)
 	{
 		if (IsViewModelReadyMessage(package))
 		{
 			RegisterHost(senderClientId);
 			return;
 		}
-		CHECK_ERROR(false, L"RemotingRequesterSession received an unexpected control message.");
+		CHECK_ERROR(false, L"RpcServerHelpers received an unexpected control message.");
 	}
 
-	void RemotingRequesterSession::OnClientDisconnected(vint clientId)
+	void RpcServerHelpers::OnClientDisconnected(vint clientId)
 	{
 		bool hostDisconnected = false;
 		bool disconnectBroker = false;
@@ -281,44 +270,47 @@ RemotingRequesterSession
 		}
 	}
 
-	void RemotingRequesterSession::Start(JsonChannelServer* channelServer)
+	void RpcServerHelpers::Start(JsonChannelServer* _channelServer)
 	{
-		CHECK_ERROR(channelServer, L"RemotingRequesterSession::Start(...)#The channel server is null.");
-		CHECK_ERROR(!brokerDispatcher, L"RemotingRequesterSession::Start(...)#The session has already started.");
+		CHECK_ERROR(_channelServer, L"RpcServerHelpers::Start(...)#The channel server is null.");
+		CHECK_ERROR(!channelServer, L"RpcServerHelpers::Start(...)#The helpers have already started.");
+		channelServer = _channelServer;
 		broadcastingClient->Connect(channelServer, broadcastingClient, taskQueue);
 		SPIN_LOCK(lockState)
 		{
 			brokerDispatcher = broadcastingClient->GetDispatcher();
 		}
-		auto requesterClientId = requesterClient->Connect(
-			channelServer,
-			requesterClient,
-			taskQueue,
-			brokerDispatcher->GetServerClientId()
-			);
-		requesterDispatcher = requesterClient->GetDispatcher();
-		brokerDispatcher->RegisterClient(requesterClientId);
-		CHECK_ERROR(taskQueueThread->Start(), L"RemotingRequesterSession::Start(...)#Failed to start the task queue thread.");
 		SPIN_LOCK(lockState)
 		{
 			admissionReady = true;
 		}
 	}
 
-	Ptr<IDescriptable> RemotingRequesterSession::RequestService()
+	Ptr<IDescriptable> RpcServerHelpers::RequestService(const WString& typeName)
 	{
-		CHECK_ERROR(requesterDispatcher, L"RemotingRequesterSession::RequestService()#The session has not started.");
-		CHECK_ERROR(!rpcInitialized, L"RemotingRequesterSession::RequestService()#The dispatcher is already initialized.");
+		CHECK_ERROR(channelServer, L"RpcServerHelpers::RequestService(...)#The helpers have not started.");
+		CHECK_ERROR(!rpcInitialized, L"RpcServerHelpers::RequestService(...)#The dispatcher is already initialized.");
+		auto requesterClientId = requesterClient->Connect(
+			channelServer,
+			requesterClient,
+			taskQueue,
+			brokerDispatcher->GetServerClientId(),
+			typeName
+			);
+		requesterDispatcher = requesterClient->GetDispatcher();
+		brokerDispatcher->RegisterClient(requesterClientId);
+		CHECK_ERROR(taskQueueThread->Start(), L"RpcServerHelpers::RequestService(...)#Failed to start the task queue thread.");
 		rpcInitialized = true;
 		requesterDispatcher->Initialize();
 		service = requesterDispatcher
 			->GetRpcLifecycle()
-			->RequestService(ViewModelServiceName);
-		CHECK_ERROR(service, L"RemotingRequesterSession::RequestService()#Failed to request the service.");
+			->RequestService(typeName);
+		CHECK_ERROR(service, L"RpcServerHelpers::RequestService(...)#Failed to request the service.");
+		CHECK_ERROR(BeginRunning(), L"RpcServerHelpers::RequestService(...)#RemotingTest_RvmHost is unavailable.");
 		return service;
 	}
 
-	bool RemotingRequesterSession::BeginRunning()
+	bool RpcServerHelpers::BeginRunning()
 	{
 		SPIN_LOCK(lockState)
 		{
@@ -334,7 +326,7 @@ RemotingRequesterSession
 		return false;
 	}
 
-	bool RemotingRequesterSession::CanAdmitRenderer()
+	bool RpcServerHelpers::CanAdmitRenderer()
 	{
 		bool result = false;
 		SPIN_LOCK(lockState)
@@ -344,7 +336,7 @@ RemotingRequesterSession
 		return result;
 	}
 
-	void RemotingRequesterSession::BeginStopping()
+	void RpcServerHelpers::BeginStopping()
 	{
 		SPIN_LOCK(lockState)
 		{
@@ -356,19 +348,22 @@ RemotingRequesterSession
 		}
 	}
 
-	void RemotingRequesterSession::Stop(const Func<void()>& stopServer)
+	void RpcServerHelpers::Stop(const Func<void()>& stopServer)
 	{
 		BeginStopping();
-		if (requesterDispatcher)
+		if (rpcInitialized)
 		{
-			FinalizeRpcOnTaskQueue(taskQueue, requesterDispatcher);
+			FinalizeRpcOnTaskQueue();
 		}
 		if (stopServer)
 		{
 			stopServer();
 		}
-		taskQueue->QueueExitTask();
-		taskQueueThread->Wait();
+		if (rpcInitialized)
+		{
+			taskQueue->QueueExitTask();
+			taskQueueThread->Wait();
+		}
 		service = nullptr;
 	}
 }

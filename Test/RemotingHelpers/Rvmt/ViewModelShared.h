@@ -18,7 +18,6 @@ namespace vl::presentation::remoting
 
 	inline constexpr const wchar_t*						ViewModelChannelName = L"ViewModelChannel";
 	inline constexpr const wchar_t*						ViewModelReadyChannelName = L"ViewModelReadyChannel";
-	inline constexpr const wchar_t*						ViewModelServiceName = L"rvmt::IViewModel";
 	inline constexpr const wchar_t*						ViewModelReadyMessage = L"Ready";
 	inline constexpr const wchar_t*						RemoteViewModelHostDisconnectedError = L"RemotingTest_RvmHost disconnected.";
 	inline constexpr vint								InvalidRemoteViewModelClientId = -1;

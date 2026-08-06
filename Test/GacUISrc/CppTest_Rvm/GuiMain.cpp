@@ -19,7 +19,6 @@ constexpr vint RemotingHttpPort = 8888;
 
 struct RvmGuiContext
 {
-	remoting::RemotingRequesterSession*				session = nullptr;
 	Ptr<rvmt::IViewModel>							viewModel;
 	Ptr<async_tcp_socket::IAsyncSocketServer>		miniHttpSocketServer;
 };
@@ -29,7 +28,6 @@ RvmGuiContext* currentGuiContext = nullptr;
 void GuiMain()
 {
 	CHECK_ERROR(currentGuiContext, L"GuiMain()#The RVM GUI context is null.");
-	CHECK_ERROR(currentGuiContext->session, L"GuiMain()#The RVM requester session is null.");
 	CHECK_ERROR(currentGuiContext->viewModel, L"GuiMain()#The rvmt::IViewModel proxy is null.");
 
 	theme::RegisterTheme(Ptr(new darkskin::Theme));
@@ -51,12 +49,7 @@ void GuiMain()
 		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/CppTest_Rvm"), RemotingHttpPort);
 	}
 
-	CHECK_ERROR(
-		currentGuiContext->session->BeginRunning(),
-		L"GuiMain()#RemotingTest_RvmHost was not available before window startup."
-		);
 	GetApplication()->Run(&window);
-	currentGuiContext->session->BeginStopping();
 	if (currentGuiContext->miniHttpSocketServer)
 	{
 		StopMiniHttpAutomationService();
@@ -75,19 +68,14 @@ int StartServer(
 	Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer
 	)
 {
-	auto session = server.GetSession();
 	server.Start();
-	session->Start(&server);
-	auto viewModel = session->RequestService().Cast<rvmt::IViewModel>();
-	RvmGuiContext context{ session, viewModel, miniHttpSocketServer };
+	auto viewModel = server.RequestService(L"rvmt::IViewModel").Cast<rvmt::IViewModel>();
+	RvmGuiContext context{ viewModel, miniHttpSocketServer };
 	CHECK_ERROR(!currentGuiContext, L"StartServer(...)#The GUI context has already been bound.");
 	currentGuiContext = &context;
 	auto result = SetupHostedWindowsDirect2DRenderer();
 	currentGuiContext = nullptr;
-	session->Stop(Func<void()>([&server]()
-	{
-		server.Stop();
-	}));
+	server.Stop();
 	return result;
 }
 

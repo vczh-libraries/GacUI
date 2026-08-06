@@ -46,7 +46,7 @@ Files in this folder are for test apps only:
 
 Files in this folder are the generated-RemoteViewModelTest-specific client and requester helpers used only by `CppTest_Rvm`, `RemotingTest_Core`, and `RemotingTest_RvmHost`.
 - They are enumerated and compiled through the single `Test/GacUISrc/Source_RemotingHelpers/Source_RemotingHelpers.vcxitems` inventory shared by all helper consumers.
-- `ViewModelShared.*` owns the fixed RVM channel/service/control constants and generated RPC initialization, `ViewModelHostClient.*` owns the network-side host client, and `ViewModelHostServer.*` owns requester/session and server-side local-client behavior.
+- `ViewModelShared.*` owns the fixed RVM channel/control constants and generated RPC initialization, `ViewModelHostClient.*` owns the network-side host client, and `ViewModelHostServer.*` owns the specialized channel server's RPC helpers and server-side local-client behavior.
 - `Release/CodegenConfig.xml` does not scan `Test/RemotingHelpers`, and no generated RemotingHelpers pairs exist in `Release` or `Release/IncludeOnly`.
 
 ## Reflectable Types

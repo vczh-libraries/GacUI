@@ -43,16 +43,34 @@ The structural reproduction is confirmed: the current sources contain every coup
 
 # PROPOSALS
 
-- No.1 Fold the requester runtime into the specialized RVM channel server
+- No.1 Fold the requester runtime into the specialized RVM channel server [CONFIRMED]
 
 ## No.1 Fold the requester runtime into the specialized RVM channel server
 
 Rename `RemotingRequesterSession` to `RpcServerHelpers` and use it as a protected implementation base of `RemoteViewModelChannelServer<TServerBase>`. Keep the state machine, RPC participants, task queue, and shutdown sequencing implemented in `ViewModelHostServer.cpp`, while making the specialized server the only public application-facing object. Move the `RequesterPhase` definition into the header and make `TaskQueueThread`, `RpcBroadcastingLocalClient`, and `RpcServiceAccessLocalClient` namespace-level implementation types instead of nested classes.
 
-Override the channel server's virtual `Start()` and `Stop()` methods in `RemoteViewModelChannelServer<TServerBase>`. `Start()` will start the transport and initialize the RPC helper participants in order; `Stop()` will let `RpcServerHelpers` finalize RPC on its task queue, stop the transport at the existing shutdown boundary, exit the task queue, and join its thread. Move `FinalizeRpcOnTaskQueue` into `RpcServerHelpers` as a private trivial method. This preserves the established transport/RPC shutdown order without making callers start or stop two coupled objects.
+Override the channel server's virtual `Start()` and `Stop()` methods in `RemoteViewModelChannelServer<TServerBase>`. `Start()` will start only the transport so `RemotingTest_Core` can retain the required GacUI local-client ID 0 before any RVM helper client connects. `RequestService()` will then prepare the broadcasting client and broker, connect and register the service-access client, and start the task queue only after both RPC identities are initialized. Keeping those helper connections contiguous preserves both the fixed Core client-ID contract and the existing requirement that queued broker traffic cannot race requester identity initialization. `Stop()` will let `RpcServerHelpers` finalize RPC on its task queue, stop the transport at the existing shutdown boundary, exit the task queue when it was started, and join its thread. Move `FinalizeRpcOnTaskQueue` into `RpcServerHelpers` as a private trivial method. This preserves the established transport/RPC shutdown order without making callers start or stop two coupled objects.
 
 Expose `RemoteViewModelChannelServer<TServerBase>::RequestService(const WString& typeName)` as the additional RVM-specific operation, forwarding into the protected helper implementation. Service acquisition will complete the requester startup phase so renderer admission becomes available, while `Stop()` owns the stopping transition. Remove `GetSession()` and all session pointers from the GUI contexts. `CppTest_Rvm` will call the specialized server directly; generic `RemotingTest_Core` code will cast its `RemotingChannelServer<TServerBase>&` to the specialized server only in `/RVMT` mode.
 
-Delete `ViewModelServiceName`. Pass `L"rvmt::IViewModel"` directly to `RequestService` in `CppTest_Rvm` and `RemotingTest_Core`, and directly to `GetTypeIdFromName` in `RemotingTest_RvmHost`. Reconcile the RVM ownership description in `Project.md` with the new API boundary.
+Delete `ViewModelServiceName`. Pass `L"rvmt::IViewModel"` directly to `RequestService` in `CppTest_Rvm` and `RemotingTest_Core`, and directly to `GetTypeIdFromName` in `RemotingTest_RvmHost`. Reconcile the RVM ownership and startup guidance in `Project.md` and `.github/Learning/Learning_Coding.md` with the new API boundary.
 
 ### CODE CHANGE
+
+- Replaced the public `RemotingRequesterSession` object with `RpcServerHelpers`, used as a protected implementation base of `RemoteViewModelChannelServer<TServerBase>`. Moved the complete `RequesterPhase` definition into the header and made `TaskQueueThread`, `RpcBroadcastingLocalClient`, and `RpcServiceAccessLocalClient` namespace-level implementation types.
+- Made the specialized channel server the only application-facing lifetime. Its `Start()` starts the transport, `RequestService(typeName)` initializes both RPC local clients and completes the running transition, and `Stop()` finalizes RPC on the helper task queue around the base transport stop. Helper shutdown now also handles a server that was started but never requested a service.
+- Preserved both startup-order contracts discovered during live verification: Core connects its fixed GacUI local client as ID 0 before the RVM local clients, while the requester task queue starts only after the service-access dispatcher has its local and server identities and has been registered with the broker.
+- Removed `GetSession()` and all requester-session fields and lifecycle calls from `CppTest_Rvm` and `RemotingTest_Core`. Both applications request `L"rvmt::IViewModel"` from the specialized server, and Core uses its existing `/RVMT` discriminator for the narrow cast. Both now stop through the channel server's virtual `Stop()`.
+- Deleted `ViewModelServiceName`; the two requesters pass `L"rvmt::IViewModel"` to `RequestService`, and `RemotingTest_RvmHost` passes it directly to `GetTypeIdFromName`.
+- Updated `Project.md` and `.github/Learning/Learning_Coding.md` to describe the combined server/helper ownership, direct service type-name boundary, and renderer admission after service acquisition.
+
+### CONFIRMED
+
+The refactor proposal is confirmed by source inspection, build, and both requested application shapes:
+
+- Static searches find the requested helper/type names and the protected helper inheritance, and find no `RemotingRequesterSession`, `GetSession(`, or `ViewModelServiceName` in `Test`. The direct `L"rvmt::IViewModel"` arguments occur at both requester boundaries and the host type lookup.
+- `Test/GacUISrc/GacUISrc.sln` builds through `copilotBuild.ps1` in Debug x64 with `0 Warning(s)` and `0 Error(s)`. Per the explicit task instruction, `UnitTest` and unrelated applications were not run.
+- `CppTest_Rvm /Http` plus `RemotingTest_RvmHost /Http` exposed the exact initial `Hello, !`, accepted editor input, produced exactly `Hello, CPPFINAL26!`, and shut down without a surviving target process.
+- `RemotingTest_Core /Http /RVMT` plus the host exposed a 16,475-byte Core `Controls` tree before the renderer was launched. `RemotingTest_Rendering_Win32 /Http /port:8890` then exposed a 26,210-byte `Dom`. Core-side IO produced exactly `Hello, COREIMPLEMENT26!` in both surfaces, the renderer DOM contained no `fatalError`, Core-authored `!Exit` shut down all three processes, and no target process survived.
+
+The requested renderer-side `/Http` input/exit subcheck is not green, but a detached pre-refactor comparison at `ebc8bca6d` proves that failure is unchanged and outside this proposal. In both the refactored build and the baseline build, renderer `/IO` accepted `!LeftClick` and `!Type` without changing Core `Controls` or renderer `Dom`; renderer `!Exit` also left all processes running. In the same baseline session, Core `/IO` immediately produced exactly `Hello, BASECORE26!` in both surfaces. The detached clean-build wrapper reached its six-minute bound after the three target executables had linked; those linked baseline executables were the ones used for the comparison. The temporary worktree and every comparison process were removed afterward.

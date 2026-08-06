@@ -342,7 +342,7 @@ Retain the final InstanceClass manager's analyzed modules, merge their original 
 
 ## `RemotingTest_Core /RVMT` gates singleton channels by startup phase
 
-Before the RVM host is reserved, accept only a remote client advertising exactly `{ViewModelChannel}`. Reserve that host once. Only after service acquisition and window construction should Core accept a client advertising exactly `{GacUIRemoteProtocol}` through the renderer replacement path. Reject empty, duplicate, mixed, unknown, or other multi-channel lists.
+Before the RVM host is reserved, accept only a remote client advertising exactly `{ViewModelChannel}`. Reserve that host once. Only after service acquisition should Core accept a client advertising exactly `{GacUIRemoteProtocol}` through the renderer replacement path; launch the renderer only after Core automation exposes the constructed window. Reject empty, duplicate, mixed, unknown, or other multi-channel lists.
 
 ## `ViewModelReadyChannel` is the post-route RPC registration barrier
 
@@ -360,7 +360,7 @@ Keep test-only renderer and RVM helper build, include, Linux configuration, and 
 
 Compile all remaining test-helper implementation through one explicit `Source_RemotingHelpers.vcxitems` inventory in the GacUISrc test solution. Individual remoting consumers should import and compile that complete inventory instead of maintaining divergent direct source lists. Keep the RVM source items visible in its `Rvmt` Solution Explorer folder. Standalone applications that need only automation receive it through their GacUI library and should not import `Source_RemotingHelpers` or generated remote-view-model items.
 
-These helpers build test applications, so prefer concrete roles and fixed test contracts over library-style flexibility. Pass a genuinely variable value such as a renderer fatal title directly to `RemoteProtocolRendererClient`; keep the fixed prompt policy in its implementation. Keep generated-RemoteViewModelTest-specific client/requester code in `Test/RemotingHelpers/Rvmt`. Declare fixed RVM channel, service, ready-message, disconnect-error, and invalid-client constants in `ViewModelShared.h`, and consume them directly instead of retaining configuration structs or factory functions. Names should expose the specific renderer-client or view-model-host responsibility.
+These helpers build test applications, so prefer concrete roles and fixed test contracts over library-style flexibility. Pass a genuinely variable value such as a renderer fatal title directly to `RemoteProtocolRendererClient`; keep the fixed prompt policy in its implementation. Keep generated-RemoteViewModelTest-specific client/requester code in `Test/RemotingHelpers/Rvmt`. Declare fixed RVM channel, ready-message, disconnect-error, and invalid-client constants in `ViewModelShared.h`, pass service type names directly at each `RequestService` or `GetTypeIdFromName` composition boundary, and avoid configuration structs or factory functions. Names should expose the specific renderer-client or view-model-host responsibility.
 
 ## GacUI test apps own concrete automation service composition
 

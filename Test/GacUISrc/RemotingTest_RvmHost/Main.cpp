@@ -39,7 +39,7 @@ int RunHost(Ptr<INetworkProtocolClient> networkClient)
 
 	channelClient->Connect();
 	auto lifecycle = dispatcher->GetRpcLifecycle();
-	auto typeId = lifecycle->GetTypeIdFromName(WString::Unmanaged(presentation::remoting::ViewModelServiceName));
+	auto typeId = lifecycle->GetTypeIdFromName(L"rvmt::IViewModel");
 	CHECK_ERROR(typeId != RpcTypeId_NotFound, L"RunHost(Ptr<INetworkProtocolClient>)#Failed to find the rvmt::IViewModel type ID.");
 	lifecycle->RegisterLocalService(typeId, service);
 	channelClient->SendReady();
