@@ -197,90 +197,61 @@ int StartServer(
 	return 0;
 }
 
-template<template<typename> class TChannelServer, typename TServerBase, typename ...TArgs>
+template<typename TServerBase, typename ...TArgs>
 int StartServerHelper(
 	vint index,
 	Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer,
 	TArgs&&... args)
 {
 	auto jsonParser = Ptr(new glr::json::Parser);
-	TChannelServer<TServerBase> channelServer(
-		jsonParser,
-		true,
-		std::forward<TArgs&&>(args)...
-	);
-
-	remoting::RemotingRequesterSession* session = nullptr;
-	if constexpr (std::is_same_v<TChannelServer<TServerBase>, RemoteViewModelChannelServer<TServerBase>>)
+	if (index == 2)
 	{
-		session = channelServer.GetSession();
+		RemoteViewModelChannelServer<TServerBase> channelServer(
+			jsonParser,
+			true,
+			std::forward<TArgs&&>(args)...
+		);
+		return StartServer<TServerBase>(index, miniHttpSocketServer, jsonParser, channelServer, channelServer.GetSession());
 	}
-	return StartServer<TServerBase>(index, miniHttpSocketServer, jsonParser, channelServer, session);
+	else
+	{
+		remoting::RemotingChannelServer<TServerBase> channelServer(
+			jsonParser,
+			true,
+			std::forward<TArgs&&>(args)...
+		);
+		return StartServer<TServerBase>(index, miniHttpSocketServer, jsonParser, channelServer, nullptr);
+	}
 }
 
 #ifdef VCZH_MSVC
 int StartNamedPipeServer(vint index)
 {
-	if (index == 2)
-	{
-		return StartServerHelper<RemoteViewModelChannelServer, named_pipe::NamedPipeServer>(
-			index,
-			nullptr,
-			WString::Unmanaged(RemotingNamedPipeName)
-			);
-	}
-	else
-	{
-		return StartServerHelper<remoting::RemotingChannelServer, named_pipe::NamedPipeServer>(
-			index,
-			nullptr,
-			WString::Unmanaged(RemotingNamedPipeName)
-			);
-	}
+	return StartServerHelper<named_pipe::NamedPipeServer>(
+		index,
+		nullptr,
+		WString::Unmanaged(RemotingNamedPipeName)
+		);
 }
 
 int StartHttpServer(vint index)
 {
-	if (index == 2)
-	{
-		return StartServerHelper<RemoteViewModelChannelServer, windows_http::HttpServer>(
-			index,
-			nullptr,
-			WString::Unmanaged(RemotingHttpBaseUrl),
-			RemotingHttpPort
-			);
-	}
-	else
-	{
-		return StartServerHelper<remoting::RemotingChannelServer, windows_http::HttpServer>(
-			index,
-			nullptr,
-			WString::Unmanaged(RemotingHttpBaseUrl),
-			RemotingHttpPort
-			);
-	}
+	return StartServerHelper<windows_http::HttpServer>(
+		index,
+		nullptr,
+		WString::Unmanaged(RemotingHttpBaseUrl),
+		RemotingHttpPort
+		);
 }
 #endif
 
 int StartMiniHttpServer(vint index)
 {
 	auto socketServer = async_tcp_socket::CreateDefaultAsyncSocketServer(RemotingHttpPort);
-	if (index == 2)
-	{
-		return StartServerHelper<RemoteViewModelChannelServer, async_tcp_socket::SocketHttpServer>(
-			index,
-			socketServer,
-			socketServer,
-			WString::Unmanaged(RemotingHttpBaseUrl)
-			);
-	}
-	else
-	{
-		return StartServerHelper<remoting::RemotingChannelServer, async_tcp_socket::SocketHttpServer>(
-			index,
-			socketServer,
-			socketServer,
-			WString::Unmanaged(RemotingHttpBaseUrl)
-			);
-	}
+	return StartServerHelper<async_tcp_socket::SocketHttpServer>(
+		index,
+		socketServer,
+		socketServer,
+		WString::Unmanaged(RemotingHttpBaseUrl)
+		);
 }
