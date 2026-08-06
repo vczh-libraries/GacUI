@@ -12,6 +12,10 @@ namespace vl::presentation::remoting
 		Stopping,
 	};
 
+/***********************************************************************
+TaskQueueThread
+***********************************************************************/
+
 	class RemotingRequesterSession::TaskQueueThread : public Thread
 	{
 	private:
@@ -37,6 +41,10 @@ namespace vl::presentation::remoting
 			CHECK_ERROR(taskQueue, L"TaskQueueThread::TaskQueueThread(...)#The task queue is null.");
 		}
 	};
+
+/***********************************************************************
+BroadcastingLocalClient
+***********************************************************************/
 
 	class RemotingRequesterSession::BroadcastingLocalClient
 		: public JsonLocalChannelClient
@@ -96,6 +104,10 @@ namespace vl::presentation::remoting
 		}
 	};
 
+/***********************************************************************
+RequesterLocalClient
+***********************************************************************/
+
 	class RemotingRequesterSession::RequesterLocalClient : public JsonLocalChannelClient
 	{
 	private:
@@ -142,6 +154,10 @@ namespace vl::presentation::remoting
 			return dispatcher.Obj();
 		}
 	};
+
+/***********************************************************************
+RemotingRequesterSession
+***********************************************************************/
 
 	void FinalizeRpcOnTaskQueue(
 		Ptr<TaskQueue> taskQueue,
