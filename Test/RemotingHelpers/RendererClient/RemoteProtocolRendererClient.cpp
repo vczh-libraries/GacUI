@@ -40,13 +40,13 @@ namespace vl::presentation::remoting
 		{
 			if (
 				!stopping &&
-				!triggeredFatalError &&
+				triggeredFatalError &&
+				!retainedFatalError &&
 				renderer &&
 				rendererAutomationService &&
 				!renderer->IsDisconnectedFromCore()
 				)
 			{
-				triggeredFatalError = true;
 				targetRenderer = renderer;
 				targetAutomationService = rendererAutomationService;
 			}
@@ -98,16 +98,13 @@ namespace vl::presentation::remoting
 		bool forceRendererToExit = false;
 		SPIN_LOCK(lockState)
 		{
-			if (stopping || (renderer && renderer->IsDisconnectedFromCore()))
+			if (stopping || triggeredFatalError || (renderer && renderer->IsDisconnectedFromCore()))
 			{
 				return;
 			}
 			targetChannel = asyncRendererChannel;
 			targetRenderer = renderer;
-			forceRendererToExit =
-				!triggeredFatalError &&
-				targetRenderer &&
-				!targetRenderer->IsDisconnectedFromCore();
+			forceRendererToExit = targetRenderer && !targetRenderer->IsDisconnectedFromCore();
 		}
 		if (targetChannel)
 		{
@@ -172,10 +169,22 @@ namespace vl::presentation::remoting
 
 	void RemoteProtocolRendererClient::OnReadError(const WString& errorMessage)
 	{
-		QueueMainThreadTask(Func<void()>([this, errorMessage]()
+		GuiRemoteProtocolAsyncJsonChannelRenderer* targetChannel = nullptr;
+		SPIN_LOCK(lockState)
 		{
-			ProcessFatalError(errorMessage);
-		}));
+			if (!stopping && !triggeredFatalError && asyncRendererChannel)
+			{
+				triggeredFatalError = true;
+				targetChannel = asyncRendererChannel;
+			}
+		}
+		if (targetChannel)
+		{
+			targetChannel->QueueMainThreadTask(Func<void()>([this, errorMessage]()
+			{
+				ProcessFatalError(errorMessage);
+			}));
+		}
 	}
 
 	void RemoteProtocolRendererClient::OnLocalError(const WString&, bool fatal)

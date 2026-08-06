@@ -3,7 +3,6 @@
 
 #include "ViewModelShared.h"
 #include "../RemotingServer/RemotingChannelServer.h"
-#include <cstdlib>
 
 namespace vl::presentation::remoting
 {
@@ -21,15 +20,17 @@ namespace vl::presentation::remoting
 			Stopping,
 		};
 
+		// covers phase, host state, admissionReady, brokerDispatcher, requesterDispatcher and pending host-loss state
 		SpinLock									lockState;
 		CriticalSection								lockBroker;
-		Func<void(const WString&)>					terminalAction;
 		RequesterPhase								phase;
 		vint										hostId = InvalidRemoteViewModelClientId;
 		bool										hostEverAccepted = false;
 		bool										brokerRegistrationClaimed = false;
 		bool										admissionReady = false;
 		bool										rpcInitialized = false;
+		bool										pendingHostLoss = false;
+		bool										hostLossClaimed = false;
 
 		rpc_controller::channeling::RpcJsonDispatcherServer*			brokerDispatcher = nullptr;
 		JsonChannelServer*											channelServer = nullptr;
@@ -47,10 +48,7 @@ namespace vl::presentation::remoting
 		void										BeginStopping();
 
 	protected:
-		RpcServerHelpers(
-			Ptr<glr::json::Parser> parser,
-			const Func<void(const WString&)>& terminalAction
-			);
+		RpcServerHelpers(Ptr<glr::json::Parser> parser);
 		~RpcServerHelpers();
 
 		bool										TryAcceptHost(vint clientId);
@@ -110,23 +108,7 @@ namespace vl::presentation::remote_view_model_test
 			TArgs&&... args
 			)
 			: Base(parser, _acceptRenderer, std::forward<TArgs>(args)...)
-			, Helpers(
-				parser,
-				Func<void(const WString&)>([this, _acceptRenderer](const WString& message)
-				{
-					if (_acceptRenderer)
-					{
-						try
-						{
-							this->BroadcastError(message);
-						}
-						catch (...)
-						{
-						}
-					}
-					std::_Exit(1);
-				})
-				)
+			, Helpers(parser)
 		{
 		}
 

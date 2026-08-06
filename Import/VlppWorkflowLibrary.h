@@ -1743,6 +1743,12 @@ namespace vl
 		extern Ptr<glr::json::JsonNode>				JsonSerializePredefinedTypes(const reflection::description::Value& value, const RpcJsonSerializeCallback& rpcjson_Serialize);
 		extern reflection::description::Value		JsonDeserializePredefinedTypes(const reflection::description::Value& value, const RpcJsonDeserializeCallback& rpcjson_Deserialize);
 
+		class RpcInjectedException : public Exception
+		{
+		public:
+			RpcInjectedException(const WString& message);
+		};
+
 		class IRpcJsonMessageDispatcher
 			: public virtual reflection::IDescriptable
 			, public reflection::Description<IRpcJsonMessageDispatcher>
@@ -1756,6 +1762,7 @@ namespace vl
 			};
 
 			virtual vint							AllocateRequestId() = 0;
+			virtual void							InjectException(const WString& message) = 0;
 			virtual Ptr<glr::json::JsonNode>		OnJsonRequest(Ptr<glr::json::JsonNode> message, RequestType requestType) = 0;
 
 			static Ptr<glr::json::JsonNode>			DefaultTranslate(
@@ -1975,6 +1982,11 @@ Interface Implementation Proxy (Implement)
 				vl::vint AllocateRequestId()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(AllocateRequestId);
+				}
+
+				void InjectException(const vl::WString& message)override
+				{
+					INVOKE_INTERFACE_PROXY(InjectException, message);
 				}
 
 				vl::Ptr<vl::glr::json::JsonNode> OnJsonRequest(vl::Ptr<vl::glr::json::JsonNode> message, vl::rpc_controller::IRpcJsonMessageDispatcher::RequestType requestType)override
@@ -2234,25 +2246,23 @@ namespace vl::rpc_controller::channeling
 		vl::Ptr<vl::rpc_controller::RpcJsonDispatcher>	rpcDispatcher;
 		vl::Ptr<vl::rpc_controller::RpcJsonLifecycle>	lifecycle;
 
-		// covers messages and bufferedResponses
-		vl::SpinLock									lockMessages;
-		vl::Semaphore									semaphoreMessages;
+		// covers messages, bufferedResponses, waitingForServices and injectedException
+		vl::CriticalSection							lockMessages;
+		vl::ConditionVariable							cvMessages;
 		vl::collections::List<ReceivedJsonMessage>		messages;
 		vl::collections::List<ReceivedJsonMessage>		bufferedResponses;
+		vl::collections::List<vl::WString>				waitingForServices;
+		bool											hasInjectedException = false;
+		vl::WString									injectedException;
 
 		// covers cachedIncomingServiceDeclarations and cachedOutgoingServiceDeclarations
 		vl::SpinLock									lockServiceDeclarations;
 		vl::collections::List<JsonPackage>				cachedIncomingServiceDeclarations;
 		vl::collections::List<JsonPackage>				cachedOutgoingServiceDeclarations;
 
-		// covers waitingForServices
-		vl::SpinLock									lockWaitingForServices;
-		vl::collections::List<vl::WString>				waitingForServices;
-		vl::EventObject									eventWaitingForServices;
-		bool											eventWaitingForServicesCreated = false;
-		vl::EventObject									eventServerLocalClientId;
-
 		void											PrepareConnection(JsonChannel* channel, const vl::collections::List<vl::WString>& _waitingForServices);
+		void											ThrowInjectedExceptionLocked();
+		void											ThrowInjectedException();
 		void											ProcessCachedIncomingServiceDeclarations();
 		void											SendCachedOutgoingServiceDeclarations();
 		void											ProcessIncomingServiceDeclaration(JsonPackage request);
@@ -2286,6 +2296,7 @@ namespace vl::rpc_controller::channeling
 		void											NotifyServerClientDisconnected();
 
 		vl::vint										AllocateRequestId() override;
+		void											InjectException(const vl::WString& message) override;
 		JsonPackage										OnJsonRequest(JsonPackage message, RequestType requestType) override;
 		void											OnRead(vl::vint senderClientId, const JsonPackage& package) override;
 

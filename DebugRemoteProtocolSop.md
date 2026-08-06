@@ -209,3 +209,56 @@ Use a fresh application state. Follow
 
 1. Close the application through the active UI surface.
 2. Require the application session to end without a fatal error or retry loop.
+
+# Fatal Regression Addendum
+
+The following operations extend the procedures above without changing their
+normal-path steps. Run each operation in a fresh session.
+
+## Remote Protocol Test (`/RPT`): Verify the Core-Authored Fatal Error
+
+1. Activate `Home`, locate the visible `Fatel Error` button (the intentional
+   test label for the Fatal Error operation), and activate it through the
+   renderer.
+2. Require Core to send exactly one `!Error` carrying exactly
+   `This is a fatel error!` and then terminate nonzero. A renderer-side local
+   transport failure or ordinary disconnect without this Core-authored package
+   is a failure.
+3. In a native renderer, require the `ERROR from GacUI Core` fatal prompt to
+   contain the exact message. Choose `No` when asked whether to close the
+   renderer so the fatal state remains inspectable.
+4. Require renderer `Dom.fatalError` to equal exactly
+   `This is a fatel error!`. Require the retained renderer to reject ordinary
+   input without retrying or reconnecting while still accepting exact `!Exit`.
+5. Send exact `!Exit` to close the retained renderer. Bound every wait and
+   require no Core, renderer, listener, native prompt, or crash dialog to remain.
+
+## Remote View Model Test (`/RVMT`): Force-Terminate `RemotingTest_RvmHost`
+
+Run this operation for both requester shapes: `CppTest_Rvm` with the host, and
+`RemotingTest_Core /RVMT` with the host and a matching renderer. First complete
+the Workflow RPC check above. For Core, keep the renderer connected throughout
+the failure.
+
+1. Force-terminate only the accepted `RemotingTest_RvmHost` process through the
+   operating-system process tool. Do not close it through its application path,
+   and do not terminate the requester, Core, or renderer.
+2. Run two variants with fresh processes:
+   - Idle-next-call: terminate the host after one successful `Translate`, then
+     focus the text box and type a different marker to trigger the next real
+     `IViewModel::Translate` RPC. `/Http` and `/MiniHttp` are allowed to discover
+     idle peer loss only at this operation.
+   - In-flight call: start a second `Translate` and terminate the host while its
+     response is pending. The blocked caller must be released within a bound;
+     a frozen UI is a failure.
+3. Require `CppTest_Rvm` to terminate nonzero from an unhandled
+   `RpcInjectedException`, without retry or recovery.
+4. For Core, require exactly one Core-authored `!Error` carrying exactly
+   `RemotingTest_RvmHost disconnected.` before Core terminates nonzero. A local
+   renderer transport error alone is not sufficient.
+5. In a native renderer, require the fatal prompt to contain that exact message
+   and choose `No` once so the retained renderer can be inspected. Require
+   `Dom.fatalError` to equal the same text, then send exact `!Exit` to close it.
+6. Bound every wait and require no requester, Core, host, renderer, listener,
+   native prompt, or crash dialog to remain. Normal requester shutdown and
+   renderer replacement must not produce this host-loss error.

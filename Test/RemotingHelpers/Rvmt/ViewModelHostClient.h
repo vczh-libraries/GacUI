@@ -9,8 +9,9 @@ namespace vl::presentation::remoting
 		: public rpc_controller::channeling::JsonNetworkChannelClient
 	{
 	private:
-		class Impl;
-		Ptr<Impl>										impl;
+		JsonChannelClient::ChannelMap					channelNames;
+		Ptr<remote_view_model_test::RemoteViewModelJsonDispatcherClient> dispatcher;
+		JsonChannel*									controlChannel = nullptr;
 
 	public:
 		ViewModelHostClient(

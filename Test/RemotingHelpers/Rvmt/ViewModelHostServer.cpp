@@ -165,16 +165,11 @@ RpcServerHelpers
 		finalized.Wait();
 	}
 
-	RpcServerHelpers::RpcServerHelpers(
-		Ptr<glr::json::Parser> parser,
-		const Func<void(const WString&)>& _terminalAction
-		)
-		: terminalAction(_terminalAction)
-		, phase(RequesterPhase::Starting)
+	RpcServerHelpers::RpcServerHelpers(Ptr<glr::json::Parser> parser)
+		: phase(RequesterPhase::Starting)
 		, taskQueue(Ptr(new TaskQueue))
 	{
 		CHECK_ERROR(parser, L"RpcServerHelpers::RpcServerHelpers(...)#The JSON parser is null.");
-		CHECK_ERROR(terminalAction, L"RpcServerHelpers::RpcServerHelpers(...)#The terminal action is null.");
 
 		taskQueueThread = Ptr(new TaskQueueThread(taskQueue));
 		broadcastingClient = Ptr(new RpcBroadcastingLocalClient(
@@ -248,12 +243,14 @@ RpcServerHelpers
 	{
 		bool hostDisconnected = false;
 		bool disconnectBroker = false;
+		remote_view_model_test::RemoteViewModelJsonDispatcherClient* dispatcherToInject = nullptr;
 		SPIN_LOCK(lockState)
 		{
 			if (hostId == clientId)
 			{
 				hostId = InvalidRemoteViewModelClientId;
 				hostDisconnected = phase != RequesterPhase::Stopping;
+				hostLossClaimed = hostDisconnected;
 				disconnectBroker = brokerRegistrationClaimed;
 			}
 		}
@@ -266,7 +263,15 @@ RpcServerHelpers
 		}
 		if (hostDisconnected)
 		{
-			terminalAction(RemoteViewModelHostDisconnectedError);
+			SPIN_LOCK(lockState)
+			{
+				dispatcherToInject = requesterDispatcher;
+				pendingHostLoss = !dispatcherToInject;
+			}
+			if (dispatcherToInject)
+			{
+				dispatcherToInject->InjectException(RemoteViewModelHostDisconnectedError);
+			}
 		}
 	}
 
@@ -297,16 +302,29 @@ RpcServerHelpers
 			brokerDispatcher->GetServerClientId(),
 			typeName
 			);
-		requesterDispatcher = requesterClient->GetDispatcher();
+		auto dispatcher = requesterClient->GetDispatcher();
+		bool injectHostLoss = false;
+		SPIN_LOCK(lockState)
+		{
+			requesterDispatcher = dispatcher;
+			injectHostLoss = pendingHostLoss;
+		}
+		if (injectHostLoss)
+		{
+			dispatcher->InjectException(RemoteViewModelHostDisconnectedError);
+		}
 		brokerDispatcher->RegisterClient(requesterClientId);
 		CHECK_ERROR(taskQueueThread->Start(), L"RpcServerHelpers::RequestService(...)#Failed to start the task queue thread.");
 		rpcInitialized = true;
-		requesterDispatcher->Initialize();
-		service = requesterDispatcher
+		dispatcher->Initialize();
+		service = dispatcher
 			->GetRpcLifecycle()
 			->RequestService(typeName);
 		CHECK_ERROR(service, L"RpcServerHelpers::RequestService(...)#Failed to request the service.");
-		CHECK_ERROR(BeginRunning(), L"RpcServerHelpers::RequestService(...)#RemotingTest_RvmHost is unavailable.");
+		if (!BeginRunning())
+		{
+			throw rpc_controller::RpcInjectedException(RemoteViewModelHostDisconnectedError);
+		}
 		return service;
 	}
 
@@ -351,7 +369,12 @@ RpcServerHelpers
 	void RpcServerHelpers::Stop(const Func<void()>& stopServer)
 	{
 		BeginStopping();
-		if (rpcInitialized)
+		bool finalizeRpc = false;
+		SPIN_LOCK(lockState)
+		{
+			finalizeRpc = rpcInitialized && !hostLossClaimed;
+		}
+		if (finalizeRpc)
 		{
 			FinalizeRpcOnTaskQueue();
 		}

@@ -30,6 +30,7 @@ struct CoreGuiContext
 	vint												mainWindowConstructorIndex = 0;
 	Ptr<rvmt::IViewModel>								viewModel;
 	Ptr<async_tcp_socket::IAsyncSocketServer>			miniHttpSocketServer;
+	Func<void(const WString&)>							broadcastFatalError;
 };
 
 CoreGuiContext* currentGuiContext = nullptr;
@@ -78,7 +79,21 @@ void GuiMain()
 		);
 #endif
 
-	GetApplication()->Run(window.Obj());
+	std::exception_ptr uiException;
+	try
+	{
+		GetApplication()->Run(window.Obj());
+	}
+	catch (const Exception& ex)
+	{
+		currentGuiContext->broadcastFatalError(ex.Message());
+		uiException = std::current_exception();
+	}
+	catch (const Error& ex)
+	{
+		currentGuiContext->broadcastFatalError(WString::Unmanaged(ex.Description()));
+		uiException = std::current_exception();
+	}
 
 #ifdef VCZH_MSVC
 	if (currentGuiContext->miniHttpSocketServer)
@@ -94,6 +109,10 @@ void GuiMain()
 #endif
 	automationService.Stop();
 	GetNativeServiceSubstitution()->Unsubstitute(&automationService);
+	if (uiException)
+	{
+		std::rethrow_exception(uiException);
+	}
 }
 
 template<typename TServerBase>
@@ -150,26 +169,55 @@ int StartServer(
 	GuiRemoteProtocolDomDiffConverter diffConverterProtocol(&filteredProtocol);
 	channelServer.SetCoreChannels(coreClient->GetProtocolChannel(), &channelSender);
 
-	Ptr<rvmt::IViewModel> viewModel;
-	if (mainWindowConstructorIndex == 2)
+	int result = 0;
+	bool fatalErrorBroadcasted = false;
+	auto broadcastFatalError = [&channelServer, &fatalErrorBroadcasted](const WString& message)
 	{
-		auto& rvmChannelServer = dynamic_cast<RemoteViewModelChannelServer<TServerBase>&>(channelServer);
-		viewModel = rvmChannelServer.RequestService(L"rvmt::IViewModel").Cast<rvmt::IViewModel>();
-	}
-
+		if (fatalErrorBroadcasted)
+		{
+			return;
+		}
+		fatalErrorBroadcasted = true;
+		try
+		{
+			channelServer.BroadcastError(message);
+		}
+		catch (...)
+		{
+		}
+	};
 	CoreGuiContext context{
 		mainWindowConstructorIndex,
-		viewModel,
-		miniHttpSocketServer
+		nullptr,
+		miniHttpSocketServer,
+		broadcastFatalError
 		};
 	CHECK_ERROR(!currentGuiContext, L"StartServer(...)#The GUI context has already been bound.");
 	currentGuiContext = &context;
-	SetupRemoteNativeController(&diffConverterProtocol);
+	try
+	{
+		if (mainWindowConstructorIndex == 2)
+		{
+			auto& rvmChannelServer = dynamic_cast<RemoteViewModelChannelServer<TServerBase>&>(channelServer);
+			context.viewModel = rvmChannelServer.RequestService(L"rvmt::IViewModel").Cast<rvmt::IViewModel>();
+		}
+		SetupRemoteNativeController(&diffConverterProtocol);
+	}
+	catch (const Exception& ex)
+	{
+		result = 1;
+		broadcastFatalError(ex.Message());
+	}
+	catch (const Error& ex)
+	{
+		result = 1;
+		broadcastFatalError(WString::Unmanaged(ex.Description()));
+	}
 	currentGuiContext = nullptr;
 
 	channelServer.ClearCoreChannels();
 	channelServer.Stop();
-	return 0;
+	return result;
 }
 
 template<typename TServerBase, typename ...TArgs>

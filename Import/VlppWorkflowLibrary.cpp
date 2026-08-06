@@ -1151,6 +1151,7 @@ WfLoadLibraryTypes
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcJsonMessageDispatcher)
 				CLASS_MEMBER_METHOD(AllocateRequestId, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(InjectException, { L"message" })
 				CLASS_MEMBER_METHOD(OnJsonRequest, { L"message" _ L"requestType" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcJsonMessageDispatcher)
 
@@ -4319,6 +4320,10 @@ namespace vl
 /***********************************************************************
 * IRpcJsonMessageDispatcher
 ***********************************************************************/
+		RpcInjectedException::RpcInjectedException(const WString& message)
+			: Exception(message)
+		{
+		}
 
 		Ptr<JsonNode> IRpcJsonMessageDispatcher::DefaultTranslate(
 			Ptr<JsonNode> message,
@@ -4701,7 +4706,7 @@ namespace vl::rpc_controller::channeling
 	using namespace vl::reflection::description;
 	using namespace vl::rpc_controller;
 
-	namespace
+	namespace rpc_json_dispatcher_client_helper
 	{
 		Ptr<JsonString> CreateJsonString(const WString& value)
 		{
@@ -4882,6 +4887,7 @@ namespace vl::rpc_controller::channeling
 			return false;
 		}
 	}
+	using namespace rpc_json_dispatcher_client_helper;
 
 /***********************************************************************
 RpcJsonDispatcherClient
@@ -4889,8 +4895,6 @@ RpcJsonDispatcherClient
 
 	RpcJsonDispatcherClient::RpcJsonDispatcherClient()
 	{
-		CHECK_ERROR(semaphoreMessages.Create(0, 65536), L"RpcJsonDispatcherClient failed to create the message semaphore.");
-		CHECK_ERROR(eventServerLocalClientId.CreateManualUnsignal(false), L"RpcJsonDispatcherClient failed to create the server-client-id event.");
 	}
 
 	void RpcJsonDispatcherClient::PrepareConnection(JsonChannel* channel, const List<WString>& _waitingForServices)
@@ -4898,13 +4902,27 @@ RpcJsonDispatcherClient
 		CHECK_ERROR(channel, L"RpcJsonDispatcherClient needs an RPC channel.");
 		CHECK_ERROR(!rpcChannel, L"RpcJsonDispatcherClient connection can only be initialized once.");
 		rpcChannel = channel;
-		CopyFrom(waitingForServices, _waitingForServices);
-		if (waitingForServices.Count() > 0)
+		CS_LOCK(lockMessages)
 		{
-			eventWaitingForServicesCreated = true;
-			CHECK_ERROR(eventWaitingForServices.CreateManualUnsignal(false), L"RpcJsonDispatcherClient failed to create the service-waiting event.");
+			CopyFrom(waitingForServices, _waitingForServices);
 		}
 		rpcChannel->Initialize(this);
+	}
+
+	void RpcJsonDispatcherClient::ThrowInjectedExceptionLocked()
+	{
+		if (hasInjectedException)
+		{
+			throw RpcInjectedException(injectedException);
+		}
+	}
+
+	void RpcJsonDispatcherClient::ThrowInjectedException()
+	{
+		CS_LOCK(lockMessages)
+		{
+			ThrowInjectedExceptionLocked();
+		}
 	}
 
 	void RpcJsonDispatcherClient::SetRpcObjects(Ptr<RpcJsonDispatcher> _rpcDispatcher, Ptr<RpcJsonLifecycle> _lifecycle)
@@ -4974,8 +4992,7 @@ RpcJsonDispatcherClient
 	void RpcJsonDispatcherClient::UpdateWaitingForServices(JsonPackage request)
 	{
 		auto typeId = ReadDeclaredServiceTypeId(request);
-		bool shouldSignal = false;
-		SPIN_LOCK(lockWaitingForServices)
+		CS_LOCK(lockMessages)
 		{
 			for (vint i = waitingForServices.Count(); i > 0; i--)
 			{
@@ -4985,32 +5002,39 @@ RpcJsonDispatcherClient
 					waitingForServices.RemoveAt(index);
 				}
 			}
-			shouldSignal = waitingForServices.Count() == 0;
 		}
-		if (shouldSignal && eventWaitingForServicesCreated)
-		{
-			eventWaitingForServices.Signal();
-		}
+		cvMessages.WakeAllPendings();
 	}
 
 	void RpcJsonDispatcherClient::WaitForServerClientId()
 	{
-		if (serverLocalClientId.load() == -1)
+		CS_LOCK(lockMessages)
 		{
-			eventServerLocalClientId.Wait();
+			while (serverLocalClientId.load() == -1)
+			{
+				ThrowInjectedExceptionLocked();
+				cvMessages.SleepWith(lockMessages);
+			}
+			ThrowInjectedExceptionLocked();
 		}
 	}
 
 	void RpcJsonDispatcherClient::WaitForExpectedServices()
 	{
-		if (eventWaitingForServicesCreated)
+		CS_LOCK(lockMessages)
 		{
-			eventWaitingForServices.Wait();
+			while (waitingForServices.Count() > 0)
+			{
+				ThrowInjectedExceptionLocked();
+				cvMessages.SleepWith(lockMessages);
+			}
+			ThrowInjectedExceptionLocked();
 		}
 	}
 
 	void RpcJsonDispatcherClient::SendJsonRequest(JsonPackage message, RequestType requestType)
 	{
+		ThrowInjectedException();
 		CHECK_ERROR(rpcChannel, L"RpcJsonDispatcherClient needs an RPC channel.");
 		switch (requestType)
 		{
@@ -5030,20 +5054,24 @@ RpcJsonDispatcherClient
 
 	void RpcJsonDispatcherClient::PushReceivedMessage(vint senderClientId, JsonPackage message)
 	{
-		SPIN_LOCK(lockMessages)
+		CS_LOCK(lockMessages)
 		{
 			messages.Add({ senderClientId, message });
 		}
-		semaphoreMessages.Release();
+		cvMessages.WakeAllPendings();
 	}
 
 	RpcJsonDispatcherClient::ReceivedJsonMessage RpcJsonDispatcherClient::PopReceivedMessage()
 	{
-		semaphoreMessages.Wait();
 		ReceivedJsonMessage result;
-		SPIN_LOCK(lockMessages)
+		CS_LOCK(lockMessages)
 		{
-			CHECK_ERROR(messages.Count() > 0, L"RpcJsonDispatcherClient message queue is unexpectedly empty.");
+			while (messages.Count() == 0)
+			{
+				ThrowInjectedExceptionLocked();
+				cvMessages.SleepWith(lockMessages);
+			}
+			ThrowInjectedExceptionLocked();
 			result = messages[0];
 			messages.RemoveAt(0);
 		}
@@ -5052,8 +5080,9 @@ RpcJsonDispatcherClient
 
 	bool RpcJsonDispatcherClient::TryPopBufferedResponse(vint requestId, ReceivedJsonMessage& message)
 	{
-		SPIN_LOCK(lockMessages)
+		CS_LOCK(lockMessages)
 		{
+			ThrowInjectedExceptionLocked();
 			for (vint i = 0; i < bufferedResponses.Count(); i++)
 			{
 				auto item = bufferedResponses[i];
@@ -5070,8 +5099,9 @@ RpcJsonDispatcherClient
 
 	void RpcJsonDispatcherClient::PushBufferedResponse(ReceivedJsonMessage message)
 	{
-		SPIN_LOCK(lockMessages)
+		CS_LOCK(lockMessages)
 		{
+			ThrowInjectedExceptionLocked();
 			bufferedResponses.Add(message);
 		}
 	}
@@ -5136,7 +5166,9 @@ RpcJsonDispatcherClient
 	{
 		CHECK_ERROR(lifecycle, L"RpcJsonDispatcherClient needs to connect before Initialize.");
 		CHECK_ERROR(initialized.load() == 0, L"RpcJsonDispatcherClient can only be initialized once.");
+		ThrowInjectedException();
 		ProcessCachedIncomingServiceDeclarations();
+		ThrowInjectedException();
 		lifecycle->Initialize();
 		initialized.store(1);
 		SendCachedOutgoingServiceDeclarations();
@@ -5160,8 +5192,19 @@ RpcJsonDispatcherClient
 		return ++nextRequestId;
 	}
 
+	void RpcJsonDispatcherClient::InjectException(const WString& message)
+	{
+		CS_LOCK(lockMessages)
+		{
+			hasInjectedException = true;
+			injectedException = message;
+		}
+		cvMessages.WakeAllPendings();
+	}
+
 	JsonPackage RpcJsonDispatcherClient::OnJsonRequest(JsonPackage message, RequestType requestType)
 	{
+		ThrowInjectedException();
 		auto rpcMethod = TryReadRpcMethod(message);
 		CHECK_ERROR(rpcMethod != WString::Empty, L"RpcJsonDispatcherClient expects an RPC message.");
 
@@ -5179,6 +5222,7 @@ RpcJsonDispatcherClient
 			{
 				SendJsonRequest(message, requestType);
 			}
+			ThrowInjectedException();
 			return nullptr;
 		}
 
@@ -5217,13 +5261,18 @@ RpcJsonDispatcherClient
 			if (IsRpcRequest(rpcMethod))
 			{
 				ProcessRequestAndSendResponse(item.senderClientId, item.message);
+				ThrowInjectedException();
 				continue;
 			}
 
 			CHECK_ERROR(IsRpcResponse(rpcMethod), L"RpcJsonDispatcherClient expects an RPC request or response.");
 			if (ReadRequestId(item.message) == requestId)
 			{
-				return item.message;
+				CS_LOCK(lockMessages)
+				{
+					ThrowInjectedExceptionLocked();
+					return item.message;
+				}
 			}
 
 			PushBufferedResponse(item);
@@ -5235,8 +5284,11 @@ RpcJsonDispatcherClient
 		vint newServerLocalClientId = -1;
 		if (TryReadLoginMessage(package, newServerLocalClientId))
 		{
-			serverLocalClientId.store(newServerLocalClientId);
-			eventServerLocalClientId.Signal();
+			CS_LOCK(lockMessages)
+			{
+				serverLocalClientId.store(newServerLocalClientId);
+			}
+			cvMessages.WakeAllPendings();
 			return;
 		}
 
@@ -5294,8 +5346,11 @@ RpcJsonDispatcherClient
 	void RpcJsonDispatcherClient::SetServerLocalClientId(vint clientId)
 	{
 		CHECK_ERROR(clientId != -1, L"RpcJsonDispatcherClient needs a valid server client id.");
-		serverLocalClientId.store(clientId);
-		eventServerLocalClientId.Signal();
+		CS_LOCK(lockMessages)
+		{
+			serverLocalClientId.store(clientId);
+		}
+		cvMessages.WakeAllPendings();
 	}
 
 	void RpcJsonDispatcherClient::NotifyServerClientDisconnected()

@@ -5941,6 +5941,7 @@ interface system::IRpcDispatcher : system::Interface {
 @FullName:vl::rpc_controller::IRpcJsonMessageDispatcher
 interface system::IRpcJsonMessageDispatcher : system::Interface {
     function AllocateRequestId() : system::Int64;
+    function InjectException(message : system::String) : system::Void;
     function OnJsonRequest(message : system::JsonNode^, requestType : system::IRpcJsonMessageDispatcher::RequestType) : system::JsonNode^;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcJsonMessageDispatcher>::Create($Arguments)
