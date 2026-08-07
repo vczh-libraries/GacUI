@@ -129,3 +129,22 @@ The reproduction is confirmed in the unmodified implementation. `Test/RemotingHe
   - Windows builds must end with `0 Warning(s)` and `0 Error(s)`; the selected unit tests must all pass without a memory-leak dump. The aggregate `Release` repository must remain byte-for-byte/worktree clean after `UpdateRelease` verification.
 
 # PROPOSALS
+
+- No.1 Move generated RPC composition to applications and package generic helpers separately
+
+## No.1 Move generated RPC composition to applications and package generic helpers separately
+
+The reusable RVM helper layer should own only generic channel, broker, task-queue, admission, and host-loss behavior. A new common `RemoteViewModelTestInitialize` pair beside the generated RemoteViewModelTest output will own the generated id map, serializer, operations, wrapper factory, and `SetRpcObjects` call. Each application will connect its generic dispatcher first, call this generated-specific initializer with the assigned client ID, and then register or request services.
+
+Requester startup will be split into explicit phases. `RpcServerHelpers::Connect` will connect the local requester once with the complete required-service-name list, publish its generic dispatcher, replay a latched host loss outside locks, register it with the broker, and start the task-queue thread. The first `RequestService` will initialize the dispatcher once and transition to `RequesterPhase::Running` only after successful acquisition; later calls will only perform lifecycle lookups and return independent wrappers. Task-queue startup and dispatcher initialization will be tracked separately so `Stop` can always join a queue started by `Connect`.
+
+The helper tree will be emitted by GacUI CodePack into dedicated `Test.RemotingHelpers` files, separate from public `GacUI*` pairs. Aggregate Release cleanup will defensively remove exact stale test pairs, while wGac/iGac imports will place the required neutral pair and any complete optional Windows pair in a read-only `Import-Test` tree. Workflow Release/GacUI Import and the synchronized RPC knowledge/manual copies will be regenerated or updated through their owning repositories.
+
+### CODE CHANGE
+
+- Regenerate Workflow Release and GacUI Import so public `RpcJsonDispatcherClient::SetRpcObjects` is available and obsolete `GetRpcJsonLifecycle` is removed.
+- Add `RemoteViewModelTestInitialize.h/.cpp` to all required Windows/Linux inventories and move every generated RemoteViewModelTest reference into that pair and the consuming apps.
+- Inline ready-message helpers, delete `ViewModelShared.cpp`, use the generic task-queue dispatcher throughout `Test/RemotingHelpers`, and remove generated include/import dependencies from the shared helper inventory and renderer project.
+- Add explicit requester `Connect(requiredServiceNames)`, expose the generic dispatcher/client ID, make service requests repeatable after one initialization, and preserve shutdown, host-loss, admission, and ready-barrier ordering.
+- Add focused repeated-service use in `CppTest_Rvm`, generate dedicated test-only CodePack pairs, add aggregate Release cleanup, and route platform test imports through `Import-Test`.
+- Update GacUI/Workflow knowledge, Learning/Project guidance, platform READMEs, and verify all static, generated, build, RPC, packaging, and syntax criteria from `# TEST`.
