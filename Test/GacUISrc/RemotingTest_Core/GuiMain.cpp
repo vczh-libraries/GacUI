@@ -2,6 +2,7 @@
 #include "RpMainWindow.h"
 #include "MainWindow.h"
 #include "RemoteViewModelTestIncludes.h"
+#include "../Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.h"
 #include "../../RemotingHelpers/Rvmt/ViewModelHostServer.h"
 #include "../../../Source/Utilities/AutomationService/MiniHttpAutomationService.h"
 #include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
@@ -199,6 +200,10 @@ int StartServer(
 		if (mainWindowConstructorIndex == 2)
 		{
 			auto& rvmChannelServer = dynamic_cast<RemoteViewModelChannelServer<TServerBase>&>(channelServer);
+			collections::List<WString> requiredServiceNames;
+			requiredServiceNames.Add(L"rvmt::IViewModel");
+			auto requesterClientId = rvmChannelServer.Connect(requiredServiceNames);
+			RemoteViewModelTestInitialize::InitializeRpc(rvmChannelServer.GetDispatcher(), requesterClientId);
 			context.viewModel = rvmChannelServer.RequestService(L"rvmt::IViewModel").Cast<rvmt::IViewModel>();
 		}
 		SetupRemoteNativeController(&diffConverterProtocol);

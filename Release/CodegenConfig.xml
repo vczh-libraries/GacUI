@@ -3,6 +3,7 @@
   <folders>
     <folder path="..\Source" />
     <folder path="..\Import" />
+    <folder path="..\Test\RemotingHelpers" />
     <except pattern="\Resource.xml.log\" />
   </folders>
   <categories>
@@ -43,6 +44,11 @@
       <except pattern="Reflection"/>
     </category>
     <category name="darkskin_r" pattern="\Skins\DarkSkin\Source\DarkSkinReflection"/>
+    <category name="test_remoting_helpers_windows" pattern="\Test\RemotingHelpers\Windows\"/>
+    <category name="test_remoting_helpers" pattern="\Test\RemotingHelpers\">
+      <except pattern="\Windows\" />
+      <except pattern=".Windows." />
+    </category>
   </categories>
   <output path=".">
     <codepair category="vlpp" filename="Vlpp" generate="false"/>
@@ -64,5 +70,7 @@
     <codepair category="compiler" filename="GacUICompiler" generate="true"/>
     <codepair category="darkskin" filename="DarkSkin" generate="true"/>
     <codepair category="darkskin_r" filename="DarkSkinReflection" generate="true"/>
+    <codepair category="test_remoting_helpers_windows" filename="Test.RemotingHelpers.Windows" generate="true"/>
+    <codepair category="test_remoting_helpers" filename="Test.RemotingHelpers" generate="true"/>
   </output>
 </codegen>

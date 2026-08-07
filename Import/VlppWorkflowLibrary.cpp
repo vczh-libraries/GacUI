@@ -4934,12 +4934,6 @@ RpcJsonDispatcherClient
 		lifecycle = _lifecycle;
 	}
 
-	RpcJsonLifecycle* RpcJsonDispatcherClient::GetRpcJsonLifecycle()
-	{
-		CHECK_ERROR(lifecycle, L"RpcJsonDispatcherClient needs a lifecycle.");
-		return lifecycle.Obj();
-	}
-
 	void RpcJsonDispatcherClient::ProcessCachedIncomingServiceDeclarations()
 	{
 		List<JsonPackage> cached;

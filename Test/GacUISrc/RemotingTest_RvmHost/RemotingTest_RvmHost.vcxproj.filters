@@ -16,10 +16,16 @@
     <Filter Include="Generated x64">
       <UniqueIdentifier>{4104FA09-2155-4641-B780-2E0C1960E4B3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Generated Common">
+      <UniqueIdentifier>{BC09B16A-B85F-45A3-B7AB-C3DF1BD18D6B}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Generated_RemoteViewModelTest\RemoteViewModelTestInitialize.cpp">
+      <Filter>Generated Common</Filter>
     </ClCompile>
     <ClCompile Include="..\Generated_RemoteViewModelTest\Source_x86\RemoteViewModelTestRpc.cpp">
       <Filter>Generated x86</Filter>
@@ -29,6 +35,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Generated_RemoteViewModelTest\RemoteViewModelTestInitialize.h">
+      <Filter>Generated Common</Filter>
+    </ClInclude>
     <ClInclude Include="..\Generated_RemoteViewModelTest\Source_x86\RemoteViewModelTestRpc.h">
       <Filter>Generated x86</Filter>
     </ClInclude>

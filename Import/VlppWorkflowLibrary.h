@@ -2281,8 +2281,9 @@ namespace vl::rpc_controller::channeling
 
 	protected:
 		virtual void									ScheduleTask(vl::Func<void()> task) = 0;
+
+	public:
 		void											SetRpcObjects(vl::Ptr<vl::rpc_controller::RpcJsonDispatcher> _rpcDispatcher, vl::Ptr<vl::rpc_controller::RpcJsonLifecycle> _lifecycle);
-		vl::rpc_controller::RpcJsonLifecycle*			GetRpcJsonLifecycle();
 
 	public:
 		RpcJsonDispatcherClient();

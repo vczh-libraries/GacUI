@@ -381,7 +381,6 @@ Global
 		Generated_FullControlTest\Generated_FullControlTest.vcxitems*{337e0972-c4ce-4863-916e-c1cd395da085}*SharedItemsImports = 4
 		Generated_RemoteProtocolTest\Generated_RemoteProtocolTest.vcxitems*{337e0972-c4ce-4863-916e-c1cd395da085}*SharedItemsImports = 4
 		Generated_RemoteViewModelTest\Generated_RemoteViewModelTest.vcxitems*{337e0972-c4ce-4863-916e-c1cd395da085}*SharedItemsImports = 4
-		Generated_RemoteViewModelTest\Generated_RemoteViewModelTest.vcxitems*{e016b58a-a7a7-4ef5-a64e-b6f86af159be}*SharedItemsImports = 4
 		Source_RemotingHelpers\Source_RemotingHelpers.vcxitems*{337e0972-c4ce-4863-916e-c1cd395da085}*SharedItemsImports = 4
 		Generated_DarkSkin\Generated_DarkSkin.vcxitems*{338e42de-9928-40b7-9f76-ea990f15d248}*SharedItemsImports = 4
 		Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems*{39f6dd5b-df85-49dc-82dc-d173acd0f7bf}*SharedItemsImports = 9

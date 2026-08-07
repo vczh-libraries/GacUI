@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>{A5B43C76-0908-4533-B486-17573760ED7D}</UniqueIdentifier>
+    </Filter>
     <Filter Include="x64">
       <UniqueIdentifier>{07944D0F-57C1-4F1D-AC17-7B143974F1F3}</UniqueIdentifier>
     </Filter>
@@ -9,6 +12,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)RemoteViewModelTestInitialize.h">
+      <Filter>Common</Filter>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\RemoteViewModelTest.h">
       <Filter>x86</Filter>
     </ClInclude>
@@ -35,6 +41,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)RemoteViewModelTestInitialize.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\RemoteViewModelTest.cpp">
       <Filter>x86</Filter>
     </ClCompile>

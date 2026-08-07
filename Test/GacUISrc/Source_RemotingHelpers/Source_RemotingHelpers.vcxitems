@@ -5,12 +5,6 @@
     <HasSharedItems>true</HasSharedItems>
     <ItemsProjectGuid>{41962197-3d8b-42cb-a680-b3a950c2b1b6}</ItemsProjectGuid>
   </PropertyGroup>
-  <ItemDefinitionGroup>
-    <ClCompile>
-      <AdditionalIncludeDirectories Condition="'$(Platform)'=='Win32'">%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)..\Generated_RemoteViewModelTest\Source_x86</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Platform)'=='x64'">%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)..\Generated_RemoteViewModelTest\Source_x64</AdditionalIncludeDirectories>
-    </ClCompile>
-  </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
@@ -18,7 +12,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RendererClient\RemoteProtocolRendererClient.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelHostClient.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelHostServer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelShared.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingServer\RemotingChannelServer.h" />

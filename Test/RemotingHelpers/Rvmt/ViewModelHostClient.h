@@ -10,7 +10,7 @@ namespace vl::presentation::remoting
 	{
 	private:
 		JsonChannelClient::ChannelMap					channelNames;
-		Ptr<remote_view_model_test::RemoteViewModelJsonDispatcherClient> dispatcher;
+		Ptr<RpcDispatcherClient>						dispatcher;
 		JsonChannel*									controlChannel = nullptr;
 
 	public:

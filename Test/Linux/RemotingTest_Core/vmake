@@ -15,6 +15,7 @@ CPP_ADDS=(
     "../../GacUISrc/Generated_RemoteProtocolTest/Source_x64/*.cpp"
     "../../GacUISrc/Generated_FullControlTest/Source_x64/*.cpp"
     "../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/*.cpp"
+    "../../GacUISrc/Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.cpp"
     )
 CPP_REMOVES=(
     "../../../Import/Vlpp.Windows.cpp"

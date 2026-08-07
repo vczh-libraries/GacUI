@@ -130,9 +130,9 @@ The reproduction is confirmed in the unmodified implementation. `Test/RemotingHe
 
 # PROPOSALS
 
-- No.1 Move generated RPC composition to applications and package generic helpers separately
+- No.1 [CONFIRMED] Move generated RPC composition to applications and package generic helpers separately
 
-## No.1 Move generated RPC composition to applications and package generic helpers separately
+## No.1 [CONFIRMED] Move generated RPC composition to applications and package generic helpers separately
 
 The reusable RVM helper layer should own only generic channel, broker, task-queue, admission, and host-loss behavior. A new common `RemoteViewModelTestInitialize` pair beside the generated RemoteViewModelTest output will own the generated id map, serializer, operations, wrapper factory, and `SetRpcObjects` call. Each application will connect its generic dispatcher first, call this generated-specific initializer with the assigned client ID, and then register or request services.
 
@@ -148,3 +148,14 @@ The helper tree will be emitted by GacUI CodePack into dedicated `Test.RemotingH
 - Add explicit requester `Connect(requiredServiceNames)`, expose the generic dispatcher/client ID, make service requests repeatable after one initialization, and preserve shutdown, host-loss, admission, and ready-barrier ordering.
 - Add focused repeated-service use in `CppTest_Rvm`, generate dedicated test-only CodePack pairs, add aggregate Release cleanup, and route platform test imports through `Import-Test`.
 - Update GacUI/Workflow knowledge, Learning/Project guidance, platform READMEs, and verify all static, generated, build, RPC, packaging, and syntax criteria from `# TEST`.
+
+### VERIFICATION RESULTS
+
+- Workflow and GacUI release pipelines completed successfully. The generated Workflow Release and GacUI Import copies match, `SetRpcObjects` is public, and `GetRpcJsonLifecycle` is absent. A final direct CodePack refresh regenerated the helper pair after the runtime-discovered startup-order correction.
+- `GacUISrc.sln` builds completed through `copilotBuild.ps1` for `Debug|x64` and `Debug|Win32` with `0 Warning(s)` and `0 Error(s)`. The selected `Debug|x64` unit-test run passed 88/88 files and 1713/1713 cases with no memory-leak output.
+- `CppTest_Rvm` retained two wrappers returned by two requests after one connection/initializer and verified exact results `Hello, First!` and `Hello, Second!`. Both requester topologies passed on Windows over `/Pipe`, `/Http`, and `/MiniHttp`; the Core topology exposed exact `Hello, !` state through both control and renderer DOM automation before clean shutdown. Every run ended without a surviving target process or port 8888/8889 listener.
+- The Pipe Core run initially exposed helper-local clients taking the fixed Core client ID before the Core registered. Moving helper startup from `RemoteViewModelChannelServer::Start` into its explicit one-time `Connect` boundary fixed the ordering; the full transport matrix and both Windows builds passed after that correction.
+- Controlled host termination at `ViewModelHostClient::SendReady` covered accepted-host loss during startup, and termination immediately before a typed real RPC covered running loss. Both surfaced the injected failure within five seconds through the expected debug termination path instead of hanging. Renderer replacement preserved `Hello, !`, retired the old renderer, admitted the replacement, and normal Core shutdown did not inject a false host-loss failure.
+- Static scans confirm `Test/RemotingHelpers` has no generated RVM include, symbol, type, generated include directory, or `ViewModelShared.cpp` inventory entry. The generated neutral helper pair contains the remaining generic helper sources and none of `RemoteViewModelTestRpc`, `vl_workflow_global`, or the deleted dispatcher subclass; ordinary GacUI pairs do not contain the helper layer. No Windows helper inputs exist, so no empty optional Windows pair was emitted.
+- Aggregate `UpdateRelease` completed with exit code 0. The exact neutral/optional helper filenames were absent from aggregate `Release/Import`, remained in GacUI `Release` and `Release/IncludeOnly`, and the initially clean aggregate Release worktree was restored to the same commit with zero changes. Both platform `import.sh` scripts passed `bash -n` and end-to-end Git Bash execution, producing separate read-only `Import` and `Import-Test` trees with the helper pair only in `Import-Test`.
+- Linux and macOS builds/runtimes are explicitly unverified because this Windows host has no installed WSL distribution or macOS environment. Source inventory inspection confirms the Core initializer add appears once and RvmHost receives it once through its explicit Visual Studio project inventory without duplicating its Linux RPC source add.

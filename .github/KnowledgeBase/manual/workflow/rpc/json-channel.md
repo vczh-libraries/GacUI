@@ -178,29 +178,22 @@ using JsonRpcLocalClient = JsonRpcChannelClient<JsonLocalChannelClient>;
 
 ## Endpoint Dispatcher Client
 
-RpcJsonDispatcherClientForTaskQueue already implements IRpcJsonMessageDispatcher by sending JSON packages through a JsonChannel. A project still needs a small subclass to create RpcJsonDispatcher and RpcJsonLifecycle, then register the RPC metadata and helper operations for the loaded module.
+RpcJsonDispatcherClientForTaskQueue already implements IRpcJsonMessageDispatcher by sending JSON packages through a JsonChannel. Keep this transport dispatcher generic. After connection assigns a client id, pass the dispatcher and id to a module-specific setup function that creates RpcJsonDispatcher and RpcJsonLifecycle, then registers the RPC metadata and helper operations for the loaded module.
 
 The module-specific registration is represented below by ConfigureLifecycleForRpcModule. It should set the id map, serializer, object ops, event ops, event attachers and wrapper factory for the module being used.
 ```C++
 void ConfigureLifecycleForRpcModule(RpcJsonLifecycle* lifecycle);
 
-class MyRpcDispatcherClient : public RpcJsonDispatcherClientForTaskQueue
+void InitializeRpcForModule(
+	RpcJsonDispatcherClient* dispatcher,
+	vint clientId)
 {
-public:
-	MyRpcDispatcherClient(Ptr<TaskQueue> taskQueue)
-		: RpcJsonDispatcherClientForTaskQueue(taskQueue)
-	{
-	}
+	auto rpcDispatcher = Ptr(new RpcJsonDispatcher(clientId, dispatcher));
+	auto lifecycle = Ptr(new RpcJsonLifecycle(clientId, rpcDispatcher.Obj()));
 
-	void InitializeRpc(vint clientId)
-	{
-		auto rpcDispatcher = Ptr(new RpcJsonDispatcher(clientId, this));
-		auto lifecycle = Ptr(new RpcJsonLifecycle(clientId, rpcDispatcher.Obj()));
-
-		SetRpcObjects(rpcDispatcher, lifecycle);
-		ConfigureLifecycleForRpcModule(lifecycle.Obj());
-	}
-};
+	dispatcher->SetRpcObjects(rpcDispatcher, lifecycle);
+	ConfigureLifecycleForRpcModule(lifecycle.Obj());
+}
 ```
 
 ## Server Channel Setup
@@ -307,18 +300,12 @@ A process can host services through a local channel client connected to the same
 class JsonRpcServiceLocalClient : public JsonRpcLocalClient
 {
 private:
-	Ptr<MyRpcDispatcherClient> dispatcher;
+	Ptr<RpcJsonDispatcherClientForTaskQueue> dispatcher;
 
 public:
 	JsonRpcServiceLocalClient(Ptr<Parser> parser)
 		: JsonRpcLocalClient(parser)
 	{
-	}
-
-	void OnConnected(vint clientId) override
-	{
-		CHECK_ERROR(dispatcher, L"The RPC dispatcher client is missing.");
-		dispatcher->InitializeRpc(clientId);
 	}
 
 	vint Connect(
@@ -328,7 +315,7 @@ public:
 		vint serverClientId,
 		const List<WString>& waitingForServices)
 	{
-		dispatcher = Ptr(new MyRpcDispatcherClient(taskQueue));
+		dispatcher = Ptr(new RpcJsonDispatcherClientForTaskQueue(taskQueue));
 		auto clientId = dispatcher->ConnectLocalServer(
 			channelServer,
 			self,
@@ -339,7 +326,7 @@ public:
 		return clientId;
 	}
 
-	MyRpcDispatcherClient* GetDispatcher()
+	RpcJsonDispatcherClient* GetDispatcher()
 	{
 		CHECK_ERROR(dispatcher, L"The RPC dispatcher client is not connected.");
 		return dispatcher.Obj();
@@ -355,7 +342,7 @@ void HostLocalService(
 {
 	auto serviceClient = Ptr(new JsonRpcServiceLocalClient(parser));
 	List<WString> waitingForServices;
-	serviceClient->Connect(
+	auto clientId = serviceClient->Connect(
 		channelServer,
 		serviceClient,
 		taskQueue,
@@ -363,6 +350,7 @@ void HostLocalService(
 		waitingForServices);
 
 	auto rpcClient = serviceClient->GetDispatcher();
+	InitializeRpcForModule(rpcClient, clientId);
 	auto lifecycle = rpcClient->GetRpcLifecycle();
 	auto typeId = lifecycle->GetTypeIdFromName(L"example::IExampleService");
 	CHECK_ERROR(typeId != RpcTypeId_NotFound, L"Unknown RPC service type.");
@@ -378,40 +366,34 @@ A remote client uses JsonNetworkChannelClient over a raw transport such as **vl:
 ```C++
 class JsonRpcNetworkEndpoint : public JsonRpcNetworkClient
 {
-private:
-	Ptr<MyRpcDispatcherClient> dispatcher;
-
 public:
 	JsonRpcNetworkEndpoint(
-		Ptr<MyRpcDispatcherClient> _dispatcher,
 		Ptr<INetworkProtocolClient> transport,
 		Ptr<Parser> parser)
 		: JsonRpcNetworkClient(transport, parser)
-		, dispatcher(_dispatcher)
 	{
 	}
 
-	void OnConnected(vint clientId) override
+	void OnConnected(vint) override
 	{
-		CHECK_ERROR(dispatcher, L"The RPC dispatcher client is missing.");
-		dispatcher->InitializeRpc(clientId);
 	}
 };
 
-Ptr<MyRpcDispatcherClient> ConnectRemoteRpcClient(
+Ptr<RpcJsonDispatcherClientForTaskQueue> ConnectRemoteRpcClient(
 	Ptr<Parser> parser,
 	Ptr<TaskQueue> taskQueue,
 	const List<WString>& waitingForServices)
 {
-	auto dispatcher = Ptr(new MyRpcDispatcherClient(taskQueue));
+	auto dispatcher = Ptr(new RpcJsonDispatcherClientForTaskQueue(taskQueue));
 	auto transport = Ptr(new named_pipe::NamedPipeClient(L"WorkflowRpcPipe"));
-	auto channelClient = Ptr(new JsonRpcNetworkEndpoint(dispatcher, transport, parser));
+	auto channelClient = Ptr(new JsonRpcNetworkEndpoint(transport, parser));
 
 	dispatcher->WaitForServer(
 		channelClient.Obj(),
 		channelClient->GetRpcChannel(),
 		waitingForServices);
 
+	InitializeRpcForModule(dispatcher.Obj(), channelClient->GetClientId());
 	dispatcher->Initialize();
 	return dispatcher;
 }

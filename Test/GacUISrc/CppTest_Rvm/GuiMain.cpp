@@ -1,5 +1,6 @@
 #include "DarkSkin.h"
 #include "RemoteViewModelTestIncludes.h"
+#include "../Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.h"
 #include "../../RemotingHelpers/Rvmt/ViewModelHostServer.h"
 #include "../../../Source/Utilities/AutomationService/MiniHttpAutomationService.h"
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
@@ -69,7 +70,14 @@ int StartServer(
 	)
 {
 	server.Start();
+	collections::List<WString> requiredServiceNames;
+	requiredServiceNames.Add(L"rvmt::IViewModel");
+	auto requesterClientId = server.Connect(requiredServiceNames);
+	RemoteViewModelTestInitialize::InitializeRpc(server.GetDispatcher(), requesterClientId);
 	auto viewModel = server.RequestService(L"rvmt::IViewModel").Cast<rvmt::IViewModel>();
+	auto secondViewModel = server.RequestService(L"rvmt::IViewModel").Cast<rvmt::IViewModel>();
+	CHECK_ERROR(viewModel->Translate(L"First") == L"Hello, First!", L"StartServer(...)#The first rvmt::IViewModel proxy returned an unexpected response.");
+	CHECK_ERROR(secondViewModel->Translate(L"Second") == L"Hello, Second!", L"StartServer(...)#The second rvmt::IViewModel proxy returned an unexpected response.");
 	RvmGuiContext context{ viewModel, miniHttpSocketServer };
 	CHECK_ERROR(!currentGuiContext, L"StartServer(...)#The GUI context has already been bound.");
 	currentGuiContext = &context;

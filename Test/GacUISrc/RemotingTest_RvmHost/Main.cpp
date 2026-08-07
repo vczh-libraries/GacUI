@@ -1,4 +1,5 @@
 #include "../../RemotingHelpers/Rvmt/ViewModelHostClient.h"
+#include "../Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.h"
 #include "RemoteViewModelTestRpc.h"
 #ifdef VCZH_MSVC
 #include <VlppOS.Windows.h>
@@ -39,6 +40,7 @@ int RunHost(Ptr<INetworkProtocolClient> networkClient)
 	auto dispatcher = channelClient->GetDispatcher();
 
 	channelClient->Connect();
+	RemoteViewModelTestInitialize::InitializeRpc(dispatcher, channelClient->GetClientId());
 	auto lifecycle = dispatcher->GetRpcLifecycle();
 	auto typeId = lifecycle->GetTypeIdFromName(L"rvmt::IViewModel");
 	CHECK_ERROR(typeId != RpcTypeId_NotFound, L"RunHost(Ptr<INetworkProtocolClient>)#Failed to find the rvmt::IViewModel type ID.");

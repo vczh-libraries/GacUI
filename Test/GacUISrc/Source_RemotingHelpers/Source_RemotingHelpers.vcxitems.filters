@@ -10,9 +10,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelHostServer.cpp">
       <Filter>Rvmt</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelShared.cpp">
-      <Filter>Rvmt</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingServer\RemotingChannelServer.h">

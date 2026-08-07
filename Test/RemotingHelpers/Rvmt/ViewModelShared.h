@@ -19,21 +19,18 @@ namespace vl::presentation::remoting
 	inline constexpr const wchar_t*						RemoteViewModelHostDisconnectedError = L"RemotingTest_RvmHost disconnected.";
 	inline constexpr vint								InvalidRemoteViewModelClientId = -1;
 
-	extern JsonPackage CreateViewModelReadyMessage();
-	extern bool IsViewModelReadyMessage(const JsonPackage& package);
-}
-
-namespace vl::presentation::remote_view_model_test
-{
-	class RemoteViewModelJsonDispatcherClient
-		: public rpc_controller::channeling::RpcJsonDispatcherClientForTaskQueue
+	inline JsonPackage CreateViewModelReadyMessage()
 	{
-	public:
-		RemoteViewModelJsonDispatcherClient(Ptr<remoting::TaskQueue> taskQueue);
+		auto package = Ptr(new glr::json::JsonString);
+		package->content.value = ViewModelReadyMessage;
+		return package;
+	}
 
-		void InitializeRpc(vint clientId);
-	};
-
+	inline bool IsViewModelReadyMessage(const JsonPackage& package)
+	{
+		auto jsonString = package.Cast<glr::json::JsonString>();
+		return jsonString && jsonString->content.value == ViewModelReadyMessage;
+	}
 }
 
 #endif

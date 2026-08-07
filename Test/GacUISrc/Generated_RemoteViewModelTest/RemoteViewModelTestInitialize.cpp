@@ -1,21 +1,5 @@
-#include "ViewModelShared.h"
+#include "RemoteViewModelTestInitialize.h"
 #include "RemoteViewModelTestRpc.h"
-
-namespace vl::presentation::remoting
-{
-	JsonPackage CreateViewModelReadyMessage()
-	{
-		auto package = Ptr(new glr::json::JsonString);
-		package->content.value = ViewModelReadyMessage;
-		return package;
-	}
-
-	bool IsViewModelReadyMessage(const JsonPackage& package)
-	{
-		auto jsonString = package.Cast<glr::json::JsonString>();
-		return jsonString && jsonString->content.value == ViewModelReadyMessage;
-	}
-}
 
 namespace vl::presentation::remote_view_model_test
 {
@@ -23,19 +7,17 @@ namespace vl::presentation::remote_view_model_test
 	using namespace reflection;
 	using namespace reflection::description;
 	using namespace rpc_controller;
-	using namespace rpc_controller::channeling;
 
-	RemoteViewModelJsonDispatcherClient::RemoteViewModelJsonDispatcherClient(Ptr<remoting::TaskQueue> taskQueue)
-		: RpcJsonDispatcherClientForTaskQueue(taskQueue)
+	void RemoteViewModelTestInitialize::InitializeRpc(
+		rpc_controller::channeling::RpcJsonDispatcherClient* dispatcher,
+		vint clientId
+		)
 	{
-	}
-
-	void RemoteViewModelJsonDispatcherClient::InitializeRpc(vint clientId)
-	{
+		CHECK_ERROR(dispatcher, L"RemoteViewModelTestInitialize::InitializeRpc(...)#The dispatcher is null.");
 		auto& app = vl_workflow_global::RemoteViewModelTestRpc::Instance();
-		auto rpcDispatcher = Ptr(new RpcJsonDispatcher(clientId, this));
+		auto rpcDispatcher = Ptr(new RpcJsonDispatcher(clientId, dispatcher));
 		auto lifecycle = Ptr(new RpcJsonLifecycle(clientId, rpcDispatcher.Obj()));
-		this->SetRpcObjects(rpcDispatcher, lifecycle);
+		dispatcher->SetRpcObjects(rpcDispatcher, lifecycle);
 
 		auto idMap = UnboxParameter<Dictionary<WString, vint>>(BoxParameter(app.rpc_GetIds()));
 		lifecycle->SetIdMap(idMap.Ref());

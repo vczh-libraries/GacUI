@@ -20,7 +20,7 @@ namespace vl::presentation::remoting
 	{
 		channelNames.Add(ViewModelChannelName, nullptr);
 		channelNames.Add(ViewModelReadyChannelName, nullptr);
-		dispatcher = Ptr(new remote_view_model_test::RemoteViewModelJsonDispatcherClient(taskQueue));
+		dispatcher = Ptr(new RpcDispatcherClient(taskQueue));
 	}
 
 	const JsonChannelClient::ChannelNameList& ViewModelHostClient::OnGetChannelNames()
@@ -58,7 +58,6 @@ namespace vl::presentation::remoting
 			GetChannels()[ViewModelChannelName],
 			waitingForServices
 			);
-		dispatcher->InitializeRpc(GetClientId());
 		controlChannel = GetChannels()[ViewModelReadyChannelName];
 		CHECK_ERROR(controlChannel, L"ViewModelHostClient::Connect()#The control channel is null.");
 	}

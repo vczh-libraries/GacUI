@@ -20,7 +20,7 @@ namespace vl::presentation::remoting
 			Stopping,
 		};
 
-		// covers phase, host state, admissionReady, brokerDispatcher, requesterDispatcher and pending host-loss state
+		// covers phase, host state, admissionReady, taskQueueStarted, rpcInitialized, brokerDispatcher, requesterDispatcher and pending host-loss state
 		SpinLock									lockState;
 		CriticalSection								lockBroker;
 		RequesterPhase								phase;
@@ -28,6 +28,7 @@ namespace vl::presentation::remoting
 		bool										hostEverAccepted = false;
 		bool										brokerRegistrationClaimed = false;
 		bool										admissionReady = false;
+		bool										taskQueueStarted = false;
 		bool										rpcInitialized = false;
 		bool										pendingHostLoss = false;
 		bool										hostLossClaimed = false;
@@ -38,8 +39,7 @@ namespace vl::presentation::remoting
 		Ptr<TaskQueueThread>											taskQueueThread;
 		Ptr<RpcBroadcastingLocalClient>								broadcastingClient;
 		Ptr<RpcServiceAccessLocalClient>							requesterClient;
-		remote_view_model_test::RemoteViewModelJsonDispatcherClient*	requesterDispatcher = nullptr;
-		Ptr<IDescriptable>												service;
+		RpcDispatcherClient*										requesterDispatcher = nullptr;
 
 		void										RegisterHost(vint clientId);
 		void										OnControlMessage(vint senderClientId, const JsonPackage& package);
@@ -54,6 +54,8 @@ namespace vl::presentation::remoting
 		bool										TryAcceptHost(vint clientId);
 		void										OnClientDisconnected(vint clientId);
 		void										Start(JsonChannelServer* channelServer);
+		vint										Connect(const collections::List<WString>& requiredServiceNames);
+		RpcDispatcherClient*							GetDispatcher();
 		Ptr<IDescriptable>							RequestService(const WString& typeName);
 		bool										CanAdmitRenderer();
 		void										Stop(const Func<void()>& stopServer);
@@ -115,7 +117,17 @@ namespace vl::presentation::remote_view_model_test
 		void Start() override
 		{
 			Base::Start();
+		}
+
+		vint Connect(const collections::List<WString>& requiredServiceNames)
+		{
 			Helpers::Start(this);
+			return Helpers::Connect(requiredServiceNames);
+		}
+
+		remoting::RpcDispatcherClient* GetDispatcher()
+		{
+			return Helpers::GetDispatcher();
 		}
 
 		Ptr<IDescriptable> RequestService(const WString& typeName)

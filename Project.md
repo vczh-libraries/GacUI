@@ -39,15 +39,16 @@ Files in this folder are for test apps only:
 - Only test apps could use these source files.
 - No need to create unit test for them.
 - Source files in `Source` cannot use anything in `Test/RemotingHelpers`.
-- They are not CodePacked or published in `Release`.
+- They are excluded from ordinary public GacUI amalgamations and the aggregate `Release` repository. GacUI CodePack emits dedicated `Test.RemotingHelpers(.Windows)?.h/.cpp` pairs in `Release` and `Release/IncludeOnly` only for platform repositories' `Import-Test` snapshots.
 - No production quality required, these files are only for building test apps quickly.
 
 ### Test/RemotingHelpers/Rvmt
 
-Files in this folder are the generated-RemoteViewModelTest-specific client and requester helpers used only by `CppTest_Rvm`, `RemotingTest_Core`, and `RemotingTest_RvmHost`.
+Files in this folder are generic client and requester helpers used only by `CppTest_Rvm`, `RemotingTest_Core`, and `RemotingTest_RvmHost`.
 - They are enumerated and compiled through the single `Test/GacUISrc/Source_RemotingHelpers/Source_RemotingHelpers.vcxitems` inventory shared by all helper consumers.
-- `ViewModelShared.*` owns the fixed RVM channel/control constants and generated RPC initialization, `ViewModelHostClient.*` owns the network-side host client, and `ViewModelHostServer.*` owns the specialized channel server's RPC helpers and server-side local-client behavior.
-- `Release/CodegenConfig.xml` does not scan `Test/RemotingHelpers`, and no generated RemotingHelpers pairs exist in `Release` or `Release/IncludeOnly`.
+- `ViewModelShared.h` owns generic aliases, fixed RVM channel/control constants, and inline Ready-message helpers; `ViewModelHostClient.*` owns the generic network-side host client; and `ViewModelHostServer.*` owns the specialized channel server's generic RPC helpers and server-side local-client behavior.
+- Generated RemoteViewModelTest RPC composition belongs to `Test/GacUISrc/Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.*`, which each affected application invokes after its generic connection is assigned a client ID.
+- `Release/CodegenConfig.xml` scans this helper tree only into the dedicated test pairs. Ordinary `GacUI*` pairs and the aggregate `Release` repository remain independent of these helpers.
 
 ## Reflectable Types
 
