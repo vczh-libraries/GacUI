@@ -115,11 +115,11 @@ namespace vl::presentation::remote_view_model_test
 		void Start() override
 		{
 			Base::Start();
+			Helpers::Start(this);
 		}
 
 		Ptr<IDescriptable> RequestService(const WString& typeName)
 		{
-			Helpers::Start(this);
 			return Helpers::RequestService(typeName);
 		}
 

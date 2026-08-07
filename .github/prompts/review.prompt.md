@@ -12,6 +12,9 @@
 - You are not allowed to modify any source code, unless directly instructed in answers to review comments.
 - You are not going to execute the task, you are just reviewing it.
 - If everything just looks good, you do not have to make any change to the task file.
+- You are not allowed to change my original words in this file:
+  - `## DETAILS`, `## VERIFICATION` and `## REVIEW COMMENTS` are added by you, you are free to change these parts.
+  - Anything before them is from me, you are not allowed to change it, except to fix typos or grammar mistakes or explicitly instructed by me later.
 
 ## Identify the Task File
 
@@ -77,7 +80,7 @@ I will put my reply here
   - You should de-ambiguous proactively, if there is an obvious best answer to the review comment, you should also propose your solution:
     - You can find my preference in `REPO-ROOT/.github/Guidelines/Coding.md`.
   - Review comments should only be created when you can't find any reasonable solution to the issue, or can't make any reasonable decision because of the ambiguity.
-    - If anything in the the task is incorrect, just make change directly instead of putting a review comment.
+    - If anything in the the task is incorrect, only make changes for typos and grammar mistakes, fact mistakes should be put in `## DETAILS`, or when it causes unresolvable ambiguity, put it in `## REVIEW COMMENTS`.
     - If there are ambiguity or missing details, but you are able to figure it out, just add them to `## DETAILS` or `## VERIFICATION` section of the task file, instead of putting a review comment.
 - Take into accounts of my replies to all review comments.
 - Expand missing details:
