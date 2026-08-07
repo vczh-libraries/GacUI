@@ -2,9 +2,6 @@
 #define VCZH_PRESENTATION_RVMT_VIEWMODEL_SHARED
 
 #include "../../../Source/GacUI.h"
-#include <VlppOS.h>
-#include <VlppWorkflowLibrary.h>
-#include "RemoteViewModelTestRpc.h"
 
 namespace vl::presentation::remoting
 {

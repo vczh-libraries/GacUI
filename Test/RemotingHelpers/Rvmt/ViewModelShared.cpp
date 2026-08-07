@@ -1,4 +1,5 @@
 #include "ViewModelShared.h"
+#include "RemoteViewModelTestRpc.h"
 
 namespace vl::presentation::remoting
 {
