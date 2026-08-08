@@ -11,7 +11,7 @@
 - The current document is the source of truth, when unalignment happens, align to this document.
 - Maintain documents and scripts in `wGac` and `iGac`.
 - Makesure test apps build and work as expected.
-- `DebugRemoteProtocolWithRenderer.md` and `DebugRemoteProtocolWithGacJS.md` documents details of verification.
+- `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md` document details of verification.
 
 ## Helper Bash Scripts
 
@@ -78,6 +78,6 @@ Try to limit changes in `GacUI` to only include making release or fixing cross-p
 - Unless there are fundemental issues to fix.
 - You need to figure out why the code is just work in `GacUI` on Windows. Having correct answers to this question help you figure out root cause efficiently and precisely.
 
-Follow `DebugRemoteProtocolWithRenderer.md` and `DebugRemoteProtocolWithGacJS.md` to make sure all test apps are behaving expectedly.
+Follow `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md` to make sure all test apps are behaving expectedly.
 Sometimes it might only need native renderer or GacJS to be verified, this will be explicitly instructed additionally. Otherwise both should be tested.
 Make sure to commit and push local changes across all affected repos.

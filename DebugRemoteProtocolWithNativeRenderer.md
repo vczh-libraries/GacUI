@@ -10,7 +10,7 @@ platform; its platform section states the currently available implementation.
 
 The core must start before the renderer. The application selector (`/FCT` or
 `/RPT`) belongs only to the core, while the renderer receives the matching
-transport selector. On Windows, the renderer also accepts `/port:<port>` for its
+transport selector. Every native renderer accepts `/port:<port>` for its
 automation listener; omission keeps the default port `8889`. Run one
 core/renderer pair at a time and retain both process identifiers for cleanup.
 
@@ -220,10 +220,11 @@ DOM and exposed as `fatalError`; exact `!Exit` remains available for cleanup.
 
 ## macOS Specific
 
-The macOS native renderer is `RemotingTest_Renderer_macOS` in the sibling
+The macOS native renderer is `RemotingTest_Rendering_macOS` in the sibling
 `iGac` repository. It uses `/MiniHttp` only; `/Http` and `/Pipe` are not part of
-the macOS contract. The current macOS launcher does not expose an automation
-port override, so its automation port remains `8889`.
+the macOS contract. Its automation port defaults to `8889`; the iGac launcher
+accepts `--port:<port>` and forwards it as the renderer's `/port:` automation
+option without changing the Core connection on port 8888.
 
 From the monorepo root, build the portable core and the iGac renderer:
 
@@ -249,7 +250,13 @@ Wait for `Waiting for a renderer ...`, then run the renderer in a second
 terminal:
 
 ```bash
-iGac/build/RemotingTest_Renderer_macOS/bin/RemotingTest_Renderer_macOS.app/Contents/MacOS/RemotingTest_Renderer_macOS /MiniHttp
+iGac/test.sh --app:renderer
+```
+
+For example, a concurrent takeover renderer can use a second automation port:
+
+```bash
+iGac/test.sh --app:renderer --port:8890
 ```
 
 The corresponding automation endpoints are:
@@ -257,8 +264,8 @@ The corresponding automation endpoints are:
 ```text
 GET  http://localhost:8888/Automation/RemotingTest_Core/Controls
 POST http://localhost:8888/Automation/RemotingTest_Core/IO
-GET  http://localhost:8889/Automation/RemotingTest_Renderer_macOS/Dom
-POST http://localhost:8889/Automation/RemotingTest_Renderer_macOS/IO
+GET  http://localhost:8889/Automation/RemotingTest_Rendering_Native/Dom
+POST http://localhost:8889/Automation/RemotingTest_Rendering_Native/IO
 ```
 
 Post renderer commands with `curl`, for example:
@@ -268,7 +275,7 @@ curl \
   -X POST \
   -H 'Content-Type: application/json; charset=utf8' \
   --data-binary '!LeftClick:<integer-x>,<integer-y>' \
-  http://localhost:8889/Automation/RemotingTest_Renderer_macOS/IO
+  http://localhost:8889/Automation/RemotingTest_Rendering_Native/IO
 ```
 
 Use renderer `/IO` for the shared SOP so both input and rendering cross the
@@ -283,9 +290,17 @@ appears in only the top-left quarter of a window and pointer coordinates behave
 as if divided by two, inspect the remote screen scaling rather than changing the
 ordinary Cocoa rendering path.
 
-To replace the renderer, stop only the renderer process and start it again
-while keeping the core alive. To test takeover, start another renderer without
-first stopping the active one. The new renderer must retain the application
-state and the previous renderer must exit cleanly. Closing the application
-through its UI must also close the active renderer without a fatal prompt or
-retry loop.
+To replace the renderer, stop only the renderer process and start it again on
+port 8889 while keeping the core alive. To test takeover, keep that renderer
+running and start another one with `--port:8890`; inspect the new renderer at
+the same automation prefix on port 8890. The new renderer must retain the
+application state and the previous renderer must exit cleanly. Closing the
+application through its UI must also close the active renderer without a fatal
+prompt or retry loop.
+
+For `/RVMT`, start
+`GacUI/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core /MiniHttp /RVMT`, then
+start `GacUI/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost /MiniHttp`.
+Wait until Core automation exposes the `Remote View Model Test` window before
+starting the renderer. Follow the `/RVMT` section of the shared SOP and clean
+up all three retained processes afterward.
