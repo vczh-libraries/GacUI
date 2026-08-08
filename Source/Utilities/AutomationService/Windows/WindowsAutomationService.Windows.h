@@ -3,7 +3,7 @@
 
 #include "../../../GacUI.h"
 #include "../../../PlatformProviders/Windows/WinNativeWindow.h"
-#include <VlppOS.h>
+#include "../../../PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
 
 namespace vl::presentation::windows
 {
@@ -32,6 +32,14 @@ namespace vl::presentation::windows
 
 	class WindowsAutomationServiceHosted : public WindowsAutomationServiceBase<AutomationServiceHosted>
 	{
+	};
+
+	class WindowsRendererAutomationService : public WindowsAutomationServiceBase<AutomationServiceRenderer>
+	{
+	public:
+		WindowsRendererAutomationService(remote_renderer::GuiRemoteRendererSingle* renderer);
+
+		INativeAutomationService::IOCommandAvailability CanRunIOCommands() override;
 	};
 
 	extern void StartWindowsHttpAutomationService(const WString& applicationName, vint port);

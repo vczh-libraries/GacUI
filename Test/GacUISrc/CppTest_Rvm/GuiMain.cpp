@@ -57,43 +57,44 @@ void GuiMain()
 	rvmt::MainWindow window(currentGuiContext->viewModel);
 	window.ForceCalculateSizeImmediately();
 	window.MoveToScreenCenter();
+
 #if defined VCZH_MSVC
 	windows::SetWindowDefaultIcon(MAINICON);
 	windows::WindowsAutomationServiceHosted automationService;
+#elif defined VCZH_GCC && !defined VCZH_APPLE
+	wayland::WGacAutomationServiceHoste rendererAutomationServiceObject(currentGuiContext->renderer);
+#elif defined VCZH_GCC && defined VCZH_APPLE
+	osx::CocoaAutomationServiceHoste rendererAutomationServiceObject(currentGuiContext->renderer);
+#endif
 	GetNativeServiceSubstitution()->Substitute(&automationService, false);
-	if (currentGuiContext->miniHttpSocketServer)
+
+#if defined VCZH_MSVC
+	if (!currentGuiContext->miniHttpSocketServer)
+	{
+		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/CppTest_Rvm"), RemotingHttpPort);
+	}
+	else
+#endif
 	{
 		StartMiniHttpAutomationService(
 			currentGuiContext->miniHttpSocketServer,
 			WString::Unmanaged(L"CppTest_Rvm")
 			);
 	}
-	else
-	{
-		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/CppTest_Rvm"), RemotingHttpPort);
-	}
-#else
-	StartMiniHttpAutomationService(
-		currentGuiContext->miniHttpSocketServer,
-		WString::Unmanaged(L"CppTest_Rvm")
-		);
-#endif
 
 	GetApplication()->Run(&window);
 #if defined VCZH_MSVC
 	if (currentGuiContext->miniHttpSocketServer)
 	{
-		StopMiniHttpAutomationService();
+		windows::StopWindowsHttpAutomationService();
 	}
 	else
+#endif
 	{
-		windows::StopWindowsHttpAutomationService();
+		StopMiniHttpAutomationService();
 	}
 	automationService.Stop();
 	GetNativeServiceSubstitution()->Unsubstitute(&automationService);
-#else
-	StopMiniHttpAutomationService();
-#endif
 }
 
 template<typename TServerBase>

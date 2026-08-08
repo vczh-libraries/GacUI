@@ -57,6 +57,15 @@ namespace vl::presentation::windows
 		return nullptr;
 	}
 
+	WindowsRendererAutomationService::WindowsRendererAutomationService(remote_renderer::GuiRemoteRendererSingle* renderer)
+		: WindowsAutomationServiceBase<AutomationServiceRenderer>(renderer)
+	{}
+
+	INativeAutomationService::IOCommandAvailability WindowsRendererAutomationService::CanRunIOCommands()
+	{
+		return AutomationServiceRenderer::CanRunIOCommands();
+	}
+
 	namespace
 	{
 		bool IsValidWindowId(const wchar_t* windowId)

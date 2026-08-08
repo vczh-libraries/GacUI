@@ -59,26 +59,21 @@ void GuiMain()
 	RemoteProtocolAutomationService automationService;
 	GetNativeServiceSubstitution()->Substitute(&automationService, false);
 #ifdef VCZH_MSVC
-	if (currentGuiContext->miniHttpSocketServer)
-	{
-		StartMiniHttpAutomationService(
-			currentGuiContext->miniHttpSocketServer,
-			WString::Unmanaged(L"RemotingTest_Core")
-			);
-	}
-	else
+	if (!currentGuiContext->miniHttpSocketServer)
 	{
 		windows::StartWindowsHttpAutomationService(
 			WString::Unmanaged(L"Automation/RemotingTest_Core"),
 			GacUIAutomationHttpPort
 			);
 	}
-#else
-	StartMiniHttpAutomationService(
-		currentGuiContext->miniHttpSocketServer,
-		WString::Unmanaged(L"RemotingTest_Core")
-		);
+	else
 #endif
+	{
+		StartMiniHttpAutomationService(
+			currentGuiContext->miniHttpSocketServer,
+			WString::Unmanaged(L"RemotingTest_Core")
+			);
+	}
 
 	std::exception_ptr uiException;
 	try
@@ -97,17 +92,16 @@ void GuiMain()
 	}
 
 #ifdef VCZH_MSVC
-	if (currentGuiContext->miniHttpSocketServer)
-	{
-		StopMiniHttpAutomationService();
-	}
-	else
+	if (!currentGuiContext->miniHttpSocketServer)
 	{
 		windows::StopWindowsHttpAutomationService();
 	}
-#else
-	StopMiniHttpAutomationService();
+	else
 #endif
+	{
+		StopMiniHttpAutomationService();
+	}
+
 	automationService.Stop();
 	GetNativeServiceSubstitution()->Unsubstitute(&automationService);
 	if (uiException)
