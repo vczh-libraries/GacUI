@@ -87,13 +87,7 @@ void GuiMain()
 	auto invoker = Ptr(new GuiMainAsyncRendererInvoker);
 	currentGuiContext->renderer->RegisterMainWindow(mainWindow);
 
-#if defined VCZH_MSVC
-	windows::WindowsAutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
-#elif defined VCZH_GCC && !defined VCZH_APPLE
-	wayland::WGacAutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
-#else
-	osx::CocoaAutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
-#endif
+	AutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
 	GetNativeServiceSubstitution()->Substitute(&rendererAutomationServiceObject, false);
 #if defined VCZH_MSVC
 	if (currentGuiContext->miniHttpSocketServer)
