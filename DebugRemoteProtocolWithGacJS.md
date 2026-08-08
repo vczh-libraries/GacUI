@@ -1,16 +1,35 @@
 # Operating GacUI Through GacJS
 
-This guide explains how to build and start `RemotingTest_Core`, serve GacJS,
-and operate the browser renderer. The renderer-independent UI actions and
-observable results are in [`DebugRemoteProtocolSop.md`](DebugRemoteProtocolSop.md). The required
-verification matrix and scenarios are in
-[`../Tools/Jobs/job.verifyRemoteProtocol.prompt.md`](../Tools/Jobs/job.verifyRemoteProtocol.prompt.md).
-Use that job to decide what must be tested and this guide to start and drive
-each browser session.
+This guide records how to build and start `RemotingTest_Core`, serve GacJS, and
+operate the browser renderer. The feature operations, error injections, and
+pass/fail observations are defined only in
+[`DebugRemoteProtocolSop.md`](DebugRemoteProtocolSop.md). Use this guide to
+establish each required browser-renderer topology, then execute the matching SOP
+section.
 
 Run from a monorepo root where `GacUI`, `GacJS`, and `Tools` are sibling
 repositories. In the commands below, `<GacUI>` and `<GacJS>` mean those checkout
 roots.
+
+## Test Matrix
+
+The Core application and transport columns are independent dimensions. Test
+their Cartesian product with fresh processes: every listed Core application
+must run once with every transport available to GacJS on that platform.
+`CppTest_Rvm` is excluded because it renders locally and needs no remote
+renderer. `/Pipe` is excluded because a fetch-based browser cannot use it.
+
+| Platform | GacJS renderer | Core application dimension | Transport dimension | Total targets |
+| --- | --- | --- | --- | --- |
+| Windows | Playwright Chromium | `/RPT`, `/FCT`, `/RVMT` | `/Http`, `/MiniHttp` | 6 |
+| Linux | Playwright Firefox | `/RPT`, `/FCT`, `/RVMT` | `/MiniHttp` | 3 |
+| macOS | Playwright WebKit | `/RPT`, `/FCT`, `/RVMT` | `/MiniHttp` | 3 |
+
+Every `/RVMT` target also includes `RemotingTest_RvmHost`. Start Core first,
+then start the host with the same transport, wait until the application is
+ready, and only then open GacJS. Installed Safari is a supplementary macOS
+compatibility check, not another required matrix row and not a substitute for
+Playwright WebKit.
 
 ## Required Reading
 
@@ -35,20 +54,13 @@ requires one transport selector:
 | --- | --- |
 | `/FCT` | FullControlTest. This is the default application. |
 | `/RPT` | RemoteProtocolTest. |
+| `/RVMT` | RemoteViewModelTest. Requires `RemotingTest_RvmHost`. |
 | `/Http` | The Windows full-HTTP transport. |
 | `/MiniHttp` | The portable async-socket MiniHTTP transport. Use this exact spelling. |
 | `/Pipe` | The Windows named-pipe transport. A fetch-based browser cannot use it. |
 
-The GacJS transport matrix is:
-
-| Platform | Compatible core transport |
-| --- | --- |
-| Windows | `/Http`, `/MiniHttp` |
-| Linux | `/MiniHttp` |
-| macOS | `/MiniHttp` |
-
-`/FCT` and `/RPT` are exclusive, as are the transport arguments. Start the core
-before opening `http://localhost:8896/index.html`.
+`/FCT`, `/RPT`, and `/RVMT` are exclusive, as are the transport arguments. Start
+Core before opening `http://localhost:8896/index.html`.
 
 The protocol endpoint is fixed at port `8888`. In MiniHTTP mode, the core also
 registers its `/Automation/RemotingTest_Core/...` routes on that listener. GacJS
@@ -76,7 +88,7 @@ uses root-relative asset URLs.
 Run the repository test command from the same directory:
 
 ```text
-npm run test
+yarn test
 ```
 
 On Windows this includes the checked-in protocol E2E tests. On Linux and macOS,
@@ -110,10 +122,9 @@ For programmatic Playwright operation:
 - Re-query the DOM after tabs, menus, dialogs, and renderer replacement.
 - Do not use arbitrary sleeps for UI synchronization.
 
-A normal renderer replacement or intentional application shutdown produces a
-terminal disconnect in the old renderer. It must settle without an uncontrolled
-fatal alert or retry loop. Retain the core output and browser diagnostics when
-investigating a failure.
+The shared SOP defines the required renderer-replacement and application-close
+results. Retain Core output and browser diagnostics while performing those
+operations.
 
 For low-level protocol diagnosis, temporarily enable `PRINT_PROTOCOL_JSON` in
 `<GacUI>/Test/GacUISrc/RemotingTest_Core/CoreChannel.cpp`. Rebuild, reproduce,
@@ -129,8 +140,9 @@ Set-Location <GacUI>\Test\GacUISrc
 ```
 
 The executable is
-`<GacUI>\Test\GacUISrc\x64\Debug\RemotingTest_Core.exe`. The following examples
-are separate runs:
+`<GacUI>\Test\GacUISrc\x64\Debug\RemotingTest_Core.exe`; `/RVMT` also uses
+`<GacUI>\Test\GacUISrc\x64\Debug\RemotingTest_RvmHost.exe`. The following
+examples are separate runs:
 
 ```powershell
 $coreExe = '<GacUI>\Test\GacUISrc\x64\Debug\RemotingTest_Core.exe'
@@ -142,8 +154,18 @@ $core = Start-Process -FilePath $coreExe -ArgumentList '/MiniHttp','/FCT' -PassT
 $core = Start-Process -FilePath $coreExe -ArgumentList '/Http','/FCT' -PassThru
 ```
 
-Substitute `/RPT` when required by the verification job. Exercise `/Http` and
-`/MiniHttp` as separate GacJS runs. Do not call MSBuild directly.
+Substitute `/RPT` for Remote Protocol Test. For `/RVMT`, start the matching host
+after Core and wait until Core automation exposes the
+`Remote View Model Test` window before opening the browser:
+
+```powershell
+$hostExe = '<GacUI>\Test\GacUISrc\x64\Debug\RemotingTest_RvmHost.exe'
+$core = Start-Process -FilePath $coreExe -ArgumentList '/Http','/RVMT' -PassThru
+$host = Start-Process -FilePath $hostExe -ArgumentList '/Http' -PassThru
+```
+
+Repeat that order with `/MiniHttp`. Exercise every application/transport target
+as a separate GacJS run. Do not call MSBuild directly.
 
 After `yarn build`, start the checked-in website server:
 
@@ -162,10 +184,12 @@ Core automation is available at
 automation port is selected by its optional `/port:<port>` argument and defaults
 to `8889`; it is not used by GacJS.
 
-Close the browser and stop only the retained core:
+Close the browser, stop the retained Core, and then stop a retained host if it
+has not already exited:
 
 ```powershell
 if ($core -and -not $core.HasExited) { Stop-Process -Id $core.Id -Force }
+if ($host -and -not $host.HasExited) { Stop-Process -Id $host.Id -Force }
 ```
 
 ## Linux and macOS
@@ -180,6 +204,13 @@ cd <GacUI>/Test/Linux/RemotingTest_Core
 core_pid=$!
 ```
 
+Build the portable host before an `/RVMT` run:
+
+```bash
+cd <GacUI>/Test/Linux/RemotingTest_RvmHost
+../../../.github/Ubuntu/build.sh
+```
+
 After `yarn build` has completed, start the website in another terminal:
 
 ```bash
@@ -188,7 +219,16 @@ npm run start
 ```
 
 It serves `lib/dist` at `http://localhost:8896` and waits for ENTER to stop.
-Substitute `/RPT` in the core command when required.
+Substitute `/RPT` for Remote Protocol Test. For `/RVMT`, start Core with that
+selector, then start the host before opening GacJS:
+
+```bash
+<GacUI>/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost /MiniHttp &
+host_pid=$!
+```
+
+Wait until Core automation exposes the `Remote View Model Test` window before
+opening the browser.
 
 Open `http://localhost:8896/index.html` only after the core reports that its
 MiniHTTP server is waiting on port `8888`. Require the page to load
@@ -201,14 +241,17 @@ stop only the retained core process:
 ```bash
 kill "$core_pid"
 wait "$core_pid" 2>/dev/null || true
+if [ -n "${host_pid:-}" ]; then
+  kill "$host_pid"
+  wait "$host_pid" 2>/dev/null || true
+fi
 ```
 
 ### Linux
 
 Use the Linux build, hosting, and cleanup commands above. Firefox is the
 required Playwright browser for this platform. Install it from
-`<GacJS>/Gaclib` and verify through a browser page, not by relying on the
-non-Windows E2E skip:
+`<GacJS>/Gaclib` and open the page for each matrix target:
 
 ```bash
 yarn playwright install firefox
@@ -236,12 +279,10 @@ Run each required application scenario in Playwright WebKit with a fresh
 yarn playwright open --browser=webkit http://localhost:8896/index.html
 ```
 
-The command opens an interactive session. When automating the
-scenario in a Playwright script, use the programmatic idle, blink, and error
-handling rules above. Require live GacUI content, focus an editor, type through
-the browser keyboard, and require the exact text to render with no dialog, page
-error, or console error. Do not add Chromium or Firefox to the macOS
-verification matrix.
+The command opens an interactive session. When automating the scenario in a
+Playwright script, use the programmatic idle, blink, and error-handling rules
+above and execute the matching shared SOP section. Do not add Chromium or
+Firefox to the macOS verification matrix.
 
 Playwright WebKit is the Safari-family automated target, but it is not the
 installed Safari application. Real Safari remains a separate manual check after

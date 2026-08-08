@@ -1,26 +1,36 @@
 # Operating GacUI With a Native Remote Renderer
 
-This guide explains how to start a native renderer, inspect its remote UI, and
-send real renderer-side input. The shared UI operations and observable results
-are defined in [`DebugRemoteProtocolSop.md`](DebugRemoteProtocolSop.md). The required transport
-matrix and pass/fail criteria are defined in
-[`../Tools/Jobs/job.verifyRemoteProtocol.prompt.md`](../Tools/Jobs/job.verifyRemoteProtocol.prompt.md).
-Use this document as the native-renderer operation entry point on every
-platform; its platform section states the currently available implementation.
+This guide records how to build and start the native test applications, inspect
+a native remote renderer, and send renderer-side input. The feature operations,
+error injections, and pass/fail observations are defined only in
+[`DebugRemoteProtocolSop.md`](DebugRemoteProtocolSop.md). Use this guide to
+establish each required process topology, then execute the matching SOP section.
 
-The core must start before the renderer. The application selector (`/FCT` or
-`/RPT`) belongs only to the core, while the renderer receives the matching
-transport selector. Every native renderer accepts `/port:<port>` for its
-automation listener; omission keeps the default port `8889`. Run one
-core/renderer pair at a time and retain both process identifiers for cleanup.
+## Test Matrix
 
-The native-renderer transport contract is:
+The application and transport columns are independent dimensions. Test their
+Cartesian product: every listed application target must run once with every
+transport available on that platform. Alternatives in one dimension do not
+replace any target in the other dimension. Use fresh processes for each target.
 
-| Platform | Transport arguments | Current implementation status |
-| --- | --- | --- |
-| Windows | `/MiniHttp`, `/Http`, `/Pipe` | Available |
-| Linux | `/MiniHttp` | Available in the sibling `wGac` repository |
-| macOS | `/MiniHttp` | Available in the sibling `iGac` repository |
+| Platform | Standalone RVM requester targets | Remote Core application dimension | Transport dimension | Total targets |
+| --- | --- | --- | --- | --- |
+| Windows | `CppTest_Rvm` + `RemotingTest_RvmHost` | `RemotingTest_Core` + `RemotingTest_Rendering_Win32`: `/RPT`, `/FCT`, `/RVMT` | `/Pipe`, `/Http`, `/MiniHttp` | 3 standalone + 9 Core = 12 |
+| Linux | wGac `Test_CppTest_Rvm` + `RemotingTest_RvmHost` | `RemotingTest_Core` + `RemotingTest_Rendering_Wayland`: `/RPT`, `/FCT`, `/RVMT` | `/MiniHttp` | 1 standalone + 3 Core = 4 |
+| macOS | iGac `Test_CppTest_Rvm` + `RemotingTest_RvmHost` | `RemotingTest_Core` + `RemotingTest_Rendering_macOS`: `/RPT`, `/FCT`, `/RVMT` | `/MiniHttp` | 1 standalone + 3 Core = 4 |
+
+Every `/RVMT` Core target also includes `RemotingTest_RvmHost`; start it after
+Core and before the renderer. The standalone RVM requester targets do not use a
+remote renderer: start the platform's `CppTest_Rvm` application first and then
+start `RemotingTest_RvmHost`. Every process in a target must use the same
+transport. On Windows, pass that transport to both processes. The wGac and iGac
+RVM launchers are fixed to `/MiniHttp`, so pass `/MiniHttp` to their host.
+
+For a Core target, the Core must start before the renderer. The application
+selector belongs only to Core, while the renderer receives the transport
+selector and optional `/port:<port>` automation-listener argument. Omitting the
+port keeps the default `8889`. Run one target at a time and retain every process
+identifier for cleanup.
 
 ## Windows
 
@@ -41,12 +51,14 @@ finally {
 The executables are:
 
 ```text
+GacUI\Test\GacUISrc\x64\Debug\CppTest_Rvm.exe
 GacUI\Test\GacUISrc\x64\Debug\RemotingTest_Core.exe
 GacUI\Test\GacUISrc\x64\Debug\RemotingTest_Rendering_Win32.exe
+GacUI\Test\GacUISrc\x64\Debug\RemotingTest_RvmHost.exe
 ```
 
 Start a pair from the monorepo root. These examples use `/RPT`; substitute
-`/FCT` when required by the verification job.
+`/FCT` or `/RVMT` for the other Core application targets.
 
 ```powershell
 $bin = (Resolve-Path GacUI\Test\GacUISrc\x64\Debug).Path
@@ -62,6 +74,24 @@ $renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win3
 # Named pipe implementation
 $core = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Core.exe') -ArgumentList '/Pipe','/RPT' -PassThru
 $renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Pipe','/port:8890' -PassThru
+```
+
+For a Core `/RVMT` target, start the three processes in this order, replacing
+`/Http` with the selected transport. Wait until Core automation exposes the
+`Remote View Model Test` window before starting the renderer:
+
+```powershell
+$core = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Core.exe') -ArgumentList '/Http','/RVMT' -PassThru
+$host = Start-Process -FilePath (Join-Path $bin 'RemotingTest_RvmHost.exe') -ArgumentList '/Http' -PassThru
+$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Http','/port:8890' -PassThru
+```
+
+For a standalone RVM requester target, omit Core and the renderer. Start the
+requester before its host, again using the same selected transport in both:
+
+```powershell
+$requester = Start-Process -FilePath (Join-Path $bin 'CppTest_Rvm.exe') -ArgumentList '/Http' -PassThru
+$host = Start-Process -FilePath (Join-Path $bin 'RemotingTest_RvmHost.exe') -ArgumentList '/Http' -PassThru
 ```
 
 The examples are separate runs, not one script. Start the selected core, wait
@@ -135,17 +165,18 @@ Keep both consoles available when investigating connection or shutdown errors.
 If a debugger is needed, use the scripts in `GacUI/.github/Scripts` as directed
 by `GacUI/.github/Guidelines/Debugging.md`.
 
-After a normal close, the renderer must settle without an `ERROR from GacUI
-Core` dialog. A fatal local channel error, such as a pipe closure or an HTTP 404
-after connection, is itself terminal: the renderer enters its ordinary
-disconnected state directly and does not wait for `OnDisconnected`. Only a
-Core-authored `!Error` package presents the fatal prompt or overlay.
+The shared SOP defines the required close and fatal-error observations. For
+diagnosis, a fatal local channel error such as a pipe closure or HTTP 404 enters
+the ordinary disconnected state directly; only a Core-authored `!Error` package
+presents the fatal prompt or overlay.
 
 Clean up only the processes retained for the run:
 
 ```powershell
 if ($renderer -and -not $renderer.HasExited) { Stop-Process -Id $renderer.Id -Force }
+if ($requester -and -not $requester.HasExited) { Stop-Process -Id $requester.Id -Force }
 if ($core -and -not $core.HasExited) { Stop-Process -Id $core.Id -Force }
+if ($host -and -not $host.HasExited) { Stop-Process -Id $host.Id -Force }
 ```
 
 If process identifiers were lost, first inspect all matching processes and their
@@ -160,11 +191,16 @@ accepts `--port:<port>` and forwards it as the renderer's `/port:` automation
 option; this changes only the renderer automation listener, not the Core
 connection on port 8888.
 
-From the monorepo root, build the portable core and the wGac renderer:
+From the monorepo root, build the portable Core and host and the wGac native
+applications:
 
 ```bash
 (
   cd GacUI/Test/Linux/RemotingTest_Core
+  ../../../.github/Ubuntu/build.sh
+)
+(
+  cd GacUI/Test/Linux/RemotingTest_RvmHost
   ../../../.github/Ubuntu/build.sh
 )
 (
@@ -173,14 +209,29 @@ From the monorepo root, build the portable core and the wGac renderer:
 )
 ```
 
-Run the core in the first terminal. Use `/RPT` for Remote Protocol Test, or
-replace it with `/FCT` for Full Control Test:
+For the standalone RVM requester target, start the wGac application first and
+then its portable host:
+
+```bash
+wGac/test.sh --app:rvmt --unblock
+GacUI/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost /MiniHttp
+```
+
+For a Core target, run Core in the first terminal. Replace `/RPT` with `/FCT`
+or `/RVMT` for the other application targets:
 
 ```bash
 GacUI/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core /MiniHttp /RPT
 ```
 
-Wait for `Waiting for a renderer ...`, then run the renderer in a second
+For `/RVMT`, start the host in another terminal and wait until Core automation
+exposes the `Remote View Model Test` window before starting the renderer:
+
+```bash
+GacUI/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost /MiniHttp
+```
+
+Wait for `Waiting for a renderer ...`, then run the renderer in another
 terminal:
 
 ```bash
@@ -209,10 +260,8 @@ protocol. Re-read core `Controls` and renderer `Dom` after every state change.
 To replace the renderer, stop only the renderer process and start it again on
 port 8889 while keeping the core alive. To test takeover, keep that renderer
 running and start another one with `--port:8890`; inspect the new renderer at
-the same automation prefix on port 8890. The replacement must retain the
-application state, and the detached renderer must settle without a retry loop.
-Closing the application through its UI must also close the active renderer
-cleanly.
+the same automation prefix on port 8890. Follow the shared SOP for all state
+continuity, detached-renderer, and application-close observations.
 
 The raw Wayland renderer has no `GuiApplication` in which to display a fatal
 message dialog. A Core-authored fatal error is retained directly in the renderer
@@ -226,11 +275,16 @@ the macOS contract. Its automation port defaults to `8889`; the iGac launcher
 accepts `--port:<port>` and forwards it as the renderer's `/port:` automation
 option without changing the Core connection on port 8888.
 
-From the monorepo root, build the portable core and the iGac renderer:
+From the monorepo root, build the portable Core and host and the iGac native
+applications:
 
 ```bash
 (
   cd GacUI/Test/Linux/RemotingTest_Core
+  ../../../.github/Ubuntu/build.sh
+)
+(
+  cd GacUI/Test/Linux/RemotingTest_RvmHost
   ../../../.github/Ubuntu/build.sh
 )
 (
@@ -239,14 +293,29 @@ From the monorepo root, build the portable core and the iGac renderer:
 )
 ```
 
-Run the core in the first terminal. Use `/RPT` for Remote Protocol Test, or
-replace it with `/FCT` for Full Control Test:
+For the standalone RVM requester target, start the iGac application first and
+then its portable host:
+
+```bash
+iGac/test.sh --app:rvmt --unblock
+GacUI/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost /MiniHttp
+```
+
+For a Core target, run Core in the first terminal. Replace `/RPT` with `/FCT`
+or `/RVMT` for the other application targets:
 
 ```bash
 GacUI/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core /MiniHttp /RPT
 ```
 
-Wait for `Waiting for a renderer ...`, then run the renderer in a second
+For `/RVMT`, start the host in another terminal and wait until Core automation
+exposes the `Remote View Model Test` window before starting the renderer:
+
+```bash
+GacUI/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost /MiniHttp
+```
+
+Wait for `Waiting for a renderer ...`, then run the renderer in another
 terminal:
 
 ```bash
@@ -293,14 +362,5 @@ ordinary Cocoa rendering path.
 To replace the renderer, stop only the renderer process and start it again on
 port 8889 while keeping the core alive. To test takeover, keep that renderer
 running and start another one with `--port:8890`; inspect the new renderer at
-the same automation prefix on port 8890. The new renderer must retain the
-application state and the previous renderer must exit cleanly. Closing the
-application through its UI must also close the active renderer without a fatal
-prompt or retry loop.
-
-For `/RVMT`, start
-`GacUI/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core /MiniHttp /RVMT`, then
-start `GacUI/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost /MiniHttp`.
-Wait until Core automation exposes the `Remote View Model Test` window before
-starting the renderer. Follow the `/RVMT` section of the shared SOP and clean
-up all three retained processes afterward.
+the same automation prefix on port 8890. Follow the shared SOP for all state
+continuity, detached-renderer, and application-close observations.

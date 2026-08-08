@@ -1,7 +1,8 @@
 # GacUI End-to-End UI Operation SOP
 
-This document contains only the renderer-independent UI actions and observable
-results used to catch end-to-end regressions. Use
+This document contains only the feature operations, error injections, and
+observable results used to catch end-to-end regressions. It does not define the
+test matrix or process setup. Use
 [`DebugRemoteProtocolWithGacJS.md`](DebugRemoteProtocolWithGacJS.md) or
 [`DebugRemoteProtocolWithNativeRenderer.md`](DebugRemoteProtocolWithNativeRenderer.md) to
 establish, drive, inspect, replace, and close the renderer session.
@@ -53,9 +54,10 @@ establish, drive, inspect, replace, and close the renderer session.
 
 1. Read the current visible UI before acting. Use the active enclosing control,
    menu item, or dialog button rather than matching hidden or historical text.
-2. Send the input through the renderer surface. For text input, focus the
-   intended editor and type with the keyboard; do not paste or inject text
-   through the core.
+2. Send the input through the visible application surface. For a Core target,
+   use the renderer rather than Core `/IO`; for a standalone `CppTest_Rvm`
+   target, use its local native UI. For text input, focus the intended editor
+   and type with the keyboard; do not paste or inject text through the core.
 3. After a tab, menu, dialog, or renderer transition, inspect the new visible UI
    and locate the controls again before continuing.
 4. After every action, require the exact visible state change. Content that
@@ -189,7 +191,9 @@ Use a fresh application state.
 Use a fresh application state. Follow
 `DebugRemoteProtocolWithGacJS.md` or
 `DebugRemoteProtocolWithNativeRenderer.md` to establish the renderer session:
-- When working with `CppTest_Rvm`, start `RemotingTest_RvmHost` after it, followed by verification steps. This is Windows only, no native renderer or GacJS is needed.
+- When working with the platform's standalone `CppTest_Rvm` application, start
+  `RemotingTest_RvmHost` after it. This target uses the local native UI and does
+  not use a remote renderer or GacJS.
 - When working with `RemotingTest_Core`, start `RemotingTest_RvmHost` before the native renderer or GacJS.
 
 ### 1. Verify the Initial UI
@@ -205,7 +209,20 @@ Use a fresh application state. Follow
    `Hello, <marker>!`.
 3. Require the application to remain connected and responsive.
 
-### 3. Close the Application
+### 3. Reject a Second View-Model Host
+
+1. Keep the accepted `RemotingTest_RvmHost` and requester running after the
+   successful `Translate` above.
+2. Start a second `RemotingTest_RvmHost` with the same transport.
+3. Require the second host not to be admitted: it must not replace the accepted
+   host, report Ready to the requester, or change the visible greeting. Remaining
+   blocked while it is rejected is acceptable; taking over the service is not.
+4. Stop only the rejected second host. Type a different marker through the
+   application surface and require the greeting to become exactly
+   `Hello, <different-marker>!`, proving that the original host still owns the
+   service and the requester remains responsive.
+
+### 4. Close the Application
 
 1. Close the application through the active UI surface.
 2. Require the application session to end without a fatal error or retry loop.
@@ -227,10 +244,16 @@ normal-path steps. Run each operation in a fresh session.
 3. In a native renderer, require the `ERROR from GacUI Core` fatal prompt to
    contain the exact message. Choose `No` when asked whether to close the
    renderer so the fatal state remains inspectable.
-4. Require renderer `Dom.fatalError` to equal exactly
+4. In a native renderer, require renderer `Dom.fatalError` to equal exactly
    `This is a fatel error!`. Require the retained renderer to reject ordinary
    input without retrying or reconnecting while still accepting exact `!Exit`.
-5. Send exact `!Exit` to close the retained renderer. Bound every wait and
+5. In GacJS, require the visible error mask, not the ordinary disconnect success
+   mask, to contain exactly `This is a fatel error!`. The page rethrows this
+   Core-authored error after displaying it, so one matching page error is
+   expected. Require no additional error, reconnect, retry loop, or apparently
+   live UI.
+6. For a native renderer, send exact `!Exit` to close the retained renderer.
+   Close the GacJS page after inspecting its terminal mask. Bound every wait and
    require no Core, renderer, listener, native prompt, or crash dialog to remain.
 
 ## Remote View Model Test (`/RVMT`): Force-Terminate `RemotingTest_RvmHost`
@@ -274,6 +297,11 @@ the failure.
 5. In a native renderer, require the fatal prompt to contain that exact message
    and choose `No` once so the retained renderer can be inspected. Require
    `Dom.fatalError` to equal the same text, then send exact `!Exit` to close it.
-6. Bound every wait and require no requester, Core, host, renderer, listener,
+6. In GacJS, require the visible error mask, not the ordinary disconnect success
+   mask, to contain exactly `RemotingTest_RvmHost disconnected.`. One matching
+   page error from the page's deliberate rethrow is expected. Require no
+   additional error, reconnect, retry loop, or apparently live UI, then close
+   the page.
+7. Bound every wait and require no requester, Core, host, renderer, listener,
    native prompt, or crash dialog to remain. Normal requester shutdown and
    renderer replacement must not produce this host-loss error.

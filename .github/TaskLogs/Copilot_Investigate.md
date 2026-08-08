@@ -45,9 +45,9 @@ combinations: `/RPT`, `/FCT`, and `/RVMT`, each over `/Http` and `/MiniHttp`.
 
 # PROPOSALS
 
-- No.1 Make each renderer guide own its complete Cartesian-product matrix
+- No.1 Make each renderer guide own its complete Cartesian-product matrix [CONFIRMED]
 
-## No.1 Make each renderer guide own its complete Cartesian-product matrix
+## No.1 Make each renderer guide own its complete Cartesian-product matrix [CONFIRMED]
 
 Move the normative matrix into an early `Test Matrix` section in each guide,
 remove reliance on the deleted verification job, state the platform-specific
@@ -59,3 +59,28 @@ handling procedures only there rather than duplicating them in either setup
 guide.
 
 ### CODE CHANGE
+
+- Added an early `Test Matrix` to both renderer setup guides. The native guide
+  now lists the Cartesian product for standalone RVM requesters and all three
+  Core applications on every platform, including the platform-specific target
+  count. The GacJS guide lists `/RPT`, `/FCT`, and `/RVMT` across its supported
+  HTTP transports and explicitly excludes only the local requester and named
+  pipes.
+- Added the missing `/RVMT` host startup and cleanup commands to the Windows,
+  Linux, and macOS setup sections and removed the stale dependency on the
+  deleted Tools verification job.
+- Kept feature actions and pass/fail behavior in `DebugRemoteProtocolSop.md`.
+  Added executable checks for rejecting a second view-model host and for the
+  exact GacJS error-mask result of Core-authored RPT and RVM-host-loss errors.
+  Reduced duplicated result wording in the setup guides to references to the
+  shared SOP.
+
+### CONFIRMED
+
+Static document checks confirmed that both `Test Matrix` headings immediately
+follow their background introductions, all requested application and transport
+tokens are present, the Windows GacJS row expands to six targets, the obsolete
+verification-job link is absent, and the SOP contains both the second-host
+admission test and GacJS-specific fatal-error observations. `git diff --check`
+also passes. The full live GacJS verification is intentionally performed only
+after this documentation proposal is committed, as requested.
