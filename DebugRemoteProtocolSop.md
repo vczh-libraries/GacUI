@@ -243,14 +243,29 @@ the failure.
 1. Force-terminate only the accepted `RemotingTest_RvmHost` process through the
    operating-system process tool. Do not close it through its application path,
    and do not terminate the requester, Core, or renderer.
+   A `/Pipe` requester must observe the broken connection directly, even while
+   idle. `/Http` and `/MiniHttp` have no heartbeat or explicit disconnect
+   exchange, so they may remain unaware while only an empty `/Request` is
+   pending. When the first post-loss `IViewModel` call caused by typing needs
+   to send a real message, a successful response to that pending `/Request`
+   starts a five-second deadline for the replacement `/Request`. Receiving the
+   replacement acknowledges delivery. Missing it means that the connection is
+   lost: unregister its connection GUID, reject any later `/Request` carrying
+   that retired GUID as unknown, and promote the loss to a fatal disconnect.
+   The call must finish within the bound and the UI must not hang.
 2. Run two variants with fresh processes:
    - Idle-next-call: terminate the host after one successful `Translate`, then
      focus the text box and type a different marker to trigger the next real
-     `IViewModel::Translate` RPC. `/Http` and `/MiniHttp` are allowed to discover
-     idle peer loss only at this operation.
-   - In-flight call: start a second `Translate` and terminate the host while its
-     response is pending. The blocked caller must be released within a bound;
-     a frozen UI is a failure.
+     `IViewModel::Translate` RPC. For `/Http` and `/MiniHttp`, this operation is
+     the latest permitted point for discovering the idle peer loss.
+   - Delivery-acknowledgement loss: start a second `Translate` and terminate the
+     host after the server delivers it through the pending `/Request`, but
+     before the host submits the replacement `/Request`. The blocked caller
+     must be released within the five-second bound; a frozen UI is a failure.
+     Once the replacement poll arrives, the transport has acknowledged that
+     delivery. With no heartbeat, a later crash during already-acknowledged
+     request execution is not detectable until the server next needs to send a
+     real message and that delivery is not acknowledged.
 3. Require `CppTest_Rvm` to terminate nonzero from an unhandled
    `RpcInjectedException`, without retry or recovery.
 4. For Core, require exactly one Core-authored `!Error` carrying exactly

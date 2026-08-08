@@ -4728,17 +4728,139 @@ void HttpServerConnection::OnCancelCurrentHttpRequestForPendingRequest()
 	}
 }
 
-void HttpServerConnection::OnNewHttpRequestForPendingRequest(HTTP_REQUEST_ID httpRequestId)
+void HttpServerConnection::ArmPollAcknowledgementTimeoutUnsafe()
 {
-	OnCancelCurrentHttpRequestForPendingRequest();
-	httpPendingRequestId = httpRequestId;
-	if (pendingRequestsToSend.Count() > 0)
+	pollAcknowledgementPending = true;
+	pollAcknowledgementTimeout->Arm(
+		HttpNetworkProtocolPollAcknowledgementTimeout,
+		Func<void()>([this]() { OnPollAcknowledgementTimeout(); })
+		);
+}
+
+bool HttpServerConnection::SendPendingRequestUnsafe(const WString& str)
+{
+	auto result = HttpServerApi::SendResponse(
+		server->GetHttpRequestQueue(),
+		httpPendingRequestId,
+		{ 200, L"OK", str, HttpNetworkProtocolContentType }
+		);
+	httpPendingRequestId = HTTP_NULL_ID;
+	if (result == NO_ERROR)
 	{
-		auto pendingRequest = pendingRequestsToSend[0];
-		pendingRequestsToSend.RemoveAt(0);
-		HttpServerApi::SendResponseUtf8(server->GetHttpRequestQueue(), httpPendingRequestId, pendingRequest);
-		httpPendingRequestId = HTTP_NULL_ID;
+		ArmPollAcknowledgementTimeoutUnsafe();
+		return false;
 	}
+	if (result == ERROR_CONNECTION_INVALID || result == ERROR_OPERATION_ABORTED)
+	{
+		pendingRequestsToSend.Add(str);
+		return true;
+	}
+	CHECK_FAIL(L"HttpSendHttpResponse failed for responding /Request.");
+	return false;
+}
+
+void HttpServerConnection::ReportPollingError(const WString& error)
+{
+	if (!callback) return;
+	try
+	{
+		if (callback->OnLocalError(error, false))
+		{
+			Stop();
+		}
+	}
+	catch (...)
+	{
+		Stop();
+		throw;
+	}
+}
+
+void HttpServerConnection::OnPollAcknowledgementTimeout()
+{
+	auto holding = RetainFromServer();
+	if (!holding) return;
+	bool report = false;
+	SPIN_LOCK(pendingRequestLock)
+	{
+		if (pollAcknowledgementPending && !stopped)
+		{
+			pollAcknowledgementPending = false;
+			pollAcknowledgementReporting = true;
+			report = true;
+		}
+	}
+	if (!report) return;
+	try
+	{
+		ReportPollingError(L"HttpServerConnection did not receive the replacement /Request after delivering a server message.");
+	}
+	catch (...)
+	{
+		SPIN_LOCK(pendingRequestLock)
+		{
+			pollAcknowledgementReporting = false;
+		}
+		throw;
+	}
+	SPIN_LOCK(pendingRequestLock)
+	{
+		pollAcknowledgementReporting = false;
+	}
+}
+
+Ptr<HttpServerConnection> HttpServerConnection::RetainFromServer()
+{
+	HttpServer* currentServer = nullptr;
+	SPIN_LOCK(pendingRequestLock)
+	{
+		currentServer = server;
+	}
+	if (!currentServer) return {};
+
+	SPIN_LOCK(currentServer->lockConnections)
+	{
+		auto index = currentServer->connections.Keys().IndexOf(guid);
+		if (index != -1 && currentServer->connections.Values()[index].Obj() == this)
+		{
+			return currentServer->connections.Values()[index];
+		}
+	}
+	return {};
+}
+
+bool HttpServerConnection::OnNewHttpRequestForPendingRequest(HTTP_REQUEST_ID httpRequestId)
+{
+	bool cancelAcknowledgement = false;
+	SPIN_LOCK(pendingRequestLock)
+	{
+		if (stopped) return false;
+		cancelAcknowledgement = pollAcknowledgementPending || pollAcknowledgementReporting;
+		pollAcknowledgementPending = false;
+	}
+	if (cancelAcknowledgement)
+	{
+		pollAcknowledgementTimeout->CancelAndWait();
+	}
+
+	bool reportLostPoll = false;
+	SPIN_LOCK(pendingRequestLock)
+	{
+		if (stopped) return false;
+		OnCancelCurrentHttpRequestForPendingRequest();
+		httpPendingRequestId = httpRequestId;
+		if (pendingRequestsToSend.Count() > 0)
+		{
+			auto pendingRequest = pendingRequestsToSend[0];
+			pendingRequestsToSend.RemoveAt(0);
+			reportLostPoll = SendPendingRequestUnsafe(pendingRequest);
+		}
+	}
+	if (reportLostPoll)
+	{
+		ReportPollingError(L"HttpServerConnection failed to respond to /Request because the polling connection was lost.");
+	}
+	return true;
 }
 
 WString HttpServerConnection::SubmitResponse(PHTTP_REQUEST pRequest)
@@ -4825,48 +4947,53 @@ void HttpServerConnection::BeginReadingLoopUnsafe()
 
 void HttpServerConnection::SendString(const WString& str)
 {
+	bool reportLostPoll = false;
 	SPIN_LOCK(pendingRequestLock)
 	{
+		CHECK_ERROR(!stopped, L"HttpServerConnection::SendString cannot send on a stopped connection.");
 		if (submittingResponse)
 		{
 			responsesToSubmit.Add(str);
 		}
 		else if (httpPendingRequestId != HTTP_NULL_ID)
 		{
-			ULONG result = HttpServerApi::SendResponse(server->GetHttpRequestQueue(), httpPendingRequestId, { 200, L"OK", str, HttpNetworkProtocolContentType });
-			if (result == NO_ERROR)
-			{
-				httpPendingRequestId = HTTP_NULL_ID;
-			}
-			else if (result == ERROR_CONNECTION_INVALID || result == ERROR_OPERATION_ABORTED)
-			{
-				httpPendingRequestId = HTTP_NULL_ID;
-				pendingRequestsToSend.Add(str);
-			}
-			else
-			{
-				CHECK_FAIL(L"HttpSendHttpResponse failed for responding /Request.");
-			}
+			reportLostPoll = SendPendingRequestUnsafe(str);
 		}
 		else
 		{
 			pendingRequestsToSend.Add(str);
 		}
 	}
+	if (reportLostPoll)
+	{
+		ReportPollingError(L"HttpServerConnection failed to respond to /Request because the polling connection was lost.");
+	}
 }
 
 void HttpServerConnection::Stop()
 {
-	auto holding = Ptr(this);
-	if (server)
+	auto holding = RetainFromServer();
+	HttpServer* stoppingServer = nullptr;
+	bool first = false;
+	SPIN_LOCK(pendingRequestLock)
 	{
-		SPIN_LOCK(server->lockConnections)
+		if (!stopped)
 		{
-			server->connections.Remove(guid);
-		}
-		SPIN_LOCK(pendingRequestLock)
-		{
+			first = true;
+			stopped = true;
+			pollAcknowledgementPending = false;
 			OnCancelCurrentHttpRequestForPendingRequest();
+			stoppingServer = server;
+			server = nullptr;
+		}
+	}
+	if (!first) return;
+	pollAcknowledgementTimeout->CancelAndWait();
+	if (stoppingServer)
+	{
+		SPIN_LOCK(stoppingServer->lockConnections)
+		{
+			stoppingServer->connections.Remove(guid);
 		}
 		if (callback)
 		{
@@ -4950,9 +5077,9 @@ void HttpServer::OnHttpRequestReceived(PHTTP_REQUEST pRequest)
 		auto guid = WString::Unmanaged(pRequest->CookedUrl.pAbsPath + urlRequestPrefix.Length());
 		if (auto connection = FindExistingConnection(guid))
 		{
-			SPIN_LOCK(connection->pendingRequestLock)
+			if (!connection->OnNewHttpRequestForPendingRequest(pRequest->RequestId))
 			{
-				connection->OnNewHttpRequestForPendingRequest(pRequest->RequestId);
+				HttpServerApi::SendResponse(GetHttpRequestQueue(), pRequest->RequestId, { 404, L"Connection stopped" });
 			}
 		}
 	}
@@ -4984,22 +5111,10 @@ void HttpServer::OnHttpServerStopping()
 		{
 			stoppingConnections.Add(connection);
 		}
-		connections.Clear();
 	}
 	for (auto connection : stoppingConnections)
 	{
-		SPIN_LOCK(connection->pendingRequestLock)
-		{
-			connection->OnCancelCurrentHttpRequestForPendingRequest();
-		}
-		connection->server = nullptr;
-	}
-	for (auto connection : stoppingConnections)
-	{
-		if (connection->callback)
-		{
-			connection->callback->OnDisconnected();
-		}
+		connection->Stop();
 	}
 }
 

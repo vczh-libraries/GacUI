@@ -419,12 +419,22 @@ protected:
 	SpinLock										pendingRequestLock;
 	HTTP_REQUEST_ID									httpPendingRequestId = HTTP_NULL_ID;
 	collections::List<WString>						pendingRequestsToSend;
+	Ptr<IHttpRequestTimeoutController>				pollAcknowledgementTimeout = CreateHttpRequestTimeoutController();
+	bool											pollAcknowledgementPending = false;
+	bool											pollAcknowledgementReporting = false;
+	bool											stopped = false;
 	bool											submittingResponse = false;
 	collections::List<WString>						responsesToSubmit;
 
-	// All following functions must be called inside SPIN_LOCK(pendingRequestLock)
+	// All following Unsafe functions must be called inside SPIN_LOCK(pendingRequestLock)
 	void											OnCancelCurrentHttpRequestForPendingRequest();
-	void											OnNewHttpRequestForPendingRequest(HTTP_REQUEST_ID httpRequestId);
+	bool											SendPendingRequestUnsafe(const WString& str);
+	void											ArmPollAcknowledgementTimeoutUnsafe();
+
+	Ptr<HttpServerConnection>						RetainFromServer();
+	bool											OnNewHttpRequestForPendingRequest(HTTP_REQUEST_ID httpRequestId);
+	void											OnPollAcknowledgementTimeout();
+	void											ReportPollingError(const WString& error);
 
 	WString											SubmitResponse(PHTTP_REQUEST pRequest);
 

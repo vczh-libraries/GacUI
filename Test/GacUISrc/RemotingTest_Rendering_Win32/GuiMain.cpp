@@ -71,6 +71,24 @@ public:
 	}
 };
 
+#if defined VCZH_MSVC
+class WindowsRendererAutomationService : public windows::WindowsAutomationServiceBase<AutomationServiceRenderer>
+{
+	using Base = windows::WindowsAutomationServiceBase<AutomationServiceRenderer>;
+
+public:
+	WindowsRendererAutomationService(GuiRemoteRendererSingle* renderer)
+		: Base(renderer)
+	{
+	}
+
+	INativeAutomationService::IOCommandAvailability CanRunIOCommands() override
+	{
+		return AutomationServiceRenderer::CanRunIOCommands();
+	}
+};
+#endif
+
 void GuiMain()
 {
 	CHECK_ERROR(currentGuiContext, L"GuiMain()#The renderer GUI context is null.");
@@ -87,7 +105,11 @@ void GuiMain()
 	auto invoker = Ptr(new GuiMainAsyncRendererInvoker);
 	currentGuiContext->renderer->RegisterMainWindow(mainWindow);
 
+#if defined VCZH_MSVC
+	WindowsRendererAutomationService rendererAutomationServiceObject(currentGuiContext->renderer);
+#else
 	AutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
+#endif
 	GetNativeServiceSubstitution()->Substitute(&rendererAutomationServiceObject, false);
 #if defined VCZH_MSVC
 	if (currentGuiContext->miniHttpSocketServer)

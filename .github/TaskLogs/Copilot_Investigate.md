@@ -24,7 +24,7 @@ Reproduce accepted-host loss after a successful `IViewModel::Translate` for both
 
 For `/Pipe`, force-terminate the accepted host while the requester is idle and require the server-side disconnect callback to record host loss without user input. For `/Http` and `/MiniHttp`, where no heartbeat or reverse disconnect route exists, trigger the first post-loss `Translate` by typing in the text box. In every transport, the requester must surface the persistent host-loss exception no later than that first RPC operation; the UI must not remain blocked.
 
-Also cover host termination while a `Translate` response is pending. The waiting requester call must be released within a bounded wait. `CppTest_Rvm` must terminate nonzero from the unhandled `RpcInjectedException`. `RemotingTest_Core` must send exactly one Core-authored `!Error` containing exactly `RemotingTest_RvmHost disconnected.` before terminating nonzero, and the native or GacJS renderer must expose that exact fatal error.
+Also cover delivery-acknowledgement loss while a `Translate` is pending: complete its nonempty `/Request` delivery, omit the replacement poll, and require the waiting requester call to be released within the five-second bound. A replacement poll acknowledges delivery; with no heartbeat, a later crash during already-acknowledged request execution is outside this transport-liveness signal until the server next needs to send a real message. `CppTest_Rvm` must terminate nonzero from the unhandled `RpcInjectedException`. `RemotingTest_Core` must send exactly one Core-authored `!Error` containing exactly `RemotingTest_RvmHost disconnected.` before terminating nonzero, and the native or GacJS renderer must expose that exact fatal error.
 
 After the focused regression passes, run the complete combination matrix required by `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md`, following the shared SOP for each listed application, transport, renderer, replacement, normal-shutdown, and fatal scenario. Every run must be bounded and leave no requester, Core, host, renderer, browser session, listener, prompt, or crash dialog behind.
 
@@ -34,7 +34,9 @@ The unmodified `Debug|x64` executables reproduce the defect after a successful i
 
 - No.1 Promote failed accepted-client HTTP poll delivery to channel disconnection [DENIED]
 - No.2 Bound configured channel RPC response waits with persistent injection [DENIED]
-- No.3 Require a replacement HTTP poll after server message delivery
+- No.3 Require a replacement HTTP poll after server message delivery [CONFIRMED]
+- No.4 Enable Windows native-renderer automation input [CONFIRMED]
+- No.5 Preserve a retained fatal renderer across Core shutdown [CONFIRMED]
 
 ## No.1 Promote failed accepted-client HTTP poll delivery to channel disconnection
 
@@ -84,6 +86,8 @@ Keep idle long polls unbounded. When either HTTP server successfully submits a n
 
 The synchronous `/Response` route may continue returning a generated reply in its own HTTP response. The RVM failure is the long-poll path: the broker sends the first post-loss request through the host's outstanding `/Request`, local submission succeeds, and the absent replacement poll is what proves the host did not receive it.
 
+The connection token is part of this state transition. Expiry stops the accepted raw connection and unregisters its GUID before reporting channel disconnection. A replacement `/Request` that arrives later with that retired GUID is therefore rejected as an unknown connection instead of reviving the old session.
+
 ### CODE CHANGE
 
 - Move the existing reusable HTTP deadline controller from the async-socket request implementation into the shared HTTP protocol layer so both server implementations can use the same monotonic, cancellable deadline primitive.
@@ -92,3 +96,29 @@ The synchronous `/Response` route may continue returning a generated reply in it
 - Preserve failed-send requeue behavior and the existing `/Response` piggyback behavior.
 - Add focused raw-server regressions for both implementations that complete one nonempty poll response, omit the replacement poll, and require one recoverable local error within the bound. Retain the channel admission promotion regression and verify the RVM applications surface the exact fatal error.
 - Regenerate and import VlppOS through the supported pipelines, update the HTTP and RVM SOP documentation, then run every required native-renderer and GacJS matrix combination.
+
+### CONFIRMED
+
+The focused raw-protocol tests pass for both HTTP.sys and Socket HTTP: an idle empty poll remains unbounded, successful nonempty delivery requires a replacement poll, expiry reports one recoverable local error, channel admission promotes it to disconnection, and stopping the connection unregisters the GUID so a late poll is rejected as unknown. The focused VlppOS suite passed 42/42, the complete Debug x64 suite passed 276/276, and the supported Release Win32 and x64 build, test, generation, and release pipeline passed.
+
+The imported implementation releases all requester shapes without a UI hang. `CppTest_Rvm` surfaced host loss after the first post-loss input over `/Pipe`, `/Http`, and `/MiniHttp`. The rebuilt `/RVMT` Core sent exactly `RemotingTest_RvmHost disconnected.`, exited, and left the renderer responsive over all three transports; the observed post-input completion was about 0.5 seconds for `/Pipe` and 2.4 seconds for `/MiniHttp`, within the transport bound. All six Windows native `/RPT` and `/FCT` rows and all four Windows GacJS `/RPT` and `/FCT` rows passed their complete shared-SOP scenarios.
+
+## No.4 Enable Windows native-renderer automation input
+
+The Windows native renderer creates the platform-neutral `AutomationServiceRenderer` directly. That service exposes the renderer DOM but intentionally has no `RunIOCommandInternal` implementation. The Windows automation HTTP endpoint consequently accepts renderer `/IO` requests with an empty response while delivering no mouse or keyboard event, which makes the required renderer-surface matrix impossible to execute. The Windows-specific `WindowsAutomationServiceBase<AutomationServiceRenderer>` wrapper already supplies the intended native input implementation and is explicitly instantiated by the platform source.
+
+Use that existing wrapper only on Windows and keep the platform-neutral service on Linux and macOS. Verify that renderer `/IO` returns `Queued`, that typing changes both Core `Controls` and renderer `Dom`, and that fatal retained state continues to reject ordinary input while accepting `!Exit`.
+
+### CONFIRMED
+
+The Windows wrapper returns `Queued` and delivers real renderer-side mouse and keyboard input through the remote protocol. The full Debug x64 GacUI unit suite passed 88/88 files and 1713/1713 cases. Every Windows native transport completed the `/RPT` interaction, replacement, takeover, and UI-close sequence and the `/FCT` list and two-editor preservation sequence through renderer `/IO`. The fatal retained-state regression also proved that ordinary input is rejected while exact `!Exit` remains available.
+
+## No.5 Preserve a retained fatal renderer across Core shutdown
+
+A Core-authored `!Error` is processed before the deterministic `ControllerConnectionStopped` emitted during Core teardown. When the user chooses `No`, `RetainByFatalError` marks the renderer as stopped and retains the DOM, but the subsequently queued normal-stop request currently hides the main window and ends the renderer anyway. Once fatal retention is established, `RequestControllerConnectionStopped` must leave the retained renderer alone. The user has already chosen whether to close it, and ordinary disconnected-state cleanup must not override that choice.
+
+Add the guard at the renderer state boundary, keep normal shutdown unchanged, and verify the exact retained `fatalError`, rejection of ordinary input, and successful exact `!Exit` cleanup.
+
+### CONFIRMED
+
+After force-terminating an accepted RvmHost and typing into the remote text box, Core exited and the renderer displayed the exact prompt `RemotingTest_RvmHost disconnected.` over `/Pipe`, `/Http`, and `/MiniHttp`. Choosing `No` kept each renderer alive with `Dom.fatalError` equal to that exact text even after `ControllerConnectionStopped`. A subsequent ordinary `/IO` command returned `!Application stopped responding.`, exact `!Exit` returned `Queued`, and each renderer then closed. The RPT fatal addendum also retained exactly `This is a fatel error!` over all three transports. Normal renderer replacement and application shutdown continued to settle without a fatal prompt in the complete native matrix.
