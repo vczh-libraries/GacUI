@@ -153,7 +153,7 @@ start times before using a name-based fallback.
 
 ## Linux Specific
 
-The Linux native renderer is `RemotingTest_Renderer_Wayland` in the sibling
+The Linux native renderer is `RemotingTest_Rendering_Wayland` in the sibling
 `wGac` repository. It uses `/MiniHttp` only; `/Http` and `/Pipe` are not part of
 the Linux contract. Its automation port defaults to `8889`. The wGac launcher
 accepts `--port:<port>` and forwards it as the renderer's `/port:` automation
