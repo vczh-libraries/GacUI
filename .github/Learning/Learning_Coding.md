@@ -2,9 +2,9 @@
 
 # Orders
 
-- `Test/RemotingHelpers` stays test-only and outside Release CodePack [9]
+- `Test/RemotingHelpers` stays test-only and outside Release CodePack [10]
+- Keep reusable renderer terminal state separate from host policy [7]
 - Stop remoting transports before stack channel wrappers destruct [6]
-- Keep reusable renderer terminal state separate from host policy [6]
 - Deliver fatal remote-channel errors before transport shutdown [6]
 - Cache renderer packages until main-thread invoker exists [5]
 - `ViewModelReadyChannel` is the post-route RPC registration barrier [5]

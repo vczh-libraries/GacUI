@@ -4,8 +4,8 @@
 
 - Keep test log paths stable during refactors [13]
 - Remote protocol frames: actions must change UI; organize frames carefully [9]
+- Verify RVM requester/host lifetimes across every transport [9]
 - Stress remote core/renderer transport and terminal flows [8]
-- Verify RVM requester/host lifetimes across every transport [8]
 - Don’t schedule redundant idle frames [7]
 - Preserve existing idle-frame titles when requested [6]
 - Seed key-behavior tests via `protocol->TypeString` [6]

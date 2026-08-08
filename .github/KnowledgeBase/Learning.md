@@ -8,7 +8,7 @@
 - Port fixes from imports to source repositories [14]
 - Proactively remove code made redundant by refactoring [14]
 - Keep design documentation aligned with code after refactoring [12]
-- Fix behavior at the owning state instead of patching symptoms [10]
+- Fix behavior at the owning state instead of patching symptoms [11]
 - Extract abstractions only for real shared behavior [9]
 - Verify and localize portability on every target OS [7]
 - Make `Stop()` drain asynchronous work before returning [6]
@@ -306,6 +306,8 @@ When a lifecycle guarantee applies to every subclass, publish completion and fin
 When shared code and tests pass on other platforms but fail on one target, fix the failing platform-specific implementation instead of weakening shared behavior or changing already-correct tests.
 
 When a layered transport needs a stricter response policy than its general parser, enforce that policy in the object that owns the physical connection. Keep the lower parser reusable, and let the connection owner classify the response, report a structured failure, and stop or retry the transport as appropriate.
+
+When HTTP long-poll delivery needs a bounded acknowledgement, put the deadline on the transport's acknowledgement transition instead of adding a timeout to a transport-independent RPC response wait. A locally successful response submission does not prove peer receipt. Arm the deadline only after delivering a nonempty server message, use the client's replacement poll as the implicit acknowledgement, cancel the deadline when that poll arrives, and report expiry through the transport's local-error path. Keep idle long polls unbounded when the protocol intentionally has no heartbeat.
 
 ## Treat environment correlation as evidence, not a cause
 
