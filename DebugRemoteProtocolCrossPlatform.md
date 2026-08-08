@@ -1,4 +1,4 @@
-# Ensure GacUI Working Properly in Linux/macOS
+# Ensure GacUI Working Properly on Linux/macOS
 
 - If you are on Linux, the repo you are working on are `GacUI`, `GacJS` and `wGac`.
 - If you are on macOS, the repo you are working on are `GacUI`, `GacJS` and `iGac`.
@@ -79,5 +79,5 @@ Try to limit changes in `GacUI` to only include making release or fixing cross-p
 - You need to figure out why the code is just work in `GacUI` on Windows. Having correct answers to this question help you figure out root cause efficiently and precisely.
 
 Follow `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md` to make sure all test apps are behaving expectedly.
-Sometimes it might only need native renderer or GacJS to be verified, this will be explicitly instructed additionally. Otherwise both should be tested.
+Without explicitly instructed, the complete matrix of all combinations of test apps, test UI loaded with remote protocol, and available network protocol choices, should be verified.
 Make sure to commit and push local changes across all affected repos.
