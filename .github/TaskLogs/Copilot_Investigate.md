@@ -27,3 +27,22 @@ After the focused regression passes, run the complete combination matrix require
 The unmodified `Debug|x64` executables reproduce the defect after a successful initial greeting. `CppTest_Rvm /Pipe` receives the server-side named-pipe disconnect and the first post-loss keystroke reaches the injected exception instead of hanging. Both `CppTest_Rvm /Http` and `CppTest_Rvm /MiniHttp` accept the focus click and post-loss `!Type:X` automation command, then stop answering the `Controls` endpoint because the UI thread remains blocked in the synchronous `Translate` response wait. The accepted host process is gone and the requester remains alive, confirming that failed HTTP poll delivery is not being promoted into the channel-server disconnection callback.
 
 # PROPOSALS
+
+- No.1 Promote failed accepted-client HTTP poll delivery to channel disconnection
+
+## No.1 Promote failed accepted-client HTTP poll delivery to channel disconnection
+
+The raw Windows HTTP and portable Socket HTTP protocols intentionally allow a failed `/Request` response to be retried: the outbound logical message is retained so a live client can submit a replacement long poll. That policy is appropriate below the channel layer, but the channel server currently discards the corresponding nonfatal local-error callback. After a client has completed the channel handshake, retrying an ambiguous delivery cannot preserve reliable channel semantics and can leave a synchronous RPC waiting forever when the client process is gone.
+
+Both HTTP server implementations should report failed `/Request` response delivery through `INetworkProtocolCallback::OnLocalError` as a nonfatal raw transport error. If the callback declines promotion, preserve the existing raw retry/requeue behavior. `NetworkProtocolChannelServer` should promote every such local error after the remote client has been accepted, matching the connected channel-client policy. Promotion makes the raw HTTP connection stop and deliver `OnDisconnected`, allowing `RpcServerHelpers::OnClientDisconnected` to inject `RemotingTest_RvmHost disconnected.` and release the pending or next RPC call. No heartbeat, reverse disconnect endpoint, or requester recovery is introduced.
+
+Update the RVM host-loss SOP so the timing is explicit: named pipe should observe host loss directly, while HTTP and MiniHTTP may remain unaware during idle time; regardless of transport, the requester must surface host loss no later than the first post-loss `IViewModel` call and must not leave the UI blocked.
+
+### CODE CHANGE
+
+- In the upstream VlppOS sources, make `NetworkProtocolChannelServer` promote server-side local transport errors only after channel admission.
+- Make Windows `HttpServerConnection` and portable `SocketHttpServerConnection` report failed `/Request` response delivery and stop only when their installed callback promotes the error; retain raw retry/requeue behavior otherwise.
+- Add deterministic VlppOS regressions for pre-admission versus post-admission channel promotion and for promoted Socket HTTP failed-poll delivery, while preserving the existing raw requeue regression.
+- Regenerate the VlppOS release and import it into GacUI through the supported release pipeline.
+- Update `DebugRemoteProtocolSop.md` and synchronized inter-process knowledge/manual text to state the timing and promotion contract.
+- Run the focused/unit builds and the complete native-renderer and GacJS verification matrices required by the task.
