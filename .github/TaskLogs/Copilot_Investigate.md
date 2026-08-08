@@ -11,6 +11,10 @@ At the end, you are going to run through both [DebugRemoteProtocolWithNativeRend
 
 # UPDATES
 
+## UPDATE
+
+My opinion, I think adding timeout to workflow does not fix the root cause. Since the issue is clearly /Http or /MiniHttp specific, that's because of the design, causing server sending client messages relying on a live /request (or /response I can't remember clearly) pending request. So maybe a better idea is to implement the timeout to both http.sys and socket http `INetworkProtocolServer` implementation. What do you think?
+
 # TEST [CONFIRMED]
 
 Reproduce accepted-host loss after a successful `IViewModel::Translate` for both requester shapes and every supported Windows transport:
@@ -29,7 +33,8 @@ The unmodified `Debug|x64` executables reproduce the defect after a successful i
 # PROPOSALS
 
 - No.1 Promote failed accepted-client HTTP poll delivery to channel disconnection [DENIED]
-- No.2 Bound configured channel RPC response waits with persistent injection
+- No.2 Bound configured channel RPC response waits with persistent injection [DENIED]
+- No.3 Require a replacement HTTP poll after server message delivery
 
 ## No.1 Promote failed accepted-client HTTP poll delivery to channel disconnection
 
@@ -66,3 +71,24 @@ Configure only the RVM requester's local dispatcher with `RemotingTest_RvmHost d
 - Document the opt-in response-timeout contract in the Workflow JSON request-routing knowledge base and manual.
 - Regenerate Workflow release files and import them into GacUI through the supported release pipeline.
 - Configure the RVM requester helper with the exact host-disconnect text, then repeat both requester shapes and all three transports for idle-next-call and in-flight host termination.
+
+### DENIED BY USER
+
+The focused Workflow unit test proved that a generic response deadline could release the call, but the proposal put HTTP peer-liveness policy into the transport-independent RPC dispatcher. The defect is specific to the `/Request` long-poll design: both HTTP servers may report successful local submission of a nonempty poll response even after the client process is gone. A Workflow timeout would mask that missing transport state transition and affect every channel-backed RPC transport. The Workflow code, tests, and documentation from this proposal were removed before release or downstream import.
+
+## No.3 Require a replacement HTTP poll after server message delivery
+
+Both HTTP clients continuously keep one `/Request` long poll alive. After receiving a `/Request` response, each client already submits the replacement poll before invoking the protocol callback. Therefore the next `/Request` is an implicit acknowledgement that the previous server-to-client message was actually received, independent of whether HTTP.sys or the socket stack merely accepted the response bytes locally.
+
+Keep idle long polls unbounded. When either HTTP server successfully submits a nonempty server message through `/Request`, arm a bounded replacement-poll deadline. The next `/Request` cancels the deadline before it becomes eligible to carry another message. If no replacement arrives, report a nonfatal local delivery error through `INetworkProtocolCallback::OnLocalError`. Raw protocol callbacks may decline promotion and keep the logical connection; an admitted `NetworkProtocolChannelServer` promotes the error, stops the connection, delivers `OnDisconnected`, and causes the RVM helper to inject the exact persistent host-loss exception. This applies the deadline only to ambiguous server delivery and introduces no heartbeat or generic RPC policy.
+
+The synchronous `/Response` route may continue returning a generated reply in its own HTTP response. The RVM failure is the long-poll path: the broker sends the first post-loss request through the host's outstanding `/Request`, local submission succeeds, and the absent replacement poll is what proves the host did not receive it.
+
+### CODE CHANGE
+
+- Move the existing reusable HTTP deadline controller from the async-socket request implementation into the shared HTTP protocol layer so both server implementations can use the same monotonic, cancellable deadline primitive.
+- Add a shared replacement-poll timeout constant and arm it only after a nonempty `/Request` response is locally submitted successfully.
+- In both Windows HTTP.sys and portable Socket HTTP servers, cancel the pending acknowledgement when the next `/Request` is registered; on expiry, report the same recoverable local delivery error and stop only when the installed callback promotes it.
+- Preserve failed-send requeue behavior and the existing `/Response` piggyback behavior.
+- Add focused raw-server regressions for both implementations that complete one nonempty poll response, omit the replacement poll, and require one recoverable local error within the bound. Retain the channel admission promotion regression and verify the RVM applications surface the exact fatal error.
+- Regenerate and import VlppOS through the supported pipelines, update the HTTP and RVM SOP documentation, then run every required native-renderer and GacJS matrix combination.
