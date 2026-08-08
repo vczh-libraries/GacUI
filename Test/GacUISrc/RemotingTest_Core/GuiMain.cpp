@@ -204,7 +204,7 @@ int StartServer(
 			requiredServiceNames.Add(L"rvmt::IViewModel");
 			auto requesterClientId = rvmChannelServer.Connect(requiredServiceNames);
 			RemoteViewModelTestInitialize::InitializeRpc(rvmChannelServer.GetDispatcher(), requesterClientId);
-			context.viewModel = rvmChannelServer.RequestService(L"rvmt::IViewModel").Cast<rvmt::IViewModel>();
+			context.viewModel = rvmChannelServer.RequestService(L"rvmt::IViewModel").template Cast<rvmt::IViewModel>();
 		}
 		SetupRemoteNativeController(&diffConverterProtocol);
 	}

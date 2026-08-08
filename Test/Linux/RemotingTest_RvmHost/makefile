@@ -1,7 +1,7 @@
 .PHONY: all clean pre-build
 .DEFAULT_GOAL := all
 
-CPP_COMPILE_OPTIONS=-I ../../../Import -I ../../GacUISrc/Generated_DarkSkin/Source_x64 -I ../../GacUISrc/Generated_RemoteProtocolTest/Source_x64 -I ../../GacUISrc/Generated_FullControlTest/Source_x64 -I ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64 -DVCZH_DEBUG_NO_REFLECTION
+CPP_COMPILE_OPTIONS=-I ../../../Import -I ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64 -DVCZH_DEBUG_NO_REFLECTION
 include $(VCPROOT)/vl/makefile-cpp
 
 pre-build:
@@ -14,9 +14,9 @@ clean:
 	if [ -d ./Obj ]; then rm -r ./Obj; fi
 	if [ -d ./Coverage ]; then rm -r ./Coverage; fi
 
-all:pre-build ./Bin/RemotingTest_Core
+all:pre-build ./Bin/RemotingTest_RvmHost
 
-./Bin/RemotingTest_Core:./Obj/Vlpp.o ./Obj/Vlpp.Linux.o ./Obj/VlppGlrParser.o ./Obj/VlppOS.o ./Obj/VlppOS.Linux.o ./Obj/VlppReflection.o ./Obj/VlppRegex.o ./Obj/VlppWorkflowLibrary.o ./Obj/GuiGraphicsDocumentElement.o ./Obj/GuiGraphicsDocumentRenderer_GuiDocumentImageCache.o ./Obj/GuiGraphicsDocumentRenderer_SetPropertiesVisitor.o ./Obj/GuiGraphicsDocumentRenderer_GuiDocumentParagraphCache.o ./Obj/GuiGraphicsDocumentRenderer_GuiDocumentElementRenderer.o ./Obj/GuiGraphicsElement.o ./Obj/GuiGraphicsElementInterfaces.o ./Obj/GuiGraphicsResourceManager.o ./Obj/GuiNativeWindow.o ./Obj/GacGenController.o ./Obj/GuiHostedApplication.o ./Obj/GuiHostedController.o ./Obj/GuiHostedGraphics.o ./Obj/GuiHostedWindow.o ./Obj/GuiHostedWindowProxy_Main.o ./Obj/GuiHostedWindowProxy_NonMain.o ./Obj/GuiHostedWindowProxy_Placeholder.o ./Obj/GuiRemoteRendererSingle.o ./Obj/GuiRemoteRendererSingle_Controller.o ./Obj/GuiRemoteRendererSingle_IO.o ./Obj/GuiRemoteRendererSingle_MainWindow.o ./Obj/GuiRemoteRendererSingle_Rendering.o ./Obj/GuiRemoteRendererSingle_Rendering_Document.o ./Obj/GuiRemoteRendererSingle_Rendering_Elements.o ./Obj/GuiRemoteRendererSingle_Rendering_Image.o ./Obj/GuiRemoteRendererSingle_Rendering_Label.o ./Obj/GuiRemoteController.o ./Obj/GuiRemoteControllerSetup.o ./Obj/GuiRemoteEvents.o ./Obj/GuiRemoteGraphics.o ./Obj/GuiRemoteGraphics_BasicElements.o ./Obj/GuiRemoteGraphics_Document.o ./Obj/GuiRemoteGraphics_Document_Helpers.o ./Obj/GuiRemoteGraphics_ImageService.o ./Obj/GuiRemoteProtocolSchemaShared.o ./Obj/GuiRemoteProtocol_Channel_Async.o ./Obj/GuiRemoteProtocol_Channel_AsyncRenderer.o ./Obj/GuiRemoteProtocol_Channel_Json.o ./Obj/GuiRemoteProtocol_DomDiff.o ./Obj/GuiRemoteProtocol_Filter.o ./Obj/GuiRemoteProtocol_FilterVerifier.o ./Obj/GuiRemoteWindow.o ./Obj/GuiRemoteProtocolSchema_BuildFrame.o ./Obj/GuiRemoteProtocolSchema_CopyDom.o ./Obj/GuiRemoteProtocolSchema_DiffFrame.o ./Obj/GuiRemoteProtocolSchema.o ./Obj/GuiDocument.o ./Obj/GuiDocumentClipboard_Document.o ./Obj/GuiDocumentClipboard_HtmlFormat.o ./Obj/GuiDocumentClipboard_RichTextFormat.o ./Obj/GuiDocumentEditor_AddContainer.o ./Obj/GuiDocumentEditor_ClearUnnecessaryRun.o ./Obj/GuiDocumentEditor_CloneRun.o ./Obj/GuiDocumentEditor_CollectStyle.o ./Obj/GuiDocumentEditor_CutRun.o ./Obj/GuiDocumentEditor_GetRunRange.o ./Obj/GuiDocumentEditor_LocateHyperlink.o ./Obj/GuiDocumentEditor_LocateStyle.o ./Obj/GuiDocumentEditor_RemoveContainer.o ./Obj/GuiDocumentEditor_RemoveRun.o ./Obj/GuiDocumentEditor_ReplaceStyleName.o ./Obj/GuiDocumentEditor_SummerizeStyle.o ./Obj/GuiDocument_Edit.o ./Obj/GuiDocument_Load.o ./Obj/GuiDocument_Save.o ./Obj/GuiParserManager.o ./Obj/GuiPluginManager.o ./Obj/GuiResource.o ./Obj/GuiResourceManager.o ./Obj/GuiResourceTypeResolvers.o ./Obj/MiniHttpAutomationService.o ./Obj/GuiSharedAsyncService.o ./Obj/GuiSharedAutomationService.o ./Obj/GuiSharedCallbackService.o ./Obj/GuiApplication.o ./Obj/GuiBasicControls.o ./Obj/GuiInstanceRootObject.o ./Obj/GuiLabelControls.o ./Obj/GuiThemeManager.o ./Obj/GuiWindowControls.o ./Obj/GuiGraphicsBoundsComposition.o ./Obj/GuiGraphicsComposition.o ./Obj/GuiGraphicsComposition_Helpers.o ./Obj/GuiGraphicsComposition_Layout.o ./Obj/GuiGraphicsEventReceiver.o ./Obj/GuiGraphicsWindowComposition.o ./Obj/GuiGraphicsHost.o ./Obj/GuiGraphicsHost_Alt.o ./Obj/GuiGraphicsHost_ShortcutKey.o ./Obj/GuiGraphicsHost_Tab.o ./Obj/GuiButtonControls.o ./Obj/GuiContainerControls.o ./Obj/GuiDateTimeControls.o ./Obj/GuiDialogs.o ./Obj/GuiScrollControls.o ./Obj/DataSourceImpl_IItemProvider_ItemProviderBase.o ./Obj/DataSourceImpl_IItemProvider_NodeItemProvider.o ./Obj/DataSourceImpl_INodeProvider_MemoryNodeProvider.o ./Obj/GuiBindableDataGrid.o ./Obj/GuiBindableListControls.o ./Obj/GuiComboControls.o ./Obj/GuiDataGridControls.o ./Obj/GuiDataGridExtensions.o ./Obj/GuiListControlItemArrangers.o ./Obj/GuiListControls.o ./Obj/GuiListViewControls.o ./Obj/ItemProvider_Binding.o ./Obj/ItemTemplate_IListViewItemView.o ./Obj/GuiTextListControls.o ./Obj/GuiTreeViewControls.o ./Obj/ItemProvider_IListViewItemView.o ./Obj/ItemProvider_ITextItemView.o ./Obj/ItemProvider_ITreeViewItemView.o ./Obj/ItemTemplate_ITextItemView.o ./Obj/ItemTemplate_ITreeViewItemView.o ./Obj/GuiAnimation.o ./Obj/GuiCommonTemplates.o ./Obj/GuiControlTemplates.o ./Obj/GuiThemeStyleFactory.o ./Obj/GuiTextUndoRedo.o ./Obj/GuiDocumentCommonInterface.o ./Obj/GuiDocumentConfig.o ./Obj/GuiDocumentViewer.o ./Obj/GuiMenuControls.o ./Obj/GuiRibbonControls.o ./Obj/GuiRibbonGalleryList.o ./Obj/GuiRibbonImpl.o ./Obj/GuiToolstripCommand.o ./Obj/GuiToolstripMenu.o ./Obj/GacUIReflectionHelper.o ./Obj/GuiGraphicsAxis.o ./Obj/GuiGraphicsFlowComposition.o ./Obj/GuiGraphicsRepeatComposition.o ./Obj/GuiGraphicsRepeatComposition_NonVirtial.o ./Obj/GuiGraphicsRepeatComposition_Virtual.o ./Obj/GuiGraphicsResponsiveComposition.o ./Obj/GuiGraphicsSharedSizeComposition.o ./Obj/GuiGraphicsSpecializedComposition.o ./Obj/GuiGraphicsStackComposition.o ./Obj/GuiGraphicsTableComposition.o ./Obj/GuiFakeClipboardService.o ./Obj/GuiFakeDialogServiceBase.o ./Obj/GuiFakeDialogServiceBase_ColorDialog.o ./Obj/GuiFakeDialogServiceBase_FileDialog.o ./Obj/GuiFakeDialogServiceBase_FontDialog.o ./Obj/GuiFakeDialogServiceBase_MessageBox.o ./Obj/GuiFakeDialogService.o ./Obj/GuiFakeDialogServiceUI.o ./Obj/GuiFakeDialogServiceUIResource.o ./Obj/GuiUtilitiesRegistration.o ./Obj/GuiSharedAutomationService_Controls.o ./Obj/RemoteProtocolRendererClient.o ./Obj/ViewModelHostClient.o ./Obj/ViewModelHostServer.o ./Obj/GuiMain.o ./Obj/Main.o ./Obj/DarkSkin.o ./Obj/DarkSkinReflection.o ./Obj/DarkSkinResource.o ./Obj/ClickMeTab.o ./Obj/DataGridTab.o ./Obj/DocumentTab.o ./Obj/RemoteProtocolTest.o ./Obj/RemoteProtocolTestReflection.o ./Obj/RemoteProtocolTestResource.o ./Obj/RpMainWindow.o ./Obj/DocumentEditorBase.o ./Obj/FullControlTest.o ./Obj/FullControlTestReflection.o ./Obj/FullControlTestResource.o ./Obj/MainWindow.o ./Obj/RemoteViewModelTest.o ./Obj/RemoteViewModelTestReflection.o ./Obj/RemoteViewModelTestResource.o ./Obj/RemoteViewModelTestRpc.o ./Obj/RemoteViewModelTestInitialize.o
+./Bin/RemotingTest_RvmHost:./Obj/Vlpp.o ./Obj/Vlpp.Linux.o ./Obj/VlppGlrParser.o ./Obj/VlppOS.o ./Obj/VlppOS.Linux.o ./Obj/VlppReflection.o ./Obj/VlppRegex.o ./Obj/VlppWorkflowLibrary.o ./Obj/GuiGraphicsDocumentElement.o ./Obj/GuiGraphicsDocumentRenderer_GuiDocumentImageCache.o ./Obj/GuiGraphicsDocumentRenderer_SetPropertiesVisitor.o ./Obj/GuiGraphicsDocumentRenderer_GuiDocumentParagraphCache.o ./Obj/GuiGraphicsDocumentRenderer_GuiDocumentElementRenderer.o ./Obj/GuiGraphicsElement.o ./Obj/GuiGraphicsElementInterfaces.o ./Obj/GuiGraphicsResourceManager.o ./Obj/GuiNativeWindow.o ./Obj/GacGenController.o ./Obj/GuiHostedApplication.o ./Obj/GuiHostedController.o ./Obj/GuiHostedGraphics.o ./Obj/GuiHostedWindow.o ./Obj/GuiHostedWindowProxy_Main.o ./Obj/GuiHostedWindowProxy_NonMain.o ./Obj/GuiHostedWindowProxy_Placeholder.o ./Obj/GuiRemoteRendererSingle.o ./Obj/GuiRemoteRendererSingle_Controller.o ./Obj/GuiRemoteRendererSingle_IO.o ./Obj/GuiRemoteRendererSingle_MainWindow.o ./Obj/GuiRemoteRendererSingle_Rendering.o ./Obj/GuiRemoteRendererSingle_Rendering_Document.o ./Obj/GuiRemoteRendererSingle_Rendering_Elements.o ./Obj/GuiRemoteRendererSingle_Rendering_Image.o ./Obj/GuiRemoteRendererSingle_Rendering_Label.o ./Obj/GuiRemoteController.o ./Obj/GuiRemoteControllerSetup.o ./Obj/GuiRemoteEvents.o ./Obj/GuiRemoteGraphics.o ./Obj/GuiRemoteGraphics_BasicElements.o ./Obj/GuiRemoteGraphics_Document.o ./Obj/GuiRemoteGraphics_Document_Helpers.o ./Obj/GuiRemoteGraphics_ImageService.o ./Obj/GuiRemoteProtocolSchemaShared.o ./Obj/GuiRemoteProtocol_Channel_Async.o ./Obj/GuiRemoteProtocol_Channel_AsyncRenderer.o ./Obj/GuiRemoteProtocol_Channel_Json.o ./Obj/GuiRemoteProtocol_DomDiff.o ./Obj/GuiRemoteProtocol_Filter.o ./Obj/GuiRemoteProtocol_FilterVerifier.o ./Obj/GuiRemoteWindow.o ./Obj/GuiRemoteProtocolSchema_BuildFrame.o ./Obj/GuiRemoteProtocolSchema_CopyDom.o ./Obj/GuiRemoteProtocolSchema_DiffFrame.o ./Obj/GuiRemoteProtocolSchema.o ./Obj/GuiDocument.o ./Obj/GuiDocumentClipboard_Document.o ./Obj/GuiDocumentClipboard_HtmlFormat.o ./Obj/GuiDocumentClipboard_RichTextFormat.o ./Obj/GuiDocumentEditor_AddContainer.o ./Obj/GuiDocumentEditor_ClearUnnecessaryRun.o ./Obj/GuiDocumentEditor_CloneRun.o ./Obj/GuiDocumentEditor_CollectStyle.o ./Obj/GuiDocumentEditor_CutRun.o ./Obj/GuiDocumentEditor_GetRunRange.o ./Obj/GuiDocumentEditor_LocateHyperlink.o ./Obj/GuiDocumentEditor_LocateStyle.o ./Obj/GuiDocumentEditor_RemoveContainer.o ./Obj/GuiDocumentEditor_RemoveRun.o ./Obj/GuiDocumentEditor_ReplaceStyleName.o ./Obj/GuiDocumentEditor_SummerizeStyle.o ./Obj/GuiDocument_Edit.o ./Obj/GuiDocument_Load.o ./Obj/GuiDocument_Save.o ./Obj/GuiParserManager.o ./Obj/GuiPluginManager.o ./Obj/GuiResource.o ./Obj/GuiResourceManager.o ./Obj/GuiResourceTypeResolvers.o ./Obj/MiniHttpAutomationService.o ./Obj/GuiSharedAsyncService.o ./Obj/GuiSharedAutomationService.o ./Obj/GuiSharedCallbackService.o ./Obj/GuiApplication.o ./Obj/GuiBasicControls.o ./Obj/GuiInstanceRootObject.o ./Obj/GuiLabelControls.o ./Obj/GuiThemeManager.o ./Obj/GuiWindowControls.o ./Obj/GuiGraphicsBoundsComposition.o ./Obj/GuiGraphicsComposition.o ./Obj/GuiGraphicsComposition_Helpers.o ./Obj/GuiGraphicsComposition_Layout.o ./Obj/GuiGraphicsEventReceiver.o ./Obj/GuiGraphicsWindowComposition.o ./Obj/GuiGraphicsHost.o ./Obj/GuiGraphicsHost_Alt.o ./Obj/GuiGraphicsHost_ShortcutKey.o ./Obj/GuiGraphicsHost_Tab.o ./Obj/GuiButtonControls.o ./Obj/GuiContainerControls.o ./Obj/GuiDateTimeControls.o ./Obj/GuiDialogs.o ./Obj/GuiScrollControls.o ./Obj/DataSourceImpl_IItemProvider_ItemProviderBase.o ./Obj/DataSourceImpl_IItemProvider_NodeItemProvider.o ./Obj/DataSourceImpl_INodeProvider_MemoryNodeProvider.o ./Obj/GuiBindableDataGrid.o ./Obj/GuiBindableListControls.o ./Obj/GuiComboControls.o ./Obj/GuiDataGridControls.o ./Obj/GuiDataGridExtensions.o ./Obj/GuiListControlItemArrangers.o ./Obj/GuiListControls.o ./Obj/GuiListViewControls.o ./Obj/ItemProvider_Binding.o ./Obj/ItemTemplate_IListViewItemView.o ./Obj/GuiTextListControls.o ./Obj/GuiTreeViewControls.o ./Obj/ItemProvider_IListViewItemView.o ./Obj/ItemProvider_ITextItemView.o ./Obj/ItemProvider_ITreeViewItemView.o ./Obj/ItemTemplate_ITextItemView.o ./Obj/ItemTemplate_ITreeViewItemView.o ./Obj/GuiAnimation.o ./Obj/GuiCommonTemplates.o ./Obj/GuiControlTemplates.o ./Obj/GuiThemeStyleFactory.o ./Obj/GuiTextUndoRedo.o ./Obj/GuiDocumentCommonInterface.o ./Obj/GuiDocumentConfig.o ./Obj/GuiDocumentViewer.o ./Obj/GuiMenuControls.o ./Obj/GuiRibbonControls.o ./Obj/GuiRibbonGalleryList.o ./Obj/GuiRibbonImpl.o ./Obj/GuiToolstripCommand.o ./Obj/GuiToolstripMenu.o ./Obj/GacUIReflectionHelper.o ./Obj/GuiGraphicsAxis.o ./Obj/GuiGraphicsFlowComposition.o ./Obj/GuiGraphicsRepeatComposition.o ./Obj/GuiGraphicsRepeatComposition_NonVirtial.o ./Obj/GuiGraphicsRepeatComposition_Virtual.o ./Obj/GuiGraphicsResponsiveComposition.o ./Obj/GuiGraphicsSharedSizeComposition.o ./Obj/GuiGraphicsSpecializedComposition.o ./Obj/GuiGraphicsStackComposition.o ./Obj/GuiGraphicsTableComposition.o ./Obj/GuiFakeClipboardService.o ./Obj/GuiFakeDialogServiceBase.o ./Obj/GuiFakeDialogServiceBase_ColorDialog.o ./Obj/GuiFakeDialogServiceBase_FileDialog.o ./Obj/GuiFakeDialogServiceBase_FontDialog.o ./Obj/GuiFakeDialogServiceBase_MessageBox.o ./Obj/GuiFakeDialogService.o ./Obj/GuiFakeDialogServiceUI.o ./Obj/GuiFakeDialogServiceUIResource.o ./Obj/GuiUtilitiesRegistration.o ./Obj/GuiSharedAutomationService_Controls.o ./Obj/RemoteProtocolRendererClient.o ./Obj/ViewModelHostClient.o ./Obj/ViewModelHostServer.o ./Obj/Main.o ./Obj/RemoteViewModelTestInitialize.o ./Obj/RemoteViewModelTestRpc.o
 	$(CPP_LINK)
 
 ./Obj/Vlpp.o: ../../../Import/Vlpp.cpp
@@ -505,68 +505,11 @@ all:pre-build ./Bin/RemotingTest_Core
 ./Obj/ViewModelHostServer.o: ../../RemotingHelpers/Rvmt/ViewModelHostServer.cpp
 	$(CPP_COMPILE)
 
-./Obj/GuiMain.o: ../../GacUISrc/RemotingTest_Core/GuiMain.cpp
-	$(CPP_COMPILE)
-
-./Obj/Main.o: ../../GacUISrc/RemotingTest_Core/Main.cpp
-	$(CPP_COMPILE)
-
-./Obj/DarkSkin.o: ../../GacUISrc/Generated_DarkSkin/Source_x64/DarkSkin.cpp
-	$(CPP_COMPILE)
-
-./Obj/DarkSkinReflection.o: ../../GacUISrc/Generated_DarkSkin/Source_x64/DarkSkinReflection.cpp
-	$(CPP_COMPILE)
-
-./Obj/DarkSkinResource.o: ../../GacUISrc/Generated_DarkSkin/Source_x64/DarkSkinResource.cpp
-	$(CPP_COMPILE)
-
-./Obj/ClickMeTab.o: ../../GacUISrc/Generated_RemoteProtocolTest/Source_x64/ClickMeTab.cpp
-	$(CPP_COMPILE)
-
-./Obj/DataGridTab.o: ../../GacUISrc/Generated_RemoteProtocolTest/Source_x64/DataGridTab.cpp
-	$(CPP_COMPILE)
-
-./Obj/DocumentTab.o: ../../GacUISrc/Generated_RemoteProtocolTest/Source_x64/DocumentTab.cpp
-	$(CPP_COMPILE)
-
-./Obj/RemoteProtocolTest.o: ../../GacUISrc/Generated_RemoteProtocolTest/Source_x64/RemoteProtocolTest.cpp
-	$(CPP_COMPILE)
-
-./Obj/RemoteProtocolTestReflection.o: ../../GacUISrc/Generated_RemoteProtocolTest/Source_x64/RemoteProtocolTestReflection.cpp
-	$(CPP_COMPILE)
-
-./Obj/RemoteProtocolTestResource.o: ../../GacUISrc/Generated_RemoteProtocolTest/Source_x64/RemoteProtocolTestResource.cpp
-	$(CPP_COMPILE)
-
-./Obj/RpMainWindow.o: ../../GacUISrc/Generated_RemoteProtocolTest/Source_x64/RpMainWindow.cpp
-	$(CPP_COMPILE)
-
-./Obj/DocumentEditorBase.o: ../../GacUISrc/Generated_FullControlTest/Source_x64/DocumentEditorBase.cpp
-	$(CPP_COMPILE)
-
-./Obj/FullControlTest.o: ../../GacUISrc/Generated_FullControlTest/Source_x64/FullControlTest.cpp
-	$(CPP_COMPILE)
-
-./Obj/FullControlTestReflection.o: ../../GacUISrc/Generated_FullControlTest/Source_x64/FullControlTestReflection.cpp
-	$(CPP_COMPILE)
-
-./Obj/FullControlTestResource.o: ../../GacUISrc/Generated_FullControlTest/Source_x64/FullControlTestResource.cpp
-	$(CPP_COMPILE)
-
-./Obj/MainWindow.o: ../../GacUISrc/Generated_FullControlTest/Source_x64/MainWindow.cpp
-	$(CPP_COMPILE)
-
-./Obj/RemoteViewModelTest.o: ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTest.cpp
-	$(CPP_COMPILE)
-
-./Obj/RemoteViewModelTestReflection.o: ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTestReflection.cpp
-	$(CPP_COMPILE)
-
-./Obj/RemoteViewModelTestResource.o: ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTestResource.cpp
-	$(CPP_COMPILE)
-
-./Obj/RemoteViewModelTestRpc.o: ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTestRpc.cpp
+./Obj/Main.o: ../../GacUISrc/RemotingTest_RvmHost/Main.cpp
 	$(CPP_COMPILE)
 
 ./Obj/RemoteViewModelTestInitialize.o: ../../GacUISrc/Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.cpp
+	$(CPP_COMPILE)
+
+./Obj/RemoteViewModelTestRpc.o: ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTestRpc.cpp
 	$(CPP_COMPILE)

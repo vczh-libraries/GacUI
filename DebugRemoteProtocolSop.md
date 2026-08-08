@@ -11,8 +11,8 @@ establish, drive, inspect, replace, and close the renderer session.
 - Test Apps:
   - `RemotingTest_Core` in `GacUI` repo is a test app for remote protocol.
   - `RemotingTest_Rendering_Win32` in `GacUI` repo is a test app for remote protocol client using Windows native renderer.
-  - `RemotingTest_Rendering_macOS` in `iGac` repo is a test app for remote protocol client using macOS native renderer.
-  - `RemotingTest_Rendering_Wayland` in `wGac` repo is a test app for remote protocol client using Linux/Wayland native renderer.
+  - `RemotingTest_Renderer_macOS` in `iGac` repo is a test app for remote protocol client using macOS native renderer.
+  - `RemotingTest_Renderer_Wayland` in `wGac` repo is a test app for remote protocol client using Linux/Wayland native renderer.
   - `Gaclib/website/entry` npmjs package in `GacJS` repo is a http service, hosting a website as a remoting protocol client running in a Browser.
   - Core and client test apps are expected to run in the same computer.
 - Expected Behavior:

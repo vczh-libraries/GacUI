@@ -1,9 +1,11 @@
 #if defined __linux__ && __has_include(<GacUI.h>) && __has_include("../WGac/Services/WGacAutomationService.h") && __has_include("../WGac/Renderers/WGacRenderer.h")
 #include <GacUI.h>
+#include <Test.RemotingHelpers.h>
 #include "../WGac/Services/WGacAutomationService.h"
 #include "../WGac/Renderers/WGacRenderer.h"
 #elif defined __APPLE__ && __has_include(<GacUI.h>)
 #include <GacUI.h>
+#include <Test.RemotingHelpers.h>
 #include "../Mac/NativeWindow/CocoaAutomationService.h"
 #include "../Mac/NativeWindow/OSX/CoreGraphics/CoreGraphicsApp.h"
 #include <dispatch/dispatch.h>
@@ -11,9 +13,9 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
-#endif
 #include "../../../Source/Utilities/AutomationService/MiniHttpAutomationService.h"
 #include "../../RemotingHelpers/RendererClient/RemoteProtocolRendererClient.h"
+#endif
 #include <VlppOS.h>
 #if defined VCZH_MSVC
 #include <VlppOS.Windows.h>
@@ -85,9 +87,15 @@ void GuiMain()
 	auto invoker = Ptr(new GuiMainAsyncRendererInvoker);
 	currentGuiContext->renderer->RegisterMainWindow(mainWindow);
 
-	AutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
 #if defined VCZH_MSVC
+	windows::WindowsAutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
+#elif defined VCZH_GCC && !defined VCZH_APPLE
+	wayland::WGacAutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
+#else
+	osx::CocoaAutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
+#endif
 	GetNativeServiceSubstitution()->Substitute(&rendererAutomationServiceObject, false);
+#if defined VCZH_MSVC
 	if (currentGuiContext->miniHttpSocketServer)
 	{
 		StartMiniHttpAutomationService(
@@ -102,15 +110,7 @@ void GuiMain()
 			currentGuiContext->automationHttpPort
 			);
 	}
-	auto rendererAutomationService = &rendererAutomationServiceObject;
-#elif defined VCZH_GCC && !defined VCZH_APPLE
-	GetNativeServiceSubstitution()->Substitute(&rendererAutomationServiceObject, false);
-	StartMiniHttpAutomationService(
-		currentGuiContext->miniHttpSocketServer,
-		WString::Unmanaged(GacUIAutomationApplicationName)
-		);
 #else
-	GetNativeServiceSubstitution()->Substitute(&rendererAutomationServiceObject, false);
 	StartMiniHttpAutomationService(
 		currentGuiContext->miniHttpSocketServer,
 		WString::Unmanaged(GacUIAutomationApplicationName)

@@ -40,8 +40,9 @@ In `GacUI` there are important test apps:
   - `test.sh --app:rvmt`
   - This project will be ported to `%CppTestRvm`.
 - `RemotingTest_Renderer_Win32`, a test app as a native renderer in remote protocol, it connects to `RemotingTest_Core`.
-  - `test.sh --app:renderer`
+  - `test.sh --app:renderer (--port:<port>)?`
   - This project will be ported to `wGac/RemotingTest_Renderer_Wayland` or `iGac/RemotingTest_Renderer_macOS`.
+  - The default automation port is 8889. A concurrent takeover renderer needs a different automation port, such as 8890; this does not change the `/MiniHttp` Core connection on port 8888.
 - `RemotingTest_Core`, a test ap as the core app in remote protocol.
   - It runs from `GacUI/Test/Linux/RemotingTest_Core`.
 - `RemotingTest_RvmHost`, a CLI app hosts the implementation of `IViewModel` with `RemoteViewModelTest` is used.

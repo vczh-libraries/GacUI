@@ -19,7 +19,7 @@ The native-renderer transport contract is:
 | Platform | Transport arguments | Current implementation status |
 | --- | --- | --- |
 | Windows | `/MiniHttp`, `/Http`, `/Pipe` | Available |
-| Linux | `/MiniHttp` | Native renderer not implemented yet |
+| Linux | `/MiniHttp` | Available in the sibling `wGac` repository |
 | macOS | `/MiniHttp` | Available in the sibling `iGac` repository |
 
 ## Windows
@@ -153,17 +153,77 @@ start times before using a name-based fallback.
 
 ## Linux Specific
 
-The planned native-renderer transport for Linux is `/MiniHttp`; `/Http` and
-`/Pipe` are not part of the planned platform contract. Native remote rendering is
-not implemented yet, so the equivalent renderer and its concrete
-start/inspection procedure must be provided by another repository before the job
-can run. Do not attempt to run `RemotingTest_Rendering_Win32` on Linux.
+The Linux native renderer is `RemotingTest_Renderer_Wayland` in the sibling
+`wGac` repository. It uses `/MiniHttp` only; `/Http` and `/Pipe` are not part of
+the Linux contract. Its automation port defaults to `8889`. The wGac launcher
+accepts `--port:<port>` and forwards it as the renderer's `/port:` automation
+option; this changes only the renderer automation listener, not the Core
+connection on port 8888.
+
+From the monorepo root, build the portable core and the wGac renderer:
+
+```bash
+(
+  cd GacUI/Test/Linux/RemotingTest_Core
+  ../../../.github/Ubuntu/build.sh
+)
+(
+  cd wGac
+  ./build.sh
+)
+```
+
+Run the core in the first terminal. Use `/RPT` for Remote Protocol Test, or
+replace it with `/FCT` for Full Control Test:
+
+```bash
+GacUI/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core /MiniHttp /RPT
+```
+
+Wait for `Waiting for a renderer ...`, then run the renderer in a second
+terminal:
+
+```bash
+wGac/test.sh --app:renderer
+```
+
+For example, a concurrent takeover renderer can use a second automation port:
+
+```bash
+wGac/test.sh --app:renderer --port:8890
+```
+
+The corresponding automation endpoints are:
+
+```text
+GET  http://localhost:8888/Automation/RemotingTest_Core/Controls
+POST http://localhost:8888/Automation/RemotingTest_Core/IO
+GET  http://localhost:8889/Automation/RemotingTest_Rendering_Native/Dom
+POST http://localhost:8889/Automation/RemotingTest_Rendering_Native/IO
+```
+
+Post renderer commands with `curl` as shown in the macOS example below. Use
+renderer `/IO` for the shared SOP so both input and rendering cross the remote
+protocol. Re-read core `Controls` and renderer `Dom` after every state change.
+
+To replace the renderer, stop only the renderer process and start it again on
+port 8889 while keeping the core alive. To test takeover, keep that renderer
+running and start another one with `--port:8890`; inspect the new renderer at
+the same automation prefix on port 8890. The replacement must retain the
+application state, and the detached renderer must settle without a retry loop.
+Closing the application through its UI must also close the active renderer
+cleanly.
+
+The raw Wayland renderer has no `GuiApplication` in which to display a fatal
+message dialog. A Core-authored fatal error is retained directly in the renderer
+DOM and exposed as `fatalError`; exact `!Exit` remains available for cleanup.
 
 ## macOS Specific
 
 The macOS native renderer is `RemotingTest_Renderer_macOS` in the sibling
-`iGac` repository. It uses `/MiniHttp` only; `/Http`, `/Pipe`, and the Windows
-renderer's `/port:` option are Windows-only. Its automation port remains `8889`.
+`iGac` repository. It uses `/MiniHttp` only; `/Http` and `/Pipe` are not part of
+the macOS contract. The current macOS launcher does not expose an automation
+port override, so its automation port remains `8889`.
 
 From the monorepo root, build the portable core and the iGac renderer:
 
