@@ -28,7 +28,8 @@ The unmodified `Debug|x64` executables reproduce the defect after a successful i
 
 # PROPOSALS
 
-- No.1 Promote failed accepted-client HTTP poll delivery to channel disconnection
+- No.1 Promote failed accepted-client HTTP poll delivery to channel disconnection [DENIED]
+- No.2 Bound configured channel RPC response waits with persistent injection
 
 ## No.1 Promote failed accepted-client HTTP poll delivery to channel disconnection
 
@@ -46,3 +47,22 @@ Update the RVM host-loss SOP so the timing is explicit: named pipe should observ
 - Regenerate the VlppOS release and import it into GacUI through the supported release pipeline.
 - Update `DebugRemoteProtocolSop.md` and synchronized inter-process knowledge/manual text to state the timing and promotion contract.
 - Run the focused/unit builds and the complete native-renderer and GacJS verification matrices required by the task.
+
+### DENIED
+
+The transport change correctly preserves retry before channel admission and promotes a reported failed delivery after admission, and all 274 VlppOS Debug x64 tests plus all 275 Release Win32 tests passed. It is nevertheless insufficient as the complete host-loss fix. In the focused `CppTest_Rvm /Http` run, the requester completed `Translate("AliveHttp")`, the accepted host was force-terminated, and the first post-loss `Translate("AfterLoss")` still blocked the UI. The requester process and window remained alive while its automation `Controls` endpoint timed out. Windows HTTP accepted the server's pending-poll response after the client process was gone, so there was no failed-send callback for the channel layer to promote. A successful local HTTP send therefore cannot establish peer receipt, and a missing RPC response still needs an application-selected deadline.
+
+## No.2 Bound configured channel RPC response waits with persistent injection
+
+`RpcJsonDispatcherClient::OnJsonRequest` is the transport-independent synchronous boundary that owns response matching. Add an optional response timeout to this dispatcher, disabled by default so existing Workflow clients retain their current policy. A caller can configure a positive timeout and terminal exception text before requests begin. Each request gets one absolute deadline; nested incoming requests and unrelated buffered responses do not extend it. If the matching response has not committed by the deadline, the dispatcher stores the configured text as its persistent injected exception under the same lock used for response selection, wakes all waits, and throws `RpcInjectedException` on the original caller thread. This preserves the existing fail-fast, last-write-wins injection behavior and introduces no heartbeat or recovery path.
+
+Configure only the RVM requester's local dispatcher with `RemotingTest_RvmHost disconnected.`. Named pipe will normally inject immediately through its direct disconnect callback. HTTP and MiniHTTP may remain unaware while idle, but the first post-loss `IViewModel` call will either observe an earlier disconnect or time out instead of freezing the UI. A call already pending when the host is terminated is released by the same bound.
+
+### CODE CHANGE
+
+- Add a public, pre-request `SetResponseTimeout(milliseconds, exceptionMessage)` configuration to the upstream Workflow `RpcJsonDispatcherClient`; reject nonpositive timeouts and reconfiguration after initialization.
+- Make the response wait use a per-request absolute deadline and atomically promote expiry to the existing persistent injected-exception state.
+- Add Workflow `LibraryTest` coverage that a missing response times out on the caller thread, poisons later calls with the exact configured text, and does not time out when a response commits first.
+- Document the opt-in response-timeout contract in the Workflow JSON request-routing knowledge base and manual.
+- Regenerate Workflow release files and import them into GacUI through the supported release pipeline.
+- Configure the RVM requester helper with the exact host-disconnect text, then repeat both requester shapes and all three transports for idle-next-call and in-flight host termination.
