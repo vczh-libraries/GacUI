@@ -88,7 +88,7 @@ void GuiMain()
 	currentGuiContext->renderer->RegisterMainWindow(mainWindow);
 
 #if defined VCZH_MSVC
-	windows::WindowsRendererAutomationService rendererAutomationServiceObject(currentGuiContext->renderer);
+	windows::WindowsAutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
 #elif defined VCZH_GCC && !defined VCZH_APPLE
 	wayland::WGacAutomationServiceRenderer rendererAutomationServiceObject(currentGuiContext->renderer);
 #elif defined VCZH_GCC && defined VCZH_APPLE

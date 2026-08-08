@@ -34,10 +34,10 @@ namespace vl::presentation::windows
 	{
 	};
 
-	class WindowsRendererAutomationService : public WindowsAutomationServiceBase<AutomationServiceRenderer>
+	class WindowsAutomationServiceRenderer : public WindowsAutomationServiceBase<AutomationServiceRenderer>
 	{
 	public:
-		WindowsRendererAutomationService(remote_renderer::GuiRemoteRendererSingle* renderer);
+		WindowsAutomationServiceRenderer(remote_renderer::GuiRemoteRendererSingle* renderer);
 
 		INativeAutomationService::IOCommandAvailability CanRunIOCommands() override;
 	};

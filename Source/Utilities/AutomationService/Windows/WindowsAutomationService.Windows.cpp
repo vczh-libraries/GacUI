@@ -57,11 +57,11 @@ namespace vl::presentation::windows
 		return nullptr;
 	}
 
-	WindowsRendererAutomationService::WindowsRendererAutomationService(remote_renderer::GuiRemoteRendererSingle* renderer)
+	WindowsAutomationServiceRenderer::WindowsAutomationServiceRenderer(remote_renderer::GuiRemoteRendererSingle* renderer)
 		: WindowsAutomationServiceBase<AutomationServiceRenderer>(renderer)
 	{}
 
-	INativeAutomationService::IOCommandAvailability WindowsRendererAutomationService::CanRunIOCommands()
+	INativeAutomationService::IOCommandAvailability WindowsAutomationServiceRenderer::CanRunIOCommands()
 	{
 		return AutomationServiceRenderer::CanRunIOCommands();
 	}

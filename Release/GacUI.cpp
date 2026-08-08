@@ -44420,6 +44420,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestControllerConnectionStopped()
 	{
+		if (stoppedByFatalError) return;
 		if (window)
 		{
 			DisconnectFromCore();
