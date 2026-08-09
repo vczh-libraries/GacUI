@@ -9,8 +9,8 @@
 - Don’t schedule redundant idle frames [7]
 - Preserve existing idle-frame titles when requested [6]
 - Seed key-behavior tests via `protocol->TypeString` [6]
+- Validate GacJS through browser UI interactions [6]
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
-- Validate GacJS through browser UI interactions [4]
 - Verify GacJS HTTP fatal errors through browser UI [4]
 - Verify `/IO` synchronous errors and queued success separately [4]
 - Caret navigation tests: type markers to expose caret [3]
@@ -71,6 +71,7 @@
 - Isolate remote cache handoffs with single-response-shape tests [1]
 - MiniHTTP automation probes use IPv4 loopback [1]
 - Verify automation-service ownership changes in every consumer app [1]
+- Remote-debugging guides own complete Cartesian test matrices [1]
 
 # Refinements
 
@@ -385,6 +386,8 @@ After importing remoting protocol dependencies, run the GacJS build and test pac
 
 For macOS MiniHTTP verification, run the portable core and a statically hosted GacJS site. Use Chromium first as a diagnostic smoke check, then start a fresh core and repeat with Playwright WebKit for Safari-family automated compatibility. Require rendered GacUI content, browser-input round trips, and no browser dialog, page error, or console error.
 
+Run the complete platform-supported matrix with fresh Core/host processes for each application target. Cover the shared SOP's normal feature path, renderer replacement where applicable, application-controlled close, Core-authored fatal errors, and both documented RVM host-loss timings; require exact visible terminal state and bounded process/listener cleanup rather than treating a successful build as end-to-end verification.
+
 Playwright WebKit is not the installed Safari application. Actual Safari remains a separate manual check and must not be reported as verified from a WebKit run.
 
 ## Browser E2E tests must handle localized dialogs and host fixtures
@@ -452,3 +455,9 @@ When a MiniHTTP test listener binds IPv4 loopback, probe it through `127.0.0.1`.
 ## Verify automation-service ownership changes in every consumer app
 
 After moving reusable automation endpoint code or changing its shared-project ownership, build the complete GacUISrc solution and run every affected test application through the repository execution wrapper. Require a nonempty `Controls` or `Dom` response, exit through automation, and cover both an explicitly selected native-renderer port and the default 8889 port. This executable matrix replaces unit tests only when the task explicitly grants that exception.
+
+## Remote-debugging guides own complete Cartesian test matrices
+
+Put each renderer's complete application-by-transport Cartesian product in an early `Test Matrix` section after the background introduction. The native and GacJS setup guides must enumerate their own platform-supported targets and required companion processes instead of delegating the matrix to another job or presenting dimensions as alternatives.
+
+Keep responsibilities separated: renderer guides own the supported matrix and setup commands, while `DebugRemoteProtocolSop.md` owns feature operations, error handling, and observable pass/fail behavior. Update the SOP when an operation is missing instead of duplicating those steps in every setup guide.

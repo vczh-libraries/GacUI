@@ -2,25 +2,27 @@
 
 # Orders
 
-- `Test/RemotingHelpers` stays test-only and outside Release CodePack [10]
+- `Test/RemotingHelpers` stays test-only and outside Release CodePack [11]
 - Keep reusable renderer terminal state separate from host policy [7]
 - Stop remoting transports before stack channel wrappers destruct [6]
 - Deliver fatal remote-channel errors before transport shutdown [6]
+- `ViewModelReadyChannel` is the post-route RPC registration barrier [6]
 - Cache renderer packages until main-thread invoker exists [5]
-- `ViewModelReadyChannel` is the post-route RPC registration barrier [5]
 - Renderer channel dispatch belongs in async renderer layer [4]
 - Treat a fatal local channel error as a complete disconnect signal [4]
 - Remote core accepts replacement renderers by detaching stale renderer [4]
 - Automation `/IO` parses synchronously and queues parsed commands [3]
 - `RemotingTest_Core /RVMT` gates singleton channels by startup phase [3]
+- `CppTest_Rvm` is a GUI app and stays console-free [3]
 - `vl::collections::ObservableList<T>` element access and replacement [2]
 - Extract helpers to remove duplicated conversion blocks [2]
 - Place helpers in the primary-responsibility namespace [2]
 - Keep remote JSON channel code pure data processing [2]
 - Do not call `IChannel::Initialize(nullptr)` to uninstall readers [2]
 - Parameterize remoting channel servers by concrete protocol server bases [2]
-- `CppTest_Rvm` is a GUI app and stays console-free [2]
 - Automation HTTP returns 404 only for protocol-level rejection [2]
+- `RemoteViewModelTest` control messages are business-only [2]
+- RVM accepted-host loss poisons the requester dispatcher outside locks [2]
 - Keep renderer automation port configurable with default 8889 [1]
 - Use channel `localClient` callbacks for remoting local-client detection [1]
 - Use `EventObject` for renderer-connection waits after channel server start [1]
@@ -65,9 +67,9 @@
 - Remote splitter bounds describe the actual two-pixel footprint [1]
 - Retry remote renderers after every relevant cache response [1]
 - `Instance_GenerateRpcMetadata` validates one aggregate of all Workflow modules [1]
-- `RemoteViewModelTest` control messages are business-only [1]
 - GacUI test apps own concrete automation service composition [1]
-- RVM accepted-host loss poisons the requester dispatcher outside locks [1]
+- `StdioRedirection` keeps Base64 framing transport-opaque [1]
+- `/Cli` host transport is independent from Core renderer transport [1]
 
 # Refinements
 
@@ -389,3 +391,13 @@ Keep `CppTest_Rvm` independent of `vl::console::Console`. Invalid arguments can 
 ## Automation HTTP returns 404 only for protocol-level rejection
 
 Returning 404 for an unsupported verb or route, malformed IO suffix, invalid content type, or disabled operation is endpoint behavior. An unexpected parser, automation implementation, callback, or invariant failure must terminate the test app at the appropriate async or OS boundary instead of being hidden behind 404.
+
+## `StdioRedirection` keeps Base64 framing transport-opaque
+
+Reserve redirected stdin/stdout exclusively for the protocol and keep diagnostics on stderr. Frame every ordinary `WString` as strict UTF-8 followed by standard padded Base64 and one newline; serialized channel-error packages remain ordinary strings that only the channel adapter interprets. Exact `!Exit` is the sole raw control line. Ignore malformed Base64/UTF-8 and unknown controls without changing connection state, and treat exact `!Exit`, EOF, peer exit, or local stop as a one-shot disconnection.
+
+Keep process/pipe mechanics platform-specific while shared code owns framing, connection state, callback installation/draining, launch admission, and multi-child ownership. Invoke callbacks outside locks, and make server `Stop()` bar launches, send `!Exit`, drain callbacks/readers, wait, and reap every owned child before returning.
+
+## `/Cli` host transport is independent from Core renderer transport
+
+For `CppTest_Rvm`, `/Cli:<path>` is one exclusive RVM transport alongside `/Pipe`, `/Http`, and `/MiniHttp`. For `RemotingTest_Core /RVMT`, `/Cli:<path>` selects only the auto-launched host transport and must be combined with exactly one renderer transport. In that mode, compose separate renderer-only and stdio host-only servers, connect the renderer/Core side first to preserve client-id ordering, and stop the host server before the renderer server. Do not manually launch `RemotingTest_RvmHost` when `/Cli` owns it.

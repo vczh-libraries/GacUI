@@ -11,7 +11,7 @@
 - Fix behavior at the owning state instead of patching symptoms [11]
 - Extract abstractions only for real shared behavior [9]
 - Verify and localize portability on every target OS [7]
-- Make `Stop()` drain asynchronous work before returning [6]
+- Make `Stop()` drain asynchronous work before returning [7]
 - Validate expectations against implementation and existing tests [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
@@ -48,6 +48,7 @@
 - Group non-template C++ implementations by class in `.cpp` files [1]
 - Use reentrant POSIX date-time conversions [1]
 - `IRpcJsonMessageDispatcher::InjectException` is persistent and last-write-wins [1]
+- Measure browser images from their own load/error event [1]
 
 # Refinements
 
@@ -336,3 +337,7 @@ Move non-template method bodies out of headers into the matching `.cpp` file whi
 ## `IRpcJsonMessageDispatcher::InjectException` is persistent and last-write-wins
 
 Treat an injected RPC dispatcher exception as durable terminal state, separate from ordinary response messages. Serialize injection with response commitment, let the newest injected message replace the previous one, wake response and startup waits, and throw `RpcInjectedException` on the original caller thread at every dispatcher-controlled checkpoint. Do not consume or clear the failure after one request.
+
+## Measure browser images from their own load/error event
+
+When metadata depends on an `HTMLImageElement`, create a fresh element for each measurement, install `load` and `error` handlers before assigning `src`, and read `naturalWidth` / `naturalHeight` only from that element's matching `load` event. Do not treat an early `decode()` rejection or stale dimensions from a shared measuring element as proof that the image is invalid; reserve fallback metadata for the actual `error` event.
