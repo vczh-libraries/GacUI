@@ -6,12 +6,9 @@ Use this page when wiring a JSON RPC endpoint to a transport. Implement IRpcJson
 
 ## IRpcJsonMessageDispatcher Contract
 
-IRpcJsonMessageDispatcher has three runtime responsibilities:
+IRpcJsonMessageDispatcher has two runtime responsibilities:
 - AllocateRequestId returns a unique request id for outgoing JSON RPC messages from this endpoint.
-- InjectException persistently stores a last-write-wins failure and wakes dispatcher-owned waits. An empty message is valid. Every later OnJsonRequest throws RpcInjectedException before sending until the dispatcher is destroyed.
 - OnJsonRequest sends one JSON request according to the RequestType and returns the response JSON node when a response is expected.
-
-InjectException must be safe to call concurrently with OnJsonRequest. A custom transport must guard the injected presence flag, message, response selection and response commitment with the same lock. Its response and startup waits must include injection in their wait predicate and be notified when the message changes. If injection commits before a matching response is committed, that call throws on its original caller thread. If the response commits first, that call may return normally, but the persistent injection still poisons every remaining and future call. Injection is observed only at dispatcher-controlled checkpoints; it cannot asynchronously throw through a blocking transport send or arbitrary service code.
 
 RequestType describes the routing behavior:
 - Direct sends a request to the target client and waits for the matching response.
@@ -34,18 +31,6 @@ private:
 	IRpcObjectEventOps* objectEventOps = nullptr;
 	IRpcDispatcher* rpcDispatcher = nullptr;
 	IRpcLifecycle* lifecycle = nullptr;
-	CriticalSection lockState;
-	ConditionVariable cvState;
-	bool hasInjectedException = false;
-	WString injectedException;
-
-	void ThrowInjectedExceptionLocked()
-	{
-		if (hasInjectedException)
-		{
-			throw RpcInjectedException(injectedException);
-		}
-	}
 
 public:
 	vint AllocateRequestId() override
@@ -53,24 +38,8 @@ public:
 		return ++nextRequestId;
 	}
 
-	void InjectException(const WString& message) override
-	{
-		CS_LOCK(lockState)
-		{
-			hasInjectedException = true;
-			injectedException = message;
-		}
-		cvState.WakeAllPendings();
-	}
-
 	Ptr<JsonNode> OnJsonRequest(Ptr<JsonNode> message, RequestType requestType) override
 	{
-		CS_LOCK(lockState)
-		{
-			ThrowInjectedExceptionLocked();
-		}
-		// The transport-specific wait must use cvState and recheck
-		// ThrowInjectedExceptionLocked before committing a response.
 		switch (requestType)
 		{
 		case RequestType::Direct:
@@ -178,22 +147,29 @@ using JsonRpcLocalClient = JsonRpcChannelClient<JsonLocalChannelClient>;
 
 ## Endpoint Dispatcher Client
 
-RpcJsonDispatcherClientForTaskQueue already implements IRpcJsonMessageDispatcher by sending JSON packages through a JsonChannel. Keep this transport dispatcher generic. After connection assigns a client id, pass the dispatcher and id to a module-specific setup function that creates RpcJsonDispatcher and RpcJsonLifecycle, then registers the RPC metadata and helper operations for the loaded module.
+RpcJsonDispatcherClientForTaskQueue already implements IRpcJsonMessageDispatcher by sending JSON packages through a JsonChannel. A project still needs a small subclass to create RpcJsonDispatcher and RpcJsonLifecycle, then register the RPC metadata and helper operations for the loaded module.
 
 The module-specific registration is represented below by ConfigureLifecycleForRpcModule. It should set the id map, serializer, object ops, event ops, event attachers and wrapper factory for the module being used.
 ```C++
 void ConfigureLifecycleForRpcModule(RpcJsonLifecycle* lifecycle);
 
-void InitializeRpcForModule(
-	RpcJsonDispatcherClient* dispatcher,
-	vint clientId)
+class MyRpcDispatcherClient : public RpcJsonDispatcherClientForTaskQueue
 {
-	auto rpcDispatcher = Ptr(new RpcJsonDispatcher(clientId, dispatcher));
-	auto lifecycle = Ptr(new RpcJsonLifecycle(clientId, rpcDispatcher.Obj()));
+public:
+	MyRpcDispatcherClient(Ptr<TaskQueue> taskQueue)
+		: RpcJsonDispatcherClientForTaskQueue(taskQueue)
+	{
+	}
 
-	dispatcher->SetRpcObjects(rpcDispatcher, lifecycle);
-	ConfigureLifecycleForRpcModule(lifecycle.Obj());
-}
+	void InitializeRpc(vint clientId)
+	{
+		auto rpcDispatcher = Ptr(new RpcJsonDispatcher(clientId, this));
+		auto lifecycle = Ptr(new RpcJsonLifecycle(clientId, rpcDispatcher.Obj()));
+
+		SetRpcObjects(rpcDispatcher, lifecycle);
+		ConfigureLifecycleForRpcModule(lifecycle.Obj());
+	}
+};
 ```
 
 ## Server Channel Setup
@@ -300,12 +276,18 @@ A process can host services through a local channel client connected to the same
 class JsonRpcServiceLocalClient : public JsonRpcLocalClient
 {
 private:
-	Ptr<RpcJsonDispatcherClientForTaskQueue> dispatcher;
+	Ptr<MyRpcDispatcherClient> dispatcher;
 
 public:
 	JsonRpcServiceLocalClient(Ptr<Parser> parser)
 		: JsonRpcLocalClient(parser)
 	{
+	}
+
+	void OnConnected(vint clientId) override
+	{
+		CHECK_ERROR(dispatcher, L"The RPC dispatcher client is missing.");
+		dispatcher->InitializeRpc(clientId);
 	}
 
 	vint Connect(
@@ -315,7 +297,7 @@ public:
 		vint serverClientId,
 		const List<WString>& waitingForServices)
 	{
-		dispatcher = Ptr(new RpcJsonDispatcherClientForTaskQueue(taskQueue));
+		dispatcher = Ptr(new MyRpcDispatcherClient(taskQueue));
 		auto clientId = dispatcher->ConnectLocalServer(
 			channelServer,
 			self,
@@ -326,7 +308,7 @@ public:
 		return clientId;
 	}
 
-	RpcJsonDispatcherClient* GetDispatcher()
+	MyRpcDispatcherClient* GetDispatcher()
 	{
 		CHECK_ERROR(dispatcher, L"The RPC dispatcher client is not connected.");
 		return dispatcher.Obj();
@@ -342,7 +324,7 @@ void HostLocalService(
 {
 	auto serviceClient = Ptr(new JsonRpcServiceLocalClient(parser));
 	List<WString> waitingForServices;
-	auto clientId = serviceClient->Connect(
+	serviceClient->Connect(
 		channelServer,
 		serviceClient,
 		taskQueue,
@@ -350,7 +332,6 @@ void HostLocalService(
 		waitingForServices);
 
 	auto rpcClient = serviceClient->GetDispatcher();
-	InitializeRpcForModule(rpcClient, clientId);
 	auto lifecycle = rpcClient->GetRpcLifecycle();
 	auto typeId = lifecycle->GetTypeIdFromName(L"example::IExampleService");
 	CHECK_ERROR(typeId != RpcTypeId_NotFound, L"Unknown RPC service type.");
@@ -366,34 +347,40 @@ A remote client uses JsonNetworkChannelClient over a raw transport such as **vl:
 ```C++
 class JsonRpcNetworkEndpoint : public JsonRpcNetworkClient
 {
+private:
+	Ptr<MyRpcDispatcherClient> dispatcher;
+
 public:
 	JsonRpcNetworkEndpoint(
+		Ptr<MyRpcDispatcherClient> _dispatcher,
 		Ptr<INetworkProtocolClient> transport,
 		Ptr<Parser> parser)
 		: JsonRpcNetworkClient(transport, parser)
+		, dispatcher(_dispatcher)
 	{
 	}
 
-	void OnConnected(vint) override
+	void OnConnected(vint clientId) override
 	{
+		CHECK_ERROR(dispatcher, L"The RPC dispatcher client is missing.");
+		dispatcher->InitializeRpc(clientId);
 	}
 };
 
-Ptr<RpcJsonDispatcherClientForTaskQueue> ConnectRemoteRpcClient(
+Ptr<MyRpcDispatcherClient> ConnectRemoteRpcClient(
 	Ptr<Parser> parser,
 	Ptr<TaskQueue> taskQueue,
 	const List<WString>& waitingForServices)
 {
-	auto dispatcher = Ptr(new RpcJsonDispatcherClientForTaskQueue(taskQueue));
+	auto dispatcher = Ptr(new MyRpcDispatcherClient(taskQueue));
 	auto transport = Ptr(new named_pipe::NamedPipeClient(L"WorkflowRpcPipe"));
-	auto channelClient = Ptr(new JsonRpcNetworkEndpoint(transport, parser));
+	auto channelClient = Ptr(new JsonRpcNetworkEndpoint(dispatcher, transport, parser));
 
 	dispatcher->WaitForServer(
 		channelClient.Obj(),
 		channelClient->GetRpcChannel(),
 		waitingForServices);
 
-	InitializeRpcForModule(dispatcher.Obj(), channelClient->GetClientId());
 	dispatcher->Initialize();
 	return dispatcher;
 }

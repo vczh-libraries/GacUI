@@ -1,6 +1,6 @@
 # Investigate and Refine Jobs
 
-`AGENTS.md` and `CLAUDE.md` route short request keywords to prompt files in `.github/prompts`. These jobs make agent work repeatable because the agent writes durable task documents, uses the copied knowledge base, and follows the repository's build, run, and debugging instructions.
+`AGENTS.md` and `CLAUDE.md` route short request keywords to prompt files in `.github/prompts`. These jobs make agent work repeatable because the agent writes durable task documents, uses the copied knowledge base, and follows the repository's build and debug scripts.
 
 ## investigate
 

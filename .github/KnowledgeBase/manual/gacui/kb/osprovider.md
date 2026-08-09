@@ -57,5 +57,5 @@ When an **INativeController** is running as a native OS provider to **GuiHostedC
 
 ## Development Note
 
-Implementing **INativeController** is a super complex topic. In order to port GacUI to a new platform, you must know everything about how GacUI interact with the OS. It is highly recommended to read the [Windows](https://github.com/vczh-libraries/GacUI/tree/master/Source/NativeWindow/Windows), [macOS](https://github.com/vczh-libraries/iGac), [Linux Wayland](https://github.com/vczh-libraries/wGac) and [Linux XWindow](https://github.com/vczh-libraries/gGac) implementation for **INativeController** before creating yours. Especially there are GDI and Direct2D support in Windows, it is a good example to know how to allow multiple rendering techniques in one OS.
+Implementing **INativeController** is a super complex topic. In order to port GacUI to a new platform, you must know everything about how GacUI interact with the OS. It is highly recommended to read the [Windows](https://github.com/vczh-libraries/GacUI/tree/master/Source/NativeWindow/Windows), [macOS](https://github.com/vczh-libraries/iGac), [Linux Wayland](https://github.com/vczh-libraries/wGac) implementation for **INativeController** before creating yours. Especially there are GDI and Direct2D support in Windows, it is a good example to know how to allow multiple rendering techniques in one OS.
 

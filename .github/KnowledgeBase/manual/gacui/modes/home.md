@@ -1,6 +1,10 @@
 # Hosted Mode and Remote Protocol
 
-Using **SetupHostedWindowsGDIRenderer** or **SetupHostedWindowsDirect2DRenderer** instead of **SetupWindowsGDIRenderer** or **SetupWindowsDirect2DRenderer** runs a GacUI application in hosted mode. A hosted mode GacUI application will start only one OS native window, other windows are rendered inside it virtually. System dialogs will be replaced by predefined GacUI implemented dialogs by default, so that anything will be strictly inside the OS native window.
+Using
+- **SetupHostedWindowsDirect2DRenderer**
+- **SetupHostedWindowsGDIRenderer**
+- **SetupWGacHostedRenderer**
+- **SetupOSXHostedCoreGraphicsRenderer** runs a GacUI application in hosted mode. A hosted mode GacUI application will start only one OS native window, other windows are rendered inside it virtually. System dialogs will be replaced by predefined GacUI implemented dialogs by default, so that anything will be strictly inside the OS native window.
 
 Using **SetupRemoteNativeController** runs a GacUI application with remote protocol (forced in hosted mode), which becomes headless, instead of render anything on the screen, it sends out rendering commands to a remote client. This part will be covered in [Remote Protocol Core Application](../.././gacui/modes/remote_core.md).
 

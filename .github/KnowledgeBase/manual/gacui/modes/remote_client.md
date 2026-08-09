@@ -15,7 +15,7 @@ using namespace vl::presentation::remote_renderer;
 GuiRemoteRendererSingle* remoteRenderer = nullptr;
 GuiRemoteProtocolAsyncJsonChannelRenderer* asyncChannel = nullptr;
 
-class GuiMainInvoker : public Object, public virtual IGuiRemoteProtocolAsyncRendererInvoker
+class GuiMainInvoker : public IGuiRemoteProtocolAsyncRendererInvoker
 {
 public:
     void InvokeInMainThread(const Func<void()>& proc) override
@@ -29,10 +29,9 @@ void GuiMain()
     auto mainWindow = GetCurrentController()->WindowService()->CreateNativeWindow(INativeWindow::Normal);
     mainWindow->SetTitle(L"Connecting ...");
 
-    auto invoker = Ptr(new GuiMainInvoker);
+    GuiMainInvoker invoker;
     remoteRenderer->RegisterMainWindow(mainWindow);
-    asyncChannel->SetInvokeInMainThread(invoker);
-    asyncChannel->ProcessPendingMessages();
+    asyncChannel->SetInvokeInMainThread(&invoker);
 
     GetCurrentController()->WindowService()->Run(mainWindow);
 
@@ -67,4 +66,4 @@ GuiRemoteProtocolAsyncJsonChannelRenderer queues messages from the channel and r
 
 The portable **/MiniHttp** path creates a default loopback TCP client with **vl::inter_process::async_tcp_socket::CreateDefaultAsyncSocketClient(port)**, wraps it in **vl::inter_process::async_tcp_socket::SocketHttpClient(socketClient, L"localhost", urlPrefix)**, and passes that object to **GuiRemoteProtocolChannelClient**. The renderer application shown by the linked test remains Win32 even though the VlppOS transport itself is available on Windows, Linux and macOS.
 
-Override `GuiRemoteProtocolChannelClient::OnReadError` when a Core-authored `!Error` should show fatal UI. Treat `OnLocalError(..., true)` as an independently complete, prompt-free disconnected transition and do not wait for `OnDisconnected`; use `OnDisconnected` as the idempotent fallback when it is delivered. See [RemotingTest_Rendering_Win32](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_Rendering_Win32) for the complete named-pipe (**/Pipe**), Windows HTTP.sys/WinHTTP (**/Http**) and portable Mini HTTP (**/MiniHttp**) implementations.
+Override GuiRemoteProtocolChannelClient::OnReadError, OnLocalError, or OnDisconnected when the renderer should show a fatal error dialog or call GuiRemoteRendererSingle::ForceExitByFatelError. See [RemotingTest_Rendering_Win32](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_Rendering_Win32) for the complete named-pipe (**/Pipe**), Windows HTTP.sys/WinHTTP (**/Http**) and portable Mini HTTP (**/MiniHttp**) implementations.
