@@ -17,7 +17,7 @@ and error-injection operations from `DebugRemoteProtocolSop.md` in Playwright
 Firefox.
 
 The matrix succeeds only when every visible state transition and exact fatal
-error required by the SOP is observed without browser page errors, unexpected
+error required by the SOP is observed without unexpected browser page errors,
 console errors, protocol hangs, or surviving Core/host processes. The browser
 must load the generated GacJS website assets, connect to Core, and drive input
 through the rendered page in both protocol directions.
@@ -33,7 +33,7 @@ matrix does not currently satisfy the shared SOP.
 
 # PROPOSALS
 
-- No.1 Measure each image after its matching browser load event
+- No.1 Measure each image after its matching browser load event [CONFIRMED]
 
 ## No.1 Measure each image after its matching browser load event
 
@@ -57,3 +57,54 @@ override using this algorithm already allowed the first, replacement, and
 takeover Firefox renderers to connect without an error.
 
 ### CODE CHANGE
+
+In `GacJS`, `ElementHTMLMeasurer` now creates a fresh image element for every
+queued image measurement. It installs `load` and `error` handlers before
+assigning the data URL, waits for that matching event, and reads natural image
+dimensions only from the successful `load` path. The existing `Unknown` 1 by 1
+fallback remains limited to the actual `error` path. The obsolete shared image
+element and the call to `decode()` were removed.
+
+`TestElementMeasurer.ts` supplies controlled fake image elements and covers both
+event paths. The success regression deliberately makes `decode()` reject while
+the image's `load` event provides PNG dimensions, proving the fixed code no
+longer mistakes Firefox's early decode rejection for an invalid image. The
+error regression verifies the fallback. `GacJS/doc/DOM.md` now documents this
+event-driven measurement contract.
+
+### CONFIRMED
+
+The focused renderer regression passes, and the complete GacJS test command
+passes 94 tests: one remote-protocol test, 89 renderer tests, and four HTTP
+tests. `yarn build` also succeeds. Both GacUI portable executables build from a
+clean state through their supported Linux build scripts.
+
+The complete required Linux matrix passes in Playwright Firefox with a fresh
+Core for every application target and the generated website served on port
+8896:
+
+- `/RPT /MiniHttp` completed the feature interaction, DataGrid add/clear,
+  document-dialog, renderer replacement, third-renderer takeover with retained
+  state, normal renderer terminal state, and application close operations. A
+  separate fatal-error run displayed exact `This is a fatel error!`, raised
+  only the SOP's one matching page error, and terminated Core nonzero.
+- `/FCT /MiniHttp` added two groups of ten list items, cleared them, exercised
+  Search and the rich document editor, preserved both typed markers across the
+  `List` and `Control` tabs, and force-exited normally.
+- `/RVMT /MiniHttp` completed translated input in both directions, rejected a
+  second host without disturbing the accepted host, translated another marker,
+  and exited normally. Fresh-process idle-next-call host loss displayed exact
+  `RemotingTest_RvmHost disconnected.`, raised only the one matching page
+  error, and terminated Core nonzero. The delivery-acknowledgement-loss variant
+  stopped the accepted host at
+  `SocketHttpClient::Impl::SubmitReceivePoll`, after the second RPC was
+  delivered through the pending request and before the replacement request;
+  the browser displayed that same exact error and Core terminated nonzero
+  within the five-second bound.
+
+All normal replacement pages received identical image metadata and remained
+interactive. Every run loaded the built page and its CSS/JavaScript assets,
+had no unexpected dialog, console error, page error, retry loop, or protocol
+hang, and left no Core, host, or port-8888 listener behind. This confirms that
+waiting for the image's own load/error event fixes the Firefox-only metadata
+inconsistency without weakening invalid-image handling.
