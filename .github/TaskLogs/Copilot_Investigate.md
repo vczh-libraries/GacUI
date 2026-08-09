@@ -32,3 +32,28 @@ nonzero. The replacement renderer could not drive the application, so the Linux
 matrix does not currently satisfy the shared SOP.
 
 # PROPOSALS
+
+- No.1 Measure each image after its matching browser load event
+
+## No.1 Measure each image after its matching browser load event
+
+The two Firefox renderer connections received byte-for-byte identical image
+data, including the PNG whose Core image id was 55. The first renderer reported
+that image as 32 by 32, while the replacement reported `Unknown` and 1 by 1.
+Browser diagnostics showed why: Firefox intermittently rejected
+`HTMLImageElement.decode()` with `EncodingError: Invalid image request` before
+the newly assigned data URL finished loading. The shared measuring element still
+held the previous image's 16 by 16 natural size at that point. GacJS treated any
+such rejection as a permanent decode failure and fabricated the generic
+`Unknown` 1 by 1 metadata, making a valid PNG inconsistent across connections.
+
+Use a fresh `HTMLImageElement` for each measurement and register its `load` and
+`error` handlers before assigning `src`. Report the natural dimensions only
+after the matching `load` event; retain the existing `Unknown` 1 by 1 fallback
+only for an actual `error` event. Add a renderer unit regression that controls
+the image events and verifies both paths, and update the DOM measurement
+documentation to describe the event-driven behavior. A diagnostic-only browser
+override using this algorithm already allowed the first, replacement, and
+takeover Firefox renderers to connect without an error.
+
+### CODE CHANGE
