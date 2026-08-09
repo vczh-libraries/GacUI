@@ -116,8 +116,15 @@ Perform the following refactor on the design in `Test/RemotingHelpers/Rvmt` and 
 
 **suggested solution**: Preserve the `INetworkProtocol` contract: report malformed input with `fatal == false`, honor the callback's return, and continue only when it declines promotion. If malformed lines must always be ignored after channel admission, either ignore them without calling `OnLocalError` or explicitly change the upstream callback/channel contract and its documentation/tests; do not silently discard a promotion result in the stdio transport.
 
+good catch, then we should just ignore malformed messages without doing local error.
+
 ### NO OPERATION SENDS A TRANSPORT REMOTE ERROR
 
 **review comment**: The wire format reserves `!Error:<base64>` for a transport remote error, but `INetworkProtocolConnection` exposes only `SendString`; `OnReadError` is receive-only. Channel-level `BroadcastError` is not this operation: it serializes an ordinary channel package whose channel name is `!Error` and sends the whole package through `SendString`, so the stdio transport must Base64 that complete ordinary string. The task does not identify any code that can emit the raw `!Error:` control line or distinguish it from `SendString`.
 
 **suggested solution**: Either expose a concrete stdio-connection `SendError(const WString&)` operation/shared framing helper and define its intended callers, or state that raw `!Error:` is receive-only/external in this task. Keep the transport control frame explicitly distinct from the channel-level `!Error` package.
+
+Looks like it is IChannelServer who defines the format of errors. So the correct design should be:
+- only keep !Exit as a termination signal
+- others are pure base64 encoded messages, and IChannel(Server|Client) will handling error encoding and decoding.
+- !Exit should just mean disconnection, it is test apps who treat disconnection as a signal to terminate. Responsibility boundary ahould be cleared.
