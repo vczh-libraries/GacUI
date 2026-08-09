@@ -72,6 +72,8 @@ guide.
 - Kept feature actions and pass/fail behavior in `DebugRemoteProtocolSop.md`.
   Added executable checks for rejecting a second view-model host and for the
   exact GacJS error-mask result of Core-authored RPT and RVM-host-loss errors.
+  The final SOP scan also found and added the missing normal close procedure for
+  `/FCT`, including the required renderer terminal state and no-hang check.
   Reduced duplicated result wording in the setup guides to references to the
   shared SOP.
 
@@ -84,3 +86,23 @@ verification-job link is absent, and the SOP contains both the second-host
 admission test and GacJS-specific fatal-error observations. `git diff --check`
 also passes. The full live GacJS verification is intentionally performed only
 after this documentation proposal is committed, as requested.
+
+The post-commit Windows GacJS verification rebuilt GacUI successfully with zero
+warnings and zero errors, then passed `yarn build` and the complete `yarn test`
+suite. All six matrix targets passed the SOP: `/RPT`, `/FCT`, and `/RVMT` over
+both `/Http` and `/MiniHttp`. This included renderer replacement and state
+continuity for `/RPT`, list/editor state and force-exit for `/FCT`, and second
+host rejection plus continued translation through the accepted host for
+`/RVMT`. The `/RPT` fatal operation produced one exact
+`This is a fatel error!` mask and Core exit code 3 on both transports.
+
+The `/RVMT` fatal addendum also passed both host-loss timings on both transports.
+For each idle-next-call run, terminating the accepted host and typing again
+produced one exact `RemotingTest_RvmHost disconnected.` mask, one matching page
+error, and Core exit code 3 without a UI hang. For each delivery-
+acknowledgement-loss run, the host was terminated under CDB at the transport's
+exact pre-replacement-poll function (`HttpClient::BeginReadingLoopUnsafe` for
+`/Http` and `SocketHttpClient::Impl::SubmitReceivePoll` for `/MiniHttp`). The
+server deadline released the blocked caller, produced the same single exact
+error, and terminated Core with exit code 3. No product-code correction was
+needed after the rebuilt binaries were exercised.

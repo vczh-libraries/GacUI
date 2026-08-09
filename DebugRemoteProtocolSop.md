@@ -186,6 +186,16 @@ Use a fresh application state.
 9. Require the application to remain connected and responsive throughout the
    typing and tab changes.
 
+### 4. Close the Application
+
+1. Ask the active renderer to force-exit the application. Use the renderer's
+   visible `Force Exit` control when it provides one; otherwise use the matching
+   renderer operation documented by its setup guide.
+2. Require the application session to end. Require the renderer to close,
+   settle, or visibly enter a terminal disconnected state without a fatal
+   prompt, error mask, reconnect, or retry loop. A frozen, apparently active
+   application is a failure.
+
 ## Remote View Model Test (`/RVMT`)
 
 Use a fresh application state. Follow
