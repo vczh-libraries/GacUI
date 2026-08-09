@@ -2,109 +2,137 @@
 
 # PROBLEM DESCRIPTION
 
-Follow GacUI/DebugRemoteProtocolWithGacJS.md to make sure GacJS works in Linux against the complete test matrix. commit and push all local changes. This has been verified on Windows so I assume GacJS and GacUI should be both fine.
+Perform the following refactor on the design in `Test/RemotingHelpers/Rvmt` and affected test apps.
+
+- Implement stdio redirection as `INetworkProtocol(Server|Client)` in `Test/RemotingHelpers/StdioRedirection/StdioRedirection(.(Windows|Linux|macOS))?.(h|cpp)`. If any file results in being semantically empty, we could just not keep it.
+  - All files added to `Test/GacUISrc/Source_RemotingHelpers` project.
+  - If macOS could share the implementation with linux, then no need to have macOS specific files.
+  - Let `Release/CodegenConfig.xml` properly covers new files, meanwhile `../Tools/Tools/Build.ps1 UpdateRelease` should make sure new Linux and optional macOS files get deleted to avoid appearing in `../Release/Import`.
+  - Shared code will be in `StdioRedirection.(h|cpp)`, eventually test apps should be able to use the same set of class names across platform.
+  - The `INetworkProtocolServer` implementation class should have one extra function `ConnectNewClient`, passing a CLI command, start the target and redirect its stdio.
+    - `ConnectNewClient` should be able to call multiple times to connect multiple clients.
+    - `Start` does nothing.
+    - `Stop` disconnects all owned clients by sending exact `!Exit`, waits for the test apps' disconnection policy to exit them, and reaps the child processes. `ConnectNewClient` should `CHECK_ERROR` to fail after calling `Stop`.
+    - `!Exit` is the only raw control line. `NetworkProtocolChannelServer` and `NetworkProtocolChannelClient` own `NetworkPackage` serialization and parsing. Each resulting ordinary `WString`, including an `ErrorChannel` package, is passed to `SendString` and UTF-8/Base64-framed as one whole message by the stdio transport, which does not interpret it.
+    - Base64 encoding/decoding already offered in upstream repos.
+  - `INetworkProtocolClient::WaitForServer` will do nothing, as stdio (aka `Console` class) is the way to communicate to the server.
+  - A client receiving `!Exit`, or a client process terminating by any other means, is defined as a disconnection. The stdio transport only reports the disconnection; test apps decide how to terminate in response.
+  - By using base64, each message could occupy a whole line. Illegal message formats, including base64 decoding failures, are ignored without generating a local error.
+  - Only when technically possible, `ConnectNewClient` could add another argument `bool showClient`, which make the cli window of client also visible and everything get printed to both cli window and the server.
+    - It is totally fine if this is not doable, and not to add the `showClient` argument.
+- `CppTest_Rvm /Cli:"path"` would run another CLI command with stdio redirection to connect to a view model implementation.
+  - During debugging, `path` should points to a `RemotingTest_RvmHost` binary, launch it with `/Cli`.
+    - It means `/Cli` should be part of the string sending to `ConnectNewClient`.
+  - The cli protocol will be implemented in `Test/RemotingHelpers`, per platform if necessary.
+  - `CppTest_Rvm /Cli:"path"` still need start the automation service.
+- `RemotingTest_Core /Cli:"path"` only hints how to connect `RemotingTest_RvmHost`, it should still need another network protocol argument to connect to renderers.
+  - Update `DebugRemoteProtocol*` to mention that `RemotingTest_RvmHost` will be started by `/Cli:"path"`, but when using other network protocol, `RemotingTest_RvmHost` still need to start manually/separatedly.
+  - Fix `Project.md` to catch up all details.
+- To clarify the differences of `/Cli` between `CppTest_Rvm` and `RemotingTest_Core`:
+  - In `CppTest_Rvm`, `/Cli` is a kind of network protocol, so `/Cli`, `/Pipe`, `/Http`, `/MiniHttp` are exclusive.
+  - In `RemotingTest_Core`, `/Cli` only controls how to connect to `RemotingTest_RvmHost`, `/Pipe`, `/Http`, `/MiniHttp` are exclusive, but `/Cli` could be used with them together.
+    - When `/Cli` is used, two servers might start parallelly, one to only accept renderers, another only accept rvmhost and reject renderers (`CppTest_Rvm` is using this one already).
+- Now `RemotingTest_RvmHost` should be careful what to print to the screen, because with `/Cli` everything will be sent to the server.
+- To verify, follow the updated `DebugRemoteProtocolWithNativeRenderer.md` but only test the `/Cli` part of the test matrix.
+  - Although you are required to complete Linux/macOS code, but no need to test them as you are working on Windows.
+- wGac and iGac modification is out of scope.
+
+## DETAILS
+
+### Stdio transport files and integration
+
+- Put the platform-neutral declarations and shared framing/lifecycle code in `Test/RemotingHelpers/StdioRedirection/StdioRedirection.h` and, when needed, `StdioRedirection.cpp`. Put only unavoidable OS process/pipe work in `StdioRedirection.Windows.cpp`, `StdioRedirection.Linux.cpp`, and an optional `StdioRedirection.macOS.cpp`. Use the Linux implementation for macOS when the differences are small enough to guard locally, and omit any file that would have no semantic content.
+- Expose the same platform-neutral server, client, and connection class names on every OS. Implement every member of `INetworkProtocolServer`, `INetworkProtocolClient`, and `INetworkProtocolConnection`, including status and callback installation. The server must remain usable as the concrete `TServerBase` of `NetworkProtocolChannelServer`; the client must remain usable as the `Ptr<INetworkProtocolClient>` composed by `NetworkProtocolChannelClient`.
+- Add every created file explicitly to both `Test/GacUISrc/Source_RemotingHelpers/Source_RemotingHelpers.vcxitems` and its `.filters` file under a `StdioRedirection` filter. Keep this shared inventory unconditional: do not add wildcards, `ExcludedFromBuild`, importer-specific conditions, or generated include paths. Make platform translation units safe through the existing platform guards.
+- Both portable builds already consume the shared inventory. Among the newly added stdio files, add only `StdioRedirection.Windows.cpp` to the existing `CPP_REMOVES` lists in `Test/Linux/RemotingTest_Core/vmake` and `Test/Linux/RemotingTest_RvmHost/vmake`; preserve all existing removals, and do not hand-edit generated `vmake.txt` or `makefile` files.
+- Update `Release/CodegenConfig.xml` so the neutral helper category excludes `.Windows.`, `.Linux.`, and `.macOS.` files. Add platform patterns scoped specifically to `\Test\RemotingHelpers\StdioRedirection\...`, avoiding broad suffix categories that could overlap other scanned `Source`, `Import`, or `Test` files. Emit `Test.RemotingHelpers`, `Test.RemotingHelpers.Windows`, and `Test.RemotingHelpers.Linux`, grouping Linux and optional macOS inputs into the Linux pair as `VlppOS` does.
+- Regenerate, rather than hand-edit, the corresponding pairs in `Release` and `Release/IncludeOnly`. Keep all test-helper code out of the ordinary `GacUI*` amalgamations.
+- `../Tools/Tools/Build.ps1 UpdateRelease` dispatches the actual aggregate-import work to `../Tools/Tools/BuildRelease.ps1`. Extend the removal list there to cover `Test.RemotingHelpers.Linux.h/.cpp`, so no `Test.RemotingHelpers*` file remains in `../Release/Import` after an update.
+
+### Wire format and connection lifecycle
+
+- Reserve redirected stdin and stdout exclusively for the protocol. Keep diagnostics on a separately inherited stderr stream and never merge them into protocol stdout.
+- Convert each `WString` to UTF-8 bytes and then standard padded Base64. Write exactly one complete line while holding the per-connection write lock:
+  - An ordinary `SendString` message is the Base64 text alone.
+  - A shutdown request is exact `!Exit`, the only transport control line. `NetworkProtocolChannelServer` or `NetworkProtocolChannelClient` serializes an `ErrorChannel` `NetworkPackage` into an ordinary `WString` and passes it to `SendString`; the stdio transport UTF-8/Base64-frames that resulting complete string without interpreting it.
+- Use `Console::TryRead`, not `Console::Read`, on the stdio client so EOF is distinguishable from a valid empty line. Decode complete lines in reverse order. Exact `!Exit` is unambiguous because `!` is not in the Base64 alphabet. Ignore unknown control lines (including raw `!Error:`), invalid Base64, and invalid UTF-8 without invoking a protocol callback. Preserve arbitrary message lengths and partial OS pipe reads.
+- `InstallCallback` supports one callback, calls `OnInstalled` immediately, and safely detaches on `nullptr`. Deliver callbacks outside internal locks; callback methods may run on reader threads.
+- The stdio client is already physically connected when constructed. Its raw `WaitForServer` is a no-op, `GetStatus` reports `Connected` until terminal input or local `Stop`, and `BeginReadingLoopUnsafe` starts the blocking stdin reader. Exact `!Exit`, EOF/peer exit, local `Stop`, or another terminal transport failure transitions once to `Disconnected`, delivers at most one `OnDisconnected` to the installed callback, and never reconnects the same connection. `!Exit` is not delivered as a message or remote error; policy above the transport decides whether that disconnection terminates the test app.
+- The stdio transport never invokes raw `INetworkProtocolCallback::OnReadError`. It Base64-decodes an ordinary message and delivers the complete `WString` through raw `OnReadString`; the channel adapter then parses the `NetworkPackage` and invokes its own error path when the channel is `ErrorChannel`.
+- `Start` launches no process, but it still establishes the logical started state required by `INetworkProtocolServer`. Reject `ConnectNewClient` before `Start`, reject repeated `Start` or `Start` after `Stop`, make `Stop` idempotent, and make `IsStopped` reflect the terminal state.
+- Each `ConnectNewClient` call owns an independent process, stdin/stdout pipe pair, connection, serialized writer, and blocking reader worker. Invoke the virtual `OnClientConnected` exactly once; if it returns `Reject`, stop and reap only that child. Repeated calls must not share connection state.
+- Race process creation against `Stop` so no child can escape ownership. `Stop` first publishes the stopped state and bars new launches. When called outside callbacks, it sends exact `!Exit` once to every live child, closes the relevant pipe ends, waits for child/read completion, drains active callbacks, reaps every child, and releases process/pipe handles; after it returns, no callback may touch the stopped object. A callback-reentrant `Stop` performs the state transition synchronously but defers physical close/wait/join/reap until the current callback unwinds, so that callback may continue using its visible state; a later non-reentrant `Stop` waits for the same completion. Do not hold collection or write locks while invoking callbacks, waiting, or joining.
+- Fatal local I/O errors call `OnLocalError(..., true)` and then disconnect. Silently discard malformed or undecodable lines without calling `OnLocalError` or `OnReadError`, changing connection state, or terminating the read loop; continue with the next line.
+
+### RVM startup and application composition
+
+- Preserve the exact RVM host channel set `{ViewModelChannel, ViewModelReadyChannel}` and the existing post-route `Ready` barrier. Do not add a heartbeat, retry, reconnect, lease, requester-stopping message, disconnect acknowledgement, or reverse shutdown handshake.
+- Do not launch the host immediately after `RemoteViewModelChannelServer::Start`, because host admission is not ready yet. Call `RemoteViewModelChannelServer::Connect(requiredServiceNames)` first; it runs `RpcServerHelpers::Start`, connects the local requester, starts the task-queue thread, and returns without acquiring the remote service. Then call `ConnectNewClient`, initialize generated RPC, and acquire the service through `RequestService`, where waiting for the host can occur. No new launch hook or `Connect` overload is required.
+- Do not move `RpcServerHelpers::Start` into `RemoteViewModelChannelServer::Start`: in the existing non-CLI Core path, the Core local channel must still acquire `GacUIRemoteProtocolCoreClientId == 1` before the RVM helper local clients consume IDs.
+- `CppTest_Rvm` accepts exactly one of `/Cli:<nonempty-host-path>`, `/Pipe`, `/Http`, and `/MiniHttp`. Parse a quoted path without relying on the current whole-command-line `strcmp`; quote the executable path and append literal ` /Cli` to the command passed to `ConnectNewClient`. Keep this Windows GUI application console-free.
+- `CppTest_Rvm /Cli` has no MiniHTTP socket, so it continues to use Windows HTTP automation on port 8888. Correct the reversed Windows/MiniHTTP endpoint shutdown branches in `CppTest_Rvm/GuiMain.cpp`, which would otherwise stop the wrong automation service in `/Cli` mode.
+- `RemotingTest_RvmHost` accepts exact `/Cli` alongside its existing exclusive transport selectors and constructs the stdio client. Preserve its setup order: connect, initialize generated RPC, register the service, send `Ready`, initialize the dispatcher, and run the task queue. Suppress its ordinary stdout banner in `/Cli` mode; any optional diagnostics must use stderr. The transport treats receipt of exact `!Exit` as disconnection and reports it through `OnDisconnected`; the existing `ViewModelHostClient::OnDisconnected` application policy remains responsible for terminating the host process.
+- `RemotingTest_Core` accepts at most one `/Cli:<nonempty-host-path>` only with `/RVMT`, and still requires exactly one of `/Pipe`, `/Http`, and `/MiniHttp` for renderers. Reject `/Cli` with default or explicit `/FCT`, with `/RPT`, with no renderer transport, or when duplicated.
+- Without `/Cli`, retain the current combined network server and manually started host. With `/Cli`, own two independent servers:
+  - A renderer-only `RemotingChannelServer` over the selected renderer transport, containing the Core local protocol client and renderer-replacement state.
+  - A host-only `RemoteViewModelChannelServer` over stdio with renderer admission disabled, containing the RVM requester, dispatcher, and auto-launched host.
+- In the `/Cli` Core path, start the renderer server and connect the Core local client first so it remains client ID 1; then start the stdio RVM server, call its RVM `Connect`, and spawn/admit the host before generated RPC initialization and `RequestService`. Stop both servers in the reverse ownership order. Route RVM host-loss exceptions through the stdio server's requester, but broadcast the resulting Core-authored fatal error through the renderer server. Renderer replacement must remain independent of host ownership.
+- On child EOF or process exit, let `RemoteViewModelChannelServer::OnClientDisconnected` inject `RemoteViewModelHostDisconnectedError`; the `CppTest_Rvm` or Core application layer chooses its documented fatal outcome. The stdio transport must not exit an application, stop its task queue, or synthesize a remote-error frame.
+- Correct the MiniHTTP automation cleanup branch in `RemotingTest_Rendering_Win32/GuiMain.cpp`; the `/Cli` MiniHTTP verification must stop MiniHTTP rather than call the Windows HTTP stopper again.
+- Keep `showClient` optional and Windows-only if it cannot be implemented cleanly without changing the protocol streams or lifecycle.
+
+### Documentation and scope
+
+- Update the RVM topology and argument tables in `Project.md`, `Test/GacUISrc/README.md`, `DebugRemoteProtocolSop.md`, `DebugRemoteProtocolWithNativeRenderer.md`, `DebugRemoteProtocolWithGacJS.md`, and `DebugRemoteProtocolCrossPlatform.md`. `DebugRemoteProtocolWindows.md` can remain a delegating overview if none of its statements become stale.
+- State that `/Cli:<path>` auto-launches `RemotingTest_RvmHost` with `/Cli`; do not launch the host manually in that mode. Existing `/Pipe`, `/Http`, and `/MiniHttp` host modes remain manual and keep their same-transport requirement.
+- Separate the Core-to-renderer transport dimension from the Core-to-host mode. Update matrix totals and startup examples without multiplying `/Cli` across `/FCT` or `/RPT`: native Windows has `4 standalone + 12 Core = 16`, native Linux/macOS has `1 standalone + 4 Core = 5`, GacJS Windows has `8`, and GacJS Linux/macOS has `4`. Mark Linux/macOS runtime rows as unverified in this Windows task.
+- Clarify that the SOP's HTTP/MiniHTTP replacement-poll timing does not apply to `/Cli` host loss, which is observed directly through stdio EOF. The externally started second-host step is a non-CLI scenario unless an explicit `ConnectNewClient` test path is provided.
+- Align the test-helper release-pair statement in `.github/Learning/Learning_Coding.md` with the new Linux pair while preserving the rule that `Test/RemotingHelpers` is test-only and the shared project inventory is unconditional.
+- Do not modify wGac or iGac in this task.
+
+## VERIFICATION
+
+- Run `git diff --check` in both GacUI and Tools. Confirm every new helper file appears exactly once in `.vcxitems` and `.filters`, the shared inventory has no wildcard/`ExcludedFromBuild`, both portable `vmake` files remove only the Windows implementation, and generated `vmake.txt`/`makefile` files were not hand-edited.
+- Build `Test/GacUISrc/GacUISrc.sln` as Debug x64 and Debug Win32 through `.github/Scripts/copilotBuild.ps1`. Run the existing `UnitTest` through `.github/Scripts/copilotExecute.ps1`; require a successful summary and no memory-leak dump. No helper-specific unit test is required by `Project.md`.
+- Run `& C:\Code\VczhLibraries\Tools\Tools\Build.ps1 GacUI` to regenerate the GacUI release/CodePack output, and inspect its text output because the wrapper catches and prints exceptions. In both `Release` and `Release/IncludeOnly`, require neutral code only in `Test.RemotingHelpers.*`, Windows code only in `Test.RemotingHelpers.Windows.*`, and Linux plus optional macOS code only in `Test.RemotingHelpers.Linux.*`; require no helper code in ordinary `GacUI*` pairs.
+- Snapshot the `C:\Code\VczhLibraries\Release` worktree, run `& C:\Code\VczhLibraries\Tools\Tools\Build.ps1 UpdateRelease`, and inspect its text output for caught failures. Confirm no `Test.RemotingHelpers*` file remains under the aggregate `Release\Import` while GacUI's generated helper pairs remain intact, then restore only aggregate-Release changes produced by this verification.
+- On Windows, follow the updated native-renderer guide for four fresh `/Cli` targets only:
+  - `CppTest_Rvm /Cli:"<absolute-RemotingTest_RvmHost.exe>"`, with no renderer.
+  - `RemotingTest_Core /RVMT /Pipe /Cli:"<absolute-RemotingTest_RvmHost.exe>"` with a `/Pipe` renderer.
+  - `RemotingTest_Core /RVMT /Http /Cli:"<absolute-RemotingTest_RvmHost.exe>"` with an `/Http` renderer.
+  - `RemotingTest_Core /RVMT /MiniHttp /Cli:"<absolute-RemotingTest_RvmHost.exe>"` with a `/MiniHttp` renderer.
+- For every target, require exactly one auto-launched host whose sole selector is `/Cli`; wait for the `Remote View Model Test` UI and exact `Hello, !`; type a unique marker through the local surface or renderer-side `/IO`; require exact `Hello, <marker>!`, matching Core `Controls`/renderer `Dom` where applicable, and no error or disconnect state.
+- Launch every manually started requester, Core, renderer, or negative-test host asynchronously through `.github/Scripts/copilotExecute.ps1 -Mode CLI` with Debug/x64 arguments prepared in the ignored project-specific `.vcxproj.user` files. The auto-launched `/Cli` host intentionally bypasses the wrapper because that product behavior is under test.
+- For standalone `/Cli`, inspect a nonempty `GET http://localhost:8888/Automation/CppTest_Rvm/Controls` response and perform the marker interaction with `POST http://localhost:8888/Automation/CppTest_Rvm/IO`. For each Core row, probe Core `Controls` on port 8888 and renderer `Dom` on its default or explicitly selected automation port, using at least one nondefault renderer port. Use `127.0.0.1` for MiniHTTP probes.
+- Close each target through its active UI. After server `Stop` sends `!Exit`, require the raw connection to report disconnection, the host application's disconnection handler to terminate the child, and the server to reap it without directly terminating it. Require the requester/Core, renderer, and child host to terminate with no stale listener, orphan process, runtime-error dialog, or unexpected prompt. The child may retain its current nonzero exit on `OnDisconnected`; process cleanup, not a new exit-code contract, is under test.
+- In fresh runs for both requester shapes, exercise two host-loss variants. For idle-next-call, force-terminate the auto-launched host after a successful translation, require stdio EOF to record disconnection promptly, and type another marker to trigger the next `Translate`. For in-flight loss, force-terminate the host while `Translate` is already blocked. In either variant, require the call and fatal application outcome promptly within a bounded verifier wait. `CppTest_Rvm` must terminate nonzero; Core must send exactly one Core-authored `RemotingTest_RvmHost disconnected.` fatal package to the retained renderer and then terminate nonzero. In the native renderer, require the fatal prompt to contain exactly that message, choose `No` to retain the renderer for inspection, require `Dom.fatalError` to equal the same text, then send exact `!Exit` to close the renderer. Require no orphan, stale listener, unexpected prompt, or retry/reconnect loop.
+- During one successful Core `/Cli` run, start a manual RVM host on the renderer transport. Require the renderer-only server to reject it without disturbing the auto-launched stdio host, then prove the original host still translates another marker.
+- Smoke-test argument rejection, including a quoted host path containing spaces: reject `CppTest_Rvm` when `/Cli` is empty, duplicated, or combined with another transport; reject Core `/Cli` without `/RVMT`, with a non-RVMT selector, without a renderer transport, or when duplicated.
+- Exercise `ConnectNewClient` repeatedly and malformed/channel-error framing through an explicit focused test path if one is added: prove that malformed, invalid-Base64, and invalid-UTF-8 lines are silently ignored by successfully reading a later valid message; prove that the stdio transport round-trips the complete serialized channel-error `WString` as one ordinary Base64 message and the channel adapter then parses it; and prove that exact `!Exit` reports disconnection without a raw remote error. Otherwise document that the four application rows cover one child per server and do not claim direct runtime coverage for those lower-level requirements.
+- Do not claim Linux/macOS build or runtime verification, and do not modify or test wGac/iGac.
+
+## REVIEW COMMENTS
 
 # UPDATES
 
 # TEST [CONFIRMED]
 
-Run the complete Linux matrix from `DebugRemoteProtocolWithGacJS.md` with fresh
-processes for each target: `/RPT /MiniHttp`, `/FCT /MiniHttp`, and
-`/RVMT /MiniHttp` with `RemotingTest_RvmHost`. Build GacJS, run its repository
-tests, build both portable GacUI executables through the supported Linux build
-script, and execute the matching feature, renderer-replacement, normal-close,
-and error-injection operations from `DebugRemoteProtocolSop.md` in Playwright
-Firefox.
+Use the existing test applications as the executable-boundary test because `Project.md` explicitly says that `Test/RemotingHelpers` needs no helper-specific unit test. First reproduce the missing feature from a current Debug/x64 build: `CppTest_Rvm /Cli:"<absolute RemotingTest_RvmHost.exe>"` and `RemotingTest_Core /RVMT /Pipe /Cli:"<absolute RemotingTest_RvmHost.exe>"` must both reject or exit before constructing the Remote View Model UI. The source/inventory audit must also show that no `StdioRedirection` implementation or Windows/Linux helper release pair exists.
 
-The matrix succeeds only when every visible state transition and exact fatal
-error required by the SOP is observed without unexpected browser page errors,
-console errors, protocol hangs, or surviving Core/host processes. The browser
-must load the generated GacJS website assets, connect to Core, and drive input
-through the rendered page in both protocol directions.
+After the change, build the complete GacUISrc solution in Debug/x64 and Debug/Win32 and run the existing `UnitTest`. The build succeeds only with zero errors and warnings. Unit tests succeed only with the complete pass summary and no memory-leak dump.
 
-The problem is confirmed in the first renderer-replacement exercise. A freshly
-built `/FCT /MiniHttp` Core rendered normally in Playwright Firefox, but after
-that page closed, a replacement Firefox page connected to the same application
-session and Core rejected its image metadata with
-`New metadata should be identical to the last one.`. GacJS displayed that text
-in its fatal error mask and raised one matching page error; Core terminated
-nonzero. The replacement renderer could not drive the application, so the Linux
-matrix does not currently satisfy the shared SOP.
+Run four fresh Debug/x64 `/Cli` application rows through the repository execution wrapper: standalone `CppTest_Rvm`, then `RemotingTest_Core /RVMT` with `/Pipe`, `/Http`, and `/MiniHttp` renderers. Each row must auto-launch exactly one `RemotingTest_RvmHost /Cli`, display `Remote View Model Test` and initial `Hello, !`, translate a unique marker to exact `Hello, <marker>!`, keep Core `Controls` and renderer `Dom` synchronized where applicable, and expose no error/disconnected state. Probe standalone and Core automation on port 8888; probe renderer automation on 8889 and at least one nondefault port, using `127.0.0.1` for MiniHTTP.
+
+Close every successful row through active UI/automation. The stdio server must send exact `!Exit`, the raw client must report one disconnection, the host application policy must exit the child, and the server must reap it. No requester, Core, renderer, host, listener, runtime-error dialog, or unexpected prompt may remain.
+
+For both requester shapes, run fresh idle-next-call and in-flight host-loss cases. Killing the auto-launched host must make standalone terminate nonzero and make Core send exactly one `RemotingTest_RvmHost disconnected.` fatal package to the retained renderer before terminating nonzero. Retaining the renderer with `No` must leave `Dom.fatalError` equal to that exact text, and exact `!Exit` must still close it. There must be no retry/reconnect loop or orphan.
+
+During one Core `/Cli` success row, launch a manual RVM host on the renderer transport. The renderer-only server must reject it while the auto-launched stdio host continues translating. Also smoke-test argument rejection: empty, duplicate, or transport-combined `/Cli` for standalone; and Core `/Cli` without `/RVMT`, with `/FCT` or `/RPT`, without a renderer transport, or duplicated. Include a quoted host path containing spaces.
+
+The four application rows cover one child per server. Unless a focused test path is added, do not claim direct runtime coverage of repeated `ConnectNewClient`, malformed Base64/UTF-8 recovery, serialized channel-error framing, or raw exact-`!Exit` classification; verify those lower-level contracts by implementation review and generated/build coverage.
+
+Regenerate GacUI CodePack output. In both `Release` and `Release/IncludeOnly`, neutral helper code must appear only in `Test.RemotingHelpers.*`, Windows code only in `Test.RemotingHelpers.Windows.*`, and Linux/macOS code only in `Test.RemotingHelpers.Linux.*`; ordinary `GacUI*` pairs must contain none of it. Run `UpdateRelease`, confirm the aggregate `Release/Import` contains no `Test.RemotingHelpers*`, and restore only aggregate-Release verification changes. Run `git diff --check` in GacUI and Tools and audit exact project/vmake inventories. Linux/macOS implementations are build-reviewed but not runtime-verified on this Windows task; wGac and iGac remain untouched.
+
+The problem is confirmed from a clean Debug/x64 build. The solution builds with zero warnings and errors, but `CppTest_Rvm /Cli:"C:\Code\VczhLibraries\GacUI\Test\GacUISrc\x64\Debug\RemotingTest_RvmHost.exe"` exits with code 1 before creating UI, and `RemotingTest_Core /RVMT /Pipe /Cli:"C:\Code\VczhLibraries\GacUI\Test\GacUISrc\x64\Debug\RemotingTest_RvmHost.exe"` prints `Error: Unknown command line argument.` and exits with code 1. Neither run starts `RemotingTest_RvmHost`. Source and generated-inventory inspection finds no `StdioRedirection` implementation, no stdio entries in `Source_RemotingHelpers.vcxitems`, and no `Test.RemotingHelpers.Linux` CodePack pair. Therefore the requested transport and both `/Cli` application compositions are absent rather than failing later in an existing implementation.
 
 # PROPOSALS
-
-- No.1 Measure each image after its matching browser load event [CONFIRMED]
-
-## No.1 Measure each image after its matching browser load event
-
-The two Firefox renderer connections received byte-for-byte identical image
-data, including the PNG whose Core image id was 55. The first renderer reported
-that image as 32 by 32, while the replacement reported `Unknown` and 1 by 1.
-Browser diagnostics showed why: Firefox intermittently rejected
-`HTMLImageElement.decode()` with `EncodingError: Invalid image request` before
-the newly assigned data URL finished loading. The shared measuring element still
-held the previous image's 16 by 16 natural size at that point. GacJS treated any
-such rejection as a permanent decode failure and fabricated the generic
-`Unknown` 1 by 1 metadata, making a valid PNG inconsistent across connections.
-
-Use a fresh `HTMLImageElement` for each measurement and register its `load` and
-`error` handlers before assigning `src`. Report the natural dimensions only
-after the matching `load` event; retain the existing `Unknown` 1 by 1 fallback
-only for an actual `error` event. Add a renderer unit regression that controls
-the image events and verifies both paths, and update the DOM measurement
-documentation to describe the event-driven behavior. A diagnostic-only browser
-override using this algorithm already allowed the first, replacement, and
-takeover Firefox renderers to connect without an error.
-
-### CODE CHANGE
-
-In `GacJS`, `ElementHTMLMeasurer` now creates a fresh image element for every
-queued image measurement. It installs `load` and `error` handlers before
-assigning the data URL, waits for that matching event, and reads natural image
-dimensions only from the successful `load` path. The existing `Unknown` 1 by 1
-fallback remains limited to the actual `error` path. The obsolete shared image
-element and the call to `decode()` were removed.
-
-`TestElementMeasurer.ts` supplies controlled fake image elements and covers both
-event paths. The success regression deliberately makes `decode()` reject while
-the image's `load` event provides PNG dimensions, proving the fixed code no
-longer mistakes Firefox's early decode rejection for an invalid image. The
-error regression verifies the fallback. `GacJS/doc/DOM.md` now documents this
-event-driven measurement contract.
-
-### CONFIRMED
-
-The focused renderer regression passes, and the complete GacJS test command
-passes 94 tests: one remote-protocol test, 89 renderer tests, and four HTTP
-tests. `yarn build` also succeeds. Both GacUI portable executables build from a
-clean state through their supported Linux build scripts.
-
-The complete required Linux matrix passes in Playwright Firefox with a fresh
-Core for every application target and the generated website served on port
-8896:
-
-- `/RPT /MiniHttp` completed the feature interaction, DataGrid add/clear,
-  document-dialog, renderer replacement, third-renderer takeover with retained
-  state, normal renderer terminal state, and application close operations. A
-  separate fatal-error run displayed exact `This is a fatel error!`, raised
-  only the SOP's one matching page error, and terminated Core nonzero.
-- `/FCT /MiniHttp` added two groups of ten list items, cleared them, exercised
-  Search and the rich document editor, preserved both typed markers across the
-  `List` and `Control` tabs, and force-exited normally.
-- `/RVMT /MiniHttp` completed translated input in both directions, rejected a
-  second host without disturbing the accepted host, translated another marker,
-  and exited normally. Fresh-process idle-next-call host loss displayed exact
-  `RemotingTest_RvmHost disconnected.`, raised only the one matching page
-  error, and terminated Core nonzero. The delivery-acknowledgement-loss variant
-  stopped the accepted host at
-  `SocketHttpClient::Impl::SubmitReceivePoll`, after the second RPC was
-  delivered through the pending request and before the replacement request;
-  the browser displayed that same exact error and Core terminated nonzero
-  within the five-second bound.
-
-All normal replacement pages received identical image metadata and remained
-interactive. Every run loaded the built page and its CSS/JavaScript assets,
-had no unexpected dialog, console error, page error, retry loop, or protocol
-hang, and left no Core, host, or port-8888 listener behind. This confirms that
-waiting for the image's own load/error event fixes the Firefox-only metadata
-inconsistency without weakening invalid-image handling.
