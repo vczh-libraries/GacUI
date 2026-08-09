@@ -45,9 +45,14 @@
     </category>
     <category name="darkskin_r" pattern="\Skins\DarkSkin\Source\DarkSkinReflection"/>
     <category name="test_remoting_helpers_windows" pattern="\Test\RemotingHelpers\Windows\"/>
+    <category name="test_remoting_helpers_windows" pattern="\Test\RemotingHelpers\StdioRedirection\StdioRedirection.Windows."/>
+    <category name="test_remoting_helpers_linux" pattern="\Test\RemotingHelpers\StdioRedirection\StdioRedirection.Linux."/>
+    <category name="test_remoting_helpers_linux" pattern="\Test\RemotingHelpers\StdioRedirection\StdioRedirection.macOS."/>
     <category name="test_remoting_helpers" pattern="\Test\RemotingHelpers\">
       <except pattern="\Windows\" />
       <except pattern=".Windows." />
+      <except pattern=".Linux." />
+      <except pattern=".macOS." />
     </category>
   </categories>
   <output path=".">
@@ -71,6 +76,7 @@
     <codepair category="darkskin" filename="DarkSkin" generate="true"/>
     <codepair category="darkskin_r" filename="DarkSkinReflection" generate="true"/>
     <codepair category="test_remoting_helpers_windows" filename="Test.RemotingHelpers.Windows" generate="true"/>
+    <codepair category="test_remoting_helpers_linux" filename="Test.RemotingHelpers.Linux" generate="true"/>
     <codepair category="test_remoting_helpers" filename="Test.RemotingHelpers" generate="true"/>
   </output>
 </codegen>

@@ -13,23 +13,24 @@
 - `Metadata_Test`: Test the generated binary files, both Win32 and X64 at the same time.
 - `GacUI_Compiler`: Compile `FakeDialogServiceUI` (with merging), `DarkSkin`, `FullControlTest`, `RemoteProtocolTest` and `RemoteViewModelTest`, both Win32 and X64 at the same time.
   - `CppTest`: Compile and run generated C++ files in `hosted mode` with `VCZH_DEBUG_NO_REFLECTION`.
-  - `CppTest_Rvm`: Windows-only. Run `Generated_RemoteViewModelTest` locally with a view-model service supplied by `RemotingTest_RvmHost` (`/Pipe`, `/Http`, `/MiniHttp`).
+  - `CppTest_Rvm`: Windows-only. Run `Generated_RemoteViewModelTest` locally with a view-model service supplied by `RemotingTest_RvmHost` (`/Pipe`, `/Http`, `/MiniHttp`, or auto-launched by `/Cli:<path>`).
   - `CppTest_Metaonly`: Compile and run generated C++ files with `VCZH_DEBUG_METAONLY_REFLECTION`.
   - `CppTest_Reflection`: Compile and run generated C++ files.
   - `GacUI_Host`: Load the compiled binary file and run.
   - `Playground`: Compile and load XML with generated DarkSkin.
-  - `RemotingTest_Core`: GacUI running in remote protocol (`/Pipe`, `/Http`, `/MiniHttp`)
+  - `RemotingTest_Core`: GacUI running in remote protocol (`/Pipe`, `/Http`, `/MiniHttp`); `/RVMT` may additionally use `/Cli:<path>` to auto-launch its host.
   - `RemotingTest_Rendering_Win32`: Renderer connects to `RemotingTest_Core` using the selected transport (`/Pipe`, `/Http`, `/MiniHttp`); `/port:<port>` optionally selects its automation port (default `8889`).
-  - `RemotingTest_RvmHost`: Provide the `ViewModelChannel` service and internal `ViewModelReadyChannel` startup signal used by `CppTest_Rvm` and `RemotingTest_Core /RVMT` (`/Pipe`, `/Http`, `/MiniHttp`).
+  - `RemotingTest_RvmHost`: Provide the `ViewModelChannel` service and internal `ViewModelReadyChannel` startup signal used by `CppTest_Rvm` and `RemotingTest_Core /RVMT` (`/Pipe`, `/Http`, `/MiniHttp`, `/Cli`).
 - `UnitTest`: Test cases for GacUI.
 - `UnitTestViewer`: Render snapshots generated in `UnitTest`.
 
-RemoteViewModel demo startup is ordered, and every participating process must use the same transport argument:
+RemoteViewModel demo startup is ordered:
 
-- For `/RVMT`, start `RemotingTest_Core /RVMT` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. Start `RemotingTest_Rendering_Win32` only after Core's `http://localhost:8888/Automation/RemotingTest_Core/Controls` response contains the `Remote View Model Test` window.
-- For the Windows-only local variant, start `CppTest_Rvm` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. This variant does not use a renderer. `/Pipe` and `/Http` use Windows HTTP for automation; `/MiniHttp` shares its port-8888 MiniHTTP socket server between RVM and automation traffic.
+- Without `/Cli`, start `RemotingTest_Core /RVMT` first, then start `RemotingTest_RvmHost` with the same `/Pipe`, `/Http`, or `/MiniHttp` selector. Start the renderer only after Core automation exposes `Remote View Model Test`.
+- With `/Cli:<path>`, Core still requires `/RVMT` and one renderer transport, but auto-launches the host with exact `/Cli`; do not start that host manually. Renderer and host traffic use independent servers.
+- The Windows-only local requester accepts exactly one of `/Pipe`, `/Http`, `/MiniHttp`, or `/Cli:<path>`. The network modes require a manually started matching host; `/Cli` auto-launches it. No renderer is used. `/Pipe`, `/Http`, and `/Cli` use Windows HTTP automation, while `/MiniHttp` shares its port-8888 socket server.
 - A requester exits with an error if `RemotingTest_RvmHost` disconnects while it is running.
-- On Linux and macOS, use the portable `RemotingTest_Core /RVMT` plus `RemotingTest_RvmHost` path with `/MiniHttp`.
+- On Linux and macOS, Core renderers use `/MiniHttp`; the host may use manual `/MiniHttp` or auto-launched stdio `/Cli:<path>`.
 
 ## Shared
 

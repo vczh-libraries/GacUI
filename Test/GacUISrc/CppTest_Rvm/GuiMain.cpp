@@ -12,6 +12,7 @@
 #include "DarkSkin.h"
 #include "../Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.h"
 #include "../../RemotingHelpers/Rvmt/ViewModelHostServer.h"
+#include "../../RemotingHelpers/StdioRedirection/StdioRedirection.h"
 #include "../../../Source/Utilities/AutomationService/MiniHttpAutomationService.h"
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #include "resource.h"
@@ -23,6 +24,7 @@
 #include "RemoteViewModelTestIncludes.h"
 #endif
 #include <VlppOS.h>
+#include <cstdlib>
 #if defined VCZH_MSVC
 #include <VlppOS.Windows.h>
 #endif
@@ -44,9 +46,45 @@ struct RvmGuiContext
 {
 	Ptr<rvmt::IViewModel>							viewModel;
 	Ptr<async_tcp_socket::IAsyncSocketServer>		miniHttpSocketServer;
+	bool										fatalHostLoss = false;
 };
 
 RvmGuiContext* currentGuiContext = nullptr;
+
+class TerminatingViewModel : public Object, public virtual rvmt::IViewModel
+{
+private:
+	Ptr<rvmt::IViewModel>							viewModel;
+	bool*										fatalHostLoss = nullptr;
+
+public:
+	TerminatingViewModel(Ptr<rvmt::IViewModel> _viewModel, bool* _fatalHostLoss)
+		: viewModel(_viewModel)
+		, fatalHostLoss(_fatalHostLoss)
+	{
+	}
+
+	WString Translate(const WString& name) override
+	{
+		try
+		{
+			return viewModel->Translate(name);
+		}
+		catch (const rpc_controller::RpcInjectedException& ex)
+		{
+			if (ex.Message() != WString::Unmanaged(RemoteViewModelHostDisconnectedError))
+			{
+				throw;
+			}
+			*fatalHostLoss = true;
+			if (auto mainWindow = GetApplication()->GetMainWindow())
+			{
+				mainWindow->Close();
+			}
+			return WString::Empty;
+		}
+	}
+};
 
 void GuiMain()
 {
@@ -84,7 +122,7 @@ void GuiMain()
 
 	GetApplication()->Run(&window);
 #if defined VCZH_MSVC
-	if (currentGuiContext->miniHttpSocketServer)
+	if (!currentGuiContext->miniHttpSocketServer)
 	{
 		windows::StopWindowsHttpAutomationService();
 	}
@@ -100,19 +138,25 @@ void GuiMain()
 template<typename TServerBase>
 int StartServer(
 	RemoteViewModelChannelServer<TServerBase>& server,
-	Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer
+	Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer,
+	const Func<void()>& connectNewClient
 	)
 {
 	server.Start();
 	collections::List<WString> requiredServiceNames;
 	requiredServiceNames.Add(L"rvmt::IViewModel");
 	auto requesterClientId = server.Connect(requiredServiceNames);
+	if (connectNewClient)
+	{
+		connectNewClient();
+	}
 	RemoteViewModelTestInitialize::InitializeRpc(server.GetDispatcher(), requesterClientId);
 	auto viewModel = server.RequestService(L"rvmt::IViewModel").template Cast<rvmt::IViewModel>();
 	auto secondViewModel = server.RequestService(L"rvmt::IViewModel").template Cast<rvmt::IViewModel>();
 	CHECK_ERROR(viewModel->Translate(L"First") == L"Hello, First!", L"StartServer(...)#The first rvmt::IViewModel proxy returned an unexpected response.");
 	CHECK_ERROR(secondViewModel->Translate(L"Second") == L"Hello, Second!", L"StartServer(...)#The second rvmt::IViewModel proxy returned an unexpected response.");
-	RvmGuiContext context{ viewModel, miniHttpSocketServer };
+	RvmGuiContext context{ nullptr, miniHttpSocketServer };
+	context.viewModel = Ptr(new TerminatingViewModel(viewModel, &context.fatalHostLoss));
 	CHECK_ERROR(!currentGuiContext, L"StartServer(...)#The GUI context has already been bound.");
 	currentGuiContext = &context;
 #if defined VCZH_MSVC
@@ -124,6 +168,10 @@ int StartServer(
 #endif
 	currentGuiContext = nullptr;
 	server.Stop();
+	if (context.fatalHostLoss)
+	{
+		std::_Exit(1);
+	}
 	return result;
 }
 
@@ -136,7 +184,7 @@ int StartNamedPipeServer()
 		false,
 		WString::Unmanaged(RemotingNamedPipeName)
 		);
-	return StartServer(server, nullptr);
+	return StartServer(server, nullptr, {});
 }
 
 int StartHttpServer()
@@ -148,7 +196,7 @@ int StartHttpServer()
 		WString::Unmanaged(RemotingHttpBaseUrl),
 		RemotingHttpPort
 		);
-	return StartServer(server, nullptr);
+	return StartServer(server, nullptr, {});
 }
 #endif
 
@@ -162,5 +210,16 @@ int StartMiniHttpServer()
 		socketServer,
 		WString::Unmanaged(RemotingHttpBaseUrl)
 		);
-	return StartServer(server, socketServer);
+	return StartServer(server, socketServer, {});
+}
+
+int StartCliServer(const WString& hostPath)
+{
+	auto parser = Ptr(new glr::json::Parser);
+	RemoteViewModelChannelServer<StdioRedirectionServer> server(parser, false);
+	auto command = WString::Unmanaged(L"\"") + hostPath + WString::Unmanaged(L"\" /Cli");
+	return StartServer(server, nullptr, Func<void()>([&]()
+	{
+		server.ConnectNewClient(command);
+	}));
 }

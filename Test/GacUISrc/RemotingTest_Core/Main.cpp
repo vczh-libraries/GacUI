@@ -8,12 +8,23 @@ using namespace vl;
 using namespace vl::console;
 
 #ifdef VCZH_MSVC
-extern int StartNamedPipeServer(vint index);
-extern int StartHttpServer(vint index);
+extern int StartNamedPipeServer(vint index, const WString& cliPath);
+extern int StartHttpServer(vint index, const WString& cliPath);
+#define ARGUMENT_COMPARE wcscmp
+#define ARGUMENT_NCOMPARE wcsncmp
+#define ARGUMENT_TEXT(TEXT) L##TEXT
+#else
+#define ARGUMENT_COMPARE strcmp
+#define ARGUMENT_NCOMPARE strncmp
+#define ARGUMENT_TEXT(TEXT) TEXT
 #endif
-extern int StartMiniHttpServer(vint index);
+extern int StartMiniHttpServer(vint index, const WString& cliPath);
 
+#ifdef VCZH_MSVC
+int wmain(int argc, wchar_t* argv[])
+#else
 int main(int argc, char* argv[])
+#endif
 {
 #ifdef VCZH_MSVC
 	_set_abort_behavior(0, _WRITE_ABORT_MSG);
@@ -21,10 +32,12 @@ int main(int argc, char* argv[])
 	int result = 1;
 	vint index = -1; // 0 = FullControlTest (/FCT), 1 = RemoteProtocolTest (/RPT), 2 = RemoteViewModelTest (/RVMT)
 	int transport = -1; // 0 = Pipe, 1 = Http, 2 = MiniHTTP
+	bool cliSpecified = false;
+	WString cliPath;
 
 	for (int i = 1; i < argc; i++)
 	{
-		if (strcmp(argv[i], "/FCT") == 0)
+		if (ARGUMENT_COMPARE(argv[i], ARGUMENT_TEXT("/FCT")) == 0)
 		{
 			if (index != -1)
 			{
@@ -33,7 +46,7 @@ int main(int argc, char* argv[])
 			}
 			index = 0;
 		}
-		else if (strcmp(argv[i], "/RPT") == 0)
+		else if (ARGUMENT_COMPARE(argv[i], ARGUMENT_TEXT("/RPT")) == 0)
 		{
 			if (index != -1)
 			{
@@ -42,7 +55,7 @@ int main(int argc, char* argv[])
 			}
 			index = 1;
 		}
-		else if (strcmp(argv[i], "/RVMT") == 0)
+		else if (ARGUMENT_COMPARE(argv[i], ARGUMENT_TEXT("/RVMT")) == 0)
 		{
 			if (index != -1)
 			{
@@ -51,7 +64,7 @@ int main(int argc, char* argv[])
 			}
 			index = 2;
 		}
-		else if (strcmp(argv[i], "/Pipe") == 0)
+		else if (ARGUMENT_COMPARE(argv[i], ARGUMENT_TEXT("/Pipe")) == 0)
 		{
 			if (transport != -1)
 			{
@@ -60,7 +73,7 @@ int main(int argc, char* argv[])
 			}
 			transport = 0;
 		}
-		else if (strcmp(argv[i], "/Http") == 0)
+		else if (ARGUMENT_COMPARE(argv[i], ARGUMENT_TEXT("/Http")) == 0)
 		{
 			if (transport != -1)
 			{
@@ -69,7 +82,7 @@ int main(int argc, char* argv[])
 			}
 			transport = 1;
 		}
-		else if (strcmp(argv[i], "/MiniHttp") == 0)
+		else if (ARGUMENT_COMPARE(argv[i], ARGUMENT_TEXT("/MiniHttp")) == 0)
 		{
 			if (transport != -1)
 			{
@@ -78,11 +91,31 @@ int main(int argc, char* argv[])
 			}
 			transport = 2;
 		}
+		else if (ARGUMENT_NCOMPARE(argv[i], ARGUMENT_TEXT("/Cli:"), 5) == 0)
+		{
+			if (cliSpecified || !argv[i][5])
+			{
+				Console::WriteLine(L"Error: /Cli must be specified once with a nonempty host path.");
+				return result;
+			}
+			cliSpecified = true;
+#ifdef VCZH_MSVC
+			cliPath = WString::CopyFrom(argv[i] + 5, wcslen(argv[i] + 5));
+#else
+			cliPath = u8tow(U8String::CopyFrom(reinterpret_cast<const char8_t*>(argv[i] + 5), strlen(argv[i] + 5)));
+#endif
+		}
 		else
 		{
 			Console::WriteLine(L"Error: Unknown command line argument.");
 			return result;
 		}
+	}
+
+	if (cliSpecified && index != 2)
+	{
+		Console::WriteLine(L"Error: /Cli can only be used with explicit /RVMT.");
+		return result;
 	}
 
 	if (index == -1)
@@ -99,7 +132,7 @@ int main(int argc, char* argv[])
 	if (transport == 0)
 	{
 #ifdef VCZH_MSVC
-		result = StartNamedPipeServer(index);
+		result = StartNamedPipeServer(index, cliPath);
 #else
 		Console::WriteLine(L"Error: /Pipe is only supported on Windows.");
 #endif
@@ -107,17 +140,21 @@ int main(int argc, char* argv[])
 	else if (transport == 1)
 	{
 #ifdef VCZH_MSVC
-		result = StartHttpServer(index);
+		result = StartHttpServer(index, cliPath);
 #else
 		Console::WriteLine(L"Error: /Http is only supported on Windows.");
 #endif
 	}
 	else
 	{
-		result = StartMiniHttpServer(index);
+		result = StartMiniHttpServer(index, cliPath);
 	}
 #if defined VCZH_MSVC && VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
 	return result;
 }
+
+#undef ARGUMENT_COMPARE
+#undef ARGUMENT_NCOMPARE
+#undef ARGUMENT_TEXT

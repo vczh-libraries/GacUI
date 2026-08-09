@@ -1,4 +1,5 @@
 #include "../../RemotingHelpers/Rvmt/ViewModelHostClient.h"
+#include "../../RemotingHelpers/StdioRedirection/StdioRedirection.h"
 #include "../Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.h"
 #include "RemoteViewModelTestRpc.h"
 #ifdef VCZH_MSVC
@@ -27,7 +28,7 @@ public:
 	}
 };
 
-int RunHost(Ptr<INetworkProtocolClient> networkClient)
+int RunHost(Ptr<INetworkProtocolClient> networkClient, bool showBanner = true)
 {
 	auto parser = Ptr(new glr::json::Parser);
 	auto taskQueue = Ptr(new TaskQueue);
@@ -48,7 +49,10 @@ int RunHost(Ptr<INetworkProtocolClient> networkClient)
 	channelClient->SendReady();
 	dispatcher->Initialize();
 
-	Console::WriteLine(L"> RemotingTest_RvmHost declared rvmt::IViewModel.");
+	if (showBanner)
+	{
+		Console::WriteLine(L"> RemotingTest_RvmHost declared rvmt::IViewModel.");
+	}
 	taskQueue->RunTaskQueue();
 	return 0;
 }
@@ -87,6 +91,10 @@ int main(int argc, char* argv[])
 			WString::Unmanaged(L"localhost"),
 			WString::Unmanaged(RemotingHttpBaseUrl)
 			)));
+	}
+	else if (strcmp(argv[1], "/Cli") == 0)
+	{
+		result = RunHost(Ptr(new presentation::remoting::StdioRedirectionClient), false);
 	}
 
 #if defined VCZH_MSVC && VCZH_CHECK_MEMORY_LEAKS

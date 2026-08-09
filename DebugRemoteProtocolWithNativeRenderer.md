@@ -8,23 +8,28 @@ establish each required process topology, then execute the matching SOP section.
 
 ## Test Matrix
 
-The application and transport columns are independent dimensions. Test their
-Cartesian product: every listed application target must run once with every
-transport available on that platform. Alternatives in one dimension do not
-replace any target in the other dimension. Use fresh processes for each target.
+The application and renderer-transport columns are independent dimensions.
+Test their Cartesian product. `/RVMT` adds a Core-to-host mode dimension:
+manual host over the selected network transport, or auto-launched stdio
+`/Cli:<path>`. Do not multiply that host dimension across `/FCT` or `/RPT`.
+Use fresh processes for each target.
 
 | Platform | Standalone RVM requester targets | Remote Core application dimension | Transport dimension | Total targets |
 | --- | --- | --- | --- | --- |
-| Windows | `CppTest_Rvm` + `RemotingTest_RvmHost` | `RemotingTest_Core` + `RemotingTest_Rendering_Win32`: `/RPT`, `/FCT`, `/RVMT` | `/Pipe`, `/Http`, `/MiniHttp` | 3 standalone + 9 Core = 12 |
-| Linux | wGac `Test_CppTest_Rvm` + `RemotingTest_RvmHost` | `RemotingTest_Core` + `RemotingTest_Rendering_Wayland`: `/RPT`, `/FCT`, `/RVMT` | `/MiniHttp` | 1 standalone + 3 Core = 4 |
-| macOS | iGac `Test_CppTest_Rvm` + `RemotingTest_RvmHost` | `RemotingTest_Core` + `RemotingTest_Rendering_macOS`: `/RPT`, `/FCT`, `/RVMT` | `/MiniHttp` | 1 standalone + 3 Core = 4 |
+| Windows | `CppTest_Rvm`: manual `/Pipe`, `/Http`, `/MiniHttp`, or auto `/Cli:<path>` | `RemotingTest_Core` + `RemotingTest_Rendering_Win32`: `/RPT`, `/FCT`, and `/RVMT` in manual or `/Cli` host mode | `/Pipe`, `/Http`, `/MiniHttp` | 4 standalone + 12 Core = 16 |
+| Linux | wGac `Test_CppTest_Rvm` + manual host | `RemotingTest_Core` + `RemotingTest_Rendering_Wayland`: `/RPT`, `/FCT`, and `/RVMT` in manual or `/Cli` host mode | `/MiniHttp` | 1 standalone + 4 Core = 5 |
+| macOS | iGac `Test_CppTest_Rvm` + manual host | `RemotingTest_Core` + `RemotingTest_Rendering_macOS`: `/RPT`, `/FCT`, and `/RVMT` in manual or `/Cli` host mode | `/MiniHttp` | 1 standalone + 4 Core = 5 |
 
-Every `/RVMT` Core target also includes `RemotingTest_RvmHost`; start it after
-Core and before the renderer. The standalone RVM requester targets do not use a
-remote renderer: start the platform's `CppTest_Rvm` application first and then
-start `RemotingTest_RvmHost`. Every process in a target must use the same
-transport. On Windows, pass that transport to both processes. The wGac and iGac
-RVM launchers are fixed to `/MiniHttp`, so pass `/MiniHttp` to their host.
+Every `/RVMT` target includes `RemotingTest_RvmHost`. In manual mode, start it
+after the requester/Core with the same network selector and before the renderer.
+In `/Cli` mode, pass its absolute executable path to the requester/Core; the
+application quotes the path, appends exact `/Cli`, and launches the host itself.
+Do not also start a manual host in that mode. Standalone requesters do not use a
+remote renderer. The wGac and iGac standalone launchers remain fixed to manual
+`/MiniHttp`.
+
+The Linux/macOS `/Cli` rows describe required cross-platform code and runtime
+procedure but were not runtime-verified during the Windows implementation task.
 
 For a Core target, the Core must start before the renderer. The application
 selector belongs only to Core, while the renderer receives the transport
@@ -76,7 +81,7 @@ $core = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Core.exe') -Argume
 $renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Pipe','/port:8890' -PassThru
 ```
 
-For a Core `/RVMT` target, start the three processes in this order, replacing
+For a non-CLI Core `/RVMT` target, start the three processes in this order, replacing
 `/Http` with the selected transport. Wait until Core automation exposes the
 `Remote View Model Test` window before starting the renderer:
 
@@ -86,12 +91,30 @@ $host = Start-Process -FilePath (Join-Path $bin 'RemotingTest_RvmHost.exe') -Arg
 $renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Http','/port:8890' -PassThru
 ```
 
+For a Core `/Cli` target, Core owns and auto-launches the host. Keep the selected
+renderer transport, pass the host path only to Core, wait for the RVM window,
+and then start the renderer:
+
+```powershell
+$hostExe = (Join-Path $bin 'RemotingTest_RvmHost.exe')
+$core = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Core.exe') -ArgumentList '/Http','/RVMT',('/Cli:"{0}"' -f $hostExe) -PassThru
+$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Http','/port:8890' -PassThru
+```
+
 For a standalone RVM requester target, omit Core and the renderer. Start the
 requester before its host, again using the same selected transport in both:
 
 ```powershell
 $requester = Start-Process -FilePath (Join-Path $bin 'CppTest_Rvm.exe') -ArgumentList '/Http' -PassThru
 $host = Start-Process -FilePath (Join-Path $bin 'RemotingTest_RvmHost.exe') -ArgumentList '/Http' -PassThru
+```
+
+The standalone `/Cli` target is one process command; it auto-launches the host
+and continues to expose Windows HTTP automation on port 8888:
+
+```powershell
+$hostExe = (Join-Path $bin 'RemotingTest_RvmHost.exe')
+$requester = Start-Process -FilePath (Join-Path $bin 'CppTest_Rvm.exe') -ArgumentList ('/Cli:"{0}"' -f $hostExe) -PassThru
 ```
 
 The examples are separate runs, not one script. Start the selected core, wait
@@ -118,6 +141,9 @@ POST http://localhost:8888/Automation/RemotingTest_Core/IO
 GET  http://localhost:8890/Automation/RemotingTest_Rendering_Native/Dom
 POST http://localhost:8890/Automation/RemotingTest_Rendering_Native/IO
 ```
+
+Standalone `CppTest_Rvm`, including `/Cli`, uses
+`http://localhost:8888/Automation/CppTest_Rvm/Controls` and `/IO`.
 
 During `/Http` and `/Pipe` runs, the projects use the Windows HTTP automation
 service. During a `/MiniHttp` run, `RemotingTest_Core` registers its automation
@@ -231,6 +257,14 @@ exposes the `Remote View Model Test` window before starting the renderer:
 GacUI/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost /MiniHttp
 ```
 
+For the additional Core `/Cli` row, use an absolute host path and do not start
+the host manually:
+
+```bash
+host_exe="$(realpath GacUI/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost)"
+GacUI/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core /MiniHttp /RVMT "/Cli:$host_exe"
+```
+
 Wait for `Waiting for a renderer ...`, then run the renderer in another
 terminal:
 
@@ -313,6 +347,14 @@ exposes the `Remote View Model Test` window before starting the renderer:
 
 ```bash
 GacUI/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost /MiniHttp
+```
+
+For the additional Core `/Cli` row, use an absolute host path and do not start
+the host manually:
+
+```bash
+host_exe="$(realpath GacUI/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost)"
+GacUI/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core /MiniHttp /RVMT "/Cli:$host_exe"
 ```
 
 Wait for `Waiting for a renderer ...`, then run the renderer in another

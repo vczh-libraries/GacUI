@@ -44,9 +44,10 @@ establish, drive, inspect, replace, and close the renderer session.
 
 - Test Apps:
   - `RemotingTest_Core /RVMT` and `CppTest_Rvm` running the `RemoteViewModelTest` app requesting a remote `IViewModel` to be implemented.
-  - `RemotingTest_RvmHost` implemented that `IViewModel` and connect to above test apps via the Workflow RPC feature, they are blocked until `RemotingTest_RvmHost` successfully connected.
+  - `RemotingTest_RvmHost` implements that `IViewModel` and connects through either a manually selected network transport or auto-launched stdio `/Cli`. Requesters block until the host has connected and sent Ready.
 - Expected Behavior:
   - Only one `RemotingTest_RvmHost` is allowed to connect.
+  - `CppTest_Rvm /Cli:<path>` auto-launches `<path> /Cli`. `RemotingTest_Core /RVMT <renderer-transport> /Cli:<path>` keeps renderer traffic on its selected network server and auto-launches the host on a separate stdio-only server.
   - If it disconnects before the main window is closed in any reason, this is considered a fatal error inside `RemotingTest_Core` and `CppTest_Rvm`, terminating them directly.
   - Terminating `RemotingTest_Core` in this way also causing such fatal error to be sent to `RemotingTest_Renderer` so it could render the error information.
 
@@ -201,10 +202,13 @@ Use a fresh application state.
 Use a fresh application state. Follow
 `DebugRemoteProtocolWithGacJS.md` or
 `DebugRemoteProtocolWithNativeRenderer.md` to establish the renderer session:
-- When working with the platform's standalone `CppTest_Rvm` application, start
-  `RemotingTest_RvmHost` after it. This target uses the local native UI and does
-  not use a remote renderer or GacJS.
-- When working with `RemotingTest_Core`, start `RemotingTest_RvmHost` before the native renderer or GacJS.
+- In a standalone non-CLI target, start the platform's `CppTest_Rvm` application
+  and then a matching `RemotingTest_RvmHost`. In standalone Windows `/Cli`
+  mode, pass the host executable path to the requester and do not start the host
+  manually. Standalone targets use the local native UI and no renderer or GacJS.
+- In a non-CLI Core target, start `RemotingTest_RvmHost` before the native
+  renderer or GacJS. In Core `/Cli` mode, Core auto-launches it; start only Core
+  and then the renderer or browser.
 
 ### 1. Verify the Initial UI
 
@@ -220,6 +224,13 @@ Use a fresh application state. Follow
 3. Require the application to remain connected and responsive.
 
 ### 3. Reject a Second View-Model Host
+
+This externally started second-host operation applies to non-CLI targets. A
+`/Cli` target owns only its auto-launched stdio child, so do not claim this
+coverage unless an explicit test path calls `ConnectNewClient` again. Starting
+a manual host on a Core `/Cli` renderer transport instead verifies that the
+renderer-only server rejects non-renderer channels; it does not create a second
+stdio host.
 
 1. Keep the accepted `RemotingTest_RvmHost` and requester running after the
    successful `Translate` above.
@@ -276,8 +287,10 @@ the failure.
 1. Force-terminate only the accepted `RemotingTest_RvmHost` process through the
    operating-system process tool. Do not close it through its application path,
    and do not terminate the requester, Core, or renderer.
-   A `/Pipe` requester must observe the broken connection directly, even while
-   idle. `/Http` and `/MiniHttp` have no heartbeat or explicit disconnect
+   A `/Cli` requester observes child termination directly as stdio EOF; no
+   replacement poll or HTTP/MiniHTTP timeout applies, and the fatal outcome must
+   begin promptly. A `/Pipe` requester must also observe the broken connection
+   directly, even while idle. `/Http` and `/MiniHttp` have no heartbeat or explicit disconnect
    exchange, so they may remain unaware while only an empty `/Request` is
    pending. When the first post-loss `IViewModel` call caused by typing needs
    to send a real message, a successful response to that pending `/Request`
@@ -289,19 +302,21 @@ the failure.
 2. Run two variants with fresh processes:
    - Idle-next-call: terminate the host after one successful `Translate`, then
      focus the text box and type a different marker to trigger the next real
-     `IViewModel::Translate` RPC. For `/Http` and `/MiniHttp`, this operation is
-     the latest permitted point for discovering the idle peer loss.
+     `IViewModel::Translate` RPC. `/Cli` may already have delivered the fatal
+     outcome from EOF. For `/Http` and `/MiniHttp`, this operation is the latest
+     permitted point for discovering the idle peer loss.
    - Delivery-acknowledgement loss: start a second `Translate` and terminate the
-     host after the server delivers it through the pending `/Request`, but
-     before the host submits the replacement `/Request`. The blocked caller
-     must be released within the five-second bound; a frozen UI is a failure.
-     Once the replacement poll arrives, the transport has acknowledged that
-     delivery. With no heartbeat, a later crash during already-acknowledged
-     request execution is not detectable until the server next needs to send a
-     real message and that delivery is not acknowledged.
-3. Require `CppTest_Rvm` to terminate nonzero from an unhandled
-   `RpcInjectedException`, without retry or recovery.
-4. For Core, require exactly one Core-authored `!Error` carrying exactly
+     host while that call is blocked. In `/Cli`, stdio EOF must release the
+     caller promptly. In `/Http` or `/MiniHttp`, terminate it after the server
+     delivers through the pending `/Request` but before the host submits the
+     replacement `/Request`; the blocked caller must be released within the
+     five-second bound. Once the replacement poll arrives, the transport has
+     acknowledged delivery. With no heartbeat, a later crash during
+     already-acknowledged request execution is not detectable until the server
+     next needs to send a real message and that delivery is not acknowledged.
+3. Require `CppTest_Rvm` to terminate nonzero through its application-layer
+   `RpcInjectedException` fatal handler, without retry or recovery.
+4. For Core, require exactly one Core-authored `ErrorChannel` package carrying exactly
    `RemotingTest_RvmHost disconnected.` before Core terminates nonzero. A local
    renderer transport error alone is not sufficient.
 5. In a native renderer, require the fatal prompt to contain that exact message

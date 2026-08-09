@@ -4,6 +4,7 @@
 #include "RemoteViewModelTestIncludes.h"
 #include "../Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.h"
 #include "../../RemotingHelpers/Rvmt/ViewModelHostServer.h"
+#include "../../RemotingHelpers/StdioRedirection/StdioRedirection.h"
 #include "../../../Source/Utilities/AutomationService/MiniHttpAutomationService.h"
 #include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
 #ifdef VCZH_MSVC
@@ -110,13 +111,13 @@ void GuiMain()
 	}
 }
 
-template<typename TServerBase>
+template<typename TChannelServer>
 class SwitchableRenderersCoreChannel : public GuiRemoteProtocolCoreChannel
 {
 	using Base = GuiRemoteProtocolCoreChannel;
 
 private:
-	RemotingChannelServer<TServerBase>*					channelServer = nullptr;
+	TChannelServer*									channelServer = nullptr;
 
 protected:
 	bool IsCorrectRendererClientId(vint clientId) override
@@ -130,7 +131,7 @@ public:
 		JsonChannel* channel,
 		const WString& executablePath,
 		IGuiRemoteEventProcessor* eventProcessor,
-		RemotingChannelServer<TServerBase>* _channelServer
+		TChannelServer* _channelServer
 		)
 		: Base(client, channel, executablePath, eventProcessor)
 		, channelServer(_channelServer)
@@ -138,12 +139,31 @@ public:
 	}
 };
 
-template<typename TServerBase>
+template<typename TRvmServer>
+Ptr<rvmt::IViewModel> RequestViewModel(
+	TRvmServer& rvmChannelServer,
+	const Func<void()>& connectNewClient
+	)
+{
+	collections::List<WString> requiredServiceNames;
+	requiredServiceNames.Add(L"rvmt::IViewModel");
+	auto requesterClientId = rvmChannelServer.Connect(requiredServiceNames);
+	if (connectNewClient)
+	{
+		connectNewClient();
+	}
+	RemoteViewModelTestInitialize::InitializeRpc(rvmChannelServer.GetDispatcher(), requesterClientId);
+	return rvmChannelServer.RequestService(L"rvmt::IViewModel").template Cast<rvmt::IViewModel>();
+}
+
+template<typename TChannelServer>
 int StartServer(
 	vint mainWindowConstructorIndex,
 	Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer,
 	Ptr<glr::json::Parser> jsonParser,
-	remoting::RemotingChannelServer<TServerBase>& channelServer
+	TChannelServer& channelServer,
+	const Func<Ptr<rvmt::IViewModel>()>& requestViewModel,
+	const Func<void()>& stopRvmServer
 	)
 {
 	channelServer.Start();
@@ -153,7 +173,7 @@ int StartServer(
 	CHECK_ERROR(coreClientId == GacUIRemoteProtocolCoreClientId, L"StartServer(...)#Failed to register the core channel client.");
 
 	GuiRemoteProtocolAsyncJsonChannel asyncChannelSender(coreClient->GetProtocolChannel());
-	SwitchableRenderersCoreChannel<TServerBase> channelSender(
+	SwitchableRenderersCoreChannel<TChannelServer> channelSender(
 		coreClient.Obj(),
 		&asyncChannelSender,
 		WString::Unmanaged(L"RemotingTest_Core.vcxproj"),
@@ -193,12 +213,8 @@ int StartServer(
 	{
 		if (mainWindowConstructorIndex == 2)
 		{
-			auto& rvmChannelServer = dynamic_cast<RemoteViewModelChannelServer<TServerBase>&>(channelServer);
-			collections::List<WString> requiredServiceNames;
-			requiredServiceNames.Add(L"rvmt::IViewModel");
-			auto requesterClientId = rvmChannelServer.Connect(requiredServiceNames);
-			RemoteViewModelTestInitialize::InitializeRpc(rvmChannelServer.GetDispatcher(), requesterClientId);
-			context.viewModel = rvmChannelServer.RequestService(L"rvmt::IViewModel").template Cast<rvmt::IViewModel>();
+			CHECK_ERROR(requestViewModel, L"StartServer(...)#The view model requester is missing.");
+			context.viewModel = requestViewModel();
 		}
 		SetupRemoteNativeController(&diffConverterProtocol);
 	}
@@ -215,6 +231,10 @@ int StartServer(
 	currentGuiContext = nullptr;
 
 	channelServer.ClearCoreChannels();
+	if (stopRvmServer)
+	{
+		stopRvmServer();
+	}
 	channelServer.Stop();
 	return result;
 }
@@ -223,56 +243,93 @@ template<typename TServerBase, typename ...TArgs>
 int StartServerHelper(
 	vint index,
 	Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer,
+	const WString& cliPath,
 	TArgs&&... args)
 {
 	auto jsonParser = Ptr(new glr::json::Parser);
-	if (index == 2)
+	if (index == 2 && cliPath != L"")
+	{
+		remoting::RemotingChannelServer<TServerBase> rendererServer(
+			jsonParser,
+			true,
+			std::forward<TArgs>(args)...
+			);
+		RemoteViewModelChannelServer<StdioRedirectionServer> rvmChannelServer(jsonParser, false);
+		auto command = WString::Unmanaged(L"\"") + cliPath + WString::Unmanaged(L"\" /Cli");
+		auto requestViewModel = Func<Ptr<rvmt::IViewModel>()>([&]()
+		{
+			rvmChannelServer.Start();
+			return RequestViewModel(rvmChannelServer, Func<void()>([&]()
+			{
+				rvmChannelServer.ConnectNewClient(command);
+			}));
+		});
+		return StartServer(
+			index,
+			miniHttpSocketServer,
+			jsonParser,
+			rendererServer,
+			requestViewModel,
+			Func<void()>([&]() { rvmChannelServer.Stop(); })
+			);
+	}
+	else if (index == 2)
 	{
 		RemoteViewModelChannelServer<TServerBase> channelServer(
 			jsonParser,
 			true,
-			std::forward<TArgs&&>(args)...
-		);
-		return StartServer<TServerBase>(index, miniHttpSocketServer, jsonParser, channelServer);
+			std::forward<TArgs>(args)...
+			);
+		return StartServer(
+			index,
+			miniHttpSocketServer,
+			jsonParser,
+			channelServer,
+			Func<Ptr<rvmt::IViewModel>()>([&]() { return RequestViewModel(channelServer, {}); }),
+			{}
+			);
 	}
 	else
 	{
 		remoting::RemotingChannelServer<TServerBase> channelServer(
 			jsonParser,
 			true,
-			std::forward<TArgs&&>(args)...
-		);
-		return StartServer<TServerBase>(index, miniHttpSocketServer, jsonParser, channelServer);
+			std::forward<TArgs>(args)...
+			);
+		return StartServer(index, miniHttpSocketServer, jsonParser, channelServer, {}, {});
 	}
 }
 
 #ifdef VCZH_MSVC
-int StartNamedPipeServer(vint index)
+int StartNamedPipeServer(vint index, const WString& cliPath)
 {
 	return StartServerHelper<named_pipe::NamedPipeServer>(
 		index,
 		nullptr,
+		cliPath,
 		WString::Unmanaged(RemotingNamedPipeName)
 		);
 }
 
-int StartHttpServer(vint index)
+int StartHttpServer(vint index, const WString& cliPath)
 {
 	return StartServerHelper<windows_http::HttpServer>(
 		index,
 		nullptr,
+		cliPath,
 		WString::Unmanaged(RemotingHttpBaseUrl),
 		RemotingHttpPort
 		);
 }
 #endif
 
-int StartMiniHttpServer(vint index)
+int StartMiniHttpServer(vint index, const WString& cliPath)
 {
 	auto socketServer = async_tcp_socket::CreateDefaultAsyncSocketServer(RemotingHttpPort);
 	return StartServerHelper<async_tcp_socket::SocketHttpServer>(
 		index,
 		socketServer,
+		cliPath,
 		socketServer,
 		WString::Unmanaged(RemotingHttpBaseUrl)
 		);

@@ -17,6 +17,7 @@ CPP_REMOVES=(
     "../../../Import/Vlpp.Windows.cpp"
 	"../../../Import/VlppOS.Windows.cpp"
 	"../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.cpp"
+    "../../RemotingHelpers/StdioRedirection/StdioRedirection.Windows.cpp"
     "../../GacUISrc/Generated_RemoteViewModelTest/Source_x86/RemoteViewModelTestRpc.cpp"
     "../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTestRpc.cpp"
     )

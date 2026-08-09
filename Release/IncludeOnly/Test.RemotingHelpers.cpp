@@ -7,3 +7,4 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Test\RemotingHelpers\RendererClient\RemoteProtocolRendererClient.cpp"
 #include "..\..\Test\RemotingHelpers\Rvmt\ViewModelHostClient.cpp"
 #include "..\..\Test\RemotingHelpers\Rvmt\ViewModelHostServer.cpp"
+#include "..\..\Test\RemotingHelpers\StdioRedirection\StdioRedirection.cpp"

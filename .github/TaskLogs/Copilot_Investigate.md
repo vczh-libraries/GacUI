@@ -137,7 +137,7 @@ The problem is confirmed from a clean Debug/x64 build. The solution builds with 
 
 # PROPOSALS
 
-- No.1 Add a shared framed stdio transport and compose a dedicated RVM host server
+- No.1 Add a shared framed stdio transport and compose a dedicated RVM host server [CONFIRMED]
 
 ## No.1 Add a shared framed stdio transport and compose a dedicated RVM host server
 
@@ -156,3 +156,25 @@ For Core, parse an optional quoted `/Cli:<path>` separately from the exclusive r
 Update the project and remote-debugging documents to distinguish renderer transport from host startup mode, describe auto-launch and manual-host rules, correct the platform matrix totals, and mark Linux/macOS runtime rows unverified for this Windows task.
 
 ### CODE CHANGE
+
+Added the platform-neutral `StdioRedirectionConnection`, `StdioRedirectionClient`, and `StdioRedirectionServer` implementation under `Test/RemotingHelpers/StdioRedirection`. Shared code owns strict UTF-8/canonical padded-Base64 line framing, exact raw `!Exit`, callback installation and draining, one-shot disconnect delivery, reader lifecycle, logical server state, launch/stop admission, and independent multi-child ownership. Windows uses anonymous pipes plus `CreateProcessW` with a separate inherited stderr stream; Linux and macOS share the guarded POSIX `fork`/pipe implementation. Process creation is serialized, parent pipe ends are protected from inheritance, and callback-reentrant stop defers physical draining until the callback unwinds.
+
+Added every source exactly once to the unconditional `Source_RemotingHelpers` project inventory and `StdioRedirection` filter. Both portable `vmake` inputs remove only the Windows translation unit. CodePack categories now emit neutral, Windows, and Linux/macOS `Test.RemotingHelpers` pairs, and the aggregate Tools release cleanup removes the Linux pair as well.
+
+Added exact `/Cli` parsing and composition to `CppTest_Rvm`, `RemotingTest_Core`, and `RemotingTest_RvmHost`. Standalone `/Cli:<path>` is exclusive with the network transports, keeps Windows HTTP automation, launches quoted `<path> /Cli`, and uses an application-layer fatal proxy so injected host loss exits 1 without a debug CRT dialog. Core accepts `/Cli:<path>` only with explicit `/RVMT` plus one renderer transport, connects its renderer-only server and Core client first, then starts an independent stdio host-only server, launches the host, and stops the two servers in reverse order. Core broadcasts one host-loss fatal package through the renderer server. The host reserves stdin/stdout for `/Cli` protocol traffic and suppresses its ordinary banner. Corrected the standalone and native-renderer automation shutdown branches.
+
+Updated `Project.md`, the GacUISrc README, the remote-protocol SOP and platform guides, and the coding knowledge note to describe the independent renderer/host dimensions, auto-launch/manual-host rules, matrix totals, release pairs, and unverified Linux/macOS runtime status.
+
+### CONFIRMED
+
+The proposal is confirmed on Windows. Final complete Debug/x64 and Debug/Win32 GacUISrc solution builds both succeeded with zero warnings and zero errors. The final UnitTest run passed 88/88 files and 1713/1713 cases with no memory-leak dump.
+
+Four fresh Debug/x64 application rows passed through the repository execution wrapper. Standalone `/Cli` and Core `/Cli` with `/Pipe`, `/Http`, and `/MiniHttp` each launched exactly one child whose sole selector was `/Cli`, exposed initial `Hello, !`, translated a unique marker exactly, and shut down through active UI without an orphan, listener, runtime-error dialog, or unexpected prompt. Core `Controls` and renderer `Dom` matched on every renderer row, including nondefault automation ports and `127.0.0.1` MiniHTTP probes. A manually launched `/MiniHttp` host was rejected with exit 1 by the renderer-only server while the original stdio host remained the sole host and translated `MiniAfterReject` exactly.
+
+Fresh idle-next-call and suspended in-flight host-loss runs passed for both requester shapes. Stdio EOF released standalone in about 80 ms and 63 ms respectively, with wrapper exit 1. Core exited 1 in about 363 ms and 227 ms, produced one prompt containing exact `RemotingTest_RvmHost disconnected.`, and choosing `No` left renderer `Dom.fatalError` equal to that exact text before exact `!Exit` closed it. No retry, reconnect, orphan, listener, or crash dialog remained.
+
+Standalone rejected empty, duplicate, and transport-combined `/Cli`; Core rejected `/Cli` without explicit `/RVMT`, with `/FCT`, with `/RPT`, without a renderer transport, and when duplicated. A successful quoted path containing spaces launched the exact copied executable, translated `SpacePath`, and cleaned up normally.
+
+The official GacUI release/CodePack pipeline completed without a caught failure. Generated neutral, Windows, and Linux/macOS code appeared only in the corresponding `Test.RemotingHelpers` pairs in both `Release` layouts, with no helper symbol in ordinary `GacUI*` pairs. `UpdateRelease` also completed without a caught failure; the aggregate `Release/Import` retained its GacUI pairs and contained no `Test.RemotingHelpers*` file, and its verification changes were restored. Project inventory and portable-build audits found each new file exactly once, no wildcard or `ExcludedFromBuild`, only the Windows implementation removed by each `vmake`, and no generated `vmake.txt` or `makefile` edit.
+
+No focused lower-level test path was added, as permitted by `Project.md`. The four application rows cover one child per server; repeated `ConnectNewClient`, malformed Base64/UTF-8 recovery, serialized channel-error framing, and raw exact-`!Exit` classification were verified by implementation review and generated/build coverage, not claimed as direct runtime coverage. Linux/macOS code was likewise reviewed and CodePack-generated but not built or runtime-tested on this Windows task. wGac and iGac were not modified or tested.

@@ -130,7 +130,7 @@ void GuiMain()
 	else
 #endif
 	{
-		windows::StopWindowsHttpAutomationService();
+		StopMiniHttpAutomationService();
 	}
 
 	currentGuiContext->channelClient->SetRendererAutomationService(nullptr);

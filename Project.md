@@ -39,7 +39,7 @@ Files in this folder are for test apps only:
 - Only test apps could use these source files.
 - No need to create unit test for them.
 - Source files in `Source` cannot use anything in `Test/RemotingHelpers`.
-- They are excluded from ordinary public GacUI amalgamations and the aggregate `Release` repository. GacUI CodePack emits dedicated `Test.RemotingHelpers(.Windows)?.h/.cpp` pairs in `Release` and `Release/IncludeOnly` only for platform repositories' `Import-Test` snapshots.
+- They are excluded from ordinary public GacUI amalgamations and the aggregate `Release` repository. GacUI CodePack emits dedicated neutral, Windows, and Linux pairs (`Test.RemotingHelpers*`) in `Release` and `Release/IncludeOnly` only for platform repositories' `Import-Test` snapshots.
 - No production quality required, these files are only for building test apps quickly.
 
 ### Test/RemotingHelpers/Rvmt
@@ -49,6 +49,14 @@ Files in this folder are generic client and requester helpers used only by `CppT
 - `ViewModelShared.h` owns generic aliases, fixed RVM channel/control constants, and inline Ready-message helpers; `ViewModelHostClient.*` owns the generic network-side host client; and `ViewModelHostServer.*` owns the specialized channel server's generic RPC helpers and server-side local-client behavior.
 - Generated RemoteViewModelTest RPC composition belongs to `Test/GacUISrc/Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.*`, which each affected application invokes after its generic connection is assigned a client ID.
 - `Release/CodegenConfig.xml` scans this helper tree only into the dedicated test pairs. Ordinary `GacUI*` pairs and the aggregate `Release` repository remain independent of these helpers.
+
+### Test/RemotingHelpers/StdioRedirection
+
+This folder implements the test-only stdio transport behind the platform-neutral `StdioRedirectionServer`, `StdioRedirectionClient`, and `StdioRedirectionConnection` names.
+- Shared code owns callback-safe connection lifecycle and one-line UTF-8/Base64 framing. Exact `!Exit` is the only raw control line; ordinary serialized channel packages remain opaque `WString` messages.
+- `StdioRedirection.Windows.cpp` owns Windows process and anonymous-pipe work. `StdioRedirection.Linux.cpp` owns the shared Linux/macOS `fork`/pipe implementation.
+- The server launches no process in `Start`. Each `ConnectNewClient` call launches and owns one independent child; `Stop` sends `!Exit`, drains callbacks and readers, and reaps every child.
+- The unconditional `Source_RemotingHelpers.vcxitems` inventory lists every platform translation unit. Portable `vmake` inputs remove only the Windows implementation.
 
 ## Reflectable Types
 
@@ -181,14 +189,14 @@ Keep test apps simple without introducing unnecessary "gracefully recovering".
 
 Automation HTTP service for GUI applications are available for Windows:
 - `CppTest`                       : Run FullControlTest in hosted mode, built without reflection (`VCZH_DEBUG_NO_REFLECTION`).
-- `CppTest_Rvm`                   : Run RemoteViewModelTest in hosted mode after acquiring its service from `RemotingTest_RvmHost`.
+- `CppTest_Rvm`                   : Run RemoteViewModelTest in hosted mode after acquiring its service from `RemotingTest_RvmHost`; `/Cli:<path>` auto-launches that host with `/Cli`.
 - `CppTest_Metaonly`              : Run FullControlTest, built with metaonly reflection (`VCZH_DEBUG_METAONLY_REFLECTION`).
 - `CppTest_Reflection`            : Run FullControlTest, built with full reflection.
 - `GacUI_Host`                    : Run FullControlTest, by loading Workflow binary assembly instead of generated C++ code.
 - `Playground`                    : Run `REPO-ROOT/Test/GacUISrc/Playground/Resources/Resource*.xml`, resource file to load specified, main window specified in `OpenMainWindow` function.
-- `RemotingTest_Core`             : Run FullControlTest, RemoteProtocolTest, or RemoteViewModelTest with remote protocol hosted by HTTP, MiniHTTP, or NamedPipe.
+- `RemotingTest_Core`             : Run FullControlTest, RemoteProtocolTest, or RemoteViewModelTest with renderer traffic hosted by HTTP, MiniHTTP, or NamedPipe; `/RVMT` may independently use `/Cli:<path>` for its host.
 - `RemotingTest_Rendering_Win32`  : Renderer of `RemotingTest_Core`.
-- `RemotingTest_RvmHost`          : Provide the remote view-model service used by `CppTest_Rvm` and `RemotingTest_Core /RVMT`.
+- `RemotingTest_RvmHost`          : Provide the remote view-model service used by `CppTest_Rvm` and `RemotingTest_Core /RVMT`, including the stdio `/Cli` mode.
 
 FullControlTest means `Generated_FullControlTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/FullControlTest/Resource.xml`.
 RemoteProtocolTest means `Generated_RemoteProtocolTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/RemoteProtocolTest/Resource.xml`.
@@ -210,12 +218,14 @@ Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in
   - Core and renderer should synchronize to the same UI state afterwards.
   - Performing IO through either the renderer or the core should result in the same UI state.
 
-`CppTest_Rvm`, `RemotingTest_Core /RVMT`, and `RemotingTest_RvmHost` share the same physical transport endpoint. RPC endpoints use the exact logical channel `ViewModelChannel`, the host also uses the internal `ViewModelReadyChannel` startup signal, and renderers use the exact logical channel `GacUIRemoteProtocol`. Use the same transport argument throughout one run.
+RVM RPC uses the exact logical channels `ViewModelChannel` and `ViewModelReadyChannel`; renderers use `GacUIRemoteProtocol`. Core-to-renderer transport and Core-to-host mode are separate dimensions:
 
-- For `/RVMT`, start `RemotingTest_Core /RVMT` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. Start the renderer only after `http://localhost:8888/Automation/RemotingTest_Core/Controls` contains the `Remote View Model Test` window.
-- For the Windows-only local variant, start `CppTest_Rvm` first. It intentionally blocks while waiting for `RemotingTest_RvmHost`; while it is blocked, start `RemotingTest_RvmHost`. This variant does not use a renderer.
+- Without `/Cli`, `RemotingTest_Core /RVMT` and its manually started `RemotingTest_RvmHost` share the selected `/Pipe`, `/Http`, or `/MiniHttp` server. Start Core, then the host with the same selector, then start the renderer after Core automation contains `Remote View Model Test`.
+- With `/Cli:<nonempty-host-path>`, Core still requires `/RVMT` and one renderer transport. It starts a renderer-only server plus a host-only stdio server, quotes the path, and auto-launches `RemotingTest_RvmHost /Cli`; do not start that host manually. Stop order is host server first, renderer server second.
+- `CppTest_Rvm` accepts exactly one of `/Pipe`, `/Http`, `/MiniHttp`, or `/Cli:<nonempty-host-path>`. The first three wait for a manually started host using the same selector. `/Cli` auto-launches the host and is itself the exclusive RVM transport. This variant never uses a renderer.
+- `RemotingTest_RvmHost` accepts exact `/Cli` in addition to its network selectors. In stdio mode, stdin/stdout are reserved for framed protocol traffic and the ordinary startup banner is suppressed.
 - A requester terminates with an error if `RemotingTest_RvmHost` disconnects while the application is running.
-- `CppTest_Rvm` exposes automation at `http://localhost:8888/Automation/CppTest_Rvm/...`. `/Pipe` and `/Http` use the Windows HTTP endpoint; `/MiniHttp` registers MiniHTTP automation on the same port-8888 socket server that carries its RVM traffic.
+- `CppTest_Rvm` exposes automation at `http://localhost:8888/Automation/CppTest_Rvm/...`. `/Pipe`, `/Http`, and `/Cli` use the Windows HTTP endpoint; `/MiniHttp` registers MiniHTTP automation on the same port-8888 socket server that carries its RVM traffic.
 
 `Playground` is for adhoc testing:
 - The UI in resource file, including `GuiMain` and `OpenMainWindow`, could be modified freely without any concern, it is not part of the release. DO NOT revert `Playground` change as I can also use it for manual verification.
@@ -242,4 +252,4 @@ You need to build, test and debug in that specific folder, otherwise the unit te
 On Linux, only configuration "debug x64" is available, no need to build or run projects with other configurations.
 Unlike Windows, building have to be done in each folder separately.
 
-`CppTest_Rvm` is Windows-only. The portable RVM demo is `RemotingTest_Core /RVMT` together with `RemotingTest_RvmHost`, using `/MiniHttp` on Linux or macOS.
+`CppTest_Rvm` is Windows-only in this solution. The portable RVM demo is `RemotingTest_Core /RVMT` with `/MiniHttp` for renderers; its host is either manually started with `/MiniHttp` or auto-launched with `/Cli:<path>`. Linux/macOS stdio code is shared by `StdioRedirection.Linux.cpp`.

@@ -45,11 +45,13 @@ In `GacUI` there are important test apps:
   - The default automation port is 8889. A concurrent takeover renderer needs a different automation port, such as 8890; this does not change the `/MiniHttp` Core connection on port 8888.
 - `RemotingTest_Core`, a test ap as the core app in remote protocol.
   - It runs from `GacUI/Test/Linux/RemotingTest_Core`.
+  - Renderer traffic always uses `/MiniHttp`. For `/RVMT`, host mode is independently either manual `/MiniHttp` or auto-launched `/Cli:<path>`.
 - `RemotingTest_RvmHost`, a CLI app hosts the implementation of `IViewModel` with `RemoteViewModelTest` is used.
   - Requres `CppTest_Rvm` or `RemotingTest_Core /RVMT`.
   - It runs from `GacUI/Test/Linux/RemotingTest_RvmHost`.
+  - Exact `/Cli` reserves stdin/stdout for UTF-8/Base64-framed protocol traffic and suppresses the ordinary banner.
 
-Only `/MiniHttp` is available as a network protocol.
+Only `/MiniHttp` is available as a renderer network protocol. The cross-platform stdio transport is also available for Core-to-host `/Cli` auto-launching; it does not replace `/MiniHttp` for renderers.
 Additionally, `test.sh --app:simple` runs a hello world GacUI app, it could be used as a smoke test hosting native renderers.
 
 ## Maintaining Test App Mirrors

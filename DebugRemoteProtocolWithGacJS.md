@@ -13,23 +13,28 @@ roots.
 
 ## Test Matrix
 
-The Core application and transport columns are independent dimensions. Test
-their Cartesian product with fresh processes: every listed Core application
-must run once with every transport available to GacJS on that platform.
+The Core application and renderer-transport columns are independent dimensions.
+Test their Cartesian product with fresh processes. `/RVMT` adds two host modes:
+manual host over the renderer network transport, and auto-launched stdio
+`/Cli:<path>`. Do not multiply that host dimension across `/FCT` or `/RPT`.
 `CppTest_Rvm` is excluded because it renders locally and needs no remote
 renderer. `/Pipe` is excluded because a fetch-based browser cannot use it.
 
 | Platform | GacJS renderer | Core application dimension | Transport dimension | Total targets |
 | --- | --- | --- | --- | --- |
-| Windows | Playwright Chromium | `/RPT`, `/FCT`, `/RVMT` | `/Http`, `/MiniHttp` | 6 |
-| Linux | Playwright Firefox | `/RPT`, `/FCT`, `/RVMT` | `/MiniHttp` | 3 |
-| macOS | Playwright WebKit | `/RPT`, `/FCT`, `/RVMT` | `/MiniHttp` | 3 |
+| Windows | Playwright Chromium | `/RPT`, `/FCT`, `/RVMT` (manual or `/Cli` host) | `/Http`, `/MiniHttp` | 8 |
+| Linux | Playwright Firefox | `/RPT`, `/FCT`, `/RVMT` (manual or `/Cli` host) | `/MiniHttp` | 4 |
+| macOS | Playwright WebKit | `/RPT`, `/FCT`, `/RVMT` (manual or `/Cli` host) | `/MiniHttp` | 4 |
 
-Every `/RVMT` target also includes `RemotingTest_RvmHost`. Start Core first,
-then start the host with the same transport, wait until the application is
-ready, and only then open GacJS. Installed Safari is a supplementary macOS
+Every `/RVMT` target also includes `RemotingTest_RvmHost`. In manual mode, start
+Core, start the host with the same transport, wait until the application is
+ready, and then open GacJS. In `/Cli` mode, pass the absolute host path to Core;
+Core launches `<path> /Cli`, so do not start the host manually. Installed Safari is a supplementary macOS
 compatibility check, not another required matrix row and not a substitute for
 Playwright WebKit.
+
+The Linux/macOS `/Cli` rows describe required cross-platform code and runtime
+procedure but were not runtime-verified during the Windows implementation task.
 
 ## Required Reading
 
@@ -58,9 +63,11 @@ requires one transport selector:
 | `/Http` | The Windows full-HTTP transport. |
 | `/MiniHttp` | The portable async-socket MiniHTTP transport. Use this exact spelling. |
 | `/Pipe` | The Windows named-pipe transport. A fetch-based browser cannot use it. |
+| `/Cli:<path>` | With explicit `/RVMT`, auto-launch `<path> /Cli` on a separate stdio host server. It does not select the browser transport. |
 
-`/FCT`, `/RPT`, and `/RVMT` are exclusive, as are the transport arguments. Start
-Core before opening `http://localhost:8896/index.html`.
+`/FCT`, `/RPT`, and `/RVMT` are exclusive, as are the transport arguments.
+`/Cli` is optional, at most once, and valid only with explicit `/RVMT` plus a
+renderer transport. Start Core before opening `http://localhost:8896/index.html`.
 
 The protocol endpoint is fixed at port `8888`. In MiniHTTP mode, the core also
 registers its `/Automation/RemotingTest_Core/...` routes on that listener. GacJS
@@ -167,6 +174,13 @@ $host = Start-Process -FilePath $hostExe -ArgumentList '/Http' -PassThru
 Repeat that order with `/MiniHttp`. Exercise every application/transport target
 as a separate GacJS run. Do not call MSBuild directly.
 
+For each `/RVMT` renderer transport, also run the `/Cli` host mode. Core owns
+the child process; wait for its RVM window and then open the browser:
+
+```powershell
+$core = Start-Process -FilePath $coreExe -ArgumentList '/Http','/RVMT',('/Cli:"{0}"' -f $hostExe) -PassThru
+```
+
 After `yarn build`, start the checked-in website server:
 
 ```powershell
@@ -229,6 +243,15 @@ host_pid=$!
 
 Wait until Core automation exposes the `Remote View Model Test` window before
 opening the browser.
+
+For the additional `/Cli` row, start Core with an absolute host path and do not
+start the host manually:
+
+```bash
+host_exe="$(realpath <GacUI>/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost)"
+<GacUI>/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core /MiniHttp /RVMT "/Cli:$host_exe" &
+core_pid=$!
+```
 
 Open `http://localhost:8896/index.html` only after the core reports that its
 MiniHTTP server is waiting on port `8888`. Require the page to load
