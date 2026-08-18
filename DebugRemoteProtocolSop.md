@@ -48,8 +48,14 @@ establish, drive, inspect, replace, and close the renderer session.
 - Expected Behavior:
   - Only one `RemotingTest_RvmHost` is allowed to connect.
   - `CppTest_Rvm /Cli:<path>` auto-launches `<path> /Cli`. `RemotingTest_Core /RVMT <renderer-transport> /Cli:<path>` keeps renderer traffic on its selected network server and auto-launches the host on a separate stdio-only server.
-  - If it disconnects before the main window is closed in any reason, this is considered a fatal error inside `RemotingTest_Core` and `CppTest_Rvm`, terminating them directly.
-  - Terminating `RemotingTest_Core` in this way also causing such fatal error to be sent to `RemotingTest_Renderer` so it could render the error information.
+  - If it disconnects before the main window is closed for any reason, this is
+    a fatal error inside `RemotingTest_Core` and `CppTest_Rvm`.
+    - When an in-flight or subsequent RPC observes host loss, `CppTest_Rvm`
+      lets the injected `rpc_controller::RpcInjectedException` escape. Its
+      nonzero crash is the required direct termination; no graceful-close
+      handler or recovery is needed.
+    - `RemotingTest_Core` catches the failure only to send the Core-authored
+      fatal error to `RemotingTest_Renderer` before terminating.
 
 ## Rules for Every Operation
 
@@ -302,9 +308,10 @@ the failure.
 2. Run two variants with fresh processes:
    - Idle-next-call: terminate the host after one successful `Translate`, then
      focus the text box and type a different marker to trigger the next real
-     `IViewModel::Translate` RPC. `/Cli` may already have delivered the fatal
-     outcome from EOF. For `/Http` and `/MiniHttp`, this operation is the latest
-     permitted point for discovering the idle peer loss.
+     `IViewModel::Translate` RPC. `/Cli` records host loss promptly from EOF;
+     the next `Translate` exposes the injected exception. For `/Http` and
+     `/MiniHttp`, this operation is the latest permitted point for discovering
+     the idle peer loss.
    - Delivery-acknowledgement loss: start a second `Translate` and terminate the
      host while that call is blocked. In `/Cli`, stdio EOF must release the
      caller promptly. In `/Http` or `/MiniHttp`, terminate it after the server
@@ -314,8 +321,9 @@ the failure.
      acknowledged delivery. With no heartbeat, a later crash during
      already-acknowledged request execution is not detectable until the server
      next needs to send a real message and that delivery is not acknowledged.
-3. Require `CppTest_Rvm` to terminate nonzero through its application-layer
-   `RpcInjectedException` fatal handler, without retry or recovery.
+3. Require `CppTest_Rvm` to terminate nonzero from an unhandled
+   `rpc_controller::RpcInjectedException`, without retry, recovery, or a
+   graceful-close adapter. The resulting crash is valid direct termination.
 4. For Core, require exactly one Core-authored `ErrorChannel` package carrying exactly
    `RemotingTest_RvmHost disconnected.` before Core terminates nonzero. A local
    renderer transport error alone is not sufficient.
