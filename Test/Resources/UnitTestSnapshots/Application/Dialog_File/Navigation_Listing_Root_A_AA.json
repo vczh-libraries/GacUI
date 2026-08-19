@@ -132,11 +132,11 @@
     [140, "ImageFrame"],
     [141, "SolidLabel"],
     [142, "SolidBackground"],
-    [143, "Polygon"],
-    [144, "Polygon"],
-    [145, "ImageFrame"],
-    [146, "SolidLabel"],
-    [147, "SolidBackground"],
+    [143, "ImageFrame"],
+    [144, "SolidLabel"],
+    [145, "SolidBackground"],
+    [146, "Polygon"],
+    [147, "Polygon"],
     [148, "ImageFrame"],
     [149, "SolidLabel"],
     [150, "SolidBackground"],
@@ -154,9 +154,6 @@
     [162, "DocumentParagraph"],
     [163, "DocumentParagraph"],
     [164, "DocumentParagraph"],
-    [165, "SolidBackground"],
-    [166, "ImageFrame"],
-    [167, "SolidLabel"],
     [168, "SolidBackground"],
     [169, "ImageFrame"],
     [170, "SolidLabel"],
@@ -185,9 +182,6 @@
     [193, "Polygon"],
     [194, "ImageFrame"],
     [195, "SolidLabel"],
-    [196, "SolidBackground"],
-    [197, "ImageFrame"],
-    [198, "SolidLabel"],
     [199, "SolidBackground"],
     [200, "ImageFrame"],
     [201, "SolidLabel"]
@@ -245,7 +239,7 @@
       "root": null
     },
     {
-      "frameId": 13,
+      "frameId": 11,
       "frameName": "Show Dialog",
       "windowSize": {
         "bounds": {
@@ -272,7 +266,7 @@
       "root": null
     },
     {
-      "frameId": 22,
+      "frameId": 17,
       "frameName": "DbClick: A",
       "windowSize": {
         "bounds": {
@@ -299,7 +293,7 @@
       "root": null
     },
     {
-      "frameId": 26,
+      "frameId": 21,
       "frameName": "Choose Filter: Text Files",
       "windowSize": {
         "bounds": {
@@ -326,7 +320,7 @@
       "root": null
     },
     {
-      "frameId": 35,
+      "frameId": 28,
       "frameName": "DbClick: AA",
       "windowSize": {
         "bounds": {
@@ -353,7 +347,7 @@
       "root": null
     },
     {
-      "frameId": 40,
+      "frameId": 33,
       "frameName": "Choose Filter: All Files",
       "windowSize": {
         "bounds": {
@@ -380,7 +374,7 @@
       "root": null
     },
     {
-      "frameId": 42,
+      "frameId": 35,
       "frameName": "Cancel",
       "windowSize": {
         "bounds": {

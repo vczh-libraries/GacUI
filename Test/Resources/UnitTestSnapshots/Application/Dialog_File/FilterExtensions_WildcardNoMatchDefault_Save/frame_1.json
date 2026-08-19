@@ -1,5 +1,5 @@
 ﻿{
-  "frameId": 13,
+  "frameId": 11,
   "frameName": "Show Dialog",
   "windowSize": {
     "bounds": {
@@ -1563,16 +1563,87 @@
     [
       138,
       [
-        "ElementDesc_ImageFrame",
-        {"id": 138, "imageId": 3, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+        "ElementDesc_Polygon",
+        {
+          "id": 138,
+          "size": {"x": 7, "y": 9},
+          "borderColor": "#F1F1F1",
+          "backgroundColor": "#00000000",
+          "points": [
+            {"x": 1, "y": 0},
+            {"x": 5, "y": 4},
+            {"x": 1, "y": 8}
+          ]
+        }
       ]
     ],
     [
       139,
       [
-        "ElementDesc_SolidLabel",
+        "ElementDesc_Polygon",
         {
           "id": 139,
+          "size": {"x": 7, "y": 9},
+          "borderColor": "#F1F1F1",
+          "backgroundColor": "#00000000",
+          "points": [
+            {"x": 5, "y": 2},
+            {"x": 5, "y": 7},
+            {"x": 0, "y": 7}
+          ]
+        }
+      ]
+    ],
+    [
+      140,
+      [
+        "ElementDesc_ImageFrame",
+        {"id": 140, "imageId": 3, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+      ]
+    ],
+    [
+      141,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 141,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Left",
+          "verticalAlignment": "Center",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": true,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "B",
+          "measuringRequest": null
+        }
+      ]
+    ],
+    [
+      142,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 142,
+          "backgroundColor": "#00000000",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      143,
+      [
+        "ElementDesc_ImageFrame",
+        {"id": 143, "imageId": 3, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+      ]
+    ],
+    [
+      144,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 144,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Left",
           "verticalAlignment": "Center",
@@ -1587,29 +1658,29 @@
       ]
     ],
     [
-      140,
+      145,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 140,
+          "id": 145,
           "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      141,
+      146,
       [
         "ElementDesc_ImageFrame",
-        {"id": 141, "imageId": 2, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+        {"id": 146, "imageId": 2, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
       ]
     ],
     [
-      142,
+      147,
       [
         "ElementDesc_SolidLabel",
         {
-          "id": 142,
+          "id": 147,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Left",
           "verticalAlignment": "Center",
@@ -1624,29 +1695,29 @@
       ]
     ],
     [
-      143,
+      148,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 143,
+          "id": 148,
           "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      144,
+      149,
       [
         "ElementDesc_ImageFrame",
-        {"id": 144, "imageId": 2, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+        {"id": 149, "imageId": 2, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
       ]
     ],
     [
-      145,
+      150,
       [
         "ElementDesc_SolidLabel",
         {
-          "id": 145,
+          "id": 150,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Left",
           "verticalAlignment": "Center",
@@ -1661,29 +1732,29 @@
       ]
     ],
     [
-      146,
+      151,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 146,
+          "id": 151,
           "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      147,
+      152,
       [
         "ElementDesc_ImageFrame",
-        {"id": 147, "imageId": 2, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+        {"id": 152, "imageId": 2, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
       ]
     ],
     [
-      148,
+      153,
       [
         "ElementDesc_SolidLabel",
         {
-          "id": 148,
+          "id": 153,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Left",
           "verticalAlignment": "Center",
@@ -1698,29 +1769,29 @@
       ]
     ],
     [
-      149,
+      154,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 149,
+          "id": 154,
           "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      150,
+      155,
       [
         "ElementDesc_ImageFrame",
-        {"id": 150, "imageId": 2, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+        {"id": 155, "imageId": 2, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
       ]
     ],
     [
-      151,
+      156,
       [
         "ElementDesc_SolidLabel",
         {
-          "id": 151,
+          "id": 156,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Left",
           "verticalAlignment": "Center",
@@ -1735,84 +1806,13 @@
       ]
     ],
     [
-      152,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 152,
-          "backgroundColor": "#00000000",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      153,
-      [
-        "ElementDesc_ImageFrame",
-        {"id": 153, "imageId": 2, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
-      ]
-    ],
-    [
-      154,
-      [
-        "ElementDesc_SolidLabel",
-        {
-          "id": 154,
-          "textColor": "#F1F1F1",
-          "horizontalAlignment": "Left",
-          "verticalAlignment": "Center",
-          "wrapLine": false,
-          "wrapLineHeightCalculation": false,
-          "ellipse": false,
-          "multiline": false,
-          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "root2.txt",
-          "measuringRequest": "TotalSize"
-        }
-      ]
-    ],
-    [
-      155,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 155,
-          "backgroundColor": "#00000000",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      156,
-      [
-        "ElementDesc_Polygon",
-        {
-          "id": 156,
-          "size": {"x": 7, "y": 9},
-          "borderColor": "#F1F1F1",
-          "backgroundColor": "#00000000",
-          "points": [
-            {"x": 1, "y": 0},
-            {"x": 5, "y": 4},
-            {"x": 1, "y": 8}
-          ]
-        }
-      ]
-    ],
-    [
       157,
       [
-        "ElementDesc_Polygon",
+        "ElementDesc_SolidBackground",
         {
           "id": 157,
-          "size": {"x": 7, "y": 9},
-          "borderColor": "#F1F1F1",
           "backgroundColor": "#00000000",
-          "points": [
-            {"x": 5, "y": 2},
-            {"x": 5, "y": 7},
-            {"x": 0, "y": 7}
-          ]
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
@@ -1820,7 +1820,7 @@
       158,
       [
         "ElementDesc_ImageFrame",
-        {"id": 158, "imageId": 3, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+        {"id": 158, "imageId": 2, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
       ]
     ],
     [
@@ -1834,11 +1834,11 @@
           "verticalAlignment": "Center",
           "wrapLine": false,
           "wrapLineHeightCalculation": false,
-          "ellipse": true,
+          "ellipse": false,
           "multiline": false,
           "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "B",
-          "measuringRequest": null
+          "text": "root2.txt",
+          "measuringRequest": "TotalSize"
         }
       ]
     ]
@@ -2532,43 +2532,43 @@
                                 ]
                               },
                               {
-                                "id": 620,
+                                "id": 548,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 155,
+                                  "element": 137,
                                   "bounds": {"x1": 89, "y1": 147, "x2": 279, "y2": 171},
                                   "validArea": {"x1": 89, "y1": 147, "x2": 279, "y2": 171}
                                 },
                                 "children": [
                                   {
-                                    "id": 624,
+                                    "id": 552,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 156,
+                                      "element": 138,
                                       "bounds": {"x1": 97, "y1": 154, "x2": 104, "y2": 163},
                                       "validArea": {"x1": 97, "y1": 154, "x2": 104, "y2": 163}
                                     },
                                     "children": null
                                   },
                                   {
-                                    "id": 632,
+                                    "id": 560,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 158,
+                                      "element": 140,
                                       "bounds": {"x1": 111, "y1": 151, "x2": 127, "y2": 167},
                                       "validArea": {"x1": 111, "y1": 151, "x2": 127, "y2": 167}
                                     },
                                     "children": null
                                   },
                                   {
-                                    "id": 636,
+                                    "id": 564,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 159,
+                                      "element": 141,
                                       "bounds": {"x1": 129, "y1": 149, "x2": 321, "y2": 169},
                                       "validArea": {"x1": 129, "y1": 149, "x2": 279, "y2": 169}
                                     },
@@ -2692,32 +2692,32 @@
                                 ]
                               },
                               {
-                                "id": 548,
+                                "id": 568,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 137,
+                                  "element": 142,
                                   "bounds": {"x1": 286, "y1": 147, "x2": 331, "y2": 171},
                                   "validArea": {"x1": 286, "y1": 147, "x2": 331, "y2": 171}
                                 },
                                 "children": [
                                   {
-                                    "id": 552,
+                                    "id": 572,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 138,
+                                      "element": 143,
                                       "bounds": {"x1": 288, "y1": 151, "x2": 304, "y2": 167},
                                       "validArea": {"x1": 288, "y1": 151, "x2": 304, "y2": 167}
                                     },
                                     "children": null
                                   },
                                   {
-                                    "id": 556,
+                                    "id": 576,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 139,
+                                      "element": 144,
                                       "bounds": {"x1": 306, "y1": 149, "x2": 313, "y2": 169},
                                       "validArea": {"x1": 306, "y1": 149, "x2": 313, "y2": 169}
                                     },
@@ -2726,32 +2726,32 @@
                                 ]
                               },
                               {
-                                "id": 560,
+                                "id": 580,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 140,
+                                  "element": 145,
                                   "bounds": {"x1": 286, "y1": 171, "x2": 374, "y2": 195},
                                   "validArea": {"x1": 286, "y1": 171, "x2": 374, "y2": 195}
                                 },
                                 "children": [
                                   {
-                                    "id": 564,
+                                    "id": 584,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 141,
+                                      "element": 146,
                                       "bounds": {"x1": 288, "y1": 175, "x2": 304, "y2": 191},
                                       "validArea": {"x1": 288, "y1": 175, "x2": 304, "y2": 191}
                                     },
                                     "children": null
                                   },
                                   {
-                                    "id": 568,
+                                    "id": 588,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 142,
+                                      "element": 147,
                                       "bounds": {"x1": 306, "y1": 173, "x2": 356, "y2": 193},
                                       "validArea": {"x1": 306, "y1": 173, "x2": 356, "y2": 193}
                                     },
@@ -2760,32 +2760,32 @@
                                 ]
                               },
                               {
-                                "id": 572,
+                                "id": 592,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 143,
+                                  "element": 148,
                                   "bounds": {"x1": 286, "y1": 195, "x2": 374, "y2": 219},
                                   "validArea": {"x1": 286, "y1": 195, "x2": 374, "y2": 219}
                                 },
                                 "children": [
                                   {
-                                    "id": 576,
+                                    "id": 596,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 144,
+                                      "element": 149,
                                       "bounds": {"x1": 288, "y1": 199, "x2": 304, "y2": 215},
                                       "validArea": {"x1": 288, "y1": 199, "x2": 304, "y2": 215}
                                     },
                                     "children": null
                                   },
                                   {
-                                    "id": 580,
+                                    "id": 600,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 145,
+                                      "element": 150,
                                       "bounds": {"x1": 306, "y1": 197, "x2": 356, "y2": 217},
                                       "validArea": {"x1": 306, "y1": 197, "x2": 356, "y2": 217}
                                     },
@@ -2794,32 +2794,32 @@
                                 ]
                               },
                               {
-                                "id": 584,
+                                "id": 604,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 146,
+                                  "element": 151,
                                   "bounds": {"x1": 286, "y1": 219, "x2": 374, "y2": 243},
                                   "validArea": {"x1": 286, "y1": 219, "x2": 374, "y2": 243}
                                 },
                                 "children": [
                                   {
-                                    "id": 588,
+                                    "id": 608,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 147,
+                                      "element": 152,
                                       "bounds": {"x1": 288, "y1": 223, "x2": 304, "y2": 239},
                                       "validArea": {"x1": 288, "y1": 223, "x2": 304, "y2": 239}
                                     },
                                     "children": null
                                   },
                                   {
-                                    "id": 592,
+                                    "id": 612,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 148,
+                                      "element": 153,
                                       "bounds": {"x1": 306, "y1": 221, "x2": 356, "y2": 241},
                                       "validArea": {"x1": 306, "y1": 221, "x2": 356, "y2": 241}
                                     },
@@ -2828,32 +2828,32 @@
                                 ]
                               },
                               {
-                                "id": 596,
+                                "id": 616,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 149,
+                                  "element": 154,
                                   "bounds": {"x1": 286, "y1": 243, "x2": 381, "y2": 267},
                                   "validArea": {"x1": 286, "y1": 243, "x2": 381, "y2": 267}
                                 },
                                 "children": [
                                   {
-                                    "id": 600,
+                                    "id": 620,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 150,
+                                      "element": 155,
                                       "bounds": {"x1": 288, "y1": 247, "x2": 304, "y2": 263},
                                       "validArea": {"x1": 288, "y1": 247, "x2": 304, "y2": 263}
                                     },
                                     "children": null
                                   },
                                   {
-                                    "id": 604,
+                                    "id": 624,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 151,
+                                      "element": 156,
                                       "bounds": {"x1": 306, "y1": 245, "x2": 363, "y2": 265},
                                       "validArea": {"x1": 306, "y1": 245, "x2": 363, "y2": 265}
                                     },
@@ -2862,32 +2862,32 @@
                                 ]
                               },
                               {
-                                "id": 608,
+                                "id": 628,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 152,
+                                  "element": 157,
                                   "bounds": {"x1": 286, "y1": 267, "x2": 388, "y2": 291},
                                   "validArea": {"x1": 286, "y1": 267, "x2": 388, "y2": 291}
                                 },
                                 "children": [
                                   {
-                                    "id": 612,
+                                    "id": 632,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 153,
+                                      "element": 158,
                                       "bounds": {"x1": 288, "y1": 271, "x2": 304, "y2": 287},
                                       "validArea": {"x1": 288, "y1": 271, "x2": 304, "y2": 287}
                                     },
                                     "children": null
                                   },
                                   {
-                                    "id": 616,
+                                    "id": 636,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 154,
+                                      "element": 159,
                                       "bounds": {"x1": 306, "y1": 269, "x2": 370, "y2": 289},
                                       "validArea": {"x1": 306, "y1": 269, "x2": 370, "y2": 289}
                                     },

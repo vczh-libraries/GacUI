@@ -1,5 +1,5 @@
 ﻿{
-  "frameId": 17,
+  "frameId": 15,
   "frameName": "Filter: Wildcard *yt+*zt",
   "windowSize": {
     "bounds": {
@@ -1513,22 +1513,22 @@
       ]
     ],
     [
-      155,
+      137,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 155,
+          "id": 137,
           "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      156,
+      138,
       [
         "ElementDesc_Polygon",
         {
-          "id": 156,
+          "id": 138,
           "size": {"x": 7, "y": 9},
           "borderColor": "#F1F1F1",
           "backgroundColor": "#00000000",
@@ -1541,11 +1541,11 @@
       ]
     ],
     [
-      157,
+      139,
       [
         "ElementDesc_Polygon",
         {
-          "id": 157,
+          "id": 139,
           "size": {"x": 7, "y": 9},
           "borderColor": "#F1F1F1",
           "backgroundColor": "#00000000",
@@ -1558,18 +1558,18 @@
       ]
     ],
     [
-      158,
+      140,
       [
         "ElementDesc_ImageFrame",
-        {"id": 158, "imageId": 3, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+        {"id": 140, "imageId": 3, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
       ]
     ],
     [
-      159,
+      141,
       [
         "ElementDesc_SolidLabel",
         {
-          "id": 159,
+          "id": 141,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Left",
           "verticalAlignment": "Center",
@@ -2347,43 +2347,43 @@
                                 ]
                               },
                               {
-                                "id": 620,
+                                "id": 548,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 155,
+                                  "element": 137,
                                   "bounds": {"x1": 89, "y1": 147, "x2": 279, "y2": 171},
                                   "validArea": {"x1": 89, "y1": 147, "x2": 279, "y2": 171}
                                 },
                                 "children": [
                                   {
-                                    "id": 624,
+                                    "id": 552,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 156,
+                                      "element": 138,
                                       "bounds": {"x1": 97, "y1": 154, "x2": 104, "y2": 163},
                                       "validArea": {"x1": 97, "y1": 154, "x2": 104, "y2": 163}
                                     },
                                     "children": null
                                   },
                                   {
-                                    "id": 632,
+                                    "id": 560,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 158,
+                                      "element": 140,
                                       "bounds": {"x1": 111, "y1": 151, "x2": 127, "y2": 167},
                                       "validArea": {"x1": 111, "y1": 151, "x2": 127, "y2": 167}
                                     },
                                     "children": null
                                   },
                                   {
-                                    "id": 636,
+                                    "id": 564,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 159,
+                                      "element": 141,
                                       "bounds": {"x1": 129, "y1": 149, "x2": 321, "y2": 169},
                                       "validArea": {"x1": 129, "y1": 149, "x2": 279, "y2": 169}
                                     },

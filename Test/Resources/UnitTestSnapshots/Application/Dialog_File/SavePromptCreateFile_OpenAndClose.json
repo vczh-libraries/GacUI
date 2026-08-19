@@ -132,11 +132,11 @@
     [140, "ImageFrame"],
     [141, "SolidLabel"],
     [142, "SolidBackground"],
-    [143, "Polygon"],
-    [144, "Polygon"],
-    [145, "ImageFrame"],
-    [146, "SolidLabel"],
-    [147, "SolidBackground"],
+    [143, "ImageFrame"],
+    [144, "SolidLabel"],
+    [145, "SolidBackground"],
+    [146, "Polygon"],
+    [147, "Polygon"],
     [148, "ImageFrame"],
     [149, "SolidLabel"],
     [150, "SolidBackground"],
@@ -206,7 +206,7 @@
       "root": null
     },
     {
-      "frameId": 13,
+      "frameId": 11,
       "frameName": "Show Dialog",
       "windowSize": {
         "bounds": {
@@ -233,7 +233,7 @@
       "root": null
     },
     {
-      "frameId": 16,
+      "frameId": 14,
       "frameName": "Typed",
       "windowSize": {
         "bounds": {
@@ -260,7 +260,7 @@
       "root": null
     },
     {
-      "frameId": 18,
+      "frameId": 16,
       "frameName": "Confirmed",
       "windowSize": {
         "bounds": {

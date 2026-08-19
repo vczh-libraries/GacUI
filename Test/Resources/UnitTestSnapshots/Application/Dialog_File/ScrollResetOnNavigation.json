@@ -137,9 +137,6 @@
     [145, "DocumentParagraph"],
     [146, "DocumentParagraph"],
     [147, "DocumentParagraph"],
-    [148, "SolidBackground"],
-    [149, "ImageFrame"],
-    [150, "SolidLabel"],
     [151, "SolidBackground"],
     [152, "ImageFrame"],
     [153, "SolidLabel"],
@@ -445,9 +442,6 @@
     [553, "ImageFrame"],
     [554, "SolidLabel"],
     [555, "DocumentParagraph"],
-    [556, "SolidBackground"],
-    [557, "ImageFrame"],
-    [558, "SolidLabel"],
     [559, "SolidBackground"],
     [560, "Polygon"],
     [561, "Polygon"],
@@ -770,7 +764,7 @@
       "root": null
     },
     {
-      "frameId": 12,
+      "frameId": 11,
       "frameName": "Show Dialog",
       "windowSize": {
         "bounds": {
@@ -797,7 +791,7 @@
       "root": null
     },
     {
-      "frameId": 22,
+      "frameId": 18,
       "frameName": "Entered: A",
       "windowSize": {
         "bounds": {
@@ -824,7 +818,7 @@
       "root": null
     },
     {
-      "frameId": 26,
+      "frameId": 22,
       "frameName": "Scrolled to end",
       "windowSize": {
         "bounds": {
@@ -851,7 +845,7 @@
       "root": null
     },
     {
-      "frameId": 35,
+      "frameId": 30,
       "frameName": "Entered: 100",
       "windowSize": {
         "bounds": {
@@ -878,7 +872,7 @@
       "root": null
     },
     {
-      "frameId": 37,
+      "frameId": 32,
       "frameName": "Cancel",
       "windowSize": {
         "bounds": {

@@ -132,11 +132,11 @@
     [140, "ImageFrame"],
     [141, "SolidLabel"],
     [142, "SolidBackground"],
-    [143, "Polygon"],
-    [144, "Polygon"],
-    [145, "ImageFrame"],
-    [146, "SolidLabel"],
-    [147, "SolidBackground"],
+    [143, "ImageFrame"],
+    [144, "SolidLabel"],
+    [145, "SolidBackground"],
+    [146, "Polygon"],
+    [147, "Polygon"],
     [148, "ImageFrame"],
     [149, "SolidLabel"],
     [150, "SolidBackground"],
@@ -256,7 +256,7 @@
       "root": null
     },
     {
-      "frameId": 12,
+      "frameId": 11,
       "frameName": "Attempt 1: Text Files + README.txt (fail)",
       "windowSize": {
         "bounds": {
@@ -283,7 +283,7 @@
       "root": null
     },
     {
-      "frameId": 18,
+      "frameId": 17,
       "frameName": "Popped up message dialog",
       "windowSize": {
         "bounds": {
@@ -310,7 +310,7 @@
       "root": null
     },
     {
-      "frameId": 20,
+      "frameId": 19,
       "frameName": "Attempt 2: Text Files + root.txt (pass)",
       "windowSize": {
         "bounds": {
@@ -337,7 +337,7 @@
       "root": null
     },
     {
-      "frameId": 23,
+      "frameId": 22,
       "frameName": "Typed",
       "windowSize": {
         "bounds": {
@@ -364,7 +364,7 @@
       "root": null
     },
     {
-      "frameId": 25,
+      "frameId": 24,
       "frameName": "Confirmed",
       "windowSize": {
         "bounds": {
