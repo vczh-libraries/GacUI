@@ -33,18 +33,19 @@ In `GacUI` there are GacUI XML Resources to build C++ code:
 - `FullControlTest`
 - `RemoteProtocolTest`
 - `RemoteViewModelTest`
-XML resources and assets will be copied from `GacUI/Resources/App/<APP-NAME>` to `Apps/<APP-NAME>/Resources`, but C++ files are generated from them locally.
+XML resources and assets will be copied from `GacUI/Test/Resources/App/<APP-NAME>` to `Apps/<APP-NAME>/Resources`, but C++ files are generated from them locally.
 
 In `GacUI` there are important test apps:
 - `CppTest`, a test app with with `FullControlTest` running, no network protocol is involved.
   - `test.sh --app:fct (--hosted)?`
-  - This project will be ported to `%FullControlTest`.
+  - Its portable counterpart is `%FullControlTest`.
 - `CppTest_Rvm`, a test app with actual UI, connecting to a view model implementation hosted in `RemotingTest_RvmHost`.
   - `test.sh --app:rvmt`
-  - This project will be ported to `%CppTestRvm`.
+  - Its portable counterpart is `%CppTestRvm`.
+  - The wGac and iGac launchers still pass `/MiniHttp`; their portable `Main.cpp` files do not expose the mirrored `StartCliServer`, so these standalone targets require a manually started `/MiniHttp` host.
 - `RemotingTest_Rendering_Win32`, a test app as a native renderer in remote protocol, it connects to `RemotingTest_Core`.
   - `test.sh --app:renderer (--port:<port>)?`
-  - This project will be ported to `wGac/RemotingTest_Rendering_Wayland` or `iGac/RemotingTest_Rendering_macOS`.
+  - Its portable counterparts are `wGac/RemotingTest_Rendering_Wayland` and `iGac/RemotingTest_Rendering_macOS`.
   - The default automation port is 8889. A concurrent takeover renderer needs a different automation port, such as 8890; this does not change the `/MiniHttp` Core connection on port 8888.
 - `RemotingTest_Core`, a test ap as the core app in remote protocol.
   - It runs from `GacUI/Test/Linux/RemotingTest_Core`.
@@ -55,7 +56,7 @@ In `GacUI` there are important test apps:
   - Exact `/Cli` reserves stdin/stdout for UTF-8/Base64-framed protocol traffic and suppresses the ordinary banner.
 
 Only `/MiniHttp` is available as a renderer network protocol. The cross-platform stdio transport is also available for Core-to-host `/Cli` auto-launching; it does not replace `/MiniHttp` for renderers.
-Additionally, `test.sh --app:simple` runs a hello world GacUI app, it could be used as a smoke test hosting native renderers.
+Additionally, `test.sh --app:simple` runs a hello world GacUI app as a smoke test of the platform's local native renderer.
 
 ## Maintaining Test App Mirrors
 
