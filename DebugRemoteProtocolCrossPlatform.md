@@ -19,6 +19,8 @@
 - `import.sh` copy released source file from `GacUI`, but `GacUI` might not be released yet, always run `CodePack` first if you are not sure.
   - `GacUI/Source` is `CodePack`-ed to `GacUI/Release` and then copied to `Import`.
   - `GacUI/Test/RemotingHelpers` is `CodePack`-ed to `GacUI/Release` and then copied to `Import-Test`.
+  - The remoting-helper output consists of the neutral `Test.RemotingHelpers.h` and `Test.RemotingHelpers.cpp`, the required GCC/POSIX implementation `Test.RemotingHelpers.Linux.cpp` used by both wGac and iGac, and the optional `Test.RemotingHelpers.Windows.cpp`.
+  - CodePack does not generate platform-specific helper headers.
 - `syncProj.sh` is supposed to maintain the structure described in `## Ensure Project Availability`.
   - Unalignment usually happens here because `GacUI` is changing progressively, `wGac` and `iGac` will then catch up after `GacUI` finishes some features.
   - `GacUI`, `wGac` and `iGac`, as well as `syncProj.sh`, might needs some manual fix.

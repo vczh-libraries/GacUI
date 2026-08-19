@@ -195,9 +195,9 @@ Use a fresh application state.
 
 ### 4. Close the Application
 
-1. Ask the active renderer to force-exit the application. Use the renderer's
-   visible `Force Exit` control when it provides one; otherwise use the matching
-   renderer operation documented by its setup guide.
+1. In GacJS, use the renderer's visible `Force Exit` control. In a native
+   renderer, activate the application's top-level `Exit` tab and then activate
+   `self.Close() (InvokeInMainThread)` through the renderer.
 2. Require the application session to end. Require the renderer to close,
    settle, or visibly enter a terminal disconnected state without a fatal
    prompt, error mask, reconnect, or retry loop. A frozen, apparently active
@@ -268,9 +268,11 @@ normal-path steps. Run each operation in a fresh session.
    `This is a fatel error!` and then terminate nonzero. A renderer-side local
    transport failure or ordinary disconnect without this Core-authored package
    is a failure.
-3. In a native renderer, require the `ERROR from GacUI Core` fatal prompt to
-   contain the exact message. Choose `No` when asked whether to close the
-   renderer so the fatal state remains inspectable.
+3. In a Windows or macOS native renderer, require the `ERROR from GacUI Core`
+   fatal prompt to contain the exact message. Choose `No` when asked whether to
+   close the renderer so the fatal state remains inspectable. The raw Linux
+   Wayland renderer has no `GuiApplication` for this prompt; require it to enter
+   the retained fatal state directly instead.
 4. In a native renderer, require renderer `Dom.fatalError` to equal exactly
    `This is a fatel error!`. Require the retained renderer to reject ordinary
    input without retrying or reconnecting while still accepting exact `!Exit`.
@@ -327,9 +329,12 @@ the failure.
 4. For Core, require exactly one Core-authored `ErrorChannel` package carrying exactly
    `RemotingTest_RvmHost disconnected.` before Core terminates nonzero. A local
    renderer transport error alone is not sufficient.
-5. In a native renderer, require the fatal prompt to contain that exact message
-   and choose `No` once so the retained renderer can be inspected. Require
-   `Dom.fatalError` to equal the same text, then send exact `!Exit` to close it.
+5. In a Windows or macOS native renderer, require the fatal prompt to contain
+   that exact message and choose `No` once so the retained renderer can be
+   inspected. The raw Linux Wayland renderer has no `GuiApplication` for this
+   prompt and must enter the retained fatal state directly. In every native
+   renderer, require `Dom.fatalError` to equal the same text, then send exact
+   `!Exit` to close it.
 6. In GacJS, require the visible error mask, not the ordinary disconnect success
    mask, to contain exactly `RemotingTest_RvmHost disconnected.`. One matching
    page error from the page's deliberate rethrow is expected. Require no

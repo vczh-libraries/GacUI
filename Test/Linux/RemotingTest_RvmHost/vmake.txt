@@ -160,6 +160,8 @@
 ../../RemotingHelpers/RendererClient/RemoteProtocolRendererClient.cpp
 ../../RemotingHelpers/Rvmt/ViewModelHostClient.cpp
 ../../RemotingHelpers/Rvmt/ViewModelHostServer.cpp
+../../RemotingHelpers/StdioRedirection/StdioRedirection.cpp
+../../RemotingHelpers/StdioRedirection/StdioRedirection.Linux.cpp
 ../../GacUISrc/RemotingTest_RvmHost/Main.cpp
 ../../GacUISrc/Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.cpp
 ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTestRpc.cpp

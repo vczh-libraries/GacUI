@@ -54460,6 +54460,67 @@ View Model (IFileDialogFilter)
 		};
 
 /***********************************************************************
+FileDialogTaskQueue
+***********************************************************************/
+
+		class FileDialogTaskQueue
+			: public Object
+			, public Description<FileDialogTaskQueue>
+		{
+		protected:
+			SpinLock						lock;
+			List<Func<void()>>				tasks;
+			bool							executing = false;
+
+			void Execute()
+			{
+				auto self = Ptr(this);
+				GetApplication()->InvokeAsync([self]()
+				{
+					while (true)
+					{
+						Func<void()> task;
+						bool completed = false;
+						SPIN_LOCK(self->lock)
+						{
+							if (self->tasks.Count() == 0)
+							{
+								self->executing = false;
+								completed = true;
+							}
+							else
+							{
+								task = self->tasks[0];
+								self->tasks.RemoveAt(0);
+							}
+						}
+						if (completed) return;
+						task();
+					}
+				});
+			}
+
+		public:
+			void Queue(const Func<void()>& task)
+			{
+				bool execute = false;
+				SPIN_LOCK(lock)
+				{
+					tasks.Add(task);
+					if (!executing)
+					{
+						executing = true;
+						execute = true;
+					}
+				}
+				if (execute)
+				{
+					Execute();
+				}
+			}
+		};
+
+/***********************************************************************
 View Model (IFileDialogFolder)
 ***********************************************************************/
 
@@ -54467,6 +54528,7 @@ View Model (IFileDialogFolder)
 		{
 			using FolderMap = Dictionary<WString, Ptr<FileDialogFolder>>;
 		protected:
+			Ptr<FileDialogTaskQueue>		taskQueue;
 			vint						taskId = 0;
 			bool						taskFired = false;
 
@@ -54503,7 +54565,7 @@ View Model (IFileDialogFolder)
 			{
 				if (HasPlaceholderChild()) return;
 				CHECK_ERROR(textLoadingFolders.Length() > 0, L"vl::presentation::FileDialogFolder::AddPlaceholderChild()#textLoadingFolders is not initialized.");
-				auto child = Ptr(new FileDialogFolder);
+				auto child = Ptr(new FileDialogFolder(taskQueue));
 				child->name = textLoadingFolders;
 				AddChild(child);
 			}
@@ -54516,10 +54578,14 @@ View Model (IFileDialogFolder)
 				}
 			}
 
-			FileDialogFolder() = default;
+			FileDialogFolder(Ptr<FileDialogTaskQueue> _taskQueue)
+				: taskQueue(_taskQueue)
+			{
+			}
 
-			FileDialogFolder(const filesystem::Folder& _folder)
-				: type(FileDialogFolderType::Folder)
+			FileDialogFolder(const filesystem::Folder& _folder, Ptr<FileDialogTaskQueue> _taskQueue)
+				: taskQueue(_taskQueue)
+				, type(FileDialogFolderType::Folder)
 				, folder(_folder)
 				, name(_folder.GetFilePath().GetName())
 			{
@@ -54537,7 +54603,7 @@ View Model (IFileDialogFolder)
 					taskFired = true;
 					auto taskFolder = Ptr(parent);
 					vint taskFolderId = ++taskFolder->taskId;
-					GetApplication()->InvokeAsync([taskFolder, taskFolderId]()
+					taskQueue->Queue([taskFolder, taskFolderId]()
 					{
 						auto subFolders = Ptr(new List<filesystem::Folder>);
 						if (!taskFolder->folder.GetFolders(*subFolders.Obj()))
@@ -54554,7 +54620,7 @@ View Model (IFileDialogFolder)
 								{
 									if (!taskFolder->childrenByName.Keys().Contains(subFolder.GetFilePath().GetName()))
 									{
-										auto child = Ptr(new FileDialogFolder(subFolder));
+										auto child = Ptr(new FileDialogFolder(subFolder, taskFolder->taskQueue));
 										taskFolder->AddChild(child);
 										child->AddPlaceholderChild();
 									}
@@ -54644,8 +54710,15 @@ View Model (IFileDialogViewModel)
 			vint						loadingTaskId = 0;
 			Files						files;
 			Regex						regexDisplayString{ L";" };
+			Ptr<FileDialogTaskQueue>		taskQueue = Ptr(new FileDialogTaskQueue);
 
 		public:
+			FileDialogViewModel()
+			{
+				rootFolder = Ptr(new FileDialogFolder(taskQueue));
+				rootFolder->type = FileDialogFolderType::Root;
+			}
+
 			FakeDialogServiceBase*      dialogService = nullptr;
 
 			bool						selectToSave = false;
@@ -54748,7 +54821,7 @@ View Model (IFileDialogViewModel)
 					vint index = folder->childrenByName.Keys().IndexOf(fragment.GetName());
 					if (index == -1)
 					{
-						auto child = Ptr(new FileDialogFolder(fragment));
+						auto child = Ptr(new FileDialogFolder(fragment, taskQueue));
 						folder->AddChild(child);
 						child->AddPlaceholderChild();
 						folder = child;
@@ -54798,7 +54871,7 @@ View Model (IFileDialogViewModel)
 				}
 
 				auto vm = Ptr(this);
-				GetApplication()->InvokeAsync([taskId, taskFolder, taskPath, vm]()
+				taskQueue->Queue([taskId, taskFolder, taskPath, vm]()
 				{
 					auto folders = Ptr(new List<filesystem::Folder>);
 					auto files = Ptr(new List<filesystem::File>);
@@ -54824,7 +54897,7 @@ View Model (IFileDialogViewModel)
 								vint index = taskFolder->childrenByName.Keys().IndexOf(item->name);
 								if (index == -1)
 								{
-									auto associatedFolder = Ptr(new FileDialogFolder(folder));
+									auto associatedFolder = Ptr(new FileDialogFolder(folder, vm->taskQueue));
 									taskFolder->AddChild(associatedFolder);
 									associatedFolder->AddPlaceholderChild();
 									item->associatedFolder = associatedFolder;
@@ -55352,8 +55425,6 @@ FakeDialogServiceBase
 			}
 
 			vm->initialDirectory = initialDirectory;
-			vm->rootFolder = Ptr(new FileDialogFolder);
-			vm->rootFolder->type = FileDialogFolderType::Root;
 
 			switch (dialogType)
 			{

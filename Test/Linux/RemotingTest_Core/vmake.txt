@@ -160,6 +160,8 @@
 ../../RemotingHelpers/RendererClient/RemoteProtocolRendererClient.cpp
 ../../RemotingHelpers/Rvmt/ViewModelHostClient.cpp
 ../../RemotingHelpers/Rvmt/ViewModelHostServer.cpp
+../../RemotingHelpers/StdioRedirection/StdioRedirection.cpp
+../../RemotingHelpers/StdioRedirection/StdioRedirection.Linux.cpp
 ../../GacUISrc/RemotingTest_Core/GuiMain.cpp
 ../../GacUISrc/RemotingTest_Core/Main.cpp
 ../../GacUISrc/Generated_DarkSkin/Source_x64/DarkSkin.cpp

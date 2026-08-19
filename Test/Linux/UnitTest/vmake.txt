@@ -78,6 +78,7 @@
 ../../../Source/Resources/GuiResource.cpp
 ../../../Source/Resources/GuiResourceManager.cpp
 ../../../Source/Resources/GuiResourceTypeResolvers.cpp
+../../../Source/Utilities/AutomationService/MiniHttpAutomationService.cpp
 ../../../Source/Utilities/SharedServices/GuiSharedAsyncService.cpp
 ../../../Source/Utilities/SharedServices/GuiSharedAutomationService.cpp
 ../../../Source/Utilities/SharedServices/GuiSharedCallbackService.cpp
@@ -293,12 +294,15 @@
 ../../GacUISrc/UnitTest/TestRemote_GraphicsHost_Shared.cpp
 ../../GacUISrc/UnitTest/TestRemote_GraphicsHost_Startup.cpp
 ../../GacUISrc/UnitTest/TestRemote_EmptyWindow.cpp
+../../GacUISrc/UnitTest/TestRemote_Caret.cpp
 ../../GacUISrc/UnitTest/TestRemote_DocumentRunManagement.cpp
+../../GacUISrc/UnitTest/TestRemote_AsyncRendererChannel.cpp
 ../../GacUISrc/UnitTest/TestRemote_RenderingDom.cpp
 ../../GacUISrc/UnitTest/TestRemote_Startup.cpp
 ../../GacUISrc/UnitTest/TestRemote_UnitTestFramework.cpp
 ../../GacUISrc/UnitTest/TestRemote_UnitTestFramework_Async.cpp
 ../../GacUISrc/UnitTest/TestResource.cpp
+../../GacUISrc/UnitTest/TestResource_Rpc.cpp
 ../../GacUISrc/UnitTest/TestItemProviders_TextItemProvider.cpp
 ../../GacUISrc/UnitTest/TestItemProviders_TextItemBindableProvider.cpp
 ../../GacUISrc/UnitTest/TestItemProviders_ListViewItemProvider.cpp

@@ -3,10 +3,12 @@
 #include <Test.RemotingHelpers.h>
 #include <Skins/DarkSkin/DarkSkin.h>
 #include "../WGac/Renderers/WGacRenderer.h"
+#include "../WGac/Services/WGacAutomationService.h"
 #elif defined __APPLE__ && __has_include(<GacUI.h>)
 #include <GacUI.h>
 #include <Test.RemotingHelpers.h>
 #include <Skins/DarkSkin/DarkSkin.h>
+#include "../Mac/NativeWindow/CocoaAutomationService.h"
 #include "../Mac/NativeWindow/OSX/CoreGraphics/CoreGraphicsApp.h"
 #else
 #include "DarkSkin.h"
@@ -63,9 +65,9 @@ void GuiMain()
 	windows::SetWindowDefaultIcon(MAINICON);
 	windows::WindowsAutomationServiceHosted automationService;
 #elif defined VCZH_GCC && !defined VCZH_APPLE
-	wayland::WGacAutomationServiceHoste rendererAutomationServiceObject(currentGuiContext->renderer);
+	wayland::WGacAutomationServiceHosted automationService;
 #elif defined VCZH_GCC && defined VCZH_APPLE
-	osx::CocoaAutomationServiceHoste rendererAutomationServiceObject(currentGuiContext->renderer);
+	osx::CocoaAutomationServiceHosted automationService;
 #endif
 	GetNativeServiceSubstitution()->Substitute(&automationService, false);
 

@@ -28,8 +28,10 @@ Do not also start a manual host in that mode. Standalone requesters do not use a
 remote renderer. The wGac and iGac standalone launchers remain fixed to manual
 `/MiniHttp`.
 
-The Linux/macOS `/Cli` rows describe required cross-platform code and runtime
-procedure but were not runtime-verified during the Windows implementation task.
+The Linux `/Cli` row has been runtime-verified, including normal shutdown and
+both host-loss variants in the fatal regression addendum. The macOS `/Cli` row
+describes the required code and runtime procedure but still requires runtime
+verification on macOS.
 
 For a Core target, the Core must start before the renderer. The application
 selector belongs only to Core, while the renderer receives the transport
