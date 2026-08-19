@@ -421,6 +421,8 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 	FilePath logFolderPath = inputPath.GetFullPath() + logFolderPostfix;
 	FilePath scriptFilePath = logFolderPath / L"Workflow.txt";
 	FilePath rpcScriptFilePath = logFolderPath / L"WorkflowRpc.txt";
+	FilePath rpcMetadataPath = logFolderPath / L"RpcMetadata.txt";
+	FilePath rpcMetadataDtsPath = logFolderPath / L"RpcMetadata.d.ts";
 	FilePath errorFilePath = logFolderPath / L"Errors.txt";
 	FilePath workingDir = inputPath.GetFolder();
 	Ptr<CodegenConfig::CppOutput> knownCppOutput;
@@ -429,6 +431,16 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 		bool succeeded = true;
 		File rpcScriptFile(rpcScriptFilePath);
 		if (rpcScriptFile.Exists() && !rpcScriptFile.Delete())
+		{
+			succeeded = false;
+		}
+		File rpcMetadataFile(rpcMetadataPath);
+		if (rpcMetadataFile.Exists() && !rpcMetadataFile.Delete())
+		{
+			succeeded = false;
+		}
+		File rpcMetadataDtsFile(rpcMetadataDtsPath);
+		if (rpcMetadataDtsFile.Exists() && !rpcMetadataDtsFile.Delete())
 		{
 			succeeded = false;
 		}
@@ -745,6 +757,20 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 				}
 				if (!rpcGenerationSucceeded)
 				{
+					cleanKnownRpcOutputs();
+					SaveErrors(errorFilePath, errors);
+					return;
+				}
+
+				auto rpcMetadata = compiled->metadata->rpcMetadata;
+				auto rpcMetadataCode = GenerateToStream([&](StreamWriter& writer)
+				{
+					WfPrint(rpcMetadata->metadataModule, L"", writer);
+				});
+				if (!File(rpcMetadataPath).WriteAllText(rpcMetadataCode, true, BomEncoder::Utf8)
+					|| !File(rpcMetadataDtsPath).WriteAllText(rpcMetadata->dts, true, BomEncoder::Utf8))
+				{
+					errors.Add(GuiResourceError({ resource }, L"Unable to write RPC metadata to: " + logFolderPath.GetFullPath()));
 					cleanKnownRpcOutputs();
 					SaveErrors(errorFilePath, errors);
 					return;

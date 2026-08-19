@@ -1,0 +1,15 @@
+﻿module RpcMetadata;
+
+namespace rvmt
+{
+    @rpc:Interface
+    @rpc:Ctor
+    @rpc:IdString("rvmt::IViewModel")
+    @rpc:IdNumber(0)
+    interface IViewModel
+    {
+        @rpc:IdString("rvmt::IViewModel.Translate")
+        @rpc:IdNumber(1)
+        func Translate(name : ::system::String) : (::system::String);
+    }
+}

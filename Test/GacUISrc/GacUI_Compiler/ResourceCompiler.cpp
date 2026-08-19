@@ -103,6 +103,8 @@ FilePath CompileResources(
 	FilePath workflowPath2 = outputBinaryFolder / (name + L".TemporaryClass.UI.txt");
 	FilePath workflowPath3 = outputBinaryFolder / (name + L".InstanceClass.UI.txt");
 	FilePath workflowRpcPath = outputBinaryFolder / (name + L".Rpc.txt");
+	FilePath rpcMetadataPath = outputBinaryFolder / L"RpcMetadata.txt";
+	FilePath rpcMetadataDtsPath = outputBinaryFolder / L"RpcMetadata.d.ts";
 	FilePath binaryPath = outputBinaryFolder / (name + L".UI.bin");
 	FilePath assemblyPath32 = outputBinaryFolder / (name + L".UI.x86.bin");
 	FilePath assemblyPath64 = outputBinaryFolder / (name + L".UI.x64.bin");
@@ -137,6 +139,8 @@ FilePath CompileResources(
 	File(workflowPath2).Delete();
 	File(workflowPath3).Delete();
 	File(workflowRpcPath).Delete();
+	File(rpcMetadataPath).Delete();
+	File(rpcMetadataDtsPath).Delete();
 	File(binaryPath).Delete();
 	File(assemblyPath32).Delete();
 	File(assemblyPath64).Delete();
@@ -176,6 +180,11 @@ FilePath CompileResources(
 		auto rpcAssemblyName = name + L"Rpc";
 		if (HasRpcMetadata(compiled))
 		{
+			auto rpcMetadata = compiled->metadata->rpcMetadata;
+			auto rpcMetadataCode = GenerateToStream([&](StreamWriter& writer)
+			{
+				WfPrint(rpcMetadata->metadataModule, L"", writer);
+			});
 			auto rpcOutput = GenerateRpcCppOutput(
 				resource,
 				compiled,
@@ -187,9 +196,13 @@ FilePath CompileResources(
 				);
 			if (!rpcOutput
 				|| !WriteRpcWorkflowScript(resource, rpcOutput, workflowRpcPath, errors)
-				|| !WriteRpcCppCodesToFile(resource, rpcOutput, rpcAssemblyName, cppFolder, errors))
+				|| !WriteRpcCppCodesToFile(resource, rpcOutput, rpcAssemblyName, cppFolder, errors)
+				|| !File(rpcMetadataPath).WriteAllText(rpcMetadataCode, true, BomEncoder::Utf8)
+				|| !File(rpcMetadataDtsPath).WriteAllText(rpcMetadata->dts, true, BomEncoder::Utf8))
 			{
 				File(workflowRpcPath).Delete();
+				File(rpcMetadataPath).Delete();
+				File(rpcMetadataDtsPath).Delete();
 				CleanRpcCppFiles(cppFolder, rpcAssemblyName);
 				WriteErrors(errors, errorPath);
 				CHECK_FAIL(L"RPC compile error occurs, please check the log for details.");
