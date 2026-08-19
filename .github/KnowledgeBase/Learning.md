@@ -4,21 +4,21 @@
 
 - Process staged tasks one by one with verification [19]
 - Verify generated artifacts with downstream consumer checks [19]
-- Crash early instead of adding error-tolerance fallbacks [14]
+- Crash early instead of adding error-tolerance fallbacks [15]
+- Proactively remove code made redundant by refactoring [15]
 - Port fixes from imports to source repositories [14]
-- Proactively remove code made redundant by refactoring [14]
-- Keep design documentation aligned with code after refactoring [12]
+- Keep design documentation aligned with code after refactoring [13]
 - Fix behavior at the owning state instead of patching symptoms [11]
-- Extract abstractions only for real shared behavior [9]
+- Extract abstractions only for real shared behavior [10]
 - Verify and localize portability on every target OS [7]
 - Make `Stop()` drain asynchronous work before returning [7]
-- Validate expectations against implementation and existing tests [5]
+- Validate expectations against implementation and existing tests [6]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
 - Do not assume async callback owners are heap allocated [4]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [3]
+- Don't assume observable changes are batched [3]
 - Capture dependent lambdas explicitly [2]
-- Don't assume observable changes are batched [2]
 - Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages [2]
 - Prefer simple calls before interface casts [2]
 - Treat Debug memory leak dumps as required failures [2]
@@ -60,6 +60,8 @@ When a C++ lambda uses another local lambda (or any local variable), capture it 
 
 When verifying callbacks from an observable collection, do not assume multiple operations collapse into a single notification. For example, for `vl::collections::ObservableList<T>`, `Clear()` followed by multiple `Add()` calls triggers one callback pair per operation; test expectations should match the actual per-operation granularity.
 
+The same caution applies to asynchronous queue refactors. Moving consumption behind UI completions or batching same-cycle submissions can preserve final functional assertions while changing allocation, callback, and rendering order. Treat stable scheduling-sensitive artifacts as evidence that the operations were observably distinct.
+
 ## Crash early instead of adding error-tolerance fallbacks
 
 For public API arguments that callers can validate with query methods, fail with `CHECK_ERROR` when the argument is invalid instead of accepting impossible protocol states.
@@ -69,6 +71,8 @@ When an invariant says a value must exist or a conversion must succeed, prefer u
 Build-generation scripts must also preserve failures from compiler or dependency probes across command substitutions and formatting pipelines. Stop before emitting tracked output when a required header or package is missing, and declare the dependency in the canonical environment bootstrap so the original diagnostic is reported instead of a malformed generated rule.
 
 For HTTP automation endpoints, return protocol errors such as 404 only for recognized request rejection. Unexpected parser, automation, callback, or invariant failures should reach a process-terminating boundary instead of being translated into a healthy-looking endpoint response.
+
+Test applications should also preserve their intended executable boundary. When a lower layer already injects a terminal RPC exception, let the real proxy call escape and crash a fail-fast test app instead of wrapping it in an application-layer close flag, catch adapter, or exit-code shim. Keep a separate error-delivery boundary only for applications that must notify another active process before terminating.
 
 ## Process staged tasks one by one with verification
 
@@ -105,6 +109,8 @@ For role-specific implementations, extract a base that contains only truly share
 When several platform implementations must satisfy the same behavioral contract, define and register each scenario once in a platform-neutral runner and parameterize only the concrete types and genuine platform seams. Duplicating test registrations per platform invites feature drift.
 
 Do not turn fixed owner decisions or concrete state observations into callbacks or virtual policy. If the owning process controls whether an operation is called, enforce that choice at the call site; if a predicate only reports internal state, keep it nonvirtual. Reserve virtual functions for behavior that derived implementations genuinely need to change.
+
+Likewise, do not pass one-shot callbacks merely to hide mutually exclusive concrete call sites. Prefer typed ownership that exposes the real server or service to the operation that performs the fixed sequence, and use compile-time or overload separation when some application modes genuinely have no such dependency.
 
 ## Make `Stop()` drain asynchronous work before returning
 

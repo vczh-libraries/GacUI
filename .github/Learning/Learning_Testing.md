@@ -3,8 +3,8 @@
 # Orders
 
 - Keep test log paths stable during refactors [13]
+- Verify RVM requester/host lifetimes across every transport [10]
 - Remote protocol frames: actions must change UI; organize frames carefully [9]
-- Verify RVM requester/host lifetimes across every transport [9]
 - Stress remote core/renderer transport and terminal flows [8]
 - Don’t schedule redundant idle frames [7]
 - Preserve existing idle-frame titles when requested [6]
@@ -72,6 +72,7 @@
 - MiniHTTP automation probes use IPv4 loopback [1]
 - Verify automation-service ownership changes in every consumer app [1]
 - Remote-debugging guides own complete Cartesian test matrices [1]
+- Treat file-dialog snapshots as scheduling-sensitive contracts [1]
 
 # Refinements
 
@@ -448,6 +449,8 @@ Across `/Pipe`, `/Http`, and `/MiniHttp`, verify successful startup and `Transla
 
 When requester/session or channel-server inheritance changes, exercise both RVM application shapes on every transport: `CppTest_Rvm` with `RemotingTest_RvmHost`, and `RemotingTest_Core /RVMT` with the host and native renderer. Require service acquisition, a live `Translate`, and clean application-controlled shutdown.
 
+For host-loss coverage, trigger a real in-flight or next RPC after one successful translation. Standalone `CppTest_Rvm` must terminate nonzero from the injected exception with no recovery, while Core rows must deliver the exact Core-authored fatal message before their nonzero exit. Cover combined and split `/Cli` topologies and audit processes, dialogs, and listeners after every row.
+
 ## MiniHTTP automation probes use IPv4 loopback
 
 When a MiniHTTP test listener binds IPv4 loopback, probe it through `127.0.0.1`. `localhost` may resolve to IPv6 and miss an otherwise healthy listener, producing a misleading endpoint failure.
@@ -461,3 +464,7 @@ After moving reusable automation endpoint code or changing its shared-project ow
 Put each renderer's complete application-by-transport Cartesian product in an early `Test Matrix` section after the background introduction. The native and GacJS setup guides must enumerate their own platform-supported targets and required companion processes instead of delegating the matrix to another job or presenting dimensions as alternatives.
 
 Keep responsibilities separated: renderer guides own the supported matrix and setup commands, while `DebugRemoteProtocolSop.md` owns feature operations, error handling, and observable pass/fail behavior. Update the SOP when an operation is missing instead of duplicating those steps in every setup guide.
+
+## Treat file-dialog snapshots as scheduling-sensitive contracts
+
+When refactoring asynchronous fake-file-dialog work, a passing unit-test summary and clean leak report are insufficient. Compare all tracked file-dialog snapshots byte for byte: moving queue consumption behind UI callbacks or batching submissions can keep functional assertions green while rewriting many snapshots through changed element-allocation and rendering order. Restore those artifacts and reject the refactor unless the scheduling and snapshot migration are explicitly intended.

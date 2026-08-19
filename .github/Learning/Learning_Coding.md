@@ -14,6 +14,7 @@
 - Automation `/IO` parses synchronously and queues parsed commands [3]
 - `RemotingTest_Core /RVMT` gates singleton channels by startup phase [3]
 - `CppTest_Rvm` is a GUI app and stays console-free [3]
+- RVM accepted-host loss poisons the requester dispatcher outside locks [3]
 - `vl::collections::ObservableList<T>` element access and replacement [2]
 - Extract helpers to remove duplicated conversion blocks [2]
 - Place helpers in the primary-responsibility namespace [2]
@@ -22,7 +23,7 @@
 - Parameterize remoting channel servers by concrete protocol server bases [2]
 - Automation HTTP returns 404 only for protocol-level rejection [2]
 - `RemoteViewModelTest` control messages are business-only [2]
-- RVM accepted-host loss poisons the requester dispatcher outside locks [2]
+- `/Cli` host transport is independent from Core renderer transport [2]
 - Keep renderer automation port configurable with default 8889 [1]
 - Use channel `localClient` callbacks for remoting local-client detection [1]
 - Use `EventObject` for renderer-connection waits after channel server start [1]
@@ -69,7 +70,7 @@
 - `Instance_GenerateRpcMetadata` validates one aggregate of all Workflow modules [1]
 - GacUI test apps own concrete automation service composition [1]
 - `StdioRedirection` keeps Base64 framing transport-opaque [1]
-- `/Cli` host transport is independent from Core renderer transport [1]
+- `FileDialogTaskQueue` lock preserves cross-thread scheduling [1]
 
 # Refinements
 
@@ -384,6 +385,8 @@ Start automation only after the native controller exists. Each test app construc
 
 After claiming the accepted RVM host exactly once, finish broker bookkeeping and inject `RemotingTest_RvmHost disconnected.` into the requester dispatcher outside server locks. If loss happens before the dispatcher exists, latch the message and inject it during installation. Keep normal stopping and renderer loss nonfatal; once host loss has poisoned the dispatcher, skip graceful RPC finalization that would wait forever on that terminal dispatcher.
 
+Standalone `CppTest_Rvm` stores and calls the real `rvmt::IViewModel` proxy. A host-loss `rpc_controller::RpcInjectedException` must escape the UI-time call and terminate that fail-fast test app directly; do not add an application-layer wrapper or recovery path. `RemotingTest_Core` is intentionally different because its existing boundary must deliver one Core-authored renderer error before terminating.
+
 ## `CppTest_Rvm` is a GUI app and stays console-free
 
 Keep `CppTest_Rvm` independent of `vl::console::Console`. Invalid arguments can produce a nonzero process result without console logging, while ordinary diagnostics and interaction use the GUI and automation surfaces.
@@ -401,3 +404,11 @@ Keep process/pipe mechanics platform-specific while shared code owns framing, co
 ## `/Cli` host transport is independent from Core renderer transport
 
 For `CppTest_Rvm`, `/Cli:<path>` is one exclusive RVM transport alongside `/Pipe`, `/Http`, and `/MiniHttp`. For `RemotingTest_Core /RVMT`, `/Cli:<path>` selects only the auto-launched host transport and must be combined with exactly one renderer transport. In that mode, compose separate renderer-only and stdio host-only servers, connect the renderer/Core side first to preserve client-id ordering, and stop the host server before the renderer server. Do not manually launch `RemotingTest_RvmHost` when `/Cli` owns it.
+
+Keep Core view-model acquisition inside `StartServer`'s error boundary and make server ownership type-directed. The combined topology reuses the already-started renderer/RVM server, the split `/Cli` topology starts and stops its separate stdio server, and `/FCT` and `/RPT` use a compile-time no-RVM path. Only child launch is an optional composition callback.
+
+## `FileDialogTaskQueue` lock preserves cross-thread scheduling
+
+`FileDialogTaskQueue::Queue` is called from UI-thread view-model paths, and task completion mutations return through `GuiApplication::InvokeInMainThread`, but the queue state is not UI-thread-confined. Its `InvokeAsync` worker removes pending tasks and clears `executing` while later UI calls can submit more work, so `SpinLock` protects a real producer/consumer overlap.
+
+Do not move consumption behind each UI completion or defer submissions into a UI-thread batch merely to remove the lock. Both add a scheduling boundary and change file-dialog element allocation and rendering order. Retain the locked worker-draining design unless an intentional behavior and snapshot migration is requested.
