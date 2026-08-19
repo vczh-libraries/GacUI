@@ -11,6 +11,7 @@
 #include <VlppOS.Windows.h>
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #endif
+#include <type_traits>
 
 using namespace vl;
 using namespace vl::inter_process;
@@ -139,31 +140,14 @@ public:
 	}
 };
 
-template<typename TRvmServer>
-Ptr<rvmt::IViewModel> RequestViewModel(
-	TRvmServer& rvmChannelServer,
-	const Func<void()>& connectNewClient
-	)
-{
-	collections::List<WString> requiredServiceNames;
-	requiredServiceNames.Add(L"rvmt::IViewModel");
-	auto requesterClientId = rvmChannelServer.Connect(requiredServiceNames);
-	if (connectNewClient)
-	{
-		connectNewClient();
-	}
-	RemoteViewModelTestInitialize::InitializeRpc(rvmChannelServer.GetDispatcher(), requesterClientId);
-	return rvmChannelServer.RequestService(L"rvmt::IViewModel").template Cast<rvmt::IViewModel>();
-}
-
-template<typename TChannelServer>
+template<typename TChannelServer, typename TRvmChannelServer = void>
 int StartServer(
 	vint mainWindowConstructorIndex,
 	Ptr<async_tcp_socket::IAsyncSocketServer> miniHttpSocketServer,
 	Ptr<glr::json::Parser> jsonParser,
 	TChannelServer& channelServer,
-	const Func<Ptr<rvmt::IViewModel>()>& requestViewModel,
-	const Func<void()>& stopRvmServer
+	TRvmChannelServer* rvmChannelServer = nullptr,
+	const Func<void()>& connectNewClient = {}
 	)
 {
 	channelServer.Start();
@@ -211,10 +195,22 @@ int StartServer(
 	currentGuiContext = &context;
 	try
 	{
-		if (mainWindowConstructorIndex == 2)
+		if constexpr (!std::is_same_v<TRvmChannelServer, void>)
 		{
-			CHECK_ERROR(requestViewModel, L"StartServer(...)#The view model requester is missing.");
-			context.viewModel = requestViewModel();
+			CHECK_ERROR(rvmChannelServer, L"StartServer(...)#The RVM channel server is missing.");
+			if constexpr (!std::is_same_v<TChannelServer, TRvmChannelServer>)
+			{
+				rvmChannelServer->Start();
+			}
+			collections::List<WString> requiredServiceNames;
+			requiredServiceNames.Add(L"rvmt::IViewModel");
+			auto requesterClientId = rvmChannelServer->Connect(requiredServiceNames);
+			if (connectNewClient)
+			{
+				connectNewClient();
+			}
+			RemoteViewModelTestInitialize::InitializeRpc(rvmChannelServer->GetDispatcher(), requesterClientId);
+			context.viewModel = rvmChannelServer->RequestService(L"rvmt::IViewModel").template Cast<rvmt::IViewModel>();
 		}
 		SetupRemoteNativeController(&diffConverterProtocol);
 	}
@@ -231,9 +227,9 @@ int StartServer(
 	currentGuiContext = nullptr;
 
 	channelServer.ClearCoreChannels();
-	if (stopRvmServer)
+	if constexpr (!std::is_same_v<TRvmChannelServer, void> && !std::is_same_v<TChannelServer, TRvmChannelServer>)
 	{
-		stopRvmServer();
+		rvmChannelServer->Stop();
 	}
 	channelServer.Stop();
 	return result;
@@ -256,21 +252,16 @@ int StartServerHelper(
 			);
 		RemoteViewModelChannelServer<StdioRedirectionServer> rvmChannelServer(jsonParser, false);
 		auto command = WString::Unmanaged(L"\"") + cliPath + WString::Unmanaged(L"\" /Cli");
-		auto requestViewModel = Func<Ptr<rvmt::IViewModel>()>([&]()
-		{
-			rvmChannelServer.Start();
-			return RequestViewModel(rvmChannelServer, Func<void()>([&]()
-			{
-				rvmChannelServer.ConnectNewClient(command);
-			}));
-		});
 		return StartServer(
 			index,
 			miniHttpSocketServer,
 			jsonParser,
 			rendererServer,
-			requestViewModel,
-			Func<void()>([&]() { rvmChannelServer.Stop(); })
+			&rvmChannelServer,
+			Func<void()>([&]()
+			{
+				rvmChannelServer.ConnectNewClient(command);
+			})
 			);
 	}
 	else if (index == 2)
@@ -285,8 +276,7 @@ int StartServerHelper(
 			miniHttpSocketServer,
 			jsonParser,
 			channelServer,
-			Func<Ptr<rvmt::IViewModel>()>([&]() { return RequestViewModel(channelServer, {}); }),
-			{}
+			&channelServer
 			);
 	}
 	else
@@ -296,7 +286,7 @@ int StartServerHelper(
 			true,
 			std::forward<TArgs>(args)...
 			);
-		return StartServer(index, miniHttpSocketServer, jsonParser, channelServer, {}, {});
+		return StartServer(index, miniHttpSocketServer, jsonParser, channelServer);
 	}
 }
 
