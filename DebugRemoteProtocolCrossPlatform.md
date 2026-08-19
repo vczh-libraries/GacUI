@@ -4,7 +4,8 @@
 - If you are on macOS, the repo you are working on are `GacUI`, `GacJS` and `iGac`.
 - `wGac` and `iGac` has very similar structure:
   - When a `%ABC` folder is mentioned below, it means `wGac/WGacABC` or `iGac/MacABC`.
-  - WWhen a repo name is not mentioned, it means `wGac` or `iGac`.
+  - When a repo name is not mentioned, it means `wGac` or `iGac`.
+- This task is usually executed after some changes have been made to `GacUI`, `import.sh` and `syncProj.sh` is required to update the repo first.
 
 ## Goal
 
@@ -20,7 +21,7 @@
   - `GacUI/Test/RemotingHelpers` is `CodePack`-ed to `GacUI/Release` and then copied to `Import-Test`.
 - `syncProj.sh` is supposed to maintain the structure described in `## Ensure Project Availability`.
   - Unalignment usually happens here because `GacUI` is changing progressively, `wGac` and `iGac` will then catch up after `GacUI` finishes some features.
-  - `GacUI`, `wGac` and `iGac` might needs some manual fix, especially `syncProj.sh`.
+  - `GacUI`, `wGac` and `iGac`, as well as `syncProj.sh`, might needs some manual fix.
 - `build.sh` builds the whole repo.
 - `test.sh` runs each app.
 
