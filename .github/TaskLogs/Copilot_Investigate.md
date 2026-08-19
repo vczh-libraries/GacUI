@@ -2,269 +2,167 @@
 
 # PROBLEM DESCRIPTION
 
-# Refactor RVM Requester Composition
-
-Commit `e1926f204` completed the stdio RVM host transport. Apply the following
-focused cleanup without changing the transport, RPC protocol, renderer
-behavior, or command-line contract.
-
-## Investigation Result
-
-Both proposed refactors are valid.
-
-- `TerminatingViewModel` in `Test/GacUISrc/CppTest_Rvm/GuiMain.cpp` is
-  unnecessary. Host loss is already injected into the requester as a
-  `rpc_controller::RpcInjectedException`; the blocked or next
-  `rvmt::IViewModel::Translate` call throws it. `CppTest_Rvm` is a test app, so
-  letting that exception remain unhandled and crash the process is the desired
-  fail-fast behavior.
-- The free `RequestViewModel` helper in
-  `Test/GacUISrc/RemotingTest_Core/GuiMain.cpp` has two mutually exclusive
-  source call sites, but the `requestViewModel` callback passed to `StartServer`
-  is invoked exactly once in each RVM run. The acquisition sequence can execute
-  directly in `StartServer` through a typed RVM-server argument or a tightly
-  scoped overload; a one-shot callback returning the view model is not needed.
-
-## Required Changes
-
-### Remove `TerminatingViewModel` from `CppTest_Rvm`
-
-In `Test/GacUISrc/CppTest_Rvm/GuiMain.cpp`:
-
-- Remove the `<cstdlib>` include, `RvmGuiContext::fatalHostLoss`, the complete
-  `TerminatingViewModel` class, and the final `std::_Exit(1)` branch.
-- Store the acquired `rvmt::IViewModel` proxy directly in `RvmGuiContext`, as
-  the code did before `e1926f204`.
-- Do not replace the wrapper with another `try`/`catch`, window-close adapter,
-  flag, exit-code shim, or recovery path. If a UI-time
-  `rvmt::IViewModel::Translate` call throws after host loss, let the exception
-  escape and crash `CppTest_Rvm`.
-- Keep normal application shutdown unchanged. A normal close still reaches
-  `server.Stop()`, whose existing stopping phase prevents the requested host
-  shutdown from being reclassified as host loss.
-- Do not change the two startup `Translate` checks. They already exercise the
-  real proxy directly.
-
-This cleanup applies to standalone `/Pipe`, `/Http`, `/MiniHttp`, and `/Cli`
-modes. A Windows runtime-error dialog during the deliberate crash test is an
-observable crash signal, not a reason to restore graceful recovery; handle the
-dialog according to the repository's computer-use guidance.
-
-### Inline Core view-model acquisition into `StartServer`
-
-In `Test/GacUISrc/RemotingTest_Core/GuiMain.cpp`:
-
-- Delete the free `RequestViewModel` function.
-- Remove the `Func<Ptr<rvmt::IViewModel>()> requestViewModel` parameter and its
-  two wrapper lambdas. Remove the one-shot `stopRvmServer` callback as well;
-  typed RVM-server ownership should express whether `StartServer` must stop a
-  separate server.
-- Give `StartServer`, or a small typed overload around it, direct access to the
-  applicable `RemoteViewModelChannelServer` and whether that RVM server is the
-  separately owned stdio server. An optional synchronous callback may remain
-  solely for `ConnectNewClient(command)` in `/Cli` mode.
-- Perform the view-model acquisition sequence directly inside the existing
-  `StartServer` exception boundary:
-  1. Start the separate stdio RVM server only in `/Cli` mode.
-  2. Create the required-service list containing exactly
-     `rvmt::IViewModel`.
-  3. Call the RVM server's `Connect`.
-  4. In `/Cli` mode, call `ConnectNewClient` only after `Connect` has made host
-     admission ready.
-  5. Call `RemoteViewModelTestInitialize::InitializeRpc` with the returned
-     requester client ID.
-  6. Request and cast `rvmt::IViewModel` into `CoreGuiContext::viewModel`.
-- Preserve the complete startup order:
-  renderer server start, Core local client registration as
-  `GacUIRemoteProtocolCoreClientId == 1`, optional separate stdio RVM server
-  start, RVM `Connect`, optional child launch, generated RPC initialization,
-  service request, and remote controller setup.
-- Preserve both topologies:
-  - Non-CLI `/RVMT` uses the same `RemoteViewModelChannelServer` for renderer
-    and host traffic. Do not start or stop it twice.
-  - `/Cli` uses a renderer-only server plus a separate
-    `RemoteViewModelChannelServer<StdioRedirectionServer>`. Clear Core channels
-    on the renderer server, stop the RVM server first, and then stop the
-    renderer server.
-- Skip all RVM setup for `/FCT` and `/RPT`. A compile-time no-RVM template path
-  or a clear overload is preferred over a dummy server.
-- Do not restore the pre-`e1926f204` `dynamic_cast` assumption that the renderer
-  server is always the RVM server; it is false for the split `/Cli` topology.
-- Keep Core's current exception boundary and one-shot
-  `CoreGuiContext::broadcastFatalError`. Unlike standalone `CppTest_Rvm`, Core
-  must send its exact Core-authored fatal `ErrorChannel` package to the active
-  renderer before terminating.
-
-## Documentation Contract
-
-Keep the accompanying `DebugRemoteProtocolSop.md` clarification: a nonzero
-crash from an unhandled `rpc_controller::RpcInjectedException` is the required
-direct termination for `CppTest_Rvm`. Do not change the SOP back to requiring
-an application-layer fatal handler. Core's distinct fatal-package requirement
-remains unchanged.
-
-## Out of Scope
-
-- No changes to `Test/RemotingHelpers/Rvmt`, stdio framing or process ownership,
-  generated RemoteViewModelTest files, reflection, project inventories, release
-  CodePack output, command-line parsing, renderer behavior, or test matrices.
-- Do not add retry, reconnect, graceful recovery, a shutdown acknowledgement,
-  a heartbeat, or defensive cleanup for a crashing test app.
-- Do not modify wGac or iGac.
-
-## Verification
-
-- Run `git diff --check` and confirm that `TerminatingViewModel`,
-  `fatalHostLoss`, the CppTest-only `std::_Exit(1)`, the free
-  `RequestViewModel`, and the one-shot `requestViewModel` callback are gone.
-  Confirm that no replacement catch/recovery wrapper was added.
-- Build `Test/GacUISrc/GacUISrc.sln` as Debug x64 and Debug Win32 through
-  `.github/Scripts/copilotBuild.ps1`. Inspect `.github/Scripts/Build.log` for a
-  successful build with zero warnings and zero errors.
-- Run the existing Debug x64 `UnitTest` through
-  `.github/Scripts/copilotExecute.ps1`. Require the complete passing summary and
-  no memory-leak dump. No new unit test or generated file is required for this
-  test-app-only refactor.
-- For standalone `CppTest_Rvm`, exercise `/Pipe`, `/Http`, `/MiniHttp`, and
-  `/Cli` with the matching host setup from the native-renderer guide. In every
-  mode, require successful service acquisition, exact `Hello, <marker>!`
-  translation, and clean application-controlled shutdown with no orphan host or
-  stale listener.
-- Repeat standalone host-loss verification in every mode. After one successful
-  translation, force-terminate the accepted host and trigger an in-flight or
-  next `Translate` as appropriate for the transport. Require `CppTest_Rvm` to
-  terminate nonzero from the unhandled `rpc_controller::RpcInjectedException`,
-  with no retry, recovery, or graceful-close adapter. If a Windows crash/runtime
-  dialog appears, record and dismiss it, and leave no process or listener
-  behind.
-- For `RemotingTest_Core /RVMT`, exercise the combined manual-host topology over
-  `/Pipe`, `/Http`, and `/MiniHttp`, and the split `/Cli:<host-path>` topology
-  with each of those three renderer transports. Require exact
-  `Hello, <marker>!` translation and clean shutdown in every row.
-- Force host loss in the Core rows according to `DebugRemoteProtocolSop.md`.
-  Require exactly one Core-authored `ErrorChannel` package containing
-  `RemotingTest_RvmHost disconnected.`, renderer-visible fatal state, and a
-  nonzero Core exit. This proves that inlining did not move acquisition outside
-  Core's exception/fatal-delivery boundary.
-- Smoke-test at least one `/FCT` and one `/RPT` Core run to prove that the
-  no-RVM `StartServer` path still starts, operates, and stops without attempting
-  view-model setup.
-- Launch and operate test applications only through the repository's documented
-  execution wrappers. Bound waits and confirm that no requester, Core, host,
-  renderer, listener, native prompt, or crash dialog remains after each run.
+One more investigation to do, the FileDialogTaskQueue uses a lock,  it it seems that the lock is used during view model calling and InvokeInMainThread execution, all in UI thread. Since this is not a public class so  it is easy to limit the analysis in this cpp file. Confirm that they are actually all in UI thread, and if so, you can remove the lock. Run unit test to make sure the change actually works. Commit and push all local changes once finishing.
 
 # UPDATES
 
 # TEST [CONFIRMED]
 
-The problem is a structural regression with executable-boundary consequences,
-so it is confirmed by source inspection plus the existing build and runtime
-coverage rather than by adding a new unit-test-only seam.
+Audit every `FileDialogTaskQueue` construction, `Queue` call, and access to
+`tasks` and `executing` in
+`Source/Utilities/FakeServices/GuiFakeDialogServiceBase_FileDialog.cpp`.
+The class is file-local, one queue is owned by each `FileDialogViewModel`, and
+the only two `Queue` calls are from `FileDialogFolder::GetType` and
+`FileDialogViewModel::RefreshFiles`. Both are GacUI view-model operations and
+run on the UI thread; completion callbacks from their queued filesystem work
+also return through `GuiApplication::InvokeInMainThread`.
 
-- Source inspection confirms that `CppTest_Rvm/GuiMain.cpp` owns the complete
-  `TerminatingViewModel` catch/close wrapper, its `fatalHostLoss` flag, and the
-  post-loop `std::_Exit(1)`. The real view-model proxy is already used by both
-  startup `Translate` checks, and `ViewModelHostServer.cpp` already injects
-  `RemoteViewModelHostDisconnectedError` into the requester dispatcher.
-- Source inspection confirms that `RemotingTest_Core/GuiMain.cpp` invokes its
-  `requestViewModel` callback once inside `StartServer`, while two mutually
-  exclusive caller branches only reconstruct the same Connect/initialize/
-  request sequence through `RequestViewModel`.
-- A baseline Debug x64 build of `Test/GacUISrc/GacUISrc.sln` passed with zero
-  warnings and zero errors. The baseline Debug x64 `UnitTest` run passed all
-  88 files and all 1713 cases with no memory-leak dump. This establishes that
-  the requested work is a focused composition cleanup, not a repair for an
-  existing build or unit-test failure.
+The current implementation is not completely UI-thread-confined, however:
+`FileDialogTaskQueue::Execute` invokes a worker with
+`GuiApplication::InvokeAsync`, and that worker removes entries from `tasks`
+and clears `executing`. Therefore deleting only `SpinLock` would introduce a
+data race between UI-thread submissions and worker-thread queue consumption.
 
-Success after the change requires the obsolete symbols and recovery path to be
-absent, Debug x64 and Win32 builds to stay warning/error free, all existing unit
-tests to pass without leaks, and the documented standalone/Core transport
-matrices to preserve service acquisition, translation, shutdown, and distinct
-host-loss behavior.
+The proposed implementation must leave only the copied filesystem task on the
+worker. All `tasks` and `executing` reads and writes must happen either in the
+known UI-thread `Queue` call sites or in an explicit `InvokeInMainThread`
+continuation. Verification requires a successful Debug x64 build, a complete
+Debug x64 `UnitTest` run with all test files and cases passing and no memory
+leak dump, stable file-dialog snapshots, and no unexpected working-tree
+changes.
 
 # PROPOSALS
 
-- No.1 Remove the requester wrappers and make Core acquisition type-directed [CONFIRMED]
+- No.1 Wait for each UI completion before continuing [DENIED]
+- No.2 Batch UI-thread submissions before background execution [DENIED]
+- No.3 Retain the cross-thread lock [CONFIRMED]
 
-## No.1 Remove the requester wrappers and make Core acquisition type-directed
+## No.1 Keep queue state on the UI thread and remove `SpinLock`
 
-Use the real `rvmt::IViewModel` proxy directly in standalone `CppTest_Rvm`.
-Deleting the local wrapper lets the already-injected
-`rpc_controller::RpcInjectedException` escape the UI-time `Translate` call and
-reach the existing process-terminating boundary, while normal GUI shutdown
-still calls `server.Stop()` in the same order.
+Have `Queue` append on the UI thread and start execution when the queue is
+idle. `Execute` removes one task while still on the UI thread, passes that
+copied task alone to `InvokeAsync`, and posts a main-thread continuation after
+the task finishes. The continuation either starts the next queued task or
+marks the queue idle. Each existing filesystem task posts its own UI completion
+before this continuation, so task completions retain request order and any
+tasks queued by a completion join the same FIFO.
 
-Generalize Core's existing `StartServer` with an optional typed RVM-server
-pointer whose template argument defaults to `void`. A compile-time no-RVM path
-keeps `/FCT` and `/RPT` free of RVM operations. For `/RVMT`, acquire the service
-directly inside the existing exception boundary. The server types also encode
-lifetime ownership: the combined topology has identical renderer/RVM server
-types and therefore uses the already-started server once, while split `/Cli`
-has different server types and starts/stops its stdio RVM server inside
-`StartServer`. Keep only the optional `ConnectNewClient(command)` callback,
-after `Connect`, because launching the child is the one operation that is
-specific to `/Cli` composition.
-
-This preserves Core client id 1, renderer setup, error broadcasting, shared
-server single-start/single-stop behavior, split-server reverse shutdown, and
-the generated RPC initialization order without a `dynamic_cast`, dummy RVM
-server, request callback, or stop callback.
+This makes `tasks` and `executing` UI-thread-confined while preserving
+background filesystem enumeration. The `SpinLock`, `SPIN_LOCK` blocks, and
+temporary cross-thread completion flags then become unnecessary.
 
 ### CODE CHANGE
 
-- In `CppTest_Rvm/GuiMain.cpp`, remove `<cstdlib>`, `fatalHostLoss`,
-  `TerminatingViewModel`, proxy wrapping, and the final `_Exit`; initialize
-  `RvmGuiContext` with the acquired proxy directly.
-- In `RemotingTest_Core/GuiMain.cpp`, remove `RequestViewModel` and both
-  one-shot callbacks. Add `<type_traits>` and make `StartServer` perform typed
-  RVM start/connect/launch/InitializeRpc/RequestService and typed split-server
-  stop operations with `if constexpr`; update the three caller branches to
-  pass the real RVM server and, only for `/Cli`, the child-launch callback.
+- Change the private queue task type from `Func<void()>` to a background
+  function returning its UI completion callback.
+- Remove `SpinLock` and both `SPIN_LOCK` sections.
+- In `Execute`, remove the next task on the UI thread, run only that copied
+  task through `InvokeAsync`, then invoke its returned callback through
+  `InvokeInMainThread`. After the callback finishes, either start the next
+  queued task or clear `executing`, still on the UI thread.
+- Change the two filesystem-enumeration tasks to return their existing UI
+  mutation lambdas instead of posting those lambdas themselves.
+
+### DENIED
+
+The Debug x64 solution built successfully with zero warnings and zero errors,
+and the complete `UnitTest` run passed all 88 files and all 1713 cases without
+a memory-leak dump. However, waiting for one UI callback before starting the
+next background task changed the observable scheduling contract: 165 tracked
+file-dialog snapshot files were rewritten with equal insertion/deletion counts.
+The visible test semantics still passed, but element allocation and rendering
+order changed throughout all 17 file-dialog cases. The generated changes were
+restored rather than accepted as an incidental snapshot migration.
+
+The lock can only be removed if background tasks remain able to run
+sequentially and post their UI callbacks without waiting for those callbacks
+to execute.
+
+## No.2 Batch UI-thread submissions before background execution
+
+Keep the existing task type and its existing behavior: each task performs
+filesystem enumeration in a worker and posts its own UI completion callback.
+When the queue becomes active, defer `Execute` through
+`InvokeInMainThread`. That collects all submissions from the current UI work
+item before execution begins. `Execute` then copies the pending tasks into a
+private batch and clears the file-local queue on the UI thread. One
+`InvokeAsync` worker executes the copied batch sequentially, preserving FIFO
+posting of completion callbacks without waiting for them.
+
+After the batch has posted all completions, the worker posts one
+`InvokeInMainThread` continuation. Because it was posted after the task
+callbacks, the continuation observes any tasks queued by those callbacks,
+starts the next batch if necessary, or marks the queue idle. Consequently all
+reads and writes of `tasks` and `executing` are on the UI thread, while the
+background/completion ordering remains the same as the locked implementation.
+
+### CODE CHANGE
+
+- Restore `Func<void()>` tasks and the two existing task call sites.
+- Remove `SpinLock` and both `SPIN_LOCK` sections.
+- Defer the first `Execute` call through `InvokeInMainThread` so same-cycle UI
+  submissions form one batch.
+- Copy and clear pending tasks on the UI thread, execute that copied batch on
+  one worker, and post a final UI continuation that starts another batch or
+  clears `executing`.
+
+### DENIED
+
+The Debug x64 solution again built with zero warnings and zero errors, and a
+second complete `UnitTest` run again passed all 88 files and all 1713 cases
+without a memory-leak dump. Nevertheless, this batching boundary rewrote 166
+tracked file-dialog snapshots (8411 insertions and 6723 deletions). Deferring
+and batching submissions changes which filesystem requests are already in the
+worker batch before UI completions are processed, so it does not preserve the
+established element-allocation and rendering order.
+
+The snapshot changes were generated by the experiment and must be restored.
+Together with No.1, this demonstrates that moving either queue consumption or
+batch formation to the UI thread changes observable behavior.
+
+## No.3 Retain the cross-thread lock
+
+Keep the existing `FileDialogTaskQueue` implementation. Its two producers are
+UI-thread view-model paths, and task completion mutations are UI-thread
+callbacks, but the consumer is intentionally different: the `InvokeAsync`
+worker repeatedly removes pending tasks and clears `executing`. That dynamic
+producer/consumer overlap is what lets later UI submissions join the active
+worker without introducing another UI scheduling boundary.
+
+`SpinLock` therefore protects real cross-thread state. Retaining it is simpler
+and preserves the stable snapshots established by the preceding fix. The
+conditional premise for removing it (all queue-state access occurs on the UI
+thread) is false.
+
+### CODE CHANGE
+
+Restore the production source and all generated snapshots to the established
+implementation. No source-code change is appropriate. Run the full unit test
+once more with the restored implementation and require no tracked snapshot
+changes.
 
 ### CONFIRMED
 
-The implementation matches the proposal. Standalone `CppTest_Rvm` now stores
-the generated `rvmt::IViewModel` proxy directly, so the existing requester
-dispatcher remains the only host-loss mechanism and no application-layer
-catch, window-close adapter, exit flag, or `_Exit` shim remains. Core now runs
-the required-service list, `Connect`, optional child launch, generated RPC
-initialization, and service request directly inside `StartServer`'s existing
-exception boundary. Template types distinguish the combined server from the
-split stdio RVM server, preserving single start/stop for the former and
-RVM-before-renderer shutdown for the latter. The compile-time `void` path
-performs no view-model work for `/FCT` or `/RPT`.
+The source and generated snapshots were restored after both experiments. A
+final Debug x64 solution build completed with zero warnings and zero errors.
+The final complete `UnitTest` run passed all 88 test files and all 1713 test
+cases, produced no memory-leak dump, and left every file-dialog snapshot
+unchanged.
 
-Verification completed as follows:
+The file-local audit establishes the exact thread split:
 
-- `git diff --check` passed, and source searches confirmed that
-  `TerminatingViewModel`, `fatalHostLoss`, the CppTest `_Exit`,
-  `RequestViewModel`, `requestViewModel`, and `stopRvmServer` are absent from
-  the changed applications. No replacement recovery wrapper was introduced.
-- Post-change Debug x64 and Debug Win32 full-solution builds completed with
-  zero warnings and zero errors. The final Debug x64 `UnitTest` run passed all
-  88 files and all 1713 cases with no memory-leak dump. An initial post-change
-  run encountered a transient snapshot-file write failure after generated
-  snapshot cleanup; an unchanged rerun completed fully, and the generated
-  locale-sensitive snapshots were restored out of the working tree.
-- Standalone normal runs over `/Pipe`, `/Http`, `/MiniHttp`, and `/Cli`
-  acquired the service, produced the exact `Hello, <marker>!` result, and shut
-  down without leftovers. Forced host loss in every mode made the next RPC
-  show the expected Windows debug-runtime crash signal and terminate
-  `CppTest_Rvm` nonzero; each dialog was dismissed and no retry or recovery
-  occurred.
-- Core `/RVMT` normal and forced-loss runs covered combined manual-host and
-  split `/Cli` topologies with `/Pipe`, `/Http`, and `/MiniHttp` renderer
-  transports. Every normal row produced the exact translated marker and shut
-  down cleanly. Every forced-loss row exited Core nonzero and displayed the
-  exact `RemotingTest_RvmHost disconnected.` prompt; choosing `No` left a DOM
-  whose `fatalError` contained that message exactly once, after which the
-  renderer accepted `!Exit` and ended cleanly.
-- No-RVM `/Pipe /FCT` and `/Http /RPT` smoke runs started and accepted input
-  without launching a view-model host, then both Core and renderer processes
-  exited with code zero. The final process and listener audit found no
-  requester, Core, host, renderer, native prompt, crash dialog, or listeners
-  on ports 8888 or 8890.
+- `FileDialogFolder::GetType` and `FileDialogViewModel::RefreshFiles` are the
+  only `Queue` callers. They submit from UI-thread view-model execution.
+- Each submitted task runs filesystem enumeration in the non-UI worker created
+  by `InvokeAsync`, then posts its model mutation through `InvokeInMainThread`.
+- The same worker also removes tasks from the queue and changes `executing`,
+  concurrently with later UI-thread `Queue` calls. Those are the accesses
+  protected by `SpinLock`.
 
-These results confirm both requested simplifications while retaining Core's
-distinct one-shot renderer fatal delivery and all current transport
-topologies.
+No.1 proved that moving consumption behind each UI completion changes 165
+snapshots. No.2 proved that moving batch formation to the UI thread changes
+166 snapshots. Both full runs passed functional assertions and leak checks,
+so the snapshot diffs specifically expose the scheduling change rather than a
+test crash. Retaining the lock is the only examined implementation that keeps
+the established FIFO scheduling and byte-stable snapshots without adding a
+new UI scheduling boundary.
