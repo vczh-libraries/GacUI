@@ -44,10 +44,11 @@ establish, drive, inspect, replace, and close the renderer session.
 
 - Test Apps:
   - `RemotingTest_Core /RVMT` and `CppTest_Rvm` running the `RemoteViewModelTest` app requesting a remote `IViewModel` to be implemented.
-  - `RemotingTest_RvmHost` implements that `IViewModel` and connects through either a manually selected network transport or auto-launched stdio `/Cli`. Requesters block until the host has connected and sent Ready.
+  - `RemotingTest_RvmHost` and GacJS `rvmhost` implement that `IViewModel`. A host connects through a manually selected network transport, the GacJS browser host, or auto-launched stdio `/Cli`. Requesters block until the accepted host has connected and sent Ready.
 - Expected Behavior:
-  - Only one `RemotingTest_RvmHost` is allowed to connect.
+  - Only one native or GacJS view-model host is allowed to connect.
   - `CppTest_Rvm /Cli:<path>` auto-launches `<path> /Cli`. `RemotingTest_Core /RVMT <renderer-transport> /Cli:<path>` keeps renderer traffic on its selected network server and auto-launches the host on a separate stdio-only server.
+  - `/Cli:<path>` and the single literal argument `/Cli:"<path>"` name the same executable path. Exactly one balanced quote pair is removed; the npm bin, a JavaScript file, or `node <script>` is not a Core-launchable path.
   - If it disconnects before the main window is closed for any reason, this is
     a fatal error inside `RemotingTest_Core` and `CppTest_Rvm`.
     - When an in-flight or subsequent RPC observes host loss, `CppTest_Rvm`
@@ -215,6 +216,11 @@ Use a fresh application state. Follow
 - In a non-CLI Core target, start `RemotingTest_RvmHost` before the native
   renderer or GacJS. In Core `/Cli` mode, Core auto-launches it; start only Core
   and then the renderer or browser.
+- For a GacJS host row, use exactly one of the browser `?rvmhost` mode, the
+  independently started Node network CLI, or the Core-launched native Node SEA.
+  The browser-host page creates distinct host and renderer clients. The network
+  CLI must reach exact `GACJS_RVMHOST_READY` before the renderer connects. The
+  SEA reserves stdout for protocol traffic and emits no readiness marker.
 
 ### 1. Verify the Initial UI
 

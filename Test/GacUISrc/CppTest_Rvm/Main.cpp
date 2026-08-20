@@ -38,7 +38,22 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	}
 	else if (argc == 2 && wcsncmp(argv[1], L"/Cli:", 5) == 0 && argv[1][5])
 	{
-		result = StartCliServer(vl::WString::CopyFrom(argv[1] + 5, wcslen(argv[1] + 5)));
+		auto cliArgument = argv[1] + 5;
+		auto cliLength = (vl::vint)wcslen(cliArgument);
+		if (cliArgument[0] == L'"' || cliArgument[cliLength - 1] == L'"')
+		{
+			if (cliLength < 2 || cliArgument[0] != L'"' || cliArgument[cliLength - 1] != L'"')
+			{
+				LocalFree(argv);
+				return result;
+			}
+			cliArgument++;
+			cliLength -= 2;
+		}
+		if (cliLength > 0)
+		{
+			result = StartCliServer(vl::WString::CopyFrom(cliArgument, cliLength));
+		}
 	}
 	LocalFree(argv);
 #if VCZH_CHECK_MEMORY_LEAKS

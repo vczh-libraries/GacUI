@@ -98,11 +98,33 @@ int main(int argc, char* argv[])
 				Console::WriteLine(L"Error: /Cli must be specified once with a nonempty host path.");
 				return result;
 			}
+#ifdef VCZH_MSVC
+			auto cliArgument = argv[i] + 5;
+			auto cliLength = (vint)wcslen(cliArgument);
+#else
+			auto cliArgument = argv[i] + 5;
+			auto cliLength = (vint)strlen(cliArgument);
+#endif
+			if (cliArgument[0] == ARGUMENT_TEXT('"') || cliArgument[cliLength - 1] == ARGUMENT_TEXT('"'))
+			{
+				if (cliLength < 2 || cliArgument[0] != ARGUMENT_TEXT('"') || cliArgument[cliLength - 1] != ARGUMENT_TEXT('"'))
+				{
+					Console::WriteLine(L"Error: /Cli contains an invalid quoted host path.");
+					return result;
+				}
+				cliArgument++;
+				cliLength -= 2;
+			}
+			if (cliLength == 0)
+			{
+				Console::WriteLine(L"Error: /Cli must be specified once with a nonempty host path.");
+				return result;
+			}
 			cliSpecified = true;
 #ifdef VCZH_MSVC
-			cliPath = WString::CopyFrom(argv[i] + 5, wcslen(argv[i] + 5));
+			cliPath = WString::CopyFrom(cliArgument, cliLength);
 #else
-			cliPath = u8tow(U8String::CopyFrom(reinterpret_cast<const char8_t*>(argv[i] + 5), strlen(argv[i] + 5)));
+			cliPath = u8tow(U8String::CopyFrom(reinterpret_cast<const char8_t*>(cliArgument), cliLength));
 #endif
 		}
 		else
