@@ -62,7 +62,7 @@ requires one transport selector:
 | --- | --- |
 | `/FCT` | FullControlTest. This is the default application. |
 | `/RPT` | RemoteProtocolTest. |
-| `/RVMT` | RemoteViewModelTest. Requires `RemotingTest_RvmHost`. |
+| `/RVMT` | RemoteViewModelTest. Requires exactly one compatible remote view-model host; see the native and GacJS host modes below. |
 | `/Http` | The Windows full-HTTP transport. |
 | `/MiniHttp` | The portable async-socket MiniHTTP transport. Use this exact spelling. |
 | `/Pipe` | The Windows named-pipe transport. A fetch-based browser cannot use it. |
@@ -147,6 +147,10 @@ pass `/Cli:<absolute path>` as one argument without shell quoting; a literal
 `/Cli:"<absolute path>"` argument is also accepted. Build and test the SEA on the
 same platform where it runs.
 
+When Core launches `/Cli:<path>` on Linux or macOS, its inherited `/bin/sh -c`
+launcher handles ordinary spaces through the surrounding quotes, but paths
+containing shell-special characters are not robustly supported.
+
 For every GacJS host mode, perform the Remote View Model SOP: require
 `Hello, !`, type a unique marker, and require `Hello, <marker>!`. Replace only
 the renderer and require the accepted host and subsequent `Translate` calls to
@@ -199,8 +203,9 @@ Set-Location <GacUI>\Test\GacUISrc
 & <GacUI>\.github\Scripts\copilotBuild.ps1
 ```
 
-The executable is
-`<GacUI>\Test\GacUISrc\x64\Debug\RemotingTest_Core.exe`; `/RVMT` also uses
+The Core executable is
+`<GacUI>\Test\GacUISrc\x64\Debug\RemotingTest_Core.exe`. For the two native
+`/RVMT` host modes, the corresponding host executable is
 `<GacUI>\Test\GacUISrc\x64\Debug\RemotingTest_RvmHost.exe`. The following
 examples are separate runs:
 
@@ -214,9 +219,9 @@ $core = Start-Process -FilePath $coreExe -ArgumentList '/MiniHttp','/FCT' -PassT
 $core = Start-Process -FilePath $coreExe -ArgumentList '/Http','/FCT' -PassThru
 ```
 
-Substitute `/RPT` for Remote Protocol Test. For `/RVMT`, start the matching host
-after Core and wait until Core automation exposes the
-`Remote View Model Test` window before opening the browser:
+Substitute `/RPT` for Remote Protocol Test. For the native network-host `/RVMT`
+mode, start the matching host after Core and wait until Core automation exposes
+the `Remote View Model Test` window before opening the browser:
 
 ```powershell
 $hostExe = '<GacUI>\Test\GacUISrc\x64\Debug\RemotingTest_RvmHost.exe'
@@ -227,8 +232,8 @@ $host = Start-Process -FilePath $hostExe -ArgumentList '/Http' -PassThru
 Repeat that order with `/MiniHttp`. Exercise every application/transport target
 as a separate GacJS run. Do not call MSBuild directly.
 
-For each `/RVMT` renderer transport, also run the `/Cli` host mode. Core owns
-the child process; wait for its RVM window and then open the browser:
+For each `/RVMT` renderer transport, also run the native `/Cli` host mode. Core
+owns the child process; wait for its RVM window and then open the browser:
 
 ```powershell
 $core = Start-Process -FilePath $coreExe -ArgumentList '/Http','/RVMT',('/Cli:"{0}"' -f $hostExe) -PassThru
@@ -295,7 +300,7 @@ cd <GacUI>/Test/Linux/RemotingTest_Core
 core_pid=$!
 ```
 
-Build the portable host before an `/RVMT` run:
+Build the portable host before a native `/RVMT` run:
 
 ```bash
 cd <GacUI>/Test/Linux/RemotingTest_RvmHost
@@ -310,8 +315,8 @@ npm run start
 ```
 
 It serves `lib/dist` at `http://localhost:8896` and waits for ENTER to stop.
-Substitute `/RPT` for Remote Protocol Test. For `/RVMT`, start Core with that
-selector, then start the host before opening GacJS:
+Substitute `/RPT` for Remote Protocol Test. For the native network-host `/RVMT`
+mode, start Core with that selector, then start the host before opening GacJS:
 
 ```bash
 <GacUI>/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost /MiniHttp &
@@ -321,8 +326,8 @@ host_pid=$!
 Wait until Core automation exposes the `Remote View Model Test` window before
 opening the browser.
 
-For the additional `/Cli` row, start Core with an absolute host path and do not
-start the host manually:
+For the native `/Cli` row, start Core with an absolute host path and do not start
+the host manually:
 
 ```bash
 host_exe="$(realpath <GacUI>/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost)"
@@ -362,7 +367,7 @@ MiniHTTP server is waiting on port `8888`. Require the page to load
 a renderer connected.
 
 After closing the browser, press ENTER in the website-server terminal. Then
-stop only the retained core process:
+stop the retained Core and any independently started host:
 
 ```bash
 kill "$core_pid"
@@ -371,6 +376,7 @@ if [ -n "${host_pid:-}" ]; then
   kill "$host_pid"
   wait "$host_pid" 2>/dev/null || true
 fi
+unset host_pid
 ```
 
 ### Linux

@@ -14,7 +14,7 @@ establish, drive, inspect, replace, and close the renderer session.
   - `RemotingTest_Rendering_Win32` in `GacUI` repo is a test app for remote protocol client using Windows native renderer.
   - `RemotingTest_Rendering_macOS` in `iGac` repo is a test app for remote protocol client using macOS native renderer.
   - `RemotingTest_Rendering_Wayland` in `wGac` repo is a test app for remote protocol client using Linux/Wayland native renderer.
-  - `Gaclib/website/entry` npmjs package in `GacJS` repo is a http service, hosting a website as a remoting protocol client running in a Browser.
+  - `Gaclib/website/entry` in the `GacJS` repo is the browser renderer website/package; its checked-in static server hosts the built output for testing.
   - Core and client test apps are expected to run in the same computer.
 - Expected Behavior:
   - Core is supposed to run with one or without renderer connected. When using the automation service from core to perform UI operation, anything should just work, don't assume there must be a renderer to handle any request/message.
@@ -44,13 +44,13 @@ establish, drive, inspect, replace, and close the renderer session.
 
 - Test Apps:
   - `RemotingTest_Core /RVMT` and `CppTest_Rvm` running the `RemoteViewModelTest` app requesting a remote `IViewModel` to be implemented.
-  - `RemotingTest_RvmHost` and GacJS `rvmhost` implement that `IViewModel`. A host connects through a manually selected network transport, the GacJS browser host, or auto-launched stdio `/Cli`. Requesters block until the accepted host has connected and sent Ready.
+  - `RemotingTest_RvmHost` and GacJS `rvmhost` implement that `IViewModel`. A host connects through a manually selected network transport, the GacJS browser host, or auto-launched stdio `/Cli`. Requesters block until the accepted host completes the Workflow RPC service handshake and the required service is acquired and held; `Ready` alone is not sufficient.
 - Expected Behavior:
   - Only one native or GacJS view-model host is allowed to connect.
   - `CppTest_Rvm /Cli:<path>` auto-launches `<path> /Cli`. `RemotingTest_Core /RVMT <renderer-transport> /Cli:<path>` keeps renderer traffic on its selected network server and auto-launches the host on a separate stdio-only server.
   - `/Cli:<path>` and the single literal argument `/Cli:"<path>"` name the same executable path. Exactly one balanced quote pair is removed; the npm bin, a JavaScript file, or `node <script>` is not a Core-launchable path.
-  - If it disconnects before the main window is closed for any reason, this is
-    a fatal error inside `RemotingTest_Core` and `CppTest_Rvm`.
+  - If the accepted host disconnects before the main window is closed for any
+    reason, this is a fatal error inside `RemotingTest_Core` and `CppTest_Rvm`.
     - When an in-flight or subsequent RPC observes host loss, `CppTest_Rvm`
       lets the injected `rpc_controller::RpcInjectedException` escape. Its
       nonzero crash is the required direct termination; no graceful-close
@@ -208,19 +208,12 @@ Use a fresh application state.
 
 Use a fresh application state. Follow
 `DebugRemoteProtocolWithGacJS.md` or
-`DebugRemoteProtocolWithNativeRenderer.md` to establish the renderer session:
-- In a standalone non-CLI target, start the platform's `CppTest_Rvm` application
-  and then a matching `RemotingTest_RvmHost`. In standalone Windows `/Cli`
-  mode, pass the host executable path to the requester and do not start the host
-  manually. Standalone targets use the local native UI and no renderer or GacJS.
-- In a non-CLI Core target, start `RemotingTest_RvmHost` before the native
-  renderer or GacJS. In Core `/Cli` mode, Core auto-launches it; start only Core
-  and then the renderer or browser.
-- For a GacJS host row, use exactly one of the browser `?rvmhost` mode, the
-  independently started Node network CLI, or the Core-launched native Node SEA.
-  The browser-host page creates distinct host and renderer clients. The network
-  CLI must reach exact `GACJS_RVMHOST_READY` before the renderer connects. The
-  SEA reserves stdout for protocol traffic and emits no readiness marker.
+`DebugRemoteProtocolWithNativeRenderer.md` to select and establish the required
+requester, host, transport, and renderer topology, and wait for that guide's
+readiness condition before performing the operations below. This SOP does not
+redefine the test matrix or process-launch sequence. A standalone requester
+uses its local native UI; a `RemotingTest_Core /RVMT` target uses its selected
+renderer.
 
 ### 1. Verify the Initial UI
 
@@ -244,12 +237,14 @@ a manual host on a Core `/Cli` renderer transport instead verifies that the
 renderer-only server rejects non-renderer channels; it does not create a second
 stdio host.
 
-1. Keep the accepted `RemotingTest_RvmHost` and requester running after the
-   successful `Translate` above.
-2. Start a second `RemotingTest_RvmHost` with the same transport.
+1. Keep the accepted view-model host and requester running after the successful
+   `Translate` above.
+2. Start a second view-model host using another instance of the target's
+   non-CLI host mode and the same transport.
 3. Require the second host not to be admitted: it must not replace the accepted
-   host, report Ready to the requester, or change the visible greeting. Remaining
-   blocked while it is rejected is acceptable; taking over the service is not.
+   host, report `Ready` to the requester, or change the visible greeting.
+   Remaining blocked while it is rejected is acceptable; taking over the
+   service is not.
 4. Stop only the rejected second host. Type a different marker through the
    application surface and require the greeting to become exactly
    `Hello, <different-marker>!`, proving that the original host still owns the
@@ -291,16 +286,20 @@ normal-path steps. Run each operation in a fresh session.
    Close the GacJS page after inspecting its terminal mask. Bound every wait and
    require no Core, renderer, listener, native prompt, or crash dialog to remain.
 
-## Remote View Model Test (`/RVMT`): Force-Terminate `RemotingTest_RvmHost`
+## Remote View Model Test (`/RVMT`): Terminate the Accepted View-Model Host
 
-Run this operation for both requester shapes: `CppTest_Rvm` with the host, and
-`RemotingTest_Core /RVMT` with the host and a matching renderer. First complete
-the Workflow RPC check above. For Core, keep the renderer connected throughout
-the failure.
+Run this operation for both requester shapes: `CppTest_Rvm` with an accepted
+host, and `RemotingTest_Core /RVMT` with an accepted host and a matching
+renderer. First complete the Workflow RPC check above. For Core, keep the
+renderer connected throughout the failure.
 
-1. Force-terminate only the accepted `RemotingTest_RvmHost` process through the
-   operating-system process tool. Do not close it through its application path,
-   and do not terminate the requester, Core, or renderer.
+1. Stop only the accepted view-model host through the failure injection
+   appropriate to that host mode. Force-terminate a native, Node, or SEA host
+   process through the operating-system process tool. For a browser `?rvmhost`
+   mode, first replace its renderer with a separate ordinary renderer, then call
+   `window.__gacui_rvmhost_session.host.stop()` to stop only the browser host
+   session. Do not close the host through its graceful application path, and do
+   not terminate the requester, Core, or retained renderer.
    A `/Cli` requester observes child termination directly as stdio EOF; no
    replacement poll or HTTP/MiniHTTP timeout applies, and the fatal outcome must
    begin promptly. A `/Pipe` requester must also observe the broken connection
