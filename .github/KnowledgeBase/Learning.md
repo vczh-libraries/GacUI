@@ -2,8 +2,8 @@
 
 # Orders
 
+- Verify generated artifacts with downstream consumer checks [20]
 - Process staged tasks one by one with verification [19]
-- Verify generated artifacts with downstream consumer checks [19]
 - Crash early instead of adding error-tolerance fallbacks [15]
 - Proactively remove code made redundant by refactoring [15]
 - Port fixes from imports to source repositories [14]

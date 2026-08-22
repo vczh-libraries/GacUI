@@ -29,7 +29,9 @@
 - Use `AssertItems`/`AssertCallbacks` for visible item lists [2]
 - Unit-test renderer `CaretLineLast` should treat CRLF as newline [2]
 - Verify remoting imports with both HTTP and named-pipe flows [2]
+- Verify `GacUICompiler` determinism with repeated no-change runs [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
+- Verify GacGen RPC outputs with positive and negative resources [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
 - Skip callback plumbing when not asserting callbacks [1]
 - Print actual vs expected on assertion failure [1]
@@ -57,7 +59,6 @@
 - Match existing test-file namespace style (avoid extra `using namespace`) [1]
 - Focus the control before simulating keyboard input [1]
 - Editor smoke tests: deterministic caret placement (`Ctrl+Home`) [1]
-- Verify `GacUICompiler` determinism with repeated no-change runs [1]
 - Prefer IOChar-only typing helpers first [1]
 - Prefer base-type lookups for reusable control tests [1]
 - Avoid over-abstraction in test scaffolds [1]
@@ -311,6 +312,12 @@ Prefer making the interaction deterministic over changing XML layout just to mak
 ## Verify `GacUICompiler` determinism with repeated no-change runs
 
 When fixing nondeterministic `GacUICompiler` output, verify by running the compiler once and committing or accepting the generated output as the baseline, then running it several more times without source changes. After each repeat, check `git status` and inspect diffs if anything changes. Success means repeated compiler runs leave both generated text/C++ files and binary resources unchanged; unit tests can still pass while binary resource nondeterminism remains, so the no-change loop is the essential verification.
+
+When adding a new generated artifact, hash or otherwise preserve all pre-existing generated C++ and binary outputs before the change. Verify that only the intended new files appear, that resources without the triggering feature remain negative controls, and that a repeated run leaves the working tree unchanged apart from the intended tracked artifacts.
+
+## Verify GacGen RPC outputs with positive and negative resources
+
+When changing GacGen RPC output, run both `/C32` and `/C64` against one resource with RPC and one without it. Require RPC metadata, generated RPC C++, and the architecture contract only for the positive resource; record the complete generated-file list and compare architecture-independent metadata across configurations. After verification, remove every log/staging directory, generated C++ file, binary resource, and wrapper artifact produced by the manual runs, restoring any pre-existing generated output byte-for-byte.
 
 ## Multiline editor assertions: validate `GetDocument()` model, not `GetText()`
 
