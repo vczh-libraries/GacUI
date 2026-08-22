@@ -21,7 +21,6 @@ CPP_REMOVES=(
     "../../../Import/Vlpp.Windows.cpp"
 	"../../../Import/VlppOS.Windows.cpp"
 	"../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.cpp"
-	"../../RemotingHelpers/StdioRedirection/StdioRedirection.Windows.cpp"
 	)
 TARGETS=("${CPP_TARGET}")
 CPP_COMPILE_OPTIONS="-I ../../../Import -I ../../GacUISrc/Generated_DarkSkin/Source_x64 -I ../../GacUISrc/Generated_RemoteProtocolTest/Source_x64 -I ../../GacUISrc/Generated_FullControlTest/Source_x64 -I ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64 -DVCZH_DEBUG_NO_REFLECTION"

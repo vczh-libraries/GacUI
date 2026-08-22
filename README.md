@@ -121,7 +121,7 @@ Network Protocol Implementation Details:
 - `/Pipe` is built on top of Named Pipe API for Windows.
 - `/Http` is built on top of http.sys and WinHttp API for Windows.
 - `/MiniHttp` is built on top of TCP/IP Socket API for all platforms.
-They are for the remote protocol demo only, no security is considered in the source code. If you are going to start your own remote protocol application, I strongly recommended you to use your own network protocol stack. The interface is flexible enough to use any possible way for data transmission, including but not limited to, stdio redirection, DLL interface, any actual network protocol, but no official default implementation is offered.
+They are for the remote protocol demo only, no security is considered in the source code. If you are going to start your own remote protocol application, I strongly recommended you to use your own network protocol stack. The interface is flexible enough to use any possible way for data transmission, including but not limited to, stdio redirection, DLL interface, or an actual network protocol. VlppOS supplies convenient testing-only implementations, including stdio redirection, but no production-ready default transport is offered.
 
 ![Run GacUI Remotely](GacUIRemote.gif)
 

@@ -10,15 +10,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelHostServer.cpp">
       <Filter>Rvmt</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\StdioRedirection\StdioRedirection.cpp">
-      <Filter>StdioRedirection</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\StdioRedirection\StdioRedirection.Linux.cpp">
-      <Filter>StdioRedirection</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\StdioRedirection\StdioRedirection.Windows.cpp">
-      <Filter>StdioRedirection</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingServer\RemotingChannelServer.h">
@@ -36,9 +27,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelShared.h">
       <Filter>Rvmt</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\StdioRedirection\StdioRedirection.h">
-      <Filter>StdioRedirection</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="RemotingServer">
@@ -49,9 +37,6 @@
     </Filter>
     <Filter Include="Rvmt">
       <UniqueIdentifier>{968E1406-3C7A-42A9-AC6A-3A63AEC0F82D}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="StdioRedirection">
-      <UniqueIdentifier>{b5d66dbd-98ab-49f5-9a10-6d2cb80bdd68}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -7124,3 +7124,251 @@ namespace vl
 	}
 }
 
+
+/***********************************************************************
+.\INTERPROCESS\STDIOREDIRECTION\STDIOREDIRECTION.WINDOWS.CPP
+***********************************************************************/
+
+#ifdef VCZH_MSVC
+
+#define _WINSOCKAPI_
+
+namespace vl::inter_process::stdio_redirection
+{
+	class WindowsStdioRedirectionProcess : public Object, public virtual IStdioRedirectionProcess
+	{
+	private:
+		HANDLE									input = INVALID_HANDLE_VALUE;
+		HANDLE									output = INVALID_HANDLE_VALUE;
+		HANDLE									process = INVALID_HANDLE_VALUE;
+		CriticalSection							lockHandles;
+		bool									waited = false;
+
+		void CloseHandleIfNeeded(HANDLE& handle)
+		{
+			if (handle != INVALID_HANDLE_VALUE && handle != NULL)
+			{
+				CloseHandle(handle);
+				handle = INVALID_HANDLE_VALUE;
+			}
+		}
+
+	public:
+		WindowsStdioRedirectionProcess(HANDLE _input, HANDLE _output, HANDLE _process)
+			: input(_input)
+			, output(_output)
+			, process(_process)
+		{
+		}
+
+		~WindowsStdioRedirectionProcess()
+		{
+			CloseInput();
+			CloseOutput();
+			CS_LOCK(lockHandles)
+			{
+				CloseHandleIfNeeded(process);
+			}
+		}
+
+		vint Read(vuint8_t* buffer, vint size, WString& errorMessage) override
+		{
+			HANDLE reading = INVALID_HANDLE_VALUE;
+			CS_LOCK(lockHandles)
+			{
+				reading = output;
+			}
+			if (reading == INVALID_HANDLE_VALUE)
+			{
+				return 0;
+			}
+			DWORD read = 0;
+			if (!ReadFile(reading, buffer, (DWORD)size, &read, nullptr))
+			{
+				auto error = GetLastError();
+				if (error == ERROR_BROKEN_PIPE || error == ERROR_HANDLE_EOF || error == ERROR_INVALID_HANDLE)
+				{
+					return 0;
+				}
+				errorMessage = WString::Unmanaged(L"Failed to read redirected stdout: ") + itow(error);
+				return -1;
+			}
+			return (vint)read;
+		}
+
+		bool Write(const vuint8_t* buffer, vint size, WString& errorMessage) override
+		{
+			HANDLE writing = INVALID_HANDLE_VALUE;
+			CS_LOCK(lockHandles)
+			{
+				writing = input;
+			}
+			if (writing == INVALID_HANDLE_VALUE)
+			{
+				return false;
+			}
+			vint writtenBytes = 0;
+			while (writtenBytes < size)
+			{
+				DWORD written = 0;
+				if (!WriteFile(writing, buffer + writtenBytes, (DWORD)(size - writtenBytes), &written, nullptr) || written == 0)
+				{
+					errorMessage = WString::Unmanaged(L"Failed to write redirected stdin: ") + itow(GetLastError());
+					return false;
+				}
+				writtenBytes += written;
+			}
+			return true;
+		}
+
+		void CloseInput() override
+		{
+			CS_LOCK(lockHandles)
+			{
+				CloseHandleIfNeeded(input);
+			}
+		}
+
+		void CloseOutput() override
+		{
+			CS_LOCK(lockHandles)
+			{
+				CloseHandleIfNeeded(output);
+			}
+		}
+
+		void WaitForExit() override
+		{
+			HANDLE waiting = INVALID_HANDLE_VALUE;
+			CS_LOCK(lockHandles)
+			{
+				if (!waited)
+				{
+					waited = true;
+					waiting = process;
+				}
+			}
+			if (waiting != INVALID_HANDLE_VALUE)
+			{
+				WaitForSingleObject(waiting, INFINITE);
+				CS_LOCK(lockHandles)
+				{
+					CloseHandleIfNeeded(process);
+				}
+			}
+		}
+	};
+
+	static Ptr<IStdioRedirectionProcess> CreateStdioRedirectionProcessUnsafe(const WString& command)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::inter_process::stdio_redirection::CreateStdioRedirectionProcess(const WString&)#"
+		SECURITY_ATTRIBUTES securityAttributes = {};
+		securityAttributes.nLength = sizeof(securityAttributes);
+		securityAttributes.bInheritHandle = TRUE;
+
+		HANDLE childInput = INVALID_HANDLE_VALUE;
+		HANDLE parentInput = INVALID_HANDLE_VALUE;
+		HANDLE parentOutput = INVALID_HANDLE_VALUE;
+		HANDLE childOutput = INVALID_HANDLE_VALUE;
+		HANDLE childError = INVALID_HANDLE_VALUE;
+		PROCESS_INFORMATION processInformation = {};
+
+		auto closeHandle = [](HANDLE& handle)
+		{
+			if (handle != INVALID_HANDLE_VALUE && handle != NULL)
+			{
+				CloseHandle(handle);
+				handle = INVALID_HANDLE_VALUE;
+			}
+		};
+
+		try
+		{
+			CHECK_ERROR(CreatePipe(&childInput, &parentInput, &securityAttributes, 0), ERROR_MESSAGE_PREFIX L"Failed to create the stdin pipe.");
+			CHECK_ERROR(SetHandleInformation(parentInput, HANDLE_FLAG_INHERIT, 0), ERROR_MESSAGE_PREFIX L"Failed to protect the parent stdin handle.");
+			CHECK_ERROR(CreatePipe(&parentOutput, &childOutput, &securityAttributes, 0), ERROR_MESSAGE_PREFIX L"Failed to create the stdout pipe.");
+			CHECK_ERROR(SetHandleInformation(parentOutput, HANDLE_FLAG_INHERIT, 0), ERROR_MESSAGE_PREFIX L"Failed to protect the parent stdout handle.");
+
+			auto currentProcess = GetCurrentProcess();
+			auto parentError = GetStdHandle(STD_ERROR_HANDLE);
+			if (
+				parentError == INVALID_HANDLE_VALUE ||
+				parentError == NULL ||
+				!DuplicateHandle(currentProcess, parentError, currentProcess, &childError, 0, TRUE, DUPLICATE_SAME_ACCESS)
+				)
+			{
+				childError = CreateFileW(
+					L"NUL",
+					GENERIC_WRITE,
+					FILE_SHARE_READ | FILE_SHARE_WRITE,
+					&securityAttributes,
+					OPEN_EXISTING,
+					FILE_ATTRIBUTE_NORMAL,
+					nullptr
+					);
+				CHECK_ERROR(childError != INVALID_HANDLE_VALUE, ERROR_MESSAGE_PREFIX L"Failed to prepare redirected stderr.");
+			}
+
+			STARTUPINFOW startupInfo = {};
+			startupInfo.cb = sizeof(startupInfo);
+			startupInfo.dwFlags = STARTF_USESTDHANDLES;
+			startupInfo.hStdInput = childInput;
+			startupInfo.hStdOutput = childOutput;
+			startupInfo.hStdError = childError;
+
+			collections::Array<wchar_t> mutableCommand(command.Length() + 1);
+			for (vint i = 0; i < command.Length(); i++)
+			{
+				mutableCommand[i] = command[i];
+			}
+			mutableCommand[command.Length()] = 0;
+			CHECK_ERROR(
+				CreateProcessW(
+					nullptr,
+					&mutableCommand[0],
+					nullptr,
+					nullptr,
+					TRUE,
+					CREATE_NO_WINDOW,
+					nullptr,
+					nullptr,
+					&startupInfo,
+					&processInformation
+					),
+				ERROR_MESSAGE_PREFIX L"Failed to launch the redirected process."
+				);
+
+			closeHandle(processInformation.hThread);
+			closeHandle(childInput);
+			closeHandle(childOutput);
+			closeHandle(childError);
+			return Ptr<IStdioRedirectionProcess>(new WindowsStdioRedirectionProcess(parentInput, parentOutput, processInformation.hProcess));
+		}
+		catch (...)
+		{
+			closeHandle(childInput);
+			closeHandle(parentInput);
+			closeHandle(parentOutput);
+			closeHandle(childOutput);
+			closeHandle(childError);
+			closeHandle(processInformation.hThread);
+			closeHandle(processInformation.hProcess);
+			throw;
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	Ptr<IStdioRedirectionProcess> CreateStdioRedirectionProcess(const WString& command)
+	{
+		static CriticalSection processCreationLock;
+		Ptr<IStdioRedirectionProcess> process;
+		CS_LOCK(processCreationLock)
+		{
+			process = CreateStdioRedirectionProcessUnsafe(command);
+		}
+		return process;
+	}
+}
+
+#endif
+

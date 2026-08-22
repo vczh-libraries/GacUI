@@ -14,7 +14,6 @@
 #include "DarkSkin.h"
 #include "../Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.h"
 #include "../../RemotingHelpers/Rvmt/ViewModelHostServer.h"
-#include "../../RemotingHelpers/StdioRedirection/StdioRedirection.h"
 #include "../../../Source/Utilities/AutomationService/MiniHttpAutomationService.h"
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #include "resource.h"
@@ -32,6 +31,7 @@
 
 using namespace vl;
 using namespace vl::inter_process;
+using namespace vl::inter_process::stdio_redirection;
 using namespace vl::presentation;
 using namespace vl::presentation::controls;
 using namespace vl::presentation::remoting;

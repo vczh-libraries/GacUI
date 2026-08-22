@@ -15,4 +15,3 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Test\RemotingHelpers\Rvmt\ViewModelShared.h"
 #include "..\..\Test\RemotingHelpers\Rvmt\ViewModelHostClient.h"
 #include "..\..\Test\RemotingHelpers\Rvmt\ViewModelHostServer.h"
-#include "..\..\Test\RemotingHelpers\StdioRedirection\StdioRedirection.h"

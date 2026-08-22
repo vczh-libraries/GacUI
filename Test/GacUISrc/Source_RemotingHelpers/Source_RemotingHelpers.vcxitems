@@ -12,9 +12,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RendererClient\RemoteProtocolRendererClient.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelHostClient.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelHostServer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\StdioRedirection\StdioRedirection.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\StdioRedirection\StdioRedirection.Linux.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\StdioRedirection\StdioRedirection.Windows.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\RemotingServer\RemotingChannelServer.h" />
@@ -22,6 +19,5 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelHostClient.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelHostServer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\Rvmt\ViewModelShared.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\RemotingHelpers\StdioRedirection\StdioRedirection.h" />
   </ItemGroup>
 </Project>

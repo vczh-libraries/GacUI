@@ -69,7 +69,6 @@
 - Retry remote renderers after every relevant cache response [1]
 - `Instance_GenerateRpcMetadata` validates one aggregate of all Workflow modules [1]
 - GacUI test apps own concrete automation service composition [1]
-- `StdioRedirection` keeps Base64 framing transport-opaque [1]
 - `FileDialogTaskQueue` lock preserves cross-thread scheduling [1]
 
 # Refinements
@@ -361,9 +360,9 @@ Keep only exact `Ready` as the post-route startup signal after the host register
 
 `Test/RemotingHelpers` is not part of the ordinary GacUI library API. Keep every helper independent of generated-application RPC types, and do not make ordinary `GacUI` or `GacUI.Windows` depend on this test-only helper tree. Generated-module initialization belongs beside the generated application, such as `Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.*`; test applications explicitly compose that initializer with the generic helper dispatcher and retain their concrete service composition.
 
-"Release CodePack" in this heading means the production/public artifact set assembled into the aggregate `Release` repository. The same GacUI CodePack run may scan `Test/RemotingHelpers` and emit separate neutral, Windows, and Linux `Test.RemotingHelpers*.h/.cpp` pairs in GacUI `Release` and `Release/IncludeOnly`; retain those pairs only for platform repositories' `Import-Test` snapshots. The Linux pair also carries a shared macOS implementation when applicable. Do not merge them into ordinary `GacUI*` pairs or copy them into the aggregate `Release` repository. Reusable automation endpoint implementations still belong under `Source/Utilities/AutomationService`: CodePack MiniHTTP into `GacUI.*` and the Windows endpoint into `GacUI.Windows.*`.
+"Release CodePack" in this heading means the production/public artifact set assembled into the aggregate `Release` repository. The same GacUI CodePack run may scan `Test/RemotingHelpers` and emit the neutral `Test.RemotingHelpers*.h/.cpp` pair in GacUI `Release` and `Release/IncludeOnly`; retain that pair only for platform repositories' `Import-Test` snapshots. Do not merge it into ordinary `GacUI*` pairs or copy it into the aggregate `Release` repository. Reusable automation endpoint implementations still belong under `Source/Utilities/AutomationService`: CodePack MiniHTTP into `GacUI.*` and the Windows endpoint into `GacUI.Windows.*`. Test-only stdio redirection belongs to VlppOS and arrives through the imported VlppOS release pairs.
 
-Compile all test-helper implementation through one explicit, unconditional `Source_RemotingHelpers.vcxitems` inventory in the GacUISrc test solution. Individual remoting consumers should import and compile that complete generic inventory instead of maintaining divergent direct source lists. Keep RVM and stdio source items visible in their `Rvmt` and `StdioRedirection` Solution Explorer folders. Platform translation units stay in the shared inventory behind source guards; portable `vmake` inputs remove only the Windows implementation. Each generated application compiles its own initializer separately; standalone applications that need only automation receive it through their GacUI library and should not import `Source_RemotingHelpers` or generated remote-view-model items.
+Compile all GacUI-owned test-helper implementation through one explicit, unconditional `Source_RemotingHelpers.vcxitems` inventory in the GacUISrc test solution. Individual remoting consumers should import and compile that complete generic inventory instead of maintaining divergent direct source lists. Keep RVM and renderer source items visible in their matching Solution Explorer folders. Each generated application compiles its own initializer separately; standalone applications that need only automation receive it through their GacUI library and should not import `Source_RemotingHelpers` or generated remote-view-model items.
 
 Keep that shared inventory unconditional; do not use `ExcludedFromBuild` to make its source list vary by importer or add generated-module include paths to it.
 
@@ -394,12 +393,6 @@ Keep `CppTest_Rvm` independent of `vl::console::Console`. Invalid arguments can 
 ## Automation HTTP returns 404 only for protocol-level rejection
 
 Returning 404 for an unsupported verb or route, malformed IO suffix, invalid content type, or disabled operation is endpoint behavior. An unexpected parser, automation implementation, callback, or invariant failure must terminate the test app at the appropriate async or OS boundary instead of being hidden behind 404.
-
-## `StdioRedirection` keeps Base64 framing transport-opaque
-
-Reserve redirected stdin/stdout exclusively for the protocol and keep diagnostics on stderr. Frame every ordinary `WString` as strict UTF-8 followed by standard padded Base64 and one newline; serialized channel-error packages remain ordinary strings that only the channel adapter interprets. Exact `!Exit` is the sole raw control line. Ignore malformed Base64/UTF-8 and unknown controls without changing connection state, and treat exact `!Exit`, EOF, peer exit, or local stop as a one-shot disconnection.
-
-Keep process/pipe mechanics platform-specific while shared code owns framing, connection state, callback installation/draining, launch admission, and multi-child ownership. Invoke callbacks outside locks, and make server `Stop()` bar launches, send `!Exit`, drain callbacks/readers, wait, and reap every owned child before returning.
 
 ## `/Cli` host transport is independent from Core renderer transport
 

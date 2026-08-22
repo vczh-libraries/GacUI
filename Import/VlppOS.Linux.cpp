@@ -6280,3 +6280,231 @@ namespace vl
 
 #endif
 
+
+/***********************************************************************
+.\INTERPROCESS\STDIOREDIRECTION\STDIOREDIRECTION.LINUX.CPP
+***********************************************************************/
+
+#ifdef VCZH_GCC
+
+#include <sys/types.h>
+#include <sys/wait.h>
+
+namespace vl::inter_process::stdio_redirection
+{
+	class PosixStdioRedirectionProcess : public Object, public virtual IStdioRedirectionProcess
+	{
+	private:
+		int										input = -1;
+		int										output = -1;
+		pid_t									process = -1;
+		CriticalSection							lockHandles;
+		bool									waited = false;
+
+		void CloseFdIfNeeded(int& fd)
+		{
+			if (fd != -1)
+			{
+				close(fd);
+				fd = -1;
+			}
+		}
+
+	public:
+		PosixStdioRedirectionProcess(int _input, int _output, pid_t _process)
+			: input(_input)
+			, output(_output)
+			, process(_process)
+		{
+		}
+
+		~PosixStdioRedirectionProcess()
+		{
+			CloseInput();
+			CloseOutput();
+		}
+
+		vint Read(vuint8_t* buffer, vint size, WString& errorMessage) override
+		{
+			int reading = -1;
+			CS_LOCK(lockHandles)
+			{
+				reading = output;
+			}
+			if (reading == -1)
+			{
+				return 0;
+			}
+			for (;;)
+			{
+				auto readBytes = read(reading, buffer, (size_t)size);
+				if (readBytes >= 0)
+				{
+					return (vint)readBytes;
+				}
+				if (errno != EINTR)
+				{
+					errorMessage = WString::Unmanaged(L"Failed to read redirected stdout: ") + itow(errno);
+					return -1;
+				}
+			}
+		}
+
+		bool Write(const vuint8_t* buffer, vint size, WString& errorMessage) override
+		{
+			int writing = -1;
+			CS_LOCK(lockHandles)
+			{
+				writing = input;
+			}
+			if (writing == -1)
+			{
+				return false;
+			}
+			vint writtenBytes = 0;
+			while (writtenBytes < size)
+			{
+				auto written = write(writing, buffer + writtenBytes, (size_t)(size - writtenBytes));
+				if (written > 0)
+				{
+					writtenBytes += (vint)written;
+				}
+				else if (written < 0 && errno == EINTR)
+				{
+					continue;
+				}
+				else
+				{
+					errorMessage = WString::Unmanaged(L"Failed to write redirected stdin: ") + itow(errno);
+					return false;
+				}
+			}
+			return true;
+		}
+
+		void CloseInput() override
+		{
+			CS_LOCK(lockHandles)
+			{
+				CloseFdIfNeeded(input);
+			}
+		}
+
+		void CloseOutput() override
+		{
+			CS_LOCK(lockHandles)
+			{
+				CloseFdIfNeeded(output);
+			}
+		}
+
+		void WaitForExit() override
+		{
+			pid_t waiting = -1;
+			CS_LOCK(lockHandles)
+			{
+				if (!waited)
+				{
+					waited = true;
+					waiting = process;
+				}
+			}
+			if (waiting != -1)
+			{
+				int status = 0;
+				while (waitpid(waiting, &status, 0) == -1 && errno == EINTR)
+				{
+				}
+			}
+		}
+	};
+
+	static Ptr<IStdioRedirectionProcess> CreateStdioRedirectionProcessUnsafe(const WString& command)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::inter_process::stdio_redirection::CreateStdioRedirectionProcess(const WString&)#"
+		collections::Array<vuint8_t> commandUtf8;
+		CHECK_ERROR(inter_process::async_tcp_socket::EncodeStrictUtf8(command, commandUtf8), ERROR_MESSAGE_PREFIX L"The command is not valid Unicode.");
+		collections::Array<char> commandBuffer(commandUtf8.Count() + 1);
+		for (vint i = 0; i < commandUtf8.Count(); i++)
+		{
+			commandBuffer[i] = (char)commandUtf8[i];
+		}
+		commandBuffer[commandUtf8.Count()] = 0;
+
+		int inputPipe[2] = { -1, -1 };
+		int outputPipe[2] = { -1, -1 };
+		CHECK_ERROR(pipe(inputPipe) == 0, ERROR_MESSAGE_PREFIX L"Failed to create the stdin pipe.");
+		if (pipe(outputPipe) != 0)
+		{
+			close(inputPipe[0]);
+			close(inputPipe[1]);
+			CHECK_ERROR(false, ERROR_MESSAGE_PREFIX L"Failed to create the stdout pipe.");
+		}
+		auto setCloseOnExec = [](int fd)
+		{
+			auto flags = fcntl(fd, F_GETFD);
+			return flags != -1 && fcntl(fd, F_SETFD, flags | FD_CLOEXEC) != -1;
+		};
+		if (
+			!setCloseOnExec(inputPipe[0]) ||
+			!setCloseOnExec(inputPipe[1]) ||
+			!setCloseOnExec(outputPipe[0]) ||
+			!setCloseOnExec(outputPipe[1])
+			)
+		{
+			close(inputPipe[0]);
+			close(inputPipe[1]);
+			close(outputPipe[0]);
+			close(outputPipe[1]);
+			CHECK_ERROR(false, ERROR_MESSAGE_PREFIX L"Failed to protect redirected pipe handles.");
+		}
+
+		signal(SIGPIPE, SIG_IGN);
+		auto child = fork();
+		if (child == -1)
+		{
+			close(inputPipe[0]);
+			close(inputPipe[1]);
+			close(outputPipe[0]);
+			close(outputPipe[1]);
+			CHECK_ERROR(false, ERROR_MESSAGE_PREFIX L"Failed to fork the redirected process.");
+		}
+
+		if (child == 0)
+		{
+			if (
+				dup2(inputPipe[0], STDIN_FILENO) == -1 ||
+				dup2(outputPipe[1], STDOUT_FILENO) == -1
+				)
+			{
+				_exit(127);
+			}
+			close(inputPipe[0]);
+			close(inputPipe[1]);
+			close(outputPipe[0]);
+			close(outputPipe[1]);
+
+			execl("/bin/sh", "sh", "-c", &commandBuffer[0], (char*)nullptr);
+			_exit(127);
+		}
+
+		close(inputPipe[0]);
+		close(outputPipe[1]);
+		return Ptr<IStdioRedirectionProcess>(new PosixStdioRedirectionProcess(inputPipe[1], outputPipe[0], child));
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	Ptr<IStdioRedirectionProcess> CreateStdioRedirectionProcess(const WString& command)
+	{
+		static CriticalSection processCreationLock;
+		Ptr<IStdioRedirectionProcess> process;
+		CS_LOCK(processCreationLock)
+		{
+			process = CreateStdioRedirectionProcessUnsafe(command);
+		}
+		return process;
+	}
+}
+
+#endif
+

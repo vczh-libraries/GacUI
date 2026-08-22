@@ -1,7 +1,7 @@
 #include "../../RemotingHelpers/Rvmt/ViewModelHostClient.h"
-#include "../../RemotingHelpers/StdioRedirection/StdioRedirection.h"
 #include "../Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.h"
 #include "RemoteViewModelTestRpc.h"
+#include <VlppOS.h>
 #ifdef VCZH_MSVC
 #include <VlppOS.Windows.h>
 #include <crtdbg.h>
@@ -11,6 +11,7 @@ using namespace vl;
 using namespace vl::collections;
 using namespace vl::console;
 using namespace vl::inter_process;
+using namespace vl::inter_process::stdio_redirection;
 using namespace vl::rpc_controller;
 using namespace vl::rpc_controller::channeling;
 using namespace vl::presentation::remote_view_model_test;
@@ -94,7 +95,7 @@ int main(int argc, char* argv[])
 	}
 	else if (strcmp(argv[1], "/Cli") == 0)
 	{
-		result = RunHost(Ptr(new presentation::remoting::StdioRedirectionClient), false);
+		result = RunHost(Ptr(new StdioRedirectionClient), false);
 	}
 
 #if defined VCZH_MSVC && VCZH_CHECK_MEMORY_LEAKS

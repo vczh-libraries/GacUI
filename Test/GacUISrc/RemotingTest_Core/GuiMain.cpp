@@ -4,9 +4,9 @@
 #include "RemoteViewModelTestIncludes.h"
 #include "../Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.h"
 #include "../../RemotingHelpers/Rvmt/ViewModelHostServer.h"
-#include "../../RemotingHelpers/StdioRedirection/StdioRedirection.h"
 #include "../../../Source/Utilities/AutomationService/MiniHttpAutomationService.h"
 #include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
+#include <VlppOS.h>
 #ifdef VCZH_MSVC
 #include <VlppOS.Windows.h>
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
@@ -15,6 +15,7 @@
 
 using namespace vl;
 using namespace vl::inter_process;
+using namespace vl::inter_process::stdio_redirection;
 using namespace vl::presentation;
 using namespace vl::presentation::controls;
 using namespace vl::presentation::remoting;
