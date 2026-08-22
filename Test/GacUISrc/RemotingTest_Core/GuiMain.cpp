@@ -246,14 +246,15 @@ int StartServerHelper(
 	auto jsonParser = Ptr(new glr::json::Parser);
 	if (index == 2 && cliPath != L"")
 	{
-		remoting::RemotingChannelServer<TServerBase> rendererServer(
+		using RvmChannelServer = RemoteViewModelChannelServer<StdioRedirectionServer>;
+		RemoteViewModelRendererChannelServer<TServerBase, RvmChannelServer> rendererServer(
 			jsonParser,
-			true,
 			std::forward<TArgs>(args)...
 			);
-		RemoteViewModelChannelServer<StdioRedirectionServer> rvmChannelServer(jsonParser, false);
+		RvmChannelServer rvmChannelServer(jsonParser, false);
+		rendererServer.SetRvmChannelServer(&rvmChannelServer);
 		auto command = WString::Unmanaged(L"\"") + cliPath + WString::Unmanaged(L"\" /Cli");
-		return StartServer(
+		auto result = StartServer(
 			index,
 			miniHttpSocketServer,
 			jsonParser,
@@ -264,6 +265,8 @@ int StartServerHelper(
 				rvmChannelServer.ConnectNewClient(command);
 			})
 			);
+		rendererServer.SetRvmChannelServer(nullptr);
+		return result;
 	}
 	else if (index == 2)
 	{

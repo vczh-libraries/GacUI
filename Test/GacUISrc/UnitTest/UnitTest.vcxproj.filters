@@ -135,6 +135,9 @@
     <ClCompile Include="TestRemote_DocumentRunManagement.cpp">
       <Filter>Source Files\Remote</Filter>
     </ClCompile>
+    <ClCompile Include="TestRemote_ChannelServer.cpp">
+      <Filter>Source Files\Remote</Filter>
+    </ClCompile>
     <ClCompile Include="TestRemote_GraphicsHost_Startup.cpp">
       <Filter>Source Files\Remote\GraphicsHost</Filter>
     </ClCompile>
