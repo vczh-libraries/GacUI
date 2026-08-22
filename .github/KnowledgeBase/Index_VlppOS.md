@@ -127,11 +127,12 @@ Cross-process synchronization objects that support waiting operations with timeo
 
 #### Inter-Process Network Protocols and Channels
 
-Production-usable asynchronous text-protocol and typed named-channel abstractions. Every concrete network-protocol implementation supplied by this repository, including the async-socket-based Mini HTTP transport, is testing-only; production applications should provide their own `INetworkProtocol*` implementation.
+Production-usable asynchronous text-protocol and typed named-channel abstractions. Every concrete network-protocol implementation supplied by this repository, including stdio redirection and the async-socket-based Mini HTTP transport, is testing-only; production applications should provide their own `INetworkProtocol*` implementation.
 
 - Use `INetworkProtocolServer`, `INetworkProtocolClient`, `INetworkProtocolConnection` and `INetworkProtocolCallback` for asynchronous `WString` messages.
 - Use `IChannelServer<TPackage>`, `IChannelClient<TPackage>`, `IChannel<TPackage>` and `IChannelReader<TPackage>` for typed named channels with client ids, direct sends, broadcasts and batched writes.
 - Use `NetworkProtocolChannelServer<TPackage, TSerialization, TServerBase>`, `NetworkProtocolChannelClient<TPackage, TSerialization>` and `NetworkProtocolLocalChannelClient<TPackage, TSerialization>` to run the channel implementation over a production-ready custom protocol.
+- Use `vl::inter_process::stdio_redirection::StdioRedirectionServer`, `vl::inter_process::stdio_redirection::StdioRedirectionClient` and `vl::inter_process::stdio_redirection::StdioRedirectionConnection` only for testing when a child process should exchange framed protocol messages through stdin and stdout.
 - Use `vl::inter_process::async_tcp_socket::SocketHttpServer` and `vl::inter_process::async_tcp_socket::SocketHttpClient` only for testing as the portable Mini HTTP implementation of the raw network-protocol interfaces.
 
 [API Explanation](./KB_VlppOS_InterProcessNetworkProtocolsAndChannels.md)

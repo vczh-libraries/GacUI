@@ -2,12 +2,12 @@
 
 # Orders
 
-- Verify generated artifacts with downstream consumer checks [20]
+- Verify generated artifacts with downstream consumer checks [21]
 - Process staged tasks one by one with verification [19]
 - Crash early instead of adding error-tolerance fallbacks [15]
 - Proactively remove code made redundant by refactoring [15]
 - Port fixes from imports to source repositories [14]
-- Keep design documentation aligned with code after refactoring [13]
+- Keep design documentation aligned with code after refactoring [14]
 - Fix behavior at the owning state instead of patching symptoms [11]
 - Extract abstractions only for real shared behavior [10]
 - Verify and localize portability on every target OS [7]

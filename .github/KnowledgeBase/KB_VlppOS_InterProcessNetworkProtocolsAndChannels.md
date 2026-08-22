@@ -21,9 +21,9 @@ The channel and protocol stack is:
 | Typed channels | `IChannelServer<TPackage>`, `IChannelClient<TPackage>`, `IChannel<TPackage>`, `IChannelReader<TPackage>` | Named typed-package delivery, client ids, direct sends, broadcasts and batching |
 | Channel bridge | `NetworkProtocolChannelServer<TPackage, TSerialization, TServerBase>`, `NetworkProtocolChannelClient<TPackage, TSerialization>`, `NetworkProtocolLocalChannelClient<TPackage, TSerialization>` | Serializes channel batches to `WString` protocol messages |
 | Text protocol | `INetworkProtocolServer`, `INetworkProtocolClient`, `INetworkProtocolConnection`, `INetworkProtocolCallback` | Asynchronous `WString` messages and connection lifecycle |
-| Portable transport | `async_tcp_socket::SocketHttpServer`, `async_tcp_socket::SocketHttpClient` | Implements the text protocol with the async-socket-based Mini HTTP stack |
+| Testing transports | `stdio_redirection::StdioRedirectionServer`, `stdio_redirection::StdioRedirectionClient`, `async_tcp_socket::SocketHttpServer`, `async_tcp_socket::SocketHttpClient` | Implements the text protocol over redirected child-process stdio or the async-socket-based Mini HTTP stack |
 
-Feature code should normally depend on `IChannel*` or `INetworkProtocol*`. Bind it to `async_tcp_socket::SocketHttpServer` and `async_tcp_socket::SocketHttpClient` at the application composition boundary.
+Feature code should normally depend on `IChannel*` or `INetworkProtocol*`. Bind testing tools to `stdio_redirection::*` or `async_tcp_socket::*` at the application composition boundary; production applications should provide their own concrete protocol transport.
 
 ## Using the Network Protocol
 
@@ -68,6 +68,19 @@ connection->InstallCallback(nullptr);
 ```
 
 Install the callback before `WaitForServer`, because connection events may be delivered while that call establishes the logical connection. Callback methods may run on arbitrary threads and must be thread-safe.
+
+## Using Stdio Redirection for Tests
+
+`Source/InterProcess/StdioRedirection/StdioRedirection.h` exposes the testing-only stdio transport in `vl::inter_process::stdio_redirection`. It implements the same `INetworkProtocol*` contracts as the other concrete transports, but connects a parent process to a child through redirected stdin and stdout instead of a listener endpoint.
+
+- `StdioRedirectionServer` is the parent-side launcher. Call `Start`, then call `ConnectNewClient(command)` once per child process. Each call launches and owns an independent child connection; `Start` itself launches nothing.
+- `StdioRedirectionClient` is the child-side endpoint over its inherited stdin and stdout. `WaitForServer` is a no-op because the redirected streams already form the connection.
+- `StdioRedirectionConnection` owns callback-safe message exchange and shutdown. Messages are strict-Unicode `WString` values encoded as one UTF-8/Base64 line. Exact raw `!Exit` is the shutdown control line; other raw control lines beginning with `!` are ignored.
+- `StdioRedirection.Windows.cpp` owns Windows process and anonymous-pipe handling. `StdioRedirection.Linux.cpp` owns the shared Linux/macOS `fork` and pipe implementation.
+
+The server sends `!Exit`, closes the child's stdin, drains callbacks and reader work, and reaps every launched process during `Stop`. Because command interpretation and process launching are intentionally convenient for local tests rather than hardened for untrusted input, do not use this transport as production inter-process infrastructure.
+
+The stdio transport can be supplied to a `NetworkProtocolChannelServer` / `NetworkProtocolChannelClient` composition anywhere another `INetworkProtocolServer` / `INetworkProtocolClient` implementation is accepted. The exact wrapper constructor depends on the application's channel subtype. Keep stdin and stdout reserved for framed transport traffic in the child; diagnostics should use stderr.
 
 ## Using Named Channels
 
