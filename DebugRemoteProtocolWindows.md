@@ -3,7 +3,7 @@
 ## Goal
 
 - Makesure test apps build and work as expected.
-- `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md` document details of verification.
+- `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md` have details of verification.
 
 ## Verification
 
