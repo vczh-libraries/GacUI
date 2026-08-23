@@ -13,7 +13,7 @@ roots.
 
 ## Test Matrix
 
-The Core application and renderer-transport columns are independent dimensions.
+The Core application and renderer transport are independent dimensions.
 Test their Cartesian product with fresh processes. `/RVMT` adds five host modes:
 the native C++ host over the renderer network transport, the native C++ host
 auto-launched over stdio, the GacJS host inside `?rvmhost`, the independently
@@ -22,11 +22,7 @@ stdio. Do not multiply that host dimension across `/FCT` or `/RPT`.
 `CppTest_Rvm` is excluded because it renders locally and needs no remote
 renderer. `/Pipe` is excluded because a fetch-based browser cannot use it.
 
-| Platform | Core application dimension | Transport dimension | Total targets |
-| --- | --- | --- | --- | --- |
-| Windows | `/RPT`, `/FCT`, `/RVMT` (five host modes) | `/Http`, `/MiniHttp` | 14 |
-| Linux | `/RPT`, `/FCT`, `/RVMT` (five host modes) | `/MiniHttp` | 7 |
-| macOS | `/RPT`, `/FCT`, `/RVMT` (five host modes) | `/MiniHttp` | 7 |
+**Complete test matrix see `### Test Matrix Card`**.
 
 Every `/RVMT` target includes exactly one host. Native manual mode uses
 `RemotingTest_RvmHost` on the same transport; native stdio mode passes that
@@ -53,18 +49,38 @@ the file format looks like this:
 
 ## Test Matrix
 
-| Test Item | 1st | 2nd | ... |
-| --- | --- | --- | --- |
-| [Windows][`/RPT`][`/Http`] | <RESULT-1st> | <RESULT-2nd> | ... |
-...
+| Test Item | 1st |
+| --- | --- |
+| [Windows][`/RPT`][`/Http`] |  |
+| [Windows][`/RPT`][`/MiniHttp`] |  |
+| [Windows][`/FCT`][`/Http`] |  |
+| [Windows][`/FCT`][`/MiniHttp`] |  |
+| [Windows][`/RVMT`][`/Http`][Native `RemotingTest_RvmHost` over network] |  |
+| [Windows][`/RVMT`][`/Http`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] |  |
+| [Windows][`/RVMT`][`/Http`][GacJS browser host `?rvmhost`] |  |
+| [Windows][`/RVMT`][`/Http`][GacJS Node `cli.js` over network] |  |
+| [Windows][`/RVMT`][`/Http`][GacJS Node SEA over stdio `/Cli:<path>`] |  |
+| [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over network] |  |
+| [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] |  |
+| [Windows][`/RVMT`][`/MiniHttp`][GacJS browser host `?rvmhost`] |  |
+| [Windows][`/RVMT`][`/MiniHttp`][GacJS Node `cli.js` over network] |  |
+| [Windows][`/RVMT`][`/MiniHttp`][GacJS Node SEA over stdio `/Cli:<path>`] |  |
+| [Linux][`/RPT`][`/MiniHttp`] |  |
+| [Linux][`/FCT`][`/MiniHttp`] |  |
+| [Linux][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over network] |  |
+| [Linux][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] |  |
+| [Linux][`/RVMT`][`/MiniHttp`][GacJS browser host `?rvmhost`] |  |
+| [Linux][`/RVMT`][`/MiniHttp`][GacJS Node `cli.js` over network] |  |
+| [Linux][`/RVMT`][`/MiniHttp`][GacJS Node SEA over stdio `/Cli:<path>`] |  |
+| [macOS][`/RPT`][`/MiniHttp`] |  |
+| [macOS][`/FCT`][`/MiniHttp`] |  |
+| [macOS][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over network] |  |
+| [macOS][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] |  |
+| [macOS][`/RVMT`][`/MiniHttp`][GacJS browser host `?rvmhost`] |  |
+| [macOS][`/RVMT`][`/MiniHttp`][GacJS Node `cli.js` over network] |  |
+| [macOS][`/RVMT`][`/MiniHttp`][GacJS Node SEA over stdio `/Cli:<path>`] |  |
 
 ## Issues Found and Fix
-
-### <TEST-ITEM> <x-nd> <start-time-of-the-test>
-
-describes the failure, cause of the failure and the fix to resolve it
-
-...
 ```
 
 - When creating a new test matrix card:

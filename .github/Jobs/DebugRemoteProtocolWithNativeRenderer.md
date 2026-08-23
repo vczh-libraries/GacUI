@@ -8,17 +8,13 @@ establish each required process topology, then execute the matching SOP section.
 
 ## Test Matrix
 
-The application and renderer-transport columns are independent dimensions.
+The application and renderer transport are independent dimensions.
 Test their Cartesian product. `/RVMT` adds a Core-to-host mode dimension:
 manual host over the selected network transport, or auto-launched stdio
 `/Cli:<path>`. Do not multiply that host dimension across `/FCT` or `/RPT`.
 Use fresh processes for each target.
 
-| Platform | Standalone RVM requester targets | Remote Core application dimension | Transport dimension | Total targets |
-| --- | --- | --- | --- | --- |
-| Windows | `CppTest_Rvm`: manual `/Pipe`, `/Http`, `/MiniHttp`, or auto `/Cli:<path>` | `RemotingTest_Core` + `RemotingTest_Rendering_Win32`: `/RPT`, `/FCT`, and `/RVMT` in manual or `/Cli` host mode | `/Pipe`, `/Http`, `/MiniHttp` | 4 standalone + 12 Core = 16 |
-| Linux | wGac `Test_CppTest_Rvm` + manual host | `RemotingTest_Core` + `RemotingTest_Rendering_Wayland`: `/RPT`, `/FCT`, and `/RVMT` in manual or `/Cli` host mode | `/MiniHttp` | 1 standalone + 4 Core = 5 |
-| macOS | iGac `Test_CppTest_Rvm` + manual host | `RemotingTest_Core` + `RemotingTest_Rendering_macOS`: `/RPT`, `/FCT`, and `/RVMT` in manual or `/Cli` host mode | `/MiniHttp` | 1 standalone + 4 Core = 5 |
+**Complete test matrix see `### Test Matrix Card`**.
 
 Every `/RVMT` target includes `RemotingTest_RvmHost`. In manual mode, start it
 after the requester/Core with the same network selector and before the renderer.
@@ -47,18 +43,36 @@ the file format looks like this:
 
 ## Test Matrix
 
-| Test Item | 1st | 2nd | ... |
-| --- | --- | --- | --- |
-| [Windows][CppTest_Rvm][`/Pipe`] | <RESULT-1st> | <RESULT-2nd> | ... |
-...
+| Test Item | 1st |
+| --- | --- |
+| [Windows][CppTest_Rvm][`/Pipe`] |  |
+| [Windows][CppTest_Rvm][`/Http`] |  |
+| [Windows][CppTest_Rvm][`/MiniHttp`] |  |
+| [Windows][CppTest_Rvm][`/Cli:<path>`] |  |
+| [Windows][`/RPT`][`/Pipe`] |  |
+| [Windows][`/RPT`][`/Http`] |  |
+| [Windows][`/RPT`][`/MiniHttp`] |  |
+| [Windows][`/FCT`][`/Pipe`] |  |
+| [Windows][`/FCT`][`/Http`] |  |
+| [Windows][`/FCT`][`/MiniHttp`] |  |
+| [Windows][`/RVMT`][`/Pipe`] |  |
+| [Windows][`/RVMT`][`/Pipe /Cli:<path>`] |  |
+| [Windows][`/RVMT`][`/Http`] |  |
+| [Windows][`/RVMT`][`/Http /Cli:<path>`] |  |
+| [Windows][`/RVMT`][`/MiniHttp`] |  |
+| [Windows][`/RVMT`][`/MiniHttp /Cli:<path>`] |  |
+| [Linux][Test_CppTest_Rvm][`/MiniHttp`] |  |
+| [Linux][`/RPT`][`/MiniHttp`] |  |
+| [Linux][`/FCT`][`/MiniHttp`] |  |
+| [Linux][`/RVMT`][`/MiniHttp`] |  |
+| [Linux][`/RVMT`][`/MiniHttp /Cli:<path>`] |  |
+| [macOS][Test_CppTest_Rvm][`/MiniHttp`] |  |
+| [macOS][`/RPT`][`/MiniHttp`] |  |
+| [macOS][`/FCT`][`/MiniHttp`] |  |
+| [macOS][`/RVMT`][`/MiniHttp`] |  |
+| [macOS][`/RVMT`][`/MiniHttp /Cli:<path>`] |  |
 
 ## Issues Found and Fix
-
-### <TEST-ITEM> <x-nd> <start-time-of-the-test>
-
-describes the failure, cause of the failure and the fix to resolve it
-
-...
 ```
 
 - When creating a new test matrix card:
