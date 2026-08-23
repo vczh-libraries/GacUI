@@ -22,11 +22,11 @@ stdio. Do not multiply that host dimension across `/FCT` or `/RPT`.
 `CppTest_Rvm` is excluded because it renders locally and needs no remote
 renderer. `/Pipe` is excluded because a fetch-based browser cannot use it.
 
-| Platform | GacJS renderer | Core application dimension | Transport dimension | Total targets |
+| Platform | Core application dimension | Transport dimension | Total targets |
 | --- | --- | --- | --- | --- |
-| Windows | Playwright Chromium | `/RPT`, `/FCT`, `/RVMT` (five host modes) | `/Http`, `/MiniHttp` | 14 |
-| Linux | Playwright Firefox | `/RPT`, `/FCT`, `/RVMT` (five host modes) | `/MiniHttp` | 7 |
-| macOS | Playwright WebKit | `/RPT`, `/FCT`, `/RVMT` (five host modes) | `/MiniHttp` | 7 |
+| Windows | `/RPT`, `/FCT`, `/RVMT` (five host modes) | `/Http`, `/MiniHttp` | 14 |
+| Linux | `/RPT`, `/FCT`, `/RVMT` (five host modes) | `/MiniHttp` | 7 |
+| macOS | `/RPT`, `/FCT`, `/RVMT` (five host modes) | `/MiniHttp` | 7 |
 
 Every `/RVMT` target includes exactly one host. Native manual mode uses
 `RemotingTest_RvmHost` on the same transport; native stdio mode passes that
@@ -38,6 +38,10 @@ Playwright WebKit.
 
 The Linux/macOS `/Cli` rows describe required cross-platform code and runtime
 procedure but were not runtime-verified during the Windows implementation task.
+
+Use Playwright Chromium for Windows.
+Use Playwright Firefox for Linux.
+Use Playwright WebKit for macOS.
 
 ### Test Matrix Card
 
@@ -51,7 +55,7 @@ the file format looks like this:
 
 | Test Item | 1st | 2nd | ... |
 | --- | --- | --- | --- |
-| [Windows Playwright Chromium][`/RPT`][`/Http`] | <RESULT-1st> | <RESULT-2nd> | ... |
+| [Windows][`/RPT`][`/Http`] | <RESULT-1st> | <RESULT-2nd> | ... |
 ...
 
 ## Issues Found and Fix
