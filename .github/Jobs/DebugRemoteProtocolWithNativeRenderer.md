@@ -79,9 +79,11 @@ the file format looks like this:
   - You should know what platform you are currently in, and only copy test items for that platform, but make sure to copy the complete subset.
   - Prepare an empty 1st column.
   - Add an empty `## Issues Found and Fix` section.
-- When a test item pass through the test, the <RESULT-x-nd> is just the start time of the test.
-- When a test item fails, the <RESULT-x-nd> will be "X".
-- When a test item is not executed, the <RESULT-x-nd> will be blank.
+- Fill <RESULT-x-nd> in time when going through a test item:
+  - When a test item is running, the <RESULT-x-nd> is "<start-time> (running)"
+  - When a test item pass through the test, the <RESULT-x-nd> is "<start-time>".
+  - When a test item fails, the <RESULT-x-nd> is "X". After the fix is working, it becomes "<start-time> (fixed)"
+  - When a test item is not executed, the <RESULT-x-nd> will be blank.
 - Only when a test item fail, a log to "Issues Found and Fix" is required.
   - Different x-nd of the same test item has its own section.
   - New sections is appended to the end of the file, no ordering is required.
