@@ -39,6 +39,44 @@ Playwright WebKit.
 The Linux/macOS `/Cli` rows describe required cross-platform code and runtime
 procedure but were not runtime-verified during the Windows implementation task.
 
+### Test Matrix Card
+
+When instructed to create a test matrix card for recording each round of results,
+the file format looks like this:
+
+```markdown
+# Test Matrix Card <DATE-TIME>
+
+## Test Matrix
+
+| Test Item | 1st | 2nd | ... |
+| --- | --- | --- | --- |
+| [Windows Playwright Chromium][`/RPT`][`/Http`] | <RESULT-1st> | <RESULT-2nd> | ... |
+...
+
+## Issues Found and Fix
+
+### <TEST-ITEM> <x-nd> <start-time-of-the-test>
+
+describes the failure, cause of the failure and the fix to resolve it
+
+...
+```
+
+- When creating a new test matrix card:
+  - You should know what platform you are currently in, and only copy test items for that platform, but make sure to copy the complete subset.
+  - Prepare an empty 1st column.
+  - Add an empty `## Issues Found and Fix` section.
+- When a test item is running, the <RESULT-x-nd> is "<start-time> (running)"
+- When a test item pass through the test, the <RESULT-x-nd> is "<start-time>".
+- When a test item fails, the <RESULT-x-nd> is "X". After the fix is working, it becomes "<start-time> (fixed)"
+- When a test item is not executed, the <RESULT-x-nd> will be blank.
+- Only when a test item fail, a log to "Issues Found and Fix" is required.
+  - Different x-nd of the same test item has its own section.
+  - New sections is appended to the end of the file, no ordering is required.
+- 1st, 2nd, 3rd means, if in the same request, the test matrix is started over, a new column is added to record the result.
+  - Columns are added only when needed.
+
 ## Required Reading
 
 Read the current repository instructions before changing or building code:

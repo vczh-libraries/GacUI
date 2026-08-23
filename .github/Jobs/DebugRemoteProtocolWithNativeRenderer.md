@@ -37,6 +37,43 @@ selector and optional `/port:<port>` automation-listener argument. Omitting the
 port keeps the default `8889`. Run one target at a time and retain every process
 identifier for cleanup.
 
+### Test Matrix Card
+
+When instructed to create a test matrix card for recording each round of results,
+the file format looks like this:
+
+```markdown
+# Test Matrix Card <DATE-TIME>
+
+## Test Matrix
+
+| Test Item | 1st | 2nd | ... |
+| --- | --- | --- | --- |
+| [Windows][CppTest_Rvm][`/Pipe`] | <RESULT-1st> | <RESULT-2nd> | ... |
+...
+
+## Issues Found and Fix
+
+### <TEST-ITEM> <x-nd> <start-time-of-the-test>
+
+describes the failure, cause of the failure and the fix to resolve it
+
+...
+```
+
+- When creating a new test matrix card:
+  - You should know what platform you are currently in, and only copy test items for that platform, but make sure to copy the complete subset.
+  - Prepare an empty 1st column.
+  - Add an empty `## Issues Found and Fix` section.
+- When a test item pass through the test, the <RESULT-x-nd> is just the start time of the test.
+- When a test item fails, the <RESULT-x-nd> will be "X".
+- When a test item is not executed, the <RESULT-x-nd> will be blank.
+- Only when a test item fail, a log to "Issues Found and Fix" is required.
+  - Different x-nd of the same test item has its own section.
+  - New sections is appended to the end of the file, no ordering is required.
+- 1st, 2nd, 3rd means, if in the same request, the test matrix is started over, a new column is added to record the result.
+  - Columns are added only when needed.
+
 ## Windows
 
 Read `GacUI/Project.md`, `GacUI/.github/copilot-instructions.md`, and the linked

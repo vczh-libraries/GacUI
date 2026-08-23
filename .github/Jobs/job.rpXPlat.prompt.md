@@ -1,7 +1,7 @@
 # Ensure GacUI Working Properly on Linux/macOS
 
-- If you are on Linux, the repo you are working on are `GacUI`, `GacJS` and `wGac`.
-- If you are on macOS, the repo you are working on are `GacUI`, `GacJS` and `iGac`.
+- If you are on Linux, the repo you are working on are `GacUI`, `GacJS` and `wGac`, you don't have to worry about `iGac` on Linux.
+- If you are on macOS, the repo you are working on are `GacUI`, `GacJS` and `iGac`, you don't have to worry about `wGac` on macOS.
 - `wGac` and `iGac` has very similar structure:
   - When a `%ABC` folder is mentioned below, it means `wGac/WGacABC` or `iGac/MacABC`.
   - When a repo name is not mentioned, it means `wGac` or `iGac`.
@@ -13,6 +13,19 @@
 - Maintain documents and scripts in `wGac` and `iGac`.
 - Makesure test apps build and work as expected.
 - `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md` document details of verification.
+
+## Maintain a Test Matrix Card
+
+You need to maintain test card in:
+- `<wGac-or-iGac>/TestMatrix_NativeRenderer.md` for `DebugRemoteProtocolWithNativeRenderer.md`
+- `<wGac-or-iGac>/TestMatrix_GacJS.md` for `DebugRemoteProtocolWithGacJS.md`
+
+If these files already exist, delete them, and recreate them following the `### Test Matrix Card` section in each document.
+During verification, test matrix cards should be updated in time:
+- When a test item starts, succeeds, fails, fixed, the file need to be updated immediately and saved, but no need to commit immediately, a commit is only required after all test items are done.
+- I will read the file to check the progress of your verification.
+Without explicitly instructed, you are required to complete every available test item in the matrix:
+- If some test items are excluded explicitly, you still need to keep complete test items in the test matrix card, but leave blanks for results of excluded items.
 
 ## Helper Bash Scripts
 
