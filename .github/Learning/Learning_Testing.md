@@ -470,7 +470,7 @@ After moving reusable automation endpoint code or changing its shared-project ow
 
 Put each renderer's complete application-by-transport Cartesian product in an early `Test Matrix` section after the background introduction. The native and GacJS setup guides must enumerate their own platform-supported targets and required companion processes instead of delegating the matrix to another job or presenting dimensions as alternatives.
 
-Keep responsibilities separated: renderer guides own the supported matrix and setup commands, while `DebugRemoteProtocolSop.md` owns feature operations, error handling, and observable pass/fail behavior. Update the SOP when an operation is missing instead of duplicating those steps in every setup guide.
+Keep responsibilities separated: renderer guides own the supported matrix and setup commands, while `REPO-ROOT/.github/Jobs/DebugRemoteProtocolSop.md` owns feature operations, error handling, and observable pass/fail behavior. Update the SOP when an operation is missing instead of duplicating those steps in every setup guide.
 
 ## Treat file-dialog snapshots as scheduling-sensitive contracts
 

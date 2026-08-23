@@ -150,12 +150,12 @@ To make a change:
 
 ## Debugging Remote Protocol Issues
 
-Use `REPO-ROOT/DebugRemoteProtocolSop.md` for the shared end-to-end UI operations and
+Use `REPO-ROOT/.github/Jobs/DebugRemoteProtocolSop.md` for the shared end-to-end UI operations and
 observable results.
 
 Remote protocol is involved in three ways:
-- Core with native renderer: `REPO-ROOT/DebugRemoteProtocolWithNativeRenderer.md`.
-- Core with `GacJS`: `REPO-ROOT/DebugRemoteProtocolWithGacJS.md`.
+- Core with native renderer: `REPO-ROOT/.github/Jobs/DebugRemoteProtocolWithNativeRenderer.md`.
+- Core with `GacJS`: `REPO-ROOT/.github/Jobs/DebugRemoteProtocolWithGacJS.md`.
 - `UnitTest`, some e2e test cases are running on top of a unit test only remote protocol renderer, which is designed to save snapshots of UI between frames at `REPO-ROOT/Test/Resources/UnitTestSnapshots`.
 
 Running core always uses network protocols.
@@ -174,7 +174,7 @@ By careful tell if a bug repro in some or all three ways, you can easily narrow 
 
 Test apps means `CppTest*` and `RemotingTest*`, they are demos and do not require production level quality.
 No need to gracefully handle any exception, actually we need them to just crash when anything unexpected thing happens, that's how we know anything in `REPO-ROOT/Source` is going wrong.
-`REPO-ROOT/DebugRemoteProtocolSop.md` defines the expected behavior of these test apps apon connection/disconnection.
+`REPO-ROOT/.github/Jobs/DebugRemoteProtocolSop.md` defines the expected behavior of these test apps apon connection/disconnection.
 Keep test apps simple without introducing unnecessary "gracefully recovering".
 
 ## Windows Specific

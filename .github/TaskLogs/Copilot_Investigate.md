@@ -3,7 +3,7 @@
 # PROBLEM DESCRIPTION
 
 1. Execute `GacUI items outside the requested GacJS-only change scope` section in [TODO_RPC_Missing.md](GacJS/TODO_RPC_Missing.md)
-2. follow [DebugRemoteProtocolWithNativeRenderer.md](GacUI/DebugRemoteProtocolWithNativeRenderer.md) and [DebugRemoteProtocolWithGacJS.md](GacUI/DebugRemoteProtocolWithGacJS.md)but only run `/cli` related part of the test matrix. since this is a very local refactoring, if any test item fails, limit the change in GacUI repo. It has been verified before this refactoring.
+2. follow [DebugRemoteProtocolWithNativeRenderer.md](../Jobs/DebugRemoteProtocolWithNativeRenderer.md) and [DebugRemoteProtocolWithGacJS.md](../Jobs/DebugRemoteProtocolWithGacJS.md)but only run `/cli` related part of the test matrix. since this is a very local refactoring, if any test item fails, limit the change in GacUI repo. It has been verified before this refactoring.
 3. commit and push all local changes once finishing
 
 # UPDATES
@@ -12,7 +12,7 @@
 
 The split `RemotingTest_Core /RVMT <renderer-transport> /Cli:<path>` topology is constructed in `Test/GacUISrc/RemotingTest_Core/GuiMain.cpp`. Its renderer side currently uses a plain `RemotingChannelServer<TServerBase>` with renderer admission enabled from construction, while its stdio host side separately owns `RemoteViewModelChannelServer<StdioRedirectionServer>` and the requester phase. This statically confirms that an early renderer bypasses the `RpcServerHelpers::CanAdmitRenderer()` check used by the combined topology.
 
-Add focused coverage around the split renderer-server type. The regression must prove that a renderer is rejected while the supplied RVM requester gate is not running, then prove that the first renderer and a replacement renderer are both accepted after that exact gate reports running. Build the complete GacUISrc solution and run the required UnitTest project. Finally, execute only the `/Cli` rows from `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md`, including successful view-model interaction, renderer replacement, application-controlled shutdown, and process cleanup as defined by the shared SOP.
+Add focused coverage around the split renderer-server type. The regression must prove that a renderer is rejected while the supplied RVM requester gate is not running, then prove that the first renderer and a replacement renderer are both accepted after that exact gate reports running. Build the complete GacUISrc solution and run the required UnitTest project. Finally, execute only the `/Cli` rows from `REPO-ROOT/.github/Jobs/DebugRemoteProtocolWithNativeRenderer.md` and `REPO-ROOT/.github/Jobs/DebugRemoteProtocolWithGacJS.md`, including successful view-model interaction, renderer replacement, application-controlled shutdown, and process cleanup as defined by the shared SOP.
 
 Success requires all focused assertions, the GacUI build, the GacUI unit test (including no memory-leak dump), and every exercised `/Cli` executable row to pass. Any failure-induced source change remains confined to GacUI.
 
