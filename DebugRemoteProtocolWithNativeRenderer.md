@@ -62,6 +62,13 @@ GacUI\Test\GacUISrc\x64\Debug\RemotingTest_Rendering_Win32.exe
 GacUI\Test\GacUISrc\x64\Debug\RemotingTest_RvmHost.exe
 ```
 
+After building Debug x64, `GacUI/Test/StartCore.ps1` wraps the Core-side
+commands below with `-App cpptest_rvm|fct|rpt|rvmt`,
+`-Protocol http|pipe|minihttp`, and optional `-Cli`. A manual RVM host starts
+one second after its requester/Core. `GacUI/Test/StartRendrerer.ps1` starts the
+matching Win32 renderer with the same `-Protocol` values and optional
+`-Port <1-65535>`.
+
 Start a pair from the monorepo root. These examples use `/RPT`; substitute
 `/FCT` or `/RVMT` for the other Core application targets.
 
@@ -235,34 +242,34 @@ applications:
 )
 ```
 
-For the standalone RVM requester target, start the wGac application first and
-then its portable host:
+For the standalone RVM requester target, `test_core.sh` starts the wGac
+application first, waits one second, then full-builds and starts its portable
+host. `test.sh` remains the launcher for native platform apps and renderers:
 
 ```bash
-wGac/test.sh --app:rvmt --unblock
-GacUI/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost /MiniHttp
+wGac/test_core.sh --app:cpptest_rvm --protocol:minihttp --unblock
 ```
 
 For a Core target, run Core in the first terminal. Replace `/RPT` with `/FCT`
 or `/RVMT` for the other application targets:
 
 ```bash
-GacUI/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core /MiniHttp /RPT
+wGac/test_core.sh --app:rpt --protocol:minihttp
 ```
 
-For `/RVMT`, start the host in another terminal and wait until Core automation
-exposes the `Remote View Model Test` window before starting the renderer:
+For manual `/RVMT`, the same launcher starts Core, waits one second, then
+full-builds and starts the host. Wait until Core automation exposes the
+`Remote View Model Test` window before starting the renderer:
 
 ```bash
-GacUI/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost /MiniHttp
+wGac/test_core.sh --app:rvmt --protocol:minihttp
 ```
 
-For the additional Core `/Cli` row, use an absolute host path and do not start
-the host manually:
+For the additional Core `/Cli` row, the launcher full-builds the host first,
+passes its absolute path to Core, and does not start a manual host:
 
 ```bash
-host_exe="$(realpath GacUI/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost)"
-GacUI/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core /MiniHttp /RVMT "/Cli:$host_exe"
+wGac/test_core.sh --app:rvmt --protocol:minihttp --cli
 ```
 
 Wait for `Waiting for a renderer ...`, then run the renderer in another
@@ -327,34 +334,34 @@ applications:
 )
 ```
 
-For the standalone RVM requester target, start the iGac application first and
-then its portable host:
+For the standalone RVM requester target, `test_core.sh` starts the iGac
+application first, waits one second, then full-builds and starts its portable
+host. `test.sh` remains the launcher for native platform apps and renderers:
 
 ```bash
-iGac/test.sh --app:rvmt --unblock
-GacUI/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost /MiniHttp
+iGac/test_core.sh --app:cpptest_rvm --protocol:minihttp --unblock
 ```
 
 For a Core target, run Core in the first terminal. Replace `/RPT` with `/FCT`
 or `/RVMT` for the other application targets:
 
 ```bash
-GacUI/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core /MiniHttp /RPT
+iGac/test_core.sh --app:rpt --protocol:minihttp
 ```
 
-For `/RVMT`, start the host in another terminal and wait until Core automation
-exposes the `Remote View Model Test` window before starting the renderer:
+For manual `/RVMT`, the same launcher starts Core, waits one second, then
+full-builds and starts the host. Wait until Core automation exposes the
+`Remote View Model Test` window before starting the renderer:
 
 ```bash
-GacUI/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost /MiniHttp
+iGac/test_core.sh --app:rvmt --protocol:minihttp
 ```
 
-For the additional Core `/Cli` row, use an absolute host path and do not start
-the host manually:
+For the additional Core `/Cli` row, the launcher full-builds the host first,
+passes its absolute path to Core, and does not start a manual host:
 
 ```bash
-host_exe="$(realpath GacUI/Test/Linux/RemotingTest_RvmHost/Bin/RemotingTest_RvmHost)"
-GacUI/Test/Linux/RemotingTest_Core/Bin/RemotingTest_Core /MiniHttp /RVMT "/Cli:$host_exe"
+iGac/test_core.sh --app:rvmt --protocol:minihttp --cli
 ```
 
 Wait for `Waiting for a renderer ...`, then run the renderer in another

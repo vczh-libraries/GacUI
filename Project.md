@@ -190,6 +190,12 @@ Automation HTTP service for GUI applications are available for Windows:
 - `RemotingTest_Rendering_Win32`  : Renderer of `RemotingTest_Core`.
 - `RemotingTest_RvmHost`          : Provide the remote view-model service used by `CppTest_Rvm` and `RemotingTest_Core /RVMT`, including the stdio `/Cli` mode.
 
+After building Debug x64, use the repository-relative launchers under `Test`:
+
+- `StartCore.ps1 -App cpptest_rvm|fct|rpt|rvmt -Protocol http|pipe|minihttp [-Cli]` starts `CppTest_Rvm` or `RemotingTest_Core`. `-Cli` is valid only for `cpptest_rvm` and `rvmt`; without it, those two app modes start their required `RemotingTest_RvmHost` manually one second after the requester/Core.
+- `StartRendrerer.ps1 -Protocol http|pipe|minihttp [-Port <1-65535>]` starts `RemotingTest_Rendering_Win32` and optionally selects its automation service port. The file name intentionally preserves the requested `Rendrerer` spelling.
+- Both launchers use `Test/GacUISrc/x64/Debug`, start visible processes for interactive testing, and return their `System.Diagnostics.Process` objects for inspection or cleanup.
+
 FullControlTest means `Generated_FullControlTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/FullControlTest/Resource.xml`.
 RemoteProtocolTest means `Generated_RemoteProtocolTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/RemoteProtocolTest/Resource.xml`.
 RemoteViewModelTest means `Generated_RemoteViewModelTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/RemoteViewModelTest/Resource.xml`.

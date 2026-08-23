@@ -26,6 +26,7 @@
   - `GacUI`, `wGac` and `iGac`, as well as `syncProj.sh`, might needs some manual fix.
 - `build.sh` builds the whole repo.
 - `test.sh` runs each app.
+- `test_core.sh` full-builds and runs the selected sibling GacUI Core-side app; it complements `test.sh`, which continues to run native platform apps and renderers.
 
 ## Ensure Project Availability
 
@@ -41,6 +42,7 @@ In `GacUI` there are important test apps:
   - Its portable counterpart is `%FullControlTest`.
 - `CppTest_Rvm`, a test app with actual UI, connecting to a view model implementation hosted in `RemotingTest_RvmHost`.
   - `test.sh --app:rvmt`
+  - `test_core.sh --app:cpptest_rvm --protocol:minihttp` starts this requester and then full-builds and starts its manual host.
   - Its portable counterpart is `%CppTestRvm`.
   - The wGac and iGac launchers still pass `/MiniHttp`; their portable `Main.cpp` files do not expose the mirrored `StartCliServer`, so these standalone targets require a manually started `/MiniHttp` host.
 - `RemotingTest_Rendering_Win32`, a test app as a native renderer in remote protocol, it connects to `RemotingTest_Core`.
@@ -49,6 +51,7 @@ In `GacUI` there are important test apps:
   - The default automation port is 8889. A concurrent takeover renderer needs a different automation port, such as 8890; this does not change the `/MiniHttp` Core connection on port 8888.
 - `RemotingTest_Core`, a test ap as the core app in remote protocol.
   - It runs from `GacUI/Test/Linux/RemotingTest_Core`.
+  - `test_core.sh --app:fct|rpt|rvmt --protocol:minihttp [--cli]` full-builds the selected GacUI project and starts it.
   - Renderer traffic always uses `/MiniHttp`. For `/RVMT`, host mode is independently either manual `/MiniHttp` or auto-launched `/Cli:<path>`.
 - `RemotingTest_RvmHost`, a CLI app hosts the implementation of `IViewModel` with `RemoteViewModelTest` is used.
   - Requres `CppTest_Rvm` or `RemotingTest_Core /RVMT`.
