@@ -10,12 +10,12 @@
 - Keep design documentation aligned with code after refactoring [14]
 - Fix behavior at the owning state instead of patching symptoms [11]
 - Extract abstractions only for real shared behavior [10]
+- Make `Stop()` drain asynchronous work before returning [8]
 - Verify and localize portability on every target OS [7]
-- Make `Stop()` drain asynchronous work before returning [7]
 - Validate expectations against implementation and existing tests [6]
+- Do not assume async callback owners are heap allocated [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
-- Do not assume async callback owners are heap allocated [4]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [3]
 - Don't assume observable changes are batched [3]
 - Capture dependent lambdas explicitly [2]
@@ -49,6 +49,9 @@
 - Use reentrant POSIX date-time conversions [1]
 - `IRpcJsonMessageDispatcher::InjectException` is persistent and last-write-wins [1]
 - Measure browser images from their own load/error event [1]
+- Keep generator compilation independent from runtime-backed tests [1]
+- Normalize checkout line endings at golden comparison boundaries [1]
+- Preserve ordered HTTP messages at upload and completion boundaries [1]
 
 # Refinements
 
@@ -100,6 +103,8 @@ Asynchronous callbacks and handle-close paths must not rely on the owning object
 
 When registered waits or async request callbacks can race with `Stop()`, give each wait/request its own context and use atomics to transfer ownership between registration, callback execution, and stop. Do not close handles or buffers until the owner path has either unregistered a not-yet-started callback or waited for a started callback to finish.
 
+When a local callback functor owns the last reference to its controller or connection, destroy that functor while the thread still advertises the matching callback-reentrant context. Restoring the callback marker first can make destruction call a wait routine that waits on the current worker itself, leaking or deadlocking the entire lifecycle.
+
 ## Extract abstractions only for real shared behavior
 
 When refactoring client/server or similar paired implementations, extract common state and helper behavior only when it genuinely simplifies both sides. Preserve intentional differences in small derived redirects or callbacks instead of forcing an abstraction just to increase reuse.
@@ -121,6 +126,8 @@ Use the platform's final callback boundary when available. For WinHTTP async req
 Renderer clients should explicitly stop their network transport before stack-owned channel wrappers are destroyed, so callback shutdown completes before local wrapper storage goes out of scope.
 
 Named-pipe shutdown should cancel pending overlapped pipe I/O before waiting for read callbacks to drain, especially when the remote side closes the pipe first. Channel-client destruction should also avoid stopping an already-disconnected transport connection.
+
+If `Stop()` is called from the object's own active callback, publish terminal state and cancel pending work immediately, but do not wait on or destroy callback-owned handles from that callback. Defer final draining and handle closure to a later external idempotent `Stop()` or destruction boundary, which must still provide the normal complete-shutdown guarantee.
 
 ## Port fixes from imports to source repositories
 
@@ -347,3 +354,19 @@ Treat an injected RPC dispatcher exception as durable terminal state, separate f
 ## Measure browser images from their own load/error event
 
 When metadata depends on an `HTMLImageElement`, create a fresh element for each measurement, install `load` and `error` handlers before assigning `src`, and read `naturalWidth` / `naturalHeight` only from that element's matching `load` event. Do not treat an early `decode()` rejection or stale dimensions from a shared measuring element as proof that the image is invalid; reserve fallback metadata for the actual `error` event.
+
+## Keep generator compilation independent from runtime-backed tests
+
+An import-phase code generator must be compilable before packages produced by later build phases exist. Keep the import phase limited to generator source compilation and source linting; move tests that import a generated runtime into the later test phase, and declare that runtime as a test-only development dependency.
+
+Preserve an acyclic documented phase order such as import, code generation, runtime build, and tests. A fresh workspace must not need a later runtime merely to compile the generator that helps produce it.
+
+## Normalize checkout line endings at golden comparison boundaries
+
+When generated output has a canonical line ending but Git may check a golden file out with platform-dependent CRLF, normalize only the golden's checkout representation before byte comparison. Keep the generator output and tracked golden semantics unchanged, and continue verifying that all supported input line-ending variants produce the same canonical bytes.
+
+## Preserve ordered HTTP messages at upload and completion boundaries
+
+Concurrent HTTP requests can reorder both client-to-server request bodies and server-to-client messages piggybacked in response bodies. Preserve send order by advancing queued submissions when the preceding request upload completes, allowing response round trips to overlap instead of serializing an entire connection.
+
+Assign a stable sequence to each submitted request and buffer completed responses until every predecessor reaches final success or terminal failure. Retries retain their original sequence. Verify both directions with a burst that requires exact FIFO receipt before immediate shutdown; limiting connection count can hide the ordering race while starving protocols that need overlapping requests.

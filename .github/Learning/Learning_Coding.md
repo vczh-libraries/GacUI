@@ -11,10 +11,10 @@
 - Renderer channel dispatch belongs in async renderer layer [4]
 - Treat a fatal local channel error as a complete disconnect signal [4]
 - Remote core accepts replacement renderers by detaching stale renderer [4]
+- `RemotingTest_Core /RVMT` gates singleton channels by startup phase [4]
+- RVM accepted-host loss poisons the requester dispatcher outside locks [4]
 - Automation `/IO` parses synchronously and queues parsed commands [3]
-- `RemotingTest_Core /RVMT` gates singleton channels by startup phase [3]
 - `CppTest_Rvm` is a GUI app and stays console-free [3]
-- RVM accepted-host loss poisons the requester dispatcher outside locks [3]
 - `vl::collections::ObservableList<T>` element access and replacement [2]
 - Extract helpers to remove duplicated conversion blocks [2]
 - Place helpers in the primary-responsibility namespace [2]
@@ -348,6 +348,8 @@ Retain the final InstanceClass manager's analyzed modules, merge their original 
 
 Before the RVM host is reserved, accept only a remote client advertising exactly `{ViewModelChannel}`. Reserve that host once. Only after service acquisition should Core accept a client advertising exactly `{GacUIRemoteProtocol}` through the renderer replacement path; launch the renderer only after Core automation exposes the constructed window. Reject empty, duplicate, mixed, unknown, or other multi-channel lists.
 
+The split `/Cli` topology must query the live requester phase from the exact stdio RVM server that owns host acquisition. A renderer-only server should reject early renderer admissions through that shared gate, then delegate both first admission and replacement to the ordinary renderer server after the requester reaches `Running`; do not copy readiness into a second flag with its own transition window.
+
 ## `ViewModelReadyChannel` is the post-route RPC registration barrier
 
 Channel admission runs before the accepted network route is committed, so do not register the RVM host with the RPC broker from the admission callback. The host sends `Ready` through `ViewModelReadyChannel` after its route exists; the requester then registers that exact host and supplies the broker ID. Preserve this ordering to avoid a startup deadlock or a lost broker login.
@@ -385,6 +387,8 @@ Start automation only after the native controller exists. Each test app construc
 After claiming the accepted RVM host exactly once, finish broker bookkeeping and inject `RemotingTest_RvmHost disconnected.` into the requester dispatcher outside server locks. If loss happens before the dispatcher exists, latch the message and inject it during installation. Keep normal stopping and renderer loss nonfatal; once host loss has poisoned the dispatcher, skip graceful RPC finalization that would wait forever on that terminal dispatcher.
 
 Standalone `CppTest_Rvm` stores and calls the real `rvmt::IViewModel` proxy. A host-loss `rpc_controller::RpcInjectedException` must escape the UI-time call and terminate that fail-fast test app directly; do not add an application-layer wrapper or recovery path. `RemotingTest_Core` is intentionally different because its existing boundary must deliver one Core-authored renderer error before terminating.
+
+On Windows Debug builds, configure `CppTest_Rvm` with `_set_abort_behavior(0, _WRITE_ABORT_MSG)` at process startup. This suppresses only the modal CRT abort message while preserving the intentional unhandled exception and nonzero termination, so an expected host-loss failure cannot leave the requester apparently alive behind a hidden dialog.
 
 ## `CppTest_Rvm` is a GUI app and stays console-free
 

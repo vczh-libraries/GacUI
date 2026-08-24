@@ -3,13 +3,13 @@
 # Orders
 
 - Keep test log paths stable during refactors [13]
-- Verify RVM requester/host lifetimes across every transport [10]
+- Verify RVM requester/host lifetimes across every transport [12]
 - Remote protocol frames: actions must change UI; organize frames carefully [9]
 - Stress remote core/renderer transport and terminal flows [8]
 - Don’t schedule redundant idle frames [7]
+- Validate GacJS through browser UI interactions [7]
 - Preserve existing idle-frame titles when requested [6]
 - Seed key-behavior tests via `protocol->TypeString` [6]
-- Validate GacJS through browser UI interactions [6]
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
 - Verify GacJS HTTP fatal errors through browser UI [4]
 - Verify `/IO` synchronous errors and queued success separately [4]
@@ -30,6 +30,7 @@
 - Unit-test renderer `CaretLineLast` should treat CRLF as newline [2]
 - Verify remoting imports with both HTTP and named-pipe flows [2]
 - Verify `GacUICompiler` determinism with repeated no-change runs [2]
+- Remote-debugging guides own complete Cartesian test matrices [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
 - Verify GacGen RPC outputs with positive and negative resources [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
@@ -72,7 +73,6 @@
 - Isolate remote cache handoffs with single-response-shape tests [1]
 - MiniHTTP automation probes use IPv4 loopback [1]
 - Verify automation-service ownership changes in every consumer app [1]
-- Remote-debugging guides own complete Cartesian test matrices [1]
 - Treat file-dialog snapshots as scheduling-sensitive contracts [1]
 
 # Refinements
@@ -458,6 +458,8 @@ When requester/session or channel-server inheritance changes, exercise both RVM 
 
 For host-loss coverage, trigger a real in-flight or next RPC after one successful translation. Standalone `CppTest_Rvm` must terminate nonzero from the injected exception with no recovery, while Core rows must deliver the exact Core-authored fatal message before their nonzero exit. Cover combined and split `/Cli` topologies and audit processes, dialogs, and listeners after every row.
 
+For split `/Cli` renderer admission, add a focused regression that rejects renderers before the exact requester gate is running, then accepts the first renderer and its replacement afterward. Exercise the executable `/Cli` rows with successful view-model input, state continuity across replacement, application-controlled shutdown, and child-process cleanup in both native and GacJS renderers.
+
 ## MiniHTTP automation probes use IPv4 loopback
 
 When a MiniHTTP test listener binds IPv4 loopback, probe it through `127.0.0.1`. `localhost` may resolve to IPv6 and miss an otherwise healthy listener, producing a misleading endpoint failure.
@@ -471,6 +473,8 @@ After moving reusable automation endpoint code or changing its shared-project ow
 Put each renderer's complete application-by-transport Cartesian product in an early `Test Matrix` section after the background introduction. The native and GacJS setup guides must enumerate their own platform-supported targets and required companion processes instead of delegating the matrix to another job or presenting dimensions as alternatives.
 
 Keep responsibilities separated: renderer guides own the supported matrix and setup commands, while `REPO-ROOT/.github/Jobs/DebugRemoteProtocolSop.md` owns feature operations, error handling, and observable pass/fail behavior. Update the SOP when an operation is missing instead of duplicating those steps in every setup guide.
+
+Recreate the native and GacJS test-matrix cards from their guide templates before a full verification run. Keep every row even when some rows are explicitly excluded, leaving excluded results blank, and update each row immediately when it starts, succeeds, fails, or is fixed. Run each included row with fresh processes and commit the cards only after the complete matrix is finished.
 
 ## Treat file-dialog snapshots as scheduling-sensitive contracts
 
