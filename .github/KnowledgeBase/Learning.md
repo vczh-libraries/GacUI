@@ -10,8 +10,8 @@
 - Keep design documentation aligned with code after refactoring [14]
 - Fix behavior at the owning state instead of patching symptoms [11]
 - Extract abstractions only for real shared behavior [10]
+- Verify and localize portability on every target OS [8]
 - Make `Stop()` drain asynchronous work before returning [8]
-- Verify and localize portability on every target OS [7]
 - Validate expectations against implementation and existing tests [6]
 - Do not assume async callback owners are heap allocated [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
@@ -332,6 +332,8 @@ The same standard applies when severe CPU usage coincides with a debugger or ter
 ## Verify and localize portability on every target OS
 
 Run the relevant tests on every target operating system whose behavior is being claimed, and report only the platforms actually exercised. Use contrasts between passing and failing platforms to narrow investigation toward the failing platform's implementation before changing shared code, while retaining cross-platform regression verification. Instructions may be prepared for an untested operating system only when they are clearly labeled untested; never report that platform as verified.
+
+Portability applies to test synchronization APIs too. When a timed thread wait exists only on one platform, use a cross-platform completion primitive such as `EventObject` for the bounded deadlock guard, signal it on every expected completion path, and still join the worker afterward. Do not weaken a bounded test into an unbounded join merely to make it compile elsewhere.
 
 ## Use reentrant POSIX date-time conversions
 
