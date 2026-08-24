@@ -98,7 +98,7 @@ It includes files from:
 
 When executing this instruction files, it usually means `GacUI` itself alone on Windows has been properly verified.
 Try to limit changes in `GacUI` to only include making release or fixing cross-platform building issues:
-- Unless there are fundemental issues to fix.
+- Unless there are fundamental issues to fix.
 - You need to figure out why the code is just work in `GacUI` on Windows. Having correct answers to this question help you figure out root cause efficiently and precisely.
 
 Follow `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md` to make sure all test apps are behaving expectedly.
