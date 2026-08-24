@@ -12,7 +12,8 @@
 - The current document is the source of truth, when unalignment happens, align to this document.
 - Maintain documents and scripts in `wGac` and `iGac`.
 - Makesure test apps build and work as expected.
-- `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md` document details of verification.
+- `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md` have details of verification.
+- You must fix any issue you see during verification.
 
 ## Maintain a Test Matrix Card
 

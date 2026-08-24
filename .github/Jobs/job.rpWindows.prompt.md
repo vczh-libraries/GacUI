@@ -4,6 +4,7 @@
 
 - Makesure test apps build and work as expected.
 - `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md` have details of verification.
+- You must fix any issue you see during verification.
 
 ## Maintain a Test Matrix Card
 
