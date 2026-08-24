@@ -21762,10 +21762,6 @@ GuiRibbonToolstrips
 				}
 
 				vint count = viewIndex == 0 ? 2 : 3;
-				auto deltaBetween = [](vint a, vint b)
-				{
-					return a > b ? a - b : b - a;
-				};
 
 				if (groups.Count() <= count)
 				{
@@ -21778,7 +21774,7 @@ GuiRibbonToolstrips
 				}
 				else if (count == 3)
 				{
-#define DELTA(POSTFIX) (deltaBetween(count1##POSTFIX, count2##POSTFIX) + deltaBetween(count2##POSTFIX, count3##POSTFIX) + deltaBetween(count3##POSTFIX, count1##POSTFIX))
+#define DELTA(POSTFIX) (abs(count1##POSTFIX - count2##POSTFIX) + abs(count2##POSTFIX - count3##POSTFIX) + abs(count3##POSTFIX - count1##POSTFIX))
 #define DEFINE_COUNT(POSTFIX, OFFSET_FIRST, OFFSET_LAST) \
 					vint count1##POSTFIX = count1_o + (OFFSET_FIRST); \
 					vint count2##POSTFIX = count2_o - (OFFSET_FIRST) - (OFFSET_LAST); \
@@ -21853,7 +21849,7 @@ GuiRibbonToolstrips
 						vint count2 = From(groups)
 							.Select([](GuiToolstripGroup* group) {return group->GetToolstripItems().Count(); })
 							.Aggregate([](vint a, vint b) {return a + b; });
-						vint delta = deltaBetween(count2, count1);
+						vint delta = abs(count2 - count1);
 
 						// TODO: (enumerable) foreach
 						for (vint i = 0; i < groups.Count(); i++)
@@ -21861,7 +21857,7 @@ GuiRibbonToolstrips
 							auto groupCount = groups[i]->GetToolstripItems().Count();
 							vint count1_2 = count1 + groupCount;
 							vint count2_2 = count2 - groupCount;
-							vint delta_2 = deltaBetween(count2_2, count1_2);
+							vint delta_2 = abs(count2_2 - count1_2);
 
 							if (delta < delta_2)
 							{
