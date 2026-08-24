@@ -297,6 +297,7 @@
 ../../GacUISrc/UnitTest/TestRemote_Caret.cpp
 ../../GacUISrc/UnitTest/TestRemote_DocumentRunManagement.cpp
 ../../GacUISrc/UnitTest/TestRemote_AsyncRendererChannel.cpp
+../../GacUISrc/UnitTest/TestRemote_ChannelServer.cpp
 ../../GacUISrc/UnitTest/TestRemote_RenderingDom.cpp
 ../../GacUISrc/UnitTest/TestRemote_Startup.cpp
 ../../GacUISrc/UnitTest/TestRemote_UnitTestFramework.cpp

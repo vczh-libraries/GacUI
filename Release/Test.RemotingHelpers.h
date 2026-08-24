@@ -417,7 +417,7 @@ namespace vl::presentation::remote_view_model_test
 					? WaitForClientResult::Accept
 					: WaitForClientResult::Reject;
 			}
-			if (remoting::IsRendererChannel(availableChannels) && !CanAdmitRenderer())
+			if (remoting::IsRendererChannel(availableChannels) && !Helpers::CanAdmitRenderer())
 			{
 				return WaitForClientResult::Reject;
 			}
@@ -457,6 +457,11 @@ namespace vl::presentation::remote_view_model_test
 			return Helpers::RequestService(typeName);
 		}
 
+		bool CanAdmitRenderer()
+		{
+			return Helpers::CanAdmitRenderer();
+		}
+
 		void Stop() override
 		{
 			Helpers::Stop(Func<void()>([this]()
@@ -469,6 +474,44 @@ namespace vl::presentation::remote_view_model_test
 		{
 			Base::OnClientDisconnected(clientId);
 			Helpers::OnClientDisconnected(clientId);
+		}
+	};
+
+	template<typename TServerBase, typename TRvmChannelServer>
+	class RemoteViewModelRendererChannelServer
+		: public remoting::RemotingChannelServer<TServerBase>
+	{
+		using Base = remoting::RemotingChannelServer<TServerBase>;
+
+	private:
+		TRvmChannelServer*						rvmChannelServer = nullptr;
+
+	protected:
+		inter_process::WaitForClientResult OnRemoteClientConnected(
+			vint clientId,
+			const remoting::JsonChannelClient::ChannelNameList& availableChannels
+			) override
+		{
+			if (remoting::IsRendererChannel(availableChannels) && (!rvmChannelServer || !rvmChannelServer->CanAdmitRenderer()))
+			{
+				return inter_process::WaitForClientResult::Reject;
+			}
+			return Base::OnRemoteClientConnected(clientId, availableChannels);
+		}
+
+	public:
+		template<typename... TArgs>
+		RemoteViewModelRendererChannelServer(
+			Ptr<glr::json::Parser> parser,
+			TArgs&&... args
+			)
+			: Base(parser, true, std::forward<TArgs>(args)...)
+		{
+		}
+
+		void SetRvmChannelServer(TRvmChannelServer* value)
+		{
+			rvmChannelServer = value;
 		}
 	};
 }
