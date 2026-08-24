@@ -16,6 +16,7 @@ extern int StartCliServer(const vl::WString& hostPath);
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int cmdShow)
 {
+	_set_abort_behavior(0, _WRITE_ABORT_MSG);
 	int result = 1;
 	int argc = 0;
 	auto argv = CommandLineToArgvW(GetCommandLineW(), &argc);

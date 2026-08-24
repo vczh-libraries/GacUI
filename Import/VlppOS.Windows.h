@@ -125,6 +125,7 @@ class HttpClientApi : public Object
 		HttpClientApi*									api = nullptr;
 		HINTERNET										httpRequest = NULL;
 		Func<void(Variant<HttpResponse, HttpError>)>	callback;
+		Func<void()>									requestSentCallback;
 		collections::Array<char>						requestBody;
 		HttpResponse									response;
 		DWORD											bodyBufferWriting = 0;
@@ -169,7 +170,7 @@ public:
 	HttpClientApi& operator=(const HttpClientApi&) = delete;
 	HttpClientApi& operator=(HttpClientApi&&) = delete;
 
-	void												HttpQuery(const HttpRequest& request, Func<void(Variant<HttpResponse, HttpError>)> callback);
+	void												HttpQuery(const HttpRequest& request, Func<void(Variant<HttpResponse, HttpError>)> callback, Func<void()> requestSentCallback = {});
 	void												Stop();
 
 	static WString										UrlEncodeQuery(const WString& query);
@@ -204,6 +205,30 @@ class HttpClient : public Object, public virtual INetworkProtocolConnection, pub
 {
 protected:
 	static constexpr vint							HttpRequestMaxAttempts = 3;
+
+	class ResponseUploadState : public Object
+	{
+	public:
+		atomic_vint								advanced = 0;
+		vint									sequence = 0;
+	};
+
+	class ResponseCompletion : public Object
+	{
+	public:
+		WString									body;
+		vint									attempt = 0;
+		Ptr<ResponseUploadState>						responseUploadState;
+		Variant<HttpResponse, HttpError>				result;
+
+		ResponseCompletion(WString _body, vint _attempt, Ptr<ResponseUploadState> _responseUploadState, Variant<HttpResponse, HttpError>&& _result)
+			: body(std::move(_body))
+			, attempt(_attempt)
+			, responseUploadState(_responseUploadState)
+			, result(std::move(_result))
+		{
+		}
+	};
 
 	enum class State
 	{
@@ -264,9 +289,23 @@ protected:
 		Response,
 	};
 
-	bool											SendHttpRequest(HttpRequestType requestType, const WString& url, const WString& body, vint attempt = 1);
-	void											OnHttpRequestCompleted(HttpRequestType requestType, WString body, vint attempt, Variant<HttpResponse, HttpError> result);
-	void											OnHttpRequestFailed(HttpRequestType requestType, const WString& body, vint attempt, const WString& errorMessage);
+	collections::List<WString>						queuedResponseBodies;
+	bool											responseUploadPending = false;
+	bool											drainResponseUploads = false;
+	bool											stopDrainingStarted = false;
+	EventObject										eventResponseUploadsCompleted;
+	vint											nextResponseSequence = 1;
+	vint											nextResponseCompletion = 1;
+	SpinLock										lockResponseCompletions;
+	collections::Dictionary<vint, Ptr<ResponseCompletion>>	pendingResponseCompletions;
+	bool											responseCompletionDraining = false;
+
+	bool											SendHttpRequest(HttpRequestType requestType, const WString& url, const WString& body, vint attempt = 1, Ptr<ResponseUploadState> responseUploadState = {});
+	bool											OnHttpRequestCompleted(HttpRequestType requestType, WString body, vint attempt, Ptr<ResponseUploadState> responseUploadState, Variant<HttpResponse, HttpError> result);
+	bool											OnHttpRequestFailed(HttpRequestType requestType, const WString& body, vint attempt, Ptr<ResponseUploadState> responseUploadState, const WString& errorMessage);
+	void											OnHttpResponseRequestSent();
+	void											OnHttpResponseRequestCompleted(WString body, vint attempt, Ptr<ResponseUploadState> responseUploadState, Variant<HttpResponse, HttpError> result);
+	void											DrainHttpResponseCompletions();
 
 public:
 
@@ -533,6 +572,7 @@ private:
 	collections::Array<BYTE>						bufferReadFile;
 	stream::MemoryStream							streamReadFile;
 	std::atomic<ReadWaitContext*>					readWaitContext = nullptr;
+	atomic_vint										readCallbackThreadId = 0;
 	OVERLAPPED										overlappedReadFile;
 	HANDLE											hEventReadFile = INVALID_HANDLE_VALUE;
 	atomic_vint										pendingCallbacks = 0;
