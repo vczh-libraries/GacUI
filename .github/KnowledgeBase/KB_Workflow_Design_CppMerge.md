@@ -1,6 +1,6 @@
 # CppMerge Tool
 
-`CppMerge` combines one x86 Workflow-generated C++ file and the corresponding x64 file into one native-width C++ file. It then uses an existing copy of that output, when present, as the source of user-written implementation regions. The executable is a thin file-system wrapper around `vl::workflow::cppcodegen::MergeCppMultiPlatform` and `vl::workflow::cppcodegen::MergeCppFileContent` from `Source/Cpp/WfMergeCpp.cpp`.
+`CppMerge` combines one x86 Workflow-generated C++ file and the corresponding x64 file into one native-width C++ file. It then uses an existing copy of that output, when present, as the source of user-written implementation regions. The executable is a thin file-system wrapper around `vl::workflow::cppcodegen::MergeCppMultiPlatform` and `vl::workflow::cppcodegen::MergeCppFileContent` from [Workflow-Repo/Source/Cpp/WfMergeCpp.cpp](https://github.com/vczh-libraries/Workflow/blob/master/Source/Cpp/WfMergeCpp.cpp).
 
 `CppMerge` operates on one file pair per invocation. Directory enumeration, filename-set validation, stale-file cleanup, and deciding where the stable output tree lives are responsibilities of its caller.
 
@@ -65,7 +65,7 @@ CppMerge.exe "Resource.xml.log\x32\Source\Foo.cpp" "Resource.xml.log\x64\Source\
 
 The repository contains two representative organizations:
 
-- `Tools/Tools/GacGen.ps1` enumerates direct children of `<resource-file>.log\x32\Source`, finds the x64 peer at `<resource-file>.log\x64\Source\<same-name>`, reads the stable destination directory from `<resource-file>.log\x32\CppOutput.txt`, and invokes `CppMerge` for that basename. The staging `.log` tree belongs to `GacGen`; it is input to `CppMerge`, not output from `CppMerge`.
+- [Tools-Repo/Tools/GacGen.ps1](https://github.com/vczh-libraries/Tools/blob/master/Tools/GacGen.ps1) enumerates direct children of `<resource-file>.log\x32\Source`, finds the x64 peer at `<resource-file>.log\x64\Source\<same-name>`, reads the stable destination directory from `<resource-file>.log\x32\CppOutput.txt`, and invokes `CppMerge` for that basename. The staging `.log` tree belongs to `GacGen`; it is input to `CppMerge`, not output from `CppMerge`.
 - Workflow compiler tests generate matching sets under `Test/Generated/Cpp32` and `Test/Generated/Cpp64` (and the corresponding `CppRpc32` / `CppRpc64` trees), validate the filename sets, and merge into `Test/SourceCppGen` or `Test/SourceCppGenRpc`. These tests call the underlying merge functions directly.
 
 ## Architecture Merge

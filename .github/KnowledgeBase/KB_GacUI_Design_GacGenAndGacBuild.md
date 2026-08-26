@@ -2,7 +2,7 @@
 
 `GacGen` compiles one GacUI XML resource for one target CPU architecture. The Windows scripts in the sibling `Tools` repository build on that primitive: `GacGen.ps1` compiles both architectures and merges generated C++, while `GacBuild.ps1` discovers a tree of resources, calculates an incremental dependency-aware build, and calls `GacGen.ps1` for every candidate. `GacClear.ps1` invalidates the per-resource caches used by that calculation.
 
-The source of truth for the executable is `Tools/GacGen/GacGen/Main.cpp` and `GacGen.cpp` in this repository. The orchestration source of truth is `Tools/Tools/GacBuild.ps1`, `GacCommon.ps1`, `GacGen.ps1`, and `GacClear.ps1` in the sibling `Tools` repository.
+The source of truth for the executable is [GacUI-Repo/Tools/GacGen/GacGen/Main.cpp](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacGen/GacGen/Main.cpp) and [GacUI-Repo/Tools/GacGen/GacGen/GacGen.cpp](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacGen/GacGen/GacGen.cpp). The orchestration source of truth is [Tools-Repo/Tools/GacBuild.ps1](https://github.com/vczh-libraries/Tools/blob/master/Tools/GacBuild.ps1), [Tools-Repo/Tools/GacCommon.ps1](https://github.com/vczh-libraries/Tools/blob/master/Tools/GacCommon.ps1), [Tools-Repo/Tools/GacGen.ps1](https://github.com/vczh-libraries/Tools/blob/master/Tools/GacGen.ps1), and [Tools-Repo/Tools/GacClear.ps1](https://github.com/vczh-libraries/Tools/blob/master/Tools/GacClear.ps1).
 
 ## Choosing an Entry Point
 
@@ -26,7 +26,7 @@ The source of truth for the executable is `Tools/GacGen/GacGen/Main.cpp` and `Ga
 
 - By default it reads `Reflection32.bin` for `/P32`, `/D32`, or `/C32`, and `Reflection64.bin` for the `64` variants, from the executable directory.
 - An optional `Metadata.txt` beside the executable, or one directory above it when no beside-executable file exists, overrides this. It contains at least three lines: metadata folder, x86 binary name, and x64 binary name. The folder is resolved relative to `Metadata.txt`.
-- The GacUI development copy uses `Tools/GacGen/Metadata.txt` to select `ReflectionCore32.bin` and `ReflectionCore64.bin`. The released tool normally has `Reflection32.bin` and `Reflection64.bin` beside it and needs no override.
+- The GacUI development copy uses [GacUI-Repo/Tools/GacGen/Metadata.txt](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacGen/Metadata.txt) to select `ReflectionCore32.bin` and `ReflectionCore64.bin`. The released tool normally has `Reflection32.bin` and `Reflection64.bin` beside it and needs no override.
 - The target architecture is a compilation input even when the executable itself was built as Win32. In particular, Workflow `vint` and RPC schemas can differ between x86 and x64.
 
 ### Resource XML and `GacGenConfig`
@@ -77,7 +77,7 @@ All configured output paths are resolved from the directory containing the resou
 | `Cpp/ReflectionInclude` | No | Semicolon-separated includes guarded for reflection-enabled builds. |
 | `Cpp/Name` | No | C++ assembly/base name. It should be a valid C++ identifier and defaults to `GacUIApplication`. |
 | `Cpp/Resource` | No | Uncompressed data-only resource binary, without the compiled Workflow assembly. |
-| `Cpp/Compressed` | No | The configuration schema describes a compressed data-only resource. The current `CompileResource` implementation in `Tools/GacGen/GacGen/Main.cpp` routes this path through the assembly-output list, so it actually receives the serialized `Assembly.bin` payload. Do not use this setting as a compressed-resource output until that implementation is corrected. |
+| `Cpp/Compressed` | No | The configuration schema describes a compressed data-only resource. The current `CompileResource` implementation in [GacUI-Repo/Tools/GacGen/GacGen/Main.cpp](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacGen/GacGen/Main.cpp) routes this path through the assembly-output list, so it actually receives the serialized `Assembly.bin` payload. Do not use this setting as a compressed-resource output until that implementation is corrected. |
 | `Cpp/CppResource` | No | File name, under `SourceFolder`, for a C++ source that embeds the uncompressed data-only resource and registers its loader plugin. |
 | `Cpp/CppCompressed` | No | Like `CppResource`, but the embedded byte array is compressed. Configure and compile only one of the two embedded-resource files. |
 | `ResX86/Resource`, `ResX64/Resource` | No | Architecture-specific uncompressed resource containing the Workflow instance-class assembly. Load with `GuiResourceUsage::InstanceClass`. |

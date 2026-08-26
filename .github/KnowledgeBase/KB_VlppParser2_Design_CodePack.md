@@ -2,7 +2,7 @@
 
 `CodePack` turns a repository's ordinary `.h` and `.cpp` source tree into a small set of dependency-ordered C++ code pairs. The monorepo uses the concatenated pairs as release artifacts and copies owning repositories' generated pairs into downstream `Import` directories. The source tree and `CodegenConfig.xml` remain authoritative; generated `Release` files are not edited by hand.
 
-The command-line entry point is [`Tools/CodePack/CodePack/Main.cpp`](../../Tools/CodePack/CodePack/Main.cpp). It accepts exactly one argument:
+The command-line entry point is [VlppParser2-Repo/Tools/CodePack/CodePack/Main.cpp](https://github.com/vczh-libraries/VlppParser2/blob/master/Tools/CodePack/CodePack/Main.cpp). It accepts exactly one argument:
 
 ```text
 CodePack.exe <config-xml>
@@ -59,7 +59,7 @@ Categories with `generate="false"` are how imported release files participate wi
 
 # Include Scanning and Source Instructions
 
-[`Codepack_GetIncludeFiles.cpp`](../../Tools/CodePack/CodePack/Codepack_GetIncludeFiles.cpp) recognizes only standalone include lines in these forms:
+[VlppParser2-Repo/Tools/CodePack/CodePack/Codepack_GetIncludeFiles.cpp](https://github.com/vczh-libraries/VlppParser2/blob/master/Tools/CodePack/CodePack/Codepack_GetIncludeFiles.cpp) recognizes only standalone include lines in these forms:
 
 ```cpp
 #include "relative/path.h"

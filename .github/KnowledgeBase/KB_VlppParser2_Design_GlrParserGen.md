@@ -2,7 +2,7 @@
 
 `GlrParserGen` compiles typed AST definitions, one lexer definition, and GLR syntax definitions into ordinary C++ source plus embedded compressed lexer and parser tables. Generated code depends on the VlppParser2 runtime but not on the grammar compiler or the original definition files at application runtime.
 
-The production driver is [`Tools/GlrParserGen/GlrParserGen/Main.cpp`](../../Tools/GlrParserGen/GlrParserGen/Main.cpp). It accepts exactly one argument and has no other modes or switches:
+The production driver is [VlppParser2-Repo/Tools/GlrParserGen/GlrParserGen/Main.cpp](https://github.com/vczh-libraries/VlppParser2/blob/master/Tools/GlrParserGen/GlrParserGen/Main.cpp). It accepts exactly one argument and has no other modes or switches:
 
 ```text
 GlrParserGen.exe <config-xml>
@@ -65,7 +65,7 @@ The driver reads the first matching named child for scalar blocks. Do not repeat
 
 # Definition-File Inputs
 
-The XML coordinates three separate text languages. Their quick references are [AST definitions](./manual/vlppparser2/ast.md), [lexer definitions](./manual/vlppparser2/lexer.md), and [syntax definitions](./manual/vlppparser2/syntax.md); the current compiler behavior and visibility rules are detailed in [Grammar compilation](../../doc/GrammarCompilation.md).
+The XML coordinates three separate text languages. Their quick references are [AST definitions](./manual/vlppparser2/ast.md), [lexer definitions](./manual/vlppparser2/lexer.md), and [syntax definitions](./manual/vlppparser2/syntax.md); the current compiler behavior and visibility rules are detailed in [VlppParser2-Repo/doc/GrammarCompilation.md](https://github.com/vczh-libraries/VlppParser2/blob/master/doc/GrammarCompilation.md).
 
 ## AST definitions
 
@@ -110,7 +110,7 @@ The driver performs these stages in a fixed order:
 6. Generate the typed parser and embedded executable data in memory.
 7. Remove blocked utility entries, create `OutputDir`, compare each remaining output with the existing file, and write only changed UTF-8 files.
 
-AST/assembler emission must precede syntax compilation. [`vl::glr::parsergen::CppParserGenOutput`](../../Source/ParserGen_Global/ParserCppGen.h) receives class and field IDs while the assembler header is generated; syntax lowering embeds those exact IDs in AST instructions. The complete contract is described in [Code generation](../../doc/CodeGeneration.md).
+AST/assembler emission must precede syntax compilation. `vl::glr::parsergen::CppParserGenOutput` in [VlppParser2-Repo/Source/ParserGen_Global/ParserCppGen.h](https://github.com/vczh-libraries/VlppParser2/blob/master/Source/ParserGen_Global/ParserCppGen.h) receives class and field IDs while the assembler header is generated; syntax lowering embeds those exact IDs in AST instructions. The complete contract is described in [VlppParser2-Repo/doc/CodeGeneration.md](https://github.com/vczh-libraries/VlppParser2/blob/master/doc/CodeGeneration.md).
 
 Because filesystem writes happen only in the final stage, a configuration, AST, lexer, syntax, or automaton error does not leave a partially regenerated output set from earlier compilation stages.
 
@@ -210,8 +210,8 @@ The tool does not provide rollback around final file I/O and does not clean stal
 
 The current production XML configurations demonstrate three useful utility profiles:
 
-- `Workflow/Source/Parser/Syntax/Parser.xml` uses multiple AST and syntax input files and emits every artifact into `Workflow/Source/Parser/Generated`.
-- `GacUI/Source/Compiler/InstanceQuery/Syntax/Parser.xml` blocks all five optional utility families and emits only the core AST, assembler, lexer, and parser pairs.
-- `GacUI/Source/Compiler/RemoteProtocol/Syntax/Parser.xml` keeps JSON/TypeScript output but blocks builder, empty, copy, and traversal visitors.
+- [Workflow-Repo/Source/Parser/Syntax/Parser.xml](https://github.com/vczh-libraries/Workflow/blob/master/Source/Parser/Syntax/Parser.xml) uses multiple AST and syntax input files and emits every artifact into `Workflow/Source/Parser/Generated`.
+- [GacUI-Repo/Source/Compiler/InstanceQuery/Syntax/Parser.xml](https://github.com/vczh-libraries/GacUI/blob/master/Source/Compiler/InstanceQuery/Syntax/Parser.xml) blocks all five optional utility families and emits only the core AST, assembler, lexer, and parser pairs.
+- [GacUI-Repo/Source/Compiler/RemoteProtocol/Syntax/Parser.xml](https://github.com/vczh-libraries/GacUI/blob/master/Source/Compiler/RemoteProtocol/Syntax/Parser.xml) keeps JSON/TypeScript output but blocks builder, empty, copy, and traversal visitors.
 
 Those generated directories are compiled by their owning projects and later included in CodePack release amalgamations. Change the definition files or generator, rerun only the affected `Parser.xml`, rebuild the owning project, and commit the input and generated output changes together.
