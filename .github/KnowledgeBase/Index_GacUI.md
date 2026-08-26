@@ -24,6 +24,15 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 
 ### Design Explanation
 
+#### GacGen Resource Compilation and GacBuild Orchestration
+
+- `GacGen` compiles one GacUI XML resource for a selected x86 or x64 target, producing Workflow, C++, resource binaries, optional RPC bindings, and architecture-specific cache artifacts.
+- `GacBuild.ps1` discovers resource XML files below a driver XML, calculates timestamp-based incremental candidates, propagates changes through named dependencies, and builds in dependency order.
+- The driver and per-resource `.log` directory schemas are stable interchange points used by `GacBuild.ps1`, `GacGen.ps1`, dependency loading, `CppMerge`, RPC generators, and future tooling.
+- `GacClear.ps1` invalidates only discovered per-resource caches, while generated production C++ and configured binary outputs remain in place.
+
+[Design Explanation](./KB_GacUI_Design_GacGenAndGacBuild.md)
+
 #### Platform Initialization and Multi-Platform Architecture
 
 - GacUI implements a sophisticated multi-platform initialization system that provides consistent API across different operating systems and rendering backends while maintaining platform-specific optimizations.
