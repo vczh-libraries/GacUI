@@ -1,5 +1,9 @@
 # Project Specific Instruction
 
+## Maintaining Tools
+
+If the behavior of `REPO-ROOT/Tools/GacGen` changes, update `REPO-ROOT/.github/KnowledgeBase/KB_GacUI_Design_GacGenAndGacBuild.md`.
+
 ## Solution to Work On
 
 You are working on the solution `REPO-ROOT/Test/GacUISrc/GacUISrc.sln`,
