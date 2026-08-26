@@ -94,6 +94,17 @@ It includes files from:
 
 `%Shared` is a project used by all test apps, it references `Import`, `Import-Test` with additional sharable local source files (mostly in `%`).
 
+Sometimes the test item fails because of lacking mature steps, instead of defect in the code.
+In this case we don't need to mark it with `(fixed)`, instead we can write the experience down in:
+- `<GacUI-repo>/.github/Learning/Learning_RpJob.md`
+Therefore reading this file is also important to avoid repeating mistakes and to improve the testing process.
+In this files there are 4 sections:
+- `## Shared`
+- `## Windows`
+- `## Linux (wGac repo specific)`
+- `## macOS (iGac repo specific)`
+If an issue is not tight to a specific platform, put the experience in the `## Shared` section.
+
 ## Verification
 
 When executing this instruction files, it usually means `GacUI` itself alone on Windows has been properly verified.

@@ -19,6 +19,17 @@ During verification, test matrix cards should be updated in time:
 Without explicitly instructed, you are required to complete every available test item in the matrix:
 - If some test items are excluded explicitly, you still need to keep complete test items in the test matrix card, but leave blanks for results of excluded items.
 
+Sometimes the test item fails because of lacking mature steps, instead of defect in the code.
+In this case we don't need to mark it with `(fixed)`, instead we can write the experience down in:
+- `<GacUI-repo>/.github/Learning/Learning_RpJob.md`
+Therefore reading this file is also important to avoid repeating mistakes and to improve the testing process.
+In this files there are 4 sections:
+- `## Shared`
+- `## Windows`
+- `## Linux (wGac repo specific)`
+- `## macOS (iGac repo specific)`
+If an issue is not tight to a specific platform, put the experience in the `## Shared` section.
+
 ## Verification
 
 Try to limit changes in `GacUI` only, unless there are fundemental issues to fix in upstream repos.
