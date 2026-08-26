@@ -57,6 +57,17 @@ Workflow AST building helper functions let code generators construct or reuse `W
 
 ### Design Explanation
 
+#### CppMerge Tool
+
+`CppMerge` combines corresponding x86 and x64 Workflow-generated C++ files into stable native-width output while carrying forward user implementations from marked regions in an existing output file.
+
+- The CLI accepts exactly one x86 input file, one x64 input file, and one output file per invocation; callers own directory enumeration and filename-set validation.
+- Only the generator's known native-integer type, decimal-literal suffix, and narrow integer-cast differences are accepted between the two staging files.
+- Existing `USER_CONTENT_BEGIN` / `USER_CONTENT_END` and legacy `USERIMPL` regions are preserved, and removed regions are retained in a recoverable `UNUSED_USER_CONTENT` section.
+- The only generated artifact is the requested UTF-8-BOM output file; `CppMerge` produces no log folder or sidecar files.
+
+[Design Explanation](./KB_Workflow_Design_CppMerge.md)
+
 #### Compiler Rebuild And Desugaring
 
 Workflow compiler analysis is organized around `WfLexicalScopeManager::Rebuild`, a barriered frontend pipeline that validates modules, builds names and scopes, resolves semantics, and rewrites high-level Workflow syntax into ordinary AST before bytecode or C++ generation.

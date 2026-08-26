@@ -207,7 +207,7 @@ object, causing missing of a complete picture.
 
 - Avoid explicit type specification whenever possible:
   - Prefer `var v = e;` whenever `T` can be omitted.
-  - Prefer `var v : T = e;` over `var v = e over T;` if `T` cannot avoid.
+  - Prefer `var v : T = e;` over `var v = e as T;` if `T` cannot avoid.
   - When implicit type conversion works at the place, avoid `cast`, `as` and `infer` expression.
   - Prefer `cast *` over `cast T` when the context accepts `T`.
 - Nested `try-catch` and `try-finally` can be merged into one single `try-catch-finally` statement.
