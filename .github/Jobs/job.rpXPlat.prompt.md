@@ -103,4 +103,11 @@ Try to limit changes in `GacUI` to only include making release or fixing cross-p
 
 Follow `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md` to make sure all test apps are behaving expectedly.
 Without explicitly instructed, the complete matrix of all combinations of test apps, test UI loaded with remote protocol, and available network protocol choices, should be verified.
+
+## Finishing
+
 Make sure to commit and push local changes across all affected repos.
+Conflict should be resolved by rebasing.
+`job.rpWindows.prompt.md` and `job.rpXPlat.prompt.md` could be running in different computers at the same time,
+so when you find the issue you just fixed, which is also resolved in remote commits,
+you need to undo your own, and verify the fix in remote commits again.
