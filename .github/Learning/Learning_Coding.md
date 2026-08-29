@@ -2,7 +2,7 @@
 
 # Orders
 
-- `Test/RemotingHelpers` stays test-only and outside Release CodePack [11]
+- `Test/RemotingHelpers` stays test-only and outside production Release imports [11]
 - Keep reusable renderer terminal state separate from host policy [7]
 - Stop remoting transports before stack channel wrappers destruct [6]
 - Deliver fatal remote-channel errors before transport shutdown [6]
@@ -358,11 +358,11 @@ Channel admission runs before the accepted network route is committed, so do not
 
 Keep only exact `Ready` as the post-route startup signal after the host registers its service. Do not add heartbeat, polling, lease, retry, keep-alive, disconnect acknowledgement, requester-stopping message, or reverse shutdown handshake. Idle `/Http` and `/MiniHttp` peers need not be detected proactively; the next real transport or RPC operation may expose the loss, and the test app then terminates instead of recovering.
 
-## `Test/RemotingHelpers` stays test-only and outside Release CodePack
+## `Test/RemotingHelpers` stays test-only and outside production Release imports
 
 `Test/RemotingHelpers` is not part of the ordinary GacUI library API. Keep every helper independent of generated-application RPC types, and do not make ordinary `GacUI` or `GacUI.Windows` depend on this test-only helper tree. Generated-module initialization belongs beside the generated application, such as `Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.*`; test applications explicitly compose that initializer with the generic helper dispatcher and retain their concrete service composition.
 
-"Release CodePack" in this heading means the production/public artifact set assembled into the aggregate `Release` repository. The same GacUI CodePack run may scan `Test/RemotingHelpers` and emit the neutral `Test.RemotingHelpers*.h/.cpp` pair in GacUI `Release` and `Release/IncludeOnly`; retain that pair only for platform repositories' `Import-Test` snapshots. Do not merge it into ordinary `GacUI*` pairs or copy it into the aggregate `Release` repository. Reusable automation endpoint implementations still belong under `Source/Utilities/AutomationService`: CodePack MiniHTTP into `GacUI.*` and the Windows endpoint into `GacUI.Windows.*`. Test-only stdio redirection belongs to VlppOS and arrives through the imported VlppOS release pairs.
+The production/public artifact set is assembled in the aggregate `Release/Import` snapshot. The same GacUI CodePack run may scan `Test/RemotingHelpers` and emit the neutral `Test.RemotingHelpers*.h/.cpp` pair in GacUI `Release` and `Release/IncludeOnly`; retain the root pair only in test-only `Import-Test` snapshots. `UpdateRelease` copies that pair and its README to the aggregate `Release/Import-Test` snapshot. Do not merge it into ordinary `GacUI*` pairs or copy it into the production `Release/Import` snapshot. Reusable automation endpoint implementations still belong under `Source/Utilities/AutomationService`: CodePack MiniHTTP into `GacUI.*` and the Windows endpoint into `GacUI.Windows.*`. Test-only stdio redirection belongs to VlppOS and arrives through the imported VlppOS release pairs.
 
 Compile all GacUI-owned test-helper implementation through one explicit, unconditional `Source_RemotingHelpers.vcxitems` inventory in the GacUISrc test solution. Individual remoting consumers should import and compile that complete generic inventory instead of maintaining divergent direct source lists. Keep RVM and renderer source items visible in their matching Solution Explorer folders. Each generated application compiles its own initializer separately; standalone applications that need only automation receive it through their GacUI library and should not import `Source_RemotingHelpers` or generated remote-view-model items.
 
