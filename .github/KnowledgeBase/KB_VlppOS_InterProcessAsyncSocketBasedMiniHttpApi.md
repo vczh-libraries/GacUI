@@ -64,7 +64,7 @@ The async socket interfaces are defined in `Source/InterProcess/AsyncSocket/Asyn
 
 ### Server and Client Sequence
 
-An `IAsyncSocketServerCallback` accepts or rejects each physical connection. For an accepted connection, install its `IAsyncSocketCallback`, start reading, and then return `WaitForClientResult::Accept`.
+An `IAsyncSocketServerCallback` accepts or rejects each physical connection through the producer's existing `Ptr<IAsyncSocketConnection>`. For an accepted connection, install its `IAsyncSocketCallback`, start reading, and then return `WaitForClientResult::Accept`.
 
 ```C++
 auto server = CreateDefaultAsyncSocketServer(port);
@@ -153,7 +153,7 @@ When directly constructing lower-layer `HttpRequest` or `HttpResponse` values, h
 
 ### Starting `HttpRequestServer` and `HttpRequestClient`
 
-Derive from `HttpRequestServer`, inject `Ptr<IAsyncSocketServer>`, and override `OnClientConnected(IHttpRequestConnection*)`. The override retains and installs one thread-safe `IHttpRequestCallback`, calls `BeginReadingLoopUnsafe`, and accepts or rejects the connection. A most-derived destructor must call `HttpRequestServer::Stop` before destroying callback-visible state.
+Derive from `HttpRequestServer`, inject `Ptr<IAsyncSocketServer>`, and override `OnClientConnected(Ptr<IHttpRequestConnection>)`. The owning argument preserves the request adapter through asynchronous admission and can be retained safely with its original reference counter. The override installs one thread-safe `IHttpRequestCallback`, calls `BeginReadingLoopUnsafe`, and accepts or rejects the connection. A most-derived destructor must call `HttpRequestServer::Stop` before destroying callback-visible state.
 
 ```C++
 auto nativeServer = CreateDefaultAsyncSocketServer(port);

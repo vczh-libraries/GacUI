@@ -12,6 +12,8 @@ The portable **/MiniHttp** test path creates an **IAsyncSocketServer** with **Cr
 
 The core client is expected to be registered as GacUIRemoteProtocolCoreClientId. A renderer created by GuiRemoteProtocolChannelClient advertises GacUIRemoteProtocolChannelName. GuiRemoteProtocolCoreChannel learns the renderer client id from the renderer's ControllerConnect event, so user code does not need to route individual remote protocol messages.
 
+Channel admission receives a **Ptr\<IJsonChannelClient\>** for a local client and null for a network client. Preserve that producer-owned **Ptr** when forwarding or retaining the local client. Use **.Obj()** only for a temporary raw-pointer operation, and never construct a new **Ptr** from that raw pointer.
+
 A compact named pipe setup looks like this:
 ```c++
 using namespace vl;
@@ -43,7 +45,7 @@ protected:
     inter_process::WaitForClientResult OnClientConnected(
         vint clientId,
         const IJsonChannelClient::ChannelNameList& availableChannels,
-        IJsonChannelClient* localClient) override
+        Ptr<IJsonChannelClient> localClient) override
     {
         if (localClient)
         {

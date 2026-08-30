@@ -138,7 +138,7 @@ public:
     WaitForClientResult OnClientConnected(
         vint clientId,
         const ChannelNameList& channelNames,
-        IChannelClient<TPackage>* localClient
+        Ptr<IChannelClient<TPackage>> localClient
         ) override
     {
         // Validate channelNames and accept or reject the participant.
@@ -147,7 +147,7 @@ public:
 };
 ```
 
-The server bridge performs the protocol callback setup and channel handshake. It assigns each accepted participant a positive client id and records which channel names that participant supports.
+The server bridge performs the protocol callback setup and channel handshake. It assigns each accepted participant a positive client id and records which channel names that participant supports. Connection-admission callbacks receive the producer's existing `Ptr`; the channel bridge retains accepted network connections, and `localClient` carries the owning local-client reference when it is non-null.
 
 A network channel client derives from `NetworkProtocolChannelClient<TPackage, TSerialization>`, declares its supported names, and wraps a Socket HTTP protocol client:
 

@@ -2,15 +2,15 @@
 
 # Orders
 
-- Verify generated artifacts with downstream consumer checks [22]
+- Verify generated artifacts with downstream consumer checks [23]
 - Process staged tasks one by one with verification [19]
 - Crash early instead of adding error-tolerance fallbacks [15]
 - Proactively remove code made redundant by refactoring [15]
-- Port fixes from imports to source repositories [14]
-- Keep design documentation aligned with code after refactoring [14]
+- Port fixes from imports to source repositories [15]
+- Keep design documentation aligned with code after refactoring [15]
 - Fix behavior at the owning state instead of patching symptoms [11]
 - Extract abstractions only for real shared behavior [10]
-- Verify and localize portability on every target OS [8]
+- Verify and localize portability on every target OS [9]
 - Make `Stop()` drain asynchronous work before returning [8]
 - Validate expectations against implementation and existing tests [6]
 - Do not assume async callback owners are heap allocated [5]
@@ -52,6 +52,7 @@
 - Keep generator compilation independent from runtime-backed tests [1]
 - Normalize checkout line endings at golden comparison boundaries [1]
 - Preserve ordered HTTP messages at upload and completion boundaries [1]
+- Preserve an existing `Ptr` counter across asynchronous ownership handoffs [1]
 
 # Refinements
 
@@ -378,3 +379,7 @@ When generated output has a canonical line ending but Git may check a golden fil
 Concurrent HTTP requests can reorder both client-to-server request bodies and server-to-client messages piggybacked in response bodies. Preserve send order by advancing queued submissions when the preceding request upload completes, allowing response round trips to overlap instead of serializing an entire connection.
 
 Assign a stable sequence to each submitted request and buffer completed responses until every predecessor reaches final success or terminal failure. Retries retain their original sequence. Verify both directions with a burst that requires exact FIFO receipt before immediate shutdown; limiting connection count can hide the ordering race while starving protocols that need overlapping requests.
+
+## Preserve an existing `Ptr` counter across asynchronous ownership handoffs
+
+When a callback or adapter must retain an object beyond the caller's synchronized scope, carry the producer's existing owning `Ptr<T>` through every layer. Never construct another `Ptr<T>` from a raw callback argument or from `.Obj()`; that creates an independent reference counter and can double-delete the same object. Use `.Obj()` only for a temporary operation that explicitly requires a raw pointer.
