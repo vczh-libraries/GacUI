@@ -11682,7 +11682,7 @@ HttpRequestServer::Impl
 				}
 			}
 
-			WaitForClientResult OnClientConnected(IAsyncSocketConnection* connection) override
+			WaitForClientResult OnClientConnected(Ptr<IAsyncSocketConnection> connection) override
 			{
 				Ptr<SocketServerCallback> self;
 				CS_LOCK(lockSelf)
@@ -11790,7 +11790,7 @@ HttpRequestServer::Impl
 			}
 		}
 
-		static WaitForClientResult OnSocketClientConnected(Ptr<Lifecycle> state, IAsyncSocketConnection* connection)
+		static WaitForClientResult OnSocketClientConnected(Ptr<Lifecycle> state, Ptr<IAsyncSocketConnection> connection)
 		{
 			HttpRequestCallbackDomain::CallbackFrame callbackFrame(state->callbackDomain);
 			HttpRequestServer* owner = nullptr;
@@ -11821,7 +11821,7 @@ HttpRequestServer::Impl
 			}
 
 			auto httpConnection = Ptr(new HttpRequestConnection(
-				connection,
+				connection.Obj(),
 				HttpRequestConnectionDirection::Server,
 				state->callbackDomain,
 				timeoutController
@@ -11853,7 +11853,7 @@ HttpRequestServer::Impl
 			auto result = WaitForClientResult::Reject;
 			try
 			{
-				result = owner->OnClientConnected(httpConnection.Obj());
+				result = owner->OnClientConnected(httpConnection);
 			}
 			catch (...)
 			{
@@ -12090,7 +12090,7 @@ HttpRequestServer
 		impl->Destroy();
 	}
 
-	WaitForClientResult HttpRequestServer::OnClientConnected(IHttpRequestConnection*)
+	WaitForClientResult HttpRequestServer::OnClientConnected(Ptr<IHttpRequestConnection>)
 	{
 		return WaitForClientResult::Accept;
 	}
@@ -12360,7 +12360,7 @@ namespace vl::inter_process::async_tcp_socket
 			bool IsAccepted();
 			bool HasCurrentCallback();
 			WString GetToken();
-			WaitForClientResult InvokeClientConnected(SocketHttpServer* server);
+			WaitForClientResult InvokeClientConnected(SocketHttpServer* server, Ptr<SocketHttpServerConnection> connection);
 			bool RegisterPoll(Ptr<SocketHttpRequestContext> context);
 			bool DispatchInbound(const WString& message, Ptr<SocketHttpServerOutboundMessage>& response);
 			void StopFromServer();
@@ -12923,8 +12923,9 @@ namespace vl::inter_process::async_tcp_socket
 			return lifecycle->token;
 		}
 
-		WaitForClientResult SocketHttpServerConnection::InvokeClientConnected(SocketHttpServer* server)
+		WaitForClientResult SocketHttpServerConnection::InvokeClientConnected(SocketHttpServer* server, Ptr<SocketHttpServerConnection> connection)
 		{
+			CHECK_ERROR(connection.Obj() == this, L"SocketHttpServerConnection received an unexpected owning connection.");
 			auto state = lifecycle;
 			bool invoke = false;
 			CS_LOCK(state->lockState)
@@ -12940,7 +12941,7 @@ namespace vl::inter_process::async_tcp_socket
 			WaitForClientResult result;
 			{
 				CallbackFrame frame(state);
-				result = server->OnClientConnected(this);
+				result = server->OnClientConnected(connection);
 			}
 			if (result != WaitForClientResult::Accept) return WaitForClientResult::Reject;
 
@@ -13420,7 +13421,7 @@ namespace vl::inter_process::async_tcp_socket
 				}
 
 				WaitForClientResult result = WaitForClientResult::Reject;
-				try { result = connection->InvokeClientConnected(owner); }
+				try { result = connection->InvokeClientConnected(owner, connection); }
 				catch (...) { result = WaitForClientResult::Reject; }
 				if (result != WaitForClientResult::Accept)
 				{
@@ -13498,7 +13499,7 @@ namespace vl::inter_process::async_tcp_socket
 		CS_LOCK(impl->lifecycle->lockState) { impl->lifecycle->owner = nullptr; }
 	}
 
-	WaitForClientResult SocketHttpServer::OnClientConnected(INetworkProtocolConnection*)
+	WaitForClientResult SocketHttpServer::OnClientConnected(Ptr<INetworkProtocolConnection>)
 	{
 		return WaitForClientResult::Accept;
 	}
@@ -14098,13 +14099,17 @@ namespace vl::inter_process::async_tcp_socket
 		public:
 			CriticalSection					lock;
 			Ptr<RegistryEntry>				entry;
-			IHttpRequestConnection*			connection = nullptr;
+			Ptr<IHttpRequestConnection>		connection;
 			Ptr<SocketHttpRequestContext>	context;
 			bool automaticWrite = false;
 			bool closeAfterWrite = false;
 			bool terminal = false;
 
-			ConnectionState(Ptr<RegistryEntry> _entry) : entry(_entry) {}
+			ConnectionState(Ptr<RegistryEntry> _entry, Ptr<IHttpRequestConnection> _connection)
+				: entry(_entry)
+				, connection(_connection)
+			{
+			}
 		};
 	}
 
@@ -14145,7 +14150,7 @@ namespace vl::inter_process::async_tcp_socket
 			}
 			if (!won) return false;
 			auto completionReserved = registration->ReserveCompletion(callback);
-			IHttpRequestConnection* connection = nullptr;
+			Ptr<IHttpRequestConnection> connection;
 			CS_LOCK(connectionState->lock)
 			{
 				if (connectionState->context.Obj() == owner) connectionState->context = nullptr;
@@ -14169,7 +14174,10 @@ namespace vl::inter_process::async_tcp_socket
 		void Process(Ptr<HttpRequest> request);
 
 	public:
-		SocketHttpServerApiDispatcher(Ptr<RegistryEntry> entry) : state(Ptr(new ConnectionState(entry))) {}
+		SocketHttpServerApiDispatcher(Ptr<RegistryEntry> entry, Ptr<IHttpRequestConnection> connection)
+			: state(Ptr(new ConnectionState(entry, connection)))
+		{
+		}
 		void InitializeSelf(Ptr<SocketHttpServerApiDispatcher> self) { CS_LOCK(lockSelf) { selfReference = self; } }
 		void OnReadRequest(Ptr<HttpRequest> request) override;
 		void OnReadRequestFailure(HttpRequestFailure failure) override;
@@ -14202,7 +14210,7 @@ namespace vl::inter_process::async_tcp_socket
 			{
 			}
 			void InitializeSelf(Ptr<SharedServer> self) { CS_LOCK(lock) { selfReference = self; } }
-			WaitForClientResult OnClientConnected(IHttpRequestConnection* connection) override;
+			WaitForClientResult OnClientConnected(Ptr<IHttpRequestConnection> connection) override;
 			void StopAndRelease();
 		};
 
@@ -14488,14 +14496,14 @@ namespace vl::inter_process::async_tcp_socket
 
 	void ResetSocketHttpServerTimeoutControllerFactoryForTesting() { SetSocketHttpServerTimeoutControllerFactoryForTesting({}); }
 
-	WaitForClientResult SharedServer::OnClientConnected(IHttpRequestConnection* connection)
+	WaitForClientResult SharedServer::OnClientConnected(Ptr<IHttpRequestConnection> connection)
 	{
 		Ptr<RegistryEntry> retained;
 		CS_LOCK(lock) { retained = entry; }
 		if (!retained) return WaitForClientResult::Reject;
 		try
 		{
-			auto dispatcher = Ptr(new SocketHttpServerApiDispatcher(retained));
+			auto dispatcher = Ptr(new SocketHttpServerApiDispatcher(retained, connection));
 			dispatcher->InitializeSelf(dispatcher);
 			connection->InstallCallback(dispatcher.Obj());
 			return WaitForClientResult::Accept;
@@ -14536,7 +14544,7 @@ namespace vl::inter_process::async_tcp_socket
 	void SocketHttpServerApiDispatcher::SendAutomatic(vint code, bool close, bool preflight)
 	{
 		auto response = Normalize(Automatic(code, close, preflight), L"GET");
-		IHttpRequestConnection* connection = nullptr;
+		Ptr<IHttpRequestConnection> connection;
 		CS_LOCK(state->lock)
 		{
 			if (state->terminal || state->automaticWrite || state->context) return;
@@ -14742,7 +14750,7 @@ namespace vl::inter_process::async_tcp_socket
 
 		if (close)
 		{
-			IHttpRequestConnection* stopping = nullptr;
+			Ptr<IHttpRequestConnection> stopping;
 			CS_LOCK(state->lock)
 			{
 				state->terminal = true;
@@ -14757,7 +14765,7 @@ namespace vl::inter_process::async_tcp_socket
 		auto retained = Retain();
 		if (!retained) return;
 		Ptr<SocketHttpRequestContext> context;
-		IHttpRequestConnection* connection = nullptr;
+		Ptr<IHttpRequestConnection> connection;
 		CS_LOCK(state->lock)
 		{
 			context = state->context;
@@ -14789,7 +14797,9 @@ namespace vl::inter_process::async_tcp_socket
 
 	void SocketHttpServerApiDispatcher::OnInstalled(IHttpRequestConnection* connection)
 	{
-		CS_LOCK(state->lock) { state->connection = connection; }
+		bool valid = false;
+		CS_LOCK(state->lock) { valid = state->connection.Obj() == connection; }
+		CHECK_ERROR(valid, L"SocketHttpServerApiDispatcher was installed on an unexpected HTTP request connection.");
 		connection->BeginReadingLoopUnsafe();
 	}
 
@@ -14812,7 +14822,7 @@ namespace vl::inter_process::async_tcp_socket
 	bool SocketHttpRequestContext::Respond(Ptr<HttpResponse> response, Func<void(bool)> completion)
 	{
 		Ptr<HttpResponse> normalized;
-		IHttpRequestConnection* connection = nullptr;
+		Ptr<IHttpRequestConnection> connection;
 		CS_LOCK(impl->lock)
 		{
 			if (impl->state != Impl::State::Pending) return false;
@@ -17220,7 +17230,7 @@ StdioRedirectionServer
 		}
 	}
 
-	WaitForClientResult StdioRedirectionServer::OnClientConnected(INetworkProtocolConnection*)
+	WaitForClientResult StdioRedirectionServer::OnClientConnected(Ptr<INetworkProtocolConnection>)
 	{
 		return WaitForClientResult::Accept;
 	}
@@ -17340,7 +17350,7 @@ StdioRedirectionServer
 				CHECK_ERROR(false, ERROR_MESSAGE_PREFIX L"The server stopped while launching the client.");
 			}
 
-			auto accepted = OnClientConnected(connection.Obj()) == WaitForClientResult::Accept;
+			auto accepted = OnClientConnected(connection) == WaitForClientResult::Accept;
 			if (!accepted)
 			{
 				connection->Stop();

@@ -524,7 +524,7 @@ public:
 	HttpServer(const WString _baseUrl, vint port);
 	~HttpServer();
 	
-	WaitForClientResult								OnClientConnected(INetworkProtocolConnection* connection) override;
+	WaitForClientResult								OnClientConnected(Ptr<INetworkProtocolConnection> connection) override;
 	void											Start() override;
 	void											Stop() override;
 	bool											IsStopped() override;
@@ -672,7 +672,7 @@ public:
 	NamedPipeServer(const WString& _pipeName);
 	~NamedPipeServer();
 
-	WaitForClientResult								OnClientConnected(INetworkProtocolConnection* connection) override;
+	WaitForClientResult								OnClientConnected(Ptr<INetworkProtocolConnection> connection) override;
 	void											Start() override;
 	void											Stop() override;
 	bool											IsStopped() override;

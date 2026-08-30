@@ -2058,7 +2058,7 @@ namespace vl::presentation::remoteprotocol::channeling
 		bool stopped = true;
 
 	public:
-		inter_process::WaitForClientResult OnClientConnected(inter_process::INetworkProtocolConnection* connection) override
+		inter_process::WaitForClientResult OnClientConnected(Ptr<inter_process::INetworkProtocolConnection> connection) override
 		{
 			return inter_process::WaitForClientResult::Reject;
 		}

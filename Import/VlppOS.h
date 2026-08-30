@@ -1369,7 +1369,7 @@ IChannelServer
 		/// <param name="availableChannels">The available channels.</param>
 		/// <param name="localClient">The local client. It is null for network clients.</param>
 		/// <returns>Returns "Reject" to disconnect the client immediatelly.</returns>
-		virtual WaitForClientResult			OnClientConnected(vint clientId, const IChannelClient<TPackage>::ChannelNameList& availableChannels, IChannelClient<TPackage>* localClient) = 0;
+		virtual WaitForClientResult			OnClientConnected(vint clientId, const IChannelClient<TPackage>::ChannelNameList& availableChannels, Ptr<IChannelClient<TPackage>> localClient) = 0;
 
 		/// <summary>
 		/// Start the server.
@@ -1730,7 +1730,7 @@ INetworkProtocolServer
 		/// </summary>
 		/// <param name="connection">A connection object representing the client.</param>
 		/// <returns>Returns "Reject" to disconnect the client immediatelly.</returns>
-		virtual WaitForClientResult				OnClientConnected(INetworkProtocolConnection* connection) = 0;
+		virtual WaitForClientResult				OnClientConnected(Ptr<INetworkProtocolConnection> connection) = 0;
 
 		/// <summary>
 		/// Start the server.
@@ -1848,7 +1848,7 @@ namespace vl::inter_process::async_tcp_socket
 	class IAsyncSocketServerCallback : public virtual Interface
 	{
 	public:
-		virtual WaitForClientResult			OnClientConnected(IAsyncSocketConnection* connection) = 0;
+		virtual WaitForClientResult			OnClientConnected(Ptr<IAsyncSocketConnection> connection) = 0;
 		/// <summary>Called exactly once when a started listener stops unexpectedly.</summary>
 		virtual void							OnServerStopped();
 	};
@@ -2077,7 +2077,7 @@ NetworkProtocolServer
 				}
 			}
 
-			WaitForClientResult OnClientConnected(IAsyncSocketConnection* connection) override
+			WaitForClientResult OnClientConnected(Ptr<IAsyncSocketConnection> connection) override
 			{
 				Ptr<SocketServerBridge> self;
 				CS_LOCK(lockSelf)
@@ -2151,7 +2151,7 @@ NetworkProtocolServer
 			});
 		}
 
-		WaitForClientResult OnSocketClientConnected(IAsyncSocketConnection* connection)
+		WaitForClientResult OnSocketClientConnected(Ptr<IAsyncSocketConnection> connection)
 		{
 			auto state = lifecycle;
 			NetworkProtocolCallbackDomain::CallbackFrame callbackFrame(state->callbackDomain);
@@ -2165,13 +2165,13 @@ NetworkProtocolServer
 				return WaitForClientResult::Reject;
 			}
 
-			auto protocolConnection = Ptr(new NetworkProtocolConnection(connection, state->callbackDomain));
+			auto protocolConnection = Ptr(new NetworkProtocolConnection(connection.Obj(), state->callbackDomain));
 			CS_LOCK(state->lockState)
 			{
 				state->connections.Add(protocolConnection);
 				acceptCallback = !state->stopStarted;
 			}
-			return acceptCallback ? OnClientConnected(protocolConnection.Obj()) : WaitForClientResult::Reject;
+			return acceptCallback ? OnClientConnected(protocolConnection) : WaitForClientResult::Reject;
 		}
 
 	public:
@@ -2195,7 +2195,7 @@ NetworkProtocolServer
 			}
 		}
 
-		virtual WaitForClientResult OnClientConnected(INetworkProtocolConnection*) override
+		virtual WaitForClientResult OnClientConnected(Ptr<INetworkProtocolConnection>) override
 		{
 			return WaitForClientResult::Accept;
 		}
@@ -3285,7 +3285,7 @@ NetworkProtocolChannelServer
 			NetworkProtocolChannelServer*					server = nullptr;
 
 		public:
-			INetworkProtocolConnection*						connection = nullptr;
+			Ptr<INetworkProtocolConnection>					connection;
 			vint											clientId = -1;
 			bool											accepted = false;
 			bool											readyForBroadcast = false;
@@ -3323,7 +3323,7 @@ NetworkProtocolChannelServer
 
 			void OnInstalled(INetworkProtocolConnection* _connection) override
 			{
-				connection = _connection;
+				CHECK_ERROR(connection.Obj() == _connection, L"NetworkProtocolChannelServer was installed on an unexpected connection.");
 			}
 		};
 
@@ -3982,7 +3982,7 @@ NetworkProtocolChannelServer
 
 	public:
 
-		WaitForClientResult OnClientConnected(INetworkProtocolConnection* connection) override
+		WaitForClientResult OnClientConnected(Ptr<INetworkProtocolConnection> connection) override
 		{
 			CHECK_ERROR(connection, L"NetworkProtocolChannelServer::OnClientConnected needs a valid connection.");
 			if (!TryBeginNetworkProtocolCallback())
@@ -4023,7 +4023,7 @@ NetworkProtocolChannelServer
 			TServerBase::Start();
 		}
 
-		WaitForClientResult OnClientConnected(vint clientId, const typename IChannelClient<TPackage>::ChannelNameList& availableChannels, IChannelClient<TPackage>* localClient) override
+		WaitForClientResult OnClientConnected(vint clientId, const typename IChannelClient<TPackage>::ChannelNameList& availableChannels, Ptr<IChannelClient<TPackage>> localClient) override
 		{
 			// default implementation allows all clients to connect
 			return WaitForClientResult::Accept;
@@ -4117,7 +4117,7 @@ NetworkProtocolChannelServer
 			}
 			StopBarrierGuard stopBarrierGuard(this);
 
-			if (OnClientConnected(assignedClientId, channels.Keys(), localClient.Obj()) == WaitForClientResult::Reject)
+			if (OnClientConnected(assignedClientId, channels.Keys(), localClient) == WaitForClientResult::Reject)
 			{
 				return -1;
 			}
@@ -7448,7 +7448,7 @@ namespace vl::inter_process::async_tcp_socket
 		/// <remarks>A derived destructor must call <see cref="Stop"/> before destroying any state accessed by <see cref="OnClientConnected"/>.</remarks>
 		virtual ~HttpRequestServer();
 
-		virtual WaitForClientResult			OnClientConnected(IHttpRequestConnection* connection);
+		virtual WaitForClientResult			OnClientConnected(Ptr<IHttpRequestConnection> connection);
 		void							Start();
 		void							Stop();
 		bool							IsStopped();
@@ -7603,7 +7603,7 @@ namespace vl::inter_process::async_tcp_socket
 		SocketHttpServer& operator=(const SocketHttpServer&) = delete;
 		SocketHttpServer& operator=(SocketHttpServer&&) = delete;
 
-		virtual WaitForClientResult			OnClientConnected(INetworkProtocolConnection* connection) override;
+		virtual WaitForClientResult			OnClientConnected(Ptr<INetworkProtocolConnection> connection) override;
 		void								Start() override;
 		void								Stop() override;
 		bool								IsStopped() override;
@@ -8135,7 +8135,7 @@ namespace vl::inter_process::stdio_redirection
 		StdioRedirectionServer();
 		~StdioRedirectionServer();
 
-		WaitForClientResult					OnClientConnected(INetworkProtocolConnection* connection) override;
+		WaitForClientResult					OnClientConnected(Ptr<INetworkProtocolConnection> connection) override;
 		void									Start() override;
 		void									Stop() override;
 		bool									IsStopped() override;

@@ -3380,7 +3380,7 @@ ServerState::AcceptOperation
 			currentServerCallbackFrame = &frame;
 			try
 			{
-				acceptResult = installedCallback->OnClientConnected(connection.Obj());
+				acceptResult = installedCallback->OnClientConnected(connection);
 			}
 			catch (...)
 			{
@@ -5284,7 +5284,7 @@ ServerState
 			{
 				try
 				{
-					result = installedCallback->OnClientConnected(wrapper.Obj());
+					result = installedCallback->OnClientConnected(wrapper);
 				}
 				catch (...)
 				{

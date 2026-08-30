@@ -159,7 +159,7 @@ namespace vl::presentation::remoting
 		inter_process::WaitForClientResult OnClientConnected(
 			vint clientId,
 			const JsonChannelClient::ChannelNameList& availableChannels,
-			JsonChannelClient* localClient
+			Ptr<JsonChannelClient> localClient
 			) override
 		{
 			if (localClient)
