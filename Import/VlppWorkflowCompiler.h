@@ -3491,267 +3491,523 @@ From parser definition:Ast
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-#ifndef VCZH_WORKFLOW_PARSER_AST_AST_JSON_VISITOR
-#define VCZH_WORKFLOW_PARSER_AST_AST_JSON_VISITOR
+#ifndef VCZH_WORKFLOW_PARSER_AST_AST_JSON
+#define VCZH_WORKFLOW_PARSER_AST_AST_JSON
 
 
-namespace vl::workflow::json_visitor
+namespace vl::workflow
 {
-	/// <summary>A JSON visitor, overriding all abstract methods with AST to JSON serialization code.</summary>
-	class AstVisitor
-		: public vl::glr::JsonVisitorBase
-		, protected virtual WfType::IVisitor
-		, protected virtual WfExpression::IVisitor
-		, protected virtual WfStatement::IVisitor
-		, protected virtual WfDeclaration::IVisitor
-		, protected virtual WfVirtualCfeDeclaration::IVisitor
-		, protected virtual WfVirtualCseDeclaration::IVisitor
-		, protected virtual WfVirtualCseStatement::IVisitor
-		, protected virtual WfCoroutineStatement::IVisitor
-		, protected virtual WfStateMachineStatement::IVisitor
-		, protected virtual WfVirtualCfeExpression::IVisitor
-		, protected virtual WfVirtualCseExpression::IVisitor
-		, protected virtual WfModuleUsingFragment::IVisitor
+	namespace json_visitor
 	{
-	protected:
-		virtual void PrintFields(WfAttachEventExpression* node);
-		virtual void PrintFields(WfAttribute* node);
-		virtual void PrintFields(WfAutoPropertyDeclaration* node);
-		virtual void PrintFields(WfBaseConstructorCall* node);
-		virtual void PrintFields(WfBinaryExpression* node);
-		virtual void PrintFields(WfBindExpression* node);
-		virtual void PrintFields(WfBlockStatement* node);
-		virtual void PrintFields(WfBreakStatement* node);
-		virtual void PrintFields(WfCallExpression* node);
-		virtual void PrintFields(WfCastResultInterfaceDeclaration* node);
-		virtual void PrintFields(WfChildExpression* node);
-		virtual void PrintFields(WfChildType* node);
-		virtual void PrintFields(WfClassDeclaration* node);
-		virtual void PrintFields(WfCoOperatorExpression* node);
-		virtual void PrintFields(WfCoOperatorStatement* node);
-		virtual void PrintFields(WfCoPauseStatement* node);
-		virtual void PrintFields(WfCoProviderStatement* node);
-		virtual void PrintFields(WfConstructorArgument* node);
-		virtual void PrintFields(WfConstructorDeclaration* node);
-		virtual void PrintFields(WfConstructorExpression* node);
-		virtual void PrintFields(WfContinueStatement* node);
-		virtual void PrintFields(WfCoroutineStatement* node);
-		virtual void PrintFields(WfDeclaration* node);
-		virtual void PrintFields(WfDeleteStatement* node);
-		virtual void PrintFields(WfDestructorDeclaration* node);
-		virtual void PrintFields(WfDetachEventExpression* node);
-		virtual void PrintFields(WfEnumDeclaration* node);
-		virtual void PrintFields(WfEnumItem* node);
-		virtual void PrintFields(WfEnumItemIntersection* node);
-		virtual void PrintFields(WfEnumerableType* node);
-		virtual void PrintFields(WfEventDeclaration* node);
-		virtual void PrintFields(WfExpectedTypeCastExpression* node);
-		virtual void PrintFields(WfExpression* node);
-		virtual void PrintFields(WfExpressionStatement* node);
-		virtual void PrintFields(WfFloatingExpression* node);
-		virtual void PrintFields(WfForEachStatement* node);
-		virtual void PrintFields(WfFormatExpression* node);
-		virtual void PrintFields(WfFunctionArgument* node);
-		virtual void PrintFields(WfFunctionDeclaration* node);
-		virtual void PrintFields(WfFunctionExpression* node);
-		virtual void PrintFields(WfFunctionType* node);
-		virtual void PrintFields(WfGotoStatement* node);
-		virtual void PrintFields(WfIfExpression* node);
-		virtual void PrintFields(WfIfStatement* node);
-		virtual void PrintFields(WfInferExpression* node);
-		virtual void PrintFields(WfIntegerExpression* node);
-		virtual void PrintFields(WfLetExpression* node);
-		virtual void PrintFields(WfLetVariable* node);
-		virtual void PrintFields(WfLiteralExpression* node);
-		virtual void PrintFields(WfMapType* node);
-		virtual void PrintFields(WfMemberExpression* node);
-		virtual void PrintFields(WfMixinCastExpression* node);
-		virtual void PrintFields(WfModule* node);
-		virtual void PrintFields(WfModuleUsingFragment* node);
-		virtual void PrintFields(WfModuleUsingItem* node);
-		virtual void PrintFields(WfModuleUsingNameFragment* node);
-		virtual void PrintFields(WfModuleUsingPath* node);
-		virtual void PrintFields(WfModuleUsingWildCardFragment* node);
-		virtual void PrintFields(WfNamespaceDeclaration* node);
-		virtual void PrintFields(WfNewClassExpression* node);
-		virtual void PrintFields(WfNewCoroutineExpression* node);
-		virtual void PrintFields(WfNewInterfaceExpression* node);
-		virtual void PrintFields(WfNullableType* node);
-		virtual void PrintFields(WfObservableListType* node);
-		virtual void PrintFields(WfObserveExpression* node);
-		virtual void PrintFields(WfOrderedLambdaExpression* node);
-		virtual void PrintFields(WfOrderedNameExpression* node);
-		virtual void PrintFields(WfPredefinedType* node);
-		virtual void PrintFields(WfPropertyDeclaration* node);
-		virtual void PrintFields(WfRaiseExceptionStatement* node);
-		virtual void PrintFields(WfRangeExpression* node);
-		virtual void PrintFields(WfRawPointerType* node);
-		virtual void PrintFields(WfReferenceExpression* node);
-		virtual void PrintFields(WfReferenceType* node);
-		virtual void PrintFields(WfReturnStatement* node);
-		virtual void PrintFields(WfSetTestingExpression* node);
-		virtual void PrintFields(WfSharedPointerType* node);
-		virtual void PrintFields(WfStateDeclaration* node);
-		virtual void PrintFields(WfStateInput* node);
-		virtual void PrintFields(WfStateInvokeStatement* node);
-		virtual void PrintFields(WfStateMachineDeclaration* node);
-		virtual void PrintFields(WfStateMachineStatement* node);
-		virtual void PrintFields(WfStateSwitchArgument* node);
-		virtual void PrintFields(WfStateSwitchCase* node);
-		virtual void PrintFields(WfStateSwitchStatement* node);
-		virtual void PrintFields(WfStatement* node);
-		virtual void PrintFields(WfStaticInitDeclaration* node);
-		virtual void PrintFields(WfStringExpression* node);
-		virtual void PrintFields(WfStructDeclaration* node);
-		virtual void PrintFields(WfStructMember* node);
-		virtual void PrintFields(WfSwitchCase* node);
-		virtual void PrintFields(WfSwitchStatement* node);
-		virtual void PrintFields(WfThisExpression* node);
-		virtual void PrintFields(WfTopQualifiedExpression* node);
-		virtual void PrintFields(WfTopQualifiedType* node);
-		virtual void PrintFields(WfTryStatement* node);
-		virtual void PrintFields(WfType* node);
-		virtual void PrintFields(WfTypeCastingExpression* node);
-		virtual void PrintFields(WfTypeOfExpressionExpression* node);
-		virtual void PrintFields(WfTypeOfTypeExpression* node);
-		virtual void PrintFields(WfTypeTestingExpression* node);
-		virtual void PrintFields(WfUnaryExpression* node);
-		virtual void PrintFields(WfVariableDeclaration* node);
-		virtual void PrintFields(WfVariableStatement* node);
-		virtual void PrintFields(WfVirtualCfeDeclaration* node);
-		virtual void PrintFields(WfVirtualCfeExpression* node);
-		virtual void PrintFields(WfVirtualCseDeclaration* node);
-		virtual void PrintFields(WfVirtualCseExpression* node);
-		virtual void PrintFields(WfVirtualCseStatement* node);
-		virtual void PrintFields(WfWhileStatement* node);
+		/// <summary>A JSON visitor, overriding all abstract methods with AST to JSON serialization code.</summary>
+		class AstVisitor
+			: public vl::glr::JsonVisitorBase
+			, protected virtual WfType::IVisitor
+			, protected virtual WfExpression::IVisitor
+			, protected virtual WfStatement::IVisitor
+			, protected virtual WfDeclaration::IVisitor
+			, protected virtual WfVirtualCfeDeclaration::IVisitor
+			, protected virtual WfVirtualCseDeclaration::IVisitor
+			, protected virtual WfVirtualCseStatement::IVisitor
+			, protected virtual WfCoroutineStatement::IVisitor
+			, protected virtual WfStateMachineStatement::IVisitor
+			, protected virtual WfVirtualCfeExpression::IVisitor
+			, protected virtual WfVirtualCseExpression::IVisitor
+			, protected virtual WfModuleUsingFragment::IVisitor
+		{
+		protected:
+			virtual void PrintFields(WfAttachEventExpression* node);
+			virtual void PrintFields(WfAttribute* node);
+			virtual void PrintFields(WfAutoPropertyDeclaration* node);
+			virtual void PrintFields(WfBaseConstructorCall* node);
+			virtual void PrintFields(WfBinaryExpression* node);
+			virtual void PrintFields(WfBindExpression* node);
+			virtual void PrintFields(WfBlockStatement* node);
+			virtual void PrintFields(WfBreakStatement* node);
+			virtual void PrintFields(WfCallExpression* node);
+			virtual void PrintFields(WfCastResultInterfaceDeclaration* node);
+			virtual void PrintFields(WfChildExpression* node);
+			virtual void PrintFields(WfChildType* node);
+			virtual void PrintFields(WfClassDeclaration* node);
+			virtual void PrintFields(WfCoOperatorExpression* node);
+			virtual void PrintFields(WfCoOperatorStatement* node);
+			virtual void PrintFields(WfCoPauseStatement* node);
+			virtual void PrintFields(WfCoProviderStatement* node);
+			virtual void PrintFields(WfConstructorArgument* node);
+			virtual void PrintFields(WfConstructorDeclaration* node);
+			virtual void PrintFields(WfConstructorExpression* node);
+			virtual void PrintFields(WfContinueStatement* node);
+			virtual void PrintFields(WfCoroutineStatement* node);
+			virtual void PrintFields(WfDeclaration* node);
+			virtual void PrintFields(WfDeleteStatement* node);
+			virtual void PrintFields(WfDestructorDeclaration* node);
+			virtual void PrintFields(WfDetachEventExpression* node);
+			virtual void PrintFields(WfEnumDeclaration* node);
+			virtual void PrintFields(WfEnumItem* node);
+			virtual void PrintFields(WfEnumItemIntersection* node);
+			virtual void PrintFields(WfEnumerableType* node);
+			virtual void PrintFields(WfEventDeclaration* node);
+			virtual void PrintFields(WfExpectedTypeCastExpression* node);
+			virtual void PrintFields(WfExpression* node);
+			virtual void PrintFields(WfExpressionStatement* node);
+			virtual void PrintFields(WfFloatingExpression* node);
+			virtual void PrintFields(WfForEachStatement* node);
+			virtual void PrintFields(WfFormatExpression* node);
+			virtual void PrintFields(WfFunctionArgument* node);
+			virtual void PrintFields(WfFunctionDeclaration* node);
+			virtual void PrintFields(WfFunctionExpression* node);
+			virtual void PrintFields(WfFunctionType* node);
+			virtual void PrintFields(WfGotoStatement* node);
+			virtual void PrintFields(WfIfExpression* node);
+			virtual void PrintFields(WfIfStatement* node);
+			virtual void PrintFields(WfInferExpression* node);
+			virtual void PrintFields(WfIntegerExpression* node);
+			virtual void PrintFields(WfLetExpression* node);
+			virtual void PrintFields(WfLetVariable* node);
+			virtual void PrintFields(WfLiteralExpression* node);
+			virtual void PrintFields(WfMapType* node);
+			virtual void PrintFields(WfMemberExpression* node);
+			virtual void PrintFields(WfMixinCastExpression* node);
+			virtual void PrintFields(WfModule* node);
+			virtual void PrintFields(WfModuleUsingFragment* node);
+			virtual void PrintFields(WfModuleUsingItem* node);
+			virtual void PrintFields(WfModuleUsingNameFragment* node);
+			virtual void PrintFields(WfModuleUsingPath* node);
+			virtual void PrintFields(WfModuleUsingWildCardFragment* node);
+			virtual void PrintFields(WfNamespaceDeclaration* node);
+			virtual void PrintFields(WfNewClassExpression* node);
+			virtual void PrintFields(WfNewCoroutineExpression* node);
+			virtual void PrintFields(WfNewInterfaceExpression* node);
+			virtual void PrintFields(WfNullableType* node);
+			virtual void PrintFields(WfObservableListType* node);
+			virtual void PrintFields(WfObserveExpression* node);
+			virtual void PrintFields(WfOrderedLambdaExpression* node);
+			virtual void PrintFields(WfOrderedNameExpression* node);
+			virtual void PrintFields(WfPredefinedType* node);
+			virtual void PrintFields(WfPropertyDeclaration* node);
+			virtual void PrintFields(WfRaiseExceptionStatement* node);
+			virtual void PrintFields(WfRangeExpression* node);
+			virtual void PrintFields(WfRawPointerType* node);
+			virtual void PrintFields(WfReferenceExpression* node);
+			virtual void PrintFields(WfReferenceType* node);
+			virtual void PrintFields(WfReturnStatement* node);
+			virtual void PrintFields(WfSetTestingExpression* node);
+			virtual void PrintFields(WfSharedPointerType* node);
+			virtual void PrintFields(WfStateDeclaration* node);
+			virtual void PrintFields(WfStateInput* node);
+			virtual void PrintFields(WfStateInvokeStatement* node);
+			virtual void PrintFields(WfStateMachineDeclaration* node);
+			virtual void PrintFields(WfStateMachineStatement* node);
+			virtual void PrintFields(WfStateSwitchArgument* node);
+			virtual void PrintFields(WfStateSwitchCase* node);
+			virtual void PrintFields(WfStateSwitchStatement* node);
+			virtual void PrintFields(WfStatement* node);
+			virtual void PrintFields(WfStaticInitDeclaration* node);
+			virtual void PrintFields(WfStringExpression* node);
+			virtual void PrintFields(WfStructDeclaration* node);
+			virtual void PrintFields(WfStructMember* node);
+			virtual void PrintFields(WfSwitchCase* node);
+			virtual void PrintFields(WfSwitchStatement* node);
+			virtual void PrintFields(WfThisExpression* node);
+			virtual void PrintFields(WfTopQualifiedExpression* node);
+			virtual void PrintFields(WfTopQualifiedType* node);
+			virtual void PrintFields(WfTryStatement* node);
+			virtual void PrintFields(WfType* node);
+			virtual void PrintFields(WfTypeCastingExpression* node);
+			virtual void PrintFields(WfTypeOfExpressionExpression* node);
+			virtual void PrintFields(WfTypeOfTypeExpression* node);
+			virtual void PrintFields(WfTypeTestingExpression* node);
+			virtual void PrintFields(WfUnaryExpression* node);
+			virtual void PrintFields(WfVariableDeclaration* node);
+			virtual void PrintFields(WfVariableStatement* node);
+			virtual void PrintFields(WfVirtualCfeDeclaration* node);
+			virtual void PrintFields(WfVirtualCfeExpression* node);
+			virtual void PrintFields(WfVirtualCseDeclaration* node);
+			virtual void PrintFields(WfVirtualCseExpression* node);
+			virtual void PrintFields(WfVirtualCseStatement* node);
+			virtual void PrintFields(WfWhileStatement* node);
 
-	protected:
-		void Visit(WfPredefinedType* node) override;
-		void Visit(WfTopQualifiedType* node) override;
-		void Visit(WfReferenceType* node) override;
-		void Visit(WfRawPointerType* node) override;
-		void Visit(WfSharedPointerType* node) override;
-		void Visit(WfNullableType* node) override;
-		void Visit(WfEnumerableType* node) override;
-		void Visit(WfMapType* node) override;
-		void Visit(WfObservableListType* node) override;
-		void Visit(WfFunctionType* node) override;
-		void Visit(WfChildType* node) override;
+		protected:
+			void Visit(WfPredefinedType* node) override;
+			void Visit(WfTopQualifiedType* node) override;
+			void Visit(WfReferenceType* node) override;
+			void Visit(WfRawPointerType* node) override;
+			void Visit(WfSharedPointerType* node) override;
+			void Visit(WfNullableType* node) override;
+			void Visit(WfEnumerableType* node) override;
+			void Visit(WfMapType* node) override;
+			void Visit(WfObservableListType* node) override;
+			void Visit(WfFunctionType* node) override;
+			void Visit(WfChildType* node) override;
 
-		void Visit(WfThisExpression* node) override;
-		void Visit(WfTopQualifiedExpression* node) override;
-		void Visit(WfReferenceExpression* node) override;
-		void Visit(WfOrderedNameExpression* node) override;
-		void Visit(WfOrderedLambdaExpression* node) override;
-		void Visit(WfMemberExpression* node) override;
-		void Visit(WfChildExpression* node) override;
-		void Visit(WfLiteralExpression* node) override;
-		void Visit(WfFloatingExpression* node) override;
-		void Visit(WfIntegerExpression* node) override;
-		void Visit(WfStringExpression* node) override;
-		void Visit(WfUnaryExpression* node) override;
-		void Visit(WfBinaryExpression* node) override;
-		void Visit(WfLetExpression* node) override;
-		void Visit(WfIfExpression* node) override;
-		void Visit(WfRangeExpression* node) override;
-		void Visit(WfSetTestingExpression* node) override;
-		void Visit(WfConstructorExpression* node) override;
-		void Visit(WfInferExpression* node) override;
-		void Visit(WfTypeCastingExpression* node) override;
-		void Visit(WfTypeTestingExpression* node) override;
-		void Visit(WfTypeOfTypeExpression* node) override;
-		void Visit(WfTypeOfExpressionExpression* node) override;
-		void Visit(WfAttachEventExpression* node) override;
-		void Visit(WfDetachEventExpression* node) override;
-		void Visit(WfObserveExpression* node) override;
-		void Visit(WfCallExpression* node) override;
-		void Visit(WfFunctionExpression* node) override;
-		void Visit(WfNewClassExpression* node) override;
-		void Visit(WfNewInterfaceExpression* node) override;
-		void Visit(WfVirtualCfeExpression* node) override;
-		void Visit(WfVirtualCseExpression* node) override;
+			void Visit(WfThisExpression* node) override;
+			void Visit(WfTopQualifiedExpression* node) override;
+			void Visit(WfReferenceExpression* node) override;
+			void Visit(WfOrderedNameExpression* node) override;
+			void Visit(WfOrderedLambdaExpression* node) override;
+			void Visit(WfMemberExpression* node) override;
+			void Visit(WfChildExpression* node) override;
+			void Visit(WfLiteralExpression* node) override;
+			void Visit(WfFloatingExpression* node) override;
+			void Visit(WfIntegerExpression* node) override;
+			void Visit(WfStringExpression* node) override;
+			void Visit(WfUnaryExpression* node) override;
+			void Visit(WfBinaryExpression* node) override;
+			void Visit(WfLetExpression* node) override;
+			void Visit(WfIfExpression* node) override;
+			void Visit(WfRangeExpression* node) override;
+			void Visit(WfSetTestingExpression* node) override;
+			void Visit(WfConstructorExpression* node) override;
+			void Visit(WfInferExpression* node) override;
+			void Visit(WfTypeCastingExpression* node) override;
+			void Visit(WfTypeTestingExpression* node) override;
+			void Visit(WfTypeOfTypeExpression* node) override;
+			void Visit(WfTypeOfExpressionExpression* node) override;
+			void Visit(WfAttachEventExpression* node) override;
+			void Visit(WfDetachEventExpression* node) override;
+			void Visit(WfObserveExpression* node) override;
+			void Visit(WfCallExpression* node) override;
+			void Visit(WfFunctionExpression* node) override;
+			void Visit(WfNewClassExpression* node) override;
+			void Visit(WfNewInterfaceExpression* node) override;
+			void Visit(WfVirtualCfeExpression* node) override;
+			void Visit(WfVirtualCseExpression* node) override;
 
-		void Visit(WfBreakStatement* node) override;
-		void Visit(WfContinueStatement* node) override;
-		void Visit(WfReturnStatement* node) override;
-		void Visit(WfDeleteStatement* node) override;
-		void Visit(WfRaiseExceptionStatement* node) override;
-		void Visit(WfIfStatement* node) override;
-		void Visit(WfWhileStatement* node) override;
-		void Visit(WfTryStatement* node) override;
-		void Visit(WfBlockStatement* node) override;
-		void Visit(WfGotoStatement* node) override;
-		void Visit(WfVariableStatement* node) override;
-		void Visit(WfExpressionStatement* node) override;
-		void Visit(WfVirtualCseStatement* node) override;
-		void Visit(WfCoroutineStatement* node) override;
-		void Visit(WfStateMachineStatement* node) override;
+			void Visit(WfBreakStatement* node) override;
+			void Visit(WfContinueStatement* node) override;
+			void Visit(WfReturnStatement* node) override;
+			void Visit(WfDeleteStatement* node) override;
+			void Visit(WfRaiseExceptionStatement* node) override;
+			void Visit(WfIfStatement* node) override;
+			void Visit(WfWhileStatement* node) override;
+			void Visit(WfTryStatement* node) override;
+			void Visit(WfBlockStatement* node) override;
+			void Visit(WfGotoStatement* node) override;
+			void Visit(WfVariableStatement* node) override;
+			void Visit(WfExpressionStatement* node) override;
+			void Visit(WfVirtualCseStatement* node) override;
+			void Visit(WfCoroutineStatement* node) override;
+			void Visit(WfStateMachineStatement* node) override;
 
-		void Visit(WfNamespaceDeclaration* node) override;
-		void Visit(WfFunctionDeclaration* node) override;
-		void Visit(WfVariableDeclaration* node) override;
-		void Visit(WfEventDeclaration* node) override;
-		void Visit(WfPropertyDeclaration* node) override;
-		void Visit(WfStaticInitDeclaration* node) override;
-		void Visit(WfConstructorDeclaration* node) override;
-		void Visit(WfDestructorDeclaration* node) override;
-		void Visit(WfClassDeclaration* node) override;
-		void Visit(WfEnumDeclaration* node) override;
-		void Visit(WfStructDeclaration* node) override;
-		void Visit(WfVirtualCfeDeclaration* node) override;
-		void Visit(WfVirtualCseDeclaration* node) override;
+			void Visit(WfNamespaceDeclaration* node) override;
+			void Visit(WfFunctionDeclaration* node) override;
+			void Visit(WfVariableDeclaration* node) override;
+			void Visit(WfEventDeclaration* node) override;
+			void Visit(WfPropertyDeclaration* node) override;
+			void Visit(WfStaticInitDeclaration* node) override;
+			void Visit(WfConstructorDeclaration* node) override;
+			void Visit(WfDestructorDeclaration* node) override;
+			void Visit(WfClassDeclaration* node) override;
+			void Visit(WfEnumDeclaration* node) override;
+			void Visit(WfStructDeclaration* node) override;
+			void Visit(WfVirtualCfeDeclaration* node) override;
+			void Visit(WfVirtualCseDeclaration* node) override;
 
-		void Visit(WfAutoPropertyDeclaration* node) override;
-		void Visit(WfCastResultInterfaceDeclaration* node) override;
+			void Visit(WfAutoPropertyDeclaration* node) override;
+			void Visit(WfCastResultInterfaceDeclaration* node) override;
 
-		void Visit(WfStateMachineDeclaration* node) override;
+			void Visit(WfStateMachineDeclaration* node) override;
 
-		void Visit(WfForEachStatement* node) override;
-		void Visit(WfSwitchStatement* node) override;
-		void Visit(WfCoProviderStatement* node) override;
+			void Visit(WfForEachStatement* node) override;
+			void Visit(WfSwitchStatement* node) override;
+			void Visit(WfCoProviderStatement* node) override;
 
-		void Visit(WfCoPauseStatement* node) override;
-		void Visit(WfCoOperatorStatement* node) override;
+			void Visit(WfCoPauseStatement* node) override;
+			void Visit(WfCoOperatorStatement* node) override;
 
-		void Visit(WfStateSwitchStatement* node) override;
-		void Visit(WfStateInvokeStatement* node) override;
+			void Visit(WfStateSwitchStatement* node) override;
+			void Visit(WfStateInvokeStatement* node) override;
 
-		void Visit(WfFormatExpression* node) override;
+			void Visit(WfFormatExpression* node) override;
 
-		void Visit(WfBindExpression* node) override;
-		void Visit(WfNewCoroutineExpression* node) override;
-		void Visit(WfMixinCastExpression* node) override;
-		void Visit(WfExpectedTypeCastExpression* node) override;
-		void Visit(WfCoOperatorExpression* node) override;
+			void Visit(WfBindExpression* node) override;
+			void Visit(WfNewCoroutineExpression* node) override;
+			void Visit(WfMixinCastExpression* node) override;
+			void Visit(WfExpectedTypeCastExpression* node) override;
+			void Visit(WfCoOperatorExpression* node) override;
 
-		void Visit(WfModuleUsingNameFragment* node) override;
-		void Visit(WfModuleUsingWildCardFragment* node) override;
+			void Visit(WfModuleUsingNameFragment* node) override;
+			void Visit(WfModuleUsingWildCardFragment* node) override;
 
-	public:
-		AstVisitor(vl::stream::StreamWriter& _writer);
+		public:
+			AstVisitor(vl::stream::StreamWriter& _writer);
 
-		void Print(WfType* node);
-		void Print(WfExpression* node);
-		void Print(WfStatement* node);
-		void Print(WfDeclaration* node);
-		void Print(WfModuleUsingFragment* node);
-		void Print(WfAttribute* node);
-		void Print(WfFunctionArgument* node);
-		void Print(WfBaseConstructorCall* node);
-		void Print(WfEnumItemIntersection* node);
-		void Print(WfEnumItem* node);
-		void Print(WfStructMember* node);
-		void Print(WfStateInput* node);
-		void Print(WfStateDeclaration* node);
-		void Print(WfSwitchCase* node);
-		void Print(WfStateSwitchArgument* node);
-		void Print(WfStateSwitchCase* node);
-		void Print(WfLetVariable* node);
-		void Print(WfConstructorArgument* node);
-		void Print(WfModuleUsingItem* node);
-		void Print(WfModuleUsingPath* node);
-		void Print(WfModule* node);
-	};
+			void Print(WfType* node);
+			void Print(WfExpression* node);
+			void Print(WfStatement* node);
+			void Print(WfDeclaration* node);
+			void Print(WfModuleUsingFragment* node);
+			void Print(WfAttribute* node);
+			void Print(WfFunctionArgument* node);
+			void Print(WfBaseConstructorCall* node);
+			void Print(WfEnumItemIntersection* node);
+			void Print(WfEnumItem* node);
+			void Print(WfStructMember* node);
+			void Print(WfStateInput* node);
+			void Print(WfStateDeclaration* node);
+			void Print(WfSwitchCase* node);
+			void Print(WfStateSwitchArgument* node);
+			void Print(WfStateSwitchCase* node);
+			void Print(WfLetVariable* node);
+			void Print(WfConstructorArgument* node);
+			void Print(WfModuleUsingItem* node);
+			void Print(WfModuleUsingPath* node);
+			void Print(WfModule* node);
+		};
+	}
+
+	namespace json_reader
+	{
+		/// <summary>A JSON reader, overriding all abstract methods with JSON to AST deserialization code.</summary>
+		class AstVisitor
+			: protected virtual WfType::IVisitor
+			, protected virtual WfExpression::IVisitor
+			, protected virtual WfStatement::IVisitor
+			, protected virtual WfDeclaration::IVisitor
+			, protected virtual WfVirtualCfeDeclaration::IVisitor
+			, protected virtual WfVirtualCseDeclaration::IVisitor
+			, protected virtual WfVirtualCseStatement::IVisitor
+			, protected virtual WfCoroutineStatement::IVisitor
+			, protected virtual WfStateMachineStatement::IVisitor
+			, protected virtual WfVirtualCfeExpression::IVisitor
+			, protected virtual WfVirtualCseExpression::IVisitor
+			, protected virtual WfModuleUsingFragment::IVisitor
+		{
+		protected:
+			class JsonObjectScope
+			{
+			protected:
+				vl::collections::List<vl::glr::json::JsonObject*>& jsonObjects;
+
+			public:
+				JsonObjectScope(vl::collections::List<vl::glr::json::JsonObject*>& _jsonObjects, vl::glr::json::JsonObject* json);
+				~JsonObjectScope();
+			};
+
+			vl::collections::List<vl::glr::json::JsonObject*> jsonObjects;
+			vl::glr::json::JsonObject* CurrentObject();
+			vl::glr::json::JsonNode* FindField(const vl::WString& name);
+			bool IsNull(vl::glr::json::JsonNode* value);
+			vl::WString ReadType(vl::glr::json::JsonObject* json);
+			void ValidateFields(vl::glr::json::JsonObject* json, const vl::WString& typeName);
+
+			virtual void FillFields(WfAttachEventExpression* node);
+			virtual void FillFields(WfAttribute* node);
+			virtual void FillFields(WfAutoPropertyDeclaration* node);
+			virtual void FillFields(WfBaseConstructorCall* node);
+			virtual void FillFields(WfBinaryExpression* node);
+			virtual void FillFields(WfBindExpression* node);
+			virtual void FillFields(WfBlockStatement* node);
+			virtual void FillFields(WfBreakStatement* node);
+			virtual void FillFields(WfCallExpression* node);
+			virtual void FillFields(WfCastResultInterfaceDeclaration* node);
+			virtual void FillFields(WfChildExpression* node);
+			virtual void FillFields(WfChildType* node);
+			virtual void FillFields(WfClassDeclaration* node);
+			virtual void FillFields(WfCoOperatorExpression* node);
+			virtual void FillFields(WfCoOperatorStatement* node);
+			virtual void FillFields(WfCoPauseStatement* node);
+			virtual void FillFields(WfCoProviderStatement* node);
+			virtual void FillFields(WfConstructorArgument* node);
+			virtual void FillFields(WfConstructorDeclaration* node);
+			virtual void FillFields(WfConstructorExpression* node);
+			virtual void FillFields(WfContinueStatement* node);
+			virtual void FillFields(WfCoroutineStatement* node);
+			virtual void FillFields(WfDeclaration* node);
+			virtual void FillFields(WfDeleteStatement* node);
+			virtual void FillFields(WfDestructorDeclaration* node);
+			virtual void FillFields(WfDetachEventExpression* node);
+			virtual void FillFields(WfEnumDeclaration* node);
+			virtual void FillFields(WfEnumItem* node);
+			virtual void FillFields(WfEnumItemIntersection* node);
+			virtual void FillFields(WfEnumerableType* node);
+			virtual void FillFields(WfEventDeclaration* node);
+			virtual void FillFields(WfExpectedTypeCastExpression* node);
+			virtual void FillFields(WfExpression* node);
+			virtual void FillFields(WfExpressionStatement* node);
+			virtual void FillFields(WfFloatingExpression* node);
+			virtual void FillFields(WfForEachStatement* node);
+			virtual void FillFields(WfFormatExpression* node);
+			virtual void FillFields(WfFunctionArgument* node);
+			virtual void FillFields(WfFunctionDeclaration* node);
+			virtual void FillFields(WfFunctionExpression* node);
+			virtual void FillFields(WfFunctionType* node);
+			virtual void FillFields(WfGotoStatement* node);
+			virtual void FillFields(WfIfExpression* node);
+			virtual void FillFields(WfIfStatement* node);
+			virtual void FillFields(WfInferExpression* node);
+			virtual void FillFields(WfIntegerExpression* node);
+			virtual void FillFields(WfLetExpression* node);
+			virtual void FillFields(WfLetVariable* node);
+			virtual void FillFields(WfLiteralExpression* node);
+			virtual void FillFields(WfMapType* node);
+			virtual void FillFields(WfMemberExpression* node);
+			virtual void FillFields(WfMixinCastExpression* node);
+			virtual void FillFields(WfModule* node);
+			virtual void FillFields(WfModuleUsingFragment* node);
+			virtual void FillFields(WfModuleUsingItem* node);
+			virtual void FillFields(WfModuleUsingNameFragment* node);
+			virtual void FillFields(WfModuleUsingPath* node);
+			virtual void FillFields(WfModuleUsingWildCardFragment* node);
+			virtual void FillFields(WfNamespaceDeclaration* node);
+			virtual void FillFields(WfNewClassExpression* node);
+			virtual void FillFields(WfNewCoroutineExpression* node);
+			virtual void FillFields(WfNewInterfaceExpression* node);
+			virtual void FillFields(WfNullableType* node);
+			virtual void FillFields(WfObservableListType* node);
+			virtual void FillFields(WfObserveExpression* node);
+			virtual void FillFields(WfOrderedLambdaExpression* node);
+			virtual void FillFields(WfOrderedNameExpression* node);
+			virtual void FillFields(WfPredefinedType* node);
+			virtual void FillFields(WfPropertyDeclaration* node);
+			virtual void FillFields(WfRaiseExceptionStatement* node);
+			virtual void FillFields(WfRangeExpression* node);
+			virtual void FillFields(WfRawPointerType* node);
+			virtual void FillFields(WfReferenceExpression* node);
+			virtual void FillFields(WfReferenceType* node);
+			virtual void FillFields(WfReturnStatement* node);
+			virtual void FillFields(WfSetTestingExpression* node);
+			virtual void FillFields(WfSharedPointerType* node);
+			virtual void FillFields(WfStateDeclaration* node);
+			virtual void FillFields(WfStateInput* node);
+			virtual void FillFields(WfStateInvokeStatement* node);
+			virtual void FillFields(WfStateMachineDeclaration* node);
+			virtual void FillFields(WfStateMachineStatement* node);
+			virtual void FillFields(WfStateSwitchArgument* node);
+			virtual void FillFields(WfStateSwitchCase* node);
+			virtual void FillFields(WfStateSwitchStatement* node);
+			virtual void FillFields(WfStatement* node);
+			virtual void FillFields(WfStaticInitDeclaration* node);
+			virtual void FillFields(WfStringExpression* node);
+			virtual void FillFields(WfStructDeclaration* node);
+			virtual void FillFields(WfStructMember* node);
+			virtual void FillFields(WfSwitchCase* node);
+			virtual void FillFields(WfSwitchStatement* node);
+			virtual void FillFields(WfThisExpression* node);
+			virtual void FillFields(WfTopQualifiedExpression* node);
+			virtual void FillFields(WfTopQualifiedType* node);
+			virtual void FillFields(WfTryStatement* node);
+			virtual void FillFields(WfType* node);
+			virtual void FillFields(WfTypeCastingExpression* node);
+			virtual void FillFields(WfTypeOfExpressionExpression* node);
+			virtual void FillFields(WfTypeOfTypeExpression* node);
+			virtual void FillFields(WfTypeTestingExpression* node);
+			virtual void FillFields(WfUnaryExpression* node);
+			virtual void FillFields(WfVariableDeclaration* node);
+			virtual void FillFields(WfVariableStatement* node);
+			virtual void FillFields(WfVirtualCfeDeclaration* node);
+			virtual void FillFields(WfVirtualCfeExpression* node);
+			virtual void FillFields(WfVirtualCseDeclaration* node);
+			virtual void FillFields(WfVirtualCseExpression* node);
+			virtual void FillFields(WfVirtualCseStatement* node);
+			virtual void FillFields(WfWhileStatement* node);
+
+		protected:
+			void Visit(WfPredefinedType* node) override;
+			void Visit(WfTopQualifiedType* node) override;
+			void Visit(WfReferenceType* node) override;
+			void Visit(WfRawPointerType* node) override;
+			void Visit(WfSharedPointerType* node) override;
+			void Visit(WfNullableType* node) override;
+			void Visit(WfEnumerableType* node) override;
+			void Visit(WfMapType* node) override;
+			void Visit(WfObservableListType* node) override;
+			void Visit(WfFunctionType* node) override;
+			void Visit(WfChildType* node) override;
+
+			void Visit(WfThisExpression* node) override;
+			void Visit(WfTopQualifiedExpression* node) override;
+			void Visit(WfReferenceExpression* node) override;
+			void Visit(WfOrderedNameExpression* node) override;
+			void Visit(WfOrderedLambdaExpression* node) override;
+			void Visit(WfMemberExpression* node) override;
+			void Visit(WfChildExpression* node) override;
+			void Visit(WfLiteralExpression* node) override;
+			void Visit(WfFloatingExpression* node) override;
+			void Visit(WfIntegerExpression* node) override;
+			void Visit(WfStringExpression* node) override;
+			void Visit(WfUnaryExpression* node) override;
+			void Visit(WfBinaryExpression* node) override;
+			void Visit(WfLetExpression* node) override;
+			void Visit(WfIfExpression* node) override;
+			void Visit(WfRangeExpression* node) override;
+			void Visit(WfSetTestingExpression* node) override;
+			void Visit(WfConstructorExpression* node) override;
+			void Visit(WfInferExpression* node) override;
+			void Visit(WfTypeCastingExpression* node) override;
+			void Visit(WfTypeTestingExpression* node) override;
+			void Visit(WfTypeOfTypeExpression* node) override;
+			void Visit(WfTypeOfExpressionExpression* node) override;
+			void Visit(WfAttachEventExpression* node) override;
+			void Visit(WfDetachEventExpression* node) override;
+			void Visit(WfObserveExpression* node) override;
+			void Visit(WfCallExpression* node) override;
+			void Visit(WfFunctionExpression* node) override;
+			void Visit(WfNewClassExpression* node) override;
+			void Visit(WfNewInterfaceExpression* node) override;
+			void Visit(WfVirtualCfeExpression* node) override;
+			void Visit(WfVirtualCseExpression* node) override;
+
+			void Visit(WfBreakStatement* node) override;
+			void Visit(WfContinueStatement* node) override;
+			void Visit(WfReturnStatement* node) override;
+			void Visit(WfDeleteStatement* node) override;
+			void Visit(WfRaiseExceptionStatement* node) override;
+			void Visit(WfIfStatement* node) override;
+			void Visit(WfWhileStatement* node) override;
+			void Visit(WfTryStatement* node) override;
+			void Visit(WfBlockStatement* node) override;
+			void Visit(WfGotoStatement* node) override;
+			void Visit(WfVariableStatement* node) override;
+			void Visit(WfExpressionStatement* node) override;
+			void Visit(WfVirtualCseStatement* node) override;
+			void Visit(WfCoroutineStatement* node) override;
+			void Visit(WfStateMachineStatement* node) override;
+
+			void Visit(WfNamespaceDeclaration* node) override;
+			void Visit(WfFunctionDeclaration* node) override;
+			void Visit(WfVariableDeclaration* node) override;
+			void Visit(WfEventDeclaration* node) override;
+			void Visit(WfPropertyDeclaration* node) override;
+			void Visit(WfStaticInitDeclaration* node) override;
+			void Visit(WfConstructorDeclaration* node) override;
+			void Visit(WfDestructorDeclaration* node) override;
+			void Visit(WfClassDeclaration* node) override;
+			void Visit(WfEnumDeclaration* node) override;
+			void Visit(WfStructDeclaration* node) override;
+			void Visit(WfVirtualCfeDeclaration* node) override;
+			void Visit(WfVirtualCseDeclaration* node) override;
+
+			void Visit(WfAutoPropertyDeclaration* node) override;
+			void Visit(WfCastResultInterfaceDeclaration* node) override;
+
+			void Visit(WfStateMachineDeclaration* node) override;
+
+			void Visit(WfForEachStatement* node) override;
+			void Visit(WfSwitchStatement* node) override;
+			void Visit(WfCoProviderStatement* node) override;
+
+			void Visit(WfCoPauseStatement* node) override;
+			void Visit(WfCoOperatorStatement* node) override;
+
+			void Visit(WfStateSwitchStatement* node) override;
+			void Visit(WfStateInvokeStatement* node) override;
+
+			void Visit(WfFormatExpression* node) override;
+
+			void Visit(WfBindExpression* node) override;
+			void Visit(WfNewCoroutineExpression* node) override;
+			void Visit(WfMixinCastExpression* node) override;
+			void Visit(WfExpectedTypeCastExpression* node) override;
+			void Visit(WfCoOperatorExpression* node) override;
+
+			void Visit(WfModuleUsingNameFragment* node) override;
+			void Visit(WfModuleUsingWildCardFragment* node) override;
+
+		public:
+			vl::Ptr<vl::glr::ParsingAstBase> ReadJson(vl::glr::json::JsonObject* json);
+		};
+	}
 }
 #endif
 

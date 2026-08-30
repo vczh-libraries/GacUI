@@ -201,6 +201,7 @@ ParserSymbolManager
 			public:
 				WString						name;
 				StringItems					astIncludes;
+				StringItems					jsonIncludes;
 				StringItems					syntaxIncludes;
 				StringItems					cppNss;
 				WString						headerGuard;
@@ -239,6 +240,7 @@ Utility
 }
 
 #endif
+
 
 /***********************************************************************
 .\AST\ASTSYMBOL.H
@@ -682,7 +684,9 @@ namespace vl
 			extern void			WriteAstCppFile					(AstDefFileGroup* group, const WString& astHeaderName, stream::StreamWriter& writer);
 
 			extern void			WriteAstUtilityHeaderFile		(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, const WString& extraNss, stream::StreamWriter& writer, Func<void(const WString&)> callback);
+			extern void			WriteAstUtilityHeaderFile		(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, const WString& guardPostfix, const collections::List<WString>& extraIncludes, const collections::List<WString>& extraNss, stream::StreamWriter& writer, Func<void(const WString&)> callback);
 			extern void			WriteAstUtilityCppFile			(AstDefFileGroup* group, const WString& utilityHeaderFile, const WString& extraNss, stream::StreamWriter& writer, Func<void(const WString&)> callback);
+			extern void			WriteAstUtilityCppFile			(AstDefFileGroup* group, const WString& utilityHeaderFile, const collections::List<WString>& extraNss, stream::StreamWriter& writer, Func<void(const WString&)> callback);
 			extern void			WriteParserUtilityHeaderFile	(AstSymbolManager& manager, Ptr<CppParserGenOutput> output, const WString& guardPostfix, stream::StreamWriter& writer, Func<void(const WString&)> callback);
 			extern void			WriteParserUtilityCppFile		(AstSymbolManager& manager, const WString& utilityHeaderFile, stream::StreamWriter& writer, Func<void(const WString&)> callback);
 
@@ -708,6 +712,7 @@ namespace vl
 }
 
 #endif
+
 
 /***********************************************************************
 .\LEXER\LEXERCPPGEN.H
@@ -1491,75 +1496,152 @@ From parser definition:RuleAst
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-#ifndef VCZH_PARSER2_PARSERGEN_RULEAST_AST_JSON_VISITOR
-#define VCZH_PARSER2_PARSERGEN_RULEAST_AST_JSON_VISITOR
+#ifndef VCZH_PARSER2_PARSERGEN_RULEAST_AST_JSON
+#define VCZH_PARSER2_PARSERGEN_RULEAST_AST_JSON
 
 
-namespace vl::glr::parsergen::json_visitor
+namespace vl::glr::parsergen
 {
-	/// <summary>A JSON visitor, overriding all abstract methods with AST to JSON serialization code.</summary>
-	class RuleAstVisitor
-		: public vl::glr::JsonVisitorBase
-		, protected virtual GlrCondition::IVisitor
-		, protected virtual GlrSyntax::IVisitor
-		, protected virtual GlrClause::IVisitor
+	namespace json_visitor
 	{
-	protected:
-		virtual void PrintFields(GlrAlternativeSyntax* node);
-		virtual void PrintFields(GlrAndCondition* node);
-		virtual void PrintFields(GlrAssignment* node);
-		virtual void PrintFields(GlrClause* node);
-		virtual void PrintFields(GlrCondition* node);
-		virtual void PrintFields(GlrCreateClause* node);
-		virtual void PrintFields(GlrLoopSyntax* node);
-		virtual void PrintFields(GlrNotCondition* node);
-		virtual void PrintFields(GlrOptionalSyntax* node);
-		virtual void PrintFields(GlrOrCondition* node);
-		virtual void PrintFields(GlrPartialClause* node);
-		virtual void PrintFields(GlrPushConditionSyntax* node);
-		virtual void PrintFields(GlrRefCondition* node);
-		virtual void PrintFields(GlrRefSyntax* node);
-		virtual void PrintFields(GlrReuseClause* node);
-		virtual void PrintFields(GlrRule* node);
-		virtual void PrintFields(GlrSequenceSyntax* node);
-		virtual void PrintFields(GlrSwitchItem* node);
-		virtual void PrintFields(GlrSyntax* node);
-		virtual void PrintFields(GlrSyntaxFile* node);
-		virtual void PrintFields(GlrTestConditionBranch* node);
-		virtual void PrintFields(GlrTestConditionSyntax* node);
-		virtual void PrintFields(GlrUseSyntax* node);
+		/// <summary>A JSON visitor, overriding all abstract methods with AST to JSON serialization code.</summary>
+		class RuleAstVisitor
+			: public vl::glr::JsonVisitorBase
+			, protected virtual GlrCondition::IVisitor
+			, protected virtual GlrSyntax::IVisitor
+			, protected virtual GlrClause::IVisitor
+		{
+		protected:
+			virtual void PrintFields(GlrAlternativeSyntax* node);
+			virtual void PrintFields(GlrAndCondition* node);
+			virtual void PrintFields(GlrAssignment* node);
+			virtual void PrintFields(GlrClause* node);
+			virtual void PrintFields(GlrCondition* node);
+			virtual void PrintFields(GlrCreateClause* node);
+			virtual void PrintFields(GlrLoopSyntax* node);
+			virtual void PrintFields(GlrNotCondition* node);
+			virtual void PrintFields(GlrOptionalSyntax* node);
+			virtual void PrintFields(GlrOrCondition* node);
+			virtual void PrintFields(GlrPartialClause* node);
+			virtual void PrintFields(GlrPushConditionSyntax* node);
+			virtual void PrintFields(GlrRefCondition* node);
+			virtual void PrintFields(GlrRefSyntax* node);
+			virtual void PrintFields(GlrReuseClause* node);
+			virtual void PrintFields(GlrRule* node);
+			virtual void PrintFields(GlrSequenceSyntax* node);
+			virtual void PrintFields(GlrSwitchItem* node);
+			virtual void PrintFields(GlrSyntax* node);
+			virtual void PrintFields(GlrSyntaxFile* node);
+			virtual void PrintFields(GlrTestConditionBranch* node);
+			virtual void PrintFields(GlrTestConditionSyntax* node);
+			virtual void PrintFields(GlrUseSyntax* node);
 
-	protected:
-		void Visit(GlrRefCondition* node) override;
-		void Visit(GlrNotCondition* node) override;
-		void Visit(GlrAndCondition* node) override;
-		void Visit(GlrOrCondition* node) override;
+		protected:
+			void Visit(GlrRefCondition* node) override;
+			void Visit(GlrNotCondition* node) override;
+			void Visit(GlrAndCondition* node) override;
+			void Visit(GlrOrCondition* node) override;
 
-		void Visit(GlrRefSyntax* node) override;
-		void Visit(GlrUseSyntax* node) override;
-		void Visit(GlrLoopSyntax* node) override;
-		void Visit(GlrOptionalSyntax* node) override;
-		void Visit(GlrSequenceSyntax* node) override;
-		void Visit(GlrAlternativeSyntax* node) override;
-		void Visit(GlrPushConditionSyntax* node) override;
-		void Visit(GlrTestConditionSyntax* node) override;
+			void Visit(GlrRefSyntax* node) override;
+			void Visit(GlrUseSyntax* node) override;
+			void Visit(GlrLoopSyntax* node) override;
+			void Visit(GlrOptionalSyntax* node) override;
+			void Visit(GlrSequenceSyntax* node) override;
+			void Visit(GlrAlternativeSyntax* node) override;
+			void Visit(GlrPushConditionSyntax* node) override;
+			void Visit(GlrTestConditionSyntax* node) override;
 
-		void Visit(GlrCreateClause* node) override;
-		void Visit(GlrPartialClause* node) override;
-		void Visit(GlrReuseClause* node) override;
+			void Visit(GlrCreateClause* node) override;
+			void Visit(GlrPartialClause* node) override;
+			void Visit(GlrReuseClause* node) override;
 
-	public:
-		RuleAstVisitor(vl::stream::StreamWriter& _writer);
+		public:
+			RuleAstVisitor(vl::stream::StreamWriter& _writer);
 
-		void Print(GlrCondition* node);
-		void Print(GlrSyntax* node);
-		void Print(GlrClause* node);
-		void Print(GlrSwitchItem* node);
-		void Print(GlrTestConditionBranch* node);
-		void Print(GlrAssignment* node);
-		void Print(GlrRule* node);
-		void Print(GlrSyntaxFile* node);
-	};
+			void Print(GlrCondition* node);
+			void Print(GlrSyntax* node);
+			void Print(GlrClause* node);
+			void Print(GlrSwitchItem* node);
+			void Print(GlrTestConditionBranch* node);
+			void Print(GlrAssignment* node);
+			void Print(GlrRule* node);
+			void Print(GlrSyntaxFile* node);
+		};
+	}
+
+	namespace json_reader
+	{
+		/// <summary>A JSON reader, overriding all abstract methods with JSON to AST deserialization code.</summary>
+		class RuleAstVisitor
+			: protected virtual GlrCondition::IVisitor
+			, protected virtual GlrSyntax::IVisitor
+			, protected virtual GlrClause::IVisitor
+		{
+		protected:
+			class JsonObjectScope
+			{
+			protected:
+				vl::collections::List<vl::glr::json::JsonObject*>& jsonObjects;
+
+			public:
+				JsonObjectScope(vl::collections::List<vl::glr::json::JsonObject*>& _jsonObjects, vl::glr::json::JsonObject* json);
+				~JsonObjectScope();
+			};
+
+			vl::collections::List<vl::glr::json::JsonObject*> jsonObjects;
+			vl::glr::json::JsonObject* CurrentObject();
+			vl::glr::json::JsonNode* FindField(const vl::WString& name);
+			bool IsNull(vl::glr::json::JsonNode* value);
+			vl::WString ReadType(vl::glr::json::JsonObject* json);
+			void ValidateFields(vl::glr::json::JsonObject* json, const vl::WString& typeName);
+
+			virtual void FillFields(GlrAlternativeSyntax* node);
+			virtual void FillFields(GlrAndCondition* node);
+			virtual void FillFields(GlrAssignment* node);
+			virtual void FillFields(GlrClause* node);
+			virtual void FillFields(GlrCondition* node);
+			virtual void FillFields(GlrCreateClause* node);
+			virtual void FillFields(GlrLoopSyntax* node);
+			virtual void FillFields(GlrNotCondition* node);
+			virtual void FillFields(GlrOptionalSyntax* node);
+			virtual void FillFields(GlrOrCondition* node);
+			virtual void FillFields(GlrPartialClause* node);
+			virtual void FillFields(GlrPushConditionSyntax* node);
+			virtual void FillFields(GlrRefCondition* node);
+			virtual void FillFields(GlrRefSyntax* node);
+			virtual void FillFields(GlrReuseClause* node);
+			virtual void FillFields(GlrRule* node);
+			virtual void FillFields(GlrSequenceSyntax* node);
+			virtual void FillFields(GlrSwitchItem* node);
+			virtual void FillFields(GlrSyntax* node);
+			virtual void FillFields(GlrSyntaxFile* node);
+			virtual void FillFields(GlrTestConditionBranch* node);
+			virtual void FillFields(GlrTestConditionSyntax* node);
+			virtual void FillFields(GlrUseSyntax* node);
+
+		protected:
+			void Visit(GlrRefCondition* node) override;
+			void Visit(GlrNotCondition* node) override;
+			void Visit(GlrAndCondition* node) override;
+			void Visit(GlrOrCondition* node) override;
+
+			void Visit(GlrRefSyntax* node) override;
+			void Visit(GlrUseSyntax* node) override;
+			void Visit(GlrLoopSyntax* node) override;
+			void Visit(GlrOptionalSyntax* node) override;
+			void Visit(GlrSequenceSyntax* node) override;
+			void Visit(GlrAlternativeSyntax* node) override;
+			void Visit(GlrPushConditionSyntax* node) override;
+			void Visit(GlrTestConditionSyntax* node) override;
+
+			void Visit(GlrCreateClause* node) override;
+			void Visit(GlrPartialClause* node) override;
+			void Visit(GlrReuseClause* node) override;
+
+		public:
+			vl::Ptr<vl::glr::ParsingAstBase> ReadJson(vl::glr::json::JsonObject* json);
+		};
+	}
 }
 #endif
 
@@ -1939,37 +2021,80 @@ From parser definition:TypeAst
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-#ifndef VCZH_PARSER2_PARSERGEN_TYPEAST_AST_JSON_VISITOR
-#define VCZH_PARSER2_PARSERGEN_TYPEAST_AST_JSON_VISITOR
+#ifndef VCZH_PARSER2_PARSERGEN_TYPEAST_AST_JSON
+#define VCZH_PARSER2_PARSERGEN_TYPEAST_AST_JSON
 
 
-namespace vl::glr::parsergen::json_visitor
+namespace vl::glr::parsergen
 {
-	/// <summary>A JSON visitor, overriding all abstract methods with AST to JSON serialization code.</summary>
-	class TypeAstVisitor
-		: public vl::glr::JsonVisitorBase
-		, protected virtual GlrType::IVisitor
+	namespace json_visitor
 	{
-	protected:
-		virtual void PrintFields(GlrAstFile* node);
-		virtual void PrintFields(GlrClass* node);
-		virtual void PrintFields(GlrClassProp* node);
-		virtual void PrintFields(GlrEnum* node);
-		virtual void PrintFields(GlrEnumItem* node);
-		virtual void PrintFields(GlrType* node);
+		/// <summary>A JSON visitor, overriding all abstract methods with AST to JSON serialization code.</summary>
+		class TypeAstVisitor
+			: public vl::glr::JsonVisitorBase
+			, protected virtual GlrType::IVisitor
+		{
+		protected:
+			virtual void PrintFields(GlrAstFile* node);
+			virtual void PrintFields(GlrClass* node);
+			virtual void PrintFields(GlrClassProp* node);
+			virtual void PrintFields(GlrEnum* node);
+			virtual void PrintFields(GlrEnumItem* node);
+			virtual void PrintFields(GlrType* node);
 
-	protected:
-		void Visit(GlrEnum* node) override;
-		void Visit(GlrClass* node) override;
+		protected:
+			void Visit(GlrEnum* node) override;
+			void Visit(GlrClass* node) override;
 
-	public:
-		TypeAstVisitor(vl::stream::StreamWriter& _writer);
+		public:
+			TypeAstVisitor(vl::stream::StreamWriter& _writer);
 
-		void Print(GlrType* node);
-		void Print(GlrEnumItem* node);
-		void Print(GlrClassProp* node);
-		void Print(GlrAstFile* node);
-	};
+			void Print(GlrType* node);
+			void Print(GlrEnumItem* node);
+			void Print(GlrClassProp* node);
+			void Print(GlrAstFile* node);
+		};
+	}
+
+	namespace json_reader
+	{
+		/// <summary>A JSON reader, overriding all abstract methods with JSON to AST deserialization code.</summary>
+		class TypeAstVisitor
+			: protected virtual GlrType::IVisitor
+		{
+		protected:
+			class JsonObjectScope
+			{
+			protected:
+				vl::collections::List<vl::glr::json::JsonObject*>& jsonObjects;
+
+			public:
+				JsonObjectScope(vl::collections::List<vl::glr::json::JsonObject*>& _jsonObjects, vl::glr::json::JsonObject* json);
+				~JsonObjectScope();
+			};
+
+			vl::collections::List<vl::glr::json::JsonObject*> jsonObjects;
+			vl::glr::json::JsonObject* CurrentObject();
+			vl::glr::json::JsonNode* FindField(const vl::WString& name);
+			bool IsNull(vl::glr::json::JsonNode* value);
+			vl::WString ReadType(vl::glr::json::JsonObject* json);
+			void ValidateFields(vl::glr::json::JsonObject* json, const vl::WString& typeName);
+
+			virtual void FillFields(GlrAstFile* node);
+			virtual void FillFields(GlrClass* node);
+			virtual void FillFields(GlrClassProp* node);
+			virtual void FillFields(GlrEnum* node);
+			virtual void FillFields(GlrEnumItem* node);
+			virtual void FillFields(GlrType* node);
+
+		protected:
+			void Visit(GlrEnum* node) override;
+			void Visit(GlrClass* node) override;
+
+		public:
+			vl::Ptr<vl::glr::ParsingAstBase> ReadJson(vl::glr::json::JsonObject* json);
+		};
+	}
 }
 #endif
 

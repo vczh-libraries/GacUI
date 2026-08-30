@@ -12403,512 +12403,1311 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl::presentation::remoteprotocol::json_visitor
+namespace vl::presentation::remoteprotocol
 {
-	void AstVisitor::PrintFields(GuiRpArrayMapType* node)
+	namespace json_visitor
 	{
-		BeginField(vl::WString::Unmanaged(L"element"));
-		WriteToken(node->element);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"keyField"));
-		WriteToken(node->keyField);
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpArrayType* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"element"));
-		Print(node->element.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpAttribute* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"cppType"));
-		WriteToken(node->cppType);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"attributes"));
-		BeginArray();
-		for (auto&& listItem : node->attributes)
+		void AstVisitor::PrintFields(GuiRpArrayMapType* node)
 		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
+			BeginField(vl::WString::Unmanaged(L"element"));
+			WriteToken(node->element);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"keyField"));
+			WriteToken(node->keyField);
+			EndField();
 		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpEnumDecl* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"members"));
-		BeginArray();
-		for (auto&& listItem : node->members)
+		void AstVisitor::PrintFields(GuiRpArrayType* node)
 		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
+			BeginField(vl::WString::Unmanaged(L"element"));
+			Print(node->element.Obj());
+			EndField();
 		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpEnumMember* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpEventDecl* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"request"));
-		Print(node->request.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpEventRequest* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpMapType* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"element"));
-		Print(node->element.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"keyType"));
-		Print(node->keyType.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpMessageDecl* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"request"));
-		Print(node->request.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"response"));
-		Print(node->response.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpMessageRequest* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpMessageResponse* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpOptionalType* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"element"));
-		Print(node->element.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpPrimitiveType* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"type"));
-		switch (node->type)
+		void AstVisitor::PrintFields(GuiRpAttribute* node)
 		{
-		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Binary:
-			WriteString(vl::WString::Unmanaged(L"Binary"));
-			break;
-		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Boolean:
-			WriteString(vl::WString::Unmanaged(L"Boolean"));
-			break;
-		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Char:
-			WriteString(vl::WString::Unmanaged(L"Char"));
-			break;
-		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Color:
-			WriteString(vl::WString::Unmanaged(L"Color"));
-			break;
-		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Double:
-			WriteString(vl::WString::Unmanaged(L"Double"));
-			break;
-		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Float:
-			WriteString(vl::WString::Unmanaged(L"Float"));
-			break;
-		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Integer:
-			WriteString(vl::WString::Unmanaged(L"Integer"));
-			break;
-		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Key:
-			WriteString(vl::WString::Unmanaged(L"Key"));
-			break;
-		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::String:
-			WriteString(vl::WString::Unmanaged(L"String"));
-			break;
-		default:
-			WriteNull();
+			BeginField(vl::WString::Unmanaged(L"cppType"));
+			WriteToken(node->cppType);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
 		}
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpReferenceType* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpSchema* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"declarations"));
-		BeginArray();
-		for (auto&& listItem : node->declarations)
+		void AstVisitor::PrintFields(GuiRpDeclaration* node)
 		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
+			BeginField(vl::WString::Unmanaged(L"attributes"));
+			BeginArray();
+			for (auto&& listItem : node->attributes)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
 		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpStructDecl* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"members"));
-		BeginArray();
-		for (auto&& listItem : node->members)
+		void AstVisitor::PrintFields(GuiRpEnumDecl* node)
 		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
+			BeginField(vl::WString::Unmanaged(L"members"));
+			BeginArray();
+			for (auto&& listItem : node->members)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
 		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		switch (node->type)
+		void AstVisitor::PrintFields(GuiRpEnumMember* node)
 		{
-		case vl::presentation::remoteprotocol::GuiRpStructType::Class:
-			WriteString(vl::WString::Unmanaged(L"Class"));
-			break;
-		case vl::presentation::remoteprotocol::GuiRpStructType::Struct:
-			WriteString(vl::WString::Unmanaged(L"Struct"));
-			break;
-		default:
-			WriteNull();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
 		}
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpStructMember* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpType* node)
-	{
-	}
-	void AstVisitor::PrintFields(GuiRpUnionDecl* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"members"));
-		BeginArray();
-		for (auto&& listItem : node->members)
+		void AstVisitor::PrintFields(GuiRpEventDecl* node)
 		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
+			BeginField(vl::WString::Unmanaged(L"request"));
+			Print(node->request.Obj());
+			EndField();
 		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(GuiRpUnionMember* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
+		void AstVisitor::PrintFields(GuiRpEventRequest* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(GuiRpMapType* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"element"));
+			Print(node->element.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"keyType"));
+			Print(node->keyType.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(GuiRpMessageDecl* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"request"));
+			Print(node->request.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"response"));
+			Print(node->response.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(GuiRpMessageRequest* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(GuiRpMessageResponse* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(GuiRpOptionalType* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"element"));
+			Print(node->element.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(GuiRpPrimitiveType* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"type"));
+			switch (node->type)
+			{
+			case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Binary:
+				WriteString(vl::WString::Unmanaged(L"Binary"));
+				break;
+			case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Boolean:
+				WriteString(vl::WString::Unmanaged(L"Boolean"));
+				break;
+			case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Char:
+				WriteString(vl::WString::Unmanaged(L"Char"));
+				break;
+			case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Color:
+				WriteString(vl::WString::Unmanaged(L"Color"));
+				break;
+			case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Double:
+				WriteString(vl::WString::Unmanaged(L"Double"));
+				break;
+			case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Float:
+				WriteString(vl::WString::Unmanaged(L"Float"));
+				break;
+			case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Integer:
+				WriteString(vl::WString::Unmanaged(L"Integer"));
+				break;
+			case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Key:
+				WriteString(vl::WString::Unmanaged(L"Key"));
+				break;
+			case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::String:
+				WriteString(vl::WString::Unmanaged(L"String"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+		}
+		void AstVisitor::PrintFields(GuiRpReferenceType* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+		}
+		void AstVisitor::PrintFields(GuiRpSchema* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"declarations"));
+			BeginArray();
+			for (auto&& listItem : node->declarations)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+		}
+		void AstVisitor::PrintFields(GuiRpStructDecl* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"members"));
+			BeginArray();
+			for (auto&& listItem : node->members)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"type"));
+			switch (node->type)
+			{
+			case vl::presentation::remoteprotocol::GuiRpStructType::Class:
+				WriteString(vl::WString::Unmanaged(L"Class"));
+				break;
+			case vl::presentation::remoteprotocol::GuiRpStructType::Struct:
+				WriteString(vl::WString::Unmanaged(L"Struct"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+		}
+		void AstVisitor::PrintFields(GuiRpStructMember* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(GuiRpType* node)
+		{
+		}
+		void AstVisitor::PrintFields(GuiRpUnionDecl* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"members"));
+			BeginArray();
+			for (auto&& listItem : node->members)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+		}
+		void AstVisitor::PrintFields(GuiRpUnionMember* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+		}
+
+		void AstVisitor::Visit(GuiRpPrimitiveType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"PrimitiveType"), node);
+			PrintFields(static_cast<GuiRpType*>(node));
+			PrintFields(static_cast<GuiRpPrimitiveType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(GuiRpReferenceType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ReferenceType"), node);
+			PrintFields(static_cast<GuiRpType*>(node));
+			PrintFields(static_cast<GuiRpReferenceType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(GuiRpOptionalType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"OptionalType"), node);
+			PrintFields(static_cast<GuiRpType*>(node));
+			PrintFields(static_cast<GuiRpOptionalType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(GuiRpArrayType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ArrayType"), node);
+			PrintFields(static_cast<GuiRpType*>(node));
+			PrintFields(static_cast<GuiRpArrayType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(GuiRpArrayMapType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ArrayMapType"), node);
+			PrintFields(static_cast<GuiRpType*>(node));
+			PrintFields(static_cast<GuiRpArrayMapType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(GuiRpMapType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"MapType"), node);
+			PrintFields(static_cast<GuiRpType*>(node));
+			PrintFields(static_cast<GuiRpMapType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(GuiRpEnumDecl* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"EnumDecl"), node);
+			PrintFields(static_cast<GuiRpDeclaration*>(node));
+			PrintFields(static_cast<GuiRpEnumDecl*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(GuiRpUnionDecl* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"UnionDecl"), node);
+			PrintFields(static_cast<GuiRpDeclaration*>(node));
+			PrintFields(static_cast<GuiRpUnionDecl*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(GuiRpStructDecl* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"StructDecl"), node);
+			PrintFields(static_cast<GuiRpDeclaration*>(node));
+			PrintFields(static_cast<GuiRpStructDecl*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(GuiRpMessageDecl* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"MessageDecl"), node);
+			PrintFields(static_cast<GuiRpDeclaration*>(node));
+			PrintFields(static_cast<GuiRpMessageDecl*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(GuiRpEventDecl* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"EventDecl"), node);
+			PrintFields(static_cast<GuiRpDeclaration*>(node));
+			PrintFields(static_cast<GuiRpEventDecl*>(node));
+			EndObject();
+		}
+
+		AstVisitor::AstVisitor(vl::stream::StreamWriter& _writer)
+			: vl::glr::JsonVisitorBase(_writer)
+		{
+		}
+
+		void AstVisitor::Print(GuiRpType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			node->Accept(static_cast<GuiRpType::IVisitor*>(this));
+		}
+
+		void AstVisitor::Print(GuiRpDeclaration* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			node->Accept(static_cast<GuiRpDeclaration::IVisitor*>(this));
+		}
+
+		void AstVisitor::Print(GuiRpAttribute* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"Attribute"), node);
+			PrintFields(static_cast<GuiRpAttribute*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(GuiRpEnumMember* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"EnumMember"), node);
+			PrintFields(static_cast<GuiRpEnumMember*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(GuiRpUnionMember* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"UnionMember"), node);
+			PrintFields(static_cast<GuiRpUnionMember*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(GuiRpStructMember* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"StructMember"), node);
+			PrintFields(static_cast<GuiRpStructMember*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(GuiRpMessageRequest* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"MessageRequest"), node);
+			PrintFields(static_cast<GuiRpMessageRequest*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(GuiRpMessageResponse* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"MessageResponse"), node);
+			PrintFields(static_cast<GuiRpMessageResponse*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(GuiRpEventRequest* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"EventRequest"), node);
+			PrintFields(static_cast<GuiRpEventRequest*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(GuiRpSchema* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"Schema"), node);
+			PrintFields(static_cast<GuiRpSchema*>(node));
+			EndObject();
+		}
+
 	}
 
-	void AstVisitor::Visit(GuiRpPrimitiveType* node)
+	namespace json_reader
 	{
-		if (!node)
+		AstVisitor::JsonObjectScope::JsonObjectScope(vl::collections::List<vl::glr::json::JsonObject*>& _jsonObjects, vl::glr::json::JsonObject* json)
+			: jsonObjects(_jsonObjects)
 		{
-			WriteNull();
-			return;
+			jsonObjects.Add(json);
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"PrimitiveType"), node);
-		PrintFields(static_cast<GuiRpType*>(node));
-		PrintFields(static_cast<GuiRpPrimitiveType*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(GuiRpReferenceType* node)
-	{
-		if (!node)
+		AstVisitor::JsonObjectScope::~JsonObjectScope()
 		{
-			WriteNull();
-			return;
+			jsonObjects.RemoveAt(jsonObjects.Count() - 1);
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ReferenceType"), node);
-		PrintFields(static_cast<GuiRpType*>(node));
-		PrintFields(static_cast<GuiRpReferenceType*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(GuiRpOptionalType* node)
-	{
-		if (!node)
+		vl::glr::json::JsonObject* AstVisitor::CurrentObject()
 		{
-			WriteNull();
-			return;
+			return jsonObjects[jsonObjects.Count() - 1];
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"OptionalType"), node);
-		PrintFields(static_cast<GuiRpType*>(node));
-		PrintFields(static_cast<GuiRpOptionalType*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(GuiRpArrayType* node)
-	{
-		if (!node)
+		vl::glr::json::JsonNode* AstVisitor::FindField(const vl::WString& name)
 		{
-			WriteNull();
-			return;
+			for (auto field : CurrentObject()->fields)
+			{
+				if (field && field->name.value == name) return field->value.Obj();
+			}
+			return nullptr;
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ArrayType"), node);
-		PrintFields(static_cast<GuiRpType*>(node));
-		PrintFields(static_cast<GuiRpArrayType*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(GuiRpArrayMapType* node)
-	{
-		if (!node)
+		bool AstVisitor::IsNull(vl::glr::json::JsonNode* value)
 		{
-			WriteNull();
-			return;
+			auto literal = dynamic_cast<vl::glr::json::JsonLiteral*>(value);
+			return literal && literal->value == vl::glr::json::JsonLiteralValue::Null;
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ArrayMapType"), node);
-		PrintFields(static_cast<GuiRpType*>(node));
-		PrintFields(static_cast<GuiRpArrayMapType*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(GuiRpMapType* node)
-	{
-		if (!node)
+		vl::WString AstVisitor::ReadType(vl::glr::json::JsonObject* json)
 		{
-			WriteNull();
-			return;
+			if (!json) throw vl::Exception(L"AST JSON object cannot be null.");
+			bool typeFound = false;
+			vl::WString typeName;
+			for (auto field : json->fields)
+			{
+				if (field && field->name.value == L"$ast")
+				{
+					if (typeFound) throw vl::Exception(L"AST JSON object contains duplicate \"$ast\" fields.");
+					typeFound = true;
+					auto jsonString = field->value.Cast<vl::glr::json::JsonString>();
+					if (!jsonString) throw vl::Exception(L"AST JSON field \"$ast\" must be a string.");
+					typeName = jsonString->content.value;
+				}
+			}
+			if (!typeFound) throw vl::Exception(L"AST JSON object is missing field \"$ast\".");
+			return typeName;
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"MapType"), node);
-		PrintFields(static_cast<GuiRpType*>(node));
-		PrintFields(static_cast<GuiRpMapType*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(GuiRpEnumDecl* node)
-	{
-		if (!node)
+		void AstVisitor::ValidateFields(vl::glr::json::JsonObject* json, const vl::WString& typeName)
 		{
-			WriteNull();
-			return;
+			vl::collections::List<vl::WString> fieldNames;
+			for (auto field : json->fields)
+			{
+				if (!field || !field->value) throw vl::Exception(L"AST JSON object contains an invalid field.");
+				auto name = field->name.value;
+				if (fieldNames.Contains(name)) throw vl::Exception(L"AST JSON object contains duplicate field \"" + name + L"\".");
+				fieldNames.Add(name);
+				bool fieldFound = name == L"$ast";
+				if (typeName == L"PrimitiveType")
+				{
+					fieldFound = fieldFound || name == L"type";
+				}
+				else if (typeName == L"ReferenceType")
+				{
+					fieldFound = fieldFound || name == L"name";
+				}
+				else if (typeName == L"OptionalType")
+				{
+					fieldFound = fieldFound || name == L"element";
+				}
+				else if (typeName == L"ArrayType")
+				{
+					fieldFound = fieldFound || name == L"element";
+				}
+				else if (typeName == L"ArrayMapType")
+				{
+					fieldFound = fieldFound || name == L"element";
+					fieldFound = fieldFound || name == L"keyField";
+				}
+				else if (typeName == L"MapType")
+				{
+					fieldFound = fieldFound || name == L"element";
+					fieldFound = fieldFound || name == L"keyType";
+				}
+				else if (typeName == L"Attribute")
+				{
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"cppType";
+				}
+				else if (typeName == L"EnumMember")
+				{
+					fieldFound = fieldFound || name == L"name";
+				}
+				else if (typeName == L"EnumDecl")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"members";
+				}
+				else if (typeName == L"UnionMember")
+				{
+					fieldFound = fieldFound || name == L"name";
+				}
+				else if (typeName == L"UnionDecl")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"members";
+				}
+				else if (typeName == L"StructMember")
+				{
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"type";
+				}
+				else if (typeName == L"StructDecl")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"type";
+					fieldFound = fieldFound || name == L"members";
+				}
+				else if (typeName == L"MessageRequest")
+				{
+					fieldFound = fieldFound || name == L"type";
+				}
+				else if (typeName == L"MessageResponse")
+				{
+					fieldFound = fieldFound || name == L"type";
+				}
+				else if (typeName == L"MessageDecl")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"request";
+					fieldFound = fieldFound || name == L"response";
+				}
+				else if (typeName == L"EventRequest")
+				{
+					fieldFound = fieldFound || name == L"type";
+				}
+				else if (typeName == L"EventDecl")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"request";
+				}
+				else if (typeName == L"Schema")
+				{
+					fieldFound = fieldFound || name == L"declarations";
+				}
+				if (!fieldFound) throw vl::Exception(L"AST JSON object contains unknown field \"" + name + L"\" for type \"" + typeName + L"\".");
+			}
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"EnumDecl"), node);
-		PrintFields(static_cast<GuiRpDeclaration*>(node));
-		PrintFields(static_cast<GuiRpEnumDecl*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(GuiRpUnionDecl* node)
-	{
-		if (!node)
+		void AstVisitor::FillFields(GuiRpArrayMapType* node)
 		{
-			WriteNull();
-			return;
+			FillFields(static_cast<GuiRpType*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"element")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"element\" must be a string.");
+				node->element.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"keyField")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"keyField\" must be a string.");
+				node->keyField.value = jsonString->content.value;
+			}
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"UnionDecl"), node);
-		PrintFields(static_cast<GuiRpDeclaration*>(node));
-		PrintFields(static_cast<GuiRpUnionDecl*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(GuiRpStructDecl* node)
-	{
-		if (!node)
+		void AstVisitor::FillFields(GuiRpArrayType* node)
 		{
-			WriteNull();
-			return;
+			FillFields(static_cast<GuiRpType*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"element")))
+			{
+				if (IsNull(value))
+				{
+					node->element = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<GuiRpType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"element\" contains an incompatible AST type.");
+					node->element = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"element\" must be an object or null.");
+			}
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"StructDecl"), node);
-		PrintFields(static_cast<GuiRpDeclaration*>(node));
-		PrintFields(static_cast<GuiRpStructDecl*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(GuiRpMessageDecl* node)
-	{
-		if (!node)
+		void AstVisitor::FillFields(GuiRpAttribute* node)
 		{
-			WriteNull();
-			return;
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"cppType")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"cppType\" must be a string.");
+				node->cppType.value = jsonString->content.value;
+			}
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"MessageDecl"), node);
-		PrintFields(static_cast<GuiRpDeclaration*>(node));
-		PrintFields(static_cast<GuiRpMessageDecl*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(GuiRpEventDecl* node)
-	{
-		if (!node)
+		void AstVisitor::FillFields(GuiRpDeclaration* node)
 		{
-			WriteNull();
-			return;
+			if (auto value = FindField(vl::WString::Unmanaged(L"attributes")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"attributes\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->attributes.Add(vl::Ptr<GuiRpAttribute>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<GuiRpAttribute>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"attributes\" contains an incompatible AST type.");
+						node->attributes.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"attributes\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"EventDecl"), node);
-		PrintFields(static_cast<GuiRpDeclaration*>(node));
-		PrintFields(static_cast<GuiRpEventDecl*>(node));
-		EndObject();
-	}
 
-	AstVisitor::AstVisitor(vl::stream::StreamWriter& _writer)
-		: vl::glr::JsonVisitorBase(_writer)
-	{
-	}
-
-	void AstVisitor::Print(GuiRpType* node)
-	{
-		if (!node)
+		void AstVisitor::FillFields(GuiRpEnumDecl* node)
 		{
-			WriteNull();
-			return;
+			FillFields(static_cast<GuiRpDeclaration*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"members")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"members\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->members.Add(vl::Ptr<GuiRpEnumMember>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<GuiRpEnumMember>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"members\" contains an incompatible AST type.");
+						node->members.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"members\" contains a non-object, non-null item.");
+				}
+			}
 		}
-		node->Accept(static_cast<GuiRpType::IVisitor*>(this));
-	}
 
-	void AstVisitor::Print(GuiRpDeclaration* node)
-	{
-		if (!node)
+		void AstVisitor::FillFields(GuiRpEnumMember* node)
 		{
-			WriteNull();
-			return;
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
 		}
-		node->Accept(static_cast<GuiRpDeclaration::IVisitor*>(this));
-	}
 
-	void AstVisitor::Print(GuiRpAttribute* node)
-	{
-		if (!node)
+		void AstVisitor::FillFields(GuiRpEventDecl* node)
 		{
-			WriteNull();
-			return;
+			FillFields(static_cast<GuiRpDeclaration*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"request")))
+			{
+				if (IsNull(value))
+				{
+					node->request = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<GuiRpEventRequest>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"request\" contains an incompatible AST type.");
+					node->request = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"request\" must be an object or null.");
+			}
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"Attribute"), node);
-		PrintFields(static_cast<GuiRpAttribute*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Print(GuiRpEnumMember* node)
-	{
-		if (!node)
+		void AstVisitor::FillFields(GuiRpEventRequest* node)
 		{
-			WriteNull();
-			return;
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<GuiRpType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"EnumMember"), node);
-		PrintFields(static_cast<GuiRpEnumMember*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Print(GuiRpUnionMember* node)
-	{
-		if (!node)
+		void AstVisitor::FillFields(GuiRpMapType* node)
 		{
-			WriteNull();
-			return;
+			FillFields(static_cast<GuiRpType*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"element")))
+			{
+				if (IsNull(value))
+				{
+					node->element = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<GuiRpType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"element\" contains an incompatible AST type.");
+					node->element = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"element\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"keyType")))
+			{
+				if (IsNull(value))
+				{
+					node->keyType = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<GuiRpType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"keyType\" contains an incompatible AST type.");
+					node->keyType = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"keyType\" must be an object or null.");
+			}
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"UnionMember"), node);
-		PrintFields(static_cast<GuiRpUnionMember*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Print(GuiRpStructMember* node)
-	{
-		if (!node)
+		void AstVisitor::FillFields(GuiRpMessageDecl* node)
 		{
-			WriteNull();
-			return;
+			FillFields(static_cast<GuiRpDeclaration*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"request")))
+			{
+				if (IsNull(value))
+				{
+					node->request = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<GuiRpMessageRequest>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"request\" contains an incompatible AST type.");
+					node->request = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"request\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"response")))
+			{
+				if (IsNull(value))
+				{
+					node->response = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<GuiRpMessageResponse>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"response\" contains an incompatible AST type.");
+					node->response = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"response\" must be an object or null.");
+			}
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"StructMember"), node);
-		PrintFields(static_cast<GuiRpStructMember*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Print(GuiRpMessageRequest* node)
-	{
-		if (!node)
+		void AstVisitor::FillFields(GuiRpMessageRequest* node)
 		{
-			WriteNull();
-			return;
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<GuiRpType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"MessageRequest"), node);
-		PrintFields(static_cast<GuiRpMessageRequest*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Print(GuiRpMessageResponse* node)
-	{
-		if (!node)
+		void AstVisitor::FillFields(GuiRpMessageResponse* node)
 		{
-			WriteNull();
-			return;
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<GuiRpType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"MessageResponse"), node);
-		PrintFields(static_cast<GuiRpMessageResponse*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Print(GuiRpEventRequest* node)
-	{
-		if (!node)
+		void AstVisitor::FillFields(GuiRpOptionalType* node)
 		{
-			WriteNull();
-			return;
+			FillFields(static_cast<GuiRpType*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"element")))
+			{
+				if (IsNull(value))
+				{
+					node->element = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<GuiRpType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"element\" contains an incompatible AST type.");
+					node->element = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"element\" must be an object or null.");
+			}
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"EventRequest"), node);
-		PrintFields(static_cast<GuiRpEventRequest*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Print(GuiRpSchema* node)
-	{
-		if (!node)
+		void AstVisitor::FillFields(GuiRpPrimitiveType* node)
 		{
-			WriteNull();
-			return;
+			FillFields(static_cast<GuiRpType*>(node));
+			node->type = GuiRpPrimitiveTypes::Boolean;
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"type\" must be a string.");
+				if (jsonString->content.value == L"Boolean") node->type = GuiRpPrimitiveTypes::Boolean;
+				else if (jsonString->content.value == L"Integer") node->type = GuiRpPrimitiveTypes::Integer;
+				else if (jsonString->content.value == L"Float") node->type = GuiRpPrimitiveTypes::Float;
+				else if (jsonString->content.value == L"Double") node->type = GuiRpPrimitiveTypes::Double;
+				else if (jsonString->content.value == L"String") node->type = GuiRpPrimitiveTypes::String;
+				else if (jsonString->content.value == L"Char") node->type = GuiRpPrimitiveTypes::Char;
+				else if (jsonString->content.value == L"Key") node->type = GuiRpPrimitiveTypes::Key;
+				else if (jsonString->content.value == L"Color") node->type = GuiRpPrimitiveTypes::Color;
+				else if (jsonString->content.value == L"Binary") node->type = GuiRpPrimitiveTypes::Binary;
+				else throw vl::Exception(L"AST JSON field \"type\" contains an unknown enum item.");
+			}
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"Schema"), node);
-		PrintFields(static_cast<GuiRpSchema*>(node));
-		EndObject();
-	}
 
+		void AstVisitor::FillFields(GuiRpReferenceType* node)
+		{
+			FillFields(static_cast<GuiRpType*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(GuiRpSchema* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"declarations")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"declarations\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->declarations.Add(vl::Ptr<GuiRpDeclaration>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<GuiRpDeclaration>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"declarations\" contains an incompatible AST type.");
+						node->declarations.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"declarations\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(GuiRpStructDecl* node)
+		{
+			FillFields(static_cast<GuiRpDeclaration*>(node));
+			node->type = GuiRpStructType::Struct;
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"type\" must be a string.");
+				if (jsonString->content.value == L"Struct") node->type = GuiRpStructType::Struct;
+				else if (jsonString->content.value == L"Class") node->type = GuiRpStructType::Class;
+				else throw vl::Exception(L"AST JSON field \"type\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"members")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"members\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->members.Add(vl::Ptr<GuiRpStructMember>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<GuiRpStructMember>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"members\" contains an incompatible AST type.");
+						node->members.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"members\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(GuiRpStructMember* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<GuiRpType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(GuiRpType* node)
+		{
+		}
+
+		void AstVisitor::FillFields(GuiRpUnionDecl* node)
+		{
+			FillFields(static_cast<GuiRpDeclaration*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"members")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"members\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->members.Add(vl::Ptr<GuiRpUnionMember>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<GuiRpUnionMember>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"members\" contains an incompatible AST type.");
+						node->members.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"members\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(GuiRpUnionMember* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::Visit(GuiRpPrimitiveType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(GuiRpReferenceType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(GuiRpOptionalType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(GuiRpArrayType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(GuiRpArrayMapType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(GuiRpMapType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(GuiRpEnumDecl* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(GuiRpUnionDecl* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(GuiRpStructDecl* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(GuiRpMessageDecl* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(GuiRpEventDecl* node)
+		{
+			FillFields(node);
+		}
+
+		vl::Ptr<vl::glr::ParsingAstBase> AstVisitor::ReadJson(vl::glr::json::JsonObject* json)
+		{
+			auto typeName = ReadType(json);
+			if (typeName == L"PrimitiveType")
+			{
+				auto node = vl::Ptr(new GuiRpPrimitiveType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<GuiRpType*>(node.Obj())->Accept(static_cast<GuiRpType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ReferenceType")
+			{
+				auto node = vl::Ptr(new GuiRpReferenceType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<GuiRpType*>(node.Obj())->Accept(static_cast<GuiRpType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"OptionalType")
+			{
+				auto node = vl::Ptr(new GuiRpOptionalType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<GuiRpType*>(node.Obj())->Accept(static_cast<GuiRpType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ArrayType")
+			{
+				auto node = vl::Ptr(new GuiRpArrayType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<GuiRpType*>(node.Obj())->Accept(static_cast<GuiRpType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ArrayMapType")
+			{
+				auto node = vl::Ptr(new GuiRpArrayMapType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<GuiRpType*>(node.Obj())->Accept(static_cast<GuiRpType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"MapType")
+			{
+				auto node = vl::Ptr(new GuiRpMapType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<GuiRpType*>(node.Obj())->Accept(static_cast<GuiRpType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"Attribute")
+			{
+				auto node = vl::Ptr(new GuiRpAttribute);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"EnumMember")
+			{
+				auto node = vl::Ptr(new GuiRpEnumMember);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"EnumDecl")
+			{
+				auto node = vl::Ptr(new GuiRpEnumDecl);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<GuiRpDeclaration*>(node.Obj())->Accept(static_cast<GuiRpDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"UnionMember")
+			{
+				auto node = vl::Ptr(new GuiRpUnionMember);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"UnionDecl")
+			{
+				auto node = vl::Ptr(new GuiRpUnionDecl);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<GuiRpDeclaration*>(node.Obj())->Accept(static_cast<GuiRpDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"StructMember")
+			{
+				auto node = vl::Ptr(new GuiRpStructMember);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"StructDecl")
+			{
+				auto node = vl::Ptr(new GuiRpStructDecl);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<GuiRpDeclaration*>(node.Obj())->Accept(static_cast<GuiRpDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"MessageRequest")
+			{
+				auto node = vl::Ptr(new GuiRpMessageRequest);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"MessageResponse")
+			{
+				auto node = vl::Ptr(new GuiRpMessageResponse);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"MessageDecl")
+			{
+				auto node = vl::Ptr(new GuiRpMessageDecl);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<GuiRpDeclaration*>(node.Obj())->Accept(static_cast<GuiRpDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"EventRequest")
+			{
+				auto node = vl::Ptr(new GuiRpEventRequest);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"EventDecl")
+			{
+				auto node = vl::Ptr(new GuiRpEventDecl);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<GuiRpDeclaration*>(node.Obj())->Accept(static_cast<GuiRpDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"Schema")
+			{
+				auto node = vl::Ptr(new GuiRpSchema);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			throw vl::Exception(L"AST JSON field \"$ast\" contains an unknown or abstract type \"" + typeName + L"\".");
+		}
+	}
 }
 
 

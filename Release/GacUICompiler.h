@@ -1455,69 +1455,138 @@ From parser definition:Ast
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_REMOTEPROTOCOL_AST_AST_JSON_VISITOR
-#define VCZH_PRESENTATION_REMOTEPROTOCOL_AST_AST_JSON_VISITOR
+#ifndef VCZH_PRESENTATION_REMOTEPROTOCOL_AST_AST_JSON
+#define VCZH_PRESENTATION_REMOTEPROTOCOL_AST_AST_JSON
 
 
-namespace vl::presentation::remoteprotocol::json_visitor
+namespace vl::presentation::remoteprotocol
 {
-	/// <summary>A JSON visitor, overriding all abstract methods with AST to JSON serialization code.</summary>
-	class AstVisitor
-		: public vl::glr::JsonVisitorBase
-		, protected virtual GuiRpType::IVisitor
-		, protected virtual GuiRpDeclaration::IVisitor
+	namespace json_visitor
 	{
-	protected:
-		virtual void PrintFields(GuiRpArrayMapType* node);
-		virtual void PrintFields(GuiRpArrayType* node);
-		virtual void PrintFields(GuiRpAttribute* node);
-		virtual void PrintFields(GuiRpDeclaration* node);
-		virtual void PrintFields(GuiRpEnumDecl* node);
-		virtual void PrintFields(GuiRpEnumMember* node);
-		virtual void PrintFields(GuiRpEventDecl* node);
-		virtual void PrintFields(GuiRpEventRequest* node);
-		virtual void PrintFields(GuiRpMapType* node);
-		virtual void PrintFields(GuiRpMessageDecl* node);
-		virtual void PrintFields(GuiRpMessageRequest* node);
-		virtual void PrintFields(GuiRpMessageResponse* node);
-		virtual void PrintFields(GuiRpOptionalType* node);
-		virtual void PrintFields(GuiRpPrimitiveType* node);
-		virtual void PrintFields(GuiRpReferenceType* node);
-		virtual void PrintFields(GuiRpSchema* node);
-		virtual void PrintFields(GuiRpStructDecl* node);
-		virtual void PrintFields(GuiRpStructMember* node);
-		virtual void PrintFields(GuiRpType* node);
-		virtual void PrintFields(GuiRpUnionDecl* node);
-		virtual void PrintFields(GuiRpUnionMember* node);
+		/// <summary>A JSON visitor, overriding all abstract methods with AST to JSON serialization code.</summary>
+		class AstVisitor
+			: public vl::glr::JsonVisitorBase
+			, protected virtual GuiRpType::IVisitor
+			, protected virtual GuiRpDeclaration::IVisitor
+		{
+		protected:
+			virtual void PrintFields(GuiRpArrayMapType* node);
+			virtual void PrintFields(GuiRpArrayType* node);
+			virtual void PrintFields(GuiRpAttribute* node);
+			virtual void PrintFields(GuiRpDeclaration* node);
+			virtual void PrintFields(GuiRpEnumDecl* node);
+			virtual void PrintFields(GuiRpEnumMember* node);
+			virtual void PrintFields(GuiRpEventDecl* node);
+			virtual void PrintFields(GuiRpEventRequest* node);
+			virtual void PrintFields(GuiRpMapType* node);
+			virtual void PrintFields(GuiRpMessageDecl* node);
+			virtual void PrintFields(GuiRpMessageRequest* node);
+			virtual void PrintFields(GuiRpMessageResponse* node);
+			virtual void PrintFields(GuiRpOptionalType* node);
+			virtual void PrintFields(GuiRpPrimitiveType* node);
+			virtual void PrintFields(GuiRpReferenceType* node);
+			virtual void PrintFields(GuiRpSchema* node);
+			virtual void PrintFields(GuiRpStructDecl* node);
+			virtual void PrintFields(GuiRpStructMember* node);
+			virtual void PrintFields(GuiRpType* node);
+			virtual void PrintFields(GuiRpUnionDecl* node);
+			virtual void PrintFields(GuiRpUnionMember* node);
 
-	protected:
-		void Visit(GuiRpPrimitiveType* node) override;
-		void Visit(GuiRpReferenceType* node) override;
-		void Visit(GuiRpOptionalType* node) override;
-		void Visit(GuiRpArrayType* node) override;
-		void Visit(GuiRpArrayMapType* node) override;
-		void Visit(GuiRpMapType* node) override;
+		protected:
+			void Visit(GuiRpPrimitiveType* node) override;
+			void Visit(GuiRpReferenceType* node) override;
+			void Visit(GuiRpOptionalType* node) override;
+			void Visit(GuiRpArrayType* node) override;
+			void Visit(GuiRpArrayMapType* node) override;
+			void Visit(GuiRpMapType* node) override;
 
-		void Visit(GuiRpEnumDecl* node) override;
-		void Visit(GuiRpUnionDecl* node) override;
-		void Visit(GuiRpStructDecl* node) override;
-		void Visit(GuiRpMessageDecl* node) override;
-		void Visit(GuiRpEventDecl* node) override;
+			void Visit(GuiRpEnumDecl* node) override;
+			void Visit(GuiRpUnionDecl* node) override;
+			void Visit(GuiRpStructDecl* node) override;
+			void Visit(GuiRpMessageDecl* node) override;
+			void Visit(GuiRpEventDecl* node) override;
 
-	public:
-		AstVisitor(vl::stream::StreamWriter& _writer);
+		public:
+			AstVisitor(vl::stream::StreamWriter& _writer);
 
-		void Print(GuiRpType* node);
-		void Print(GuiRpDeclaration* node);
-		void Print(GuiRpAttribute* node);
-		void Print(GuiRpEnumMember* node);
-		void Print(GuiRpUnionMember* node);
-		void Print(GuiRpStructMember* node);
-		void Print(GuiRpMessageRequest* node);
-		void Print(GuiRpMessageResponse* node);
-		void Print(GuiRpEventRequest* node);
-		void Print(GuiRpSchema* node);
-	};
+			void Print(GuiRpType* node);
+			void Print(GuiRpDeclaration* node);
+			void Print(GuiRpAttribute* node);
+			void Print(GuiRpEnumMember* node);
+			void Print(GuiRpUnionMember* node);
+			void Print(GuiRpStructMember* node);
+			void Print(GuiRpMessageRequest* node);
+			void Print(GuiRpMessageResponse* node);
+			void Print(GuiRpEventRequest* node);
+			void Print(GuiRpSchema* node);
+		};
+	}
+
+	namespace json_reader
+	{
+		/// <summary>A JSON reader, overriding all abstract methods with JSON to AST deserialization code.</summary>
+		class AstVisitor
+			: protected virtual GuiRpType::IVisitor
+			, protected virtual GuiRpDeclaration::IVisitor
+		{
+		protected:
+			class JsonObjectScope
+			{
+			protected:
+				vl::collections::List<vl::glr::json::JsonObject*>& jsonObjects;
+
+			public:
+				JsonObjectScope(vl::collections::List<vl::glr::json::JsonObject*>& _jsonObjects, vl::glr::json::JsonObject* json);
+				~JsonObjectScope();
+			};
+
+			vl::collections::List<vl::glr::json::JsonObject*> jsonObjects;
+			vl::glr::json::JsonObject* CurrentObject();
+			vl::glr::json::JsonNode* FindField(const vl::WString& name);
+			bool IsNull(vl::glr::json::JsonNode* value);
+			vl::WString ReadType(vl::glr::json::JsonObject* json);
+			void ValidateFields(vl::glr::json::JsonObject* json, const vl::WString& typeName);
+
+			virtual void FillFields(GuiRpArrayMapType* node);
+			virtual void FillFields(GuiRpArrayType* node);
+			virtual void FillFields(GuiRpAttribute* node);
+			virtual void FillFields(GuiRpDeclaration* node);
+			virtual void FillFields(GuiRpEnumDecl* node);
+			virtual void FillFields(GuiRpEnumMember* node);
+			virtual void FillFields(GuiRpEventDecl* node);
+			virtual void FillFields(GuiRpEventRequest* node);
+			virtual void FillFields(GuiRpMapType* node);
+			virtual void FillFields(GuiRpMessageDecl* node);
+			virtual void FillFields(GuiRpMessageRequest* node);
+			virtual void FillFields(GuiRpMessageResponse* node);
+			virtual void FillFields(GuiRpOptionalType* node);
+			virtual void FillFields(GuiRpPrimitiveType* node);
+			virtual void FillFields(GuiRpReferenceType* node);
+			virtual void FillFields(GuiRpSchema* node);
+			virtual void FillFields(GuiRpStructDecl* node);
+			virtual void FillFields(GuiRpStructMember* node);
+			virtual void FillFields(GuiRpType* node);
+			virtual void FillFields(GuiRpUnionDecl* node);
+			virtual void FillFields(GuiRpUnionMember* node);
+
+		protected:
+			void Visit(GuiRpPrimitiveType* node) override;
+			void Visit(GuiRpReferenceType* node) override;
+			void Visit(GuiRpOptionalType* node) override;
+			void Visit(GuiRpArrayType* node) override;
+			void Visit(GuiRpArrayMapType* node) override;
+			void Visit(GuiRpMapType* node) override;
+
+			void Visit(GuiRpEnumDecl* node) override;
+			void Visit(GuiRpUnionDecl* node) override;
+			void Visit(GuiRpStructDecl* node) override;
+			void Visit(GuiRpMessageDecl* node) override;
+			void Visit(GuiRpEventDecl* node) override;
+
+		public:
+			vl::Ptr<vl::glr::ParsingAstBase> ReadJson(vl::glr::json::JsonObject* json);
+		};
+	}
 }
 #endif
 

@@ -42899,3038 +42899,7933 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl::workflow::json_visitor
+namespace vl::workflow
 {
-	void AstVisitor::PrintFields(WfAttachEventExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"event"));
-		Print(node->event.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"function"));
-		Print(node->function.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfAttribute* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"category"));
-		WriteToken(node->category);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"value"));
-		Print(node->value.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfAutoPropertyDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"configConst"));
-		switch (node->configConst)
-		{
-		case vl::workflow::WfAPConst::Readonly:
-			WriteString(vl::WString::Unmanaged(L"Readonly"));
-			break;
-		case vl::workflow::WfAPConst::Writable:
-			WriteString(vl::WString::Unmanaged(L"Writable"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"configObserve"));
-		switch (node->configObserve)
-		{
-		case vl::workflow::WfAPObserve::NotObservable:
-			WriteString(vl::WString::Unmanaged(L"NotObservable"));
-			break;
-		case vl::workflow::WfAPObserve::Observable:
-			WriteString(vl::WString::Unmanaged(L"Observable"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"functionKind"));
-		switch (node->functionKind)
-		{
-		case vl::workflow::WfFunctionKind::Normal:
-			WriteString(vl::WString::Unmanaged(L"Normal"));
-			break;
-		case vl::workflow::WfFunctionKind::Override:
-			WriteString(vl::WString::Unmanaged(L"Override"));
-			break;
-		case vl::workflow::WfFunctionKind::Static:
-			WriteString(vl::WString::Unmanaged(L"Static"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfBaseConstructorCall* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"arguments"));
-		BeginArray();
-		for (auto&& listItem : node->arguments)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfBinaryExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"first"));
-		Print(node->first.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"op"));
-		switch (node->op)
-		{
-		case vl::workflow::WfBinaryOperator::Add:
-			WriteString(vl::WString::Unmanaged(L"Add"));
-			break;
-		case vl::workflow::WfBinaryOperator::And:
-			WriteString(vl::WString::Unmanaged(L"And"));
-			break;
-		case vl::workflow::WfBinaryOperator::Assign:
-			WriteString(vl::WString::Unmanaged(L"Assign"));
-			break;
-		case vl::workflow::WfBinaryOperator::Div:
-			WriteString(vl::WString::Unmanaged(L"Div"));
-			break;
-		case vl::workflow::WfBinaryOperator::EQ:
-			WriteString(vl::WString::Unmanaged(L"EQ"));
-			break;
-		case vl::workflow::WfBinaryOperator::Exp:
-			WriteString(vl::WString::Unmanaged(L"Exp"));
-			break;
-		case vl::workflow::WfBinaryOperator::FailedThen:
-			WriteString(vl::WString::Unmanaged(L"FailedThen"));
-			break;
-		case vl::workflow::WfBinaryOperator::FlagAnd:
-			WriteString(vl::WString::Unmanaged(L"FlagAnd"));
-			break;
-		case vl::workflow::WfBinaryOperator::FlagOr:
-			WriteString(vl::WString::Unmanaged(L"FlagOr"));
-			break;
-		case vl::workflow::WfBinaryOperator::GE:
-			WriteString(vl::WString::Unmanaged(L"GE"));
-			break;
-		case vl::workflow::WfBinaryOperator::GT:
-			WriteString(vl::WString::Unmanaged(L"GT"));
-			break;
-		case vl::workflow::WfBinaryOperator::Index:
-			WriteString(vl::WString::Unmanaged(L"Index"));
-			break;
-		case vl::workflow::WfBinaryOperator::LE:
-			WriteString(vl::WString::Unmanaged(L"LE"));
-			break;
-		case vl::workflow::WfBinaryOperator::LT:
-			WriteString(vl::WString::Unmanaged(L"LT"));
-			break;
-		case vl::workflow::WfBinaryOperator::Mod:
-			WriteString(vl::WString::Unmanaged(L"Mod"));
-			break;
-		case vl::workflow::WfBinaryOperator::Mul:
-			WriteString(vl::WString::Unmanaged(L"Mul"));
-			break;
-		case vl::workflow::WfBinaryOperator::NE:
-			WriteString(vl::WString::Unmanaged(L"NE"));
-			break;
-		case vl::workflow::WfBinaryOperator::Or:
-			WriteString(vl::WString::Unmanaged(L"Or"));
-			break;
-		case vl::workflow::WfBinaryOperator::Shl:
-			WriteString(vl::WString::Unmanaged(L"Shl"));
-			break;
-		case vl::workflow::WfBinaryOperator::Shr:
-			WriteString(vl::WString::Unmanaged(L"Shr"));
-			break;
-		case vl::workflow::WfBinaryOperator::Sub:
-			WriteString(vl::WString::Unmanaged(L"Sub"));
-			break;
-		case vl::workflow::WfBinaryOperator::Xor:
-			WriteString(vl::WString::Unmanaged(L"Xor"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"second"));
-		Print(node->second.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfBindExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfBlockStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"endLabel"));
-		WriteToken(node->endLabel);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"statements"));
-		BeginArray();
-		for (auto&& listItem : node->statements)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfBreakStatement* node)
-	{
-	}
-	void AstVisitor::PrintFields(WfCallExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"arguments"));
-		BeginArray();
-		for (auto&& listItem : node->arguments)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"function"));
-		Print(node->function.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfCastResultInterfaceDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"baseType"));
-		Print(node->baseType.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"elementType"));
-		Print(node->elementType.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfChildExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"parent"));
-		Print(node->parent.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfChildType* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"parent"));
-		Print(node->parent.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfClassDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"baseTypes"));
-		BeginArray();
-		for (auto&& listItem : node->baseTypes)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"constructorType"));
-		switch (node->constructorType)
-		{
-		case vl::workflow::WfConstructorType::RawPtr:
-			WriteString(vl::WString::Unmanaged(L"RawPtr"));
-			break;
-		case vl::workflow::WfConstructorType::SharedPtr:
-			WriteString(vl::WString::Unmanaged(L"SharedPtr"));
-			break;
-		case vl::workflow::WfConstructorType::Undefined:
-			WriteString(vl::WString::Unmanaged(L"Undefined"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"declarations"));
-		BeginArray();
-		for (auto&& listItem : node->declarations)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"kind"));
-		switch (node->kind)
-		{
-		case vl::workflow::WfClassKind::Class:
-			WriteString(vl::WString::Unmanaged(L"Class"));
-			break;
-		case vl::workflow::WfClassKind::Interface:
-			WriteString(vl::WString::Unmanaged(L"Interface"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfCoOperatorExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfCoOperatorStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"arguments"));
-		BeginArray();
-		for (auto&& listItem : node->arguments)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"opName"));
-		WriteToken(node->opName);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"varName"));
-		WriteToken(node->varName);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfCoPauseStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"statement"));
-		Print(node->statement.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfCoProviderStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"statement"));
-		Print(node->statement.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfConstructorArgument* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"key"));
-		Print(node->key.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"value"));
-		Print(node->value.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfConstructorDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"arguments"));
-		BeginArray();
-		for (auto&& listItem : node->arguments)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"baseConstructorCalls"));
-		BeginArray();
-		for (auto&& listItem : node->baseConstructorCalls)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"constructorType"));
-		switch (node->constructorType)
-		{
-		case vl::workflow::WfConstructorType::RawPtr:
-			WriteString(vl::WString::Unmanaged(L"RawPtr"));
-			break;
-		case vl::workflow::WfConstructorType::SharedPtr:
-			WriteString(vl::WString::Unmanaged(L"SharedPtr"));
-			break;
-		case vl::workflow::WfConstructorType::Undefined:
-			WriteString(vl::WString::Unmanaged(L"Undefined"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"statement"));
-		Print(node->statement.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfConstructorExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"arguments"));
-		BeginArray();
-		for (auto&& listItem : node->arguments)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfContinueStatement* node)
-	{
-	}
-	void AstVisitor::PrintFields(WfCoroutineStatement* node)
-	{
-	}
-	void AstVisitor::PrintFields(WfDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"attributes"));
-		BeginArray();
-		for (auto&& listItem : node->attributes)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfDeleteStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfDestructorDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"statement"));
-		Print(node->statement.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfDetachEventExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"event"));
-		Print(node->event.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"handler"));
-		Print(node->handler.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfEnumDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"items"));
-		BeginArray();
-		for (auto&& listItem : node->items)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"kind"));
-		switch (node->kind)
-		{
-		case vl::workflow::WfEnumKind::Flag:
-			WriteString(vl::WString::Unmanaged(L"Flag"));
-			break;
-		case vl::workflow::WfEnumKind::Normal:
-			WriteString(vl::WString::Unmanaged(L"Normal"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfEnumItem* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"attributes"));
-		BeginArray();
-		for (auto&& listItem : node->attributes)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"intersections"));
-		BeginArray();
-		for (auto&& listItem : node->intersections)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"kind"));
-		switch (node->kind)
-		{
-		case vl::workflow::WfEnumItemKind::Constant:
-			WriteString(vl::WString::Unmanaged(L"Constant"));
-			break;
-		case vl::workflow::WfEnumItemKind::Intersection:
-			WriteString(vl::WString::Unmanaged(L"Intersection"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"number"));
-		WriteToken(node->number);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfEnumItemIntersection* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfEnumerableType* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"element"));
-		Print(node->element.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfEventDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"arguments"));
-		BeginArray();
-		for (auto&& listItem : node->arguments)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfExpectedTypeCastExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"strategy"));
-		switch (node->strategy)
-		{
-		case vl::workflow::WfTypeCastingStrategy::Strong:
-			WriteString(vl::WString::Unmanaged(L"Strong"));
-			break;
-		case vl::workflow::WfTypeCastingStrategy::Weak:
-			WriteString(vl::WString::Unmanaged(L"Weak"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfExpression* node)
-	{
-	}
-	void AstVisitor::PrintFields(WfExpressionStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfFloatingExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"value"));
-		WriteToken(node->value);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfForEachStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"collection"));
-		Print(node->collection.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"direction"));
-		switch (node->direction)
-		{
-		case vl::workflow::WfForEachDirection::Normal:
-			WriteString(vl::WString::Unmanaged(L"Normal"));
-			break;
-		case vl::workflow::WfForEachDirection::Reversed:
-			WriteString(vl::WString::Unmanaged(L"Reversed"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"statement"));
-		Print(node->statement.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfFormatExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"value"));
-		WriteToken(node->value);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfFunctionArgument* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"attributes"));
-		BeginArray();
-		for (auto&& listItem : node->attributes)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfFunctionDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"anonymity"));
-		switch (node->anonymity)
-		{
-		case vl::workflow::WfFunctionAnonymity::Anonymous:
-			WriteString(vl::WString::Unmanaged(L"Anonymous"));
-			break;
-		case vl::workflow::WfFunctionAnonymity::Named:
-			WriteString(vl::WString::Unmanaged(L"Named"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"arguments"));
-		BeginArray();
-		for (auto&& listItem : node->arguments)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"functionKind"));
-		switch (node->functionKind)
-		{
-		case vl::workflow::WfFunctionKind::Normal:
-			WriteString(vl::WString::Unmanaged(L"Normal"));
-			break;
-		case vl::workflow::WfFunctionKind::Override:
-			WriteString(vl::WString::Unmanaged(L"Override"));
-			break;
-		case vl::workflow::WfFunctionKind::Static:
-			WriteString(vl::WString::Unmanaged(L"Static"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"returnType"));
-		Print(node->returnType.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"statement"));
-		Print(node->statement.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfFunctionExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"function"));
-		Print(node->function.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfFunctionType* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"arguments"));
-		BeginArray();
-		for (auto&& listItem : node->arguments)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"result"));
-		Print(node->result.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfGotoStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"label"));
-		WriteToken(node->label);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfIfExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"condition"));
-		Print(node->condition.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"falseBranch"));
-		Print(node->falseBranch.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"trueBranch"));
-		Print(node->trueBranch.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfIfStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"falseBranch"));
-		Print(node->falseBranch.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"trueBranch"));
-		Print(node->trueBranch.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfInferExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfIntegerExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"value"));
-		WriteToken(node->value);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfLetExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"variables"));
-		BeginArray();
-		for (auto&& listItem : node->variables)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfLetVariable* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"value"));
-		Print(node->value.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfLiteralExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"value"));
-		switch (node->value)
-		{
-		case vl::workflow::WfLiteralValue::False:
-			WriteString(vl::WString::Unmanaged(L"False"));
-			break;
-		case vl::workflow::WfLiteralValue::Null:
-			WriteString(vl::WString::Unmanaged(L"Null"));
-			break;
-		case vl::workflow::WfLiteralValue::True:
-			WriteString(vl::WString::Unmanaged(L"True"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfMapType* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"key"));
-		Print(node->key.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"value"));
-		Print(node->value.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"writability"));
-		switch (node->writability)
-		{
-		case vl::workflow::WfMapWritability::Readonly:
-			WriteString(vl::WString::Unmanaged(L"Readonly"));
-			break;
-		case vl::workflow::WfMapWritability::Writable:
-			WriteString(vl::WString::Unmanaged(L"Writable"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfMemberExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"parent"));
-		Print(node->parent.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfMixinCastExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfModule* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"declarations"));
-		BeginArray();
-		for (auto&& listItem : node->declarations)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"moduleType"));
-		switch (node->moduleType)
-		{
-		case vl::workflow::WfModuleType::Module:
-			WriteString(vl::WString::Unmanaged(L"Module"));
-			break;
-		case vl::workflow::WfModuleType::Unit:
-			WriteString(vl::WString::Unmanaged(L"Unit"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"paths"));
-		BeginArray();
-		for (auto&& listItem : node->paths)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfModuleUsingFragment* node)
-	{
-	}
-	void AstVisitor::PrintFields(WfModuleUsingItem* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"fragments"));
-		BeginArray();
-		for (auto&& listItem : node->fragments)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfModuleUsingNameFragment* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfModuleUsingPath* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"items"));
-		BeginArray();
-		for (auto&& listItem : node->items)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfModuleUsingWildCardFragment* node)
-	{
-	}
-	void AstVisitor::PrintFields(WfNamespaceDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"declarations"));
-		BeginArray();
-		for (auto&& listItem : node->declarations)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfNewClassExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"arguments"));
-		BeginArray();
-		for (auto&& listItem : node->arguments)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfNewCoroutineExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"statement"));
-		Print(node->statement.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfNewInterfaceExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"declarations"));
-		BeginArray();
-		for (auto&& listItem : node->declarations)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfNullableType* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"element"));
-		Print(node->element.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfObservableListType* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"element"));
-		Print(node->element.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfObserveExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"events"));
-		BeginArray();
-		for (auto&& listItem : node->events)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"observeType"));
-		switch (node->observeType)
-		{
-		case vl::workflow::WfObserveType::ExtendedObserve:
-			WriteString(vl::WString::Unmanaged(L"ExtendedObserve"));
-			break;
-		case vl::workflow::WfObserveType::SimpleObserve:
-			WriteString(vl::WString::Unmanaged(L"SimpleObserve"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"parent"));
-		Print(node->parent.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfOrderedLambdaExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"body"));
-		Print(node->body.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfOrderedNameExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfPredefinedType* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		switch (node->name)
-		{
-		case vl::workflow::WfPredefinedTypeName::Bool:
-			WriteString(vl::WString::Unmanaged(L"Bool"));
-			break;
-		case vl::workflow::WfPredefinedTypeName::Char:
-			WriteString(vl::WString::Unmanaged(L"Char"));
-			break;
-		case vl::workflow::WfPredefinedTypeName::Double:
-			WriteString(vl::WString::Unmanaged(L"Double"));
-			break;
-		case vl::workflow::WfPredefinedTypeName::Float:
-			WriteString(vl::WString::Unmanaged(L"Float"));
-			break;
-		case vl::workflow::WfPredefinedTypeName::Int:
-			WriteString(vl::WString::Unmanaged(L"Int"));
-			break;
-		case vl::workflow::WfPredefinedTypeName::Interface:
-			WriteString(vl::WString::Unmanaged(L"Interface"));
-			break;
-		case vl::workflow::WfPredefinedTypeName::Object:
-			WriteString(vl::WString::Unmanaged(L"Object"));
-			break;
-		case vl::workflow::WfPredefinedTypeName::String:
-			WriteString(vl::WString::Unmanaged(L"String"));
-			break;
-		case vl::workflow::WfPredefinedTypeName::UInt:
-			WriteString(vl::WString::Unmanaged(L"UInt"));
-			break;
-		case vl::workflow::WfPredefinedTypeName::Void:
-			WriteString(vl::WString::Unmanaged(L"Void"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfPropertyDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"getter"));
-		WriteToken(node->getter);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"setter"));
-		WriteToken(node->setter);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"valueChangedEvent"));
-		WriteToken(node->valueChangedEvent);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfRaiseExceptionStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfRangeExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"begin"));
-		Print(node->begin.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"beginBoundary"));
-		switch (node->beginBoundary)
-		{
-		case vl::workflow::WfRangeBoundary::Exclusive:
-			WriteString(vl::WString::Unmanaged(L"Exclusive"));
-			break;
-		case vl::workflow::WfRangeBoundary::Inclusive:
-			WriteString(vl::WString::Unmanaged(L"Inclusive"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"end"));
-		Print(node->end.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"endBoundary"));
-		switch (node->endBoundary)
-		{
-		case vl::workflow::WfRangeBoundary::Exclusive:
-			WriteString(vl::WString::Unmanaged(L"Exclusive"));
-			break;
-		case vl::workflow::WfRangeBoundary::Inclusive:
-			WriteString(vl::WString::Unmanaged(L"Inclusive"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfRawPointerType* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"element"));
-		Print(node->element.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfReferenceExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfReferenceType* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfReturnStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfSetTestingExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"collection"));
-		Print(node->collection.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"element"));
-		Print(node->element.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"test"));
-		switch (node->test)
-		{
-		case vl::workflow::WfSetTesting::In:
-			WriteString(vl::WString::Unmanaged(L"In"));
-			break;
-		case vl::workflow::WfSetTesting::NotIn:
-			WriteString(vl::WString::Unmanaged(L"NotIn"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfSharedPointerType* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"element"));
-		Print(node->element.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfStateDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"arguments"));
-		BeginArray();
-		for (auto&& listItem : node->arguments)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"statement"));
-		Print(node->statement.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfStateInput* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"arguments"));
-		BeginArray();
-		for (auto&& listItem : node->arguments)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfStateInvokeStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"arguments"));
-		BeginArray();
-		for (auto&& listItem : node->arguments)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		switch (node->type)
-		{
-		case vl::workflow::WfStateInvokeType::Goto:
-			WriteString(vl::WString::Unmanaged(L"Goto"));
-			break;
-		case vl::workflow::WfStateInvokeType::Push:
-			WriteString(vl::WString::Unmanaged(L"Push"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfStateMachineDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"inputs"));
-		BeginArray();
-		for (auto&& listItem : node->inputs)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"states"));
-		BeginArray();
-		for (auto&& listItem : node->states)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfStateMachineStatement* node)
-	{
-	}
-	void AstVisitor::PrintFields(WfStateSwitchArgument* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfStateSwitchCase* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"arguments"));
-		BeginArray();
-		for (auto&& listItem : node->arguments)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"statement"));
-		Print(node->statement.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfStateSwitchStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"caseBranches"));
-		BeginArray();
-		for (auto&& listItem : node->caseBranches)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		switch (node->type)
-		{
-		case vl::workflow::WfStateSwitchType::Default:
-			WriteString(vl::WString::Unmanaged(L"Default"));
-			break;
-		case vl::workflow::WfStateSwitchType::Ignore:
-			WriteString(vl::WString::Unmanaged(L"Ignore"));
-			break;
-		case vl::workflow::WfStateSwitchType::IgnoreAndReturn:
-			WriteString(vl::WString::Unmanaged(L"IgnoreAndReturn"));
-			break;
-		case vl::workflow::WfStateSwitchType::Pass:
-			WriteString(vl::WString::Unmanaged(L"Pass"));
-			break;
-		case vl::workflow::WfStateSwitchType::PassAndReturn:
-			WriteString(vl::WString::Unmanaged(L"PassAndReturn"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfStatement* node)
-	{
-	}
-	void AstVisitor::PrintFields(WfStaticInitDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"statement"));
-		Print(node->statement.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfStringExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"value"));
-		WriteToken(node->value);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfStructDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"members"));
-		BeginArray();
-		for (auto&& listItem : node->members)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfStructMember* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"attributes"));
-		BeginArray();
-		for (auto&& listItem : node->attributes)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfSwitchCase* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"statement"));
-		Print(node->statement.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfSwitchStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"caseBranches"));
-		BeginArray();
-		for (auto&& listItem : node->caseBranches)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"defaultBranch"));
-		Print(node->defaultBranch.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfThisExpression* node)
-	{
-	}
-	void AstVisitor::PrintFields(WfTopQualifiedExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfTopQualifiedType* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfTryStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"catchStatement"));
-		Print(node->catchStatement.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"finallyStatement"));
-		Print(node->finallyStatement.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"protectedStatement"));
-		Print(node->protectedStatement.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfType* node)
-	{
-	}
-	void AstVisitor::PrintFields(WfTypeCastingExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"strategy"));
-		switch (node->strategy)
-		{
-		case vl::workflow::WfTypeCastingStrategy::Strong:
-			WriteString(vl::WString::Unmanaged(L"Strong"));
-			break;
-		case vl::workflow::WfTypeCastingStrategy::Weak:
-			WriteString(vl::WString::Unmanaged(L"Weak"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfTypeOfExpressionExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfTypeOfTypeExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfTypeTestingExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"test"));
-		switch (node->test)
-		{
-		case vl::workflow::WfTypeTesting::IsNotNull:
-			WriteString(vl::WString::Unmanaged(L"IsNotNull"));
-			break;
-		case vl::workflow::WfTypeTesting::IsNotType:
-			WriteString(vl::WString::Unmanaged(L"IsNotType"));
-			break;
-		case vl::workflow::WfTypeTesting::IsNull:
-			WriteString(vl::WString::Unmanaged(L"IsNull"));
-			break;
-		case vl::workflow::WfTypeTesting::IsType:
-			WriteString(vl::WString::Unmanaged(L"IsType"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfUnaryExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"op"));
-		switch (node->op)
-		{
-		case vl::workflow::WfUnaryOperator::Negative:
-			WriteString(vl::WString::Unmanaged(L"Negative"));
-			break;
-		case vl::workflow::WfUnaryOperator::Not:
-			WriteString(vl::WString::Unmanaged(L"Not"));
-			break;
-		case vl::workflow::WfUnaryOperator::Positive:
-			WriteString(vl::WString::Unmanaged(L"Positive"));
-			break;
-		default:
-			WriteNull();
-		}
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"operand"));
-		Print(node->operand.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfVariableDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expression"));
-		Print(node->expression.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"type"));
-		Print(node->type.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfVariableStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"variable"));
-		Print(node->variable.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfVirtualCfeDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expandedDeclarations"));
-		BeginArray();
-		for (auto&& listItem : node->expandedDeclarations)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfVirtualCfeExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expandedExpression"));
-		Print(node->expandedExpression.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfVirtualCseDeclaration* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expandedDeclarations"));
-		BeginArray();
-		for (auto&& listItem : node->expandedDeclarations)
-		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
-		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfVirtualCseExpression* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expandedExpression"));
-		Print(node->expandedExpression.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfVirtualCseStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"expandedStatement"));
-		Print(node->expandedStatement.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(WfWhileStatement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"condition"));
-		Print(node->condition.Obj());
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"statement"));
-		Print(node->statement.Obj());
-		EndField();
-	}
-
-	void AstVisitor::Visit(WfPredefinedType* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"PredefinedType"), node);
-		PrintFields(static_cast<WfType*>(node));
-		PrintFields(static_cast<WfPredefinedType*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfTopQualifiedType* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"TopQualifiedType"), node);
-		PrintFields(static_cast<WfType*>(node));
-		PrintFields(static_cast<WfTopQualifiedType*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfReferenceType* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ReferenceType"), node);
-		PrintFields(static_cast<WfType*>(node));
-		PrintFields(static_cast<WfReferenceType*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfRawPointerType* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"RawPointerType"), node);
-		PrintFields(static_cast<WfType*>(node));
-		PrintFields(static_cast<WfRawPointerType*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfSharedPointerType* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"SharedPointerType"), node);
-		PrintFields(static_cast<WfType*>(node));
-		PrintFields(static_cast<WfSharedPointerType*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfNullableType* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"NullableType"), node);
-		PrintFields(static_cast<WfType*>(node));
-		PrintFields(static_cast<WfNullableType*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfEnumerableType* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"EnumerableType"), node);
-		PrintFields(static_cast<WfType*>(node));
-		PrintFields(static_cast<WfEnumerableType*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfMapType* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"MapType"), node);
-		PrintFields(static_cast<WfType*>(node));
-		PrintFields(static_cast<WfMapType*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfObservableListType* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ObservableListType"), node);
-		PrintFields(static_cast<WfType*>(node));
-		PrintFields(static_cast<WfObservableListType*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfFunctionType* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"FunctionType"), node);
-		PrintFields(static_cast<WfType*>(node));
-		PrintFields(static_cast<WfFunctionType*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfChildType* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ChildType"), node);
-		PrintFields(static_cast<WfType*>(node));
-		PrintFields(static_cast<WfChildType*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfThisExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ThisExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfThisExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfTopQualifiedExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"TopQualifiedExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfTopQualifiedExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfReferenceExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ReferenceExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfReferenceExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfOrderedNameExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"OrderedNameExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfOrderedNameExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfOrderedLambdaExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"OrderedLambdaExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfOrderedLambdaExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfMemberExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"MemberExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfMemberExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfChildExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ChildExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfChildExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfLiteralExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"LiteralExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfLiteralExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfFloatingExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"FloatingExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfFloatingExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfIntegerExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"IntegerExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfIntegerExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfStringExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"StringExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfStringExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfUnaryExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"UnaryExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfUnaryExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfBinaryExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"BinaryExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfBinaryExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfLetExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"LetExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfLetExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfIfExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"IfExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfIfExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfRangeExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"RangeExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfRangeExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfSetTestingExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"SetTestingExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfSetTestingExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfConstructorExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ConstructorExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfConstructorExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfInferExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"InferExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfInferExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfTypeCastingExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"TypeCastingExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfTypeCastingExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfTypeTestingExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"TypeTestingExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfTypeTestingExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfTypeOfTypeExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"TypeOfTypeExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfTypeOfTypeExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfTypeOfExpressionExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"TypeOfExpressionExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfTypeOfExpressionExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfAttachEventExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"AttachEventExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfAttachEventExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfDetachEventExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"DetachEventExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfDetachEventExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfObserveExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ObserveExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfObserveExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfCallExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"CallExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfCallExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfFunctionExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"FunctionExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfFunctionExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfNewClassExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"NewClassExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfNewClassExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfNewInterfaceExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"NewInterfaceExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfNewInterfaceExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfVirtualCfeExpression* node)
-	{
-		node->Accept(static_cast<WfVirtualCfeExpression::IVisitor*>(this));
-	}
-
-	void AstVisitor::Visit(WfVirtualCseExpression* node)
-	{
-		node->Accept(static_cast<WfVirtualCseExpression::IVisitor*>(this));
-	}
-
-	void AstVisitor::Visit(WfBreakStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"BreakStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfBreakStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfContinueStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ContinueStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfContinueStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfReturnStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ReturnStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfReturnStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfDeleteStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"DeleteStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfDeleteStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfRaiseExceptionStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"RaiseExceptionStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfRaiseExceptionStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfIfStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"IfStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfIfStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfWhileStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"WhileStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfWhileStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfTryStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"TryStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfTryStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfBlockStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"BlockStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfBlockStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfGotoStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"GotoStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfGotoStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfVariableStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"VariableStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfVariableStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfExpressionStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ExpressionStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfExpressionStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfVirtualCseStatement* node)
-	{
-		node->Accept(static_cast<WfVirtualCseStatement::IVisitor*>(this));
-	}
-
-	void AstVisitor::Visit(WfCoroutineStatement* node)
-	{
-		node->Accept(static_cast<WfCoroutineStatement::IVisitor*>(this));
-	}
-
-	void AstVisitor::Visit(WfStateMachineStatement* node)
-	{
-		node->Accept(static_cast<WfStateMachineStatement::IVisitor*>(this));
-	}
-
-	void AstVisitor::Visit(WfNamespaceDeclaration* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"NamespaceDeclaration"), node);
-		PrintFields(static_cast<WfDeclaration*>(node));
-		PrintFields(static_cast<WfNamespaceDeclaration*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfFunctionDeclaration* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"FunctionDeclaration"), node);
-		PrintFields(static_cast<WfDeclaration*>(node));
-		PrintFields(static_cast<WfFunctionDeclaration*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfVariableDeclaration* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"VariableDeclaration"), node);
-		PrintFields(static_cast<WfDeclaration*>(node));
-		PrintFields(static_cast<WfVariableDeclaration*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfEventDeclaration* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"EventDeclaration"), node);
-		PrintFields(static_cast<WfDeclaration*>(node));
-		PrintFields(static_cast<WfEventDeclaration*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfPropertyDeclaration* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"PropertyDeclaration"), node);
-		PrintFields(static_cast<WfDeclaration*>(node));
-		PrintFields(static_cast<WfPropertyDeclaration*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfStaticInitDeclaration* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"StaticInitDeclaration"), node);
-		PrintFields(static_cast<WfDeclaration*>(node));
-		PrintFields(static_cast<WfStaticInitDeclaration*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfConstructorDeclaration* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ConstructorDeclaration"), node);
-		PrintFields(static_cast<WfDeclaration*>(node));
-		PrintFields(static_cast<WfConstructorDeclaration*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfDestructorDeclaration* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"DestructorDeclaration"), node);
-		PrintFields(static_cast<WfDeclaration*>(node));
-		PrintFields(static_cast<WfDestructorDeclaration*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfClassDeclaration* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ClassDeclaration"), node);
-		PrintFields(static_cast<WfDeclaration*>(node));
-		PrintFields(static_cast<WfClassDeclaration*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfEnumDeclaration* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"EnumDeclaration"), node);
-		PrintFields(static_cast<WfDeclaration*>(node));
-		PrintFields(static_cast<WfEnumDeclaration*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfStructDeclaration* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"StructDeclaration"), node);
-		PrintFields(static_cast<WfDeclaration*>(node));
-		PrintFields(static_cast<WfStructDeclaration*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfVirtualCfeDeclaration* node)
-	{
-		node->Accept(static_cast<WfVirtualCfeDeclaration::IVisitor*>(this));
-	}
-
-	void AstVisitor::Visit(WfVirtualCseDeclaration* node)
-	{
-		node->Accept(static_cast<WfVirtualCseDeclaration::IVisitor*>(this));
-	}
-
-	void AstVisitor::Visit(WfAutoPropertyDeclaration* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"AutoPropertyDeclaration"), node);
-		PrintFields(static_cast<WfDeclaration*>(node));
-		PrintFields(static_cast<WfVirtualCfeDeclaration*>(node));
-		PrintFields(static_cast<WfAutoPropertyDeclaration*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfCastResultInterfaceDeclaration* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"CastResultInterfaceDeclaration"), node);
-		PrintFields(static_cast<WfDeclaration*>(node));
-		PrintFields(static_cast<WfVirtualCfeDeclaration*>(node));
-		PrintFields(static_cast<WfCastResultInterfaceDeclaration*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfStateMachineDeclaration* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"StateMachineDeclaration"), node);
-		PrintFields(static_cast<WfDeclaration*>(node));
-		PrintFields(static_cast<WfVirtualCseDeclaration*>(node));
-		PrintFields(static_cast<WfStateMachineDeclaration*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfForEachStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ForEachStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfVirtualCseStatement*>(node));
-		PrintFields(static_cast<WfForEachStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfSwitchStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"SwitchStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfVirtualCseStatement*>(node));
-		PrintFields(static_cast<WfSwitchStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfCoProviderStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"CoProviderStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfVirtualCseStatement*>(node));
-		PrintFields(static_cast<WfCoProviderStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfCoPauseStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"CoPauseStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfCoroutineStatement*>(node));
-		PrintFields(static_cast<WfCoPauseStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfCoOperatorStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"CoOperatorStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfCoroutineStatement*>(node));
-		PrintFields(static_cast<WfCoOperatorStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfStateSwitchStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"StateSwitchStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfStateMachineStatement*>(node));
-		PrintFields(static_cast<WfStateSwitchStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfStateInvokeStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"StateInvokeStatement"), node);
-		PrintFields(static_cast<WfStatement*>(node));
-		PrintFields(static_cast<WfStateMachineStatement*>(node));
-		PrintFields(static_cast<WfStateInvokeStatement*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfFormatExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"FormatExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfVirtualCfeExpression*>(node));
-		PrintFields(static_cast<WfFormatExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfBindExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"BindExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfVirtualCseExpression*>(node));
-		PrintFields(static_cast<WfBindExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfNewCoroutineExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"NewCoroutineExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfVirtualCseExpression*>(node));
-		PrintFields(static_cast<WfNewCoroutineExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfMixinCastExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"MixinCastExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfVirtualCseExpression*>(node));
-		PrintFields(static_cast<WfMixinCastExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfExpectedTypeCastExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ExpectedTypeCastExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfVirtualCseExpression*>(node));
-		PrintFields(static_cast<WfExpectedTypeCastExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfCoOperatorExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"CoOperatorExpression"), node);
-		PrintFields(static_cast<WfExpression*>(node));
-		PrintFields(static_cast<WfVirtualCseExpression*>(node));
-		PrintFields(static_cast<WfCoOperatorExpression*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfModuleUsingNameFragment* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ModuleUsingNameFragment"), node);
-		PrintFields(static_cast<WfModuleUsingFragment*>(node));
-		PrintFields(static_cast<WfModuleUsingNameFragment*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Visit(WfModuleUsingWildCardFragment* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ModuleUsingWildCardFragment"), node);
-		PrintFields(static_cast<WfModuleUsingFragment*>(node));
-		PrintFields(static_cast<WfModuleUsingWildCardFragment*>(node));
-		EndObject();
-	}
-
-	AstVisitor::AstVisitor(vl::stream::StreamWriter& _writer)
-		: vl::glr::JsonVisitorBase(_writer)
-	{
-	}
-
-	void AstVisitor::Print(WfType* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		node->Accept(static_cast<WfType::IVisitor*>(this));
-	}
-
-	void AstVisitor::Print(WfExpression* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		node->Accept(static_cast<WfExpression::IVisitor*>(this));
-	}
-
-	void AstVisitor::Print(WfStatement* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		node->Accept(static_cast<WfStatement::IVisitor*>(this));
-	}
-
-	void AstVisitor::Print(WfDeclaration* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		node->Accept(static_cast<WfDeclaration::IVisitor*>(this));
-	}
-
-	void AstVisitor::Print(WfModuleUsingFragment* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
+	namespace json_visitor
+	{
+		void AstVisitor::PrintFields(WfAttachEventExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"event"));
+			Print(node->event.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"function"));
+			Print(node->function.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfAttribute* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"category"));
+			WriteToken(node->category);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"value"));
+			Print(node->value.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfAutoPropertyDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"configConst"));
+			switch (node->configConst)
+			{
+			case vl::workflow::WfAPConst::Readonly:
+				WriteString(vl::WString::Unmanaged(L"Readonly"));
+				break;
+			case vl::workflow::WfAPConst::Writable:
+				WriteString(vl::WString::Unmanaged(L"Writable"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"configObserve"));
+			switch (node->configObserve)
+			{
+			case vl::workflow::WfAPObserve::NotObservable:
+				WriteString(vl::WString::Unmanaged(L"NotObservable"));
+				break;
+			case vl::workflow::WfAPObserve::Observable:
+				WriteString(vl::WString::Unmanaged(L"Observable"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"functionKind"));
+			switch (node->functionKind)
+			{
+			case vl::workflow::WfFunctionKind::Normal:
+				WriteString(vl::WString::Unmanaged(L"Normal"));
+				break;
+			case vl::workflow::WfFunctionKind::Override:
+				WriteString(vl::WString::Unmanaged(L"Override"));
+				break;
+			case vl::workflow::WfFunctionKind::Static:
+				WriteString(vl::WString::Unmanaged(L"Static"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfBaseConstructorCall* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"arguments"));
+			BeginArray();
+			for (auto&& listItem : node->arguments)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfBinaryExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"first"));
+			Print(node->first.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"op"));
+			switch (node->op)
+			{
+			case vl::workflow::WfBinaryOperator::Add:
+				WriteString(vl::WString::Unmanaged(L"Add"));
+				break;
+			case vl::workflow::WfBinaryOperator::And:
+				WriteString(vl::WString::Unmanaged(L"And"));
+				break;
+			case vl::workflow::WfBinaryOperator::Assign:
+				WriteString(vl::WString::Unmanaged(L"Assign"));
+				break;
+			case vl::workflow::WfBinaryOperator::Div:
+				WriteString(vl::WString::Unmanaged(L"Div"));
+				break;
+			case vl::workflow::WfBinaryOperator::EQ:
+				WriteString(vl::WString::Unmanaged(L"EQ"));
+				break;
+			case vl::workflow::WfBinaryOperator::Exp:
+				WriteString(vl::WString::Unmanaged(L"Exp"));
+				break;
+			case vl::workflow::WfBinaryOperator::FailedThen:
+				WriteString(vl::WString::Unmanaged(L"FailedThen"));
+				break;
+			case vl::workflow::WfBinaryOperator::FlagAnd:
+				WriteString(vl::WString::Unmanaged(L"FlagAnd"));
+				break;
+			case vl::workflow::WfBinaryOperator::FlagOr:
+				WriteString(vl::WString::Unmanaged(L"FlagOr"));
+				break;
+			case vl::workflow::WfBinaryOperator::GE:
+				WriteString(vl::WString::Unmanaged(L"GE"));
+				break;
+			case vl::workflow::WfBinaryOperator::GT:
+				WriteString(vl::WString::Unmanaged(L"GT"));
+				break;
+			case vl::workflow::WfBinaryOperator::Index:
+				WriteString(vl::WString::Unmanaged(L"Index"));
+				break;
+			case vl::workflow::WfBinaryOperator::LE:
+				WriteString(vl::WString::Unmanaged(L"LE"));
+				break;
+			case vl::workflow::WfBinaryOperator::LT:
+				WriteString(vl::WString::Unmanaged(L"LT"));
+				break;
+			case vl::workflow::WfBinaryOperator::Mod:
+				WriteString(vl::WString::Unmanaged(L"Mod"));
+				break;
+			case vl::workflow::WfBinaryOperator::Mul:
+				WriteString(vl::WString::Unmanaged(L"Mul"));
+				break;
+			case vl::workflow::WfBinaryOperator::NE:
+				WriteString(vl::WString::Unmanaged(L"NE"));
+				break;
+			case vl::workflow::WfBinaryOperator::Or:
+				WriteString(vl::WString::Unmanaged(L"Or"));
+				break;
+			case vl::workflow::WfBinaryOperator::Shl:
+				WriteString(vl::WString::Unmanaged(L"Shl"));
+				break;
+			case vl::workflow::WfBinaryOperator::Shr:
+				WriteString(vl::WString::Unmanaged(L"Shr"));
+				break;
+			case vl::workflow::WfBinaryOperator::Sub:
+				WriteString(vl::WString::Unmanaged(L"Sub"));
+				break;
+			case vl::workflow::WfBinaryOperator::Xor:
+				WriteString(vl::WString::Unmanaged(L"Xor"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"second"));
+			Print(node->second.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfBindExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfBlockStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"endLabel"));
+			WriteToken(node->endLabel);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"statements"));
+			BeginArray();
+			for (auto&& listItem : node->statements)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfBreakStatement* node)
+		{
+		}
+		void AstVisitor::PrintFields(WfCallExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"arguments"));
+			BeginArray();
+			for (auto&& listItem : node->arguments)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"function"));
+			Print(node->function.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfCastResultInterfaceDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"baseType"));
+			Print(node->baseType.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"elementType"));
+			Print(node->elementType.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfChildExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"parent"));
+			Print(node->parent.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfChildType* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"parent"));
+			Print(node->parent.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfClassDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"baseTypes"));
+			BeginArray();
+			for (auto&& listItem : node->baseTypes)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"constructorType"));
+			switch (node->constructorType)
+			{
+			case vl::workflow::WfConstructorType::RawPtr:
+				WriteString(vl::WString::Unmanaged(L"RawPtr"));
+				break;
+			case vl::workflow::WfConstructorType::SharedPtr:
+				WriteString(vl::WString::Unmanaged(L"SharedPtr"));
+				break;
+			case vl::workflow::WfConstructorType::Undefined:
+				WriteString(vl::WString::Unmanaged(L"Undefined"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"declarations"));
+			BeginArray();
+			for (auto&& listItem : node->declarations)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"kind"));
+			switch (node->kind)
+			{
+			case vl::workflow::WfClassKind::Class:
+				WriteString(vl::WString::Unmanaged(L"Class"));
+				break;
+			case vl::workflow::WfClassKind::Interface:
+				WriteString(vl::WString::Unmanaged(L"Interface"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfCoOperatorExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfCoOperatorStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"arguments"));
+			BeginArray();
+			for (auto&& listItem : node->arguments)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"opName"));
+			WriteToken(node->opName);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"varName"));
+			WriteToken(node->varName);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfCoPauseStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"statement"));
+			Print(node->statement.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfCoProviderStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"statement"));
+			Print(node->statement.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfConstructorArgument* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"key"));
+			Print(node->key.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"value"));
+			Print(node->value.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfConstructorDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"arguments"));
+			BeginArray();
+			for (auto&& listItem : node->arguments)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"baseConstructorCalls"));
+			BeginArray();
+			for (auto&& listItem : node->baseConstructorCalls)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"constructorType"));
+			switch (node->constructorType)
+			{
+			case vl::workflow::WfConstructorType::RawPtr:
+				WriteString(vl::WString::Unmanaged(L"RawPtr"));
+				break;
+			case vl::workflow::WfConstructorType::SharedPtr:
+				WriteString(vl::WString::Unmanaged(L"SharedPtr"));
+				break;
+			case vl::workflow::WfConstructorType::Undefined:
+				WriteString(vl::WString::Unmanaged(L"Undefined"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"statement"));
+			Print(node->statement.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfConstructorExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"arguments"));
+			BeginArray();
+			for (auto&& listItem : node->arguments)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfContinueStatement* node)
+		{
+		}
+		void AstVisitor::PrintFields(WfCoroutineStatement* node)
+		{
+		}
+		void AstVisitor::PrintFields(WfDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"attributes"));
+			BeginArray();
+			for (auto&& listItem : node->attributes)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfDeleteStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfDestructorDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"statement"));
+			Print(node->statement.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfDetachEventExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"event"));
+			Print(node->event.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"handler"));
+			Print(node->handler.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfEnumDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"items"));
+			BeginArray();
+			for (auto&& listItem : node->items)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"kind"));
+			switch (node->kind)
+			{
+			case vl::workflow::WfEnumKind::Flag:
+				WriteString(vl::WString::Unmanaged(L"Flag"));
+				break;
+			case vl::workflow::WfEnumKind::Normal:
+				WriteString(vl::WString::Unmanaged(L"Normal"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfEnumItem* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"attributes"));
+			BeginArray();
+			for (auto&& listItem : node->attributes)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"intersections"));
+			BeginArray();
+			for (auto&& listItem : node->intersections)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"kind"));
+			switch (node->kind)
+			{
+			case vl::workflow::WfEnumItemKind::Constant:
+				WriteString(vl::WString::Unmanaged(L"Constant"));
+				break;
+			case vl::workflow::WfEnumItemKind::Intersection:
+				WriteString(vl::WString::Unmanaged(L"Intersection"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"number"));
+			WriteToken(node->number);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfEnumItemIntersection* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfEnumerableType* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"element"));
+			Print(node->element.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfEventDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"arguments"));
+			BeginArray();
+			for (auto&& listItem : node->arguments)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfExpectedTypeCastExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"strategy"));
+			switch (node->strategy)
+			{
+			case vl::workflow::WfTypeCastingStrategy::Strong:
+				WriteString(vl::WString::Unmanaged(L"Strong"));
+				break;
+			case vl::workflow::WfTypeCastingStrategy::Weak:
+				WriteString(vl::WString::Unmanaged(L"Weak"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfExpression* node)
+		{
+		}
+		void AstVisitor::PrintFields(WfExpressionStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfFloatingExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"value"));
+			WriteToken(node->value);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfForEachStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"collection"));
+			Print(node->collection.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"direction"));
+			switch (node->direction)
+			{
+			case vl::workflow::WfForEachDirection::Normal:
+				WriteString(vl::WString::Unmanaged(L"Normal"));
+				break;
+			case vl::workflow::WfForEachDirection::Reversed:
+				WriteString(vl::WString::Unmanaged(L"Reversed"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"statement"));
+			Print(node->statement.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfFormatExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"value"));
+			WriteToken(node->value);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfFunctionArgument* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"attributes"));
+			BeginArray();
+			for (auto&& listItem : node->attributes)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfFunctionDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"anonymity"));
+			switch (node->anonymity)
+			{
+			case vl::workflow::WfFunctionAnonymity::Anonymous:
+				WriteString(vl::WString::Unmanaged(L"Anonymous"));
+				break;
+			case vl::workflow::WfFunctionAnonymity::Named:
+				WriteString(vl::WString::Unmanaged(L"Named"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"arguments"));
+			BeginArray();
+			for (auto&& listItem : node->arguments)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"functionKind"));
+			switch (node->functionKind)
+			{
+			case vl::workflow::WfFunctionKind::Normal:
+				WriteString(vl::WString::Unmanaged(L"Normal"));
+				break;
+			case vl::workflow::WfFunctionKind::Override:
+				WriteString(vl::WString::Unmanaged(L"Override"));
+				break;
+			case vl::workflow::WfFunctionKind::Static:
+				WriteString(vl::WString::Unmanaged(L"Static"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"returnType"));
+			Print(node->returnType.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"statement"));
+			Print(node->statement.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfFunctionExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"function"));
+			Print(node->function.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfFunctionType* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"arguments"));
+			BeginArray();
+			for (auto&& listItem : node->arguments)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"result"));
+			Print(node->result.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfGotoStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"label"));
+			WriteToken(node->label);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfIfExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"condition"));
+			Print(node->condition.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"falseBranch"));
+			Print(node->falseBranch.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"trueBranch"));
+			Print(node->trueBranch.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfIfStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"falseBranch"));
+			Print(node->falseBranch.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"trueBranch"));
+			Print(node->trueBranch.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfInferExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfIntegerExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"value"));
+			WriteToken(node->value);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfLetExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"variables"));
+			BeginArray();
+			for (auto&& listItem : node->variables)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfLetVariable* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"value"));
+			Print(node->value.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfLiteralExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"value"));
+			switch (node->value)
+			{
+			case vl::workflow::WfLiteralValue::False:
+				WriteString(vl::WString::Unmanaged(L"False"));
+				break;
+			case vl::workflow::WfLiteralValue::Null:
+				WriteString(vl::WString::Unmanaged(L"Null"));
+				break;
+			case vl::workflow::WfLiteralValue::True:
+				WriteString(vl::WString::Unmanaged(L"True"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfMapType* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"key"));
+			Print(node->key.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"value"));
+			Print(node->value.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"writability"));
+			switch (node->writability)
+			{
+			case vl::workflow::WfMapWritability::Readonly:
+				WriteString(vl::WString::Unmanaged(L"Readonly"));
+				break;
+			case vl::workflow::WfMapWritability::Writable:
+				WriteString(vl::WString::Unmanaged(L"Writable"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfMemberExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"parent"));
+			Print(node->parent.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfMixinCastExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfModule* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"declarations"));
+			BeginArray();
+			for (auto&& listItem : node->declarations)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"moduleType"));
+			switch (node->moduleType)
+			{
+			case vl::workflow::WfModuleType::Module:
+				WriteString(vl::WString::Unmanaged(L"Module"));
+				break;
+			case vl::workflow::WfModuleType::Unit:
+				WriteString(vl::WString::Unmanaged(L"Unit"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"paths"));
+			BeginArray();
+			for (auto&& listItem : node->paths)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfModuleUsingFragment* node)
+		{
+		}
+		void AstVisitor::PrintFields(WfModuleUsingItem* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"fragments"));
+			BeginArray();
+			for (auto&& listItem : node->fragments)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfModuleUsingNameFragment* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfModuleUsingPath* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"items"));
+			BeginArray();
+			for (auto&& listItem : node->items)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfModuleUsingWildCardFragment* node)
+		{
+		}
+		void AstVisitor::PrintFields(WfNamespaceDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"declarations"));
+			BeginArray();
+			for (auto&& listItem : node->declarations)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfNewClassExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"arguments"));
+			BeginArray();
+			for (auto&& listItem : node->arguments)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfNewCoroutineExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"statement"));
+			Print(node->statement.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfNewInterfaceExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"declarations"));
+			BeginArray();
+			for (auto&& listItem : node->declarations)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfNullableType* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"element"));
+			Print(node->element.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfObservableListType* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"element"));
+			Print(node->element.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfObserveExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"events"));
+			BeginArray();
+			for (auto&& listItem : node->events)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"observeType"));
+			switch (node->observeType)
+			{
+			case vl::workflow::WfObserveType::ExtendedObserve:
+				WriteString(vl::WString::Unmanaged(L"ExtendedObserve"));
+				break;
+			case vl::workflow::WfObserveType::SimpleObserve:
+				WriteString(vl::WString::Unmanaged(L"SimpleObserve"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"parent"));
+			Print(node->parent.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfOrderedLambdaExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"body"));
+			Print(node->body.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfOrderedNameExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfPredefinedType* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			switch (node->name)
+			{
+			case vl::workflow::WfPredefinedTypeName::Bool:
+				WriteString(vl::WString::Unmanaged(L"Bool"));
+				break;
+			case vl::workflow::WfPredefinedTypeName::Char:
+				WriteString(vl::WString::Unmanaged(L"Char"));
+				break;
+			case vl::workflow::WfPredefinedTypeName::Double:
+				WriteString(vl::WString::Unmanaged(L"Double"));
+				break;
+			case vl::workflow::WfPredefinedTypeName::Float:
+				WriteString(vl::WString::Unmanaged(L"Float"));
+				break;
+			case vl::workflow::WfPredefinedTypeName::Int:
+				WriteString(vl::WString::Unmanaged(L"Int"));
+				break;
+			case vl::workflow::WfPredefinedTypeName::Interface:
+				WriteString(vl::WString::Unmanaged(L"Interface"));
+				break;
+			case vl::workflow::WfPredefinedTypeName::Object:
+				WriteString(vl::WString::Unmanaged(L"Object"));
+				break;
+			case vl::workflow::WfPredefinedTypeName::String:
+				WriteString(vl::WString::Unmanaged(L"String"));
+				break;
+			case vl::workflow::WfPredefinedTypeName::UInt:
+				WriteString(vl::WString::Unmanaged(L"UInt"));
+				break;
+			case vl::workflow::WfPredefinedTypeName::Void:
+				WriteString(vl::WString::Unmanaged(L"Void"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfPropertyDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"getter"));
+			WriteToken(node->getter);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"setter"));
+			WriteToken(node->setter);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"valueChangedEvent"));
+			WriteToken(node->valueChangedEvent);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfRaiseExceptionStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfRangeExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"begin"));
+			Print(node->begin.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"beginBoundary"));
+			switch (node->beginBoundary)
+			{
+			case vl::workflow::WfRangeBoundary::Exclusive:
+				WriteString(vl::WString::Unmanaged(L"Exclusive"));
+				break;
+			case vl::workflow::WfRangeBoundary::Inclusive:
+				WriteString(vl::WString::Unmanaged(L"Inclusive"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"end"));
+			Print(node->end.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"endBoundary"));
+			switch (node->endBoundary)
+			{
+			case vl::workflow::WfRangeBoundary::Exclusive:
+				WriteString(vl::WString::Unmanaged(L"Exclusive"));
+				break;
+			case vl::workflow::WfRangeBoundary::Inclusive:
+				WriteString(vl::WString::Unmanaged(L"Inclusive"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfRawPointerType* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"element"));
+			Print(node->element.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfReferenceExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfReferenceType* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfReturnStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfSetTestingExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"collection"));
+			Print(node->collection.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"element"));
+			Print(node->element.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"test"));
+			switch (node->test)
+			{
+			case vl::workflow::WfSetTesting::In:
+				WriteString(vl::WString::Unmanaged(L"In"));
+				break;
+			case vl::workflow::WfSetTesting::NotIn:
+				WriteString(vl::WString::Unmanaged(L"NotIn"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfSharedPointerType* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"element"));
+			Print(node->element.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfStateDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"arguments"));
+			BeginArray();
+			for (auto&& listItem : node->arguments)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"statement"));
+			Print(node->statement.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfStateInput* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"arguments"));
+			BeginArray();
+			for (auto&& listItem : node->arguments)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfStateInvokeStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"arguments"));
+			BeginArray();
+			for (auto&& listItem : node->arguments)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"type"));
+			switch (node->type)
+			{
+			case vl::workflow::WfStateInvokeType::Goto:
+				WriteString(vl::WString::Unmanaged(L"Goto"));
+				break;
+			case vl::workflow::WfStateInvokeType::Push:
+				WriteString(vl::WString::Unmanaged(L"Push"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfStateMachineDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"inputs"));
+			BeginArray();
+			for (auto&& listItem : node->inputs)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"states"));
+			BeginArray();
+			for (auto&& listItem : node->states)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfStateMachineStatement* node)
+		{
+		}
+		void AstVisitor::PrintFields(WfStateSwitchArgument* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfStateSwitchCase* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"arguments"));
+			BeginArray();
+			for (auto&& listItem : node->arguments)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"statement"));
+			Print(node->statement.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfStateSwitchStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"caseBranches"));
+			BeginArray();
+			for (auto&& listItem : node->caseBranches)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"type"));
+			switch (node->type)
+			{
+			case vl::workflow::WfStateSwitchType::Default:
+				WriteString(vl::WString::Unmanaged(L"Default"));
+				break;
+			case vl::workflow::WfStateSwitchType::Ignore:
+				WriteString(vl::WString::Unmanaged(L"Ignore"));
+				break;
+			case vl::workflow::WfStateSwitchType::IgnoreAndReturn:
+				WriteString(vl::WString::Unmanaged(L"IgnoreAndReturn"));
+				break;
+			case vl::workflow::WfStateSwitchType::Pass:
+				WriteString(vl::WString::Unmanaged(L"Pass"));
+				break;
+			case vl::workflow::WfStateSwitchType::PassAndReturn:
+				WriteString(vl::WString::Unmanaged(L"PassAndReturn"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfStatement* node)
+		{
+		}
+		void AstVisitor::PrintFields(WfStaticInitDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"statement"));
+			Print(node->statement.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfStringExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"value"));
+			WriteToken(node->value);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfStructDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"members"));
+			BeginArray();
+			for (auto&& listItem : node->members)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfStructMember* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"attributes"));
+			BeginArray();
+			for (auto&& listItem : node->attributes)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfSwitchCase* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"statement"));
+			Print(node->statement.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfSwitchStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"caseBranches"));
+			BeginArray();
+			for (auto&& listItem : node->caseBranches)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"defaultBranch"));
+			Print(node->defaultBranch.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfThisExpression* node)
+		{
+		}
+		void AstVisitor::PrintFields(WfTopQualifiedExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfTopQualifiedType* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfTryStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"catchStatement"));
+			Print(node->catchStatement.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"finallyStatement"));
+			Print(node->finallyStatement.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"protectedStatement"));
+			Print(node->protectedStatement.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfType* node)
+		{
+		}
+		void AstVisitor::PrintFields(WfTypeCastingExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"strategy"));
+			switch (node->strategy)
+			{
+			case vl::workflow::WfTypeCastingStrategy::Strong:
+				WriteString(vl::WString::Unmanaged(L"Strong"));
+				break;
+			case vl::workflow::WfTypeCastingStrategy::Weak:
+				WriteString(vl::WString::Unmanaged(L"Weak"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfTypeOfExpressionExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfTypeOfTypeExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfTypeTestingExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"test"));
+			switch (node->test)
+			{
+			case vl::workflow::WfTypeTesting::IsNotNull:
+				WriteString(vl::WString::Unmanaged(L"IsNotNull"));
+				break;
+			case vl::workflow::WfTypeTesting::IsNotType:
+				WriteString(vl::WString::Unmanaged(L"IsNotType"));
+				break;
+			case vl::workflow::WfTypeTesting::IsNull:
+				WriteString(vl::WString::Unmanaged(L"IsNull"));
+				break;
+			case vl::workflow::WfTypeTesting::IsType:
+				WriteString(vl::WString::Unmanaged(L"IsType"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfUnaryExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"op"));
+			switch (node->op)
+			{
+			case vl::workflow::WfUnaryOperator::Negative:
+				WriteString(vl::WString::Unmanaged(L"Negative"));
+				break;
+			case vl::workflow::WfUnaryOperator::Not:
+				WriteString(vl::WString::Unmanaged(L"Not"));
+				break;
+			case vl::workflow::WfUnaryOperator::Positive:
+				WriteString(vl::WString::Unmanaged(L"Positive"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"operand"));
+			Print(node->operand.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfVariableDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expression"));
+			Print(node->expression.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"type"));
+			Print(node->type.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfVariableStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"variable"));
+			Print(node->variable.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfVirtualCfeDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expandedDeclarations"));
+			BeginArray();
+			for (auto&& listItem : node->expandedDeclarations)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfVirtualCfeExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expandedExpression"));
+			Print(node->expandedExpression.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfVirtualCseDeclaration* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expandedDeclarations"));
+			BeginArray();
+			for (auto&& listItem : node->expandedDeclarations)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfVirtualCseExpression* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expandedExpression"));
+			Print(node->expandedExpression.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfVirtualCseStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"expandedStatement"));
+			Print(node->expandedStatement.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(WfWhileStatement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"condition"));
+			Print(node->condition.Obj());
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"statement"));
+			Print(node->statement.Obj());
+			EndField();
+		}
+
+		void AstVisitor::Visit(WfPredefinedType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"PredefinedType"), node);
+			PrintFields(static_cast<WfType*>(node));
+			PrintFields(static_cast<WfPredefinedType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfTopQualifiedType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"TopQualifiedType"), node);
+			PrintFields(static_cast<WfType*>(node));
+			PrintFields(static_cast<WfTopQualifiedType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfReferenceType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ReferenceType"), node);
+			PrintFields(static_cast<WfType*>(node));
+			PrintFields(static_cast<WfReferenceType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfRawPointerType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"RawPointerType"), node);
+			PrintFields(static_cast<WfType*>(node));
+			PrintFields(static_cast<WfRawPointerType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfSharedPointerType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"SharedPointerType"), node);
+			PrintFields(static_cast<WfType*>(node));
+			PrintFields(static_cast<WfSharedPointerType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfNullableType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"NullableType"), node);
+			PrintFields(static_cast<WfType*>(node));
+			PrintFields(static_cast<WfNullableType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfEnumerableType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"EnumerableType"), node);
+			PrintFields(static_cast<WfType*>(node));
+			PrintFields(static_cast<WfEnumerableType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfMapType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"MapType"), node);
+			PrintFields(static_cast<WfType*>(node));
+			PrintFields(static_cast<WfMapType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfObservableListType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ObservableListType"), node);
+			PrintFields(static_cast<WfType*>(node));
+			PrintFields(static_cast<WfObservableListType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfFunctionType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"FunctionType"), node);
+			PrintFields(static_cast<WfType*>(node));
+			PrintFields(static_cast<WfFunctionType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfChildType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ChildType"), node);
+			PrintFields(static_cast<WfType*>(node));
+			PrintFields(static_cast<WfChildType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfThisExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ThisExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfThisExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfTopQualifiedExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"TopQualifiedExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfTopQualifiedExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfReferenceExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ReferenceExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfReferenceExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfOrderedNameExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"OrderedNameExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfOrderedNameExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfOrderedLambdaExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"OrderedLambdaExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfOrderedLambdaExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfMemberExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"MemberExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfMemberExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfChildExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ChildExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfChildExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfLiteralExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"LiteralExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfLiteralExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfFloatingExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"FloatingExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfFloatingExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfIntegerExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"IntegerExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfIntegerExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfStringExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"StringExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfStringExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfUnaryExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"UnaryExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfUnaryExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfBinaryExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"BinaryExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfBinaryExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfLetExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"LetExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfLetExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfIfExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"IfExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfIfExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfRangeExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"RangeExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfRangeExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfSetTestingExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"SetTestingExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfSetTestingExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfConstructorExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ConstructorExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfConstructorExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfInferExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"InferExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfInferExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfTypeCastingExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"TypeCastingExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfTypeCastingExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfTypeTestingExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"TypeTestingExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfTypeTestingExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfTypeOfTypeExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"TypeOfTypeExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfTypeOfTypeExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfTypeOfExpressionExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"TypeOfExpressionExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfTypeOfExpressionExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfAttachEventExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"AttachEventExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfAttachEventExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfDetachEventExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"DetachEventExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfDetachEventExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfObserveExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ObserveExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfObserveExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfCallExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"CallExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfCallExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfFunctionExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"FunctionExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfFunctionExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfNewClassExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"NewClassExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfNewClassExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfNewInterfaceExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"NewInterfaceExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfNewInterfaceExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfVirtualCfeExpression* node)
+		{
+			node->Accept(static_cast<WfVirtualCfeExpression::IVisitor*>(this));
+		}
+
+		void AstVisitor::Visit(WfVirtualCseExpression* node)
+		{
+			node->Accept(static_cast<WfVirtualCseExpression::IVisitor*>(this));
+		}
+
+		void AstVisitor::Visit(WfBreakStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"BreakStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfBreakStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfContinueStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ContinueStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfContinueStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfReturnStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ReturnStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfReturnStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfDeleteStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"DeleteStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfDeleteStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfRaiseExceptionStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"RaiseExceptionStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfRaiseExceptionStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfIfStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"IfStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfIfStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfWhileStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"WhileStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfWhileStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfTryStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"TryStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfTryStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfBlockStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"BlockStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfBlockStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfGotoStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"GotoStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfGotoStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfVariableStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"VariableStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfVariableStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfExpressionStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ExpressionStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfExpressionStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfVirtualCseStatement* node)
+		{
+			node->Accept(static_cast<WfVirtualCseStatement::IVisitor*>(this));
+		}
+
+		void AstVisitor::Visit(WfCoroutineStatement* node)
+		{
+			node->Accept(static_cast<WfCoroutineStatement::IVisitor*>(this));
+		}
+
+		void AstVisitor::Visit(WfStateMachineStatement* node)
+		{
+			node->Accept(static_cast<WfStateMachineStatement::IVisitor*>(this));
+		}
+
+		void AstVisitor::Visit(WfNamespaceDeclaration* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"NamespaceDeclaration"), node);
+			PrintFields(static_cast<WfDeclaration*>(node));
+			PrintFields(static_cast<WfNamespaceDeclaration*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfFunctionDeclaration* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"FunctionDeclaration"), node);
+			PrintFields(static_cast<WfDeclaration*>(node));
+			PrintFields(static_cast<WfFunctionDeclaration*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfVariableDeclaration* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"VariableDeclaration"), node);
+			PrintFields(static_cast<WfDeclaration*>(node));
+			PrintFields(static_cast<WfVariableDeclaration*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfEventDeclaration* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"EventDeclaration"), node);
+			PrintFields(static_cast<WfDeclaration*>(node));
+			PrintFields(static_cast<WfEventDeclaration*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfPropertyDeclaration* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"PropertyDeclaration"), node);
+			PrintFields(static_cast<WfDeclaration*>(node));
+			PrintFields(static_cast<WfPropertyDeclaration*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfStaticInitDeclaration* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"StaticInitDeclaration"), node);
+			PrintFields(static_cast<WfDeclaration*>(node));
+			PrintFields(static_cast<WfStaticInitDeclaration*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfConstructorDeclaration* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ConstructorDeclaration"), node);
+			PrintFields(static_cast<WfDeclaration*>(node));
+			PrintFields(static_cast<WfConstructorDeclaration*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfDestructorDeclaration* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"DestructorDeclaration"), node);
+			PrintFields(static_cast<WfDeclaration*>(node));
+			PrintFields(static_cast<WfDestructorDeclaration*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfClassDeclaration* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ClassDeclaration"), node);
+			PrintFields(static_cast<WfDeclaration*>(node));
+			PrintFields(static_cast<WfClassDeclaration*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfEnumDeclaration* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"EnumDeclaration"), node);
+			PrintFields(static_cast<WfDeclaration*>(node));
+			PrintFields(static_cast<WfEnumDeclaration*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfStructDeclaration* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"StructDeclaration"), node);
+			PrintFields(static_cast<WfDeclaration*>(node));
+			PrintFields(static_cast<WfStructDeclaration*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfVirtualCfeDeclaration* node)
+		{
+			node->Accept(static_cast<WfVirtualCfeDeclaration::IVisitor*>(this));
+		}
+
+		void AstVisitor::Visit(WfVirtualCseDeclaration* node)
+		{
+			node->Accept(static_cast<WfVirtualCseDeclaration::IVisitor*>(this));
+		}
+
+		void AstVisitor::Visit(WfAutoPropertyDeclaration* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"AutoPropertyDeclaration"), node);
+			PrintFields(static_cast<WfDeclaration*>(node));
+			PrintFields(static_cast<WfVirtualCfeDeclaration*>(node));
+			PrintFields(static_cast<WfAutoPropertyDeclaration*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfCastResultInterfaceDeclaration* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"CastResultInterfaceDeclaration"), node);
+			PrintFields(static_cast<WfDeclaration*>(node));
+			PrintFields(static_cast<WfVirtualCfeDeclaration*>(node));
+			PrintFields(static_cast<WfCastResultInterfaceDeclaration*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfStateMachineDeclaration* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"StateMachineDeclaration"), node);
+			PrintFields(static_cast<WfDeclaration*>(node));
+			PrintFields(static_cast<WfVirtualCseDeclaration*>(node));
+			PrintFields(static_cast<WfStateMachineDeclaration*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfForEachStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ForEachStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfVirtualCseStatement*>(node));
+			PrintFields(static_cast<WfForEachStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfSwitchStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"SwitchStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfVirtualCseStatement*>(node));
+			PrintFields(static_cast<WfSwitchStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfCoProviderStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"CoProviderStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfVirtualCseStatement*>(node));
+			PrintFields(static_cast<WfCoProviderStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfCoPauseStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"CoPauseStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfCoroutineStatement*>(node));
+			PrintFields(static_cast<WfCoPauseStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfCoOperatorStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"CoOperatorStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfCoroutineStatement*>(node));
+			PrintFields(static_cast<WfCoOperatorStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfStateSwitchStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"StateSwitchStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfStateMachineStatement*>(node));
+			PrintFields(static_cast<WfStateSwitchStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfStateInvokeStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"StateInvokeStatement"), node);
+			PrintFields(static_cast<WfStatement*>(node));
+			PrintFields(static_cast<WfStateMachineStatement*>(node));
+			PrintFields(static_cast<WfStateInvokeStatement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfFormatExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"FormatExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfVirtualCfeExpression*>(node));
+			PrintFields(static_cast<WfFormatExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfBindExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"BindExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfVirtualCseExpression*>(node));
+			PrintFields(static_cast<WfBindExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfNewCoroutineExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"NewCoroutineExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfVirtualCseExpression*>(node));
+			PrintFields(static_cast<WfNewCoroutineExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfMixinCastExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"MixinCastExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfVirtualCseExpression*>(node));
+			PrintFields(static_cast<WfMixinCastExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfExpectedTypeCastExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ExpectedTypeCastExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfVirtualCseExpression*>(node));
+			PrintFields(static_cast<WfExpectedTypeCastExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfCoOperatorExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"CoOperatorExpression"), node);
+			PrintFields(static_cast<WfExpression*>(node));
+			PrintFields(static_cast<WfVirtualCseExpression*>(node));
+			PrintFields(static_cast<WfCoOperatorExpression*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfModuleUsingNameFragment* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ModuleUsingNameFragment"), node);
+			PrintFields(static_cast<WfModuleUsingFragment*>(node));
+			PrintFields(static_cast<WfModuleUsingNameFragment*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfModuleUsingWildCardFragment* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ModuleUsingWildCardFragment"), node);
+			PrintFields(static_cast<WfModuleUsingFragment*>(node));
+			PrintFields(static_cast<WfModuleUsingWildCardFragment*>(node));
+			EndObject();
+		}
+
+		AstVisitor::AstVisitor(vl::stream::StreamWriter& _writer)
+			: vl::glr::JsonVisitorBase(_writer)
+		{
+		}
+
+		void AstVisitor::Print(WfType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			node->Accept(static_cast<WfType::IVisitor*>(this));
+		}
+
+		void AstVisitor::Print(WfExpression* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			node->Accept(static_cast<WfExpression::IVisitor*>(this));
+		}
+
+		void AstVisitor::Print(WfStatement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			node->Accept(static_cast<WfStatement::IVisitor*>(this));
+		}
+
+		void AstVisitor::Print(WfDeclaration* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			node->Accept(static_cast<WfDeclaration::IVisitor*>(this));
+		}
+
+		void AstVisitor::Print(WfModuleUsingFragment* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			node->Accept(static_cast<WfModuleUsingFragment::IVisitor*>(this));
+		}
+
+		void AstVisitor::Print(WfAttribute* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"Attribute"), node);
+			PrintFields(static_cast<WfAttribute*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(WfFunctionArgument* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"FunctionArgument"), node);
+			PrintFields(static_cast<WfFunctionArgument*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(WfBaseConstructorCall* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"BaseConstructorCall"), node);
+			PrintFields(static_cast<WfBaseConstructorCall*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(WfEnumItemIntersection* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"EnumItemIntersection"), node);
+			PrintFields(static_cast<WfEnumItemIntersection*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(WfEnumItem* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"EnumItem"), node);
+			PrintFields(static_cast<WfEnumItem*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(WfStructMember* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"StructMember"), node);
+			PrintFields(static_cast<WfStructMember*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(WfStateInput* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"StateInput"), node);
+			PrintFields(static_cast<WfStateInput*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(WfStateDeclaration* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"StateDeclaration"), node);
+			PrintFields(static_cast<WfStateDeclaration*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(WfSwitchCase* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"SwitchCase"), node);
+			PrintFields(static_cast<WfSwitchCase*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(WfStateSwitchArgument* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"StateSwitchArgument"), node);
+			PrintFields(static_cast<WfStateSwitchArgument*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(WfStateSwitchCase* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"StateSwitchCase"), node);
+			PrintFields(static_cast<WfStateSwitchCase*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(WfLetVariable* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"LetVariable"), node);
+			PrintFields(static_cast<WfLetVariable*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(WfConstructorArgument* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ConstructorArgument"), node);
+			PrintFields(static_cast<WfConstructorArgument*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(WfModuleUsingItem* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ModuleUsingItem"), node);
+			PrintFields(static_cast<WfModuleUsingItem*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(WfModuleUsingPath* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ModuleUsingPath"), node);
+			PrintFields(static_cast<WfModuleUsingPath*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Print(WfModule* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"Module"), node);
+			PrintFields(static_cast<WfModule*>(node));
+			EndObject();
+		}
+
+	}
+
+	namespace json_reader
+	{
+		AstVisitor::JsonObjectScope::JsonObjectScope(vl::collections::List<vl::glr::json::JsonObject*>& _jsonObjects, vl::glr::json::JsonObject* json)
+			: jsonObjects(_jsonObjects)
+		{
+			jsonObjects.Add(json);
+		}
+
+		AstVisitor::JsonObjectScope::~JsonObjectScope()
+		{
+			jsonObjects.RemoveAt(jsonObjects.Count() - 1);
+		}
+
+		vl::glr::json::JsonObject* AstVisitor::CurrentObject()
+		{
+			return jsonObjects[jsonObjects.Count() - 1];
+		}
+
+		vl::glr::json::JsonNode* AstVisitor::FindField(const vl::WString& name)
+		{
+			for (auto field : CurrentObject()->fields)
+			{
+				if (field && field->name.value == name) return field->value.Obj();
+			}
+			return nullptr;
+		}
+
+		bool AstVisitor::IsNull(vl::glr::json::JsonNode* value)
+		{
+			auto literal = dynamic_cast<vl::glr::json::JsonLiteral*>(value);
+			return literal && literal->value == vl::glr::json::JsonLiteralValue::Null;
+		}
+
+		vl::WString AstVisitor::ReadType(vl::glr::json::JsonObject* json)
+		{
+			if (!json) throw vl::Exception(L"AST JSON object cannot be null.");
+			bool typeFound = false;
+			vl::WString typeName;
+			for (auto field : json->fields)
+			{
+				if (field && field->name.value == L"$ast")
+				{
+					if (typeFound) throw vl::Exception(L"AST JSON object contains duplicate \"$ast\" fields.");
+					typeFound = true;
+					auto jsonString = field->value.Cast<vl::glr::json::JsonString>();
+					if (!jsonString) throw vl::Exception(L"AST JSON field \"$ast\" must be a string.");
+					typeName = jsonString->content.value;
+				}
+			}
+			if (!typeFound) throw vl::Exception(L"AST JSON object is missing field \"$ast\".");
+			return typeName;
+		}
+
+		void AstVisitor::ValidateFields(vl::glr::json::JsonObject* json, const vl::WString& typeName)
+		{
+			vl::collections::List<vl::WString> fieldNames;
+			for (auto field : json->fields)
+			{
+				if (!field || !field->value) throw vl::Exception(L"AST JSON object contains an invalid field.");
+				auto name = field->name.value;
+				if (fieldNames.Contains(name)) throw vl::Exception(L"AST JSON object contains duplicate field \"" + name + L"\".");
+				fieldNames.Add(name);
+				bool fieldFound = name == L"$ast";
+				if (typeName == L"Attribute")
+				{
+					fieldFound = fieldFound || name == L"category";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"value";
+				}
+				else if (typeName == L"PredefinedType")
+				{
+					fieldFound = fieldFound || name == L"name";
+				}
+				else if (typeName == L"TopQualifiedType")
+				{
+					fieldFound = fieldFound || name == L"name";
+				}
+				else if (typeName == L"ReferenceType")
+				{
+					fieldFound = fieldFound || name == L"name";
+				}
+				else if (typeName == L"RawPointerType")
+				{
+					fieldFound = fieldFound || name == L"element";
+				}
+				else if (typeName == L"SharedPointerType")
+				{
+					fieldFound = fieldFound || name == L"element";
+				}
+				else if (typeName == L"NullableType")
+				{
+					fieldFound = fieldFound || name == L"element";
+				}
+				else if (typeName == L"EnumerableType")
+				{
+					fieldFound = fieldFound || name == L"element";
+				}
+				else if (typeName == L"MapType")
+				{
+					fieldFound = fieldFound || name == L"writability";
+					fieldFound = fieldFound || name == L"key";
+					fieldFound = fieldFound || name == L"value";
+				}
+				else if (typeName == L"ObservableListType")
+				{
+					fieldFound = fieldFound || name == L"element";
+				}
+				else if (typeName == L"FunctionType")
+				{
+					fieldFound = fieldFound || name == L"result";
+					fieldFound = fieldFound || name == L"arguments";
+				}
+				else if (typeName == L"ChildType")
+				{
+					fieldFound = fieldFound || name == L"parent";
+					fieldFound = fieldFound || name == L"name";
+				}
+				else if (typeName == L"NamespaceDeclaration")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"declarations";
+				}
+				else if (typeName == L"FunctionArgument")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"type";
+				}
+				else if (typeName == L"FunctionDeclaration")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"functionKind";
+					fieldFound = fieldFound || name == L"anonymity";
+					fieldFound = fieldFound || name == L"arguments";
+					fieldFound = fieldFound || name == L"returnType";
+					fieldFound = fieldFound || name == L"statement";
+				}
+				else if (typeName == L"VariableDeclaration")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"type";
+					fieldFound = fieldFound || name == L"expression";
+				}
+				else if (typeName == L"EventDeclaration")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"arguments";
+				}
+				else if (typeName == L"PropertyDeclaration")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"type";
+					fieldFound = fieldFound || name == L"getter";
+					fieldFound = fieldFound || name == L"setter";
+					fieldFound = fieldFound || name == L"valueChangedEvent";
+				}
+				else if (typeName == L"StaticInitDeclaration")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"statement";
+				}
+				else if (typeName == L"BaseConstructorCall")
+				{
+					fieldFound = fieldFound || name == L"type";
+					fieldFound = fieldFound || name == L"arguments";
+				}
+				else if (typeName == L"ConstructorDeclaration")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"constructorType";
+					fieldFound = fieldFound || name == L"baseConstructorCalls";
+					fieldFound = fieldFound || name == L"arguments";
+					fieldFound = fieldFound || name == L"statement";
+				}
+				else if (typeName == L"DestructorDeclaration")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"statement";
+				}
+				else if (typeName == L"ClassDeclaration")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"kind";
+					fieldFound = fieldFound || name == L"constructorType";
+					fieldFound = fieldFound || name == L"baseTypes";
+					fieldFound = fieldFound || name == L"declarations";
+				}
+				else if (typeName == L"EnumItemIntersection")
+				{
+					fieldFound = fieldFound || name == L"name";
+				}
+				else if (typeName == L"EnumItem")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"kind";
+					fieldFound = fieldFound || name == L"number";
+					fieldFound = fieldFound || name == L"intersections";
+				}
+				else if (typeName == L"EnumDeclaration")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"kind";
+					fieldFound = fieldFound || name == L"items";
+				}
+				else if (typeName == L"StructMember")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"type";
+				}
+				else if (typeName == L"StructDeclaration")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"members";
+				}
+				else if (typeName == L"AutoPropertyDeclaration")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"expandedDeclarations";
+					fieldFound = fieldFound || name == L"functionKind";
+					fieldFound = fieldFound || name == L"type";
+					fieldFound = fieldFound || name == L"configConst";
+					fieldFound = fieldFound || name == L"configObserve";
+					fieldFound = fieldFound || name == L"expression";
+				}
+				else if (typeName == L"CastResultInterfaceDeclaration")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"expandedDeclarations";
+					fieldFound = fieldFound || name == L"baseType";
+					fieldFound = fieldFound || name == L"elementType";
+				}
+				else if (typeName == L"StateInput")
+				{
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"arguments";
+				}
+				else if (typeName == L"StateDeclaration")
+				{
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"arguments";
+					fieldFound = fieldFound || name == L"statement";
+				}
+				else if (typeName == L"StateMachineDeclaration")
+				{
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"expandedDeclarations";
+					fieldFound = fieldFound || name == L"inputs";
+					fieldFound = fieldFound || name == L"states";
+				}
+				else if (typeName == L"BreakStatement")
+				{
+				}
+				else if (typeName == L"ContinueStatement")
+				{
+				}
+				else if (typeName == L"ReturnStatement")
+				{
+					fieldFound = fieldFound || name == L"expression";
+				}
+				else if (typeName == L"DeleteStatement")
+				{
+					fieldFound = fieldFound || name == L"expression";
+				}
+				else if (typeName == L"RaiseExceptionStatement")
+				{
+					fieldFound = fieldFound || name == L"expression";
+				}
+				else if (typeName == L"IfStatement")
+				{
+					fieldFound = fieldFound || name == L"type";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"expression";
+					fieldFound = fieldFound || name == L"trueBranch";
+					fieldFound = fieldFound || name == L"falseBranch";
+				}
+				else if (typeName == L"WhileStatement")
+				{
+					fieldFound = fieldFound || name == L"condition";
+					fieldFound = fieldFound || name == L"statement";
+				}
+				else if (typeName == L"TryStatement")
+				{
+					fieldFound = fieldFound || name == L"protectedStatement";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"catchStatement";
+					fieldFound = fieldFound || name == L"finallyStatement";
+				}
+				else if (typeName == L"BlockStatement")
+				{
+					fieldFound = fieldFound || name == L"statements";
+					fieldFound = fieldFound || name == L"endLabel";
+				}
+				else if (typeName == L"GotoStatement")
+				{
+					fieldFound = fieldFound || name == L"label";
+				}
+				else if (typeName == L"VariableStatement")
+				{
+					fieldFound = fieldFound || name == L"variable";
+				}
+				else if (typeName == L"ExpressionStatement")
+				{
+					fieldFound = fieldFound || name == L"expression";
+				}
+				else if (typeName == L"ForEachStatement")
+				{
+					fieldFound = fieldFound || name == L"expandedStatement";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"direction";
+					fieldFound = fieldFound || name == L"collection";
+					fieldFound = fieldFound || name == L"statement";
+				}
+				else if (typeName == L"SwitchCase")
+				{
+					fieldFound = fieldFound || name == L"expression";
+					fieldFound = fieldFound || name == L"statement";
+				}
+				else if (typeName == L"SwitchStatement")
+				{
+					fieldFound = fieldFound || name == L"expandedStatement";
+					fieldFound = fieldFound || name == L"expression";
+					fieldFound = fieldFound || name == L"caseBranches";
+					fieldFound = fieldFound || name == L"defaultBranch";
+				}
+				else if (typeName == L"CoProviderStatement")
+				{
+					fieldFound = fieldFound || name == L"expandedStatement";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"statement";
+				}
+				else if (typeName == L"CoPauseStatement")
+				{
+					fieldFound = fieldFound || name == L"statement";
+				}
+				else if (typeName == L"CoOperatorStatement")
+				{
+					fieldFound = fieldFound || name == L"varName";
+					fieldFound = fieldFound || name == L"opName";
+					fieldFound = fieldFound || name == L"arguments";
+				}
+				else if (typeName == L"StateSwitchArgument")
+				{
+					fieldFound = fieldFound || name == L"name";
+				}
+				else if (typeName == L"StateSwitchCase")
+				{
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"arguments";
+					fieldFound = fieldFound || name == L"statement";
+				}
+				else if (typeName == L"StateSwitchStatement")
+				{
+					fieldFound = fieldFound || name == L"type";
+					fieldFound = fieldFound || name == L"caseBranches";
+				}
+				else if (typeName == L"StateInvokeStatement")
+				{
+					fieldFound = fieldFound || name == L"type";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"arguments";
+				}
+				else if (typeName == L"ThisExpression")
+				{
+				}
+				else if (typeName == L"TopQualifiedExpression")
+				{
+					fieldFound = fieldFound || name == L"name";
+				}
+				else if (typeName == L"ReferenceExpression")
+				{
+					fieldFound = fieldFound || name == L"name";
+				}
+				else if (typeName == L"OrderedNameExpression")
+				{
+					fieldFound = fieldFound || name == L"name";
+				}
+				else if (typeName == L"OrderedLambdaExpression")
+				{
+					fieldFound = fieldFound || name == L"body";
+				}
+				else if (typeName == L"MemberExpression")
+				{
+					fieldFound = fieldFound || name == L"parent";
+					fieldFound = fieldFound || name == L"name";
+				}
+				else if (typeName == L"ChildExpression")
+				{
+					fieldFound = fieldFound || name == L"parent";
+					fieldFound = fieldFound || name == L"name";
+				}
+				else if (typeName == L"LiteralExpression")
+				{
+					fieldFound = fieldFound || name == L"value";
+				}
+				else if (typeName == L"FloatingExpression")
+				{
+					fieldFound = fieldFound || name == L"value";
+				}
+				else if (typeName == L"IntegerExpression")
+				{
+					fieldFound = fieldFound || name == L"value";
+				}
+				else if (typeName == L"StringExpression")
+				{
+					fieldFound = fieldFound || name == L"value";
+				}
+				else if (typeName == L"UnaryExpression")
+				{
+					fieldFound = fieldFound || name == L"op";
+					fieldFound = fieldFound || name == L"operand";
+				}
+				else if (typeName == L"BinaryExpression")
+				{
+					fieldFound = fieldFound || name == L"op";
+					fieldFound = fieldFound || name == L"first";
+					fieldFound = fieldFound || name == L"second";
+				}
+				else if (typeName == L"LetVariable")
+				{
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"value";
+				}
+				else if (typeName == L"LetExpression")
+				{
+					fieldFound = fieldFound || name == L"variables";
+					fieldFound = fieldFound || name == L"expression";
+				}
+				else if (typeName == L"IfExpression")
+				{
+					fieldFound = fieldFound || name == L"condition";
+					fieldFound = fieldFound || name == L"trueBranch";
+					fieldFound = fieldFound || name == L"falseBranch";
+				}
+				else if (typeName == L"RangeExpression")
+				{
+					fieldFound = fieldFound || name == L"begin";
+					fieldFound = fieldFound || name == L"beginBoundary";
+					fieldFound = fieldFound || name == L"end";
+					fieldFound = fieldFound || name == L"endBoundary";
+				}
+				else if (typeName == L"SetTestingExpression")
+				{
+					fieldFound = fieldFound || name == L"test";
+					fieldFound = fieldFound || name == L"element";
+					fieldFound = fieldFound || name == L"collection";
+				}
+				else if (typeName == L"ConstructorArgument")
+				{
+					fieldFound = fieldFound || name == L"key";
+					fieldFound = fieldFound || name == L"value";
+				}
+				else if (typeName == L"ConstructorExpression")
+				{
+					fieldFound = fieldFound || name == L"arguments";
+				}
+				else if (typeName == L"InferExpression")
+				{
+					fieldFound = fieldFound || name == L"expression";
+					fieldFound = fieldFound || name == L"type";
+				}
+				else if (typeName == L"TypeCastingExpression")
+				{
+					fieldFound = fieldFound || name == L"strategy";
+					fieldFound = fieldFound || name == L"expression";
+					fieldFound = fieldFound || name == L"type";
+				}
+				else if (typeName == L"TypeTestingExpression")
+				{
+					fieldFound = fieldFound || name == L"test";
+					fieldFound = fieldFound || name == L"expression";
+					fieldFound = fieldFound || name == L"type";
+				}
+				else if (typeName == L"TypeOfTypeExpression")
+				{
+					fieldFound = fieldFound || name == L"type";
+				}
+				else if (typeName == L"TypeOfExpressionExpression")
+				{
+					fieldFound = fieldFound || name == L"expression";
+				}
+				else if (typeName == L"AttachEventExpression")
+				{
+					fieldFound = fieldFound || name == L"event";
+					fieldFound = fieldFound || name == L"function";
+				}
+				else if (typeName == L"DetachEventExpression")
+				{
+					fieldFound = fieldFound || name == L"event";
+					fieldFound = fieldFound || name == L"handler";
+				}
+				else if (typeName == L"ObserveExpression")
+				{
+					fieldFound = fieldFound || name == L"parent";
+					fieldFound = fieldFound || name == L"observeType";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"expression";
+					fieldFound = fieldFound || name == L"events";
+				}
+				else if (typeName == L"CallExpression")
+				{
+					fieldFound = fieldFound || name == L"function";
+					fieldFound = fieldFound || name == L"arguments";
+				}
+				else if (typeName == L"FunctionExpression")
+				{
+					fieldFound = fieldFound || name == L"function";
+				}
+				else if (typeName == L"NewClassExpression")
+				{
+					fieldFound = fieldFound || name == L"type";
+					fieldFound = fieldFound || name == L"arguments";
+				}
+				else if (typeName == L"NewInterfaceExpression")
+				{
+					fieldFound = fieldFound || name == L"type";
+					fieldFound = fieldFound || name == L"declarations";
+				}
+				else if (typeName == L"FormatExpression")
+				{
+					fieldFound = fieldFound || name == L"expandedExpression";
+					fieldFound = fieldFound || name == L"value";
+				}
+				else if (typeName == L"BindExpression")
+				{
+					fieldFound = fieldFound || name == L"expandedExpression";
+					fieldFound = fieldFound || name == L"expression";
+				}
+				else if (typeName == L"NewCoroutineExpression")
+				{
+					fieldFound = fieldFound || name == L"expandedExpression";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"statement";
+				}
+				else if (typeName == L"MixinCastExpression")
+				{
+					fieldFound = fieldFound || name == L"expandedExpression";
+					fieldFound = fieldFound || name == L"type";
+					fieldFound = fieldFound || name == L"expression";
+				}
+				else if (typeName == L"ExpectedTypeCastExpression")
+				{
+					fieldFound = fieldFound || name == L"expandedExpression";
+					fieldFound = fieldFound || name == L"strategy";
+					fieldFound = fieldFound || name == L"expression";
+				}
+				else if (typeName == L"CoOperatorExpression")
+				{
+					fieldFound = fieldFound || name == L"expandedExpression";
+					fieldFound = fieldFound || name == L"name";
+				}
+				else if (typeName == L"ModuleUsingNameFragment")
+				{
+					fieldFound = fieldFound || name == L"name";
+				}
+				else if (typeName == L"ModuleUsingWildCardFragment")
+				{
+				}
+				else if (typeName == L"ModuleUsingItem")
+				{
+					fieldFound = fieldFound || name == L"fragments";
+				}
+				else if (typeName == L"ModuleUsingPath")
+				{
+					fieldFound = fieldFound || name == L"items";
+				}
+				else if (typeName == L"Module")
+				{
+					fieldFound = fieldFound || name == L"moduleType";
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"paths";
+					fieldFound = fieldFound || name == L"declarations";
+				}
+				if (!fieldFound) throw vl::Exception(L"AST JSON object contains unknown field \"" + name + L"\" for type \"" + typeName + L"\".");
+			}
+		}
+
+		void AstVisitor::FillFields(WfAttachEventExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"event")))
+			{
+				if (IsNull(value))
+				{
+					node->event = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"event\" contains an incompatible AST type.");
+					node->event = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"event\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"function")))
+			{
+				if (IsNull(value))
+				{
+					node->function = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"function\" contains an incompatible AST type.");
+					node->function = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"function\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfAttribute* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"category")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"category\" must be a string.");
+				node->category.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"value")))
+			{
+				if (IsNull(value))
+				{
+					node->value = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"value\" contains an incompatible AST type.");
+					node->value = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"value\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfAutoPropertyDeclaration* node)
+		{
+			FillFields(static_cast<WfVirtualCfeDeclaration*>(node));
+			node->functionKind = WfFunctionKind::Static;
+			if (auto value = FindField(vl::WString::Unmanaged(L"functionKind")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"functionKind\" must be a string.");
+				if (jsonString->content.value == L"Static") node->functionKind = WfFunctionKind::Static;
+				else if (jsonString->content.value == L"Override") node->functionKind = WfFunctionKind::Override;
+				else if (jsonString->content.value == L"Normal") node->functionKind = WfFunctionKind::Normal;
+				else throw vl::Exception(L"AST JSON field \"functionKind\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
+			node->configConst = WfAPConst::Readonly;
+			if (auto value = FindField(vl::WString::Unmanaged(L"configConst")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"configConst\" must be a string.");
+				if (jsonString->content.value == L"Readonly") node->configConst = WfAPConst::Readonly;
+				else if (jsonString->content.value == L"Writable") node->configConst = WfAPConst::Writable;
+				else throw vl::Exception(L"AST JSON field \"configConst\" contains an unknown enum item.");
+			}
+			node->configObserve = WfAPObserve::Observable;
+			if (auto value = FindField(vl::WString::Unmanaged(L"configObserve")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"configObserve\" must be a string.");
+				if (jsonString->content.value == L"Observable") node->configObserve = WfAPObserve::Observable;
+				else if (jsonString->content.value == L"NotObservable") node->configObserve = WfAPObserve::NotObservable;
+				else throw vl::Exception(L"AST JSON field \"configObserve\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfBaseConstructorCall* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"arguments")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"arguments\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->arguments.Add(vl::Ptr<WfExpression>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfExpression>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"arguments\" contains an incompatible AST type.");
+						node->arguments.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"arguments\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfBinaryExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			node->op = WfBinaryOperator::Assign;
+			if (auto value = FindField(vl::WString::Unmanaged(L"op")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"op\" must be a string.");
+				if (jsonString->content.value == L"Assign") node->op = WfBinaryOperator::Assign;
+				else if (jsonString->content.value == L"Index") node->op = WfBinaryOperator::Index;
+				else if (jsonString->content.value == L"FlagAnd") node->op = WfBinaryOperator::FlagAnd;
+				else if (jsonString->content.value == L"FlagOr") node->op = WfBinaryOperator::FlagOr;
+				else if (jsonString->content.value == L"FailedThen") node->op = WfBinaryOperator::FailedThen;
+				else if (jsonString->content.value == L"Exp") node->op = WfBinaryOperator::Exp;
+				else if (jsonString->content.value == L"Add") node->op = WfBinaryOperator::Add;
+				else if (jsonString->content.value == L"Sub") node->op = WfBinaryOperator::Sub;
+				else if (jsonString->content.value == L"Mul") node->op = WfBinaryOperator::Mul;
+				else if (jsonString->content.value == L"Div") node->op = WfBinaryOperator::Div;
+				else if (jsonString->content.value == L"Mod") node->op = WfBinaryOperator::Mod;
+				else if (jsonString->content.value == L"Shl") node->op = WfBinaryOperator::Shl;
+				else if (jsonString->content.value == L"Shr") node->op = WfBinaryOperator::Shr;
+				else if (jsonString->content.value == L"LT") node->op = WfBinaryOperator::LT;
+				else if (jsonString->content.value == L"GT") node->op = WfBinaryOperator::GT;
+				else if (jsonString->content.value == L"LE") node->op = WfBinaryOperator::LE;
+				else if (jsonString->content.value == L"GE") node->op = WfBinaryOperator::GE;
+				else if (jsonString->content.value == L"EQ") node->op = WfBinaryOperator::EQ;
+				else if (jsonString->content.value == L"NE") node->op = WfBinaryOperator::NE;
+				else if (jsonString->content.value == L"Xor") node->op = WfBinaryOperator::Xor;
+				else if (jsonString->content.value == L"And") node->op = WfBinaryOperator::And;
+				else if (jsonString->content.value == L"Or") node->op = WfBinaryOperator::Or;
+				else throw vl::Exception(L"AST JSON field \"op\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"first")))
+			{
+				if (IsNull(value))
+				{
+					node->first = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"first\" contains an incompatible AST type.");
+					node->first = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"first\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"second")))
+			{
+				if (IsNull(value))
+				{
+					node->second = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"second\" contains an incompatible AST type.");
+					node->second = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"second\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfBindExpression* node)
+		{
+			FillFields(static_cast<WfVirtualCseExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfBlockStatement* node)
+		{
+			FillFields(static_cast<WfStatement*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"statements")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"statements\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->statements.Add(vl::Ptr<WfStatement>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfStatement>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"statements\" contains an incompatible AST type.");
+						node->statements.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"statements\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"endLabel")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"endLabel\" must be a string.");
+				node->endLabel.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfBreakStatement* node)
+		{
+			FillFields(static_cast<WfStatement*>(node));
+		}
+
+		void AstVisitor::FillFields(WfCallExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"function")))
+			{
+				if (IsNull(value))
+				{
+					node->function = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"function\" contains an incompatible AST type.");
+					node->function = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"function\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"arguments")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"arguments\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->arguments.Add(vl::Ptr<WfExpression>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfExpression>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"arguments\" contains an incompatible AST type.");
+						node->arguments.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"arguments\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfCastResultInterfaceDeclaration* node)
+		{
+			FillFields(static_cast<WfVirtualCfeDeclaration*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"baseType")))
+			{
+				if (IsNull(value))
+				{
+					node->baseType = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"baseType\" contains an incompatible AST type.");
+					node->baseType = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"baseType\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"elementType")))
+			{
+				if (IsNull(value))
+				{
+					node->elementType = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"elementType\" contains an incompatible AST type.");
+					node->elementType = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"elementType\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfChildExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"parent")))
+			{
+				if (IsNull(value))
+				{
+					node->parent = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"parent\" contains an incompatible AST type.");
+					node->parent = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"parent\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfChildType* node)
+		{
+			FillFields(static_cast<WfType*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"parent")))
+			{
+				if (IsNull(value))
+				{
+					node->parent = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"parent\" contains an incompatible AST type.");
+					node->parent = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"parent\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfClassDeclaration* node)
+		{
+			FillFields(static_cast<WfDeclaration*>(node));
+			node->kind = WfClassKind::Class;
+			if (auto value = FindField(vl::WString::Unmanaged(L"kind")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"kind\" must be a string.");
+				if (jsonString->content.value == L"Class") node->kind = WfClassKind::Class;
+				else if (jsonString->content.value == L"Interface") node->kind = WfClassKind::Interface;
+				else throw vl::Exception(L"AST JSON field \"kind\" contains an unknown enum item.");
+			}
+			node->constructorType = WfConstructorType::Undefined;
+			if (auto value = FindField(vl::WString::Unmanaged(L"constructorType")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"constructorType\" must be a string.");
+				if (jsonString->content.value == L"Undefined") node->constructorType = WfConstructorType::Undefined;
+				else if (jsonString->content.value == L"SharedPtr") node->constructorType = WfConstructorType::SharedPtr;
+				else if (jsonString->content.value == L"RawPtr") node->constructorType = WfConstructorType::RawPtr;
+				else throw vl::Exception(L"AST JSON field \"constructorType\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"baseTypes")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"baseTypes\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->baseTypes.Add(vl::Ptr<WfType>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfType>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"baseTypes\" contains an incompatible AST type.");
+						node->baseTypes.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"baseTypes\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"declarations")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"declarations\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->declarations.Add(vl::Ptr<WfDeclaration>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfDeclaration>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"declarations\" contains an incompatible AST type.");
+						node->declarations.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"declarations\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfCoOperatorExpression* node)
+		{
+			FillFields(static_cast<WfVirtualCseExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfCoOperatorStatement* node)
+		{
+			FillFields(static_cast<WfCoroutineStatement*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"varName")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"varName\" must be a string.");
+				node->varName.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"opName")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"opName\" must be a string.");
+				node->opName.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"arguments")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"arguments\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->arguments.Add(vl::Ptr<WfExpression>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfExpression>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"arguments\" contains an incompatible AST type.");
+						node->arguments.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"arguments\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfCoPauseStatement* node)
+		{
+			FillFields(static_cast<WfCoroutineStatement*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"statement")))
+			{
+				if (IsNull(value))
+				{
+					node->statement = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"statement\" contains an incompatible AST type.");
+					node->statement = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"statement\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfCoProviderStatement* node)
+		{
+			FillFields(static_cast<WfVirtualCseStatement*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"statement")))
+			{
+				if (IsNull(value))
+				{
+					node->statement = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"statement\" contains an incompatible AST type.");
+					node->statement = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"statement\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfConstructorArgument* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"key")))
+			{
+				if (IsNull(value))
+				{
+					node->key = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"key\" contains an incompatible AST type.");
+					node->key = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"key\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"value")))
+			{
+				if (IsNull(value))
+				{
+					node->value = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"value\" contains an incompatible AST type.");
+					node->value = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"value\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfConstructorDeclaration* node)
+		{
+			FillFields(static_cast<WfDeclaration*>(node));
+			node->constructorType = WfConstructorType::Undefined;
+			if (auto value = FindField(vl::WString::Unmanaged(L"constructorType")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"constructorType\" must be a string.");
+				if (jsonString->content.value == L"Undefined") node->constructorType = WfConstructorType::Undefined;
+				else if (jsonString->content.value == L"SharedPtr") node->constructorType = WfConstructorType::SharedPtr;
+				else if (jsonString->content.value == L"RawPtr") node->constructorType = WfConstructorType::RawPtr;
+				else throw vl::Exception(L"AST JSON field \"constructorType\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"baseConstructorCalls")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"baseConstructorCalls\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->baseConstructorCalls.Add(vl::Ptr<WfBaseConstructorCall>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfBaseConstructorCall>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"baseConstructorCalls\" contains an incompatible AST type.");
+						node->baseConstructorCalls.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"baseConstructorCalls\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"arguments")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"arguments\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->arguments.Add(vl::Ptr<WfFunctionArgument>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfFunctionArgument>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"arguments\" contains an incompatible AST type.");
+						node->arguments.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"arguments\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"statement")))
+			{
+				if (IsNull(value))
+				{
+					node->statement = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"statement\" contains an incompatible AST type.");
+					node->statement = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"statement\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfConstructorExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"arguments")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"arguments\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->arguments.Add(vl::Ptr<WfConstructorArgument>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfConstructorArgument>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"arguments\" contains an incompatible AST type.");
+						node->arguments.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"arguments\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfContinueStatement* node)
+		{
+			FillFields(static_cast<WfStatement*>(node));
+		}
+
+		void AstVisitor::FillFields(WfCoroutineStatement* node)
+		{
+			FillFields(static_cast<WfStatement*>(node));
+		}
+
+		void AstVisitor::FillFields(WfDeclaration* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"attributes")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"attributes\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->attributes.Add(vl::Ptr<WfAttribute>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfAttribute>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"attributes\" contains an incompatible AST type.");
+						node->attributes.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"attributes\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfDeleteStatement* node)
+		{
+			FillFields(static_cast<WfStatement*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfDestructorDeclaration* node)
+		{
+			FillFields(static_cast<WfDeclaration*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"statement")))
+			{
+				if (IsNull(value))
+				{
+					node->statement = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"statement\" contains an incompatible AST type.");
+					node->statement = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"statement\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfDetachEventExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"event")))
+			{
+				if (IsNull(value))
+				{
+					node->event = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"event\" contains an incompatible AST type.");
+					node->event = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"event\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"handler")))
+			{
+				if (IsNull(value))
+				{
+					node->handler = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"handler\" contains an incompatible AST type.");
+					node->handler = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"handler\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfEnumDeclaration* node)
+		{
+			FillFields(static_cast<WfDeclaration*>(node));
+			node->kind = WfEnumKind::Normal;
+			if (auto value = FindField(vl::WString::Unmanaged(L"kind")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"kind\" must be a string.");
+				if (jsonString->content.value == L"Normal") node->kind = WfEnumKind::Normal;
+				else if (jsonString->content.value == L"Flag") node->kind = WfEnumKind::Flag;
+				else throw vl::Exception(L"AST JSON field \"kind\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"items")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"items\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->items.Add(vl::Ptr<WfEnumItem>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfEnumItem>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"items\" contains an incompatible AST type.");
+						node->items.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"items\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfEnumItem* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"attributes")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"attributes\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->attributes.Add(vl::Ptr<WfAttribute>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfAttribute>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"attributes\" contains an incompatible AST type.");
+						node->attributes.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"attributes\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			node->kind = WfEnumItemKind::Constant;
+			if (auto value = FindField(vl::WString::Unmanaged(L"kind")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"kind\" must be a string.");
+				if (jsonString->content.value == L"Constant") node->kind = WfEnumItemKind::Constant;
+				else if (jsonString->content.value == L"Intersection") node->kind = WfEnumItemKind::Intersection;
+				else throw vl::Exception(L"AST JSON field \"kind\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"number")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"number\" must be a string.");
+				node->number.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"intersections")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"intersections\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->intersections.Add(vl::Ptr<WfEnumItemIntersection>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfEnumItemIntersection>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"intersections\" contains an incompatible AST type.");
+						node->intersections.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"intersections\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfEnumItemIntersection* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfEnumerableType* node)
+		{
+			FillFields(static_cast<WfType*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"element")))
+			{
+				if (IsNull(value))
+				{
+					node->element = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"element\" contains an incompatible AST type.");
+					node->element = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"element\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfEventDeclaration* node)
+		{
+			FillFields(static_cast<WfDeclaration*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"arguments")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"arguments\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->arguments.Add(vl::Ptr<WfType>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfType>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"arguments\" contains an incompatible AST type.");
+						node->arguments.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"arguments\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfExpectedTypeCastExpression* node)
+		{
+			FillFields(static_cast<WfVirtualCseExpression*>(node));
+			node->strategy = WfTypeCastingStrategy::Strong;
+			if (auto value = FindField(vl::WString::Unmanaged(L"strategy")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"strategy\" must be a string.");
+				if (jsonString->content.value == L"Strong") node->strategy = WfTypeCastingStrategy::Strong;
+				else if (jsonString->content.value == L"Weak") node->strategy = WfTypeCastingStrategy::Weak;
+				else throw vl::Exception(L"AST JSON field \"strategy\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfExpression* node)
+		{
+		}
+
+		void AstVisitor::FillFields(WfExpressionStatement* node)
+		{
+			FillFields(static_cast<WfStatement*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfFloatingExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"value")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"value\" must be a string.");
+				node->value.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfForEachStatement* node)
+		{
+			FillFields(static_cast<WfVirtualCseStatement*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			node->direction = WfForEachDirection::Normal;
+			if (auto value = FindField(vl::WString::Unmanaged(L"direction")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"direction\" must be a string.");
+				if (jsonString->content.value == L"Normal") node->direction = WfForEachDirection::Normal;
+				else if (jsonString->content.value == L"Reversed") node->direction = WfForEachDirection::Reversed;
+				else throw vl::Exception(L"AST JSON field \"direction\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"collection")))
+			{
+				if (IsNull(value))
+				{
+					node->collection = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"collection\" contains an incompatible AST type.");
+					node->collection = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"collection\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"statement")))
+			{
+				if (IsNull(value))
+				{
+					node->statement = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"statement\" contains an incompatible AST type.");
+					node->statement = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"statement\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfFormatExpression* node)
+		{
+			FillFields(static_cast<WfVirtualCfeExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"value")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"value\" must be a string.");
+				node->value.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfFunctionArgument* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"attributes")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"attributes\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->attributes.Add(vl::Ptr<WfAttribute>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfAttribute>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"attributes\" contains an incompatible AST type.");
+						node->attributes.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"attributes\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfFunctionDeclaration* node)
+		{
+			FillFields(static_cast<WfDeclaration*>(node));
+			node->functionKind = WfFunctionKind::Static;
+			if (auto value = FindField(vl::WString::Unmanaged(L"functionKind")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"functionKind\" must be a string.");
+				if (jsonString->content.value == L"Static") node->functionKind = WfFunctionKind::Static;
+				else if (jsonString->content.value == L"Override") node->functionKind = WfFunctionKind::Override;
+				else if (jsonString->content.value == L"Normal") node->functionKind = WfFunctionKind::Normal;
+				else throw vl::Exception(L"AST JSON field \"functionKind\" contains an unknown enum item.");
+			}
+			node->anonymity = WfFunctionAnonymity::Named;
+			if (auto value = FindField(vl::WString::Unmanaged(L"anonymity")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"anonymity\" must be a string.");
+				if (jsonString->content.value == L"Named") node->anonymity = WfFunctionAnonymity::Named;
+				else if (jsonString->content.value == L"Anonymous") node->anonymity = WfFunctionAnonymity::Anonymous;
+				else throw vl::Exception(L"AST JSON field \"anonymity\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"arguments")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"arguments\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->arguments.Add(vl::Ptr<WfFunctionArgument>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfFunctionArgument>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"arguments\" contains an incompatible AST type.");
+						node->arguments.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"arguments\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"returnType")))
+			{
+				if (IsNull(value))
+				{
+					node->returnType = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"returnType\" contains an incompatible AST type.");
+					node->returnType = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"returnType\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"statement")))
+			{
+				if (IsNull(value))
+				{
+					node->statement = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"statement\" contains an incompatible AST type.");
+					node->statement = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"statement\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfFunctionExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"function")))
+			{
+				if (IsNull(value))
+				{
+					node->function = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfFunctionDeclaration>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"function\" contains an incompatible AST type.");
+					node->function = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"function\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfFunctionType* node)
+		{
+			FillFields(static_cast<WfType*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"result")))
+			{
+				if (IsNull(value))
+				{
+					node->result = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"result\" contains an incompatible AST type.");
+					node->result = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"result\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"arguments")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"arguments\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->arguments.Add(vl::Ptr<WfType>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfType>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"arguments\" contains an incompatible AST type.");
+						node->arguments.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"arguments\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfGotoStatement* node)
+		{
+			FillFields(static_cast<WfStatement*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"label")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"label\" must be a string.");
+				node->label.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfIfExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"condition")))
+			{
+				if (IsNull(value))
+				{
+					node->condition = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"condition\" contains an incompatible AST type.");
+					node->condition = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"condition\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"trueBranch")))
+			{
+				if (IsNull(value))
+				{
+					node->trueBranch = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"trueBranch\" contains an incompatible AST type.");
+					node->trueBranch = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"trueBranch\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"falseBranch")))
+			{
+				if (IsNull(value))
+				{
+					node->falseBranch = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"falseBranch\" contains an incompatible AST type.");
+					node->falseBranch = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"falseBranch\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfIfStatement* node)
+		{
+			FillFields(static_cast<WfStatement*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"trueBranch")))
+			{
+				if (IsNull(value))
+				{
+					node->trueBranch = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"trueBranch\" contains an incompatible AST type.");
+					node->trueBranch = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"trueBranch\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"falseBranch")))
+			{
+				if (IsNull(value))
+				{
+					node->falseBranch = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"falseBranch\" contains an incompatible AST type.");
+					node->falseBranch = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"falseBranch\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfInferExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfIntegerExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"value")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"value\" must be a string.");
+				node->value.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfLetExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"variables")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"variables\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->variables.Add(vl::Ptr<WfLetVariable>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfLetVariable>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"variables\" contains an incompatible AST type.");
+						node->variables.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"variables\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfLetVariable* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"value")))
+			{
+				if (IsNull(value))
+				{
+					node->value = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"value\" contains an incompatible AST type.");
+					node->value = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"value\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfLiteralExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			node->value = WfLiteralValue::Null;
+			if (auto value = FindField(vl::WString::Unmanaged(L"value")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"value\" must be a string.");
+				if (jsonString->content.value == L"Null") node->value = WfLiteralValue::Null;
+				else if (jsonString->content.value == L"True") node->value = WfLiteralValue::True;
+				else if (jsonString->content.value == L"False") node->value = WfLiteralValue::False;
+				else throw vl::Exception(L"AST JSON field \"value\" contains an unknown enum item.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfMapType* node)
+		{
+			FillFields(static_cast<WfType*>(node));
+			node->writability = WfMapWritability::Readonly;
+			if (auto value = FindField(vl::WString::Unmanaged(L"writability")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"writability\" must be a string.");
+				if (jsonString->content.value == L"Readonly") node->writability = WfMapWritability::Readonly;
+				else if (jsonString->content.value == L"Writable") node->writability = WfMapWritability::Writable;
+				else throw vl::Exception(L"AST JSON field \"writability\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"key")))
+			{
+				if (IsNull(value))
+				{
+					node->key = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"key\" contains an incompatible AST type.");
+					node->key = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"key\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"value")))
+			{
+				if (IsNull(value))
+				{
+					node->value = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"value\" contains an incompatible AST type.");
+					node->value = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"value\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfMemberExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"parent")))
+			{
+				if (IsNull(value))
+				{
+					node->parent = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"parent\" contains an incompatible AST type.");
+					node->parent = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"parent\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfMixinCastExpression* node)
+		{
+			FillFields(static_cast<WfVirtualCseExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfModule* node)
+		{
+			node->moduleType = WfModuleType::Module;
+			if (auto value = FindField(vl::WString::Unmanaged(L"moduleType")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"moduleType\" must be a string.");
+				if (jsonString->content.value == L"Module") node->moduleType = WfModuleType::Module;
+				else if (jsonString->content.value == L"Unit") node->moduleType = WfModuleType::Unit;
+				else throw vl::Exception(L"AST JSON field \"moduleType\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"paths")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"paths\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->paths.Add(vl::Ptr<WfModuleUsingPath>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfModuleUsingPath>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"paths\" contains an incompatible AST type.");
+						node->paths.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"paths\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"declarations")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"declarations\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->declarations.Add(vl::Ptr<WfDeclaration>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfDeclaration>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"declarations\" contains an incompatible AST type.");
+						node->declarations.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"declarations\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfModuleUsingFragment* node)
+		{
+		}
+
+		void AstVisitor::FillFields(WfModuleUsingItem* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"fragments")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"fragments\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->fragments.Add(vl::Ptr<WfModuleUsingFragment>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfModuleUsingFragment>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"fragments\" contains an incompatible AST type.");
+						node->fragments.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"fragments\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfModuleUsingNameFragment* node)
+		{
+			FillFields(static_cast<WfModuleUsingFragment*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfModuleUsingPath* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"items")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"items\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->items.Add(vl::Ptr<WfModuleUsingItem>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfModuleUsingItem>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"items\" contains an incompatible AST type.");
+						node->items.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"items\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfModuleUsingWildCardFragment* node)
+		{
+			FillFields(static_cast<WfModuleUsingFragment*>(node));
+		}
+
+		void AstVisitor::FillFields(WfNamespaceDeclaration* node)
+		{
+			FillFields(static_cast<WfDeclaration*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"declarations")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"declarations\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->declarations.Add(vl::Ptr<WfDeclaration>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfDeclaration>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"declarations\" contains an incompatible AST type.");
+						node->declarations.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"declarations\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfNewClassExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"arguments")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"arguments\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->arguments.Add(vl::Ptr<WfExpression>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfExpression>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"arguments\" contains an incompatible AST type.");
+						node->arguments.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"arguments\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfNewCoroutineExpression* node)
+		{
+			FillFields(static_cast<WfVirtualCseExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"statement")))
+			{
+				if (IsNull(value))
+				{
+					node->statement = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"statement\" contains an incompatible AST type.");
+					node->statement = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"statement\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfNewInterfaceExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"declarations")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"declarations\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->declarations.Add(vl::Ptr<WfDeclaration>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfDeclaration>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"declarations\" contains an incompatible AST type.");
+						node->declarations.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"declarations\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfNullableType* node)
+		{
+			FillFields(static_cast<WfType*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"element")))
+			{
+				if (IsNull(value))
+				{
+					node->element = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"element\" contains an incompatible AST type.");
+					node->element = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"element\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfObservableListType* node)
+		{
+			FillFields(static_cast<WfType*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"element")))
+			{
+				if (IsNull(value))
+				{
+					node->element = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"element\" contains an incompatible AST type.");
+					node->element = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"element\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfObserveExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"parent")))
+			{
+				if (IsNull(value))
+				{
+					node->parent = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"parent\" contains an incompatible AST type.");
+					node->parent = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"parent\" must be an object or null.");
+			}
+			node->observeType = WfObserveType::SimpleObserve;
+			if (auto value = FindField(vl::WString::Unmanaged(L"observeType")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"observeType\" must be a string.");
+				if (jsonString->content.value == L"SimpleObserve") node->observeType = WfObserveType::SimpleObserve;
+				else if (jsonString->content.value == L"ExtendedObserve") node->observeType = WfObserveType::ExtendedObserve;
+				else throw vl::Exception(L"AST JSON field \"observeType\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"events")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"events\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->events.Add(vl::Ptr<WfExpression>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfExpression>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"events\" contains an incompatible AST type.");
+						node->events.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"events\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfOrderedLambdaExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"body")))
+			{
+				if (IsNull(value))
+				{
+					node->body = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"body\" contains an incompatible AST type.");
+					node->body = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"body\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfOrderedNameExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfPredefinedType* node)
+		{
+			FillFields(static_cast<WfType*>(node));
+			node->name = WfPredefinedTypeName::Void;
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				if (jsonString->content.value == L"Void") node->name = WfPredefinedTypeName::Void;
+				else if (jsonString->content.value == L"Object") node->name = WfPredefinedTypeName::Object;
+				else if (jsonString->content.value == L"Interface") node->name = WfPredefinedTypeName::Interface;
+				else if (jsonString->content.value == L"Int") node->name = WfPredefinedTypeName::Int;
+				else if (jsonString->content.value == L"UInt") node->name = WfPredefinedTypeName::UInt;
+				else if (jsonString->content.value == L"Float") node->name = WfPredefinedTypeName::Float;
+				else if (jsonString->content.value == L"Double") node->name = WfPredefinedTypeName::Double;
+				else if (jsonString->content.value == L"String") node->name = WfPredefinedTypeName::String;
+				else if (jsonString->content.value == L"Char") node->name = WfPredefinedTypeName::Char;
+				else if (jsonString->content.value == L"Bool") node->name = WfPredefinedTypeName::Bool;
+				else throw vl::Exception(L"AST JSON field \"name\" contains an unknown enum item.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfPropertyDeclaration* node)
+		{
+			FillFields(static_cast<WfDeclaration*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"getter")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"getter\" must be a string.");
+				node->getter.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"setter")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"setter\" must be a string.");
+				node->setter.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"valueChangedEvent")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"valueChangedEvent\" must be a string.");
+				node->valueChangedEvent.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfRaiseExceptionStatement* node)
+		{
+			FillFields(static_cast<WfStatement*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfRangeExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"begin")))
+			{
+				if (IsNull(value))
+				{
+					node->begin = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"begin\" contains an incompatible AST type.");
+					node->begin = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"begin\" must be an object or null.");
+			}
+			node->beginBoundary = WfRangeBoundary::Inclusive;
+			if (auto value = FindField(vl::WString::Unmanaged(L"beginBoundary")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"beginBoundary\" must be a string.");
+				if (jsonString->content.value == L"Inclusive") node->beginBoundary = WfRangeBoundary::Inclusive;
+				else if (jsonString->content.value == L"Exclusive") node->beginBoundary = WfRangeBoundary::Exclusive;
+				else throw vl::Exception(L"AST JSON field \"beginBoundary\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"end")))
+			{
+				if (IsNull(value))
+				{
+					node->end = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"end\" contains an incompatible AST type.");
+					node->end = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"end\" must be an object or null.");
+			}
+			node->endBoundary = WfRangeBoundary::Inclusive;
+			if (auto value = FindField(vl::WString::Unmanaged(L"endBoundary")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"endBoundary\" must be a string.");
+				if (jsonString->content.value == L"Inclusive") node->endBoundary = WfRangeBoundary::Inclusive;
+				else if (jsonString->content.value == L"Exclusive") node->endBoundary = WfRangeBoundary::Exclusive;
+				else throw vl::Exception(L"AST JSON field \"endBoundary\" contains an unknown enum item.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfRawPointerType* node)
+		{
+			FillFields(static_cast<WfType*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"element")))
+			{
+				if (IsNull(value))
+				{
+					node->element = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"element\" contains an incompatible AST type.");
+					node->element = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"element\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfReferenceExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfReferenceType* node)
+		{
+			FillFields(static_cast<WfType*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfReturnStatement* node)
+		{
+			FillFields(static_cast<WfStatement*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfSetTestingExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			node->test = WfSetTesting::In;
+			if (auto value = FindField(vl::WString::Unmanaged(L"test")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"test\" must be a string.");
+				if (jsonString->content.value == L"In") node->test = WfSetTesting::In;
+				else if (jsonString->content.value == L"NotIn") node->test = WfSetTesting::NotIn;
+				else throw vl::Exception(L"AST JSON field \"test\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"element")))
+			{
+				if (IsNull(value))
+				{
+					node->element = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"element\" contains an incompatible AST type.");
+					node->element = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"element\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"collection")))
+			{
+				if (IsNull(value))
+				{
+					node->collection = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"collection\" contains an incompatible AST type.");
+					node->collection = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"collection\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfSharedPointerType* node)
+		{
+			FillFields(static_cast<WfType*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"element")))
+			{
+				if (IsNull(value))
+				{
+					node->element = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"element\" contains an incompatible AST type.");
+					node->element = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"element\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfStateDeclaration* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"arguments")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"arguments\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->arguments.Add(vl::Ptr<WfFunctionArgument>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfFunctionArgument>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"arguments\" contains an incompatible AST type.");
+						node->arguments.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"arguments\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"statement")))
+			{
+				if (IsNull(value))
+				{
+					node->statement = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"statement\" contains an incompatible AST type.");
+					node->statement = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"statement\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfStateInput* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"arguments")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"arguments\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->arguments.Add(vl::Ptr<WfFunctionArgument>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfFunctionArgument>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"arguments\" contains an incompatible AST type.");
+						node->arguments.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"arguments\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfStateInvokeStatement* node)
+		{
+			FillFields(static_cast<WfStateMachineStatement*>(node));
+			node->type = WfStateInvokeType::Goto;
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"type\" must be a string.");
+				if (jsonString->content.value == L"Goto") node->type = WfStateInvokeType::Goto;
+				else if (jsonString->content.value == L"Push") node->type = WfStateInvokeType::Push;
+				else throw vl::Exception(L"AST JSON field \"type\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"arguments")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"arguments\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->arguments.Add(vl::Ptr<WfExpression>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfExpression>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"arguments\" contains an incompatible AST type.");
+						node->arguments.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"arguments\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfStateMachineDeclaration* node)
+		{
+			FillFields(static_cast<WfVirtualCseDeclaration*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"inputs")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"inputs\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->inputs.Add(vl::Ptr<WfStateInput>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfStateInput>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"inputs\" contains an incompatible AST type.");
+						node->inputs.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"inputs\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"states")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"states\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->states.Add(vl::Ptr<WfStateDeclaration>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfStateDeclaration>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"states\" contains an incompatible AST type.");
+						node->states.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"states\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfStateMachineStatement* node)
+		{
+			FillFields(static_cast<WfStatement*>(node));
+		}
+
+		void AstVisitor::FillFields(WfStateSwitchArgument* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfStateSwitchCase* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"arguments")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"arguments\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->arguments.Add(vl::Ptr<WfStateSwitchArgument>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfStateSwitchArgument>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"arguments\" contains an incompatible AST type.");
+						node->arguments.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"arguments\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"statement")))
+			{
+				if (IsNull(value))
+				{
+					node->statement = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"statement\" contains an incompatible AST type.");
+					node->statement = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"statement\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfStateSwitchStatement* node)
+		{
+			FillFields(static_cast<WfStateMachineStatement*>(node));
+			node->type = WfStateSwitchType::Default;
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"type\" must be a string.");
+				if (jsonString->content.value == L"Default") node->type = WfStateSwitchType::Default;
+				else if (jsonString->content.value == L"Pass") node->type = WfStateSwitchType::Pass;
+				else if (jsonString->content.value == L"PassAndReturn") node->type = WfStateSwitchType::PassAndReturn;
+				else if (jsonString->content.value == L"Ignore") node->type = WfStateSwitchType::Ignore;
+				else if (jsonString->content.value == L"IgnoreAndReturn") node->type = WfStateSwitchType::IgnoreAndReturn;
+				else throw vl::Exception(L"AST JSON field \"type\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"caseBranches")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"caseBranches\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->caseBranches.Add(vl::Ptr<WfStateSwitchCase>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfStateSwitchCase>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"caseBranches\" contains an incompatible AST type.");
+						node->caseBranches.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"caseBranches\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfStatement* node)
+		{
+		}
+
+		void AstVisitor::FillFields(WfStaticInitDeclaration* node)
+		{
+			FillFields(static_cast<WfDeclaration*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"statement")))
+			{
+				if (IsNull(value))
+				{
+					node->statement = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"statement\" contains an incompatible AST type.");
+					node->statement = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"statement\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfStringExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"value")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"value\" must be a string.");
+				node->value.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfStructDeclaration* node)
+		{
+			FillFields(static_cast<WfDeclaration*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"members")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"members\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->members.Add(vl::Ptr<WfStructMember>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfStructMember>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"members\" contains an incompatible AST type.");
+						node->members.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"members\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfStructMember* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"attributes")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"attributes\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->attributes.Add(vl::Ptr<WfAttribute>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfAttribute>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"attributes\" contains an incompatible AST type.");
+						node->attributes.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"attributes\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfSwitchCase* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"statement")))
+			{
+				if (IsNull(value))
+				{
+					node->statement = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"statement\" contains an incompatible AST type.");
+					node->statement = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"statement\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfSwitchStatement* node)
+		{
+			FillFields(static_cast<WfVirtualCseStatement*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"caseBranches")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"caseBranches\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->caseBranches.Add(vl::Ptr<WfSwitchCase>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfSwitchCase>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"caseBranches\" contains an incompatible AST type.");
+						node->caseBranches.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"caseBranches\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"defaultBranch")))
+			{
+				if (IsNull(value))
+				{
+					node->defaultBranch = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"defaultBranch\" contains an incompatible AST type.");
+					node->defaultBranch = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"defaultBranch\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfThisExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+		}
+
+		void AstVisitor::FillFields(WfTopQualifiedExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfTopQualifiedType* node)
+		{
+			FillFields(static_cast<WfType*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(WfTryStatement* node)
+		{
+			FillFields(static_cast<WfStatement*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"protectedStatement")))
+			{
+				if (IsNull(value))
+				{
+					node->protectedStatement = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"protectedStatement\" contains an incompatible AST type.");
+					node->protectedStatement = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"protectedStatement\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"catchStatement")))
+			{
+				if (IsNull(value))
+				{
+					node->catchStatement = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"catchStatement\" contains an incompatible AST type.");
+					node->catchStatement = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"catchStatement\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"finallyStatement")))
+			{
+				if (IsNull(value))
+				{
+					node->finallyStatement = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"finallyStatement\" contains an incompatible AST type.");
+					node->finallyStatement = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"finallyStatement\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfType* node)
+		{
+		}
+
+		void AstVisitor::FillFields(WfTypeCastingExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			node->strategy = WfTypeCastingStrategy::Strong;
+			if (auto value = FindField(vl::WString::Unmanaged(L"strategy")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"strategy\" must be a string.");
+				if (jsonString->content.value == L"Strong") node->strategy = WfTypeCastingStrategy::Strong;
+				else if (jsonString->content.value == L"Weak") node->strategy = WfTypeCastingStrategy::Weak;
+				else throw vl::Exception(L"AST JSON field \"strategy\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfTypeOfExpressionExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfTypeOfTypeExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfTypeTestingExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			node->test = WfTypeTesting::IsType;
+			if (auto value = FindField(vl::WString::Unmanaged(L"test")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"test\" must be a string.");
+				if (jsonString->content.value == L"IsType") node->test = WfTypeTesting::IsType;
+				else if (jsonString->content.value == L"IsNotType") node->test = WfTypeTesting::IsNotType;
+				else if (jsonString->content.value == L"IsNull") node->test = WfTypeTesting::IsNull;
+				else if (jsonString->content.value == L"IsNotNull") node->test = WfTypeTesting::IsNotNull;
+				else throw vl::Exception(L"AST JSON field \"test\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfUnaryExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			node->op = WfUnaryOperator::Positive;
+			if (auto value = FindField(vl::WString::Unmanaged(L"op")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"op\" must be a string.");
+				if (jsonString->content.value == L"Positive") node->op = WfUnaryOperator::Positive;
+				else if (jsonString->content.value == L"Negative") node->op = WfUnaryOperator::Negative;
+				else if (jsonString->content.value == L"Not") node->op = WfUnaryOperator::Not;
+				else throw vl::Exception(L"AST JSON field \"op\" contains an unknown enum item.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"operand")))
+			{
+				if (IsNull(value))
+				{
+					node->operand = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"operand\" contains an incompatible AST type.");
+					node->operand = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"operand\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfVariableDeclaration* node)
+		{
+			FillFields(static_cast<WfDeclaration*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"type")))
+			{
+				if (IsNull(value))
+				{
+					node->type = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"type\" contains an incompatible AST type.");
+					node->type = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"type\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"expression")))
+			{
+				if (IsNull(value))
+				{
+					node->expression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expression\" contains an incompatible AST type.");
+					node->expression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expression\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfVariableStatement* node)
+		{
+			FillFields(static_cast<WfStatement*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"variable")))
+			{
+				if (IsNull(value))
+				{
+					node->variable = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfVariableDeclaration>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"variable\" contains an incompatible AST type.");
+					node->variable = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"variable\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfVirtualCfeDeclaration* node)
+		{
+			FillFields(static_cast<WfDeclaration*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"expandedDeclarations")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"expandedDeclarations\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->expandedDeclarations.Add(vl::Ptr<WfDeclaration>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfDeclaration>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"expandedDeclarations\" contains an incompatible AST type.");
+						node->expandedDeclarations.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"expandedDeclarations\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfVirtualCfeExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"expandedExpression")))
+			{
+				if (IsNull(value))
+				{
+					node->expandedExpression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expandedExpression\" contains an incompatible AST type.");
+					node->expandedExpression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expandedExpression\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfVirtualCseDeclaration* node)
+		{
+			FillFields(static_cast<WfDeclaration*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"expandedDeclarations")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"expandedDeclarations\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->expandedDeclarations.Add(vl::Ptr<WfDeclaration>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfDeclaration>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"expandedDeclarations\" contains an incompatible AST type.");
+						node->expandedDeclarations.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"expandedDeclarations\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(WfVirtualCseExpression* node)
+		{
+			FillFields(static_cast<WfExpression*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"expandedExpression")))
+			{
+				if (IsNull(value))
+				{
+					node->expandedExpression = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expandedExpression\" contains an incompatible AST type.");
+					node->expandedExpression = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expandedExpression\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfVirtualCseStatement* node)
+		{
+			FillFields(static_cast<WfStatement*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"expandedStatement")))
+			{
+				if (IsNull(value))
+				{
+					node->expandedStatement = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"expandedStatement\" contains an incompatible AST type.");
+					node->expandedStatement = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"expandedStatement\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(WfWhileStatement* node)
+		{
+			FillFields(static_cast<WfStatement*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"condition")))
+			{
+				if (IsNull(value))
+				{
+					node->condition = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfExpression>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"condition\" contains an incompatible AST type.");
+					node->condition = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"condition\" must be an object or null.");
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"statement")))
+			{
+				if (IsNull(value))
+				{
+					node->statement = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfStatement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"statement\" contains an incompatible AST type.");
+					node->statement = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"statement\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::Visit(WfPredefinedType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfTopQualifiedType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfReferenceType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfRawPointerType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfSharedPointerType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfNullableType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfEnumerableType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfMapType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfObservableListType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfFunctionType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfChildType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfThisExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfTopQualifiedExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfReferenceExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfOrderedNameExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfOrderedLambdaExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfMemberExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfChildExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfLiteralExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfFloatingExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfIntegerExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfStringExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfUnaryExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfBinaryExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfLetExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfIfExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfRangeExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfSetTestingExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfConstructorExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfInferExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfTypeCastingExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfTypeTestingExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfTypeOfTypeExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfTypeOfExpressionExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfAttachEventExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfDetachEventExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfObserveExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfCallExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfFunctionExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfNewClassExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfNewInterfaceExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfVirtualCfeExpression* node)
+		{
+			node->Accept(static_cast<WfVirtualCfeExpression::IVisitor*>(this));
+		}
+
+		void AstVisitor::Visit(WfVirtualCseExpression* node)
+		{
+			node->Accept(static_cast<WfVirtualCseExpression::IVisitor*>(this));
+		}
+
+		void AstVisitor::Visit(WfBreakStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfContinueStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfReturnStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfDeleteStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfRaiseExceptionStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfIfStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfWhileStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfTryStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfBlockStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfGotoStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfVariableStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfExpressionStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfVirtualCseStatement* node)
+		{
+			node->Accept(static_cast<WfVirtualCseStatement::IVisitor*>(this));
+		}
+
+		void AstVisitor::Visit(WfCoroutineStatement* node)
+		{
+			node->Accept(static_cast<WfCoroutineStatement::IVisitor*>(this));
+		}
+
+		void AstVisitor::Visit(WfStateMachineStatement* node)
+		{
+			node->Accept(static_cast<WfStateMachineStatement::IVisitor*>(this));
+		}
+
+		void AstVisitor::Visit(WfNamespaceDeclaration* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfFunctionDeclaration* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfVariableDeclaration* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfEventDeclaration* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfPropertyDeclaration* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfStaticInitDeclaration* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfConstructorDeclaration* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfDestructorDeclaration* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfClassDeclaration* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfEnumDeclaration* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfStructDeclaration* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfVirtualCfeDeclaration* node)
+		{
+			node->Accept(static_cast<WfVirtualCfeDeclaration::IVisitor*>(this));
+		}
+
+		void AstVisitor::Visit(WfVirtualCseDeclaration* node)
+		{
+			node->Accept(static_cast<WfVirtualCseDeclaration::IVisitor*>(this));
+		}
+
+		void AstVisitor::Visit(WfAutoPropertyDeclaration* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfCastResultInterfaceDeclaration* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfStateMachineDeclaration* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfForEachStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfSwitchStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfCoProviderStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfCoPauseStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfCoOperatorStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfStateSwitchStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfStateInvokeStatement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfFormatExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfBindExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfNewCoroutineExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfMixinCastExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfExpectedTypeCastExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfCoOperatorExpression* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfModuleUsingNameFragment* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfModuleUsingWildCardFragment* node)
+		{
+			FillFields(node);
+		}
+
+		vl::Ptr<vl::glr::ParsingAstBase> AstVisitor::ReadJson(vl::glr::json::JsonObject* json)
+		{
+			auto typeName = ReadType(json);
+			if (typeName == L"Attribute")
+			{
+				auto node = vl::Ptr(new WfAttribute);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"PredefinedType")
+			{
+				auto node = vl::Ptr(new WfPredefinedType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfType*>(node.Obj())->Accept(static_cast<WfType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"TopQualifiedType")
+			{
+				auto node = vl::Ptr(new WfTopQualifiedType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfType*>(node.Obj())->Accept(static_cast<WfType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ReferenceType")
+			{
+				auto node = vl::Ptr(new WfReferenceType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfType*>(node.Obj())->Accept(static_cast<WfType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"RawPointerType")
+			{
+				auto node = vl::Ptr(new WfRawPointerType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfType*>(node.Obj())->Accept(static_cast<WfType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"SharedPointerType")
+			{
+				auto node = vl::Ptr(new WfSharedPointerType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfType*>(node.Obj())->Accept(static_cast<WfType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"NullableType")
+			{
+				auto node = vl::Ptr(new WfNullableType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfType*>(node.Obj())->Accept(static_cast<WfType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"EnumerableType")
+			{
+				auto node = vl::Ptr(new WfEnumerableType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfType*>(node.Obj())->Accept(static_cast<WfType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"MapType")
+			{
+				auto node = vl::Ptr(new WfMapType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfType*>(node.Obj())->Accept(static_cast<WfType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ObservableListType")
+			{
+				auto node = vl::Ptr(new WfObservableListType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfType*>(node.Obj())->Accept(static_cast<WfType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"FunctionType")
+			{
+				auto node = vl::Ptr(new WfFunctionType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfType*>(node.Obj())->Accept(static_cast<WfType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ChildType")
+			{
+				auto node = vl::Ptr(new WfChildType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfType*>(node.Obj())->Accept(static_cast<WfType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"NamespaceDeclaration")
+			{
+				auto node = vl::Ptr(new WfNamespaceDeclaration);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfDeclaration*>(node.Obj())->Accept(static_cast<WfDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"FunctionArgument")
+			{
+				auto node = vl::Ptr(new WfFunctionArgument);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"FunctionDeclaration")
+			{
+				auto node = vl::Ptr(new WfFunctionDeclaration);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfDeclaration*>(node.Obj())->Accept(static_cast<WfDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"VariableDeclaration")
+			{
+				auto node = vl::Ptr(new WfVariableDeclaration);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfDeclaration*>(node.Obj())->Accept(static_cast<WfDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"EventDeclaration")
+			{
+				auto node = vl::Ptr(new WfEventDeclaration);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfDeclaration*>(node.Obj())->Accept(static_cast<WfDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"PropertyDeclaration")
+			{
+				auto node = vl::Ptr(new WfPropertyDeclaration);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfDeclaration*>(node.Obj())->Accept(static_cast<WfDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"StaticInitDeclaration")
+			{
+				auto node = vl::Ptr(new WfStaticInitDeclaration);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfDeclaration*>(node.Obj())->Accept(static_cast<WfDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"BaseConstructorCall")
+			{
+				auto node = vl::Ptr(new WfBaseConstructorCall);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ConstructorDeclaration")
+			{
+				auto node = vl::Ptr(new WfConstructorDeclaration);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfDeclaration*>(node.Obj())->Accept(static_cast<WfDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"DestructorDeclaration")
+			{
+				auto node = vl::Ptr(new WfDestructorDeclaration);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfDeclaration*>(node.Obj())->Accept(static_cast<WfDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ClassDeclaration")
+			{
+				auto node = vl::Ptr(new WfClassDeclaration);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfDeclaration*>(node.Obj())->Accept(static_cast<WfDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"EnumItemIntersection")
+			{
+				auto node = vl::Ptr(new WfEnumItemIntersection);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"EnumItem")
+			{
+				auto node = vl::Ptr(new WfEnumItem);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"EnumDeclaration")
+			{
+				auto node = vl::Ptr(new WfEnumDeclaration);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfDeclaration*>(node.Obj())->Accept(static_cast<WfDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"StructMember")
+			{
+				auto node = vl::Ptr(new WfStructMember);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"StructDeclaration")
+			{
+				auto node = vl::Ptr(new WfStructDeclaration);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfDeclaration*>(node.Obj())->Accept(static_cast<WfDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"AutoPropertyDeclaration")
+			{
+				auto node = vl::Ptr(new WfAutoPropertyDeclaration);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfDeclaration*>(node.Obj())->Accept(static_cast<WfDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"CastResultInterfaceDeclaration")
+			{
+				auto node = vl::Ptr(new WfCastResultInterfaceDeclaration);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfDeclaration*>(node.Obj())->Accept(static_cast<WfDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"StateInput")
+			{
+				auto node = vl::Ptr(new WfStateInput);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"StateDeclaration")
+			{
+				auto node = vl::Ptr(new WfStateDeclaration);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"StateMachineDeclaration")
+			{
+				auto node = vl::Ptr(new WfStateMachineDeclaration);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfDeclaration*>(node.Obj())->Accept(static_cast<WfDeclaration::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"BreakStatement")
+			{
+				auto node = vl::Ptr(new WfBreakStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ContinueStatement")
+			{
+				auto node = vl::Ptr(new WfContinueStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ReturnStatement")
+			{
+				auto node = vl::Ptr(new WfReturnStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"DeleteStatement")
+			{
+				auto node = vl::Ptr(new WfDeleteStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"RaiseExceptionStatement")
+			{
+				auto node = vl::Ptr(new WfRaiseExceptionStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"IfStatement")
+			{
+				auto node = vl::Ptr(new WfIfStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"WhileStatement")
+			{
+				auto node = vl::Ptr(new WfWhileStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"TryStatement")
+			{
+				auto node = vl::Ptr(new WfTryStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"BlockStatement")
+			{
+				auto node = vl::Ptr(new WfBlockStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"GotoStatement")
+			{
+				auto node = vl::Ptr(new WfGotoStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"VariableStatement")
+			{
+				auto node = vl::Ptr(new WfVariableStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ExpressionStatement")
+			{
+				auto node = vl::Ptr(new WfExpressionStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ForEachStatement")
+			{
+				auto node = vl::Ptr(new WfForEachStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"SwitchCase")
+			{
+				auto node = vl::Ptr(new WfSwitchCase);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"SwitchStatement")
+			{
+				auto node = vl::Ptr(new WfSwitchStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"CoProviderStatement")
+			{
+				auto node = vl::Ptr(new WfCoProviderStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"CoPauseStatement")
+			{
+				auto node = vl::Ptr(new WfCoPauseStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"CoOperatorStatement")
+			{
+				auto node = vl::Ptr(new WfCoOperatorStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"StateSwitchArgument")
+			{
+				auto node = vl::Ptr(new WfStateSwitchArgument);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"StateSwitchCase")
+			{
+				auto node = vl::Ptr(new WfStateSwitchCase);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"StateSwitchStatement")
+			{
+				auto node = vl::Ptr(new WfStateSwitchStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"StateInvokeStatement")
+			{
+				auto node = vl::Ptr(new WfStateInvokeStatement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfStatement*>(node.Obj())->Accept(static_cast<WfStatement::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ThisExpression")
+			{
+				auto node = vl::Ptr(new WfThisExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"TopQualifiedExpression")
+			{
+				auto node = vl::Ptr(new WfTopQualifiedExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ReferenceExpression")
+			{
+				auto node = vl::Ptr(new WfReferenceExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"OrderedNameExpression")
+			{
+				auto node = vl::Ptr(new WfOrderedNameExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"OrderedLambdaExpression")
+			{
+				auto node = vl::Ptr(new WfOrderedLambdaExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"MemberExpression")
+			{
+				auto node = vl::Ptr(new WfMemberExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ChildExpression")
+			{
+				auto node = vl::Ptr(new WfChildExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"LiteralExpression")
+			{
+				auto node = vl::Ptr(new WfLiteralExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"FloatingExpression")
+			{
+				auto node = vl::Ptr(new WfFloatingExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"IntegerExpression")
+			{
+				auto node = vl::Ptr(new WfIntegerExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"StringExpression")
+			{
+				auto node = vl::Ptr(new WfStringExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"UnaryExpression")
+			{
+				auto node = vl::Ptr(new WfUnaryExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"BinaryExpression")
+			{
+				auto node = vl::Ptr(new WfBinaryExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"LetVariable")
+			{
+				auto node = vl::Ptr(new WfLetVariable);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"LetExpression")
+			{
+				auto node = vl::Ptr(new WfLetExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"IfExpression")
+			{
+				auto node = vl::Ptr(new WfIfExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"RangeExpression")
+			{
+				auto node = vl::Ptr(new WfRangeExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"SetTestingExpression")
+			{
+				auto node = vl::Ptr(new WfSetTestingExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ConstructorArgument")
+			{
+				auto node = vl::Ptr(new WfConstructorArgument);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ConstructorExpression")
+			{
+				auto node = vl::Ptr(new WfConstructorExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"InferExpression")
+			{
+				auto node = vl::Ptr(new WfInferExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"TypeCastingExpression")
+			{
+				auto node = vl::Ptr(new WfTypeCastingExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"TypeTestingExpression")
+			{
+				auto node = vl::Ptr(new WfTypeTestingExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"TypeOfTypeExpression")
+			{
+				auto node = vl::Ptr(new WfTypeOfTypeExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"TypeOfExpressionExpression")
+			{
+				auto node = vl::Ptr(new WfTypeOfExpressionExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"AttachEventExpression")
+			{
+				auto node = vl::Ptr(new WfAttachEventExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"DetachEventExpression")
+			{
+				auto node = vl::Ptr(new WfDetachEventExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ObserveExpression")
+			{
+				auto node = vl::Ptr(new WfObserveExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"CallExpression")
+			{
+				auto node = vl::Ptr(new WfCallExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"FunctionExpression")
+			{
+				auto node = vl::Ptr(new WfFunctionExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"NewClassExpression")
+			{
+				auto node = vl::Ptr(new WfNewClassExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"NewInterfaceExpression")
+			{
+				auto node = vl::Ptr(new WfNewInterfaceExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"FormatExpression")
+			{
+				auto node = vl::Ptr(new WfFormatExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"BindExpression")
+			{
+				auto node = vl::Ptr(new WfBindExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"NewCoroutineExpression")
+			{
+				auto node = vl::Ptr(new WfNewCoroutineExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"MixinCastExpression")
+			{
+				auto node = vl::Ptr(new WfMixinCastExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ExpectedTypeCastExpression")
+			{
+				auto node = vl::Ptr(new WfExpectedTypeCastExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"CoOperatorExpression")
+			{
+				auto node = vl::Ptr(new WfCoOperatorExpression);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfExpression*>(node.Obj())->Accept(static_cast<WfExpression::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ModuleUsingNameFragment")
+			{
+				auto node = vl::Ptr(new WfModuleUsingNameFragment);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfModuleUsingFragment*>(node.Obj())->Accept(static_cast<WfModuleUsingFragment::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ModuleUsingWildCardFragment")
+			{
+				auto node = vl::Ptr(new WfModuleUsingWildCardFragment);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfModuleUsingFragment*>(node.Obj())->Accept(static_cast<WfModuleUsingFragment::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ModuleUsingItem")
+			{
+				auto node = vl::Ptr(new WfModuleUsingItem);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ModuleUsingPath")
+			{
+				auto node = vl::Ptr(new WfModuleUsingPath);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"Module")
+			{
+				auto node = vl::Ptr(new WfModule);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			throw vl::Exception(L"AST JSON field \"$ast\" contains an unknown or abstract type \"" + typeName + L"\".");
 		}
-		node->Accept(static_cast<WfModuleUsingFragment::IVisitor*>(this));
-	}
-
-	void AstVisitor::Print(WfAttribute* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"Attribute"), node);
-		PrintFields(static_cast<WfAttribute*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Print(WfFunctionArgument* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"FunctionArgument"), node);
-		PrintFields(static_cast<WfFunctionArgument*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Print(WfBaseConstructorCall* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"BaseConstructorCall"), node);
-		PrintFields(static_cast<WfBaseConstructorCall*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Print(WfEnumItemIntersection* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"EnumItemIntersection"), node);
-		PrintFields(static_cast<WfEnumItemIntersection*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Print(WfEnumItem* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"EnumItem"), node);
-		PrintFields(static_cast<WfEnumItem*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Print(WfStructMember* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"StructMember"), node);
-		PrintFields(static_cast<WfStructMember*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Print(WfStateInput* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"StateInput"), node);
-		PrintFields(static_cast<WfStateInput*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Print(WfStateDeclaration* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"StateDeclaration"), node);
-		PrintFields(static_cast<WfStateDeclaration*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Print(WfSwitchCase* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"SwitchCase"), node);
-		PrintFields(static_cast<WfSwitchCase*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Print(WfStateSwitchArgument* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"StateSwitchArgument"), node);
-		PrintFields(static_cast<WfStateSwitchArgument*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Print(WfStateSwitchCase* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"StateSwitchCase"), node);
-		PrintFields(static_cast<WfStateSwitchCase*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Print(WfLetVariable* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"LetVariable"), node);
-		PrintFields(static_cast<WfLetVariable*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Print(WfConstructorArgument* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ConstructorArgument"), node);
-		PrintFields(static_cast<WfConstructorArgument*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Print(WfModuleUsingItem* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ModuleUsingItem"), node);
-		PrintFields(static_cast<WfModuleUsingItem*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Print(WfModuleUsingPath* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ModuleUsingPath"), node);
-		PrintFields(static_cast<WfModuleUsingPath*>(node));
-		EndObject();
-	}
-
-	void AstVisitor::Print(WfModule* node)
-	{
-		if (!node)
-		{
-			WriteNull();
-			return;
-		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"Module"), node);
-		PrintFields(static_cast<WfModule*>(node));
-		EndObject();
 	}
-
 }
 
 

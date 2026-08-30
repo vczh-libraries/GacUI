@@ -1954,176 +1954,464 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl::glr::json::json_visitor
+namespace vl::glr::json
 {
-	void AstVisitor::PrintFields(JsonArray* node)
+	namespace json_visitor
 	{
-		BeginField(vl::WString::Unmanaged(L"items"));
-		BeginArray();
-		for (auto&& listItem : node->items)
+		void AstVisitor::PrintFields(JsonArray* node)
 		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
+			BeginField(vl::WString::Unmanaged(L"items"));
+			BeginArray();
+			for (auto&& listItem : node->items)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
 		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(JsonLiteral* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"value"));
-		switch (node->value)
+		void AstVisitor::PrintFields(JsonLiteral* node)
 		{
-		case vl::glr::json::JsonLiteralValue::False:
-			WriteString(vl::WString::Unmanaged(L"False"));
-			break;
-		case vl::glr::json::JsonLiteralValue::Null:
-			WriteString(vl::WString::Unmanaged(L"Null"));
-			break;
-		case vl::glr::json::JsonLiteralValue::True:
-			WriteString(vl::WString::Unmanaged(L"True"));
-			break;
-		default:
-			WriteNull();
+			BeginField(vl::WString::Unmanaged(L"value"));
+			switch (node->value)
+			{
+			case vl::glr::json::JsonLiteralValue::False:
+				WriteString(vl::WString::Unmanaged(L"False"));
+				break;
+			case vl::glr::json::JsonLiteralValue::Null:
+				WriteString(vl::WString::Unmanaged(L"Null"));
+				break;
+			case vl::glr::json::JsonLiteralValue::True:
+				WriteString(vl::WString::Unmanaged(L"True"));
+				break;
+			default:
+				WriteNull();
+			}
+			EndField();
 		}
-		EndField();
-	}
-	void AstVisitor::PrintFields(JsonNode* node)
-	{
-	}
-	void AstVisitor::PrintFields(JsonNumber* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"content"));
-		WriteToken(node->content);
-		EndField();
-	}
-	void AstVisitor::PrintFields(JsonObject* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"fields"));
-		BeginArray();
-		for (auto&& listItem : node->fields)
+		void AstVisitor::PrintFields(JsonNode* node)
 		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
 		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(JsonObjectField* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"value"));
-		Print(node->value.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(JsonString* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"content"));
-		WriteToken(node->content);
-		EndField();
+		void AstVisitor::PrintFields(JsonNumber* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"content"));
+			WriteToken(node->content);
+			EndField();
+		}
+		void AstVisitor::PrintFields(JsonObject* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"fields"));
+			BeginArray();
+			for (auto&& listItem : node->fields)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+		}
+		void AstVisitor::PrintFields(JsonObjectField* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"value"));
+			Print(node->value.Obj());
+			EndField();
+		}
+		void AstVisitor::PrintFields(JsonString* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"content"));
+			WriteToken(node->content);
+			EndField();
+		}
+
+		void AstVisitor::Visit(JsonLiteral* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"Literal"), node);
+			PrintFields(static_cast<JsonNode*>(node));
+			PrintFields(static_cast<JsonLiteral*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(JsonString* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"String"), node);
+			PrintFields(static_cast<JsonNode*>(node));
+			PrintFields(static_cast<JsonString*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(JsonNumber* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"Number"), node);
+			PrintFields(static_cast<JsonNode*>(node));
+			PrintFields(static_cast<JsonNumber*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(JsonArray* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"Array"), node);
+			PrintFields(static_cast<JsonNode*>(node));
+			PrintFields(static_cast<JsonArray*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(JsonObject* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"Object"), node);
+			PrintFields(static_cast<JsonNode*>(node));
+			PrintFields(static_cast<JsonObject*>(node));
+			EndObject();
+		}
+
+		AstVisitor::AstVisitor(vl::stream::StreamWriter& _writer)
+			: vl::glr::JsonVisitorBase(_writer)
+		{
+		}
+
+		void AstVisitor::Print(JsonNode* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			node->Accept(static_cast<JsonNode::IVisitor*>(this));
+		}
+
+		void AstVisitor::Print(JsonObjectField* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"ObjectField"), node);
+			PrintFields(static_cast<JsonObjectField*>(node));
+			EndObject();
+		}
+
 	}
 
-	void AstVisitor::Visit(JsonLiteral* node)
+	namespace json_reader
 	{
-		if (!node)
+		AstVisitor::JsonObjectScope::JsonObjectScope(vl::collections::List<vl::glr::json::JsonObject*>& _jsonObjects, vl::glr::json::JsonObject* json)
+			: jsonObjects(_jsonObjects)
 		{
-			WriteNull();
-			return;
+			jsonObjects.Add(json);
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"Literal"), node);
-		PrintFields(static_cast<JsonNode*>(node));
-		PrintFields(static_cast<JsonLiteral*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(JsonString* node)
-	{
-		if (!node)
+		AstVisitor::JsonObjectScope::~JsonObjectScope()
 		{
-			WriteNull();
-			return;
+			jsonObjects.RemoveAt(jsonObjects.Count() - 1);
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"String"), node);
-		PrintFields(static_cast<JsonNode*>(node));
-		PrintFields(static_cast<JsonString*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(JsonNumber* node)
-	{
-		if (!node)
+		vl::glr::json::JsonObject* AstVisitor::CurrentObject()
 		{
-			WriteNull();
-			return;
+			return jsonObjects[jsonObjects.Count() - 1];
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"Number"), node);
-		PrintFields(static_cast<JsonNode*>(node));
-		PrintFields(static_cast<JsonNumber*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(JsonArray* node)
-	{
-		if (!node)
+		vl::glr::json::JsonNode* AstVisitor::FindField(const vl::WString& name)
 		{
-			WriteNull();
-			return;
+			for (auto field : CurrentObject()->fields)
+			{
+				if (field && field->name.value == name) return field->value.Obj();
+			}
+			return nullptr;
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"Array"), node);
-		PrintFields(static_cast<JsonNode*>(node));
-		PrintFields(static_cast<JsonArray*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(JsonObject* node)
-	{
-		if (!node)
+		bool AstVisitor::IsNull(vl::glr::json::JsonNode* value)
 		{
-			WriteNull();
-			return;
+			auto literal = dynamic_cast<vl::glr::json::JsonLiteral*>(value);
+			return literal && literal->value == vl::glr::json::JsonLiteralValue::Null;
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"Object"), node);
-		PrintFields(static_cast<JsonNode*>(node));
-		PrintFields(static_cast<JsonObject*>(node));
-		EndObject();
-	}
 
-	AstVisitor::AstVisitor(vl::stream::StreamWriter& _writer)
-		: vl::glr::JsonVisitorBase(_writer)
-	{
-	}
-
-	void AstVisitor::Print(JsonNode* node)
-	{
-		if (!node)
+		vl::WString AstVisitor::ReadType(vl::glr::json::JsonObject* json)
 		{
-			WriteNull();
-			return;
+			if (!json) throw vl::Exception(L"AST JSON object cannot be null.");
+			bool typeFound = false;
+			vl::WString typeName;
+			for (auto field : json->fields)
+			{
+				if (field && field->name.value == L"$ast")
+				{
+					if (typeFound) throw vl::Exception(L"AST JSON object contains duplicate \"$ast\" fields.");
+					typeFound = true;
+					auto jsonString = field->value.Cast<vl::glr::json::JsonString>();
+					if (!jsonString) throw vl::Exception(L"AST JSON field \"$ast\" must be a string.");
+					typeName = jsonString->content.value;
+				}
+			}
+			if (!typeFound) throw vl::Exception(L"AST JSON object is missing field \"$ast\".");
+			return typeName;
 		}
-		node->Accept(static_cast<JsonNode::IVisitor*>(this));
-	}
 
-	void AstVisitor::Print(JsonObjectField* node)
-	{
-		if (!node)
+		void AstVisitor::ValidateFields(vl::glr::json::JsonObject* json, const vl::WString& typeName)
 		{
-			WriteNull();
-			return;
+			vl::collections::List<vl::WString> fieldNames;
+			for (auto field : json->fields)
+			{
+				if (!field || !field->value) throw vl::Exception(L"AST JSON object contains an invalid field.");
+				auto name = field->name.value;
+				if (fieldNames.Contains(name)) throw vl::Exception(L"AST JSON object contains duplicate field \"" + name + L"\".");
+				fieldNames.Add(name);
+				bool fieldFound = name == L"$ast";
+				if (typeName == L"Literal")
+				{
+					fieldFound = fieldFound || name == L"value";
+				}
+				else if (typeName == L"String")
+				{
+					fieldFound = fieldFound || name == L"content";
+				}
+				else if (typeName == L"Number")
+				{
+					fieldFound = fieldFound || name == L"content";
+				}
+				else if (typeName == L"Array")
+				{
+					fieldFound = fieldFound || name == L"items";
+				}
+				else if (typeName == L"ObjectField")
+				{
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"value";
+				}
+				else if (typeName == L"Object")
+				{
+					fieldFound = fieldFound || name == L"fields";
+				}
+				if (!fieldFound) throw vl::Exception(L"AST JSON object contains unknown field \"" + name + L"\" for type \"" + typeName + L"\".");
+			}
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"ObjectField"), node);
-		PrintFields(static_cast<JsonObjectField*>(node));
-		EndObject();
-	}
 
+		void AstVisitor::FillFields(JsonArray* node)
+		{
+			FillFields(static_cast<JsonNode*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"items")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"items\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->items.Add(vl::Ptr<JsonNode>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<JsonNode>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"items\" contains an incompatible AST type.");
+						node->items.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"items\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(JsonLiteral* node)
+		{
+			FillFields(static_cast<JsonNode*>(node));
+			node->value = JsonLiteralValue::True;
+			if (auto value = FindField(vl::WString::Unmanaged(L"value")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"value\" must be a string.");
+				if (jsonString->content.value == L"True") node->value = JsonLiteralValue::True;
+				else if (jsonString->content.value == L"False") node->value = JsonLiteralValue::False;
+				else if (jsonString->content.value == L"Null") node->value = JsonLiteralValue::Null;
+				else throw vl::Exception(L"AST JSON field \"value\" contains an unknown enum item.");
+			}
+		}
+
+		void AstVisitor::FillFields(JsonNode* node)
+		{
+		}
+
+		void AstVisitor::FillFields(JsonNumber* node)
+		{
+			FillFields(static_cast<JsonNode*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"content")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"content\" must be a string.");
+				node->content.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(JsonObject* node)
+		{
+			FillFields(static_cast<JsonNode*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"fields")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"fields\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->fields.Add(vl::Ptr<JsonObjectField>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<JsonObjectField>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"fields\" contains an incompatible AST type.");
+						node->fields.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"fields\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(JsonObjectField* node)
+		{
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"value")))
+			{
+				if (IsNull(value))
+				{
+					node->value = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<JsonNode>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"value\" contains an incompatible AST type.");
+					node->value = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"value\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(JsonString* node)
+		{
+			FillFields(static_cast<JsonNode*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"content")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"content\" must be a string.");
+				node->content.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::Visit(JsonLiteral* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(JsonString* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(JsonNumber* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(JsonArray* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(JsonObject* node)
+		{
+			FillFields(node);
+		}
+
+		vl::Ptr<vl::glr::ParsingAstBase> AstVisitor::ReadJson(vl::glr::json::JsonObject* json)
+		{
+			auto typeName = ReadType(json);
+			if (typeName == L"Literal")
+			{
+				auto node = vl::Ptr(new JsonLiteral);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<JsonNode*>(node.Obj())->Accept(static_cast<JsonNode::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"String")
+			{
+				auto node = vl::Ptr(new JsonString);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<JsonNode*>(node.Obj())->Accept(static_cast<JsonNode::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"Number")
+			{
+				auto node = vl::Ptr(new JsonNumber);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<JsonNode*>(node.Obj())->Accept(static_cast<JsonNode::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"Array")
+			{
+				auto node = vl::Ptr(new JsonArray);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<JsonNode*>(node.Obj())->Accept(static_cast<JsonNode::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"ObjectField")
+			{
+				auto node = vl::Ptr(new JsonObjectField);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"Object")
+			{
+				auto node = vl::Ptr(new JsonObject);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<JsonNode*>(node.Obj())->Accept(static_cast<JsonNode::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			throw vl::Exception(L"AST JSON field \"$ast\" contains an unknown or abstract type \"" + typeName + L"\".");
+		}
+	}
 }
 
 
@@ -8372,212 +8660,585 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl::glr::xml::json_visitor
+namespace vl::glr::xml
 {
-	void AstVisitor::PrintFields(XmlAttribute* node)
+	namespace json_visitor
 	{
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"value"));
-		WriteToken(node->value);
-		EndField();
-	}
-	void AstVisitor::PrintFields(XmlCData* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"content"));
-		WriteToken(node->content);
-		EndField();
-	}
-	void AstVisitor::PrintFields(XmlComment* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"content"));
-		WriteToken(node->content);
-		EndField();
-	}
-	void AstVisitor::PrintFields(XmlDocument* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"prologs"));
-		BeginArray();
-		for (auto&& listItem : node->prologs)
+		void AstVisitor::PrintFields(XmlAttribute* node)
 		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"value"));
+			WriteToken(node->value);
+			EndField();
 		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"rootElement"));
-		Print(node->rootElement.Obj());
-		EndField();
-	}
-	void AstVisitor::PrintFields(XmlElement* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"attributes"));
-		BeginArray();
-		for (auto&& listItem : node->attributes)
+		void AstVisitor::PrintFields(XmlCData* node)
 		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
+			BeginField(vl::WString::Unmanaged(L"content"));
+			WriteToken(node->content);
+			EndField();
 		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"closingName"));
-		WriteToken(node->closingName);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"subNodes"));
-		BeginArray();
-		for (auto&& listItem : node->subNodes)
+		void AstVisitor::PrintFields(XmlComment* node)
 		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
+			BeginField(vl::WString::Unmanaged(L"content"));
+			WriteToken(node->content);
+			EndField();
 		}
-		EndArray();
-		EndField();
-	}
-	void AstVisitor::PrintFields(XmlInstruction* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"attributes"));
-		BeginArray();
-		for (auto&& listItem : node->attributes)
+		void AstVisitor::PrintFields(XmlDocument* node)
 		{
-			BeginArrayItem();
-			Print(listItem.Obj());
-			EndArrayItem();
+			BeginField(vl::WString::Unmanaged(L"prologs"));
+			BeginArray();
+			for (auto&& listItem : node->prologs)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"rootElement"));
+			Print(node->rootElement.Obj());
+			EndField();
 		}
-		EndArray();
-		EndField();
-		BeginField(vl::WString::Unmanaged(L"name"));
-		WriteToken(node->name);
-		EndField();
-	}
-	void AstVisitor::PrintFields(XmlNode* node)
-	{
-	}
-	void AstVisitor::PrintFields(XmlText* node)
-	{
-		BeginField(vl::WString::Unmanaged(L"content"));
-		WriteToken(node->content);
-		EndField();
+		void AstVisitor::PrintFields(XmlElement* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"attributes"));
+			BeginArray();
+			for (auto&& listItem : node->attributes)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"closingName"));
+			WriteToken(node->closingName);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"subNodes"));
+			BeginArray();
+			for (auto&& listItem : node->subNodes)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+		}
+		void AstVisitor::PrintFields(XmlInstruction* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"attributes"));
+			BeginArray();
+			for (auto&& listItem : node->attributes)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+			BeginField(vl::WString::Unmanaged(L"name"));
+			WriteToken(node->name);
+			EndField();
+		}
+		void AstVisitor::PrintFields(XmlNode* node)
+		{
+		}
+		void AstVisitor::PrintFields(XmlText* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"content"));
+			WriteToken(node->content);
+			EndField();
+		}
+
+		void AstVisitor::Visit(XmlText* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"Text"), node);
+			PrintFields(static_cast<XmlNode*>(node));
+			PrintFields(static_cast<XmlText*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(XmlCData* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"CData"), node);
+			PrintFields(static_cast<XmlNode*>(node));
+			PrintFields(static_cast<XmlCData*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(XmlComment* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"Comment"), node);
+			PrintFields(static_cast<XmlNode*>(node));
+			PrintFields(static_cast<XmlComment*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(XmlElement* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"Element"), node);
+			PrintFields(static_cast<XmlNode*>(node));
+			PrintFields(static_cast<XmlElement*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(XmlInstruction* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"Instruction"), node);
+			PrintFields(static_cast<XmlNode*>(node));
+			PrintFields(static_cast<XmlInstruction*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(XmlDocument* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"Document"), node);
+			PrintFields(static_cast<XmlNode*>(node));
+			PrintFields(static_cast<XmlDocument*>(node));
+			EndObject();
+		}
+
+		AstVisitor::AstVisitor(vl::stream::StreamWriter& _writer)
+			: vl::glr::JsonVisitorBase(_writer)
+		{
+		}
+
+		void AstVisitor::Print(XmlNode* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			node->Accept(static_cast<XmlNode::IVisitor*>(this));
+		}
+
+		void AstVisitor::Print(XmlAttribute* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"Attribute"), node);
+			PrintFields(static_cast<XmlAttribute*>(node));
+			EndObject();
+		}
+
 	}
 
-	void AstVisitor::Visit(XmlText* node)
+	namespace json_reader
 	{
-		if (!node)
+		AstVisitor::JsonObjectScope::JsonObjectScope(vl::collections::List<vl::glr::json::JsonObject*>& _jsonObjects, vl::glr::json::JsonObject* json)
+			: jsonObjects(_jsonObjects)
 		{
-			WriteNull();
-			return;
+			jsonObjects.Add(json);
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"Text"), node);
-		PrintFields(static_cast<XmlNode*>(node));
-		PrintFields(static_cast<XmlText*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(XmlCData* node)
-	{
-		if (!node)
+		AstVisitor::JsonObjectScope::~JsonObjectScope()
 		{
-			WriteNull();
-			return;
+			jsonObjects.RemoveAt(jsonObjects.Count() - 1);
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"CData"), node);
-		PrintFields(static_cast<XmlNode*>(node));
-		PrintFields(static_cast<XmlCData*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(XmlComment* node)
-	{
-		if (!node)
+		vl::glr::json::JsonObject* AstVisitor::CurrentObject()
 		{
-			WriteNull();
-			return;
+			return jsonObjects[jsonObjects.Count() - 1];
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"Comment"), node);
-		PrintFields(static_cast<XmlNode*>(node));
-		PrintFields(static_cast<XmlComment*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(XmlElement* node)
-	{
-		if (!node)
+		vl::glr::json::JsonNode* AstVisitor::FindField(const vl::WString& name)
 		{
-			WriteNull();
-			return;
+			for (auto field : CurrentObject()->fields)
+			{
+				if (field && field->name.value == name) return field->value.Obj();
+			}
+			return nullptr;
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"Element"), node);
-		PrintFields(static_cast<XmlNode*>(node));
-		PrintFields(static_cast<XmlElement*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(XmlInstruction* node)
-	{
-		if (!node)
+		bool AstVisitor::IsNull(vl::glr::json::JsonNode* value)
 		{
-			WriteNull();
-			return;
+			auto literal = dynamic_cast<vl::glr::json::JsonLiteral*>(value);
+			return literal && literal->value == vl::glr::json::JsonLiteralValue::Null;
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"Instruction"), node);
-		PrintFields(static_cast<XmlNode*>(node));
-		PrintFields(static_cast<XmlInstruction*>(node));
-		EndObject();
-	}
 
-	void AstVisitor::Visit(XmlDocument* node)
-	{
-		if (!node)
+		vl::WString AstVisitor::ReadType(vl::glr::json::JsonObject* json)
 		{
-			WriteNull();
-			return;
+			if (!json) throw vl::Exception(L"AST JSON object cannot be null.");
+			bool typeFound = false;
+			vl::WString typeName;
+			for (auto field : json->fields)
+			{
+				if (field && field->name.value == L"$ast")
+				{
+					if (typeFound) throw vl::Exception(L"AST JSON object contains duplicate \"$ast\" fields.");
+					typeFound = true;
+					auto jsonString = field->value.Cast<vl::glr::json::JsonString>();
+					if (!jsonString) throw vl::Exception(L"AST JSON field \"$ast\" must be a string.");
+					typeName = jsonString->content.value;
+				}
+			}
+			if (!typeFound) throw vl::Exception(L"AST JSON object is missing field \"$ast\".");
+			return typeName;
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"Document"), node);
-		PrintFields(static_cast<XmlNode*>(node));
-		PrintFields(static_cast<XmlDocument*>(node));
-		EndObject();
-	}
 
-	AstVisitor::AstVisitor(vl::stream::StreamWriter& _writer)
-		: vl::glr::JsonVisitorBase(_writer)
-	{
-	}
-
-	void AstVisitor::Print(XmlNode* node)
-	{
-		if (!node)
+		void AstVisitor::ValidateFields(vl::glr::json::JsonObject* json, const vl::WString& typeName)
 		{
-			WriteNull();
-			return;
+			vl::collections::List<vl::WString> fieldNames;
+			for (auto field : json->fields)
+			{
+				if (!field || !field->value) throw vl::Exception(L"AST JSON object contains an invalid field.");
+				auto name = field->name.value;
+				if (fieldNames.Contains(name)) throw vl::Exception(L"AST JSON object contains duplicate field \"" + name + L"\".");
+				fieldNames.Add(name);
+				bool fieldFound = name == L"$ast";
+				if (typeName == L"Text")
+				{
+					fieldFound = fieldFound || name == L"content";
+				}
+				else if (typeName == L"CData")
+				{
+					fieldFound = fieldFound || name == L"content";
+				}
+				else if (typeName == L"Attribute")
+				{
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"value";
+				}
+				else if (typeName == L"Comment")
+				{
+					fieldFound = fieldFound || name == L"content";
+				}
+				else if (typeName == L"Element")
+				{
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"closingName";
+					fieldFound = fieldFound || name == L"attributes";
+					fieldFound = fieldFound || name == L"subNodes";
+				}
+				else if (typeName == L"Instruction")
+				{
+					fieldFound = fieldFound || name == L"name";
+					fieldFound = fieldFound || name == L"attributes";
+				}
+				else if (typeName == L"Document")
+				{
+					fieldFound = fieldFound || name == L"prologs";
+					fieldFound = fieldFound || name == L"rootElement";
+				}
+				if (!fieldFound) throw vl::Exception(L"AST JSON object contains unknown field \"" + name + L"\" for type \"" + typeName + L"\".");
+			}
 		}
-		node->Accept(static_cast<XmlNode::IVisitor*>(this));
-	}
 
-	void AstVisitor::Print(XmlAttribute* node)
-	{
-		if (!node)
+		void AstVisitor::FillFields(XmlAttribute* node)
 		{
-			WriteNull();
-			return;
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"value")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"value\" must be a string.");
+				node->value.value = jsonString->content.value;
+			}
 		}
-		BeginObject();
-		WriteType(vl::WString::Unmanaged(L"Attribute"), node);
-		PrintFields(static_cast<XmlAttribute*>(node));
-		EndObject();
-	}
 
+		void AstVisitor::FillFields(XmlCData* node)
+		{
+			FillFields(static_cast<XmlNode*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"content")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"content\" must be a string.");
+				node->content.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(XmlComment* node)
+		{
+			FillFields(static_cast<XmlNode*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"content")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"content\" must be a string.");
+				node->content.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::FillFields(XmlDocument* node)
+		{
+			FillFields(static_cast<XmlNode*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"prologs")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"prologs\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->prologs.Add(vl::Ptr<XmlNode>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<XmlNode>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"prologs\" contains an incompatible AST type.");
+						node->prologs.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"prologs\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"rootElement")))
+			{
+				if (IsNull(value))
+				{
+					node->rootElement = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<XmlElement>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"rootElement\" contains an incompatible AST type.");
+					node->rootElement = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"rootElement\" must be an object or null.");
+			}
+		}
+
+		void AstVisitor::FillFields(XmlElement* node)
+		{
+			FillFields(static_cast<XmlNode*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"closingName")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"closingName\" must be a string.");
+				node->closingName.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"attributes")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"attributes\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->attributes.Add(vl::Ptr<XmlAttribute>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<XmlAttribute>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"attributes\" contains an incompatible AST type.");
+						node->attributes.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"attributes\" contains a non-object, non-null item.");
+				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"subNodes")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"subNodes\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->subNodes.Add(vl::Ptr<XmlNode>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<XmlNode>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"subNodes\" contains an incompatible AST type.");
+						node->subNodes.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"subNodes\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(XmlInstruction* node)
+		{
+			FillFields(static_cast<XmlNode*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"name")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"name\" must be a string.");
+				node->name.value = jsonString->content.value;
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"attributes")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"attributes\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->attributes.Add(vl::Ptr<XmlAttribute>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<XmlAttribute>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"attributes\" contains an incompatible AST type.");
+						node->attributes.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"attributes\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
+		void AstVisitor::FillFields(XmlNode* node)
+		{
+		}
+
+		void AstVisitor::FillFields(XmlText* node)
+		{
+			FillFields(static_cast<XmlNode*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"content")))
+			{
+				auto jsonString = dynamic_cast<vl::glr::json::JsonString*>(value);
+				if (!jsonString) throw vl::Exception(L"AST JSON field \"content\" must be a string.");
+				node->content.value = jsonString->content.value;
+			}
+		}
+
+		void AstVisitor::Visit(XmlText* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(XmlCData* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(XmlComment* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(XmlElement* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(XmlInstruction* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(XmlDocument* node)
+		{
+			FillFields(node);
+		}
+
+		vl::Ptr<vl::glr::ParsingAstBase> AstVisitor::ReadJson(vl::glr::json::JsonObject* json)
+		{
+			auto typeName = ReadType(json);
+			if (typeName == L"Text")
+			{
+				auto node = vl::Ptr(new XmlText);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<XmlNode*>(node.Obj())->Accept(static_cast<XmlNode::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"CData")
+			{
+				auto node = vl::Ptr(new XmlCData);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<XmlNode*>(node.Obj())->Accept(static_cast<XmlNode::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"Attribute")
+			{
+				auto node = vl::Ptr(new XmlAttribute);
+				JsonObjectScope scope(jsonObjects, json);
+				FillFields(node.Obj());
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"Comment")
+			{
+				auto node = vl::Ptr(new XmlComment);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<XmlNode*>(node.Obj())->Accept(static_cast<XmlNode::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"Element")
+			{
+				auto node = vl::Ptr(new XmlElement);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<XmlNode*>(node.Obj())->Accept(static_cast<XmlNode::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"Instruction")
+			{
+				auto node = vl::Ptr(new XmlInstruction);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<XmlNode*>(node.Obj())->Accept(static_cast<XmlNode::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"Document")
+			{
+				auto node = vl::Ptr(new XmlDocument);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<XmlNode*>(node.Obj())->Accept(static_cast<XmlNode::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			throw vl::Exception(L"AST JSON field \"$ast\" contains an unknown or abstract type \"" + typeName + L"\".");
+		}
+	}
 }
 
 
