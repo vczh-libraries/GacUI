@@ -353,6 +353,7 @@ Detailed project guidance: [Index_GacUI.md](./Index_GacUI.md)
   - [Writing Project.md](./manual/coding-agent/project-md.md)
 - [Investigate and Refine Jobs](./manual/coding-agent/jobs.md)
 - [AutomationService and Basic Computer Use](./manual/coding-agent/gacui-debugging.md)
+- [Creating Remote Protocol and Foreign View Model](./manual/coding-agent/remoting.md)
 
 ## Unit Testing
 
