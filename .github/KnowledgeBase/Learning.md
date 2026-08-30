@@ -2,7 +2,7 @@
 
 # Orders
 
-- Verify generated artifacts with downstream consumer checks [21]
+- Verify generated artifacts with downstream consumer checks [22]
 - Process staged tasks one by one with verification [19]
 - Crash early instead of adding error-tolerance fallbacks [15]
 - Proactively remove code made redundant by refactoring [15]
@@ -16,8 +16,9 @@
 - Do not assume async callback owners are heap allocated [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
-- Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [3]
+- Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [4]
 - Don't assume observable changes are batched [3]
+- Use RAII scope cleanup instead of manual catch cleanup [3]
 - Capture dependent lambdas explicitly [2]
 - Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages [2]
 - Prefer simple calls before interface casts [2]
@@ -26,7 +27,6 @@
 - Prefer raw pointers unless shared ownership is required [2]
 - Start async callbacks after most-derived construction [2]
 - Sort serialization metadata by deterministic keys, not pointer addresses [2]
-- Use RAII scope cleanup instead of manual catch cleanup [2]
 - Treat environment correlation as evidence, not a cause [2]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
@@ -223,6 +223,8 @@ When multiple handlers attached to the same `Event<T>` can both observe, mutate,
 
 When a helper temporarily suppresses callbacks, changes ownership flags, or otherwise establishes scoped state, use a small scope object whose destructor restores state during normal return and exception unwinding. Avoid manual `try`/`catch` blocks that only restore state and rethrow; C++ stack unwinding should own that cleanup.
 
+Use the same pattern for recursive readers that push non-owning current-input state before visitor dispatch. A scope object must pop that state on both successful return and nested conversion failure so later recursion never observes a stale input object.
+
 Do not add a scope wrapper solely to run normal-path finalization after an exception in a fail-fast test app. When the exception is intended to terminate the process and the OS releases the endpoint, keep ordinary shutdown calls straight-line at the end. Retain scoped ownership where destruction order prevents callbacks from reaching expired stack objects.
 
 ## `collections::Dictionary` copy assignment is deleted (use move/swap)
@@ -251,6 +253,8 @@ For generated build files, compare the selected source list with the owning proj
 
 When generated build metadata must be platform-invariant, generate it with native and simulated host selection and compare tracked `makefile` and `vmake.txt` output byte for byte. Then perform clean and no-op incremental builds and inspect host-local dependency files, ensuring stable tracked output does not break platform-specific includes or incremental rebuilds.
 
+For a generated reader that reverses a generated writer, reuse real serialized outputs at every existing logged or golden site, parse them through the public input parser, perform an exact writer-reader-writer round trip, and require byte-for-byte equality. Add focused valid and malformed inputs for every generated field category and validation branch so a successful generator run cannot hide an incomplete reader.
+
 When a generator produces runnable sample applications, verify the generated output through the actual app workflow too. For example, generated ChatBot RPC code should be checked by running the server and multiple clients through joins, chat messages, client exit, and server shutdown, not only by confirming generation succeeds.
 
 When CodePack ownership is split, inspect the exact generated code pairs and their dependency boundaries. Confirm neutral output excludes platform-only dependencies, ordinary library pairs do not absorb the helper layer, and generated formatting is preserved rather than hand-edited.
@@ -274,6 +278,8 @@ When a C++ struct contains `vl::collections::List` fields, the struct's implicit
 When a failure is part of the public or script-visible semantics and tests are expected to catch it as a recoverable error, throw `vl::Exception`. Reserve `CHECK_ERROR` / `CHECK_FAIL` / `vl::Error` for internal invariant violations and states that indicate implementation corruption. For example, duplicate RPC registration can remain a catchable semantic exception when samples intentionally verify it, while impossible local type ids should fail as invariants.
 
 At script-visible reflection boundaries, translate recoverable collection operation failures into `vl::Exception` so Workflow `catch` blocks and RPC exception transport can observe them normally; do not expose `vl::Error` for expected user-data access failures.
+
+Generated parsers and deserializers should also throw `vl::Exception` for malformed external input, including unknown or duplicate fields, wrong value kinds, unknown discriminants, and incompatible nested types. Keep `CHECK_ERROR` for generator or runtime states that valid generated code cannot reach.
 
 ## Compare type descriptors by pointer when descriptor identity is available
 
