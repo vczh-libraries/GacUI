@@ -136,21 +136,20 @@
     - GDI (**Normal**, **Hosted**, **Remote**)
     - Direct2d (**Normal**, **Hosted**, **Remote**)
     - UWP (Remote)
-  - Linux
-    - wGac repo: improve development process for release
-  - macOS
-    - iGac repo: improve development process for release
+  - Linux (wGac repo)
+  - macOS (iGac repo)
   - HTML5 Dom/CSS (**Remote**)
     - WebAssembly (Remote)
   - CLI (Hosted)
     - Dedicated skin
 - Port GacUI to other languages:
   - Applications written in other language can:
-    - Implement view model (SyncObj).
-    - Render the UI (Remote).
+    - Implement view model (**Workflow RPC**).
+    - Render the UI (**GacJS**).
   - Languages:
-    - JavaScript / TypeScript
-      - HTTP for test purpose
+    - TypeScript
+      - **CLI**
+      - **HTTP**
       - WebAssembly
     - .NET
     - Python
