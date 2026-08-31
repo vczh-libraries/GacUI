@@ -1,12 +1,4 @@
-# 1.4.1.3
-
-## New Feature
-
-## Fixed Bugs
-
-## Milestone
-
-### Release
+# Universal Release
 
 - `Import/Mac` from `iGac/Mac`
 - `Import/Wayland` from `wGac/WGac`
