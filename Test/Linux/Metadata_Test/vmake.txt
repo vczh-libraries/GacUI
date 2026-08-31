@@ -78,6 +78,7 @@
 ../../../Source/Resources/GuiResource.cpp
 ../../../Source/Resources/GuiResourceManager.cpp
 ../../../Source/Resources/GuiResourceTypeResolvers.cpp
+../../../Source/Utilities/AutomationService/MiniHttpAutomationService.cpp
 ../../../Source/Utilities/SharedServices/GuiSharedAsyncService.cpp
 ../../../Source/Utilities/SharedServices/GuiSharedAutomationService.cpp
 ../../../Source/Utilities/SharedServices/GuiSharedCallbackService.cpp
