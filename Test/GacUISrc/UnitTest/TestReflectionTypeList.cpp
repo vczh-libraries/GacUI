@@ -66,6 +66,39 @@ TEST_FILE
 				GUIREFLECTIONCONTROLS_CLASS_TYPELIST(PROCESS_TYPE);
 			});
 		});
+
+		TEST_CASE(L"Ensure mouse button and Super modifier reflection surface")
+		{
+			auto mouseButtonType = GetTypeDescriptor(L"presentation::NativeMouseButton");
+			TEST_ASSERT(mouseButtonType);
+			auto mouseButtonEnum = mouseButtonType->GetEnumType();
+			TEST_ASSERT(mouseButtonEnum);
+			TEST_ASSERT(mouseButtonEnum->IndexOfItem(L"Left") != -1);
+			TEST_ASSERT(mouseButtonEnum->IndexOfItem(L"Middle") != -1);
+			TEST_ASSERT(mouseButtonEnum->IndexOfItem(L"Right") != -1);
+			TEST_ASSERT(mouseButtonEnum->IndexOfItem(L"Mouse4") != -1);
+			TEST_ASSERT(mouseButtonEnum->IndexOfItem(L"Mouse5") != -1);
+
+			auto mouseEventArgsType = GetTypeDescriptor(L"presentation::compositions::GuiMouseEventArgs");
+			TEST_ASSERT(mouseEventArgsType->GetPropertyByName(L"button", true));
+			TEST_ASSERT(mouseEventArgsType->GetPropertyByName(L"osSuper", true));
+			TEST_ASSERT(GetTypeDescriptor(L"presentation::compositions::GuiKeyEventArgs")->GetPropertyByName(L"osSuper", true));
+			TEST_ASSERT(GetTypeDescriptor(L"presentation::compositions::GuiCharEventArgs")->GetPropertyByName(L"osSuper", true));
+
+			auto compositionType = GetTypeDescriptor(L"presentation::compositions::GuiGraphicsComposition");
+			TEST_ASSERT(compositionType->GetEventByName(L"mouseDown", true));
+			TEST_ASSERT(compositionType->GetEventByName(L"mouseUp", true));
+			TEST_ASSERT(compositionType->GetEventByName(L"mouseDoubleClick", true));
+			TEST_ASSERT(!compositionType->GetEventByName(L"leftButtonDown", true));
+			TEST_ASSERT(!compositionType->GetEventByName(L"leftButtonUp", true));
+			TEST_ASSERT(!compositionType->GetEventByName(L"leftButtonDoubleClick", true));
+			TEST_ASSERT(!compositionType->GetEventByName(L"middleButtonDown", true));
+			TEST_ASSERT(!compositionType->GetEventByName(L"middleButtonUp", true));
+			TEST_ASSERT(!compositionType->GetEventByName(L"middleButtonDoubleClick", true));
+			TEST_ASSERT(!compositionType->GetEventByName(L"rightButtonDown", true));
+			TEST_ASSERT(!compositionType->GetEventByName(L"rightButtonUp", true));
+			TEST_ASSERT(!compositionType->GetEventByName(L"rightButtonDoubleClick", true));
+		});
 	});
 	SetupGacGenNativeController();
 	SetGuiMainProxy({});
