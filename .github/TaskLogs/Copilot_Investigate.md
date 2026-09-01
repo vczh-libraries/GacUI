@@ -153,3 +153,22 @@ The final proposal is successful only when the focused reflection reproduction p
 The focused case built in Debug x64 with the full solution (`Build succeeded`, 0 warnings, 0 errors). Running `UnitTest` through `copilotExecute.ps1` reached the new case after all preceding tests passed and failed at `TEST_ASSERT(mouseButtonType)`. This proves the current reflected API has no `presentation::NativeMouseButton`, the first required entry point for the five-button model; the same source/metadata inspection also shows the nine old composition events and no `osSuper` properties. The test is left unchanged so it becomes a regression test for the implemented proposal.
 
 # PROPOSALS
+
+- No.1 Unify mouse-button dispatch and transport Super state end to end
+
+## No.1 Unify mouse-button dispatch and transport Super state end to end
+
+The missing behavior is not localized to one provider: button identity and Super state are lost because the native, composition, hosted, remote, shortcut, automation, reflection, and generated-resource contracts all stop at the old three-button/three-modifier model. The solution is one lockstep breaking change across these owning boundaries, preserving only the explicitly frozen and compatibility-scoped APIs.
+
+Keep `WindowMouseInfo_` unchanged. Introduce `NativeMouseButton`, replace native and composition button-specific callbacks/events with unified down/up/double-click callbacks carrying the button, and transport mouse `osSuper` separately with each native callback. Track all five held buttons in `GuiGraphicsHost` so capture is based on the actual event stream, including second-down double clicks and mixed ordinary/extended buttons. Migrate every composition subscriber to unified events with an explicit button filter, while retaining and reconstructing the existing list Item and tree Node Left/Middle/Right events.
+
+Add `osSuper` to key/char info and every shortcut identity/signature after `alt`. Add the resource-service canonical Super label and use it for shortcut rendering, including remote renderer configuration and environment-change invalidation. Accept Win/Command/Super as parser aliases, register `MOD_WIN` on Windows, and treat Super as a modifier in navigation/activation guards.
+
+Update the Windows XBUTTON message mapping, hosted forwarding, GacGen/test services, automation commands, remote protocol source schemas and direct forwarding, reflection, source XML, samples, documentation, SOP, and breaking-change notes. Generate protocol, reflection metadata, XML outputs, and release artifacts only through their owning repository projects. Expand focused unit tests for five-button routing/order/capture, list/tree compatibility, Super conversion/shortcut behavior, automation, remote JSON, and reflection, then run the required build/unit/native-remoting/release verification.
+
+### CODE CHANGE
+
+- Change the native and composition input contracts, all implementations, and all filtered consumers as described above without changing `WindowMouseInfo_`.
+- Change shortcut/resource APIs, parser/display behavior, modifier-sensitive guards, Windows global-hotkey registration, and remote reconnect/environment refresh.
+- Change protocol TXT sources, reflection registrations, automation and unit-test helpers, test applications/XML, documentation, SOP, and release notes; regenerate protected artifacts with `Metadata_UpdateProtocol`, `Metadata_Generate`, `GacUI_Compiler`, and the Tools release builds.
+- Add and update unit/protocol tests so the confirmed reflection reproduction and behavioral verification pass unchanged.
