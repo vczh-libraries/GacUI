@@ -96,7 +96,24 @@ renderer replacement and intentional close steps.
 4. Do not click the button again. Use `You have clicked!` as the
    state-continuity marker during renderer replacement.
 
-### 3. Add and Clear DataGrid Rows
+### 3. Verify Shortcuts and Mouse Buttons
+
+1. On `Home`, require the three shortcut labels to be exactly `Ctrl+Q`,
+   `Ctrl+Win+Q`, and `{Ctrl+Shift+Alt+Win+Q}` on Windows.
+2. Press `Ctrl+Q` and require a distinct dialog containing exactly
+   `You pressed Ctrl+Q!`. Close that dialog.
+3. Press `Ctrl+Win+Q` and require a distinct dialog containing exactly
+   `You pressed Ctrl+Win+Q!`. Close that dialog.
+4. Press `Ctrl+Shift+Alt+Win+Q` through the real Windows global-hot-key path and
+   require a distinct dialog containing exactly
+   `You pressed Ctrl+Shift+Alt+Win+Q!`. Close that dialog.
+5. Over the visible mouse-result label, press and release Left, Middle, Right,
+   XBUTTON1, and XBUTTON2 through the renderer. For each button, require the
+   label to change first to exactly `<button> button down!` and then to exactly
+   `<button> button up!`, where `<button>` is respectively `Left`, `Middle`,
+   `Right`, `Mouse4`, or `Mouse5`.
+
+### 4. Add and Clear DataGrid Rows
 
 1. Activate `DataGrid`.
 2. Require the `Name`, `Title`, and `Description` headers, the `Add 3 Rows` and
@@ -108,7 +125,7 @@ renderer replacement and intentional close steps.
 6. Require all three rows and their cell values to disappear while the grid,
    headers, `Add 3 Rows`, and `Clear` remain visible and usable.
 
-### 4. Open and Close the Document Dialog
+### 5. Open and Close the Document Dialog
 
 1. Activate `Document` and require document content containing the interactive
    text `RIGHT NOW`.
@@ -120,7 +137,7 @@ renderer replacement and intentional close steps.
 5. Require the dialog and its text to disappear. Require the `Document` view to
    be active and responsive again.
 
-### 5. Replace the Renderer and Verify State Continuity
+### 6. Replace the Renderer and Verify State Continuity
 
 1. Close the first renderer without closing the application session.
 2. Open a second renderer using the same renderer configuration and connect it
@@ -136,8 +153,14 @@ renderer replacement and intentional close steps.
    application. Require it to settle without a fatal error or retry loop.
 8. Inspect the third renderer's current UI and locate all controls again before
    continuing.
+9. On the third renderer, require the three shortcut labels to remain exactly
+   `Ctrl+Q`, `Ctrl+Win+Q`, and `{Ctrl+Shift+Alt+Win+Q}`. Repeat all three shortcut
+   activations from section 3 and dismiss each expected dialog.
+10. Repeat the Mouse4 and Mouse5 down/up checks from section 3 through the third
+    renderer and require the same exact label text without a fatal error or
+    disconnect.
 
-### 6. Close the Application Through the File Menu
+### 7. Close the Application Through the File Menu
 
 Perform these steps in the third renderer.
 
@@ -194,7 +217,24 @@ Use a fresh application state.
 9. Require the application to remain connected and responsive throughout the
    typing and tab changes.
 
-### 4. Close the Application
+### 4. Verify Shortcuts and Mouse Buttons
+
+1. Activate `Window Manager` and require the three shortcut labels to be
+   exactly `Ctrl+Q`, `Ctrl+Win+Q`, and `{Ctrl+Shift+Alt+Win+Q}` on Windows.
+2. Press `Ctrl+Q` and require a distinct dialog containing exactly
+   `You pressed Ctrl+Q!`. Close that dialog.
+3. Press `Ctrl+Win+Q` and require a distinct dialog containing exactly
+   `You pressed Ctrl+Win+Q!`. Close that dialog.
+4. Press `Ctrl+Shift+Alt+Win+Q` through the real Windows global-hot-key path and
+   require a distinct dialog containing exactly
+   `You pressed Ctrl+Shift+Alt+Win+Q!`. Close that dialog.
+5. Over the visible mouse-result label, press and release Left, Middle, Right,
+   XBUTTON1, and XBUTTON2 through the native Windows provider. For each button,
+   require the label to change first to exactly `<button> button down!` and then
+   to exactly `<button> button up!`, where `<button>` is respectively `Left`,
+   `Middle`, `Right`, `Mouse4`, or `Mouse5`.
+
+### 5. Close the Application
 
 1. In GacJS, use the renderer's visible `Force Exit` control. In a native
    renderer, activate the application's top-level `Exit` tab and then activate

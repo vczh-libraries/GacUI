@@ -519,7 +519,7 @@ UnitTestSnapshotViewerAppWindow
 				rootComposition->GetEventReceiver()->mouseEnter.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComposition_MouseEnter);
 				rootComposition->GetEventReceiver()->mouseLeave.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComopsition_MouseLeave);
 				rootComposition->GetEventReceiver()->mouseMove.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComposition_MouseMove);
-				rootComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComposition_LeftButtonDown);
+				rootComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComposition_LeftButtonDown);
 			};
 
 			if (frame->GetDom())
@@ -587,6 +587,7 @@ UnitTestSnapshotViewerAppWindow
 
 	void UnitTestSnapshotViewerAppWindow::rootComposition_LeftButtonDown(vl::presentation::compositions::GuiGraphicsComposition* sender, vl::presentation::compositions::GuiMouseEventArgs& arguments)
 	{
+		if (arguments.button != NativeMouseButton::Left) return;
 		if (!arguments.ctrl) return;
 		auto domSource = arguments.compositionSource;
 		while (domSource)

@@ -60,7 +60,9 @@ Implement:
 - **Generated hook definition `BeforeControlTemplateUninstalled_()`**: Clear template-specific state; the definition may be empty
 - **Generated hook definition `AfterControlTemplateInstalled_(bool initialize)`**: Sync state to template; the definition may be empty when no synchronization is needed
   - Call template methods: `TypedControlTemplateObject(true)->SetState(controlState)`
-- **Event handlers**: Mouse events (`leftButtonDown`, `leftButtonUp`, `mouseEnter`, `mouseLeave`), keyboard events (`keyDown`, `keyUp`)
+- **Event handlers**: Mouse events (`mouseDown`, `mouseUp`, `mouseEnter`,
+  `mouseLeave`), keyboard events (`keyDown`, `keyUp`). Filter
+  `GuiMouseEventArgs::button` when a control should react to only one button.
 - **Property getters/setters**: Update state and notify template
 - **Template access**: Use `TypedControlTemplateObject(true)` to get typed template with existence check, or `TypedControlTemplateObject(false)` without check
 
@@ -193,7 +195,7 @@ When creating a control that inherits from another control (e.g., `GuiSelectable
 
 - **Inherit from parent control**: `class GuiDerivedControl : public GuiParentControl, public Description<GuiDerivedControl>`
 - **Specify parent in template macro**: `GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DerivedTemplate, GuiParentControl)`
-- **Do NOT re-attach parent event handlers**: Don't re-attach `leftButtonDown` if parent already handles it
+- **Do NOT re-attach parent event handlers**: Don't re-attach `mouseDown` if the parent already handles it
 - **Attach to parent's events instead**: Example - `GuiSelectableButton` attaches to `GuiButton::AfterClicked`
 
 ### Constructor Pattern
@@ -294,6 +296,7 @@ void GuiMyControl::AfterControlTemplateInstalled_(bool initialize)
 
 void GuiMyControl::OnMouseClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 {
+	if (arguments.button != NativeMouseButton::Left) return;
     SetMyState(!myState);
 }
 
@@ -301,7 +304,7 @@ GuiMyControl::GuiMyControl(theme::ThemeName themeName)
     : GuiControl(themeName)
 {
     StateChanged.SetAssociatedComposition(boundsComposition);
-    boundsComposition->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiMyControl::OnMouseClick);
+    boundsComposition->GetEventReceiver()->mouseUp.AttachMethod(this, &GuiMyControl::OnMouseClick);
 }
 
 GuiMyControl::~GuiMyControl()

@@ -2,7 +2,7 @@
 
 Raw input events are in compositions. Normally a composition doesn't receive events, until **GuiGraphicsComposition**::**GetEventReceiver** is called. This function create a big object containing all event registrations inside it, and cause **GuiGraphicsComposition**::**HasEventReceiver** to become **true** forever. You are not able to free the space of event registration object once it is associated to a composition.
 
-In the event registration object you will find a lot of fields for events, for example, **leftButtonDown**. There are 3 methods for subscribing an event:
+In the event registration object you will find a lot of fields for events, for example, **mouseDown**. There are 3 methods for subscribing an event:
 - composition-\>GetEventReceiver()-\>EVENT_NAME.**AttachMethod**: subscribe an event using an object and a member function pointer.
 - composition-\>GetEventReceiver()-\>EVENT_NAME.**AttachFunction**: subscribe an event using a function pointer or a **vl::Func\<...\>** functor.
 - composition-\>GetEventReceiver()-\>EVENT_NAME.**AttachLambda**: subscribe an event using a lambda expression or other functors. All 3 methods returns a new handler object per each call. The only purpose for this object is to use in composition-\>GetEventReceiver()-\>EVENT_NAME.**Detach** and cancel the registration that returning that perticular handler object. If **Detach** returns **false**, either this registration has already been canceled, or this registration doesn't happen in this event.
@@ -25,17 +25,14 @@ Such process could be detected using members of the second argument:
 ### Button and Wheel Events
 
 GacUI offers the following button events:
-- leftButtonDown
-- leftButtonUp
-- leftButtonDoubleClick
-- middleButtonDown
-- middleButtonUp
-- middleButtonDoubleClick
-- rightButtonDown
-- rightButtonUp
-- rightButtonDoubleClick
+- mouseDown
+- mouseUp
+- mouseDoubleClick
 - horizontalWheel
-- verticalWheel mapping to the 5 standard buttons of a mouse. But a typical mouse today, middle button and vertical wheel are merged together, horizontal wheel are usually missing.
+- verticalWheel
+
+The three button events share the same event type. Read **button** to distinguish
+**Left**, **Middle**, **Right**, **Mouse4**, and **Mouse5**.
 
 The type of the second argument is **vl::presentation::compositions::GuiMouseEventArgs&**, or **presentation::composition::GuiMouseEventArgs*** in **Workflow**.
 
@@ -44,6 +41,9 @@ Mouse button and wheel events are raised on captured composition, or the composi
 Other members contains the information of the event:
 - **ctrl**: **true** if the CTRL key is pressing.
 - **shift**: **true** if the SHIFT key is pressing.
+- **alt**: **true** if the ALT key is pressing.
+- **osSuper**: **true** if the Windows, Command, or Super key is pressing.
+- **button**: the button for a down, up, or double-click event.
 - **left**: **true** if the mouse left button is pressing.
 - **middle**: **true** if the mouse middle button is pressing.
 - **right**: **true** if the mouse right button is pressing.
@@ -65,7 +65,7 @@ GacUI offers the following button events:
 
 When a button down event happens, the **compositionSource** is captured. A captured composition becomes the **compositionSource** of all following mouse events happen in the containing window (or menu, popup, etc...), including button up events.
 
-After the button up event happens, the capturing is released.
+Capturing is released after every held mouse button is released.
 
 ### Moving or deleting controls or compositions during mouse events.
 

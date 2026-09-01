@@ -2097,7 +2097,7 @@ namespace vl
 				bool									IsKeyToggled(VKEY code)override;
 				WString									GetKeyName(VKEY code)override;
 				VKEY									GetKey(const WString& name)override;
-				vint									RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)override;
+				vint									RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)override;
 				bool									UnregisterGlobalShortcutKey(vint id)override;
 			};
 
@@ -2108,6 +2108,7 @@ namespace vl
 }
 
 #endif
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\WINDOWS\SERVICESIMPL\WINDOWSRESOURCESERVICE.H
@@ -2158,12 +2159,14 @@ namespace vl
 				FontProperties								GetDefaultFont()override;
 				void										SetDefaultFont(const FontProperties& value)override;
 				void										EnumerateFonts(collections::List<WString>& fonts)override;
+				WString									GetOSSuperKeyName()override;
 			};
 		}
 	}
 }
 
 #endif
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\WINDOWS\SERVICESIMPL\WINDOWSSCREENSERVICE.H

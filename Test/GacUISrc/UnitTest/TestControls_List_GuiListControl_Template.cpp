@@ -199,6 +199,24 @@ namespace gacui_unittest_template
 				});
 				protocol->OnNextIdleFrame(L"Hover 1st", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(0);
+					auto logs = FindObjectByName<GuiTextList>(window, L"logs");
+					vint extendedButtonEvents = 0;
+					auto handler = itemStyle->GetEventReceiver()->mouseDown.AttachLambda([&](auto*, auto& arguments)
+					{
+						if (arguments.button == NativeMouseButton::Mouse4 || arguments.button == NativeMouseButton::Mouse5)
+						{
+							extendedButtonEvents++;
+						}
+					});
+					vint itemEventCount = logs->GetItems().Count();
+					protocol->Mouse4Click();
+					protocol->Mouse5Click();
+					TEST_ASSERT(extendedButtonEvents == 2);
+					TEST_ASSERT(logs->GetItems().Count() == itemEventCount);
+					itemStyle->GetEventReceiver()->mouseDown.Detach(handler);
 					protocol->LClick();
 				});
 				protocol->OnNextIdleFrame(L"Click 1st", [=]()

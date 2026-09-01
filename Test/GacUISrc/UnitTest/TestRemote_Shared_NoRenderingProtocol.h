@@ -14,12 +14,14 @@ namespace remote_protocol_tests
 
 	class SingleScreenProtocolFeatures :
 		public UnitTestRemoteProtocol_MainWindow,
-		public UnitTestRemoteProtocol_IO
+		public UnitTestRemoteProtocol_IO,
+		public UnitTestRemoteProtocol_IOCommands
 	{
-	public:
+public:
 		SingleScreenProtocolFeatures(const UnitTestScreenConfig& _globalConfig)
 			: UnitTestRemoteProtocol_MainWindow(_globalConfig)
 			, UnitTestRemoteProtocol_IO(_globalConfig)
+			, UnitTestRemoteProtocol_IOCommands(_globalConfig)
 		{
 		}
 

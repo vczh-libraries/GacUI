@@ -710,12 +710,14 @@ GuiTableSplitterCompositionBase
 
 			void GuiTableSplitterCompositionBase::OnLeftButtonDown(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
 			{
+				if (arguments.button != NativeMouseButton::Left) return;
 				dragging = true;
 				draggingPoint = Point(arguments.x, arguments.y);
 			}
 
 			void GuiTableSplitterCompositionBase::OnLeftButtonUp(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
 			{
+				if (arguments.button != NativeMouseButton::Left) return;
 				dragging = false;
 			}
 
@@ -846,8 +848,8 @@ GuiTableSplitterCompositionBase
 			
 			GuiTableSplitterCompositionBase::GuiTableSplitterCompositionBase()
 			{
-				GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiTableSplitterCompositionBase::OnLeftButtonDown);
-				GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiTableSplitterCompositionBase::OnLeftButtonUp);
+				GetEventReceiver()->mouseDown.AttachMethod(this, &GuiTableSplitterCompositionBase::OnLeftButtonDown);
+				GetEventReceiver()->mouseUp.AttachMethod(this, &GuiTableSplitterCompositionBase::OnLeftButtonUp);
 			}
 
 			GuiTableComposition* GuiTableSplitterCompositionBase::GetTableParent()

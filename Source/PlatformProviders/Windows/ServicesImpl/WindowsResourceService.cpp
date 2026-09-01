@@ -153,6 +153,11 @@ WindowsResourceService
 				EnumFontFamilies(refHdc, NULL, proc, (LPARAM)&fonts);
 				ReleaseDC(NULL, refHdc);
 			}
+
+			WString WindowsResourceService::GetOSSuperKeyName()
+			{
+				return WString::Unmanaged(L"Win");
+			}
 		}
 	}
 }

@@ -343,14 +343,14 @@
                     <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
                       <SolidBackground ref.Name="colorBackground" Color-eval="ViewModel.Color"/>
                     </Bounds>
-                    <ev.leftButtonUp-eval><![CDATA[
+                    <ev.mouseUp-eval><![CDATA[
                       {
-                        if (ViewModel.SelectColor(self))
+                        if (arguments.button == NativeMouseButton::Left and ViewModel.SelectColor(self))
                         {
                           colorBackground.Color = ViewModel.Color;
                         }
                       }
-                    ]]></ev.leftButtonUp-eval>
+                    ]]></ev.mouseUp-eval>
                   </Bounds>
                   <!--
                   <ComboButton ref.Name="comboColor" Alt="K">

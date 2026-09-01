@@ -8,6 +8,7 @@ TEST_FILE
 		List<WString> eventLogs;
 		GuiWindow* controlHost = nullptr;
 		GuiButton* x = nullptr, * y = nullptr, * z = nullptr;
+		bool superCharObserved = false;
 
 		auto pressKeys = [&]()
 		{
@@ -103,6 +104,13 @@ TEST_FILE
 			AttachAndLogEvents(x->GetFocusableComposition(), L"x", eventLogs);
 			AttachAndLogEvents(y->GetFocusableComposition(), L"y", eventLogs);
 			AttachAndLogEvents(z->GetFocusableComposition(), L"z", eventLogs);
+			y->GetFocusableComposition()->GetEventReceiver()->charInput.AttachLambda([&](GuiGraphicsComposition*, GuiCharEventArgs& arguments)
+			{
+				if (arguments.code == L'D' && arguments.osSuper)
+				{
+					superCharObserved = true;
+				}
+			});
 		});
 
 		protocol.OnNextFrame([&]()
@@ -161,6 +169,10 @@ TEST_FILE
 
 			pressKeys();
 			assertKeysOnY();
+
+			protocol.TypeString(L"D", false, false, false, true);
+			TEST_ASSERT(superCharObserved);
+			eventLogs.Clear();
 		});
 
 		protocol.OnNextFrame([&]()

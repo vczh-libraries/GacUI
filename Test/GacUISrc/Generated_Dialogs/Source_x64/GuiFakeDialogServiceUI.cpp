@@ -448,7 +448,7 @@ Closures
 
 	void __vwsnf33_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiKeyEventArgs* arguments) const
 	{
-		if (((((! ::vl::__vwsn::This(arguments)->ctrl) && (! ::vl::__vwsn::This(arguments)->shift)) && (! ::vl::__vwsn::This(arguments)->alt)) && (::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN)))
+		if ((((((! ::vl::__vwsn::This(arguments)->ctrl) && (! ::vl::__vwsn::This(arguments)->shift)) && (! ::vl::__vwsn::This(arguments)->alt)) && (! ::vl::__vwsn::This(arguments)->osSuper)) && (::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN)))
 		{
 			if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->TryConfirm(::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::vl::presentation::controls::GuiWindow>(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost())), ::vl::__vwsn::This(__vwsnthis_0->self)->GetSelection()))
 			{
@@ -527,7 +527,7 @@ Closures
 
 	void __vwsnf39_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiKeyEventArgs* arguments) const
 	{
-		if (((((! ::vl::__vwsn::This(arguments)->ctrl) && (! ::vl::__vwsn::This(arguments)->shift)) && (! ::vl::__vwsn::This(arguments)->alt)) && (::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN)))
+		if ((((((! ::vl::__vwsn::This(arguments)->ctrl) && (! ::vl::__vwsn::This(arguments)->shift)) && (! ::vl::__vwsn::This(arguments)->alt)) && (! ::vl::__vwsn::This(arguments)->osSuper)) && (::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN)))
 		{
 			if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->TryConfirm(::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::vl::presentation::controls::GuiWindow>(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost())), ::vl::__vwsn::This(__vwsnthis_0->self)->GetSelection()))
 			{
@@ -1026,7 +1026,7 @@ Closures
 
 	void __vwsnf67_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const
 	{
-		if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SelectColor(static_cast<::vl::presentation::controls::GuiWindow*>(__vwsnthis_0->self)))
+		if (((::vl::__vwsn::This(arguments)->button == ::vl::presentation::NativeMouseButton::Left) && ::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SelectColor(static_cast<::vl::presentation::controls::GuiWindow*>(__vwsnthis_0->self))))
 		{
 			::vl::__vwsn::This(__vwsnthis_0->colorBackground.Obj())->SetColor(::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetColor());
 		}
@@ -7765,7 +7765,7 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf67_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->colorBounds)->GetEventReceiver()->leftButtonUp, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->colorBounds)->GetEventReceiver()->mouseUp, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc41_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));

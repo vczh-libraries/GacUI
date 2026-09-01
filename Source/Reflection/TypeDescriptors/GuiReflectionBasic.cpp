@@ -193,6 +193,14 @@ Type Declaration
 				ENUM_NAMESPACE_ITEM(SizeWE)
 			END_ENUM_ITEM(INativeCursor::SystemCursorType)
 
+			BEGIN_ENUM_ITEM(NativeMouseButton)
+				ENUM_CLASS_ITEM(Left)
+				ENUM_CLASS_ITEM(Middle)
+				ENUM_CLASS_ITEM(Right)
+				ENUM_CLASS_ITEM(Mouse4)
+				ENUM_CLASS_ITEM(Mouse5)
+			END_ENUM_ITEM(NativeMouseButton)
+
 			BEGIN_ENUM_ITEM(BoolOption)
 				ENUM_CLASS_ITEM(AlwaysTrue)
 				ENUM_CLASS_ITEM(AlwaysFalse)
@@ -308,6 +316,7 @@ Type Declaration
 
 				CLASS_MEMBER_METHOD(GetSystemCursor, {L"type"})
 				CLASS_MEMBER_METHOD(EnumerateFonts, {L"fonts"})
+				CLASS_MEMBER_METHOD(GetOSSuperKeyName, NO_PARAMETER)
 			END_INTERFACE_MEMBER(INativeResourceService)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeAsyncService)
@@ -359,7 +368,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(IsKeyToggled, { L"code" })
 				CLASS_MEMBER_METHOD(GetKeyName, { L"code" })
 				CLASS_MEMBER_METHOD(GetKey, { L"name" })
-				CLASS_MEMBER_METHOD(RegisterGlobalShortcutKey, { L"ctrl" _ L"shift" _ L"alt" _ L"key" })
+				CLASS_MEMBER_METHOD(RegisterGlobalShortcutKey, { L"ctrl" _ L"shift" _ L"alt" _ L"osSuper" _ L"key" })
 				CLASS_MEMBER_METHOD(UnregisterGlobalShortcutKey, { L"id" })
 			END_INTERFACE_MEMBER(INativeInputService)
 

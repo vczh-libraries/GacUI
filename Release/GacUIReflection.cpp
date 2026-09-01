@@ -431,6 +431,14 @@ Type Declaration
 				ENUM_NAMESPACE_ITEM(SizeWE)
 			END_ENUM_ITEM(INativeCursor::SystemCursorType)
 
+			BEGIN_ENUM_ITEM(NativeMouseButton)
+				ENUM_CLASS_ITEM(Left)
+				ENUM_CLASS_ITEM(Middle)
+				ENUM_CLASS_ITEM(Right)
+				ENUM_CLASS_ITEM(Mouse4)
+				ENUM_CLASS_ITEM(Mouse5)
+			END_ENUM_ITEM(NativeMouseButton)
+
 			BEGIN_ENUM_ITEM(BoolOption)
 				ENUM_CLASS_ITEM(AlwaysTrue)
 				ENUM_CLASS_ITEM(AlwaysFalse)
@@ -546,6 +554,7 @@ Type Declaration
 
 				CLASS_MEMBER_METHOD(GetSystemCursor, {L"type"})
 				CLASS_MEMBER_METHOD(EnumerateFonts, {L"fonts"})
+				CLASS_MEMBER_METHOD(GetOSSuperKeyName, NO_PARAMETER)
 			END_INTERFACE_MEMBER(INativeResourceService)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeAsyncService)
@@ -597,7 +606,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(IsKeyToggled, { L"code" })
 				CLASS_MEMBER_METHOD(GetKeyName, { L"code" })
 				CLASS_MEMBER_METHOD(GetKey, { L"name" })
-				CLASS_MEMBER_METHOD(RegisterGlobalShortcutKey, { L"ctrl" _ L"shift" _ L"alt" _ L"key" })
+				CLASS_MEMBER_METHOD(RegisterGlobalShortcutKey, { L"ctrl" _ L"shift" _ L"alt" _ L"osSuper" _ L"key" })
 				CLASS_MEMBER_METHOD(UnregisterGlobalShortcutKey, { L"id" })
 			END_INTERFACE_MEMBER(INativeInputService)
 
@@ -1088,6 +1097,7 @@ Type Loader
 	}
 }
 
+
 /***********************************************************************
 .\REFLECTION\TYPEDESCRIPTORS\GUIREFLECTIONCOMPOSITIONS.CPP
 ***********************************************************************/
@@ -1228,10 +1238,10 @@ Type Declaration (Extra)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemCount)
 
 				CLASS_MEMBER_METHOD(GetItem, {L"index"})
-				CLASS_MEMBER_METHOD(TryGetShortcut, { L"ctrl" _ L"shift" _ L"alt" _ L"ket" })
-				CLASS_MEMBER_METHOD(CreateNewShortcut, { L"ctrl" _ L"shift" _ L"alt" _ L"ket" })
-				CLASS_MEMBER_METHOD(CreateShortcutIfNotExist, { L"ctrl" _ L"shift" _ L"alt" _ L"ket" })
-				CLASS_MEMBER_METHOD(DestroyShortcut, { L"ctrl" _ L"shift" _ L"alt" _ L"ket" })
+				CLASS_MEMBER_METHOD(TryGetShortcut, { L"ctrl" _ L"shift" _ L"alt" _ L"osSuper" _ L"key" })
+				CLASS_MEMBER_METHOD(CreateNewShortcut, { L"ctrl" _ L"shift" _ L"alt" _ L"osSuper" _ L"key" })
+				CLASS_MEMBER_METHOD(CreateShortcutIfNotExist, { L"ctrl" _ L"shift" _ L"alt" _ L"osSuper" _ L"key" })
+				CLASS_MEMBER_METHOD(DestroyShortcut, { L"item" })
 			END_INTERFACE_MEMBER(IGuiShortcutKeyManager)
 
 			BEGIN_CLASS_MEMBER(GuiShortcutKeyManager)
@@ -1286,15 +1296,9 @@ Type Declaration (Class)
 			BEGIN_CLASS_MEMBER(GuiGraphicsComposition)
 				CLASS_MEMBER_EXTERNALMETHOD(SafeDelete, NO_PARAMETER, void(GuiGraphicsComposition::*)(), vl::presentation::compositions::SafeDeleteComposition)
 
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(leftButtonDown)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(leftButtonUp)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(leftButtonDoubleClick)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(middleButtonDown)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(middleButtonUp)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(middleButtonDoubleClick)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(rightButtonDown)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(rightButtonUp)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(rightButtonDoubleClick)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(mouseDown)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(mouseUp)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(mouseDoubleClick)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(horizontalWheel)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(verticalWheel)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(mouseMove)
@@ -1646,6 +1650,7 @@ Type Loader
 		}
 	}
 }
+
 
 /***********************************************************************
 .\REFLECTION\TYPEDESCRIPTORS\GUIREFLECTIONCONTROLS.CPP
@@ -3477,6 +3482,7 @@ Type Declaration
 				CLASS_MEMBER_FIELD(ctrl)
 				CLASS_MEMBER_FIELD(shift)
 				CLASS_MEMBER_FIELD(alt)
+				CLASS_MEMBER_FIELD(osSuper)
 				CLASS_MEMBER_FIELD(capslock)
 				CLASS_MEMBER_FIELD(autoRepeatKeyDown)
 			END_CLASS_MEMBER(GuiKeyEventArgs)
@@ -3489,6 +3495,7 @@ Type Declaration
 				CLASS_MEMBER_FIELD(ctrl)
 				CLASS_MEMBER_FIELD(shift)
 				CLASS_MEMBER_FIELD(alt)
+				CLASS_MEMBER_FIELD(osSuper)
 				CLASS_MEMBER_FIELD(capslock)
 			END_CLASS_MEMBER(GuiCharEventArgs)
 
@@ -3496,6 +3503,8 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiEventArgs)
 				EVENTARGS_CONSTRUCTOR(GuiMouseEventArgs)
 				
+				CLASS_MEMBER_FIELD(button)
+				CLASS_MEMBER_FIELD(osSuper)
 				CLASS_MEMBER_FIELD(ctrl)
 				CLASS_MEMBER_FIELD(shift)
 				CLASS_MEMBER_FIELD(left)
@@ -3586,6 +3595,7 @@ Type Loader
 		}
 	}
 }
+
 
 /***********************************************************************
 .\REFLECTION\TYPEDESCRIPTORS\GUIREFLECTIONPLUGIN.CPP

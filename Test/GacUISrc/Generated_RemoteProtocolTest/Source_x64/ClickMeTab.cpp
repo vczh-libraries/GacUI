@@ -35,6 +35,27 @@ Class (::rptest::ClickMeTab)
 
 namespace rptest
 {
+	::vl::WString ClickMeTab::MouseButtonName(::vl::presentation::NativeMouseButton button)
+	{
+		if ((button == ::vl::presentation::NativeMouseButton::Left))
+		{
+			return ::vl::WString::Unmanaged(L"Left");
+		}
+		if ((button == ::vl::presentation::NativeMouseButton::Middle))
+		{
+			return ::vl::WString::Unmanaged(L"Middle");
+		}
+		if ((button == ::vl::presentation::NativeMouseButton::Right))
+		{
+			return ::vl::WString::Unmanaged(L"Right");
+		}
+		if ((button == ::vl::presentation::NativeMouseButton::Mouse4))
+		{
+			return ::vl::WString::Unmanaged(L"Mouse4");
+		}
+		return ::vl::WString::Unmanaged(L"Mouse5");
+	}
+
 	ClickMeTab::ClickMeTab()
 		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
 	{

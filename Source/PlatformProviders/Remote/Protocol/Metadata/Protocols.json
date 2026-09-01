@@ -411,6 +411,13 @@
                 "$ast": "ReferenceType",
                 "name": "CharacterEncoding"
             }
+        }, {
+            "$ast": "StructMember",
+            "name": "osSuperKeyName",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "String"
+            }
         }],
         "type": "Struct"
     }, {
@@ -946,7 +953,11 @@
         }
     }, {
         "$ast": "EnumDecl",
-        "attributes": [],
+        "attributes": [{
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::NativeMouseButton",
+            "name": "@Cpp"
+        }],
         "name": "IOMouseButton",
         "members": [{
             "$ast": "EnumMember",
@@ -957,6 +968,12 @@
         }, {
             "$ast": "EnumMember",
             "name": "Right"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Mouse4"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Mouse5"
         }]
     }, {
         "$ast": "StructDecl",
@@ -976,6 +993,13 @@
         }, {
             "$ast": "StructMember",
             "name": "shift",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "osSuper",
             "type": {
                 "$ast": "PrimitiveType",
                 "type": "Boolean"
@@ -1089,6 +1113,13 @@
             }
         }, {
             "$ast": "StructMember",
+            "name": "osSuper",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
             "name": "capslock",
             "type": {
                 "$ast": "PrimitiveType",
@@ -1141,6 +1172,13 @@
             }
         }, {
             "$ast": "StructMember",
+            "name": "osSuper",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
             "name": "capslock",
             "type": {
                 "$ast": "PrimitiveType",
@@ -1176,6 +1214,13 @@
         }, {
             "$ast": "StructMember",
             "name": "alt",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "osSuper",
             "type": {
                 "$ast": "PrimitiveType",
                 "type": "Boolean"

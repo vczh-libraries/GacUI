@@ -46,6 +46,7 @@ namespace vl
 				FontProperties								GetDefaultFont()override;
 				void										SetDefaultFont(const FontProperties& value)override;
 				void										EnumerateFonts(collections::List<WString>& fonts)override;
+				WString									GetOSSuperKeyName()override;
 			};
 		}
 	}

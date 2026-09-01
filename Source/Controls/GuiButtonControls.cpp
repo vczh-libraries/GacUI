@@ -109,6 +109,7 @@ GuiButton
 
 			void GuiButton::OnLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
+				if (arguments.button != NativeMouseButton::Left) return;
 				if (arguments.eventSource == boundsComposition)
 				{
 					mousePressingDirect = true;
@@ -134,6 +135,7 @@ GuiButton
 
 			void GuiButton::OnLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
+				if (arguments.button != NativeMouseButton::Left) return;
 				if (mousePressingDirect || mousePressingIndirect)
 				{
 					bool skipChecking = mousePressingIndirect;
@@ -167,7 +169,7 @@ GuiButton
 			
 			void GuiButton::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
-				if (arguments.eventSource == focusableComposition && !arguments.ctrl && !arguments.shift && !arguments.alt)
+				if (arguments.eventSource == focusableComposition && !arguments.ctrl && !arguments.shift && !arguments.alt && !arguments.osSuper)
 				{
 					switch (arguments.code)
 					{
@@ -190,7 +192,7 @@ GuiButton
 
 			void GuiButton::OnKeyUp(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
-				if (arguments.eventSource == focusableComposition && !arguments.ctrl && !arguments.shift && !arguments.alt)
+				if (arguments.eventSource == focusableComposition && !arguments.ctrl && !arguments.shift && !arguments.alt && !arguments.osSuper)
 				{
 					switch (arguments.code)
 					{
@@ -223,8 +225,8 @@ GuiButton
 				Clicked.SetAssociatedComposition(boundsComposition);
 				SetFocusableComposition(boundsComposition);
 
-				boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiButton::OnLeftButtonDown);
-				boundsComposition->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiButton::OnLeftButtonUp);
+				boundsComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiButton::OnLeftButtonDown);
+				boundsComposition->GetEventReceiver()->mouseUp.AttachMethod(this, &GuiButton::OnLeftButtonUp);
 				boundsComposition->GetEventReceiver()->mouseEnter.AttachMethod(this, &GuiButton::OnMouseEnter);
 				boundsComposition->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiButton::OnMouseLeave);
 				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiButton::OnKeyDown);

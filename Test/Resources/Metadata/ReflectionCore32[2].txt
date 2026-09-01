@@ -664,7 +664,7 @@ interface presentation::INativeInputService : system::Interface {
     function GetKeyName(code : presentation::VKEY) : system::String;
     function IsKeyPressing(code : presentation::VKEY) : system::Boolean;
     function IsKeyToggled(code : presentation::VKEY) : system::Boolean;
-    function RegisterGlobalShortcutKey(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, key : presentation::VKEY) : system::Int32;
+    function RegisterGlobalShortcutKey(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, osSuper : system::Boolean, key : presentation::VKEY) : system::Int32;
     function UnregisterGlobalShortcutKey(id : system::Int32) : system::Boolean;
 
 }
@@ -676,6 +676,7 @@ interface presentation::INativeResourceService : system::Interface {
     function EnumerateFonts(fonts : system::List<system::String>^) : system::Void;
     function GetDefaultFont() : presentation::FontProperties;
     function GetDefaultSystemCursor() : presentation::INativeCursor*;
+    function GetOSSuperKeyName() : system::String;
     function GetSystemCursor(type : presentation::INativeCursor::SystemCursorType) : presentation::INativeCursor*;
     function SetDefaultFont(value : presentation::FontProperties) : system::Void;
 
@@ -860,6 +861,15 @@ struct presentation::NativeMargin {
     property left : presentation::NativeCoordinate;
     property right : presentation::NativeCoordinate;
     property top : presentation::NativeCoordinate;
+}
+
+@ValueType
+enum presentation::NativeMouseButton {
+    Left = 0,
+    Middle = 1,
+    Mouse4 = 3,
+    Mouse5 = 4,
+    Right = 2,
 }
 
 @ValueType
@@ -1199,6 +1209,7 @@ class presentation::compositions::GuiCharEventArgs : presentation::compositions:
     property capslock : system::Boolean;
     property code : system::Char;
     property ctrl : system::Boolean;
+    property osSuper : system::Boolean;
     property shift : system::Boolean;
 
     constructor () : presentation::compositions::GuiCharEventArgs^;
@@ -1322,31 +1333,15 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
     @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event leftButtonDoubleClick : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiMouseEventArgs*>^;
-    @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
-    @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
-    @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event leftButtonDown : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiMouseEventArgs*>^;
-    @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
-    @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
-    @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event leftButtonUp : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiMouseEventArgs*>^;
-    @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
-    @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
-    @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
     event lostFocus : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
     @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event middleButtonDoubleClick : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiMouseEventArgs*>^;
+    event mouseDoubleClick : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiMouseEventArgs*>^;
     @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
     @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event middleButtonDown : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiMouseEventArgs*>^;
-    @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
-    @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
-    @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event middleButtonUp : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiMouseEventArgs*>^;
+    event mouseDown : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiMouseEventArgs*>^;
     @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
     @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
@@ -1362,6 +1357,10 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
     @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
+    event mouseUp : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiMouseEventArgs*>^;
+    @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
+    @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
+    @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
     event previewCharInput : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiCharEventArgs*>^;
     @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
@@ -1371,18 +1370,6 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
     @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
     event renderTargetChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
-    @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
-    @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
-    @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event rightButtonDoubleClick : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiMouseEventArgs*>^;
-    @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
-    @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
-    @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event rightButtonDown : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiMouseEventArgs*>^;
-    @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
-    @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
-    @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event rightButtonUp : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiMouseEventArgs*>^;
     @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
     @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
@@ -1480,6 +1467,7 @@ class presentation::compositions::GuiKeyEventArgs : presentation::compositions::
     property capslock : system::Boolean;
     property code : presentation::VKEY;
     property ctrl : system::Boolean;
+    property osSuper : system::Boolean;
     property shift : system::Boolean;
 
     constructor () : presentation::compositions::GuiKeyEventArgs^;
@@ -1487,10 +1475,12 @@ class presentation::compositions::GuiKeyEventArgs : presentation::compositions::
 }
 
 class presentation::compositions::GuiMouseEventArgs : presentation::compositions::GuiEventArgs {
+    property button : presentation::NativeMouseButton;
     property ctrl : system::Boolean;
     property left : system::Boolean;
     property middle : system::Boolean;
     property nonClient : system::Boolean;
+    property osSuper : system::Boolean;
     property right : system::Boolean;
     property shift : system::Boolean;
     property wheel : system::Int32;
@@ -1896,12 +1886,12 @@ interface presentation::compositions::IGuiShortcutKeyItem : system::Interface {
 interface presentation::compositions::IGuiShortcutKeyManager : system::Interface {
     property ItemCount : system::Int32 { get:GetItemCount }
 
-    function CreateNewShortcut(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
-    function CreateShortcutIfNotExist(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
-    function DestroyShortcut(ctrl : presentation::compositions::IGuiShortcutKeyItem*) : system::Boolean;
+    function CreateNewShortcut(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, osSuper : system::Boolean, key : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
+    function CreateShortcutIfNotExist(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, osSuper : system::Boolean, key : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
+    function DestroyShortcut(item : presentation::compositions::IGuiShortcutKeyItem*) : system::Boolean;
     function GetItem(index : system::Int32) : presentation::compositions::IGuiShortcutKeyItem*;
     function GetItemCount() : system::Int32;
-    function TryGetShortcut(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
+    function TryGetShortcut(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, osSuper : system::Boolean, key : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
 
 }
 

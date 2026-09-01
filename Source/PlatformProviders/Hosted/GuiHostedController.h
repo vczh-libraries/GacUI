@@ -127,6 +127,14 @@ GuiHostedController
 				void (GuiHostedController::* PreAction)(const NativeWindowMouseInfo&),
 				GuiHostedWindow* (GuiHostedController::* GetSelectedWindow)(const NativeWindowMouseInfo&),
 				void (GuiHostedController::* PostAction)(GuiHostedWindow*, const NativeWindowMouseInfo&),
+				void (INativeWindowListener::* Callback)(NativeMouseButton, const NativeWindowMouseInfo&)
+				>
+			void							HandleMouseButtonCallback(NativeMouseButton button, const NativeWindowMouseInfo& info);
+
+			template<
+				void (GuiHostedController::* PreAction)(const NativeWindowMouseInfo&),
+				GuiHostedWindow* (GuiHostedController::* GetSelectedWindow)(const NativeWindowMouseInfo&),
+				void (GuiHostedController::* PostAction)(GuiHostedWindow*, const NativeWindowMouseInfo&),
 				void (INativeWindowListener::* Callback)(const NativeWindowMouseInfo&)
 				>
 			void							HandleMouseCallback(const NativeWindowMouseInfo& info);
@@ -137,15 +145,9 @@ GuiHostedController
 			>
 			void							HandleKeyboardCallback(const TInfo& info);
 
-			void							LeftButtonDown(const NativeWindowMouseInfo& info) override;
-			void							LeftButtonUp(const NativeWindowMouseInfo& info) override;
-			void							LeftButtonDoubleClick(const NativeWindowMouseInfo& info) override;
-			void							RightButtonDown(const NativeWindowMouseInfo& info) override;
-			void							RightButtonUp(const NativeWindowMouseInfo& info) override;
-			void							RightButtonDoubleClick(const NativeWindowMouseInfo& info) override;
-			void							MiddleButtonDown(const NativeWindowMouseInfo& info) override;
-			void							MiddleButtonUp(const NativeWindowMouseInfo& info) override;
-			void							MiddleButtonDoubleClick(const NativeWindowMouseInfo& info) override;
+			void							MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info) override;
+			void							MouseUp(NativeMouseButton button, const NativeWindowMouseInfo& info) override;
+			void							MouseDoubleClick(NativeMouseButton button, const NativeWindowMouseInfo& info) override;
 			void							HorizontalWheel(const NativeWindowMouseInfo& info) override;
 			void							VerticalWheel(const NativeWindowMouseInfo& info) override;
 			void							MouseMoving(const NativeWindowMouseInfo& info) override;
@@ -161,6 +163,7 @@ GuiHostedController
 			// =============================================================
 
 			void							GlobalTimer() override;
+			void							EnvironmentChanged() override;
 			void							ClipboardUpdated() override;
 			void							GlobalShortcutKeyActivated(vint id) override;
 			void							NativeWindowDestroying(INativeWindow* window) override;

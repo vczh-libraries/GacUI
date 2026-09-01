@@ -50,10 +50,10 @@ Actual painting happens in either `RequestRendererEndRendering` or `GlobalTimer(
 ### Event Forwarding
 
 `GuiRemoteRendererSingle` implements all `INativeWindowListener` mouse/keyboard callbacks to forward OS events as protocol events:
-- **Discrete events** (button clicks, key presses): Sent immediately via `events->OnIOButtonDown`, `events->OnIOButtonUp`, `events->OnIOButtonDoubleClick`, `events->OnIOKeyDown`, etc. Mouse-button events carry an `IOMouseInfoWithButton` whose `button` is `IOMouseButton::Left`, `Right`, or `Middle`.
+- **Discrete events** (button clicks, key presses): Sent immediately via `events->OnIOButtonDown`, `events->OnIOButtonUp`, `events->OnIOButtonDoubleClick`, `events->OnIOKeyDown`, etc. Mouse-button events carry an `IOMouseInfoWithButton` whose `button` is the mapped `NativeMouseButton` value (`Left`, `Middle`, `Right`, `Mouse4`, or `Mouse5`) and whose `info` is the complete `NativeWindowMouseInfo`, including the captured `osSuper` state.
 - **High-frequency events** (mouse move, wheel, key auto-repeat): Accumulated and coalesced:
-  - `pendingMouseMove`: Only the latest mouse position is kept.
-  - `pendingHWheel` / `pendingVWheel`: Wheel deltas are summed across frames.
+  - `pendingMouseMove`: Only the latest `NativeWindowMouseInfo` is kept and sent directly as `IOMouseInfo`.
+  - `pendingHWheel` / `pendingVWheel`: `NativeWindowMouseInfo` wheel deltas are summed across frames and sent directly as `IOMouseInfo`; an `osSuper` transition flushes the pending delta before accumulating the next event.
   - `pendingKeyAutoDown`: Only the latest auto-repeat key is kept.
   - `SendAccumulatedMessages()` is called from `GlobalTimer()` to flush these accumulated events.
 - **Window lifecycle events** (`Opened`, `BeforeClosing`, `Moved`, `DpiChanged`): Translated to protocol events like `OnControllerConnect`, `OnControllerRequestExit`, `OnWindowBoundsUpdated`.

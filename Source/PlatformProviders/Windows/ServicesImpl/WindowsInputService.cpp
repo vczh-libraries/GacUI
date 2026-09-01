@@ -144,12 +144,13 @@ WindowsInputService
 				return index == -1 ? VKEY::KEY_UNKNOWN : keys.Values()[index];
 			}
 
-			vint WindowsInputService::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)
+			vint WindowsInputService::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)
 			{
 				UINT modifier = 0;
 				if (ctrl) modifier |= MOD_CONTROL;
 				if (shift) modifier |= MOD_SHIFT;
 				if (alt) modifier |= MOD_ALT;
+				if (osSuper) modifier |= MOD_WIN;
 
 				vint id = ++usedHotKeys;
 				BOOL result = RegisterHotKey(ownerHandle, (int)id, modifier, (UINT)key);

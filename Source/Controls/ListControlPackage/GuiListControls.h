@@ -303,15 +303,9 @@ List Control
 				class VisibleStyleHelper
 				{
 				public:
-					Ptr<compositions::IGuiGraphicsEventHandler>		leftButtonDownHandler;
-					Ptr<compositions::IGuiGraphicsEventHandler>		leftButtonUpHandler;
-					Ptr<compositions::IGuiGraphicsEventHandler>		leftButtonDoubleClickHandler;
-					Ptr<compositions::IGuiGraphicsEventHandler>		middleButtonDownHandler;
-					Ptr<compositions::IGuiGraphicsEventHandler>		middleButtonUpHandler;
-					Ptr<compositions::IGuiGraphicsEventHandler>		middleButtonDoubleClickHandler;
-					Ptr<compositions::IGuiGraphicsEventHandler>		rightButtonDownHandler;
-					Ptr<compositions::IGuiGraphicsEventHandler>		rightButtonUpHandler;
-					Ptr<compositions::IGuiGraphicsEventHandler>		rightButtonDoubleClickHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		mouseDownHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		mouseUpHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		mouseDoubleClickHandler;
 					Ptr<compositions::IGuiGraphicsEventHandler>		mouseMoveHandler;
 					Ptr<compositions::IGuiGraphicsEventHandler>		mouseEnterHandler;
 					Ptr<compositions::IGuiGraphicsEventHandler>		mouseLeaveHandler;

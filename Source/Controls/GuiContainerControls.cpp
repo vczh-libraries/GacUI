@@ -144,6 +144,7 @@ GuiTab
 
 			void GuiTab::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
+				if (arguments.osSuper) return;
 				if (arguments.eventSource == focusableComposition)
 				{
 					if (auto ct = TypedControlTemplateObject(false))

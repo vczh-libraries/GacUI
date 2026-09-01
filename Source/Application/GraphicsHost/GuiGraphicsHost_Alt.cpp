@@ -337,7 +337,7 @@ GuiAltActionManager
 
 			bool GuiAltActionManager::KeyDown(const NativeWindowKeyInfo& info)
 			{
-				if (!info.ctrl && !info.shift)
+				if (!info.ctrl && !info.shift && !info.osSuper)
 				{
 					if (currentAltHost)
 					{
@@ -391,7 +391,7 @@ GuiAltActionManager
 
 			bool GuiAltActionManager::KeyUp(const NativeWindowKeyInfo& info)
 			{
-				if (!info.ctrl && !info.shift && info.code == supressAltKey)
+				if (!info.ctrl && !info.shift && !info.osSuper && info.code == supressAltKey)
 				{
 					supressAltKey = VKEY::KEY_UNKNOWN;
 					return true;

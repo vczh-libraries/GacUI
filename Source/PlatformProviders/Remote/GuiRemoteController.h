@@ -38,7 +38,7 @@ GuiRemoteController
 		friend class elements::GuiRemoteGraphicsRenderTarget;
 		friend class elements::GuiRemoteGraphicsResourceManager;
 		using CursorMap = collections::Dictionary<INativeCursor::SystemCursorType, Ptr<INativeCursor>>;
-		using HotKeyEntry = Tuple<bool, bool, bool, VKEY>;
+		using HotKeyEntry = Tuple<bool, bool, bool, bool, VKEY>;
 		using HotKeySet = collections::SortedList<HotKeyEntry>;
 		using HotKeyIds = collections::Dictionary<vint, HotKeyEntry>;
 	protected:
@@ -81,6 +81,7 @@ GuiRemoteController
 		FontProperties					GetDefaultFont() override;
 		void							SetDefaultFont(const FontProperties& value) override;
 		void							EnumerateFonts(collections::List<WString>& fonts) override;
+		WString							GetOSSuperKeyName() override;
 
 		// =============================================================
 		// INativeInputService
@@ -96,7 +97,7 @@ GuiRemoteController
 		WString							GetKeyName(VKEY code) override;
 		VKEY							GetKey(const WString& name) override;
 		void							UpdateGlobalShortcutKey();
-		vint							RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key) override;
+		vint							RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key) override;
 		bool							UnregisterGlobalShortcutKey(vint id) override;
 
 		// =============================================================

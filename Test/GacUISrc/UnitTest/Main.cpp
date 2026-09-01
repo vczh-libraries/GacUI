@@ -152,6 +152,7 @@ using namespace vl::reflection::description;
 remoteprotocol::ControllerGlobalConfig MakeGlobalConfig()
 {
 	vl::presentation::remoteprotocol::ControllerGlobalConfig globalConfig;
+	globalConfig.osSuperKeyName = WString::Unmanaged(L"Super");
 #if defined VCZH_WCHAR_UTF16
 	globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF16;
 #elif defined VCZH_WCHAR_UTF32

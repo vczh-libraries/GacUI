@@ -102,7 +102,7 @@ GuiDocumentCommonInterface
 
 			bool GuiDocumentCommonInterface::ProcessKey(VKEY code, bool shift, bool ctrl)
 			{
-				if (IGuiShortcutKeyItem* item = internalShortcutKeyManager->TryGetShortcut(ctrl, shift, false, code))
+				if (IGuiShortcutKeyItem* item = internalShortcutKeyManager->TryGetShortcut(ctrl, shift, false, false, code))
 				{
 					GuiEventArgs arguments(documentControl->GetBoundsComposition());
 					item->Executed.Execute(arguments);
@@ -304,8 +304,8 @@ GuiDocumentCommonInterface
 					}
 
 					documentMouseArea->GetEventReceiver()->mouseMove.Detach(onMouseMoveHandler);
-					documentMouseArea->GetEventReceiver()->leftButtonDown.Detach(onMouseDownHandler);
-					documentMouseArea->GetEventReceiver()->leftButtonUp.Detach(onMouseUpHandler);
+					documentMouseArea->GetEventReceiver()->mouseDown.Detach(onMouseDownHandler);
+					documentMouseArea->GetEventReceiver()->mouseUp.Detach(onMouseUpHandler);
 					documentMouseArea->GetEventReceiver()->mouseLeave.Detach(onMouseLeaveHandler);
 
 					onMouseMoveHandler = nullptr;
@@ -322,8 +322,8 @@ GuiDocumentCommonInterface
 					}
 
 					onMouseMoveHandler = documentMouseArea->GetEventReceiver()->mouseMove.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseMove);
-					onMouseDownHandler = documentMouseArea->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseDown);
-					onMouseUpHandler = documentMouseArea->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseUp);
+					onMouseDownHandler = documentMouseArea->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseDown);
+					onMouseUpHandler = documentMouseArea->GetEventReceiver()->mouseUp.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseUp);
 					onMouseLeaveHandler = documentMouseArea->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseLeave);
 				}
 			}
@@ -361,7 +361,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::AddShortcutCommand(VKEY key, const Func<void()>& eventHandler)
 			{
-				IGuiShortcutKeyItem* item=internalShortcutKeyManager->CreateNewShortcut(true, false, false, key);
+				IGuiShortcutKeyItem* item=internalShortcutKeyManager->CreateNewShortcut(true, false, false, false, key);
 				item->Executed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 				{
 					eventHandler();
@@ -504,6 +504,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
+				if (arguments.osSuper) return;
 				if (documentControl->GetVisuallyEnabled())
 				{
 					if (editMode != GuiDocumentEditMode::ViewOnly)
@@ -521,6 +522,7 @@ GuiDocumentCommonInterface
 				if (documentControl->GetVisuallyEnabled())
 				{
 					if (editMode == GuiDocumentEditMode::Editable &&
+						!arguments.osSuper &&
 						arguments.code != (wchar_t)VKEY::KEY_ESCAPE &&
 						arguments.code != (wchar_t)VKEY::KEY_BACK &&
 						arguments.code != (wchar_t)VKEY::KEY_RETURN &&
@@ -622,6 +624,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
+				if (arguments.button != NativeMouseButton::Left) return;
 				auto offset = GetMouseOffset();
 				auto x = arguments.x - offset.x;
 				auto y = arguments.y - offset.y;
@@ -652,6 +655,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
+				if (arguments.button != NativeMouseButton::Left) return;
 				auto offset = GetMouseOffset();
 				auto x = arguments.x - offset.x;
 				auto y = arguments.y - offset.y;

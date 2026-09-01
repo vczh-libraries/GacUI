@@ -13,6 +13,19 @@ namespace remote_protocol_tests
 	void AssertEventLogs(List<WString>& eventLogs, TArgs&& ...args)
 	{
 		const wchar_t* expected[] = { args... };
+		if (eventLogs.Count() != sizeof...(args))
+		{
+			TEST_PRINT(L"Actual event logs (" + itow(eventLogs.Count()) + L"):");
+			for (auto&& eventLog : eventLogs)
+			{
+				TEST_PRINT(L"  " + eventLog);
+			}
+			TEST_PRINT(L"Expected event logs (" + itow(sizeof...(args)) + L"):");
+			for (auto eventLog : expected)
+			{
+				TEST_PRINT(L"  " + WString::Unmanaged(eventLog));
+			}
+		}
 		TEST_ASSERT(eventLogs.Count() == sizeof...(args));
 		for (vint i = 0; i < eventLogs.Count(); i++)
 		{
@@ -112,19 +125,38 @@ namespace remote_protocol_tests
 		LOG_CALLBACK(Paint)
 		LOG_CALLBACK(Destroying)
 		LOG_CALLBACK(Destroyed)
-	
-		LOG_IO_CALLBACK(LeftButtonDown, NativeWindowMouseInfo)
-		LOG_IO_CALLBACK(LeftButtonUp, NativeWindowMouseInfo)
-		LOG_IO_CALLBACK(LeftButtonDoubleClick, NativeWindowMouseInfo)
-		LOG_IO_CALLBACK(RightButtonDown, NativeWindowMouseInfo)
-		LOG_IO_CALLBACK(RightButtonUp, NativeWindowMouseInfo)
-		LOG_IO_CALLBACK(RightButtonDoubleClick, NativeWindowMouseInfo)
-		LOG_IO_CALLBACK(MiddleButtonDown, NativeWindowMouseInfo)
-		LOG_IO_CALLBACK(MiddleButtonUp, NativeWindowMouseInfo)
-		LOG_IO_CALLBACK(MiddleButtonDoubleClick, NativeWindowMouseInfo)
-		LOG_IO_CALLBACK(HorizontalWheel, NativeWindowMouseInfo)
-		LOG_IO_CALLBACK(VerticalWheel, NativeWindowMouseInfo)
-		LOG_IO_CALLBACK(MouseMoving, NativeWindowMouseInfo)
+
+		WString PrintButton(NativeMouseButton button)
+		{
+			switch (button)
+			{
+			case NativeMouseButton::Left: return WString::Unmanaged(L"Left");
+			case NativeMouseButton::Middle: return WString::Unmanaged(L"Middle");
+			case NativeMouseButton::Right: return WString::Unmanaged(L"Right");
+			case NativeMouseButton::Mouse4: return WString::Unmanaged(L"Mouse4");
+			case NativeMouseButton::Mouse5: return WString::Unmanaged(L"Mouse5");
+			default: return WString::Unmanaged(L"Unknown");
+			}
+		}
+
+#define LOG_MOUSE_BUTTON_CALLBACK(NAME)\
+		void NAME(NativeMouseButton button, const NativeWindowMouseInfo& info) override\
+		{\
+			callbacks.Add(L ## #NAME L"(" + PrintButton(button) + L"," + PrintArguments(info) + (info.osSuper ? L",Super)" : L")"));\
+		}\
+
+#define LOG_MOUSE_CALLBACK(NAME)\
+		void NAME(const NativeWindowMouseInfo& info) override\
+		{\
+			callbacks.Add(L ## #NAME L"(" + PrintArguments(info) + (info.osSuper ? L",Super)" : L")"));\
+		}\
+
+		LOG_MOUSE_BUTTON_CALLBACK(MouseDown)
+		LOG_MOUSE_BUTTON_CALLBACK(MouseUp)
+		LOG_MOUSE_BUTTON_CALLBACK(MouseDoubleClick)
+		LOG_MOUSE_CALLBACK(HorizontalWheel)
+		LOG_MOUSE_CALLBACK(VerticalWheel)
+		LOG_MOUSE_CALLBACK(MouseMoving)
 		LOG_CALLBACK(MouseEntered)
 		LOG_CALLBACK(MouseLeaved)
 		
@@ -146,6 +178,8 @@ namespace remote_protocol_tests
 		}
 	
 #undef LOG_IO_CALLBACK
+#undef LOG_MOUSE_BUTTON_CALLBACK
+#undef LOG_MOUSE_CALLBACK
 #undef SHOULD_NOT_BE_CALLED
 	};
 }

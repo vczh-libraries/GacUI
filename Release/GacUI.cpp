@@ -199,11 +199,11 @@ GuiGlobalShortcutKeyManager
 
 				bool OnCreatingShortcut(GuiShortcutKeyItem* item) override
 				{
-					bool ctrl, shift, alt;
+					bool ctrl, shift, alt, osSuper;
 					VKEY key;
-					item->ReadKeyConfig(ctrl, shift, alt, key);
+					item->ReadKeyConfig(ctrl, shift, alt, osSuper, key);
 
-					vint id = GetCurrentController()->InputService()->RegisterGlobalShortcutKey(ctrl, shift, alt, key);
+					vint id = GetCurrentController()->InputService()->RegisterGlobalShortcutKey(ctrl, shift, alt, osSuper, key);
 					if (id < (vint)NativeGlobalShortcutKeyResult::ValidIdBegins) return false;
 
 					idToItemsMap.Add(id, item);
@@ -714,6 +714,7 @@ void GuiApplicationMain()
 {
 	vl::presentation::controls::GuiApplicationInitialize();
 }
+
 
 /***********************************************************************
 .\APPLICATION\CONTROLS\GUIBASICCONTROLS.CPP
@@ -3160,7 +3161,7 @@ GuiPopup
 
 			void GuiPopup::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
-				if (arguments.code == VKEY::KEY_ESCAPE && !arguments.ctrl && !arguments.shift && !arguments.alt)
+				if (arguments.code == VKEY::KEY_ESCAPE && !arguments.ctrl && !arguments.shift && !arguments.alt && !arguments.osSuper)
 				{
 					Hide();
 					arguments.handled = true;
@@ -4468,15 +4469,9 @@ Event Receiver
 
 			GuiGraphicsEventReceiver::GuiGraphicsEventReceiver(GuiGraphicsComposition* _sender)
 				:sender(_sender)
-				,leftButtonDown(_sender)
-				,leftButtonUp(_sender)
-				,leftButtonDoubleClick(_sender)
-				,middleButtonDown(_sender)
-				,middleButtonUp(_sender)
-				,middleButtonDoubleClick(_sender)
-				,rightButtonDown(_sender)
-				,rightButtonUp(_sender)
-				,rightButtonDoubleClick(_sender)
+				,mouseDown(_sender)
+				,mouseUp(_sender)
+				,mouseDoubleClick(_sender)
 				,horizontalWheel(_sender)
 				,verticalWheel(_sender)
 				,mouseMove(_sender)
@@ -4506,6 +4501,7 @@ Event Receiver
 		}
 	}
 }
+
 
 /***********************************************************************
 .\APPLICATION\GRAPHICSCOMPOSITIONS\GUIGRAPHICSWINDOWCOMPOSITION.CPP
@@ -4622,11 +4618,7 @@ GuiGraphicsHost
 				}
 				if(mouseCaptureComposition==composition)
 				{
-					if(hostRecord.nativeWindow)
-					{
-						hostRecord.nativeWindow->ReleaseCapture();
-					}
-					mouseCaptureComposition=0;
+					ResetMouseCapture();
 				}
 				if(focusedComposition==composition)
 				{
@@ -4635,9 +4627,31 @@ GuiGraphicsHost
 				mouseEnterCompositions.Remove(composition);
 			}
 
+			bool GuiGraphicsHost::AnyMouseButtonDown()
+			{
+				for (bool state : mouseButtonStates)
+				{
+					if (state) return true;
+				}
+				return false;
+			}
+
+			void GuiGraphicsHost::ResetMouseCapture()
+			{
+				for (bool& state : mouseButtonStates)
+				{
+					state = false;
+				}
+				if (hostRecord.nativeWindow && hostRecord.nativeWindow->IsCapturing())
+				{
+					hostRecord.nativeWindow->ReleaseCapture();
+				}
+				mouseCaptureComposition = nullptr;
+			}
+
 			void GuiGraphicsHost::MouseCapture(const NativeWindowMouseInfo& info)
 			{
-				if (hostRecord.nativeWindow && (info.left || info.middle || info.right))
+				if (hostRecord.nativeWindow)
 				{
 					if (!hostRecord.nativeWindow->IsCapturing() && !info.nonClient)
 					{
@@ -4648,9 +4662,9 @@ GuiGraphicsHost
 				}
 			}
 
-			void GuiGraphicsHost::MouseUncapture(const NativeWindowMouseInfo& info)
+			void GuiGraphicsHost::MouseUncapture()
 			{
-				if(hostRecord.nativeWindow && !(info.left || info.middle || info.right))
+				if(hostRecord.nativeWindow && !AnyMouseButtonDown())
 				{
 					hostRecord.nativeWindow->ReleaseCapture();
 					mouseCaptureComposition=0;
@@ -4776,9 +4790,14 @@ GuiGraphicsHost
 				}
 			}
 
-			void GuiGraphicsHost::OnMouseInput(const NativeWindowMouseInfo& info, bool capture, bool release, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent)
+			void GuiGraphicsHost::OnMouseInput(NativeMouseButton button, const NativeWindowMouseInfo& info, bool capture, bool release, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent)
 			{
-				if (capture) MouseCapture(info);
+				vint buttonIndex = (vint)button;
+				if (capture)
+				{
+					mouseButtonStates[buttonIndex] = true;
+					MouseCapture(info);
+				}
 				GuiGraphicsComposition* composition = 0;
 				if (mouseCaptureComposition)
 				{
@@ -4789,13 +4808,19 @@ GuiGraphicsHost
 					auto point = hostRecord.nativeWindow->Convert(NativePoint(info.x, info.y));
 					composition = windowComposition->FindVisibleComposition(point, true);
 				}
-				if (release) MouseUncapture(info);
+				if (release)
+				{
+					mouseButtonStates[buttonIndex] = false;
+					MouseUncapture();
+				}
 
 				if (composition)
 				{
 					Rect bounds = composition->GetGlobalBounds();
 					Point point = hostRecord.nativeWindow->Convert(NativePoint(info.x, info.y));
 					GuiMouseEventArgs arguments;
+					arguments.button = button;
+					arguments.osSuper = info.osSuper;
 					arguments.ctrl = info.ctrl;
 					arguments.shift = info.shift;
 					arguments.left = info.left;
@@ -4867,68 +4892,31 @@ GuiGraphicsHost
 				}
 			}
 
-			void GuiGraphicsHost::LeftButtonDown(const NativeWindowMouseInfo& info)
+			void GuiGraphicsHost::MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info)
 			{
 				altActionManager->CloseAltHost();
-				OnMouseInput(info, true, false, &GuiGraphicsEventReceiver::leftButtonDown);
+				OnMouseInput(button, info, true, false, &GuiGraphicsEventReceiver::mouseDown);
 			}
 
-			void GuiGraphicsHost::LeftButtonUp(const NativeWindowMouseInfo& info)
+			void GuiGraphicsHost::MouseUp(NativeMouseButton button, const NativeWindowMouseInfo& info)
 			{
-				OnMouseInput(info, false, true, &GuiGraphicsEventReceiver::leftButtonUp);
+				OnMouseInput(button, info, false, true, &GuiGraphicsEventReceiver::mouseUp);
 			}
 
-			void GuiGraphicsHost::LeftButtonDoubleClick(const NativeWindowMouseInfo& info)
-			{
-				altActionManager->CloseAltHost();
-				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::leftButtonDown);
-				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::leftButtonDoubleClick);
-			}
-
-			void GuiGraphicsHost::RightButtonDown(const NativeWindowMouseInfo& info)
+			void GuiGraphicsHost::MouseDoubleClick(NativeMouseButton button, const NativeWindowMouseInfo& info)
 			{
 				altActionManager->CloseAltHost();
-				OnMouseInput(info, true, false, &GuiGraphicsEventReceiver::rightButtonDown);
-			}
-
-			void GuiGraphicsHost::RightButtonUp(const NativeWindowMouseInfo& info)
-			{
-				OnMouseInput(info, false, true, &GuiGraphicsEventReceiver::rightButtonUp);
-			}
-
-			void GuiGraphicsHost::RightButtonDoubleClick(const NativeWindowMouseInfo& info)
-			{
-				altActionManager->CloseAltHost();
-				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::rightButtonDown);
-				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::rightButtonDoubleClick);
-			}
-
-			void GuiGraphicsHost::MiddleButtonDown(const NativeWindowMouseInfo& info)
-			{
-				altActionManager->CloseAltHost();
-				OnMouseInput(info, true, false, &GuiGraphicsEventReceiver::middleButtonDown);
-			}
-
-			void GuiGraphicsHost::MiddleButtonUp(const NativeWindowMouseInfo& info)
-			{
-				OnMouseInput(info, false, true, &GuiGraphicsEventReceiver::middleButtonUp);
-			}
-
-			void GuiGraphicsHost::MiddleButtonDoubleClick(const NativeWindowMouseInfo& info)
-			{
-				altActionManager->CloseAltHost();
-				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::middleButtonDown);
-				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::middleButtonDoubleClick);
+				OnMouseInput(button, info, false, false, &GuiGraphicsEventReceiver::mouseDoubleClick);
 			}
 
 			void GuiGraphicsHost::HorizontalWheel(const NativeWindowMouseInfo& info)
 			{
-				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::horizontalWheel);
+				OnMouseInput(NativeMouseButton::Left, info, false, false, &GuiGraphicsEventReceiver::horizontalWheel);
 			}
 
 			void GuiGraphicsHost::VerticalWheel(const NativeWindowMouseInfo& info)
 			{
-				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::verticalWheel);
+				OnMouseInput(NativeMouseButton::Left, info, false, false, &GuiGraphicsEventReceiver::verticalWheel);
 			}
 
 			void GuiGraphicsHost::MouseMoving(const NativeWindowMouseInfo& info)
@@ -4995,7 +4983,7 @@ GuiGraphicsHost
 					hostRecord.nativeWindow->SetWindowCursor(GetCurrentController()->ResourceService()->GetDefaultSystemCursor());
 				}
 
-				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::mouseMove);
+				OnMouseInput(NativeMouseButton::Left, info, false, false, &GuiGraphicsEventReceiver::mouseMove);
 			}
 
 			void GuiGraphicsHost::MouseEntered()
@@ -5035,7 +5023,7 @@ GuiGraphicsHost
 			void GuiGraphicsHost::KeyUp(const NativeWindowKeyInfo& info)
 			{
 				if (altActionManager->KeyUp(info)) { return; }
-				if (!info.ctrl && !info.shift && info.code == VKEY::KEY_MENU && hostRecord.nativeWindow)
+				if (!info.ctrl && !info.shift && !info.osSuper && info.code == VKEY::KEY_MENU && hostRecord.nativeWindow)
 				{
 					hostRecord.nativeWindow->SupressAlt();
 				}
@@ -5245,6 +5233,7 @@ GuiGraphicsHost
 				{
 					if (hostRecord.nativeWindow)
 					{
+						ResetMouseCapture();
 						GetCurrentController()->CallbackService()->UninstallListener(this);
 						hostRecord.nativeWindow->UninstallListener(this);
 					}
@@ -5371,6 +5360,7 @@ GuiGraphicsHost
 		}
 	}
 }
+
 
 /***********************************************************************
 .\APPLICATION\GRAPHICSHOST\GUIGRAPHICSHOST_ALT.CPP
@@ -5710,7 +5700,7 @@ GuiAltActionManager
 
 			bool GuiAltActionManager::KeyDown(const NativeWindowKeyInfo& info)
 			{
-				if (!info.ctrl && !info.shift)
+				if (!info.ctrl && !info.shift && !info.osSuper)
 				{
 					if (currentAltHost)
 					{
@@ -5764,7 +5754,7 @@ GuiAltActionManager
 
 			bool GuiAltActionManager::KeyUp(const NativeWindowKeyInfo& info)
 			{
-				if (!info.ctrl && !info.shift && info.code == supressAltKey)
+				if (!info.ctrl && !info.shift && !info.osSuper && info.code == supressAltKey)
 				{
 					supressAltKey = VKEY::KEY_UNKNOWN;
 					return true;
@@ -5784,6 +5774,7 @@ GuiAltActionManager
 	}
 }
 
+
 /***********************************************************************
 .\APPLICATION\GRAPHICSHOST\GUIGRAPHICSHOST_SHORTCUTKEY.CPP
 ***********************************************************************/
@@ -5799,12 +5790,13 @@ namespace vl
 GuiShortcutKeyItem
 ***********************************************************************/
 
-			GuiShortcutKeyItem::GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _global, bool _ctrl, bool _shift, bool _alt, VKEY _key)
+			GuiShortcutKeyItem::GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _global, bool _ctrl, bool _shift, bool _alt, bool _osSuper, VKEY _key)
 				:shortcutKeyManager(_shortcutKeyManager)
 				,global(_global)
 				,ctrl(_ctrl)
 				,shift(_shift)
 				,alt(_alt)
+				,osSuper(_osSuper)
 				,key(_key)
 			{
 			}
@@ -5825,16 +5817,18 @@ GuiShortcutKeyItem
 				if (ctrl) name += L"Ctrl+";
 				if (shift) name += L"Shift+";
 				if (alt) name += L"Alt+";
+				if (osSuper) name += GetCurrentController()->ResourceService()->GetOSSuperKeyName() + L"+";
 				name += GetCurrentController()->InputService()->GetKeyName(key);
 				if (global) name += L"}";
 				return name;
 			}
 
-			void GuiShortcutKeyItem::ReadKeyConfig(bool& _ctrl, bool& _shift, bool& _alt, VKEY& _key)
+			void GuiShortcutKeyItem::ReadKeyConfig(bool& _ctrl, bool& _shift, bool& _alt, bool& _osSuper, VKEY& _key)
 			{
 				_ctrl = ctrl;
 				_shift = shift;
 				_alt = alt;
+				_osSuper = osSuper;
 				_key = key;
 			}
 
@@ -5844,15 +5838,17 @@ GuiShortcutKeyItem
 					info.ctrl==ctrl &&
 					info.shift==shift &&
 					info.alt==alt &&
+					info.osSuper==osSuper &&
 					info.code==key;
 			}
 
-			bool GuiShortcutKeyItem::CanActivate(bool _ctrl, bool _shift, bool _alt, VKEY _key)
+			bool GuiShortcutKeyItem::CanActivate(bool _ctrl, bool _shift, bool _alt, bool _osSuper, VKEY _key)
 			{
 				return
 					_ctrl==ctrl &&
 					_shift==shift &&
 					_alt==alt &&
+					_osSuper==osSuper &&
 					_key==key;
 			}
 
@@ -5880,9 +5876,9 @@ GuiShortcutKeyManager
 			{
 			}
 
-			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcutInternal(bool ctrl, bool shift, bool alt, VKEY key)
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcutInternal(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)
 			{
-				auto item = Ptr(new GuiShortcutKeyItem(this, IsGlobal(), ctrl, shift, alt, key));
+				auto item = Ptr(new GuiShortcutKeyItem(this, IsGlobal(), ctrl, shift, alt, osSuper, key));
 				if (!OnCreatingShortcut(item.Obj())) return nullptr;
 				shortcutKeyItems.Add(item);
 				return item.Obj();
@@ -5924,11 +5920,11 @@ GuiShortcutKeyManager
 				return executed;
 			}
 
-			IGuiShortcutKeyItem* GuiShortcutKeyManager::TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key)
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::TryGetShortcut(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)
 			{
 				for (auto item : shortcutKeyItems)
 				{
-					if (item->CanActivate(ctrl, shift, alt, key))
+					if (item->CanActivate(ctrl, shift, alt, osSuper, key))
 					{
 						return item.Obj();
 					}
@@ -5936,22 +5932,22 @@ GuiShortcutKeyManager
 				return nullptr;
 			}
 
-			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateNewShortcut(bool ctrl, bool shift, bool alt, VKEY key)
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateNewShortcut(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)
 			{
 				CHECK_ERROR(
-					TryGetShortcut(ctrl, shift, alt, key) == nullptr,
-					L"vl::presentation::compositions::GuiShortcutKeyManager::CreateNewShortcut(bool, bool, bool, VKEY)#The shortcut key exists."
+					TryGetShortcut(ctrl, shift, alt, osSuper, key) == nullptr,
+					L"vl::presentation::compositions::GuiShortcutKeyManager::CreateNewShortcut(bool, bool, bool, bool, VKEY)#The shortcut key exists."
 					);
-				return CreateShortcutInternal(ctrl, shift, alt, key);
+				return CreateShortcutInternal(ctrl, shift, alt, osSuper, key);
 			}
 
-			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcutIfNotExist(bool ctrl, bool shift, bool alt, VKEY key)
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcutIfNotExist(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)
 			{
-				if (TryGetShortcut(ctrl, shift, alt, key))
+				if (TryGetShortcut(ctrl, shift, alt, osSuper, key))
 				{
 					return nullptr;
 				}
-				return CreateShortcutInternal(ctrl, shift, alt, key);
+				return CreateShortcutInternal(ctrl, shift, alt, osSuper, key);
 			}
 
 			bool GuiShortcutKeyManager::DestroyShortcut(IGuiShortcutKeyItem* item)
@@ -5970,6 +5966,7 @@ GuiShortcutKeyManager
 		}
 	}
 }
+
 
 /***********************************************************************
 .\APPLICATION\GRAPHICSHOST\GUIGRAPHICSHOST_TAB.CPP
@@ -6099,7 +6096,7 @@ GuiTabActionManager
 
 			bool GuiTabActionManager::KeyDown(const NativeWindowKeyInfo& info, GuiGraphicsComposition* focusedComposition)
 			{
-				if (!info.ctrl && !info.alt && info.code == VKEY::KEY_TAB)
+				if (!info.ctrl && !info.alt && !info.osSuper && info.code == VKEY::KEY_TAB)
 				{
 					GuiControl* focusedControl = nullptr;
 					if (focusedComposition)
@@ -6130,6 +6127,7 @@ GuiTabActionManager
 		}
 	}
 }
+
 
 /***********************************************************************
 .\CONTROLS\GUIBUTTONCONTROLS.CPP
@@ -6244,6 +6242,7 @@ GuiButton
 
 			void GuiButton::OnLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
+				if (arguments.button != NativeMouseButton::Left) return;
 				if (arguments.eventSource == boundsComposition)
 				{
 					mousePressingDirect = true;
@@ -6269,6 +6268,7 @@ GuiButton
 
 			void GuiButton::OnLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
+				if (arguments.button != NativeMouseButton::Left) return;
 				if (mousePressingDirect || mousePressingIndirect)
 				{
 					bool skipChecking = mousePressingIndirect;
@@ -6302,7 +6302,7 @@ GuiButton
 			
 			void GuiButton::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
-				if (arguments.eventSource == focusableComposition && !arguments.ctrl && !arguments.shift && !arguments.alt)
+				if (arguments.eventSource == focusableComposition && !arguments.ctrl && !arguments.shift && !arguments.alt && !arguments.osSuper)
 				{
 					switch (arguments.code)
 					{
@@ -6325,7 +6325,7 @@ GuiButton
 
 			void GuiButton::OnKeyUp(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
-				if (arguments.eventSource == focusableComposition && !arguments.ctrl && !arguments.shift && !arguments.alt)
+				if (arguments.eventSource == focusableComposition && !arguments.ctrl && !arguments.shift && !arguments.alt && !arguments.osSuper)
 				{
 					switch (arguments.code)
 					{
@@ -6358,8 +6358,8 @@ GuiButton
 				Clicked.SetAssociatedComposition(boundsComposition);
 				SetFocusableComposition(boundsComposition);
 
-				boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiButton::OnLeftButtonDown);
-				boundsComposition->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiButton::OnLeftButtonUp);
+				boundsComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiButton::OnLeftButtonDown);
+				boundsComposition->GetEventReceiver()->mouseUp.AttachMethod(this, &GuiButton::OnLeftButtonUp);
 				boundsComposition->GetEventReceiver()->mouseEnter.AttachMethod(this, &GuiButton::OnMouseEnter);
 				boundsComposition->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiButton::OnMouseLeave);
 				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiButton::OnKeyDown);
@@ -6552,6 +6552,7 @@ GuiSelectableButton
 	}
 }
 
+
 /***********************************************************************
 .\CONTROLS\GUICONTAINERCONTROLS.CPP
 ***********************************************************************/
@@ -6694,6 +6695,7 @@ GuiTab
 
 			void GuiTab::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
+				if (arguments.osSuper) return;
 				if (arguments.eventSource == focusableComposition)
 				{
 					if (auto ct = TypedControlTemplateObject(false))
@@ -7179,6 +7181,7 @@ GuiScrollContainer
 		}
 	}
 }
+
 
 /***********************************************************************
 .\CONTROLS\GUIDATETIMECONTROLS.CPP
@@ -8012,6 +8015,7 @@ GuiScroll
 
 			void GuiScroll::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
+				if (arguments.osSuper) return;
 				if (arguments.eventSource == focusableComposition)
 				{
 					switch (arguments.code)
@@ -8049,6 +8053,7 @@ GuiScroll
 
 			void GuiScroll::OnMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
+				if (arguments.button != NativeMouseButton::Left && arguments.button != NativeMouseButton::Right) return;
 				if (autoFocus)
 				{
 					SetFocused();
@@ -8092,8 +8097,7 @@ GuiScroll
 
 				commandExecutor = Ptr(new CommandExecutor(this));
 				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiScroll::OnKeyDown);
-				boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiScroll::OnMouseDown);
-				boundsComposition->GetEventReceiver()->rightButtonDown.AttachMethod(this, &GuiScroll::OnMouseDown);
+				boundsComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiScroll::OnMouseDown);
 			}
 
 			GuiScroll::~GuiScroll()
@@ -8213,6 +8217,7 @@ GuiScroll
 		}
 	}
 }
+
 
 /***********************************************************************
 .\CONTROLS\LISTCONTROLPACKAGE\DATASOURCEIMPL_IITEMPROVIDER_ITEMPROVIDERBASE.CPP
@@ -10314,7 +10319,7 @@ GuiComboBoxBase
 
 			void GuiComboBoxBase::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
-				if (arguments.code == VKEY::KEY_SPACE && !arguments.ctrl && !arguments.shift && !arguments.alt)
+				if (arguments.code == VKEY::KEY_SPACE && !arguments.ctrl && !arguments.shift && !arguments.alt && !arguments.osSuper)
 				{
 					GetSubMenu()->Hide();
 					arguments.handled = true;
@@ -10516,6 +10521,7 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
+				if (arguments.osSuper) return;
 				if (!arguments.autoRepeatKeyDown)
 				{
 					switch (arguments.code)
@@ -10728,6 +10734,7 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnCellButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
+					if (arguments.button != NativeMouseButton::Left && arguments.button != NativeMouseButton::Right) return;
 					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
 					{
 						if (IsInEditor(dataGrid, arguments))
@@ -10739,6 +10746,7 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnCellLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
+					if (arguments.button != NativeMouseButton::Left) return;
 					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
 					{
 						if (IsInEditor(dataGrid, arguments))
@@ -10759,6 +10767,7 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnCellRightButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
+					if (arguments.button != NativeMouseButton::Right) return;
 					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
 					{
 						if (IsInEditor(dataGrid, arguments))
@@ -10837,10 +10846,9 @@ DefaultDataGridItemTemplate
 							auto cell = new GuiCellComposition;
 							textTable->AddChild(cell);
 							cell->SetSite(0, i, 1, 1);
-							cell->GetEventReceiver()->leftButtonDown.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellButtonDown);
-							cell->GetEventReceiver()->rightButtonDown.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellButtonDown);
-							cell->GetEventReceiver()->leftButtonUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellLeftButtonUp);
-							cell->GetEventReceiver()->rightButtonUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellRightButtonUp);
+							cell->GetEventReceiver()->mouseDown.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellButtonDown);
+							cell->GetEventReceiver()->mouseUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellLeftButtonUp);
+							cell->GetEventReceiver()->mouseUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellRightButtonUp);
 							dataCells[i] = cell;
 						}
 					}
@@ -11281,6 +11289,7 @@ GuiVirtualDataGrid
 
 			void GuiVirtualDataGrid::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
+				if (arguments.osSuper) return;
 				if (selectedCell.row != -1)
 				{
 					if (arguments.code == VKEY::KEY_RETURN)
@@ -11449,6 +11458,7 @@ GuiVirtualDataGrid
 		}
 	}
 }
+
 
 /***********************************************************************
 .\CONTROLS\LISTCONTROLPACKAGE\GUIDATAGRIDEXTENSIONS.CPP
@@ -12537,13 +12547,6 @@ GuiListControl
 				}
 			}
 
-#define ATTACH_ITEM_MOUSE_EVENT(EVENTNAME, ITEMEVENTNAME)\
-					{\
-						helper->EVENTNAME##Handler = style->GetEventReceiver()->EVENTNAME.AttachFunction(\
-							[this, style](GuiGraphicsComposition* sender, GuiMouseEventArgs& args){ OnItemMouseEvent(ITEMEVENTNAME, style, sender, args); }\
-							);\
-					}\
-
 #define ATTACH_ITEM_NOTIFY_EVENT(EVENTNAME, ITEMEVENTNAME)\
 					{\
 						helper->EVENTNAME##Handler = style->GetEventReceiver()->EVENTNAME.AttachFunction(\
@@ -12559,22 +12562,46 @@ GuiListControl
 					auto helper=Ptr(new VisibleStyleHelper);
 					visibleStyles.Add(style, helper);
 
-					ATTACH_ITEM_MOUSE_EVENT(leftButtonDown, ItemLeftButtonDown);
-					ATTACH_ITEM_MOUSE_EVENT(leftButtonUp, ItemLeftButtonUp);
-					ATTACH_ITEM_MOUSE_EVENT(leftButtonDoubleClick, ItemLeftButtonDoubleClick);
-					ATTACH_ITEM_MOUSE_EVENT(middleButtonDown, ItemMiddleButtonDown);
-					ATTACH_ITEM_MOUSE_EVENT(middleButtonUp, ItemMiddleButtonUp);
-					ATTACH_ITEM_MOUSE_EVENT(middleButtonDoubleClick, ItemMiddleButtonDoubleClick);
-					ATTACH_ITEM_MOUSE_EVENT(rightButtonDown, ItemRightButtonDown);
-					ATTACH_ITEM_MOUSE_EVENT(rightButtonUp, ItemRightButtonUp);
-					ATTACH_ITEM_MOUSE_EVENT(rightButtonDoubleClick, ItemRightButtonDoubleClick);
-					ATTACH_ITEM_MOUSE_EVENT(mouseMove, ItemMouseMove);
+					helper->mouseDownHandler = style->GetEventReceiver()->mouseDown.AttachFunction(
+						[this, style](GuiGraphicsComposition* sender, GuiMouseEventArgs& args)
+						{
+							switch (args.button)
+							{
+							case NativeMouseButton::Left: OnItemMouseEvent(ItemLeftButtonDown, style, sender, args); break;
+							case NativeMouseButton::Middle: OnItemMouseEvent(ItemMiddleButtonDown, style, sender, args); break;
+							case NativeMouseButton::Right: OnItemMouseEvent(ItemRightButtonDown, style, sender, args); break;
+							default:;
+							}
+						});
+					helper->mouseUpHandler = style->GetEventReceiver()->mouseUp.AttachFunction(
+						[this, style](GuiGraphicsComposition* sender, GuiMouseEventArgs& args)
+						{
+							switch (args.button)
+							{
+							case NativeMouseButton::Left: OnItemMouseEvent(ItemLeftButtonUp, style, sender, args); break;
+							case NativeMouseButton::Middle: OnItemMouseEvent(ItemMiddleButtonUp, style, sender, args); break;
+							case NativeMouseButton::Right: OnItemMouseEvent(ItemRightButtonUp, style, sender, args); break;
+							default:;
+							}
+						});
+					helper->mouseDoubleClickHandler = style->GetEventReceiver()->mouseDoubleClick.AttachFunction(
+						[this, style](GuiGraphicsComposition* sender, GuiMouseEventArgs& args)
+						{
+							switch (args.button)
+							{
+							case NativeMouseButton::Left: OnItemMouseEvent(ItemLeftButtonDoubleClick, style, sender, args); break;
+							case NativeMouseButton::Middle: OnItemMouseEvent(ItemMiddleButtonDoubleClick, style, sender, args); break;
+							case NativeMouseButton::Right: OnItemMouseEvent(ItemRightButtonDoubleClick, style, sender, args); break;
+							default:;
+							}
+						});
+					helper->mouseMoveHandler = style->GetEventReceiver()->mouseMove.AttachFunction(
+						[this, style](GuiGraphicsComposition* sender, GuiMouseEventArgs& args) { OnItemMouseEvent(ItemMouseMove, style, sender, args); });
 					ATTACH_ITEM_NOTIFY_EVENT(mouseEnter, ItemMouseEnter);
 					ATTACH_ITEM_NOTIFY_EVENT(mouseLeave, ItemMouseLeave);
 				}
 			}
 
-#undef ATTACH_ITEM_MOUSE_EVENT
 #undef ATTACH_ITEM_NOTIFY_EVENT
 
 #define DETACH_ITEM_EVENT(EVENTNAME) style->GetEventReceiver()->EVENTNAME.Detach(helper->EVENTNAME##Handler)
@@ -12587,15 +12614,9 @@ GuiListControl
 					Ptr<VisibleStyleHelper> helper=visibleStyles.Values().Get(index);
 					visibleStyles.Remove(style);
 					
-					DETACH_ITEM_EVENT(leftButtonDown);
-					DETACH_ITEM_EVENT(leftButtonUp);
-					DETACH_ITEM_EVENT(leftButtonDoubleClick);
-					DETACH_ITEM_EVENT(middleButtonDown);
-					DETACH_ITEM_EVENT(middleButtonUp);
-					DETACH_ITEM_EVENT(middleButtonDoubleClick);
-					DETACH_ITEM_EVENT(rightButtonDown);
-					DETACH_ITEM_EVENT(rightButtonUp);
-					DETACH_ITEM_EVENT(rightButtonDoubleClick);
+					DETACH_ITEM_EVENT(mouseDown);
+					DETACH_ITEM_EVENT(mouseUp);
+					DETACH_ITEM_EVENT(mouseDoubleClick);
 					DETACH_ITEM_EVENT(mouseMove);
 					DETACH_ITEM_EVENT(mouseEnter);
 					DETACH_ITEM_EVENT(mouseLeave);
@@ -12635,9 +12656,7 @@ GuiListControl
 
 				if (acceptFocus)
 				{
-					boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiListControl::OnBoundsMouseButtonDown);
-					boundsComposition->GetEventReceiver()->middleButtonDown.AttachMethod(this, &GuiListControl::OnBoundsMouseButtonDown);
-					boundsComposition->GetEventReceiver()->rightButtonDown.AttachMethod(this, &GuiListControl::OnBoundsMouseButtonDown);
+					boundsComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiListControl::OnBoundsMouseButtonDown);
 					SetFocusableComposition(boundsComposition);
 				}
 			}
@@ -12895,6 +12914,7 @@ GuiSelectableListControl
 
 			void GuiSelectableListControl::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
+				if (arguments.osSuper) return;
 				if(GetVisuallyEnabled())
 				{
 					if(SelectItemsByKey(arguments.code, arguments.ctrl, arguments.shift))
@@ -13125,6 +13145,7 @@ GuiSelectableListControl
 	}
 }
 
+
 /***********************************************************************
 .\CONTROLS\LISTCONTROLPACKAGE\GUILISTVIEWCONTROLS.CPP
 ***********************************************************************/
@@ -13280,6 +13301,7 @@ ListViewColumnItemArranger
 
 				void ListViewColumnItemArranger::ColumnHeaderSplitterLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
+					if (arguments.button != NativeMouseButton::Left) return;
 					if(listView->GetVisuallyEnabled())
 					{
 						arguments.handled=true;
@@ -13290,6 +13312,7 @@ ListViewColumnItemArranger
 
 				void ListViewColumnItemArranger::ColumnHeaderSplitterLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
+					if (arguments.button != NativeMouseButton::Left) return;
 					if(listView->GetVisuallyEnabled())
 					{
 						arguments.handled=true;
@@ -13397,8 +13420,8 @@ ListViewColumnItemArranger
 								splitterComposition->SetPreferredMinSize(Size(SplitterWidth, 0));
 								columnHeaderSplitters.Add(splitterComposition);
 
-								splitterComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterLeftButtonDown);
-								splitterComposition->GetEventReceiver()->leftButtonUp.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterLeftButtonUp);
+								splitterComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterLeftButtonDown);
+								splitterComposition->GetEventReceiver()->mouseUp.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterLeftButtonUp);
 								splitterComposition->GetEventReceiver()->mouseMove.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterMouseMove);
 							}
 							for (vint i = 0; i < listViewItemView->GetColumnCount(); i++)
@@ -13652,6 +13675,7 @@ GuiListView
 	}
 }
 
+
 /***********************************************************************
 .\CONTROLS\LISTCONTROLPACKAGE\GUITEXTLISTCONTROLS.CPP
 ***********************************************************************/
@@ -13757,7 +13781,7 @@ GuiVirtualTextList
 			void GuiVirtualTextList::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiVirtualTextList::OnKeyDown(GuiGraphicsComposition*, GuiKeyEventArgs&)#"
-				if (arguments.code == VKEY::KEY_SPACE && !arguments.ctrl && !arguments.shift && !arguments.alt)
+				if (arguments.code == VKEY::KEY_SPACE && !arguments.ctrl && !arguments.shift && !arguments.alt && !arguments.osSuper)
 				{
 					const auto& selectedItems = GetSelectedItems();
 					if (selectedItems.Count() > 0)
@@ -13831,6 +13855,7 @@ GuiTextList
 		}
 	}
 }
+
 
 /***********************************************************************
 .\CONTROLS\LISTCONTROLPACKAGE\GUITREEVIEWCONTROLS.CPP
@@ -16668,7 +16693,7 @@ DefaultTreeItemTemplate
 			expandingButton->SetAutoFocus(false);
 			expandingButton->SetAutoSelection(false);
 			expandingButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-			expandingButton->GetBoundsComposition()->GetEventReceiver()->leftButtonDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonDoubleClick);
+			expandingButton->GetBoundsComposition()->GetEventReceiver()->mouseDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonDoubleClick);
 			expandingButton->Clicked.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonClicked);
 			cell->AddChild(expandingButton->GetBoundsComposition());
 		}
@@ -16759,6 +16784,7 @@ DefaultTreeItemTemplate
 
 	void DefaultTreeItemTemplate::OnExpandingButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 	{
+		if (arguments.button != NativeMouseButton::Left) return;
 		arguments.handled = true;
 	}
 
@@ -16789,6 +16815,7 @@ DefaultTreeItemTemplate
 	{
 	}
 }
+
 
 /***********************************************************************
 .\CONTROLS\TEMPLATES\GUIANIMATION.CPP
@@ -17725,8 +17752,9 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachHandle(compositions::GuiGraphicsComposition* handle)
 			{
-				handle->GetEventReceiver()->leftButtonDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				handle->GetEventReceiver()->mouseDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
+					if (arguments.button != NativeMouseButton::Left) return;
 					if (scrollTemplate->GetVisuallyEnabled())
 					{
 						dragging = true;
@@ -17735,8 +17763,9 @@ GuiCommonScrollBehavior
 					}
 				});
 
-				handle->GetEventReceiver()->leftButtonUp.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs&)
+				handle->GetEventReceiver()->mouseUp.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
+					if (arguments.button != NativeMouseButton::Left) return;
 					if (scrollTemplate->GetVisuallyEnabled())
 					{
 						dragging = false;
@@ -17775,8 +17804,9 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachHorizontalScrollHandle(compositions::GuiPartialViewComposition* partialView)
 			{
-				partialView->GetParent()->GetEventReceiver()->leftButtonDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				partialView->GetParent()->GetEventReceiver()->mouseDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
+					if (arguments.button != NativeMouseButton::Left) return;
 					if (scrollTemplate->GetVisuallyEnabled())
 					{
 						if (arguments.x < partialView->GetCachedBounds().x1)
@@ -17795,8 +17825,9 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachVerticalScrollHandle(compositions::GuiPartialViewComposition* partialView)
 			{
-				partialView->GetParent()->GetEventReceiver()->leftButtonDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				partialView->GetParent()->GetEventReceiver()->mouseDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
+					if (arguments.button != NativeMouseButton::Left) return;
 					if (scrollTemplate->GetVisuallyEnabled())
 					{
 						if (arguments.y < partialView->GetCachedBounds().y1)
@@ -17863,6 +17894,7 @@ GuiCommonScrollBehavior
 		}
 	}
 }
+
 
 /***********************************************************************
 .\CONTROLS\TEMPLATES\GUICONTROLTEMPLATES.CPP
@@ -18171,7 +18203,7 @@ GuiDocumentCommonInterface
 
 			bool GuiDocumentCommonInterface::ProcessKey(VKEY code, bool shift, bool ctrl)
 			{
-				if (IGuiShortcutKeyItem* item = internalShortcutKeyManager->TryGetShortcut(ctrl, shift, false, code))
+				if (IGuiShortcutKeyItem* item = internalShortcutKeyManager->TryGetShortcut(ctrl, shift, false, false, code))
 				{
 					GuiEventArgs arguments(documentControl->GetBoundsComposition());
 					item->Executed.Execute(arguments);
@@ -18373,8 +18405,8 @@ GuiDocumentCommonInterface
 					}
 
 					documentMouseArea->GetEventReceiver()->mouseMove.Detach(onMouseMoveHandler);
-					documentMouseArea->GetEventReceiver()->leftButtonDown.Detach(onMouseDownHandler);
-					documentMouseArea->GetEventReceiver()->leftButtonUp.Detach(onMouseUpHandler);
+					documentMouseArea->GetEventReceiver()->mouseDown.Detach(onMouseDownHandler);
+					documentMouseArea->GetEventReceiver()->mouseUp.Detach(onMouseUpHandler);
 					documentMouseArea->GetEventReceiver()->mouseLeave.Detach(onMouseLeaveHandler);
 
 					onMouseMoveHandler = nullptr;
@@ -18391,8 +18423,8 @@ GuiDocumentCommonInterface
 					}
 
 					onMouseMoveHandler = documentMouseArea->GetEventReceiver()->mouseMove.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseMove);
-					onMouseDownHandler = documentMouseArea->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseDown);
-					onMouseUpHandler = documentMouseArea->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseUp);
+					onMouseDownHandler = documentMouseArea->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseDown);
+					onMouseUpHandler = documentMouseArea->GetEventReceiver()->mouseUp.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseUp);
 					onMouseLeaveHandler = documentMouseArea->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseLeave);
 				}
 			}
@@ -18430,7 +18462,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::AddShortcutCommand(VKEY key, const Func<void()>& eventHandler)
 			{
-				IGuiShortcutKeyItem* item=internalShortcutKeyManager->CreateNewShortcut(true, false, false, key);
+				IGuiShortcutKeyItem* item=internalShortcutKeyManager->CreateNewShortcut(true, false, false, false, key);
 				item->Executed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 				{
 					eventHandler();
@@ -18573,6 +18605,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
+				if (arguments.osSuper) return;
 				if (documentControl->GetVisuallyEnabled())
 				{
 					if (editMode != GuiDocumentEditMode::ViewOnly)
@@ -18590,6 +18623,7 @@ GuiDocumentCommonInterface
 				if (documentControl->GetVisuallyEnabled())
 				{
 					if (editMode == GuiDocumentEditMode::Editable &&
+						!arguments.osSuper &&
 						arguments.code != (wchar_t)VKEY::KEY_ESCAPE &&
 						arguments.code != (wchar_t)VKEY::KEY_BACK &&
 						arguments.code != (wchar_t)VKEY::KEY_RETURN &&
@@ -18691,6 +18725,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
+				if (arguments.button != NativeMouseButton::Left) return;
 				auto offset = GetMouseOffset();
 				auto x = arguments.x - offset.x;
 				auto y = arguments.y - offset.y;
@@ -18721,6 +18756,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
+				if (arguments.button != NativeMouseButton::Left) return;
 				auto offset = GetMouseOffset();
 				auto x = arguments.x - offset.x;
 				auto y = arguments.y - offset.y;
@@ -23222,6 +23258,11 @@ GuiToolstripCommand
 				DescriptionChanged.Execute(arguments);
 			}
 
+			void GuiToolstripCommand::EnvironmentChanged()
+			{
+				InvokeDescriptionChanged();
+			}
+
 			compositions::IGuiShortcutKeyManager* GuiToolstripCommand::GetShortcutManagerFromBuilder(Ptr<ShortcutBuilder> builder)
 			{
 				if (builder->global)
@@ -23238,8 +23279,15 @@ GuiToolstripCommand
 						}
 						return attachedControlHost->GetShortcutKeyManager();
 					}
+					else
+					{
+						if (!detachedShortcutKeyManager)
+						{
+							detachedShortcutKeyManager = Ptr(new GuiShortcutKeyManager);
+						}
+						return detachedShortcutKeyManager.Obj();
+					}
 				}
-				return nullptr;
 			}
 
 			void GuiToolstripCommand::RemoveShortcut()
@@ -23277,7 +23325,7 @@ GuiToolstripCommand
 						shortcutBuilder = builder;
 						if (auto shortcutKeyManager = GetShortcutManagerFromBuilder(builder))
 						{
-							if (auto item = shortcutKeyManager->CreateShortcutIfNotExist(builder->ctrl, builder->shift, builder->alt, builder->key))
+							if (auto item = shortcutKeyManager->CreateShortcutIfNotExist(builder->ctrl, builder->shift, builder->alt, builder->osSuper, builder->key))
 							{
 								ReplaceShortcut(item);
 							}
@@ -23305,7 +23353,7 @@ GuiToolstripCommand
 					{
 						if (shortcutKeyItem)
 						{
-							ReplaceShortcut(nullptr);
+							RemoveShortcut();
 						}
 						BuildShortcut(shortcutBuilder->text);
 					}
@@ -23314,10 +23362,12 @@ GuiToolstripCommand
 
 			GuiToolstripCommand::GuiToolstripCommand()
 			{
+				GetCurrentController()->CallbackService()->InstallListener(this);
 			}
 
 			GuiToolstripCommand::~GuiToolstripCommand()
 			{
+				GetCurrentController()->CallbackService()->UninstallListener(this);
 				RemoveShortcut();
 				shortcutBuilder = nullptr;
 			}
@@ -23464,14 +23514,16 @@ GuiToolstripCommand::ShortcutBuilder Parser
 				const vint					_ctrl;
 				const vint					_shift;
 				const vint					_alt;
+				const vint					_osSuper;
 				const vint					_key;
 
 				GuiToolstripCommandShortcutParser()
-					: regexShortcut(L"((<global>global:))?((<ctrl>Ctrl)/+|(<shift>Shift)/+|(<alt>Alt)/+)*(<key>/.+)")
+					: regexShortcut(L"((<global>global:))?((<ctrl>Ctrl)/+|(<shift>Shift)/+|(<alt>Alt)/+|(<osSuper>Win|Command|Super)/+)*(<key>/.+)")
 					, _global(regexShortcut.CaptureNames().IndexOf(L"global"))
 					, _ctrl(regexShortcut.CaptureNames().IndexOf(L"ctrl"))
 					, _shift(regexShortcut.CaptureNames().IndexOf(L"shift"))
 					, _alt(regexShortcut.CaptureNames().IndexOf(L"alt"))
+					, _osSuper(regexShortcut.CaptureNames().IndexOf(L"osSuper"))
 					, _key(regexShortcut.CaptureNames().IndexOf(L"key"))
 				{
 				}
@@ -23493,6 +23545,7 @@ GuiToolstripCommand::ShortcutBuilder Parser
 					builder->ctrl = match->Groups().Contains(_ctrl);
 					builder->shift = match->Groups().Contains(_shift);
 					builder->alt = match->Groups().Contains(_alt);
+					builder->osSuper = match->Groups().Contains(_osSuper);
 
 					WString name = match->Groups()[_key][0].Value();
 					builder->key = GetCurrentController()->InputService()->GetKey(name);
@@ -23531,6 +23584,7 @@ GuiToolstripCommandPlugin
 		}
 	}
 }
+
 
 /***********************************************************************
 .\CONTROLS\TOOLSTRIPPACKAGE\GUITOOLSTRIPMENU.CPP
@@ -28975,12 +29029,14 @@ GuiTableSplitterCompositionBase
 
 			void GuiTableSplitterCompositionBase::OnLeftButtonDown(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
 			{
+				if (arguments.button != NativeMouseButton::Left) return;
 				dragging = true;
 				draggingPoint = Point(arguments.x, arguments.y);
 			}
 
 			void GuiTableSplitterCompositionBase::OnLeftButtonUp(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
 			{
+				if (arguments.button != NativeMouseButton::Left) return;
 				dragging = false;
 			}
 
@@ -29111,8 +29167,8 @@ GuiTableSplitterCompositionBase
 			
 			GuiTableSplitterCompositionBase::GuiTableSplitterCompositionBase()
 			{
-				GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiTableSplitterCompositionBase::OnLeftButtonDown);
-				GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiTableSplitterCompositionBase::OnLeftButtonUp);
+				GetEventReceiver()->mouseDown.AttachMethod(this, &GuiTableSplitterCompositionBase::OnLeftButtonDown);
+				GetEventReceiver()->mouseUp.AttachMethod(this, &GuiTableSplitterCompositionBase::OnLeftButtonUp);
 			}
 
 			GuiTableComposition* GuiTableSplitterCompositionBase::GetTableParent()
@@ -29228,6 +29284,7 @@ GuiColumnSplitterComposition
 		}
 	}
 }
+
 
 /***********************************************************************
 .\GRAPHICSELEMENT\GUIGRAPHICSDOCUMENTELEMENT.CPP
@@ -32113,39 +32170,15 @@ INativeWindowListener
 		{
 		}
 
-		void INativeWindowListener::LeftButtonDown(const NativeWindowMouseInfo& info)
+		void INativeWindowListener::MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info)
 		{
 		}
 
-		void INativeWindowListener::LeftButtonUp(const NativeWindowMouseInfo& info)
+		void INativeWindowListener::MouseUp(NativeMouseButton button, const NativeWindowMouseInfo& info)
 		{
 		}
 
-		void INativeWindowListener::LeftButtonDoubleClick(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void INativeWindowListener::RightButtonDown(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void INativeWindowListener::RightButtonUp(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void INativeWindowListener::RightButtonDoubleClick(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void INativeWindowListener::MiddleButtonDown(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void INativeWindowListener::MiddleButtonUp(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void INativeWindowListener::MiddleButtonDoubleClick(const NativeWindowMouseInfo& info)
+		void INativeWindowListener::MouseDoubleClick(NativeMouseButton button, const NativeWindowMouseInfo& info)
 		{
 		}
 
@@ -32629,6 +32662,11 @@ public:
 		CHECK_FAIL(L"Not implemented!");
 	}
 
+	WString GetOSSuperKeyName() override
+	{
+		return WString::Unmanaged(L"Super");
+	}
+
 	////////////////////////////////////////////////////////////////////
 	// INativeImageService
 	////////////////////////////////////////////////////////////////////
@@ -32729,7 +32767,7 @@ public:
 		CHECK_FAIL(L"Not implemented!");
 	}
 
-	vint RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key) override
+	vint RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key) override
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
@@ -33348,8 +33386,36 @@ GuiHostedController::INativeWindowListener (Template)
 			void (GuiHostedController::* PreAction)(const NativeWindowMouseInfo&),
 			GuiHostedWindow*(GuiHostedController::* GetSelectedWindow)(const NativeWindowMouseInfo&),
 			void (GuiHostedController::* PostAction)(GuiHostedWindow*, const NativeWindowMouseInfo&),
+			void (INativeWindowListener::* Callback)(NativeMouseButton, const NativeWindowMouseInfo&)
+			>
+		void GuiHostedController::HandleMouseButtonCallback(NativeMouseButton button, const NativeWindowMouseInfo& info)
+		{
+			(this->*PreAction)(info);
+			auto postActionWindow = hoveringWindow;
+			if (!wmWindow)
+			{
+				if (auto selectedWindow = (this->*GetSelectedWindow)(info))
+				{
+					postActionWindow = selectedWindow;
+					if (!selectedWindow->IsEnabled()) return;
+					auto adjustedInfo = info;
+					adjustedInfo.x.value -= selectedWindow->wmWindow.bounds.x1.value;
+					adjustedInfo.y.value -= selectedWindow->wmWindow.bounds.y1.value;
+					for (auto listener : selectedWindow->listeners)
+					{
+						(listener->*Callback)(button, adjustedInfo);
+					}
+				}
+			}
+			(this->*PostAction)(postActionWindow, info);
+		}
+
+		template<
+			void (GuiHostedController::* PreAction)(const NativeWindowMouseInfo&),
+			GuiHostedWindow*(GuiHostedController::* GetSelectedWindow)(const NativeWindowMouseInfo&),
+			void (GuiHostedController::* PostAction)(GuiHostedWindow*, const NativeWindowMouseInfo&),
 			void (INativeWindowListener::* Callback)(const NativeWindowMouseInfo&)
-		>
+			>
 		void GuiHostedController::HandleMouseCallback(const NativeWindowMouseInfo& info)
 		{
 			(this->*PreAction)(info);
@@ -33397,31 +33463,49 @@ GuiHostedController::INativeWindowListener (Template)
 GuiHostedController::INativeWindowListener (IO Event Handling)
 ***********************************************************************/
 
-#define IMPLEMENT_MOUSE_CALLBACK(NAME, PREACTION, POLICY, POSTACTION)					\
-		void GuiHostedController::NAME(const NativeWindowMouseInfo& info)				\
-		{																				\
-			HandleMouseCallback<														\
-				&GuiHostedController::PreAction_##PREACTION,							\
-				&GuiHostedController::GetSelectedWindow_##POLICY,						\
-				&GuiHostedController::PostAction_##POSTACTION,							\
-				&INativeWindowListener::NAME											\
-			>(info);																	\
-		}																				\
+		void GuiHostedController::MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info)
+		{
+			if (button == NativeMouseButton::Left)
+			{
+				HandleMouseButtonCallback<&GuiHostedController::PreAction_LeftButtonDown, &GuiHostedController::GetSelectedWindow_MouseDown, &GuiHostedController::PostAction_Other, &INativeWindowListener::MouseDown>(button, info);
+			}
+			else
+			{
+				HandleMouseButtonCallback<&GuiHostedController::PreAction_MouseDown, &GuiHostedController::GetSelectedWindow_MouseDown, &GuiHostedController::PostAction_Other, &INativeWindowListener::MouseDown>(button, info);
+			}
+		}
 
-		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDown,			LeftButtonDown,	MouseDown,		Other			)
-		IMPLEMENT_MOUSE_CALLBACK(LeftButtonUp,				Other,			Other,			LeftButtonUp	)
-		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDoubleClick,		Other,			Other,			Other			)
-		IMPLEMENT_MOUSE_CALLBACK(RightButtonDown,			MouseDown,		MouseDown,		Other			)
-		IMPLEMENT_MOUSE_CALLBACK(RightButtonUp,				Other,			Other,			Other			)
-		IMPLEMENT_MOUSE_CALLBACK(RightButtonDoubleClick,	Other,			Other,			Other			)
-		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonDown,			MouseDown,		MouseDown,		Other			)
-		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonUp,			Other,			Other,			Other			)
-		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonDoubleClick,	Other,			Other,			Other			)
-		IMPLEMENT_MOUSE_CALLBACK(HorizontalWheel,			Other,			Other,			Other			)
-		IMPLEMENT_MOUSE_CALLBACK(VerticalWheel,				Other,			Other,			Other			)
-		IMPLEMENT_MOUSE_CALLBACK(MouseMoving,				MouseMoving,	MouseMoving,	Other			)
+		void GuiHostedController::MouseUp(NativeMouseButton button, const NativeWindowMouseInfo& info)
+		{
+			if (button == NativeMouseButton::Left)
+			{
+				HandleMouseButtonCallback<&GuiHostedController::PreAction_Other, &GuiHostedController::GetSelectedWindow_Other, &GuiHostedController::PostAction_LeftButtonUp, &INativeWindowListener::MouseUp>(button, info);
+			}
+			else
+			{
+				HandleMouseButtonCallback<&GuiHostedController::PreAction_Other, &GuiHostedController::GetSelectedWindow_Other, &GuiHostedController::PostAction_Other, &INativeWindowListener::MouseUp>(button, info);
+			}
+		}
 
-#undef IMPLEMENT_MOUSE_CALLBACK
+		void GuiHostedController::MouseDoubleClick(NativeMouseButton button, const NativeWindowMouseInfo& info)
+		{
+			HandleMouseButtonCallback<&GuiHostedController::PreAction_Other, &GuiHostedController::GetSelectedWindow_Other, &GuiHostedController::PostAction_Other, &INativeWindowListener::MouseDoubleClick>(button, info);
+		}
+
+		void GuiHostedController::HorizontalWheel(const NativeWindowMouseInfo& info)
+		{
+			HandleMouseCallback<&GuiHostedController::PreAction_Other, &GuiHostedController::GetSelectedWindow_Other, &GuiHostedController::PostAction_Other, &INativeWindowListener::HorizontalWheel>(info);
+		}
+
+		void GuiHostedController::VerticalWheel(const NativeWindowMouseInfo& info)
+		{
+			HandleMouseCallback<&GuiHostedController::PreAction_Other, &GuiHostedController::GetSelectedWindow_Other, &GuiHostedController::PostAction_Other, &INativeWindowListener::VerticalWheel>(info);
+		}
+
+		void GuiHostedController::MouseMoving(const NativeWindowMouseInfo& info)
+		{
+			HandleMouseCallback<&GuiHostedController::PreAction_MouseMoving, &GuiHostedController::GetSelectedWindow_MouseMoving, &GuiHostedController::PostAction_Other, &INativeWindowListener::MouseMoving>(info);
+		}
 
 		void GuiHostedController::MouseEntered()
 		{
@@ -33550,6 +33634,11 @@ GuiHostedController::INativeControllerListener
 					}
 				}
 			}
+		}
+
+		void GuiHostedController::EnvironmentChanged()
+		{
+			callbackService.InvokeEnvironmentChanged();
 		}
 
 		void GuiHostedController::ClipboardUpdated()
@@ -35291,6 +35380,11 @@ GuiRemoteController::INativeResourceService
 			CopyFrom(fonts, *remoteFontConfig.supportedFonts.Obj());
 		}
 	}
+
+	WString GuiRemoteController::GetOSSuperKeyName()
+	{
+		return remoteGlobalConfig.osSuperKeyName == L"" ? WString::Unmanaged(L"Super") : remoteGlobalConfig.osSuperKeyName;
+	}
 			
 /***********************************************************************
 GuiRemoteController::INativeInputService
@@ -35368,15 +35462,16 @@ GuiRemoteController::INativeInputService
 			key.ctrl = entry.get<0>();
 			key.shift = entry.get<1>();
 			key.alt = entry.get<2>();
-			key.code = entry.get<3>();
+			key.osSuper = entry.get<3>();
+			key.code = entry.get<4>();
 			hotKeys->Add(key);
 		}
 		remoteMessages.RequestIOUpdateGlobalShortcutKey(hotKeys);
 	}
 
-	vint GuiRemoteController::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)
+	vint GuiRemoteController::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)
 	{
-		HotKeyEntry entry = { ctrl,shift,alt,key };
+		HotKeyEntry entry = { ctrl,shift,alt,osSuper,key };
 		if (hotKeySet.Contains(entry)) return (vint)NativeGlobalShortcutKeyResult::Occupied;
 
 		vint id = ++usedHotKeys;
@@ -35914,56 +36009,17 @@ GuiRemoteEvents (events)
 
 	void GuiRemoteEvents::OnIOButtonDown(const remoteprotocol::IOMouseInfoWithButton& arguments)
 	{
-		switch (arguments.button)
-		{
-		case remoteprotocol::IOMouseButton::Left:
-			for (auto l : remote->remoteWindow.listeners) l->LeftButtonDown(arguments.info);
-			break;
-		case remoteprotocol::IOMouseButton::Middle:
-			for (auto l : remote->remoteWindow.listeners) l->MiddleButtonDown(arguments.info);
-			break;
-		case remoteprotocol::IOMouseButton::Right:
-			for (auto l : remote->remoteWindow.listeners) l->RightButtonDown(arguments.info);
-			break;
-		default:
-			CHECK_FAIL(L"vl::presentation::GuiRemoteEvents::OnIOButtonDown(const IOMouseInfoWithButton&)#Unrecognized button.");
-		}
+		for (auto l : remote->remoteWindow.listeners) l->MouseDown(arguments.button, arguments.info);
 	}
 
 	void GuiRemoteEvents::OnIOButtonDoubleClick(const remoteprotocol::IOMouseInfoWithButton& arguments)
 	{
-		switch (arguments.button)
-		{
-		case remoteprotocol::IOMouseButton::Left:
-			for (auto l : remote->remoteWindow.listeners) l->LeftButtonDoubleClick(arguments.info);
-			break;
-		case remoteprotocol::IOMouseButton::Middle:
-			for (auto l : remote->remoteWindow.listeners) l->MiddleButtonDoubleClick(arguments.info);
-			break;
-		case remoteprotocol::IOMouseButton::Right:
-			for (auto l : remote->remoteWindow.listeners) l->RightButtonDoubleClick(arguments.info);
-			break;
-		default:
-			CHECK_FAIL(L"vl::presentation::GuiRemoteEvents::OnIOButtonDoubleClick(const IOMouseInfoWithButton&)#Unrecognized button.");
-		}
+		for (auto l : remote->remoteWindow.listeners) l->MouseDoubleClick(arguments.button, arguments.info);
 	}
 
 	void GuiRemoteEvents::OnIOButtonUp(const remoteprotocol::IOMouseInfoWithButton& arguments)
 	{
-		switch (arguments.button)
-		{
-		case remoteprotocol::IOMouseButton::Left:
-			for (auto l : remote->remoteWindow.listeners) l->LeftButtonUp(arguments.info);
-			break;
-		case remoteprotocol::IOMouseButton::Middle:
-			for (auto l : remote->remoteWindow.listeners) l->MiddleButtonUp(arguments.info);
-			break;
-		case remoteprotocol::IOMouseButton::Right:
-			for (auto l : remote->remoteWindow.listeners) l->RightButtonUp(arguments.info);
-			break;
-		default:
-			CHECK_FAIL(L"vl::presentation::GuiRemoteEvents::OnIOButtonUp(const IOMouseInfoWithButton&)#Unrecognized button.");
-		}
+		for (auto l : remote->remoteWindow.listeners) l->MouseUp(arguments.button, arguments.info);
 	}
 
 	void GuiRemoteEvents::OnIOHWheel(const NativeWindowMouseInfo& arguments)
@@ -36006,6 +36062,7 @@ GuiRemoteEvents (events)
 		for (auto l : remote->remoteWindow.listeners) l->Char(arguments);
 	}
 }
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\GUIREMOTEGRAPHICS.CPP
@@ -42154,15 +42211,17 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOMouseButton>(const ::vl::presentation::remoteprotocol::IOMouseButton & value)
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeMouseButton>(const ::vl::presentation::NativeMouseButton & value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOMouseButton>(const ::vl::presentation::remoteprotocol::IOMouseButton&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::NativeMouseButton>(const ::vl::presentation::NativeMouseButton&)#"
 		auto node = Ptr(new glr::json::JsonString);
 		switch (value)
 		{
-		case ::vl::presentation::remoteprotocol::IOMouseButton::Left: node->content.value = WString::Unmanaged(L"Left"); break;
-		case ::vl::presentation::remoteprotocol::IOMouseButton::Middle: node->content.value = WString::Unmanaged(L"Middle"); break;
-		case ::vl::presentation::remoteprotocol::IOMouseButton::Right: node->content.value = WString::Unmanaged(L"Right"); break;
+		case ::vl::presentation::NativeMouseButton::Left: node->content.value = WString::Unmanaged(L"Left"); break;
+		case ::vl::presentation::NativeMouseButton::Middle: node->content.value = WString::Unmanaged(L"Middle"); break;
+		case ::vl::presentation::NativeMouseButton::Right: node->content.value = WString::Unmanaged(L"Right"); break;
+		case ::vl::presentation::NativeMouseButton::Mouse4: node->content.value = WString::Unmanaged(L"Mouse4"); break;
+		case ::vl::presentation::NativeMouseButton::Mouse5: node->content.value = WString::Unmanaged(L"Mouse5"); break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;
@@ -42457,6 +42516,7 @@ namespace vl::presentation::remoteprotocol
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"documentCaretFromEncoding", value.documentCaretFromEncoding);
+		ConvertCustomTypeToJsonField(node, L"osSuperKeyName", value.osSuperKeyName);
 		return node;
 	}
 
@@ -42483,6 +42543,7 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"ctrl", value.ctrl);
 		ConvertCustomTypeToJsonField(node, L"shift", value.shift);
+		ConvertCustomTypeToJsonField(node, L"osSuper", value.osSuper);
 		ConvertCustomTypeToJsonField(node, L"left", value.left);
 		ConvertCustomTypeToJsonField(node, L"middle", value.middle);
 		ConvertCustomTypeToJsonField(node, L"right", value.right);
@@ -42508,6 +42569,7 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"ctrl", value.ctrl);
 		ConvertCustomTypeToJsonField(node, L"shift", value.shift);
 		ConvertCustomTypeToJsonField(node, L"alt", value.alt);
+		ConvertCustomTypeToJsonField(node, L"osSuper", value.osSuper);
 		ConvertCustomTypeToJsonField(node, L"capslock", value.capslock);
 		ConvertCustomTypeToJsonField(node, L"autoRepeatKeyDown", value.autoRepeatKeyDown);
 		return node;
@@ -42520,6 +42582,7 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"ctrl", value.ctrl);
 		ConvertCustomTypeToJsonField(node, L"shift", value.shift);
 		ConvertCustomTypeToJsonField(node, L"alt", value.alt);
+		ConvertCustomTypeToJsonField(node, L"osSuper", value.osSuper);
 		ConvertCustomTypeToJsonField(node, L"capslock", value.capslock);
 		return node;
 	}
@@ -42531,6 +42594,7 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"ctrl", value.ctrl);
 		ConvertCustomTypeToJsonField(node, L"shift", value.shift);
 		ConvertCustomTypeToJsonField(node, L"alt", value.alt);
+		ConvertCustomTypeToJsonField(node, L"osSuper", value.osSuper);
 		ConvertCustomTypeToJsonField(node, L"code", value.code);
 		return node;
 	}
@@ -43002,14 +43066,16 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOMouseButton>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IOMouseButton& value)
+	template<> void ConvertJsonToCustomType<::vl::presentation::NativeMouseButton>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeMouseButton& value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOMouseButton>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::IOMouseButton&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::NativeMouseButton>(Ptr<JsonNode>, ::vl::presentation::NativeMouseButton&)#"
 		auto jsonNode = node.Cast<glr::json::JsonString>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
-		if (jsonNode->content.value == L"Left") value = ::vl::presentation::remoteprotocol::IOMouseButton::Left; else
-		if (jsonNode->content.value == L"Middle") value = ::vl::presentation::remoteprotocol::IOMouseButton::Middle; else
-		if (jsonNode->content.value == L"Right") value = ::vl::presentation::remoteprotocol::IOMouseButton::Right; else
+		if (jsonNode->content.value == L"Left") value = ::vl::presentation::NativeMouseButton::Left; else
+		if (jsonNode->content.value == L"Middle") value = ::vl::presentation::NativeMouseButton::Middle; else
+		if (jsonNode->content.value == L"Right") value = ::vl::presentation::NativeMouseButton::Right; else
+		if (jsonNode->content.value == L"Mouse4") value = ::vl::presentation::NativeMouseButton::Mouse4; else
+		if (jsonNode->content.value == L"Mouse5") value = ::vl::presentation::NativeMouseButton::Mouse5; else
 		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 #undef ERROR_MESSAGE_PREFIX
 	}
@@ -43339,6 +43405,7 @@ namespace vl::presentation::remoteprotocol
 		for (auto field : jsonNode->fields)
 		{
 			if (field->name.value == L"documentCaretFromEncoding") ConvertJsonToCustomType(field->value, value.documentCaretFromEncoding); else
+			if (field->name.value == L"osSuperKeyName") ConvertJsonToCustomType(field->value, value.osSuperKeyName); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -43383,6 +43450,7 @@ namespace vl::presentation::remoteprotocol
 		{
 			if (field->name.value == L"ctrl") ConvertJsonToCustomType(field->value, value.ctrl); else
 			if (field->name.value == L"shift") ConvertJsonToCustomType(field->value, value.shift); else
+			if (field->name.value == L"osSuper") ConvertJsonToCustomType(field->value, value.osSuper); else
 			if (field->name.value == L"left") ConvertJsonToCustomType(field->value, value.left); else
 			if (field->name.value == L"middle") ConvertJsonToCustomType(field->value, value.middle); else
 			if (field->name.value == L"right") ConvertJsonToCustomType(field->value, value.right); else
@@ -43420,6 +43488,7 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"ctrl") ConvertJsonToCustomType(field->value, value.ctrl); else
 			if (field->name.value == L"shift") ConvertJsonToCustomType(field->value, value.shift); else
 			if (field->name.value == L"alt") ConvertJsonToCustomType(field->value, value.alt); else
+			if (field->name.value == L"osSuper") ConvertJsonToCustomType(field->value, value.osSuper); else
 			if (field->name.value == L"capslock") ConvertJsonToCustomType(field->value, value.capslock); else
 			if (field->name.value == L"autoRepeatKeyDown") ConvertJsonToCustomType(field->value, value.autoRepeatKeyDown); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
@@ -43438,6 +43507,7 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"ctrl") ConvertJsonToCustomType(field->value, value.ctrl); else
 			if (field->name.value == L"shift") ConvertJsonToCustomType(field->value, value.shift); else
 			if (field->name.value == L"alt") ConvertJsonToCustomType(field->value, value.alt); else
+			if (field->name.value == L"osSuper") ConvertJsonToCustomType(field->value, value.osSuper); else
 			if (field->name.value == L"capslock") ConvertJsonToCustomType(field->value, value.capslock); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
@@ -43455,6 +43525,7 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"ctrl") ConvertJsonToCustomType(field->value, value.ctrl); else
 			if (field->name.value == L"shift") ConvertJsonToCustomType(field->value, value.shift); else
 			if (field->name.value == L"alt") ConvertJsonToCustomType(field->value, value.alt); else
+			if (field->name.value == L"osSuper") ConvertJsonToCustomType(field->value, value.osSuper); else
 			if (field->name.value == L"code") ConvertJsonToCustomType(field->value, value.code); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
@@ -44221,6 +44292,7 @@ namespace vl::presentation::remote_renderer
 	{
 		if (!CanSendEvents()) return;
 		vl::presentation::remoteprotocol::ControllerGlobalConfig globalConfig;
+		globalConfig.osSuperKeyName = GetCurrentController()->ResourceService()->GetOSSuperKeyName();
 #if defined VCZH_WCHAR_UTF16
 		globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF16;
 #elif defined VCZH_WCHAR_UTF32
@@ -44472,7 +44544,7 @@ namespace vl::presentation::remote_renderer
 			auto inputService = GetCurrentController()->InputService();
 			for (auto&& shortcut : *arguments.Obj())
 			{
-				vint id = inputService->RegisterGlobalShortcutKey(shortcut.ctrl, shortcut.shift, shortcut.alt, shortcut.code);
+				vint id = inputService->RegisterGlobalShortcutKey(shortcut.ctrl, shortcut.shift, shortcut.alt, shortcut.osSuper, shortcut.code);
 				if (id != -1)
 				{
 					globalShortcuts.Add(id, shortcut);
@@ -44511,92 +44583,32 @@ namespace vl::presentation::remote_renderer
 * Rendering (INativeWindow)
 ***********************************************************************/
 
-	void GuiRemoteRendererSingle::LeftButtonDown(const NativeWindowMouseInfo& info)
+	void GuiRemoteRendererSingle::MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
 		SendAccumulatedMessages();
 		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Left;
+		arguments.button = button;
 		arguments.info = info;
 		events->OnIOButtonDown(arguments);
 	}
 
-	void GuiRemoteRendererSingle::LeftButtonUp(const NativeWindowMouseInfo& info)
+	void GuiRemoteRendererSingle::MouseUp(NativeMouseButton button, const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
 		SendAccumulatedMessages();
 		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Left;
+		arguments.button = button;
 		arguments.info = info;
 		events->OnIOButtonUp(arguments);
 	}
 
-	void GuiRemoteRendererSingle::LeftButtonDoubleClick(const NativeWindowMouseInfo& info)
+	void GuiRemoteRendererSingle::MouseDoubleClick(NativeMouseButton button, const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
 		SendAccumulatedMessages();
 		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Left;
-		arguments.info = info;
-		events->OnIOButtonDoubleClick(arguments);
-	}
-
-	void GuiRemoteRendererSingle::RightButtonDown(const NativeWindowMouseInfo& info)
-	{
-		if (!CanSendEvents()) return;
-		SendAccumulatedMessages();
-		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Right;
-		arguments.info = info;
-		events->OnIOButtonDown(arguments);
-	}
-
-	void GuiRemoteRendererSingle::RightButtonUp(const NativeWindowMouseInfo& info)
-	{
-		if (!CanSendEvents()) return;
-		SendAccumulatedMessages();
-		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Right;
-		arguments.info = info;
-		events->OnIOButtonUp(arguments);
-	}
-
-	void GuiRemoteRendererSingle::RightButtonDoubleClick(const NativeWindowMouseInfo& info)
-	{
-		if (!CanSendEvents()) return;
-		SendAccumulatedMessages();
-		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Right;
-		arguments.info = info;
-		events->OnIOButtonDoubleClick(arguments);
-	}
-
-	void GuiRemoteRendererSingle::MiddleButtonDown(const NativeWindowMouseInfo& info)
-	{
-		if (!CanSendEvents()) return;
-		SendAccumulatedMessages();
-		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Middle;
-		arguments.info = info;
-		events->OnIOButtonDown(arguments);
-	}
-
-	void GuiRemoteRendererSingle::MiddleButtonUp(const NativeWindowMouseInfo& info)
-	{
-		if (!CanSendEvents()) return;
-		SendAccumulatedMessages();
-		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Middle;
-		arguments.info = info;
-		events->OnIOButtonUp(arguments);
-	}
-
-	void GuiRemoteRendererSingle::MiddleButtonDoubleClick(const NativeWindowMouseInfo& info)
-	{
-		if (!CanSendEvents()) return;
-		SendAccumulatedMessages();
-		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Middle;
+		arguments.button = button;
 		arguments.info = info;
 		events->OnIOButtonDoubleClick(arguments);
 	}
@@ -44604,6 +44616,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::HorizontalWheel(const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
+		if (pendingHWheel && pendingHWheel.Value().osSuper != info.osSuper) SendAccumulatedMessages();
 		auto copy = info;
 		if (pendingHWheel) copy.wheel += pendingHWheel.Value().wheel;
 		pendingHWheel = copy;
@@ -44612,6 +44625,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::VerticalWheel(const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
+		if (pendingVWheel && pendingVWheel.Value().osSuper != info.osSuper) SendAccumulatedMessages();
 		auto copy = info;
 		if (pendingVWheel) copy.wheel += pendingVWheel.Value().wheel;
 		pendingVWheel = copy;
@@ -44659,7 +44673,7 @@ namespace vl::presentation::remote_renderer
 	{
 		if (!CanSendEvents()) return;
 		pendingKeyAutoDown.Reset();
-		if (!info.ctrl && !info.shift && info.code == VKEY::KEY_MENU)
+		if (!info.ctrl && !info.shift && !info.osSuper && info.code == VKEY::KEY_MENU)
 		{
 			window->SupressAlt();
 		}
@@ -56208,7 +56222,7 @@ Closures
 
 	void __vwsnf33_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiKeyEventArgs* arguments) const
 	{
-		if (((((! ::vl::__vwsn::This(arguments)->ctrl) && (! ::vl::__vwsn::This(arguments)->shift)) && (! ::vl::__vwsn::This(arguments)->alt)) && (::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN)))
+		if ((((((! ::vl::__vwsn::This(arguments)->ctrl) && (! ::vl::__vwsn::This(arguments)->shift)) && (! ::vl::__vwsn::This(arguments)->alt)) && (! ::vl::__vwsn::This(arguments)->osSuper)) && (::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN)))
 		{
 			if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->TryConfirm(::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::vl::presentation::controls::GuiWindow>(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost())), ::vl::__vwsn::This(__vwsnthis_0->self)->GetSelection()))
 			{
@@ -56287,7 +56301,7 @@ Closures
 
 	void __vwsnf39_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiKeyEventArgs* arguments) const
 	{
-		if (((((! ::vl::__vwsn::This(arguments)->ctrl) && (! ::vl::__vwsn::This(arguments)->shift)) && (! ::vl::__vwsn::This(arguments)->alt)) && (::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN)))
+		if ((((((! ::vl::__vwsn::This(arguments)->ctrl) && (! ::vl::__vwsn::This(arguments)->shift)) && (! ::vl::__vwsn::This(arguments)->alt)) && (! ::vl::__vwsn::This(arguments)->osSuper)) && (::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN)))
 		{
 			if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->TryConfirm(::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::vl::presentation::controls::GuiWindow>(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost())), ::vl::__vwsn::This(__vwsnthis_0->self)->GetSelection()))
 			{
@@ -56786,7 +56800,7 @@ Closures
 
 	void __vwsnf67_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const
 	{
-		if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SelectColor(static_cast<::vl::presentation::controls::GuiWindow*>(__vwsnthis_0->self)))
+		if (((::vl::__vwsn::This(arguments)->button == ::vl::presentation::NativeMouseButton::Left) && ::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SelectColor(static_cast<::vl::presentation::controls::GuiWindow*>(__vwsnthis_0->self))))
 		{
 			::vl::__vwsn::This(__vwsnthis_0->colorBackground.Obj())->SetColor(::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetColor());
 		}
@@ -63525,7 +63539,7 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf67_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->colorBounds)->GetEventReceiver()->leftButtonUp, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->colorBounds)->GetEventReceiver()->mouseUp, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc41_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
@@ -64972,15 +64986,16 @@ RunIOCommandOnNativeWindow
 				L"!KeyDown:Key1+Key2+...+KeyN\r\n"
 				L"!KeyUp:Key1+Key2+...+KeyN\r\n"
 				L"!KeyPress:Key1+Key2+...+KeyN\r\n"
-				L"!MouseMove:X,Y(,ctrl)?(,shift)?(,alt)?\r\n"
-				L"!(Left|Middle|Right)(Down|Up|Click|DbClick):X,Y(,ctrl)?(,shift)?(,alt)?\r\n"
-				L"!MouseWheel(Up|Down|Left|Right):ticks(,ctrl)?(,shift)?(,alt)?";
+				L"!MouseMove:X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?\r\n"
+				L"!(Left|Middle|Right|Mouse4|Mouse5)(Down|Up|Click|DbClick):X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?\r\n"
+				L"!MouseWheel(Up|Down|Left|Right):ticks(,ctrl)?(,shift)?(,alt)?(,win|command|super)?";
 
 			struct IOCommandModifiers
 			{
 				bool ctrl = false;
 				bool shift = false;
 				bool alt = false;
+				bool osSuper = false;
 			};
 
 			struct TemporaryModifiers
@@ -64988,6 +65003,7 @@ RunIOCommandOnNativeWindow
 				bool ctrl = false;
 				bool shift = false;
 				bool alt = false;
+				bool osSuper = false;
 			};
 
 			struct MouseCommandArguments
@@ -65000,13 +65016,6 @@ RunIOCommandOnNativeWindow
 			{
 				vint ticks = 0;
 				IOCommandModifiers modifiers;
-			};
-
-			enum class MouseButton
-			{
-				Left,
-				Middle,
-				Right,
 			};
 
 			struct SyntaxErrorCommand
@@ -65042,7 +65051,7 @@ RunIOCommandOnNativeWindow
 
 			struct MouseButtonCommand
 			{
-				MouseButton button = MouseButton::Left;
+				NativeMouseButton button = NativeMouseButton::Left;
 				WString operation;
 				MouseCommandArguments arguments;
 			};
@@ -65152,6 +65161,11 @@ RunIOCommandOnNativeWindow
 					modifiers.alt = true;
 					return true;
 				}
+				else if (token == L"WIN" || token == L"COMMAND" || token == L"SUPER")
+				{
+					modifiers.osSuper = true;
+					return true;
+				}
 				return false;
 			}
 
@@ -65209,6 +65223,11 @@ RunIOCommandOnNativeWindow
 				return IsPressing(state, VKEY::KEY_MENU) || IsPressing(state, VKEY::KEY_LMENU) || IsPressing(state, VKEY::KEY_RMENU);
 			}
 
+			bool IsOSSuperPressing(IoCommandState* state)
+			{
+				return IsPressing(state, VKEY::KEY_LWIN) || IsPressing(state, VKEY::KEY_RWIN);
+			}
+
 			NativeWindowMouseInfo MakeMouseInfo(IoCommandState* state)
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
@@ -65216,6 +65235,7 @@ RunIOCommandOnNativeWindow
 				NativeWindowMouseInfo info;
 				info.ctrl = IsCtrlPressing(state);
 				info.shift = IsShiftPressing(state);
+				info.osSuper = IsOSSuperPressing(state);
 				info.left = state->leftPressing;
 				info.middle = state->middlePressing;
 				info.right = state->rightPressing;
@@ -65234,6 +65254,7 @@ RunIOCommandOnNativeWindow
 				info.ctrl = IsCtrlPressing(state);
 				info.shift = IsShiftPressing(state);
 				info.alt = IsAltPressing(state);
+				info.osSuper = IsOSSuperPressing(state);
 				info.capslock = state->capslockToggled;
 				info.autoRepeatKeyDown = autoRepeatKeyDown;
 				return info;
@@ -65246,6 +65267,7 @@ RunIOCommandOnNativeWindow
 				info.ctrl = IsCtrlPressing(state);
 				info.shift = IsShiftPressing(state);
 				info.alt = IsAltPressing(state);
+				info.osSuper = IsOSSuperPressing(state);
 				info.capslock = state->capslockToggled;
 				return info;
 			}
@@ -65306,10 +65328,19 @@ RunIOCommandOnNativeWindow
 					KeyDown(state, listeners, VKEY::KEY_MENU);
 					temporary.alt = true;
 				}
+				if (modifiers.osSuper && !IsOSSuperPressing(state))
+				{
+					KeyDown(state, listeners, VKEY::KEY_LWIN);
+					temporary.osSuper = true;
+				}
 			}
 
 			void ReleaseTemporaryModifiers(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, const TemporaryModifiers& temporary)
 			{
+				if (temporary.osSuper)
+				{
+					KeyUp(state, listeners, VKEY::KEY_LWIN);
+				}
 				if (temporary.alt)
 				{
 					KeyUp(state, listeners, VKEY::KEY_MENU);
@@ -65354,82 +65385,65 @@ RunIOCommandOnNativeWindow
 				}
 			}
 
-			void ButtonDown(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, MouseButton button, NativePoint position)
+			bool& GetButtonPressing(IoCommandState* state, NativeMouseButton button)
+			{
+				switch (button)
+				{
+				case NativeMouseButton::Left: return state->leftPressing;
+				case NativeMouseButton::Middle: return state->middlePressing;
+				case NativeMouseButton::Right: return state->rightPressing;
+				case NativeMouseButton::Mouse4: return state->mouse4Pressing;
+				default: return state->mouse5Pressing;
+				}
+			}
+
+			void ButtonDown(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, NativeMouseButton button, NativePoint position)
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
 				MouseMove(state, listeners, position);
-				switch (button)
+				auto&& pressing = GetButtonPressing(state, button);
+				CHECK_ERROR(!pressing, ERROR_MESSAGE_PREFIX L"The mouse button should not be being pressed.");
+				pressing = true;
+				auto info = MakeMouseInfo(state);
+				for (auto listener : listeners)
 				{
-				case MouseButton::Left:
-					CHECK_ERROR(!state->leftPressing, ERROR_MESSAGE_PREFIX L"The left button should not be being pressed.");
-					state->leftPressing = true;
-					for (auto listener : listeners) listener->LeftButtonDown(MakeMouseInfo(state));
-					break;
-				case MouseButton::Middle:
-					CHECK_ERROR(!state->middlePressing, ERROR_MESSAGE_PREFIX L"The middle button should not be being pressed.");
-					state->middlePressing = true;
-					for (auto listener : listeners) listener->MiddleButtonDown(MakeMouseInfo(state));
-					break;
-				case MouseButton::Right:
-					CHECK_ERROR(!state->rightPressing, ERROR_MESSAGE_PREFIX L"The right button should not be being pressed.");
-					state->rightPressing = true;
-					for (auto listener : listeners) listener->RightButtonDown(MakeMouseInfo(state));
-					break;
+					listener->MouseDown(button, info);
 				}
 #undef ERROR_MESSAGE_PREFIX
 			}
 
-			void ButtonUp(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, MouseButton button, NativePoint position)
+			void ButtonUp(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, NativeMouseButton button, NativePoint position)
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
 				MouseMove(state, listeners, position);
-				switch (button)
+				auto&& pressing = GetButtonPressing(state, button);
+				CHECK_ERROR(pressing, ERROR_MESSAGE_PREFIX L"The mouse button should be being pressed.");
+				pressing = false;
+				auto info = MakeMouseInfo(state);
+				for (auto listener : listeners)
 				{
-				case MouseButton::Left:
-					CHECK_ERROR(state->leftPressing, ERROR_MESSAGE_PREFIX L"The left button should be being pressed.");
-					state->leftPressing = false;
-					for (auto listener : listeners) listener->LeftButtonUp(MakeMouseInfo(state));
-					break;
-				case MouseButton::Middle:
-					CHECK_ERROR(state->middlePressing, ERROR_MESSAGE_PREFIX L"The middle button should be being pressed.");
-					state->middlePressing = false;
-					for (auto listener : listeners) listener->MiddleButtonUp(MakeMouseInfo(state));
-					break;
-				case MouseButton::Right:
-					CHECK_ERROR(state->rightPressing, ERROR_MESSAGE_PREFIX L"The right button should be being pressed.");
-					state->rightPressing = false;
-					for (auto listener : listeners) listener->RightButtonUp(MakeMouseInfo(state));
-					break;
+					listener->MouseUp(button, info);
 				}
 #undef ERROR_MESSAGE_PREFIX
 			}
 
-			void ButtonDoubleClick(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, MouseButton button, NativePoint position)
+			void ButtonDoubleClick(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, NativeMouseButton button, NativePoint position)
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
 				MouseMove(state, listeners, position);
-				switch (button)
+				auto&& pressing = GetButtonPressing(state, button);
+				CHECK_ERROR(!pressing, ERROR_MESSAGE_PREFIX L"The mouse button should not be being pressed.");
+				pressing = true;
+				auto info = MakeMouseInfo(state);
+				for (auto listener : listeners)
 				{
-				case MouseButton::Left:
-					CHECK_ERROR(!state->leftPressing, ERROR_MESSAGE_PREFIX L"The left button should not be being pressed.");
-					state->leftPressing = true;
-					for (auto listener : listeners) listener->LeftButtonDoubleClick(MakeMouseInfo(state));
-					break;
-				case MouseButton::Middle:
-					CHECK_ERROR(!state->middlePressing, ERROR_MESSAGE_PREFIX L"The middle button should not be being pressed.");
-					state->middlePressing = true;
-					for (auto listener : listeners) listener->MiddleButtonDoubleClick(MakeMouseInfo(state));
-					break;
-				case MouseButton::Right:
-					CHECK_ERROR(!state->rightPressing, ERROR_MESSAGE_PREFIX L"The right button should not be being pressed.");
-					state->rightPressing = true;
-					for (auto listener : listeners) listener->RightButtonDoubleClick(MakeMouseInfo(state));
-					break;
+					listener->MouseDown(button, info);
+					listener->MouseDoubleClick(button, info);
 				}
 #undef ERROR_MESSAGE_PREFIX
 			}
 
-			void MouseButtonOperation(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, MouseButton button, const WString& operation, NativePoint position)
+			void MouseButtonOperation(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, NativeMouseButton button, const WString& operation, NativePoint position)
 			{
 				if (operation == L"Down")
 				{
@@ -65509,17 +65523,19 @@ RunIOCommandOnNativeWindow
 				return true;
 			}
 
-			WString MouseButtonPrefix(MouseButton button)
+			WString MouseButtonPrefix(NativeMouseButton button)
 			{
 				switch (button)
 				{
-				case MouseButton::Left: return WString::Unmanaged(L"!Left");
-				case MouseButton::Middle: return WString::Unmanaged(L"!Middle");
-				default: return WString::Unmanaged(L"!Right");
+				case NativeMouseButton::Left: return WString::Unmanaged(L"!Left");
+				case NativeMouseButton::Middle: return WString::Unmanaged(L"!Middle");
+				case NativeMouseButton::Right: return WString::Unmanaged(L"!Right");
+				case NativeMouseButton::Mouse4: return WString::Unmanaged(L"!Mouse4");
+				default: return WString::Unmanaged(L"!Mouse5");
 				}
 			}
 
-			bool TryParseMouseButtonCommand(const WString& command, MouseButton button, const WString& operation, MouseButtonCommand& mouseCommand, bool& matched)
+			bool TryParseMouseButtonCommand(const WString& command, NativeMouseButton button, const WString& operation, MouseButtonCommand& mouseCommand, bool& matched)
 			{
 				auto prefix = MouseButtonPrefix(button) + operation + WString::Unmanaged(L":");
 				if (!StartsWith(command, prefix)) return false;
@@ -65615,13 +65631,19 @@ RunIOCommandOnNativeWindow
 				{
 					MouseButtonCommand mouseCommand;
 					bool matched = false;
-					if (TryParseMouseButtonCommand(command, MouseButton::Left, operation, mouseCommand, matched)) return mouseCommand;
+					if (TryParseMouseButtonCommand(command, NativeMouseButton::Left, operation, mouseCommand, matched)) return mouseCommand;
 					if (matched) return SyntaxErrorCommand{};
 
-					if (TryParseMouseButtonCommand(command, MouseButton::Middle, operation, mouseCommand, matched)) return mouseCommand;
+					if (TryParseMouseButtonCommand(command, NativeMouseButton::Middle, operation, mouseCommand, matched)) return mouseCommand;
 					if (matched) return SyntaxErrorCommand{};
 
-					if (TryParseMouseButtonCommand(command, MouseButton::Right, operation, mouseCommand, matched)) return mouseCommand;
+					if (TryParseMouseButtonCommand(command, NativeMouseButton::Right, operation, mouseCommand, matched)) return mouseCommand;
+					if (matched) return SyntaxErrorCommand{};
+
+					if (TryParseMouseButtonCommand(command, NativeMouseButton::Mouse4, operation, mouseCommand, matched)) return mouseCommand;
+					if (matched) return SyntaxErrorCommand{};
+
+					if (TryParseMouseButtonCommand(command, NativeMouseButton::Mouse5, operation, mouseCommand, matched)) return mouseCommand;
 					if (matched) return SyntaxErrorCommand{};
 				}
 

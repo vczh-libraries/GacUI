@@ -2979,7 +2979,7 @@ namespace gaclib_controls
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiKeyEventArgs*) : (::system::Void)
                 {
-                    if (((((!arguments.ctrl) and (!arguments.shift)) and (!arguments.alt)) and (arguments.code == VKEY::KEY_RETURN)))
+                    if ((((((!arguments.ctrl) and (!arguments.shift)) and (!arguments.alt)) and (!arguments.osSuper)) and (arguments.code == VKEY::KEY_RETURN)))
                     {
                         if (ViewModel.TryConfirm((cast (::presentation::controls::GuiWindow*) self.RelatedControlHost), self.Selection))
                         {
@@ -3091,7 +3091,7 @@ namespace gaclib_controls
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiKeyEventArgs*) : (::system::Void)
                 {
-                    if (((((!arguments.ctrl) and (!arguments.shift)) and (!arguments.alt)) and (arguments.code == VKEY::KEY_RETURN)))
+                    if ((((((!arguments.ctrl) and (!arguments.shift)) and (!arguments.alt)) and (!arguments.osSuper)) and (arguments.code == VKEY::KEY_RETURN)))
                     {
                         if (ViewModel.TryConfirm((cast (::presentation::controls::GuiWindow*) self.RelatedControlHost), self.Selection))
                         {
@@ -5919,12 +5919,12 @@ namespace gaclib_controls
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiMouseEventArgs*) : (::system::Void)
                 {
-                    if (ViewModel.SelectColor(self))
+                    if (((arguments.button == NativeMouseButton::Left) and ViewModel.SelectColor(self)))
                     {
                         (colorBackground.Color = ViewModel.Color);
                     }
                 };
-                attach(colorBounds.leftButtonUp, <event-handler>);
+                attach(colorBounds.mouseUp, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)

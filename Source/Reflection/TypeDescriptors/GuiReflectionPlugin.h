@@ -54,6 +54,7 @@ Type List (Basic)
 			F(presentation::INativeImage::FormatType)\
 			F(presentation::INativeCursor)\
 			F(presentation::INativeCursor::SystemCursorType)\
+			F(presentation::NativeMouseButton)\
 			F(presentation::BoolOption)\
 			F(presentation::NativeWindowFrameConfig)\
 			F(presentation::INativeWindow)\

@@ -132,15 +132,9 @@ namespace vl::presentation::remote_renderer
 
 	protected:
 
-		void									LeftButtonDown(const NativeWindowMouseInfo& info) override;
-		void									LeftButtonUp(const NativeWindowMouseInfo& info) override;
-		void									LeftButtonDoubleClick(const NativeWindowMouseInfo& info) override;
-		void									RightButtonDown(const NativeWindowMouseInfo& info) override;
-		void									RightButtonUp(const NativeWindowMouseInfo& info) override;
-		void									RightButtonDoubleClick(const NativeWindowMouseInfo& info) override;
-		void									MiddleButtonDown(const NativeWindowMouseInfo& info) override;
-		void									MiddleButtonUp(const NativeWindowMouseInfo& info) override;
-		void									MiddleButtonDoubleClick(const NativeWindowMouseInfo& info) override;
+		void									MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info) override;
+		void									MouseUp(NativeMouseButton button, const NativeWindowMouseInfo& info) override;
+		void									MouseDoubleClick(NativeMouseButton button, const NativeWindowMouseInfo& info) override;
 		void									HorizontalWheel(const NativeWindowMouseInfo& info) override;
 		void									VerticalWheel(const NativeWindowMouseInfo& info) override;
 		void									MouseMoving(const NativeWindowMouseInfo& info) override;

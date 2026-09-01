@@ -279,11 +279,12 @@ WindowsForm
 				NativeWindowMouseInfo ConvertMouse(WPARAM wParam, LPARAM lParam, bool wheelMessage, bool nonClient)
 				{
 					NativeWindowMouseInfo info;
+					info.osSuper = IsOSSuperPressed();
 
 					info.nonClient = false;
 					if (nonClient)
 					{
-						switch (wParam)
+						switch (LOWORD(wParam))
 						{
 						case HTMINBUTTON:
 						case HTMAXBUTTON:
@@ -343,6 +344,16 @@ WindowsForm
 					return info;
 				}
 
+				bool IsOSSuperPressed()
+				{
+					return WinIsKeyPressing(VKEY::KEY_LWIN) || WinIsKeyPressing(VKEY::KEY_RWIN);
+				}
+
+				NativeMouseButton GetXButton(WPARAM wParam)
+				{
+					return GET_XBUTTON_WPARAM(wParam) == XBUTTON1 ? NativeMouseButton::Mouse4 : NativeMouseButton::Mouse5;
+				}
+
 				NativeWindowKeyInfo ConvertKey(WPARAM wParam, LPARAM lParam)
 				{
 					NativeWindowKeyInfo info;
@@ -350,6 +361,7 @@ WindowsForm
 					info.ctrl=WinIsKeyPressing(VKEY::KEY_CONTROL);
 					info.shift=WinIsKeyPressing(VKEY::KEY_SHIFT);
 					info.alt=WinIsKeyPressing(VKEY::KEY_MENU);
+					info.osSuper=IsOSSuperPressed();
 					info.capslock=WinIsKeyToggled(VKEY::KEY_CAPITAL);
 					info.autoRepeatKeyDown = (((vuint32_t)lParam) >> 30) % 2 == 1;
 					return info;
@@ -362,6 +374,7 @@ WindowsForm
 					info.ctrl=WinIsKeyPressing(VKEY::KEY_CONTROL);
 					info.shift=WinIsKeyPressing(VKEY::KEY_SHIFT);
 					info.alt=WinIsKeyPressing(VKEY::KEY_MENU);
+					info.osSuper=IsOSSuperPressed();
 					info.capslock=WinIsKeyToggled(VKEY::KEY_CAPITAL);
 					return info;
 				}
@@ -437,9 +450,11 @@ WindowsForm
 						case WM_LBUTTONDOWN:
 						case WM_MBUTTONDOWN:
 						case WM_RBUTTONDOWN:
+						case WM_XBUTTONDOWN:
 						case WM_NCLBUTTONDOWN:
 						case WM_NCMBUTTONDOWN:
 						case WM_NCRBUTTONDOWN:
+						case WM_NCXBUTTONDOWN:
 							activatedWindow = this;
 							closePopups = true;
 							break;
@@ -621,7 +636,7 @@ WindowsForm
 							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
-								listeners[i]->LeftButtonDown(info);
+								listeners[i]->MouseDown(NativeMouseButton::Left, info);
 							}
 						}
 						break;
@@ -634,7 +649,7 @@ WindowsForm
 							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
-								listeners[i]->LeftButtonUp(info);
+								listeners[i]->MouseUp(NativeMouseButton::Left, info);
 							}
 						}
 						break;
@@ -647,7 +662,8 @@ WindowsForm
 							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
-								listeners[i]->LeftButtonDoubleClick(info);
+								listeners[i]->MouseDown(NativeMouseButton::Left, info);
+								listeners[i]->MouseDoubleClick(NativeMouseButton::Left, info);
 							}
 						}
 						break;
@@ -660,7 +676,7 @@ WindowsForm
 							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
-								listeners[i]->RightButtonDown(info);
+								listeners[i]->MouseDown(NativeMouseButton::Right, info);
 							}
 						}
 						break;
@@ -673,7 +689,7 @@ WindowsForm
 							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
-								listeners[i]->RightButtonUp(info);
+								listeners[i]->MouseUp(NativeMouseButton::Right, info);
 							}
 						}
 						break;
@@ -686,7 +702,8 @@ WindowsForm
 							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
-								listeners[i]->RightButtonDoubleClick(info);
+								listeners[i]->MouseDown(NativeMouseButton::Right, info);
+								listeners[i]->MouseDoubleClick(NativeMouseButton::Right, info);
 							}
 						}
 						break;
@@ -699,7 +716,7 @@ WindowsForm
 							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
-								listeners[i]->MiddleButtonDown(info);
+								listeners[i]->MouseDown(NativeMouseButton::Middle, info);
 							}
 						}
 						break;
@@ -712,7 +729,7 @@ WindowsForm
 							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
-								listeners[i]->MiddleButtonUp(info);
+								listeners[i]->MouseUp(NativeMouseButton::Middle, info);
 							}
 						}
 						break;
@@ -725,10 +742,54 @@ WindowsForm
 							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
-								listeners[i]->MiddleButtonDoubleClick(info);
+								listeners[i]->MouseDown(NativeMouseButton::Middle, info);
+								listeners[i]->MouseDoubleClick(NativeMouseButton::Middle, info);
 							}
 						}
 						break;
+					case WM_NCXBUTTONDOWN:
+						if (!customFrameMode) break;
+						nonClient = true;
+					case WM_XBUTTONDOWN:
+						{
+							auto button = GetXButton(wParam);
+							NativeWindowMouseInfo info = ConvertMouse(nonClient ? (WPARAM)LOWORD(wParam) : GET_KEYSTATE_WPARAM(wParam), lParam, false, nonClient);
+							for (vint i = 0; i < listeners.Count(); i++)
+							{
+								listeners[i]->MouseDown(button, info);
+							}
+							result = TRUE;
+							return true;
+						}
+					case WM_NCXBUTTONUP:
+						if (!customFrameMode) break;
+						nonClient = true;
+					case WM_XBUTTONUP:
+						{
+							auto button = GetXButton(wParam);
+							NativeWindowMouseInfo info = ConvertMouse(nonClient ? (WPARAM)LOWORD(wParam) : GET_KEYSTATE_WPARAM(wParam), lParam, false, nonClient);
+							for (vint i = 0; i < listeners.Count(); i++)
+							{
+								listeners[i]->MouseUp(button, info);
+							}
+							result = TRUE;
+							return true;
+						}
+					case WM_NCXBUTTONDBLCLK:
+						if (!customFrameMode) break;
+						nonClient = true;
+					case WM_XBUTTONDBLCLK:
+						{
+							auto button = GetXButton(wParam);
+							NativeWindowMouseInfo info = ConvertMouse(nonClient ? (WPARAM)LOWORD(wParam) : GET_KEYSTATE_WPARAM(wParam), lParam, false, nonClient);
+							for (vint i = 0; i < listeners.Count(); i++)
+							{
+								listeners[i]->MouseDown(button, info);
+								listeners[i]->MouseDoubleClick(button, info);
+							}
+							result = TRUE;
+							return true;
+						}
 					case WM_NCMOUSEMOVE:
 						if (!customFrameMode) break;
 						nonClient = true;
@@ -824,7 +885,7 @@ WindowsForm
 						{
 							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
 							info.autoRepeatKeyDown = false;
-							if (supressingAlt && !info.ctrl && !info.shift && info.code == VKEY::KEY_MENU)
+							if (supressingAlt && !info.ctrl && !info.shift && !info.osSuper && info.code == VKEY::KEY_MENU)
 							{
 								supressingAlt = false;
 								break;
@@ -838,7 +899,7 @@ WindowsForm
 					case WM_SYSKEYDOWN:
 						{
 							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
-							if (supressingAlt && !info.ctrl && !info.shift && info.code == VKEY::KEY_MENU)
+							if (supressingAlt && !info.ctrl && !info.shift && !info.osSuper && info.code == VKEY::KEY_MENU)
 							{
 								break;
 							}
@@ -14099,12 +14160,13 @@ WindowsInputService
 				return index == -1 ? VKEY::KEY_UNKNOWN : keys.Values()[index];
 			}
 
-			vint WindowsInputService::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)
+			vint WindowsInputService::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)
 			{
 				UINT modifier = 0;
 				if (ctrl) modifier |= MOD_CONTROL;
 				if (shift) modifier |= MOD_SHIFT;
 				if (alt) modifier |= MOD_ALT;
+				if (osSuper) modifier |= MOD_WIN;
 
 				vint id = ++usedHotKeys;
 				BOOL result = RegisterHotKey(ownerHandle, (int)id, modifier, (UINT)key);
@@ -14120,6 +14182,7 @@ WindowsInputService
 		}
 	}
 }
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\WINDOWS\SERVICESIMPL\WINDOWSRESOURCESERVICE.CPP
@@ -14278,9 +14341,15 @@ WindowsResourceService
 				EnumFontFamilies(refHdc, NULL, proc, (LPARAM)&fonts);
 				ReleaseDC(NULL, refHdc);
 			}
+
+			WString WindowsResourceService::GetOSSuperKeyName()
+			{
+				return WString::Unmanaged(L"Win");
+			}
 		}
 	}
 }
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\WINDOWS\SERVICESIMPL\WINDOWSSCREENSERVICE.CPP

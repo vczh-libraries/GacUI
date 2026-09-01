@@ -27,12 +27,24 @@ namespace rptest
 	class ClickMeTab : public ::vl::presentation::controls::GuiTabPage, public ::rptest::ClickMeTabConstructor, public ::vl::reflection::Description<ClickMeTab>
 	{
 		friend class ::rptest::ClickMeTabConstructor;
+		friend class ::vl_workflow_global::__vwsnc1_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc2_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc3_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf10_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf1_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf2_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf3_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf4_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf5_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf6_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf7_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf8_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf9_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ClickMeTab>;
 #endif
 	public:
+		::vl::WString MouseButtonName(::vl::presentation::NativeMouseButton button);
 		ClickMeTab();
 		~ClickMeTab();
 	};

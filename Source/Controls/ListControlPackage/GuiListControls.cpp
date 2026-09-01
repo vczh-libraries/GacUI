@@ -347,13 +347,6 @@ GuiListControl
 				}
 			}
 
-#define ATTACH_ITEM_MOUSE_EVENT(EVENTNAME, ITEMEVENTNAME)\
-					{\
-						helper->EVENTNAME##Handler = style->GetEventReceiver()->EVENTNAME.AttachFunction(\
-							[this, style](GuiGraphicsComposition* sender, GuiMouseEventArgs& args){ OnItemMouseEvent(ITEMEVENTNAME, style, sender, args); }\
-							);\
-					}\
-
 #define ATTACH_ITEM_NOTIFY_EVENT(EVENTNAME, ITEMEVENTNAME)\
 					{\
 						helper->EVENTNAME##Handler = style->GetEventReceiver()->EVENTNAME.AttachFunction(\
@@ -369,22 +362,46 @@ GuiListControl
 					auto helper=Ptr(new VisibleStyleHelper);
 					visibleStyles.Add(style, helper);
 
-					ATTACH_ITEM_MOUSE_EVENT(leftButtonDown, ItemLeftButtonDown);
-					ATTACH_ITEM_MOUSE_EVENT(leftButtonUp, ItemLeftButtonUp);
-					ATTACH_ITEM_MOUSE_EVENT(leftButtonDoubleClick, ItemLeftButtonDoubleClick);
-					ATTACH_ITEM_MOUSE_EVENT(middleButtonDown, ItemMiddleButtonDown);
-					ATTACH_ITEM_MOUSE_EVENT(middleButtonUp, ItemMiddleButtonUp);
-					ATTACH_ITEM_MOUSE_EVENT(middleButtonDoubleClick, ItemMiddleButtonDoubleClick);
-					ATTACH_ITEM_MOUSE_EVENT(rightButtonDown, ItemRightButtonDown);
-					ATTACH_ITEM_MOUSE_EVENT(rightButtonUp, ItemRightButtonUp);
-					ATTACH_ITEM_MOUSE_EVENT(rightButtonDoubleClick, ItemRightButtonDoubleClick);
-					ATTACH_ITEM_MOUSE_EVENT(mouseMove, ItemMouseMove);
+					helper->mouseDownHandler = style->GetEventReceiver()->mouseDown.AttachFunction(
+						[this, style](GuiGraphicsComposition* sender, GuiMouseEventArgs& args)
+						{
+							switch (args.button)
+							{
+							case NativeMouseButton::Left: OnItemMouseEvent(ItemLeftButtonDown, style, sender, args); break;
+							case NativeMouseButton::Middle: OnItemMouseEvent(ItemMiddleButtonDown, style, sender, args); break;
+							case NativeMouseButton::Right: OnItemMouseEvent(ItemRightButtonDown, style, sender, args); break;
+							default:;
+							}
+						});
+					helper->mouseUpHandler = style->GetEventReceiver()->mouseUp.AttachFunction(
+						[this, style](GuiGraphicsComposition* sender, GuiMouseEventArgs& args)
+						{
+							switch (args.button)
+							{
+							case NativeMouseButton::Left: OnItemMouseEvent(ItemLeftButtonUp, style, sender, args); break;
+							case NativeMouseButton::Middle: OnItemMouseEvent(ItemMiddleButtonUp, style, sender, args); break;
+							case NativeMouseButton::Right: OnItemMouseEvent(ItemRightButtonUp, style, sender, args); break;
+							default:;
+							}
+						});
+					helper->mouseDoubleClickHandler = style->GetEventReceiver()->mouseDoubleClick.AttachFunction(
+						[this, style](GuiGraphicsComposition* sender, GuiMouseEventArgs& args)
+						{
+							switch (args.button)
+							{
+							case NativeMouseButton::Left: OnItemMouseEvent(ItemLeftButtonDoubleClick, style, sender, args); break;
+							case NativeMouseButton::Middle: OnItemMouseEvent(ItemMiddleButtonDoubleClick, style, sender, args); break;
+							case NativeMouseButton::Right: OnItemMouseEvent(ItemRightButtonDoubleClick, style, sender, args); break;
+							default:;
+							}
+						});
+					helper->mouseMoveHandler = style->GetEventReceiver()->mouseMove.AttachFunction(
+						[this, style](GuiGraphicsComposition* sender, GuiMouseEventArgs& args) { OnItemMouseEvent(ItemMouseMove, style, sender, args); });
 					ATTACH_ITEM_NOTIFY_EVENT(mouseEnter, ItemMouseEnter);
 					ATTACH_ITEM_NOTIFY_EVENT(mouseLeave, ItemMouseLeave);
 				}
 			}
 
-#undef ATTACH_ITEM_MOUSE_EVENT
 #undef ATTACH_ITEM_NOTIFY_EVENT
 
 #define DETACH_ITEM_EVENT(EVENTNAME) style->GetEventReceiver()->EVENTNAME.Detach(helper->EVENTNAME##Handler)
@@ -397,15 +414,9 @@ GuiListControl
 					Ptr<VisibleStyleHelper> helper=visibleStyles.Values().Get(index);
 					visibleStyles.Remove(style);
 					
-					DETACH_ITEM_EVENT(leftButtonDown);
-					DETACH_ITEM_EVENT(leftButtonUp);
-					DETACH_ITEM_EVENT(leftButtonDoubleClick);
-					DETACH_ITEM_EVENT(middleButtonDown);
-					DETACH_ITEM_EVENT(middleButtonUp);
-					DETACH_ITEM_EVENT(middleButtonDoubleClick);
-					DETACH_ITEM_EVENT(rightButtonDown);
-					DETACH_ITEM_EVENT(rightButtonUp);
-					DETACH_ITEM_EVENT(rightButtonDoubleClick);
+					DETACH_ITEM_EVENT(mouseDown);
+					DETACH_ITEM_EVENT(mouseUp);
+					DETACH_ITEM_EVENT(mouseDoubleClick);
 					DETACH_ITEM_EVENT(mouseMove);
 					DETACH_ITEM_EVENT(mouseEnter);
 					DETACH_ITEM_EVENT(mouseLeave);
@@ -445,9 +456,7 @@ GuiListControl
 
 				if (acceptFocus)
 				{
-					boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiListControl::OnBoundsMouseButtonDown);
-					boundsComposition->GetEventReceiver()->middleButtonDown.AttachMethod(this, &GuiListControl::OnBoundsMouseButtonDown);
-					boundsComposition->GetEventReceiver()->rightButtonDown.AttachMethod(this, &GuiListControl::OnBoundsMouseButtonDown);
+					boundsComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiListControl::OnBoundsMouseButtonDown);
 					SetFocusableComposition(boundsComposition);
 				}
 			}
@@ -705,6 +714,7 @@ GuiSelectableListControl
 
 			void GuiSelectableListControl::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
+				if (arguments.osSuper) return;
 				if(GetVisuallyEnabled())
 				{
 					if(SelectItemsByKey(arguments.code, arguments.ctrl, arguments.shift))

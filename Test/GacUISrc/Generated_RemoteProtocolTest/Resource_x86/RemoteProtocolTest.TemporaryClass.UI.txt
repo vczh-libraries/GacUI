@@ -24,6 +24,11 @@ namespace rptest
     @cpp:File("ClickMeTab")
     class ClickMeTab : ::presentation::controls::GuiTabPage
     {
+        func MouseButtonName(button : NativeMouseButton) : (string)
+        {
+            raise "Not Implemented";
+        }
+
         new* ()
             :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
         {

@@ -94,6 +94,7 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnCellButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
+					if (arguments.button != NativeMouseButton::Left && arguments.button != NativeMouseButton::Right) return;
 					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
 					{
 						if (IsInEditor(dataGrid, arguments))
@@ -105,6 +106,7 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnCellLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
+					if (arguments.button != NativeMouseButton::Left) return;
 					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
 					{
 						if (IsInEditor(dataGrid, arguments))
@@ -125,6 +127,7 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnCellRightButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
+					if (arguments.button != NativeMouseButton::Right) return;
 					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
 					{
 						if (IsInEditor(dataGrid, arguments))
@@ -203,10 +206,9 @@ DefaultDataGridItemTemplate
 							auto cell = new GuiCellComposition;
 							textTable->AddChild(cell);
 							cell->SetSite(0, i, 1, 1);
-							cell->GetEventReceiver()->leftButtonDown.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellButtonDown);
-							cell->GetEventReceiver()->rightButtonDown.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellButtonDown);
-							cell->GetEventReceiver()->leftButtonUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellLeftButtonUp);
-							cell->GetEventReceiver()->rightButtonUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellRightButtonUp);
+							cell->GetEventReceiver()->mouseDown.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellButtonDown);
+							cell->GetEventReceiver()->mouseUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellLeftButtonUp);
+							cell->GetEventReceiver()->mouseUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellRightButtonUp);
 							dataCells[i] = cell;
 						}
 					}
@@ -647,6 +649,7 @@ GuiVirtualDataGrid
 
 			void GuiVirtualDataGrid::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
+				if (arguments.osSuper) return;
 				if (selectedCell.row != -1)
 				{
 					if (arguments.code == VKEY::KEY_RETURN)

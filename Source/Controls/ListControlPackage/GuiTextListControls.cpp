@@ -102,7 +102,7 @@ GuiVirtualTextList
 			void GuiVirtualTextList::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiVirtualTextList::OnKeyDown(GuiGraphicsComposition*, GuiKeyEventArgs&)#"
-				if (arguments.code == VKEY::KEY_SPACE && !arguments.ctrl && !arguments.shift && !arguments.alt)
+				if (arguments.code == VKEY::KEY_SPACE && !arguments.ctrl && !arguments.shift && !arguments.alt && !arguments.osSuper)
 				{
 					const auto& selectedItems = GetSelectedItems();
 					if (selectedItems.Count() > 0)

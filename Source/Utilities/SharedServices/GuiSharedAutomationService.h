@@ -49,6 +49,8 @@ namespace vl
 			bool								leftPressing = false;
 			bool								middlePressing = false;
 			bool								rightPressing = false;
+			bool								mouse4Pressing = false;
+			bool								mouse5Pressing = false;
 			bool								capslockToggled = false;
 		};
 
@@ -65,11 +67,11 @@ namespace vl
 		*   KeyN up, ..., Key2 up, Key1 up
 		* !KeyPress:Key1+Key2+...+KeyN
 		*   Key1 down, Key2 down, ..., KeyN down, KeyN up, ..., Key2 up, Key1 up
-		* !MouseMove:X,Y(,ctrl)?(,shift)?(,alt)?
-		* !(Left|Middle|Right)(Down|Up|Click|DbClick):X,Y(,ctrl)?(,shift)?(,alt)?
+		* !MouseMove:X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?
+		* !(Left|Middle|Right|Mouse4|Mouse5)(Down|Up|Click|DbClick):X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?
 		*   Click means Down/Up
 		*   DbClick means Down/Up/Down/DbClick/Up
-		* !MouseWheel(Up|Down|Left|Right):ticks(,ctrl)?(,shift)?(,alt)?
+		* !MouseWheel(Up|Down|Left|Right):ticks(,ctrl)?(,shift)?(,alt)?(,win|command|super)?
 		*   WindowMouseInfo_::wheel = ticks * 120 * direction (1 or -1)
 		* 
 		* --------------------------------------------------------------------------------
@@ -84,7 +86,7 @@ namespace vl
 		*   INativeWindow::Convert should be used to convert them to NativeCoordinate before calling the event handlers
 		* 
 		* During calling the event handlers
-		*   ctrl/shift/alt should be set accordingly
+		*   ctrl/shift/alt/osSuper should be set accordingly
 		*   the state argument is for remembering whatever is needed
 		*   RunIOCommandOnNativeWindow assume it is the only source of IO interactions
 		*/

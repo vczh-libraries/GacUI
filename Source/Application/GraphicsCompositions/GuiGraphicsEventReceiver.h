@@ -298,6 +298,8 @@ Predefined Events
 			/// <summary>Mouse event arguments.</summary>
 			struct GuiMouseEventArgs : public GuiEventArgs, public WindowMouseInfo, public Description<GuiMouseEventArgs>
 			{
+				NativeMouseButton		button = NativeMouseButton::Left;
+
 				/// <summary>Create an event arguments with <see cref="compositionSource"/> and <see cref="eventSource"/> set to null.</summary>
 				GuiMouseEventArgs()
 				{
@@ -463,24 +465,12 @@ Event Receiver
 
 				GuiGraphicsComposition*			GetAssociatedComposition();
 
-				/// <summary>Left mouse button down event.</summary>
-				GuiMouseEvent					leftButtonDown;
-				/// <summary>Left mouse button up event.</summary>
-				GuiMouseEvent					leftButtonUp;
-				/// <summary>Left mouse button double click event.</summary>
-				GuiMouseEvent					leftButtonDoubleClick;
-				/// <summary>Middle mouse button down event.</summary>
-				GuiMouseEvent					middleButtonDown;
-				/// <summary>Middle mouse button up event.</summary>
-				GuiMouseEvent					middleButtonUp;
-				/// <summary>Middle mouse button double click event.</summary>
-				GuiMouseEvent					middleButtonDoubleClick;
-				/// <summary>Right mouse button down event.</summary>
-				GuiMouseEvent					rightButtonDown;
-				/// <summary>Right mouse button up event.</summary>
-				GuiMouseEvent					rightButtonUp;
-				/// <summary>Right mouse button double click event.</summary>
-				GuiMouseEvent					rightButtonDoubleClick;
+				/// <summary>Mouse button down event.</summary>
+				GuiMouseEvent					mouseDown;
+				/// <summary>Mouse button up event.</summary>
+				GuiMouseEvent					mouseUp;
+				/// <summary>Mouse button double click event.</summary>
+				GuiMouseEvent					mouseDoubleClick;
 				/// <summary>Horizontal wheel scrolling event.</summary>
 				GuiMouseEvent					horizontalWheel;
 				/// <summary>Vertical wheel scrolling event.</summary>

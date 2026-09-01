@@ -485,6 +485,15 @@ INativeWindow
 		/// <summary>
 		/// Mouse message information.
 		/// </summary>
+		enum class NativeMouseButton
+		{
+			Left,
+			Middle,
+			Right,
+			Mouse4,
+			Mouse5,
+		};
+
 		/// <typeparam name="T">Type of the coordinate.</typeparam>
 		template<typename T>
 		struct WindowMouseInfo_
@@ -493,6 +502,8 @@ INativeWindow
 			bool						ctrl;
 			/// <summary>True if the shift button is pressed.</summary>
 			bool						shift;
+			/// <summary>True if the operating system Super button is pressed.</summary>
+			bool						osSuper = false;
 			/// <summary>True if the left mouse button is pressed.</summary>
 			bool						left;
 			/// <summary>True if the middle mouse button is pressed.</summary>
@@ -525,6 +536,8 @@ INativeWindow
 			bool						shift;
 			/// <summary>True if the alt button is pressed.</summary>
 			bool						alt;
+			/// <summary>True if the operating system Super button is pressed.</summary>
+			bool						osSuper = false;
 			/// <summary>True if the capslock button is pressed.</summary>
 			bool						capslock;
 			/// <summary>True if this repeated event is generated because a key is holding down.</summary>
@@ -546,6 +559,8 @@ INativeWindow
 			bool						shift;
 			/// <summary>True if the alt button is pressed.</summary>
 			bool						alt;
+			/// <summary>True if the operating system Super button is pressed.</summary>
+			bool						osSuper = false;
 			/// <summary>True if the capslock button is pressed.</summary>
 			bool						capslock;
 		};
@@ -673,50 +688,23 @@ INativeWindow
 			virtual void				Destroyed();
 			
 			/// <summary>
-			/// Called when the left mouse button is pressed.
+			/// Called when a mouse button is pressed.
 			/// </summary>
+			/// <param name="button">The mouse button.</param>
 			/// <param name="info">Detailed information to this message.</param>
-			virtual void				LeftButtonDown(const NativeWindowMouseInfo& info);
+			virtual void				MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info);
 			/// <summary>
-			/// Called when the left mouse button is released.
+			/// Called when a mouse button is released.
 			/// </summary>
+			/// <param name="button">The mouse button.</param>
 			/// <param name="info">Detailed information to this message.</param>
-			virtual void				LeftButtonUp(const NativeWindowMouseInfo& info);
+			virtual void				MouseUp(NativeMouseButton button, const NativeWindowMouseInfo& info);
 			/// <summary>
-			/// Called when the left mouse button performed a double click.
+			/// Called when a mouse button performed a double click.
 			/// </summary>
+			/// <param name="button">The mouse button.</param>
 			/// <param name="info">Detailed information to this message.</param>
-			virtual void				LeftButtonDoubleClick(const NativeWindowMouseInfo& info);
-			/// <summary>
-			/// Called when the right mouse button is pressed.
-			/// </summary>
-			/// <param name="info">Detailed information to this message.</param>
-			virtual void				RightButtonDown(const NativeWindowMouseInfo& info);
-			/// <summary>
-			/// Called when the right mouse button is released.
-			/// </summary>
-			/// <param name="info">Detailed information to this message.</param>
-			virtual void				RightButtonUp(const NativeWindowMouseInfo& info);
-			/// <summary>
-			/// Called when the right mouse button performed a double click.
-			/// </summary>
-			/// <param name="info">Detailed information to this message.</param>
-			virtual void				RightButtonDoubleClick(const NativeWindowMouseInfo& info);
-			/// <summary>
-			/// Called when the middle mouse button is pressed.
-			/// </summary>
-			/// <param name="info">Detailed information to this message.</param>
-			virtual void				MiddleButtonDown(const NativeWindowMouseInfo& info);
-			/// <summary>
-			/// Called when the middle mouse button is released.
-			/// </summary>
-			/// <param name="info">Detailed information to this message.</param>
-			virtual void				MiddleButtonUp(const NativeWindowMouseInfo& info);
-			/// <summary>
-			/// Called when the middle mouse button performed a double click.
-			/// </summary>
-			/// <param name="info">Detailed information to this message.</param>
-			virtual void				MiddleButtonDoubleClick(const NativeWindowMouseInfo& info);
+			virtual void				MouseDoubleClick(NativeMouseButton button, const NativeWindowMouseInfo& info);
 			/// <summary>
 			/// Called when the horizontal mouse wheel scrolls.
 			/// </summary>
@@ -1059,6 +1047,8 @@ INativeResourceService
 			/// </summary>
 			/// <param name="fonts">The collection to receive all fonts.</param>
 			virtual void					EnumerateFonts(collections::List<WString>& fonts)=0;
+			/// <summary>Get the platform canonical name of the operating system Super key.</summary>
+			virtual WString					GetOSSuperKeyName()=0;
 		};
 
 /***********************************************************************
@@ -1411,7 +1401,7 @@ INativeInputService
 			/// <param name="key">The non-control key.</param>
 			/// <param name="id"></param>
 			/// <returns>Returns the created id. If it fails, the id equals to one of an item in <see cref="NativeGlobalShortcutKeyResult"/> except "ValidIdBegins".</returns>
-			virtual vint							RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)=0;
+			virtual vint							RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)=0;
 
 			/// <summary>
 			/// Unregister a system-wide shortcut key.

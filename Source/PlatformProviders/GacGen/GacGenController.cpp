@@ -126,6 +126,11 @@ public:
 		CHECK_FAIL(L"Not implemented!");
 	}
 
+	WString GetOSSuperKeyName() override
+	{
+		return WString::Unmanaged(L"Super");
+	}
+
 	////////////////////////////////////////////////////////////////////
 	// INativeImageService
 	////////////////////////////////////////////////////////////////////
@@ -226,7 +231,7 @@ public:
 		CHECK_FAIL(L"Not implemented!");
 	}
 
-	vint RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key) override
+	vint RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key) override
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}

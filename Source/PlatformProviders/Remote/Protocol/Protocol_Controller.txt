@@ -109,6 +109,7 @@ enum CharacterEncoding
 struct ControllerGlobalConfig
 {
     var documentCaretFromEncoding : CharacterEncoding;
+    var osSuperKeyName : string;
 }
 
 event ControllerConnect         { request: ControllerGlobalConfig; }

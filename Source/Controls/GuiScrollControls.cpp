@@ -78,6 +78,7 @@ GuiScroll
 
 			void GuiScroll::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
+				if (arguments.osSuper) return;
 				if (arguments.eventSource == focusableComposition)
 				{
 					switch (arguments.code)
@@ -115,6 +116,7 @@ GuiScroll
 
 			void GuiScroll::OnMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
+				if (arguments.button != NativeMouseButton::Left && arguments.button != NativeMouseButton::Right) return;
 				if (autoFocus)
 				{
 					SetFocused();
@@ -158,8 +160,7 @@ GuiScroll
 
 				commandExecutor = Ptr(new CommandExecutor(this));
 				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiScroll::OnKeyDown);
-				boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiScroll::OnMouseDown);
-				boundsComposition->GetEventReceiver()->rightButtonDown.AttachMethod(this, &GuiScroll::OnMouseDown);
+				boundsComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiScroll::OnMouseDown);
 			}
 
 			GuiScroll::~GuiScroll()

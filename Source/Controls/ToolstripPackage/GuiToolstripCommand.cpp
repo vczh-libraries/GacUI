@@ -37,6 +37,11 @@ GuiToolstripCommand
 				DescriptionChanged.Execute(arguments);
 			}
 
+			void GuiToolstripCommand::EnvironmentChanged()
+			{
+				InvokeDescriptionChanged();
+			}
+
 			compositions::IGuiShortcutKeyManager* GuiToolstripCommand::GetShortcutManagerFromBuilder(Ptr<ShortcutBuilder> builder)
 			{
 				if (builder->global)
@@ -53,8 +58,15 @@ GuiToolstripCommand
 						}
 						return attachedControlHost->GetShortcutKeyManager();
 					}
+					else
+					{
+						if (!detachedShortcutKeyManager)
+						{
+							detachedShortcutKeyManager = Ptr(new GuiShortcutKeyManager);
+						}
+						return detachedShortcutKeyManager.Obj();
+					}
 				}
-				return nullptr;
 			}
 
 			void GuiToolstripCommand::RemoveShortcut()
@@ -92,7 +104,7 @@ GuiToolstripCommand
 						shortcutBuilder = builder;
 						if (auto shortcutKeyManager = GetShortcutManagerFromBuilder(builder))
 						{
-							if (auto item = shortcutKeyManager->CreateShortcutIfNotExist(builder->ctrl, builder->shift, builder->alt, builder->key))
+							if (auto item = shortcutKeyManager->CreateShortcutIfNotExist(builder->ctrl, builder->shift, builder->alt, builder->osSuper, builder->key))
 							{
 								ReplaceShortcut(item);
 							}
@@ -120,7 +132,7 @@ GuiToolstripCommand
 					{
 						if (shortcutKeyItem)
 						{
-							ReplaceShortcut(nullptr);
+							RemoveShortcut();
 						}
 						BuildShortcut(shortcutBuilder->text);
 					}
@@ -129,10 +141,12 @@ GuiToolstripCommand
 
 			GuiToolstripCommand::GuiToolstripCommand()
 			{
+				GetCurrentController()->CallbackService()->InstallListener(this);
 			}
 
 			GuiToolstripCommand::~GuiToolstripCommand()
 			{
+				GetCurrentController()->CallbackService()->UninstallListener(this);
 				RemoveShortcut();
 				shortcutBuilder = nullptr;
 			}
@@ -279,14 +293,16 @@ GuiToolstripCommand::ShortcutBuilder Parser
 				const vint					_ctrl;
 				const vint					_shift;
 				const vint					_alt;
+				const vint					_osSuper;
 				const vint					_key;
 
 				GuiToolstripCommandShortcutParser()
-					: regexShortcut(L"((<global>global:))?((<ctrl>Ctrl)/+|(<shift>Shift)/+|(<alt>Alt)/+)*(<key>/.+)")
+					: regexShortcut(L"((<global>global:))?((<ctrl>Ctrl)/+|(<shift>Shift)/+|(<alt>Alt)/+|(<osSuper>Win|Command|Super)/+)*(<key>/.+)")
 					, _global(regexShortcut.CaptureNames().IndexOf(L"global"))
 					, _ctrl(regexShortcut.CaptureNames().IndexOf(L"ctrl"))
 					, _shift(regexShortcut.CaptureNames().IndexOf(L"shift"))
 					, _alt(regexShortcut.CaptureNames().IndexOf(L"alt"))
+					, _osSuper(regexShortcut.CaptureNames().IndexOf(L"osSuper"))
 					, _key(regexShortcut.CaptureNames().IndexOf(L"key"))
 				{
 				}
@@ -308,6 +324,7 @@ GuiToolstripCommand::ShortcutBuilder Parser
 					builder->ctrl = match->Groups().Contains(_ctrl);
 					builder->shift = match->Groups().Contains(_shift);
 					builder->alt = match->Groups().Contains(_alt);
+					builder->osSuper = match->Groups().Contains(_osSuper);
 
 					WString name = match->Groups()[_key][0].Value();
 					builder->key = GetCurrentController()->InputService()->GetKey(name);

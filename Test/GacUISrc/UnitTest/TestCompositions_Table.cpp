@@ -694,10 +694,11 @@ TEST_FILE
 		prototype.y = 2;
 		prototype.wheel = 0;
 		prototype.nonClient = false;
+		prototype.button = NativeMouseButton::Left;
 
 		{
 			auto args = prototype;
-			splitter->GetEventReceiver()->leftButtonDown.Execute(args);
+			splitter->GetEventReceiver()->mouseDown.Execute(args);
 		}
 		{
 			auto args = prototype;
@@ -709,7 +710,7 @@ TEST_FILE
 			auto args = prototype;
 			args.x += offset.x;
 			args.y += offset.y;
-			splitter->GetEventReceiver()->leftButtonUp.Execute(args);
+			splitter->GetEventReceiver()->mouseUp.Execute(args);
 		}
 	};
 

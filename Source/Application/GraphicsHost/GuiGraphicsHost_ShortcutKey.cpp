@@ -11,12 +11,13 @@ namespace vl
 GuiShortcutKeyItem
 ***********************************************************************/
 
-			GuiShortcutKeyItem::GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _global, bool _ctrl, bool _shift, bool _alt, VKEY _key)
+			GuiShortcutKeyItem::GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _global, bool _ctrl, bool _shift, bool _alt, bool _osSuper, VKEY _key)
 				:shortcutKeyManager(_shortcutKeyManager)
 				,global(_global)
 				,ctrl(_ctrl)
 				,shift(_shift)
 				,alt(_alt)
+				,osSuper(_osSuper)
 				,key(_key)
 			{
 			}
@@ -37,16 +38,18 @@ GuiShortcutKeyItem
 				if (ctrl) name += L"Ctrl+";
 				if (shift) name += L"Shift+";
 				if (alt) name += L"Alt+";
+				if (osSuper) name += GetCurrentController()->ResourceService()->GetOSSuperKeyName() + L"+";
 				name += GetCurrentController()->InputService()->GetKeyName(key);
 				if (global) name += L"}";
 				return name;
 			}
 
-			void GuiShortcutKeyItem::ReadKeyConfig(bool& _ctrl, bool& _shift, bool& _alt, VKEY& _key)
+			void GuiShortcutKeyItem::ReadKeyConfig(bool& _ctrl, bool& _shift, bool& _alt, bool& _osSuper, VKEY& _key)
 			{
 				_ctrl = ctrl;
 				_shift = shift;
 				_alt = alt;
+				_osSuper = osSuper;
 				_key = key;
 			}
 
@@ -56,15 +59,17 @@ GuiShortcutKeyItem
 					info.ctrl==ctrl &&
 					info.shift==shift &&
 					info.alt==alt &&
+					info.osSuper==osSuper &&
 					info.code==key;
 			}
 
-			bool GuiShortcutKeyItem::CanActivate(bool _ctrl, bool _shift, bool _alt, VKEY _key)
+			bool GuiShortcutKeyItem::CanActivate(bool _ctrl, bool _shift, bool _alt, bool _osSuper, VKEY _key)
 			{
 				return
 					_ctrl==ctrl &&
 					_shift==shift &&
 					_alt==alt &&
+					_osSuper==osSuper &&
 					_key==key;
 			}
 
@@ -92,9 +97,9 @@ GuiShortcutKeyManager
 			{
 			}
 
-			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcutInternal(bool ctrl, bool shift, bool alt, VKEY key)
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcutInternal(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)
 			{
-				auto item = Ptr(new GuiShortcutKeyItem(this, IsGlobal(), ctrl, shift, alt, key));
+				auto item = Ptr(new GuiShortcutKeyItem(this, IsGlobal(), ctrl, shift, alt, osSuper, key));
 				if (!OnCreatingShortcut(item.Obj())) return nullptr;
 				shortcutKeyItems.Add(item);
 				return item.Obj();
@@ -136,11 +141,11 @@ GuiShortcutKeyManager
 				return executed;
 			}
 
-			IGuiShortcutKeyItem* GuiShortcutKeyManager::TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key)
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::TryGetShortcut(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)
 			{
 				for (auto item : shortcutKeyItems)
 				{
-					if (item->CanActivate(ctrl, shift, alt, key))
+					if (item->CanActivate(ctrl, shift, alt, osSuper, key))
 					{
 						return item.Obj();
 					}
@@ -148,22 +153,22 @@ GuiShortcutKeyManager
 				return nullptr;
 			}
 
-			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateNewShortcut(bool ctrl, bool shift, bool alt, VKEY key)
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateNewShortcut(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)
 			{
 				CHECK_ERROR(
-					TryGetShortcut(ctrl, shift, alt, key) == nullptr,
-					L"vl::presentation::compositions::GuiShortcutKeyManager::CreateNewShortcut(bool, bool, bool, VKEY)#The shortcut key exists."
+					TryGetShortcut(ctrl, shift, alt, osSuper, key) == nullptr,
+					L"vl::presentation::compositions::GuiShortcutKeyManager::CreateNewShortcut(bool, bool, bool, bool, VKEY)#The shortcut key exists."
 					);
-				return CreateShortcutInternal(ctrl, shift, alt, key);
+				return CreateShortcutInternal(ctrl, shift, alt, osSuper, key);
 			}
 
-			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcutIfNotExist(bool ctrl, bool shift, bool alt, VKEY key)
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcutIfNotExist(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)
 			{
-				if (TryGetShortcut(ctrl, shift, alt, key))
+				if (TryGetShortcut(ctrl, shift, alt, osSuper, key))
 				{
 					return nullptr;
 				}
-				return CreateShortcutInternal(ctrl, shift, alt, key);
+				return CreateShortcutInternal(ctrl, shift, alt, osSuper, key);
 			}
 
 			bool GuiShortcutKeyManager::DestroyShortcut(IGuiShortcutKeyItem* item)

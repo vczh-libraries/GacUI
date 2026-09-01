@@ -53,9 +53,9 @@ The same change applied to `FullControlTest` will be applied to the main tab.
 
 ### Event model and propagation
 
-- Keep `WindowMouseInfo_` binary- and source-compatible: do not add a button state or `osSuper` field to it.
+- Add `osSuper = false` to `WindowMouseInfo_` beside its existing modifier fields. Keeping the captured modifier state inside the mouse-info value makes the native listener signatures and remote protocol match the existing key/character event shape.
 - Add `NativeMouseButton` to the basic reflected type list and register all five enum values. Add `button = NativeMouseButton::Left` and `osSuper = false` to `GuiMouseEventArgs`; `GuiItemMouseEventArgs` and `GuiNodeMouseEventArgs` inherit both fields.
-- Replace the nine button-specific callbacks on `INativeWindowListener` with `MouseDown`, `MouseUp`, and `MouseDoubleClick`. The button is the first argument. Carry `osSuper` separately beside the frozen `NativeWindowMouseInfo` for these callbacks and for `MouseMoving`, `HorizontalWheel`, and `VerticalWheel` so every emitted `GuiMouseEventArgs` receives the modifier state captured with the native event.
+- Replace the nine button-specific callbacks on `INativeWindowListener` with `MouseDown`, `MouseUp`, and `MouseDoubleClick`. The button is the first argument and the callback takes only the `NativeWindowMouseInfo` value after it. `MouseMoving`, `HorizontalWheel`, and `VerticalWheel` also take only that value; every emitted `GuiMouseEventArgs` reads `osSuper` from it.
 - Do not query `INativeInputService` from `GuiGraphicsHost` for every mouse event. That would add a synchronous renderer round trip in remote mode and could observe a later key state. Capture and transport the state with the event instead.
 - Preserve the existing double-click sequence: the second press raises `mouseDown` immediately before `mouseDoubleClick`, followed later by `mouseUp`.
 - Update every listener implementation, adapter, test listener, and call site, including the default implementation, `GuiGraphicsHost`, `GuiHostedController`, the Windows provider, remote core and renderer, shared automation services, GacGen stubs, and unit-test protocol helpers.
@@ -80,7 +80,7 @@ The same change applied to `FullControlTest` will be applied to the main tab.
 
 ### Remote protocol, reflection, and generated artifacts
 
-- In `Protocol_IO.txt`, map `IOMouseButton` to `NativeMouseButton`, add `Mouse4` and `Mouse5`, add `osSuper` to `IOKeyInfo`, `IOCharInfo`, and `GlobalShortcutKey`, and carry mouse `osSuper` in non-native protocol wrappers for button, move, and wheel events.
+- In `Protocol_IO.txt`, map `IOMouseButton` to `NativeMouseButton`, add `Mouse4` and `Mouse5`, and add `osSuper` directly to the C++-mapped `IOMouseInfo`, `IOKeyInfo`, `IOCharInfo`, and `GlobalShortcutKey`. Keep `IOMouseInfoWithButton` only because it carries button identity; remove `IOMouseInfoWithModifier` and use `IOMouseInfo` directly for move and wheel events.
 - Forward the unified callbacks directly in `GuiRemoteRendererSingle` and `GuiRemoteEvents`; remove the Left/Middle/Right dispatch switches. Include `osSuper` in renderer-side global registration and in the core's hot-key storage/replay.
 - Update `Protocol_Controller.txt` for the canonical Super-key label. Treat all protocol changes as wire-breaking. Downstream native-renderer and GacJS ports scheduled in `ToDo/1.4.1.1.md` must update to the same schema later; compatibility with their old schema is not a completion requirement for this GacUI task.
 - Run `Metadata_UpdateProtocol` to regenerate `Source/PlatformProviders/Remote/Protocol/Generated/GuiRemoteProtocolSchema.h`, `.cpp`, and `Protocol/Metadata/Protocols.json`; never edit generated protocol files directly.
@@ -137,6 +137,23 @@ The same change applied to `FullControlTest` will be applied to the main tab.
 
 # UPDATES
 
+## UPDATE
+
+the work is overall good, but it looks like that, not putting the osSuper in `WindowMouseInfo_` cause INativeWindowListener and remote protocol to be a little bit ugly, please make a small refactor to do that, remove IOMouseInfoWithModifier because it is no longer need, and similar changes to other places where new types are created just because of this. Verification is the same, so you need to update GacJS. But Build.ps1 is not needed for Release just update code-packed files.
+
+## Final review and verification
+
+- Refactored the follow-up mouse contract so `WindowMouseInfo_` owns `osSuper`; native-listener, hosted, automation, graphics-host, and remote paths now pass one complete mouse-info value. Removed `IOMouseInfoWithModifier`, made move and wheel events use `IOMouseInfo` directly, and kept only the button wrapper needed to carry button identity.
+- Regenerated the remote schema and updated GacJS imports, generated bindings, browser modifier/button mapping, controller configuration, protocol documentation, and stale mapping comments. The GacJS build passed, and `yarn test` passed all ten packages plus 53/53 Windows protocol E2E cases covering HTTP, MiniHTTP, renderer replacement, and the view-model matrix.
+- The final Debug x64 solution build passed with zero warnings/errors, and the complete Debug x64 unit suite passed 89/89 files and 1718/1718 cases with no leak report. A focused native `/Pipe` run also accepted Super-tagged move/wheel and Mouse4/Mouse5 down/up payloads, displayed both exact button transitions, and remained connected without a fatal state.
+- Reran `Build.ps1 -Project GacUI` with `UseMultiToolTask=true`; Release Win32/x64 builds, metadata generation/tests, complete Release unit suites, GacGen, DarkSkin generation, and the final CodePack completed successfully. For this follow-up, did not run `Build.ps1 -Project Release`; copied only the regenerated `Gac*.h`/`Gac*.cpp` files, producing four intended Release-repository changes.
+- Reviewed the implemented mouse/Super-key change across native Windows input, hosted and remote forwarding, composition dispatch, shortcuts, reflection, generated resources, automation, documentation, and release artifacts. No unresolved review comments remain.
+- Kept toolstrip shortcuts valid while commands are detached, migrated them atomically to a control host's shortcut manager, and refreshed existing shortcut labels when the renderer's canonical Super-key name changes. The focused regression now compares manager ownership instead of a recyclable raw address and detaches temporary event handlers before their captured frame state expires.
+- Removed a duplicated `osSuper` guard in document character input. Audits found no obsolete button-specific native/composition event handlers in maintained source or downstream XML; the intentionally retained list-item and tree-node Left/Middle/Right events remain unchanged.
+- Generated and tested Debug metadata for Win32 and x64, regenerated protected XML/C++ outputs for both architectures, repeated metadata verification afterward, and completed the final Debug x64 build with zero warnings and errors. The full Debug x64 UnitTest run passed 89/89 files and 1718/1718 cases with no leak report.
+- Verified local Windows-host behavior and Pipe, HTTP, and MiniHTTP remoting: canonical shortcut labels, distinct local Super/non-Super shortcuts, five-button automation, native Left/Middle/Right/XBUTTON1/XBUTTON2 down/up routing, XBUTTON handled results, renderer replacement, and repeated input after replacement. Direct synthetic activation of the OS global-hotkey chord was unavailable under the input-injection policy; registration, `MOD_WIN` payloads, replay, display, and activation matching are covered by focused tests.
+- Ran `Build.ps1 -Project GacUI` with `UseMultiToolTask=true`; Release Win32/x64 builds, metadata generation/tests, complete Release unit tests, CodePack, GacGen, and DarkSkin generation passed. Ran `Build.ps1 -Project Release`, migrated its three remaining sample/tutorial XML handlers to unified mouse events with explicit Right-button filters, and reran the complete resource plus Debug/Release tutorial verification successfully.
+
 # TEST [CONFIRMED]
 
 The public reflection surface provides a buildable, runtime-observable reproduction before the new C++ symbols exist. Extend `TestReflectionTypeList.cpp` with a focused case that looks up types and members by string and requires:
@@ -154,13 +171,13 @@ The focused case built in Debug x64 with the full solution (`Build succeeded`, 0
 
 # PROPOSALS
 
-- No.1 Unify mouse-button dispatch and transport Super state end to end
+- No.1 Unify mouse-button dispatch and transport Super state end to end [CONFIRMED]
 
 ## No.1 Unify mouse-button dispatch and transport Super state end to end
 
 The missing behavior is not localized to one provider: button identity and Super state are lost because the native, composition, hosted, remote, shortcut, automation, reflection, and generated-resource contracts all stop at the old three-button/three-modifier model. The solution is one lockstep breaking change across these owning boundaries, preserving only the explicitly frozen and compatibility-scoped APIs.
 
-Keep `WindowMouseInfo_` unchanged. Introduce `NativeMouseButton`, replace native and composition button-specific callbacks/events with unified down/up/double-click callbacks carrying the button, and transport mouse `osSuper` separately with each native callback. Track all five held buttons in `GuiGraphicsHost` so capture is based on the actual event stream, including second-down double clicks and mixed ordinary/extended buttons. Migrate every composition subscriber to unified events with an explicit button filter, while retaining and reconstructing the existing list Item and tree Node Left/Middle/Right events.
+Add `osSuper` to `WindowMouseInfo_`. Introduce `NativeMouseButton`, replace native and composition button-specific callbacks/events with unified down/up/double-click callbacks carrying the button, and pass the complete mouse-info value through each native callback. Track all five held buttons in `GuiGraphicsHost` so capture is based on the actual event stream, including second-down double clicks and mixed ordinary/extended buttons. Migrate every composition subscriber to unified events with an explicit button filter, while retaining and reconstructing the existing list Item and tree Node Left/Middle/Right events.
 
 Add `osSuper` to key/char info and every shortcut identity/signature after `alt`. Add the resource-service canonical Super label and use it for shortcut rendering, including remote renderer configuration and environment-change invalidation. Accept Win/Command/Super as parser aliases, register `MOD_WIN` on Windows, and treat Super as a modifier in navigation/activation guards.
 
@@ -168,7 +185,14 @@ Update the Windows XBUTTON message mapping, hosted forwarding, GacGen/test servi
 
 ### CODE CHANGE
 
-- Change the native and composition input contracts, all implementations, and all filtered consumers as described above without changing `WindowMouseInfo_`.
+- Change the native and composition input contracts, all implementations, and all filtered consumers as described above, with `osSuper` owned by `WindowMouseInfo_` and no separate native-listener modifier parameter.
+- Simplify the remote schema so mouse move/wheel events use `IOMouseInfo` directly, remove `IOMouseInfoWithModifier`, regenerate the protocol, and update GacJS plus code-packed Release files without running the full Release build.
 - Change shortcut/resource APIs, parser/display behavior, modifier-sensitive guards, Windows global-hotkey registration, and remote reconnect/environment refresh.
 - Change protocol TXT sources, reflection registrations, automation and unit-test helpers, test applications/XML, documentation, SOP, and release notes; regenerate protected artifacts with `Metadata_UpdateProtocol`, `Metadata_Generate`, `GacUI_Compiler`, and the Tools release builds.
 - Add and update unit/protocol tests so the confirmed reflection reproduction and behavioral verification pass unchanged.
+
+### CONFIRMED
+
+The implemented follow-up establishes one owner for mouse modifier state: `WindowMouseInfo_` now contains `osSuper`, and every native-listener callback, hosted adapter, graphics-host conversion, automation helper, and remote endpoint transports that complete value. The protocol no longer needs `IOMouseInfoWithModifier`; move and wheel events use `IOMouseInfo` directly, while the button wrapper contains only the button and mouse info. Generated C++ protocol files, metadata, codepacks, and GacJS bindings all reflect the same shape.
+
+Verification passed across the affected boundaries: Debug x64 built with zero warnings/errors; the full Debug unit suite passed 89/89 files and 1718/1718 cases with no leak report; GacJS import, code generation, build, all ten package tests, and 53/53 Windows protocol E2E cases passed; and a native named-pipe session accepted Super-tagged mouse move/wheel and Mouse4/Mouse5 down/up input without disconnect or fatal state. The supported GacUI packaging pipeline also passed both Release architectures, metadata generation/tests, full Release unit suites, GacGen, skin generation, and CodePack. Per the follow-up instruction, the Release repository received only the four changed code-packed files and its full `Build.ps1 -Project Release` workflow was not rerun.

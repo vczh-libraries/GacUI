@@ -61,6 +61,11 @@ GuiRemoteController::INativeResourceService
 			CopyFrom(fonts, *remoteFontConfig.supportedFonts.Obj());
 		}
 	}
+
+	WString GuiRemoteController::GetOSSuperKeyName()
+	{
+		return remoteGlobalConfig.osSuperKeyName == L"" ? WString::Unmanaged(L"Super") : remoteGlobalConfig.osSuperKeyName;
+	}
 			
 /***********************************************************************
 GuiRemoteController::INativeInputService
@@ -138,15 +143,16 @@ GuiRemoteController::INativeInputService
 			key.ctrl = entry.get<0>();
 			key.shift = entry.get<1>();
 			key.alt = entry.get<2>();
-			key.code = entry.get<3>();
+			key.osSuper = entry.get<3>();
+			key.code = entry.get<4>();
 			hotKeys->Add(key);
 		}
 		remoteMessages.RequestIOUpdateGlobalShortcutKey(hotKeys);
 	}
 
-	vint GuiRemoteController::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)
+	vint GuiRemoteController::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)
 	{
-		HotKeyEntry entry = { ctrl,shift,alt,key };
+		HotKeyEntry entry = { ctrl,shift,alt,osSuper,key };
 		if (hotKeySet.Contains(entry)) return (vint)NativeGlobalShortcutKeyResult::Occupied;
 
 		vint id = ++usedHotKeys;

@@ -144,6 +144,11 @@ namespace demo
     {
         var openedSubWindows : GuiWindow^[] = {};
 
+        func MouseButtonName(button : NativeMouseButton) : (string)
+        {
+            raise "Not Implemented";
+        }
+
         new* ()
             :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
         {

@@ -89,15 +89,17 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOMouseButton>(const ::vl::presentation::remoteprotocol::IOMouseButton & value)
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeMouseButton>(const ::vl::presentation::NativeMouseButton & value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOMouseButton>(const ::vl::presentation::remoteprotocol::IOMouseButton&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::NativeMouseButton>(const ::vl::presentation::NativeMouseButton&)#"
 		auto node = Ptr(new glr::json::JsonString);
 		switch (value)
 		{
-		case ::vl::presentation::remoteprotocol::IOMouseButton::Left: node->content.value = WString::Unmanaged(L"Left"); break;
-		case ::vl::presentation::remoteprotocol::IOMouseButton::Middle: node->content.value = WString::Unmanaged(L"Middle"); break;
-		case ::vl::presentation::remoteprotocol::IOMouseButton::Right: node->content.value = WString::Unmanaged(L"Right"); break;
+		case ::vl::presentation::NativeMouseButton::Left: node->content.value = WString::Unmanaged(L"Left"); break;
+		case ::vl::presentation::NativeMouseButton::Middle: node->content.value = WString::Unmanaged(L"Middle"); break;
+		case ::vl::presentation::NativeMouseButton::Right: node->content.value = WString::Unmanaged(L"Right"); break;
+		case ::vl::presentation::NativeMouseButton::Mouse4: node->content.value = WString::Unmanaged(L"Mouse4"); break;
+		case ::vl::presentation::NativeMouseButton::Mouse5: node->content.value = WString::Unmanaged(L"Mouse5"); break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;
@@ -392,6 +394,7 @@ namespace vl::presentation::remoteprotocol
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"documentCaretFromEncoding", value.documentCaretFromEncoding);
+		ConvertCustomTypeToJsonField(node, L"osSuperKeyName", value.osSuperKeyName);
 		return node;
 	}
 
@@ -418,6 +421,7 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"ctrl", value.ctrl);
 		ConvertCustomTypeToJsonField(node, L"shift", value.shift);
+		ConvertCustomTypeToJsonField(node, L"osSuper", value.osSuper);
 		ConvertCustomTypeToJsonField(node, L"left", value.left);
 		ConvertCustomTypeToJsonField(node, L"middle", value.middle);
 		ConvertCustomTypeToJsonField(node, L"right", value.right);
@@ -443,6 +447,7 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"ctrl", value.ctrl);
 		ConvertCustomTypeToJsonField(node, L"shift", value.shift);
 		ConvertCustomTypeToJsonField(node, L"alt", value.alt);
+		ConvertCustomTypeToJsonField(node, L"osSuper", value.osSuper);
 		ConvertCustomTypeToJsonField(node, L"capslock", value.capslock);
 		ConvertCustomTypeToJsonField(node, L"autoRepeatKeyDown", value.autoRepeatKeyDown);
 		return node;
@@ -455,6 +460,7 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"ctrl", value.ctrl);
 		ConvertCustomTypeToJsonField(node, L"shift", value.shift);
 		ConvertCustomTypeToJsonField(node, L"alt", value.alt);
+		ConvertCustomTypeToJsonField(node, L"osSuper", value.osSuper);
 		ConvertCustomTypeToJsonField(node, L"capslock", value.capslock);
 		return node;
 	}
@@ -466,6 +472,7 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"ctrl", value.ctrl);
 		ConvertCustomTypeToJsonField(node, L"shift", value.shift);
 		ConvertCustomTypeToJsonField(node, L"alt", value.alt);
+		ConvertCustomTypeToJsonField(node, L"osSuper", value.osSuper);
 		ConvertCustomTypeToJsonField(node, L"code", value.code);
 		return node;
 	}
@@ -937,14 +944,16 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOMouseButton>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IOMouseButton& value)
+	template<> void ConvertJsonToCustomType<::vl::presentation::NativeMouseButton>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeMouseButton& value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOMouseButton>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::IOMouseButton&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::NativeMouseButton>(Ptr<JsonNode>, ::vl::presentation::NativeMouseButton&)#"
 		auto jsonNode = node.Cast<glr::json::JsonString>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
-		if (jsonNode->content.value == L"Left") value = ::vl::presentation::remoteprotocol::IOMouseButton::Left; else
-		if (jsonNode->content.value == L"Middle") value = ::vl::presentation::remoteprotocol::IOMouseButton::Middle; else
-		if (jsonNode->content.value == L"Right") value = ::vl::presentation::remoteprotocol::IOMouseButton::Right; else
+		if (jsonNode->content.value == L"Left") value = ::vl::presentation::NativeMouseButton::Left; else
+		if (jsonNode->content.value == L"Middle") value = ::vl::presentation::NativeMouseButton::Middle; else
+		if (jsonNode->content.value == L"Right") value = ::vl::presentation::NativeMouseButton::Right; else
+		if (jsonNode->content.value == L"Mouse4") value = ::vl::presentation::NativeMouseButton::Mouse4; else
+		if (jsonNode->content.value == L"Mouse5") value = ::vl::presentation::NativeMouseButton::Mouse5; else
 		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 #undef ERROR_MESSAGE_PREFIX
 	}
@@ -1274,6 +1283,7 @@ namespace vl::presentation::remoteprotocol
 		for (auto field : jsonNode->fields)
 		{
 			if (field->name.value == L"documentCaretFromEncoding") ConvertJsonToCustomType(field->value, value.documentCaretFromEncoding); else
+			if (field->name.value == L"osSuperKeyName") ConvertJsonToCustomType(field->value, value.osSuperKeyName); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -1318,6 +1328,7 @@ namespace vl::presentation::remoteprotocol
 		{
 			if (field->name.value == L"ctrl") ConvertJsonToCustomType(field->value, value.ctrl); else
 			if (field->name.value == L"shift") ConvertJsonToCustomType(field->value, value.shift); else
+			if (field->name.value == L"osSuper") ConvertJsonToCustomType(field->value, value.osSuper); else
 			if (field->name.value == L"left") ConvertJsonToCustomType(field->value, value.left); else
 			if (field->name.value == L"middle") ConvertJsonToCustomType(field->value, value.middle); else
 			if (field->name.value == L"right") ConvertJsonToCustomType(field->value, value.right); else
@@ -1355,6 +1366,7 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"ctrl") ConvertJsonToCustomType(field->value, value.ctrl); else
 			if (field->name.value == L"shift") ConvertJsonToCustomType(field->value, value.shift); else
 			if (field->name.value == L"alt") ConvertJsonToCustomType(field->value, value.alt); else
+			if (field->name.value == L"osSuper") ConvertJsonToCustomType(field->value, value.osSuper); else
 			if (field->name.value == L"capslock") ConvertJsonToCustomType(field->value, value.capslock); else
 			if (field->name.value == L"autoRepeatKeyDown") ConvertJsonToCustomType(field->value, value.autoRepeatKeyDown); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
@@ -1373,6 +1385,7 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"ctrl") ConvertJsonToCustomType(field->value, value.ctrl); else
 			if (field->name.value == L"shift") ConvertJsonToCustomType(field->value, value.shift); else
 			if (field->name.value == L"alt") ConvertJsonToCustomType(field->value, value.alt); else
+			if (field->name.value == L"osSuper") ConvertJsonToCustomType(field->value, value.osSuper); else
 			if (field->name.value == L"capslock") ConvertJsonToCustomType(field->value, value.capslock); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
@@ -1390,6 +1403,7 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"ctrl") ConvertJsonToCustomType(field->value, value.ctrl); else
 			if (field->name.value == L"shift") ConvertJsonToCustomType(field->value, value.shift); else
 			if (field->name.value == L"alt") ConvertJsonToCustomType(field->value, value.alt); else
+			if (field->name.value == L"osSuper") ConvertJsonToCustomType(field->value, value.osSuper); else
 			if (field->name.value == L"code") ConvertJsonToCustomType(field->value, value.code); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}

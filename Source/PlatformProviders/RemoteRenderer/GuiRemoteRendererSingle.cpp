@@ -104,6 +104,7 @@ namespace vl::presentation::remote_renderer
 	{
 		if (!CanSendEvents()) return;
 		vl::presentation::remoteprotocol::ControllerGlobalConfig globalConfig;
+		globalConfig.osSuperKeyName = GetCurrentController()->ResourceService()->GetOSSuperKeyName();
 #if defined VCZH_WCHAR_UTF16
 		globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF16;
 #elif defined VCZH_WCHAR_UTF32

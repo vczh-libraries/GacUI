@@ -1,8 +1,11 @@
+[@Cpp(::vl::presentation::NativeMouseButton)]
 enum IOMouseButton
 {
     Left,
     Middle,
     Right,
+    Mouse4,
+    Mouse5,
 }
 
 [@Cpp(::vl::presentation::NativeWindowMouseInfo)]
@@ -10,6 +13,7 @@ struct IOMouseInfo
 {
     var ctrl: bool;
     var shift: bool;
+    var osSuper: bool;
     var left: bool;
     var middle: bool;
     var right: bool;
@@ -32,6 +36,7 @@ struct IOKeyInfo
     var ctrl: bool;
     var shift: bool;
     var alt: bool;
+    var osSuper: bool;
     var capslock: bool;
     var autoRepeatKeyDown: bool;
 }
@@ -43,6 +48,7 @@ struct IOCharInfo
     var ctrl: bool;
     var shift: bool;
     var alt: bool;
+    var osSuper: bool;
     var capslock: bool;
 }
 
@@ -52,6 +58,7 @@ struct GlobalShortcutKey
     var ctrl : bool;
     var shift : bool;
     var alt : bool;
+    var osSuper : bool;
     var code : key;
 }
 

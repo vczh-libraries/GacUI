@@ -74,22 +74,40 @@
     <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*" ref.Styles="res://WindowManagerContentStyles">
       <ref.Members><![CDATA[
         var openedSubWindows: GuiWindow^[] = {};
+
+        func MouseButtonName(button: NativeMouseButton): string
+        {
+	          if (button == NativeMouseButton::Left) { return "Left"; }
+	          if (button == NativeMouseButton::Middle) { return "Middle"; }
+	          if (button == NativeMouseButton::Right) { return "Right"; }
+	          if (button == NativeMouseButton::Mouse4) { return "Mouse4"; }
+          return "Mouse5";
+        }
       ]]></ref.Members>
       <Window ref.Name="self" Text="Complete Control Showcase" ClientSize="x:640 y:480">
         <MessageDialog ref.Name="dialogLocalShortcut"
                        Title-eval="self.Text"
                        Text="You pressed Ctrl+Q!"
           />
+        <MessageDialog ref.Name="dialogLocalSuperShortcut"
+                       Title-eval="self.Text"
+                       Text="You pressed Ctrl+Win+Q!"
+          />
         <MessageDialog ref.Name="dialogGlobalShortcut"
                        Title-eval="self.Text"
-                       Text="You pressed Ctrl+Shift+Alt+Q!"
+                       Text="You pressed Ctrl+Shift+Alt+Win+Q!"
           />
-        <ToolstripCommand ShortcutBuilder="Ctrl+Q">
+        <ToolstripCommand ref.Name="commandLocalShortcut" ShortcutBuilder="Ctrl+Q">
           <ev.Executed-eval><![CDATA[{
             dialogLocalShortcut.ShowDialog();
           }]]></ev.Executed-eval>
         </ToolstripCommand>
-        <ToolstripCommand ShortcutBuilder="global:Ctrl+Shift+Alt+Q">
+        <ToolstripCommand ref.Name="commandLocalSuperShortcut" ShortcutBuilder="Ctrl+Win+Q">
+          <ev.Executed-eval><![CDATA[{
+            dialogLocalSuperShortcut.ShowDialog();
+          }]]></ev.Executed-eval>
+        </ToolstripCommand>
+        <ToolstripCommand ref.Name="commandGlobalShortcut" ShortcutBuilder="global:Ctrl+Shift+Alt+Command+Q">
           <ev.Executed-eval><![CDATA[{
             dialogGlobalShortcut.ShowDialog();
           }]]></ev.Executed-eval>
@@ -166,10 +184,24 @@
             <TabPage Alt="W" Text="Window Manager">
               <Stack ref.Style="windowManagerContent">
                 <StackItem>
-                  <Label Text="Local shortcut key: Ctrl+Q"/>
+                  <Label Text-bind="commandLocalShortcut.Shortcut.Name"/>
                 </StackItem>
                 <StackItem>
-                  <Label Text="Global shortcut key: Ctrl+Shift+Alt+Q"/>
+                  <Label Text-bind="commandLocalSuperShortcut.Shortcut.Name"/>
+                </StackItem>
+                <StackItem>
+                  <Label Text-bind="commandGlobalShortcut.Shortcut.Name"/>
+                </StackItem>
+                <StackItem>
+                  <Bounds PreferredMinSize="y:24" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                    <SolidLabel ref.Name="labelMouseButton" Text="Click here with any mouse button." VerticalAlignment="Center"/>
+                    <ev.mouseDown-eval><![CDATA[{
+	                      labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button down!";
+                    }]]></ev.mouseDown-eval>
+                    <ev.mouseUp-eval><![CDATA[{
+	                      labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button up!";
+                    }]]></ev.mouseUp-eval>
+                  </Bounds>
                 </StackItem>
               </Stack>
             </TabPage>

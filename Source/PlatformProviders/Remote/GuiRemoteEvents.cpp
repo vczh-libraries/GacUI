@@ -161,56 +161,17 @@ GuiRemoteEvents (events)
 
 	void GuiRemoteEvents::OnIOButtonDown(const remoteprotocol::IOMouseInfoWithButton& arguments)
 	{
-		switch (arguments.button)
-		{
-		case remoteprotocol::IOMouseButton::Left:
-			for (auto l : remote->remoteWindow.listeners) l->LeftButtonDown(arguments.info);
-			break;
-		case remoteprotocol::IOMouseButton::Middle:
-			for (auto l : remote->remoteWindow.listeners) l->MiddleButtonDown(arguments.info);
-			break;
-		case remoteprotocol::IOMouseButton::Right:
-			for (auto l : remote->remoteWindow.listeners) l->RightButtonDown(arguments.info);
-			break;
-		default:
-			CHECK_FAIL(L"vl::presentation::GuiRemoteEvents::OnIOButtonDown(const IOMouseInfoWithButton&)#Unrecognized button.");
-		}
+		for (auto l : remote->remoteWindow.listeners) l->MouseDown(arguments.button, arguments.info);
 	}
 
 	void GuiRemoteEvents::OnIOButtonDoubleClick(const remoteprotocol::IOMouseInfoWithButton& arguments)
 	{
-		switch (arguments.button)
-		{
-		case remoteprotocol::IOMouseButton::Left:
-			for (auto l : remote->remoteWindow.listeners) l->LeftButtonDoubleClick(arguments.info);
-			break;
-		case remoteprotocol::IOMouseButton::Middle:
-			for (auto l : remote->remoteWindow.listeners) l->MiddleButtonDoubleClick(arguments.info);
-			break;
-		case remoteprotocol::IOMouseButton::Right:
-			for (auto l : remote->remoteWindow.listeners) l->RightButtonDoubleClick(arguments.info);
-			break;
-		default:
-			CHECK_FAIL(L"vl::presentation::GuiRemoteEvents::OnIOButtonDoubleClick(const IOMouseInfoWithButton&)#Unrecognized button.");
-		}
+		for (auto l : remote->remoteWindow.listeners) l->MouseDoubleClick(arguments.button, arguments.info);
 	}
 
 	void GuiRemoteEvents::OnIOButtonUp(const remoteprotocol::IOMouseInfoWithButton& arguments)
 	{
-		switch (arguments.button)
-		{
-		case remoteprotocol::IOMouseButton::Left:
-			for (auto l : remote->remoteWindow.listeners) l->LeftButtonUp(arguments.info);
-			break;
-		case remoteprotocol::IOMouseButton::Middle:
-			for (auto l : remote->remoteWindow.listeners) l->MiddleButtonUp(arguments.info);
-			break;
-		case remoteprotocol::IOMouseButton::Right:
-			for (auto l : remote->remoteWindow.listeners) l->RightButtonUp(arguments.info);
-			break;
-		default:
-			CHECK_FAIL(L"vl::presentation::GuiRemoteEvents::OnIOButtonUp(const IOMouseInfoWithButton&)#Unrecognized button.");
-		}
+		for (auto l : remote->remoteWindow.listeners) l->MouseUp(arguments.button, arguments.info);
 	}
 
 	void GuiRemoteEvents::OnIOHWheel(const NativeWindowMouseInfo& arguments)

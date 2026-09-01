@@ -40,7 +40,7 @@ GuiComboBoxBase
 
 			void GuiComboBoxBase::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
-				if (arguments.code == VKEY::KEY_SPACE && !arguments.ctrl && !arguments.shift && !arguments.alt)
+				if (arguments.code == VKEY::KEY_SPACE && !arguments.ctrl && !arguments.shift && !arguments.alt && !arguments.osSuper)
 				{
 					GetSubMenu()->Hide();
 					arguments.handled = true;
@@ -242,6 +242,7 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
+				if (arguments.osSuper) return;
 				if (!arguments.autoRepeatKeyDown)
 				{
 					switch (arguments.code)

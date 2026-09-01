@@ -199,7 +199,13 @@ Two separate lists (`ordinaryWindowsInOrder` and `topMostedWindowsInOrder`) trac
 
 `GuiHostedController` listens to mouse events on the single native window. Mouse dispatching uses a template-based system:
 
-`HandleMouseCallback<PreAction, GetSelectedWindow, PostAction, Callback>` is the core template:
+`HandleMouseButtonCallback<PreAction, GetSelectedWindow, PostAction, Callback>`
+dispatches `MouseDown`, `MouseUp`, and `MouseDoubleClick` with a
+`NativeMouseButton` value. `HandleMouseCallback` dispatches movement and wheel
+events. Both forms forward a complete `NativeWindowMouseInfo`; the adjusted copy
+preserves the captured `osSuper` state while changing only coordinates.
+
+The core dispatch sequence:
 1. Calls `PreAction` (may trigger window manager operations)
 2. If not in a window-manager operation (`wmWindow == nullptr`), calls `GetSelectedWindow` to find the target
 3. Adjusts mouse coordinates by subtracting the target window's `wmWindow.bounds` top-left
@@ -211,7 +217,10 @@ Three `GetSelectedWindow` strategies:
 - `GetSelectedWindow_MouseMoving` — updates `hoveringWindow` via `UpdateHoveringWindow` and `enteringWindow` via `UpdateEnteringWindow`
 - `GetSelectedWindow_Other` — returns `capturingWindow` or `hoveringWindow`
 
-Individual mouse event methods (`LeftButtonDown`, `MouseMoving`, etc.) are wired to the right combination of PreAction/GetSelectedWindow/PostAction via `IMPLEMENT_MOUSE_CALLBACK` macros.
+The unified mouse methods are wired to the right combination of
+PreAction/GetSelectedWindow/PostAction through these templates. Left-button
+down/up still select the special window-manager pre/post actions; Middle,
+Right, Mouse4, and Mouse5 use the general actions.
 
 ### Window Manager Dragging and Resizing
 

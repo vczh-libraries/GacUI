@@ -257,7 +257,8 @@ For a test named `Controls/Basic/GuiButton/ClickOnMouseUp`:
 `UnitTestRemoteProtocol_IOCommands` provides methods to simulate all user input. It maintains virtual state:
 - `mousePosition` — current mouse position (`Nullable<NativePoint>`, initially unset; first `MouseMove` triggers `OnIOMouseEntered`).
 - `pressingKeys` — `SortedList<VKEY>` of currently pressed keys.
-- `leftPressing`, `middlePressing`, `rightPressing` — mouse button states.
+- `leftPressing`, `middlePressing`, `rightPressing`, `mouse4Pressing`, and
+  `mouse5Pressing` — mouse button states.
 - `capslockToggled` — capslock toggle state.
 
 Each method constructs the appropriate `NativeWindowMouseInfo`, `NativeWindowKeyInfo`, or `NativeWindowCharInfo` struct (via `MakeMouseInfo()`, `MakeKeyInfo()`, `MakeCharInfo()`) and calls the corresponding event on `IGuiRemoteProtocolEvents` (obtained via `UseEvents()`).
@@ -278,7 +279,8 @@ Overloads accept either `GuiGraphicsComposition*` or `GuiControl*`.
 - `_LDown(location)` / `_LUp(location)` — low-level left button down/up. `_LDown` calls `MouseMove` if position changed, then `UseEvents().OnIOButtonDown({Left, ...})`.
 - `LClick(location)` — `_LDown` followed by `_LUp`.
 - `LDBClick(location)` — sends a normal down/up pair, an explicit `OnIOButtonDoubleClick`, and the final up event.
-- Analogous `RClick`, `MClick`, `RDBClick`, `MDBClick` for right and middle buttons.
+- Analogous `RClick`, `MClick`, `Mouse4Click`, `Mouse5Click` and double-click
+  helpers exist for the other four buttons.
 - `WheelUp(jumps)` / `WheelDown(jumps)` — `OnIOVWheel` with delta scaled by 120 per jump.
 - `HWheelLeft(jumps)` / `HWheelRight(jumps)` — `OnIOHWheel` similarly.
 
@@ -287,7 +289,8 @@ Overloads accept either `GuiGraphicsComposition*` or `GuiControl*`.
 - `_KeyDown(key)` / `_KeyUp(key)` — sends `OnIOKeyDown` / `OnIOKeyUp`. Tracks `pressingKeys` state. Special handling for `VKEY::KEY_CAPITAL` toggles `capslockToggled`.
 - `_KeyDownRepeat(key)` — sends an auto-repeat `OnIOKeyDown` for a key that is already pressed.
 - `KeyPress(key)` — `_KeyDown` followed by `_KeyUp`.
-- `KeyPress(key, ctrl, shift, alt)` — wraps the key press with modifier key down/up events.
+- `KeyPress(key, ctrl, shift, alt, osSuper)` — wraps the key press with modifier
+  key down/up events.
 - `TypeString(text)` — sends a sequence of `OnIOChar` events for each character via `MakeCharInfo`, without synthesizing key down/up events.
 
 Keyboard helpers target the currently focused control. Focus the target control in the frame (for example with `SetFocused()` or a click) before using `TypeString`, `KeyPress`, `_KeyDown`, or `_KeyUp`.
@@ -298,9 +301,15 @@ When a test calls `protocol->LClick(location)`:
 1. `_LDown(location)` → `MouseMove(location)` if position changed → `UseEvents().OnIOButtonDown({Left, MakeMouseInfo()})`.
 2. `_LUp(location)` → `UseEvents().OnIOButtonUp({Left, MakeMouseInfo()})`.
 3. These events reach `GuiRemoteEvents` (the `IGuiRemoteProtocolEvents` implementation in `GuiRemoteController`).
-4. `GuiRemoteEvents::OnIOButtonDown()` dispatches to `listener->LeftButtonDown(info)` on `remoteWindow`.
+4. `GuiRemoteEvents::OnIOButtonDown()` dispatches to
+   `listener->MouseDown(NativeMouseButton::Left, info)` on
+   `remoteWindow`.
 5. `GuiGraphicsHost` receives the call as `INativeWindowListener`.
-6. `GuiGraphicsHost::LeftButtonDown()` calls `OnMouseInput()`, which converts native coordinates to logical coordinates, performs hit-testing via `FindVisibleComposition()`, creates `GuiMouseEventArgs`, and dispatches via `RaiseMouseEvent()`.
+6. `GuiGraphicsHost::MouseDown()` calls `OnMouseInput()`, which converts native
+   coordinates to logical coordinates, performs hit-testing via
+   `FindVisibleComposition()`, creates `GuiMouseEventArgs` with `button` and the
+   `osSuper` value inherited from `WindowMouseInfo`, and dispatches the unified `mouseDown` event via
+   `RaiseMouseEvent()`.
 7. The event bubbles through the composition tree, triggering control-level handlers.
 
 All of this happens **synchronously within a single `ProcessRemoteEvents()` call**, so by the time the frame callback returns, all side effects of the interaction have been processed.

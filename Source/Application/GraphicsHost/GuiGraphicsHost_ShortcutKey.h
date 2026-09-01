@@ -61,21 +61,21 @@ Shortcut Key Manager
 				/// <param name="shift">Set to true if the SHIFT key is required.</param>
 				/// <param name="alt">Set to true if the ALT key is required.</param>
 				/// <param name="key">The non-control key.</param>
-				virtual IGuiShortcutKeyItem*			TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key)=0;
+				virtual IGuiShortcutKeyItem*			TryGetShortcut(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)=0;
 				/// <summary>Create a shortcut key item using a key combination. If the item for the key combination exists, this function crashes.</summary>
 				/// <returns>The created shortcut key item.</returns>
 				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
 				/// <param name="shift">Set to true if the SHIFT key is required.</param>
 				/// <param name="alt">Set to true if the ALT key is required.</param>
 				/// <param name="key">The non-control key.</param>
-				virtual IGuiShortcutKeyItem*			CreateNewShortcut(bool ctrl, bool shift, bool alt, VKEY key)=0;
+				virtual IGuiShortcutKeyItem*			CreateNewShortcut(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)=0;
 				/// <summary>Create a shortcut key item using a key combination. If the item for the key combination exists, this function returns the item that is created before.</summary>
 				/// <returns>The created shortcut key item.</returns>
 				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
 				/// <param name="shift">Set to true if the SHIFT key is required.</param>
 				/// <param name="alt">Set to true if the ALT key is required.</param>
 				/// <param name="key">The non-control key.</param>
-				virtual IGuiShortcutKeyItem*			CreateShortcutIfNotExist(bool ctrl, bool shift, bool alt, VKEY key)=0;
+				virtual IGuiShortcutKeyItem*			CreateShortcutIfNotExist(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)=0;
 				/// <summary>Destroy a shortcut key item using a key combination</summary>
 				/// <returns>Returns true if the manager destroyed a existing shortcut key item.</returns>
 				/// <param name="item">The shortcut key item.</param>
@@ -96,18 +96,19 @@ Shortcut Key Manager Helpers
 				bool							ctrl;
 				bool							shift;
 				bool							alt;
+				bool							osSuper;
 				VKEY							key;
 
 			public:
-				GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _global, bool _ctrl, bool _shift, bool _alt, VKEY _key);
+				GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _global, bool _ctrl, bool _shift, bool _alt, bool _osSuper, VKEY _key);
 				~GuiShortcutKeyItem();
 
 				IGuiShortcutKeyManager*			GetManager()override;
 				WString							GetName()override;
 
-				void							ReadKeyConfig(bool& _ctrl, bool& _shift, bool& _alt, VKEY& _key);
+				void							ReadKeyConfig(bool& _ctrl, bool& _shift, bool& _alt, bool& _osSuper, VKEY& _key);
 				bool							CanActivate(const NativeWindowKeyInfo& info);
-				bool							CanActivate(bool _ctrl, bool _shift, bool _alt, VKEY _key);
+				bool							CanActivate(bool _ctrl, bool _shift, bool _alt, bool _osSuper, VKEY _key);
 				void							Execute();
 			};
 
@@ -121,7 +122,7 @@ Shortcut Key Manager Helpers
 				virtual bool					IsGlobal();
 				virtual bool					OnCreatingShortcut(GuiShortcutKeyItem* item);
 				virtual void					OnDestroyingShortcut(GuiShortcutKeyItem* item);
-				IGuiShortcutKeyItem*			CreateShortcutInternal(bool ctrl, bool shift, bool alt, VKEY key);
+				IGuiShortcutKeyItem*			CreateShortcutInternal(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key);
 			public:
 				/// <summary>Create the shortcut key manager.</summary>
 				GuiShortcutKeyManager();
@@ -131,9 +132,9 @@ Shortcut Key Manager Helpers
 				IGuiShortcutKeyItem*			GetItem(vint index)override;
 				bool							Execute(const NativeWindowKeyInfo& info)override;
 				
-				IGuiShortcutKeyItem*			TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key)override;
-				IGuiShortcutKeyItem*			CreateNewShortcut(bool ctrl, bool shift, bool alt, VKEY key)override;
-				IGuiShortcutKeyItem*			CreateShortcutIfNotExist(bool ctrl, bool shift, bool alt, VKEY key)override;
+				IGuiShortcutKeyItem*			TryGetShortcut(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)override;
+				IGuiShortcutKeyItem*			CreateNewShortcut(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)override;
+				IGuiShortcutKeyItem*			CreateShortcutIfNotExist(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)override;
 				bool							DestroyShortcut(IGuiShortcutKeyItem* item)override;
 			};
 		}

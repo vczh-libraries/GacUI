@@ -132,13 +132,6 @@ namespace vl::presentation::remoteprotocol
 		UTF32,
 	};
 
-	enum class IOMouseButton
-	{
-		Left,
-		Middle,
-		Right,
-	};
-
 	enum class ElementHorizontalAlignment
 	{
 		Left,
@@ -229,6 +222,7 @@ namespace vl::presentation::remoteprotocol
 	struct ControllerGlobalConfig
 	{
 		::vl::presentation::remoteprotocol::CharacterEncoding documentCaretFromEncoding;
+		::vl::WString osSuperKeyName;
 	};
 
 	struct WindowSizingConfig
@@ -247,7 +241,7 @@ namespace vl::presentation::remoteprotocol
 
 	struct IOMouseInfoWithButton
 	{
-		::vl::presentation::remoteprotocol::IOMouseButton button;
+		::vl::presentation::NativeMouseButton button;
 		::vl::presentation::NativeWindowMouseInfo info;
 	};
 
@@ -257,6 +251,7 @@ namespace vl::presentation::remoteprotocol
 		bool ctrl;
 		bool shift;
 		bool alt;
+		bool osSuper;
 		::vl::presentation::VKEY code;
 	};
 
@@ -570,7 +565,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeCursor::SystemCursorType>(const ::vl::presentation::INativeCursor::SystemCursorType & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState & value);
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOMouseButton>(const ::vl::presentation::remoteprotocol::IOMouseButton & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeMouseButton>(const ::vl::presentation::NativeMouseButton & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::ElementShapeType>(const ::vl::presentation::elements::ElementShapeType & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::GuiGradientBackgroundElement::Direction>(const ::vl::presentation::elements::GuiGradientBackgroundElement::Direction & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::Gui3DSplitterElement::Direction>(const ::vl::presentation::elements::Gui3DSplitterElement::Direction & value);
@@ -648,7 +643,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindowListener::HitTestResult>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindowListener::HitTestResult& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeCursor::SystemCursorType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeCursor::SystemCursorType& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value);
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOMouseButton>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IOMouseButton& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::NativeMouseButton>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeMouseButton& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::elements::ElementShapeType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::ElementShapeType& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::elements::GuiGradientBackgroundElement::Direction>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::GuiGradientBackgroundElement::Direction& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::elements::Gui3DSplitterElement::Direction>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::Gui3DSplitterElement::Direction& value);

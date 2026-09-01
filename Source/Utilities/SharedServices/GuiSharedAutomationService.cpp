@@ -117,15 +117,16 @@ RunIOCommandOnNativeWindow
 				L"!KeyDown:Key1+Key2+...+KeyN\r\n"
 				L"!KeyUp:Key1+Key2+...+KeyN\r\n"
 				L"!KeyPress:Key1+Key2+...+KeyN\r\n"
-				L"!MouseMove:X,Y(,ctrl)?(,shift)?(,alt)?\r\n"
-				L"!(Left|Middle|Right)(Down|Up|Click|DbClick):X,Y(,ctrl)?(,shift)?(,alt)?\r\n"
-				L"!MouseWheel(Up|Down|Left|Right):ticks(,ctrl)?(,shift)?(,alt)?";
+				L"!MouseMove:X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?\r\n"
+				L"!(Left|Middle|Right|Mouse4|Mouse5)(Down|Up|Click|DbClick):X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?\r\n"
+				L"!MouseWheel(Up|Down|Left|Right):ticks(,ctrl)?(,shift)?(,alt)?(,win|command|super)?";
 
 			struct IOCommandModifiers
 			{
 				bool ctrl = false;
 				bool shift = false;
 				bool alt = false;
+				bool osSuper = false;
 			};
 
 			struct TemporaryModifiers
@@ -133,6 +134,7 @@ RunIOCommandOnNativeWindow
 				bool ctrl = false;
 				bool shift = false;
 				bool alt = false;
+				bool osSuper = false;
 			};
 
 			struct MouseCommandArguments
@@ -145,13 +147,6 @@ RunIOCommandOnNativeWindow
 			{
 				vint ticks = 0;
 				IOCommandModifiers modifiers;
-			};
-
-			enum class MouseButton
-			{
-				Left,
-				Middle,
-				Right,
 			};
 
 			struct SyntaxErrorCommand
@@ -187,7 +182,7 @@ RunIOCommandOnNativeWindow
 
 			struct MouseButtonCommand
 			{
-				MouseButton button = MouseButton::Left;
+				NativeMouseButton button = NativeMouseButton::Left;
 				WString operation;
 				MouseCommandArguments arguments;
 			};
@@ -297,6 +292,11 @@ RunIOCommandOnNativeWindow
 					modifiers.alt = true;
 					return true;
 				}
+				else if (token == L"WIN" || token == L"COMMAND" || token == L"SUPER")
+				{
+					modifiers.osSuper = true;
+					return true;
+				}
 				return false;
 			}
 
@@ -354,6 +354,11 @@ RunIOCommandOnNativeWindow
 				return IsPressing(state, VKEY::KEY_MENU) || IsPressing(state, VKEY::KEY_LMENU) || IsPressing(state, VKEY::KEY_RMENU);
 			}
 
+			bool IsOSSuperPressing(IoCommandState* state)
+			{
+				return IsPressing(state, VKEY::KEY_LWIN) || IsPressing(state, VKEY::KEY_RWIN);
+			}
+
 			NativeWindowMouseInfo MakeMouseInfo(IoCommandState* state)
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
@@ -361,6 +366,7 @@ RunIOCommandOnNativeWindow
 				NativeWindowMouseInfo info;
 				info.ctrl = IsCtrlPressing(state);
 				info.shift = IsShiftPressing(state);
+				info.osSuper = IsOSSuperPressing(state);
 				info.left = state->leftPressing;
 				info.middle = state->middlePressing;
 				info.right = state->rightPressing;
@@ -379,6 +385,7 @@ RunIOCommandOnNativeWindow
 				info.ctrl = IsCtrlPressing(state);
 				info.shift = IsShiftPressing(state);
 				info.alt = IsAltPressing(state);
+				info.osSuper = IsOSSuperPressing(state);
 				info.capslock = state->capslockToggled;
 				info.autoRepeatKeyDown = autoRepeatKeyDown;
 				return info;
@@ -391,6 +398,7 @@ RunIOCommandOnNativeWindow
 				info.ctrl = IsCtrlPressing(state);
 				info.shift = IsShiftPressing(state);
 				info.alt = IsAltPressing(state);
+				info.osSuper = IsOSSuperPressing(state);
 				info.capslock = state->capslockToggled;
 				return info;
 			}
@@ -451,10 +459,19 @@ RunIOCommandOnNativeWindow
 					KeyDown(state, listeners, VKEY::KEY_MENU);
 					temporary.alt = true;
 				}
+				if (modifiers.osSuper && !IsOSSuperPressing(state))
+				{
+					KeyDown(state, listeners, VKEY::KEY_LWIN);
+					temporary.osSuper = true;
+				}
 			}
 
 			void ReleaseTemporaryModifiers(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, const TemporaryModifiers& temporary)
 			{
+				if (temporary.osSuper)
+				{
+					KeyUp(state, listeners, VKEY::KEY_LWIN);
+				}
 				if (temporary.alt)
 				{
 					KeyUp(state, listeners, VKEY::KEY_MENU);
@@ -499,82 +516,65 @@ RunIOCommandOnNativeWindow
 				}
 			}
 
-			void ButtonDown(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, MouseButton button, NativePoint position)
+			bool& GetButtonPressing(IoCommandState* state, NativeMouseButton button)
+			{
+				switch (button)
+				{
+				case NativeMouseButton::Left: return state->leftPressing;
+				case NativeMouseButton::Middle: return state->middlePressing;
+				case NativeMouseButton::Right: return state->rightPressing;
+				case NativeMouseButton::Mouse4: return state->mouse4Pressing;
+				default: return state->mouse5Pressing;
+				}
+			}
+
+			void ButtonDown(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, NativeMouseButton button, NativePoint position)
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
 				MouseMove(state, listeners, position);
-				switch (button)
+				auto&& pressing = GetButtonPressing(state, button);
+				CHECK_ERROR(!pressing, ERROR_MESSAGE_PREFIX L"The mouse button should not be being pressed.");
+				pressing = true;
+				auto info = MakeMouseInfo(state);
+				for (auto listener : listeners)
 				{
-				case MouseButton::Left:
-					CHECK_ERROR(!state->leftPressing, ERROR_MESSAGE_PREFIX L"The left button should not be being pressed.");
-					state->leftPressing = true;
-					for (auto listener : listeners) listener->LeftButtonDown(MakeMouseInfo(state));
-					break;
-				case MouseButton::Middle:
-					CHECK_ERROR(!state->middlePressing, ERROR_MESSAGE_PREFIX L"The middle button should not be being pressed.");
-					state->middlePressing = true;
-					for (auto listener : listeners) listener->MiddleButtonDown(MakeMouseInfo(state));
-					break;
-				case MouseButton::Right:
-					CHECK_ERROR(!state->rightPressing, ERROR_MESSAGE_PREFIX L"The right button should not be being pressed.");
-					state->rightPressing = true;
-					for (auto listener : listeners) listener->RightButtonDown(MakeMouseInfo(state));
-					break;
+					listener->MouseDown(button, info);
 				}
 #undef ERROR_MESSAGE_PREFIX
 			}
 
-			void ButtonUp(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, MouseButton button, NativePoint position)
+			void ButtonUp(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, NativeMouseButton button, NativePoint position)
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
 				MouseMove(state, listeners, position);
-				switch (button)
+				auto&& pressing = GetButtonPressing(state, button);
+				CHECK_ERROR(pressing, ERROR_MESSAGE_PREFIX L"The mouse button should be being pressed.");
+				pressing = false;
+				auto info = MakeMouseInfo(state);
+				for (auto listener : listeners)
 				{
-				case MouseButton::Left:
-					CHECK_ERROR(state->leftPressing, ERROR_MESSAGE_PREFIX L"The left button should be being pressed.");
-					state->leftPressing = false;
-					for (auto listener : listeners) listener->LeftButtonUp(MakeMouseInfo(state));
-					break;
-				case MouseButton::Middle:
-					CHECK_ERROR(state->middlePressing, ERROR_MESSAGE_PREFIX L"The middle button should be being pressed.");
-					state->middlePressing = false;
-					for (auto listener : listeners) listener->MiddleButtonUp(MakeMouseInfo(state));
-					break;
-				case MouseButton::Right:
-					CHECK_ERROR(state->rightPressing, ERROR_MESSAGE_PREFIX L"The right button should be being pressed.");
-					state->rightPressing = false;
-					for (auto listener : listeners) listener->RightButtonUp(MakeMouseInfo(state));
-					break;
+					listener->MouseUp(button, info);
 				}
 #undef ERROR_MESSAGE_PREFIX
 			}
 
-			void ButtonDoubleClick(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, MouseButton button, NativePoint position)
+			void ButtonDoubleClick(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, NativeMouseButton button, NativePoint position)
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
 				MouseMove(state, listeners, position);
-				switch (button)
+				auto&& pressing = GetButtonPressing(state, button);
+				CHECK_ERROR(!pressing, ERROR_MESSAGE_PREFIX L"The mouse button should not be being pressed.");
+				pressing = true;
+				auto info = MakeMouseInfo(state);
+				for (auto listener : listeners)
 				{
-				case MouseButton::Left:
-					CHECK_ERROR(!state->leftPressing, ERROR_MESSAGE_PREFIX L"The left button should not be being pressed.");
-					state->leftPressing = true;
-					for (auto listener : listeners) listener->LeftButtonDoubleClick(MakeMouseInfo(state));
-					break;
-				case MouseButton::Middle:
-					CHECK_ERROR(!state->middlePressing, ERROR_MESSAGE_PREFIX L"The middle button should not be being pressed.");
-					state->middlePressing = true;
-					for (auto listener : listeners) listener->MiddleButtonDoubleClick(MakeMouseInfo(state));
-					break;
-				case MouseButton::Right:
-					CHECK_ERROR(!state->rightPressing, ERROR_MESSAGE_PREFIX L"The right button should not be being pressed.");
-					state->rightPressing = true;
-					for (auto listener : listeners) listener->RightButtonDoubleClick(MakeMouseInfo(state));
-					break;
+					listener->MouseDown(button, info);
+					listener->MouseDoubleClick(button, info);
 				}
 #undef ERROR_MESSAGE_PREFIX
 			}
 
-			void MouseButtonOperation(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, MouseButton button, const WString& operation, NativePoint position)
+			void MouseButtonOperation(IoCommandState* state, collections::List<INativeWindowListener*>& listeners, NativeMouseButton button, const WString& operation, NativePoint position)
 			{
 				if (operation == L"Down")
 				{
@@ -654,17 +654,19 @@ RunIOCommandOnNativeWindow
 				return true;
 			}
 
-			WString MouseButtonPrefix(MouseButton button)
+			WString MouseButtonPrefix(NativeMouseButton button)
 			{
 				switch (button)
 				{
-				case MouseButton::Left: return WString::Unmanaged(L"!Left");
-				case MouseButton::Middle: return WString::Unmanaged(L"!Middle");
-				default: return WString::Unmanaged(L"!Right");
+				case NativeMouseButton::Left: return WString::Unmanaged(L"!Left");
+				case NativeMouseButton::Middle: return WString::Unmanaged(L"!Middle");
+				case NativeMouseButton::Right: return WString::Unmanaged(L"!Right");
+				case NativeMouseButton::Mouse4: return WString::Unmanaged(L"!Mouse4");
+				default: return WString::Unmanaged(L"!Mouse5");
 				}
 			}
 
-			bool TryParseMouseButtonCommand(const WString& command, MouseButton button, const WString& operation, MouseButtonCommand& mouseCommand, bool& matched)
+			bool TryParseMouseButtonCommand(const WString& command, NativeMouseButton button, const WString& operation, MouseButtonCommand& mouseCommand, bool& matched)
 			{
 				auto prefix = MouseButtonPrefix(button) + operation + WString::Unmanaged(L":");
 				if (!StartsWith(command, prefix)) return false;
@@ -760,13 +762,19 @@ RunIOCommandOnNativeWindow
 				{
 					MouseButtonCommand mouseCommand;
 					bool matched = false;
-					if (TryParseMouseButtonCommand(command, MouseButton::Left, operation, mouseCommand, matched)) return mouseCommand;
+					if (TryParseMouseButtonCommand(command, NativeMouseButton::Left, operation, mouseCommand, matched)) return mouseCommand;
 					if (matched) return SyntaxErrorCommand{};
 
-					if (TryParseMouseButtonCommand(command, MouseButton::Middle, operation, mouseCommand, matched)) return mouseCommand;
+					if (TryParseMouseButtonCommand(command, NativeMouseButton::Middle, operation, mouseCommand, matched)) return mouseCommand;
 					if (matched) return SyntaxErrorCommand{};
 
-					if (TryParseMouseButtonCommand(command, MouseButton::Right, operation, mouseCommand, matched)) return mouseCommand;
+					if (TryParseMouseButtonCommand(command, NativeMouseButton::Right, operation, mouseCommand, matched)) return mouseCommand;
+					if (matched) return SyntaxErrorCommand{};
+
+					if (TryParseMouseButtonCommand(command, NativeMouseButton::Mouse4, operation, mouseCommand, matched)) return mouseCommand;
+					if (matched) return SyntaxErrorCommand{};
+
+					if (TryParseMouseButtonCommand(command, NativeMouseButton::Mouse5, operation, mouseCommand, matched)) return mouseCommand;
 					if (matched) return SyntaxErrorCommand{};
 				}
 

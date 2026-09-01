@@ -43,6 +43,7 @@ Type Declaration
 				CLASS_MEMBER_FIELD(ctrl)
 				CLASS_MEMBER_FIELD(shift)
 				CLASS_MEMBER_FIELD(alt)
+				CLASS_MEMBER_FIELD(osSuper)
 				CLASS_MEMBER_FIELD(capslock)
 				CLASS_MEMBER_FIELD(autoRepeatKeyDown)
 			END_CLASS_MEMBER(GuiKeyEventArgs)
@@ -55,6 +56,7 @@ Type Declaration
 				CLASS_MEMBER_FIELD(ctrl)
 				CLASS_MEMBER_FIELD(shift)
 				CLASS_MEMBER_FIELD(alt)
+				CLASS_MEMBER_FIELD(osSuper)
 				CLASS_MEMBER_FIELD(capslock)
 			END_CLASS_MEMBER(GuiCharEventArgs)
 
@@ -62,6 +64,8 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiEventArgs)
 				EVENTARGS_CONSTRUCTOR(GuiMouseEventArgs)
 				
+				CLASS_MEMBER_FIELD(button)
+				CLASS_MEMBER_FIELD(osSuper)
 				CLASS_MEMBER_FIELD(ctrl)
 				CLASS_MEMBER_FIELD(shift)
 				CLASS_MEMBER_FIELD(left)

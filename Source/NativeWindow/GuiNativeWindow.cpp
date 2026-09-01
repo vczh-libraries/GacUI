@@ -132,39 +132,15 @@ INativeWindowListener
 		{
 		}
 
-		void INativeWindowListener::LeftButtonDown(const NativeWindowMouseInfo& info)
+		void INativeWindowListener::MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info)
 		{
 		}
 
-		void INativeWindowListener::LeftButtonUp(const NativeWindowMouseInfo& info)
+		void INativeWindowListener::MouseUp(NativeMouseButton button, const NativeWindowMouseInfo& info)
 		{
 		}
 
-		void INativeWindowListener::LeftButtonDoubleClick(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void INativeWindowListener::RightButtonDown(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void INativeWindowListener::RightButtonUp(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void INativeWindowListener::RightButtonDoubleClick(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void INativeWindowListener::MiddleButtonDown(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void INativeWindowListener::MiddleButtonUp(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void INativeWindowListener::MiddleButtonDoubleClick(const NativeWindowMouseInfo& info)
+		void INativeWindowListener::MouseDoubleClick(NativeMouseButton button, const NativeWindowMouseInfo& info)
 		{
 		}
 

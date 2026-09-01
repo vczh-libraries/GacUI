@@ -619,8 +619,9 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachHandle(compositions::GuiGraphicsComposition* handle)
 			{
-				handle->GetEventReceiver()->leftButtonDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				handle->GetEventReceiver()->mouseDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
+					if (arguments.button != NativeMouseButton::Left) return;
 					if (scrollTemplate->GetVisuallyEnabled())
 					{
 						dragging = true;
@@ -629,8 +630,9 @@ GuiCommonScrollBehavior
 					}
 				});
 
-				handle->GetEventReceiver()->leftButtonUp.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs&)
+				handle->GetEventReceiver()->mouseUp.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
+					if (arguments.button != NativeMouseButton::Left) return;
 					if (scrollTemplate->GetVisuallyEnabled())
 					{
 						dragging = false;
@@ -669,8 +671,9 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachHorizontalScrollHandle(compositions::GuiPartialViewComposition* partialView)
 			{
-				partialView->GetParent()->GetEventReceiver()->leftButtonDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				partialView->GetParent()->GetEventReceiver()->mouseDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
+					if (arguments.button != NativeMouseButton::Left) return;
 					if (scrollTemplate->GetVisuallyEnabled())
 					{
 						if (arguments.x < partialView->GetCachedBounds().x1)
@@ -689,8 +692,9 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachVerticalScrollHandle(compositions::GuiPartialViewComposition* partialView)
 			{
-				partialView->GetParent()->GetEventReceiver()->leftButtonDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				partialView->GetParent()->GetEventReceiver()->mouseDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
+					if (arguments.button != NativeMouseButton::Left) return;
 					if (scrollTemplate->GetVisuallyEnabled())
 					{
 						if (arguments.y < partialView->GetCachedBounds().y1)

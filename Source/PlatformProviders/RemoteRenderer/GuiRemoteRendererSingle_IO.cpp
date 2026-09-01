@@ -38,7 +38,7 @@ namespace vl::presentation::remote_renderer
 			auto inputService = GetCurrentController()->InputService();
 			for (auto&& shortcut : *arguments.Obj())
 			{
-				vint id = inputService->RegisterGlobalShortcutKey(shortcut.ctrl, shortcut.shift, shortcut.alt, shortcut.code);
+				vint id = inputService->RegisterGlobalShortcutKey(shortcut.ctrl, shortcut.shift, shortcut.alt, shortcut.osSuper, shortcut.code);
 				if (id != -1)
 				{
 					globalShortcuts.Add(id, shortcut);
@@ -77,92 +77,32 @@ namespace vl::presentation::remote_renderer
 * Rendering (INativeWindow)
 ***********************************************************************/
 
-	void GuiRemoteRendererSingle::LeftButtonDown(const NativeWindowMouseInfo& info)
+	void GuiRemoteRendererSingle::MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
 		SendAccumulatedMessages();
 		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Left;
+		arguments.button = button;
 		arguments.info = info;
 		events->OnIOButtonDown(arguments);
 	}
 
-	void GuiRemoteRendererSingle::LeftButtonUp(const NativeWindowMouseInfo& info)
+	void GuiRemoteRendererSingle::MouseUp(NativeMouseButton button, const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
 		SendAccumulatedMessages();
 		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Left;
+		arguments.button = button;
 		arguments.info = info;
 		events->OnIOButtonUp(arguments);
 	}
 
-	void GuiRemoteRendererSingle::LeftButtonDoubleClick(const NativeWindowMouseInfo& info)
+	void GuiRemoteRendererSingle::MouseDoubleClick(NativeMouseButton button, const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
 		SendAccumulatedMessages();
 		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Left;
-		arguments.info = info;
-		events->OnIOButtonDoubleClick(arguments);
-	}
-
-	void GuiRemoteRendererSingle::RightButtonDown(const NativeWindowMouseInfo& info)
-	{
-		if (!CanSendEvents()) return;
-		SendAccumulatedMessages();
-		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Right;
-		arguments.info = info;
-		events->OnIOButtonDown(arguments);
-	}
-
-	void GuiRemoteRendererSingle::RightButtonUp(const NativeWindowMouseInfo& info)
-	{
-		if (!CanSendEvents()) return;
-		SendAccumulatedMessages();
-		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Right;
-		arguments.info = info;
-		events->OnIOButtonUp(arguments);
-	}
-
-	void GuiRemoteRendererSingle::RightButtonDoubleClick(const NativeWindowMouseInfo& info)
-	{
-		if (!CanSendEvents()) return;
-		SendAccumulatedMessages();
-		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Right;
-		arguments.info = info;
-		events->OnIOButtonDoubleClick(arguments);
-	}
-
-	void GuiRemoteRendererSingle::MiddleButtonDown(const NativeWindowMouseInfo& info)
-	{
-		if (!CanSendEvents()) return;
-		SendAccumulatedMessages();
-		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Middle;
-		arguments.info = info;
-		events->OnIOButtonDown(arguments);
-	}
-
-	void GuiRemoteRendererSingle::MiddleButtonUp(const NativeWindowMouseInfo& info)
-	{
-		if (!CanSendEvents()) return;
-		SendAccumulatedMessages();
-		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Middle;
-		arguments.info = info;
-		events->OnIOButtonUp(arguments);
-	}
-
-	void GuiRemoteRendererSingle::MiddleButtonDoubleClick(const NativeWindowMouseInfo& info)
-	{
-		if (!CanSendEvents()) return;
-		SendAccumulatedMessages();
-		IOMouseInfoWithButton arguments;
-		arguments.button = IOMouseButton::Middle;
+		arguments.button = button;
 		arguments.info = info;
 		events->OnIOButtonDoubleClick(arguments);
 	}
@@ -170,6 +110,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::HorizontalWheel(const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
+		if (pendingHWheel && pendingHWheel.Value().osSuper != info.osSuper) SendAccumulatedMessages();
 		auto copy = info;
 		if (pendingHWheel) copy.wheel += pendingHWheel.Value().wheel;
 		pendingHWheel = copy;
@@ -178,6 +119,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::VerticalWheel(const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
+		if (pendingVWheel && pendingVWheel.Value().osSuper != info.osSuper) SendAccumulatedMessages();
 		auto copy = info;
 		if (pendingVWheel) copy.wheel += pendingVWheel.Value().wheel;
 		pendingVWheel = copy;
@@ -225,7 +167,7 @@ namespace vl::presentation::remote_renderer
 	{
 		if (!CanSendEvents()) return;
 		pendingKeyAutoDown.Reset();
-		if (!info.ctrl && !info.shift && info.code == VKEY::KEY_MENU)
+		if (!info.ctrl && !info.shift && !info.osSuper && info.code == VKEY::KEY_MENU)
 		{
 			window->SupressAlt();
 		}

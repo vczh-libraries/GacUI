@@ -33,11 +33,11 @@ GuiGlobalShortcutKeyManager
 
 				bool OnCreatingShortcut(GuiShortcutKeyItem* item) override
 				{
-					bool ctrl, shift, alt;
+					bool ctrl, shift, alt, osSuper;
 					VKEY key;
-					item->ReadKeyConfig(ctrl, shift, alt, key);
+					item->ReadKeyConfig(ctrl, shift, alt, osSuper, key);
 
-					vint id = GetCurrentController()->InputService()->RegisterGlobalShortcutKey(ctrl, shift, alt, key);
+					vint id = GetCurrentController()->InputService()->RegisterGlobalShortcutKey(ctrl, shift, alt, osSuper, key);
 					if (id < (vint)NativeGlobalShortcutKeyResult::ValidIdBegins) return false;
 
 					idToItemsMap.Add(id, item);

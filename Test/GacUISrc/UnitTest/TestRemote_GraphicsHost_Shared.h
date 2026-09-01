@@ -116,8 +116,10 @@ namespace remote_graphics_host_tests
 	extern void										AttachAndLogEvents(GuiGraphicsComposition* sender, const wchar_t* name, List<WString>& eventLogs);
 
 	extern NativeWindowKeyInfo						MakeKeyInfo(bool ctrl, bool shift, bool alt, VKEY code);
+	extern NativeWindowKeyInfo						MakeKeyInfo(bool ctrl, bool shift, bool alt, bool osSuper, VKEY code);
 	extern NativeWindowCharInfo						MakeCharInfo(bool ctrl, bool shift, bool alt, wchar_t code);
-	extern NativeWindowMouseInfo					MakeMouseInfo(bool left, bool middle, bool right, vint x, vint y, vint wheel);
-	extern remoteprotocol::IOMouseInfoWithButton	MakeMouseInfoWithButton(remoteprotocol::IOMouseButton button, bool left, bool middle, bool right, vint x, vint y, vint wheel);
+	extern NativeWindowCharInfo						MakeCharInfo(bool ctrl, bool shift, bool alt, bool osSuper, wchar_t code);
+	extern NativeWindowMouseInfo					MakeMouseInfo(bool left, bool middle, bool right, vint x, vint y, vint wheel, bool osSuper = false);
+	extern remoteprotocol::IOMouseInfoWithButton	MakeMouseInfoWithButton(NativeMouseButton button, bool left, bool middle, bool right, vint x, vint y, vint wheel, bool osSuper = false);
 }
 using namespace remote_graphics_host_tests;

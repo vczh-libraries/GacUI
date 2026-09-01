@@ -19,12 +19,13 @@ namespace vl
 		{
 			class IGuiShortcutKeyItem;
 			class IGuiShortcutKeyManager;
+			class GuiShortcutKeyManager;
 		}
 
 		namespace controls
 		{
 			/// <summary>A command for toolstrip controls.</summary>
-			class GuiToolstripCommand : public GuiComponent, public Description<GuiToolstripCommand>
+			class GuiToolstripCommand : public GuiComponent, private INativeControllerListener, public Description<GuiToolstripCommand>
 			{
 			public:
 				class ShortcutBuilder : public Object
@@ -35,6 +36,7 @@ namespace vl
 					bool									ctrl = false;
 					bool									shift = false;
 					bool									alt = false;
+					bool									osSuper = false;
 					VKEY									key = VKEY::KEY_UNKNOWN;
 				};
 			protected:
@@ -46,6 +48,7 @@ namespace vl
 				bool										selected = false;
 				Ptr<compositions::IGuiGraphicsEventHandler>	shortcutKeyItemExecutedHandler;
 				Ptr<ShortcutBuilder>						shortcutBuilder;
+				Ptr<compositions::GuiShortcutKeyManager>		detachedShortcutKeyManager;
 
 				GuiInstanceRootObject*						attachedRootObject = nullptr;
 				GuiControlHost*								attachedControlHost = nullptr;
@@ -54,6 +57,7 @@ namespace vl
 				void										OnShortcutKeyItemExecuted(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnRenderTargetChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										InvokeDescriptionChanged();
+				void										EnvironmentChanged()override;
 
 				compositions::IGuiShortcutKeyManager*		GetShortcutManagerFromBuilder(Ptr<ShortcutBuilder> builder);
 				void										RemoveShortcut();
