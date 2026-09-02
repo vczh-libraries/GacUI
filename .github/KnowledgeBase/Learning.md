@@ -4,12 +4,12 @@
 
 - Verify generated artifacts with downstream consumer checks [23]
 - Process staged tasks one by one with verification [19]
+- Proactively remove code made redundant by refactoring [16]
+- Keep design documentation aligned with code after refactoring [16]
 - Crash early instead of adding error-tolerance fallbacks [15]
-- Proactively remove code made redundant by refactoring [15]
 - Port fixes from imports to source repositories [15]
-- Keep design documentation aligned with code after refactoring [15]
 - Fix behavior at the owning state instead of patching symptoms [11]
-- Extract abstractions only for real shared behavior [10]
+- Extract abstractions only for real shared behavior [11]
 - Verify and localize portability on every target OS [9]
 - Make `Stop()` drain asynchronous work before returning [8]
 - Validate expectations against implementation and existing tests [6]
@@ -117,6 +117,8 @@ When several platform implementations must satisfy the same behavioral contract,
 Do not turn fixed owner decisions or concrete state observations into callbacks or virtual policy. If the owning process controls whether an operation is called, enforce that choice at the call site; if a predicate only reports internal state, keep it nonvirtual. Reserve virtual functions for behavior that derived implementations genuinely need to change.
 
 Likewise, do not pass one-shot callbacks merely to hide mutually exclusive concrete call sites. Prefer typed ownership that exposes the real server or service to the operation that performs the fixed sequence, and use compile-time or overload separation when some application modes genuinely have no such dependency.
+
+For environment or lifecycle invalidation, prefer forwarding one application-level notification through the existing ownership tree over registering every affected object as a global listener. This keeps notifications scoped to objects that are actually installed or active.
 
 ## Make `Stop()` drain asynchronous work before returning
 
@@ -308,6 +310,8 @@ When splitting a monolithic implementation into focused files, delete empty sour
 
 For application refactors, remove helper wrappers that only duplicate an already-clear direct call. For example, direct `GetChannels()[WString::Unmanaged(RpcChannel)]` access is preferable to a `GetRpcChannel` helper when the intended behavior is still to fail if the channel is missing.
 
+When a shared event-information type can own a newly common field, move the field there and delete modifier-only wrapper types and parallel overload plumbing that no longer represent a distinct concept.
+
 ## Keep design documentation aligned with code after refactoring
 
 When a refactoring changes architecture or behavior, update the corresponding design documents in the same task rather than deferring it. After a structural change, re-read the related documents and reconcile anything that became misaligned (for example, descriptions of a transport path that no longer exists). Treat documentation drift left by a previous refactoring as part of the current cleanup.
@@ -315,6 +319,8 @@ When a refactoring changes architecture or behavior, update the corresponding de
 Public namespace refactors require corresponding knowledge-base and documentation-site updates; publish the site when its generated or documented surface actually changes.
 
 Once a shared behavioral suite already exists, follow-up platform implementation task documents should point to binding and running that suite rather than requesting duplicate test cases. Reuse authoritative platform details from existing design documents and preserve explicit out-of-scope sections.
+
+Keep API comments and sample handler names synchronized with refactored event signatures and names; mechanically working examples can still teach an obsolete public model.
 
 ## Fix behavior at the owning state instead of patching symptoms
 

@@ -70,6 +70,8 @@
 - `Instance_GenerateRpcMetadata` validates one aggregate of all Workflow modules [1]
 - GacUI test apps own concrete automation service composition [1]
 - `FileDialogTaskQueue` lock preserves cross-thread scheduling [1]
+- Unified composition mouse handlers use unified event names [1]
+- Propagate environment changes through installed `GuiComponent`s [1]
 
 # Refinements
 
@@ -411,3 +413,11 @@ Keep Core view-model acquisition inside `StartServer`'s error boundary and make 
 `FileDialogTaskQueue::Queue` is called from UI-thread view-model paths, and task completion mutations return through `GuiApplication::InvokeInMainThread`, but the queue state is not UI-thread-confined. Its `InvokeAsync` worker removes pending tasks and clears `executing` while later UI calls can submit more work, so `SpinLock` protects a real producer/consumer overlap.
 
 Do not move consumption behind each UI completion or defer submissions into a UI-thread batch merely to remove the lock. Both add a scheduling boundary and change file-dialog element allocation and rendering order. Retain the locked worker-draining design unless an intentional behavior and snapshot migration is requested.
+
+## Unified composition mouse handlers use unified event names
+
+Handlers attached to `mouseDown`, `mouseUp`, or `mouseDoubleClick` should be named `On...MouseDown`, `On...MouseUp`, or `On...MouseDoubleClick`, even when the handler filters for one button or performs a button-specific action. The method name should identify the event being handled; inspect `GuiMouseEventArgs::button` for Left, Middle, Right, Mouse4, or Mouse5 behavior. Keep button-specific names only for compatibility events whose event itself remains button-specific.
+
+## Propagate environment changes through installed `GuiComponent`s
+
+Use the existing `GuiApplication` to `GuiWindow` to installed-`GuiComponent` ownership path for renderer environment changes instead of registering each component as an `INativeControllerListener`. `GuiWindow::EnvironmentChanged` refreshes display-font state and invokes `GuiComponent::EnvironmentChanged()` only for installed components; `GuiToolstripCommand` raises `DescriptionChanged` from that hook so bound shortcut labels refresh without listener proliferation or notifications to detached commands.
