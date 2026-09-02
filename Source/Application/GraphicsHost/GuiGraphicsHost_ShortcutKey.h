@@ -60,6 +60,7 @@ Shortcut Key Manager
 				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
 				/// <param name="shift">Set to true if the SHIFT key is required.</param>
 				/// <param name="alt">Set to true if the ALT key is required.</param>
+				/// <param name="osSuper">Set to true if the operating system Super key is required.</param>
 				/// <param name="key">The non-control key.</param>
 				virtual IGuiShortcutKeyItem*			TryGetShortcut(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)=0;
 				/// <summary>Create a shortcut key item using a key combination. If the item for the key combination exists, this function crashes.</summary>
@@ -67,6 +68,7 @@ Shortcut Key Manager
 				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
 				/// <param name="shift">Set to true if the SHIFT key is required.</param>
 				/// <param name="alt">Set to true if the ALT key is required.</param>
+				/// <param name="osSuper">Set to true if the operating system Super key is required.</param>
 				/// <param name="key">The non-control key.</param>
 				virtual IGuiShortcutKeyItem*			CreateNewShortcut(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)=0;
 				/// <summary>Create a shortcut key item using a key combination. If the item for the key combination exists, this function returns the item that is created before.</summary>
@@ -74,6 +76,7 @@ Shortcut Key Manager
 				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
 				/// <param name="shift">Set to true if the SHIFT key is required.</param>
 				/// <param name="alt">Set to true if the ALT key is required.</param>
+				/// <param name="osSuper">Set to true if the operating system Super key is required.</param>
 				/// <param name="key">The non-control key.</param>
 				virtual IGuiShortcutKeyItem*			CreateShortcutIfNotExist(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)=0;
 				/// <summary>Destroy a shortcut key item using a key combination</summary>

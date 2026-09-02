@@ -47,7 +47,7 @@ DefaultTreeItemTemplate
 			expandingButton->SetAutoFocus(false);
 			expandingButton->SetAutoSelection(false);
 			expandingButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-			expandingButton->GetBoundsComposition()->GetEventReceiver()->mouseDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonDoubleClick);
+			expandingButton->GetBoundsComposition()->GetEventReceiver()->mouseDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonMouseDoubleClick);
 			expandingButton->Clicked.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonClicked);
 			cell->AddChild(expandingButton->GetBoundsComposition());
 		}
@@ -136,7 +136,7 @@ DefaultTreeItemTemplate
 		}
 	}
 
-	void DefaultTreeItemTemplate::OnExpandingButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+	void DefaultTreeItemTemplate::OnExpandingButtonMouseDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 	{
 		if (arguments.button != NativeMouseButton::Left) return;
 		arguments.handled = true;

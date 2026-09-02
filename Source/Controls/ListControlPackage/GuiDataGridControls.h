@@ -41,9 +41,8 @@ DefaultDataGridItemTemplate
 					IDataEditorFactory*										GetDataEditorFactory(vint row, vint column);
 					vint													GetCellColumnIndex(compositions::GuiGraphicsComposition* composition);
 					bool													IsInEditor(GuiVirtualDataGrid* dataGrid, compositions::GuiMouseEventArgs& arguments);
-					void													OnCellButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
-					void													OnCellLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
-					void													OnCellRightButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
+					void													OnCellMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
+					void													OnCellMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 
 					void													DeleteAllVisualizers();
 					void													DeleteVisualizer(vint column);

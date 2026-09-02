@@ -150,7 +150,7 @@ ListViewColumnItemArranger
 					}
 				}
 
-				void ListViewColumnItemArranger::ColumnHeaderSplitterLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+				void ListViewColumnItemArranger::ColumnHeaderSplitterMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
 					if (arguments.button != NativeMouseButton::Left) return;
 					if(listView->GetVisuallyEnabled())
@@ -161,7 +161,7 @@ ListViewColumnItemArranger
 					}
 				}
 
-				void ListViewColumnItemArranger::ColumnHeaderSplitterLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+				void ListViewColumnItemArranger::ColumnHeaderSplitterMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
 					if (arguments.button != NativeMouseButton::Left) return;
 					if(listView->GetVisuallyEnabled())
@@ -271,8 +271,8 @@ ListViewColumnItemArranger
 								splitterComposition->SetPreferredMinSize(Size(SplitterWidth, 0));
 								columnHeaderSplitters.Add(splitterComposition);
 
-								splitterComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterLeftButtonDown);
-								splitterComposition->GetEventReceiver()->mouseUp.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterLeftButtonUp);
+								splitterComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterMouseDown);
+								splitterComposition->GetEventReceiver()->mouseUp.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterMouseUp);
 								splitterComposition->GetEventReceiver()->mouseMove.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterMouseMove);
 							}
 							for (vint i = 0; i < listViewItemView->GetColumnCount(); i++)

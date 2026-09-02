@@ -141,8 +141,22 @@ The same change applied to `FullControlTest` will be applied to the main tab.
 
 the work is overall good, but it looks like that, not putting the osSuper in `WindowMouseInfo_` cause INativeWindowListener and remote protocol to be a little bit ugly, please make a small refactor to do that, remove IOMouseInfoWithModifier because it is no longer need, and similar changes to other places where new types are created just because of this. Verification is the same, so you need to update GacJS. But Build.ps1 is not needed for Release just update code-packed files.
 
+## UPDATE
+
+[TODO\_Task\_MouseEvent.md](TODO_Task_MouseEvent.md) There are multiple commits created from the last work but I have merged them into one, so you only need to read the last commit to trace what is changed. Limit the scope to what was changed in the last commit. It is overall good but here are more refactoring work items:
+
+- Some functions have signature changed but the XML comments are not updated, fix them.
+- Events changed from leftButtonDown to buttonDown but handler methods were not renamed. For example, GuiButton::OnLeftButtonDown  should become GuiButton::OnMouseDown, as the method name should reflect what event is handled instead of what it does. Fix all similar instances. Another example is DefaultDataGridItemTemplate::OnCellButtonDown  , it should also be OnCellMouseDown, to match the event name.
+
+After finishing all of this, you need to tell me what was the purpose of:
+
+- ``GuiToolstripCommand` implementing `INativeControllerListener``
+- What does `AutomationMouseListener` and added content in that file do?
+
 ## Final review and verification
 
+- Added the missing `osSuper` XML parameter comments to the four shortcut-registration/lookup signatures changed by the squashed mouse/Super commit. Renamed every handler attached to a unified composition mouse event so its name reflects `MouseDown`, `MouseUp`, or `MouseDoubleClick`; consolidated the data-grid left/right mouse-up handlers while preserving their selection behavior. Intentionally retained the list-item and tree-node button-specific handler names because those compatibility events remain button-specific.
+- The final Debug x64 solution build passed with zero warnings/errors, and the complete Debug x64 unit suite passed 89/89 files and 1718/1718 cases with no leak report. `Build.ps1 -Project GacUI` also passed both Release architectures, metadata generation/tests, both complete Release unit suites, GacGen, DarkSkin generation, and CodePack; the generated diff is limited to the four expected `Release/GacUI*` files and passes `git diff --check`.
 - Refactored the follow-up mouse contract so `WindowMouseInfo_` owns `osSuper`; native-listener, hosted, automation, graphics-host, and remote paths now pass one complete mouse-info value. Removed `IOMouseInfoWithModifier`, made move and wheel events use `IOMouseInfo` directly, and kept only the button wrapper needed to carry button identity.
 - Regenerated the remote schema and updated GacJS imports, generated bindings, browser modifier/button mapping, controller configuration, protocol documentation, and stale mapping comments. The GacJS build passed, and `yarn test` passed all ten packages plus 53/53 Windows protocol E2E cases covering HTTP, MiniHTTP, renderer replacement, and the view-model matrix.
 - The final Debug x64 solution build passed with zero warnings/errors, and the complete Debug x64 unit suite passed 89/89 files and 1718/1718 cases with no leak report. A focused native `/Pipe` run also accepted Super-tagged move/wheel and Mouse4/Mouse5 down/up payloads, displayed both exact button transitions, and remained connected without a fatal state.
@@ -185,6 +199,7 @@ Update the Windows XBUTTON message mapping, hosted forwarding, GacGen/test servi
 
 ### CODE CHANGE
 
+- Complete the squashed commit's naming/documentation refactor by documenting the added `osSuper` parameters, renaming unified composition-event handlers after their events, and regenerating the affected GacUI code-packed files.
 - Change the native and composition input contracts, all implementations, and all filtered consumers as described above, with `osSuper` owned by `WindowMouseInfo_` and no separate native-listener modifier parameter.
 - Simplify the remote schema so mouse move/wheel events use `IOMouseInfo` directly, remove `IOMouseInfoWithModifier`, regenerate the protocol, and update GacJS plus code-packed Release files without running the full Release build.
 - Change shortcut/resource APIs, parser/display behavior, modifier-sensitive guards, Windows global-hotkey registration, and remote reconnect/environment refresh.
@@ -196,3 +211,5 @@ Update the Windows XBUTTON message mapping, hosted forwarding, GacGen/test servi
 The implemented follow-up establishes one owner for mouse modifier state: `WindowMouseInfo_` now contains `osSuper`, and every native-listener callback, hosted adapter, graphics-host conversion, automation helper, and remote endpoint transports that complete value. The protocol no longer needs `IOMouseInfoWithModifier`; move and wheel events use `IOMouseInfo` directly, while the button wrapper contains only the button and mouse info. Generated C++ protocol files, metadata, codepacks, and GacJS bindings all reflect the same shape.
 
 Verification passed across the affected boundaries: Debug x64 built with zero warnings/errors; the full Debug unit suite passed 89/89 files and 1718/1718 cases with no leak report; GacJS import, code generation, build, all ten package tests, and 53/53 Windows protocol E2E cases passed; and a native named-pipe session accepted Super-tagged mouse move/wheel and Mouse4/Mouse5 down/up input without disconnect or fatal state. The supported GacUI packaging pipeline also passed both Release architectures, metadata generation/tests, full Release unit suites, GacGen, skin generation, and CodePack. Per the follow-up instruction, the Release repository received only the four changed code-packed files and its full `Build.ps1 -Project Release` workflow was not rerun.
+
+The final naming/documentation follow-up is also complete. All changed shortcut signatures now document `osSuper`; handlers attached to unified composition mouse events use event-based names, while retained button-specific item/node handlers remain unchanged. Debug x64 and both Release packaging architectures passed their complete unit suites, and the regenerated GacUI codepack contains only the corresponding source changes.

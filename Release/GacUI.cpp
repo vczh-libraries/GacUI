@@ -6240,7 +6240,7 @@ GuiButton
 				AfterClicked.Execute(GetNotifyEventArguments());
 			}
 
-			void GuiButton::OnLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+			void GuiButton::OnMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
 				if (arguments.button != NativeMouseButton::Left) return;
 				if (arguments.eventSource == boundsComposition)
@@ -6266,7 +6266,7 @@ GuiButton
 				}
 			}
 
-			void GuiButton::OnLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+			void GuiButton::OnMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
 				if (arguments.button != NativeMouseButton::Left) return;
 				if (mousePressingDirect || mousePressingIndirect)
@@ -6358,8 +6358,8 @@ GuiButton
 				Clicked.SetAssociatedComposition(boundsComposition);
 				SetFocusableComposition(boundsComposition);
 
-				boundsComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiButton::OnLeftButtonDown);
-				boundsComposition->GetEventReceiver()->mouseUp.AttachMethod(this, &GuiButton::OnLeftButtonUp);
+				boundsComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiButton::OnMouseDown);
+				boundsComposition->GetEventReceiver()->mouseUp.AttachMethod(this, &GuiButton::OnMouseUp);
 				boundsComposition->GetEventReceiver()->mouseEnter.AttachMethod(this, &GuiButton::OnMouseEnter);
 				boundsComposition->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiButton::OnMouseLeave);
 				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiButton::OnKeyDown);
@@ -10732,7 +10732,7 @@ DefaultDataGridItemTemplate
 					return false;
 				}
 
-				void DefaultDataGridItemTemplate::OnCellButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+				void DefaultDataGridItemTemplate::OnCellMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
 					if (arguments.button != NativeMouseButton::Left && arguments.button != NativeMouseButton::Right) return;
 					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
@@ -10744,9 +10744,9 @@ DefaultDataGridItemTemplate
 					}
 				}
 
-				void DefaultDataGridItemTemplate::OnCellLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+				void DefaultDataGridItemTemplate::OnCellMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
-					if (arguments.button != NativeMouseButton::Left) return;
+					if (arguments.button != NativeMouseButton::Left && arguments.button != NativeMouseButton::Right) return;
 					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
 					{
 						if (IsInEditor(dataGrid, arguments))
@@ -10759,28 +10759,7 @@ DefaultDataGridItemTemplate
 							if (index != -1)
 							{
 								vint currentRow = GetIndex();
-								dataGrid->SelectCell({ currentRow,index }, true);
-							}
-						}
-					}
-				}
-
-				void DefaultDataGridItemTemplate::OnCellRightButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
-				{
-					if (arguments.button != NativeMouseButton::Right) return;
-					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
-					{
-						if (IsInEditor(dataGrid, arguments))
-						{
-							arguments.handled = true;
-						}
-						else if (dataGrid->GetVisuallyEnabled())
-						{
-							vint index = GetCellColumnIndex(sender);
-							if (index != -1)
-							{
-								vint currentRow = GetIndex();
-								dataGrid->SelectCell({ currentRow,index }, false);
+								dataGrid->SelectCell({ currentRow,index }, arguments.button == NativeMouseButton::Left);
 							}
 						}
 					}
@@ -10846,9 +10825,8 @@ DefaultDataGridItemTemplate
 							auto cell = new GuiCellComposition;
 							textTable->AddChild(cell);
 							cell->SetSite(0, i, 1, 1);
-							cell->GetEventReceiver()->mouseDown.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellButtonDown);
-							cell->GetEventReceiver()->mouseUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellLeftButtonUp);
-							cell->GetEventReceiver()->mouseUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellRightButtonUp);
+							cell->GetEventReceiver()->mouseDown.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellMouseDown);
+							cell->GetEventReceiver()->mouseUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellMouseUp);
 							dataCells[i] = cell;
 						}
 					}
@@ -12447,7 +12425,7 @@ GuiListControl
 				}
 			}
 
-			void GuiListControl::OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+			void GuiListControl::OnBoundsMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
 				if(GetVisuallyEnabled())
 				{
@@ -12656,7 +12634,7 @@ GuiListControl
 
 				if (acceptFocus)
 				{
-					boundsComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiListControl::OnBoundsMouseButtonDown);
+					boundsComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiListControl::OnBoundsMouseDown);
 					SetFocusableComposition(boundsComposition);
 				}
 			}
@@ -13299,7 +13277,7 @@ ListViewColumnItemArranger
 					}
 				}
 
-				void ListViewColumnItemArranger::ColumnHeaderSplitterLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+				void ListViewColumnItemArranger::ColumnHeaderSplitterMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
 					if (arguments.button != NativeMouseButton::Left) return;
 					if(listView->GetVisuallyEnabled())
@@ -13310,7 +13288,7 @@ ListViewColumnItemArranger
 					}
 				}
 
-				void ListViewColumnItemArranger::ColumnHeaderSplitterLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+				void ListViewColumnItemArranger::ColumnHeaderSplitterMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
 					if (arguments.button != NativeMouseButton::Left) return;
 					if(listView->GetVisuallyEnabled())
@@ -13420,8 +13398,8 @@ ListViewColumnItemArranger
 								splitterComposition->SetPreferredMinSize(Size(SplitterWidth, 0));
 								columnHeaderSplitters.Add(splitterComposition);
 
-								splitterComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterLeftButtonDown);
-								splitterComposition->GetEventReceiver()->mouseUp.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterLeftButtonUp);
+								splitterComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterMouseDown);
+								splitterComposition->GetEventReceiver()->mouseUp.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterMouseUp);
 								splitterComposition->GetEventReceiver()->mouseMove.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterMouseMove);
 							}
 							for (vint i = 0; i < listViewItemView->GetColumnCount(); i++)
@@ -16693,7 +16671,7 @@ DefaultTreeItemTemplate
 			expandingButton->SetAutoFocus(false);
 			expandingButton->SetAutoSelection(false);
 			expandingButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-			expandingButton->GetBoundsComposition()->GetEventReceiver()->mouseDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonDoubleClick);
+			expandingButton->GetBoundsComposition()->GetEventReceiver()->mouseDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonMouseDoubleClick);
 			expandingButton->Clicked.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonClicked);
 			cell->AddChild(expandingButton->GetBoundsComposition());
 		}
@@ -16782,7 +16760,7 @@ DefaultTreeItemTemplate
 		}
 	}
 
-	void DefaultTreeItemTemplate::OnExpandingButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+	void DefaultTreeItemTemplate::OnExpandingButtonMouseDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 	{
 		if (arguments.button != NativeMouseButton::Left) return;
 		arguments.handled = true;
@@ -29027,14 +29005,14 @@ GuiTableSplitterCompositionBase
 				tableParent = dynamic_cast<GuiTableComposition*>(newParent);
 			}
 
-			void GuiTableSplitterCompositionBase::OnLeftButtonDown(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
+			void GuiTableSplitterCompositionBase::OnMouseDown(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
 			{
 				if (arguments.button != NativeMouseButton::Left) return;
 				dragging = true;
 				draggingPoint = Point(arguments.x, arguments.y);
 			}
 
-			void GuiTableSplitterCompositionBase::OnLeftButtonUp(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
+			void GuiTableSplitterCompositionBase::OnMouseUp(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
 			{
 				if (arguments.button != NativeMouseButton::Left) return;
 				dragging = false;
@@ -29167,8 +29145,8 @@ GuiTableSplitterCompositionBase
 			
 			GuiTableSplitterCompositionBase::GuiTableSplitterCompositionBase()
 			{
-				GetEventReceiver()->mouseDown.AttachMethod(this, &GuiTableSplitterCompositionBase::OnLeftButtonDown);
-				GetEventReceiver()->mouseUp.AttachMethod(this, &GuiTableSplitterCompositionBase::OnLeftButtonUp);
+				GetEventReceiver()->mouseDown.AttachMethod(this, &GuiTableSplitterCompositionBase::OnMouseDown);
+				GetEventReceiver()->mouseUp.AttachMethod(this, &GuiTableSplitterCompositionBase::OnMouseUp);
 			}
 
 			GuiTableComposition* GuiTableSplitterCompositionBase::GetTableParent()

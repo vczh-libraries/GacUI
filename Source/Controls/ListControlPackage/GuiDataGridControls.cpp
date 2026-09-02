@@ -92,7 +92,7 @@ DefaultDataGridItemTemplate
 					return false;
 				}
 
-				void DefaultDataGridItemTemplate::OnCellButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+				void DefaultDataGridItemTemplate::OnCellMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
 					if (arguments.button != NativeMouseButton::Left && arguments.button != NativeMouseButton::Right) return;
 					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
@@ -104,9 +104,9 @@ DefaultDataGridItemTemplate
 					}
 				}
 
-				void DefaultDataGridItemTemplate::OnCellLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+				void DefaultDataGridItemTemplate::OnCellMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
-					if (arguments.button != NativeMouseButton::Left) return;
+					if (arguments.button != NativeMouseButton::Left && arguments.button != NativeMouseButton::Right) return;
 					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
 					{
 						if (IsInEditor(dataGrid, arguments))
@@ -119,28 +119,7 @@ DefaultDataGridItemTemplate
 							if (index != -1)
 							{
 								vint currentRow = GetIndex();
-								dataGrid->SelectCell({ currentRow,index }, true);
-							}
-						}
-					}
-				}
-
-				void DefaultDataGridItemTemplate::OnCellRightButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
-				{
-					if (arguments.button != NativeMouseButton::Right) return;
-					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
-					{
-						if (IsInEditor(dataGrid, arguments))
-						{
-							arguments.handled = true;
-						}
-						else if (dataGrid->GetVisuallyEnabled())
-						{
-							vint index = GetCellColumnIndex(sender);
-							if (index != -1)
-							{
-								vint currentRow = GetIndex();
-								dataGrid->SelectCell({ currentRow,index }, false);
+								dataGrid->SelectCell({ currentRow,index }, arguments.button == NativeMouseButton::Left);
 							}
 						}
 					}
@@ -206,9 +185,8 @@ DefaultDataGridItemTemplate
 							auto cell = new GuiCellComposition;
 							textTable->AddChild(cell);
 							cell->SetSite(0, i, 1, 1);
-							cell->GetEventReceiver()->mouseDown.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellButtonDown);
-							cell->GetEventReceiver()->mouseUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellLeftButtonUp);
-							cell->GetEventReceiver()->mouseUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellRightButtonUp);
+							cell->GetEventReceiver()->mouseDown.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellMouseDown);
+							cell->GetEventReceiver()->mouseUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellMouseUp);
 							dataCells[i] = cell;
 						}
 					}

@@ -293,7 +293,7 @@ List Control
 				Size											QueryFullSize()override;
 				void											UpdateView(Rect viewBounds)override;
 				
-				void											OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
+				void											OnBoundsMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void											SetStyleAndArranger(ItemStyleProperty styleProperty, Ptr<IItemArranger> arranger);
 
 				//-----------------------------------------------------------

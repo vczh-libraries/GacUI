@@ -247,7 +247,7 @@ GuiListControl
 				}
 			}
 
-			void GuiListControl::OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+			void GuiListControl::OnBoundsMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
 				if(GetVisuallyEnabled())
 				{
@@ -456,7 +456,7 @@ GuiListControl
 
 				if (acceptFocus)
 				{
-					boundsComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiListControl::OnBoundsMouseButtonDown);
+					boundsComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiListControl::OnBoundsMouseDown);
 					SetFocusableComposition(boundsComposition);
 				}
 			}

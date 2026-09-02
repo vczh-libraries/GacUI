@@ -627,7 +627,7 @@ namespace gaclib_controls
 		void		rootComposition_MouseEnter(vl::presentation::compositions::GuiGraphicsComposition* sender, vl::presentation::compositions::GuiEventArgs& arguments);
 		void		rootComopsition_MouseLeave(vl::presentation::compositions::GuiGraphicsComposition* sender, vl::presentation::compositions::GuiEventArgs& arguments);
 		void		rootComposition_MouseMove(vl::presentation::compositions::GuiGraphicsComposition* sender, vl::presentation::compositions::GuiMouseEventArgs& arguments);
-		void		rootComposition_LeftButtonDown(vl::presentation::compositions::GuiGraphicsComposition* sender, vl::presentation::compositions::GuiMouseEventArgs& arguments);
+		void		rootComposition_MouseDown(vl::presentation::compositions::GuiGraphicsComposition* sender, vl::presentation::compositions::GuiMouseEventArgs& arguments);
 		void		OnKeyUp(vl::presentation::compositions::GuiGraphicsComposition* sender, vl::presentation::compositions::GuiKeyEventArgs& arguments);
 
 	public:

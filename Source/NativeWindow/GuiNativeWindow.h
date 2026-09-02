@@ -1398,6 +1398,7 @@ INativeInputService
 			/// <param name="ctrl">Set to true if the CTRL key is required.</param>
 			/// <param name="shift">Set to true if the SHIFT key is required.</param>
 			/// <param name="alt">Set to true if the ALT key is required.</param>
+			/// <param name="osSuper">Set to true if the operating system Super key is required.</param>
 			/// <param name="key">The non-control key.</param>
 			/// <param name="id"></param>
 			/// <returns>Returns the created id. If it fails, the id equals to one of an item in <see cref="NativeGlobalShortcutKeyResult"/> except "ValidIdBegins".</returns>

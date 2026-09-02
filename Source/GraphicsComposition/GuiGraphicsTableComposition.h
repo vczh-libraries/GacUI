@@ -273,8 +273,8 @@ Table Compositions
 				Point								draggingPoint;
 				
 				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
-				void								OnLeftButtonDown(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
-				void								OnLeftButtonUp(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
+				void								OnMouseDown(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
+				void								OnMouseUp(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
 
 				void								OnMouseMoveHelper(
 														vint cellsBefore,
