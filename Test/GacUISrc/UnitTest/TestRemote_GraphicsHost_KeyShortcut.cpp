@@ -9,6 +9,71 @@ TEST_FILE
 		TEST_ASSERT(remote.ResourceService()->GetOSSuperKeyName() == L"osSuper");
 	});
 
+	TEST_CASE(L"Refresh shortcut labels on initial connection and renderer replacement")
+	{
+		GraphicsHostProtocol protocol;
+		SetGuiMainProxy([&]()
+		{
+			auto theme = Ptr(new EmptyControlTheme);
+			theme::RegisterTheme(theme);
+			{
+				GuiWindow window(theme::ThemeName::Window);
+				auto nestedControl = new GuiCustomControl(theme::ThemeName::CustomControl);
+				window.GetContainerComposition()->AddChild(nestedControl->GetBoundsComposition());
+				auto nestedTemplate = new templates::GuiTemplate;
+				nestedControl->GetContainerComposition()->AddChild(nestedTemplate);
+				GuiInstanceRootObject* owners[] = { &window,nestedControl,nestedTemplate };
+				const wchar_t* builders[] = { L"Ctrl+Alt+Win+Q",L"Ctrl+Alt+Command+W",L"global:Ctrl+Shift+Alt+Super+E" };
+				GuiToolstripCommand* commands[3];
+				IGuiShortcutKeyItem* shortcuts[3];
+				GuiLabel* labels[3];
+				vint notifications[3] = {};
+				for (vint i = 0; i < 3; i++)
+				{
+					commands[i] = new GuiToolstripCommand;
+					commands[i]->SetShortcutBuilder(builders[i]);
+					owners[i]->AddComponent(commands[i]);
+					shortcuts[i] = commands[i]->GetShortcut();
+					labels[i] = new GuiLabel(theme::ThemeName::ShortcutKey);
+					nestedTemplate->AddChild(labels[i]->GetBoundsComposition());
+					labels[i]->SetText(shortcuts[i]->GetName());
+					commands[i]->DescriptionChanged.AttachLambda([&, i](GuiGraphicsComposition*, GuiEventArgs&)
+					{
+						notifications[i]++;
+						labels[i]->SetText(commands[i]->GetShortcut()->GetName());
+					});
+				}
+				auto detachedCommand = Ptr(new GuiToolstripCommand);
+				detachedCommand->SetShortcutBuilder(L"Ctrl+Win+A");
+				vint detachedNotifications = 0;
+				detachedCommand->DescriptionChanged.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&)
+				{
+					detachedNotifications++;
+				});
+
+				auto rendererConfig = MakeGlobalConfig();
+				const wchar_t* rendererNames[] = { L"Win",L"Command",L"Super" };
+				for (vint i = 0; i < 3; i++)
+				{
+					rendererConfig.osSuperKeyName = WString::Unmanaged(rendererNames[i]);
+					protocol.GetEvents()->OnControllerConnect(rendererConfig);
+					TEST_ASSERT(labels[0]->GetText() == L"Ctrl+Alt+" + rendererConfig.osSuperKeyName + L"+Q");
+					TEST_ASSERT(labels[1]->GetText() == L"Ctrl+Alt+" + rendererConfig.osSuperKeyName + L"+W");
+					TEST_ASSERT(labels[2]->GetText() == L"{Ctrl+Shift+Alt+" + rendererConfig.osSuperKeyName + L"+E}");
+					for (vint j = 0; j < 3; j++)
+					{
+						TEST_ASSERT(commands[j]->GetShortcut() == shortcuts[j]);
+						TEST_ASSERT(notifications[j] == i + 1);
+					}
+					TEST_ASSERT(detachedNotifications == 0);
+					protocol.GetEvents()->OnControllerDisconnect();
+				}
+			}
+			theme::UnregisterTheme(theme->Name);
+		});
+		StartRemoteControllerTest(protocol);
+	});
+
 	TEST_CATEGORY(L"Trigger local shortcut key")
 	{
 		auto osSuperKeyName = MakeGlobalConfig().osSuperKeyName;
