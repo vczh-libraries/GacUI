@@ -101,7 +101,7 @@ GuiApplication
 			{
 				for (auto window : windows)
 				{
-					window->NotifyUpdateDisplayFont();
+					window->EnvironmentChanged();
 				}
 			}
 

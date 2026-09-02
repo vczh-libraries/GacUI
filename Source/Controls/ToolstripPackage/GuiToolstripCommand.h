@@ -68,6 +68,7 @@ namespace vl
 				GuiToolstripCommand();
 				~GuiToolstripCommand();
 
+				void										EnvironmentChanged()override;
 				void										Attach(GuiInstanceRootObject* rootObject)override;
 				void										Detach(GuiInstanceRootObject* rootObject)override;
 

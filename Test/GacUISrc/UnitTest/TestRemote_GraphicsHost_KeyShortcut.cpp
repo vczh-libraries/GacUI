@@ -1,21 +1,17 @@
 #include "TestRemote_GraphicsHost_Shared.h"
-
-WString GetCoreOSSuperKeyName()
-{
-#if defined VCZH_MSVC
-	return WString::Unmanaged(L"Win");
-#elif defined VCZH_GCC && defined VCZH_APPLE
-	return WString::Unmanaged(L"Command");
-#elif defined VCZH_GCC
-	return WString::Unmanaged(L"Super");
-#endif
-}
+#include "../../../Source/PlatformProviders/Remote/GuiRemoteController.h"
 
 TEST_FILE
 {
+	TEST_CASE(L"Remote Super key name falls back before connecting")
+	{
+		vl::presentation::GuiRemoteController remote(nullptr);
+		TEST_ASSERT(remote.ResourceService()->GetOSSuperKeyName() == L"osSuper");
+	});
+
 	TEST_CATEGORY(L"Trigger local shortcut key")
 	{
-		auto osSuperKeyName = GetCoreOSSuperKeyName();
+		auto osSuperKeyName = MakeGlobalConfig().osSuperKeyName;
 		GraphicsHostProtocol protocol;
 		List<WString> eventLogs;
 		GuiWindow* controlHost = nullptr;
@@ -63,13 +59,25 @@ TEST_FILE
 			{
 				descriptionChangedCount++;
 			});
+			auto detachedCommand = Ptr(new GuiToolstripCommand);
+			detachedCommand->SetShortcutBuilder(L"Ctrl+Win+A");
+			vint detachedDescriptionChangedCount = 0;
+			auto detachedDescriptionChangedHandler = detachedCommand->DescriptionChanged.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&)
+			{
+				detachedDescriptionChangedCount++;
+			});
 			auto rendererConfig = MakeGlobalConfig();
-			rendererConfig.osSuperKeyName = WString::Unmanaged(L"RendererSuper");
+			rendererConfig.osSuperKeyName = WString::Unmanaged(L"Win");
 			protocol.GetEvents()->OnControllerDisconnect();
+			TEST_ASSERT(c3->GetShortcut()->GetName() == L"Ctrl+Super+Z");
+			TEST_ASSERT(descriptionChangedCount == 0);
 			protocol.GetEvents()->OnControllerConnect(rendererConfig);
 			TEST_ASSERT(c3->GetShortcut() == superShortcut);
-			TEST_ASSERT(c3->GetShortcut()->GetName() == L"Ctrl+" + osSuperKeyName + L"+Z");
-			TEST_ASSERT(descriptionChangedCount == 0);
+			TEST_ASSERT(c3->GetShortcut()->GetName() == L"Ctrl+Win+Z");
+			TEST_ASSERT(descriptionChangedCount == 1);
+			TEST_ASSERT(detachedCommand->GetShortcut()->GetName() == L"Ctrl+Win+A");
+			TEST_ASSERT(detachedDescriptionChangedCount == 0);
+			detachedCommand->DescriptionChanged.Detach(detachedDescriptionChangedHandler);
 			c3->DescriptionChanged.Detach(descriptionChangedHandler);
 			c3->DescriptionChanged.Detach(shortcutMigrationHandler);
 		});
@@ -162,7 +170,7 @@ TEST_FILE
 	});
 	TEST_CATEGORY(L"Trigger global shortcut key")
 	{
-		auto osSuperKeyName = GetCoreOSSuperKeyName();
+		auto osSuperKeyName = MakeGlobalConfig().osSuperKeyName;
 		GraphicsHostProtocol protocol;
 		List<WString> eventLogs;
 		GuiWindow* controlHost = nullptr;

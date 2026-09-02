@@ -267,7 +267,7 @@ GuiApplication
 			{
 				for (auto window : windows)
 				{
-					window->NotifyUpdateDisplayFont();
+					window->EnvironmentChanged();
 				}
 			}
 
@@ -1594,6 +1594,10 @@ GuiComponent
 			{
 			}
 
+			void GuiComponent::EnvironmentChanged()
+			{
+			}
+
 			void GuiComponent::Attach(GuiInstanceRootObject* rootObject)
 			{
 			}
@@ -1883,6 +1887,7 @@ GuiInstanceRootObject
 		}
 	}
 }
+
 
 /***********************************************************************
 .\APPLICATION\CONTROLS\GUILABELCONTROLS.CPP
@@ -2878,6 +2883,15 @@ GuiWindow
 			void GuiWindow::OnVisualStatusChanged()
 			{
 				GuiControlHost::OnVisualStatusChanged();
+			}
+
+			void GuiWindow::EnvironmentChanged()
+			{
+				NotifyUpdateDisplayFont();
+				for (auto component : components)
+				{
+					component->EnvironmentChanged();
+				}
 			}
 
 			void GuiWindow::OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -23230,6 +23244,11 @@ GuiToolstripCommand
 				UpdateShortcutOwner();
 			}
 
+			void GuiToolstripCommand::EnvironmentChanged()
+			{
+				InvokeDescriptionChanged();
+			}
+
 			void GuiToolstripCommand::InvokeDescriptionChanged()
 			{
 				GuiEventArgs arguments;
@@ -35354,13 +35373,9 @@ GuiRemoteController::INativeResourceService
 
 	WString GuiRemoteController::GetOSSuperKeyName()
 	{
-#if defined VCZH_MSVC
-		return WString::Unmanaged(L"Win");
-#elif defined VCZH_GCC && defined VCZH_APPLE
-		return WString::Unmanaged(L"Command");
-#elif defined VCZH_GCC
-		return WString::Unmanaged(L"Super");
-#endif
+		return remoteGlobalConfig.osSuperKeyName.Length() == 0
+			? WString::Unmanaged(L"osSuper")
+			: remoteGlobalConfig.osSuperKeyName;
 	}
 			
 /***********************************************************************

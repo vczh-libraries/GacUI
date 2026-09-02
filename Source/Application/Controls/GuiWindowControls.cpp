@@ -882,6 +882,15 @@ GuiWindow
 				GuiControlHost::OnVisualStatusChanged();
 			}
 
+			void GuiWindow::EnvironmentChanged()
+			{
+				NotifyUpdateDisplayFont();
+				for (auto component : components)
+				{
+					component->EnvironmentChanged();
+				}
+			}
+
 			void GuiWindow::OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				if (auto ct = TypedControlTemplateObject(false))

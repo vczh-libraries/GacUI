@@ -9295,6 +9295,8 @@ Component
 				GuiComponent();
 				~GuiComponent();
 
+				/// <summary>Called when the native environment is changed.</summary>
+				virtual void							EnvironmentChanged();
 				virtual void							Attach(GuiInstanceRootObject* rootObject);
 				virtual void							Detach(GuiInstanceRootObject* rootObject);
 			};
@@ -9434,6 +9436,7 @@ Root Object
 }
 
 #endif
+
 
 /***********************************************************************
 .\APPLICATION\CONTROLS\GUITHEMEMANAGER.H
@@ -10540,6 +10543,7 @@ Window
 				void									SetNativeWindowFrameProperties();
 				bool									ApplyFrameConfigOnVariable(BoolOption frameConfig, BoolOption templateConfig, bool& variable);
 				void									ApplyFrameConfig();
+				void									EnvironmentChanged();
 
 				void									Moved()override;
 				void									DpiChanged(bool preparing)override;
@@ -11562,6 +11566,7 @@ namespace vl
 				GuiToolstripCommand();
 				~GuiToolstripCommand();
 
+				void										EnvironmentChanged()override;
 				void										Attach(GuiInstanceRootObject* rootObject)override;
 				void										Detach(GuiInstanceRootObject* rootObject)override;
 

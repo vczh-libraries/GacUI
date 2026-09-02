@@ -24,6 +24,10 @@ GuiComponent
 			{
 			}
 
+			void GuiComponent::EnvironmentChanged()
+			{
+			}
+
 			void GuiComponent::Attach(GuiInstanceRootObject* rootObject)
 			{
 			}

@@ -270,6 +270,7 @@ Window
 				void									SetNativeWindowFrameProperties();
 				bool									ApplyFrameConfigOnVariable(BoolOption frameConfig, BoolOption templateConfig, bool& variable);
 				void									ApplyFrameConfig();
+				void									EnvironmentChanged();
 
 				void									Moved()override;
 				void									DpiChanged(bool preparing)override;

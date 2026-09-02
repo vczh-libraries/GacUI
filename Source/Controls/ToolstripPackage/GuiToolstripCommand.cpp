@@ -31,6 +31,11 @@ GuiToolstripCommand
 				UpdateShortcutOwner();
 			}
 
+			void GuiToolstripCommand::EnvironmentChanged()
+			{
+				InvokeDescriptionChanged();
+			}
+
 			void GuiToolstripCommand::InvokeDescriptionChanged()
 			{
 				GuiEventArgs arguments;

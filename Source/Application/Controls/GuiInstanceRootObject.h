@@ -40,6 +40,8 @@ Component
 				GuiComponent();
 				~GuiComponent();
 
+				/// <summary>Called when the native environment is changed.</summary>
+				virtual void							EnvironmentChanged();
 				virtual void							Attach(GuiInstanceRootObject* rootObject);
 				virtual void							Detach(GuiInstanceRootObject* rootObject);
 			};
