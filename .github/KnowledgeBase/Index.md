@@ -363,3 +363,4 @@ Detailed project guidance: [Index_GacUI.md](./Index_GacUI.md)
   - [IO Interaction](./manual/unittest/gacui_io.md)
   - [Accessing Controls](./manual/unittest/gacui_controls.md)
   - [Snapshot Viewer](./manual/unittest/gacui_snapshots.md)
+

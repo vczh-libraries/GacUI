@@ -12,3 +12,4 @@ If you enable everything (by default) in **Parser.xml**, AST will generates foll
 For any **RuleName** decorated with a **@parser**, a **ParseRuleName** function is generated in the **your::namespaces::Parser** class. Here **Parser** is the name of the parser defined in **Parser.xml**. You can either put a string or a List\<RegexToken\> to this function. It returns an AST tree when succeeded, otherwise it triggers the **OnError** event. In this event, you can choose to stop the parse function to throw an exception, and it will just returns null.
 
 For the predefined XML parser, you are not recommended to call the **Parser** class directly, because some post processing is required to fix the AST tree. Instead pass this **Parser** class to **XmlParseDocument** or **XmlParseElement**.
+
