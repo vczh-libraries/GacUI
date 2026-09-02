@@ -1,9 +1,21 @@
 #include "TestRemote_GraphicsHost_Shared.h"
 
+WString GetCoreOSSuperKeyName()
+{
+#if defined VCZH_MSVC
+	return WString::Unmanaged(L"Win");
+#elif defined VCZH_GCC && defined VCZH_APPLE
+	return WString::Unmanaged(L"Command");
+#elif defined VCZH_GCC
+	return WString::Unmanaged(L"Super");
+#endif
+}
+
 TEST_FILE
 {
 	TEST_CATEGORY(L"Trigger local shortcut key")
 	{
+		auto osSuperKeyName = GetCoreOSSuperKeyName();
 		GraphicsHostProtocol protocol;
 		List<WString> eventLogs;
 		GuiWindow* controlHost = nullptr;
@@ -26,7 +38,7 @@ TEST_FILE
 			c3->Executed.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&) { eventLogs.Add((L"Ctrl+Super+Z")); });
 			auto detachedSuperShortcut = c3->GetShortcut();
 			TEST_ASSERT(detachedSuperShortcut != nullptr);
-			TEST_ASSERT(detachedSuperShortcut->GetName() == L"Ctrl+Super+Z");
+			TEST_ASSERT(detachedSuperShortcut->GetName() == L"Ctrl+" + osSuperKeyName + L"+Z");
 			auto detachedShortcutManager = detachedSuperShortcut->GetManager();
 			vint shortcutMigrationCount = 0;
 			auto shortcutMigrationHandler = c3->DescriptionChanged.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&)
@@ -39,7 +51,7 @@ TEST_FILE
 			auto superShortcut = c3->GetShortcut();
 			TEST_ASSERT(superShortcut != nullptr);
 			TEST_ASSERT(superShortcut->GetManager() != detachedShortcutManager);
-			TEST_ASSERT(superShortcut->GetName() == L"Ctrl+Super+Z");
+			TEST_ASSERT(superShortcut->GetName() == L"Ctrl+" + osSuperKeyName + L"+Z");
 			TEST_ASSERT(shortcutMigrationCount == 1);
 			c3->SetShortcutBuilder(L"Ctrl+Command+Z");
 			TEST_ASSERT(c3->GetShortcut() == superShortcut);
@@ -51,13 +63,13 @@ TEST_FILE
 			{
 				descriptionChangedCount++;
 			});
-			auto windowsConfig = MakeGlobalConfig();
-			windowsConfig.osSuperKeyName = WString::Unmanaged(L"Win");
+			auto rendererConfig = MakeGlobalConfig();
+			rendererConfig.osSuperKeyName = WString::Unmanaged(L"RendererSuper");
 			protocol.GetEvents()->OnControllerDisconnect();
-			protocol.GetEvents()->OnControllerConnect(windowsConfig);
+			protocol.GetEvents()->OnControllerConnect(rendererConfig);
 			TEST_ASSERT(c3->GetShortcut() == superShortcut);
-			TEST_ASSERT(c3->GetShortcut()->GetName() == L"Ctrl+Win+Z");
-			TEST_ASSERT(descriptionChangedCount >= 1);
+			TEST_ASSERT(c3->GetShortcut()->GetName() == L"Ctrl+" + osSuperKeyName + L"+Z");
+			TEST_ASSERT(descriptionChangedCount == 0);
 			c3->DescriptionChanged.Detach(descriptionChangedHandler);
 			c3->DescriptionChanged.Detach(shortcutMigrationHandler);
 		});
@@ -150,6 +162,7 @@ TEST_FILE
 	});
 	TEST_CATEGORY(L"Trigger global shortcut key")
 	{
+		auto osSuperKeyName = GetCoreOSSuperKeyName();
 		GraphicsHostProtocol protocol;
 		List<WString> eventLogs;
 		GuiWindow* controlHost = nullptr;
@@ -203,7 +216,7 @@ TEST_FILE
 			TEST_ASSERT(protocol.globalShortcutKeys[2].alt == true);
 			TEST_ASSERT(protocol.globalShortcutKeys[2].osSuper == true);
 			TEST_ASSERT(protocol.globalShortcutKeys[2].code == VKEY::KEY_Z);
-			TEST_ASSERT(c3->GetShortcut()->GetName() == L"{Ctrl+Shift+Alt+Super+Z}");
+			TEST_ASSERT(c3->GetShortcut()->GetName() == L"{Ctrl+Shift+Alt+" + osSuperKeyName + L"+Z}");
 
 			protocol.globalShortcutKeys.Clear();
 			protocol.GetEvents()->OnControllerDisconnect();

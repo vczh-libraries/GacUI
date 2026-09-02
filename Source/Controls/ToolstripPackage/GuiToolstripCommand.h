@@ -25,7 +25,7 @@ namespace vl
 		namespace controls
 		{
 			/// <summary>A command for toolstrip controls.</summary>
-			class GuiToolstripCommand : public GuiComponent, private INativeControllerListener, public Description<GuiToolstripCommand>
+			class GuiToolstripCommand : public GuiComponent, public Description<GuiToolstripCommand>
 			{
 			public:
 				class ShortcutBuilder : public Object
@@ -57,7 +57,6 @@ namespace vl
 				void										OnShortcutKeyItemExecuted(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnRenderTargetChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										InvokeDescriptionChanged();
-				void										EnvironmentChanged()override;
 
 				compositions::IGuiShortcutKeyManager*		GetShortcutManagerFromBuilder(Ptr<ShortcutBuilder> builder);
 				void										RemoveShortcut();

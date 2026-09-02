@@ -37,11 +37,6 @@ GuiToolstripCommand
 				DescriptionChanged.Execute(arguments);
 			}
 
-			void GuiToolstripCommand::EnvironmentChanged()
-			{
-				InvokeDescriptionChanged();
-			}
-
 			compositions::IGuiShortcutKeyManager* GuiToolstripCommand::GetShortcutManagerFromBuilder(Ptr<ShortcutBuilder> builder)
 			{
 				if (builder->global)
@@ -141,12 +136,10 @@ GuiToolstripCommand
 
 			GuiToolstripCommand::GuiToolstripCommand()
 			{
-				GetCurrentController()->CallbackService()->InstallListener(this);
 			}
 
 			GuiToolstripCommand::~GuiToolstripCommand()
 			{
-				GetCurrentController()->CallbackService()->UninstallListener(this);
 				RemoveShortcut();
 				shortcutBuilder = nullptr;
 			}

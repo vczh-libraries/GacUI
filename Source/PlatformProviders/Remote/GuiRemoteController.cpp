@@ -64,7 +64,13 @@ GuiRemoteController::INativeResourceService
 
 	WString GuiRemoteController::GetOSSuperKeyName()
 	{
-		return remoteGlobalConfig.osSuperKeyName == L"" ? WString::Unmanaged(L"Super") : remoteGlobalConfig.osSuperKeyName;
+#if defined VCZH_MSVC
+		return WString::Unmanaged(L"Win");
+#elif defined VCZH_GCC && defined VCZH_APPLE
+		return WString::Unmanaged(L"Command");
+#elif defined VCZH_GCC
+		return WString::Unmanaged(L"Super");
+#endif
 	}
 			
 /***********************************************************************
