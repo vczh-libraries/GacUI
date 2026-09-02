@@ -707,9 +707,8 @@ class PredefinedListItemTemplate : public TBase
 **User Interactions**:
 
 Mouse Events (in `DefaultDataGridItemTemplate`):
-- `OnCellLeftButtonUp`: If not in editor, calls `SelectCell(pos, true)` to open editor
-- `OnCellRightButtonUp`: If not in editor, calls `SelectCell(pos, false)` to select without editing
-- `OnCellButtonDown`: Marks event as handled if click is inside editor (prevents closing)
+- `OnCellMouseDown`: Handles only Left and Right, and marks the event as handled if the click is inside the editor (prevents closing)
+- `OnCellMouseUp`: Handles only Left and Right; outside the editor it calls `SelectCell(pos, true)` for Left to open the editor, or `SelectCell(pos, false)` for Right to select without editing
 - `IsInEditor`: Checks if event source is within editor composition hierarchy
 
 Keyboard Events (in `GuiVirtualDataGrid::OnKeyDown`):

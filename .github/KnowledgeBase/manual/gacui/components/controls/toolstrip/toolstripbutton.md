@@ -35,9 +35,9 @@ Setting a correct key combination to **\<ToolstripCommand/\>**::**ShortcutBuilde
 
 The value of the **ShortcutBuilder** property must be in this format:
 ```
-Ctrl+Shift+Alt+KEY
+Ctrl+Shift+Alt+Win+KEY
 ```
-**Ctrl+**, **Shift+** and **Alt+** are optional. And **KEY** must be one of a value returning from **vl::presentation::GetCurrentController()-\>InputService()-\>GetKeyName(VKEY)**.
+**Ctrl+**, **Shift+**, **Alt+**, and the operating-system Super modifier are optional. **Win+**, **Command+**, and **Super+** are aliases for the same Super modifier on every platform. The rendered shortcut uses the active platform provider's canonical label: Win on Windows, Command on macOS, and Super on Linux. If a remote renderer changes that label, installed commands notify bound shortcut text automatically. And **KEY** must be one of a value returning from **vl::presentation::GetCurrentController()-\>InputService()-\>GetKeyName(VKEY)**.
 
 A valid **KEY** must be one of the following values:
 - A to Z

@@ -265,7 +265,7 @@ protected:
     bool myState = false;
 
     // Event handlers
-    void OnMouseClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
+    void OnMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
     
 public:
     GuiMyControl(theme::ThemeName themeName);
@@ -294,7 +294,7 @@ void GuiMyControl::AfterControlTemplateInstalled_(bool initialize)
     TypedControlTemplateObject(true)->SetMyState(myState);
 }
 
-void GuiMyControl::OnMouseClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+void GuiMyControl::OnMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 {
 	if (arguments.button != NativeMouseButton::Left) return;
     SetMyState(!myState);
@@ -304,7 +304,7 @@ GuiMyControl::GuiMyControl(theme::ThemeName themeName)
     : GuiControl(themeName)
 {
     StateChanged.SetAssociatedComposition(boundsComposition);
-    boundsComposition->GetEventReceiver()->mouseUp.AttachMethod(this, &GuiMyControl::OnMouseClick);
+    boundsComposition->GetEventReceiver()->mouseUp.AttachMethod(this, &GuiMyControl::OnMouseUp);
 }
 
 GuiMyControl::~GuiMyControl()

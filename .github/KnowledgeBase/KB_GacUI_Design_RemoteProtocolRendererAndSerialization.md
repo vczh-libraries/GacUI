@@ -60,6 +60,12 @@ Actual painting happens in either `RequestRendererEndRendering` or `GlobalTimer(
 
 All outgoing callbacks and responses are guarded by `CanSendEvents()`. `DisconnectFromCore()` marks the renderer as disconnecting, releases mouse capture, unregisters global shortcuts, and clears all accumulated events so no stale input is sent afterward.
 
+### Super-Key Label and Environment Refresh
+
+When the native renderer opens, it sends its resource service's canonical Super-key label in `ControllerGlobalConfig::osSuperKeyName`. The remote core returns that label from `GuiRemoteController::GetOSSuperKeyName()`; before the first renderer supplies a label it returns `osSuper`, and disconnecting does not clear the last received label.
+
+Each renderer connection invokes the controller environment-change path. `GuiApplication` forwards the change through each live `GuiWindow`, which refreshes its display font and calls `GuiComponent::EnvironmentChanged()` on installed components. `GuiToolstripCommand` overrides that hook to raise `DescriptionChanged`, so bound shortcut text adopts a replacement renderer's label. Detached commands are intentionally not notified, and commands do not register individual `INativeControllerListener` instances.
+
 ### Hit Testing
 
 Hit testing is performed locally in the renderer by traversing the rendering DOM tree via `HitTestInternal`. Each DOM node may have `hitTestResult` and `cursor` attributes set by the core side. The renderer walks the tree and finds the matching node for a given point. This avoids round-trips — hit testing stays entirely renderer-side.

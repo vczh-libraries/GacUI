@@ -31,8 +31,7 @@ GacUI offers the following button events:
 - horizontalWheel
 - verticalWheel
 
-The three button events share the same event type. Read **button** to distinguish
-**Left**, **Middle**, **Right**, **Mouse4**, and **Mouse5**.
+The three button events share the same event type. Read **button** to distinguish **Left**, **Middle**, **Right**, **Mouse4**, and **Mouse5**.
 
 The type of the second argument is **vl::presentation::compositions::GuiMouseEventArgs&**, or **presentation::composition::GuiMouseEventArgs*** in **Workflow**.
 
@@ -41,7 +40,6 @@ Mouse button and wheel events are raised on captured composition, or the composi
 Other members contains the information of the event:
 - **ctrl**: **true** if the CTRL key is pressing.
 - **shift**: **true** if the SHIFT key is pressing.
-- **alt**: **true** if the ALT key is pressing.
 - **osSuper**: **true** if the Windows, Command, or Super key is pressing.
 - **button**: the button for a down, up, or double-click event.
 - **left**: **true** if the mouse left button is pressing.
@@ -55,7 +53,7 @@ Other members contains the information of the event:
 GacUI offers the following button events:
 - mouseMove
 - mouseEnter
-- mouseLeave mapping to the 5 standard buttons of a mouse. But a typical mouse today, middle button and vertical wheel are merged together, horizontal wheel are usually missing.
+- mouseLeave
 
 **mouseEnter** happens when the mouse moves into a composition. **mouseLeave** happens when the mouse moves out of a composition. When a mouse moves from one composition to its child composition, it doesn't count as leaving the original composition, it is still in the original composition and its child composition.
 
@@ -131,6 +129,7 @@ Other members contains the information of the event:
 - **ctrl**: **true** if the CTRL key is pressing.
 - **shift**: **true** if the SHIFT key is pressing.
 - **alt**: **true** if the ALT button is pressing.
+- **osSuper**: **true** if the Windows, Command, or Super key is pressing.
 - **capslock**: **true** if the CAPSLOCK button is activated.
 - **autoRepeatKeyDown**: **true** if this event is generated because of holding a key.
 
@@ -152,6 +151,7 @@ Other members contains the information of the event:
 - **ctrl**: **true** if the CTRL key is pressing.
 - **shift**: **true** if the SHIFT key is pressing.
 - **alt**: **true** if the ALT button is pressing.
+- **osSuper**: **true** if the Windows, Command, or Super key is pressing.
 - **capslock**: **true** if the CAPSLOCK button is activated.
 
 ## Other Events

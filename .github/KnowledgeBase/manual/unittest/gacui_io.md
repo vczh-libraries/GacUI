@@ -5,13 +5,13 @@ To calculate the location of a control or a composition for a following mouse in
 ## Mouse Interactions
 
 Here are a list of available mouse interaction functions in the **protocol** object:
-- **MouseMove(location)**: move the mouse to the specified location
+- **MouseMove(location) and MouseMove(location, ctrl, shift, alt, osSuper)**: move the mouse to the specified location with optional modifier keys.
 - **_LDown(location?)**: trigger a left button down event.
 - **_LUp(location?)**: trigger a left button up event.
 - **_LDBClick(location?)**: trigger a left button double click event.
 - **LClick(location?) and LClick(location, ctrl, shift, alt, osSuper)**: trigger multiple events to simulate a click with optional modifier keys.
 - **LDBClick(location?) and LDBClick(location, ctrl, shift, alt, osSuper)**: trigger multiple events to simulate a double click with optional modifier keys.
-- M (middle), R (right), Mouse4, and Mouse5 versions of the above functions are available.
+- M (middle), R (right), Mouse4, and Mouse5 versions of the down, up, click, and double-click functions are available.
 
 ## Mouse Wheel Interactions
 
@@ -26,5 +26,5 @@ Here are a list of available key interaction functions in the **protocol** objec
 - **_KeyDownRepeat(key)**: trigger a key down event triggers by keep pressing a key.
 - **_KeyUp(key)**: trigger a key up event.
 - **KeyPress(key) and KeyPress(key, ctrl, shift, alt, osSuper)**: trigger multiple events to simulate a key press with optional modifier keys.
-- **TypeString(string)**: trigger a sequence of char events to type a string. Key events will not be triggered.
+- **TypeString(string) and TypeString(string, ctrl, shift, alt, osSuper)**: trigger a sequence of char events with optional modifier keys. Other key events will not be triggered.
 
