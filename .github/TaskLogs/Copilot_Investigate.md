@@ -19,3 +19,15 @@ Use protocol tracing or a debugger to compare the renderer-side key event with t
 On macOS, real keyboard events sent to the focused `RemotingTest_Rendering_macOS` window reproduced the issue: `Ctrl+Q` and `Ctrl+Alt+Command+Q` produced no dialog, while `Ctrl+Shift+Alt+Command+Q` produced `You pressed Ctrl+Shift+Alt+Win+Q!` through the global-hot-key path.
 
 # PROPOSALS
+
+- No.1 Preserve the Cocoa first responder across style-mask updates
+
+## No.1 Preserve the Cocoa first responder across style-mask updates
+
+Tracing `CocoaWindow::UpdateStyleMask()` during remote startup showed that the renderer initially assigns its `CoreGraphicsView` as the native window's first responder. The Core then sends custom-frame, border, size-box, title-bar, and minimize-box settings. AppKit's `-[NSWindow setStyleMask:]` replaces the content view with the `NSWindow` as first responder on each update. The standalone application applies these settings before showing the window and subsequently restores focus during activation, but the already-visible remote renderer does not receive another activation request. Global shortcuts continue to work because Carbon dispatch does not depend on the Cocoa responder chain.
+
+Preserve whether the content view was the first responder before changing the style mask, and restore that exact responder state afterward. Do not activate an inactive window or assign focus when the content view did not already own it.
+
+### CODE CHANGE
+
+Update iGac `CocoaWindow::UpdateStyleMask()` to retain the content-view first-responder state across `-[NSWindow setStyleMask:]`. Document this Cocoa behavior in `doc/OSProvider_Window.md`.
