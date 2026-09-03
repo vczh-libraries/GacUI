@@ -24,14 +24,14 @@
       ]]></ref.Members>
       <TabPage ref.Name="self" Text="Home">
         <MessageDialog ref.Name="dialogLocalShortcut" Title="Remote Protocol Test" Text="You pressed Ctrl+Q!"/>
-        <MessageDialog ref.Name="dialogLocalSuperShortcut" Title="Remote Protocol Test" Text="You pressed Ctrl+Win+Q!"/>
+        <MessageDialog ref.Name="dialogLocalSuperShortcut" Title="Remote Protocol Test" Text="You pressed Ctrl+Alt+Win+Q!"/>
         <MessageDialog ref.Name="dialogGlobalShortcut" Title="Remote Protocol Test" Text="You pressed Ctrl+Shift+Alt+Win+Q!"/>
         <ToolstripCommand ref.Name="commandLocalShortcut" ShortcutBuilder="Ctrl+Q">
           <ev.Executed-eval><![CDATA[{
             dialogLocalShortcut.ShowDialog();
           }]]></ev.Executed-eval>
         </ToolstripCommand>
-        <ToolstripCommand ref.Name="commandLocalSuperShortcut" ShortcutBuilder="Ctrl+Win+Q">
+        <ToolstripCommand ref.Name="commandLocalSuperShortcut" ShortcutBuilder="Ctrl+Alt+Win+Q">
           <ev.Executed-eval><![CDATA[{
             dialogLocalSuperShortcut.ShowDialog();
           }]]></ev.Executed-eval>
@@ -80,15 +80,16 @@
             <Label Text-bind="commandGlobalShortcut.Shortcut.Name"/>
           </Cell>
           <Cell Site="row:4 column:0 columnSpan:3">
-            <Bounds PreferredMinSize="y:24" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-              <SolidLabel ref.Name="labelMouseButton" Text="Click here with any mouse button." VerticalAlignment="Center"/>
-              <ev.mouseDown-eval><![CDATA[{
-	                labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button down!";
-              }]]></ev.mouseDown-eval>
-              <ev.mouseUp-eval><![CDATA[{
-	                labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button up!";
-              }]]></ev.mouseUp-eval>
-            </Bounds>
+            <Label ref.Name="labelMouseButton" Text="Click here with any mouse button.">
+              <att.BoundsComposition-set PreferredMinSize="y:24" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                <ev.mouseDown-eval><![CDATA[{
+                  labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button down!";
+                }]]></ev.mouseDown-eval>
+                <ev.mouseUp-eval><![CDATA[{
+                  labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button up!";
+                }]]></ev.mouseUp-eval>
+              </att.BoundsComposition-set>
+            </Label>
           </Cell>
           <Cell Site="row:5 column:0 columnSpan:3">
             <Raw/>

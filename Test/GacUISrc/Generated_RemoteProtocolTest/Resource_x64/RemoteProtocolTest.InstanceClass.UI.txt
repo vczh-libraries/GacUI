@@ -87,7 +87,7 @@ namespace rptest
         var commandGlobalShortcut : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
 
         @cpp:Protected
-        var labelMouseButton : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+        var labelMouseButton : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         var buttonClickMe : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
@@ -116,7 +116,7 @@ namespace rptest
                 (dialogLocalSuperShortcut.Title = "Remote Protocol Test");
             }
             {
-                (dialogLocalSuperShortcut.Text = "You pressed Ctrl+Win+Q!");
+                (dialogLocalSuperShortcut.Text = "You pressed Ctrl+Alt+Win+Q!");
             }
             {
                 self.AddComponent(dialogLocalSuperShortcut);
@@ -143,7 +143,7 @@ namespace rptest
             (commandLocalSuperShortcut = new (::presentation::controls::GuiToolstripCommand*)());
             <this>.SetNamedObject("commandLocalSuperShortcut", commandLocalSuperShortcut);
             {
-                (commandLocalSuperShortcut.ShortcutBuilder = "Ctrl+Win+Q");
+                (commandLocalSuperShortcut.ShortcutBuilder = "Ctrl+Alt+Win+Q");
             }
             {
                 self.AddComponent(commandLocalSuperShortcut);
@@ -260,26 +260,22 @@ namespace rptest
             {
                 <precompile>10.SetSite(4, 0, 1, 3);
             }
-            (<precompile>11 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (labelMouseButton = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <this>.SetNamedObject("labelMouseButton", labelMouseButton);
+            }
+            (<precompile>11 = labelMouseButton.BoundsComposition);
             {
                 (<precompile>11.PreferredMinSize = {y : 24;} of (::presentation::Size));
             }
             {
                 (<precompile>11.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
-            (labelMouseButton = new (::presentation::elements::GuiSolidLabelElement^)());
-            <this>.SetNamedObject("labelMouseButton", labelMouseButton);
-            {
-                (labelMouseButton.VerticalAlignment = Center of (::presentation::Alignment));
-            }
             {
                 (labelMouseButton.Text = "Click here with any mouse button.");
             }
             {
-                (<precompile>11.OwnedElement = labelMouseButton);
-            }
-            {
-                <precompile>10.AddChild(<precompile>11);
+                <precompile>10.AddChild(labelMouseButton.BoundsComposition);
             }
             {
                 <precompile>0.AddChild(<precompile>10);

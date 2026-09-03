@@ -73,6 +73,7 @@ establish, drive, inspect, replace, and close the renderer session.
 5. After every action except the final close, require the application to remain
    responsive with no startup mask, unexpected modal dialog, alert, error or
    fatal overlay, or disconnect.
+   In GacJS, Mouse4 and Mouse5 must not navigate browser history or change the page URL.
 
 ## Remote Protocol Test (`/RPT`)
 
@@ -99,11 +100,14 @@ renderer replacement and intentional close steps.
 ### 3. Verify Shortcuts and Mouse Buttons
 
 1. On `Home`, require the three shortcut labels to be exactly `Ctrl+Q`,
-   `Ctrl+Win+Q`, and `{Ctrl+Shift+Alt+Win+Q}` on Windows.
+   `Ctrl+Alt+Win+Q`, and `{Ctrl+Shift+Alt+Win+Q}` on Windows.
+   Inspect the visible native-renderer DOM or GacJS page text after the initial
+   connection; `osSuper` must never remain in either displayed shortcut.
+   On macOS require `Command` in place of `Win`; on Linux require `Super`.
 2. Press `Ctrl+Q` and require a distinct dialog containing exactly
    `You pressed Ctrl+Q!`. Close that dialog.
-3. Press `Ctrl+Win+Q` and require a distinct dialog containing exactly
-   `You pressed Ctrl+Win+Q!`. Close that dialog.
+3. Press `Ctrl+Alt+Win+Q` and require a distinct dialog containing exactly
+   `You pressed Ctrl+Alt+Win+Q!`. Close that dialog.
 4. Press `Ctrl+Shift+Alt+Win+Q` through the real Windows global-hot-key path and
    require a distinct dialog containing exactly
    `You pressed Ctrl+Shift+Alt+Win+Q!`. Close that dialog.
@@ -112,6 +116,8 @@ renderer replacement and intentional close steps.
    label to change first to exactly `<button> button down!` and then to exactly
    `<button> button up!`, where `<button>` is respectively `Left`, `Middle`,
    `Right`, `Mouse4`, or `Mouse5`.
+6. Require the mouse-result label to use the same theme font and text color as
+   the shortcut labels, both initially and after mouse input.
 
 ### 4. Add and Clear DataGrid Rows
 
@@ -154,8 +160,10 @@ renderer replacement and intentional close steps.
 8. Inspect the third renderer's current UI and locate all controls again before
    continuing.
 9. On the third renderer, require the three shortcut labels to remain exactly
-   `Ctrl+Q`, `Ctrl+Win+Q`, and `{Ctrl+Shift+Alt+Win+Q}`. Repeat all three shortcut
+   `Ctrl+Q`, `Ctrl+Alt+Win+Q`, and `{Ctrl+Shift+Alt+Win+Q}`. Repeat all three shortcut
    activations from section 3 and dismiss each expected dialog.
+   Use the replacement renderer's canonical `Win`, `Command`, or `Super` name,
+   and reject a stale name from the previous renderer or the literal `osSuper`.
 10. Repeat the Mouse4 and Mouse5 down/up checks from section 3 through the third
     renderer and require the same exact label text without a fatal error or
     disconnect.
@@ -220,11 +228,14 @@ Use a fresh application state.
 ### 4. Verify Shortcuts and Mouse Buttons
 
 1. Activate `Window Manager` and require the three shortcut labels to be
-   exactly `Ctrl+Q`, `Ctrl+Win+Q`, and `{Ctrl+Shift+Alt+Win+Q}` on Windows.
+   exactly `Ctrl+Q`, `Ctrl+Alt+Win+Q`, and `{Ctrl+Shift+Alt+Win+Q}` on Windows.
+   Inspect the visible native-renderer DOM or GacJS page text after the initial
+   connection; `osSuper` must never remain in either displayed shortcut.
+   On macOS require `Command` in place of `Win`; on Linux require `Super`.
 2. Press `Ctrl+Q` and require a distinct dialog containing exactly
    `You pressed Ctrl+Q!`. Close that dialog.
-3. Press `Ctrl+Win+Q` and require a distinct dialog containing exactly
-   `You pressed Ctrl+Win+Q!`. Close that dialog.
+3. Press `Ctrl+Alt+Win+Q` and require a distinct dialog containing exactly
+   `You pressed Ctrl+Alt+Win+Q!`. Close that dialog.
 4. Press `Ctrl+Shift+Alt+Win+Q` through the real Windows global-hot-key path and
    require a distinct dialog containing exactly
    `You pressed Ctrl+Shift+Alt+Win+Q!`. Close that dialog.
@@ -233,6 +244,12 @@ Use a fresh application state.
    require the label to change first to exactly `<button> button down!` and then
    to exactly `<button> button up!`, where `<button>` is respectively `Left`,
    `Middle`, `Right`, `Mouse4`, or `Mouse5`.
+6. Require the mouse-result label to use the same theme font and text color as
+   the shortcut labels, both initially and after mouse input.
+7. Replace the renderer while keeping Core alive, return to `Window Manager`,
+   and repeat the exact label, shortcut activation, and Mouse4/Mouse5 checks.
+   Use the replacement renderer's canonical platform name and require no fatal
+   error or unexpected disconnect.
 
 ### 5. Close the Application
 

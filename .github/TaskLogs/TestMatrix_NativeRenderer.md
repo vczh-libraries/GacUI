@@ -1,4 +1,6 @@
-# Test Matrix Card 2026-08-30 09:13:23
+# Test Matrix Card 2026-09-02 16:43:50
+
+This round covers the mouse/shortcut regressions in FullControlTest and RemoteProtocolTest. RVM rows are outside this task and remain blank.
 
 ## Test Matrix
 
@@ -8,27 +10,47 @@
 | [Windows][CppTest_Rvm][`/Http`] |  |
 | [Windows][CppTest_Rvm][`/MiniHttp`] |  |
 | [Windows][CppTest_Rvm][`/Cli:<path>`] |  |
-| [Windows][`/RPT`][`/Pipe`] |  |
-| [Windows][`/RPT`][`/Http`] |  |
-| [Windows][`/RPT`][`/MiniHttp`] |  |
-| [Windows][`/FCT`][`/Pipe`] |  |
-| [Windows][`/FCT`][`/Http`] |  |
-| [Windows][`/FCT`][`/MiniHttp`] |  |
-| [Windows][`/RVMT`][`/Pipe`] | 2026-08-30 09:16:31 (fixed) |
-| [Windows][`/RVMT`][`/Pipe /Cli:<path>`] | 2026-08-30 09:19:53 |
-| [Windows][`/RVMT`][`/Http`] | 2026-08-30 09:20:07 (fixed) |
-| [Windows][`/RVMT`][`/Http /Cli:<path>`] | 2026-08-30 09:21:36 |
-| [Windows][`/RVMT`][`/MiniHttp`] | 2026-08-30 09:21:53 |
-| [Windows][`/RVMT`][`/MiniHttp /Cli:<path>`] | 2026-08-30 09:23:22 |
+| [Windows][`/RPT`][`/Pipe`] | X |
+| [Windows][`/RPT`][`/Http`] | X |
+| [Windows][`/RPT`][`/MiniHttp`] | X |
+| [Windows][`/FCT`][`/Pipe`] | X |
+| [Windows][`/FCT`][`/Http`] | X |
+| [Windows][`/FCT`][`/MiniHttp`] | X |
+| [Windows][`/RVMT`][`/Pipe`] |  |
+| [Windows][`/RVMT`][`/Pipe /Cli:<path>`] |  |
+| [Windows][`/RVMT`][`/Http`] |  |
+| [Windows][`/RVMT`][`/Http /Cli:<path>`] |  |
+| [Windows][`/RVMT`][`/MiniHttp`] |  |
+| [Windows][`/RVMT`][`/MiniHttp /Cli:<path>`] |  |
 
 ## Issues Found and Fix
 
-### [Windows][`/RVMT`][`/Pipe`] — 1st
+### Native Windows-key input is blocked
 
-The normal scenario passed, but the first idle-loss automation run timed out while looking for a native fatal dialog through shell-level window-title discovery. Core had exited nonzero and the renderer UI thread was blocked, but that discovery path exposed neither the dialog nor the automation endpoint while the modal prompt was active. This was a verification-harness discovery error, not a product defect.
+The desktop is noninteractive: `GetForegroundWindow()` returns zero, focus cannot be acquired, and real `SendInput` fails with Access denied (5). Consequently the native Ctrl+Alt+Win+Q and RegisterHotKey/MOD_WIN activation checks remain unverified. A row is marked X while these required checks remain blocked, even when its available checks pass.
 
-The verifier now enumerates top-level Win32 windows by the retained renderer PID, requires the `#32770` dialog and its child text to contain both `ERROR from GacUI Core` and exact `RemotingTest_RvmHost disconnected.`, and activates only its `No` button. Fresh idle-next-call and suspended in-flight delivery-loss runs then retained exact `Dom.fatalError`, terminated Core nonzero, and closed through exact `!Exit`. The normal run had already passed initial greeting, both translations, second-host rejection, accepted-host continuity, and graceful shutdown. No source change was made.
+### RPT / Pipe, 1st
 
-### [Windows][`/RVMT`][`/Http`] — 1st
+Exact visible native DOM labels and matching Segoe UI 15 / #F1F1F1 styling passed initially and after renderer replacement/takeover. All five Windows mouse-message down/up pairs passed, with TRUE returned for the X-button messages. Ctrl+Q through renderer automation, the Click Me state marker, repeated Ctrl+Q and Mouse4/Mouse5 after takeover, old-renderer exit, and menu-controlled application close passed. Windows-key activation remains blocked as described above.
 
-The normal and idle-next-call scenarios passed. The first delivery-loss session then timed out waiting for its initial renderer UI immediately after the preceding fatal session, so that row was not credited. A process preflight found no retained Core, host, or renderer, and the same delivery-loss scenario passed immediately with a fresh process set. It produced the exact native prompt and retained `Dom.fatalError`, Core exited nonzero, and exact `!Exit` reaped the renderer. This was transient listener/process settlement in the verification sequence, not a product defect; no source change was made.
+An initial harness replacement reused the automation port before the terminated process released it. CDB identified `HttpServerApi` construction failure with result 0xB7 (ERROR_ALREADY_EXISTS). The corrected harness waits for process exit and uses separate automation ports; the replacement checks then passed.
+
+### RPT / Http, 1st
+
+The same available checks passed over HTTP, including both replacement stages and menu-controlled close. The replaced and final renderers exited with code zero. The reattached Core process object did not retain an exit code; its termination was observed and the final renderer exited normally. Fresh launch process objects are retained for the remaining rows. Windows-key activation remains blocked as described above.
+
+### RPT / MiniHttp, 1st
+
+The same available checks passed over MiniHTTP. The first exit-confirmation click left the modal open. The harness now locates buttons in the current visible renderer DOM and checks that each dialog disappears before continuing; the normal-close retry exited both Core and renderer with code zero. Windows-key activation remains blocked as described above.
+
+### FCT / Pipe, 1st
+
+Available checks passed at 2026-09-02 18:15:45: exact labels/style, all five Windows mouse-message pairs, Ctrl+Q, reconnection/takeover, and repeated labels/style/Ctrl+Q/Mouse4/Mouse5. The replaced renderer, normally closed Core, and final renderer all exited zero. The first harness attempt left the shortcut modal open before testing mouse input; requiring actual dialog disappearance resolved that sequencing failure. Windows-key activation remains blocked as described above.
+
+### FCT / Http, 1st
+
+The same available checks passed at 2026-09-02 18:16:27, with code-zero exits for the replaced renderer, normally closed Core, and final renderer. Windows-key activation remains blocked as described above.
+
+### FCT / MiniHttp, 1st
+
+The same available checks passed at 2026-09-02 18:34:39, with code-zero exits for the replaced renderer, normally closed Core, and final renderer. Large DOM reads stalled in the PowerShell HTTP client during the release rebuild. CDB found the renderer in its normal UI message pump with idle network workers and no modal or crash. A direct curl request downloaded the 1.5 MB DOM in 1.85 seconds; using curl for loopback requests and parsing JSON as a hashtable allowed the row to finish. MiniHTTP automation uses explicit IPv4 loopback. Windows-key activation remains blocked as described above.

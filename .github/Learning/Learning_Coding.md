@@ -421,3 +421,5 @@ Handlers attached to `mouseDown`, `mouseUp`, or `mouseDoubleClick` should be nam
 ## Propagate environment changes through installed `GuiComponent`s
 
 Use the existing `GuiApplication` to `GuiWindow` to installed-`GuiComponent` ownership path for renderer environment changes instead of registering each component as an `INativeControllerListener`. `GuiWindow::EnvironmentChanged` refreshes display-font state and invokes `GuiComponent::EnvironmentChanged()` only for installed components; `GuiToolstripCommand` raises `DescriptionChanged` from that hook so bound shortcut labels refresh without listener proliferation or notifications to detached commands.
+
+Walk the complete window composition tree and notify instance roots on both associated controls and templates. Window-owned components alone omit commands declared in nested tab pages. Verify initial connection and renderer replacement with commands constructed before connection, actual displayed labels, and unchanged shortcut identities.

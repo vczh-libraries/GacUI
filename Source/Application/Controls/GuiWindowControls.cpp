@@ -885,9 +885,20 @@ GuiWindow
 			void GuiWindow::EnvironmentChanged()
 			{
 				NotifyUpdateDisplayFont();
-				for (auto component : components)
+				List<GuiGraphicsComposition*> compositions;
+				compositions.Add(GetBoundsComposition());
+				for (vint i = 0; i < compositions.Count(); i++)
 				{
-					component->EnvironmentChanged();
+					auto composition = compositions[i];
+					if (auto root = dynamic_cast<GuiInstanceRootObject*>(composition))
+					{
+						root->InvokeEnvironmentChanged();
+					}
+					if (auto root = dynamic_cast<GuiInstanceRootObject*>(composition->GetAssociatedControl()))
+					{
+						root->InvokeEnvironmentChanged();
+					}
+					CopyFrom(compositions, composition->Children(), true);
 				}
 			}
 

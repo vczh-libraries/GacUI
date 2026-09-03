@@ -326,6 +326,19 @@ The renderer-side stack uses:
 1. `GuiRemoteProtocolAsyncJsonChannelRenderer` when network packages can arrive before the native GacUI window is ready. It queues received packages until `SetInvokeInMainThread(...)` installs an `IGuiRemoteProtocolAsyncRendererInvoker`, then drains them on the renderer UI thread. Calling `Detach()` clears the reader, increments `messageVersion`, and prevents callbacks queued before detachment from running after a later reader installation.
 2. `GuiRemoteProtocolRendererChannel` to bridge the renderer JSON channel to a concrete renderer `IGuiRemoteProtocol` implementation and to serialize renderer events/responses back to `GacUIRemoteProtocolCoreClientId`. Construct it with the renderer-side `IJsonChannel` and the `IGuiRemoteProtocol`.
 
+## Shortcut Label Localization
+
+`ControllerGlobalConfig::osSuperKeyName` carries the renderer platform's canonical
+`Win`, `Command`, or `Super` label. After connection configuration is installed,
+`GuiRemoteController::OnControllerConnect` publishes an environment change through
+the hosted controller and `GuiApplication`. `GuiWindow::EnvironmentChanged` walks
+its composition tree and calls `GuiInstanceRootObject::InvokeEnvironmentChanged`
+on each instance root, including associated custom controls and templates.
+Installed `GuiToolstripCommand` components then raise `DescriptionChanged`, so
+existing shortcut bindings refresh on initial connection and renderer replacement.
+Commands attached to nested tab pages must receive this notification too; notifying
+only components directly owned by the window leaves their labels stale.
+
 ## Image Service
 
 `GuiRemoteGraphicsImageService` implements `INativeImageService` and creates `GuiRemoteGraphicsImage` objects with core-side binary copies. Image metadata (dimensions, format) is lazily fetched from the renderer side via `ImageCreated` messages in the `ElementMeasurings` response.

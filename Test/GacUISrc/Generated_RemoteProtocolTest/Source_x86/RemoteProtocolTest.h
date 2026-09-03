@@ -105,7 +105,7 @@ namespace rptest
 		::vl::presentation::controls::GuiToolstripCommand* commandLocalShortcut;
 		::vl::presentation::controls::GuiToolstripCommand* commandLocalSuperShortcut;
 		::vl::presentation::controls::GuiToolstripCommand* commandGlobalShortcut;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> labelMouseButton;
+		::vl::presentation::controls::GuiLabel* labelMouseButton;
 		::vl::presentation::controls::GuiButton* buttonClickMe;
 		void __vwsn_rptest_ClickMeTab_Initialize(::rptest::ClickMeTab* __vwsn_this_);
 	public:

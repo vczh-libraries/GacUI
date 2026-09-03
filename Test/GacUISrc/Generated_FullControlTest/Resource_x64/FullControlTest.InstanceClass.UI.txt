@@ -2252,7 +2252,7 @@ namespace demo
         var editorToolstrip : ::demo::DocumentEditorToolstrip* = null of (::demo::DocumentEditorToolstrip*);
 
         @cpp:Protected
-        var labelMouseButton : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+        var labelMouseButton : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         var <precompile>39 : ::demo::LocalizedDialogsTabPage* = null of (::demo::LocalizedDialogsTabPage*);
@@ -2378,7 +2378,7 @@ namespace demo
             (dialogLocalSuperShortcut = new (::presentation::controls::GuiMessageDialog*)());
             <this>.SetNamedObject("dialogLocalSuperShortcut", dialogLocalSuperShortcut);
             {
-                (dialogLocalSuperShortcut.Text = "You pressed Ctrl+Win+Q!");
+                (dialogLocalSuperShortcut.Text = "You pressed Ctrl+Alt+Win+Q!");
             }
             {
                 self.AddComponent(dialogLocalSuperShortcut);
@@ -2402,7 +2402,7 @@ namespace demo
             (commandLocalSuperShortcut = new (::presentation::controls::GuiToolstripCommand*)());
             <this>.SetNamedObject("commandLocalSuperShortcut", commandLocalSuperShortcut);
             {
-                (commandLocalSuperShortcut.ShortcutBuilder = "Ctrl+Win+Q");
+                (commandLocalSuperShortcut.ShortcutBuilder = "Ctrl+Alt+Win+Q");
             }
             {
                 self.AddComponent(commandLocalSuperShortcut);
@@ -2784,26 +2784,22 @@ namespace demo
                 <precompile>42.AddChild(<precompile>47);
             }
             (<precompile>49 = new (::presentation::compositions::GuiStackItemComposition*)());
-            (<precompile>50 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (labelMouseButton = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <this>.SetNamedObject("labelMouseButton", labelMouseButton);
+            }
+            (<precompile>50 = labelMouseButton.BoundsComposition);
             {
                 (<precompile>50.PreferredMinSize = {y : 24;} of (::presentation::Size));
             }
             {
                 (<precompile>50.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
-            (labelMouseButton = new (::presentation::elements::GuiSolidLabelElement^)());
-            <this>.SetNamedObject("labelMouseButton", labelMouseButton);
-            {
-                (labelMouseButton.VerticalAlignment = Center of (::presentation::Alignment));
-            }
             {
                 (labelMouseButton.Text = "Click here with any mouse button.");
             }
             {
-                (<precompile>50.OwnedElement = labelMouseButton);
-            }
-            {
-                <precompile>49.AddChild(<precompile>50);
+                <precompile>49.AddChild(labelMouseButton.BoundsComposition);
             }
             {
                 <precompile>42.AddChild(<precompile>49);

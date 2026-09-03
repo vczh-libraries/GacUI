@@ -241,6 +241,14 @@ GuiInstanceRootObject
 				}
 			}
 
+			void GuiInstanceRootObject::InvokeEnvironmentChanged()
+			{
+				for (auto component : components)
+				{
+					component->EnvironmentChanged();
+				}
+			}
+
 			bool GuiInstanceRootObject::AddComponent(GuiComponent* component)
 			{
 				CHECK_ERROR(finalized == false, L"GuiInstanceRootObject::AddComponent(GuiComponent*)#Cannot add component after finalizing.");

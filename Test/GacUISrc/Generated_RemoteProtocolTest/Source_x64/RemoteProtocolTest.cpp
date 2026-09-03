@@ -63,7 +63,7 @@ Closures
 
 	void __vwsnf10_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->labelMouseButton.Obj())->SetText((::vl::__vwsn::This(__vwsnthis_0->self)->MouseButtonName(::vl::__vwsn::This(arguments)->button) + ::vl::WString::Unmanaged(L" button down!")));
+		::vl::__vwsn::This(__vwsnthis_0->labelMouseButton)->SetText((::vl::__vwsn::This(__vwsnthis_0->self)->MouseButtonName(::vl::__vwsn::This(arguments)->button) + ::vl::WString::Unmanaged(L" button down!")));
 	}
 
 	//-------------------------------------------------------------------
@@ -362,7 +362,7 @@ Closures
 
 	void __vwsnf9_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->labelMouseButton.Obj())->SetText((::vl::__vwsn::This(__vwsnthis_0->self)->MouseButtonName(::vl::__vwsn::This(arguments)->button) + ::vl::WString::Unmanaged(L" button up!")));
+		::vl::__vwsn::This(__vwsnthis_0->labelMouseButton)->SetText((::vl::__vwsn::This(__vwsnthis_0->self)->MouseButtonName(::vl::__vwsn::This(arguments)->button) + ::vl::WString::Unmanaged(L" button up!")));
 	}
 
 	//-------------------------------------------------------------------
@@ -579,7 +579,7 @@ namespace rptest
 			::vl::__vwsn::This(this->dialogLocalSuperShortcut)->SetTitle(::vl::WString::Unmanaged(L"Remote Protocol Test"));
 		}
 		{
-			::vl::__vwsn::This(this->dialogLocalSuperShortcut)->SetText(::vl::WString::Unmanaged(L"You pressed Ctrl+Win+Q!"));
+			::vl::__vwsn::This(this->dialogLocalSuperShortcut)->SetText(::vl::WString::Unmanaged(L"You pressed Ctrl+Alt+Win+Q!"));
 		}
 		{
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->dialogLocalSuperShortcut));
@@ -606,7 +606,7 @@ namespace rptest
 		(this->commandLocalSuperShortcut = new ::vl::presentation::controls::GuiToolstripCommand());
 		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandLocalSuperShortcut"), ::vl::__vwsn::Box(this->commandLocalSuperShortcut));
 		{
-			::vl::__vwsn::This(this->commandLocalSuperShortcut)->SetShortcutBuilder(::vl::WString::Unmanaged(L"Ctrl+Win+Q"));
+			::vl::__vwsn::This(this->commandLocalSuperShortcut)->SetShortcutBuilder(::vl::WString::Unmanaged(L"Ctrl+Alt+Win+Q"));
 		}
 		{
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandLocalSuperShortcut));
@@ -723,26 +723,22 @@ namespace rptest
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetSite(static_cast<::vl::vint64_t>(4L), static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(3L));
 		}
-		(this->__vwsn_precompile_11 = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			(this->labelMouseButton = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"labelMouseButton"), ::vl::__vwsn::Box(this->labelMouseButton));
+		}
+		(this->__vwsn_precompile_11 = ::vl::__vwsn::This(this->labelMouseButton)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.y = static_cast<::vl::vint64_t>(24L); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
 		}
-		(this->labelMouseButton = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
-		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"labelMouseButton"), ::vl::__vwsn::Box(this->labelMouseButton));
 		{
-			::vl::__vwsn::This(this->labelMouseButton.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
+			::vl::__vwsn::This(this->labelMouseButton)->SetText(::vl::WString::Unmanaged(L"Click here with any mouse button."));
 		}
 		{
-			::vl::__vwsn::This(this->labelMouseButton.Obj())->SetText(::vl::WString::Unmanaged(L"Click here with any mouse button."));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->labelMouseButton));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_10)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_11));
+			::vl::__vwsn::This(this->__vwsn_precompile_10)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->labelMouseButton)->GetBoundsComposition()));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_10));
@@ -828,7 +824,7 @@ namespace rptest
 		, commandLocalShortcut(static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr))
 		, commandLocalSuperShortcut(static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr))
 		, commandGlobalShortcut(static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr))
-		, labelMouseButton(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
+		, labelMouseButton(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 		, buttonClickMe(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
 	{
 	}

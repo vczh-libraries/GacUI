@@ -9396,6 +9396,7 @@ Root Object
 				Ptr<description::IValueSubscription>			AddSubscription(Ptr<description::IValueSubscription> subscription);
 				/// <summary>Clear all subscriptions.</summary>
 				void											UpdateSubscriptions();
+				void											InvokeEnvironmentChanged();
 
 				/// <summary>Add a component. When this control host is disposing, all attached components will be deleted.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>

@@ -91,7 +91,7 @@
           />
         <MessageDialog ref.Name="dialogLocalSuperShortcut"
                        Title-eval="self.Text"
-                       Text="You pressed Ctrl+Win+Q!"
+                       Text="You pressed Ctrl+Alt+Win+Q!"
           />
         <MessageDialog ref.Name="dialogGlobalShortcut"
                        Title-eval="self.Text"
@@ -102,7 +102,7 @@
             dialogLocalShortcut.ShowDialog();
           }]]></ev.Executed-eval>
         </ToolstripCommand>
-        <ToolstripCommand ref.Name="commandLocalSuperShortcut" ShortcutBuilder="Ctrl+Win+Q">
+        <ToolstripCommand ref.Name="commandLocalSuperShortcut" ShortcutBuilder="Ctrl+Alt+Win+Q">
           <ev.Executed-eval><![CDATA[{
             dialogLocalSuperShortcut.ShowDialog();
           }]]></ev.Executed-eval>
@@ -193,15 +193,16 @@
                   <Label Text-bind="commandGlobalShortcut.Shortcut.Name"/>
                 </StackItem>
                 <StackItem>
-                  <Bounds PreferredMinSize="y:24" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-                    <SolidLabel ref.Name="labelMouseButton" Text="Click here with any mouse button." VerticalAlignment="Center"/>
-                    <ev.mouseDown-eval><![CDATA[{
-	                      labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button down!";
-                    }]]></ev.mouseDown-eval>
-                    <ev.mouseUp-eval><![CDATA[{
-	                      labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button up!";
-                    }]]></ev.mouseUp-eval>
-                  </Bounds>
+                  <Label ref.Name="labelMouseButton" Text="Click here with any mouse button.">
+                    <att.BoundsComposition-set PreferredMinSize="y:24" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                      <ev.mouseDown-eval><![CDATA[{
+                        labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button down!";
+                      }]]></ev.mouseDown-eval>
+                      <ev.mouseUp-eval><![CDATA[{
+                        labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button up!";
+                      }]]></ev.mouseUp-eval>
+                    </att.BoundsComposition-set>
+                  </Label>
                 </StackItem>
               </Stack>
             </TabPage>
