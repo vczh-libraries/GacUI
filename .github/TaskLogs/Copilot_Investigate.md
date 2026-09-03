@@ -20,7 +20,7 @@ On macOS, real keyboard events sent to the focused `RemotingTest_Rendering_macOS
 
 # PROPOSALS
 
-- No.1 Preserve the Cocoa first responder across style-mask updates
+- No.1 Preserve the Cocoa first responder across style-mask updates [CONFIRMED]
 
 ## No.1 Preserve the Cocoa first responder across style-mask updates
 
@@ -30,4 +30,10 @@ Preserve whether the content view was the first responder before changing the st
 
 ### CODE CHANGE
 
-Update iGac `CocoaWindow::UpdateStyleMask()` to retain the content-view first-responder state across `-[NSWindow setStyleMask:]`. Document this Cocoa behavior in `doc/OSProvider_Window.md`.
+Updated iGac `CocoaWindow::UpdateStyleMask()` to record whether `nsWindow.contentView` is the first responder before `-[NSWindow setStyleMask:]` and restore it afterward only when it previously owned focus. Documented this Cocoa behavior in `doc/OSProvider_Window.md`.
+
+### CONFIRMED
+
+Diagnostic tracing before the fix showed `CoreGraphicsView` as first responder immediately after renderer activation, followed by `NSKVONotifying_CocoaNSWindow` after each remote window-style update. With the fix, real macOS keyboard events in `RemotingTest_Core /FCT /MiniHttp` activated all three expected dialogs: `Ctrl+Q`, `Ctrl+Alt+Command+Q`, and the global `Ctrl+Shift+Alt+Command+Q`. After stopping and replacing the renderer while preserving the Core process, the first two in-app shortcuts and the global shortcut continued to work.
+
+The standalone Cocoa FullControlTest still activated all three shortcuts and remained responsive after each native dialog was closed. The complete iGac build passed, and the focused GacUI remote shortcut unit-test file passed 14/14 cases.
