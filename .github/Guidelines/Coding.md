@@ -203,6 +203,31 @@ object, causing missing of a complete picture.
     - Except that the calulation is so tiny and simple, then it is fine to do a cross-platform solution instead.
   - Implement the solution for the rest of the platform.
 
+## When Seeing Memory Leaks and Unstable Bugs
+
+- Memory leaks and unstable bugs will always be the highest priority issue.
+- Detecting memory leaks:
+  - On Windows:
+    - By correctly configuring vcxproj files and calling expected tools in the `main` or `WinMain` function, memory leaks would always be detected and logged after a successful unit test run.
+    - For non-unit test projects, attaching a debugger would reveal it. 
+    - Detect memory leaks with `Debug`, do not detect memory leaks with `Release`.
+  - Memory leak detection is not required to be done on Linux and macOS for now.
+- Detecting unstable bugs:
+  - One of a typical example would be about dangling pointers.
+  - When experiencing bugs that can't repro in every test run, do not easily treat it as a non-issue.
+  - The standard way in this project would be to repeat the test 25 times, and only treat it as a non-issue only if observing consecutive 25 successful runs.
+- Whenever we see such issues:
+  - If it is a new issue due to completing the current task, you have to address that as part of the current task.
+  - If it is an existing issue, you still have to fix the issue along with the current task. And when the current task requires commit and push, make a separate commit to fix the issue, and push it together. 
+
+## When Seeing Unstable Bugs
+
+- One of a typical example would be about dangling pointers.
+- When experiencing bugs that can't repro in every test run, do not easily treat it as non-issue.
+- The standard way in this project would be to repeat the test 25 times, and only define non-issue as observing consecutive 25 successful runs.
+- If we can't the consecutive 25 successful runs:
+  - Such issue would be
+
 ## Workflow Script Coding Convention
 
 - Avoid explicit type specification whenever possible:
