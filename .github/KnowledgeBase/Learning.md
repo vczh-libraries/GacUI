@@ -8,7 +8,7 @@
 - Keep design documentation aligned with code after refactoring [16]
 - Crash early instead of adding error-tolerance fallbacks [15]
 - Port fixes from imports to source repositories [15]
-- Fix behavior at the owning state instead of patching symptoms [11]
+- Fix behavior at the owning state instead of patching symptoms [12]
 - Extract abstractions only for real shared behavior [11]
 - Verify and localize portability on every target OS [9]
 - Make `Stop()` drain asynchronous work before returning [8]
@@ -335,6 +335,8 @@ When shared code and tests pass on other platforms but fail on one target, fix t
 When a layered transport needs a stricter response policy than its general parser, enforce that policy in the object that owns the physical connection. Keep the lower parser reusable, and let the connection owner classify the response, report a structured failure, and stop or retry the transport as appropriate.
 
 When HTTP long-poll delivery needs a bounded acknowledgement, put the deadline on the transport's acknowledgement transition instead of adding a timeout to a transport-independent RPC response wait. A locally successful response submission does not prove peer receipt. Arm the deadline only after delivering a nonempty server message, use the client's replacement poll as the implicit acknowledgement, cancel the deadline when that poll arrives, and report expiry through the transport's local-error path. Keep idle long polls unbounded when the protocol intentionally has no heartbeat.
+
+When a native window-style update changes keyboard focus or responder ownership as a side effect, preserve and restore the previous owner at the style-changing boundary. Restore focus only when the affected view already owned it; do not activate an inactive window or steal focus from another responder. Standalone startup may hide the problem by activating the window afterward, while an already-visible remote renderer receives no later activation to repair the lost state.
 
 ## Treat environment correlation as evidence, not a cause
 

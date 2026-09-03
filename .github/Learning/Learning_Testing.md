@@ -75,8 +75,15 @@
 - Verify automation-service ownership changes in every consumer app [1]
 - Treat file-dialog snapshots as scheduling-sensitive contracts [1]
 - Verify renderer-localized shortcut labels in the remoting SOP [1]
+- Verify native shortcut delivery through the focused renderer [1]
 
 # Refinements
+
+## Verify native shortcut delivery through the focused renderer
+
+For shortcuts that work in a standalone native application but fail through a remote renderer, send real native keyboard events to the focused renderer window and check in-app shortcuts separately from global hot keys. A working global shortcut does not prove that the window's ordinary keyboard-input path works. Trace native focus/responder ownership and renderer-side key delivery before blaming modifier serialization or Core shortcut lookup; protocol-level input injection can bypass the failing native boundary.
+
+For the macOS FullControlTest scenario, verify `Ctrl+Q`, `Ctrl+Alt+Command+Q`, and the global `Ctrl+Shift+Alt+Command+Q` by their resulting dialogs. Repeat after replacing the renderer while retaining the Core, and check the standalone Cocoa equivalents and continued responsiveness after dismissing each dialog. Keep the Cocoa implementation details in iGac's owning window-provider documentation.
 
 ## Account for eager child preparation in item-provider tests
 
