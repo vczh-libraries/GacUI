@@ -216,6 +216,7 @@ object, causing missing of a complete picture.
   - One of a typical example would be about dangling pointers.
   - When experiencing bugs that can't repro in every test run, do not easily treat it as a non-issue.
   - The standard way in this project would be to repeat the test 25 times, and only treat it as a non-issue only if observing consecutive 25 successful runs.
+- Some unit test projects might take a long time to run, therefore it is strongly recommended to use one or multiple `/F:FileName.cpp` to limit the scope to where such issues could happen first, and then use the discovered effective and efficient set of `/F:FileName.cpp` to help testing the fix, instead of always run the whole unit test project.
 - Whenever we see such issues:
   - If it is a new issue due to completing the current task, you have to address that as part of the current task.
   - If it is an existing issue, you still have to fix the issue along with the current task. And when the current task requires commit and push, make a separate commit to fix the issue, and push it together. 
