@@ -884,6 +884,8 @@ GuiWindow
 
 			void GuiWindow::EnvironmentChanged()
 			{
+				// child compositions or controls could be GuiInstanceRootObject
+				// recursive calling is necessary
 				NotifyUpdateDisplayFont();
 				List<GuiGraphicsComposition*> compositions;
 				compositions.Add(GetBoundsComposition());
