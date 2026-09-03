@@ -72,6 +72,7 @@
 - `FileDialogTaskQueue` lock preserves cross-thread scheduling [1]
 - Unified composition mouse handlers use unified event names [1]
 - Propagate environment changes through installed `GuiComponent`s [1]
+- Use themed labels for mouse input examples [1]
 
 # Refinements
 
@@ -423,3 +424,7 @@ Handlers attached to `mouseDown`, `mouseUp`, or `mouseDoubleClick` should be nam
 Use the existing `GuiApplication` to `GuiWindow` to installed-`GuiComponent` ownership path for renderer environment changes instead of registering each component as an `INativeControllerListener`. `GuiWindow::EnvironmentChanged` refreshes display-font state and invokes `GuiComponent::EnvironmentChanged()` only for installed components; `GuiToolstripCommand` raises `DescriptionChanged` from that hook so bound shortcut labels refresh without listener proliferation or notifications to detached commands.
 
 Walk the complete window composition tree and notify instance roots on both associated controls and templates. Window-owned components alone omit commands declared in nested tab pages. Verify initial connection and renderer replacement with commands constructed before connection, actual displayed labels, and unchanged shortcut identities.
+
+## Use themed labels for mouse input examples
+
+Use a `Label` control for a clickable text target in sample resources, and attach mouse handlers to its `att.BoundsComposition-set` property. A raw `SolidLabel` element does not inherit the surrounding label theme automatically; using a control keeps the target's font and color consistent without hard-coded styling.

@@ -74,6 +74,7 @@
 - MiniHTTP automation probes use IPv4 loopback [1]
 - Verify automation-service ownership changes in every consumer app [1]
 - Treat file-dialog snapshots as scheduling-sensitive contracts [1]
+- Verify renderer-localized shortcut labels in the remoting SOP [1]
 
 # Refinements
 
@@ -479,3 +480,7 @@ Recreate the native and GacJS test-matrix cards from their guide templates befor
 ## Treat file-dialog snapshots as scheduling-sensitive contracts
 
 When refactoring asynchronous fake-file-dialog work, a passing unit-test summary and clean leak report are insufficient. Compare all tracked file-dialog snapshots byte for byte: moving queue consumption behind UI callbacks or batching submissions can keep functional assertions green while rewriting many snapshots through changed element-allocation and rendering order. Restore those artifacts and reject the refactor unless the scheduling and snapshot migration are explicitly intended.
+
+## Verify renderer-localized shortcut labels in the remoting SOP
+
+Keep exact shortcut-label expectations in `.github/Jobs/DebugRemoteProtocolSop.md` for both FullControlTest and RemoteProtocolTest. Inspect rendered labels after initial connection and renderer replacement, including commands owned by nested controls. The displayed modifier must follow the renderer's `Win`, `Command`, or `Super` label rather than the parser's internal name. Use sample chords that avoid reserved OS shortcuts; a direct event injection does not verify real native global-hot-key activation.
