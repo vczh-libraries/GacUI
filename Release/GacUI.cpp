@@ -44424,6 +44424,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::RegisterMainWindow(INativeWindow* _window)
 	{
 		window = _window;
+		windowSizingConfig = GetWindowSizingConfig();
 		window->InstallListener(this);
 		GetCurrentController()->CallbackService()->InstallListener(this);
 	}
@@ -65875,7 +65876,7 @@ AutomationService
 
 				for (auto subWindow : app->windows)
 				{
-					if (subWindow != mainWindow && subWindow->GetVisible() && !dynamic_cast<GuiPopup*>(subWindow))
+					if (subWindow != mainWindow && subWindow->GetOpening() && !dynamic_cast<GuiPopup*>(subWindow))
 					{
 						subWindows->items.Add(DumpWindowClientArea(subWindow, GetNativeWindowId(subWindow->GetNativeWindow()), { 0,0 }));
 					}

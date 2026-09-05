@@ -1,10 +1,47 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService.h"
+#include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
+#include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
 #include "TestRemote_GraphicsHost_Shared.h"
 
 using namespace vl;
 using namespace vl::presentation;
 using namespace remote_graphics_host_tests;
+
+class AutomationStartupRenderer : public remote_renderer::GuiRemoteRendererSingle
+{
+public:
+	AutomationStartupRenderer()
+		: GuiRemoteRendererSingle(true)
+	{
+		windowSizingConfig.sizeState = (INativeWindow::WindowSizeState)-1;
+	}
+
+	void UnregisterWindow()
+	{
+		UnregisterMainWindow();
+		window->UninstallListener(this);
+	}
+};
+
+class AutomationWindowService : public AutomationService
+{
+protected:
+	Nullable<WString> GetNativeWindowId(INativeWindow* window) override
+	{
+		TEST_ASSERT(window);
+		windows.Add(window);
+		return WString::Unmanaged(L"window");
+	}
+
+	INativeWindow* GetNativeWindow(Nullable<WString> windowId) override
+	{
+		return nullptr;
+	}
+
+public:
+	List<INativeWindow*> windows;
+};
 
 class AutomationServiceTestDouble : public AutomationServiceBase
 {
@@ -94,6 +131,75 @@ public:
 
 TEST_FILE
 {
+	TEST_CATEGORY(L"Multiwindow automation: only open native windows are dumped")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+
+		protocol.OnNextFrame([&]()
+		{
+			GuiWindow subWindow(theme::ThemeName::Window);
+			AutomationWindowService service;
+			auto checkWindows = [&](bool includeSubWindow)
+			{
+				service.windows.Clear();
+				TEST_ASSERT(service.DumpControlTree() != WString::Empty);
+				TEST_ASSERT(service.windows.Count() == (includeSubWindow ? 2 : 1));
+				TEST_ASSERT(service.windows[0] == controlHost->GetNativeWindow());
+				if (includeSubWindow)
+				{
+					TEST_ASSERT(service.windows[1] == subWindow.GetNativeWindow());
+				}
+			};
+
+			checkWindows(false);
+			subWindow.Show();
+			checkWindows(true);
+			subWindow.Hide();
+			checkWindows(false);
+			GetCurrentController()->WindowService()->DestroyNativeWindow(subWindow.GetNativeWindow());
+			TEST_ASSERT(subWindow.GetNativeWindow() == nullptr);
+			checkWindows(false);
+			service.Stop();
+			controlHost->Hide();
+		});
+
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
+	TEST_CATEGORY(L"Renderer automation: window registration initializes the startup DOM")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+
+		protocol.OnNextFrame([&]()
+		{
+			auto nativeWindow = controlHost->GetNativeWindow();
+			AutomationStartupRenderer renderer;
+			renderer.RegisterMainWindow(nativeWindow);
+			AutomationServiceRenderer service(&renderer);
+
+			remoteprotocol::WindowSizingConfig expected;
+			expected.bounds = nativeWindow->GetBounds();
+			expected.clientBounds = nativeWindow->GetClientBoundsInScreen();
+			expected.sizeState = nativeWindow->GetSizeState();
+			expected.customFramePadding = nativeWindow->GetCustomFramePadding();
+			Dictionary<vint, Pair<remoteprotocol::RendererType, Nullable<remoteprotocol::UnitTest_ElementDescVariant>>> elements;
+			TEST_ASSERT(service.DumpDomTree() == DumpJsonToString(DumpRemoteProtocolRenderingDom(
+				nativeWindow->GetTitle(), expected, nullptr, elements)));
+
+			service.Stop();
+			renderer.UnregisterWindow();
+			controlHost->Hide();
+		});
+
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
 	TEST_CASE(L"AutomationServiceBase: Disabled rejects all IO commands")
 	{
 		AutomationServiceTestDouble service;

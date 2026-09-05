@@ -45,7 +45,7 @@ AutomationService
 
 				for (auto subWindow : app->windows)
 				{
-					if (subWindow != mainWindow && subWindow->GetVisible() && !dynamic_cast<GuiPopup*>(subWindow))
+					if (subWindow != mainWindow && subWindow->GetOpening() && !dynamic_cast<GuiPopup*>(subWindow))
 					{
 						subWindows->items.Add(DumpWindowClientArea(subWindow, GetNativeWindowId(subWindow->GetNativeWindow()), { 0,0 }));
 					}

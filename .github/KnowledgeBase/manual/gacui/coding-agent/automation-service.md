@@ -124,6 +124,10 @@ When a remote renderer is retained after a fatal remote-protocol error, renderer
 
 ## Implementing Another Platform
 
+`GuiRemoteRendererSingle::RegisterMainWindow` captures the native window's sizing configuration before automation starts. This makes an early renderer `GET /Dom` safe before the first Core frame or sizing request has arrived; do not defer that initialization to a later protocol callback.
+
+Multiwindow control dumps select subwindows with `GuiControlHost::GetOpening()`, not control-level `GetVisible()`. A closed dialog can remain in the application window list until deferred deletion, even after its native window is destroyed. Keep native-window ID validation strict and omit such closed windows before resolving their IDs.
+
 A platform implementation should implement `INativeAutomationService` or reuse `AutomationServiceBase` from `Utilities/SharedServices`. Return true from `Available`, implement the supported `Can...` and operation pairs, and make `Stop` disable all future operations.
 
 When implementing IO:
@@ -139,4 +143,3 @@ The Windows HTTP wrapper is only one endpoint layer. Other platforms may expose 
 Application-level automation depends on the GacUI UI thread. A native crash dialog, file dialog, or other modal native window can block the UI thread and keep the HTTP endpoint from answering. In that situation, inspect and operate native windows from another process using Win32 APIs, then return to the automation endpoint after the modal window is closed.
 
 Do not use operating-system UI Automation as the fallback for GacUI automation on Windows. It can fail when the screen is locked, and it is not the contract implemented by `AutomationService`.
-

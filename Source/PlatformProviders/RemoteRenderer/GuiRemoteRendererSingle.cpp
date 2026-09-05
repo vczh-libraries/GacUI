@@ -207,6 +207,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::RegisterMainWindow(INativeWindow* _window)
 	{
 		window = _window;
+		windowSizingConfig = GetWindowSizingConfig();
 		window->InstallListener(this);
 		GetCurrentController()->CallbackService()->InstallListener(this);
 	}
