@@ -3,6 +3,9 @@
 #if defined VCZH_MSVC
 #define _WINSOCKAPI_
 #include <Windows.h>
+#elif defined VCZH_GCC
+#include <iostream>
+#include <locale>
 #endif
 
 using namespace vl;
@@ -202,6 +205,7 @@ int wmain(int argc, wchar_t* argv[])
 #elif defined VCZH_GCC
 int main(int argc, char* argv[])
 {
+	std::wcout.imbue(std::locale(""));
 	return UnitTestMain(argc, argv);
 }
 #endif
