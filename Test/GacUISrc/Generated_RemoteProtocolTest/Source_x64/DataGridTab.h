@@ -27,11 +27,11 @@ namespace rptest
 	class DataGridTab : public ::vl::presentation::controls::GuiTabPage, public ::rptest::DataGridTabConstructor, public ::vl::reflection::Description<DataGridTab>
 	{
 		friend class ::rptest::DataGridTabConstructor;
-		friend struct ::vl_workflow_global::__vwsnf11_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf12_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf13_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf14_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf15_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf16_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf17_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf18_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf19_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DataGridTab>;
 #endif

@@ -421,6 +421,7 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"ctrl", value.ctrl);
 		ConvertCustomTypeToJsonField(node, L"shift", value.shift);
+		ConvertCustomTypeToJsonField(node, L"alt", value.alt);
 		ConvertCustomTypeToJsonField(node, L"osSuper", value.osSuper);
 		ConvertCustomTypeToJsonField(node, L"left", value.left);
 		ConvertCustomTypeToJsonField(node, L"middle", value.middle);
@@ -1328,6 +1329,7 @@ namespace vl::presentation::remoteprotocol
 		{
 			if (field->name.value == L"ctrl") ConvertJsonToCustomType(field->value, value.ctrl); else
 			if (field->name.value == L"shift") ConvertJsonToCustomType(field->value, value.shift); else
+			if (field->name.value == L"alt") ConvertJsonToCustomType(field->value, value.alt); else
 			if (field->name.value == L"osSuper") ConvertJsonToCustomType(field->value, value.osSuper); else
 			if (field->name.value == L"left") ConvertJsonToCustomType(field->value, value.left); else
 			if (field->name.value == L"middle") ConvertJsonToCustomType(field->value, value.middle); else

@@ -43,6 +43,12 @@ GuiRemoteEventFilter
 #undef ERROR_MESSAGE_PREFIX
 	}
 	
+	void GuiRemoteEventFilter::DiscardResponses()
+	{
+		responseIds.Clear();
+		filteredResponses.Clear();
+	}
+
 	void GuiRemoteEventFilter::ProcessEvents()
 	{
 #define EVENT_NODROP(NAME)
@@ -343,7 +349,7 @@ GuiRemoteProtocolFilter
 		GuiRemoteProtocolCombinator<GuiRemoteEventFilter>::Submit(disconnected);
 		if (disconnected)
 		{
-			eventCombinator.responseIds.Clear();
+			eventCombinator.DiscardResponses();
 		}
 		else
 		{

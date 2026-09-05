@@ -66,7 +66,10 @@ namespace rptest
         var <precompile>12 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>13 : ::presentation::elements::IGuiGraphicsElement^ = null of (::presentation::elements::IGuiGraphicsElement^);
+        var <precompile>13 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>14 : ::presentation::elements::IGuiGraphicsElement^ = null of (::presentation::elements::IGuiGraphicsElement^);
 
         @cpp:Protected
         var dialogLocalShortcut : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
@@ -88,6 +91,9 @@ namespace rptest
 
         @cpp:Protected
         var labelMouseButton : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        var labelMouseModifiers : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         var buttonClickMe : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
@@ -167,13 +173,14 @@ namespace rptest
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>0.SetRowsAndColumns(6, 3);
+                <precompile>0.SetRowsAndColumns(7, 3);
                 <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(3, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(4, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(5, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(5, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(6, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
@@ -284,12 +291,29 @@ namespace rptest
             {
                 <precompile>12.SetSite(5, 0, 1, 3);
             }
-            (<precompile>13 = ::presentation::elements::IGuiGraphicsElement::CreateRawElement());
             {
-                (<precompile>12.OwnedElement = <precompile>13);
+                (labelMouseModifiers = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <this>.SetNamedObject("labelMouseModifiers", labelMouseModifiers);
+            }
+            {
+                (labelMouseModifiers.Text = "Alt: 0; Super: 0");
+            }
+            {
+                <precompile>12.AddChild(labelMouseModifiers.BoundsComposition);
             }
             {
                 <precompile>0.AddChild(<precompile>12);
+            }
+            (<precompile>13 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>13.SetSite(6, 0, 1, 3);
+            }
+            (<precompile>14 = ::presentation::elements::IGuiGraphicsElement::CreateRawElement());
+            {
+                (<precompile>13.OwnedElement = <precompile>14);
+            }
+            {
+                <precompile>0.AddChild(<precompile>13);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
@@ -552,6 +576,7 @@ namespace rptest
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiMouseEventArgs*) : (::system::Void)
                 {
                     (labelMouseButton.Text = (self.MouseButtonName(arguments.button) & " button up!"));
+                    self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
                 };
                 attach(<precompile>11.mouseUp, <event-handler>);
             }
@@ -559,8 +584,37 @@ namespace rptest
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiMouseEventArgs*) : (::system::Void)
                 {
                     (labelMouseButton.Text = (self.MouseButtonName(arguments.button) & " button down!"));
+                    self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
                 };
                 attach(<precompile>11.mouseDown, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiMouseEventArgs*) : (::system::Void)
+                {
+                    self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                };
+                attach(<precompile>11.mouseMove, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiMouseEventArgs*) : (::system::Void)
+                {
+                    self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                };
+                attach(<precompile>11.mouseDoubleClick, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiMouseEventArgs*) : (::system::Void)
+                {
+                    self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                };
+                attach(<precompile>11.verticalWheel, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiMouseEventArgs*) : (::system::Void)
+                {
+                    self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                };
+                attach(<precompile>11.horizontalWheel, <event-handler>);
             }
         }
 
@@ -597,6 +651,21 @@ namespace rptest
     @cpp:Friend(typeof(ClickMeTabConstructor))
     class ClickMeTab : ::presentation::controls::GuiTabPage, ClickMeTabConstructor
     {
+        func ShowMouseModifiers(alt : bool, osSuper : bool) : (void)
+        {
+            var altText = "0";
+            var superText = "0";
+            if (alt)
+            {
+                (altText = "1");
+            }
+            if (osSuper)
+            {
+                (superText = "1");
+            }
+            (labelMouseModifiers.Text = ((("Alt: " & altText) & "; Super: ") & superText));
+        }
+
         func MouseButtonName(button : NativeMouseButton) : (string)
         {
             if ((button == NativeMouseButton::Left))

@@ -82,6 +82,8 @@ TEST_FILE
 			auto mouseEventArgsType = GetTypeDescriptor(L"presentation::compositions::GuiMouseEventArgs");
 			TEST_ASSERT(mouseEventArgsType->GetPropertyByName(L"button", true));
 			TEST_ASSERT(mouseEventArgsType->GetPropertyByName(L"osSuper", true));
+			TEST_ASSERT(mouseEventArgsType->GetPropertyByName(L"alt", true));
+			TEST_ASSERT((vint)VKEY::KEY_LEFT_BRACKET == 0xDB && (vint)VKEY::KEY_RIGHT_BRACKET == 0xDD);
 			TEST_ASSERT(GetTypeDescriptor(L"presentation::compositions::GuiKeyEventArgs")->GetPropertyByName(L"osSuper", true));
 			TEST_ASSERT(GetTypeDescriptor(L"presentation::compositions::GuiCharEventArgs")->GetPropertyByName(L"osSuper", true));
 

@@ -35,6 +35,21 @@ Class (::demo::MainWindow)
 
 namespace demo
 {
+	void MainWindow::ShowMouseModifiers(bool alt, bool osSuper)
+	{
+		auto altText = ::vl::WString::Unmanaged(L"0");
+		auto superText = ::vl::WString::Unmanaged(L"0");
+		if (alt)
+		{
+			(altText = ::vl::WString::Unmanaged(L"1"));
+		}
+		if (osSuper)
+		{
+			(superText = ::vl::WString::Unmanaged(L"1"));
+		}
+		::vl::__vwsn::This(this->labelMouseModifiers)->SetText((((::vl::WString::Unmanaged(L"Alt: ") + altText) + ::vl::WString::Unmanaged(L"; Super: ")) + superText));
+	}
+
 	::vl::WString MainWindow::MouseButtonName(::vl::presentation::NativeMouseButton button)
 	{
 		if ((button == ::vl::presentation::NativeMouseButton::Left))

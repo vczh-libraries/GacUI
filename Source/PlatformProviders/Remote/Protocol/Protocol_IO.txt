@@ -13,6 +13,7 @@ struct IOMouseInfo
 {
     var ctrl: bool;
     var shift: bool;
+    var alt: bool;
     var osSuper: bool;
     var left: bool;
     var middle: bool;

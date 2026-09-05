@@ -65,22 +65,27 @@ namespace demo
 		friend struct ::vl_workflow_global::__vwsnf61_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf62_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf63_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf64_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf64_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf65_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf66_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf67_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
-		friend struct ::vl_workflow_global::__vwsnf68_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf67_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf68_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
 		friend struct ::vl_workflow_global::__vwsnf69_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf70_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf71_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf71_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
 		friend struct ::vl_workflow_global::__vwsnf72_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf73_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf74_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf75_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf76_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf77_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf78_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindow>;
 #endif
 	public:
 		::vl::Ptr<::vl::reflection::description::IValueList> openedSubWindows;
+		void ShowMouseModifiers(bool alt, bool osSuper);
 		::vl::WString MouseButtonName(::vl::presentation::NativeMouseButton button);
 		MainWindow();
 		~MainWindow();

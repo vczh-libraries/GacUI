@@ -250,6 +250,7 @@ UnitTestRemoteProtocol
 			NativeWindowMouseInfo info;
 			info.ctrl = IsPressing(VKEY::KEY_CONTROL) || IsPressing(VKEY::KEY_LCONTROL) || IsPressing(VKEY::KEY_RCONTROL);
 			info.shift = IsPressing(VKEY::KEY_SHIFT) || IsPressing(VKEY::KEY_LSHIFT) || IsPressing(VKEY::KEY_RSHIFT);
+			info.alt = IsPressing(VKEY::KEY_MENU) || IsPressing(VKEY::KEY_LMENU) || IsPressing(VKEY::KEY_RMENU);
 			info.osSuper = IsOSSuperPressing();
 			info.left = leftPressing;
 			info.middle = middlePressing;

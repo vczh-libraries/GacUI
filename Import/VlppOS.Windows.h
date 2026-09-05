@@ -6,7 +6,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "Vlpp.h"
 
 /***********************************************************************
-.\ASYNCSOCKET\ASYNCSOCKET.WINDOWS.H
+.\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET.WINDOWS.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -69,7 +69,7 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 
 
 /***********************************************************************
-.\WINDOWS\NETWORKPROTOCOL.WINDOWS.H
+.\INTERPROCESS\WINDOWS\NETWORKPROTOCOL.WINDOWS.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -96,7 +96,7 @@ Interfaces:
 
 
 /***********************************************************************
-.\WINDOWS\HTTPCLIENTAPI.WINDOWS.H
+.\INTERPROCESS\WINDOWS\HTTPCLIENTAPI.WINDOWS.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -183,7 +183,7 @@ public:
 
 
 /***********************************************************************
-.\WINDOWS\HTTPCLIENT.WINDOWS.H
+.\INTERPROCESS\WINDOWS\HTTPCLIENT.WINDOWS.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -329,7 +329,7 @@ public:
 
 
 /***********************************************************************
-.\WINDOWS\HTTPSERVERAPI.WINDOWS.H
+.\INTERPROCESS\WINDOWS\HTTPSERVERAPI.WINDOWS.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -424,7 +424,7 @@ public:
 
 
 /***********************************************************************
-.\WINDOWS\HTTPSERVER.WINDOWS.H
+.\INTERPROCESS\WINDOWS\HTTPSERVER.WINDOWS.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -536,7 +536,7 @@ public:
 
 
 /***********************************************************************
-.\WINDOWS\NAMEDPIPE.WINDOWS.H
+.\INTERPROCESS\WINDOWS\NAMEDPIPE.WINDOWS.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -695,6 +695,53 @@ public:
 };
 
 }
+
+#endif
+
+
+/***********************************************************************
+.\TUI\TUI.INPUT.WINDOWS.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_TUI_INPUT_WINDOWS
+#define VCZH_TUI_INPUT_WINDOWS
+
+
+#ifdef VCZH_MSVC
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#ifndef _WINSOCKAPI_
+#define _WINSOCKAPI_
+#endif
+
+namespace vl
+{
+	namespace console
+	{
+		namespace tui_internal
+		{
+			// The production record decoder is also used directly by deterministic tests.
+			class WindowsTuiInputDecoder
+			{
+			private:
+				bool							keys[256] = {};
+				DWORD							mouseButtons = 0;
+				void							QueueMouseButton(unittest::TuiBackendEventType type, presentation::NativeMouseButton button, const presentation::WindowMouseInfo& info);
+			public:
+				collections::List<unittest::TuiBackendEvent> pendingEvents;
+
+				void							DecodeKey(const KEY_EVENT_RECORD& record);
+				void							DecodeMouse(const MOUSE_EVENT_RECORD& record, COORD viewportOrigin);
+			};
+		}
+	}
+}
+#endif
 
 #endif
 

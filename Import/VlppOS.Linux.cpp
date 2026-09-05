@@ -5720,6 +5720,7 @@ Licensed under https://github.com/vczh-libraries/License
 #include <wchar.h>
 
 using namespace vl;
+using namespace vl::presentation;
 using namespace vl::collections;
 
 namespace vl
@@ -5811,34 +5812,15 @@ namespace vl
 				output += std::to_string((long long)value);
 			}
 
-			class PosixTuiBackend : public unittest::ITuiBackend
+			class PosixTuiBackend : public unittest::ITuiBackend, private PosixTuiInputDecoder
 			{
 			private:
 				termios						savedTermios = {};
 				struct sigaction				savedAction = {};
 				sigset_t					savedMask = {};
-				List<vuint8_t>				inputBytes;
-				List<unittest::TuiBackendEvent> pendingEvents;
-				vuint64_t					escapeDeadline = 0;
-				vuint64_t					lastClickTime = 0;
-				vint						lastClickX = -1;
-				vint						lastClickY = -1;
-				TuiMouseButton				lastClickButton = TuiMouseButton::Left;
-				bool						left = false;
-				bool						middle = false;
-				bool						right = false;
 				bool						started = false;
 				bool						termiosChanged = false;
 				bool						signalInstalled = false;
-
-				void QueueChar(wchar_t code, bool alt = false)
-				{
-					unittest::TuiBackendEvent event;
-					event.type = unittest::TuiBackendEventType::Char;
-					event.charInfo.code = code;
-					event.charInfo.alt = alt;
-					pendingEvents.Add(event);
-				}
 
 				void DrainResizePipe()
 				{
@@ -5864,217 +5846,6 @@ namespace vl
 						event.height = height;
 						pendingEvents.Add(event);
 					}
-				}
-
-				bool TryParseMouse()
-				{
-					if (inputBytes.Count() < 4 || inputBytes[0] != 0x1B || inputBytes[1] != '[' || inputBytes[2] != '<') return false;
-					vint end = -1;
-					for (vint i = 3; i < inputBytes.Count(); i++)
-					{
-						if (inputBytes[i] == 'M' || inputBytes[i] == 'm')
-						{
-							end = i;
-							break;
-						}
-						if (!(inputBytes[i] == ';' || (inputBytes[i] >= '0' && inputBytes[i] <= '9')))
-						{
-							inputBytes.RemoveRange(0, i + 1);
-							QueueChar(L'\uFFFD');
-							return true;
-						}
-					}
-					if (end == -1) return false;
-
-					vint values[3] = {};
-					vint valueIndex = 0;
-					for (vint i = 3; i < end; i++)
-					{
-						if (inputBytes[i] == ';')
-						{
-							valueIndex++;
-							if (valueIndex >= 3) break;
-						}
-						else
-						{
-							values[valueIndex] = values[valueIndex] * 10 + inputBytes[i] - '0';
-						}
-					}
-					auto final = inputBytes[end];
-					inputBytes.RemoveRange(0, end + 1);
-					escapeDeadline = 0;
-					if (valueIndex != 2) return true;
-
-					auto cb = values[0];
-					TuiMouseInfo info;
-					info.x = values[1] - 1;
-					info.y = values[2] - 1;
-					info.shift = (cb & 4) != 0;
-					info.alt = (cb & 8) != 0;
-					info.ctrl = (cb & 16) != 0;
-					auto motion = (cb & 32) != 0;
-					auto base = cb & ~(4 | 8 | 16 | 32);
-					info.left = left;
-					info.middle = middle;
-					info.right = right;
-
-					unittest::TuiBackendEvent event;
-					event.mouseInfo = info;
-					if (base >= 64 && base <= 67)
-					{
-						if (base == 64 || base == 65)
-						{
-							event.type = unittest::TuiBackendEventType::MouseVerticalWheel;
-							event.mouseInfo.wheel = base == 64 ? 120 : -120;
-						}
-						else
-						{
-							event.type = unittest::TuiBackendEventType::MouseHorizontalWheel;
-							event.mouseInfo.wheel = base == 66 ? 120 : -120;
-						}
-						pendingEvents.Add(event);
-						return true;
-					}
-					if (motion)
-					{
-						event.type = unittest::TuiBackendEventType::MouseMove;
-						pendingEvents.Add(event);
-						return true;
-					}
-
-					auto released = final == 'm' || base == 3;
-					auto button = base == 0 ? TuiMouseButton::Left : base == 1 ? TuiMouseButton::Middle : TuiMouseButton::Right;
-					event.mouseButton = button;
-					if (released)
-					{
-						event.type = unittest::TuiBackendEventType::MouseUp;
-						if (button == TuiMouseButton::Left) left = false;
-						if (button == TuiMouseButton::Middle) middle = false;
-						if (button == TuiMouseButton::Right) right = false;
-					}
-					else
-					{
-						auto now = GetMonotonicTime();
-						auto doubleClick = lastClickTime != 0 && now - lastClickTime <= 500 && lastClickX == info.x && lastClickY == info.y && lastClickButton == button;
-						event.type = doubleClick ? unittest::TuiBackendEventType::MouseDoubleClick : unittest::TuiBackendEventType::MouseDown;
-						if (button == TuiMouseButton::Left) left = true;
-						if (button == TuiMouseButton::Middle) middle = true;
-						if (button == TuiMouseButton::Right) right = true;
-						if (doubleClick)
-						{
-							lastClickTime = 0;
-						}
-						else
-						{
-							lastClickTime = now;
-							lastClickX = info.x;
-							lastClickY = info.y;
-							lastClickButton = button;
-						}
-					}
-					event.mouseInfo.left = left;
-					event.mouseInfo.middle = middle;
-					event.mouseInfo.right = right;
-					pendingEvents.Add(event);
-					return true;
-				}
-
-				bool TryConsumeSpecialSequence()
-				{
-					if (inputBytes.Count() < 2 || inputBytes[0] != 0x1B || inputBytes[1] != '[') return false;
-					for (vint i = 2; i < inputBytes.Count(); i++)
-					{
-						auto byte = inputBytes[i];
-						if (byte >= 0x40 && byte <= 0x7E)
-						{
-							inputBytes.RemoveRange(0, i + 1);
-							escapeDeadline = 0;
-							return true;
-						}
-					}
-					return false;
-				}
-
-				bool TryDecodeUtf8(bool alt = false)
-				{
-					auto offset = alt ? 1 : 0;
-					if (inputBytes.Count() <= offset) return false;
-					auto first = inputBytes[offset];
-					vint length = 0;
-					char32_t code = 0;
-					if (first < 0x80)
-					{
-						length = 1;
-						code = first;
-					}
-					else if (first >= 0xC2 && first <= 0xDF)
-					{
-						length = 2;
-						code = first & 0x1F;
-					}
-					else if (first >= 0xE0 && first <= 0xEF)
-					{
-						length = 3;
-						code = first & 0x0F;
-					}
-					else if (first >= 0xF0 && first <= 0xF4)
-					{
-						length = 4;
-						code = first & 0x07;
-					}
-					else
-					{
-						inputBytes.RemoveRange(0, offset + 1);
-						QueueChar(L'\uFFFD', alt);
-						return true;
-					}
-					if (inputBytes.Count() < offset + length) return false;
-					for (vint i = 1; i < length; i++)
-					{
-						auto next = inputBytes[offset + i];
-						if ((next & 0xC0) != 0x80)
-						{
-							inputBytes.RemoveRange(0, offset + 1);
-							QueueChar(L'\uFFFD', alt);
-							return true;
-						}
-						code = (code << 6) | (next & 0x3F);
-					}
-					auto minimum = length == 1 ? 0 : length == 2 ? 0x80 : length == 3 ? 0x800 : 0x10000;
-					if (code < minimum || code > 0x10FFFF || (code >= 0xD800 && code <= 0xDFFF))
-					{
-						inputBytes.RemoveRange(0, offset + length);
-						QueueChar(L'\uFFFD', alt);
-						return true;
-					}
-					inputBytes.RemoveRange(0, offset + length);
-					escapeDeadline = 0;
-					QueueChar((wchar_t)code, alt);
-					return true;
-				}
-
-				bool ParseInput()
-				{
-					if (inputBytes.Count() == 0) return false;
-					if (inputBytes[0] == 0x1B)
-					{
-						if (TryParseMouse()) return true;
-						if (TryConsumeSpecialSequence()) return true;
-						if (inputBytes.Count() > 1 && inputBytes[1] != '[')
-						{
-							return TryDecodeUtf8(true);
-						}
-						if (escapeDeadline == 0) escapeDeadline = GetMonotonicTime() + 30;
-						if (GetMonotonicTime() >= escapeDeadline)
-						{
-							inputBytes.RemoveAt(0);
-							escapeDeadline = 0;
-							QueueChar((wchar_t)0x1B);
-							return true;
-						}
-						return false;
-					}
-					return TryDecodeUtf8();
 				}
 
 				void AppendColor(std::string& output, TuiColor foreground, TuiColor background, TuiColorMode colorMode)
@@ -6177,10 +5948,7 @@ namespace vl
 						sigaction(SIGWINCH, &savedAction, nullptr);
 						pthread_sigmask(SIG_SETMASK, &savedMask, nullptr);
 					}
-					inputBytes.Clear();
-					pendingEvents.Clear();
-					escapeDeadline = 0;
-					left = middle = right = false;
+					static_cast<PosixTuiInputDecoder&>(*this) = {};
 					termiosChanged = false;
 					signalInstalled = false;
 					started = false;
@@ -6204,14 +5972,14 @@ namespace vl
 
 				bool ReadEvent(vint milliseconds, unittest::TuiBackendEvent& event) override
 				{
-					if (pendingEvents.Count() == 0) ParseInput();
+					if (pendingEvents.Count() == 0) ParseInput(GetMonotonicTime());
 					if (pendingEvents.Count() == 0)
 					{
 						auto wait = milliseconds;
-						if (escapeDeadline != 0)
+						if (escapeDeadline)
 						{
 							auto now = GetMonotonicTime();
-							auto remaining = escapeDeadline <= now ? 0 : (vint)(escapeDeadline - now);
+							auto remaining = escapeDeadline.Value() <= now ? 0 : (vint)(escapeDeadline.Value() - now);
 							if (wait < 0 || remaining < wait) wait = remaining;
 						}
 						pollfd descriptors[] =
@@ -6219,11 +5987,8 @@ namespace vl
 							{ STDIN_FILENO, POLLIN, 0 },
 							{ resizePipe[0], POLLIN, 0 },
 						};
-						vint result = 0;
-						do
-						{
-							result = poll(descriptors, sizeof(descriptors) / sizeof(*descriptors), wait);
-						} while (result == -1 && errno == EINTR);
+						auto result = poll(descriptors, sizeof(descriptors) / sizeof(*descriptors), wait);
+						if (result == -1 && errno == EINTR) return false;
 						CHECK_ERROR(result >= 0, L"vl::console::TUI POSIX backend failed while waiting for terminal input.");
 						if (descriptors[1].revents & POLLIN)
 						{
@@ -6239,7 +6004,7 @@ namespace vl
 								for (vint i = 0; i < count; i++) inputBytes.Add(bytes[i]);
 							}
 						}
-						if (pendingEvents.Count() == 0) ParseInput();
+						if (pendingEvents.Count() == 0) ParseInput(GetMonotonicTime());
 					}
 					if (pendingEvents.Count() == 0) return false;
 					event = pendingEvents[0];

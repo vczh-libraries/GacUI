@@ -279,6 +279,7 @@ WindowsForm
 				NativeWindowMouseInfo ConvertMouse(WPARAM wParam, LPARAM lParam, bool wheelMessage, bool nonClient)
 				{
 					NativeWindowMouseInfo info;
+					info.alt = WinIsKeyPressing(VKEY::KEY_MENU);
 					info.osSuper = IsOSSuperPressed();
 
 					info.nonClient = false;

@@ -366,6 +366,7 @@ RunIOCommandOnNativeWindow
 				NativeWindowMouseInfo info;
 				info.ctrl = IsCtrlPressing(state);
 				info.shift = IsShiftPressing(state);
+				info.alt = IsAltPressing(state);
 				info.osSuper = IsOSSuperPressing(state);
 				info.left = state->leftPressing;
 				info.middle = state->middlePressing;

@@ -75,6 +75,27 @@ establish, drive, inspect, replace, and close the renderer session.
    fatal overlay, or disconnect.
    In GacJS, Mouse4 and Mouse5 must not navigate browser history or change the page URL.
 
+## Shared Input Payload Checks
+
+On the mouse-result label in either `/RPT` Home or `/FCT` Window Manager:
+
+1. Require the separate initial readout `Alt: 0; Super: 0`.
+2. For Left, Middle, Right, Mouse4 and Mouse5, press and release with neither
+   modifier, Alt alone, Super alone, and both. Require the ordinary exact
+   button down/up text and respectively `Alt: 0; Super: 0`, `Alt: 1; Super: 0`,
+   `Alt: 0; Super: 1`, and `Alt: 1; Super: 1`. Also combine Ctrl and Shift
+   with Alt and Super.
+3. Over the same label, repeat the modifier combinations while moving,
+   double-clicking, and scrolling in both directions on both wheel axes.
+   Require the modifier readout to match each event. The readout uses
+   reflected C++ mouse event arguments, so observing it through the renderer
+   verifies both input delivery and rendered output.
+4. Repeat after renderer replacement; pending input from the detached renderer
+   must not alter the new session.
+5. In an editable control, type `Hello[Ab]{Cd}` with the keyboard and require
+   the exact text. Check outgoing browser KeyDown values `0xDB` and `0xDD`
+   for the left and right bracket physical keys, including shifted braces.
+
 ## Remote Protocol Test (`/RPT`)
 
 Use a fresh application state. Keep the same application session through the

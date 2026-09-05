@@ -144,6 +144,11 @@ namespace demo
     {
         var openedSubWindows : GuiWindow^[] = {};
 
+        func ShowMouseModifiers(alt : bool, osSuper : bool) : (void)
+        {
+            raise "Not Implemented";
+        }
+
         func MouseButtonName(button : NativeMouseButton) : (string)
         {
             raise "Not Implemented";

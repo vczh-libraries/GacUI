@@ -51,10 +51,12 @@ public:
 	vint mouseMove = 0;
 	vint verticalWheel = 0;
 	bool allSuper = true;
+	bool allAlt = true;
 
 	void MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info) override
 	{
 		allSuper &= info.osSuper;
+		allAlt &= info.alt;
 		if (button == NativeMouseButton::Mouse4) mouse4Down++;
 		if (button == NativeMouseButton::Mouse5) mouse5Down++;
 	}
@@ -62,6 +64,7 @@ public:
 	void MouseUp(NativeMouseButton button, const NativeWindowMouseInfo& info) override
 	{
 		allSuper &= info.osSuper;
+		allAlt &= info.alt;
 		if (button == NativeMouseButton::Mouse4) mouse4Up++;
 		if (button == NativeMouseButton::Mouse5) mouse5Up++;
 	}
@@ -69,6 +72,7 @@ public:
 	void MouseDoubleClick(NativeMouseButton button, const NativeWindowMouseInfo& info) override
 	{
 		allSuper &= info.osSuper;
+		allAlt &= info.alt;
 		if (button == NativeMouseButton::Mouse4) mouse4DoubleClick++;
 		if (button == NativeMouseButton::Mouse5) mouse5DoubleClick++;
 	}
@@ -76,12 +80,14 @@ public:
 	void MouseMoving(const NativeWindowMouseInfo& info) override
 	{
 		allSuper &= info.osSuper;
+		allAlt &= info.alt;
 		mouseMove++;
 	}
 
 	void VerticalWheel(const NativeWindowMouseInfo& info) override
 	{
 		allSuper &= info.osSuper;
+		allAlt &= info.alt;
 		verticalWheel++;
 	}
 };
@@ -143,16 +149,16 @@ TEST_FILE
 				TEST_ASSERT(RunIOCommandOnNativeWindow(&state, controller, nativeWindow, listeners, WString::Unmanaged(command)) == L"Queued");
 			};
 
-			run(L"!Mouse4Down:10,20,Win");
-			run(L"!Mouse4Up:10,20,Command");
-			run(L"!Mouse4Click:10,20,Super");
-			run(L"!Mouse4DbClick:10,20,Win");
-			run(L"!Mouse5Down:10,20,Command");
-			run(L"!Mouse5Up:10,20,Super");
-			run(L"!Mouse5Click:10,20,Win");
-			run(L"!Mouse5DbClick:10,20,Command");
-			run(L"!MouseMove:30,40,Super");
-			run(L"!MouseWheelUp:1,Win");
+			run(L"!Mouse4Down:10,20,Win,Alt");
+			run(L"!Mouse4Up:10,20,Command,Alt");
+			run(L"!Mouse4Click:10,20,Super,Alt");
+			run(L"!Mouse4DbClick:10,20,Win,Alt");
+			run(L"!Mouse5Down:10,20,Command,Alt");
+			run(L"!Mouse5Up:10,20,Super,Alt");
+			run(L"!Mouse5Click:10,20,Win,Alt");
+			run(L"!Mouse5DbClick:10,20,Command,Alt");
+			run(L"!MouseMove:30,40,Super,Alt");
+			run(L"!MouseWheelUp:1,Win,Alt");
 		});
 
 		protocol.OnNextFrame([&]()
@@ -165,7 +171,7 @@ TEST_FILE
 			TEST_ASSERT(listener.mouse5DoubleClick == 1);
 			TEST_ASSERT(listener.mouseMove == 2);
 			TEST_ASSERT(listener.verticalWheel == 1);
-			TEST_ASSERT(listener.allSuper);
+			TEST_ASSERT(listener.allSuper && listener.allAlt);
 			controlHost->Hide();
 		});
 

@@ -31,6 +31,10 @@ namespace rptest
 		friend class ::vl_workflow_global::__vwsnc2_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc3_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf10_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf11_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf12_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf13_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf14_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf1_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf2_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf3_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
@@ -44,6 +48,7 @@ namespace rptest
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ClickMeTab>;
 #endif
 	public:
+		void ShowMouseModifiers(bool alt, bool osSuper);
 		::vl::WString MouseButtonName(::vl::presentation::NativeMouseButton button);
 		ClickMeTab();
 		~ClickMeTab();

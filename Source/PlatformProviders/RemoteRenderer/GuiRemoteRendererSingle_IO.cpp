@@ -110,7 +110,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::HorizontalWheel(const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
-		if (pendingHWheel && pendingHWheel.Value().osSuper != info.osSuper) SendAccumulatedMessages();
+		if (pendingHWheel && (pendingHWheel.Value().alt != info.alt || pendingHWheel.Value().osSuper != info.osSuper)) SendAccumulatedMessages();
 		auto copy = info;
 		if (pendingHWheel) copy.wheel += pendingHWheel.Value().wheel;
 		pendingHWheel = copy;
@@ -119,7 +119,7 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::VerticalWheel(const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;
-		if (pendingVWheel && pendingVWheel.Value().osSuper != info.osSuper) SendAccumulatedMessages();
+		if (pendingVWheel && (pendingVWheel.Value().alt != info.alt || pendingVWheel.Value().osSuper != info.osSuper)) SendAccumulatedMessages();
 		auto copy = info;
 		if (pendingVWheel) copy.wheel += pendingVWheel.Value().wheel;
 		pendingVWheel = copy;

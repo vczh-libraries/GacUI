@@ -287,6 +287,7 @@ GuiGraphicsHost
 					arguments.osSuper = info.osSuper;
 					arguments.ctrl = info.ctrl;
 					arguments.shift = info.shift;
+					arguments.alt = info.alt;
 					arguments.left = info.left;
 					arguments.middle = info.middle;
 					arguments.right = info.right;

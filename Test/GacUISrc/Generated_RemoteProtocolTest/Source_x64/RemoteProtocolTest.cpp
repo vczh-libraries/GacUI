@@ -64,16 +64,65 @@ Closures
 	void __vwsnf10_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->labelMouseButton)->SetText((::vl::__vwsn::This(__vwsnthis_0->self)->MouseButtonName(::vl::__vwsn::This(arguments)->button) + ::vl::WString::Unmanaged(L" button down!")));
+		::vl::__vwsn::This(__vwsnthis_0->self)->ShowMouseModifiers(::vl::__vwsn::This(arguments)->alt, ::vl::__vwsn::This(arguments)->osSuper);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf11_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::__vwsnf11_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0)
+	__vwsnf11_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_::__vwsnf11_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_(::rptest::ClickMeTabConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf11_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	void __vwsnf11_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->ShowMouseModifiers(::vl::__vwsn::This(arguments)->alt, ::vl::__vwsn::This(arguments)->osSuper);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf12_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_::__vwsnf12_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_(::rptest::ClickMeTabConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf12_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->ShowMouseModifiers(::vl::__vwsn::This(arguments)->alt, ::vl::__vwsn::This(arguments)->osSuper);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf13_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_::__vwsnf13_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_(::rptest::ClickMeTabConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf13_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->ShowMouseModifiers(::vl::__vwsn::This(arguments)->alt, ::vl::__vwsn::This(arguments)->osSuper);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf14_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_::__vwsnf14_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_(::rptest::ClickMeTabConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf14_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->ShowMouseModifiers(::vl::__vwsn::This(arguments)->alt, ::vl::__vwsn::This(arguments)->osSuper);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf15_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::__vwsnf15_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::WString __vwsnf15_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::rptest::DataItem>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetName();
@@ -81,12 +130,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf12_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::__vwsnf12_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0)
+	__vwsnf16_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::__vwsnf16_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf12_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf16_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::rptest::DataItem>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetTitle();
@@ -94,12 +143,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf13_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::__vwsnf13_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0)
+	__vwsnf17_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::__vwsnf17_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf13_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf17_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::rptest::DataItem>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetDescription();
@@ -107,12 +156,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf14_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::__vwsnf14_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0)
+	__vwsnf18_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::__vwsnf18_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf14_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf18_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto __vwsn_for_begin_i = static_cast<::vl::vint64_t>(1L);
@@ -130,62 +179,14 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf15_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::__vwsnf15_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0)
+	__vwsnf19_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::__vwsnf19_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf15_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf19_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->itemSource.Obj())->Clear();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf16_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_::__vwsnf16_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_(::rptest::DocumentTabConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf16_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->dialogStart)->ShowDialog();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf17_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::__vwsnf17_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf17_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(__vwsnthis_0->self), vl::Func(::vl_workflow_global::__vwsnf18_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__(__vwsnthis_0)));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf18_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__::__vwsnf18_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf18_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__::operator()() const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->Hide();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf19_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::__vwsnf19_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf19_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->Hide();
 	}
 
 	//-------------------------------------------------------------------
@@ -202,38 +203,38 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf20_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::__vwsnf20_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf20_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_::__vwsnf20_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_(::rptest::DocumentTabConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf20_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf20_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(__vwsnthis_0->self), vl::Func(::vl_workflow_global::__vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__(__vwsnthis_0)));
+		::vl::__vwsn::This(__vwsnthis_0->dialogStart)->ShowDialog();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__::__vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::__vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__::operator()() const
+	void __vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(__vwsnthis_0->self), vl::Func(::vl_workflow_global::__vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__(__vwsnthis_0)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::__vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__::__vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__::operator()() const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+		::vl::__vwsn::This(__vwsnthis_0->self)->Hide();
 	}
 
 	//-------------------------------------------------------------------
@@ -243,7 +244,55 @@ Closures
 	{
 	}
 
-	void __vwsnf23_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiRequestEventArgs* arguments) const
+	void __vwsnf23_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->Hide();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf24_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::__vwsnf24_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf24_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(__vwsnthis_0->self), vl::Func(::vl_workflow_global::__vwsnf25_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__(__vwsnthis_0)));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf25_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__::__vwsnf25_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf25_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__::operator()() const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf26_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::__vwsnf26_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf26_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf27_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::__vwsnf27_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf27_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiRequestEventArgs* arguments) const
 	{
 		if ((::vl::__vwsn::This(__vwsnthis_0->dialogQueryClose)->ShowDialog() == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectCancel))
 		{
@@ -363,6 +412,7 @@ Closures
 	void __vwsnf9_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->labelMouseButton)->SetText((::vl::__vwsn::This(__vwsnthis_0->self)->MouseButtonName(::vl::__vwsn::This(arguments)->button) + ::vl::WString::Unmanaged(L" button up!")));
+		::vl::__vwsn::This(__vwsnthis_0->self)->ShowMouseModifiers(::vl::__vwsn::This(arguments)->alt, ::vl::__vwsn::This(arguments)->osSuper);
 	}
 
 	//-------------------------------------------------------------------
@@ -630,13 +680,14 @@ namespace rptest
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint64_t>(6L), static_cast<::vl::vint64_t>(3L));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint64_t>(7L), static_cast<::vl::vint64_t>(3L));
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint64_t>(0L), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint64_t>(1L), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint64_t>(2L), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint64_t>(3L), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint64_t>(4L), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint64_t>(5L), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint64_t>(5L), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint64_t>(6L), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint64_t>(0L), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint64_t>(1L), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint64_t>(2L), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
@@ -747,12 +798,29 @@ namespace rptest
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetSite(static_cast<::vl::vint64_t>(5L), static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(3L));
 		}
-		(this->__vwsn_precompile_13 = ::vl::reflection::description::GuiRawElement_Constructor());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetOwnedElement(this->__vwsn_precompile_13);
+			(this->labelMouseModifiers = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"labelMouseModifiers"), ::vl::__vwsn::Box(this->labelMouseModifiers));
+		}
+		{
+			::vl::__vwsn::This(this->labelMouseModifiers)->SetText(::vl::WString::Unmanaged(L"Alt: 0; Super: 0"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->labelMouseModifiers)->GetBoundsComposition()));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_12));
+		}
+		(this->__vwsn_precompile_13 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetSite(static_cast<::vl::vint64_t>(6L), static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(3L));
+		}
+		(this->__vwsn_precompile_14 = ::vl::reflection::description::GuiRawElement_Constructor());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetOwnedElement(this->__vwsn_precompile_14);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_13));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
@@ -800,6 +868,22 @@ namespace rptest
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf10_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_11)->GetEventReceiver()->mouseDown, __vwsn_event_handler_);
 		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf11_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_11)->GetEventReceiver()->mouseMove, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf12_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_11)->GetEventReceiver()->mouseDoubleClick, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf13_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_11)->GetEventReceiver()->verticalWheel, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf14_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_11)->GetEventReceiver()->horizontalWheel, __vwsn_event_handler_);
+		}
 	}
 
 	ClickMeTabConstructor::ClickMeTabConstructor()
@@ -817,7 +901,8 @@ namespace rptest
 		, __vwsn_precompile_10(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_11(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_12(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
-		, __vwsn_precompile_13(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>())
+		, __vwsn_precompile_13(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_14(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>())
 		, dialogLocalShortcut(static_cast<::vl::presentation::controls::GuiMessageDialog*>(nullptr))
 		, dialogLocalSuperShortcut(static_cast<::vl::presentation::controls::GuiMessageDialog*>(nullptr))
 		, dialogGlobalShortcut(static_cast<::vl::presentation::controls::GuiMessageDialog*>(nullptr))
@@ -825,6 +910,7 @@ namespace rptest
 		, commandLocalSuperShortcut(static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr))
 		, commandGlobalShortcut(static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr))
 		, labelMouseButton(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, labelMouseModifiers(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 		, buttonClickMe(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
 	{
 	}
@@ -920,7 +1006,7 @@ Class (::rptest::DataGridTabConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_7.Obj())->SetSize(static_cast<::vl::vint64_t>(120L));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_7.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf11_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_7.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf15_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_7.Obj())->SetText(::vl::WString::Unmanaged(L"Name"));
@@ -934,7 +1020,7 @@ Class (::rptest::DataGridTabConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_8.Obj())->SetSize(static_cast<::vl::vint64_t>(160L));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_8.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf12_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_8.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf16_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_8.Obj())->SetText(::vl::WString::Unmanaged(L"Title"));
@@ -948,7 +1034,7 @@ Class (::rptest::DataGridTabConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_9.Obj())->SetSize(static_cast<::vl::vint64_t>(300L));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_9.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf13_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_9.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf17_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_9.Obj())->SetText(::vl::WString::Unmanaged(L"Description"));
@@ -967,11 +1053,11 @@ Class (::rptest::DataGridTabConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf14_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf18_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_2)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf15_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf19_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_4)->Clicked, __vwsn_event_handler_);
 		}
 		{
@@ -1768,7 +1854,7 @@ Class (::rptest::DocumentTabConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_75)->SetDocument(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::DocumentModel>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString::Unmanaged(L"res"), ::vl::WString::Unmanaged(L"SideDocuments/Cell3Req"), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf16_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf20_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_83)->Clicked, __vwsn_event_handler_);
 		}
 		{
@@ -2210,19 +2296,19 @@ Class (::rptest::RpMainWindowConstructor)
 			::vl::__vwsn::This(this->dialogQueryClose)->SetTitle(::vl::__vwsn::This(this->self)->GetText());
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf17_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_16)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf19_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf23_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_17)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf20_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf24_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_19)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf26_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_20)->Clicked, __vwsn_event_handler_);
 		}
 		{
@@ -2241,7 +2327,7 @@ Class (::rptest::RpMainWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_30)->SetImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString::Unmanaged(L"res"), ::vl::WString::Unmanaged(L"ToolbarImages/Paste"), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf23_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf27_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->WindowClosing, __vwsn_event_handler_);
 		}
 	}

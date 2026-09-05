@@ -111,7 +111,8 @@ GuiRemoteEventFilter
 		GuiRemoteEventFilter();
 		~GuiRemoteEventFilter();
 	
-		void													ProcessResponses();	
+		void													ProcessResponses();
+		void													DiscardResponses();
 		void													ProcessEvents();
 
 		// responses

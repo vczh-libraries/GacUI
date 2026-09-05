@@ -1,4 +1,24 @@
 #include "TestRemote_GraphicsHost_Shared.h"
+#include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
+
+class MouseInputRenderer : public remote_renderer::GuiRemoteRendererSingle
+{
+public:
+	MouseInputRenderer(IGuiRemoteProtocolEvents* _events)
+		: GuiRemoteRendererSingle(false)
+	{
+		events = _events;
+	}
+
+	using GuiRemoteRendererSingle::MouseDown;
+	using GuiRemoteRendererSingle::MouseUp;
+	using GuiRemoteRendererSingle::MouseDoubleClick;
+	using GuiRemoteRendererSingle::MouseMoving;
+	using GuiRemoteRendererSingle::HorizontalWheel;
+	using GuiRemoteRendererSingle::VerticalWheel;
+	using GuiRemoteRendererSingle::SendAccumulatedMessages;
+	using GuiRemoteRendererSingle::DisconnectFromCore;
+};
 
 TEST_FILE
 {
@@ -689,4 +709,113 @@ TEST_FILE
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
 		StartRemoteControllerTest(protocol);
 	});
+	TEST_CATEGORY(L"Alt and Super survive mouse serialization, hosted routing and renderer batching")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		NativeWindowMouseInfo expected;
+		NativeMouseButton expectedButton = NativeMouseButton::Left;
+		vint buttons = 0;
+		List<WindowMouseInfo> wheels;
+
+		protocol.OnNextFrame([&]()
+		{
+			controlHost->ForceCalculateSizeImmediately();
+			TEST_ASSERT(controlHost->GetBoundsComposition()->GetCachedBounds() == Rect({ 0,0 }, { 640,480 }));
+			auto receiver = controlHost->GetBoundsComposition()->GetEventReceiver();
+			auto checkButton = [&](GuiGraphicsComposition*, GuiMouseEventArgs& args)
+			{
+				TEST_ASSERT(args.alt == expected.alt && args.osSuper == expected.osSuper);
+				TEST_ASSERT(args.ctrl == expected.ctrl && args.shift == expected.shift);
+				TEST_ASSERT(args.button == expectedButton);
+				TEST_ASSERT(args.left == expected.left && args.middle == expected.middle && args.right == expected.right);
+				buttons++;
+			};
+			receiver->mouseDown.AttachLambda(checkButton);
+			receiver->mouseUp.AttachLambda(checkButton);
+			receiver->mouseDoubleClick.AttachLambda(checkButton);
+			auto checkWheel = [&](GuiGraphicsComposition*, GuiMouseEventArgs& args)
+			{
+				wheels.Add(args);
+			};
+			receiver->horizontalWheel.AttachLambda(checkWheel);
+			receiver->verticalWheel.AttachLambda(checkWheel);
+		});
+		protocol.OnNextFrame([&]()
+		{
+			MouseInputRenderer renderer(protocol.GetEvents());
+			expected.x = 20;
+			expected.y = 30;
+			renderer.MouseMoving(expected);
+			renderer.SendAccumulatedMessages();
+			for (vint mask = 0; mask < 16; mask++)
+			{
+				expected.ctrl = (mask & 1) != 0;
+				expected.shift = (mask & 2) != 0;
+				expected.alt = (mask & 4) != 0;
+				expected.osSuper = (mask & 8) != 0;
+				NativeWindowMouseInfo restored;
+				ConvertJsonToCustomType(ConvertCustomTypeToJson(expected), restored);
+				TEST_ASSERT(restored.ctrl == expected.ctrl && restored.shift == expected.shift);
+				TEST_ASSERT(restored.alt == expected.alt && restored.osSuper == expected.osSuper);
+				for (auto button : { NativeMouseButton::Left, NativeMouseButton::Middle, NativeMouseButton::Right, NativeMouseButton::Mouse4, NativeMouseButton::Mouse5 })
+				{
+					expectedButton = button;
+					expected.left = button == NativeMouseButton::Left;
+					expected.middle = button == NativeMouseButton::Middle;
+					expected.right = button == NativeMouseButton::Right;
+					renderer.MouseDown(button, expected);
+					expected.left = expected.middle = expected.right = false;
+					renderer.MouseUp(button, expected);
+					expected.left = button == NativeMouseButton::Left;
+					expected.middle = button == NativeMouseButton::Middle;
+					expected.right = button == NativeMouseButton::Right;
+					renderer.MouseDoubleClick(button, expected);
+					expected.left = expected.middle = expected.right = false;
+					renderer.MouseUp(button, expected);
+				}
+			}
+			TEST_ASSERT(buttons == 16 * 5 * 4);
+			for (auto horizontal : { false, true })
+			{
+				wheels.Clear();
+				expected = {};
+				expected.x = 20;
+				expected.y = 30;
+				auto wheel = [&](const NativeWindowMouseInfo& info)
+				{
+					if (horizontal) renderer.HorizontalWheel(info);
+					else renderer.VerticalWheel(info);
+				};
+				expected.wheel = 60;
+				wheel(expected);
+				wheel(expected);
+				expected.alt = true;
+				expected.wheel = -120;
+				wheel(expected);
+				TEST_ASSERT(wheels.Count() == 1 && !wheels[0].alt && !wheels[0].osSuper && wheels[0].wheel == 120);
+				expected.osSuper = true;
+				expected.wheel = 240;
+				wheel(expected);
+				TEST_ASSERT(wheels.Count() == 2 && wheels[1].alt && !wheels[1].osSuper && wheels[1].wheel == -120);
+				renderer.SendAccumulatedMessages();
+				TEST_ASSERT(wheels.Count() == 3 && wheels[2].alt && wheels[2].osSuper && wheels[2].wheel == 240);
+			}
+			expected.wheel = 120;
+			renderer.VerticalWheel(expected);
+			renderer.HorizontalWheel(expected);
+			renderer.MouseMoving(expected);
+			auto before = wheels.Count();
+			renderer.DisconnectFromCore();
+			renderer.SendAccumulatedMessages();
+			renderer.VerticalWheel(expected);
+			renderer.SendAccumulatedMessages();
+			TEST_ASSERT(wheels.Count() == before);
+			controlHost->Hide();
+		});
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
 }

@@ -5055,6 +5055,7 @@ WString HttpServerConnection::SubmitResponse(PHTTP_REQUEST pRequest)
 	}
 
 	WString responseToClient;
+	bool reportLostPoll = false;
 	SPIN_LOCK(pendingRequestLock)
 	{
 		submittingResponse = false;
@@ -5073,6 +5074,17 @@ WString HttpServerConnection::SubmitResponse(PHTTP_REQUEST pRequest)
 			responseToClient = pendingRequestsToSend[0];
 			pendingRequestsToSend.RemoveAt(0);
 		}
+		// Excess callback responses must also satisfy a poll that is already waiting.
+		if (httpPendingRequestId != HTTP_NULL_ID && pendingRequestsToSend.Count() > 0)
+		{
+			auto pendingRequest = pendingRequestsToSend[0];
+			pendingRequestsToSend.RemoveAt(0);
+			reportLostPoll = SendPendingRequestUnsafe(pendingRequest);
+		}
+	}
+	if (reportLostPoll)
+	{
+		ReportPollingError(L"HttpServerConnection failed to respond to /Request because the polling connection was lost.");
 	}
 	return responseToClient;
 }
@@ -6719,7 +6731,6 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-#define _WINSOCKAPI_
 #include <exception>
 
 #ifndef VCZH_MSVC
@@ -6727,6 +6738,7 @@ static_assert(false, "Do not build this file for non-Windows applications.");
 #endif
 
 using namespace vl;
+using namespace vl::presentation;
 using namespace vl::collections;
 
 namespace vl
@@ -6786,7 +6798,107 @@ namespace vl
 				return (color & 8) | ((color & 1) << 2) | (color & 2) | ((color & 4) >> 2);
 			}
 
-			class WindowsTuiBackend : public unittest::ITuiBackend
+			void WindowsTuiInputDecoder::DecodeKey(const KEY_EVENT_RECORD& record)
+			{
+				auto validKey = record.wVirtualKeyCode > 0 && record.wVirtualKeyCode <= 255;
+				auto repeated = validKey && keys[record.wVirtualKeyCode];
+				if (validKey) keys[record.wVirtualKeyCode] = record.bKeyDown != FALSE;
+				auto repeat = record.bKeyDown && record.wRepeatCount > 0 ? record.wRepeatCount : 1;
+				for (vint i = 0; i < repeat; i++)
+				{
+					unittest::TuiBackendEvent event;
+					event.type = record.bKeyDown ? unittest::TuiBackendEventType::KeyDown : unittest::TuiBackendEventType::KeyUp;
+					auto& info = event.keyInfo;
+					info.code = validKey ? (VKEY)record.wVirtualKeyCode : VKEY::KEY_UNKNOWN;
+					info.ctrl = (record.dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED)) != 0;
+					info.shift = (record.dwControlKeyState & SHIFT_PRESSED) != 0;
+					info.alt = (record.dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)) != 0;
+					info.capslock = (record.dwControlKeyState & CAPSLOCK_ON) != 0;
+					info.autoRepeatKeyDown = record.bKeyDown && (repeated || i > 0);
+					pendingEvents.Add(event);
+					if (record.bKeyDown && record.uChar.UnicodeChar != 0)
+					{
+						event.type = unittest::TuiBackendEventType::Char;
+						event.charInfo.code = record.uChar.UnicodeChar;
+						event.charInfo.ctrl = info.ctrl;
+						event.charInfo.shift = info.shift;
+						event.charInfo.alt = info.alt;
+						event.charInfo.capslock = info.capslock;
+						pendingEvents.Add(event);
+					}
+				}
+			}
+
+			void WindowsTuiInputDecoder::QueueMouseButton(unittest::TuiBackendEventType type, NativeMouseButton button, const WindowMouseInfo& info)
+			{
+				unittest::TuiBackendEvent event;
+				event.type = type;
+				event.mouseButton = button;
+				event.mouseInfo = info;
+				pendingEvents.Add(event);
+			}
+
+			void WindowsTuiInputDecoder::DecodeMouse(const MOUSE_EVENT_RECORD& record, COORD viewportOrigin)
+			{
+				WindowMouseInfo info;
+				info.x = record.dwMousePosition.X - viewportOrigin.X;
+				info.y = record.dwMousePosition.Y - viewportOrigin.Y;
+				info.ctrl = (record.dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED)) != 0;
+				info.shift = (record.dwControlKeyState & SHIFT_PRESSED) != 0;
+				info.alt = (record.dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)) != 0;
+				info.left = (record.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) != 0;
+				info.middle = (record.dwButtonState & FROM_LEFT_2ND_BUTTON_PRESSED) != 0;
+				info.right = (record.dwButtonState & RIGHTMOST_BUTTON_PRESSED) != 0;
+				if (record.dwEventFlags == MOUSE_MOVED)
+				{
+					unittest::TuiBackendEvent event;
+					event.type = unittest::TuiBackendEventType::MouseMove;
+					event.mouseInfo = info;
+					pendingEvents.Add(event);
+				}
+				else if (record.dwEventFlags == MOUSE_WHEELED || record.dwEventFlags == MOUSE_HWHEELED)
+				{
+					unittest::TuiBackendEvent event;
+					event.type = record.dwEventFlags == MOUSE_WHEELED ? unittest::TuiBackendEventType::MouseVerticalWheel : unittest::TuiBackendEventType::MouseHorizontalWheel;
+					event.mouseInfo = info;
+					event.mouseInfo.wheel = (SHORT)HIWORD(record.dwButtonState);
+					pendingEvents.Add(event);
+				}
+				else if (record.dwEventFlags == DOUBLE_CLICK)
+				{
+					auto changedButtons = record.dwButtonState & ~mouseButtons;
+					auto button = (changedButtons & FROM_LEFT_1ST_BUTTON_PRESSED) ? NativeMouseButton::Left
+						: (changedButtons & FROM_LEFT_2ND_BUTTON_PRESSED) ? NativeMouseButton::Middle
+						: NativeMouseButton::Right;
+					QueueMouseButton(unittest::TuiBackendEventType::MouseDoubleClick, button, info);
+				}
+				else if (record.dwEventFlags == 0)
+				{
+					struct ButtonMapping
+					{
+						DWORD			mask;
+						NativeMouseButton	button;
+					};
+					ButtonMapping mappings[] =
+					{
+						{ FROM_LEFT_1ST_BUTTON_PRESSED, NativeMouseButton::Left },
+						{ FROM_LEFT_2ND_BUTTON_PRESSED, NativeMouseButton::Middle },
+						{ RIGHTMOST_BUTTON_PRESSED, NativeMouseButton::Right },
+					};
+					for (auto mapping : mappings)
+					{
+						auto before = (mouseButtons & mapping.mask) != 0;
+						auto after = (record.dwButtonState & mapping.mask) != 0;
+						if (before != after)
+						{
+							QueueMouseButton(after ? unittest::TuiBackendEventType::MouseDown : unittest::TuiBackendEventType::MouseUp, mapping.button, info);
+						}
+					}
+				}
+				mouseButtons = record.dwButtonState;
+			}
+
+			class WindowsTuiBackend : public unittest::ITuiBackend, private WindowsTuiInputDecoder
 			{
 			private:
 				HANDLE						inputHandle = INVALID_HANDLE_VALUE;
@@ -6798,8 +6910,6 @@ namespace vl
 				CONSOLE_CURSOR_INFO			cursorInfo = {};
 				CONSOLE_SCREEN_BUFFER_INFOEX	screenInfo = {};
 				CONSOLE_SCREEN_BUFFER_INFO	originalGeometry = {};
-				List<unittest::TuiBackendEvent> pendingEvents;
-				DWORD						mouseButtons = 0;
 				vint						viewportWidth = 0;
 				vint						viewportHeight = 0;
 				bool						started = false;
@@ -6872,121 +6982,6 @@ namespace vl
 					}
 				}
 
-				TuiMouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& record)
-				{
-					CONSOLE_SCREEN_BUFFER_INFO info = {};
-					CHECK_ERROR(GetConsoleScreenBufferInfo(outputHandle, &info), L"vl::console::TUI Windows backend failed to query the console viewport.");
-					TuiMouseInfo result;
-					result.x = record.dwMousePosition.X - info.srWindow.Left;
-					result.y = record.dwMousePosition.Y - info.srWindow.Top;
-					result.ctrl = (record.dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED)) != 0;
-					result.shift = (record.dwControlKeyState & SHIFT_PRESSED) != 0;
-					result.alt = (record.dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)) != 0;
-					result.left = (record.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) != 0;
-					result.middle = (record.dwButtonState & FROM_LEFT_2ND_BUTTON_PRESSED) != 0;
-					result.right = (record.dwButtonState & RIGHTMOST_BUTTON_PRESSED) != 0;
-					return result;
-				}
-
-				TuiKeyInfo GetKeyInfo(const KEY_EVENT_RECORD& record)
-				{
-					TuiKeyInfo result;
-					result.ctrl = (record.dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED)) != 0;
-					result.shift = (record.dwControlKeyState & SHIFT_PRESSED) != 0;
-					result.alt = (record.dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)) != 0;
-					result.capslock = (record.dwControlKeyState & CAPSLOCK_ON) != 0;
-					result.autoRepeatKeyDown = record.bKeyDown && record.wRepeatCount > 1;
-					return result;
-				}
-
-				void QueueChar(wchar_t code, const KEY_EVENT_RECORD& record)
-				{
-					unittest::TuiBackendEvent event;
-					event.type = unittest::TuiBackendEventType::Char;
-					event.charInfo.code = code;
-					event.charInfo.ctrl = (record.dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED)) != 0;
-					event.charInfo.shift = (record.dwControlKeyState & SHIFT_PRESSED) != 0;
-					event.charInfo.alt = (record.dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)) != 0;
-					event.charInfo.capslock = (record.dwControlKeyState & CAPSLOCK_ON) != 0;
-					pendingEvents.Add(event);
-				}
-
-				void DecodeKey(const KEY_EVENT_RECORD& record)
-				{
-					unittest::TuiBackendEvent keyEvent;
-					keyEvent.type = record.bKeyDown ? unittest::TuiBackendEventType::KeyDown : unittest::TuiBackendEventType::KeyUp;
-					keyEvent.keyInfo = GetKeyInfo(record);
-					pendingEvents.Add(keyEvent);
-
-					if (!record.bKeyDown || record.uChar.UnicodeChar == 0) return;
-					auto codeUnit = record.uChar.UnicodeChar;
-					auto repeat = record.wRepeatCount == 0 ? 1 : record.wRepeatCount;
-					for (vint i = 0; i < repeat; i++)
-					{
-						QueueChar(codeUnit, record);
-					}
-				}
-
-				void QueueMouseButton(unittest::TuiBackendEventType type, TuiMouseButton button, const TuiMouseInfo& info)
-				{
-					unittest::TuiBackendEvent event;
-					event.type = type;
-					event.mouseButton = button;
-					event.mouseInfo = info;
-					pendingEvents.Add(event);
-				}
-
-				void DecodeMouse(const MOUSE_EVENT_RECORD& record)
-				{
-					auto info = GetMouseInfo(record);
-					if (record.dwEventFlags == MOUSE_MOVED)
-					{
-						unittest::TuiBackendEvent event;
-						event.type = unittest::TuiBackendEventType::MouseMove;
-						event.mouseInfo = info;
-						pendingEvents.Add(event);
-					}
-					else if (record.dwEventFlags == MOUSE_WHEELED || record.dwEventFlags == MOUSE_HWHEELED)
-					{
-						unittest::TuiBackendEvent event;
-						event.type = record.dwEventFlags == MOUSE_WHEELED ? unittest::TuiBackendEventType::MouseVerticalWheel : unittest::TuiBackendEventType::MouseHorizontalWheel;
-						event.mouseInfo = info;
-						event.mouseInfo.wheel = (SHORT)HIWORD(record.dwButtonState);
-						pendingEvents.Add(event);
-					}
-					else if (record.dwEventFlags == DOUBLE_CLICK)
-					{
-						auto button = (record.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) ? TuiMouseButton::Left
-							: (record.dwButtonState & FROM_LEFT_2ND_BUTTON_PRESSED) ? TuiMouseButton::Middle
-							: TuiMouseButton::Right;
-						QueueMouseButton(unittest::TuiBackendEventType::MouseDoubleClick, button, info);
-					}
-					else if (record.dwEventFlags == 0)
-					{
-						struct ButtonMapping
-						{
-							DWORD			mask;
-							TuiMouseButton	button;
-						};
-						ButtonMapping mappings[] =
-						{
-							{ FROM_LEFT_1ST_BUTTON_PRESSED, TuiMouseButton::Left },
-							{ FROM_LEFT_2ND_BUTTON_PRESSED, TuiMouseButton::Middle },
-							{ RIGHTMOST_BUTTON_PRESSED, TuiMouseButton::Right },
-						};
-						for (auto mapping : mappings)
-						{
-							auto before = (mouseButtons & mapping.mask) != 0;
-							auto after = (record.dwButtonState & mapping.mask) != 0;
-							if (before != after)
-							{
-								QueueMouseButton(after ? unittest::TuiBackendEventType::MouseDown : unittest::TuiBackendEventType::MouseUp, mapping.button, info);
-							}
-						}
-					}
-					mouseButtons = record.dwButtonState;
-				}
-
 				void DecodeRecord(const INPUT_RECORD& record)
 				{
 					switch (record.EventType)
@@ -6995,7 +6990,11 @@ namespace vl
 						DecodeKey(record.Event.KeyEvent);
 						break;
 					case MOUSE_EVENT:
-						DecodeMouse(record.Event.MouseEvent);
+						{
+							CONSOLE_SCREEN_BUFFER_INFO info = {};
+							CHECK_ERROR(GetConsoleScreenBufferInfo(outputHandle, &info), L"vl::console::TUI Windows backend failed to query the console viewport.");
+							DecodeMouse(record.Event.MouseEvent, { info.srWindow.Left, info.srWindow.Top });
+						}
 						break;
 					case WINDOW_BUFFER_SIZE_EVENT:
 						SynchronizeViewport(true);
@@ -7161,8 +7160,7 @@ namespace vl
 					if (cursorInfoSaved && !SetConsoleCursorInfo(originalOutputHandle, &cursorInfo)) restored = false;
 					if (outputModeChanged && !SetConsoleMode(originalOutputHandle, outputMode)) restored = false;
 					if (inputModeChanged && !SetConsoleMode(inputHandle, inputMode)) restored = false;
-					pendingEvents.Clear();
-					mouseButtons = 0;
+					static_cast<WindowsTuiInputDecoder&>(*this) = {};
 					viewportWidth = 0;
 					viewportHeight = 0;
 					outputHandle = INVALID_HANDLE_VALUE;

@@ -13,6 +13,15 @@
   <Instance name="ClickMeTabResource">
     <Instance ref.Class="rptest::ClickMeTab">
       <ref.Members><![CDATA[
+        func ShowMouseModifiers(alt: bool, osSuper: bool): void
+        {
+          var altText = "0";
+          var superText = "0";
+          if (alt) { altText = "1"; }
+          if (osSuper) { superText = "1"; }
+          labelMouseModifiers.Text = "Alt: " & altText & "; Super: " & superText;
+        }
+
         func MouseButtonName(button: NativeMouseButton): string
         {
 	          if (button == NativeMouseButton::Left) { return "Left"; }
@@ -43,6 +52,7 @@
         </ToolstripCommand>
         <Table CellPadding="10" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
+            <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
@@ -84,14 +94,31 @@
               <att.BoundsComposition-set PreferredMinSize="y:24" AlignmentToParent="left:0 top:0 right:0 bottom:0">
                 <ev.mouseDown-eval><![CDATA[{
                   labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button down!";
+                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
                 }]]></ev.mouseDown-eval>
                 <ev.mouseUp-eval><![CDATA[{
                   labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button up!";
+                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
                 }]]></ev.mouseUp-eval>
-              </att.BoundsComposition-set>
+                              <ev.mouseMove-eval><![CDATA[{
+                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                }]]></ev.mouseMove-eval>
+                <ev.mouseDoubleClick-eval><![CDATA[{
+                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                }]]></ev.mouseDoubleClick-eval>
+                <ev.verticalWheel-eval><![CDATA[{
+                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                }]]></ev.verticalWheel-eval>
+                <ev.horizontalWheel-eval><![CDATA[{
+                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                }]]></ev.horizontalWheel-eval>
+</att.BoundsComposition-set>
             </Label>
           </Cell>
           <Cell Site="row:5 column:0 columnSpan:3">
+            <Label ref.Name="labelMouseModifiers" Text="Alt: 0; Super: 0"/>
+          </Cell>
+          <Cell Site="row:6 column:0 columnSpan:3">
             <Raw/>
           </Cell>
         </Table>

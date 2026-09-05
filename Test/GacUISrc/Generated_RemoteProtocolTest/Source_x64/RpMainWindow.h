@@ -27,13 +27,13 @@ namespace rptest
 	class RpMainWindow : public ::vl::presentation::controls::GuiWindow, public ::rptest::RpMainWindowConstructor, public ::vl::reflection::Description<RpMainWindow>
 	{
 		friend class ::rptest::RpMainWindowConstructor;
-		friend struct ::vl_workflow_global::__vwsnf17_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf18_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__;
-		friend struct ::vl_workflow_global::__vwsnf19_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf20_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__;
-		friend struct ::vl_workflow_global::__vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__;
 		friend struct ::vl_workflow_global::__vwsnf23_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf24_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf25_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf26_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf27_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RpMainWindow>;
 #endif

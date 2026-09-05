@@ -1,8 +1,40 @@
 #include "TestRemote_GraphicsHost_Shared.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteController.h"
+#ifdef VCZH_MSVC
+#include "../../../Source/PlatformProviders/Windows/ServicesImpl/WindowsInputService.h"
+#endif
 
 TEST_FILE
 {
+	TEST_CASE(L"Shared key names and fresh GUI input arguments")
+	{
+		auto checkNames = [](INativeInputService* input)
+		{
+			TEST_ASSERT(input->GetKeyName(VKEY::KEY_UNKNOWN) == L"?");
+			TEST_ASSERT(input->GetKey(L"not a key") == VKEY::KEY_UNKNOWN);
+			TEST_ASSERT(input->GetKeyName(VKEY::KEY_LEFT_BRACKET) == L"[");
+			TEST_ASSERT(input->GetKeyName(VKEY::KEY_RIGHT_BRACKET) == L"]");
+			TEST_ASSERT(input->GetKey(L"[") == VKEY::KEY_LEFT_BRACKET);
+			TEST_ASSERT(input->GetKey(L"]") == VKEY::KEY_RIGHT_BRACKET);
+		};
+		GuiRemoteController remote(nullptr);
+		checkNames(remote.InputService());
+#ifdef VCZH_MSVC
+		windows::WindowsInputService windowsInput;
+		checkNames(&windowsInput);
+#endif
+		GuiMouseEventArgs mouse;
+		TEST_ASSERT(!mouse.ctrl && !mouse.shift && !mouse.alt && !mouse.osSuper);
+		TEST_ASSERT(!mouse.left && !mouse.middle && !mouse.right && !mouse.nonClient);
+		TEST_ASSERT(mouse.x == 0 && mouse.y == 0 && mouse.wheel == 0 && mouse.button == NativeMouseButton::Left);
+		GuiKeyEventArgs key;
+		TEST_ASSERT(key.code == VKEY::KEY_UNKNOWN);
+		TEST_ASSERT(!key.ctrl && !key.shift && !key.alt && !key.osSuper && !key.capslock && !key.autoRepeatKeyDown);
+		GuiCharEventArgs character;
+		TEST_ASSERT(character.code == 0);
+		TEST_ASSERT(!character.ctrl && !character.shift && !character.alt && !character.osSuper && !character.capslock);
+	});
+
 	TEST_CASE(L"Remote Super key name falls back before connecting")
 	{
 		vl::presentation::GuiRemoteController remote(nullptr);

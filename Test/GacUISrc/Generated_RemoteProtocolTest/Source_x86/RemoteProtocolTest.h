@@ -26,20 +26,24 @@ https://github.com/vczh-libraries
 namespace vl_workflow_global
 {
 	struct __vwsnf10_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
-	struct __vwsnf11_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
-	struct __vwsnf12_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
-	struct __vwsnf13_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
-	struct __vwsnf14_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+	struct __vwsnf11_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+	struct __vwsnf12_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+	struct __vwsnf13_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+	struct __vwsnf14_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
 	struct __vwsnf15_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
-	struct __vwsnf16_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_;
-	struct __vwsnf17_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
-	struct __vwsnf18_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__;
-	struct __vwsnf19_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
+	struct __vwsnf16_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+	struct __vwsnf17_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+	struct __vwsnf18_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+	struct __vwsnf19_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
 	struct __vwsnf1_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
-	struct __vwsnf20_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
-	struct __vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__;
-	struct __vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
+	struct __vwsnf20_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_;
+	struct __vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
+	struct __vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__;
 	struct __vwsnf23_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
+	struct __vwsnf24_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
+	struct __vwsnf25_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__;
+	struct __vwsnf26_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
+	struct __vwsnf27_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
 	struct __vwsnf2_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
 	struct __vwsnf3_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
 	struct __vwsnf4_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
@@ -71,6 +75,10 @@ namespace rptest
 		friend class ::vl_workflow_global::__vwsnc2_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc3_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf10_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf11_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf12_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf13_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf14_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf1_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf2_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf3_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
@@ -98,7 +106,8 @@ namespace rptest
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_11;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_12;
-		::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement> __vwsn_precompile_13;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_13;
+		::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement> __vwsn_precompile_14;
 		::vl::presentation::controls::GuiMessageDialog* dialogLocalShortcut;
 		::vl::presentation::controls::GuiMessageDialog* dialogLocalSuperShortcut;
 		::vl::presentation::controls::GuiMessageDialog* dialogGlobalShortcut;
@@ -106,6 +115,7 @@ namespace rptest
 		::vl::presentation::controls::GuiToolstripCommand* commandLocalSuperShortcut;
 		::vl::presentation::controls::GuiToolstripCommand* commandGlobalShortcut;
 		::vl::presentation::controls::GuiLabel* labelMouseButton;
+		::vl::presentation::controls::GuiLabel* labelMouseModifiers;
 		::vl::presentation::controls::GuiButton* buttonClickMe;
 		void __vwsn_rptest_ClickMeTab_Initialize(::rptest::ClickMeTab* __vwsn_this_);
 	public:
@@ -114,11 +124,11 @@ namespace rptest
 
 	class DataGridTabConstructor : public ::vl::Object, public ::vl::reflection::Description<DataGridTabConstructor>
 	{
-		friend struct ::vl_workflow_global::__vwsnf11_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf12_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf13_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf14_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf15_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf16_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf17_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf18_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf19_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DataGridTabConstructor>;
 #endif
@@ -165,7 +175,7 @@ namespace rptest
 
 	class DocumentTabConstructor : public ::vl::Object, public ::vl::reflection::Description<DocumentTabConstructor>
 	{
-		friend struct ::vl_workflow_global::__vwsnf16_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf20_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentTabConstructor>;
 #endif
@@ -266,13 +276,13 @@ namespace rptest
 
 	class RpMainWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<RpMainWindowConstructor>
 	{
-		friend struct ::vl_workflow_global::__vwsnf17_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf18_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__;
-		friend struct ::vl_workflow_global::__vwsnf19_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf20_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__;
-		friend struct ::vl_workflow_global::__vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__;
 		friend struct ::vl_workflow_global::__vwsnf23_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf24_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf25_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf26_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf27_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RpMainWindowConstructor>;
 #endif
@@ -353,40 +363,40 @@ Closures
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const;
 	};
 
-	struct __vwsnf11_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_
+	struct __vwsnf11_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_
 	{
-		::rptest::DataGridTabConstructor* __vwsnthis_0;
+		::rptest::ClickMeTabConstructor* __vwsnthis_0;
 
-		__vwsnf11_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0);
+		__vwsnf11_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_(::rptest::ClickMeTabConstructor* __vwsnctorthis_0);
 
-		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const;
 	};
 
-	struct __vwsnf12_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_
+	struct __vwsnf12_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_
 	{
-		::rptest::DataGridTabConstructor* __vwsnthis_0;
+		::rptest::ClickMeTabConstructor* __vwsnthis_0;
 
-		__vwsnf12_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0);
+		__vwsnf12_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_(::rptest::ClickMeTabConstructor* __vwsnctorthis_0);
 
-		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const;
 	};
 
-	struct __vwsnf13_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_
+	struct __vwsnf13_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_
 	{
-		::rptest::DataGridTabConstructor* __vwsnthis_0;
+		::rptest::ClickMeTabConstructor* __vwsnthis_0;
 
-		__vwsnf13_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0);
+		__vwsnf13_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_(::rptest::ClickMeTabConstructor* __vwsnctorthis_0);
 
-		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const;
 	};
 
-	struct __vwsnf14_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_
+	struct __vwsnf14_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_
 	{
-		::rptest::DataGridTabConstructor* __vwsnthis_0;
+		::rptest::ClickMeTabConstructor* __vwsnthis_0;
 
-		__vwsnf14_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0);
+		__vwsnf14_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_(::rptest::ClickMeTabConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const;
 	};
 
 	struct __vwsnf15_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_
@@ -395,41 +405,41 @@ Closures
 
 		__vwsnf15_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0);
 
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+	};
+
+	struct __vwsnf16_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_
+	{
+		::rptest::DataGridTabConstructor* __vwsnthis_0;
+
+		__vwsnf16_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0);
+
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+	};
+
+	struct __vwsnf17_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_
+	{
+		::rptest::DataGridTabConstructor* __vwsnthis_0;
+
+		__vwsnf17_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0);
+
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+	};
+
+	struct __vwsnf18_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_
+	{
+		::rptest::DataGridTabConstructor* __vwsnthis_0;
+
+		__vwsnf18_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0);
+
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf16_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_
+	struct __vwsnf19_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_
 	{
-		::rptest::DocumentTabConstructor* __vwsnthis_0;
+		::rptest::DataGridTabConstructor* __vwsnthis_0;
 
-		__vwsnf16_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_(::rptest::DocumentTabConstructor* __vwsnctorthis_0);
-
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
-	};
-
-	struct __vwsnf17_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_
-	{
-		::rptest::RpMainWindowConstructor* __vwsnthis_0;
-
-		__vwsnf17_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0);
-
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
-	};
-
-	struct __vwsnf18_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__
-	{
-		::rptest::RpMainWindowConstructor* __vwsnthis_0;
-
-		__vwsnf18_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__(::rptest::RpMainWindowConstructor* __vwsnctorthis_0);
-
-		void operator()() const;
-	};
-
-	struct __vwsnf19_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_
-	{
-		::rptest::RpMainWindowConstructor* __vwsnthis_0;
-
-		__vwsnf19_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf19_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
@@ -443,31 +453,31 @@ Closures
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf20_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_
+	struct __vwsnf20_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_
 	{
-		::rptest::RpMainWindowConstructor* __vwsnthis_0;
+		::rptest::DocumentTabConstructor* __vwsnthis_0;
 
-		__vwsnf20_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf20_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_(::rptest::DocumentTabConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__
+	struct __vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_
 	{
 		::rptest::RpMainWindowConstructor* __vwsnthis_0;
 
-		__vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__(::rptest::RpMainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf21_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__
+	{
+		::rptest::RpMainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__(::rptest::RpMainWindowConstructor* __vwsnctorthis_0);
 
 		void operator()() const;
-	};
-
-	struct __vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_
-	{
-		::rptest::RpMainWindowConstructor* __vwsnthis_0;
-
-		__vwsnf22_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0);
-
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
 	struct __vwsnf23_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_
@@ -475,6 +485,42 @@ Closures
 		::rptest::RpMainWindowConstructor* __vwsnthis_0;
 
 		__vwsnf23_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf24_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_
+	{
+		::rptest::RpMainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf24_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf25_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__
+	{
+		::rptest::RpMainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf25_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize__(::rptest::RpMainWindowConstructor* __vwsnctorthis_0);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf26_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_
+	{
+		::rptest::RpMainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf26_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf27_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_
+	{
+		::rptest::RpMainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf27_RemoteProtocolTest_rptest_RpMainWindowConstructor___vwsn_rptest_RpMainWindow_Initialize_(::rptest::RpMainWindowConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiRequestEventArgs* arguments) const;
 	};

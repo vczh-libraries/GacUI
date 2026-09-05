@@ -999,6 +999,13 @@
             }
         }, {
             "$ast": "StructMember",
+            "name": "alt",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
             "name": "osSuper",
             "type": {
                 "$ast": "PrimitiveType",

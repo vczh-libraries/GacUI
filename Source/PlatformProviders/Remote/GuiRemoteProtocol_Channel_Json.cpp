@@ -437,6 +437,12 @@ GuiRemoteProtocolCoreChannel
 			channel->SendToClient(receiverClientId, package);
 		}
 		channel->BatchWrite(disconnected);
+		// Admission can detach this renderer while BatchWrite delivers responses.
+		// OnRead ignores detached responses, so the batch must be cancelled as well.
+		if (GetRendererClientId() != receiverClientId || !IsCorrectRendererClientId(receiverClientId))
+		{
+			disconnected = true;
+		}
 	}
 
 	IGuiRemoteEventProcessor* GuiRemoteProtocolCoreChannel::GetRemoteEventProcessor()

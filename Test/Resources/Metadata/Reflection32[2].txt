@@ -4240,7 +4240,7 @@ enum presentation::VKEY {
     KEY_LBUTTON = 1,
     KEY_LCONTROL = 162,
     KEY_LEFT = 37,
-    KEY_LEFT_BRACKET = 221,
+    KEY_LEFT_BRACKET = 219,
     KEY_LMENU = 164,
     KEY_LSHIFT = 160,
     KEY_LWIN = 91,
@@ -4317,7 +4317,7 @@ enum presentation::VKEY {
     KEY_RCONTROL = 163,
     KEY_RETURN = 13,
     KEY_RIGHT = 39,
-    KEY_RIGHT_BRACKET = 219,
+    KEY_RIGHT_BRACKET = 221,
     KEY_RMENU = 165,
     KEY_RSHIFT = 161,
     KEY_RWIN = 92,
@@ -4690,6 +4690,7 @@ class presentation::compositions::GuiKeyEventArgs : presentation::compositions::
 }
 
 class presentation::compositions::GuiMouseEventArgs : presentation::compositions::GuiEventArgs {
+    property alt : system::Boolean;
     property button : presentation::NativeMouseButton;
     property ctrl : system::Boolean;
     property left : system::Boolean;

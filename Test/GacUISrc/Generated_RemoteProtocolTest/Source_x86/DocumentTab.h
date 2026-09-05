@@ -27,7 +27,7 @@ namespace rptest
 	class DocumentTab : public ::vl::presentation::controls::GuiTabPage, public ::rptest::DocumentTabConstructor, public ::vl::reflection::Description<DocumentTab>
 	{
 		friend class ::rptest::DocumentTabConstructor;
-		friend struct ::vl_workflow_global::__vwsnf16_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf20_RemoteProtocolTest_rptest_DocumentTabConstructor___vwsn_rptest_DocumentTab_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentTab>;
 #endif

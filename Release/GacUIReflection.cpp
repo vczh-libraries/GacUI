@@ -3504,6 +3504,7 @@ Type Declaration
 				EVENTARGS_CONSTRUCTOR(GuiMouseEventArgs)
 				
 				CLASS_MEMBER_FIELD(button)
+				CLASS_MEMBER_FIELD(alt)
 				CLASS_MEMBER_FIELD(osSuper)
 				CLASS_MEMBER_FIELD(ctrl)
 				CLASS_MEMBER_FIELD(shift)
