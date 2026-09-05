@@ -1,4 +1,4 @@
-- Completed work in `../VlppOS/TODO_Task.md`.
+- Completed work in `../VlppOS/TODO_Task.md`, verified on Windows. The goal of this request is to make sure it also works on Linux/macOS.
 - Breaking changes to handle after importing the new VlppOS:
   - GacUI: remove the moved declarations and keyboard macros from `Source/GuiTypes.h` and `Source/NativeWindow/GuiNativeWindow.h`. Use their single copy in VlppOS `Source/TUI/TUITypes.h`, still under `vl::presentation`. Regenerate GacUI releases, then import matching GacUI and VlppOS releases into wGac/iGac and rebuild.
   - Fill the new `WindowMouseInfo_::alt` in every mouse path, including buttons, movement, wheels, and generated input. Use Alt on Windows and wGac, and Option on iGac; keep Super/Command in `osSuper`. Update GacUI's Windows provider, wGac's `WGac/WGacNativeWindow.cpp` (including mouse-enter input), and iGac's `Mac/NativeWindow/OSX/CocoaWindow.mm`.
@@ -9,7 +9,9 @@
 - Verification is done following these documents.
   - `VlppOS/.github/Jobs/DebugTuiPlaygroundSOP.md`
   - `GacUI/.github/Jobs/job.rpXPlat.prompt.md`
-- Based on what OS you are on:
-  - On Linux, you are working on VlppOS, GacUI and wGac.
-  - On macOS, you are working on VlppOS, GacUI and iGac.
+  - Based on what OS you are on:
+    - On Linux, you are working on VlppOS, GacUI and wGac.
+    - On macOS, you are working on VlppOS, GacUI and iGac.
+  - VlppOS and GacUI are already verified on windows, but if you find any issue in the current OS during verification, fix them.
+  - wGac/iGac is updated but never verified, you are going to take care of any issue in them.
 - commit and push once finishing.
