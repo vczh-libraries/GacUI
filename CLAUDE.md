@@ -3,6 +3,7 @@
   - MUST READ `Coding Guidelines and Tools` before touching the source code.
   - MUST READ `Leveraging the Knowledge Base` and find the knowledge you may need before making any decision.
 - Read through `REPO-ROOT/Project.md` before performing any work.
+- When commit and/or push are required, you should always commit and push once finishing a request, no matter whatever is pending or not. Github repos and clones are more for the backup purpose, there is no strong requirement of completeness of tasks before committing.
 - Interpret the request (in the latest chat message, not including conversation history) following the steps:
 
 ## Step 1
