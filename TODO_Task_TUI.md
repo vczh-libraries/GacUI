@@ -175,6 +175,198 @@ These are acceptance steps for implementation of this task; this review does not
 - Resize the actual terminal smaller than the requested/main minimum size and grow it again; confirm top-left clipping and restored content, no second main-window frame, correct terminal title updates, and normal hosted subwindow movement/resizing/activation. Programmatic main-window minimize/maximize/restore/hide/close requests do not manipulate the terminal.
 - Exit through the explicit TUI Exit command, including after modal/dialog use, and immediately inspect restoration of terminal contents, cursor, colors, input mode, and usable shell input. Repeat a fresh session to catch stale globals/listeners. Confirm no surviving application or helper threads and no Debug leak report. Record only Windows verification actually performed; the future Wayland/Cocoa adapters remain unverified by this task.
 
+## CppTest_Tui (TuiControlTest)
+
+This is the page migration and acceptance plan. Source paths below are relative to `Test/Resources/App/FullControlTest`; rewrite their counterparts under `Test/Resources/App/TuiControlTest`, retaining the resource organization and reusable models/handlers. Each `###` identifies a navigable leaf page by its original tab path; shared parent tabs and helper resources are described with their pages.
+
+- Preserve the top-level order `List`, `Refresh List`, `Layout`, `Control`, `Misc`, `Window Manager`, `Exit`, and the retained child-tab order, captions, group labels, sample content, and principal pane arrangement. Use `Complete Control Showcase (TUI)` as the terminal title. At a glance, the tab path and arrangement should identify the corresponding FullControlTest page. Rewrite compositions, templates, spacing, icons, and sizes for cells; preserve familiar left/right or top/bottom relationships instead of inventing unrelated navigation or flattening every page into a command list.
+- Follow [GacUILayout.md](GacUILayout.md): one-cell text rows, compact grouping, TuiSkin colors and focus styles, character borders/icons, and layout margins rather than spaces inserted into labels. Target a comfortable 120-by-40-cell viewport, also inspect 80-by-25 cells, then shrink below the content minimum and restore. Use the existing control's scrolling/wrapping or a clearly organized scrollable content area when needed, retaining access to every command and preserving the logical grouping. Below minimum size, apply the specified top-left clipping without losing state.
+- Exclude `Control / Document Editor (Ribbon)`, the toolbar visual inside `Control / Document Editor (Toolstrip)`, `Misc / Elements`, and `Misc / Animation`, including their unused resource references. Retain Toolstrip's menu bar and move any unique toolbar commands into an appropriate text menu. All other pages below remain. Image/icon presentation, non-detail ListView modes, font metrics, and native-window operations follow the explicit TUI limitations already recorded in DETAILS; keep the underlying operation/data visible through an appropriate TUI representation rather than dropping unrelated functionality.
+- Transfer these page procedures into the planned [.github/Jobs/DebugTuiControlTestSop.md](.github/Jobs/DebugTuiControlTestSop.md) when implementing the app. The existing [DebugRemoteProtocolSop.md](.github/Jobs/DebugRemoteProtocolSop.md), `Rules for Every Operation` and `Complete Control Showcase (/FCT)`, supplies the baseline. Its coverage is narrower than this inventory, so the additional page procedures below are required. TUI uses the visible Windows Terminal surface, has no Core/renderer transport or HTTP automation, and has no renderer-replacement test.
+- For every page: start from a fresh state where exact values are specified; locate currently visible controls after every transition; perform each action and verify its stated result immediately; test mouse and keyboard access; leave the page and return to check state retention. Inspect recognizable layout at the normal viewport and behavior after shrinking/growing. Distinguish a source feature that is already a placeholder from an implemented feature; do not claim a file operation or rollback works merely because its menu is present. Record page/function coverage and actual results in the TUI SOP.
+- The FCT `Add and Clear Both Lists` sequence maps directly to `List / TextList`. Its `Type and Preserve Text in Two Editors` sequence needs the retained Toolstrip editor and a TextBox-page editor: `Search:` belongs to the excluded Ribbon editor and must not be invented on Toolstrip just to copy that SOP. Shortcut/mouse and exit steps map to the last two pages below with the explicit TUI capability differences.
+
+### List / TextList
+
+- **Source and identity:** `TextListTabPage.xml` and `MyTextItem` in `Resource.xml`. Preserve the two parallel direct/bindable lists, top `Text / Check / Radio` selector, central `Operations` group, source-rotation command, and two Dummy checkboxes plus two grouped Dummy radio buttons.
+- **TUI rewrite:** Use compact list panes, character check/radio marks, and cell-sized command buttons in the same arrangement. Retain the original data models, selection behavior, bindings, and ALT commands; distinguish focus, selection, and checked state with TuiSkin.
+- **Page SOP:** Follow FCT `Add and Clear Both Lists`: fresh `Add 10 items` shows `0` through `9` in both panes; `Clear` removes them from both. In a fresh run, two additions produce `0` through `19`. Exercise all three list styles and their check/radio behavior. On separate fresh ten-item datasets, `Remove odd items` leaves `1,3,5,7,9`, and `Remove even items` leaves `0,2,4,6,8`; preserve the actual positional-removal handlers despite their potentially misleading captions. Rotate the source twice: only the right list empties, then its model reappears. Clear and add again without restarting to check the counter continues. Verify independent Dummy checks, exclusive Dummy radios, selection, scrolling, and retained data after tab changes.
+
+### List / ListView
+
+- **Source and identity:** `ListViewTabPage.xml` and `Images/ImageLoader.xml`. Preserve the top view selector/source-rotation command, two corresponding panes, `Id / Category / Size / File` columns, and original image-derived records, including `Task / 005 / 16x16 / 005_Task_16x16_72.png`.
+- **TUI rewrite:** Keep aligned cell columns and horizontal scrolling for filenames; use meaningful glyph/text image identities instead of image slots. Retain all six view requests but display the effective `Detail` view beside the selector, consistent with the provider restriction.
+- **Page SOP:** Compare the complete datasets in both panes by scrolling. Select rows by mouse and keyboard, request each of BigIcon, SmallIcon, List, Tile, Information, and Detail, and require effective Detail with unchanged data and no unsupported renderer. Rotate the source twice: only the right pane empties then restores. Resize columns and the terminal and verify headers remain aligned with their values and all filenames remain accessible.
+
+### List / TreeView
+
+- **Source and identity:** `TreeViewTabPage.xml`. Preserve the two side-by-side trees, source-rotation command, and original `Blue+ / Green+ / Grey+ / Orange+` hierarchy and arrow labels.
+- **TUI rewrite:** Use cell indentation, expansion marks, and compact glyph/text identities while preserving color names so the hierarchy is recognizable independently of color. Keep the original direct/bindable relationship.
+- **Page SOP:** Expand and collapse all four roots in both panes. Blue contains six children (`<--`, `-->`, `V`, `^`, `<`, `>`); the other roots contain four (`V`, `^`, `<`, `>`). Exercise keyboard tree navigation, mouse expansion, selection, and scrolling. Rotate twice and require only the right tree to empty then restore. Verify ordinary repainting preserves selection/expansion and resizing leaves correctly aligned glyphs and text.
+
+### List / BindableDataGrid
+
+- **Source and identity:** `DataGridTabPage.xml`, `DataGridComponents.xml`, and models in `Resource.xml`. Preserve the view selector/source-rotation command, five original Japanese/Chinese records, and `Name / Gender / Category / Birthday / Website` columns, including the Birthday header's `From:`/`To:` filter popup.
+- **TUI rewrite:** Keep the grid as the main visual surface. Use cell-sized text/combo/calendar editors, `Male / Female` text in place of gender images, category names with compact color samples, and styled Website text. Replace focus-rectangle decorators with TUI cell/border styling. Preserve sorting, filtering, and editor bindings. Standard ListView requests yield Detail; the distinct `DataGrid` choice restores the editable grid.
+- **Page SOP:** Verify all five records and edit every column with its appropriate editor; leave/reopen the cell and require the value to persist. The existing editors submit through `CellValue` bindings, so do not assume Escape rolls back an already submitted value. Cycle each sortable header through its source-supported sort states, checking order and ties. On fresh records, default From-only filtering leaves three rows, default To-only leaves four, both leave exactly `涼宮 春日` and `キョン`, and disabling both restores five. Change the date bounds and verify filtering follows them. Rotate the source twice and require edited records to return. Request BigIcon, SmallIcon, List, Tile, Information, and Detail in turn; require effective Detail each time, then choose DataGrid and require the editors to return. Resize columns, scroll, and inspect popup placement and CJK cell alignment.
+
+### Refresh List / TextList
+
+- **Source and identity:** `RefreshListTabPages.xml`, `RefreshTextListTabPage`. Keep `Check First / Uncheck First / Read (false)` above the six checkable rows `First` through `Sixth`, initially unchecked.
+- **TUI rewrite:** Use one-cell checkbox marks and compact command rows, retaining multi-selection and separate checked/selected/focused appearances. Keep the programmatic refresh path, not just direct checkbox interaction.
+- **Page SOP:** `Check First`, then `Read`, must show a checked First item and `Read (true)`; `Uncheck First`, then `Read`, reverses both. Toggle First directly and require Read to report the model value. Exercise Ctrl/Shift selection independently of checking. Repeat after scrolling and shrinking/growing the terminal to ensure recycled rows show current check state.
+
+### Refresh List / BindableTextList
+
+- **Source and identity:** `RefreshListTabPages.xml`, `RefreshBindableTextListTabPage` and `RefreshItem`. Preserve `Use Name / Use Title / Check First / Uncheck First / Read` above the three checkable rows, initially unchecked.
+- **TUI rewrite:** Keep the same command-over-list structure, wrapping the command row only as needed. Preserve the non-observable `Selected` property and explicit refresh notification; changing the model to bypass refresh coverage would lose the purpose of this page.
+- **Page SOP:** `Use Title` changes `First / Second / Third` to `1st / 2nd / 3rd`; `Use Name` restores the names. Under both mappings, exercise programmatic check/uncheck, Read, and direct check interaction and require agreement with the model. Ctrl/Shift selection remains separate. Switching text mappings, scrolling, and returning to the page must not discard checked state or leave stale labels.
+
+### Refresh List / ListView
+
+- **Source and identity:** `RefreshListTabPages.xml`, `RefreshListViewTabPage`. Retain the selector, `*MainColumn / *SubColumn / *DataColumn / *Column`, four columns, `First` through `Fourth`, and `One / Two / Three` subitems with Task/Reminder/Tip identities.
+- **TUI rewrite:** Use the familiar command row over a Detail table. Replace image slots with glyph/text identities. Because Detail does not display the original Tile/Information `DataColumns` projection, add a compact labeled projection/readout driven by that actual collection, keeping its mutation demonstration visible.
+- **Page SOP:** Toggle `*MainColumn`: only First becomes MainColumn and back. Toggle `*SubColumn`: only its first subitem becomes SubColumn and back. Four `*DataColumn` clicks must expose `[0,1,2] -> [1,1,2] -> [1,1] -> [0,1] -> [0,1,2]`. Four `*Column` clicks must show `[Id,Category,Size,File] -> [Id,What?,Wait?,File] -> [Id,Wait?,File] -> [Id,Size,File] -> [Id,Category,Size,File]`. Verify each intermediate result immediately, including duplicate projection indexes. Repeat view requests, selection, scrolling, and resizing without having to reopen the page to see updates.
+
+### Refresh List / BindableListView
+
+- **Source and identity:** `RefreshListTabPages.xml`, `RefreshBindableListViewTabPage` and `RefreshItem`. Preserve the corresponding table and `Use Name / Use Title / *Sub1 / *DataColumn / *Column` commands.
+- **TUI rewrite:** Reuse the recognizable cell table and actual-collection projection/readout from the preceding page. Preserve the explicit `NotifyItemDataModified` path for non-observable Sub1 and all property-to-column bindings.
+- **Page SOP:** Switch names `First` through `Fourth` to titles `1st` through `4th` and back. `*Sub1` changes only the first row's One to SubColumn and back immediately. Run the exact four-click DataColumns and header cycles specified for Refresh List / ListView. After Category is reinserted, confirm it still reads Sub1 and follows later changes. Repeat under each requested view and after scrolling modified items out of view and back.
+
+### Refresh List / TreeView
+
+- **Source and identity:** `RefreshListTabPages.xml`, `RefreshTreeViewTabPage`. Preserve `*First / *First/Second` above the four-root tree, the children of First and Second, and Task/Reminder/Tip associations.
+- **TUI rewrite:** Keep a command row over the same tree shape, using compact indentation and glyph/text image identities. Preserve refresh of a targeted node without rebuilding unrelated branches.
+- **Page SOP:** Expand First; `*First` toggles its label First/One without losing its children. `*First/Second` toggles its second child Second (1)/Two (1), leaving sibling branches unchanged. Repeat the child mutation with First collapsed, then expand and require the latest name. Select another node before mutating the target and check coherent selection/expansion. Scroll and resize to verify visible and recycled node templates refresh correctly.
+
+### Refresh List / BindableTreeView
+
+- **Source and identity:** `RefreshListTabPages.xml`, `RefreshBindableTreeViewTabPage` and `RefreshItem`. Preserve the same root/child arrangement and `Use Name / Use Title / *First / *First/Second` commands.
+- **TUI rewrite:** Keep recognizable tree geometry and cell-sized controls, preserving the source's mapping configuration and explicit node-refresh behavior rather than making properties observable to bypass it.
+- **Page SOP:** Switch names to ordinal titles throughout expanded branches and back. `*First` toggles Name First/One and Title 1st/One; `*First/Second` toggles Name Second (1)/Two (1) and Title 2nd (1)/Two (1). Verify both mappings, mutation while collapsed followed by expansion, unchanged siblings, and current labels after scrolling. Renaming must remain separate from selection and expand/collapse actions.
+
+### Refresh List / BindableDataGrid
+
+- **Source and identity:** `RefreshListTabPages.xml`, `RefreshBindableDataGridTabPage`, and `TextEditor` in `DataGridComponents.xml`. Preserve four original records, the selector and `Use Name / Use Title / *Sub1 / *DataColumn / *Column`, and `Id / Category / Size / File` columns.
+- **TUI rewrite:** Keep this recognizable grid distinct from the non-grid refresh page. Preserve the File text editor and hyperlink-style presentation with supported cell focus/borders. Include the same DataColumns projection/readout and keep DataGrid mode independent of coerced standard views.
+- **Page SOP:** Verify Name/Title switching, first-row Sub1 mutation, and both exact four-click collection/header cycles from Refresh List / ListView. Edit File and leave/reopen the cell. Request BigIcon, SmallIcon, List, Tile, Information, and Detail in turn, requiring effective Detail, then return to DataGrid and verify its editor and edited value survive alongside text-mapping changes. Reinsert Category and require its binding to follow subsequent Sub1 changes. Exercise cell selection, header resizing, horizontal scrolling, and repainting at every intermediate column count.
+
+### Layout / Repeat / RepeatStack
+
+- **Source and identity:** `RepeatTabPage.xml`, `RepeatComponents.xml`. Keep the four inner Repeat tabs, this page's vertical English-number buttons, and the right-hand `Operations` group with all five commands. Preserve the surrounding horizontal scroll/tracker/progress controls below and vertical scroll/tracker controls at the right.
+- **TUI rewrite:** Use a terminal-sized scrolling stack and compact command/control rows without replacing the RepeatStack composition. Each Repeat tab keeps its own items and counter. Preserve the original relationship in which only the horizontal tracker drives the progress bar.
+- **Page SOP:** Clear, Reset Counter, Add 10 must produce zero through nine. Remove odd items must leave one/three/five/seven/nine. On a reset ten-item dataset, Remove even items must leave zero/two/four/six/eight. After a reset/add, Clear/Add without resetting must produce ten through nineteen; Reset Counter alone leaves existing rows, and the next Add appends zero through nine. Add enough items to scroll, check order and tab-state retention, then exercise the surrounding controls over their ranges; progress follows only the horizontal tracker. The other three Repeat pages must run this same controller sequence on their independent models.
+
+### Layout / Repeat / RepeatFlow
+
+- **Source and identity:** `RepeatTabPage.xml`, `RepeatComponents.xml`. Keep the wrapping field of English-number buttons beside the same Operations group and surrounding scroll/tracker controls.
+- **TUI rewrite:** Retain actual RepeatFlow layout with variable button widths measured in cells. Its wrapping, variable-width arrangement should remain visibly different from RepeatStack and the adjacent shared-size examples.
+- **Page SOP:** Run the complete RepeatStack controller sequence on this tab. Add several batches, narrow and widen the terminal, and require wrapping without missing or reordered items; scroll to the last item. Confirm button widths follow their text lengths and remain different where labels have different lengths. Check the surrounding tracker/progress relationship and independent state when switching Repeat tabs.
+
+### Layout / Repeat / SharedSize (RepeatFlow)
+
+- **Source and identity:** `RepeatTabPage.xml`, `RepeatComponents.xml`, retaining `SharedSizeRoot` and the `EnglishNumber` width group. Keep the same English-number buttons and Operations placement as RepeatFlow.
+- **TUI rewrite:** Preserve equal-width buttons as this page's immediately recognizable distinction. Shared widths must come from actual cell measurement and shared-size layout, not a hard-coded common width.
+- **Page SOP:** Run the complete RepeatStack controller sequence. Add batches containing longer names and require participating buttons to share the widest measured width. Resize and verify uniform widths, wrapping, and item order. Clear/reset/add short labels again and verify stale content or an obsolete long-label width does not survive. Test independent counters and the surrounding tracker/progress controls.
+
+### Layout / Repeat / SharedSize (TextList)
+
+- **Source and identity:** `RepeatTabPage.xml`, `RepeatComponents.xml`, and `SharedSizeTextItemTemplate`. Preserve the selectable text-list counterpart with right-anchored, equal-width English-number label areas and the same Operations group.
+- **TUI rewrite:** Retain the real text-list item-template behavior and shared-width binding, with compact margins and readable selection. Keep text left-aligned inside the right-anchored label areas, matching the original arrangement. Do not replace it with the button-flow example.
+- **Page SOP:** Run the complete RepeatStack controller sequence. Select with mouse/keyboard, scroll through longer names, and require equal-width, right-anchored label areas with left-aligned text. Remove rows and clear; require exact surviving items, no stale labels, and no invalid selection appearance. Switch among all four Repeat tabs and verify their independent contents/counters and the surrounding tracker/progress behavior.
+
+### Layout / Responsive
+
+- **Source and identity:** `ResponsiveTabPage.xml` and its three helper controls. Preserve the vertically ordered `GuiResponsiveViewComposition`, `GuiResponsiveStackComposition`, and `GuiResponsiveGroupComposition` groups, `LevelUp();`/`LevelDown();`, level readouts, and familiar Pen/Pineapple/Apple labels.
+- **TUI rewrite:** Use compact palette-colored cell borders and readouts while retaining the actual responsive composition types and shared editable document in the View example. Preserve the four View text variants `Pen Pineapple Apple Pen`, `Pineapple Pen`, `Apple`, and `Pen`.
+- **Page SOP:** Enter a marker into `Edit me!`, traverse View levels both ways, and require the same editor content to survive migration and appear in the label. Verify View has four levels, Stack seven, and Group four; step to both boundaries and require bounded readouts. Stack changes participating children incrementally, while Group advances eligible children together. Resize and switch away/back without state loss. This source demonstrates explicit level buttons and has no ResponsiveContainer, so resizing must not be falsely described as an automatic level-switching test.
+
+### Control / Document Editor (Toolstrip)
+
+- **Source and identity:** `DocumentEditorToolstrip.xml`, `DocumentEditorBase.xml`, `DocumentComponents.xml`, and their dependencies. Preserve the exact page title, `File / Edit / View` menu bar, familiar submenu labels (including the source's `Paragram Alignment`), and large central document area.
+- **TUI rewrite:** Remove toolbar compositions and icon slots; move unique Bold/Italic/Underline/Strike, Set Font, Text Color, and Background Color commands into a text `Format` menu. Preserve command enabled/selected bindings, shortcuts, edit modes, paragraph alignment, clipboard/undo commands, and hyperlink dialogs. Insert Image still selects/decodes an image, but represents it as a supported selectable inline object such as `[Image: name, width x height]`, retaining backing image identity/data and deletion/undo semantics without creating a document image run or ImageFrame. File/image picker previews use textual metadata. Font metrics remain TuiFont/1 with supported styles.
+- **Page SOP:** Type a unique marker, select/replace, copy/paste, cut/delete, undo/redo, and verify exact content and command availability. Apply/remove each style and foreground/background color; cancel dialogs and require no change. Exercise default/left/center/right alignment and Preview/Selectable/Editable modes, requiring each mode's actual editing/selection behavior. Create/edit/cancel/remove a hyperlink and activate it to check `You Clicked a Hyperlink!` and the recorded URL. Cancel image selection, then insert/select/delete/undo a textual image object. Open every File picker and verify its filters, navigation, and cancellation. For FCT's two-editor continuity check, enter a second distinct marker in a retained TextBox page, visit List, and return to both editors; require unchanged markers with no invented Search field.
+- **Existing limitation to preserve explicitly:** The four file-format callbacks in the generated FullControlTest C++ currently throw `You should implement this function.`, while their Workflow bodies show not-implemented dialogs. Retain the commands and document this baseline limitation; do not promise successful private-format/RTF/HTML file round trips. When rewriting TUI XML, prefer retaining those explanatory Workflow bodies as generated behavior instead of copying throwing UserImpl stubs, and verify the named format/path in the resulting TUI message. This does not implement persistence. `CancelWindowClose()` is not wired by FullControlTest's `Resource.xml`, so do not invent a baseline save-on-exit requirement.
+
+### Control / TextBox / TextBox
+
+- **Source and identity:** `TextBoxTabPage.xml`, `TextBoxSubTabPage` with tab input enabled, and its Text resource. Preserve `Archer` in the single-line field above the multiline poem beginning `I am the bone of my sword`, the four child-tab captions, and `Make Font Larger / Make Font Smaller` below their shared editor group.
+- **TUI rewrite:** Use cell-sized fields with their original ALT access points. Preserve the shared font-change requests across all four leaves, adding a requested-size readout next to the buttons so the operations remain observable although glyph metrics stay one cell. Keep the original +5/-5 requests and Smaller's requested-size-greater-than-5 enable condition.
+- **Page SOP:** Verify both original texts; enter independent markers, navigate arrows/Home/End, select/replace, copy/paste, and undo/redo. Tab inside an editor inserts tab content without moving focus; use the mouse/access key to leave it. Add multiline content and scroll. Run Larger then Smaller and require the requested size to change and return across all four leaves without changing glyph height. Switch away/back and require both markers. Repeat with CJK and supplementary characters to expose cell/caret mismatches.
+
+### Control / TextBox / TextBox (No Tab)
+
+- **Source and identity:** The second `TextBoxSubTabPage` instance in `TextBoxTabPage.xml`, with `TextBoxAcceptTabInput=false`. Keep the exact `(No Tab)` title and the same Archer-over-poem arrangement as its sibling.
+- **TUI rewrite:** Retain independent text state with the same cell-sized fields, shared font controls/readout, and ordinary editing behavior; focus traversal is the intentional difference.
+- **Page SOP:** Repeat the preceding page's editing, selection, clipboard, undo/redo, and scrolling checks with different markers. Tab/Shift+Tab must move focus without inserting a tab character. Compare directly with the tab-accepting sibling. Shared size requests must update the binding/readout without changing cell metrics or either page's text. Switch away/back and verify independent retained content.
+
+### Control / TextBox / Document
+
+- **Source and identity:** `TextBoxTabPage.xml`, `DocumentBoxSubTabPage`, `DocFixed`, and `DocRelative`, with tab input enabled. Preserve the top Archer DocumentTextBox and the two document panes below: `Fixed Size Title` left, `Relative Size Title` right, with their original poem.
+- **TUI rewrite:** Keep the distinct DocumentTextBox, DocumentViewer, and DocumentLabel control types and ALT access points. Use a terminal-sized two-column layout; provide surrounding page scrolling if the non-scrolling label grows. Retain fixed/relative font-size metadata and show a compact metadata readout where needed, while both render with cell metrics.
+- **Page SOP:** Check all three original texts, enter distinct markers in each editor, select/replace and undo/redo, and require Tab insertion without focus movement. Exercise access-key/mouse focus. Resize to wrap the documents, verify viewer scrolling versus label growth, and reach all text before restoring the viewport. Shared Larger/Smaller must preserve the fixed/relative metadata and text while glyph height remains one row. Visit another top-level tab and return to require all three markers unchanged.
+
+### Control / TextBox / Document (No Tab)
+
+- **Source and identity:** The second `DocumentBoxSubTabPage` instance and the same document resources in `TextBoxTabPage.xml`, with tab input disabled. Keep the exact `(No Tab)` title, top Archer field, and matching fixed-title/relative-title panes.
+- **TUI rewrite:** Preserve the three control types, independent document state, wrapping/growth behavior, clipboard support, and shared requested-font controls. Keep the layout visually paired with the preceding page.
+- **Page SOP:** Repeat its three-editor content, selection, clipboard, undo/redo, scrolling/growth, and resize checks with different markers. Tab/Shift+Tab must move focus and leave all three document texts unchanged. Verify access keys and mouse focus, shared size requests without cell-metric changes, and persistent independent text/metadata after switching pages.
+
+### Control / Embedded Controls
+
+- **Source and identity:** `EmbeddedControlsSubTabPage.xml` and linked `SideDocuments.xml`. Preserve the selectable document headed `RemotingTest_Core.exe`, explanatory text, `Argument / Description / Required` table with `/Http`, `/Pipe`, `/FCT`, `/RPT`, and final `Run [combo]? Start [RIGHT NOW]!` sentence.
+- **TUI rewrite:** Use cell-sized table columns and palette borders. Keep the table, combo, and button as actual DocumentItem inline compositions in the document; moving them into unrelated page controls would remove the feature under test. Retain combo choices FullControlTest/RemoteProtocolTest, initially FullControlTest. The sample button only displays `Pretend to be starting!`; it does not launch another app.
+- **Page SOP:** Verify the heading, complete four-row table, and initial combo selection. Scroll to the inline controls, choose RemoteProtocolTest, and require persistence after scrolling, resizing, and returning to the page. Click RIGHT NOW and require exactly `Pretend to be starting!` in a dismissible TUI dialog; dismiss OK and require a responsive document with the combo state retained. Select surrounding text and navigate around every embedded composition, checking valid caret/selection boundaries, inline relayout after wrapping, and no stale cells after dropdown/dialog dismissal.
+
+### Misc / Localization
+
+- **Source and identity:** `LocalizedStringsTabPage.xml` and `LocalizedComponents.xml`. Preserve the locale selector above the formatted-value list, the localized page title `Localization / 本地化`, all twelve entries, and all three sentence-binding forms including escaped dollar characters.
+- **TUI rewrite:** Use a compact selector/label row and full-width scrolling list, retaining application-wide locale bindings and original sample values. Chinese text must be measured in terminal cells without distorting labels or borders.
+- **Page SOP:** Switch en-US to zh-CN and back. Require the title, selector label, date/time/number/currency strings, and all three sentence entries to update. The number value remains 2147483647 and currency value 1342177.28 under their locale formatting; changing locale alone must not change the stored date/time. Check the literal dollar characters in sentence results and correct CJK cell boundaries. Visit Dialogs and require its shared locale selector to reflect the application locale.
+
+### Misc / Dialogs / MessageDialog
+
+- **Source and identity:** `LocalizedDialogsTabPage.xml`, `LocalizedComponents.xml`, and the localized dialog-string injection. Keep the shared locale selector and `Title / Text / Input / DefaultButton / Icon / Output` form with `Show Dialog`.
+- **TUI rewrite:** Preserve the recognizable form rows in a compact cell layout. Replace graphical message icons with a supported glyph/text meaning, retaining every icon choice and all existing button-set, default-button, and output bindings.
+- **Page SOP:** Edit the title/message and verify both in the hosted modal. Exercise all seven button sets, all nine possible returned outputs, all five icon choices, and every applicable default-button position. Keyboard activation of the default must return the corresponding Select output and update only to the actual choice. Repeat representative cases in en-US/zh-CN and inspect localized buttons. Close every dialog, verify it disappears, and require focus to return to the page with correct output.
+
+### Misc / Dialogs / ColorDialog
+
+- **Source and identity:** `LocalizedDialogsTabPage.xml`. Keep the color preview above `Show Dialog`, together with the shared locale selector.
+- **TUI rewrite:** Replace the large GUI swatch with a compact cell swatch and readable RGB/hex value in the same preview region. Preserve current/custom-color input, acceptance, and cancellation through FakeTuiDialogService.
+- **Page SOP:** Open with the current preview color, select/edit another color, accept, and require the swatch and numeric readout to agree. Reopen and require that accepted color as the initial value. Change then cancel and require the previous page color to remain. Exercise custom colors, repeat under zh-CN, and verify the dialog and its controls remain usable after resizing.
+
+### Misc / Dialogs / FontDialog
+
+- **Source and identity:** `LocalizedDialogsTabPage.xml`. Preserve `Sample Text`, the `Effect` checkbox, and `Show Dialog` in their original order with the shared locale selector.
+- **TUI rewrite:** Render the sample using supported terminal styles and color, keeping font name/size restricted to TuiFont/1 as required. Preserve simple/full effect-dialog selection and commit/cancel behavior without retaining GUI-sized font preview boxes.
+- **Page SOP:** Open with Effect off, then on, and require the appropriate dialog controls. With effects enabled, exercise bold, italic, underline, strikeline, and color; accept and verify the sample in Windows Terminal. Reopen to check retained settings, change/cancel, and require the prior sample style/color. Repeat in both locales and confirm font controls cannot change terminal cell metrics.
+
+### Misc / Dialogs / Open/Save FileDialog
+
+- **Source and identity:** `LocalizedDialogsTabPage.xml`. Preserve the six fields `Title / Directory / FileName / Filter / FilterIndex / DefaultExtension`, all nine option checkboxes, `Selected Files`, and both launch buttons. Retain fields left, options right, and results below at comfortable widths.
+- **TUI rewrite:** Use compact/scrollable groups and cell-sized path/result fields, preserving option forwarding, property transfer, folder/file navigation, and returned selection. All dialogs and nested prompts use TUI windows. Preserve the four currently inert fake-service options (ReadOnlyCheckBox, DereferenceLinks, NetworkButton, AddToRecent) and document their unchanged behavior; their checkboxes must not be claimed to enable absent features.
+- **Page SOP:** Prepare a known directory with several file types. Set all six fields and verify initial title/location/name/filter selection; navigate folders, wait for asynchronous rows, change filters, and select one or multiple files as allowed. Require exact Selected Files results. Exercise empty/invalid selection, missing file/directory, create confirmation, save default-extension behavior, and overwrite confirmation, accepting and canceling nested prompts. Canceling the outer dialog preserves prior page results. Repeat representative validation in Chinese and resize while the dialog is open. These pickers select paths; do not infer that they read/write file contents.
+
+### Misc / DatePicker
+
+- **Source and identity:** `DatePickerTabPage.xml`. Preserve two calendars side by side, their two date combo boxes below, and the recognizable `DP1 / DP2 / DC1 / DC2` readouts. Keep four independent selected-date values.
+- **TUI rewrite:** Use actual cell calendar grids with compact month/year selectors and TUI dropdowns, keeping the paired calendar/combo arrangement visible rather than replacing it with four plain date-entry fields.
+- **Page SOP:** Change month/year and select distinct dates in both calendars; only the corresponding DP readout changes. Choose separate dates through each combo's popup; its text/DC readout changes without altering the other three values. Test leap-year February and month/year boundaries, date-grid alignment, keyboard/mouse selection, popup dismissal, resizing, and persistence after visiting another page.
+
+### Window Manager
+
+- **Source and identity:** `Resource.xml`, `WindowManagerContentStyles`, `SubWindowResource`, and the main Window Manager tab. Preserve the vertical frame-option checklist, `Open New Window` button, three shortcut labels, mouse-result label, and separate `Alt: 0; Super: 0` readout. Subwindows repeat the same checklist, matching the original demonstration.
+- **TUI rewrite:** Use compact checkbox rows and terminal-sized hosted subwindows. Bind options to the actual frame capabilities: the physical main window has no GacUI frame; child windows retain the supported border/title/size-box controls with TUI lines and glyphs. Keep shortcut names and result messages recognizable. Preserve local/global shortcut registration through the appropriate service, but do not invent OS Super bits or extra mouse-button events that the terminal backend cannot report; document those capability limits alongside the unchanged named operations.
+- **Page SOP:** Adapt FCT `Verify Shortcuts and Mouse Buttons`. Open a child and then a grandchild; move, resize, activate, overlap, and close them, requiring correct ownership, focus, clipping, and exposed-background repaint. Toggle each enabled frame option and verify the corresponding child's appearance; disabled main-window options remain unavailable and do not change the terminal frame. Require the Windows labels `Ctrl+Q`, `Ctrl+Alt+Win+Q`, and `{Ctrl+Shift+Alt+Win+Q}`. Press `Ctrl+Q` and require `You pressed Ctrl+Q!` in a dismissible TUI dialog. Test the global chord through real OS registration and require `You pressed Ctrl+Shift+Alt+Win+Q!`, separately from terminal key payloads; the local Super chord cannot be claimed verified through a backend that reports no Super modifier. For every delivered mouse button require exact `<button> button down!`/`<button> button up!`, and verify movement, double-click, both wheel axes, and modifier readouts. Mark unobservable terminal inputs explicitly instead of silently passing the native renderer's five-button/Super matrix. Finish with another successful ordinary interaction to prove the page remains live.
+
+### Exit
+
+- **Source and identity:** The `Exit` tab in `Resource.xml`. Preserve the four vertically arranged, exactly named `self.Hide()` / `self.Close()` buttons, with and without `(InvokeInMainThread)`, so the page is immediately recognizable.
+- **TUI rewrite:** Keep those four operations as the documented physical-main-window no-op demonstrations and show that constraint in a short adjacent label. Add clearly named `Stop TUI` and `Stop TUI (InvokeInMainThread)` buttons using `ITuiApplication::Stop()`, with the same immediate/queued pairing. Keep hosted subwindow closing independent from these main-window restrictions.
+- **Page SOP:** Adapt FCT `Close the Application`. Click each original button and require the terminal/application to remain active and responsive; queued operations must actually run, so update a visible invocation readout when their callbacks execute. On separate fresh runs, use each Stop button and require normal teardown and restored terminal contents, cursor, colors, input mode, and usable shell input. Repeat after opening/closing hosted dialogs and changing pages. Do not substitute terminal-tab close, force termination, or a remote renderer's Force Exit for normal application stopping.
+
 ## REVIEW COMMENTS
 
 No unresolved review comments. The decisions and factual corrections above belong to DETAILS, with implementation acceptance checks in VERIFICATION.
