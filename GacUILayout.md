@@ -9,7 +9,25 @@
 
 ## Best Practice for Choosing Appropriate Compositions and Controls
 
+- Layout of a control applies to its `BoundsComposition` property.
+- The default values are not, but it is recommended to set a composition's `MinSizeLimitation` to `ElementAndChildren`, so it automatically expands to make all children visible.
+- There is no such thing like setting an absolute position.
+  - Use `AlignmentToParent` to define how it sticks to the border of its parent composition, a component of -1 means it doesn't care where is the parent's border in this direction.
+  - Use `PreferredMinSize` if a minimum size is known.
+  - All these properties are combined to calculate the actual position and size of a composition.
+- There are 2 ways of centering an object:
+  - When an object should expand to the size of the container, use `AlignmentToParent`.
+  - When an object has its own size, use a 3x3 table, where the center column/row is `MinSize` and others are all `Percentage`.
+- Prefer `Label` over `SolidLabel` in normal UI because `Label` could load the expected font and control template.
+- Prefer `SolidLabel` over `Label` in templates because `SolidLabel` is more lightway, more configuration, meanwhile expected font and color will come from bindable template properties.
+  - Centering a `SolidLabel` could be easily done to set both alignment to `Center`.
+
 ## Best Practice for GUI Based Layout
+
+- Ideal distance between objects are 5 pixels.
+  - It should be the distance between two visible objects, not between positions of two GacUI classes.
+  - For example, a table with `CellSpan` set to 5 will a fixed distance between cells. But when a cell embeds another table with `CellSpan` set to 5 with `Border` set to true, the distance between inner table cells to outer table cells is actually 10, which does not maintain the 5 pixels rule.
+  - Another example, if a container has `InternalMargin` all values set to 5, if a control in it also has `Margin` all values set to 5, the distance between the border of the container and the child control is actually 10, which does not maintain the 5 pixels rule.
 
 ## Best Practice for TUI Based Layout
 
