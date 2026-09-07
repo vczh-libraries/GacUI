@@ -7,10 +7,12 @@
 - Control/item templates are also recommended and almost the only way to change the look of controls. If a template is created for a specific feature instead of app-wise theme, `<ThemeTemplate/>` is not needed here, instead setting the template to a control explicitly would also work.
 - `DarkSkin` is the official default skin for GUI based GacUI application, which is also a great example for learning how to create fully functional templates for any controls.
 
-## Best Practice for Choosing Appropriate Compositions and Controls
+## Best Practice for Using Compositions and Controls Appropriately
 
 - Layout of a control applies to its `BoundsComposition` property.
-- The default values are not, but it is recommended to set a composition's `MinSizeLimitation` to `ElementAndChildren`, so it automatically expands to make all children visible.
+- Tt is recommended to set a composition's `MinSizeLimitation` to `LimitToElementAndChildren`, so it automatically expands to make all children visible.
+  - This value needs to be explicitly set, because the default value is `NoLimit`, meaning not caring about its `OwnedElement` or children.
+  - If a composition is known to have no children, `LimitToElement` would also be an more optimal option to ensure the `IGuiGraphicsElement` is visible completely.
 - There is no such thing like setting an absolute position.
   - Use `AlignmentToParent` to define how it sticks to the border of its parent composition, a component of -1 means it doesn't care where is the parent's border in this direction.
   - Use `PreferredMinSize` if a minimum size is known.
@@ -18,6 +20,7 @@
 - There are 2 ways of centering an object:
   - When an object should expand to the size of the container, use `AlignmentToParent`.
   - When an object has its own size, use a 3x3 table, where the center column/row is `MinSize` and others are all `Percentage`.
+- Use `Stack` when multiple objects are lined up vertically or horizontally, but there position does not affect or be affected by other objects in the other direction, in which case a table would do the work.
 - Prefer `Label` over `SolidLabel` in normal UI because `Label` could load the expected font and control template.
 - Prefer `SolidLabel` over `Label` in templates because `SolidLabel` is more lightway, more configuration, meanwhile expected font and color will come from bindable template properties.
   - Centering a `SolidLabel` could be easily done to set both alignment to `Center`.
@@ -30,6 +33,11 @@
   - Another example, if a container has `InternalMargin` all values set to 5, if a control in it also has `Margin` all values set to 5, the distance between the border of the container and the child control is actually 10, which does not maintain the 5 pixels rule.
 
 ## Best Practice for TUI Based Layout
+
+- Usually there should be no distance between objects.
+  - Unless if two buttons or something without a border are stacking vertically, keep one pixel between them would be better.
+  - There is no need to keep a distance if they are stacking horizontally, as TuiSkin requires the control has one pixel to before and after the text.
+  - There is no need to keep a distance between two objects with borders, since borders are rendered by characters, they are visibly having a distance.
 
 ## Best Practice for Creating/Updating Official TuiSkin
 
@@ -84,6 +92,8 @@
   - Group boxes also use label colors.
   - Combo box dropdown button and scroll bar arrow buttons are button with icon not with text.
     - When the button is in any state except normal, icon colors are text colors.
+  - The mark of a check box of a radio button will use text color instead of icon color.
+  - Grid lines in list view or data grid would use the control border colors, but when the control is focused, grid lines still use the normal color.
 
 ### Style and Layout
 
