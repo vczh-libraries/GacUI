@@ -75,5 +75,6 @@
 - No need to create `Test/Linux/CppTest_Tui` as the actuall test app will be created in `wGac` and `iGac`.
 - UI Best Practice: check out `GacUILayout.md`.
   - This should be followed to create `TuiSkin` and `CppTest_Tui`.
+  - This should be followed to create TUI based `FakeDialogService` UI.
   - This should be followed to create item templates and cell visualizers.
 - Complete a knowledge base page to explain how GacUI is built on top of TUI application. This is difference from the above item "how to authorize a good-looking TUI application". Rules to implement `INative(Controller|Window)` or leveraging utilities created for non-TUI native renderer should also be recorded. This would be helpful to implement `SetupTui(Wayland|Cocoa)Renderer` after it is fully verified on windows.
