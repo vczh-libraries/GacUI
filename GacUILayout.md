@@ -17,9 +17,51 @@
 
 - Exclude ribbon and toolbar since they requires image.
   - Using them in GacUI XML Resource leading to crash is expected, due to not offering proper control templates.
-- Colors are listed in workflow global variables, not hardcoded in all XMLs. `-eval` binding could be used in XML to use them.
+- Colors are listed in fields of a struct in a workflow global variable. `-eval` binding could be used in XML to use them.
+  - The type name will be `tuiskin::ColorPackage`.
+  - The variable name will be `tuiColors`.
+  - When a color is needed, there is only two ways: using `tuiColors` or any color property from a template. Hardcoded color values are not allowed.
+  - Besides of generated C++ code, there are a pair of manually written C++ file for TuiSkin calls `TuiSkinConfig.(h|cpp)`.
+    - Currently it has only two functions:
+      - `tuiskin::CreateDefaultColorPackage` to create `tuiskin::ColorPackage` with all color assigned.
+      - `tuiskin::SetColorPackage` to set a color package to the global variable.
+    - `TuiSkinConfig.(h|cpp)` will `#include` generated files from TuiSkin's XML resource.
 - Polygons on darkskin is to render icons without actually using an image, such thing should be replaced by one character in TuiSkin.
 
-### Color List
+### Color List (CreateDefaultColorPackage's values)
+
+- General, unless described below, these colors should be used:
+  - `ControlBackground`: black, for any control background.
+  - `ControlText`: white, for any control text.
+  - `ControlBorder`: gray.
+  - `LabelText`: gray.
+- Menus:
+  - `MenuBackground`: dark gray, for normal or disabled menu item and menu bar backgrounds.
+  - `MenuText`: white, for normal menu text and menu separator.
+  - `MenuTextDisabled`: gray.
+  - `MenuBackgroundHighlighted`, dark blue.
+  - `MenuTextHighlighted`, white.
+- List items, tab headers:
+  - `ItemBackground`: black, for normal or disabled item background.
+  - `ItemText`: white, for normal item text.
+  - `ItemTextDisabled`: gray.
+  - `ItemBackgroundHighlighted`: dark blue.
+  - `ItemTextHighlighted`: white.
+  - `ItemBackgroundSelected`: light sky blue.
+  - `ItemTextSelected`: drak gray.
+  - In data grid, when a cell is selected, only the selected cell uses selected color, other cells in this row use highlighted color.
+- Buttons:
+  - `ButtonBackground`: dark gray, for normal or disabled button background.
+  - `ButtonText`: white, for normal button text.
+  - `ButtonIcon`: gray.
+  - `ButtonTextDisabled`: gray.
+  - `ButtonBackgroundHighlighted`: light sky blue.
+  - `ButtonTextHighlighted`: dark gray.
+  - `ButtonBackgroundPressed`: light gray.
+  - `ButtonTextPressed`: white.
+- Exceptions:
+  - Although check boxes and radio buttons are buttons, but they should use label colors.
+  - Combo box dropdown button and scroll bar arrow buttons are button with icon not with text.
+    - When the button is in any state except normal, icon colors are text colors.
 
 ### Layouting

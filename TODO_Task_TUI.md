@@ -53,12 +53,14 @@
   - TUI immediately takes control when SetupTui*Renderer is called, but only when Show is called, it renders. Hide/Close no ops, all Show functions are the same.
   - The main window will always rendered ans treated as Activated.
 - TuiSkin, organized following darkskin, also needs to be added to `Build.ps1 -Project GacUI`.
+  - `Generated_TuiSkin.vcxitems`, `TuiSkinConfig.(h|cpp)` is also put here.
   - Check out `GacUILayout.md` for details.
 - ListView and DataGrid should not use non-detail view. Inside `SetView` calling `GetTuiApplication` and disable non-detail view accordingly. DataGrid has its own view which is allowed.
   - Proper item template and cell visualizers need to have a TUI specific version, `SetView` could use it when `GetTuiApplication` is not null.
   - When `GetTuiApplication` is not null, ListView's non-detail views are treated as detail view.
   - Item templates of other list controls also need a TUI version.
 - TUI test app and SOP of manual testing.
+  - `Generated_TuiControlTest.vcxitems`.
   - SOP will be put in `GacUI/.github/Jobs/DebugTuiControlTestSop.md`.
     - Since the new test app `TuiControlTest` is mainly a copy of `FullControlTest`, the content should be similar to `FullControlTest` part in `GacUI/.github/Jobs/DebugRemoteProtocolSop.md`.
     - Update `Project.md` to introduce the test app.
