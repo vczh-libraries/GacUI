@@ -34,8 +34,10 @@
   - `ControlBackground`: black, for any control background.
   - `ControlText`: white, for any control text.
   - `ControlBorder`: gray.
+  - `ControlBorderDisabled`: dark gray.
+  - `ControlBorderFocused`: light sky blue.
   - `LabelText`: gray.
-- Menus:
+- Menus (includes menu item in dropdown, and menu button in menu bar):
   - `MenuBackground`: dark gray, for normal or disabled menu item and menu bar backgrounds.
   - `MenuText`: white, for normal menu text and menu separator.
   - `MenuTextDisabled`: gray.
@@ -61,7 +63,29 @@
   - `ButtonTextPressed`: white.
 - Exceptions:
   - Although check boxes and radio buttons are buttons, but they should use label colors.
+  - Group boxes also use label colors.
   - Combo box dropdown button and scroll bar arrow buttons are button with icon not with text.
     - When the button is in any state except normal, icon colors are text colors.
 
-### Layouting
+### Style and Layout
+
+- Window frame.
+  - Main window do not have a frame, its template will be a pure background with nothing.
+    - It will use the frame from the OS CLI window.\
+    - When query for all components (border, sizebox, maximizing button, minimizing button, etc) are all invisible.
+  - Sub window could have a frame apon user settings:
+    - When there is a sizable box, use double line.
+    - When there is a border, use thick line.
+    - When there is no box, there is no line.
+      - But just like drakskin, dropdown menu style should maintain a thin line, which mean they have their own window template for dropdown.
+- Unlike darkskin, scroll bars, buttons and menu items will have no border.
+  - Two spaces are added around the control text, so that buttons, or menu buttons in a menu bar, could just be stacked together without spaces between them horizontally.
+  - Do not add spaces around the text, instead use 1 pixel of distance in layout, which will be rendered with a space.
+- Group box will be a round line, the group header is directly on the top border from the 3rd pixel.
+- Focused control is represented by its border color when there is a border, and by bold text when there is text.
+  - Main window won't have difference because it is always activated.
+- For buttons and menus, highlighted state renders underline on its text.
+  - Pressed buttons also need underline on its text.
+- Tab consists of tab buttons and a container. The container has a thin border in `ItemBackgroundSelected`, or `ItemBackground` when disabled.
+  - The row of horizontally aligned tab headers, or the last row when there is multiple, is directly on the top border from the 3rd pixel.
+- Any container control do not need a margin between the content to the border, meaning its `ContainerComposition` is located from (1,1), meanwhile the left-top position is defined as (0,0).

@@ -25,7 +25,7 @@
   - This will keep wGac and iGac implementation thin, but you should not handle platform specific thing in shared code.
 - Renderer:
   - `ImageFrame` completedly not implemented, by not setting a renderer factory, using `<ImageFrame/>` leading to crash is expected, due to not offering the renderer.
-    - Also no `Polygon`, `3D*`, `InnerShadow`, `Gradient*`
+    - Also no `Polygon`, `3D*`, `InnerShadow`, `Gradient*`, `FocusRectangle`.
   - Add `TuiBorder` so that TUI line/rect style could be used.
     - When width or height is 1, it becomes a linr.
     - When both are 1, it does bot render.
