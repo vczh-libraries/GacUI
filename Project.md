@@ -179,6 +179,8 @@ By careful tell if a bug repro in some or all three ways, you can easily narrow 
 Test apps means `CppTest*` and `RemotingTest*`, they are demos and do not require production level quality.
 No need to gracefully handle any exception, actually we need them to just crash when anything unexpected thing happens, that's how we know anything in `REPO-ROOT/Source` is going wrong.
 `REPO-ROOT/.github/Jobs/DebugRemoteProtocolSop.md` defines the expected behavior of these test apps apon connection/disconnection.
+Any test app starting a `FullControlTest` is recommended to be tested following the "## Complete Control Showcase (`/FCT`)" section of `REPO-ROOT/.github/Jobs/DebugRemoteProtocolSop.md`.
+Any test app starting a `TuiControlTest` is recommended to be tested following  `REPO-ROOT/.github/Jobs/DebugTuiControlTestSop.md`.
 Keep test apps simple without introducing unnecessary "gracefully recovering".
 
 ## Windows Specific

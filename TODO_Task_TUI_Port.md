@@ -1,17 +1,11 @@
-- Completed work in `../VlppOS/TODO_Task.md`, verified on Windows. The goal of this request is to make sure it also works on Linux/macOS.
-- Breaking changes to handle after importing the new VlppOS:
-  - GacUI: remove the moved declarations and keyboard macros from `Source/GuiTypes.h` and `Source/NativeWindow/GuiNativeWindow.h`. Use their single copy in VlppOS `Source/TUI/TUITypes.h`, still under `vl::presentation`. Regenerate GacUI releases, then import matching GacUI and VlppOS releases into wGac/iGac and rebuild.
-  - Fill the new `WindowMouseInfo_::alt` in every mouse path, including buttons, movement, wheels, and generated input. Use Alt on Windows and wGac, and Option on iGac; keep Super/Command in `osSuper`. Update GacUI's Windows provider, wGac's `WGac/WGacNativeWindow.cpp` (including mouse-enter input), and iGac's `Mac/NativeWindow/OSX/CocoaWindow.mm`.
-  - GacUI: carry `alt` through mouse-event copies, hosted mode, automation, reflection, and remote serialization. Regenerate protocol code and reflection metadata. Update remote cores and renderers together so their mouse messages agree.
-  - Shared input fields will have defaults: flags are false, coordinates/wheel/character are zero, and key code is `VKEY::KEY_UNKNOWN` (-1). Check aggregate initializers after adding `alt`, and use normal initialization instead of clearing event structs with zero bytes.
-  - `VKEY::KEY_LEFT_BRACKET` will mean `[` (0xDB), and `KEY_RIGHT_BRACKET` will mean `]` (0xDD). Check key mappings, names, shortcuts, and metadata in all three repos. Fix iGac's reversed bracket/brace tables in `Mac/NativeWindow/OSX/ServicesImpl/CocoaInputService.mm`. Keep the raw OEM key values unchanged.
-  - Old TUI input types will be removed. Update any TUI callbacks and callers: `TuiMouseButton` to `NativeMouseButton`, `TuiMouseInfo` to `WindowMouseInfo`, `TuiKeyInfo` to `NativeWindowKeyInfo`, and `TuiCharInfo` to `NativeWindowCharInfo` in `vl::presentation`.
-- Verification is done following these documents.
-  - `VlppOS/.github/Jobs/DebugTuiPlaygroundSOP.md`
-  - `GacUI/.github/Jobs/job.rpXPlat.prompt.md`
-  - Based on what OS you are on:
-    - On Linux, you are working on VlppOS, GacUI and wGac.
-    - On macOS, you are working on VlppOS, GacUI and iGac.
+- Based on what OS you are on:
+  - On Linux, you are working on VlppOS, GacUI and wGac.
+  - On macOS, you are working on VlppOS, GacUI and iGac.
   - VlppOS and GacUI are already verified on windows, but if you find any issue in the current OS during verification, fix them.
   - wGac/iGac is updated but never verified, you are going to take care of any issue in them.
+- The already completed work is in `TODO_Task_TUI.md`, verified on Windows. The goal of this request is to make sure it also works on Linux/macOS:
+  - Port the new test app, make sure it could be synced in the future in `syncProj.sh`, and started by `test.sh --app:tui`.
+  - Update `GacUI/.github/Jobs/job.rpXPlat.prompt.md` for the new test app. The SOP is in `GacUI/.github/Jobs/DebugTuiControlTestSop.md`.
+    - If it has already been updated, verify this document again.
+  - Make sure the ported test app passed tests following `GacUI/.github/Jobs/DebugTuiControlTestSop.md`.
 - commit and push once finishing.

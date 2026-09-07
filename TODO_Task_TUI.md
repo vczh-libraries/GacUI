@@ -1,0 +1,82 @@
+
+- The goal of this task is to complete a new TUI based platform provider for GacUI on Windows.
+- Although most types have a `Gui` prefix, all TUI related types should have a `Tui` prefix.
+  - `SetupTuiWindowsRenderer` needs to be called to start a TUI application.
+    - `SetupTui(Wayland|Cocoa)Renderer` will be implemented in `wGac` and `iGac` repo.
+    - TUI application should be hosted application, meaning the hosted controller will be created by feeding the TUI controller.
+  - Just like hosted mode could be detected by calling `GetHostedApplication() != nullptr`, TUI will have a `GetTuiApplication()`.
+  - `GetTuiApplication` returns `ITuiApplication`. If nothing needs to be added, keep an empty interface.
+  - `SetTuiApplication(tuiController.GetTuiApplication());` will be used to enable `GetTuiApplication`.
+  - One pixel would be one character in TUI application, this is important.
+    - Some characters might take the space of two characters, it measure two pixels then.
+  - DPI means nothing as monitor or text scaling doesn't matter when rendering using character pixels.
+  - Implementing `INativeController`:
+    - It should use services created for the non-TUI native renderer.
+    - Only one supported font listed called "TuiFont", which does nothing as font doesn't matter. Default font size will be 1.
+    - `AutomationService` returns nullptr.
+    - `ImageService` exists but it will not be called anyway, but having it helps loading resources containing images. Only `<ImageFrame/>` is unavailable but loading an image is still doable.
+- Shared code and Windows only code.
+  - TUI on all platforms should be able to share a lot of code because TUI on VlppOS is crossed platform.
+  - Cross platform codr will be in `Source/PlatformProviders/TUI`.
+  - Windows only source code will be in `Source/PlatformProviders/Windows/TUI`.
+    - As `SetupTuiWindowsRenderer` is put here and windows specific services will be returned from the actual controller class.
+    - So there will be `TuiControllerBase` and `TuiWindowsController`. Same for other platform provider classes if necessary.
+  - Multiple pairs of files are expected because I don't want to see huge file containing uncountable classes, but I also don't want to see files created for each class, keep a balance, you can read existing platform providers and get a feeling.
+  - This will keep wGac and iGac implementation thin, but you should not handle platform specific thing in shared code.
+- Renderer:
+  - `ImageFrame` completedly not implemented, by not setting a renderer factory, using `<ImageFrame/>` leading to crash is expected, due to not offering the renderer.
+    - Also no `Polygon`, `3D*`, `InnerShadow`, `Gradient*`
+  - Add `TuiBorder` so that TUI line/rect style could be used.
+    - When width or height is 1, it becomes a linr.
+    - When both are 1, it does bot render.
+    - Reuse ElementShaoe but ellipse is treated as RoundRect and when not possible then treated as Rect.
+    - `SolidBorder` is the thin version of `TuiBorder`.
+    - `TuiBorder` will not be implemented in any other platform providers, including temote protocol, therefore no need to fix remote protocol for this.
+  - `SolidLabel` and `IGuiGraphicsParagraph` should be implemented but surely to ignore `fontFamily` and `size` and antialias in `FontProperties`.
+  - `IGuiGraphicsParagraph` will use simple layout, just like how remote protocol renderer for unit test is doing.
+- TUI version of `FakeDialogService` UI:
+  - `Source/Utilities/FakeServices/TuiDialogs`. Generated files added to `Source_GacUI_Utilities_(Controls|Reflection).vcxitems`.
+  - `FakeTuiDialogService` class will be created, it is similar to `FakeDialogService` but uses different UI.
+  - In `Gui(Initialize|Finalize)Utilities`, `GetTuiApplication` could be used here so that to setup `FakeDialogService` or `FakeTuiDialogService`.
+- TUI on GacUI
+  - "main window" here means the `INativeWindow` from TUI, which is also the main window of the application because it is in hosted mode. Sub windows are rendered in the main window.
+  - The main window should not support customized frame, which could be reported by `INativeWindow`. Because it is a hosted application too so only one `INativeWindow` will be created anyway.
+    - Because CLI window is not controlled by us. For example, Windows Terminal will be used here, a TUI application even becomes a tab.
+    - Size od windows are measures by characters, not the actual size in OS window management.
+  - Maximize/Minimize/Restore/Close buttons on the main window will always exists, this can be controlled by the window template offered to the main window, therefore setting them to false won't be effective.
+    - Sub windows has no limit.
+    - Resizing, maximizing, minimizing and restoring is not doable for now. Related functions just no-op.
+      - When no-op, we still need to store the value set to the main window's size just like it is doable, retriving size would read the stored value, until the underlying CLI window resized, then the value override the stored value.
+      - It will be tricky when the CLI window shrink beyond the minimum size reported from GacUI, just render the left-top sub area in this case.
+  - Convert functions do not scale because there will be no actual DPI handling.
+  - Title calls Consone::SetTitle.
+  - TUI immediately takes control when SetupTui*Renderer is called, but only when Show is called, it renders. Hide/Close no ops, all Show functions are the same.
+  - The main window will always rendered ans treated as Activated.
+- TuiSkin, organized following darkskin, also needs to be added to `Build.ps1 -Project GacUI`
+  - Exclude ribbon and toolbar since they requires image.
+    - Using them in GacUI XML Resource leading to crash is expected, due to not offering proper control templates.
+  - Colors are listed in workflow global variables, not hardcoded in all XMLs. `-eval` binding could be used in XML to use them.
+  - Polygons on darkskin is to render icons without actually using an image, such thing should be replaced by one character in TuiSkin.
+- ListView and DataGrid should not use non-detail view. Inside `SetView` calling `GetTuiApplication` and disable non-detail view accordingly. DataGrid has its own view which is allowed.
+  - Proper item template and cell visualizers need to have a TUI specific version, `SetView` could use it when `GetTuiApplication` is not null.
+  - When `GetTuiApplication` is not null, ListView's non-detail views are treated as detail view.
+  - Item templates of other list controls also need a TUI version.
+- TUI test app and SOP of manual testing.
+  - SOP will be put in `GacUI/.github/Jobs/DebugTuiControlTestSop.md`.
+    - Since the new test app `TuiControlTest` is mainly a copy of `FullControlTest`, the content should be similar to `FullControlTest` part in `GacUI/.github/Jobs/DebugRemoteProtocolSop.md`.
+    - Update `Project.md` to introduce the test app.
+    - Update `GacUI/.github/Jobs/job.rpWindows.prompt.md` for the new test app.
+  - TuiControlTest copying FullControlTest but excluding:
+    - `Control/Ribbon`
+    - Toolbar in `Control/Toolstrip`
+    - `MISC/Elements`
+    - `MISC/Animation`
+  - TuiControlTest will be organized mirroring FullControlTest about resource files, generated files, project organizations, etc.
+  - `CppTest_Tui` will be added to `GacUI_Compiler_DependedTests` solution folder in `GacUISrc.sln`, starting `TuiControlTest`.
+    - No need to start the automation service.
+- `GacUI_Compiler` needs to be properly maintained to compile TUI dialogs and test app.
+- No need to create `Test/Linux/CppTest_Tui` as the actuall test app will be created in `wGac` and `iGac`.
+- UI Best Practice: check out `GacUILayout.md`.
+  - This should be followed to create `TuiSkin` and `CppTest_Tui`.
+  - This should be followed to create item templates and cell visualizers.
+- Complete a knowledge base page to explain how GacUI is built on top of TUI application. This is difference from the above item "how to authorize a good-looking TUI application". Rules to implement `INative(Controller|Window)` or leveraging utilities created for non-TUI native renderer should also be recorded. This would be helpful to implement `SetupTui(Wayland|Cocoa)Renderer` after it is fully verified on windows.
